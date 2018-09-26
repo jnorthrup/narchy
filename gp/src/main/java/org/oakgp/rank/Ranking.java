@@ -15,8 +15,8 @@
  */
 package org.oakgp.rank;
 
+import jcog.pri.AtomicPri;
 import jcog.pri.Pri;
-import jcog.pri.ScalarValue;
 import jcog.sort.TopN;
 
 /**
@@ -30,7 +30,7 @@ public final class Ranking extends TopN<Evolved> {
 
     public Ranking(int capacity, boolean reverse) {
 
-        super(new Evolved[capacity], reverse ? Pri::priNeg : ScalarValue.AtomicScalarValue::pri);
+        super(new Evolved[capacity], reverse ? Pri::priNeg : AtomicPri::pri);
     }
 
     public Ranking(Evolved... initial) {

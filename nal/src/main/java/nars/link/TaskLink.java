@@ -1,7 +1,7 @@
 package nars.link;
 
 import jcog.Util;
-import jcog.pri.PLink;
+import jcog.pri.PLinkHashCached;
 import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.Priority;
 import nars.NAR;
@@ -61,7 +61,7 @@ public interface TaskLink extends Priority, Termed {
         public String toString() {
             return term.toString() +
                     (char) punc +
-                    (when != ETERNAL ? ("@" + when) : "");
+                    (when != ETERNAL ? ( when) : "");
         }
 
         @Override
@@ -166,7 +166,7 @@ public interface TaskLink extends Priority, Termed {
      * serializable and doesnt maintain a direct reference to a task.
      * may delete itself if the target concept is not conceptualized.
      */
-    class GeneralTaskLink extends PLink<Tasklike> implements TaskLink {
+    class GeneralTaskLink extends PLinkHashCached<Tasklike> implements TaskLink {
 
 
         public GeneralTaskLink(Task t, NAR n, float pri) {

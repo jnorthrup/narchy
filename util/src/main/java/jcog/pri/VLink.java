@@ -9,7 +9,7 @@ import java.util.Arrays;
  * c) vector coordinates
  * d) current centroid id(s)
  */
-public final class VLink<X> extends PLink<X> {
+public final class VLink<X> extends PLinkHashCached<X> {
 
     /**
      * feature vector representing the item as learned by clusterer

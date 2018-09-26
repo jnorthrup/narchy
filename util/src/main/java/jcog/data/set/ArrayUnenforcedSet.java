@@ -1,10 +1,10 @@
 package jcog.data.set;
 
 import com.google.common.collect.Iterables;
-import jcog.TODO;
 import jcog.data.list.FasterList;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * Helper for efficiently representing small sets whose elements are known to be unique by
@@ -77,22 +77,26 @@ public class ArrayUnenforcedSet<X> extends FasterList<X> implements Set<X> {
 
     @Override
     public boolean addAll(Collection<? extends X> source) {
-        throw new TODO();
+        boolean changed = false;
+        for (X x : source) {
+            changed |= add(x);
+        }
+        return changed;
     }
 
-    /**
-     * Multiple inheritance helper.
-     */
-    private class SetForEquality extends AbstractSet<X> {
-        @Override
-        public Iterator<X> iterator() {
-            return ArrayUnenforcedSet.this.iterator();
-        }
-
-        @Override
-        public int size() {
-            return ArrayUnenforcedSet.this.size();
-        }
-    }
+//    /**
+//     * Multiple inheritance helper.
+//     */
+//    private class SetForEquality extends AbstractSet<X> {
+//        @Override
+//        public Iterator<X> iterator() {
+//            return ArrayUnenforcedSet.this.iterator();
+//        }
+//
+//        @Override
+//        public int size() {
+//            return ArrayUnenforcedSet.this.size();
+//        }
+//    }
 
 }

@@ -5,7 +5,10 @@ import jcog.grammar.evolve.EvolveGrammar;
 import jcog.grammar.evolve.SimpleConfig;
 import jcog.grammar.evolve.inputs.DataSet;
 import jcog.grammar.evolve.outputs.Results;
+import jcog.random.XoRoShiRo128PlusRandom;
 import org.junit.jupiter.api.Test;
+
+import java.util.Random;
 
 import static jcog.grammar.DataSetTest.noise;
 
@@ -39,9 +42,10 @@ class EvolveGrammarTest {
     }
     @Test
     void test2() throws Exception {
+        Random rng = new XoRoShiRo128PlusRandom(1);
         run(DataSetTest.getExampleDataSet2(
 
-                () -> "/*" + noise(2 + (int)(Math.random()*3)) + "*/",
+                () -> "/*" + noise(2 + rng.nextInt(3)) + "*/",
 
                 "acs(x111111);", "fn_c(yy3333,ab);", "d123();", "a(x,y,z);",
                 "xf(/*ab,c*/z, z1);", "gggg(b /* !;*(fs)s! */);"
