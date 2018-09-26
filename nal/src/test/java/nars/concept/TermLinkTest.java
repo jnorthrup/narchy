@@ -220,13 +220,13 @@ class TermLinkTest {
     void testImageExt() {
 
         testTemplates("(chronic-->(trackXY,happy,/))",
-                "[(trackXY,happy,/), happy, chronic, trackXY]");
+                "[(trackXY,happy,/), chronic]");
     }
 
     @Test
     void testImageExtWithNumbers() {
         testTemplates("(1-->(bitmap,0,/))",
-                "[(bitmap,0,/), bitmap, 0, 1]");
+                "[(bitmap,0,/), 1]");
     }
 
 

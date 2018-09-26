@@ -264,7 +264,7 @@ public enum $ {
 
 
     public static Variable varDep(int i) {
-        return v(VAR_DEP, (byte) i);
+        return (nars.term.Variable) v(VAR_DEP, (byte) i);
     }
 
     public static Variable varDep(String s) {
@@ -272,7 +272,7 @@ public enum $ {
     }
 
     public static Variable varIndep(int i) {
-        return v(VAR_INDEP, (byte) i);
+        return (nars.term.Variable) v(VAR_INDEP, (byte) i);
     }
 
     public static Variable varIndep(String s) {
@@ -281,7 +281,7 @@ public enum $ {
 
 
     public static Variable varQuery(int i) {
-        return v(VAR_QUERY, (byte) i);
+        return (nars.term.Variable) v(VAR_QUERY, (byte) i);
     }
 
     public static Variable varQuery(String s) {
@@ -398,7 +398,7 @@ public enum $ {
      * normalized variable
      */
     public static NormalizedVariable v(/*@NotNull*/ Op type, byte id) {
-        return NormalizedVariable.the(type, id);
+        return (NormalizedVariable) NormalizedVariable.the(type, id);
     }
 
 

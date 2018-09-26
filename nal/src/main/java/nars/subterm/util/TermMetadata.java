@@ -1,6 +1,5 @@
 package nars.subterm.util;
 
-import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termlike;
@@ -62,9 +61,9 @@ abstract public class TermMetadata implements Termlike {
             if (v instanceof Variable) {
                 if (v instanceof NormalizedVariable) {
 
-                    /** automatic disqualification if image variable is present, because this may be in a term that will be Image normalized. see CompoundNormalization */
-                    if (v == Op.ImgInt || v == Op.ImgExt)
-                        return false;
+//                    /** automatic disqualification if image variable is present, because this may be in a term that will be Image normalized. see CompoundNormalization */
+//                    if (v == Op.ImgInt || v == Op.ImgExt)
+//                        return false;
 
                     NormalizedVariable nv = (NormalizedVariable) v;
                     byte varID = nv.anonNum();

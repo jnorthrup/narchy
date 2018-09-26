@@ -217,6 +217,11 @@ public interface TermTransform {
             return TermTransform.super.transformCompound(x);
         }
 
+        /** HACK */
+        protected final Term transformCompoundPlease(Compound x) {
+            return transformCompound(x, null, XTERNAL);
+        }
+
     }
 
 }

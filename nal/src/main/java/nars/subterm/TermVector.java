@@ -5,6 +5,7 @@ import nars.The;
 import nars.subterm.util.SubtermMetadataCollector;
 import nars.subterm.util.TermMetadata;
 import nars.term.Term;
+import nars.term.util.Image;
 
 import java.util.Iterator;
 
@@ -37,8 +38,10 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
     }
 
     protected void testIfInitiallyNormalized() {
-        if (vars() == 0 || testIfInitiallyNormalized(this))
-            setNormalized();
+        if (!hasAll(Image.ImageBits)) {
+            if (vars() == 0 || testIfInitiallyNormalized(this))
+              setNormalized();
+        }
     }
 
     @Override

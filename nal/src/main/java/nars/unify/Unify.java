@@ -260,7 +260,11 @@ public abstract class Unify extends Versioning implements Subst {
 
 
     public boolean constrain(UnifyConstraint m) {
-        return constrain(m.x, m);
+        Term target = m.x;
+        if (target instanceof Variable)
+            return constrain((Variable)m.x, m);
+        else
+            return true; //its a constant that will be compared with? HACK TODO check how this works (for images)
     }
 
     private boolean constrain(Variable target, UnifyConstraint... mm) {

@@ -14,7 +14,7 @@ import static nars.Op.*;
 /** utilities for transforming image compound terms */
 public enum Image { ;
 
-    static final int imageBits = PROD.bit | Op.VAR_DEP.bit | INH.bit;
+    public static final int ImageBits = PROD.bit | Op.IMG.bit | INH.bit;
 
     public static final Functor imageNormalize = Functor.f1Inline("imageNormalize", Image::imageNormalize);
     public static final Functor imageInt = Functor.f2Inline("imageInt", Image::imageInt);
@@ -37,7 +37,7 @@ public enum Image { ;
     }
 
     private static boolean imaged(Term p) {
-        return p.hasAny(Op.VAR_DEP) && p.OR(x -> (x == Op.ImgInt || x == Op.ImgExt));
+        return p.hasAny(Op.IMG) && p.OR(x -> (x == Op.ImgInt || x == Op.ImgExt));
     }
 
     private static Term imageInt(Term t, Term x) {
@@ -57,7 +57,7 @@ public enum Image { ;
     }
 
     public static Term imageNormalize(Term _t) {
-        if (!(_t instanceof Compound) || !_t.hasAll(imageBits))
+        if (!(_t instanceof Compound) || !_t.hasAll(ImageBits))
             return _t;
 
         boolean negated;
@@ -70,7 +70,7 @@ public enum Image { ;
             negated = false;
         }
 
-        if (t.op()==INH && t.hasAll(imageBits)) {
+        if (t.op()==INH && t.hasAll(ImageBits)) {
             Term s = t.sub(0);
             Subterms ss = null;
             boolean isInt = s.op()==PROD && (ss = s.subterms()).contains(Op.ImgInt);// && !ss.contains(Op.ImgExt);

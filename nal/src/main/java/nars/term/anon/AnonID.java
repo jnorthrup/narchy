@@ -24,6 +24,11 @@ public abstract class AnonID implements Atomic, The {
     /** meant to be a perfect hash among all normalized variables */
     protected final short id;
 
+
+    protected AnonID(Op type, byte num) {
+        this(AnonID.termToId(type, num));
+    }
+
     protected AnonID(short id) {
         this.id = id;
     }

@@ -114,10 +114,6 @@ public interface Variable extends Atomic {
     static boolean unifyVar(Variable x, Variable y, Unify u) {
 
 
-        if (x == Op.ImgInt || x == Op.ImgExt || y == Op.ImgInt || y == Op.ImgExt)
-            return x == y;
-
-
         Op xOp = x.op();
         Op yOp = y.op();
         if (xOp == yOp) {

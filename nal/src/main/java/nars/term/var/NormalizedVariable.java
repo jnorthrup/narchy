@@ -40,7 +40,7 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
     /**
      * numerically-indexed variable instance cache; prevents duplicates and speeds comparisons
      */
-    private static final NormalizedVariable[][] varCache = new NormalizedVariable[4][Param.MAX_INTERNED_VARS];
+    private static final AnonID[][] varCache = new AnonID[4][Param.MAX_INTERNED_VARS];
 
     static {
 
@@ -57,13 +57,10 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
     private final byte[] bytes;
 
     NormalizedVariable(/*@NotNull*/ Op type, byte num) {
-        super(AnonID.termToId(type, num));
+        super(type, num);
         assert num > 0;
 
-        byte[] b = new byte[2];
-        b[0] = type.id;
-        b[1] = num;
-        this.bytes = b;
+        this.bytes = new byte[] { type.id, num };
     }
 
 
@@ -106,7 +103,7 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
      * TODO move this to TermBuilder
      */
 
-    private static NormalizedVariable vNew(/*@NotNull*/ Op type, byte id) {
+    private static AnonID vNew(/*@NotNull*/ Op type, byte id) {
         switch (type) {
             case VAR_PATTERN:
                 return new VarPattern(id);
@@ -129,11 +126,11 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
         }
     }
 
-    public static NormalizedVariable the(/*@NotNull*/ Op op, byte id) {
+    public static AnonID the(/*@NotNull*/ Op op, byte id) {
         return the(op.id, id);
     }
 
-    public static NormalizedVariable the(/*@NotNull*/ byte op, byte id) {
+    public static AnonID the(/*@NotNull*/ byte op, byte id) {
         if (id > 0 && id < Param.MAX_INTERNED_VARS) {
             return varCache[NormalizedVariable.opToVarIndex(op)][id];
         } else {

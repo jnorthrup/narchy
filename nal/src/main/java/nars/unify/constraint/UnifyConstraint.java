@@ -7,7 +7,6 @@ import nars.$;
 import nars.Param;
 import nars.derive.Derivation;
 import nars.term.Term;
-import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
@@ -48,11 +47,11 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
     }
 
     private final static Atomic UnifyIf = Atomic.the("unifyIf");
-    public final Variable x;
+    public final Term x;
 
     UnifyConstraint(Term x, Term id) {
         super(id);
-        this.x = (Variable) x;
+        this.x = x;
     }
 
     protected UnifyConstraint(Term x, String func, @Nullable Term... args) {
@@ -195,7 +194,7 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
             this.cache = c;
 
             if (Param.DEBUG) {
-                final Variable target = c[0].x;
+                final Term target = c[0].x;
                 for (int i = 1; i < c.length; i++)
                     assert (c[i].x.equals(target));
             }

@@ -5,7 +5,6 @@ import nars.subterm.ArrayTermVector;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
 import nars.term.Compound;
-import nars.term.util.SetSectDiff;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.anon.Anom;
@@ -14,12 +13,12 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.util.Conj;
+import nars.term.util.SetSectDiff;
 import nars.term.util.TermBuilder;
 import nars.term.util.TermException;
 import nars.term.util.builder.InterningTermBuilder;
 import nars.term.var.ImDep;
 import nars.term.var.UnnormalizedVariable;
-import nars.term.var.VarDep;
 import nars.time.Tense;
 import org.apache.lucene.util.MathUtil;
 import org.eclipse.collections.api.map.ImmutableMap;
@@ -205,6 +204,8 @@ public enum Op {
 
     BOOL("B", Op.ANY_LEVEL),
 
+    IMG("/", 4),
+
 
     /**
      * for ellipsis, when seen as a term
@@ -278,8 +279,8 @@ public enum Op {
 
     public static final int AtomicConstant = Op.ATOM.bit | Op.INT.bit | Op.BOOL.bit;
 
-    public static final VarDep ImgInt = new ImDep((byte) 126, (byte) '\\');
-    public static final VarDep ImgExt = new ImDep((byte) 127, (byte) '/');
+    public static final ImDep ImgInt = new ImDep((byte) 126, (byte) '\\');
+    public static final ImDep ImgExt = new ImDep((byte) 127, (byte) '/');
     public static final int Diff = Op.DIFFe.bit | Op.DIFFi.bit;
     public static final int Sect = or(Op.SECTe, Op.SECTi);
     public static final int Set = or(Op.SETe, Op.SETi);
