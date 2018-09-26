@@ -34,7 +34,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
         return false;
     }
 
-    public final float rank(X x) {
+    @Deprecated private final float rank(X x) {
         return rank.rank(x, min);
     }
 
@@ -137,7 +137,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
 
     public float minValue() {
         X f = last();
-        return f != null ? rank(f) : Float.NaN;
+        return f != null ? rankNeg(f) : Float.NaN;
     }
 
     private float _minValueIfFull() {

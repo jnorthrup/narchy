@@ -8,19 +8,19 @@ import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.widget.shape.VerletSurface;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.port.util.Wire;
+import spacegraph.space2d.widget.shape.VerletSurface;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.space2d.widget.windo.Windo;
-import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.util.animate.Animated;
 import toxi.geom.QuadtreeIndex;
 import toxi.geom.Vec2D;
 import toxi.physics2d.VerletParticle2D;
 import toxi.physics2d.VerletPhysics2D;
-import toxi.physics2d.spring.VerletSpring2D;
 import toxi.physics2d.behavior.AttractionBehavior2D;
 import toxi.physics2d.behavior.GravityBehavior2D;
+import toxi.physics2d.spring.VerletSpring2D;
 
 import java.util.Random;
 

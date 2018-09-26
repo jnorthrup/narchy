@@ -1,16 +1,8 @@
 package jcog.pri;
 
-import jcog.WTF;
-import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.math.FloatSupplier;
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
-
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
-
-import static java.lang.Float.floatToIntBits;
-import static java.lang.Float.intBitsToFloat;
 
 /**
  * general purpose value.  consumes and supplies 32-bit float numbers

@@ -87,7 +87,7 @@ abstract public class NAgentX extends NAgent {
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, float clockFPS) {
-        return runRT(init, 2 * clockFPS, clockFPS);
+        return runRT(init,  clockFPS, clockFPS);
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, float narFPS, float clockFPS) {
@@ -114,7 +114,7 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
-                .attention(() -> new Attention(128))
+                .attention(() -> new Attention(256))
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(

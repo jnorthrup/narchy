@@ -374,7 +374,7 @@ public class SortedArray<X> extends AbstractList<X> {
         if (index == size || Util.fastCompare(cmp.floatValueOf(last), elementRank) < 0) {
             return addEnd(element);
         } else {
-            return (index == -1 ? addEnd(element) : addInternal(index, element));
+            return (index == -1 ? addEnd(element) : addInternal(index, element, size));
         }
     }
 
@@ -385,7 +385,7 @@ public class SortedArray<X> extends AbstractList<X> {
             for (int i = 0; i < size; i++) {
                 final X current = l[i];
                 if (elementRank < cmp.floatValueOf(current)) {
-                    return addInternal(i, element);
+                    return addInternal(i, element, size);
                 }
             }
         }
@@ -423,13 +423,11 @@ public class SortedArray<X> extends AbstractList<X> {
 //        return this.items = newList;
     }
 
-    private int addInternal(int index, X e) {
-        if (index == -1)
-            return -1;
+    private int addInternal(int index, X e, int s) {
+        assert(index >=0);
 
-        int s = this.size;
-        if (index > -1 && index < s) {
-            if (!this.addAtIndex(index, e))
+        if (index < s) {
+            if (!this.addAtIndex(index, e, s))
                 return -1;
             return index;
         } else if (index == s) {
@@ -440,26 +438,33 @@ public class SortedArray<X> extends AbstractList<X> {
 
     }
 
-    private boolean addAtIndex(int index, X element) {
-        int oldSize = this.size;
+    private boolean addAtIndex(int index, X element, int oldSize) {
+
         X[] list = this.items;
+        boolean adding;
         if (list.length == oldSize) {
             if (!grows()) {
-                rejectExisting(list[index]);
-                list[index] = element;
-                return true;
+                rejectExisting(list[oldSize-1]); //pop
+                adding = false;
             } else {
                 int newCapacity = grow(oldSize);
                 assert (newCapacity > list.length);
                 this.items = list = copyOfArray(list, newCapacity);
-
+                adding = true;
             }
+        } else {
+            adding = true;
         }
 
+        if (adding)
+            SIZE.getAndIncrement(this);
 
-        SIZE.getAndIncrement(this);
-        System.arraycopy(list, index, list, index + 1, oldSize - index);
+        int ss = Math.min(oldSize - 1, list.length - 2);
+        if (ss + 1 - index >= 0)
+            System.arraycopy(list, index, list, index + 1, ss + 1 - index);
+
         list[index] = element;
+
         return true;
 
     }
@@ -632,7 +637,7 @@ public class SortedArray<X> extends AbstractList<X> {
         float ev = cmp.floatValueOf(midleE);
         final int comparedValue = Util.fastCompare(ev, elementRank);
         if (comparedValue == 0) {
-            return rightBorder[0] = midle;
+            return rightBorder[0] = midle + 1 /* after existing element */;
         }
 
         boolean c = (0 < comparedValue);

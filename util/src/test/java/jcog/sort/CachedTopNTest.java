@@ -17,8 +17,11 @@ class CachedTopNTest {
         assertAdd(c, "bbb", "[bbb, a]");
         assertAdd(c, "cc", "[bbb, cc, a]");
         assertAdd(c, "dd", "[bbb, cc, dd]");
-        assertAdd(c, "eee", "[bbb, eee, dd]");
-        assertAdd(c, "ff", "[bbb, eee, dd]");  //disallow replacement of equal to weakest
+        assertAdd(c, "eee", "[bbb, eee, cc]");
+        assertAdd(c, "ff", "[bbb, eee, cc]");  //disallow replacement of equal to weakest
+        assertAdd(c, "BBB", "[bbb, eee, BBB]");
+        assertAdd(c, "xxxx", "[xxxx, bbb, eee]");
+        assertAdd(c, "yyyyy", "[yyyyy, xxxx, bbb]");
     }
 
     @Test
@@ -29,8 +32,8 @@ class CachedTopNTest {
         assertAdd(c, "bbb", "[3 bbb, 1 a]");
         assertAdd(c, "cc", "[3 bbb, 2 cc, 1 a]");
         assertAdd(c, "dd", "[3 bbb, 2 cc, 2 dd]");
-        assertAdd(c, "eee", "[3 bbb, 3 eee, 2 dd]");
-        assertAdd(c, "ff", "[3 bbb, 3 eee, 2 dd]");  //disallow replacement of equal to weakest
+        assertAdd(c, "eee", "[3 bbb, 3 eee, 2 cc]");
+        assertAdd(c, "ff", "[3 bbb, 3 eee, 2 cc]");  //disallow replacement of equal to weakest
     }
 
     private static void assertAdd(TopN<String> c, String x, String expect) {

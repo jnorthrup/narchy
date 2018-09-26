@@ -15,8 +15,8 @@ import toxi.geom.QuadtreeIndex;
 import toxi.geom.Vec2D;
 import toxi.physics2d.VerletParticle2D;
 import toxi.physics2d.VerletPhysics2D;
-import toxi.physics2d.spring.VerletSpring2D;
 import toxi.physics2d.constraint.ParticleConstraint2D;
+import toxi.physics2d.spring.VerletSpring2D;
 
 import java.lang.ref.WeakReference;
 import java.util.List;

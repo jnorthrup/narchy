@@ -1,6 +1,9 @@
 package nars.nal.multistep;
 
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NARS;
+import nars.Narsese;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Disabled;

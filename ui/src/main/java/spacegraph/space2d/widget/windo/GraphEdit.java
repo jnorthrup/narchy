@@ -18,8 +18,8 @@ import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.space2d.widget.shape.VerletSurface;
 import spacegraph.util.math.v2;
 import toxi.physics2d.VerletParticle2D;
-import toxi.physics2d.spring.VerletSpring2D;
 import toxi.physics2d.behavior.AttractionBehavior2D;
+import toxi.physics2d.spring.VerletSpring2D;
 
 import java.util.List;
 import java.util.function.Consumer;

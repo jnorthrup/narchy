@@ -8,7 +8,6 @@ import nars.IO;
 import nars.Op;
 import nars.Param;
 import nars.The;
-import nars.subterm.util.SubtermMetadataCollector;
 import nars.term.Term;
 
 import java.util.function.IntConsumer;

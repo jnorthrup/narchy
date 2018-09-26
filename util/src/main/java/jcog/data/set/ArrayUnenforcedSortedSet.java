@@ -4,7 +4,6 @@ import jcog.TODO;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.SortedSet;
 

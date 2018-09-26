@@ -8,10 +8,10 @@ import nars.The;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Functor;
-import nars.term.util.SetSectDiff;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
+import nars.term.util.SetSectDiff;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;

@@ -1,9 +1,9 @@
 package spacegraph.input.finger;
 
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.space2d.widget.shape.PathSurface;
 import spacegraph.space2d.widget.windo.GraphEdit;
-import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.util.Path2D;
 
 import javax.annotation.Nullable;

@@ -1,6 +1,5 @@
 package nars.control.proto;
 
-import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Op;

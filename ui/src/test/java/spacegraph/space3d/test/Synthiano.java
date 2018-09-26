@@ -6,8 +6,8 @@ import net.beadsproject.beads.data.WaveFactory;
 import net.beadsproject.beads.ugens.*;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
-import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.Widget;
+import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import static net.beadsproject.beads.arpeggiator_01.midiPitchToFrequency;
 
