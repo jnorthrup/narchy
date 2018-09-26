@@ -479,7 +479,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         Y result;
 
         float priBefore = existing.priCommit();
-        float oo = mergeFunction.merge(existing, incoming);
+        float oo = merge(existing, incoming);
         float priAfter = existing.pri();
         if (priAfter != priAfter) {
             //got deleted
@@ -505,6 +505,10 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         incoming.delete();
 
         return result;
+    }
+
+    protected float merge(Y existing, Y incoming) {
+        return mergeFunction.merge(existing, incoming);
     }
 
     private Y removeFromMap(Y x) {

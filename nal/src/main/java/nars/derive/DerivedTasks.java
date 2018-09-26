@@ -22,7 +22,6 @@ public interface DerivedTasks {
         if (pp instanceof NALTask)
             ((NALTask) pp).priCauseMerge(tt);
         if (pp.isCyclic() && !tt.isCyclic()) {
-
             pp.setCyclic(false);
         }
         return pp;
@@ -55,7 +54,14 @@ public interface DerivedTasks {
          * temporary buffer for derivations before input so they can be merged in case of duplicates
          */
         final PriArrayBag<Task> tasks = new PriArrayBag<>(PriMerge.max, new ConcurrentHashMap<>()) {
-//            @Override
+            @Override
+            protected float merge(Task existing, Task incoming) {
+                if (incoming!=existing)
+                    DERIVATION_MERGE.apply(existing, incoming);
+                return super.merge(existing, incoming);
+            }
+
+            //            @Override
 //            protected boolean fastMergeMaxReject() {
 //                return true;
 //            }

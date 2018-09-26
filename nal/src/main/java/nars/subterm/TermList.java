@@ -5,7 +5,6 @@ import nars.Op;
 import nars.term.Term;
 
 import java.util.Collection;
-import java.util.List;
 
 import static nars.Op.CONJ;
 import static nars.term.atom.Bool.True;
@@ -35,7 +34,7 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     @Override
     public int hashCode() {
-        return Subterms.hash((List)this);
+        return Subterms.hash(items, size);
     }
 
 

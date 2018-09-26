@@ -68,6 +68,7 @@ public abstract class Param {
      */
     public static final boolean TASKLINK_CONCEPT_TERM = true;
 
+
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
 
     /** if ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION is true, then this is tested: */
@@ -387,7 +388,8 @@ public abstract class Param {
     public static final int STAMP_CAPACITY = 16;
 
     /** TODO make this NAR-specific */
-    public static final IntRange causeCapacity = new IntRange(64, 0, 128);
+    public static final int CAUSE_MAX = 256;
+    public static final IntRange causeCapacity = new IntRange(64, 0, CAUSE_MAX);
 
 
     public final static int UnificationStackMax = 128;

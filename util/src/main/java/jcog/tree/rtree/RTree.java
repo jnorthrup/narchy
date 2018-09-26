@@ -45,9 +45,9 @@ import java.util.stream.Stream;
  */
 public class RTree<T> implements Space<T> {
 
-    private static final MetalAtomicIntegerFieldUpdater size = new MetalAtomicIntegerFieldUpdater(RTree.class, "_size");
+    private static final MetalAtomicIntegerFieldUpdater SIZE = new MetalAtomicIntegerFieldUpdater(RTree.class, "_size");
 
-    private volatile Node<T> root;
+    private Node<T> root;
 
     /**
      * size counter
@@ -82,7 +82,7 @@ public class RTree<T> implements Space<T> {
 
     @Override
     public void clear() {
-        size.updateAndGet(this, (sizeBeforeClear) -> {
+        SIZE.updateAndGet(this, (sizeBeforeClear) -> {
             if (sizeBeforeClear > 0 || root == null)
                 this.root = model.newLeaf();
             return 0;
@@ -111,7 +111,7 @@ public class RTree<T> implements Space<T> {
         if (nextRoot != null) {
             this.root = nextRoot;
             if (added[0]) {
-                size.incrementAndGet(this);
+                SIZE.incrementAndGet(this);
                 return true;
             }
         }
@@ -120,7 +120,7 @@ public class RTree<T> implements Space<T> {
 
 
     @Override
-    public Spatialization<T> model() {
+    public final Spatialization<T> model() {
         return model;
     }
 
@@ -129,13 +129,13 @@ public class RTree<T> implements Space<T> {
      */
     @Override
     public boolean remove(final T x) {
-        int before = _size;
+        int before = SIZE.get(this);
         if (before == 0)
             return false;
         boolean[] removed = new boolean[1];
         root = root.remove(x, model.bounds(x), model, removed);
         if (removed[0]) {
-            size.decrementAndGet(this);
+            SIZE.decrementAndGet(this);
             return true;
         }
         return false;
@@ -172,7 +172,7 @@ public class RTree<T> implements Space<T> {
      */
     @Override
     public int size() {
-        return size.getOpaque(this);
+        return SIZE.getOpaque(this);
     }
 
 

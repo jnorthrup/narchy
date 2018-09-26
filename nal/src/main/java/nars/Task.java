@@ -101,23 +101,20 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 punc
         );
 
-        if (stamp.length == 1) {
-            h = Util.hashCombine(h, Long.hashCode(stamp[0]));
-        } else {
+        if (stamp.length > 1) {
 
             if (truth != null)
                 h = Util.hashCombine(h, truth.hashCode());
 
             if (start != ETERNAL) {
-                h = Util.hashCombine(h,
-                        Long.hashCode(start),
-                        Long.hashCode(end)
-                );
+                h = Util.hashCombine(h, Long.hashCode(start));
+                if (end!=start)
+                    h = Util.hashCombine(h,  Long.hashCode(end));
             }
-
-            h = Util.hashCombine(h, Arrays.hashCode(stamp));
-
         }
+
+        if (stamp.length > 0)
+            h = Util.hashCombine(h, Arrays.hashCode(stamp));
 
         return h;
     }

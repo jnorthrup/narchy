@@ -1,5 +1,6 @@
 package nars.task;
 
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.data.map.CompactArrayMap;
 import jcog.pri.UnitPri;
@@ -34,7 +35,7 @@ public class NALTask extends UnitPri implements Task {
     private final int hash;
     private final long creation, start, end;
     /*@Stable*/ private final long[] stamp;
-    public volatile short[] cause = ArrayUtils.EMPTY_SHORT_ARRAY;
+    private volatile short[] cause = ArrayUtils.EMPTY_SHORT_ARRAY;
 
     private volatile boolean cyclic;
 
@@ -54,7 +55,7 @@ public class NALTask extends UnitPri implements Task {
         }
 
         if ((start == ETERNAL && end != ETERNAL) ||
-                (start != ETERNAL && start > end) ||
+                (start > end) ||
                 (start == TIMELESS) || (end == TIMELESS)
         )
             throw new RuntimeException("start=" + start + ", end=" + end + " is invalid task occurrence time");
@@ -111,7 +112,7 @@ public class NALTask extends UnitPri implements Task {
     public Task causeMerge(short[] c) {
         if (!Arrays.equals(cause(), c)) {
             int causeCap = Math.min(Param.causeCapacity.intValue(), c.length + cause().length);
-            this.cause = Cause.merge(causeCap, cause, c);
+            cause(Cause.merge(causeCap, cause, c));
         }
         return this;
     }
@@ -165,11 +166,16 @@ public class NALTask extends UnitPri implements Task {
     /**
      * set the cause[]
      */
-    public Task cause(short[] cause) {
+    public NALTask cause(short[] cause) {
+        if (cause.length > Param.CAUSE_MAX) //HACK
+            throw new WTF("cause overflow");
+
         if (!Arrays.equals(this.cause, cause))
             this.cause = cause;
+
         return this;
     }
+
 
     @Override
     public String toString() {

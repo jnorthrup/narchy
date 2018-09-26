@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static jcog.Util.ITEM;
@@ -102,10 +103,15 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
             case 1: return Stream.of(list[0]);
             case 2: return Stream.of(list[0], list[1]);
             default:
-                Stream<X> s = Stream.of(list);
-                if (list.length>size)
-                    s = s.limit(size);
-                return s;
+                return arrayStream(list, size);
+        }
+    }
+
+    private static <X> Stream<X> arrayStream(X[] list, int size) {
+        if (list.length>size) {
+            return IntStream.range(0, size).mapToObj(i -> list[i]);
+        } else {
+            return Stream.of(list);
         }
     }
 
@@ -115,10 +121,7 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
             case 1: { X x0 = list[0]; return x0==null ? Stream.empty() : Stream.of(x0); }
             case 2: { X x0 = list[0], x1 = list[1]; if (x0!=null && x1!=null) return Stream.of(x0, x1); else if (x0 == null && x1 == null) return Stream.empty(); else if (x1 == null) return Stream.of(x0); else return Stream.of(x1); }
             default:
-                Stream<X> s = Stream.of(list);
-                if (list.length>size)
-                    s = s.limit(size);
-                return s.filter(Objects::nonNull);
+                return arrayStream(list, size).filter(Objects::nonNull);
         }
     }
 

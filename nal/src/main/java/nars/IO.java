@@ -189,6 +189,8 @@ public class IO {
                 case VAR_PATTERN:
                 case VAR_QUERY:
                     return readVariable(in, o);
+                case IMG:
+                    return in.readByte() == 127 ? Op.ImgExt : Op.ImgInt;
                 case BOOL:
                     byte code = in.readByte();
                     switch (code) {

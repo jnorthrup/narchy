@@ -25,9 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Random;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import static nars.Op.*;
 
@@ -186,7 +184,7 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
                 nar, start, end,
                 stamp.apply(nar.random()));
 
-        dyn.cause = cause();
+        dyn.cause( cause() );
 
         dyn.pri(Math.max(ScalarValue.EPSILON, pri(start, end)));
 

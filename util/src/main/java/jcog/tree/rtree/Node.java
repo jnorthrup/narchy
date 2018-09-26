@@ -153,4 +153,10 @@ public interface Node<X> extends Nodelike<X> {
 
 
     Object get(int i);
+
+    default Stream<Node<X>> streamNodesRecursively() {
+        return Stream.concat(Stream.of(this), streamNodes().flatMap(Node::streamNodesRecursively));
+    }
+
+
 }

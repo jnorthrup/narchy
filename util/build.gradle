@@ -37,7 +37,7 @@ dependencies {
 //    compile group: 'org.junit.platform', name: 'junit-platform-runner', version: '1.0.2'
 
     compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.6.2'
-    compile(group: 'net.openhft', name: 'affinity', version: '3.1.9') {
+    compile(group: 'net.openhft', name: 'affinity', version: '3.1.10') {
         exclude(module: 'slf4j-api')
         exclude(module: 'annotations')
     }

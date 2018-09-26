@@ -5,7 +5,6 @@ import nars.term.Term;
 import nars.term.anon.AnonID;
 import nars.term.atom.Bool;
 import nars.unify.Unify;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -24,7 +23,7 @@ public final class ImDep extends AnonID {
         this.str = String.valueOf((char) sym);
         this.symChar = (char) sym;
         this.rank = Term.opX(Op.IMG, (short) id);
-        this.bytes = new byte[] { Op.IMG.id, id };;
+        this.bytes = new byte[] { Op.IMG.id, id };
     }
 
     @Override
@@ -42,10 +41,7 @@ public final class ImDep extends AnonID {
         return rank;
     }
 
-    @Override
-    public @Nullable NormalizedVariable normalize(byte vid) {
-        throw new UnsupportedOperationException();
-    }
+
 
     @Override
     public boolean unify(Term y, Unify u) {

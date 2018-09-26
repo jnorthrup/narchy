@@ -16,7 +16,6 @@ import nars.time.Tense;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.XTERNAL;
 
 public interface TaskLink extends Priority, Termed {
 
@@ -39,9 +38,9 @@ public interface TaskLink extends Priority, Termed {
         public Tasklike(Term term, byte punc, long when) {
             this.punc = punc;
 
-            if (when == XTERNAL || when != ETERNAL &&
-                    (when < -9023372036854775808L || when > +9023372036854775808L))
-                throw new RuntimeException("detected invalid time");
+//            if (when == XTERNAL || when != ETERNAL &&
+//                    (when < -9023372036854775808L || when > +9023372036854775808L))
+//                throw new RuntimeException("detected invalid time");
 
             this.when = when;
 
@@ -65,16 +64,11 @@ public interface TaskLink extends Priority, Termed {
         }
 
         @Override
-        public boolean equals(Object o) {
+        public final boolean equals(Object o) {
             if (this == o) return true;
 
-
-            Tasklike tasklike = (Tasklike) o;
-            if (hash != tasklike.hash) return false;
-
-            return punc == tasklike.punc && when == tasklike.when &&
-
-                    term.equals(tasklike.term);
+            Tasklike oo = (Tasklike) o;
+            return (hash == oo.hash) && (punc == oo.punc) && (when == oo.when) && (term.equals(oo.term));
         }
 
         @Override

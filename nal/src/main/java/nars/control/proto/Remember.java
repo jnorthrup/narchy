@@ -1,5 +1,6 @@
 package nars.control.proto;
 
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Op;
@@ -129,6 +130,7 @@ public class Remember extends AbstractTask {
 
     private void validate(NAR n) {
         assert (input.op().taskable);
+
 
         //verify dithering
         if (Param.DEBUG_ENSURE_DITHERED_TRUTH) {

@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget.meta;
 
+import jcog.Util;
 import jcog.exe.InstrumentedLoop;
 import jcog.exe.Loop;
 import jcog.math.MutableInteger;
@@ -16,7 +17,7 @@ public class LoopPanel extends Gridding {
 
     protected final Loop loop;
     private final IntSpinner fpsLabel;
-    private final Plot2D cycleTimePlot;
+    private final Plot2D cycleTimePlot, heapPlot;
     private MutableInteger fps;
 
     private volatile boolean pause = false;
@@ -34,6 +35,9 @@ public class LoopPanel extends Gridding {
         } else {
             cycleTimePlot = null; 
         }
+
+        heapPlot = new Plot2D(128, Plot2D.Line)
+                .add("heap", Util::memoryUsed, 0, 1);
 
         set(
                 new Gridding(
@@ -57,7 +61,8 @@ public class LoopPanel extends Gridding {
                         })
                         ),
                         fpsLabel, 
-                        cycleTimePlot
+                        cycleTimePlot,
+                        heapPlot
                 ));
         update();
     }
@@ -77,6 +82,7 @@ public class LoopPanel extends Gridding {
                     fpsLabel.set(g);
                 }
                 cycleTimePlot.update();
+                heapPlot.update();
             } else {
                 if (loop.isRunning()) {
                     

@@ -30,6 +30,10 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
     }
 
 
+    public DurSurface durs(float durs) {
+        on.durs(durs);
+        return this;
+    }
 
     @Override
     protected void starting() {

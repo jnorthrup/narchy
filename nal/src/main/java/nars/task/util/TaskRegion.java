@@ -25,7 +25,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     /**
      * cost of splitting a node by freq
      */
-    float FREQ_COST = 1f;
+    float FREQ_COST = 2f;
 
     /**
      * cost of splitting a node by conf
@@ -284,19 +284,19 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     default boolean intersects(HyperRegion x) {
         if (x == this) return true;
         long start = start();
-
+        long end = end();
         if (x instanceof TimeRange) {
             if (x instanceof TimeConfRange) {
                 TimeConfRange t = (TimeConfRange) x;
-                return start <= t.end && end() >= t.start && confMin() <= t.cMax && confMax() >= t.cMin;
+                return start <= t.end && end >= t.start && confMin() <= t.cMax && confMax() >= t.cMin;
             } else {
                 TimeRange t = (TimeRange) x;
-                return start <= t.end && end() >= t.start;
+                return start <= t.end && end >= t.start;
             }
         } else {
             TaskRegion t = (TaskRegion) x;
             return start <= t.end() &&
-                    end() >= t.start() &&
+                    end >= t.start() &&
                     coordF(false, 1) <= t.coordF(true, 1) &&
                     coordF(true, 1) >= t.coordF(false, 1) &&
                     coordF(false, 2) <= t.coordF(true, 2) &&
@@ -309,18 +309,19 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         if (x == this) return true;
 
         long start = start();
+        long end = end();
         if (x instanceof TimeRange) {
             if (x instanceof TimeConfRange) {
                 TimeConfRange t = (TimeConfRange) x;
-                return start <= t.start && end() >= t.end && confMin() <= t.cMin && confMax() >= t.cMax;
+                return start <= t.start && end >= t.end && confMin() <= t.cMin && confMax() >= t.cMax;
             } else {
                 TimeRange t = (TimeRange) x;
-                return start <= t.start && end() >= t.end;
+                return start <= t.start && end >= t.end;
             }
         } else {
             TaskRegion t = (TaskRegion) x;
             return
-                    start <= t.start() && end() >= t.end() &&
+                    start <= t.start() && end >= t.end() &&
                             coordF(false, 1) <= t.coordF(false, 1) &&
                             coordF(true, 1) >= t.coordF(true, 1) &&
                             coordF(false, 2) <= t.coordF(false, 2) &&

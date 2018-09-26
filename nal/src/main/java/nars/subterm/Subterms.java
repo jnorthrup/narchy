@@ -47,6 +47,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return h;
     }
 
+    static int hash(Term[] term, int n) {
+        int h = 1;
+        for (int i = 0; i < n; i++)
+            h = Util.hashCombine(h, term[i]);
+        return h;
+    }
+
     static int hash(Subterms container) {
         return container.intifyShallow(Util::hashCombine, 1);
     }

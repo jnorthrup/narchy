@@ -86,8 +86,8 @@ abstract public class NAgentX extends NAgent {
         super(id, frameTrigger, nar);
     }
 
-    public static NAR runRT(Function<NAR, NAgent> init, float narFPS) {
-        return runRT(init, narFPS, narFPS);
+    public static NAR runRT(Function<NAR, NAgent> init, float clockFPS) {
+        return runRT(init, 2 * clockFPS, clockFPS);
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, float narFPS, float clockFPS) {
@@ -114,7 +114,7 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
-                .attention(() -> new Attention(256))
+                .attention(() -> new Attention(128))
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
@@ -144,7 +144,10 @@ abstract public class NAgentX extends NAgent {
 
 
                         //new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
-                        new HijackConceptIndex(128 * 1024, 4)
+                        new HijackConceptIndex(
+                                //128 * 1024,
+                                64 * 1024,
+                                4)
 
 
                 )

@@ -284,4 +284,38 @@ class RTreeBeliefTableTest {
             System.out.println("\t" + (i++) + ": "+ t);
         System.out.println();
     }
+
+    @Test void testSplitOrdering() {
+        NAR n = NARS.shell();
+
+        n.time.dur(1);
+
+        Term term = $.p("x");
+
+        TaskConcept c = (TaskConcept) n.conceptualize(term);
+        BeliefTables cb = true ? c.beliefs() : c.goals();
+
+        int cap = 64;
+
+        RTreeBeliefTable table = cb.tableFirst(RTreeBeliefTable.class);
+        table.setCapacity(cap);
+
+
+        int horizon = 50;
+        int maxRange = 8;
+
+        //populate table randomly
+        for (int i= 0; i < cap; i++) {
+            long start = n.random().nextInt(horizon);
+            long end = start + n.random().nextInt(maxRange);
+            add(table, term, n.random().nextFloat(), n.random().nextFloat()*0.8f + 0.1f, start, end, n);
+        }
+        table.print();
+
+        table.read(t->{
+           t.root().streamNodesRecursively().forEach(r -> {
+               System.out.println(r);
+           });
+        });
+    }
 }

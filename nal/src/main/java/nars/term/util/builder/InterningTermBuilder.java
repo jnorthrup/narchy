@@ -32,7 +32,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private final HijackTermCache root;
 
     public InterningTermBuilder() {
-        this(64 * 1024);
+        this(32 * 1024);
     }
 
     public InterningTermBuilder(int cacheSizePerOp) {

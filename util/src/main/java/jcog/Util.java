@@ -146,9 +146,11 @@ public enum Util {
     }
 
     public static int hash(byte[] bytes) {
-
-
         return hash(bytes, 0, bytes.length);
+    }
+
+    public static int hash(long[] longs) {
+        return Long.hashCode(_hashFn.hashLongs(longs));
     }
 
     static final LongHashFunction _hashFn = LongHashFunction.xx();
@@ -435,6 +437,7 @@ public enum Util {
 
     /**
      * from clojure.Util - not tested
+     * also appears in https://www.boost.org/doc/libs/1_35_0/doc/html/boost/hash_combine_id241013.html
      */
     public static int hashCombine(int a, int b) {
         return a ^ (b + 0x9e3779b9 + (a << 6) + (a >> 2));

@@ -1553,7 +1553,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         protected boolean process(Object x) {
             if (x instanceof NALTask) {
                 NALTask t = (NALTask) x;
-                short[] currentCause = t.cause;
+                short[] currentCause = t.cause();
                 int tcl = currentCause.length;
                 switch (tcl) {
                     case 0:

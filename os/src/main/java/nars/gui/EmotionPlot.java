@@ -30,6 +30,8 @@ public class EmotionPlot extends DurSurface<Gridding> {
 
         super.starting();
 
+        durs(0.5f); //2x sample
+
         the.set(
                 plot1 = new Plot2D(plotHistory, Plot2D.Line)
                         .add("Dex+0", () -> a.dexterity()/*, 0f, 1f*/)

@@ -256,7 +256,7 @@ public class ConjClustering extends Causable {
 
 
                                 NALTask m = new STMClusterTask(cp, t, start, start, Stamp.sample(Param.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
-                                m.cause = Cause.merge(Param.causeCapacity.intValue(), uu);
+                                m.cause( Cause.merge(Param.causeCapacity.intValue(), uu) );
 
                                 if (in.inputIfCapacity(m)) {
 
