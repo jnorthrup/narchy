@@ -18,6 +18,8 @@ import java.util.function.Predicate;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
+/** generic reflective object decorator: constructs representations and multi-representations
+ * from materialization abstractions */
 public class AutoBuilder<X, Y> {
 
     public AutoBuilder(int maxDepth, AutoBuilding<X, Y> building) {
@@ -32,16 +34,12 @@ public class AutoBuilder<X, Y> {
         return build(root, null, null, 0);
     }
 
-    protected Y build(X root, @Nullable Y parentRepr, @Nullable Object relation, int depth) {
+    @Nullable protected Y build(X root, @Nullable Y parentRepr, @Nullable Object relation, int depth) {
+        if (!add(root))
+            return null; //cycle
+
         List<Pair<X, Iterable<Y>>> bb = new FasterList<>();
-        collect(root, bb, depth, relation);
-        return building.build(bb, root, parentRepr);
-    }
 
-    private void collect(X x, List<Pair<X,Iterable<Y>>> built, int depth, Object relation) {
-
-        if (!add(x))
-            return;
 
         FasterList<BiFunction<X,Object,Y>> builders = new FasterList();
 
@@ -58,19 +56,23 @@ public class AutoBuilder<X, Y> {
 //        }
 
         {
-            classBuilders(x, builders); //TODO check subtypes/supertypes etc
+            classBuilders(root, builders); //TODO check subtypes/supertypes etc
             if (!builders.isEmpty()) {
-                Iterable<Y> yy = ()->builders.stream().map(b -> b.apply(x, relation)).iterator();
-                built.add(pair(x, yy));
+                Iterable<Y> yy = ()->builders.stream().map(b -> b.apply(root, relation)).iterator();
+                bb.add(pair(root, yy));
             }
         }
 
-        if (depth < maxDepth) {
-            collectFields(x, built, depth + 1);
-        }
+        //if (bb.isEmpty()) {
+            if (depth <= maxDepth) {
+                collectFields(root, parentRepr, bb, depth + 1);
+            }
+        //}
 
 
+        return building.build(bb, root, parentRepr);
     }
+
 
     private void classBuilders(X x, FasterList<BiFunction<X,Object,Y>> ll) {
         Class<?> xc = x.getClass();
@@ -99,14 +101,19 @@ public class AutoBuilder<X, Y> {
 //    }
 
 
-    private void collectFields(Object x, List<Pair<X,Iterable<Y>>> target, int depth) {
+    private void collectFields(X x, Y parentRepr, List<Pair<X, Iterable<Y>>> target, int depth) {
+
         Class cc = x.getClass();
         Reflect.on(cc).fields(true, false, false).forEach((s, ff) -> {
             Field f = ff.get();
             try {
                 Object xf = f.get(x);
-                if (xf != null && xf != x)
-                    collect((X)xf, target, depth, f);
+                if (xf != null && xf != x) {
+                    X z = (X) xf;
+                    Y w = build(z, parentRepr, f, depth);
+                    if (w!=null)
+                        target.add(pair(z, List.of(w)));
+                }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }

@@ -19,9 +19,16 @@ public class MetaFrame extends Bordering {
 //        Runnable zoomer = () -> surface.root().zoom(surface);
 
 
-        Surface n =
 
-                new VectorLabel(name(surface));
+
+    }
+
+    @Override
+    protected void starting() {
+        super.starting();
+
+        Surface n =
+                new VectorLabel(name());
 
 
         borderWest = borderEast = 0;
@@ -37,16 +44,16 @@ public class MetaFrame extends Bordering {
         set(NE, new Scale(hideButton, 0.8f));
 
 
+        Surface surface = get(0);
         Surface wm = (surface instanceof Menu) ? ((Menu) surface).menu() : null;
         if (wm != null)
             set(S, wm);
         else
             borderSouth = 0;
-
     }
 
-    protected String name(Surface widget) {
-        return widget.toString();
+    protected String name() {
+        return get(0).toString();
     }
 
 

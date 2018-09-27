@@ -14,17 +14,18 @@ public class ObjectSurfaceTest {
 
     public static class MyClass {
 
-        public final FloatRange f = new FloatRange(0.5f, 0, 1f);
+        public final FloatRange MEGATONS = new FloatRange(0.5f, 0, 1f);
 
-        public final Runnable runMe = ()->{
-            f.set(0.1f);
+        public final Runnable ABORT = ()->{
+            MEGATONS.set(0.1f);
         };
 
-        public MyInnerClass myInnerClass = new MyInnerClass();
+        public MyInnerClass inner = new MyInnerClass();
     }
 
     public static class MyInnerClass {
-        public final AtomicBoolean toggleMe = new AtomicBoolean();
+        public final AtomicBoolean WARNING = new AtomicBoolean();
+        public final FloatRange EXTREME_DANGER = new FloatRange(0.75f, 0, 1f);
     }
 
 }

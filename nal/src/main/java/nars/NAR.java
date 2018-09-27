@@ -1571,8 +1571,15 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                         break;
                     default:
 
-                        short[] tc = Arrays.copyOf(currentCause, tcl + 1);
-                        tc[tcl] = ci;
+                        int cc = Param.causeCapacity.intValue();
+                        short[] tc = Arrays.copyOf(currentCause, Math.min(cc, tcl + 1));
+                        if (tc.length == cc) {
+                            //shift
+                            System.arraycopy(tc, 1, tc, 0, tc.length-1);
+                            tc[tc.length-1] = ci;
+                        } else {
+                            tc[tcl] = ci;
+                        }
                         t.cause(tc);
                         break;
                 }

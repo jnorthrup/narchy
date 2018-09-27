@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.meta;
 
 import com.google.common.collect.Lists;
+import com.jogamp.opengl.GL2;
 import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
@@ -20,6 +21,7 @@ import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.IntSlider;
 import spacegraph.space2d.widget.tab.ButtonSet;
 import spacegraph.space2d.widget.text.LabeledPane;
+import spacegraph.video.Draw;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -51,6 +53,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         AutoBuilder.AutoBuilding<Object,Surface> building = (List<Pair<Object, Iterable<Surface>>> content, @Nullable Object parent, @Nullable Surface parentRepr) -> {
             List<Surface> c =  new FasterList(content.size());
             for (Pair<Object, Iterable<Surface>> p : content) {
+                Object o = p.getOne();
                 ArrayList<Surface> cx = Lists.newArrayList(p.getTwo());
                 switch(cx.size()) {
                     case 0: break; //TODO shouldnt happen
@@ -62,8 +65,10 @@ public class ObjectSurface<X> extends MutableUnitContainer {
                 }
             }
 
-            //TODO if !c.isEmpty()
-            return new Gridding(c);
+            if (c.isEmpty())
+                return null;
+
+            return new ObjectMetaFrame(obj, c.size() > 1 ? new Gridding(c) : c.get(0));
         };
 
         builder = new AutoBuilder<Object, Surface>(maxDepth, building);
@@ -96,7 +101,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
 
             builder.clear();
 
-            set(new ObjectMetaFrame(obj, builder.build(obj)));
+            set(builder.build(obj));
 
             return true;
         }
@@ -181,16 +186,25 @@ public class ObjectSurface<X> extends MutableUnitContainer {
     public static class ObjectMetaFrame extends MetaFrame {
         public final Object instance;
         public final Surface surface;
+        private final int instanceHash;
 
         public ObjectMetaFrame(Object instance, Surface surface) {
             super(surface);
             if (instance instanceof Surface)
                 throw new TODO();
             this.instance = instance;
+            this.instanceHash = instance.hashCode();
             this.surface = surface;
         }
 
-        protected String name(Surface widget) {
+        @Override
+        protected void paintBelow(GL2 gl, SurfaceRender r) {
+            super.paintBelow(gl, r);
+            Draw.colorHash(gl, instanceHash, 0.25f);
+            Draw.rect(bounds, gl);
+        }
+
+        @Override protected String name() {
             return instance != null ? instance.toString() : "";
         }
 
