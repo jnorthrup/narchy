@@ -6,7 +6,11 @@ public abstract class AbstractTimedFuture<T> implements TimedFuture<T> {
 
     int rounds;
 
+    protected AbstractTimedFuture() {
+
+    }
     AbstractTimedFuture(int rounds) {
+        this();
         this.rounds = rounds;
     }
 

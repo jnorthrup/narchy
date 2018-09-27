@@ -16,13 +16,11 @@ import static org.slf4j.LoggerFactory.getLogger;
  * be repeatedly called.
  * Do not call it externally.
  */
-abstract public class Loop implements Runnable {
+abstract public class Loop extends FixedRateTimedFuture {
 
     protected final Logger logger;
 
 
-    @Deprecated
-    private volatile FixedRateTimedFuture task = null;
 
     /**
      * busy lock
@@ -59,6 +57,12 @@ abstract public class Loop implements Runnable {
     public Loop(int periodMS) {
         this(new AtomicInteger(periodMS));
     }
+
+    @Override
+    public String toString() {
+        return getClass() + "@" + System.identityHashCode(this);
+    }
+
     /**
      * create and auto-start
      */
@@ -101,11 +105,9 @@ abstract public class Loop implements Runnable {
 
                 synchronized (periodMS) {
 
-
-                    assert (this.task == null);
                     starting();
-                    this.task = Exe.timer()
-                            .scheduleAtFixedRate(this, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
+
+                    Exe.timer().scheduleAtFixedRate(this, nextPeriodMS, TimeUnit.MILLISECONDS);
 
                 }
             } else if (/*prevPeriodMS >= 0 && */nextPeriodMS < 0) {
@@ -114,15 +116,7 @@ abstract public class Loop implements Runnable {
 
                 synchronized (periodMS) {
 
-                    FixedRateTimedFuture prevTask = this.task;
-                    if (prevTask != null) {
-
-                        this.task = null;
-
-                        prevTask.cancel(false);
-
-
-                    }
+                    cancel(false);
 
                     stopping();
                 }
@@ -131,9 +125,7 @@ abstract public class Loop implements Runnable {
 
                 logger.debug("period={}ms", nextPeriodMS);
 
-                FixedRateTimedFuture task = this.task;
-                if (task != null)
-                    task.setPeriodMS(nextPeriodMS);
+                super.setPeriodMS(nextPeriodMS);
 
             }
             return true;
@@ -171,7 +163,7 @@ abstract public class Loop implements Runnable {
     @Override
     public final void run() {
 
-        if (!executing.compareAndSet(false, true))
+        if (executing.compareAndExchange(false, true))
             return;
 
         beforeNext();

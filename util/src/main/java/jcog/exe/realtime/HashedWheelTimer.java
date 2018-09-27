@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
+
 /**
  * Hash Wheel Timer, as per the paper:
  * <p>
@@ -242,27 +244,31 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     public TimedFuture<?> schedule(Runnable runnable,
                                    long period,
                                    TimeUnit timeUnit) {
-        return scheduleOneShot(TimeUnit.NANOSECONDS.convert(period, timeUnit),
+        return scheduleOneShot(NANOSECONDS.convert(period, timeUnit),
                 constantlyNull(runnable));
     }
 
     @Override
     public <V> TimedFuture<V> schedule(Callable<V> callable, long period, TimeUnit timeUnit) {
-        return scheduleOneShot(TimeUnit.NANOSECONDS.convert(period, timeUnit),
+        return scheduleOneShot(NANOSECONDS.convert(period, timeUnit),
                 callable);
     }
 
     @Override
     public FixedRateTimedFuture scheduleAtFixedRate(Runnable runnable, long initialDelay, long period, TimeUnit unit) {
-        return scheduleFixedRate(TimeUnit.NANOSECONDS.convert(period, unit),
-                TimeUnit.NANOSECONDS.convert(initialDelay, unit),
+        return scheduleFixedRate(NANOSECONDS.convert(period, unit), NANOSECONDS.convert(initialDelay, unit),
                 runnable);
+    }
+
+    public void scheduleAtFixedRate(FixedRateTimedFuture f, long period, TimeUnit unit) {
+        f.init(NANOSECONDS.convert(period, unit), resolution, wheels);
+        schedule(f);
     }
 
     @Override
     public FixedDelayTimedFuture<?> scheduleWithFixedDelay(Runnable runnable, long initialDelay, long delay, TimeUnit unit) {
-        return scheduleFixedDelay(TimeUnit.NANOSECONDS.convert(delay, unit),
-                TimeUnit.NANOSECONDS.convert(initialDelay, unit),
+        return scheduleFixedDelay(NANOSECONDS.convert(delay, unit),
+                NANOSECONDS.convert(initialDelay, unit),
                 constantlyNull(runnable));
     }
 
@@ -279,11 +285,11 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
      */
     @Override
     public final void execute(Runnable r) {
-        try {
+        //try {
             executor.execute(r);
-        } catch (Throwable t) {
-            logger.error("{} {}", r, t);
-        }
+//        } catch (Throwable t) {
+//            logger.error("{} {}", r, t);
+//        }
     }
 
     @Override
@@ -381,15 +387,20 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     }
 
 
-    private <V> FixedRateTimedFuture scheduleFixedRate(long recurringTimeout,
+    public FixedRateTimedFuture scheduleFixedRate(long recurringTimeout,
                                                        long firstDelay,
                                                        Runnable callable) {
 
-        isTrue(recurringTimeout >= resolution,
-                "Cannot schedule tasks for amount of time less than timer precision.");
 
         FixedRateTimedFuture r = new FixedRateTimedFuture(0, callable,
                 recurringTimeout, resolution, wheels);
+
+        return scheduleFixedRate(recurringTimeout, firstDelay, r);
+    }
+
+    private FixedRateTimedFuture scheduleFixedRate(long recurringTimeout, long firstDelay, FixedRateTimedFuture r) {
+        isTrue(recurringTimeout >= resolution,
+                "Cannot schedule tasks for amount of time less than timer precision.");
 
         if (firstDelay > 0) {
             scheduleOneShot(firstDelay, () -> {

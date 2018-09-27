@@ -31,7 +31,7 @@ public class Treadmill extends AtomicLongArray implements SpinMutex {
             
             boolean collision = false;
             for (int i = 0; i < slots; i++) {
-                long v = getOpaque(i);
+                long v = get(i);
                 if (v == hash) {
                     collision = true;
                     break; 

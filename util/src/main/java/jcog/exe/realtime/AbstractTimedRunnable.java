@@ -6,6 +6,11 @@ abstract public class AbstractTimedRunnable extends AbstractTimedFuture<Void> {
 
     public final Runnable run;
 
+    protected AbstractTimedRunnable() {
+        super();
+        run = null;
+    }
+
     protected AbstractTimedRunnable(int rounds, Runnable run) {
         super(rounds);
         this.run = run;

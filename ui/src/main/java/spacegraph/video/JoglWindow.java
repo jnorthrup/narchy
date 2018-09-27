@@ -16,12 +16,17 @@ import org.slf4j.LoggerFactory;
 import spacegraph.util.animate.Animated;
 
 import java.util.Collection;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 
 public abstract class JoglWindow implements GLEventListener, WindowListener {
 
+
+    static {
+        Threading.disableSingleThreading();
+
+    }
 
     private static final Collection<JoglWindow> windows = new ConcurrentFastIteratingHashSet<>(new JoglWindow[0]);
     final Topic<JoglWindow> onUpdate = new ListTopic<>();
@@ -32,7 +37,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      * update loop
      */
     private final InstrumentedLoop updater;
-    private final ConcurrentLinkedQueue<Consumer<JoglWindow>> preRenderTasks = new ConcurrentLinkedQueue();
     public volatile GLWindow window;
     public GL2 gl;
     /**
@@ -44,8 +48,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     private float updateFPS = 32f;
     public float renderFPS = 32f;
 
-    /** reduction throttle for update loop when unfoused */
-    private float updateFPSUnfocusedMultiplier = 0.25f;
+//    /** reduction throttle for update loop when unfoused */
+//    private float updateFPSUnfocusedMultiplier = 0.25f;
 
     /**
      * render loop
@@ -55,18 +59,20 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     private long lastRenderMS = System.currentTimeMillis();
     private volatile int nx, ny, nw, nh;
 
-    private final Consumer<JoglWindow> windowUpdater = (s) -> {
-        GLWindow w = window;
-        if (w == null)
+    private final AtomicBoolean updateWindow = new AtomicBoolean(true);
+
+    private void updateWindow() {
+        if (!updateWindow.compareAndSet(true, false))
             return;
 
-        int nw = this.nw;
-        int nh = this.nh;
+        GLWindow w = window;
+
+        int nw = this.nw, nh = this.nh;
 
         if (nw == 0 || nh == 0) {
-            if (w.isVisible()) {
+            if (w.isVisible())
                 w.setVisible(false);
-            }
+
         } else {
             if (!w.isVisible())
                 w.setVisible(true);
@@ -75,21 +81,16 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 w.setSize(nw, nh);
             }
 
-            int nx = this.nx;
-            int ny = this.ny;
+            int nx = this.nx, ny = this.ny;
             if (nx != getX() || ny != getY())
                 w.setPosition(nx, ny);
 
         }
 
-
-    };
+    }
 
     JoglWindow() {
         logger = LoggerFactory.getLogger(toString());
-
-
-        renderer = new GameAnimatorControl();
 
         updater = new InstrumentedLoop() {
             @Override
@@ -97,10 +98,17 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 return JoglWindow.this.next();
             }
         };
+
+        renderer = new GameAnimatorControl();
+
+
+
     }
 
+    private static final GLCapabilitiesImmutable config = config();
+
     private static GLWindow window() {
-        return window(config());
+        return window(config);
     }
 
 
@@ -138,10 +146,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         GLWindow w = this.window;
         if (w != null)
             Exe.invoke(w::destroy);
-    }
-
-    public final void pre(Consumer<JoglWindow> beforeNextRender) {
-        preRenderTasks.add(beforeNextRender);
     }
 
     abstract protected void init(GL2 gl);
@@ -357,8 +361,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         }
 
         if (change) {
-            if (!preRenderTasks.contains(windowUpdater))
-                pre(windowUpdater);
+            updateWindow.set(true);
         }
 
     }
@@ -400,7 +403,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
     private void show(String title, int w, int h, boolean async) {
-        show(title, w, h, Integer.MIN_VALUE, Integer.MIN_VALUE, async);
+        Threading.invokeOnOpenGLThread(false, ()->{
+            show(title, w, h, Integer.MIN_VALUE, Integer.MIN_VALUE, async);
+        });
     }
 
     public void addMouseListenerPost(MouseListener m) {
@@ -479,24 +484,26 @@ class GameAnimatorControl extends AnimatorBase {
             @Override
             public boolean next() {
 
-                if (window != null && !paused) {
+                if (window != null) {
 
-                    preRenderTasks.removeIf(r -> {
-                        r.accept(JoglWindow.this);
-                        return true;
-                    });
+                    updateWindow();
 
-                    if (!drawables.isEmpty()) {
-                        GLAutoDrawable d = drawables.get(0);
-                        if (d == null)
-                            return false;
+                    if (!paused) {
 
-                        d.display();
-                        return true; //async
+                        if (!drawables.isEmpty()) {
+                            GLAutoDrawable d = drawables.get(0);
+                            if (d == null)
+                                return false;
+
+                            d.display();
+                        }
                     }
+                    return true;
+                } else {
+                    return false;
                 }
 
-                return true;
+
 
             }
         };

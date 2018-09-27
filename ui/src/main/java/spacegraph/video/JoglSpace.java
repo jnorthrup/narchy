@@ -4,6 +4,7 @@ import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.Threading;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.math.FloatUtil;
 import jcog.data.list.FastCoWList;
@@ -33,6 +34,7 @@ import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 import static spacegraph.util.math.v3.v;
 
 abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatial<X>> {
+
 
     public final v3 camPos;
     public final v3 camFwd;

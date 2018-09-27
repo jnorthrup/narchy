@@ -4,13 +4,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FixedRateTimedFuture extends AbstractTimedRunnable {
 
-    /** adjustable while running */
-    private volatile long periodNS;
+    /**
+     * adjustable while running
+     */
+    private long periodNS;
+
+    public FixedRateTimedFuture() {
+        super();
+    }
 
     public FixedRateTimedFuture(int rounds,
                                 Runnable callable,
                                 long recurringTimeout, long resolution, int wheelSize) {
         super(rounds, callable);
+        init(recurringTimeout, resolution, wheelSize);
+    }
+
+    public void init(long recurringTimeout, long resolution, int wheelSize) {
         reset(this.periodNS = recurringTimeout, resolution, wheelSize);
     }
 
@@ -29,24 +39,30 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
 
     @Override
     public void execute(HashedWheelTimer t) {
-        if (!isCancelled()) {
-            pending.setRelease(true);
-            super.execute(t);
-            reset(periodNS, t.resolution, t.wheels); //TODO time since last
-            t._schedule(this);
+        if (pending.weakCompareAndSetAcquire(false, true)) {
+            try {
+                if (!isCancelled()) {
+                    super.execute(t);
+                    reset(periodNS, t.resolution, t.wheels); //TODO time since last
+                    t._schedule(this);
+                }
+            } finally {
+                pending.setRelease(false);
+            }
         }
+
     }
 
-    @Override
-    public void run() {
-        if (pending.compareAndSet(true, false)) { //coalesce
-            //System.out.println(" run " + this);
-            super.run();
-        } else {
-            //elide
-            //System.out.println("skip " + this);
-        }
-    }
+//    @Override
+//    public void run() {
+//        if (pending.compareAndSet(true, false)) { //coalesce
+//            //System.out.println(" run " + this);
+//            super.run();
+//        } else {
+//            //elide
+//            //System.out.println("skip " + this);
+//        }
+//    }
 
     @Override
     public boolean isPeriodic() {
@@ -62,14 +78,14 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
     }
 
     public int getOffset(long resolution) {
-        return (int) Math.round(Math.max(resolution, ((double) periodNS))/resolution);
+        return (int) Math.round(Math.max(resolution, ((double) periodNS)) / resolution);
     }
 
     public void reset(long period, long resolution, int wheels) {
         this.rounds = (int)
-            Math.min(Integer.MAX_VALUE-1,
-                Math.round((((double)period)/resolution) / wheels)
-            );
+                Math.min(Integer.MAX_VALUE - 1,
+                        Math.round((((double) period) / resolution) / wheels)
+                );
     }
 
 

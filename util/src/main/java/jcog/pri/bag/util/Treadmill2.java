@@ -3,7 +3,7 @@ package jcog.pri.bag.util;
 
 /** contains 2 sub-treadmills
  * TODO parameterize the bit which it checks adjustable so these can be chained arbitrarily */
-public class Treadmill2 implements SpinMutex {
+public final class Treadmill2 implements SpinMutex {
 
     private final SpinMutex a;
     private final SpinMutex b;
@@ -18,15 +18,13 @@ public class Treadmill2 implements SpinMutex {
         b = new Treadmill( cHalf );
     }
 
-    private SpinMutex select(long hash) {
-        return (hash & 1) == 0 ? a : b;
-    }
 
     @Override
     public int start(long hash) {
-        SpinMutex x = select(hash);
+        boolean aOrB = (hash & 1) == 0;
+        SpinMutex x = aOrB ? a : b;
         int i = x.start(hash);
-        if (x == b)
+        if (!aOrB)
             i += cHalf;
         return i;
     }
