@@ -23,6 +23,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static jcog.Util.ITEM;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 
@@ -35,6 +36,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             new AtomicFloatFieldUpdater(ArrayBag.class, "mass");
     private static final AtomicFloatFieldUpdater<ArrayBag> PRESSURE =
             new AtomicFloatFieldUpdater(ArrayBag.class, "pressure");
+
+    static final int SAMPLE_CONTIGUOUS_RUN = 3;
 
     final PriMerge mergeFunction;
 
@@ -308,7 +311,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
             return i;
         } else {
-            float runLength = 3;
+
+            float runLength = SAMPLE_CONTIGUOUS_RUN;
             float restartProb = (1f / (1 + runLength));
             if (rng.nextFloat() < restartProb) {
                 return sampleStart(rng, size);
@@ -626,8 +630,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         for (int i = 0; i < s; i++) {
 
             Object y0 =
-                    //ITEM.getOpaque(yy, i); //<- works but may be slightly slower
-                    yy[i];
+                    ITEM.getOpaque(yy, i);
+                    //yy[i];
 
             if (y0 == null)
                 continue; //throw new WTF();

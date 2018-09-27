@@ -27,13 +27,15 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
     /** importance of frequency polarity in result (distance from freq=0.5) */
     public final FloatRange polarityImportance = new FloatRange(0.05f, 0f, 1f);
 
-    public final FloatRange relGrowthExponent = new FloatRange(3f, 0f, 8f);
+    public final FloatRange relGrowthExponent = new FloatRange(2f, 0f, 8f);
 
     @Override
     public float pri(Task t, float f, float e, Derivation d) {
         float factor = this.scale.floatValue();
 
-        factor *= factorComplexity(t, d);
+        factor *=
+                //factorComplexityRelative(t, d);
+                factorComplexityAbsolute(t, d);
 
         if (f==f) {
             //belief or goal:
@@ -44,17 +46,22 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
         return Util.clamp( d.parentPri() * factor, ScalarValue.EPSILON, 1f);
     }
 
-    float factorComplexity(Task t, Derivation d) {
+    float factorComplexityAbsolute(Task t, Derivation d) {
+        float f = (1f - (t.voluplexity() / ((float)(d.termVolMax+1))));
+        return (float) Math.pow(f, relGrowthExponent.floatValue());
+    }
+
+    float factorComplexityRelative(Task t, Derivation d) {
         float pCompl = d.parentComplexitySum;
         float dCompl = t.voluplexity();
-        float relGrowthCostFactor =
+        float f =
+                1f / (1f + Math.max(0, dCompl/(dCompl+pCompl)));
                 //pCompl / (pCompl + dCompl);
                 //1f / (1f + Math.max(0, (dCompl - pCompl)) / pCompl);
-                1f / (1f + Math.max(0, dCompl/(dCompl+pCompl)));
                 //1f-Util.unitize((dCompl - pCompl) / pCompl );
 
 
-        return (float) Math.pow(relGrowthCostFactor, relGrowthExponent.floatValue());
+        return (float) Math.pow(f, relGrowthExponent.floatValue());
     }
 
     float factorPolarity(float freq) {

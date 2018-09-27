@@ -14,10 +14,10 @@ public class ObjectSurfaceTest {
 
     public static class MyClass {
 
-        public final FloatRange MEGATONS = new FloatRange(0.5f, 0, 1f);
+        public final FloatRange AT_FIELD = new FloatRange(0.5f, 0, 1f);
 
         public final Runnable ABORT = ()->{
-            MEGATONS.set(0.1f);
+            AT_FIELD.set(0.1f);
         };
 
         public MyInnerClass inner = new MyInnerClass();
