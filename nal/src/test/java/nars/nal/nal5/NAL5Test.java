@@ -17,12 +17,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 700;
+    private final int cycles = 600;
 
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(17);
+        n.termVolumeMax.set(15);
         n.confMin.set(0.25f);
         return n;
     }
@@ -323,22 +323,22 @@ public class NAL5Test extends NALTest {
         ;
     }
 
-    @Test
-    void disjunction_decompose_one_premise() {
-        test
-                .believe("(||, a, b)")
-                .mustBelieve(cycles, "a", 1f, 0.40f)
-                .mustBelieve(cycles, "b", 1f, 0.40f)
-        ;
-    }
-    @Test
-    void disjunction_decompose_one_premise_pos_neg() {
-        test
-                .believe("(||, a, --b)")
-                .mustBelieve(cycles, "a", 1f, 0.40f)
-                .mustBelieve(cycles, "b", 0f, 0.40f)
-        ;
-    }
+//    @Test
+//    void disjunction_decompose_one_premise() {
+//        test
+//                .believe("(||, a, b)")
+//                .mustBelieve(cycles, "a", 1f, 0.40f)
+//                .mustBelieve(cycles, "b", 1f, 0.40f)
+//        ;
+//    }
+//    @Test
+//    void disjunction_decompose_one_premise_pos_neg() {
+//        test
+//                .believe("(||, a, --b)")
+//                .mustBelieve(cycles, "a", 1f, 0.40f)
+//                .mustBelieve(cycles, "b", 0f, 0.40f)
+//        ;
+//    }
 
     @Test
     void disjunction_decompose_two_premises3() {
@@ -362,7 +362,7 @@ public class NAL5Test extends NALTest {
         tester.believe("(robin --> [flying])");
         tester.ask("(||,(robin --> [flying]),(robin --> swimmer))");
 
-        tester.mustBelieve(cycles, " (&&,(--,(robin --> swimmer)),(--,(robin --> [flying])))", 0.00f, 0.81f);
+        tester.mustBelieve(cycles, " ((robin --> swimmer) || (robin --> [flying]))", 1.00f, 0.81f);
     }
 
 

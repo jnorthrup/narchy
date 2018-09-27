@@ -3,7 +3,6 @@ package nars.nal.nal8;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
-import nars.Param;
 import nars.nal.nal7.NAL7Test;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -312,7 +311,7 @@ public class NAL8Test extends NALTest {
     @Test
     void testConjSeqGoalNegDecomposeForward() {
 
-        Param.DEBUG = true;
+
         test
                 .goal("(--x &&+3 y)", Tense.Present, 1f, 0.9f)
                 .believe("x", Tense.Present, 0f, 0.9f)
@@ -321,7 +320,25 @@ public class NAL8Test extends NALTest {
                 .mustNotOutput(cycles, "y", GOAL, 0)
         ;
     }
+    @Test
+    void conditionalDisjDecomposePos() {
 
+        test
+                .goal("(x || y)", Tense.Present, 1f, 0.9f)
+                .inputAt(2, "--x. |")
+                .mustGoal(cycles, "y", 1f, 0.81f, 2)
+        ;
+    }
+
+    @Test
+    void conditionalDisjDecomposeNeg() {
+
+        test
+                .goal("(--x || y)", Tense.Present, 1f, 0.9f)
+                .believe("x", Tense.Present, 1f, 0.9f)
+                .mustGoal(cycles, "y", 1f, 0.81f, 0)
+        ;
+    }
 
     @Test
     void testInhibition() {

@@ -1175,7 +1175,7 @@ public class Occurrify extends TimeGraph {
             else
                 range = Math.min(d._task.range(), d._belief.range())-1;
 
-            base = taskInBelief ? d.taskStart : d.beliefStart;
+            base = taskInBelief || d.beliefStart == ETERNAL ? d.taskStart : d.beliefStart;
         }
 
         assert(base!=ETERNAL && base!=TIMELESS);

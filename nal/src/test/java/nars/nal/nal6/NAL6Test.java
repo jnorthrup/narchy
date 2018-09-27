@@ -26,7 +26,7 @@ public class NAL6Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(18);
+        n.termVolumeMax.set(16);
         //n.freqResolution.set(0.1f);
         n.confMin.set(0.3f);
         return n;

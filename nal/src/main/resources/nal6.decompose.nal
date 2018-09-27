@@ -8,9 +8,6 @@
     C, X, --is(X,"#"),                     eventOfNeg(C,X)  |- --X, (Belief:StructuralDeduction, Time:TaskSubEventNeg)
     C, X, --is(X,"#"),conjSimultaneous(C), eventOfNeg(C,X)  |- --X, (  Goal:StructuralDeduction, Time:TaskSubEventNeg)
 
-  //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)
-    D, X,conjSimultaneous(D),  eventOfNeg(D,X)  |- --conjWithout(D,--X), (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
-    D, X,conjSimultaneous(D),  eventOf(D,X)     |- --conjWithout(D,X), (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
 
 
     //D, X, --is(X,"#"),                     eventOf(D,X)     |- --X,  (Belief:StructuralDeductionWeakN, Time:TaskSubEventPos)
@@ -31,5 +28,15 @@
     C, X, eventOf(C,X)    |- conjDropIfEarliest(C,  X), (Belief:Deduction,Goal:Deduction,Time:BeliefInTask)
     C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DeductionPN,Time:BeliefInTask)
 
+    //conditional disjunction decompose
+    D, X, eventOfNeg(D,X) |- --conjWithout(D,--X), (Goal:DeductionNN,Time:BeliefInTask)
+    D, X, eventOf(D,X)    |- --conjWithout(D,  X), (Goal:DeductionNP,Time:BeliefInTask)
+
+
+
+          //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)
+          //   disabled: may be spam-like
+            //D, X,conjSimultaneous(D),  eventOfNeg(D,X)  |- --conjWithout(D,--X), (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
+            //D, X,conjSimultaneous(D),  eventOf(D,X)     |- --conjWithout(D,X), (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
 
 
