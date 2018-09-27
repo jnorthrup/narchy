@@ -407,24 +407,6 @@
 
 
 
-    //see: https://en.wikipedia.org/wiki/Imperative_logic#Ross.27_Paradox
-
-
-    //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
-    X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Deduction,Time:TaskInBelief)
-        //conjDropIfLatestFiltered
-    X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:DeductionN,Time:TaskInBelief)
-        //conjDropIfLatestFiltered
-
-            //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:DesireDepolarizedTask)
-
-    C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Belief:Deduction,Goal:Desire,Time:BeliefInTask)
-
-    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DesirePN,Time:BeliefInTask)
-
-        //conjDropIfEarliestFiltered
-
-
 
 
 

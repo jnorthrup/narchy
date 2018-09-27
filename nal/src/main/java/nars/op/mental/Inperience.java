@@ -280,6 +280,8 @@ abstract public class Inperience extends LeakBack {
     @Override
     public boolean filter(Task next) {
 
+        if (next.stamp().length == 0)
+            return false;
 
         if (//next.isInput() ||
             !acceptTask(next)

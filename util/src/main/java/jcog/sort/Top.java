@@ -2,45 +2,45 @@ package jcog.sort;
 
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 import java.util.function.Consumer;
+
+import static java.lang.Float.NEGATIVE_INFINITY;
 
 public class Top<T> implements Consumer<T> {
     public final FloatFunction<T> rank;
-    public T the;
+    /* TODO private */ public T the;
     public float score;
 
     public Top(FloatFunction<T> rank) {
-        this(rank, Float.NEGATIVE_INFINITY);
+        this.rank = rank;
+        this.score = NEGATIVE_INFINITY;
     }
 
-    public Top(FloatFunction<T> rank, float minScore) {
-        this.rank = rank;
-        this.score = minScore;
+    public void clear() {
+        score = NEGATIVE_INFINITY;
+        the = null;
+    }
+
+    public final T get() { return the; }
+
+    @Override
+    public String toString() {
+        return the + "=" + score;
     }
 
     @Override
     public void accept(T x) {
-        accept(x, rank.floatValueOf(x));
-    }
-    public void accept(T x, float override) {
-        if (override==override && override >= score) { 
+        float override = rank.floatValueOf(x);
+        if (override==override && override > score) {
             the = x;
             score = override;
         }
     }
 
-    public List<T> toList() {
-        if (the == null) return Collections.emptyList();
-        else return Collections.singletonList(the);
-    }
-
-    public Top<T> of(Iterator<T> iterator) {
-        iterator.forEachRemaining(this);
-        return this;
-    }
+//    public Top<T> of(Iterator<T> iterator) {
+//        iterator.forEachRemaining(this);
+//        return this;
+//    }
 
     public boolean isEmpty() {
         return the==null;

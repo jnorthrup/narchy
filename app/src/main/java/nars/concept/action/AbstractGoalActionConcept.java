@@ -53,6 +53,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
         return t!=null ? t.conf() : 0;
     }
 
+
     int actionDur = 0;
 
     public AbstractGoalActionConcept actionDur(int actionDur) {
@@ -71,11 +72,12 @@ public class AbstractGoalActionConcept extends ActionConcept {
         Predicate<Task> withoutCuriosity = t -> !(t instanceof CuriosityTask);  /* filter curiosity tasks? */
 
 
+        int actionDur = this.actionDur;
+        if (actionDur < 0) actionDur = n.dur();
+
         long rad = (now - prev);
         long s = now - rad;
         long e = now + rad;
-        int actionDur =
-                this.actionDur;
                 //0;
                 //1;
                 //Tense.occToDT(rad); //controls fall-off / bleed-through of goal across time

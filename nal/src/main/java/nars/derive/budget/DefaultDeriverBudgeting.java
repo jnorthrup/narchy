@@ -16,7 +16,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
     /**
      * global multiplier
      */
-    public final FloatRange scale = new FloatRange(0.5f, 0f, 2f);
+    public final FloatRange scale = new FloatRange(1f, 0f, 2f);
 
     /**
      * how important is it to retain conf (evidence).
@@ -27,7 +27,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
     /** importance of frequency polarity in result (distance from freq=0.5) */
     public final FloatRange polarityImportance = new FloatRange(0.05f, 0f, 1f);
 
-    public final FloatRange relGrowthExponent = new FloatRange(1.5f, 0f, 8f);
+    public final FloatRange relGrowthExponent = new FloatRange(3f, 0f, 8f);
 
     @Override
     public float pri(Task t, float f, float e, Derivation d) {

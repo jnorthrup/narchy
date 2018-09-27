@@ -33,11 +33,15 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
     @Override
-    public int hashCode() {
-        return Subterms.hash(items, size);
+    public int hashCodeSubterms() {
+        int s = size;
+        return s > 0 ? Subterms.hash(items, size) : 1;
     }
 
-
+    @Override
+    public int hashCode() {
+        return hashCodeSubterms();
+    }
 
     @Override
     public final boolean these() {
@@ -53,7 +57,7 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     @Override
     public final Term sub(int i) {
-        return get(i);
+        return items[i];
     }
 
     @Override
@@ -81,13 +85,13 @@ public class TermList extends FasterList<Term> implements Subterms {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         
-        if ((obj instanceof TermList)) {
-            return fastListEquals(((TermList)obj));
-        } else {
-            if (hashCode()!=obj.hashCode())
-                return false;
+//        if ((obj instanceof TermList)) {
+//            return fastListEquals(((TermList)obj));
+//        } else {
+//            if (hashCode()!=obj.hashCode())
+//                return false;
             return ((Subterms)obj).equalTerms(this);
-        }
+//        }
     }
 
 

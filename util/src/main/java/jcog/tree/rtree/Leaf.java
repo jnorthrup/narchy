@@ -38,7 +38,7 @@ import java.util.stream.Stream;
  * Created by jcairns on 4/30/15.
  * <p>
  */
-public class Leaf<X> extends AbstractNode<X> {
+public final class Leaf<X> extends AbstractNode<X> {
 
     public final X[] data;
 
@@ -131,7 +131,7 @@ public class Leaf<X> extends AbstractNode<X> {
             if (size < model.max) {
 
                 grow(tb);
-                data[size++] = t;
+                data[this.size++] = t;
 
                 next = this;
             } else {
@@ -153,7 +153,7 @@ public class Leaf<X> extends AbstractNode<X> {
         int s = size;
         for (int i = 0; i < s; i++) {
             X d = data[i];
-            if (d!=null && !p.test(d))
+            if (/*d!=null && */!p.test(d))
                 return false;
         }
         return true;
@@ -165,7 +165,7 @@ public class Leaf<X> extends AbstractNode<X> {
         short s = this.size;
         for (int i = 0; i < s; i++) {
             X d = data[i];
-            if (d!=null && p.test(d))
+            if (/*d!=null && */p.test(d))
                 return true;
         }
         return false;
@@ -238,7 +238,7 @@ public class Leaf<X> extends AbstractNode<X> {
         HyperRegion r = null;
         for (int i = 0; i < s; i++) {
             X d = data[i];
-            if (d!=null && d.equals(told)) {
+            if (/*d!=null && */d.equals(told)) {
                 data[i] = tnew;
             }
 
@@ -259,7 +259,7 @@ public class Leaf<X> extends AbstractNode<X> {
             X[] data = this.data;
             for (int i = 0; i < s; i++) {
                 X d = data[i];
-                if (d != null && (containsAll || rect.intersects(model.bounds(d))) && !t.test(d))
+                if (/*d != null && */ (containsAll || rect.intersects(model.bounds(d))) && !t.test(d))
                     return false;
             }
         }
@@ -274,7 +274,7 @@ public class Leaf<X> extends AbstractNode<X> {
             X[] data = this.data;
             for (int i = 0; i < s; i++) {
                 X d = data[i];
-                if (d != null && (containsAll || rect.contains(model.bounds(d))) && !t.test(d))
+                if (/*d != null && */(containsAll || rect.contains(model.bounds(d))) && !t.test(d))
                     return false;
             }
         }
@@ -294,7 +294,7 @@ public class Leaf<X> extends AbstractNode<X> {
             X[] data = this.data;
             for (int i = 0; i < s; i++) {
                 X d = data[i];
-                if (d != null)
+                //if (d != null)
                     consumer.accept(d);
             }
         }
@@ -341,8 +341,9 @@ public class Leaf<X> extends AbstractNode<X> {
         double eps = model.epsilon();
         if (Util.equals(l1CostInc, l2CostInc, eps)) {
             if (Util.equals(l1c, l2c, eps)) {
-                final double l1MbrMargin = l1Mbr.perimeter();
-                final double l2MbrMargin = l2Mbr.perimeter();
+
+                final double l1MbrMargin = l1Mbr.perimeter(), l2MbrMargin = l2Mbr.perimeter();
+
                 if (Util.equals(l1MbrMargin, l2MbrMargin, eps)) {
                     
                     target = ((l1Node.size() <= l2Node.size()) ? l1Node : l2Node);

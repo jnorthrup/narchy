@@ -3,6 +3,7 @@ package jcog.sort;
 import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -66,7 +67,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
 
 
     @Override
-    public final boolean add(X e) {
+    public final boolean add(@NotNull X e) {
         int r = add(e, this::rankNeg);
         if (r >= 0) {
             commit();
@@ -85,8 +86,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
 
     @Override
     public final void accept(X e) {
-        if (e!=null)
-            add(e);
+        add(e);
     }
 
     private void commit() {

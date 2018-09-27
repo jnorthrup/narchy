@@ -14,7 +14,6 @@ import nars.derive.Derivers;
 import nars.derive.impl.MatrixDeriver;
 import nars.exe.Attention;
 import nars.exe.UniExec;
-import nars.gui.EmotionPlot;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
 import nars.op.stm.ConjClustering;
@@ -26,6 +25,7 @@ import nars.video.CameraSensorView;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.video.Draw;
 
 import java.util.List;
@@ -185,7 +185,7 @@ public class TrackXY_NAR extends NAgentX {
                     //new CameraSensorView(c, this).withControls(),
                     NARui.agent(a)
                     , 400, 400);
-            window(new Gridding(NARui.top(n), new EmotionPlot(128, a)), 800, 250);
+            window(new Gridding(NARui.top(n), new ObjectSurface(a.track)), 800, 250);
 
 //            NARui.agentWindow(t);
             if (a.cam != null) {

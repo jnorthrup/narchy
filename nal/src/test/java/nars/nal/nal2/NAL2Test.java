@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL2Test extends NALTest {
 
-    private static final int cycles = 150;
+    private static final int cycles = 350;
 
 
     @Override
@@ -323,8 +323,8 @@ public class NAL2Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<{Mars,Pluto,Venus} --> planetX>", 1.0f, 0.9f);
         tester.believe("<{Pluto,Saturn} --> planetX>", 0.1f, 0.9f);
-        tester.mustBelieve(cycles, "<{Mars,Pluto,Saturn,Venus} --> planetX>", 0.1f, 0.81f);
-        tester.mustBelieve(cycles, "<{Mars,Venus} --> planetX>", 0.9f, 0.81f);
+        tester.mustBelieve(cycles*2, "<{Mars,Pluto,Saturn,Venus} --> planetX>", 0.1f, 0.81f);
+        tester.mustBelieve(cycles*2, "<{Mars,Venus} --> planetX>", 0.9f, 0.81f);
     }
 
 }

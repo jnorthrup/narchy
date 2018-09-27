@@ -687,64 +687,37 @@ public class Occurrify extends TimeGraph {
 
         },
 
+        /** for use with ConjDropIfLatest */
         TaskInBelief() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-
-//                if (d.taskStart!=ETERNAL && d.beliefStart!=ETERNAL) {
-                    return solveDT(d, x, d.occ.reset(true, false, x)); //special
-//                } else {
-//                    return solveOccDT(d, x, d.occ.reset(x)); //normal
-//                }
+                return solveDT(d, x, d.occ.reset(true, false, x)); //special
             }
 
             @Override
             long[] occurrence(Derivation d) {
-
-                long base;
-                long range;
-                if (d.taskStart == ETERNAL && d.beliefStart == ETERNAL) {
-                    return new long[] { ETERNAL, ETERNAL };
-                }
-
-                if (d.taskStart == ETERNAL) {
-                    base = d.beliefStart;
-                    range = d._belief.range()-1;
-                } else {
-                    if (d.beliefStart==ETERNAL)
-                        range = d._task.range()-1;
-                    else
-                        range = Math.min(d._task.range(), d._belief.range())-1;
-                    base = d.taskStart;
-                }
-                assert(base!=ETERNAL && base!=TIMELESS);
-
-                int shift = d.beliefTerm.subTimeFirst(d.taskTerm);
-                if (shift==DTERNAL) {
-                    shift = d.beliefTerm.subTimeFirst(d.taskTerm.neg()); //try negative
-                    if (shift==DTERNAL)
-                        return null;
-                }
-                long start = base + shift;
-
-                return new long[] {start, start + range };
-
+                return OccConjDecompose(d, true);
             }
+
             @Override
             public BeliefProjection beliefProjection() {
                 return BeliefProjection.Task;
             }
         },
+
+        /** for use with ConjDropIfEarliest */
         BeliefInTask() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
 
-                return solveOccDT(d, x, d.occ.reset(false,true, x));
+                @Nullable Pair<Term, long[]> p = solveDT(d, x, d.occ.reset(false, true, x));
+                if (p!=null) { long[] se = p.getTwo();  if (se[0]!=ETERNAL) { int shift = d.taskTerm.eventRange() - x.eventRange();  se[0] += shift; se[1] += shift;}  }
+                return p;
             }
 
             @Override
             long[] occurrence(Derivation d) {
-                return rangeCombine(d, OccIntersect.Belief);
+                return OccConjDecompose(d, false);
             }
             @Override
             public BeliefProjection beliefProjection() {
@@ -1184,6 +1157,50 @@ public class Occurrify extends TimeGraph {
         public BeliefProjection beliefProjection() {
             return BeliefProjection.Task;
         }
+    }
+
+    private static long[] OccConjDecompose(Derivation d, boolean taskInBelief) {
+        long base;
+        long range;
+        if (d.taskStart == ETERNAL && d.beliefStart == ETERNAL) {
+            return new long[] { ETERNAL, ETERNAL };
+        }
+
+        if (d.taskStart == ETERNAL) {
+            base = d.beliefStart;
+            range = d._belief.range()-1;
+        } else {
+            if (d.beliefStart==ETERNAL)
+                range = d._task.range()-1;
+            else
+                range = Math.min(d._task.range(), d._belief.range())-1;
+
+            base = taskInBelief ? d.taskStart : d.beliefStart;
+        }
+
+        assert(base!=ETERNAL && base!=TIMELESS);
+
+        int shift;
+
+        if (taskInBelief) {
+
+            Term inner = d.taskTerm, outer = d.beliefTerm;
+
+            shift = outer.subTimeFirst(inner);
+            if (shift==DTERNAL) {
+                shift = outer.subTimeFirst(inner.neg()); //try negative
+                if (shift==DTERNAL)
+                    return null;
+            }
+
+        } else {
+            //shift = the occurrence of the 2nd event (since it was conjDropIfEarly)
+            shift = 0; //applied later
+        }
+
+        long start = base + shift;
+
+        return new long[] {start, start + range };
     }
 
     private static boolean immediatizable(Derivation d) {

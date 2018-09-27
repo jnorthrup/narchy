@@ -2,7 +2,6 @@ package nars.table.temporal;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.pri.Deleteable;
 import jcog.sort.Top;
 import jcog.sort.Top2;
 import jcog.tree.rtree.*;
@@ -23,8 +22,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static jcog.WTF.WTF;
-
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
     private static final float PRESENT_AND_FUTURE_BOOST_BELIEF = 2f;
@@ -32,7 +29,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
     private static final int MIN_TASKS_PER_LEAF = 2;
-    private static final int MAX_TASKS_PER_LEAF = 4;
+    private static final int MAX_TASKS_PER_LEAF = 3;
     private static final Split<TaskRegion> SPLIT = new AxialSplitLeaf<>();
 
 
@@ -52,16 +49,14 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * immediately returns false if space removed at least one as a result of the scan, ie. by removing
      * an encountered deleted task.
      */
-    private static boolean findEvictable(Space<TaskRegion> tree, Node<TaskRegion> next, @Nullable Top<TaskRegion> closest, Top<TaskRegion> weakest, Consumer<Leaf<TaskRegion>> weakLeaf) {
+    private static boolean findEvictable(Space<TaskRegion> tree, Node<TaskRegion> next, @Nullable Top<TaskRegion> closest, Top<Task> weakest, Consumer<Leaf<TaskRegion>> mergeableLeaf) {
         if (next instanceof Leaf) {
 
             Leaf l = (Leaf) next;
-            for (Object _x : l.data) {
-                if (_x == null)
-                    break;
-
-                TaskRegion x = (TaskRegion) _x;
-                if (((Deleteable) x).isDeleted()) {
+            Object[] data = l.data;
+            for (int i = 0, dataLength = l.size; i < dataLength; i++) {
+                Task x = (Task) data[i];
+                if (x.isDeleted()) {
 
                     boolean removed = tree.remove(x);
 
@@ -76,16 +71,15 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             }
 
             if (l.size >= 2)
-                weakLeaf.accept(l);
+                mergeableLeaf.accept(l);
 
         } else {
 
             Branch b = (Branch) next;
-
-            for (Node ww : b.data) {
-                if (ww == null)
-                    break;
-                else if (!findEvictable(tree, ww, closest, weakest, weakLeaf))
+            Node[] bd = b.data;
+            for (int i = 0, dataLength = b.size; i < dataLength; i++) {
+                Node bb = bd[i];
+                if (!findEvictable(tree, bb, closest, weakest, mergeableLeaf))
                     return false;
             }
         }
@@ -266,9 +260,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                             :
                             (n) -> {
                                 if (time.contains(n)) {
-                                    if (!m.tryAccept((Task) n)) {
-                                        return false;
-                                    }
+                                    return m.tryAccept((Task) n);
                                 }
 
                                 return true;
@@ -507,28 +499,28 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         FloatFunction<Leaf<TaskRegion>> leafWeakness =
                 L -> leafRegionWeakness.floatValueOf((TaskRegion) L.bounds());
 
-        Top<Leaf<TaskRegion>> weakLeaf = new Top<>(leafWeakness);
+        Top<Leaf<TaskRegion>> mergeableLeaf = new Top<>(leafWeakness);
 
-        FloatFunction<TaskRegion> weakestTask = t ->
-                -taskStrength.floatValueOf((Task) t);
+        FloatFunction<Task> weakestTask = t ->
+                -taskStrength.floatValueOf(t);
 //                (float) (-1 * Param.evi(taskStrength.floatValueOf((Task) t),
 //                        //t.midTimeTo(now)
 //                         t.maxTimeTo(now)
 //                        , perceptDur));
 
-        Top<TaskRegion> weakest = new Top<>(weakestTask);
+        Top<Task> weakest = new Top<>(weakestTask);
 
         Top<TaskRegion> closest = input != null ? new Top<>(Answer.mergeability(input)) : null;
 
 
-        if (!findEvictable(tree, tree.root(), closest, weakest, weakLeaf))
+        if (!findEvictable(tree, tree.root(), closest, weakest, mergeableLeaf))
             return true;
 
 
         //assert (tree.size() >= cap);
 
 
-        return mergeOrDelete(tree, input, closest, weakest, weakLeaf, taskStrength, inputStrength, weakestTask, remember, nar);
+        return mergeOrDelete(tree, input, closest, weakest, mergeableLeaf, taskStrength, inputStrength, remember, nar);
 
 
     }
@@ -536,11 +528,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     private static boolean mergeOrDelete(Space<TaskRegion> treeRW,
                                          @Nullable Task I /* input */,
                                          @Nullable Top<TaskRegion> closest,
-                                         Top<TaskRegion> weakest,
-                                         Top<Leaf<TaskRegion>> weakLeaf,
+                                         Top<Task> weakest,
+                                         Top<Leaf<TaskRegion>> mergeableLeaf,
                                          FloatFunction<Task> taskStrength,
                                          float inputStrength,
-                                         FloatFunction<TaskRegion> weakness,
                                          Remember r,
                                          NAR nar) {
 
@@ -558,13 +549,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
 
 
-        if (!weakLeaf.isEmpty()) {
-            Leaf<TaskRegion> la = weakLeaf.the;
+        if (!mergeableLeaf.isEmpty()) {
+            Leaf<TaskRegion> la = mergeableLeaf.the;
 
             TaskRegion a, b;
             if (la.size > 2) {
-                Top2<TaskRegion> w = new Top2<>(weakness);
-                la.forEach(w::add);
+                Top2<Task> w = new Top2<>(weakest.rank);
+                la.forEach(x -> w.add((Task)x));
                 a = w.a;
                 b = w.b;
             } else if (la.size == 2) {
@@ -583,7 +574,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
 
 
-        W = (weakest != null && weakest.the != null) ? (Task) weakest.the : A;
+        W = (weakest != null && weakest.the != null) ? weakest.the : A;
         if (W == null)
             return false;
 
@@ -629,49 +620,39 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                     r.forget(W);
                     return true;
                 }
-                throw WTF();
             }
+            break;
 
             case RejectInput: {
                 r.forget(I);
                 return false;
             }
 
+
             case MergeInputClosest: {
                 if (treeRW.remove(C)) {
                     if (treeRW.add(IC)) {
                         TemporalBeliefTable.fundMerge(IC, r, I, C);
-                    } //else: already contained the merger
+                    } //else: possibly already contained the merger
 
                     return true;
                 }
-                throw WTF();
             }
+            break;
 
             case MergeLeaf: {
-
-
                 if (treeRW.remove(A) && treeRW.remove(B)) {
                     if (treeRW.add(AB)) {
                         TemporalBeliefTable.fundMerge(AB, r, A, B);
-                    } else {
-                        //this may happen if the merge was acdtually a duplicate of what was in the table.
-                        //this is fine. just forget the merge
-
-                        AB.delete();
-
-                        //TODO if I is more valuable than A, remove A and try to insert I
-
-                    }
+                    } //else: possibly already contained the merger
                     return true;
                 }
-                throw WTF();
             }
+            break;
 
-            default:
-                throw new UnsupportedOperationException();
         }
 
+        throw new UnsupportedOperationException();
 
     }
 

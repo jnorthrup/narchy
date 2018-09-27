@@ -17,3 +17,19 @@
     //D, X, --is(X,"#"),conjSimultaneous(D), eventOf(D,X)     |- --X,  (  Goal:StructuralDeductionWeakN, Time:TaskSubEventPos)
     //D, X, --is(X,"#"),                     eventOfNeg(D,X)  |-   X,  (Belief:StructuralDeductionWeakN, Time:TaskSubEventNeg)
     //D, X, --is(X,"#"),conjSimultaneous(D), eventOfNeg(D,X)  |-   X,  (  Goal:StructuralDeductionWeakN, Time:TaskSubEventNeg)
+
+
+
+    //see: https://en.wikipedia.org/wiki/Imperative_logic#Ross.27_Paradox
+
+
+    //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
+    //  filters to prevent deriving anti-goal if it appears in the precondition, was called: "conjDropIfLatestFiltered"
+    X, C, eventOf(C,X)    |- conjDropIfLatest(C,  X), (Goal:Deduction,Time:TaskInBelief)
+    X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:DeductionN,Time:TaskInBelief)
+
+    C, X, eventOf(C,X)    |- conjDropIfEarliest(C,  X), (Belief:Deduction,Goal:Deduction,Time:BeliefInTask)
+    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DeductionPN,Time:BeliefInTask)
+
+
+
