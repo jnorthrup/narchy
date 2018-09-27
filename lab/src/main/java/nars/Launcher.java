@@ -14,7 +14,7 @@ public class Launcher {
 
     static class Experiment implements Runnable {
         final Class<? extends NAgentX> env;
-        final float fps = 10f;
+        final float fps = 25f;
 
         Experiment(Class<? extends NAgentX> env) {
             this.env = env;

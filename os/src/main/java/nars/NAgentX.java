@@ -147,6 +147,7 @@ abstract public class NAgentX extends NAgent {
                         new HijackConceptIndex(
                                 //128 * 1024,
                                 64 * 1024,
+                                //8 * 1024,
                                 4)
 
 
@@ -351,8 +352,13 @@ abstract public class NAgentX extends NAgent {
 
 
         try {
-            InterNAR i = new InterNAR(n, 0);
-            i.runFPS(4);
+            InterNAR i = new InterNAR(n, 0) {
+                @Override
+                protected void starting(NAR nar) {
+                    super.starting(nar);
+                    runFPS(4);
+                }
+            };
         } catch (Exception e) {
             e.printStackTrace();
         }

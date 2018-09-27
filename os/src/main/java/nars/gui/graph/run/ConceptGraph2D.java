@@ -1,6 +1,5 @@
 package nars.gui.graph.run;
 
-import com.jogamp.opengl.GL2;
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.concept.Concept;
@@ -9,14 +8,13 @@ import nars.gui.NARui;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.*;
+import spacegraph.space2d.container.ForceDirected2D;
+import spacegraph.space2d.container.Graph2D;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.video.Draw;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -143,29 +141,9 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         }
     }
 
-    public Surface widget() {
-        Gridding cfg = configWidget();
-        cfg.add(new ObjectSurface(controls));
-        addControls(cfg);
-
-        return new Splitting(new Clipped(
-                this
-        ) {
-            @Override
-            protected void paintBelow(GL2 gl, SurfaceRender r) {
 
 
-                gl.glColor4f(0,0,0, 0.9f);
-                Draw.rect(bounds, gl);
 
-                super.paintBelow(gl, r);
-            }
-        }, cfg, 0.1f);
-    }
-
-    protected void addControls(Gridding cfg) {
-
-    }
 
 
     final static float WEIGHT_UPDATE_RATE = 0.1f;

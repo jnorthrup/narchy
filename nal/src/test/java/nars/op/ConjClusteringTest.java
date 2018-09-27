@@ -38,6 +38,27 @@ class ConjClusteringTest {
         assertEquals(1, n.concept($.$("(&&,(--,x0),(--,x1),(--,x2),(--,x3))")).beliefs().size());
     }
 
+    @Test void testDimensionalDistance1() throws Narsese.NarseseException {
+        NAR n = NARS.shell();
+        n.time.dur(4);
+
+        int ccap = 8;
+        ConjClustering c = new ConjClustering(n, BELIEF, (t) -> t.isInput(), 2, ccap);
+
+
+        n.log();
+
+        n.inputAt(1, "$1.0 x. |");
+        n.inputAt(2, "$1.0 y. |");
+        n.inputAt(1, "$0.1 z. |");
+        n.inputAt(3, "$0.1 w. |");
+
+
+        n.run(4);
+        //TODO
+//        assertEquals(1, n.concept($.$("")).beliefs().size());
+
+    }
     
     
 }

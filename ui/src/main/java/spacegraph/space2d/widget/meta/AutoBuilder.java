@@ -7,10 +7,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -58,7 +55,7 @@ public class AutoBuilder<X, Y> {
         {
             classBuilders(root, builders); //TODO check subtypes/supertypes etc
             if (!builders.isEmpty()) {
-                Iterable<Y> yy = ()->builders.stream().map(b -> b.apply(root, relation)).iterator();
+                Iterable<Y> yy = ()->builders.stream().map(b -> b.apply(root, relation)).filter(Objects::nonNull).iterator();
                 bb.add(pair(root, yy));
             }
         }

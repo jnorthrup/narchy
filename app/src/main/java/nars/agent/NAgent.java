@@ -297,6 +297,10 @@ public class NAgent extends NARService implements NSense, NAct {
     public Off rewardDetailed(FloatSupplier rewardfunc) {
         return rewardDetailed(rewardTerm("reward"), rewardfunc);
     }
+    @Deprecated
+    public Off rewardDetailed(float min, float max, FloatSupplier rewardfunc) {
+        return rewardDetailed(rewardTerm("reward"), min, max, rewardfunc);
+    }
 
     public Off reward(String reward, FloatSupplier rewardFunc) {
         return reward(rewardTerm(reward), rewardFunc);
@@ -458,10 +462,10 @@ public class NAgent extends NARService implements NSense, NAct {
 
         float curiConf =
                         //nar.confMin.floatValue() * 4;
-                        //nar.confMin.floatValue() * 2;
+                        nar.confMin.floatValue() * 2;
                         //nar.confMin.floatValue();
                         //nar.confDefault(GOAL)/3;
-                        nar.confDefault(GOAL)/2;
+                        //nar.confDefault(GOAL)/2;
                         //w2c(c2w(nar.confDefault(GOAL))/3);
                         //w2c(c2w(nar.confDefault(GOAL))/2);
                         //nar.confDefault(GOAL);

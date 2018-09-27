@@ -41,7 +41,7 @@ public class FZero extends NAgentX {
 
     float fwdSpeed = 7;
     float rotSpeed = 0.15f;
-    static float fps = 25f;
+    static float fps = 40f;
 
 
     public static void main(String[] args) {
@@ -151,7 +151,7 @@ public class FZero extends NAgentX {
 //        });
 
 
-        rewardDetailed("race", -1, +1, ()->{
+        rewardNormalized("race", -1, +1, ()->{
             double distance = fz.vehicleMetrics[0][1];
             double deltaDistance = (distance - lastDistance);
 
@@ -163,7 +163,7 @@ public class FZero extends NAgentX {
             float race =
                     ((float)
                             //-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
-                            deltaDistance / (fps * 0.2f));
+                            deltaDistance / (fps * 0.4f));
 
 //        float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 0.2)) : -1f;
 

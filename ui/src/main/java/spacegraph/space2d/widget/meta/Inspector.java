@@ -35,7 +35,7 @@ public class Inspector extends Bordering {
 
                 .set(graph.nodes());
 
-        set(graphView);
+        set(graphView.widget());
     }
 
     public void include(Surface s, int depth) {

@@ -25,6 +25,7 @@ import spacegraph.video.Draw;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -53,7 +54,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         AutoBuilder.AutoBuilding<Object,Surface> building = (List<Pair<Object, Iterable<Surface>>> content, @Nullable Object parent, @Nullable Surface parentRepr) -> {
             List<Surface> c =  new FasterList(content.size());
             for (Pair<Object, Iterable<Surface>> p : content) {
-                Object o = p.getOne();
+                //Object o = p.getOne();
                 ArrayList<Surface> cx = Lists.newArrayList(p.getTwo());
                 switch(cx.size()) {
                     case 0: break; //TODO shouldnt happen
@@ -68,7 +69,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
             if (c.isEmpty())
                 return null;
 
-            return new ObjectMetaFrame(obj, c.size() > 1 ? new Gridding(c) : c.get(0));
+            return new ObjectMetaFrame(parent, c.size() > 1 ? new Gridding(c) : c.get(0));
         };
 
         builder = new AutoBuilder<Object, Surface>(maxDepth, building);
@@ -82,6 +83,30 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         builder.on(AtomicBoolean.class, (x,relation) -> new MyAtomicBooleanCheckBox(relationLabel(relation), (AtomicBoolean) x));
         builder.on(IntRange.class,  (x, relation) -> new MyIntSlider((IntRange) x, relationLabel(relation)));
         builder.on(MutableEnum.class, (x, relation) -> newSwitch((MutableEnum) x, relationLabel(relation)));
+        builder.on(Collection.class, (x, relation) -> {
+            Collection cx = (Collection) x;
+            if (cx.isEmpty())
+                return null;
+
+            List<Surface> yy = new FasterList(cx.size());
+
+            for (Object cxx : cx) {
+                Surface yyy = builder.build(cxx);
+                if (yyy!=null)
+                    yy.add(yyy); //TODO depth, parent, ..
+            }
+            if (yy.isEmpty())
+                return null;
+
+            Surface xx = new Gridding(yy);
+
+            String l = relationLabel(relation);
+
+            if (!l.isEmpty())
+                return new LabeledPane(l, xx);
+            else
+                return xx;
+        });
     }
 
     public String relationLabel(@Nullable Object relation) {

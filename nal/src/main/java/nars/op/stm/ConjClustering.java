@@ -9,7 +9,7 @@ import nars.Param;
 import nars.Task;
 import nars.bag.BagClustering;
 import nars.control.Cause;
-import nars.control.channel.BufferedCauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.exe.Causable;
 import nars.task.NALTask;
 import nars.task.util.TaskException;
@@ -38,7 +38,7 @@ public class ConjClustering extends Causable {
 
     private final BagClustering<Task> bag;
     private final BagClustering.Dimensionalize<Task> model;
-    private final BufferedCauseChannel in;
+    private final CauseChannel in;
     private final byte punc;
     private final float termVolumeMaxFactor = 0.9f;
     private final Predicate<Task> filter;
@@ -51,6 +51,8 @@ public class ConjClustering extends Causable {
     //temporary to the current singleton
     transient private int tasksGenerated;
 
+    private int learningIterations = 4;
+
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
         this(nar, punc, (t) -> true, centroids, capacity);
     }
@@ -58,7 +60,7 @@ public class ConjClustering extends Causable {
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
         super();
 
-        this.in = nar.newChannel(this).buffered();
+        this.in = nar.newChannel(this);//.buffered();
 
         this.dur = nar.dur();
 
@@ -67,22 +69,28 @@ public class ConjClustering extends Causable {
             @Override
             public void coord(Task t, double[] c) {
                 Truth tt = t.truth();
-                c[1] = tt.polarity();
-                c[2] = tt.conf();
-                c[0] = t.start();
+                c[0] = tt.polarity();
+                c[1] = tt.conf();
+                c[2] = t.priElseZero();
+
+                c[3] = t.mid();
                 c[4] = t.range();
-                c[3] = t.priElseZero();
             }
 
             @Override
             public double distanceSq(double[] a, double[] b) {
-                return (1 + (Math.abs(a[0] - b[0]) / Math.min(a[4], b[4])) + (Math.abs(a[4]-b[4])/dur))
-                        *
-                        (
-                                Math.abs(a[1] - b[1])
-                                        + Math.abs(a[2] - b[2])
-                                        + Math.abs(a[3] - b[3]) * 0.1f
-                        );
+                return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]) + Math.abs(a[2] - b[2]) +
+
+                        Math.abs(a[3] - b[3]) +
+                        Math.abs(a[4] - b[4]) * 0.5;
+
+//                return (1 + (Math.abs(a[0] - b[0]) / Math.min(a[4], b[4])) + (Math.abs(a[4] - b[4]) / dur))
+//                        *
+//                        (
+//                                Math.abs(a[1] - b[1])
+//                                        + Math.abs(a[2] - b[2])
+//                                        + Math.abs(a[3] - b[3]) * 0.1f
+//                        );
             }
         };
 
@@ -125,15 +133,12 @@ public class ConjClustering extends Causable {
         this.volMax = Math.round(nar.termVolumeMax.intValue() * termVolumeMaxFactor);
         this.tasksGenerated = 0;
 
-        try {
-            bag.commit(nar.forgetRate.floatValue(), 1);
 
-            conjoiner.kontinue = kontinue;
-            bag.cluster(nar, nar.random(), conjoiner::conjoinCentroid);
-        } finally {
-            if (tasksGenerated > 0)
-                in.commit();
-        }
+        bag.commit(nar.forgetRate.floatValue(), learningIterations);
+
+        conjoiner.kontinue = kontinue;
+        bag.cluster(nar, nar.random(), conjoiner::conjoinCentroid);
+
     }
 
     final CentroidConjoiner conjoiner = new CentroidConjoiner();
@@ -256,40 +261,39 @@ public class ConjClustering extends Causable {
 
 
                                 NALTask m = new STMClusterTask(cp, t, start, start, Stamp.sample(Param.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
-                                m.cause( Cause.merge(Param.causeCapacity.intValue(), uu) );
+                                m.cause(Cause.merge(Param.causeCapacity.intValue(), uu));
 
-                                if (in.inputIfCapacity(m)) {
 
-                                    int v = cp.getOne().volume();
-                                    float cmplFactor =
-                                            ((float) v) / (v + volMax);
+                                int v = cp.getOne().volume();
+                                float cmplFactor =
+                                        ((float) v) / (v + volMax);
 
-                                    float freqFactor =
-                                            t.freq();
-                                    float confFactor =
-                                            (conf / (conf + confMax));
+                                float freqFactor =
+                                        t.freq();
+                                float confFactor =
+                                        (conf / (conf + confMax));
 
-                                    m.pri(Priority.fund(Math.min(priMax, priMin * freqFactor * cmplFactor * confFactor), false, uu));
+                                m.pri(Priority.fund(Math.min(priMax, priMin * freqFactor * cmplFactor * confFactor), false, uu));
 
-                                    for (Task aa : actualTasks)
-                                        bag.remove(aa);
+                                for (Task aa : actualTasks)
+                                    bag.remove(aa);
 
-                                    tasksGenerated++;
+                                tasksGenerated++;
+                                in.input(m);
 
-                                    if (!kontinue.getAsBoolean())
-                                        return false;
-
-                                } else {
+                                if (!kontinue.getAsBoolean())
                                     return false;
-                                }
+
+                            } else {
+                                return false;
                             }
                         }
-
-
                     }
-                }
 
+
+                }
             }
+
 
             return true;
         }

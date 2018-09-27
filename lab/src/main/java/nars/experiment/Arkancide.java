@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Arkancide extends NAgentX {
 
     static boolean numeric = true;
-    static boolean cam = true;
+    static boolean cam = false;
 
     public final FloatRange ballSpeed = new FloatRange(0.75f, 0.04f, 6f);
 
@@ -45,7 +45,7 @@ public class Arkancide extends NAgentX {
 
         runRT((NAR n) -> {
 
-            n.timeResolution.set(25); //50fps resolution
+            //n.timeResolution.set(25); //50fps resolution
 
 
             return new Arkancide(n, cam, numeric);
@@ -57,7 +57,7 @@ public class Arkancide extends NAgentX {
 
 
     public Arkancide(NAR nar) {
-        this(nar, true, true);
+        this(nar, cam, numeric);
     }
 
     public Arkancide(NAR nar, boolean cam, boolean numeric) {
@@ -67,12 +67,12 @@ public class Arkancide extends NAgentX {
         noid = new Arkanoid(true);
 
 
-        paddleSpeed = 50 * noid.BALL_VELOCITY;
+        paddleSpeed = 90 * noid.BALL_VELOCITY;
 
 
         //initBipolarDirect();
-        initBipolarRelative();
-        //initToggle();
+        //initBipolarRelative();
+        initToggle();
 
         float resX = 0.01f;
         float resY = 0.01f;
@@ -93,10 +93,10 @@ public class Arkancide extends NAgentX {
 
 
         if (numeric) {
-            senseNumber($.the("px"), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
-            senseNumber($.the("dx"), (() -> Math.abs(noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
-            senseNumber($.the("bx"), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
-            senseNumber($.the("by"), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
+            senseNumberTri($.inh($.the("px"), id), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
+            senseNumberTri($.inh($.the("dx"), id), (() -> Math.abs(noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
+            senseNumberTri($.inh($.p("b", "x"), id), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
+            senseNumberTri($.inh($.p("b", "y"), id), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
 
 
         }
@@ -110,13 +110,13 @@ public class Arkancide extends NAgentX {
 
 
 
-        rewardDetailed(()->{
+        rewardNormalized("score", -1, +1, ()->{
             noid.BALL_VELOCITY = ballSpeed.floatValue();
             float nextScore = noid.next();
             float reward = Math.max(-1f, Math.min(1f, nextScore - prevScore));
             this.prevScore = nextScore;
 
-            return reward;
+            return reward != 0 ? reward : Float.NaN;
         });
 
         /*actionTriState*/

@@ -97,6 +97,36 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         super();
         update(updater);
     }
+    public Surface widget() {
+        return widget(null);
+    }
+    public Surface widget(Object controls) {
+        Gridding cfg = configWidget();
+
+        if (controls!=null) {
+            cfg.add(new ObjectSurface(controls));
+        }
+
+        addControls(cfg);
+
+        return new Splitting(new Clipped(
+                this
+        ) {
+            @Override
+            protected void paintBelow(GL2 gl, SurfaceRender r) {
+
+
+                gl.glColor4f(0,0,0, 0.9f);
+                Draw.rect(bounds, gl);
+
+                super.paintBelow(gl, r);
+            }
+        }, cfg, 0.1f);
+    }
+
+    protected void addControls(Gridding cfg) {
+
+    }
 
     /**
      * adds a rendering stage.  these are applied successively at each visible node
