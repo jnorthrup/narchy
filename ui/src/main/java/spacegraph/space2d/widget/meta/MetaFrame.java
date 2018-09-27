@@ -1,7 +1,9 @@
 package spacegraph.space2d.widget.meta;
 
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -14,25 +16,54 @@ public class MetaFrame extends Bordering {
 
     public MetaFrame(Surface surface) {
         super(surface);
+    }
 
+    /** referent; by default - the surface */
+    protected Object the() {
+        return get(0);
+    }
 
-//        Runnable zoomer = () -> surface.root().zoom(surface);
-
-
-
-
+    protected Surface newMetaMenu() {
+        return new Gridding(
+            new PushButton("^").click(()->{
+                //pop-out
+                Surface s = get(0);
+                if (s.remove()) {
+                    SpaceGraph.window(s, 500, 500); //TODO size by window TODO child window
+                }
+            }),
+            new PushButton("?").click(()->{
+                //pop-up inspection view
+                Object tt = the();
+                if (tt instanceof Surface) {
+                    SpaceGraph.window(new Inspector((Surface) tt), 500, 500); //TODO size by window TODO child window
+                }
+            })
+            //copy, paste, ...
+            //modal view lock to bounds
+            //etc
+        );
     }
 
     @Override
     protected void starting() {
         super.starting();
 
-        Surface n =
-                new VectorLabel(name());
-
-
-        borderWest = borderEast = 0;
+        PushButton n = new PushButton(new VectorLabel(name()));
+        n.click(()->{
+            synchronized (MetaFrame.this) {
+                //root().zoom(MetaFrame.this);
+                if (borderWest == 0) {
+                    set(W, newMetaMenu(), 0.1f);
+                } else {
+                    remove(W);
+                    borderSize(W, 0);
+                }
+            }
+        });
         set(N, n);
+
+
 
 //        Surface m = grid(
 //                PushButton.awesome("tag"),
@@ -51,6 +82,8 @@ public class MetaFrame extends Bordering {
         else
             borderSouth = 0;
     }
+
+
 
     protected String name() {
         return get(0).toString();

@@ -187,7 +187,7 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
         if (direction >= 9)
             throw new ArrayIndexOutOfBoundsException();
 
-        super.put(direction, next);
+        put(direction, next);
         return this;
     }
 

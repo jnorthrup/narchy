@@ -29,6 +29,10 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
         return children.getOpaque(s);
     }
 
+    public final S remove(int index) {
+        return put(index, null);
+    }
+
     /** returns the removed element */
     public S put(int index, S s) {
         return children.getAndUpdate(index, (r) -> {

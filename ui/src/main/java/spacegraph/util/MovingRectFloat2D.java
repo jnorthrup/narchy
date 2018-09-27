@@ -62,18 +62,14 @@ public class MovingRectFloat2D {
         return y + h / 2;
     }
 
-    public void limitSpeed(float speed) {
+    public void commit(float speedLimit, float momentum) {
         v2 delta = new v2(x, y);
         delta.subbed(x0, y0);
         float len = delta.normalize();
-        if (len > speed) {
-            delta.scaled(speed);
-            x = x0 + delta.x;
-            y = y0 + delta.y;
-        } else {
-            x = Util.lerp(0.5f, x0, x);
-            y = Util.lerp(0.5f, y0, y);
-        }
+
+        delta.scaled(Math.min(speedLimit,len));
+        x = Util.lerp(momentum, x0 + delta.x, x0);
+        y = Util.lerp(momentum, y0 + delta.y, y0);
 
     }
 

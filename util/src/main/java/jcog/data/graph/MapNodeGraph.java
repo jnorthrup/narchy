@@ -66,18 +66,27 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
         return false;
     }
 
-    public MutableNode<N, E> addNode(N key) {
 
-
+    public final MutableNode<N, E> addNode(N key) {
+        return addNode(key, true);
+    }
+    private MutableNode<N,E> addNode(N key, boolean returnNodeIfExisted) {
         final boolean[] created = {false};
-        Node<N, E> r = nodes.computeIfAbsent(key, (x) -> {
+        MutableNode<N, E> r = (MutableNode<N, E>) nodes.computeIfAbsent(key, (x) -> {
             created[0] = true;
             return newNode(x);
         });
         if (created[0]) {
             onAdd(r);
+            return r;
+        } else {
+            return returnNodeIfExisted ? r : null;
         }
-        return (MutableNode<N, E>) r;
+
+    }
+
+    public final boolean addNewNode(N key) {
+        return addNode(key, true) != null;
     }
 
     @Override
@@ -158,6 +167,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
     public boolean containsNode(Object x) {
         return nodes.containsKey(x);
     }
+
 
 
 }

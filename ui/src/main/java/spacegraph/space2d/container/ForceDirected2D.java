@@ -14,7 +14,7 @@ import java.util.Random;
 public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
     final Random rng = new XoRoShiRo128PlusRandom(1);
-    private int iterations = 2;
+    private int iterations = 1;
     private float AUTOSCALE = 0f;
 
 
@@ -23,16 +23,18 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
         return new MovingRectFloat2D();
     }
 
-    public final FloatRange repelSpeed = new FloatRange(4f, 0, 8f);
+    public final FloatRange repelSpeed = new FloatRange(4f, 0, 16f);
 
     public final FloatRange attractSpeed = new FloatRange(0.25f, 0, 1f);
 
-    public final FloatRange nodeScale = new FloatRange(0.5f, 0.04f, 1.5f);
+    public final FloatRange nodeScale = new FloatRange(0.25f, 0.04f, 1.5f);
 
-    public final FloatRange nodeSpacing  = new FloatRange(1f, 1f, 4f);
 
-    public final FloatRange maxSpeed  = new FloatRange(5f, 0f, 100f);
+    public final FloatRange nodeSpacing  = new FloatRange(1f, 0.1f, 4f);
 
+    public final FloatRange needSpeedLimit = new FloatRange(25f, 0f, 100f);
+
+    public final FloatRange nodeMomentum = new FloatRange(0.5f, 0f, 1f);
 
 
     private float maxRepelDist;
@@ -80,21 +82,27 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
         float repelSpeed = this.repelSpeed.floatValue() / iterations;
         float attractSpeed = this.attractSpeed.floatValue() / iterations;
 
-        float maxSpeedPerIter = maxSpeed.floatValue() / iterations;
+        float maxSpeedPerIter = needSpeedLimit.floatValue() / iterations;
 
         for (int ii = 0; ii < iterations; ii++) {
 
             for (int x = 0; x < n; x++) {
-                MovingRectFloat2D bx = nodes.get(x);
-                attract(bx, attractSpeed);
+                MovingRectFloat2D a = nodes.get(x);
+
+                attract(a, attractSpeed);
+
+                final float ar = a.radius();
+                final v2 aCenter = new v2(a.cx(), a.cy());
+
                 for (int y = x + 1; y < n; y++)
-                    repel(bx, nodes.get(y), repelSpeed);
+                    repel(a, aCenter, ar, nodes.get(y), repelSpeed);
 
             }
 
             RectFloat2D gg = g.bounds;
+            float momentum = nodeMomentum.floatValue();
             for (MovingRectFloat2D b : nodes) {
-                b.limitSpeed(maxSpeedPerIter);
+                b.commit(maxSpeedPerIter, momentum);
                 b.fence(gg);
             }
 
@@ -135,14 +143,16 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
             delta.subbed(px, py);
 
             float scale = fromRad + to.radius();
-            float len = delta.normalize() - (scale * equilibriumDist);
+            float len = delta.normalize();
+            if (len > (scale * equilibriumDist)) {
 //            len = len * (1+Util.tanhFast(len - (scale)))/2;
 
 
-            //attractSpeed/=neighbors;
+                //attractSpeed/=neighbors;
 
-            float s = attractSpeed * len * weightToVelocity(edge.weight);
-            total.add(delta.x * s, delta.y * s);
+                float s = attractSpeed * len * weightToVelocity(edge.weight);
+                total.add(delta.x * s, delta.y * s);
+            }
         });
 
         b.move(total.x, total.y);
@@ -152,19 +162,19 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
         return weight * weight;
     }
 
-    private void repel(MovingRectFloat2D a, MovingRectFloat2D b, float repelSpeed) {
+    private void repel(MovingRectFloat2D a, v2 aCenter, float ar, MovingRectFloat2D b, float repelSpeed) {
 
-        Tuple2f delta = new v2(a.cx(), a.cy()).subbed(b.cx(), b.cy());
+        Tuple2f delta = aCenter.clone().subbed(b.cx(), b.cy());
 
 
-        float ar = a.radius();
+
         float br = b.radius();
 //        ar *= ar;
 //        br *= br;
 
         float scale = (ar + br);
 
-        float len = delta.normalize() - scale; // -  (scale*equilibriumDist);
+        float len = delta.normalize();
         if (len < Spatialization.EPSILONf) {
             //coincident, apply random vector
             double theta = (float) (rng.nextFloat()*Math.PI*2);
@@ -174,6 +184,9 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
             len = 0;
         } else if (len >= maxRepelDist)
             return;
+
+        len -= (scale) * equilibriumDist;
+        len = Math.max(0, len);
 
         float s = repelSpeed /
                 (1 + (len * len));
