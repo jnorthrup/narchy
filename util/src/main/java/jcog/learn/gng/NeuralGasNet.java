@@ -125,19 +125,8 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
         setWinnerUpdateRate(0.5f / centroids, 0.25f / centroids);
 
 
-        /** nodes should begin with randomized coordinates */
-        for (int i = 0; i < centroids; i++) {
-            this.centroids[i] = newCentroid(i, dimension);
-        }
 
-
-
-
-
-
-
-
-
+        clear();
     }
 
     public void forEachNode(Consumer<N> each) {
@@ -147,10 +136,13 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
 
     public void clear() {
         edges.clear();
-        
+
+        /** nodes should begin with randomized coordinates */
+        for (int i = 0; i < centroids.length; i++) {
+            this.centroids[i] = newCentroid(i, dimension);
+        }
     }
 
-    @NotNull
     public N newCentroid(int i, int dims) {
         return (N) new Centroid(i, dims);
     }

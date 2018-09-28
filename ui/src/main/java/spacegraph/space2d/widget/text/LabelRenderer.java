@@ -90,7 +90,8 @@ public interface LabelRenderer extends BiConsumer<VectorLabel, GL2> {
 
 
                 File fontfile = new File(
-                        "/usr/share/fonts/truetype/hack/Hack-Regular.ttf"
+                        //"/usr/share/fonts/truetype/hack/Hack-Regular.ttf"
+                        "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"
                 );
 
                 this.font = new TypecastFontConstructor().create(fontfile);

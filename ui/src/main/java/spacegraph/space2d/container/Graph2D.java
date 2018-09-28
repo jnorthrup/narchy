@@ -361,7 +361,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     /**
      * iterative animated geometric update; processes the visual representation of the content
      */
-    public interface Graph2DUpdater<X> {
+    @FunctionalInterface public interface Graph2DUpdater<X> {
 
         void update(Graph2D<X> g, int dtMS);
 
@@ -420,7 +420,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
          */
         public final ConcurrentFastIteratingHashMap<X, EdgeVis<X>> outs = new ConcurrentFastIteratingHashMap(new EdgeVis[0]);
 
-        private float r, g, b;
+        private float r, g, b, a;
 
         void start(X id) {
             this.id = id;
@@ -453,15 +453,12 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
         @Override
         protected void paintBelow(GL2 gl, SurfaceRender r) {
-            float alpha = 0.8f;
-            gl.glColor4f(this.r, g, b, alpha);
+            gl.glColor4f(this.r, g, b, a);
             Draw.rect(bounds, gl);
         }
 
         public void color(float r, float g, float b) {
-            this.r = r;
-            this.g = g;
-            this.b = b;
+            color(r,g,b,1);
         }
 
         public boolean pinned() {
@@ -517,6 +514,12 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             });
         }
 
+        public void color(float r, float g, float b, float a) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            this.a = a;
+        }
     }
 
     public static class EdgeVis<X> {
