@@ -87,7 +87,7 @@ public class BagClustering<X> {
     public void print(PrintStream out) {
         forEachCluster(c -> {
             out.println(c);
-            stream(c.id).forEach(i -> {
+            stream(c._id).forEach(i -> {
                 out.print("\t");
                 out.println(i);
             });
@@ -138,11 +138,17 @@ public class BagClustering<X> {
             if ((tt instanceof Prioritized) && ((Prioritized) tt).isDeleted())
                 t.delete();
         });
-        bag.commit(bag.forget(forgetRate));
 
+        int s = bag.size();
+        if (s > 0) {
+            bag.commit(bag.forget(forgetRate));
 
-        for (int i = 0; i < learningIterations; i++)
-            bag.forEach(this::learn);
+//            net.alpha.set(0.8f / s);
+            float lambdaFactor = 1f;
+            net.setLambdaPeriod((int) Math.ceil(s * lambdaFactor));
+            for (int i = 0; i < learningIterations; i++)
+                bag.forEach(this::learn);
+        }
     }
 
     private List<VLink<X>> cluster(@Nullable Random rng) {
@@ -220,8 +226,8 @@ public class BagClustering<X> {
     /**
      * TODO this is O(N) not great
      */
-    public Stream<VLink<X>> stream(int centroid) {
-        return bag.stream().filter(y -> y.centroid == centroid);
+    public Stream<VLink<X>> stream(int internalID) {
+        return bag.stream().filter(y -> y.centroid == internalID);
     }
 
     public Stream<VLink<X>> neighbors(X x) {

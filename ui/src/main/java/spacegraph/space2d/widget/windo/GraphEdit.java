@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.windo;
 
 import jcog.data.graph.*;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,9 +36,9 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     }
 
     public GraphEdit(float w, float h) {
-        this(RectFloat2D.X0Y0WH(0,0 , w, h));
+        this(RectFloat.X0Y0WH(0,0 , w, h));
     }
-    public GraphEdit(RectFloat2D bounds) {
+    public GraphEdit(RectFloat bounds) {
         this();
         pos(bounds);
         physics.pos(bounds);
@@ -344,7 +344,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 
                     }
                 });
-        z.pos(RectFloat2D.XYWH(pos.x, pos.y, w, h));
+        z.pos(RectFloat.XYWH(pos.x, pos.y, w, h));
         z.root().zoom(z);
     }
 
@@ -354,7 +354,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 
     public Windo sprout(S from, S toAdd, float scale) {
         Windo to = add(toAdd);
-        to.pos(RectFloat2D.XYWH(from.cx(), from.cy(), from.w() * scale, from.h() * scale));
+        to.pos(RectFloat.XYWH(from.cx(), from.cy(), from.w() * scale, from.h() * scale));
 
         VerletParticle2D toParticle = physics.bind(to, VerletSurface.VerletSurfaceBinding.Center, false);
         toParticle.addBehaviorGlobal(new AttractionBehavior2D<>(toParticle, 100 /* TODO auto radius*/, -20));
@@ -451,7 +451,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
                         super.stopping();
                     }
                 });
-            }).pos(RectFloat2D.XYWH(mid.x, mid.y, 20, 20));
+            }).pos(RectFloat.XYWH(mid.x, mid.y, 20, 20));
 
             physics.bind(gripWindow, mid, false, VerletSurface.VerletSurfaceBinding.Center);
         } else {

@@ -8,7 +8,7 @@ public class IntSlider extends FloatSlider {
         super(v, min, max);
     }
 
-    protected IntSlider(IntRange x) {
+    public IntSlider(IntRange x) {
         this(x.intValue(), x.min, x.max);
         input = x::floatValue; //x::floatValue;
         slider.on((SliderModel s, float v) -> x.set(v));

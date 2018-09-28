@@ -152,7 +152,7 @@ public class RectLongND implements HyperRegion<LongND>, Serializable, Comparable
     }
 
     @Override
-    public double coord(boolean maxOrMin, int dimension) {
+    public double coord(int dimension, boolean maxOrMin) {
         return maxOrMin ? max.coord[dimension] : min.coord[dimension];
     }
 

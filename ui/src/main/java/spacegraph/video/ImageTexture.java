@@ -8,7 +8,7 @@ import jcog.io.tar.TarEntry;
 import jcog.io.tar.TarInputStream;
 import jcog.memoize.Memoize;
 import jcog.memoize.SoftMemoize;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -89,7 +89,7 @@ public class ImageTexture extends Tex {
         return new ImageTexture("fontawesome://" + icon );
     }
 
-    public void paint(GL2 gl, RectFloat2D bounds, float repeatScale, float alpha) {
+    public void paint(GL2 gl, RectFloat bounds, float repeatScale, float alpha) {
         if (texture == null) {
 
             //TODO async load

@@ -74,7 +74,7 @@ public class RectLong1D implements HyperRegion<Long1D> {
     }
 
     @Override
-    public double coord(boolean maxOrMin, int dimension) {
+    public double coord(int dimension, boolean maxOrMin) {
         assert(dimension==0);
         return maxOrMin ? max : min;
     }

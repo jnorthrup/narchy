@@ -282,11 +282,11 @@ public class Timeline2D<E> extends Graph2D<E> {
                     next.add(t);
                 }
             });
-            next.sortThis((x, y) -> {
-                return model.compareDurThenStart(x.id, y.id);
-            });
             if (next.isEmpty())
                 return;
+
+            next.sortThis((x, y) -> model.compareDurThenStart(x.id, y.id));
+
 
 
             List<RoaringBitmap> lanes = new FasterList();
@@ -340,6 +340,7 @@ public class Timeline2D<E> extends Graph2D<E> {
                         right = mid + timeVisibleEpsilon /2;
                     }
 
+                    jj.show();
                     jj.pos(x(left), Y + laneHeight * i, x(right), Y + laneHeight * (i + 1));
                 }
             }

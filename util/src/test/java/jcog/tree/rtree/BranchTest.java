@@ -20,7 +20,7 @@ package jcog.tree.rtree;
  * #L%
  */
 
-import jcog.tree.rtree.rect.RectDouble2D;
+import jcog.tree.rtree.rect.RectDouble;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,8 +38,8 @@ class BranchTest {
     void branchOptimizationTest() {
 
         for(Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values()) {
-            RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(type);
-            RectDouble2D[] rects = RTree2DTest.generateRandomRects(80);
+            RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(type);
+            RectDouble[] rects = RTree2DTest.generateRandomRects(80);
 
             int i = 0;
             

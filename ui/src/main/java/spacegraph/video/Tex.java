@@ -7,7 +7,7 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.AspectAlign;
@@ -45,15 +45,15 @@ public class Tex {
     private Object src;
     protected GL2 gl;
 
-    public final void paint(GL2 gl, RectFloat2D bounds) {
+    public final void paint(GL2 gl, RectFloat bounds) {
         paint(gl, bounds, 1f);
     }
 
-    public final void paint(GL2 gl, RectFloat2D bounds, float alpha) {
+    public final void paint(GL2 gl, RectFloat bounds, float alpha) {
         paint(gl, bounds, -1, alpha);
     }
 
-    void paint(GL2 gl, RectFloat2D bounds, float repeatScale, float alpha) {
+    void paint(GL2 gl, RectFloat bounds, float repeatScale, float alpha) {
 
         commit(gl);
 

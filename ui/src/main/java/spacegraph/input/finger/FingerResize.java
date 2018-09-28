@@ -1,6 +1,6 @@
 package spacegraph.input.finger;
 
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.math.v2;
@@ -9,7 +9,7 @@ public abstract class FingerResize extends FingerDragging {
     private final static float aspectRatioRatioLimit = 0.1f;
     private final Windo.DragEdit mode;
     private final boolean invY;
-    private RectFloat2D before;
+    private RectFloat before;
 
     private v2 posStart;
 
@@ -131,7 +131,7 @@ public abstract class FingerResize extends FingerDragging {
     abstract protected v2 pos(Finger finger);
 
     /** current size */
-    protected abstract RectFloat2D size();
+    protected abstract RectFloat size();
 
     protected abstract void resize(float x1, float y1, float x2, float y2);
 

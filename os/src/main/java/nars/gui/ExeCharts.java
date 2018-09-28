@@ -3,7 +3,7 @@ package nars.gui;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.math.FloatRange;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import nars.NAR;
 import nars.control.DurService;
 import nars.control.MetaGoal;
@@ -82,7 +82,7 @@ public class ExeCharts {
                             return new FloatSlider(want[w], min, max) {
 
                                 @Override
-                                protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+                                protected void paintWidget(GL2 gl, RectFloat bounds) {
                                     if (auto.get()) {
                                         set(want[w]);
                                     }

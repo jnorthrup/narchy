@@ -3,7 +3,7 @@ package spacegraph.space2d.container;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
@@ -50,7 +50,7 @@ abstract public class Container extends Surface {
 
 
     @Override
-    public final <S extends Surface> S pos(RectFloat2D r) {
+    public final <S extends Surface> S pos(RectFloat r) {
         if (posChanged(r))
             layout();
         return (S) this;

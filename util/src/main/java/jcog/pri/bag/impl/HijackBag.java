@@ -183,8 +183,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     @Override
     public void clear() {
         AtomicReferenceArray<V> x = reset(reprobes);
-        PRESSURE.zero(this);
-        SIZE.set(this, 0);
+        PRESSURE.zeroLazy(this);
+        SIZE.lazySet(this, 0);
         mass = 0;
         if (x != null) {
             forEachActive(this, x, this::_onRemoved);

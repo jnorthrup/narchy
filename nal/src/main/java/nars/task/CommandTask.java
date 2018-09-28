@@ -51,7 +51,7 @@ public class CommandTask implements Task {
     }
 
     @Override
-    public double coord(boolean maxOrMin, int dimension) {
+    public double coord(int dimension, boolean maxOrMin) {
         throw new UnsupportedOperationException();
     }
 

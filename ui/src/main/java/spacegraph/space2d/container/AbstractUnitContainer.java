@@ -1,6 +1,6 @@
 package spacegraph.space2d.container;
 
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 
 import java.util.function.Consumer;
@@ -24,7 +24,7 @@ abstract public class AbstractUnitContainer<S extends Surface> extends Container
         t.pos(innerBounds());
         t.layout();
     }
-    protected RectFloat2D innerBounds() {
+    protected RectFloat innerBounds() {
         return bounds;
     }
 

@@ -3,7 +3,7 @@ package spacegraph.util;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.pri.ScalarValue;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import spacegraph.util.math.Tuple2f;
@@ -176,10 +176,10 @@ public class Path2D extends FloatArrayList {
         return items;
     }
 
-    public RectFloat2D bounds() {
+    public RectFloat bounds() {
         int n = points();
         if (n < 2)
-            return RectFloat2D.Zero;
+            return RectFloat.Zero;
 
         float x1 = Float.POSITIVE_INFINITY, y1 = Float.POSITIVE_INFINITY, x2 = Float.NEGATIVE_INFINITY, y2 = Float.NEGATIVE_INFINITY;
         float[] a = array();
@@ -191,6 +191,6 @@ public class Path2D extends FloatArrayList {
             if (y > y2) y2 = y;
         }
 
-        return RectFloat2D.XYXY(x1, y1, x2, y2);
+        return RectFloat.XYXY(x1, y1, x2, y2);
     }
 }

@@ -62,6 +62,10 @@ public class ArrayTensor implements
         this.data = new float[size];
     }
 
+    /** optimized case */
+    @Override public float[] toFloatArrayShared() {
+        return data;
+    }
 
     @Override
     public int[] stride() {

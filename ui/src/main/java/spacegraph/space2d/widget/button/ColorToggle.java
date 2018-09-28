@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.button;
 
 import com.jogamp.opengl.GL2;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.video.Draw;
 
@@ -13,7 +13,7 @@ public class ColorToggle extends ToggleButton {
     }
 
     @Override
-    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+    protected void paintWidget(GL2 gl, RectFloat bounds) {
         gl.glColor4f(r, g, b, 0.95f);
         Draw.rect(bounds, gl);
 

@@ -88,18 +88,18 @@ public interface HyperRegion<X> {
     /**
      * returns coordinate scalar at the given extremum and dimension
      *
-     * @param maxOrMin  true = max, false = min
      * @param dimension which dimension index
+     * @param maxOrMin  true = max, false = min
      */
-    double coord(boolean maxOrMin, int dimension);
+    double coord(int dimension, boolean maxOrMin);
 
-    default float coordF(boolean maxOrMin, int dimension) {
-        return (float)coord(maxOrMin, dimension);
+    default float coordF(int dimension, boolean maxOrMin) {
+        return (float)coord(dimension, maxOrMin);
     }
 
 
     default double center(int d) {
-        return (coord(true, d) + coord(false, d)) / 2.0;
+        return (coord(d, true) + coord(d, false)) / 2.0;
     }
 
     /**
@@ -109,7 +109,7 @@ public interface HyperRegion<X> {
      * @return double - the numeric range of the dimention (min - max)
      */
     default double range(final int dim) {
-        return Math.abs(coord(true, dim) - coord(false, dim));
+        return Math.abs(coord(dim, true) - coord(dim, false));
     }
 
     default double rangeIfFinite(int dim, double elseValue) {
@@ -133,8 +133,8 @@ public interface HyperRegion<X> {
         if (this == x) return true;
         int d = dim();
         for (int i = 0; i < d; i++)
-            if (coord(false, i) > x.coord(false, i) ||
-                    coord(true, i) < x.coord(true, i))
+            if (coord(i, false) > x.coord(i, false) ||
+                    coord(i, true) < x.coord(i, true))
                 return false;
         return true;
     }
@@ -151,8 +151,8 @@ public interface HyperRegion<X> {
         int d = dim();
 
         for (int i = 0; i < d; i++)
-            if (coord(false, i) > x.coord(true, i) ||
-                    coord(true, i) < x.coord(false, i))
+            if (coord(i, false) > x.coord(i, true) ||
+                    coord(i, true) < x.coord(i, false))
                 return false;
         return true;
     }
@@ -199,7 +199,7 @@ public interface HyperRegion<X> {
         if(this == X)
             return 0;
         return Math.abs(
-                coord(maxOrMin, dim) - X.coord(XmaxOrMin, dim)
+                coord(dim, maxOrMin) - X.coord(dim, XmaxOrMin)
         );
     }
 

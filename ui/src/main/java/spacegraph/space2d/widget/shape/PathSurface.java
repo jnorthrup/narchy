@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.shape;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.Path2D;
@@ -40,7 +40,7 @@ public class PathSurface extends Surface {
     public boolean visible() {
         if (invalid) {
             //update bounds
-            RectFloat2D newBounds = path.bounds();
+            RectFloat newBounds = path.bounds();
             //System.out.println(path + " " + newBounds);
             pos(newBounds);
             invalid = false;

@@ -1,6 +1,6 @@
 package jcog.tree.rtree;
 
-import jcog.tree.rtree.rect.RectDouble2D;
+import jcog.tree.rtree.rect.RectDouble;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,7 +16,7 @@ class SplitTest {
 
         int entryCount = 32*1024;
 
-        final RectDouble2D[] rects = RTree2DTest.generateRandomRects(entryCount);
+        final RectDouble[] rects = RTree2DTest.generateRandomRects(entryCount);
 
         for (Spatialization.DefaultSplits s : Spatialization.DefaultSplits.values()) {
             for (int min : new int[]{2, 3, 4}) {
@@ -30,10 +30,10 @@ class SplitTest {
                     int HALF = TOTAL/2;
 
 
-                    final RTree<RectDouble2D> t = RTree2DTest.createRect2DTree(s, min, max);
+                    final RTree<RectDouble> t = RTree2DTest.createRect2DTree(s, min, max);
                     int i = 0;
                     for (int i1 = 0; i1 < HALF; i1++) {
-                        RectDouble2D r = rects[i1];
+                        RectDouble r = rects[i1];
                         boolean added = t.add(r);
                         if (!added) {
                             t.add(r); 
@@ -64,8 +64,8 @@ class SplitTest {
                     }
 
                     for (int k = 0; k < HALF; k++) {
-                        RectDouble2D a = rects[k];
-                        RectDouble2D b = rects[k + HALF];
+                        RectDouble a = rects[k];
+                        RectDouble b = rects[k + HALF];
                         assertNotEquals(a,b);
 
                         assertFalse(t.contains(b));

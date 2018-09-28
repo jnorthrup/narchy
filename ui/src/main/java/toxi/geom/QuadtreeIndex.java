@@ -28,7 +28,7 @@
 package toxi.geom;
 
 import jcog.pri.ScalarValue;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.Set;
@@ -207,7 +207,7 @@ public class QuadtreeIndex<V extends Vec2D> extends Rect implements SpatialIndex
     }
 
     @Override
-    public void bounds(RectFloat2D bounds) {
+    public void bounds(RectFloat bounds) {
         if (bounds.equals(x, y, width, height, ScalarValue.EPSILON))
             return; //no change
 

@@ -1,7 +1,7 @@
 package spacegraph.space2d.container;
 
 import jcog.pri.ScalarValue;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.util.MovingRectFloat2D;
 
 /**
@@ -22,7 +22,7 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
     @Override
     protected void layout(Graph2D<X> g) {
-        RectFloat2D b = g.bounds;
+        RectFloat b = g.bounds;
         nodes.sortThisByFloat((a)-> {
             //a.w = a.h = 1;
             a.w = b.w;
@@ -37,7 +37,7 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
     int mid;
     float total;
-    public void layout(int start, int end, RectFloat2D bounds) {
+    public void layout(int start, int end, RectFloat bounds) {
         if (start > end) {
             return;
         }
@@ -50,13 +50,13 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
             if (highestAspect(start, mid, bounds) > highestAspect(start, mid + 1, bounds)) {
                 mid++;
             } else {
-                RectFloat2D newBounds = layoutRow(start, mid, bounds);
+                RectFloat newBounds = layoutRow(start, mid, bounds);
                 layout(mid + 1, end, newBounds);
             }
         }
     }
 
-    float highestAspect(int start, int end, RectFloat2D bounds) {
+    float highestAspect(int start, int end, RectFloat bounds) {
 
         layoutRow(start, end, bounds);
 
@@ -71,7 +71,7 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
         return max;
     }
 
-    RectFloat2D layoutRow(int start, int end, RectFloat2D bounds) {
+    RectFloat layoutRow(int start, int end, RectFloat bounds) {
         boolean isHorizontal = bounds.w > bounds.h;
 
         float rowSize = areaSum(start, end);
@@ -93,14 +93,14 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
             assert(ratio==ratio): p + " " + rowSize;
 
-            RectFloat2D r;
+            RectFloat r;
             if (isHorizontal) {
-                r = RectFloat2D.X0Y0WH(bounds.x,
+                r = RectFloat.X0Y0WH(bounds.x,
                         bounds.y + bounds.h * offset,
                         bounds.w * rowRatio,
                         bounds.h * ratio);
             } else {
-                r = RectFloat2D.X0Y0WH(
+                r = RectFloat.X0Y0WH(
                         bounds.x + bounds.w * offset,
                         bounds.y,
                         bounds.w * ratio,
@@ -110,9 +110,9 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
             offset += ratio;
         }
         if (isHorizontal) {
-            return RectFloat2D.X0Y0WH(bounds.x + bounds.w * rowRatio, bounds.y, bounds.w - bounds.w * rowRatio, bounds.h);
+            return RectFloat.X0Y0WH(bounds.x + bounds.w * rowRatio, bounds.y, bounds.w - bounds.w * rowRatio, bounds.h);
         } else {
-            return RectFloat2D.X0Y0WH(bounds.x, bounds.y + bounds.h * rowRatio, bounds.w, bounds.h - bounds.h * rowRatio);
+            return RectFloat.X0Y0WH(bounds.x, bounds.y + bounds.h * rowRatio, bounds.w, bounds.h - bounds.h * rowRatio);
         }
     }
 

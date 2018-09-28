@@ -1,7 +1,7 @@
 package spacegraph.input.finger;
 
 import com.jogamp.newt.opengl.GLWindow;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.math.v2;
 import spacegraph.video.JoglSpace;
@@ -26,12 +26,12 @@ public class FingerResizeWindow extends FingerResize {
 
 
     @Override
-    protected RectFloat2D size() {
+    protected RectFloat size() {
 
         JoglSpace w = this.window;
 
         GLWindow ww = w.window;
-        return RectFloat2D.XYXY(ww.getX(), ww.getY(), ww.getX()+ww.getWidth(),ww.getY()+ww.getHeight());
+        return RectFloat.XYXY(ww.getX(), ww.getY(), ww.getX()+ww.getWidth(),ww.getY()+ww.getHeight());
     }
 
 

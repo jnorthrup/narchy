@@ -22,7 +22,7 @@ package jcog.tree.rtree.point;
 
 import jcog.tree.rtree.HyperPoint;
 import jcog.tree.rtree.HyperRegion;
-import jcog.tree.rtree.rect.RectDouble2D;
+import jcog.tree.rtree.rect.RectDouble;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
@@ -113,7 +113,7 @@ public class Double2D implements HyperPoint, Comparable<Double2D> {
 
         @Override
         public HyperRegion apply(final Double2D point) {
-            return new RectDouble2D(point);
+            return new RectDouble(point);
         }
 
 

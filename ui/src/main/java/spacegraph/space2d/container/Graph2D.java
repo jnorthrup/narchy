@@ -227,7 +227,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             render();
 
         } finally {
-            busy.setRelease(false);
+            busy.set(false);
         }
 
         return this;
@@ -256,9 +256,8 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
                     compute(x, xx -> xx == null ? materialize(x) : rematerialize(xx));
 
             NodeVis<X> cv = xxx.value;
-            if (cv.parent == null) {
+            if (cv.parent == null)
                 cv.start(this);
-            }
 
             cv.show();
         });
@@ -277,6 +276,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             builder.accept(y);
             return y;
         });
+        yy.id = x; //in case x different instance but equal
         updater.init(this, yy);
 //        yy.show();
         return yy;
@@ -401,9 +401,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     public static class NodeVis<X> extends Windo {
 
-        public transient X id;
-//        public final Flip<ConcurrentFastIteratingHashMap<X,EdgeVis<X>>> edgeOut =
-//                new Flip(()->new ConcurrentFastIteratingHashMap(new EdgeVis[0]));
+        public transient volatile X id; //TODO WeakReference
 
         /**
          * optional priority component

@@ -29,7 +29,7 @@ package toxi.physics2d;
 
 import jcog.WTF;
 import jcog.data.list.FastCoWList;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import toxi.geom.Rect;
 import toxi.geom.SpatialIndex;
@@ -68,7 +68,7 @@ public class VerletPhysics2D {
     /**
      * Optional bounding rect to constrain particles too
      */
-    public RectFloat2D bounds;
+    public RectFloat bounds;
 
     protected float drag;
 
@@ -253,7 +253,7 @@ public class VerletPhysics2D {
      * @param world
      * @return itself
      */
-    public VerletPhysics2D setBounds(RectFloat2D world) {
+    public VerletPhysics2D setBounds(RectFloat world) {
         bounds = world;
         return this;
     }
@@ -347,7 +347,7 @@ public class VerletPhysics2D {
         springs.removeIf(s -> !s.update(false));
     }
 
-    public void bounds(RectFloat2D bounds) {
+    public void bounds(RectFloat bounds) {
         index.bounds(bounds);
         this.bounds = bounds;
     }

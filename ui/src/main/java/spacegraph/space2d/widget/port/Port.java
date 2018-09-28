@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.port;
 
 import com.jogamp.opengl.GL2;
 import jcog.data.graph.Node;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.IntObjectProcedure;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.Wiring;
@@ -158,7 +158,7 @@ public class Port extends Widget implements Wiring.Wireable {
 
 
     @Override
-    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+    protected void paintWidget(GL2 gl, RectFloat bounds) {
 
         if (beingWiredOut !=null) {
             gl.glColor4f(0.5f, 1, 0, 0.35f);

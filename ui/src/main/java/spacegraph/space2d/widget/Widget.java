@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget;
 
 import com.jogamp.opengl.GL2;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
@@ -116,7 +116,7 @@ public class Widget extends MutableUnitContainer<Surface> {
     }
 
 
-    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+    protected void paintWidget(GL2 gl, RectFloat bounds) {
 
     }
 
@@ -145,8 +145,8 @@ public class Widget extends MutableUnitContainer<Surface> {
     }
 
     @Override
-    protected RectFloat2D innerBounds() {
-        RectFloat2D r = bounds;
+    protected RectFloat innerBounds() {
+        RectFloat r = bounds;
         float b;
         if (r.w >= r.h) {
             b = border * r.h;

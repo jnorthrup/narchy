@@ -22,79 +22,70 @@ package jcog.tree.rtree.rect;
 
 
 import jcog.tree.rtree.HyperRegion;
-import jcog.tree.rtree.point.DoubleND;
+import jcog.tree.rtree.point.FloatND;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.function.Function;
 
-import static java.lang.Double.NEGATIVE_INFINITY;
-import static java.lang.Double.POSITIVE_INFINITY;
+import static java.lang.Float.NEGATIVE_INFINITY;
+import static java.lang.Float.POSITIVE_INFINITY;
 
 /**
  * Created by jcovert on 6/15/15.
  */
 
-public class RectDoubleND implements HyperRegion<DoubleND>, Serializable {
+public class HyperRectFloat implements HyperRegion<FloatND>, Serializable, Comparable<HyperRectFloat> {
 
-    public static final HyperRegion ALL_1 = RectDoubleND.all(1);
-    public static final HyperRegion ALL_2 = RectDoubleND.all(2);
-    public static final HyperRegion ALL_3 = RectDoubleND.all(3);
-    public static final HyperRegion ALL_4 = RectDoubleND.all(4);
-    public static final DoubleND unbounded = new DoubleND() {
+    public static final HyperRegion ALL_1 = HyperRectFloat.all(1);
+    public static final HyperRegion ALL_2 = HyperRectFloat.all(2);
+    public static final HyperRegion ALL_3 = HyperRectFloat.all(3);
+    public static final HyperRegion ALL_4 = HyperRectFloat.all(4);
+    public static final FloatND unbounded = new FloatND() {
         @Override
         public String toString() {
             return "*";
         }
     };
-    public final DoubleND min;
-    public final DoubleND max;
+    public final FloatND min;
+    public final FloatND max;
 
-    public RectDoubleND() {
+    public HyperRectFloat() {
         min = unbounded;
         max = unbounded;
     }
 
-    public RectDoubleND(final DoubleND p) {
+    public HyperRectFloat(final FloatND p) {
         min = p;
         max = p;
     }
 
-    public RectDoubleND(double[] a, double[] b) {
-        this(new DoubleND(a), new DoubleND(b));
+    public HyperRectFloat(float[] a, float[] b) {
+        this(new FloatND(a), new FloatND(b));
     }
 
-    @Override
-    public double coord(boolean maxOrMin, int dimension) {
-        return (maxOrMin ? max : min).coord[dimension];
-    }
 
-    public RectDoubleND(final DoubleND a, final DoubleND b) {
+    public HyperRectFloat(final FloatND a, final FloatND b) {
         int dim = a.dim();
 
-        double[] min = new double[dim];
-        double[] max = new double[dim];
+        float[] min = new float[dim];
+        float[] max = new float[dim];
 
-        double[] ad = a.coord;
-        double[] bd = b.coord;
+        float[] ad = a.coord;
+        float[] bd = b.coord;
         for (int i = 0; i < dim; i++) {
-            double ai = ad[i];
-            double bi = bd[i];
+            float ai = ad[i];
+            float bi = bd[i];
             min[i] = Math.min(ai, bi);
             max[i] = Math.max(ai, bi);
         }
-        this.min = new DoubleND(min);
-        this.max = new DoubleND(max);
+        this.min = new FloatND(min);
+        this.max = new FloatND(max);
     }
 
     public static HyperRegion all(int i) {
-        return new RectDoubleND(DoubleND.fill(i, NEGATIVE_INFINITY), DoubleND.fill(i, POSITIVE_INFINITY));
+        return new HyperRectFloat(FloatND.fill(i, NEGATIVE_INFINITY), FloatND.fill(i, POSITIVE_INFINITY));
     }
-
-
-
-
-
-
 
 
 
@@ -120,7 +111,7 @@ public class RectDoubleND implements HyperRegion<DoubleND>, Serializable {
 
     @Override
     public double cost() {
-        double sigma = 1f;
+        float sigma = 1f;
         int dim = dim();
         for (int i = 0; i < dim; i++) {
             sigma *= rangeIfFinite(i, 1 /* an infinite dimension can not be compared, so just ignore it */);
@@ -130,16 +121,20 @@ public class RectDoubleND implements HyperRegion<DoubleND>, Serializable {
 
     @Override
     public HyperRegion mbr(final HyperRegion r) {
-        final RectDoubleND x = (RectDoubleND) r;
+        if (this == r)
+            return this;
+
+        final HyperRectFloat x = (HyperRectFloat) r;
+
 
         int dim = dim();
-        double[] newMin = new double[dim];
-        double[] newMax = new double[dim];
+        float[] newMin = new float[dim];
+        float[] newMax = new float[dim];
         for (int i = 0; i < dim; i++) {
             newMin[i] = Math.min(min.coord[i], x.min.coord[i]);
             newMax[i] = Math.max(max.coord[i], x.max.coord[i]);
         }
-        return new RectDoubleND(newMin, newMax);
+        return new HyperRectFloat(newMin, newMax);
     }
 
 
@@ -148,26 +143,26 @@ public class RectDoubleND implements HyperRegion<DoubleND>, Serializable {
         return centerF(dim);
     }
 
-    public double centerF(int dim) {
-        double min = this.min.coord[dim];
-        double max = this.max.coord[dim];
-        if ((min == NEGATIVE_INFINITY) && (max == Double.POSITIVE_INFINITY))
+    public float centerF(int dim) {
+        float min = this.min.coord[dim];
+        float max = this.max.coord[dim];
+        if ((min == NEGATIVE_INFINITY) && (max == Float.POSITIVE_INFINITY))
             return 0;
         if (min == NEGATIVE_INFINITY)
             return max;
-        if (max == Double.POSITIVE_INFINITY)
+        if (max == Float.POSITIVE_INFINITY)
             return min;
 
-        return (max + min) / 2;
+        return (max + min) / 2f;
     }
 
-    public DoubleND center() {
+    public FloatND center() {
         int dim = dim();
-        double[] c = new double[dim];
+        float[] c = new float[dim];
         for (int i = 0; i < dim; i++) {
             c[i] = centerF(i);
         }
-        return new DoubleND(c);
+        return new FloatND(c);
     }
 
 
@@ -177,13 +172,18 @@ public class RectDoubleND implements HyperRegion<DoubleND>, Serializable {
     }
 
     @Override
+    public double coord(int dimension, boolean maxOrMin) {
+        return (maxOrMin ? max : min).coord[dimension];
+    }
+
+    @Override
     public double range(final int dim) {
-        double min = this.min.coord[dim];
-        double max = this.max.coord[dim];
+        float min = this.min.coord[dim];
+        float max = this.max.coord[dim];
         if (min == max)
             return 0;
-        if ((min == NEGATIVE_INFINITY) || (max == Double.POSITIVE_INFINITY))
-            return Double.POSITIVE_INFINITY;
+        if ((min == NEGATIVE_INFINITY) || (max == Float.POSITIVE_INFINITY))
+            return Float.POSITIVE_INFINITY;
         return (max - min);
     }
 
@@ -192,8 +192,16 @@ public class RectDoubleND implements HyperRegion<DoubleND>, Serializable {
         if (this == o) return true;
         if (o == null /*|| getClass() != o.getClass()*/) return false;
 
-        RectDoubleND r = (RectDoubleND) o;
+        HyperRectFloat r = (HyperRectFloat) o;
         return min.equals(r.min) && max.equals(r.max);
+    }
+
+    @Override
+    public int compareTo(@NotNull HyperRectFloat o) {
+        int a = min.compareTo(o.min);
+        if (a != 0) return a;
+        int b = max.compareTo(o.max);
+        return b;
     }
 
     @Override
@@ -207,12 +215,18 @@ public class RectDoubleND implements HyperRegion<DoubleND>, Serializable {
         if (min.equals(max)) {
             return min.toString();
         } else {
-            return new StringBuilder().append('(').append(min).append(',').append(max).append(')').toString();
+            final StringBuilder sb = new StringBuilder();
+            sb.append('(');
+            sb.append(min);
+            sb.append(',');
+            sb.append(max);
+            sb.append(')');
+            return sb.toString();
         }
     }
 
 
-    public final static class Builder<X extends RectDoubleND> implements Function<X, HyperRegion> {
+    @Deprecated public final static class Builder<X extends HyperRectFloat> implements Function<X, HyperRegion> {
 
         @Override
         public X apply(final X rect2D) {

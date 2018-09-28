@@ -197,7 +197,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
             case 0:
                 return 1 + end()-start();
             default:
-                return /*Math.abs*/(coordF(true, dim) - coordF(false, dim));
+                return /*Math.abs*/(coordF(dim, true) - coordF(dim, false));
         }
 
     }
@@ -261,20 +261,20 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
                 } else {
                     return new TasksRegion(
                             Math.min(start(), es), Math.max(end(), ee),
-                            Math.min(coordF(false, 1), ef),
-                            Math.max(coordF(true, 1), ef),
-                            Math.min(coordF(false, 2), ec),
-                            Math.max(coordF(true, 2), ec)
+                            Math.min(coordF(1, false), ef),
+                            Math.max(coordF(1, true), ef),
+                            Math.min(coordF(2, false), ec),
+                            Math.max(coordF(2, true), ec)
                     );
                 }
             } else {
                 TaskRegion er = (TaskRegion) r;
                 return new TasksRegion(
                         Math.min(start(), er.start()), Math.max(end(), er.end()),
-                        Math.min(coordF(false, 1), er.coordF(false, 1)),
-                        Math.max(coordF(true, 1), er.coordF(true, 1)),
-                        Math.min(coordF(false, 2), er.coordF(false, 2)),
-                        Math.max(coordF(true, 2), er.coordF(true, 2))
+                        Math.min(coordF(1, false), er.coordF(1, false)),
+                        Math.max(coordF(1, true), er.coordF(1, true)),
+                        Math.min(coordF(2, false), er.coordF(2, false)),
+                        Math.max(coordF(2, true), er.coordF(2, true))
                 );
             }
         }
@@ -297,10 +297,10 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
             TaskRegion t = (TaskRegion) x;
             return start <= t.end() &&
                     end >= t.start() &&
-                    coordF(false, 1) <= t.coordF(true, 1) &&
-                    coordF(true, 1) >= t.coordF(false, 1) &&
-                    coordF(false, 2) <= t.coordF(true, 2) &&
-                    coordF(true, 2) >= t.coordF(false, 2);
+                    coordF(1, false) <= t.coordF(1, true) &&
+                    coordF(1, true) >= t.coordF(1, false) &&
+                    coordF(2, false) <= t.coordF(2, true) &&
+                    coordF(2, true) >= t.coordF(2, false);
         }
     }
 
@@ -322,16 +322,16 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
             TaskRegion t = (TaskRegion) x;
             return
                     start <= t.start() && end >= t.end() &&
-                            coordF(false, 1) <= t.coordF(false, 1) &&
-                            coordF(true, 1) >= t.coordF(true, 1) &&
-                            coordF(false, 2) <= t.coordF(false, 2) &&
-                            coordF(true, 2) >= t.coordF(true, 2);
+                            coordF(1, false) <= t.coordF(1, false) &&
+                            coordF(1, true) >= t.coordF(1, true) &&
+                            coordF(2, false) <= t.coordF(2, false) &&
+                            coordF(2, true) >= t.coordF(2, true);
         }
     }
 
 
     @Override
-    double coord(boolean maxOrMin, int dimension);
+    double coord(int dimension, boolean maxOrMin);
 
     default boolean intersectsConf(float cMin, float cMax) {
         return (cMin <= confMax() && cMax >= confMin());
@@ -342,7 +342,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     }
 
     default float freqMin() {
-        return coordF(false, 1);
+        return coordF(1, false);
     }
 
     default float freqMean() {
@@ -350,15 +350,15 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     }
 
     default float freqMax() {
-        return coordF(true, 1);
+        return coordF(1, true);
     }
 
     default float confMin() {
-        return coordF(false, 2);
+        return coordF(2, false);
     }
 
     default float confMax() {
-        return coordF(true, 2);
+        return coordF(2, true);
     }
 
 

@@ -20,7 +20,7 @@ package jcog.tree.rtree;
  * #L%
  */
 
-import jcog.tree.rtree.rect.RectDouble2D;
+import jcog.tree.rtree.rect.RectDouble;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,7 +33,7 @@ class Rect2DTest {
     @Test
     void centroidTest() {
 
-        RectDouble2D rect = new RectDouble2D(0, 0, 4, 3);
+        RectDouble rect = new RectDouble(0, 0, 4, 3);
 
         HyperPoint centroid = rect.center();
         double x = centroid.coord(0);
@@ -45,11 +45,11 @@ class Rect2DTest {
     @Test
     void mbrTest() {
 
-        RectDouble2D rect = new RectDouble2D(0, 0, 4, 3);
+        RectDouble rect = new RectDouble(0, 0, 4, 3);
 
         
-        RectDouble2D rectInside = new RectDouble2D(0, 0, 1, 1);
-        RectDouble2D mbr = rect.mbr(rectInside);
+        RectDouble rectInside = new RectDouble(0, 0, 1, 1);
+        RectDouble mbr = rect.mbr(rectInside);
         double expectedMinX = rect.min.x;
         double expectedMinY = rect.min.y;
         double expectedMaxX = rect.max.x;
@@ -64,7 +64,7 @@ class Rect2DTest {
         assertTrue(actualMaxY == expectedMaxY, "Bad maxY - Expected: " + expectedMaxY + " Actual: " + actualMaxY);
 
         
-        RectDouble2D rectOverlap = new RectDouble2D(3, 1, 5, 4);
+        RectDouble rectOverlap = new RectDouble(3, 1, 5, 4);
         mbr = rect.mbr(rectOverlap);
         expectedMinX = 0.0d;
         expectedMinY = 0.0d;
@@ -83,7 +83,7 @@ class Rect2DTest {
     @Test
     void rangeTest() {
 
-        RectDouble2D rect = new RectDouble2D(0, 0, 4, 3);
+        RectDouble rect = new RectDouble(0, 0, 4, 3);
 
         double xRange = rect.range(0);
         double yRange = rect.range(1);
@@ -95,67 +95,67 @@ class Rect2DTest {
     @Test
     void containsTest() {
 
-        RectDouble2D rect = new RectDouble2D(0, 0, 4, 3);
+        RectDouble rect = new RectDouble(0, 0, 4, 3);
 
         
-        RectDouble2D rectOutsideNotContained = new RectDouble2D(4, 2, 5, 3);
+        RectDouble rectOutsideNotContained = new RectDouble(4, 2, 5, 3);
         assertTrue(!rect.contains(rectOutsideNotContained), "Shares an edge but should not be 'contained'");
 
         
-        RectDouble2D rectInsideNotContained = new RectDouble2D(0, 1, 4, 5);
+        RectDouble rectInsideNotContained = new RectDouble(0, 1, 4, 5);
         assertTrue(!rect.contains(rectInsideNotContained), "Shares an edge but should not be 'contained'");
 
         
-        RectDouble2D rectInsideContained = new RectDouble2D(0, 1, 1, 2);
+        RectDouble rectInsideContained = new RectDouble(0, 1, 1, 2);
         assertTrue(rect.contains(rectInsideContained), "Shares an edge and should be 'contained'");
 
         
-        RectDouble2D rectIntersects = new RectDouble2D(3, 2, 5, 4);
+        RectDouble rectIntersects = new RectDouble(3, 2, 5, 4);
         assertTrue(!rect.contains(rectIntersects), "Intersects but should not be 'contained'");
 
         
-        RectDouble2D rectContained = new RectDouble2D(1, 1, 2, 2);
+        RectDouble rectContained = new RectDouble(1, 1, 2, 2);
         assertTrue(rect.contains(rectContained), "Contains and should be 'contained'");
 
         
-        RectDouble2D rectNotContained = new RectDouble2D(5, 0, 6, 1);
+        RectDouble rectNotContained = new RectDouble(5, 0, 6, 1);
         assertTrue(!rect.contains(rectNotContained), "Does not contain and should not be 'contained'");
     }
 
     @Test
     void intersectsTest() {
 
-        RectDouble2D rect = new RectDouble2D(0, 0, 4, 3);
+        RectDouble rect = new RectDouble(0, 0, 4, 3);
 
         
-        RectDouble2D rectOutsideIntersects = new RectDouble2D(4, 2, 5, 3);
+        RectDouble rectOutsideIntersects = new RectDouble(4, 2, 5, 3);
         assertTrue(rect.intersects(rectOutsideIntersects), "Shares an edge and should 'intersect'");
 
         
-        RectDouble2D rectInsideIntersects = new RectDouble2D(0, 1, 4, 5);
+        RectDouble rectInsideIntersects = new RectDouble(0, 1, 4, 5);
         assertTrue(rect.intersects(rectInsideIntersects), "Shares an edge and should 'intersect'");
 
         
-        RectDouble2D rectInsideIntersectsContained = new RectDouble2D(0, 1, 1, 2);
+        RectDouble rectInsideIntersectsContained = new RectDouble(0, 1, 1, 2);
         assertTrue(rect.intersects(rectInsideIntersectsContained), "Shares an edge and should 'intersect'");
 
         
-        RectDouble2D rectIntersects = new RectDouble2D(3, 2, 5, 4);
+        RectDouble rectIntersects = new RectDouble(3, 2, 5, 4);
         assertTrue(rect.intersects(rectIntersects), "Intersects and should 'intersect'");
 
         
-        RectDouble2D rectContained = new RectDouble2D(1, 1, 2, 2);
+        RectDouble rectContained = new RectDouble(1, 1, 2, 2);
         assertTrue(rect.intersects(rectContained), "Contains and should 'intersect'");
 
         
-        RectDouble2D rectNotIntersects = new RectDouble2D(5, 0, 6, 1);
+        RectDouble rectNotIntersects = new RectDouble(5, 0, 6, 1);
         assertTrue(!rect.intersects(rectNotIntersects), "Does not intersect and should not 'intersect'");
     }
 
     @Test
     void costTest() {
 
-        RectDouble2D rect = new RectDouble2D(0, 0, 4, 3);
+        RectDouble rect = new RectDouble(0, 0, 4, 3);
         double cost = rect.cost();
         assertTrue(cost == 12.0d, "Bad cost - expected " + 12.0 + " but was " + cost);
     }

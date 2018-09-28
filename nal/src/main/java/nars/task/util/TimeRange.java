@@ -68,7 +68,7 @@ public class TimeRange implements HyperRegion, LongInterval {
 
 
     @Override
-    public final double coord(boolean maxOrMin, int dimension) {
+    public final double coord(int dimension, boolean maxOrMin) {
         throw new UnsupportedOperationException();
     }
 

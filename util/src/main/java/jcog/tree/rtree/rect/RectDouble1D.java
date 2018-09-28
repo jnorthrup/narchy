@@ -30,7 +30,7 @@ public abstract class RectDouble1D implements HyperRegion<Double1D> {
     }
 
     @Override
-    public double coord(boolean maxOrMin, int dimension) {
+    public double coord(int dimension, boolean maxOrMin) {
         assert(dimension==0);
         return maxOrMin ? to() : from();
     }

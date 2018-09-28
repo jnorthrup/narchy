@@ -7,7 +7,7 @@ import com.jogamp.opengl.glu.GLUtessellator;
 import com.jogamp.opengl.glu.GLUtessellatorCallback;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMove;
 import spacegraph.space2d.Surface;
@@ -152,7 +152,7 @@ public class OsmSpace implements GLUtessellatorCallback {
         }
 
         @Override
-        protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+        protected void paintWidget(GL2 gl, RectFloat bounds) {
             if (render == null) {
                 render = compile(gl, osm);
             }

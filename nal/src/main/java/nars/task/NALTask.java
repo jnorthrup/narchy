@@ -183,7 +183,7 @@ public class NALTask extends UnitPri implements Task {
     }
 
     @Override
-    public double coord(boolean maxOrMin, int dimension) {
+    public double coord(int dimension, boolean maxOrMin) {
         switch (dimension) {
             case 0:
                 return maxOrMin ? end() : start();

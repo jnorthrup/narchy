@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.console;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.jogamp.opengl.GL2;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.video.Tex;
 
 import java.awt.*;
@@ -119,7 +119,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         tex.paint(gl, textBounds(), alpha);
     }
 
-    protected RectFloat2D textBounds() {
+    protected RectFloat textBounds() {
         return bounds;
     }
 

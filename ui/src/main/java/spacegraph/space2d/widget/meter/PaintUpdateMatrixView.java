@@ -4,12 +4,13 @@ import com.jogamp.opengl.GL2;
 import spacegraph.space2d.SurfaceRender;
 
 
-public class AutoUpdateMatrixView extends BitmapMatrixView {
-    public AutoUpdateMatrixView(float[] x) {
+/** TODO use TriggeredMatrixView for async which should cause less updates */
+public class PaintUpdateMatrixView extends BitmapMatrixView {
+    public PaintUpdateMatrixView(float[] x) {
         super(x);
     }
 
-    public AutoUpdateMatrixView(float[][] x) {
+    public PaintUpdateMatrixView(float[][] x) {
         super(x);
     }
 
@@ -18,4 +19,5 @@ public class AutoUpdateMatrixView extends BitmapMatrixView {
         update();
         super.paint(gl, surfaceRender);
     }
+
 }

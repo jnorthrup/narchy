@@ -5,7 +5,7 @@ import jcog.Util;
 import jcog.data.map.CellMap;
 import jcog.data.map.MRUMap;
 import jcog.tree.rtree.Spatialization;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMove;
@@ -48,7 +48,7 @@ public class ScrollGrid<X> extends Bordering {
     /**
      * current view, in local grid coordinate
      */
-    private volatile RectFloat2D view = RectFloat2D.Zero;
+    private volatile RectFloat view = RectFloat.Zero;
 
     private static final boolean autoHideScrollForSingleColumnOrRow = true;
 
@@ -190,7 +190,7 @@ public class ScrollGrid<X> extends Bordering {
     }
 
     /** the current view */
-    public final RectFloat2D view() {
+    public final RectFloat view() {
         return view;
     }
 
@@ -200,7 +200,7 @@ public class ScrollGrid<X> extends Bordering {
     }
 
     /** set the view window's center and size of focus, in grid coordinates */
-    private ScrollGrid<X> view(RectFloat2D v) {
+    private ScrollGrid<X> view(RectFloat v) {
         return view(v.x, v.y, v.w, v.h);
     }
 
@@ -246,7 +246,7 @@ public class ScrollGrid<X> extends Bordering {
      */
     public ScrollGrid<X> view(float x, float y, float w, float h) {
 
-        RectFloat2D v = view;
+        RectFloat v = view;
 
         float x1, x2, y1, y2;
 
@@ -299,7 +299,7 @@ public class ScrollGrid<X> extends Bordering {
 
         }
 
-        RectFloat2D nextView = RectFloat2D.XYXY(x1, y1, x2, y2);
+        RectFloat nextView = RectFloat.XYXY(x1, y1, x2, y2);
         if (!v.equals(nextView, Spatialization.EPSILONf)) {
 
 
@@ -402,7 +402,7 @@ public class ScrollGrid<X> extends Bordering {
     abstract static class ScrollGridContainer<X> extends MutableMapContainer<Integer,X> {
 
         volatile short x1=0, y1=0, x2=1, y2=1;
-        private transient RectFloat2D view;
+        private transient RectFloat view;
         private transient float dx, dy, cw, ch;
 
         ScrollGridContainer() {
@@ -418,7 +418,7 @@ public class ScrollGrid<X> extends Bordering {
                     (y >= y1 && y < y2);
         }
 
-        void layout(RectFloat2D view, short x1, short y1, short x2, short y2) {
+        void layout(RectFloat view, short x1, short y1, short x2, short y2) {
             this.view = view;
 
             this.x1 = x1;
@@ -493,7 +493,7 @@ public class ScrollGrid<X> extends Bordering {
         abstract protected X value(short sx, short sy);
 
         void cellVisible(Surface s, float cw, float ch, float cx, float cy) {
-            s.pos(RectFloat2D.XYWH(cx, cy, cw, ch));
+            s.pos(RectFloat.XYWH(cx, cy, cw, ch));
         }
 
 

@@ -40,6 +40,9 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
     public void set(float newValue) {
         F.set(this, newValue);
     }
+    public void setLazy(float newValue) {
+        F.setLazy(this, newValue);
+    }
 
     public final float floatValue() {
         return F.getOpaque(this);

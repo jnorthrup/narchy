@@ -89,8 +89,8 @@ public class TaskProxy extends UnitPri implements Task {
 
 
     @Override
-    public double coord(boolean maxOrMin, int dimension) {
-        return task.coord(maxOrMin, dimension);
+    public double coord(int dimension, boolean maxOrMin) {
+        return task.coord(dimension, maxOrMin);
     }
 
     @Override

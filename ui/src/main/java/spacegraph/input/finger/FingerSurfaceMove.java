@@ -1,11 +1,11 @@
 package spacegraph.input.finger;
 
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 
 public class FingerSurfaceMove extends FingerMove {
     private final Surface moving;
-    private RectFloat2D before;
+    private RectFloat before;
 
     public FingerSurfaceMove(Surface moving) {
         this(moving, true, true);

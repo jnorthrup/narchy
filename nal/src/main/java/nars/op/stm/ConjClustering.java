@@ -36,7 +36,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 public class ConjClustering extends Causable {
 
 
-    private final BagClustering<Task> bag;
+    public final BagClustering<Task> data;
     private final BagClustering.Dimensionalize<Task> model;
     private final CauseChannel in;
     private final byte punc;
@@ -51,7 +51,7 @@ public class ConjClustering extends Causable {
     //temporary to the current singleton
     transient private int tasksGenerated;
 
-    private int learningIterations = 4;
+    private int learningIterations = 1;
 
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
         this(nar, punc, (t) -> true, centroids, capacity);
@@ -69,20 +69,22 @@ public class ConjClustering extends Causable {
             @Override
             public void coord(Task t, double[] c) {
                 Truth tt = t.truth();
-                c[0] = tt.polarity();
-                c[1] = tt.conf();
-                c[2] = t.priElseZero();
+                c[0] = t.mid();
+                c[1] = t.priElseZero();
 
-                c[3] = t.mid();
+                c[2] = tt.polarity();
+                c[3] = tt.conf();
+
                 c[4] = t.range();
             }
 
             @Override
             public double distanceSq(double[] a, double[] b) {
-                return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]) + Math.abs(a[2] - b[2]) +
-
+                return Math.abs(a[0] - b[0]) +
+                        Math.abs(a[1] - b[1]) +
+                        Math.abs(a[2] - b[2]) +
                         Math.abs(a[3] - b[3]) +
-                        Math.abs(a[4] - b[4]) * 0.5;
+                        Math.abs(a[4] - b[4]) * 0.5; //range
 
 //                return (1 + (Math.abs(a[0] - b[0]) / Math.min(a[4], b[4])) + (Math.abs(a[4] - b[4]) / dur))
 //                        *
@@ -94,7 +96,7 @@ public class ConjClustering extends Causable {
             }
         };
 
-        this.bag = new BagClustering<>(model, centroids, capacity);
+        this.data = new BagClustering<>(model, centroids, capacity);
 
         this.punc = punc;
         this.filter = filter;
@@ -109,7 +111,7 @@ public class ConjClustering extends Causable {
             if (!t.isEternal()
                     && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets) //TODO allow ImDep's
                     && filter.test(t)) {
-                bag.put(t,
+                data.put(t,
 
                         t.priElseZero() * t.originality()
 
@@ -124,7 +126,7 @@ public class ConjClustering extends Causable {
     @Override
     protected /*synchronized*/ void next(NAR nar, BooleanSupplier kontinue /* max tasks generated per centroid, >=1 */) {
 
-        if (bag == null || bag.bag.isEmpty()) return;
+        if (data == null || data.bag.isEmpty()) return;
 
         this.now = nar.time();
         this.dur = nar.dur();
@@ -134,10 +136,11 @@ public class ConjClustering extends Causable {
         this.tasksGenerated = 0;
 
 
-        bag.commit(nar.forgetRate.floatValue(), learningIterations);
+
+        data.commit(nar.forgetRate.floatValue(), 1);
 
         conjoiner.kontinue = kontinue;
-        bag.cluster(nar, nar.random(), conjoiner::conjoinCentroid);
+        data.cluster(nar, nar.random(), conjoiner::conjoinCentroid);
 
     }
 
@@ -276,7 +279,7 @@ public class ConjClustering extends Causable {
                                 m.pri(Priority.fund(Math.min(priMax, priMin * freqFactor * cmplFactor * confFactor), false, uu));
 
                                 for (Task aa : actualTasks)
-                                    bag.remove(aa);
+                                    data.remove(aa);
 
                                 tasksGenerated++;
                                 in.input(m);

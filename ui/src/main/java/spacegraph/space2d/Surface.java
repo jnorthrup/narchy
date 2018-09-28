@@ -5,7 +5,7 @@ import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.Util;
 import jcog.tree.rtree.Spatialization;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.container.AbstractMutableContainer;
 import spacegraph.space2d.container.AspectAlign;
@@ -22,7 +22,7 @@ import java.util.function.Predicate;
  */
 abstract public class Surface implements SurfaceBase {
 
-    private static final AtomicReferenceFieldUpdater<Surface,RectFloat2D> BOUNDS = AtomicReferenceFieldUpdater.newUpdater(Surface.class, RectFloat2D.class, "bounds");
+    private static final AtomicReferenceFieldUpdater<Surface, RectFloat> BOUNDS = AtomicReferenceFieldUpdater.newUpdater(Surface.class, RectFloat.class, "bounds");
     private final static AtomicReferenceFieldUpdater<Surface,SurfaceBase> PARENT = AtomicReferenceFieldUpdater.newUpdater(Surface.class, SurfaceBase.class, "parent");
 
     public static final Surface[] EmptySurfaceArray = new Surface[0];
@@ -38,7 +38,7 @@ abstract public class Surface implements SurfaceBase {
      * scale can remain the unit 1 vector, normally
      */
 
-    public volatile RectFloat2D bounds = RectFloat2D.Zero;
+    public volatile RectFloat bounds = RectFloat.Zero;
     public volatile SurfaceBase parent;
     protected volatile boolean visible = true, showing = false;
 
@@ -91,25 +91,25 @@ abstract public class Surface implements SurfaceBase {
 
     abstract protected void paint(GL2 gl, SurfaceRender surfaceRender);
 
-    public <S extends Surface> S pos(RectFloat2D next) {
+    public <S extends Surface> S pos(RectFloat next) {
         BOUNDS.set(this, next);
 //        if (bounds.area() < ScalarValue.EPSILON)
 //            throw new WTF();
         return (S) this;
     }
 
-    protected final boolean posChanged(RectFloat2D next) {
-        RectFloat2D last = BOUNDS.getAndSet(this, next);
+    protected final boolean posChanged(RectFloat next) {
+        RectFloat last = BOUNDS.getAndSet(this, next);
 //        if (bounds.area() < ScalarValue.EPSILON)
 //            throw new WTF();
         return !last.equals(next, Spatialization.EPSILONf);
     }
 
     public final Surface pos(float x1, float y1, float x2, float y2) {
-        return pos(RectFloat2D.XYXY(x1, y1, x2, y2));
+        return pos(RectFloat.XYXY(x1, y1, x2, y2));
     }
     public final Surface posXYWH(float x, float y, float w, float h) {
-        return pos(RectFloat2D.XYWH(x, y, w, h));
+        return pos(RectFloat.XYWH(x, y, w, h));
     }
 
     public AspectAlign align(AspectAlign.Align align) {
@@ -221,6 +221,7 @@ abstract public class Surface implements SurfaceBase {
 
     }
 
+
     public boolean key(KeyEvent e, boolean pressed) {
         return false;
     }
@@ -274,11 +275,11 @@ abstract public class Surface implements SurfaceBase {
     }
 
     public void posxyWH(float x, float y, float w, float h) {
-        pos(RectFloat2D.X0Y0WH(x,y,w,h));
+        pos(RectFloat.X0Y0WH(x,y,w,h));
     }
 
     /** keeps this rectangle within the given bounds */
-    public void fence(RectFloat2D bounds) {
+    public void fence(RectFloat bounds) {
         //if (bounds.contains(this.bounds)) {
         if (this.bounds == bounds)
             return;

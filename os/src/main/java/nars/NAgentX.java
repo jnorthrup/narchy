@@ -13,6 +13,7 @@ import nars.agent.SimpleReward;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
+import nars.control.DurService;
 import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.impl.MatrixDeriver;
@@ -43,7 +44,9 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.widget.meter.Cluster2DView;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -336,7 +339,17 @@ abstract public class NAgentX extends NAgent {
 
         //new STMLinkage(n, 1);
 
-        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 96);
+        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 16, 96);
+        {
+            Cluster2DView v = new Cluster2DView() {
+
+            };
+            DurService.on(n, ()->{
+                v.update(conjClusterBinput.data.net);
+            });
+            SpaceGraph.window(v, 500, 500);
+        }
+
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 64);
         //ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof SeriesBeliefTable.SeriesTask /* exclude curiosity */) ), 8, 96);
 

@@ -12,9 +12,10 @@ public class BufferedTensor extends BatchArrayTensor {
     }
 
 
-    @Override public void update() {
+    @Override public BatchArrayTensor update() {
         //from.snapshot();
         from.writeTo(data);
+        return this;
     }
 
 }

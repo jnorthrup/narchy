@@ -4,7 +4,7 @@ import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.math.FloatRange;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.Spatialization;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.util.MovingRectFloat2D;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
@@ -99,7 +99,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
             }
 
-            RectFloat2D gg = g.bounds;
+            RectFloat gg = g.bounds;
             float momentum = nodeMomentum.floatValue();
             for (MovingRectFloat2D b : nodes) {
                 b.commit(maxSpeedPerIter, momentum);

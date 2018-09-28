@@ -29,16 +29,16 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Created by jcovert on 6/15/15.
  */
-public class RectDouble2D implements HyperRegion<Double2D>, Comparable<RectDouble2D> {
+public class RectDouble implements HyperRegion<Double2D>, Comparable<RectDouble> {
     public final Double2D min;
     public final Double2D max;
 
-    public RectDouble2D(final Double2D p) {
+    public RectDouble(final Double2D p) {
         min = p;
         max = p;
     }
 
-    public RectDouble2D(double x1, double y1, double x2, double y2) {
+    public RectDouble(double x1, double y1, double x2, double y2) {
         if (x2 < x1) {
             double t = x2;
             x2 = x1;
@@ -54,7 +54,7 @@ public class RectDouble2D implements HyperRegion<Double2D>, Comparable<RectDoubl
         max = new Double2D(x2, y2);
     }
 
-    public RectDouble2D(final Double2D p1, final Double2D p2) {
+    public RectDouble(final Double2D p1, final Double2D p2) {
         final double minX, maxX;
 
         if (p1.x < p2.x) {
@@ -81,14 +81,14 @@ public class RectDouble2D implements HyperRegion<Double2D>, Comparable<RectDoubl
 
 
     @Override
-    public RectDouble2D mbr(final HyperRegion<Double2D> r) {
-        final RectDouble2D r2 = (RectDouble2D) r;
+    public RectDouble mbr(final HyperRegion<Double2D> r) {
+        final RectDouble r2 = (RectDouble) r;
         final double minX = Math.min(min.x, r2.min.x);
         final double minY = Math.min(min.y, r2.min.y);
         final double maxX = Math.max(max.x, r2.max.x);
         final double maxY = Math.max(max.y, r2.max.y);
 
-        return new RectDouble2D(minX, minY, maxX, maxY);
+        return new RectDouble(minX, minY, maxX, maxY);
 
     }
 
@@ -116,7 +116,7 @@ public class RectDouble2D implements HyperRegion<Double2D>, Comparable<RectDoubl
 
 
     @Override
-    public double coord(boolean maxOrMin, int dimension) {
+    public double coord(int dimension, boolean maxOrMin) {
         Double2D e = (maxOrMin ? max : min);
         assert(dimension==0 || dimension==1);
         return dimension==0 ? e.x : e.y;
@@ -136,7 +136,7 @@ public class RectDouble2D implements HyperRegion<Double2D>, Comparable<RectDoubl
 
     @Override
     public boolean contains(@NotNull final HyperRegion r) {
-        final RectDouble2D r2 = (RectDouble2D) r;
+        final RectDouble r2 = (RectDouble) r;
 
         return min.x <= r2.min.x &&
                 max.x >= r2.max.x &&
@@ -146,7 +146,7 @@ public class RectDouble2D implements HyperRegion<Double2D>, Comparable<RectDoubl
 
     @Override
     public boolean intersects(final HyperRegion r) {
-        final RectDouble2D r2 = (RectDouble2D) r;
+        final RectDouble r2 = (RectDouble) r;
 
         return !((min.x > r2.max.x) || (r2.min.x > max.x) ||
                 (min.y > r2.max.y) || (r2.min.y > max.y));
@@ -165,7 +165,7 @@ public class RectDouble2D implements HyperRegion<Double2D>, Comparable<RectDoubl
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        RectDouble2D rect2D = (RectDouble2D) o;
+        RectDouble rect2D = (RectDouble) o;
 
         return Util.equals(min.x, rect2D.min.x, Spatialization.EPSILON) &&
                 Util.equals(max.x, rect2D.max.x, Spatialization.EPSILON) &&
@@ -198,7 +198,7 @@ public class RectDouble2D implements HyperRegion<Double2D>, Comparable<RectDoubl
     }
 
     @Override
-    public int compareTo(RectDouble2D o) {
+    public int compareTo(RectDouble o) {
         int a = min.compareTo(o.min);
         if (a != 0) return a;
         int b = max.compareTo(o.max);

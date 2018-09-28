@@ -5,7 +5,7 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.event.Off;
 import jcog.exe.Exe;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
@@ -116,7 +116,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         int W = window.window.getWidth();
         int H = window.window.getHeight();
-        if (posChanged(RectFloat2D.XYXY(0, 0, W, H))) {
+        if (posChanged(RectFloat.XYXY(0, 0, W, H))) {
             layout();
         }
 
@@ -295,7 +295,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         System.out.println("unzoom " + prev + " " + su);
     }
 
-    public void zoom(RectFloat2D b) {
+    public void zoom(RectFloat b) {
         zoom(b.cx(), b.cy(), b.w, b.h, zoomMargin);
     }
 

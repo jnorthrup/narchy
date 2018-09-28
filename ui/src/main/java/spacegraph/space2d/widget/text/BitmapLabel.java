@@ -4,7 +4,7 @@ package spacegraph.space2d.widget.text;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
 import jcog.Texts;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.AspectAlign;
 import spacegraph.space2d.widget.console.BitmapTextGrid;
@@ -20,7 +20,7 @@ public class BitmapLabel extends BitmapTextGrid {
 
     private volatile String text = "";
     private volatile TextColor fgColor = TextColor.ANSI.WHITE, bgColor= TextColor.ANSI.BLACK;
-    private volatile RectFloat2D textBounds;
+    private volatile RectFloat textBounds;
 
     public BitmapLabel(String text) {
         super();
@@ -49,7 +49,7 @@ public class BitmapLabel extends BitmapTextGrid {
     }
 
     @Override
-    protected RectFloat2D textBounds() {
+    protected RectFloat textBounds() {
         return textBounds;
     }
     protected void layoutText() {

@@ -27,7 +27,7 @@
 package toxi.geom;
 
 import jcog.Util;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import toxi.math.InterpolateStrategy;
 import toxi.math.MathUtils;
 import toxi.math.ScaleMap;
@@ -321,7 +321,7 @@ public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
         y = MathUtils.clip(y, r.y, r.y + r.height);
         return this;
     }
-    public Vec2D constrain(RectFloat2D r) {
+    public Vec2D constrain(RectFloat r) {
         x = MathUtils.clip(x, r.x, r.x + r.w);
         y = MathUtils.clip(y, r.y, r.y + r.h);
         return this;

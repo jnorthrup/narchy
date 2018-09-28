@@ -5,7 +5,7 @@ import jcog.Util;
 import jcog.experiment.TrackXY;
 import jcog.learn.ql.HaiQae;
 import jcog.math.FloatNormalized;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
 import nars.agent.FrameTrigger;
 import nars.agent.util.RLBooster;
@@ -193,7 +193,7 @@ public class TrackXY_NAR extends NAgentX {
                     @Override
                     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
                         super.paint(gl, surfaceRender);
-                        RectFloat2D at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
+                        RectFloat at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
                         gl.glColor4f(1, 0, 0, 0.9f);
                         Draw.rect(at.move(x(), y(), 0.01f), gl);
                     }

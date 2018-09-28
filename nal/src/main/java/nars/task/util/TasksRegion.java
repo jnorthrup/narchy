@@ -57,7 +57,7 @@ public final class TasksRegion implements TaskRegion {
     }
 
     @Override
-    public double coord(boolean maxOrMin, int dimension) {
+    public double coord(int dimension, boolean maxOrMin) {
         if (maxOrMin) {
             switch (dimension) {
                 case 0:

@@ -6,8 +6,8 @@ import jcog.event.Off;
 import jcog.event.Topic;
 import jcog.exe.Exe;
 import jcog.math.Longerval;
-import jcog.tree.rtree.rect.RectDoubleND;
-import jcog.tree.rtree.rect.RectFloatND;
+import jcog.tree.rtree.rect.HyperRectDouble;
+import jcog.tree.rtree.rect.HyperRectFloat;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
@@ -467,15 +467,15 @@ public class User {
                                 o.getClass().getName(),
                                 Field.Store.YES));
 
-                        if (o instanceof RectFloatND) {
-                            RectFloatND r = (RectFloatND)o;
+                        if (o instanceof HyperRectFloat) {
+                            HyperRectFloat r = (HyperRectFloat)o;
                             if (r.dim() == 4) {
                                 double[] min = Util.toDouble(r.min.coord);
                                 double[] max = Util.toDouble(r.max.coord);
                                 d.add(new DoubleRange(BOUNDS, min, max));
                             }
-                        } else if (o instanceof RectDoubleND) {
-                            RectDoubleND r = (RectDoubleND)o;
+                        } else if (o instanceof HyperRectDouble) {
+                            HyperRectDouble r = (HyperRectDouble)o;
                             if (r.dim() == 4) {
                                 double[] min = (r.min.coord);
                                 double[] max = (r.max.coord);

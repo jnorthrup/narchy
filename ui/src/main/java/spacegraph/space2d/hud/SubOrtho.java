@@ -1,6 +1,6 @@
 package spacegraph.space2d.hud;
 
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 import spacegraph.video.JoglSpace;
 
@@ -8,7 +8,7 @@ import spacegraph.video.JoglSpace;
 public class SubOrtho extends Ortho {
 
     private final Surface content;
-    private RectFloat2D boundsWin;
+    private RectFloat boundsWin;
 
     public SubOrtho(Surface content) {
         super();
@@ -29,7 +29,7 @@ public class SubOrtho extends Ortho {
 
     /** position and size relative to the containing window (1=width, 1=height)*/
     public Ortho posWindow(float x, float y, float w, float h) {
-        this.boundsWin = RectFloat2D.XYWH(x, y, w, h);
+        this.boundsWin = RectFloat.XYWH(x, y, w, h);
         layout();
         return this;
     }
@@ -42,7 +42,7 @@ public class SubOrtho extends Ortho {
         super.doLayout(dtMS);
 
 
-        surface.pos(RectFloat2D.XYXY(boundsWin.x * ww, boundsWin.y * wh, (boundsWin.x + boundsWin.w) * ww,
+        surface.pos(RectFloat.XYXY(boundsWin.x * ww, boundsWin.y * wh, (boundsWin.x + boundsWin.w) * ww,
                 (boundsWin.y + boundsWin.h) * wh));
 
 

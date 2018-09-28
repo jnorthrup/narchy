@@ -8,7 +8,7 @@ import com.jogamp.graph.geom.SVertex;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.util.PMVMatrix;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import jogamp.graph.font.typecast.TypecastFontConstructor;
 import spacegraph.video.Draw;
 
@@ -139,7 +139,7 @@ public interface LabelRenderer extends BiConsumer<VectorLabel, GL2> {
             regionRenderer.init(gl, renderModes);
             //regionRenderer.enable(gl, false);
 
-            RectFloat2D bounds = label.bounds;
+            RectFloat bounds = label.bounds;
 
 //            gl.glColor3f(0.25f, 0.25f, 0.25f);
 //            Draw.rect(bounds, gl);

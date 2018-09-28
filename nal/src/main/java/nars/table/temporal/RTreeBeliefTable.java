@@ -99,7 +99,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             //r.midTimeTo(when);
             //r.maxTimeTo(when); //pessimistic, prevents wide-spanning taskregions from having an advantage over nearer narrower ones
 
-            float conf = (((float) r.coord(false, 2)) + ((float) r.coord(true, 2))) / 2;
+            float conf = (((float) r.coord(2, false)) + ((float) r.coord(2, true))) / 2;
 
             float v = //-Param.evi(c2wSafe(conf),  timeDist, perceptDur);
                     (timeDist) * (1 - conf);

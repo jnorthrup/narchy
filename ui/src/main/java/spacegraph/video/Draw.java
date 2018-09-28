@@ -32,7 +32,7 @@ import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.texture.Texture;
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import org.jetbrains.annotations.Nullable;
@@ -838,7 +838,7 @@ public enum Draw {
         bounds(s.bounds, gl, c);
     }
 
-    public static void bounds(RectFloat2D s, GL2 gl, Consumer<GL2> c) {
+    public static void bounds(RectFloat s, GL2 gl, Consumer<GL2> c) {
         bounds(gl, s.x, s.y, s.w, s.h, c);
     }
 
@@ -850,11 +850,11 @@ public enum Draw {
         gl.glPopMatrix();
     }
 
-    public static void rect(RectFloat2D bounds, GL2 gl) {
+    public static void rect(RectFloat bounds, GL2 gl) {
         Draw.rect(bounds.x, bounds.y, bounds.w, bounds.h, gl);
     }
 
-    public static void rectStroke(RectFloat2D bounds, GL2 gl) {
+    public static void rectStroke(RectFloat bounds, GL2 gl) {
         Draw.rectStroke(gl, bounds.x, bounds.y, bounds.w, bounds.h);
     }
 
@@ -1089,7 +1089,7 @@ public enum Draw {
         }
     }
 
-    public static void rectRGBA(RectFloat2D bounds, float r, float g, float b, float a, GL2 gl) {
+    public static void rectRGBA(RectFloat bounds, float r, float g, float b, float a, GL2 gl) {
         gl.glColor4f(r, g, b, a);
         Draw.rect(bounds, gl);
     }

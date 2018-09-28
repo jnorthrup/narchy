@@ -1,6 +1,6 @@
 package toxi.geom;
 
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 
 import java.util.function.Consumer;
 
@@ -23,7 +23,7 @@ public interface SpatialIndex<T> {
     boolean unindex(T p);
 
     /** resize bounds of the index */
-    default void bounds(RectFloat2D bounds) {
+    default void bounds(RectFloat bounds) {
 
     }
 }

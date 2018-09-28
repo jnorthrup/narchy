@@ -4,20 +4,17 @@ import com.jogamp.opengl.GL2;
 import jcog.exe.Loop;
 import jcog.experiment.TrackXY;
 import jcog.learn.ql.HaiQae;
-import jcog.math.FloatRange;
 import jcog.random.XoRoShiRo128PlusRandom;
-import jcog.signal.Tensor;
-import jcog.signal.tensor.TensorLERP;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.widget.chip.NoiseVectorChip;
 import spacegraph.space2d.widget.chip.SwitchChip;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.meter.AutoUpdateMatrixView;
+import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.port.Port;
-import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.windo.GraphEdit;
@@ -97,9 +94,6 @@ public class TensorGlow {
         HaiQae q = new HaiQae(8, 4);
         float[] in = new float[q.ae.inputs()];
 
-        final Tensor randomVector = Tensor.randomVectorGauss(in.length, 0, 1, rng);
-        final FloatRange lerpRate = new FloatRange(0.01f, 0, 1f);
-        final TensorLERP lerpVector = new TensorLERP(randomVector, lerpRate);
 
         {
             TrackXY track = new TrackXY(4, 4);
@@ -108,7 +102,7 @@ public class TensorGlow {
                 protected void paint(GL2 gl, SurfaceRender surfaceRender) {
                     super.paint(gl, surfaceRender);
 
-                    RectFloat2D at = cellRect(track.cx, track.cy, 0.5f, 0.5f);
+                    RectFloat at = cellRect(track.cx, track.cy, 0.5f, 0.5f);
                     gl.glColor4f(0, 0, 1, 0.9f);
                     Draw.rect(at.move(x(), y(), 0.01f), gl);
                 }
@@ -133,22 +127,13 @@ public class TensorGlow {
             p.sprout(trackWin, new Port((z)->{ if ((Boolean)z) track.control(0, +1); }), 0.25f);
         }
 
-        p.add(new Gridding(0.25f,
-                        new AutoUpdateMatrixView(
-                                lerpVector.data
-                        ),
-                        new LabeledPane("lerp", new XYSlider().on((x, y) -> {
-                            lerpRate.set(x);
-                        })),
-                        new LabeledPane("out", new Port((x) -> {
-                        }) {
-                            @Override
-                            public void prePaint(int dtMS) {
-                                super.prePaint(dtMS);
-                                out(lerpVector.data);
-                            }
-                        }))
-                ).pos(100, 100, 200, 200);
+
+        {
+
+            //lerpVector.update();
+            p.add(new NoiseVectorChip()).pos(100, 100, 200, 200);
+
+        }
 
         //p.add(new TogglePort()).pos(200, 200, 300, 300);
 
@@ -157,14 +142,14 @@ public class TensorGlow {
                 new VectorLabel("HaiQ"),
                 new ObjectSurface(q),
                 new Gridding(VERTICAL,
-                        new AutoUpdateMatrixView(in),
-                        new AutoUpdateMatrixView(q.ae.x),
-                        new AutoUpdateMatrixView(q.ae.W),
-                        new AutoUpdateMatrixView(q.ae.y)
+                        new PaintUpdateMatrixView(in),
+                        new PaintUpdateMatrixView(q.ae.x),
+                        new PaintUpdateMatrixView(q.ae.W),
+                        new PaintUpdateMatrixView(q.ae.y)
                 ),
                 new Gridding(VERTICAL,
-                        new AutoUpdateMatrixView(q.q),
-                        new AutoUpdateMatrixView(q.et)
+                        new PaintUpdateMatrixView(q.q),
+                        new PaintUpdateMatrixView(q.et)
                 )
         );
         hw.add(new LabeledPane("input", new Port((float[] i) -> {
@@ -175,7 +160,7 @@ public class TensorGlow {
         p.add(hw).pos(350, 350, 500, 500);
 
         Loop.of(() -> {
-            lerpVector.update();
+
             int a = q.act((((float) Math.random()) - 0.5f) * 2, in);
             outs.out(a);
 //            int n = outs.size();

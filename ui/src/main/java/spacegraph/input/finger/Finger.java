@@ -3,7 +3,7 @@ package spacegraph.input.finger;
 import com.jogamp.opengl.GL2;
 import jcog.data.atomic.AtomicFloat;
 import jcog.data.bit.AtomicMetalBitSet;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
@@ -84,7 +84,7 @@ public class Finger {
             Surface what;
             if (finger != null && (what = finger.touching()) != null) {
 
-                idle.set(false);
+                idle.lazySet(false);
 
                 if (finger.clickedNow(button, what)) {
 
@@ -116,7 +116,7 @@ public class Finger {
 
     private static v2 relative(v2 x, Surface c) {
         v2 y = new v2(x);
-        RectFloat2D b = c.bounds;
+        RectFloat b = c.bounds;
         y.sub(b.x, b.y);
         y.scaled(1f / b.w, 1f / b.h);
         return y;
@@ -203,7 +203,7 @@ public class Finger {
 
             if (!ff.update(this)) {
                 ff.stop(this);
-                fingering.set(Fingering.Null);
+                fingering.lazySet(Fingering.Null);
             }
 
         }
@@ -348,7 +348,7 @@ public class Finger {
         for (int i = 0; i < next.length; i++) {
             float r = next[i];
             if (r != 0)
-                this.rotation[i].set(r); //add(r);
+                this.rotation[i].setLazy(r); //add(r);
         }
     }
 

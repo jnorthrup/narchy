@@ -6,7 +6,7 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.pri.ScalarValue;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.video.Draw;
@@ -232,7 +232,7 @@ public class Plot2D extends Widget {
     }
 
     @Override
-    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+    protected void paintWidget(GL2 gl, RectFloat bounds) {
         Draw.bounds(bounds, gl, this::paintUnit);
     }
 

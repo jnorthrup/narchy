@@ -1,13 +1,15 @@
 package jcog.learn.gng;
 
 import com.google.common.base.Joiner;
-import jcog.Util;
 import jcog.learn.gng.impl.Centroid;
 import jcog.learn.gng.impl.DenseIntUndirectedGraph;
 import jcog.learn.gng.impl.ShortUndirectedGraph;
-import org.jetbrains.annotations.NotNull;
+import jcog.math.FloatRange;
+import jcog.pri.ScalarValue;
+import jcog.tree.rtree.point.DoubleND;
+import jcog.tree.rtree.rect.HyperRectDouble;
+import jcog.tree.rtree.rect.MutableHyperRectDouble;
 
-import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -20,11 +22,12 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
 
     public final int dimension;
 
-    /** the bounds of all the centroids in all dimensions (ex: for normalizing their movement and/or distance functions)
+    /**
+     * the bounds of all the centroids in all dimensions (ex: for normalizing their movement and/or distance functions)
      * stored as a 1D double[] with every pair of numbers corresponding
      * to min/max bounds of each dimension, so it will have dimension*2 elements
      */
-    public final double[] rangeMinMax;
+    private final MutableHyperRectDouble rangeMinMax;
 
     public final ShortUndirectedGraph edges;
     public final Centroid[] centroids;
@@ -35,10 +38,11 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
 
 
     private final int maxNodes;
-    private int lambda;
+    private int lambdaPeriod;
     private int ttl;
-    private double alpha;
-    private double beta;
+    public final FloatRange alpha = new FloatRange(0.8f, 0, 1f);
+    public final FloatRange beta = new FloatRange(0.9f, 0, 1f);
+
 
     /**
      * faster point learning for the winner node
@@ -50,21 +54,16 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
      */
     private double winnerNeighborUpdateRate;
 
-    private final float rangeAdaptRate;
 
-    public int getLambda() {
-        return lambda;
+    public int getLambdaPeriod() {
+        return lambdaPeriod;
     }
 
     /**
      * lifespan of an node
      */
-    public void setLambda(int lambda) {
-        this.lambda = lambda;
-    }
-
-    public void setAlpha(double alpha) {
-        this.alpha = alpha;
+    public void setLambdaPeriod(int lambdaPeriod) {
+        this.lambdaPeriod = lambdaPeriod;
     }
 
     public void setWinnerUpdateRate(double rate, double neighborRate) {
@@ -72,8 +71,8 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
         this.winnerNeighborUpdateRate = neighborRate;
     }
 
-    public void setBeta(double beta) {
-        this.beta = beta;
+    public void setBeta(float beta) {
+        this.beta.set(beta);
     }
 
     public void setMaxEdgeAge(int maxAge) {
@@ -98,14 +97,12 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
 
 
         edges =
-                
+
                 new DenseIntUndirectedGraph((short) centroids);
 
         this.centroids = new Centroid[centroids];
 
-        this.rangeMinMax = new double[dimension * 2];
-        Arrays.fill(rangeMinMax, Float.NaN);
-        this.rangeAdaptRate = 1f /(1f + centroids);
+        this.rangeMinMax = new MutableHyperRectDouble(dimension);
 
         this.distanceSq = distanceSq != null ? distanceSq : Centroid.DistanceFunction::distanceCartesianSq;
 
@@ -115,15 +112,11 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
         this.maxNodes = centroids;
 
 
-        
-        setLambda(centroids*2);
-        setMaxEdgeAge(centroids*2);
+        setLambdaPeriod(centroids * 2);
+        setMaxEdgeAge(centroids * 2);
 
-        setAlpha(0.8);
-        setBeta(0.9);
 
         setWinnerUpdateRate(0.5f / centroids, 0.25f / centroids);
-
 
 
         clear();
@@ -148,11 +141,11 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
     }
 
     public N closest(double[] x) {
-        
+
         double minDistSq = Double.POSITIVE_INFINITY;
         Centroid closest = null;
 
-        
+
         for (Centroid n : centroids) {
             double dist;
             if ((dist = distanceSq.distance(n.getDataRef(), x)) < minDistSq) {
@@ -165,6 +158,26 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
     }
 
 
+    public HyperRectDouble bounds() {
+        MutableHyperRectDouble b = null;
+        //double[] err = new double[dimension];
+
+        for (int i1 = 0, centroidsLength = centroids.length; i1 < centroidsLength; i1++) {
+            Centroid n = centroids[i1];
+            if (n.active()) {
+                if (b == null) {
+                    b = new MutableHyperRectDouble(new DoubleND(n.toArray()));
+                } else {
+                    b.mbrSelf(n.getDataRef());
+                }
+                //err[i] = n.localError();
+            }
+        }
+//        for (int k = 0; k < dimension; k++) {
+//            b.grow(k, err[k]);
+//        }
+        return b;
+    }
 
     /**
      * translates all nodes uniformly
@@ -176,11 +189,14 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
     }
 
     public N put(double... x) {
+        if (x.length != dimension)
+            throw new ArrayIndexOutOfBoundsException();
 
-        if (alpha == 0 || lambda == 0)
-            return null; 
+        float alpha = this.alpha.floatValue();
+        if (alpha < ScalarValue.EPSILON || lambdaPeriod == 0)
+            return null;
 
-        
+
         double minDist = Double.POSITIVE_INFINITY;
         double maxDist = Double.NEGATIVE_INFINITY;
         short closest = -1;
@@ -190,8 +206,6 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
 
         final int nodes = maxNodes;
 
-
-        range(x, rangeAdaptRate);
 
         for (short j = 0; j < nodes; j++) {
             Centroid nj = this.centroids[j];
@@ -219,7 +233,7 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
             if (n == null)
                 continue;
             if (j == closest) continue;
-            double dd = n.localDistanceSq(); 
+            double dd = n.localDistanceSq();
             if (dd < minDist2) {
                 nextClosestNode = j;
                 minDist2 = dd;
@@ -227,41 +241,34 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
         }
 
 
-
         if (closest == -1) {
-            
-            
+
+
             return null;
         }
 
         assert (closest != nextClosestNode);
 
-        
+
         this.centroids[closest].updateLocalError(x, winnerUpdateRate);
 
-        
+
         short sc = closest;
         edges.edgesOf(closest, (connection, age) -> {
-            this.centroids[connection].update(x, winnerNeighborUpdateRate);
+            this.centroids[connection].lerp(x, winnerNeighborUpdateRate);
         });
         edges.addToEdges(sc, -1);
 
 
-        
-        
-
-        
         if (nextClosestNode != -1)
             edges.setEdge(closest, nextClosestNode, ttl);
 
 
-        
-        if (iteration++ % lambda == 0) {
+        if (iteration++ % lambdaPeriod == 0) {
 
             edges.removeVertex(furthest);
             removed((N) this.centroids[furthest]);
 
-            
 
             short maxErrorID = -1;
             {
@@ -269,7 +276,7 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
                 for (int i = 0, nodeLength = this.centroids.length; i < nodeLength; i++) {
                     Centroid n = this.centroids[i];
                     if (i == furthest)
-                        continue; 
+                        continue;
                     if (n.localError() > maxError) {
                         maxErrorID = (short) i;
                         maxError = n.localError();
@@ -282,7 +289,6 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
             }
 
 
-            
             final double[] maxError = {Double.NEGATIVE_INFINITY};
             short _maxErrorNeighbour[] = {-1};
             edges.edgesOf(maxErrorID, (otherNodeID) -> {
@@ -299,12 +305,10 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
 
                 short maxErrorNeighborID = _maxErrorNeighbour[0];
 
-                
+
                 edges.removeEdge(maxErrorID, maxErrorNeighborID);
 
-                
 
-                
                 N newNode = newCentroid(furthest, dimension);
                 randomizeCentroid(rangeMinMax, newNode);
 
@@ -318,65 +322,29 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
                     throw new RuntimeException("new node has same id as max error node");
                 }
 
-                
+
                 edges.setEdge(maxErrorID, furthest, ttl);
                 edges.setEdge(maxErrorNeighborID, furthest, ttl);
 
-                
+
                 maxErrorNode.mulLocalError(alpha);
                 maxErrorNeighbor.mulLocalError(alpha);
             }
         }
 
 
-        
-
-        
+        float beta = this.beta.floatValue();
         for (Centroid n : this.centroids) {
             n.mulLocalError(beta);
         }
 
 
-
-
-
-
-
-
-
-        
-
-        
-
         return node(closest);
     }
 
-    public void randomizeCentroid(double[] r, N newNode) {
+    public void randomizeCentroid(MutableHyperRectDouble bounds, N newNode) {
         for (int i = 0; i < dimension; i++)
-            newNode.randomizeUniform(i, r[i*2], r[i*2+1]);
-    }
-
-    public void range(double[] coord, float adapt) {
-        int dim = coord.length;
-        int k = 0;
-
-
-
-        for (int d = 0; d < dim; d++) {
-            double c = coord[d];
-
-            double curMin = rangeMinMax[k];
-
-                rangeMinMax[k] = ((curMin != curMin) || (curMin > c)) ? c : Util.lerp(adapt, curMin, c);
-
-            k++;
-
-            double curMax = rangeMinMax[k];
-
-                rangeMinMax[k] = ((curMax != curMax) || (curMax < c)) ? c : Util.lerp(adapt, curMax, c);
-            k++;
-        }
-
+            newNode.randomizeUniform(i, bounds.coord(i, false), bounds.coord(i, true));
     }
 
 
@@ -384,26 +352,9 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
         return (N) centroids[i];
     }
 
-    private short randomNode() {
-        return (short) (Math.random() * centroids.length);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    }
+//    private short randomNode() {
+//        return (short) (Math.random() * centroids.length);
+//    }
 
     /**
      * called before a node will be removed
@@ -413,7 +364,7 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
     }
 
     public Stream<N> nodeStream() {
-        return Stream.of(centroids).map(n -> (N) n);
+        return Stream.of(centroids).filter(Centroid::active).map(n -> (N) n);
     }
 
     public void compact() {
@@ -428,34 +379,6 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
     public String toString() {
         return Joiner.on("\n").join(centroids);
     }
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

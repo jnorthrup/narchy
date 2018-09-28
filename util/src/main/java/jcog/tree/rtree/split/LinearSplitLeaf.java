@@ -60,21 +60,21 @@ public final class LinearSplitLeaf<T> implements Split<T> {
                 int[][] rd = rIndex[d];
 
                 HyperRegion rj = model.bounds(data[j]);
-                double rjMin = rj.coord(false, d);
-                if (model.bounds(data[rd[MIN][MIN]]).coord(false, d) > rjMin) { 
+                double rjMin = rj.coord(d, false);
+                if (model.bounds(data[rd[MIN][MIN]]).coord(d, false) > rjMin) {
                     rd[MIN][MIN] = j;
                 }
 
-                if (model.bounds(data[rd[MIN][MAX]]).coord(false, d) < rjMin) { 
+                if (model.bounds(data[rd[MIN][MAX]]).coord(d, false) < rjMin) {
                     rd[MIN][MAX] = j;
                 }
 
-                double rjMax = rj.coord(true, d);
-                if (model.bounds(data[rd[MAX][MIN]]).coord(true, d) > rjMax) {
+                double rjMax = rj.coord(d, true);
+                if (model.bounds(data[rd[MAX][MIN]]).coord(d, true) > rjMax) {
                     rd[MAX][MIN] = j;
                 }
 
-                if (model.bounds(data[rd[MAX][MAX]]).coord(true, d) < rjMax) {
+                if (model.bounds(data[rd[MAX][MAX]]).coord(d, true) < rjMax) {
                     rd[MAX][MAX] = j;
                 }
             }

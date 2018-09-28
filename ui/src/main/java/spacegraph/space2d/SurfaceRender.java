@@ -1,6 +1,6 @@
 package spacegraph.space2d;
 
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.util.math.v2;
 import spacegraph.util.math.v3;
 
@@ -64,7 +64,7 @@ public class SurfaceRender {
     }
 
 
-    public final boolean visible(RectFloat2D r) {
+    public final boolean visible(RectFloat r) {
 //        if (r.w < pixelScaleX)
 //            return false;
 //        if (r.h < pixelScaleY)
@@ -76,18 +76,18 @@ public class SurfaceRender {
         return true;
     }
 
-    public v2 visP(RectFloat2D bounds) {
+    public v2 visP(RectFloat bounds) {
         float pctX = bounds.w * scaleX;
         float pctY = bounds.h * scaleY;
         return new v2(pctX, pctY);
     }
 
-    public float visPMin(RectFloat2D bounds) {
+    public float visPMin(RectFloat bounds) {
         return Math.min(bounds.w * scaleX, bounds.h * scaleY);
     }
 
 
-    public final boolean visP(RectFloat2D bounds, int minPixelsToBeVisible) {
+    public final boolean visP(RectFloat bounds, int minPixelsToBeVisible) {
 
         if (bounds.w * scaleX < minPixelsToBeVisible)
             return false;
@@ -96,4 +96,10 @@ public class SurfaceRender {
 
         return true;
     }
+
+//    /** adapts the world coordinates to a new virtual local coordinate system */
+//    public SurfaceRender virtual(RectFloat xywh) {
+//
+//
+//    }
 }

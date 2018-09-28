@@ -38,7 +38,7 @@ public class PatrickTests extends NALTest {
         TestNAR tt = test;
         tt.nar.freqResolution.set(0.05f);
         tt.confTolerance(0.2f);
-        tt.nar.termVolumeMax.set(16);
+        tt.nar.termVolumeMax.set(12);
 
         tt
 

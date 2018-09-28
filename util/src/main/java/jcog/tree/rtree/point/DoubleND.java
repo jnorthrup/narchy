@@ -21,7 +21,11 @@ public class DoubleND implements HyperPoint, Serializable {
         this(copy.coord.clone());
     }
 
-    public DoubleND(double... coord) {
+    public DoubleND(int length) {
+        this(new double[length]);
+    }
+
+    public DoubleND(double[] coord) {
         this.coord = coord;
     }
 

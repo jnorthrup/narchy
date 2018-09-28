@@ -1,6 +1,6 @@
 package spacegraph.input.finger;
 
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.math.v2;
@@ -23,7 +23,7 @@ public class FingerResizeSurface extends FingerResize {
     }
 
     @Override
-    protected RectFloat2D size() {
+    protected RectFloat size() {
         return resizing.bounds;
     }
 

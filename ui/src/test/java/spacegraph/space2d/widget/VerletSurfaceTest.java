@@ -3,7 +3,7 @@ package spacegraph.space2d.widget;
 import com.jogamp.opengl.GL2;
 import jcog.event.Off;
 import jcog.random.XoRoShiRo128PlusRandom;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
@@ -47,7 +47,7 @@ class VerletSurfaceTest {
 
             physics = new VerletPhysics2D(3, 0);
             physics.setDrag(0.02f);
-            physics.setBounds(RectFloat2D.X0Y0WH(0, 0, W, W));
+            physics.setBounds(RectFloat.X0Y0WH(0, 0, W, W));
             physics.setIndex(
                     new QuadtreeIndex(null, -1, -1, W + 1, W + 1)
                     //new RTreeQuadTree()

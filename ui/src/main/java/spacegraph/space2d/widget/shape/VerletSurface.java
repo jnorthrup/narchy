@@ -4,7 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
@@ -39,14 +39,14 @@ public class VerletSurface extends Surface implements Animated {
     private boolean bounded = true;
 
     public VerletSurface(float w, float h) {
-        this(RectFloat2D.X0Y0WH(0, 0, w, h));
+        this(RectFloat.X0Y0WH(0, 0, w, h));
     }
 
     public VerletSurface() {
         this(1, 1);
     }
 
-    public VerletSurface(RectFloat2D bounds) {
+    public VerletSurface(RectFloat bounds) {
         super();
 
 
@@ -164,7 +164,7 @@ public class VerletSurface extends Surface implements Animated {
     }
 
     @Override
-    public <S extends Surface> S pos(RectFloat2D next) {
+    public <S extends Surface> S pos(RectFloat next) {
         if (physics != null)
             physics.bounds(next);
         return super.pos(next);

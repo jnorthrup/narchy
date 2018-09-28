@@ -4,7 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.exe.Loop;
 import jcog.signal.buffer.CircularFloatBuffer;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import spacegraph.SpaceGraph;
@@ -43,8 +43,8 @@ import static spacegraph.space2d.container.Gridding.VERTICAL;
 
 public class WallTest {
 
-    static GraphEdit newWallWindow() {
-        GraphEdit w = new GraphEdit(RectFloat2D.X0Y0WH(0,0,1000, 900));
+    public static GraphEdit newWallWindow() {
+        GraphEdit w = new GraphEdit(RectFloat.X0Y0WH(0,0,1000, 900));
         SpaceGraph.window(
                 //new Bordering(w).borderSize(Bordering.S, 0.25f).south(w.debugger()),
                 w,
@@ -59,9 +59,9 @@ public class WallTest {
             Wall w = newWallWindow();
 
 
-            w.add(new PushButton("X")).pos(RectFloat2D.XYXY(10, 10, 200, 200));
-            w.add(new PushButton("Y")).pos(RectFloat2D.XYXY(50, 10, 200, 200));
-            w.add(new PushButton("Z")).pos(RectFloat2D.XYXY(100, 10, 200, 200));
+            w.add(new PushButton("X")).pos(RectFloat.XYXY(10, 10, 200, 200));
+            w.add(new PushButton("Y")).pos(RectFloat.XYXY(50, 10, 200, 200));
+            w.add(new PushButton("Z")).pos(RectFloat.XYXY(100, 10, 200, 200));
 
             //Windo ww = w.add(new PushButton("Y"), 200, 300f);
             //System.out.println(ww);
@@ -79,14 +79,14 @@ public class WallTest {
 
 
             Port A = new Port();
-            Windo a = s.add(A).pos(RectFloat2D.Unit.transform(500, 250, 250));
+            Windo a = s.add(A).pos(RectFloat.Unit.transform(500, 250, 250));
 
 
             Port B = LabeledPort.generic();
-            Windo b = s.add(B).pos(RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f).scale(500));
+            Windo b = s.add(B).pos(RectFloat.XYWH(+1, 0, 0.25f, 0.25f).scale(500));
 
             TogglePort AB = new TogglePort();
-            s.add(AB).pos(RectFloat2D.XYWH(0, 0, 0.25f, 0.25f).scale(500));
+            s.add(AB).pos(RectFloat.XYWH(0, 0, 0.25f, 0.25f).scale(500));
 
             Loop.of(() -> {
                 A.out(Texts.n4(Math.random()));
@@ -105,16 +105,16 @@ public class WallTest {
                     new Port(),
                     new Port()
             )), new LabeledPane("->", new Port()));
-            s.add(mux).pos(RectFloat2D.Unit.transform(250, 0, 250));
+            s.add(mux).pos(RectFloat.Unit.transform(250, 0, 250));
 
             Port A = new FloatRangePort(0.5f, 0, 1);
-            s.add(A).pos(RectFloat2D.Unit.transform(250, 250, 250));
+            s.add(A).pos(RectFloat.Unit.transform(250, 250, 250));
 
             Port B = new FloatRangePort(0.5f, 0, 1);
-            s.add(B).pos(RectFloat2D.Unit.transform(250, 500, 250));
+            s.add(B).pos(RectFloat.Unit.transform(250, 500, 250));
 
             Port Y = LabeledPort.generic();
-            s.add(Y).pos(RectFloat2D.Unit.transform(250, 750, 250));
+            s.add(Y).pos(RectFloat.Unit.transform(250, 750, 250));
 
         }
     }

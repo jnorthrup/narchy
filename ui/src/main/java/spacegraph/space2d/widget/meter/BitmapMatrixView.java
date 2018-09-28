@@ -4,7 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.math.FloatSupplier;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.RingBufferTensor;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
@@ -192,11 +192,11 @@ public class BitmapMatrixView extends Surface {
     /**
      * the prw, prh represent a rectangular size proportional to the displayed cell size
      */
-    public RectFloat2D cellRect(float x, float y, float prw, float prh) {
+    public RectFloat cellRect(float x, float y, float prw, float prh) {
         v2 c = cell(x, y);
         float pw = prw / this.w;
         float ph = prh / this.h;
-        return RectFloat2D.XYWH(c.x, c.y, pw * w(), ph * h());
+        return RectFloat.XYWH(c.x, c.y, pw * w(), ph * h());
     }
 
     /**

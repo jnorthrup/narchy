@@ -51,7 +51,7 @@ public class TensorChain extends BatchArrayTensor {
     }
 
     @Override
-    public void update() {
+    public TensorChain update() {
         int[] p = { 0 };
 
         for (Tensor x : sub) {
@@ -59,6 +59,7 @@ public class TensorChain extends BatchArrayTensor {
                data[p[0]++] = v;
             });
         }
+        return this;
     }
 
 

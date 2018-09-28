@@ -2,7 +2,7 @@ package toxi.geom;
 
 import jcog.tree.rtree.RTree;
 import jcog.tree.rtree.Spatialization;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import toxi.physics2d.VerletParticle2D;
 
 import java.util.function.Consumer;
@@ -14,13 +14,13 @@ public class RTreeQuadTree<X extends VerletParticle2D> extends RTree<X> implemen
         super(RTreeQuadTree::b, 2, 3, Spatialization.DefaultSplits.AXIAL.get());
     }
 
-    static RectFloat2D b(Vec2D v) {
+    static RectFloat b(Vec2D v) {
         float DEFAULT_RADIUS = 0.5f;
         return b(v, DEFAULT_RADIUS);
     }
 
-    private static RectFloat2D b(Vec2D v, float radius) {
-        return RectFloat2D.XYWH(v.x, v.y, radius*2, radius*2);
+    private static RectFloat b(Vec2D v, float radius) {
+        return RectFloat.XYWH(v.x, v.y, radius*2, radius*2);
     }
 
 

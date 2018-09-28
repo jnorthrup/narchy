@@ -1,7 +1,7 @@
 package spacegraph.util;
 
 import jcog.Util;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.Graph2D;
 import spacegraph.util.math.v2;
 
@@ -22,7 +22,7 @@ public class MovingRectFloat2D {
         clear();
     }
 
-    public void set(RectFloat2D r) {
+    public void set(RectFloat r) {
         this.x0 = this.x = r.x;
         this.y0 = this.y = r.y;
         size(r.w, r.h);
@@ -48,11 +48,6 @@ public class MovingRectFloat2D {
         return this;
     }
 
-    public MovingRectFloat2D move(float dx, float dy, float rate) {
-        this.x = Util.lerp(rate, this.x, this.x + dx);
-        this.y = Util.lerp(rate, this.y, this.y + dy);
-        return this;
-    }
 
     public float cx() {
         return x + w / 2;
@@ -103,11 +98,11 @@ public class MovingRectFloat2D {
             node = null;
         }
         this.x0 = this.y0 = 0;
-        set(RectFloat2D.Unit);
+        set(RectFloat.Unit);
     }
 
     /** keeps this rectangle within the given bounds */
-    public void fence(RectFloat2D bounds) {
+    public void fence(RectFloat bounds) {
         x = Util.clamp(x, bounds.left(), bounds.right()-w);
         y = Util.clamp(y, bounds.top(), bounds.bottom()-h);
     }

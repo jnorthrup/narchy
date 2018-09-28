@@ -279,7 +279,7 @@ public class Windo extends MutableUnitContainer {
 
     private void paintBack(GL2 gl) {
         if (opaque()) {
-            gl.glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
+            gl.glColor4f(0.25f, 0.25f, 0.25f, 0.25f);
             Draw.rect(bounds, gl);
         }
     }

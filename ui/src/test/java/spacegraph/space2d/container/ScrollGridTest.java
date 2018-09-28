@@ -1,7 +1,7 @@
 package spacegraph.space2d.container;
 
 import com.jogamp.opengl.GL2;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.Widget;
@@ -42,7 +42,7 @@ class ScrollGridTest {
                         if (Math.random() < 0.5f) {
                             Surface p = new PushButton(s) {
                                 @Override
-                                protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+                                protected void paintWidget(GL2 gl, RectFloat bounds) {
                                     Draw.colorHash(gl, x ^ y, 0.2f, 0.3f, 0.85f);
                                     Draw.rect(bounds, gl);
                                 }

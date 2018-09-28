@@ -117,9 +117,9 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
 
         int pixels = width * height;
 
-        net.setAlpha(0.005f);
-        
-        net.setLambda(64);
+        net.alpha.set(0.005f);
+
+        net.setLambdaPeriod(64);
         
         net.setWinnerUpdateRate(0.05f, 0.01f);
 

@@ -20,7 +20,7 @@ package jcog.tree.rtree;
  * #L%
  */
 
-import jcog.tree.rtree.rect.RectDouble2D;
+import jcog.tree.rtree.rect.RectDouble;
 import jcog.tree.rtree.util.Stats;
 import org.junit.jupiter.api.Test;
 
@@ -43,17 +43,17 @@ class QuadraticSplitLeafTest {
     @Test
     void basicSplitTest() {
 
-        RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(TYPE);
-        rTree.add(new RectDouble2D(0, 0, 1, 1));
-        rTree.add(new RectDouble2D(1, 1, 2, 2));
-        rTree.add(new RectDouble2D(2, 2, 3, 3));
-        rTree.add(new RectDouble2D(3, 3, 4, 4));
-        rTree.add(new RectDouble2D(4, 4, 5, 5));
-        rTree.add(new RectDouble2D(5, 5, 6, 6));
-        rTree.add(new RectDouble2D(6, 6, 7, 7));
-        rTree.add(new RectDouble2D(7, 7, 8, 8));
+        RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(TYPE);
+        rTree.add(new RectDouble(0, 0, 1, 1));
+        rTree.add(new RectDouble(1, 1, 2, 2));
+        rTree.add(new RectDouble(2, 2, 3, 3));
+        rTree.add(new RectDouble(3, 3, 4, 4));
+        rTree.add(new RectDouble(4, 4, 5, 5));
+        rTree.add(new RectDouble(5, 5, 6, 6));
+        rTree.add(new RectDouble(6, 6, 7, 7));
+        rTree.add(new RectDouble(7, 7, 8, 8));
         
-        rTree.add(new RectDouble2D(8, 8, 9, 9));
+        rTree.add(new RectDouble(8, 8, 9, 9));
 
         Stats stats = rTree.stats();
         assertTrue(stats.getMaxDepth() == 1, "Unexpected max depth after basic split");
@@ -65,16 +65,16 @@ class QuadraticSplitLeafTest {
     @Test
     void splitCorrectnessTest() {
 
-        RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(2, 4, TYPE);
-        rTree.add(new RectDouble2D(0, 0, 3, 3));
-        rTree.add(new RectDouble2D(1, 1, 2, 2));
-        rTree.add(new RectDouble2D(2, 2, 4, 4));
-        rTree.add(new RectDouble2D(4, 0, 5, 1));
+        RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(2, 4, TYPE);
+        rTree.add(new RectDouble(0, 0, 3, 3));
+        rTree.add(new RectDouble(1, 1, 2, 2));
+        rTree.add(new RectDouble(2, 2, 4, 4));
+        rTree.add(new RectDouble(4, 0, 5, 1));
         
-        rTree.add(new RectDouble2D(0, 2, 1, 4));
+        rTree.add(new RectDouble(0, 2, 1, 4));
 
         Branch root = (Branch) rTree.root();
-        Node<RectDouble2D>[] children = root.data;
+        Node<RectDouble>[] children = root.data;
         int childCount = 0;
         for(Node c : children) {
             if (c != null) {
@@ -83,15 +83,15 @@ class QuadraticSplitLeafTest {
         }
         assertEquals(2, childCount, "Expected different number of children after split");
 
-        Node<RectDouble2D> child1 = children[0];
-        RectDouble2D child1Mbr = (RectDouble2D) child1.bounds();
-        RectDouble2D expectedChild1Mbr = new RectDouble2D(0, 0, 4, 4);
+        Node<RectDouble> child1 = children[0];
+        RectDouble child1Mbr = (RectDouble) child1.bounds();
+        RectDouble expectedChild1Mbr = new RectDouble(0, 0, 4, 4);
         assertEquals(4, child1.size(), "Child 1 size incorrect after split");
         assertEquals(expectedChild1Mbr, child1Mbr, "Child 1 mbr incorrect after split");
 
-        Node<RectDouble2D> child2 = children[1];
-        RectDouble2D child2Mbr = (RectDouble2D) child2.bounds();
-        RectDouble2D expectedChild2Mbr = new RectDouble2D(4, 0, 5, 1);
+        Node<RectDouble> child2 = children[1];
+        RectDouble child2Mbr = (RectDouble) child2.bounds();
+        RectDouble expectedChild2Mbr = new RectDouble(4, 0, 5, 1);
         assertEquals(1, child2.size(), "Child 2 size incorrect after split");
         assertEquals(expectedChild2Mbr, child2Mbr, "Child 2 mbr incorrect after split");
     }
@@ -103,27 +103,27 @@ class QuadraticSplitLeafTest {
     @Test
     void overlappingEntryTest() {
 
-        final RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(TYPE);
-        rTree.add(new RectDouble2D(0, 0, 1, 1));
-        rTree.add(new RectDouble2D(0, 0, 2, 2));
-        rTree.add(new RectDouble2D(0, 0, 2.1, 2));
-        rTree.add(new RectDouble2D(0, 0, 3, 3));
-        rTree.add(new RectDouble2D(0, 0, 3.1, 3));
+        final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(TYPE);
+        rTree.add(new RectDouble(0, 0, 1, 1));
+        rTree.add(new RectDouble(0, 0, 2, 2));
+        rTree.add(new RectDouble(0, 0, 2.1, 2));
+        rTree.add(new RectDouble(0, 0, 3, 3));
+        rTree.add(new RectDouble(0, 0, 3.1, 3));
 
-        rTree.add(new RectDouble2D(0, 0, 4, 4));
-        rTree.add(new RectDouble2D(0, 0, 5, 5));
-        rTree.add(new RectDouble2D(0, 0, 6, 6));
-        rTree.add(new RectDouble2D(0, 0, 7, 7));
-        rTree.add(new RectDouble2D(0, 0, 7.1, 7));
+        rTree.add(new RectDouble(0, 0, 4, 4));
+        rTree.add(new RectDouble(0, 0, 5, 5));
+        rTree.add(new RectDouble(0, 0, 6, 6));
+        rTree.add(new RectDouble(0, 0, 7, 7));
+        rTree.add(new RectDouble(0, 0, 7.1, 7));
 
-        rTree.add(new RectDouble2D(0, 0, 8, 8));
-        rTree.add(new RectDouble2D(0, 0, 9, 9));
-        rTree.add(new RectDouble2D(0, 1, 2, 2));
-        rTree.add(new RectDouble2D(0, 1, 3, 3));
-        rTree.add(new RectDouble2D(0, 1, 4, 4));
+        rTree.add(new RectDouble(0, 0, 8, 8));
+        rTree.add(new RectDouble(0, 0, 9, 9));
+        rTree.add(new RectDouble(0, 1, 2, 2));
+        rTree.add(new RectDouble(0, 1, 3, 3));
+        rTree.add(new RectDouble(0, 1, 4, 4));
 
-        rTree.add(new RectDouble2D(0, 1, 4.1, 4));
-        rTree.add(new RectDouble2D(0, 1, 5, 5));
+        rTree.add(new RectDouble(0, 1, 4.1, 4));
+        rTree.add(new RectDouble(0, 1, 5, 5));
 
         
         final int expectedEntryCount = 17;
@@ -140,9 +140,9 @@ class QuadraticSplitLeafTest {
     void randomEntryTest() {
 
         final int entryCount = 50000;
-        final RectDouble2D[] rects = RTree2DTest.generateRandomRects(entryCount);
+        final RectDouble[] rects = RTree2DTest.generateRandomRects(entryCount);
 
-        final RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(TYPE);
+        final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(TYPE);
         for (int i = 0; i < rects.length; i++) {
             rTree.add(rects[i]);
         }
@@ -161,7 +161,7 @@ class QuadraticSplitLeafTest {
      */
     @Test
     void causeLinearSplitOverflow() {
-        final RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(2, 8, TYPE);
+        final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(2, 8, TYPE);
         final Random rand = new Random(13);
         for (int i = 0; i < 500; i++) {
             final int x1 = rand.nextInt(10);
@@ -169,7 +169,7 @@ class QuadraticSplitLeafTest {
             final int x2 = x1 + rand.nextInt(200);
             final int y2 = y1 + rand.nextInt(200);
 
-            rTree.add(new RectDouble2D(x1, y1, x2, y2));
+            rTree.add(new RectDouble(x1, y1, x2, y2));
         }
         final Stats stats = rTree.stats();
         stats.print(System.out);

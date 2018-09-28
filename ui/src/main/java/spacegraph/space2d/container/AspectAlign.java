@@ -1,6 +1,6 @@
 package spacegraph.space2d.container;
 
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 
 import static spacegraph.space2d.container.AspectAlign.Align.Center;
@@ -69,19 +69,19 @@ public class AspectAlign extends UnitContainer {
 
 
     @Override
-    protected RectFloat2D innerBounds() {
+    protected RectFloat innerBounds() {
         return innerBounds(bounds, scaleX, scaleY, aspect, align);
     }
 
-    public static RectFloat2D innerBounds(RectFloat2D bounds, float aspect) {
+    public static RectFloat innerBounds(RectFloat bounds, float aspect) {
         return innerBounds(bounds, aspect, Align.Center);
     }
 
-    public static RectFloat2D innerBounds(RectFloat2D bounds, float aspect, Align align) {
+    public static RectFloat innerBounds(RectFloat bounds, float aspect, Align align) {
         return innerBounds(bounds, 1, 1, aspect, align);
     }
 
-    public static RectFloat2D innerBounds(RectFloat2D bounds, float scaleX, float scaleY, float aspect, Align align) {
+    public static RectFloat innerBounds(RectFloat bounds, float scaleX, float scaleY, float aspect, Align align) {
         final float w = bounds.w;
         final float h = bounds.h;
 
@@ -157,7 +157,7 @@ public class AspectAlign extends UnitContainer {
         }
 
 
-        return RectFloat2D.X0Y0WH(tx, ty, tw, th);
+        return RectFloat.X0Y0WH(tx, ty, tw, th);
     }
 
 

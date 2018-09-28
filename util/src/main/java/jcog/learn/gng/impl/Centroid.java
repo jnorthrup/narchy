@@ -4,6 +4,7 @@ package jcog.learn.gng.impl;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static jcog.Texts.n4;
 
@@ -12,19 +13,25 @@ import static jcog.Texts.n4;
  */
 public class Centroid extends ArrayRealVector {
 
-    public final int id;
+    /** serial unique ID */
+    private static final AtomicInteger ID = new AtomicInteger();
+    public final int id = ID.getAndIncrement();
+
+    public final int _id;
+
     private double localError;
     private double localDistanceSq; 
 
-    public Centroid(int id, int dimensions) {
+    public Centroid(int internalID, int dimensions) {
         super(dimensions);
-        this.id = id;
+        this._id = internalID;
         Arrays.fill(getDataRef(), Double.NaN);
     }
 
     @Override
     public boolean equals(Object other) {
-        return (this == other) || ((Centroid) other).id == id;
+        return this == other;
+        //return (this == other) || ((Centroid) other)._id == _id;
     }
 
     @Override
@@ -107,7 +114,7 @@ public class Centroid extends ArrayRealVector {
     /**
      * 0 < rate < 1.0
      */
-    public void update(final double[] x, final double rate) {
+    public void lerp(final double[] x, final double rate) {
         final double[] d = getDataRef();
         final double ir = (1.0 - rate);
         int k = 0;
@@ -127,6 +134,12 @@ public class Centroid extends ArrayRealVector {
     @Override
     public String toString() {
         return id + ": <" + n4(getDataRef()) + "> lErr=" + n4(localError) + " dist=" + n4(localDistance());
+    }
+
+    /** tests the first dimension value if not NaN */
+    public boolean active() {
+        double v = getEntry(0);
+        return v == v;
     }
 
     public interface DistanceFunction {
@@ -181,7 +194,7 @@ public class Centroid extends ArrayRealVector {
     /*** move the centroid towards the point being learned, at the given rate */
     public void updateLocalError(double[] x, double winnerUpdateRate) {
         setLocalError(localError() + localDistance());
-        update(x, winnerUpdateRate);
+        lerp(x, winnerUpdateRate);
     }
 
 

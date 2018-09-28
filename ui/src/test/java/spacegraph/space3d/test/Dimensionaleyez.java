@@ -114,7 +114,7 @@ public class Dimensionaleyez extends SimpleSpatial {
             float p = 0.3f + (float) (0.7f / (1f + n.localDistance()));
 
             float sat = 0.5f;
-            float hue = (n.id%10)/10f;
+            float hue = (n.id %10)/10f;
             float bri = 0.5f;
             float size = last;
 

@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.meter;
 import com.jogamp.opengl.GL2;
 import jcog.math.FloatSupplier;
 import jcog.signal.tensor.ArrayTensor;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.video.Draw;
@@ -161,7 +161,7 @@ import java.util.function.Supplier;
     }
 
     @Override
-    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+    protected void paintWidget(GL2 gl, RectFloat bounds) {
 
         float h = this.h;
         float w = this.w;

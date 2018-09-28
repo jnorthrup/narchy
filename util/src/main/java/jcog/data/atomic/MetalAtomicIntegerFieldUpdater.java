@@ -1,6 +1,5 @@
 package jcog.data.atomic;
 
-import jcog.TODO;
 import jcog.Util;
 import sun.misc.Unsafe;
 
@@ -71,14 +70,13 @@ public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldU
     }
 
     public final void lazySet(T obj, int newValue) {
-        throw new TODO();
-//            this.accessCheck(obj);
-//            U.putIntRelease(obj, this.offset, newValue);
+        U.putOrderedInt(obj, this.offset, newValue);
     }
 
     public final int get(T obj) {
         return U.getIntVolatile(obj, this.offset);
     }
+
     public final int getOpaque(T obj) {
         return U.getIntVolatile(obj, this.offset);
         //return U.getIntOpaque(obj, this.offset);

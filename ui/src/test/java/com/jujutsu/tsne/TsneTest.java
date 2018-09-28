@@ -6,7 +6,7 @@ import jcog.Util;
 import jcog.data.set.ArrayHashSet;
 import jcog.io.Schema;
 import jcog.io.arff.ARFF;
-import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.tree.rtree.rect.RectFloat;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import spacegraph.SpaceGraph;
@@ -97,7 +97,7 @@ public class TsneTest {
         public void node(Graph2D.NodeVis<Schema.Instance> node, Graph2D.GraphEditing<Schema.Instance> graph) {
             node.set(new PushButton() {
                 @Override
-                protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+                protected void paintWidget(GL2 gl, RectFloat bounds) {
 
                 }
 
