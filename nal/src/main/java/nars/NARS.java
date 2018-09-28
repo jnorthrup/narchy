@@ -129,7 +129,7 @@ public class NARS {
                 n.activateConceptRate.set(0.1f);
                 n.activateLinkRate.set(0.1f);
 
-                //nar.forgetRate.set(0.5f);
+                n.forgetRate.set(0.4f);
 
 
                 n.beliefPriDefault.set(0.5f);

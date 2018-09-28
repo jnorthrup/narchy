@@ -48,6 +48,8 @@ public class ConjClustering extends Causable {
     private int volMax;
     private int ditherTime;
 
+    private boolean popConjoinedTasks = false;
+
     //temporary to the current singleton
     transient private int tasksGenerated;
 
@@ -111,17 +113,17 @@ public class ConjClustering extends Causable {
             if (!t.isEternal()
                     && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets) //TODO allow ImDep's
                     && filter.test(t)) {
-                data.put(t,
 
-                        t.priElseZero() * t.originality()
-
-                );
+                data.put(t, pri(t));
 
             }
         }, punc));
 
     }
 
+    public float pri(Task t) {
+        return t.priElseZero() * t.conf() * t.range() * t.originality() ;
+    }
 
     @Override
     protected /*synchronized*/ void next(NAR nar, BooleanSupplier kontinue /* max tasks generated per centroid, >=1 */) {
@@ -137,11 +139,16 @@ public class ConjClustering extends Causable {
 
 
 
-        data.commit(nar.forgetRate.floatValue(), 1);
+        data.commit(forgetRate(), 1);
 
         conjoiner.kontinue = kontinue;
         data.cluster(nar, nar.random(), conjoiner::conjoinCentroid);
 
+    }
+
+    protected float forgetRate() {
+        //nar.forgetRate.floatValue()
+        return 0.5f;
     }
 
     final CentroidConjoiner conjoiner = new CentroidConjoiner();
@@ -156,6 +163,7 @@ public class ConjClustering extends Causable {
          * HACK
          */
         transient volatile public BooleanSupplier kontinue;
+
 
         private boolean conjoinCentroid(Stream<VLink<Task>> group, NAR nar) {
 
@@ -278,8 +286,10 @@ public class ConjClustering extends Causable {
 
                                 m.pri(Priority.fund(Math.min(priMax, priMin * freqFactor * cmplFactor * confFactor), false, uu));
 
-                                for (Task aa : actualTasks)
-                                    data.remove(aa);
+                                if (popConjoinedTasks) {
+                                    for (Task aa : actualTasks)
+                                        data.remove(aa);
+                                }
 
                                 tasksGenerated++;
                                 in.input(m);

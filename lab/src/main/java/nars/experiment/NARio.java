@@ -37,7 +37,6 @@ public class NARio extends NAgentX {
         super("nario", fps(fps), nar);
 
 
-//        nar.freqResolution.set(0.1f);
 
 
         game = new MarioComponent(
@@ -389,6 +388,7 @@ public class NARio extends NAgentX {
             x = new NARio(n);
             n.freqResolution.set(0.02f);
             n.confResolution.set(0.01f);
+
 
             return x;
 

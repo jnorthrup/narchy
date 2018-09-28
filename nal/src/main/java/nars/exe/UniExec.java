@@ -34,7 +34,7 @@ public class UniExec extends AbstractExec {
 
     final MetalConcurrentQueue in;
 
-    static float timeSliceMomentum = 0.9f;
+    static float timeSliceMomentum = 0.5f;
 
 
     final Sharing sharing = new Sharing();
@@ -215,17 +215,17 @@ public class UniExec extends AbstractExec {
                             forEach((InstrumentedWork s) -> {
                                 Causable c = (Causable) s.who;
                                 if (sleeping.get(c.scheduledID)) {
-                                    s.pri(0);
+                                    s.pri(0, 1-timeSliceMomentum);
                                     return;
                                 }
 
-                                double v = s.valuePerSecond, vv = explorationRate;
+                                double v = s.valuePerSecond, vv;
                                 if (v == v) {
-                                    double vn = (v - valRateMin[0]) / valRateRange;
-                                    //vv += vn;
-                                    vv = Math.max(vv, vn);
+                                    vv = (v - valRateMin[0]) / valRateRange;
+                                } else {
+                                    vv = 0;
                                 }
-                                s.valuePerSecondNormalized = vv;
+                                s.valuePerSecondNormalized = Math.max(vv, explorationRate);
                                 valueRateSum[0] += vv;
                             });
 

@@ -44,10 +44,12 @@ public class PriForget<P extends Priority> implements Consumer<P> {
 
         if ((s > 0) && (pressure > 0) && (cap > 0) && (mass > 0) && temperature > 0) {
 
+            float idealPri = 1 - temperature; //headroom median balanced
+            float totalQuell = (mass + pressure ) - (s * idealPri);
             float eachMustForgetPct =
-                    temperature *
-                        (((float)s)/cap) *
-                        Math.min(1f, pressure / (pressure + mass))
+                        Util.unitize(totalQuell / s);
+
+                        //* Math.min(1f, quell + pressure / (pressure + mass))
             ;
 
             if (eachMustForgetPct > cap * ScalarValue.EPSILON) {

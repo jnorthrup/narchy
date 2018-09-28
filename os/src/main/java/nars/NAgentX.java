@@ -339,7 +339,7 @@ abstract public class NAgentX extends NAgent {
 
         //new STMLinkage(n, 1);
 
-        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 16, 96);
+        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 96);
         {
             Cluster2DView v = new Cluster2DView() {
 
@@ -350,7 +350,7 @@ abstract public class NAgentX extends NAgent {
             SpaceGraph.window(v, 500, 500);
         }
 
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 64);
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 32);
         //ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof SeriesBeliefTable.SeriesTask /* exclude curiosity */) ), 8, 96);
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(64, n);
