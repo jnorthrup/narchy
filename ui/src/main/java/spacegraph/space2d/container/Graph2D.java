@@ -36,6 +36,10 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     private final AtomicBoolean busy = new AtomicBoolean(false);
 
+
+    //public AtomicFloat scale = new AtomicFloat(1);
+
+
     private List<Graph2DRenderer<X>> renderers = new FasterList<>();
 
 //    private final DequePool<NodeVis<X>> nodePool = new DequePool<>() {
@@ -121,6 +125,12 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             }
         }, cfg, 0.1f);
     }
+
+//    @Override
+//    public void renderContents(GL2 gl, SurfaceRender r) {
+//        SurfaceRender rr = r.clone(scale.floatValue(), new v2()); //HACK
+//        super.renderContents(gl, rr);
+//    }
 
     protected void addControls(Gridding cfg) {
 

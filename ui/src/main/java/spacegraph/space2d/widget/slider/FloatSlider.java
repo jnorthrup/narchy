@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.slider;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.NumberX;
+import jcog.data.atomic.AtomicFloat;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.pri.ScalarValue;
@@ -47,6 +48,10 @@ public class FloatSlider extends Widget {
 
     public FloatSlider(FloatRange f) {
         this(new DefaultFloatSlider(f.get(), f.min, f.max));
+        input = f;
+    }
+    public FloatSlider(AtomicFloat f, float min, float max) {
+        this(new DefaultFloatSlider(f.get(), min, max));
         input = f;
     }
 

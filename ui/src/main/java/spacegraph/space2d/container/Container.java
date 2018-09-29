@@ -98,7 +98,7 @@ abstract public class Container extends Surface {
         paintAbove(gl, r);
     }
 
-    public final void renderContents(GL2 gl, SurfaceRender r) {
+    public void renderContents(GL2 gl, SurfaceRender r) {
         forEach(c -> {
             if (c.parent!=null) {
                 c.render(gl, r);
@@ -108,13 +108,7 @@ abstract public class Container extends Surface {
     }
 
     protected boolean prePaint(SurfaceRender r) {
-        prePaint(r.dtMS);
         return true;
-    }
-
-    @Deprecated
-    public void prePaint(int dtMS) {
-
     }
 
 

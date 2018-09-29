@@ -111,22 +111,24 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     @Override
-    public void prePaint(int dtMS) {
+    protected boolean prePaint(SurfaceRender r) {
+        if (super.prePaint(r)) {
+            int W = window.window.getWidth();
+            int H = window.window.getHeight();
+            if (posChanged(RectFloat.XYXY(0, 0, W, H))) {
+                layout();
+            }
 
-
-        int W = window.window.getWidth();
-        int H = window.window.getHeight();
-        if (posChanged(RectFloat.XYXY(0, 0, W, H))) {
-            layout();
+            float scale = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
+            float s = Math.max(W, H) * scale;
+            this.scale.set(s, s);
+            //this.scale.set(W * scale, H * scale);
+            return true;
         }
-
-        float scale = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
-        float s = Math.max(W, H) * scale;
-        this.scale.set(s, s);
-        //this.scale.set(W * scale, H * scale);
-
-        super.prePaint(dtMS);
+        return false;
     }
+
+
 
     @Override
     protected void doLayout(int dtMS) {

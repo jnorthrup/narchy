@@ -28,14 +28,6 @@ public class FloatRangePort extends FloatPort {
         set(new Gridding(0.25f, new EmptySurface(), s));
     }
 
-    @Override
-    public void prePaint(int dtMS) {
-        
-
-
-
-        super.prePaint(dtMS);
-    }
 
 
 
@@ -45,7 +37,7 @@ public class FloatRangePort extends FloatPort {
     }
 
     @Override
-    public boolean in(Wire from, Float s) {
+    public boolean recv(Wire from, Float s) {
         return false;
     }
 

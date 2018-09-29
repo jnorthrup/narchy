@@ -53,8 +53,8 @@ public class Wire {
     }
 
     /** sends to target */
-    public final boolean in(Surface sender, Object s) {
-        if (((Port)other(sender)).in(this, s)) {
+    public final boolean send(Surface sender, Object s) {
+        if (((Port)other(sender)).recv(this, transfer(sender, s))) {
             long now = System.nanoTime();
 
             Class<?> cl = s.getClass();
@@ -76,6 +76,11 @@ public class Wire {
             return true;
         }
         return false;
+    }
+
+    /** allows subclasses to impl inline filters or transforms */
+    protected Object transfer(Surface sender, Object x) {
+        return x;
     }
 
     public Surface other(Surface x) {

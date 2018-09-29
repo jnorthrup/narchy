@@ -5,6 +5,7 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.TextEdit;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.IntConsumer;
 
 import static spacegraph.space2d.container.Gridding.col;
 
@@ -30,6 +31,14 @@ public class IntPort extends TypedPort<Integer> {
         txt.on(this::out);
     }
 
+    public IntPort(IntConsumer i) {
+        this();
+        on((I)->{
+            if (I != null)
+                i.accept(I);
+        });
+    }
+
     public int get() {
         return value.getOpaque();
     }
@@ -53,7 +62,7 @@ public class IntPort extends TypedPort<Integer> {
         if (value.getAndSet(next)!=next) {
 
             txt.text(Integer.toString(next));
-            out(sender, next);
+            super.out(sender, next);
 
             return /* true */;
         }

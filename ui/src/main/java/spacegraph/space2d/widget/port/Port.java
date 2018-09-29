@@ -7,6 +7,7 @@ import org.eclipse.collections.api.block.procedure.primitive.IntObjectProcedure;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.Wiring;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.port.util.Wire;
@@ -230,13 +231,17 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     }
 
 
-    @Override
-    public void prePaint(int dtMS) {
-        IntObjectProcedure<Port<X>> u = this.updater;
-        if (u !=null)
-            u.value(dtMS, this);
 
-        super.prePaint(dtMS);
+    @Override
+    public boolean prePaint(SurfaceRender r) {
+        if (super.prePaint(r)) {
+            IntObjectProcedure<Port<X>> u = this.updater;
+            if (u !=null)
+                u.value(r.dtMS, this);
+
+            return true;
+        }
+        return false;
     }
 
     public final void out(X x) {
@@ -273,17 +278,18 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         if (enabled) {
             Node<spacegraph.space2d.Surface, Wire> n = this.node;
             if (n!=null)
-                n.edges(true, true).forEach(t -> { t.id().in(sender, x); } );
+                n.edges(true, true).forEach(t -> { t.id().send(sender, x); } );
         }
     }
 
-    public boolean in(Wire from, X s) {
+    public boolean recv(Wire from, X s) {
         if (!enabled) {
             return false;
         } else {
-             if (this.in != null) {
+            In<? super X> in = this.in;
+            if (in != null) {
                  try {
-                     this.in.accept(from, s);
+                     in.accept(from, s);
                      return true;
                  } catch (Throwable t) {
                      SurfaceRoot r = root();

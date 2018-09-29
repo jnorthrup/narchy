@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.meta;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.jogamp.opengl.GL2;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.TensorChain;
@@ -9,6 +10,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
@@ -22,7 +24,9 @@ import spacegraph.space2d.widget.port.FloatRangePort;
 import spacegraph.space2d.widget.port.IntPort;
 import spacegraph.space2d.widget.port.LabeledPort;
 import spacegraph.space2d.widget.tab.TabPane;
+import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
+import spacegraph.video.Draw;
 import spacegraph.video.WebCam;
 
 import java.util.HashMap;
@@ -56,35 +60,37 @@ public class ProtoWidget extends Widget {
     private static final Supplier<Surface> TODO = () -> new VectorLabel("TODO");
     private static final WidgetLibrary LIBRARY  = new WidgetLibrary() {{
 
-        add("Keyboard", ()-> new KeyboardChip(), "Hardware");
-        add("ArrowKeys", ()-> new KeyboardChip.ArrowKeysChip(), "Hardware");
+        add("Keyboard", ()-> new KeyboardChip(), "Input");
+        add("ArrowKeys", ()-> new KeyboardChip.ArrowKeysChip(), "Input");
 
-        add("Mouse", TODO, "Hardware");
-        add("Gamepad", TODO, "Hardware");
-        add("WebCam", () -> new WebCam.WebCamSurface(WebCam.the()), "Hardware");
+        add("Mouse", TODO, "Input");
+        add("Gamepad", TODO, "Input");
+        add("WebCam", () -> new WebCam.WebCamSurface(WebCam.the()), "Input");
         add("Microphone", ()->{
             {
                 WaveCapture au = new WaveCapture(new AudioSource(20), 4f);
                 au.setFPS(20f);
                 return au.view();
             }
-        }, "Hardware");
+        }, "Input");
 
-        add("int", ()->new IntPort(), "Signal");
-        add("float[-1..1]", ()->new FloatRangePort(0.5f, -1, 1f), "Signal");
-        add("float[0..1]", ()->new FloatRangePort(0.5f, 0, 1f), "Signal");
-        add("Rng", ()->new FloatRangePort(0.5f, 0, 1f), "Signal");
-        add("Wave", TODO, "Signal");
+        add("int", ()->new IntPort(), "Number");
+        add("float[-1..1]", ()->new FloatRangePort(0.5f, -1, 1f), "Number");
+        add("float[0..1]", ()->new FloatRangePort(0.5f, 0, 1f), "Number");
+        add("random float[0..1]", ()->new FloatRangePort(0.5f, 0, 1f), "Number");
 
-        add("Split", TODO, "Signal");
 
+        add("ColorChoose", TODO, "Video");
+        add("Recognizer", TODO, "Video");
+        add("Tracker", TODO, "Video");
+        add("Snapshotter", TODO, "Video");
+        add("Vectorize", TODO, "Video");
+        add("ShapeDetect", TODO, "Video");
+
+        add("split", TODO, "Tensor");
         add("concat", ()->new BiFunctionChip<Tensor, Tensor,Tensor>((Tensor a, Tensor b) -> {
             return TensorChain.get(a, b);
-        }), "Signal");
-
-        add("Mix", TODO, "Signal");
-        add("EQ", TODO, "Signal");
-
+        }), "Tensor");
         add("OneHotBit", ()-> new BiFunctionChip<>((Integer signal, Integer range) -> {
             //TODO optimize with a special Tensor impl
             if (signal >= 0 && signal < range) {
@@ -94,26 +100,38 @@ public class ProtoWidget extends Widget {
             } else {
                 return null;
             }
-        }), "Signal");
+        }), "Tensor");
+
+
+        add("mix", TODO, "Audio");
+        add("EQ", TODO, "Audio");
+        add("play", TODO, "Audio");
+        add("sonify", TODO, "Audio");
 
         add("QLearn", TODO, "Control");
         add("PID", TODO, "Control");
 
-        add("Text", LabeledPort::generic, "See");
-        add("Plot", PlotChip::new, "See");
-        add("Cluster2D", Cluster2DChip::new, "See");
-        add("Color", TODO, "See");
+        add("Text", LabeledPort::generic, "Meter");
+        add("Plot", PlotChip::new, "Meter");
+        add("Cluster2D", Cluster2DChip::new, "Meter");
 
-        add("Audio", TODO, "Hear");
-        add("Sonify", TODO, "Hear");
+
+
+
 
         add("Geo", TODO, "Reality");
         add("Weather", TODO, "Reality");
 
-        add("Files", TODO, "Connect");
-        add("SSH", TODO, "Connect");
-        add("RDP", TODO, "Connect");
-        add("WWW", TODO, "Connect");
+        add("File", TODO, "Data"); //and directory too
+        add("CSV", TODO, "Data");
+        add("ARFF", TODO, "Data");
+        add("SQL", TODO, "Data");
+        add("SSH", TODO, "Data");
+        add("RDP", TODO, "Data");
+        add("HTTP", TODO, "Data");
+        add("FTP", TODO, "Data");
+
+        add("Shell", TODO, "Data");
 
     }};
 
@@ -130,7 +148,18 @@ public class ProtoWidget extends Widget {
             Surface[] fields = v.stream()
                     .map(x -> becoming(x.getOne(), x.getTwo()))
                     .toArray(Surface[]::new);
-            categories.put(t, ()->new Gridding( fields ) );
+            categories.put(t, () -> new Widget(new LabeledPane(new VectorLabel(t) {
+                {
+                    textColor.set(1,1,1,1);
+
+                }
+
+                @Override
+                protected void paintBelow(GL2 gl, SurfaceRender r) {
+                    gl.glColor3f(0,0, 0);
+                    Draw.rect(bounds, gl);
+                }
+            }, new Gridding( fields )) ));
         });
 
         set(new TabPane(categories, (l)->{

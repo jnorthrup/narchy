@@ -1,13 +1,16 @@
 package spacegraph.space2d.widget.tab;
 
+import com.jogamp.opengl.GL2;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.*;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.text.VectorLabel;
+import spacegraph.video.Draw;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -40,7 +43,13 @@ public class TabPane extends Splitting {
 
         unsplit();
 
-        content = new Gridding();
+        content = new Gridding() {
+            @Override
+            protected void paintBelow(GL2 gl, SurfaceRender r) {
+                gl.glColor3f(0.1f, 0.1f, 0.1f);
+                Draw.rect(bounds, gl);
+            }
+        };
 
         tabs = new Gridding();
 

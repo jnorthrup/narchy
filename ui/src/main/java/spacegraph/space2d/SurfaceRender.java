@@ -1,8 +1,13 @@
 package spacegraph.space2d;
 
+import com.jogamp.opengl.GL2;
+import jcog.Util;
+import jcog.pri.ScalarValue;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.util.math.v2;
 import spacegraph.util.math.v3;
+
+import java.util.function.Consumer;
 
 /** surface rendering context */
 public class SurfaceRender {
@@ -25,29 +30,29 @@ public class SurfaceRender {
         this.renderStartNS = System.nanoTime();
     }
 
-//    public void clone(float scale, v2 offset, Consumer<SurfaceRender> run, GL2 gl) {
-//        SurfaceRender s = clone(scale, offset);
-//        if (s!=this) {
-//            gl.glPushMatrix();
-//            {
-//                gl.glTranslatef(offset.x, offset.y, 0);
-//                gl.glScalef(scale, scale, 1);
-//                run.accept(s);
-//            }
-//            gl.glPopMatrix();
-//        } else {
-//            run.accept(this);
-//        }
-//    }
-//
-//    public SurfaceRender clone(float scale, v2 offset) {
-//        if (Util.equals(scale, 1f, ScalarValue.EPSILON) && offset.equalsZero())
-//            return this; //unchanged
-//        else
-//            return new SurfaceRender(pw, ph, dtMS)
-//                    .set(scaleX * scale, scaleY * scale,
-//                        (x1 + x2)/2 + offset.x, (y1 + y2)/2 + offset.y);
-//    }
+    public void clone(float scale, v2 offset, Consumer<SurfaceRender> run, GL2 gl) {
+        SurfaceRender s = clone(scale, offset);
+        if (s!=this) {
+            gl.glPushMatrix();
+            {
+                gl.glTranslatef(offset.x, offset.y, 0);
+                gl.glScalef(scale, scale, 1);
+                run.accept(s);
+            }
+            gl.glPopMatrix();
+        } else {
+            run.accept(this);
+        }
+    }
+
+    public SurfaceRender clone(float scale, v2 offset) {
+        if (Util.equals(scale, 1f, ScalarValue.EPSILON) && offset.equalsZero())
+            return this; //unchanged
+        else
+            return new SurfaceRender(pw, ph, dtMS)
+                    .set(scaleX * scale, scaleY * scale,
+                        (x1 + x2)/2 + offset.x, (y1 + y2)/2 + offset.y);
+    }
 
     public SurfaceRender set(v3 cam, v2 scale) {
         return set(scale.x, scale.y, cam.x, cam.y);

@@ -9,7 +9,6 @@ import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.space2d.widget.shape.PathSurface;
 import spacegraph.space2d.widget.windo.GraphEdit;
-import spacegraph.space2d.widget.windo.Link;
 import spacegraph.util.Path2D;
 
 import javax.annotation.Nullable;
@@ -28,7 +27,16 @@ public class Wiring extends FingerDragging {
         CAST.set(float[].class, double[].class, (Function<float[], double[]>) Util::toDouble);
         CAST.set(double[].class, float[].class, (Function<double[], float[]>)Util::toFloat);
 
+        CAST.set(Float.class, Double.class, (Function<Float,Double>)(Float::doubleValue)); //1-element
+        CAST.set(Double.class, Float.class, (Function<Double,Float>)(Double::floatValue)); //1-element
+        CAST.set(Float.class, float[].class, (Function<Float,float[]>)(v -> new float[] { v })); //1-element
         CAST.set(Float.class, Tensor.class, (Function<Float,Tensor>)(ArrayTensor::new)); //1-element
+        CAST.set(Tensor.class, ArrayTensor.class, (Function<Tensor,ArrayTensor>)(t -> {
+            if (t instanceof ArrayTensor) {
+                return (ArrayTensor) t; //does this happen
+            }
+            return new ArrayTensor(t.toFloatArrayShared());
+        }));
         CAST.set(ArrayTensor.class, float[].class, (Function<ArrayTensor,float[]>)(a->a.data));
 
     }
@@ -116,48 +124,42 @@ public class Wiring extends FingerDragging {
 
     }
 
-    /**
-     * called when wire has been established
-     *
-     * @param start
-     * @param end
-     * @param y
-     * @param wall
-     */
-    protected Link wire(Wire w, GraphEdit wall) {
 
+
+    private Wire typeAdapt(Wire w, GraphEdit wall) {
         if (w.a instanceof TypedPort && w.b instanceof TypedPort) {
+
+            //TODO lazy construct and/or cache these
+
             //apply type checking and auto-conversion if necessary
             Class aa = ((TypedPort) w.a).type;
             Class bb = ((TypedPort) w.b).type;
             if (aa.equals(bb)) {
                 //ok
             } else {
+
                 List<Function> ab = CAST.convertors(aa, bb);
                 List<Function> ba = CAST.convertors(bb, aa);
 
-//                System.out.println(aa + " -> " + bb + ": " + ab);
-//                System.out.println(bb + " -> " + aa + ": " + ba);
+                if (!ab.isEmpty() || !ba.isEmpty()) {
+                    w = new AdaptingWire(w, ab, ba);
+                }
+
+
             }
+
         }
-
-        return wall.wire(w);
-
-//        PathSurface p = new PathSurface(2);
-//        p.set(0, start.cx(), start.cy());
-//        p.set(1, end.cx(), end.cy());
-//        wall.addRaw(p);
+        return w;
     }
 
 
     protected boolean tryWire() {
         GraphEdit wall = graph();
         Wire x = new Wire(start, end);
-        Wire y = wall.addWire(x);
-        if (y == x) {
-            Link w = //new Wire(start, end);
-                    wire(y, wall);
+        Wire y = typeAdapt(x, wall);
+        if (y == wall.addWire(y)) {
 
+            wall.link(y);
 
             start.root().debug(start, 1, () -> "wire(" + wall + ",(" + start + ',' + end + "))");
             //wire(start, end, y, wall);
@@ -191,4 +193,5 @@ public class Wiring extends FingerDragging {
             }
         }
     }
+
 }

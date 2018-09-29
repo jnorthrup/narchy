@@ -376,22 +376,22 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     /**
      * returns the grip window
      */
-    public Link wire(Wire w) {
+    public Link link(Wire w) {
         Surface a = w.a;
         Surface b = w.b;
-        return wire(w, a, b);
+        return link(w, a, b);
     }
 
 
-    private Link wire(Wire w, Surface a, Surface b) {
+    private Link link(Wire w, Surface a, Surface b) {
         VerletParticle2D ap = physics.bind(a, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
         VerletParticle2D bp = physics.bind(b, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
 
-        return wire(w, a, ap, b, bp);
+        return link(w, a, ap, b, bp);
     }
 
 
-    private Link wire(@Nullable Wire w, Surface a, VerletParticle2D ap, Surface b, VerletParticle2D bp) {
+    private Link link(@Nullable Wire w, Surface a, VerletParticle2D ap, Surface b, VerletParticle2D bp) {
 
         if (w == null)
             w = new Wire(a, b);
@@ -412,6 +412,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
         Surface aa = wire.a, bb = wire.b;
 
         synchronized (links) {
+
 
             NodeGraph.MutableNode<Surface, Wire> A = links.addNode(aa);
             NodeGraph.MutableNode<Surface, Wire> B = links.addNode(bb);

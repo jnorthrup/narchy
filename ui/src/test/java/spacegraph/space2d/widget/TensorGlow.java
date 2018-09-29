@@ -36,7 +36,7 @@ public class TensorGlow {
 
     public static void main(String[] args) {
 
-        GraphEdit p = WallTest.newWallWindow();
+        GraphEdit p = GraphEditTest.newWallWindow();
 
 //        p.W.setGravity(new v2(0, -2.8f));
 //        staticBox(p.W, -5, -8, +5, 2f, false, true, true, true);

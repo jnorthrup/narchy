@@ -5,7 +5,6 @@ import jcog.data.graph.Node;
 import org.ujmp.core.Matrix;
 import org.ujmp.core.util.matrices.SystemEnvironmentMatrix;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.widget.button.PushButton;
 
 import java.io.IOException;
 
@@ -42,28 +41,7 @@ public class Graph2DTest {
         }
 
     }
-    static class Graph2DVirtualTest {
-        public static void main(String[] args) {
 
-
-
-            Graph2D<Node<Object, Object>> sg = new Graph2D<Node<Object, Object>>()
-
-                    .update(new ForceDirected2D())
-
-                    .render(new Graph2D.NodeGraphRenderer())
-
-                    .set(h.nodes());
-
-            
-
-            SpaceGraph.window(new Bordering(sg)
-                    .set(Bordering.S, new PushButton("#"), 0.1f)
-                    .set(Bordering.W, new PushButton("#"), 0.1f),
-                    800, 800);
-        }
-
-    }
     static class Ujmp1 {
         public static void main(String[] args) throws IOException {
 

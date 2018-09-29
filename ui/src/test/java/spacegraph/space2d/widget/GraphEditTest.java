@@ -3,6 +3,7 @@ package spacegraph.space2d.widget;
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.exe.Loop;
+import jcog.signal.Tensor;
 import jcog.signal.buffer.CircularFloatBuffer;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
@@ -39,10 +40,10 @@ import static java.lang.Boolean.TRUE;
 import static spacegraph.space2d.container.Gridding.HORIZONTAL;
 import static spacegraph.space2d.container.Gridding.VERTICAL;
 
-public class WallTest {
+public class GraphEditTest {
 
     public static GraphEdit newWallWindow() {
-        GraphEdit w = new GraphEdit(RectFloat.X0Y0WH(0,0,1000, 900));
+        GraphEdit w = new GraphEdit(RectFloat.X0Y0WH(0, 0, 1000, 900));
         SpaceGraph.window(
                 //new Bordering(w).borderSize(Bordering.S, 0.25f).south(w.debugger()),
                 w,
@@ -92,6 +93,7 @@ public class WallTest {
         }
 
     }
+
     public static class Box2DTest_FloatMux {
 
         public static void main(String[] args) {
@@ -172,7 +174,7 @@ public class WallTest {
 
             {
                 TextEdit e = new TextEdit("a b c d e", true);
-                e.resize(16,3);
+                e.resize(16, 3);
                 Port p = new Port();
                 e.on(p::out);
                 g.add(
@@ -181,7 +183,7 @@ public class WallTest {
             }
 
             {
-                CircularFloatBuffer buffer = new CircularFloatBuffer(2*TinySpeech.SAMPLE_FREQUENCY);
+                CircularFloatBuffer buffer = new CircularFloatBuffer(2 * TinySpeech.SAMPLE_FREQUENCY);
 //            for (int i = 0; i < buffer.capacity()/2; i++) {
 //                buffer.write(new float[]{(float) Math.sin(i / 500f)});
 //                buffer.write(new float[]{(float) Math.sin(i / 500f)});
@@ -193,7 +195,7 @@ public class WallTest {
                     if (busy.compareAndSet(false, true)) {
                         try {
                             buffer.clear();
-                            buffer.write( TinySpeech.say(text, 80, 1f) );
+                            buffer.write(TinySpeech.say(text, 80, 1f));
                             wave.update();
                         } finally {
                             busy.set(false);
@@ -206,7 +208,7 @@ public class WallTest {
                         new Bordering(wave)
                                 .set(Bordering.W, p, 0.1f)
                                 .set(Bordering.S, new Gridding(
-                                        PushButton.awesome("play").click(()->{
+                                        PushButton.awesome("play").click(() -> {
                                             Audio.the().play(new SamplePlayer(new SoundSample(buffer.data, TinySpeech.SAMPLE_FREQUENCY)));
                                         })
                                 ), 0.1f)
@@ -231,11 +233,11 @@ public class WallTest {
 //                e.click(()->{
 //                    Synth
 //                })
-                TypedPort<ObjectIntPair<float[]>> p = new TypedPort(ObjectIntPair.class, (Consumer<ObjectIntPair<float[]>>)(ObjectIntPair<float[]> mixTarget)->{
+                TypedPort<ObjectIntPair<float[]>> p = new TypedPort(ObjectIntPair.class, (Consumer<ObjectIntPair<float[]>>) (ObjectIntPair<float[]> mixTarget) -> {
                     h.next(mixTarget.getOne());
                 });
                 g.add(
-                        new Bordering(new Gridding(e, new FloatSlider(h.amp(), 0, 8f ).on(a->{
+                        new Bordering(new Gridding(e, new FloatSlider(h.amp(), 0, 8f).on(a -> {
                             h.amp(a);
                         }))).set(Bordering.E, p, 0.1f)
                 ).pos(0, 0, 250, 250);
@@ -245,7 +247,7 @@ public class WallTest {
             {
 
 
-                g.add( new WaveViewChip() ).pos(300, 0, 850, 550);
+                g.add(new WaveViewChip()).pos(300, 0, 850, 550);
 
                 g.add(new AudioOutPort()).pos(500, 30, 450, 350);
             }
@@ -265,8 +267,8 @@ public class WallTest {
                     FloatRangePort f = new FloatRangePort(50f, 1, 100);
                     Windo x = add(new LabeledPane("ms", f));
                     x.pos(100, 100, 400, 400);
-                    Windo xPlus = sprout(x, new PushButton("+").click(()->f.f.add(0.1f)), 0.15f);
-                    Windo xMinus = sprout(x, new PushButton("-").click(()->f.f.subtract(0.1f)), 0.15f);
+                    Windo xPlus = sprout(x, new PushButton("+").click(() -> f.f.add(0.1f)), 0.15f);
+                    Windo xMinus = sprout(x, new PushButton("-").click(() -> f.f.subtract(0.1f)), 0.15f);
 
                     Gridding tick = new PulseChip();
                     add(tick).pos(0, 0, 200, 200);
@@ -275,7 +277,7 @@ public class WallTest {
 
                         AtomicBoolean state = new AtomicBoolean(false);
                         Port out = LabeledPort.generic();
-                        Port in = new Port((z)->{
+                        Port in = new Port((z) -> {
                             if (z == TRUE) {
                                 out.out(state.getAndSet(!state.getOpaque())); //TODO really make atomic
                             }
@@ -291,13 +293,13 @@ public class WallTest {
                                     gl.glColor4f(0.5f, 0f, 0, 0.5f);
                                 }
 
-                                Draw.rect( bounds, gl);
+                                Draw.rect(bounds, gl);
                             }
                         };
                         add(inverter).pos(70, 70, 140, 140);
 
                         //add(new SwitchChip(4)).pos(170, 170, 240, 240);
-                        add(new FunctionSelectChip<Double,Double>(
+                        add(new FunctionSelectChip<Double, Double>(
                                 Map.of("sin", Math::sin, "cos", Math::cos))).pos(170, 170, 240, 240);
                     }
 
@@ -307,9 +309,16 @@ public class WallTest {
             SpaceGraph.window(g, 1000, 1000);
 
 
-
         }
 
     }
 
+    public static class AutoAdaptTest {
+
+        public static void main(String[] args) {
+            GraphEdit w = newWallWindow();
+            w.add(new IntPort()).pos(100, 100, 400, 400);
+            w.add(new TypedPort<Tensor>(Tensor.class)).pos(100, 100, 400, 400);
+        }
+    }
 }
