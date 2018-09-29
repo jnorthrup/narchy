@@ -32,12 +32,12 @@ public class VerletSurface extends Surface implements Animated {
 
     public VerletPhysics2D physics;
 
-    private boolean animateWhenInvisible = false;
+    private final boolean animateWhenInvisible = false;
 
     /**
      * constrained to the surface's rectangular bounds
      */
-    private boolean bounded = true;
+    private final boolean bounded = true;
 
     public final AtomicBoolean debugRender = new AtomicBoolean(true);
 
@@ -199,8 +199,8 @@ public class VerletSurface extends Surface implements Animated {
                 //immediate
                 vv.next.set(pNext);
 
-                float density = 0.01f;
-                vv.mass = (float) (ss.bounds.area() * density);
+                float density = 0.001f;
+                vv.mass = ss.bounds.area() * density;
 
 //                    vv.set(pNext);
 //                    vv.prev.set(pNext);

@@ -19,6 +19,7 @@ import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.chip.AudioOutPort;
 import spacegraph.space2d.widget.chip.FunctionSelectChip;
+import spacegraph.space2d.widget.chip.PulseChip;
 import spacegraph.space2d.widget.chip.WaveViewChip;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.meter.WaveView;
@@ -267,61 +268,7 @@ public class WallTest {
                     Windo xPlus = sprout(x, new PushButton("+").click(()->f.f.add(0.1f)), 0.15f);
                     Windo xMinus = sprout(x, new PushButton("-").click(()->f.f.subtract(0.1f)), 0.15f);
 
-                    Port periodMS = new Port();
-                    //TODO phase
-                    Port pulse = new Port();
-                    Gridding tick = new Gridding(
-                        new LabeledPane("period(MS)", periodMS),
-                        new LabeledPane("trigger", pulse)
-                    ) {
-                        float p = Float.NaN;
-                        Loop loop = null;
-                        AtomicBoolean busy = new AtomicBoolean();
-
-                        protected void tick() {
-                            if (busy.compareAndSet(false, true)) {
-                                try {
-                                    pulse.out(TRUE);
-                                } finally {
-                                    busy.set(false);
-                                }
-                            }
-                        }
-
-                        @Override
-                        protected void stopping() {
-                            super.stopping();
-                            if (loop!=null) {
-                                loop.stop();
-                                loop = null;
-                            }
-                        }
-
-                        {
-                            periodMS.on(x ->{
-                                synchronized (this) {
-
-                                    if (x instanceof Number) {
-                                        p = ((Number) x).floatValue();
-                                    } else {
-                                        p = Float.NaN;
-                                    }
-
-                                    if (p > 0.5f) {
-                                        if (loop == null)
-                                            loop = Loop.of(this::tick);
-                                        loop.setPeriodMS(Math.round(p));
-                                    }
-
-                                    if ((p!=p || p < 0.5f)) {
-                                        if (loop != null)
-                                            loop.stop();
-                                    }
-
-                                }
-                            });
-                        }
-                    };
+                    Gridding tick = new PulseChip();
                     add(tick).pos(0, 0, 200, 200);
 
                     {
@@ -362,5 +309,7 @@ public class WallTest {
 
 
         }
+
     }
+
 }

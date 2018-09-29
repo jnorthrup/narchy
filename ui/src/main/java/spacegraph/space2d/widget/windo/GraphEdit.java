@@ -1,27 +1,20 @@
 package spacegraph.space2d.widget.windo;
 
-import com.jogamp.opengl.GL2;
-import jcog.Util;
 import jcog.data.graph.*;
 import jcog.tree.rtree.rect.RectFloat;
-import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.DoubleClicking;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.collection.MutableListContainer;
-import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ProtoWidget;
 import spacegraph.space2d.widget.meta.WizardFrame;
 import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.space2d.widget.shape.VerletSurface;
 import spacegraph.util.math.v2;
-import spacegraph.video.Draw;
 import toxi.physics2d.VerletParticle2D;
 import toxi.physics2d.behavior.AttractionBehavior2D;
 import toxi.physics2d.spring.VerletSpring2D;
@@ -404,84 +397,8 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
             w = new Wire(a, b);
 
 
-        Link l = new Link(w);
+        Link l = new Link.DefaultLink(w, a, ap, b, bp, this);
 
-        float m = 8; //TODO dynamic based on surface area, density
-        ap.mass(m);
-        bp.mass(m);
-
-        int extraJoints = 2;
-        int chainLen = 2 + 1 + (extraJoints*2); //should be an odd number
-
-        Pair<List<VerletParticle2D>, List<VerletSpring2D>> chain = physics.addParticleChain(ap, bp,
-                chainLen, 1f /* some minimal # */, 0.05f);
-
-        List<VerletSpring2D> springs = chain.getTwo();
-        l.offs.add(()->{
-            //destroy the chain springs on destruction
-            springs.forEach(physics.physics::removeSpringAndItsParticles);
-        });
-
-        final List<VerletParticle2D> points = chain.getOne();
-//        VerletParticle2D first = points.get(0);
-//        VerletParticle2D last = points.get(points.size() - 1);
-        VerletParticle2D mid = points.get(points.size() / 2);
-
-
-//        if (first!=mid) {
-//            mid.addBehaviorGlobal(new AttractionBehavior2D<>(mid, 300, -1));
-//        }
-
-
-        l.bind(add(new PushButton("x", () -> l.remove(GraphEdit.this)), g ->
-                new Windo(new MetaFrame(g))).size(20, 20),
-                mid, false, VerletSurface.VerletSurfaceBinding.Center, this);
-
-        Surface r = new Surface() {
-
-            @Override
-            public boolean visible() {
-                if (a.parent==null || b.parent==null) {
-                    remove();
-                    return false;
-                }
-
-                SurfaceBase p = parent;
-                if (p instanceof Surface)
-                    pos(((Surface)p).bounds); //inherit bounds
-
-                return super.visible();
-            }
-
-            @Override protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-//                for (VerletParticle2D p : chain.getOne()) {
-//                    float t = 2 * p.mass();
-//                    Draw.rect(p.x - t / 2, p.y - t / 2, t, t, gl);
-//                }
-
-                int window = 100 * 1000 * 1000;
-                long renderStart = surfaceRender.renderStartNS;
-
-                float aa = l.id.activity(true, renderStart, window);
-                float bb = l.id.activity(false, renderStart, window);
-
-                float baseA = Util.lerp(aa, 8, 50);
-                float baseB = Util.lerp(bb, 8, 50);
-                Draw.colorHash(gl, l.id.typeHash(true),  0.25f + 0.25f * aa);
-                for (VerletSpring2D s : chain.getTwo()) {
-                    VerletParticle2D a = s.a, b = s.b;
-                    Draw.halfTriEdge2D(a.x, a.y, b.x, b.y, baseA, gl); //Draw.line(a.x, a.y, b.x, b.y, gl);
-                }
-                Draw.colorHash(gl, l.id.typeHash(false), 0.25f + 0.25f * bb);
-                for (VerletSpring2D s : chain.getTwo()) {
-                    VerletParticle2D a = s.a, b = s.b;
-                    Draw.halfTriEdge2D(b.x, b.y, a.x, a.y, baseB, gl); //Draw.line(a.x, a.y, b.x, b.y, gl);
-                }
-
-            }
-        };
-        raw.add(r);
-        l.hold(r);
 
         return l;
     }
