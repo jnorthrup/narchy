@@ -19,6 +19,7 @@ import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.TruthFunctions;
+import nars.truth.polation.TruthIntegration;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
@@ -122,7 +123,9 @@ public class ConjClustering extends Causable {
     }
 
     public float pri(Task t) {
-        return t.priElseZero() * t.conf() * t.range() * t.originality() ;
+        return t.priElseZero() * TruthIntegration.evi(t);
+                // * t.originality()l
+
     }
 
     @Override

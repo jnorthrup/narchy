@@ -60,7 +60,10 @@ public enum TruthFunctions2 {
 
     @Nullable
     public static Truth analogyNew(/*@NotNull*/ Truth a, float bf, float bc, float minConf) {
-        float c = and(bf, TruthFunctions.confCompose(a.conf(), bc));
+        float c = and(bf,
+                //TruthFunctions.confCompose(a.conf(), bc)
+                a.conf() * bc
+        );
         return c >= minConf ? t(a.freq(), c) : null;
     }
 //    @Nullable

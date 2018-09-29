@@ -66,13 +66,13 @@ public class Gradius extends NAgentX {
 
         float width = g.getWidth();
         float height = g.getHeight();
-        int gpsDigits = 2;
-        float gpsRes = 0.04f;
-        senseNumber(level -> $.prop($.the("Y"), $.the(level)),
+        int gpsDigits = 8;
+        float gpsRes = 0.1f;
+        senseNumber(level -> $.p($.the("y"), $.the(level)),
                 () -> g.player[OBJ_Y] / height,
                 gpsDigits, DigitizedScalar.FuzzyNeedle
         ).resolution(gpsRes);
-        senseNumber(level -> $.prop($.the("X"), $.the(level)),
+        senseNumber(level -> $.p($.the("x"), $.the(level)),
                 () -> g.player[OBJ_X] / width,
                 gpsDigits, DigitizedScalar.FuzzyNeedle
         ).resolution(gpsRes);
@@ -86,14 +86,14 @@ public class Gradius extends NAgentX {
         }
 
 
-        //initToggle();
-        initBipolar();
+        initToggle();
+        //initBipolar();
 
         rewardNormalized("alive", -1, +1, ()->{
             if (g.playerDead > 1)
                 return -1f;
             else if (g.paused)
-                return 0f;
+                return Float.NaN;
             else
                 return +1;
         });

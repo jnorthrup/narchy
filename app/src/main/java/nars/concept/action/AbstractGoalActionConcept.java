@@ -54,7 +54,9 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
 
-    int actionDur = -1;
+    int actionDur =
+            0;
+            //-1;
 
     public AbstractGoalActionConcept actionDur(int actionDur) {
         this.actionDur = actionDur;

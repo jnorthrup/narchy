@@ -20,7 +20,7 @@ public class CachedFloatFunction<X> extends ObjectFloatHashMapWithHashingStrateg
             return object1 == object2;
         }
     };
-    private final int sizeMaxBeforeCompact;
+    private final int compactionLimit;
 
     protected FloatFunction<X> f;
 
@@ -30,11 +30,11 @@ public class CachedFloatFunction<X> extends ObjectFloatHashMapWithHashingStrateg
     }
 
     public CachedFloatFunction(int sizeMin, @Nullable FloatFunction<X> f) {
-        this(sizeMin, sizeMin * 8, f);
+        this(sizeMin, sizeMin * 2, f);
     }
-    public CachedFloatFunction(int sizeMin, int sizeMaxBeforeCompact, @Nullable FloatFunction<X> f) {
+    public CachedFloatFunction(int sizeMin, int compactionLimit, @Nullable FloatFunction<X> f) {
         super(IDENTITY_STRATEGY, sizeMin);
-        this.sizeMaxBeforeCompact = sizeMaxBeforeCompact;
+        this.compactionLimit = compactionLimit;
         value(f);
     }
 
@@ -58,7 +58,7 @@ public class CachedFloatFunction<X> extends ObjectFloatHashMapWithHashingStrateg
         if (s > 0) {
             super.clear();
 
-            if (s > sizeMaxBeforeCompact) {
+            if (s > compactionLimit) {
                 compact();
             }
         }
