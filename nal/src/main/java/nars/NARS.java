@@ -126,10 +126,10 @@ public class NARS {
                 n.termlinkBalance.set(0.5f);
                 n.termVolumeMax.set(26);
 
-                n.activateConceptRate.set(0.1f);
-                n.activateLinkRate.set(0.1f);
 
-                n.forgetRate.set(0.4f);
+                n.activateConceptRate.set(0.53f);
+                n.forgetRate.set(0.47f);
+                n.activateLinkRate.set(1f);
 
 
                 n.beliefPriDefault.set(0.5f);

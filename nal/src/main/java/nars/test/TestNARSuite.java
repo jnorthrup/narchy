@@ -5,9 +5,11 @@ import nars.NAR;
 import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -27,25 +29,29 @@ public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
     }
 
     public void run(boolean parallel) {
+        run(parallel, 1);
+    }
 
-        Stream<Method> mm;
-        if (parallel)
-            mm = testMethods.parallel();
-        else
-            mm = testMethods;
+    public void run(boolean parallel, int iterations) {
 
-        mm.forEach(m -> {
-            try {
-                String testName = m.getDeclaringClass().getName() + ' ' + m.getName();
-                MyTestNAR t = new MyTestNAR(narBuilder.get(), testName);
-                synchronized(TestNARSuite.this) {
-                    add(t);
+
+        List<Method> mm = testMethods.collect(Collectors.toList());
+
+        for (int i = 0; i < iterations; i++) {
+
+            (parallel ? mm.stream().parallel() : mm.stream()).forEach(m -> {
+                try {
+                    String testName = m.getDeclaringClass().getName() + ' ' + m.getName();
+                    MyTestNAR t = new MyTestNAR(narBuilder.get(), testName);
+                    synchronized (TestNARSuite.this) {
+                        add(t); //allow repeats
+                    }
+                    NALTest.test(t, m);
+                } catch (Throwable e) {
+                    e.printStackTrace();
                 }
-                NALTest.test(t, m);
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-        });
+            });
+        }
     }
 
 
