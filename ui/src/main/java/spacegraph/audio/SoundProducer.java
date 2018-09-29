@@ -8,7 +8,7 @@ public interface SoundProducer {
 
     default float getAmplitude() { return 1.0f; }
 
-    void stop();
+
 
     interface Amplifiable {
         void setAmplitude(float a);

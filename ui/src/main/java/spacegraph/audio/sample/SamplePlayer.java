@@ -51,7 +51,6 @@ public class SamplePlayer implements SoundProducer {
         return alive;
     }
 
-    @Override
     public void stop() {
         alive = false;
     }

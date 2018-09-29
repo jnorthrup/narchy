@@ -6,11 +6,8 @@ import jcog.exe.Loop;
 import jcog.signal.buffer.CircularFloatBuffer;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
-import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import spacegraph.SpaceGraph;
 import spacegraph.audio.Audio;
-import spacegraph.audio.Sound;
-import spacegraph.audio.SoundProducer;
 import spacegraph.audio.sample.SamplePlayer;
 import spacegraph.audio.sample.SoundSample;
 import spacegraph.audio.speech.TinySpeech;
@@ -20,7 +17,9 @@ import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.chip.AudioOutPort;
 import spacegraph.space2d.widget.chip.FunctionSelectChip;
+import spacegraph.space2d.widget.chip.WaveViewChip;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.meter.WaveView;
 import spacegraph.space2d.widget.port.FloatRangePort;
@@ -174,6 +173,7 @@ public class WallTest {
 
             {
                 TextEdit e = new TextEdit("a b c d e", true);
+                e.resize(16,3);
                 Port p = new Port();
                 e.on(p::out);
                 g.add(
@@ -245,72 +245,11 @@ public class WallTest {
             }
 
             {
-                CircularFloatBuffer buffer = new CircularFloatBuffer(44100 * 2);
-//            for (int i = 0; i < buffer.capacity()/2; i++) {
-//                buffer.write(new float[]{(float) Math.sin(i / 500f)});
-//                buffer.write(new float[]{(float) Math.sin(i / 500f)});
-//            }
-
-                WaveView wave = new WaveView(buffer, 600, 400);
-                Port p = new Port();
 
 
-//                p.on((String text) -> {
-//                    if (busy.compareAndSet(false, true)) {
-//                        try {
-//                            buffer.clear();
-//                            buffer.write( TinySpeech.say(text, 60, 1.5f) );
-//                            wave.update();
-//                        } finally {
-//                            busy.set(false);
-//                        }
-//                    } else {
-//                        //pending.set(true);
-//                    }
-//                });
-                Sound playing = Audio.the().play(new SoundProducer() {
-                    {
-                        int c = buffer.capacity();
-                        for (int i = 0; i < c; i++) {
-                            buffer.write(new float[] { 0 });
-                        }
-                    }
-                    @Override
-                    public void read(float[] buf, int readRate) {
+                g.add( new WaveViewChip() ).pos(300, 0, 850, 550);
 
-                        if (p.active()) {
-                            p.out(PrimitiveTuples.pair(buf /* TODO buffer mix command object */, readRate));
-
-                            buffer.flush(buf.length);
-                            buffer.write(buf);
-
-                            wave.updateLive();
-                        }
-                    }
-
-                    @Override
-                    public void skip(int samplesToSkip, int readRate) {
-                        //TODO
-                        //buffer.skip(..);
-                        //System.out.println("skip " + samplesToSkip);
-                    }
-
-                    @Override
-                    public boolean isLive() {
-                        return true;
-                    }
-
-                    @Override
-                    public void stop() {
-
-                    }
-                });
-                //playing.volume(0); //initially off
-
-                g.add(
-                        new Bordering(wave)
-                                .set(Bordering.W, p, 0.1f)
-                ).pos(300, 0, 850, 550);
+                g.add(new AudioOutPort()).pos(500, 30, 450, 350);
             }
 
             SpaceGraph.window(g, 1000, 1000);

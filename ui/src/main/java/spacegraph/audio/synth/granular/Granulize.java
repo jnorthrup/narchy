@@ -136,7 +136,6 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
 				'}';
 	}
 
-	@Override
 	public void stop() {
 		isPlaying = false;
 	}

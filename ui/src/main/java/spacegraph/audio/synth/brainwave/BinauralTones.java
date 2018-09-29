@@ -48,7 +48,7 @@ public class BinauralTones implements SoundProducer {
         return playing;
     }
 
-    @Override
+
     public void stop() {
         playing = false;
     }

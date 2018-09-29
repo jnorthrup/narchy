@@ -15,7 +15,7 @@ public class MutableUnitContainer<S extends Surface> extends AbstractUnitContain
         set(the);
     }
 
-    public final void set(S next) {
+    public final MutableUnitContainer set(S next) {
         synchronized(this) {
             if (next == null) {
                 _set(new EmptySurface());
@@ -23,6 +23,7 @@ public class MutableUnitContainer<S extends Surface> extends AbstractUnitContain
                 _set(next);
             }
         }
+        return this;
     }
 
     private void _set(Surface next) {

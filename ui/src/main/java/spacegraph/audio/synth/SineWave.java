@@ -48,7 +48,6 @@ public class SineWave implements SoundProducer, SoundProducer.Amplifiable {
         return playing;
     }
 
-    @Override
     public void stop() {
         playing = false;
     }
