@@ -3,31 +3,30 @@
 //      https://en.wikipedia.org/wiki/Fluid_Concepts_and_Creative_Analogies
 //      https://cogsci.indiana.edu/
 
-  X, (X <-> Y)                        |- Y, (Belief:Analogy, Goal:Desire)
-    X, (X <-> Y)                         |-  --Y, (Goal:DesireWeakPN)
-  X, (--X <-> Y)                      |- Y, (Belief:AnalogyN, Goal:DesireN)
-    X, (--X <-> Y)                       |-  --Y, (Goal:DesireWeakNN)
+  X, (X <-> Y)                        |- Y, (Belief:Analogy, Goal:Desire, Time:Task)
+    X, (X <-> Y)                         |-  --Y, (Goal:DesireWeakPN, Time:Task)
+  X, (--X <-> Y)                      |- Y, (Belief:AnalogyN, Goal:DesireN, Time:Task)
+    X, (--X <-> Y)                       |-  --Y, (Goal:DesireWeakNN, Time:Task)
 
-    X, (  X --> Y)                        |- Y, (Goal:DesireWeak)
-    X, (--X --> Y)                     |- Y, (Goal:DesireWeakN)
-        (X --> Y), X                         |- Y, (Goal:DesireWeak)
+    X, (  X --> Y)                        |- Y, (Goal:DesireWeak, Time:Task)
+    X, (--X --> Y)                     |- Y, (Goal:DesireWeakN, Time:Task)
+        (X --> Y), X                         |- Y, (Goal:DesireWeak, Time:Task)
                                                             //DesireWeakN
-        (--X --> Y), X                         |- Y, (Goal:DesireWeakPN)
+        (--X --> Y), X                         |- Y, (Goal:DesireWeakPN, Time:Task)
                                                             //DesireWeakNN
-    X, (Y -->   X)                        |- Y, (Goal:DesireWeak)
-    X, (Y --> --X)                     |- Y, (Goal:DesireWeakN)
-        (Y --> X), X                         |- Y, (Goal:DesireWeak)
+    X, (Y -->   X)                        |- Y, (Goal:DesireWeak, Time:Task)
+    X, (Y --> --X)                     |- Y, (Goal:DesireWeakN, Time:Task)
+        (Y --> X), X                         |- Y, (Goal:DesireWeak, Time:Task)
                                                            //DesireWeakN
-        (Y --> --X), X                         |- Y, (Goal:DesireWeakPN)
+        (Y --> --X), X                         |- Y, (Goal:DesireWeakPN, Time:Task)
                                                            //DesireWeakNN
 
 
-  Z, (X <-> Y), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Belief:Analogy, Goal:DesireWeak)
+  Z, (X <-> Y), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Belief:Analogy, Goal:DesireWeak, Time:Task)
   //Z, (X <-> Y), task("."), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Punctuation:Question)
     //Z, (X <-> Y), task("!"), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Punctuation:Question)
         //  Belief:Analogy, Goal:DesireWeak)
-  Z, (X <-> Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, "$", strict), (Belief:Analogy, Goal:DesireWeak)
-  Z, (--X <-> Y), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Y, X, Z, "$", strict), (Belief:AnalogyN, Goal:DesireWeakN)
+
       //Z, (X <-> Y), task("."), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, strict), (Punctuation:Question)
         //  Z, (X <-> Y), task("!"), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, strict), (Punctuation:Quest)
       //Z, (--X <-> Y), task("."), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Y, X, Z, strict), (Punctuation:Question)

@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.meta;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import jcog.signal.tensor.ArrayTensor;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
@@ -11,9 +12,12 @@ import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
+import spacegraph.space2d.widget.chip.BiFunctionChip;
 import spacegraph.space2d.widget.chip.Cluster2DChip;
+import spacegraph.space2d.widget.chip.KeyboardChip;
 import spacegraph.space2d.widget.chip.PlotChip;
 import spacegraph.space2d.widget.port.FloatRangePort;
+import spacegraph.space2d.widget.port.IntPort;
 import spacegraph.space2d.widget.port.LabeledPort;
 import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -50,7 +54,7 @@ public class ProtoWidget extends Widget {
     private static final Supplier<Surface> TODO = () -> new VectorLabel("TODO");
     private static final WidgetLibrary LIBRARY  = new WidgetLibrary() {{
 
-        add("Keyboard", TODO, "Hardware");
+        add("Keyboard", ()-> new KeyboardChip(), "Hardware");
         add("Mouse", TODO, "Hardware");
         add("Gamepad", TODO, "Hardware");
         add("WebCam", () -> new WebCam.WebCamSurface(WebCam.the()), "Hardware");
@@ -62,6 +66,7 @@ public class ProtoWidget extends Widget {
             }
         }, "Hardware");
 
+        add("int", ()->new IntPort(), "Signal");
         add("x[0..1]", ()->new FloatRangePort(0.5f, 0, 1f), "Signal");
         add("Rng", ()->new FloatRangePort(0.5f, 0, 1f), "Signal");
         add("Wave", TODO, "Signal");
@@ -69,6 +74,17 @@ public class ProtoWidget extends Widget {
         add("Split", TODO, "Signal");
         add("Mix", TODO, "Signal");
         add("EQ", TODO, "Signal");
+
+        add("OneHotBit", ()-> new BiFunctionChip<>((Integer signal, Integer range) -> {
+            //TODO optimize with a special Tensor impl
+            if (signal >= 0 && signal < range) {
+                float[] x = new float[range];
+                x[signal] = 1;
+                return new ArrayTensor(x);
+            } else {
+                return null;
+            }
+        }), "Signal");
 
         add("QLearn", TODO, "Control");
         add("PID", TODO, "Control");

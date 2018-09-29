@@ -7,6 +7,7 @@ import org.eclipse.collections.api.block.procedure.primitive.IntObjectProcedure;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.Wiring;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.port.util.LinkingWiring;
 import spacegraph.space2d.widget.port.util.Wire;
@@ -283,7 +284,11 @@ public class Port extends Widget implements Wiring.Wireable {
                 this.in.accept(from, s);
                 return true;
             } catch (Throwable t) {
-                root().error(this, 1f, t);
+                SurfaceRoot r = root();
+                if (r!=null)
+                    r.error(this, 1f, t);
+                else
+                    t.printStackTrace(); //TODO HACK
                 return false;
             }
         }

@@ -32,12 +32,12 @@ public class Cluster2DView extends Graph2D<Centroid> {
                                 super.paintBelow(gl, rr);
 
                                 NodeVis p = parent(NodeVis.class);
-//                                if (p!=null) {
+                                if (p!=null) {
                                     float alpha = 0.25f + 0.75f * p.pri;
                                     gl.glColor4f(1f, 0.5f, 0, alpha);
                                     //Draw.colorHash(gl, x.id, alpha);
                                     Draw.circle(gl, new v2(cx(), cy()), false, Math.max(w(), h()) / 2, 6);
-//                                }
+                                }
                             }
                         }
                 )

@@ -175,10 +175,11 @@ abstract public class Container extends Surface {
 
     @Override
     public boolean key(KeyEvent e, boolean pressed) {
-        if (showing() && !super.key(e, pressed)) {
-            return whileEach(c -> c.key(e, pressed));
+        if (showing()) {
+            if (!whileEach(c -> c.key(e, pressed)) && super.key(e, pressed))
+                return false;
         }
-        return false;
+        return true;
     }
 
     @Override

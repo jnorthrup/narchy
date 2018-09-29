@@ -12,6 +12,8 @@ public class LabeledPort<X> extends Port {
         return new LabeledPort(Object::toString);
     }
 
+
+
     private LabeledPort(Function<X, String> toString) {
         this.toString = toString;
         set(l);

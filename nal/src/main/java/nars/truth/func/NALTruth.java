@@ -325,7 +325,7 @@ public enum NALTruth implements TruthFunc {
     },
 
 
-    @AllowOverlap AnonymousAnalogy() {
+    AnonymousAnalogy() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions.anonymousAnalogy(T, B, minConf);

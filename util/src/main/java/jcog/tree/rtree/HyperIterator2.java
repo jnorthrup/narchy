@@ -1,7 +1,9 @@
 package jcog.tree.rtree;
 
 import jcog.data.pool.DequePool;
-import jcog.sort.CachedTopN;
+import jcog.math.CachedFloatFunction;
+import jcog.math.CachedFloatRank;
+import jcog.sort.TopN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,32 +29,36 @@ public class HyperIterator2<X> {
     /**
      * at each level, the plan is slowly popped from the end growing to the beginning (sorted in reverse)
      */
-    final CachedTopN plan;
+    final TopN plan;
 
 
-    final static ThreadLocal<DequePool<CachedTopN>> pool =
-            //HEAP
-            //() -> new CachedFloatRank<>(64);
-
+    final static ThreadLocal<DequePool<CachedFloatRank>> pool =
             ThreadLocal.withInitial(()->
                     new DequePool() {
                         @Override
-                        public CachedTopN create() {
-                            return new CachedTopN(32, (x)->0);
+                        public CachedFloatRank create() {
+                            return new CachedFloatRank(64);
                         }
-                    }
-            );
+                    });
+
+//                    new DequePool() {
+//                        @Override
+//                        public TopN create() {
+//                            return new TopN(32, (x)->0);
+//                        }
+//                    }
+//            );
 
     public HyperIterator2(RTree<X> tree, FloatFunction<HyperRegion> rank) {
         this(tree.model, tree.root(), rank);
     }
 
     public HyperIterator2(Spatialization model, Node<X> start, FloatFunction<HyperRegion> rank) {
-        this.plan = /*new CachedTopN(32, rank);*/
-                    pool.get().get().clear(r -> rank.floatValueOf(
-                            r instanceof Node ? ((Node)r).bounds() : model.bounds(r)
-                    ));
+        CachedFloatFunction valueFn = pool.get().get().value(r -> rank.floatValueOf(
+                r instanceof Node ? ((Node) r).bounds() : model.bounds(r)
+        ));
 
+        this.plan = new TopN(new Object[32], valueFn);
         plan.accept(start);
     }
 

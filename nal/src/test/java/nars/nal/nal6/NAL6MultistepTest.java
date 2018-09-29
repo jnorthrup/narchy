@@ -66,7 +66,7 @@ public class NAL6MultistepTest {
 
         
         Truth burgTruth = n.beliefTruth(burglary, Tense.ETERNAL);
-        assertEquals(0.65f, burgTruth.freq(), 0.1f /* approximate */);
+        assertEquals(0.65f, burgTruth.freq(), 0.15f /* approximate */);
         Truth eqTruth = n.beliefTruth(earthquake, Tense.ETERNAL);
         assertEquals(0.31f, eqTruth.freq(), 0.2f /* approximate */);
     }

@@ -861,6 +861,25 @@ public class Occurrify extends TimeGraph {
             }
 
         },
+        Task() {
+            @Override
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+                //return solveOccDTWithGoalOverride(d, x);
+                @Nullable Pair<Term, long[]> p = solveDT(d, x, d.occ.reset(x));
+                if (p!=null) {
+                    p.getTwo()[0] = d.taskStart;
+                    p.getTwo()[1] = d.taskEnd;
+                    return p;
+                }
+                return p;
+            }
+
+            @Override
+            long[] occurrence(Derivation d) {
+                return new long[] { TIMELESS, TIMELESS }; //HACK to be rewritten by the above method
+            }
+
+        },
         /**
          * result occurs in the intersecting time interval, if exists; otherwise fails
          */
@@ -882,6 +901,8 @@ public class Occurrify extends TimeGraph {
                 } else if (d.taskStart == ETERNAL && d.belief != null) {
                     return new long[]{d.beliefStart, d.beliefEnd};
                 } else {
+
+                    assert(d.belief != null && d.beliefStart!=TIMELESS);
 
                     long[] i = Longerval.intersectionArray(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd);
                     if (i == null) {

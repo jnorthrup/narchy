@@ -103,7 +103,7 @@ public class BiPolarAction extends AbstractSensor {
         float freqRes = nar.freqResolution.floatValue();
         if (x==x) {
             x = Util.clamp(x, -1f, +1f);
-            if (Math.abs(x) < freqRes/2)
+            if (Math.abs(x) < freqRes)
                 x = 0;
 
         }
@@ -203,7 +203,7 @@ public class BiPolarAction extends AbstractSensor {
         public DefaultPolarization(boolean fair, NSense s) {
             this.fair = fair;
             curiosity = ((NAct) s).curiosity();
-            freqOrExp = true;
+            freqOrExp = false;
 
         }
 

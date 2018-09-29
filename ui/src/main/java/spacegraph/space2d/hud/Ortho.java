@@ -383,7 +383,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     @Override
     public void keyReleased(KeyEvent e) {
-
         setKey(e, false);
     }
 

@@ -10,6 +10,7 @@ import jcog.util.Int2Function;
 import nars.agent.FrameTrigger;
 import nars.agent.NAgent;
 import nars.agent.SimpleReward;
+import nars.concept.action.AbstractGoalActionConcept;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
@@ -59,6 +60,7 @@ import static java.util.stream.Collectors.toList;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -351,7 +353,8 @@ abstract public class NAgentX extends NAgent {
         }
 
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 32);
-        //ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof SeriesBeliefTable.SeriesTask /* exclude curiosity */) ), 8, 96);
+        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof AbstractGoalActionConcept.CuriosityTask) ),
+                8, 96);
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(64, n);
         Introduction factorizer = new Factorize.FactorIntroduction(64, n);
