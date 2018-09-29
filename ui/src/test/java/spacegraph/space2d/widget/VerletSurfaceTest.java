@@ -199,7 +199,7 @@ class VerletSurfaceTest {
             Surface a = add(new PushButton("x")).pos(100, 100, 200, 200);
             Surface b = add(new PushButton("y")).pos(300, 300, 400, 400);
 
-            cable(new Wire(a, b), new PushButton("xy").click((r)->r.parent(Windo.class).remove()));
+
 
 
         }

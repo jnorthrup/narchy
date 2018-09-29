@@ -2,7 +2,9 @@ package spacegraph.space2d.widget.meta;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
+import jcog.signal.tensor.TensorChain;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
@@ -75,6 +77,11 @@ public class ProtoWidget extends Widget {
         add("Wave", TODO, "Signal");
 
         add("Split", TODO, "Signal");
+
+        add("concat", ()->new BiFunctionChip<Tensor, Tensor,Tensor>((Tensor a, Tensor b) -> {
+            return TensorChain.get(a, b);
+        }), "Signal");
+
         add("Mix", TODO, "Signal");
         add("EQ", TODO, "Signal");
 

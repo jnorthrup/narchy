@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.port;
 
-import jcog.Util;
 import jcog.math.FloatRange;
 import spacegraph.input.finger.Wiring;
 import spacegraph.space2d.container.EmptySurface;
@@ -10,11 +9,10 @@ import spacegraph.space2d.widget.slider.FloatSlider;
 
 import javax.annotation.Nullable;
 
-public class FloatRangePort extends TypedPort {
+public class FloatRangePort extends FloatPort {
 
     private static final float EPSILON = 0.001f;
 
-    private float curValue = Float.NaN;
     public final FloatRange f;
 
     public FloatRangePort(float val, float min, float max) {
@@ -22,10 +20,11 @@ public class FloatRangePort extends TypedPort {
     }
 
     private FloatRangePort(FloatRange f/*, Consumer<Runnable> updater*/) {
-        super(Float.class);
+        super();
         this.f = f;
 
-        FloatSlider s = new FloatSlider(f);
+        FloatSlider s = new FloatSlider(f).on((float ff)->FloatRangePort.this.set(ff));
+
         set(new Gridding(0.25f, new EmptySurface(), s));
     }
 
@@ -33,18 +32,12 @@ public class FloatRangePort extends TypedPort {
     public void prePaint(int dtMS) {
         
 
-        float nextValue = f.get();
-        if (!Util.equals(nextValue, curValue, EPSILON)) {
-            curValue = nextValue;
-            out();
-        }
+
 
         super.prePaint(dtMS);
     }
 
-    private void out() {
-        out(curValue);
-    }
+
 
     @Override
     public Port on(@Nullable In i) {
@@ -52,7 +45,7 @@ public class FloatRangePort extends TypedPort {
     }
 
     @Override
-    public boolean in(Wire from, Object s) {
+    public boolean in(Wire from, Float s) {
         return false;
     }
 

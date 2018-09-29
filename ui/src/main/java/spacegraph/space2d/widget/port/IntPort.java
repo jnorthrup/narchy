@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static spacegraph.space2d.container.Gridding.col;
 
 /** TODO add both text and spinner methods */
-public class IntPort extends TypedPort {
+public class IntPort extends TypedPort<Integer> {
 
     final AtomicInteger value = new AtomicInteger();
 
@@ -25,16 +25,20 @@ public class IntPort extends TypedPort {
 
         set(new Splitting(txt = new TextEdit(8, 1), col(incButton, decButton), false, 0.8f));
 
-        incButton.click(()-> set(value.getOpaque()+1));
-        decButton.click(()-> set((value.getOpaque()-1))); //TODO fully atomic
-        txt.on(this::set);
+        incButton.click(()-> out(get() +1));
+        decButton.click(()-> out((get() -1))); //TODO fully atomic
+        txt.on(this::out);
     }
 
-    public final boolean set(String x) {
+    public int get() {
+        return value.getOpaque();
+    }
+
+    public final boolean out(String x) {
         try {
             Integer next = process(Integer.valueOf(x));
             if (next!=null) {
-                return set(next);
+                out(next);
             }
 
         } catch (NumberFormatException t) {
@@ -43,14 +47,17 @@ public class IntPort extends TypedPort {
         return false;
     }
 
-    public final boolean set(int next) {
-        if (value.getAndSet(next)!=next) {
-            txt.text(Integer.toString(next));
-            out(next);
+    @Override
+    protected void out(Port sender, Integer next) {
 
-            return true;
+        if (value.getAndSet(next)!=next) {
+
+            txt.text(Integer.toString(next));
+            out(sender, next);
+
+            return /* true */;
         }
-        return false;
+        return /*false*/;
     }
 
     /** returns true if the value is valid and can set the port, override in subclasses to filter input */

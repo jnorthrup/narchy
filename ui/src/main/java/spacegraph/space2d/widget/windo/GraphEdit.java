@@ -8,9 +8,12 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.DoubleClicking;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.Scale;
+import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.collection.MutableListContainer;
+import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ProtoWidget;
 import spacegraph.space2d.widget.meta.WizardFrame;
@@ -370,49 +373,40 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     }
 
 
-    static class Cable extends Wire {
 
-        Windo grip;
+    public static class Link extends Stacking {
 
-        Cable(Wire wire, Windo grip) {
-            super(wire);
-            this.grip = grip;
+        public final Wire id;
+
+        Link(Wire wire) {
+            super();
+            this.id = wire;
         }
 
-        public final void remove() {
-            synchronized (this) {
-                if (grip != null) {
-                    grip.remove();
-                    grip = null;
-                }
-            }
-        }
+        
     }
 
     /** returns the grip window */
-    public Cable cable(Wire w, Surface grip) {
+    public Link wire(Wire w) {
         Surface a = w.a;
         Surface b = w.b;
-        return cable(w, grip, a, b);
+        return wire(w, a, b);
     }
 
     @NotNull
-    public GraphEdit.Cable cable(Wire w, Surface grip, Surface a, Surface b) {
+    public GraphEdit.Link wire(Wire w, Surface a, Surface b) {
         VerletParticle2D ap = physics.bind(a, VerletSurface.VerletSurfaceBinding.Center);
         VerletParticle2D bp = physics.bind(b, VerletSurface.VerletSurfaceBinding.Center);
 
-        return cable(w, a, ap, b, bp, grip);
+        return wire(w, a, ap, b, bp);
     }
 
-    public Cable cable(Surface a, VerletParticle2D ap, Surface b, VerletParticle2D bp) {
-        return cable(a, ap, b, bp,null);
+
+    public Link cable(Surface a, VerletParticle2D ap, Surface b, VerletParticle2D bp) {
+        return wire(null, a, ap, b, bp);
     }
 
-    public Cable cable(Surface a, VerletParticle2D ap, Surface b, VerletParticle2D bp, @Nullable Surface grip) {
-        return cable(null, a, ap, b, bp,grip);
-    }
-
-    protected Cable cable(@Nullable Wire w, Surface a, VerletParticle2D ap, Surface b, VerletParticle2D bp, @Nullable Surface grip) {
+    protected Link wire(@Nullable Wire w, Surface a, VerletParticle2D ap, Surface b, VerletParticle2D bp) {
         float m = 8; //TODO dynamic based on surface area, density
         ap.mass(m);
         bp.mass(m);
@@ -432,7 +426,12 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 //        }
 
         Windo gripWindow;
-        if (grip!=null) {
+        PushButton grip;
+//        if (grip == null) {
+//            //default grip:
+            grip = new PushButton("x").click((r)->r.parent(Windo.class).remove());
+//        }
+//        if (grip!=null) {
             VerletParticle2D mid = points.get(points.size() / 2);
 
             gripWindow = add(grip, (g) -> {
@@ -454,15 +453,17 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
             }).pos(RectFloat.XYWH(mid.x, mid.y, 20, 20));
 
             physics.bind(gripWindow, mid, false, VerletSurface.VerletSurfaceBinding.Center);
-        } else {
-            gripWindow = null;
-        }
+//        }
+//        else {
+//            gripWindow = null;
+//        }
 
         if (w == null)
             w = new Wire(a, b);
 
-        return new Cable(w, gripWindow);
-
+        Link l = new Link(w);
+        raw.add(l);
+        return l;
     }
 
 

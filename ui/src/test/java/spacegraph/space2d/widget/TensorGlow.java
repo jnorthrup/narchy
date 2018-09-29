@@ -5,6 +5,7 @@ import jcog.exe.Loop;
 import jcog.experiment.TrackXY;
 import jcog.learn.ql.HaiQae;
 import jcog.random.XoRoShiRo128PlusRandom;
+import jcog.signal.Tensor;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
@@ -14,6 +15,8 @@ import spacegraph.space2d.widget.chip.SwitchChip;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
+import spacegraph.space2d.widget.port.FloatPort;
+import spacegraph.space2d.widget.port.IntPort;
 import spacegraph.space2d.widget.port.Port;
 import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.text.LabeledPane;
@@ -113,12 +116,10 @@ public class TensorGlow {
                 trackView.update();
             }).setFPS(10f);
 
-            Port state = new Port() {
+            TypedPort<Tensor> state = new TypedPort<>(Tensor.class);
 
-            };
-            Port reward = new Port() {
+            FloatPort reward = new FloatPort();
 
-            };
             Windo trackWin = p.add(new Bordering(trackView).set(Bordering.S, state, 0.05f).set(Bordering.E, reward, 0.05f));
             trackWin.pos(500, 500, 600, 600);
 
@@ -138,7 +139,7 @@ public class TensorGlow {
 
         //p.add(new TogglePort()).pos(200, 200, 300, 300);
 
-        Port outs;
+        IntPort outs;
         Gridding hw = new Gridding(
                 new VectorLabel("HaiQ"),
                 new ObjectSurface(q),
@@ -156,7 +157,7 @@ public class TensorGlow {
         hw.add(new LabeledPane("input", new TypedPort<>(float[].class, (i) -> {
             System.arraycopy(i, 0, in, 0, i.length);
         })));
-        hw.add(new LabeledPane("act", outs = new Port()));
+        hw.add(new LabeledPane("act", outs = new IntPort()));
 
         p.add(hw).pos(350, 350, 500, 500);
 

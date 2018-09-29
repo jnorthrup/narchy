@@ -9,7 +9,6 @@ import spacegraph.input.finger.Wiring;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.widget.Widget;
-import spacegraph.space2d.widget.port.util.LinkingWiring;
 import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.video.Draw;
@@ -184,7 +183,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         if (finger!=null /*&& buttons!=null*/) {
             Surface x = super.finger(finger);
             if (x==null || x==this) {
-                if (finger.tryFingering(new LinkingWiring(this)))
+                if (finger.tryFingering(new Wiring(this)))
                     return this;
             }
 
