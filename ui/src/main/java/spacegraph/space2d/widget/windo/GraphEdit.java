@@ -1,17 +1,18 @@
 package spacegraph.space2d.widget.windo;
 
+import com.jogamp.opengl.GL2;
+import jcog.Util;
 import jcog.data.graph.*;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.DoubleClicking;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.Scale;
-import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.MetaFrame;
@@ -20,6 +21,7 @@ import spacegraph.space2d.widget.meta.WizardFrame;
 import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.space2d.widget.shape.VerletSurface;
 import spacegraph.util.math.v2;
+import spacegraph.video.Draw;
 import toxi.physics2d.VerletParticle2D;
 import toxi.physics2d.behavior.AttractionBehavior2D;
 import toxi.physics2d.spring.VerletSpring2D;
@@ -39,8 +41,9 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     }
 
     public GraphEdit(float w, float h) {
-        this(RectFloat.X0Y0WH(0,0 , w, h));
+        this(RectFloat.X0Y0WH(0, 0, w, h));
     }
+
     public GraphEdit(RectFloat bounds) {
         this();
         pos(bounds);
@@ -60,7 +63,9 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     };
 
 
-    /** for links and other supporting geometry that is self-managed */
+    /**
+     * for links and other supporting geometry that is self-managed
+     */
     final MutableListContainer raw = new MutableListContainer(); /* {
         @Override
         protected boolean tangible() {
@@ -75,6 +80,8 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     @Override
     protected void starting() {
 
+        physics.debugRender.set(false);
+
         physics.start(this);
         physics.pos(bounds);
 
@@ -85,12 +92,12 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     }
 
     public Windo add(Surface x) {
-        return add(x, (xx) -> new Windo(new Scale(new MetaFrame(xx),0.98f)) {
+        return add(x, (xx) -> new Windo(new Scale(new MetaFrame(xx), 0.98f)) {
             @Override
             protected void stopping() {
                 //remove any associated links, recursively
                 if (xx instanceof Container) {
-                    ((Container)xx).forEachRecursively(GraphEdit.this::removingComponent);
+                    ((Container) xx).forEachRecursively(GraphEdit.this::removingComponent);
                 } else {
                     removingComponent(xx);
                 }
@@ -317,7 +324,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 //        if (s != null && s != this && !(s instanceof PhyWindow))
 //            return s;
 
-        if (s==null || s == raw)
+        if (s == null || s == raw)
             doubleClicking.update(finger);
 
 
@@ -365,7 +372,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
         VerletParticle2D fromParticle = physics.bind(from, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
 
 
-        physics.physics.addSpring(new VerletSpring2D(fromParticle, toParticle, 10,0.5f ));
+        physics.physics.addSpring(new VerletSpring2D(fromParticle, toParticle, 10, 0.5f));
 
 //        cable(from, fromParticle, to, toParticle);
 
@@ -373,96 +380,109 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     }
 
 
-
-    public static class Link extends Stacking {
-
-        public final Wire id;
-
-        Link(Wire wire) {
-            super();
-            this.id = wire;
-        }
-
-        
-    }
-
-    /** returns the grip window */
+    /**
+     * returns the grip window
+     */
     public Link wire(Wire w) {
         Surface a = w.a;
         Surface b = w.b;
         return wire(w, a, b);
     }
 
-    @NotNull
-    public GraphEdit.Link wire(Wire w, Surface a, Surface b) {
-        VerletParticle2D ap = physics.bind(a, VerletSurface.VerletSurfaceBinding.Center);
-        VerletParticle2D bp = physics.bind(b, VerletSurface.VerletSurfaceBinding.Center);
+
+    private Link wire(Wire w, Surface a, Surface b) {
+        VerletParticle2D ap = physics.bind(a, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
+        VerletParticle2D bp = physics.bind(b, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
 
         return wire(w, a, ap, b, bp);
     }
 
 
-    public Link cable(Surface a, VerletParticle2D ap, Surface b, VerletParticle2D bp) {
-        return wire(null, a, ap, b, bp);
-    }
+    private Link wire(@Nullable Wire w, Surface a, VerletParticle2D ap, Surface b, VerletParticle2D bp) {
 
-    protected Link wire(@Nullable Wire w, Surface a, VerletParticle2D ap, Surface b, VerletParticle2D bp) {
+        if (w == null)
+            w = new Wire(a, b);
+
+
+        Link l = new Link(w);
+
         float m = 8; //TODO dynamic based on surface area, density
         ap.mass(m);
         bp.mass(m);
 
-        int chainLen = 5; //should be an odd number
+        int extraJoints = 2;
+        int chainLen = 2 + 1 + (extraJoints*2); //should be an odd number
+
         Pair<List<VerletParticle2D>, List<VerletSpring2D>> chain = physics.addParticleChain(ap, bp,
-                chainLen, 10f /* some minimal # */, 0.05f);
+                chainLen, 1f /* some minimal # */, 0.05f);
+
+        List<VerletSpring2D> springs = chain.getTwo();
+        l.offs.add(()->{
+            //destroy the chain springs on destruction
+            springs.forEach(physics.physics::removeSpringAndItsParticles);
+        });
 
         final List<VerletParticle2D> points = chain.getOne();
-        VerletParticle2D first = points.get(0);
-        VerletParticle2D last = points.get(points.size()-1);
-
+//        VerletParticle2D first = points.get(0);
+//        VerletParticle2D last = points.get(points.size() - 1);
+        VerletParticle2D mid = points.get(points.size() / 2);
 
 
 //        if (first!=mid) {
 //            mid.addBehaviorGlobal(new AttractionBehavior2D<>(mid, 300, -1));
 //        }
 
-        Windo gripWindow;
-        PushButton grip;
-//        if (grip == null) {
-//            //default grip:
-            grip = new PushButton("x").click((r)->r.parent(Windo.class).remove());
-//        }
-//        if (grip!=null) {
-            VerletParticle2D mid = points.get(points.size() / 2);
 
-            gripWindow = add(grip, (g) -> {
-                return new Windo(new MetaFrame(g) {
-                    @Override
-                    protected void stopping() {
+        l.bind(add(new PushButton("x", () -> l.remove(GraphEdit.this)), g ->
+                new Windo(new MetaFrame(g))).size(20, 20),
+                mid, false, VerletSurface.VerletSurfaceBinding.Center, this);
 
-                        unlink(a, b);
+        Surface r = new Surface() {
 
-                        //destroy the chain
-                        points.clear();
-                        List<VerletSpring2D> springs = chain.getTwo();
-                        springs.forEach(physics.physics::removeSpringAndItsParticles);
-                        springs.clear();
+            @Override
+            public boolean visible() {
+                if (a.parent==null || b.parent==null) {
+                    remove();
+                    return false;
+                }
 
-                        super.stopping();
-                    }
-                });
-            }).pos(RectFloat.XYWH(mid.x, mid.y, 20, 20));
+                SurfaceBase p = parent;
+                if (p instanceof Surface)
+                    pos(((Surface)p).bounds); //inherit bounds
 
-            physics.bind(gripWindow, mid, false, VerletSurface.VerletSurfaceBinding.Center);
-//        }
-//        else {
-//            gripWindow = null;
-//        }
+                return super.visible();
+            }
 
-        if (w == null)
-            w = new Wire(a, b);
+            @Override protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+//                for (VerletParticle2D p : chain.getOne()) {
+//                    float t = 2 * p.mass();
+//                    Draw.rect(p.x - t / 2, p.y - t / 2, t, t, gl);
+//                }
 
-        Link l = new Link(w);
-        raw.add(l);
+                int window = 100 * 1000 * 1000;
+                long renderStart = surfaceRender.renderStartNS;
+
+                float aa = l.id.activity(true, renderStart, window);
+                float bb = l.id.activity(false, renderStart, window);
+
+                float baseA = Util.lerp(aa, 8, 50);
+                float baseB = Util.lerp(bb, 8, 50);
+                Draw.colorHash(gl, l.id.typeHash(true),  0.25f + 0.25f * aa);
+                for (VerletSpring2D s : chain.getTwo()) {
+                    VerletParticle2D a = s.a, b = s.b;
+                    Draw.halfTriEdge2D(a.x, a.y, b.x, b.y, baseA, gl); //Draw.line(a.x, a.y, b.x, b.y, gl);
+                }
+                Draw.colorHash(gl, l.id.typeHash(false), 0.25f + 0.25f * bb);
+                for (VerletSpring2D s : chain.getTwo()) {
+                    VerletParticle2D a = s.a, b = s.b;
+                    Draw.halfTriEdge2D(b.x, b.y, a.x, a.y, baseB, gl); //Draw.line(a.x, a.y, b.x, b.y, gl);
+                }
+
+            }
+        };
+        raw.add(r);
+        l.hold(r);
+
         return l;
     }
 
@@ -470,13 +490,18 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     /**
      * undirected link
      */
-    public Wire link(Wire wire) {
+    @Nullable public Wire addWire(final Wire wire) {
 
         Surface aa = wire.a, bb = wire.b;
 
         synchronized (links) {
 
             NodeGraph.MutableNode<Surface, Wire> A = links.addNode(aa);
+            NodeGraph.MutableNode<Surface, Wire> B = links.addNode(bb);
+            if (!links.addEdge(A, wire, B)) {
+                //already exists
+                return null;
+            }
 
             Iterable<FromTo<Node<spacegraph.space2d.Surface, Wire>, Wire>> edges = A.edges(false, true);
             if (edges != null) {
@@ -492,8 +517,8 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
                 return null;
             }
 
-            NodeGraph.MutableNode<Surface, Wire> B = links.addNode(bb);
-            links.addEdge(A, wire, B);
+
+
 
 
 //                W.invoke(() -> {
@@ -514,7 +539,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 
     }
 
-    private Wire unlink(Surface source, Surface target) {
+    protected Wire removeWire(Surface source, Surface target) {
         synchronized (links) {
             Wire wire = new Wire(source, target);
             Node<spacegraph.space2d.Surface, Wire> an = links.node(wire.a);
@@ -524,6 +549,9 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
                     boolean removed = links.edgeRemove(new ImmutableDirectedEdge<>(
                             an, wire, bn)
                     );
+                    if (removed) {
+                        //TODO log( unwire(..) )
+                    }
                     return removed ? wire : null;
                 }
             }

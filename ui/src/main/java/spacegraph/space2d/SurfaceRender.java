@@ -14,6 +14,7 @@ public class SurfaceRender {
 
     /** ms since last update */
     public final int dtMS;
+    public final long renderStartNS;
     private float scaleX, scaleY;
     private float x1, x2, y1, y2;
 
@@ -21,6 +22,7 @@ public class SurfaceRender {
         this.pw = pw;
         this.ph = ph;
         this.dtMS = dtMS;
+        this.renderStartNS = System.nanoTime();
     }
 
 //    public void clone(float scale, v2 offset, Consumer<SurfaceRender> run, GL2 gl) {

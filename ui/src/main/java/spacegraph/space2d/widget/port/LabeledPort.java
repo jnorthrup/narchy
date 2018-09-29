@@ -1,10 +1,11 @@
 package spacegraph.space2d.widget.port;
 
+import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.function.Function;
 
-public class LabeledPort<X> extends Port {
+public class LabeledPort<X> extends Port<X> {
     private final VectorLabel l = new VectorLabel("?");
     private final Function<X, String> toString;
 
@@ -12,27 +13,18 @@ public class LabeledPort<X> extends Port {
         return new LabeledPort(Object::toString);
     }
 
-
-
     private LabeledPort(Function<X, String> toString) {
         this.toString = toString;
         set(l);
 
-        on((v)-> label((X) v));
+        on((w,x)->{
+            update(w, x);
+            //out((Port)w.other(LabeledPort.this), x); //rebroadcast
+        });
     }
 
-    @Override
-    protected void out(Port sender, Object x) {
-        super.out(sender, x);
-        try {
-            label((X)x);
-        } catch (ClassCastException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    protected VectorLabel label(X v) {
-        return l.text(toString.apply(v));
+    protected VectorLabel update(Wire w, X x) {
+        return l.text(toString.apply(x));
     }
 
 }

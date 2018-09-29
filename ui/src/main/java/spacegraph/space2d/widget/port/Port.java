@@ -273,26 +273,30 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         if (enabled) {
             Node<spacegraph.space2d.Surface, Wire> n = this.node;
             if (n!=null)
-                n.edges(true, true).forEach(t -> { if (t!=sender) { t.id().in(sender, x); } } );
+                n.edges(true, true).forEach(t -> { t.id().in(sender, x); } );
         }
     }
 
     public boolean in(Wire from, X s) {
-        if (!enabled || this.in == null) {
+        if (!enabled) {
             return false;
         } else {
-            try {
-                this.in.accept(from, s);
-                return true;
-            } catch (Throwable t) {
-                SurfaceRoot r = root();
-                if (r!=null)
-                    r.error(this, 1f, t);
-                else
-                    t.printStackTrace(); //TODO HACK
-                return false;
-            }
+             if (this.in != null) {
+                 try {
+                     this.in.accept(from, s);
+                     return true;
+                 } catch (Throwable t) {
+                     SurfaceRoot r = root();
+                     if (r != null)
+                         r.error(this, 1f, t);
+                     else
+                         t.printStackTrace(); //TODO HACK
+                     return false;
+                 }
+             }
+            return true;
         }
+
     }
 
     public void enable(boolean b) {

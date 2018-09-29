@@ -21,8 +21,8 @@ import spacegraph.video.Draw;
         Draw.rectStroke(gl, smx - cw / 2f, smy - ch / 2f, cw, ch);
 
         gl.glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
-        Draw.line(gl, smx, smy - ch, smx, smy + ch);
-        Draw.line(gl, smx - cw, smy, smx + cw, smy);
+        Draw.line(smx, smy - ch, smx, smy + ch, gl);
+        Draw.line(smx - cw, smy, smx + cw, smy, gl);
     };
 
     /** virtua cop */
@@ -75,8 +75,8 @@ import spacegraph.video.Draw;
 
         protected void renderInside(float rad, GL2 gl) {
             float radh = rad * 0.75f;
-            Draw.line(gl, 0, -radh, 0, +radh);
-            Draw.line(gl, -radh, 0, +radh, 0);
+            Draw.line(0, -radh, 0, +radh, gl);
+            Draw.line(-radh, 0, +radh, 0, gl);
         }
 
         protected void renderOutside(float rad, GL2 gl) {

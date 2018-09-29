@@ -55,7 +55,7 @@ public class Wire {
     /** sends to target */
     public final boolean in(Surface sender, Object s) {
         if (((Port)other(sender)).in(this, s)) {
-            long now = System.currentTimeMillis();
+            long now = System.nanoTime();
 
             Class<?> cl = s.getClass();
             int th = cl.hashCode();
@@ -78,7 +78,7 @@ public class Wire {
         return false;
     }
 
-    private Surface other(Surface x) {
+    public Surface other(Surface x) {
         if (x == a) {
             return b;
         } else if (x == b) {
@@ -91,15 +91,19 @@ public class Wire {
     /** provides a value between 0 and 1 indicating amount of 'recent' activity.
      * this is entirely relative to itself and not other wires.
      * used for display purposes.
-     * time is in milliesconds
+     * time is in nanosconds
      */
     public float activity(boolean aOrB, long now, long window) {
         long l = aOrB ? aLastActive : bLastActive;
         if (l == Long.MIN_VALUE)
             return 0;
         else {
-            return 1f/(1f+(Math.abs(now - l))/((float)(window)));
+            return (float) (1.0/(1.0+(Math.abs(now - l))/((double)window)));
         }
+    }
+    /** combined activity level */
+    public final float activity(long now, long window) {
+        return activity(true, now, window) + activity(false, now, window);
     }
 
     public final boolean connect() {

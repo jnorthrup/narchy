@@ -24,7 +24,7 @@ public enum Exe { ;
     /** global timer */
     private static volatile HashedWheelTimer timer =  new HashedWheelTimer(
             new AdmissionQueueWheelModel(16,
-                    TimeUnit.MILLISECONDS.toNanos(1)
+                    TimeUnit.MILLISECONDS.toNanos(2)
             ),
             HashedWheelTimer.WaitStrategy.SleepWait,
             //HashedWheelTimer.WaitStrategy.YieldingWait,

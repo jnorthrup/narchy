@@ -27,8 +27,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static jcog.Util.sqr;
-
 /**
  * 2D directed/undirected graph widget
  * TODO generify for use in Dynamics3D
@@ -560,7 +558,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
                     gl.glLineWidth(1f + e.weight * 4f);
                     e.color(gl);
                     NodeVis to = e.to;
-                    Draw.line(gl, x, y, to.cx(), to.cy());
+                    Draw.line(x, y, to.cx(), to.cy(), gl);
                 }
             },
             Triangle {
@@ -576,18 +574,10 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
                     float tx = to.cx(), ty = to.cy();
 
                     float scale = Math.min(from.w(), from.h());
-                    float base = Util.lerp(e.weight, scale / 3f, scale);
+                    float base = Util.lerp(e.weight, scale / 2, scale);
 
-                    float len = (float) Math.sqrt(sqr(fx - tx) + sqr(fy - ty));
-                    float theta = (float) (Math.atan2(ty - fy, tx - fx) * 180 / Math.PI) + 270f;
-
-                    //isosceles triangle
-                    gl.glPushMatrix();
-                    gl.glTranslatef((tx + fx) / 2, (ty + fy) / 2, 0);
-                    gl.glRotatef(theta, 0, 0, 1);
                     e.color(gl);
-                    Draw.tri2f(gl, -base / 2, -len / 2, +base / 2, -len / 2, 0, +len / 2);
-                    gl.glPopMatrix();
+                    Draw.halfTriEdge2D(fx, fy, tx, ty, base, gl);
 
                 }
             };

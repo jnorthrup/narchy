@@ -86,7 +86,7 @@ public class MetaFrame extends Bordering {
 
 
     protected String name() {
-        return get(0).toString();
+        return childrenCount() == 0 ? "" : get(0).toString();
     }
 
 

@@ -351,9 +351,9 @@ public class Plot2D extends Widget {
         gl.glLineWidth(2);
 
         float W = 1.0f;
-        Draw.line(gl, 0, 0, W, 0);
+        Draw.line(0, 0, W, 0, gl);
         float H = 1.0f;
-        Draw.line(gl, 0, H, W, H);
+        Draw.line(0, H, W, H, gl);
 
         Draw.hersheyText(gl, n4(minValue), 0.04f, 0, 0, 0, Draw.TextAlignment.Left);
         Draw.hersheyText(gl, n4(maxValue), 0.04f, 0, H, 0, Draw.TextAlignment.Left);

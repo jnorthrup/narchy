@@ -78,7 +78,10 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
     }
 
     public int getOffset(long resolution) {
-        return (int) Math.round(Math.max(resolution, ((double) periodNS)) / resolution);
+        return (int) Math.round(
+                //Math.max(resolution, ((double) periodNS))
+                ((double)periodNS)
+                        / resolution);
     }
 
     public void reset(long period, long resolution, int wheels) {

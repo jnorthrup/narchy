@@ -59,6 +59,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static com.jogamp.opengl.GL.*;
+import static jcog.Util.sqr;
 import static jcog.Util.unitize;
 import static spacegraph.util.math.v3.v;
 
@@ -377,25 +378,25 @@ public enum Draw {
     }
 
     @Deprecated
-    public static void line(GL2 gl, double x1, double y1, double x2, double y2) {
-        line(gl, (float) x1, (float) y1, (float) x2, (float) y2);
+    public static void line(double x1, double y1, double x2, double y2, GL2 gl) {
+        line((float) x1, (float) y1, (float) x2, (float) y2, gl);
     }
 
-    public static void line(GL2 gl, int x1, int y1, int x2, int y2) {
+    public static void line(int x1, int y1, int x2, int y2, GL2 gl) {
         gl.glBegin(GL2.GL_LINES);
         gl.glVertex2i(x1, y1);
         gl.glVertex2i(x2, y2);
         gl.glEnd();
     }
 
-    public static void line(GL2 gl, float x1, float y1, float x2, float y2) {
+    public static void line(float x1, float y1, float x2, float y2, GL2 gl) {
         gl.glBegin(GL2.GL_LINES);
         gl.glVertex2f(x1, y1);
         gl.glVertex2f(x2, y2);
         gl.glEnd();
     }
 
-    public static void tri2d(GL2 gl, int x1, int y1, int x2, int y2, int x3, int y3) {
+    public static void tri2d(int x1, int y1, int x2, int y2, int x3, int y3, GL2 gl) {
         gl.glBegin(GL2.GL_TRIANGLES);
         gl.glVertex2i(x1, y1);
         gl.glVertex2i(x2, y2);
@@ -1092,6 +1093,18 @@ public enum Draw {
     public static void rectRGBA(RectFloat bounds, float r, float g, float b, float a, GL2 gl) {
         gl.glColor4f(r, g, b, a);
         Draw.rect(bounds, gl);
+    }
+
+    public static void halfTriEdge2D(float fx, float fy, float tx, float ty, float base, GL2 gl) {
+        float len = (float) Math.sqrt(sqr(fx - tx) + sqr(fy - ty));
+        float theta = (float) (Math.atan2(ty - fy, tx - fx) * 180 / Math.PI) + 270f;
+
+        //isosceles triangle
+        gl.glPushMatrix();
+        gl.glTranslatef((tx + fx) / 2, (ty + fy) / 2, 0);
+        gl.glRotatef(theta, 0, 0, 1);
+        tri2f(gl, -base / 2, -len / 2, +base / 2, -len / 2, 0, +len / 2);
+        gl.glPopMatrix();
     }
 
     public enum TextAlignment {

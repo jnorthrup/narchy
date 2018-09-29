@@ -9,6 +9,7 @@ import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.space2d.widget.shape.PathSurface;
 import spacegraph.space2d.widget.windo.GraphEdit;
+import spacegraph.space2d.widget.windo.Link;
 import spacegraph.util.Path2D;
 
 import javax.annotation.Nullable;
@@ -103,7 +104,8 @@ public class Wiring extends FingerDragging {
         if (end != null) {
 
 
-            tryWire();
+            if (!tryWire())
+                return; //fail
         }
 
         if (this.start instanceof Wireable)
@@ -122,7 +124,7 @@ public class Wiring extends FingerDragging {
      * @param y
      * @param wall
      */
-    protected GraphEdit.Link wire(Wire w, GraphEdit wall) {
+    protected Link wire(Wire w, GraphEdit wall) {
 
         if (w.a instanceof TypedPort && w.b instanceof TypedPort) {
             //apply type checking and auto-conversion if necessary
@@ -147,16 +149,21 @@ public class Wiring extends FingerDragging {
 //        wall.addRaw(p);
     }
 
+
     protected boolean tryWire() {
         GraphEdit wall = graph();
-        GraphEdit.Link x = //new Wire(start, end);
-                wire(new Wire(start, end), wall);
-        Wire y = wall.link(x.id);
-        if (y == x.id) {
+        Wire x = new Wire(start, end);
+        Wire y = wall.addWire(x);
+        if (y == x) {
+            Link w = //new Wire(start, end);
+                    wire(y, wall);
+
+
             start.root().debug(start, 1, () -> "wire(" + wall + ",(" + start + ',' + end + "))");
             //wire(start, end, y, wall);
             return true;
         }
+
         return false;
     }
 

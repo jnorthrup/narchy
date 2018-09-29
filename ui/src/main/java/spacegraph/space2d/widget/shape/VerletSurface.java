@@ -20,6 +20,7 @@ import toxi.physics2d.spring.VerletSpring2D;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -37,6 +38,8 @@ public class VerletSurface extends Surface implements Animated {
      * constrained to the surface's rectangular bounds
      */
     private boolean bounded = true;
+
+    public final AtomicBoolean debugRender = new AtomicBoolean(true);
 
     public VerletSurface(float w, float h) {
         this(RectFloat.X0Y0WH(0, 0, w, h));
@@ -90,7 +93,8 @@ public class VerletSurface extends Surface implements Animated {
 
     @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-        VerletSurface.render(physics, gl);
+        if (debugRender.getOpaque())
+            VerletSurface.render(physics, gl);
     }
 
     public enum VerletSurfaceBinding {
@@ -194,6 +198,9 @@ public class VerletSurface extends Surface implements Animated {
 
                 //immediate
                 vv.next.set(pNext);
+
+                float density = 0.01f;
+                vv.mass = (float) (ss.bounds.area() * density);
 
 //                    vv.set(pNext);
 //                    vv.prev.set(pNext);
@@ -302,7 +309,7 @@ public class VerletSurface extends Surface implements Animated {
         for (VerletSpring2D s : physics.springs) {
             VerletParticle2D a = s.a, b = s.b;
             gl.glLineWidth(Math.min(a.mass(), b.mass()));
-            Draw.line(gl, a.x, a.y, b.x, b.y);
+            Draw.line(a.x, a.y, b.x, b.y, gl);
         }
     }
 }
