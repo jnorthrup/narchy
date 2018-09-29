@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
-import spacegraph.space2d.widget.port.Port;
+import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.IntSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
@@ -21,7 +21,7 @@ import java.util.Random;
 public class NoiseVectorChip extends Splitting {
 
     final IntRange size = new IntRange(1, 1, 64);
-    private final Port out;
+    private final TypedPort<Tensor> out;
     private BitmapMatrixView view;
 
     //TODO move to SmoothingChip
@@ -51,7 +51,7 @@ public class NoiseVectorChip extends Splitting {
 
             new LabeledPane("momentum", new FloatSlider(0.5f, 0, 1).on(momentum::set)),
 
-            new LabeledPane("out", out = new Port((x) -> { }))
+            new LabeledPane("out", out = new TypedPort<>(Tensor.class))
         ));
 
         next();

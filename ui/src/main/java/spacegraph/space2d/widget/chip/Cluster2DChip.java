@@ -10,10 +10,11 @@ import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.Cluster2DView;
 import spacegraph.space2d.widget.port.Port;
+import spacegraph.space2d.widget.port.TypedPort;
 
 public class Cluster2DChip extends Bordering {
 
-    private final Port in;
+    private final Port<Tensor> in;
     private final Cluster2DView centroids;
 
     //TODO allow choice or more abstract mapping from certain dimensions
@@ -46,7 +47,7 @@ public class Cluster2DChip extends Bordering {
 
         config.update(1);
 
-        in = new Port().on((Tensor t) -> {
+        in = new TypedPort<>(Tensor.class).on((Tensor t) -> {
             synchronized (g) {
                 int volume = t.volume();
                 config.update(volume);

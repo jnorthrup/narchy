@@ -22,10 +22,7 @@ import spacegraph.space2d.widget.chip.FunctionSelectChip;
 import spacegraph.space2d.widget.chip.WaveViewChip;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.meter.WaveView;
-import spacegraph.space2d.widget.port.FloatRangePort;
-import spacegraph.space2d.widget.port.LabeledPort;
-import spacegraph.space2d.widget.port.Port;
-import spacegraph.space2d.widget.port.TogglePort;
+import spacegraph.space2d.widget.port.*;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.windo.GraphEdit;
@@ -35,6 +32,7 @@ import spacegraph.video.Draw;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import static java.lang.Boolean.TRUE;
 import static spacegraph.space2d.container.Gridding.HORIZONTAL;
@@ -190,8 +188,7 @@ public class WallTest {
 
                 WaveView wave = new WaveView(buffer, 600, 400);
                 AtomicBoolean busy = new AtomicBoolean(false);
-                Port p = new Port();
-                p.on((String text) -> {
+                TypedPort p = new TypedPort<>(String.class, (String text) -> {
                     if (busy.compareAndSet(false, true)) {
                         try {
                             buffer.clear();
@@ -233,7 +230,7 @@ public class WallTest {
 //                e.click(()->{
 //                    Synth
 //                })
-                Port p = new Port((ObjectIntPair<float[]> mixTarget)->{
+                TypedPort<ObjectIntPair<float[]>> p = new TypedPort(ObjectIntPair.class, (Consumer<ObjectIntPair<float[]>>)(ObjectIntPair<float[]> mixTarget)->{
                     h.next(mixTarget.getOne());
                 });
                 g.add(

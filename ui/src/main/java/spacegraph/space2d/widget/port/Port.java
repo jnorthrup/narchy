@@ -21,14 +21,14 @@ import java.util.function.Supplier;
 /** base class for a port implementation
  * @see http:
  * */
-public class Port extends Widget implements Wiring.Wireable {
+public class Port<X> extends Widget implements Wiring.Wireable {
 
     private transient volatile Wiring beingWiredOut = null;
     private transient volatile Wiring beingWiredIn = null;
     private boolean enabled = true;
 
     /** input handler */
-    public In in = null;
+    public In<? super X> in = null;
 
     /** prototype (example) builder.  stipulates a protocol as specified by an example instance */
     private Supplier specifyHow = null;
@@ -36,7 +36,7 @@ public class Port extends Widget implements Wiring.Wireable {
     /** prototype (example) acceptor. accepts a protocol (on connect / re-connect) */
     private Consumer obeyHow = null;
 
-    private IntObjectProcedure<Port> updater = null;
+    private IntObjectProcedure<Port<X>> updater = null;
 
     private transient Node<spacegraph.space2d.Surface, Wire> node;
 
@@ -46,48 +46,50 @@ public class Port extends Widget implements Wiring.Wireable {
         super();
     }
 
-    public Port(In i) {
+
+
+    public Port(In<? super X> i) {
         this();
         on(i);
     }
 
     /** for convenience */
-    public Port(Consumer<?> i) {
+    public Port(Consumer<? super X> i) {
         this();
         on(i);
     }
 
 
-    public <X> Port on(Consumer<X> i) {
+    public Port<X> on(Consumer<? super X> i) {
         return on((Wire w, X x)->i.accept(x));
     }
 
-    public <X> Port specify(Supplier<X> proto) {
+    public Port<X> specify(Supplier<X> proto) {
         this.specifyHow = proto;
         return this;
     }
 
-    public <X> Port obey(Consumer<X> withRecievedProto) {
+    public Port<X> obey(Consumer<? super X> withRecievedProto) {
         this.obeyHow = withRecievedProto;
         return this;
     }
 
     /** set the input handler */
-    public <X> Port on(@Nullable In<X> i) {
+    public Port<X> on(@Nullable In<? super X> i) {
         this.in = i; return this;
     }
 
-    public Port update(@Nullable Runnable update) {
+    public Port<X> update(@Nullable Runnable update) {
         this.updater = (i,p)->update.run();
         return this;
     }
 
-    public Port update(@Nullable Consumer<Port> update) {
+    public Port<X> update(@Nullable Consumer<Port<X>> update) {
         this.updater = (i,p)->update.accept(p);
         return this;
     }
 
-    public Port update(@Nullable IntObjectProcedure<Port> update) {
+    public Port<X> update(@Nullable IntObjectProcedure<Port<X>> update) {
         this.updater = update;
         return this;
     }
@@ -231,14 +233,14 @@ public class Port extends Widget implements Wiring.Wireable {
 
     @Override
     public void prePaint(int dtMS) {
-        IntObjectProcedure<Port> u = this.updater;
+        IntObjectProcedure<Port<X>> u = this.updater;
         if (u !=null)
             u.value(dtMS, this);
 
         super.prePaint(dtMS);
     }
 
-    public final void out(Object x) {
+    public final void out(X x) {
         out(this, x);
     }
 
@@ -247,7 +249,7 @@ public class Port extends Widget implements Wiring.Wireable {
         super.starting();
 
         this.node = parent(GraphEdit.class).links.addNode(this);
-        IntObjectProcedure<Port> u = this.updater;
+        IntObjectProcedure<Port<X>> u = this.updater;
         if (u !=null)
             u.value(0, this);
 
@@ -267,7 +269,7 @@ public class Port extends Widget implements Wiring.Wireable {
 
 
     /** TODO Supplier-called version of this */
-    protected void out(Port sender, Object x) {
+    protected void out(Port sender, X x) {
         
         if (enabled) {
             Node<spacegraph.space2d.Surface, Wire> n = this.node;
@@ -276,7 +278,7 @@ public class Port extends Widget implements Wiring.Wireable {
         }
     }
 
-    public boolean in(Wire from, Object s) {
+    public boolean in(Wire from, X s) {
         if (!enabled || this.in == null) {
             return false;
         } else {

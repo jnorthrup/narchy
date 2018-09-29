@@ -2,20 +2,20 @@ package spacegraph.space2d.widget.chip;
 
 import com.jogamp.newt.event.KeyEvent;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.widget.port.Port;
+import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 public class KeyboardChip extends Bordering {
 
     private final VectorLabel txt;
-    private final Port out;
+    private final TypedPort<Integer> out;
 
     public KeyboardChip() {
         super();
 
         set(txt = new VectorLabel());
-        set(S, new LabeledPane("out", out = new Port()), 0.1f);
+        set(S, new LabeledPane("out", out = new TypedPort<>(Integer.class)), 0.1f);
 
 
     }
@@ -61,6 +61,10 @@ public class KeyboardChip extends Bordering {
                     return "left";
                 case 2:
                     return "right";
+                case 3:
+                    return "up";
+                case 4:
+                    return "down";
             }
             return "";
         }
@@ -72,6 +76,10 @@ public class KeyboardChip extends Bordering {
                     return 1;
                 case KeyEvent.VK_RIGHT:
                     return 2;
+                case KeyEvent.VK_UP:
+                    return 3;
+                case KeyEvent.VK_DOWN:
+                    return 4;
             }
             return 0;
         }

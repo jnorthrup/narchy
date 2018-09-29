@@ -12,9 +12,10 @@ import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.chip.NoiseVectorChip;
 import spacegraph.space2d.widget.chip.SwitchChip;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
+import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
 import spacegraph.space2d.widget.port.Port;
+import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.windo.GraphEdit;
@@ -152,7 +153,7 @@ public class TensorGlow {
                         new PaintUpdateMatrixView(q.et)
                 )
         );
-        hw.add(new LabeledPane("input", new Port((float[] i) -> {
+        hw.add(new LabeledPane("input", new TypedPort<>(float[].class, (i) -> {
             System.arraycopy(i, 0, in, 0, i.length);
         })));
         hw.add(new LabeledPane("act", outs = new Port()));

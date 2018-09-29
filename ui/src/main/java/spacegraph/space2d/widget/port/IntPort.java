@@ -9,14 +9,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static spacegraph.space2d.container.Gridding.col;
 
 /** TODO add both text and spinner methods */
-public class IntPort extends Port {
+public class IntPort extends TypedPort {
 
     final AtomicInteger value = new AtomicInteger();
 
     final TextEdit txt;
 
     public IntPort() {
-        super();
+        super(Integer.class);
 
         process(0);
 

@@ -10,7 +10,7 @@ import spacegraph.space2d.widget.slider.FloatSlider;
 
 import javax.annotation.Nullable;
 
-public class FloatRangePort extends /*Source*/Port {
+public class FloatRangePort extends TypedPort {
 
     private static final float EPSILON = 0.001f;
 
@@ -22,6 +22,7 @@ public class FloatRangePort extends /*Source*/Port {
     }
 
     private FloatRangePort(FloatRange f/*, Consumer<Runnable> updater*/) {
+        super(Float.class);
         this.f = f;
 
         FloatSlider s = new FloatSlider(f);

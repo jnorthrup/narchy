@@ -3,15 +3,15 @@ package spacegraph.space2d.widget.chip;
 import jcog.signal.buffer.CircularFloatBuffer;
 import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
 import spacegraph.space2d.widget.meter.WaveView;
-import spacegraph.space2d.widget.port.Port;
+import spacegraph.space2d.widget.port.TypedPort;
 
-public class WaveViewChip extends Port {
+public class WaveViewChip extends TypedPort<ObjectIntPair<float[]>> {
 
     final CircularFloatBuffer buffer = new CircularFloatBuffer(44100 * 2);
     final WaveView wave = new WaveView(buffer, 600, 400);
 
     public WaveViewChip() {
-        super();
+        super(ObjectIntPair.class);
 
         on((ObjectIntPair<float[]> nextBuffer)->{
             float[] b = nextBuffer.getOne();

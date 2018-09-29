@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.chip;
 
 import java.util.function.BiFunction;
 
-public class BiFunctionChip<X,Y,Z> extends AbstractFunctionChip.AbstractBiFunctionChip<X,Y,Z> {
+public class BiFunctionChip<X,Y,Z> extends AbstractBiFunctionChip<X,Y,Z> {
 
     final BiFunction<X,Y,Z> f;
 

@@ -7,6 +7,7 @@ import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.math.MutableEnum;
+import jcog.reflect.AutoBuilder;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
