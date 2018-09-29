@@ -1,9 +1,8 @@
 package spacegraph.space2d.widget.chip;
 
 import spacegraph.space2d.widget.WallTest;
+import spacegraph.space2d.widget.port.IntPort;
 import spacegraph.space2d.widget.windo.GraphEdit;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class KeyboardChipTest {
 
@@ -11,7 +10,8 @@ class KeyboardChipTest {
 
         GraphEdit w = WallTest.newWallWindow();
         w.add(new Cluster2DChip()).pos(100, 100, 300, 300);
-        w.add(new KeyboardChip()).pos(300, 300, 500, 500);
+        w.add(new KeyboardChip.ArrowKeysChip()).pos(300, 300, 500, 500);
+        w.add(new IntPort()).pos(300, 300, 500, 500);
 
 
     }

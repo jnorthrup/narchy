@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.port;
 
-import jcog.Util;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.TextEdit;
@@ -24,7 +23,7 @@ public class IntPort extends Port {
         PushButton incButton = new PushButton("+");
         PushButton decButton = new PushButton("-");
 
-        set(new Splitting(txt = new TextEdit(8, 1), col(incButton, decButton), true, 0.9f));
+        set(new Splitting(txt = new TextEdit(8, 1), col(incButton, decButton), false, 0.8f));
 
         incButton.click(()-> set(value.getOpaque()+1));
         decButton.click(()-> set((value.getOpaque()-1))); //TODO fully atomic
@@ -46,7 +45,9 @@ public class IntPort extends Port {
 
     public final boolean set(int next) {
         if (value.getAndSet(next)!=next) {
+            txt.text(Integer.toString(next));
             out(next);
+
             return true;
         }
         return false;

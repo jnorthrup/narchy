@@ -84,17 +84,17 @@ public class Cluster2DView extends Graph2D<Centroid> {
                 set(Stream.empty());
             } else {
 
-                ((MutableHyperRectDouble) n).growPct(0.35f);
+                n.growPct(0.35f);
                 if (this.netBounds == null)
                     this.netBounds = n;
                 else
                     n = this.netBounds.lerp(n, boundsRate);
 
                 //float sx = w() / 2, sy = h() / 2;
-                sx = 1 / (float) netBounds.range(0);
+                sx = (float) (1 / netBounds.range(0));
                 minX = (float) netBounds.coord(0, false);
                 if (netBounds.dim() > 1) {
-                    sy = 1 / (float) netBounds.range(1);
+                    sy = (float) (1 / netBounds.range(1));
                     minY = (float) netBounds.coord(1, false);
                 } else {
                     minY = 0;

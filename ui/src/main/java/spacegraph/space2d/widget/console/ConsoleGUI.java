@@ -67,7 +67,9 @@ public class ConsoleGUI extends ConsoleTerminal {
                 screen.startScreen();
 
 
+
                 gui = new MultiWindowTextGUI(MyStupidGUIThread::new, screen);
+
 
 
 
@@ -78,8 +80,8 @@ public class ConsoleGUI extends ConsoleTerminal {
                 window = new BasicWindow();
                 window.setPosition(new TerminalPosition(0, 0));
 
-                TerminalSize size = term.getTerminalSize();
-                window.setSize(new TerminalSize(size.getColumns() , size.getRows() ));
+//                TerminalSize size = term.getTerminalSize();
+//                window.setSize(new TerminalSize(size.getColumns() , size.getRows() ));
 
                 window.setHints(List.of(Window.Hint.FULL_SCREEN, Window.Hint.NO_DECORATIONS));
 

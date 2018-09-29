@@ -96,7 +96,7 @@ public class FZero extends NAgentX {
                 //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(false, 0.9f);
-                initBipolarRotateDirect(false, 0.7f);
+                initBipolarRotateDirect(false, 0.2f);
 
 //        window(new Gridding(
 //                //new CameraSensorView(c, this).withControls(),

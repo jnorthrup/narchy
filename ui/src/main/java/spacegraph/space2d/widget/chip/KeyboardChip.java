@@ -33,11 +33,47 @@ public class KeyboardChip extends Bordering {
     }
 
     protected void out(int keyCode) {
-        if (keyCode!=0)
-            txt.text(String.valueOf(keyCode));
+
+        int kc = map(keyCode);
+        if (kc!=0)
+            txt.text(label(kc));
         else
             txt.text("");
 
-        out.out(keyCode);
+
+        out.out(kc /*new ArrayTensor(new float[] { kc })*/);
+    }
+
+    /** return 0 to filter */
+    protected int map(int keyCode) {
+        return keyCode;
+    }
+
+    protected String label(int keyCode) {
+        return String.valueOf(keyCode);
+    }
+
+    public static class ArrowKeysChip extends KeyboardChip {
+        @Override
+        protected String label(int keyCode) {
+            switch (keyCode) {
+                case 1:
+                    return "left";
+                case 2:
+                    return "right";
+            }
+            return "";
+        }
+
+        @Override
+        protected int map(int keyCode) {
+            switch(keyCode) {
+                case KeyEvent.VK_LEFT:
+                    return 1;
+                case KeyEvent.VK_RIGHT:
+                    return 2;
+            }
+            return 0;
+        }
     }
 }

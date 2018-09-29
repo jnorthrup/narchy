@@ -72,6 +72,15 @@ public class TextEdit extends ConsoleGUI {
         return ((TextEditUI)term).onText.on(textChange);
     }
 
+    public TextEdit text(String text) {
+        ((TextEditUI)term).text(text);
+        return this;
+    }
+
+    public String text() {
+        return ((TextEditUI)term).text();
+    }
+
     public static class TextEditUI extends DefaultVirtualTerminal {
 
 
@@ -179,8 +188,10 @@ public class TextEdit extends ConsoleGUI {
 
             };
 
-            if (c != -1)
+            if (c != -1) {
+                setTerminalSize(new TerminalSize(c, r));
                 textBox.setSize(new TerminalSize(c, r));
+            }
 
         }
 

@@ -55,6 +55,8 @@ public class ProtoWidget extends Widget {
     private static final WidgetLibrary LIBRARY  = new WidgetLibrary() {{
 
         add("Keyboard", ()-> new KeyboardChip(), "Hardware");
+        add("ArrowKeys", ()-> new KeyboardChip.ArrowKeysChip(), "Hardware");
+
         add("Mouse", TODO, "Hardware");
         add("Gamepad", TODO, "Hardware");
         add("WebCam", () -> new WebCam.WebCamSurface(WebCam.the()), "Hardware");
@@ -67,7 +69,8 @@ public class ProtoWidget extends Widget {
         }, "Hardware");
 
         add("int", ()->new IntPort(), "Signal");
-        add("x[0..1]", ()->new FloatRangePort(0.5f, 0, 1f), "Signal");
+        add("float[-1..1]", ()->new FloatRangePort(0.5f, -1, 1f), "Signal");
+        add("float[0..1]", ()->new FloatRangePort(0.5f, 0, 1f), "Signal");
         add("Rng", ()->new FloatRangePort(0.5f, 0, 1f), "Signal");
         add("Wave", TODO, "Signal");
 
