@@ -76,7 +76,7 @@ public class DefaultConceptBuilder extends ConceptBuilder {
     @Override
     public BeliefTables newTable(Term c, boolean beliefOrGoal) {
         if (c.op().beliefable && !c.hasAny(Op.VAR_QUERY) && (beliefOrGoal || goalable(c))) {
-            return new BeliefTables(newTemporalTable(c), newEternalTable(c));
+            return new BeliefTables(newTemporalTable(c, beliefOrGoal), newEternalTable(c));
         } else {
             return BeliefTables.Empty;
         }
@@ -87,8 +87,11 @@ public class DefaultConceptBuilder extends ConceptBuilder {
     }
 
     @Override
-    public TemporalBeliefTable newTemporalTable(Term c) {
-        return new RTreeBeliefTable.RTreeBeliefTableEternalizing();
+    public TemporalBeliefTable newTemporalTable(Term c, boolean beliefOrGoal) {
+        return //c.hasXternal() ?
+                new RTreeBeliefTable()
+                //: new RTreeBeliefTable.EternalizingRTreeBeliefTable(beliefOrGoal)
+        ;
     }
 
     @Override

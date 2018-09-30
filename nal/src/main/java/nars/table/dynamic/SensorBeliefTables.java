@@ -30,7 +30,7 @@ public class SensorBeliefTables extends BeliefTables {
     public FloatRange res;
 
     public SensorBeliefTables(Term term, boolean beliefOrGoal, ConceptBuilder b) {
-        this(term, beliefOrGoal, b.newTemporalTable(term));
+        this(term, beliefOrGoal, b.newTemporalTable(term, beliefOrGoal));
     }
 
     public SensorBeliefTables(Term c, boolean beliefOrGoal, TemporalBeliefTable t) {

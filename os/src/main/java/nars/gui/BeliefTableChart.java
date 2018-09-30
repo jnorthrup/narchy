@@ -114,7 +114,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
 
         void update(Concept c) {
             BeliefTable table = (BeliefTable) c.table(beliefOrGoal ? BELIEF : GOAL);
-            projected.project(table, start, end, w, nar);
+            projected.project(table, start, end, w, term, nar);
             tasks.set(table, start, end);
         }
 

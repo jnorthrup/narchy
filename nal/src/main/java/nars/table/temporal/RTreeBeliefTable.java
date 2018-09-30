@@ -1,20 +1,25 @@
 package nars.table.temporal;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.sort.Top;
 import jcog.sort.Top2;
 import jcog.tree.rtree.*;
 import jcog.tree.rtree.split.AxialSplitLeaf;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.control.proto.Remember;
+import nars.task.NALTask;
 import nars.task.Revision;
 import nars.task.TaskProxy;
 import nars.task.signal.SignalTask;
 import nars.task.util.*;
-import nars.truth.TruthAccumulator;
+import nars.truth.Truth;
+import nars.truth.TruthFunctions;
 import nars.truth.polation.TruthIntegration;
+import nars.truth.util.TruthAccumulator;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,6 +27,10 @@ import java.io.PrintStream;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
@@ -248,6 +257,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (s == 0)
             return;
 
+
         TimeRangeFilter time = m.time;
 
         @Nullable TaskRegion bounds = this.bounds();
@@ -450,11 +460,16 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             r.merge(existing);
             //assert(existing==input || r.forgotten.containsInstance(input));
         } else {
-            if (!r.forgotten(input))
-                r.remember(input);
+            if (!r.forgotten(input)) {
+                remember(r, input);
+            }
         }
 
 
+    }
+
+    @Deprecated protected void remember(Remember r, Task input) {
+        r.remember(input);
     }
 
     private boolean ensureCapacity(Space<TaskRegion> treeRW, @Nullable Task input, Remember remember, NAR nar) {
@@ -772,11 +787,57 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     /** TODO */
-    public static class RTreeBeliefTableEternalizing extends RTreeBeliefTable {
+    public static class EternalizingRTreeBeliefTable extends RTreeBeliefTable {
 
         final TruthAccumulator ete = new TruthAccumulator();
+        private final boolean beliefOrGoal;
+
+        public EternalizingRTreeBeliefTable(boolean beliefOrGoal) {
+            this.beliefOrGoal = beliefOrGoal;
+
+        }
+
+        @Override
+        public void match(Answer m) {
+            super.match(m);
+            if (m.template!=null) {
+                Truth t = ete.peekAverage();
+                if (t != null) {
 
 
+                    Task tt = new NALTask(m.template, beliefOrGoal ? BELIEF : GOAL, t,
+                            m.nar.time(), m.time.start, m.time.end,
+                            m.nar.evidence() //TODO hold rolling evidence buffer
+                    ).pri(m.nar);
+
+//                System.out.println(tt);
+                    m.tryAccept(tt);
+                }
+            } else {
+                if (Param.DEBUG)
+                    throw new WTF("null template"); //HACK
+            }
+        }
+
+        @Override
+        protected void remember(Remember r, Task input) {
+            super.remember(r, input);
+
+            {
+
+                @Nullable TaskRegion bounds = bounds();
+                if (bounds==null)
+                    return;
+
+                int cap = capacity();
+                float e = TruthIntegration.evi(input) * (((float) input.range()) / bounds.range() );
+                float ee = TruthFunctions.eternalize(e);
+                float ce = w2cSafe(ee);
+                if (ce > Param.TRUTH_EPSILON) {
+                    ete.add(input.freq(), ce);
+                }
+            }
+        }
     }
 
 

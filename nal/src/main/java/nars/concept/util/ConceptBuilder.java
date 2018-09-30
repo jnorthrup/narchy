@@ -41,7 +41,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
     protected abstract EternalTable newEternalTable(Term c);
 
-    public abstract TemporalBeliefTable newTemporalTable(Term c);
+    public abstract TemporalBeliefTable newTemporalTable(Term c, boolean beliefOrGoal);
 
     public abstract Bag[] newLinkBags(Term term);
 
@@ -79,7 +79,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
     private BeliefTables newDynamicBeliefTable(Term t, DynamicTruthModel dmt, boolean beliefOrGoal) {
         return new BeliefTables(
-                newTemporalTable(t),
+                newTemporalTable(t, beliefOrGoal),
                 newEternalTable(t),
                 new DynamicTruthTable(t, dmt, beliefOrGoal)
         );
@@ -321,7 +321,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
         }
 
         @Override
-        public TemporalBeliefTable newTemporalTable(Term c) {
+        public TemporalBeliefTable newTemporalTable(Term c, boolean beliefOrGoal) {
             return null;
         }
 

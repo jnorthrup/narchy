@@ -1,5 +1,7 @@
-package nars.truth;
+package nars.truth.util;
 
+import nars.truth.PreciseTruth;
+import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -20,11 +22,11 @@ public class TruthAccumulator extends AtomicReference<double[]> {
         return truth(commit(), true);
     }
 
-    protected double[] commit() {
+    public double[] commit() {
         return getAndSet(new double[3]);
     }
 
-    public Truth peekSum() {
+    public PreciseTruth peekSum() {
         return truth(get(), true);
     }
     @Nullable public Truth peekAverage() {
@@ -32,7 +34,7 @@ public class TruthAccumulator extends AtomicReference<double[]> {
     }
 
     @Nullable
-    private static Truth truth(double[] fc, boolean sumOrAverage) {
+    private static PreciseTruth truth(double[] fc, boolean sumOrAverage) {
 
         double e = fc[1];
         if (e <= 0)
@@ -43,15 +45,21 @@ public class TruthAccumulator extends AtomicReference<double[]> {
         return PreciseTruth.byEvi((float)(fc[0]/e), ee);
     }
 
+
     public void add(@Nullable Truth t) {
-        double fe, e;
-        if (t == null) {
-            e = fe = 0; 
-        } else {
-            double f = t.freq();
-            e = t.evi();
-            fe = f * e;
-        }
+
+        if (t == null)
+            return;
+
+
+        double f = t.freq();
+        double e = t.evi();
+        add(f, e);
+    }
+
+    public void add(double f, double e) {
+        double fe = f * e;
+
         getAndUpdate(fc->{
             fc[0] += fe;
             fc[1] += e;
@@ -66,4 +74,5 @@ public class TruthAccumulator extends AtomicReference<double[]> {
         Truth t = peekSum();
         return t!=null ? t.toString() : "null";
     }
+
 }

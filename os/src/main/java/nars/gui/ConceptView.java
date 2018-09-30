@@ -43,13 +43,13 @@ public class ConceptView extends Gridding {
             c.print(sa, false, false, true, false);
 
             io.term.clearScreen();
-            io.text.append(sa);
+            io.append(sa);
             io.term.flush();
 
         } else {
             io.term.clearScreen();
             try {
-                io.text.append(String.valueOf(term)).append(" unconceptualized");
+                io.append(String.valueOf(term)).append(" unconceptualized");
             } catch (IOException e) {
                 e.printStackTrace();
             }

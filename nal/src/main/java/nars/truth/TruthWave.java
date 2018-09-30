@@ -4,6 +4,7 @@ import jcog.WTF;
 import nars.NAR;
 import nars.Param;
 import nars.table.BeliefTable;
+import nars.term.Term;
 import nars.time.Tense;
 import nars.util.TimeAware;
 import org.jetbrains.annotations.NotNull;
@@ -136,7 +137,7 @@ public class TruthWave {
     /**
      * fills the wave with evenly sampled points in a time range
      */
-    public void project(BeliefTable table, long minT, long maxT, int points, NAR nar) {
+    public void project(BeliefTable table, long minT, long maxT, int points, Term term, NAR nar) {
         clear();
         this.start = minT;
         this.end = maxT;
@@ -153,7 +154,7 @@ public class TruthWave {
             long a = Math.round(t); //Math.round(t - dt/2);
             long b = Math.round(t + dt);
 
-            Truth tr = table.truth(a, b, nar); 
+            Truth tr = table.truth(a, b, term, nar);
 
             load(data, (j++) * ENTRY_SIZE,
                     minT, maxT,

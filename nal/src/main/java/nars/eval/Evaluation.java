@@ -126,7 +126,7 @@ public class Evaluation {
         } else {
             CartesianIterator<Predicate>/*<VersionMap<Term,Term>>>*/ ci =
                     new CartesianIterator(
-                            Predicate[]::new, termutator.array()); //toArray((IntFunction<Iterable[]>)(Iterable[]::new)));
+                            Predicate[]::new, termutator.toArray((IntFunction<Iterable[]>)(Iterable[]::new)));
             termutator.clear();
             nextProduct: while (ci.hasNext()) {
 

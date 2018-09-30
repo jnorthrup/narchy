@@ -145,10 +145,10 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
 
         TaskConcept s = cam.get(x,y);
-        Truth b = s.beliefs().truth(start, end, nar);
+        Truth b = s.beliefs().truth(start, end, s.term, nar);
         float bf = b != null ? b.freq() : 0.5f;
 
-        Truth d = s.goals().truth(start, end, nar);
+        Truth d = s.goals().truth(start, end, s.term, nar);
         float R = bf*0.75f, G = bf*0.75f, B = bf*0.75f;
         if (d!=null) {
             float f = d.expectation();

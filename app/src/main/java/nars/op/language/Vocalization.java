@@ -8,7 +8,7 @@ import nars.control.DurService;
 import nars.control.NARService;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.truth.TruthAccumulator;
+import nars.truth.util.TruthAccumulator;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.tuple.Tuples;
