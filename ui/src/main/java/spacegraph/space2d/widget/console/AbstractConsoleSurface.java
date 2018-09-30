@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.console;
 import com.googlecode.lanterna.TextCharacter;
 import spacegraph.space2d.container.EmptyContainer;
 
-public abstract class AbstractConsoleSurface extends EmptyContainer implements Appendable {
+public abstract class AbstractConsoleSurface extends EmptyContainer {
     protected int rows;
     protected int cols;
 

@@ -38,8 +38,11 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
 
     protected BitmapTextGrid() {
-
         setBitmapFontSize(28);
+    }
+
+    protected BitmapTextGrid(int cols, int rows) {
+        resize(cols, rows);
     }
 
     private boolean ensureBufferSize() {

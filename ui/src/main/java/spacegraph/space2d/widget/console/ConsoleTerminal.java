@@ -6,26 +6,21 @@ import com.googlecode.lanterna.TerminalTextUtils;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
-import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
-import com.googlecode.lanterna.terminal.virtual.VirtualTerminalListener;
 import com.jogamp.newt.event.KeyEvent;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.widget.Widget;
 
 import java.io.OutputStream;
 import java.util.TreeSet;
 
 
-public class ConsoleTerminal extends Widget {
+public class ConsoleTerminal extends Widget implements Appendable {
 
     public final VirtualTerminal term;
     public final MyBitmapTextGrid text = new MyBitmapTextGrid();
-    private VirtualTerminalListener listener;
 
     public ConsoleTerminal(int cols, int rows) {
         this(new DefaultVirtualTerminal(new TerminalSize(cols, rows)));
@@ -45,12 +40,12 @@ public class ConsoleTerminal extends Widget {
 
             @Override
             public void write(int i) {
-                text.append((char) i);
+                append((char) i);
             }
 
             @Override
             public void flush() {
-                term.flush();
+                flush();
             }
         };
     }
@@ -150,40 +145,6 @@ public class ConsoleTerminal extends Widget {
 
 
     @Override
-    public boolean start(@Nullable SurfaceBase parent) {
-        if (super.start(parent)) {
-
-            term.addVirtualTerminalListener(listener = new VirtualTerminalListener() {
-
-
-                @Override
-                public void onFlush() {
-                    text.invalidate();
-                }
-
-                @Override
-                public void onBell() {
-
-                }
-
-                @Override
-                public void onClose() {
-                }
-
-                @Override
-                public void onResized(Terminal terminal, TerminalSize terminalSize) {
-                    text.invalidate();
-                }
-            });
-
-            text.invalidate();
-
-
-            return true;
-        }
-        return false;
-    }
-    @Override
     public boolean key(KeyEvent e, boolean pressed) {
 
         int cc = e.getKeyCode();
@@ -271,13 +232,30 @@ public class ConsoleTerminal extends Widget {
     public boolean stop() {
         if (super.stop()) {
             term.close();
-            term.removeVirtualTerminalListener(listener);
-            listener = null;
             return true;
         }
         return false;
     }
 
+    @Override
+    public Appendable append(CharSequence c) {
+        int l = c.length();
+        for (int i = 0; i < l; i++) {
+            append(c.charAt(i));
+        }
+        return this;
+    }
+
+    @Override
+    public Appendable append(char c) {
+        term.putCharacter(c);
+        return this;
+    }
+
+    @Override
+    public Appendable append(CharSequence charSequence, int i, int i1) {
+        throw new UnsupportedOperationException("TODO");
+    }
 
     public class MyBitmapTextGrid extends BitmapTextGrid {
         @Override
@@ -290,25 +268,7 @@ public class ConsoleTerminal extends Widget {
 //            return false;
 //        }
 
-        @Override
-        public Appendable append(CharSequence c) {
-            int l = c.length();
-            for (int i = 0; i < l; i++) {
-                text.append(c.charAt(i));
-            }
-            return this;
-        }
 
-        @Override
-        public Appendable append(char c) {
-            term.putCharacter(c);
-            return this;
-        }
-
-        @Override
-        public Appendable append(CharSequence charSequence, int i, int i1) {
-            throw new UnsupportedOperationException("TODO");
-        }
 
         @Override
         protected void doLayout(int dtMS) {

@@ -20,9 +20,7 @@ import spacegraph.space2d.widget.chip.BiFunctionChip;
 import spacegraph.space2d.widget.chip.Cluster2DChip;
 import spacegraph.space2d.widget.chip.KeyboardChip;
 import spacegraph.space2d.widget.chip.PlotChip;
-import spacegraph.space2d.widget.port.FloatRangePort;
-import spacegraph.space2d.widget.port.IntPort;
-import spacegraph.space2d.widget.port.LabeledPort;
+import spacegraph.space2d.widget.port.*;
 import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -62,22 +60,27 @@ public class ProtoWidget extends Widget {
 
         add("Keyboard", ()-> new KeyboardChip(), "Input");
         add("ArrowKeys", ()-> new KeyboardChip.ArrowKeysChip(), "Input");
-
+        add("QwertyPiano", TODO, "Input");
         add("Mouse", TODO, "Input");
         add("Gamepad", TODO, "Input");
-        add("WebCam", () -> new WebCam.WebCamSurface(WebCam.the()), "Input");
+
+        add("WebCam", () -> new WebCam.WebCamSurface(WebCam.the()), "Video");
         add("Microphone", ()->{
             {
                 WaveCapture au = new WaveCapture(new AudioSource(20), 4f);
                 au.setFPS(20f);
                 return au.view();
             }
-        }, "Input");
+        }, "Audio");
 
-        add("int", ()->new IntPort(), "Number");
-        add("float[-1..1]", ()->new FloatRangePort(0.5f, -1, 1f), "Number");
-        add("float[0..1]", ()->new FloatRangePort(0.5f, 0, 1f), "Number");
-        add("random float[0..1]", ()->new FloatRangePort(0.5f, 0, 1f), "Number");
+        add("int", ()->new IntPort(), "Value");
+        add("float", ()->new FloatPort(), "Value");
+        add("text", ()->new TextPort(), "Value");
+        add("float[-1..1]", ()->new FloatRangePort(0.5f, -1, 1f), "Value");
+        add("float[0..1]", ()->new FloatRangePort(0.5f, 0, 1f), "Value");
+
+//        add("random float[0..1]", TODO, "Noise");
+//        add("random float[-1..+1]", TODO, "Noise");
 
 
         add("ColorChoose", TODO, "Video");
@@ -108,6 +111,7 @@ public class ProtoWidget extends Widget {
         add("play", TODO, "Audio");
         add("sonify", TODO, "Audio");
 
+        add("MLP", TODO, "Control");
         add("QLearn", TODO, "Control");
         add("PID", TODO, "Control");
 

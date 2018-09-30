@@ -11,7 +11,7 @@ public class IntRangePort extends IntPort {
     }
 
     @Override
-    public Integer process(int v) {
-        return Util.clamp(v, min, max);
+    public Integer process(Integer v) {
+        return v!=null ? Util.clamp(v, min, max) : null;
     }
 }

@@ -29,10 +29,7 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
+import java.io.*;
 
 import static com.jcraft.jcterm.Terminal.SFTP;
 import static com.jcraft.jcterm.Terminal.SHELL;
@@ -90,7 +87,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         setJMenuBar(mb);
 
         term = new JCTermSwing();
-        getContentPane().add( term);
+        getContentPane().add(term);
         pack();
 
         ComponentListener l = new ComponentAdapter() {
@@ -149,81 +146,21 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                     continue;
                 }
 
-                try {
-                    UserInfo ui = new MyUserInfo();
+                String user = this.user;
+                String host = this.host;
 
-                    jschsession = JSchSession.getSession(user, null, host, port, ui, proxy);
-                    setCompression(compression);
 
-                    Configuration conf = JCTermSwing.getCR().load(configName);
-                    conf.addDestination(destination);
-                    JCTermSwing.getCR().save(conf);
-                } catch (Exception e) {
-                    
-                    break;
-                }
+                Configuration conf = JCTermSwing.getCR().load(configName);
+                conf.addDestination(destination);
+                JCTermSwing.getCR().save(conf);
 
-                Channel channel = null;
-                OutputStream out = null;
-                InputStream in = null;
+                connection = connect(user, host, port);
 
-                if (mode == SHELL) {
-                    channel = jschsession.getSession().openChannel("shell");
-                    if (xforwarding) {
-                        jschsession.getSession().setX11Host(xhost);
-                        jschsession.getSession().setX11Port(xport + 6000);
-                        channel.setXForwarding(true);
-                    }
-
-                    out = channel.getOutputStream();
-                    in = channel.getInputStream();
-
-                    channel.connect();
-                } else if (mode == SFTP) {
-
-                    out = new PipedOutputStream();
-                    in = new PipedInputStream();
-
-                    channel = jschsession.getSession().openChannel("sftp");
-
-                    channel.connect();
-
-                    (new Sftp((ChannelSftp) channel, new PipedInputStream(
-                            (PipedOutputStream) out), new PipedOutputStream(
-                            (PipedInputStream) in))).kick();
-                }
-
-                final OutputStream fout = out;
-                final InputStream fin = in;
-                final Channel fchannel = channel;
-
-                connection = new Connection() {
-                    public InputStream getInputStream() {
-                        return fin;
-                    }
-
-                    public OutputStream getOutputStream() {
-                        return fout;
-                    }
-
-                    public void requestResize(Terminal term) {
-                        if (fchannel instanceof ChannelShell) {
-                            int c = term.getColumnCount();
-                            int r = term.getRowCount();
-                            ((ChannelShell) fchannel).setPtySize(c, r, c * term.getCharWidth(),
-                                    r * term.getCharHeight());
-                        }
-                    }
-
-                    public void close() {
-                        fchannel.disconnect();
-                    }
-                };
                 setTitle("[" + (counter++) + "] " + user + '@' + host + (port != 22 ? (":" + port) : ""));
                 term.requestFocus();
                 term.start(connection);
             } catch (Exception e) {
-                
+
             }
             break;
         }
@@ -232,6 +169,81 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         dispose_connection();
 
         setVisible(false);
+    }
+
+    public Connection connect(String user, String host, int port) throws JSchException, IOException {
+        return connect(user, host, port, new MyUserInfo());
+    }
+    public Connection connect(String user, String host, int port, UserInfo userInfo) throws JSchException, IOException {
+        try {
+
+            jschsession = JSchSession.getSession(user, null, host, port, userInfo, proxy);
+            setCompression(compression);
+
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            return null;
+        }
+
+        Channel channel = null;
+        OutputStream out = null;
+        InputStream in = null;
+
+        if (mode == SHELL) {
+            channel = jschsession.getSession().openChannel("shell");
+            if (xforwarding) {
+                jschsession.getSession().setX11Host(xhost);
+                jschsession.getSession().setX11Port(xport + 6000);
+                channel.setXForwarding(true);
+            }
+
+            out = channel.getOutputStream();
+            in = channel.getInputStream();
+
+            channel.connect();
+        } else if (mode == SFTP) {
+
+            out = new PipedOutputStream();
+            in = new PipedInputStream();
+
+            channel = jschsession.getSession().openChannel("sftp");
+
+            channel.connect();
+
+            (new Sftp((ChannelSftp) channel, new PipedInputStream(
+                    (PipedOutputStream) out), new PipedOutputStream(
+                    (PipedInputStream) in))).kick();
+        }
+
+        final OutputStream fout = out;
+        final InputStream fin = in;
+        final Channel fchannel = channel;
+
+        return new Connection() {
+            public InputStream getInputStream() {
+                return fin;
+            }
+
+            public OutputStream getOutputStream() {
+                return fout;
+            }
+
+            public void requestResize(Terminal term) {
+                if (fchannel instanceof ChannelShell) {
+                    int c = term.getColumnCount();
+                    int r = term.getRowCount();
+                    ((ChannelShell) fchannel).setPtySize(c, r, c * term.getCharWidth(),
+                            r * term.getCharHeight());
+                }
+            }
+
+            public void close() {
+                fchannel.disconnect();
+            }
+        };
+
     }
 
     private void dispose_connection() {
@@ -335,9 +347,6 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
     }
 
 
-
-
-
     private boolean getAntiAliasing() {
         return term.getAntiAliasing();
     }
@@ -345,15 +354,6 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
     private void setAntiAliasing(boolean foo) {
         term.setAntiAliasing(foo);
     }
-
-
-
-
-
-
-
-
-
 
 
     private void openSession() {
@@ -850,7 +850,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                 }
                 return response;
             } else {
-                return null; 
+                return null;
             }
         }
     }

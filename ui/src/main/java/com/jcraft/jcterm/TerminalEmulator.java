@@ -25,7 +25,7 @@ package com.jcraft.jcterm;
 import java.io.IOException;
 import java.io.InputStream;
 
-abstract class TerminalEmulator {
+public abstract class TerminalEmulator {
     private final int tab = 8;
     final Terminal term;
     private final InputStream in;

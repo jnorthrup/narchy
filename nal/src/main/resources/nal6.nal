@@ -156,12 +156,12 @@
 
     //the comparison rules here emulates what Comparison did in generating <=> which are modeled here as a pair of opposing ==>
     //untested
-    (P ==> M), (S ==> M) |- --((S ==> P) && (P ==> S)), (Belief:ComparisonSymmetric)
-    (M ==> P), (M ==> S) |- --((S ==> P) && (P ==> S)), (Belief:ComparisonSymmetric)
-//    (P ==> M), (S ==> M) |- (S ==> P), (Belief:Comparison)
-//        (P ==> M), (S ==> M) |- (P ==> S), (Belief:Comparison)
-//    (M ==> P), (M ==> S) |- (S ==> P), (Belief:Comparison)
-//        (M ==> P), (M ==> S) |- (P ==> S), (Belief:Comparison)
+//    (P ==> M), (S ==> M) |- --((S ==> P) && (P ==> S)), (Belief:ComparisonSymmetric)
+//    (M ==> P), (M ==> S) |- --((S ==> P) && (P ==> S)), (Belief:ComparisonSymmetric)
+////    (P ==> M), (S ==> M) |- (S ==> P), (Belief:Comparison)
+////        (P ==> M), (S ==> M) |- (P ==> S), (Belief:Comparison)
+////    (M ==> P), (M ==> S) |- (S ==> P), (Belief:Comparison)
+////        (M ==> P), (M ==> S) |- (P ==> S), (Belief:Comparison)
 
 // Contraposition (structural)
 //    a→b == ¬b→¬a		# contra positition [Lex contrapositionis]

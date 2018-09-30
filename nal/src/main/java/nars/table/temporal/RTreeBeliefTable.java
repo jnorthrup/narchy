@@ -13,6 +13,7 @@ import nars.task.Revision;
 import nars.task.TaskProxy;
 import nars.task.signal.SignalTask;
 import nars.task.util.*;
+import nars.truth.TruthAccumulator;
 import nars.truth.polation.TruthIntegration;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -769,6 +770,15 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
 
     }
+
+    /** TODO */
+    public static class RTreeBeliefTableEternalizing extends RTreeBeliefTable {
+
+        final TruthAccumulator ete = new TruthAccumulator();
+
+
+    }
+
 
 //    private final static class ExpandingScan extends CachedTopN<TaskRegion> implements Predicate<TaskRegion> {
 //

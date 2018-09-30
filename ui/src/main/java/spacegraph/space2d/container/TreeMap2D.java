@@ -2,6 +2,7 @@ package spacegraph.space2d.container;
 
 import jcog.pri.ScalarValue;
 import jcog.tree.rtree.rect.RectFloat;
+import spacegraph.space2d.container.layout.DynamicLayout2D;
 import spacegraph.util.MovingRectFloat2D;
 
 /**

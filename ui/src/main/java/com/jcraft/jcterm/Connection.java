@@ -25,7 +25,7 @@ package com.jcraft.jcterm;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-interface Connection {
+public interface Connection {
 
     InputStream getInputStream();
 

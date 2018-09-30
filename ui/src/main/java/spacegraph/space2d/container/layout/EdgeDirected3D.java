@@ -1,4 +1,4 @@
-package spacegraph.space2d.container;
+package spacegraph.space2d.container.layout;
 
 import spacegraph.space3d.SimpleSpatial;
 import spacegraph.space3d.Spatial;

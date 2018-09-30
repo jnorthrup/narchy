@@ -244,7 +244,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         return false;
     }
 
-    public final void out(X x) {
+    public void out(X x) {
         out(this, x);
     }
 

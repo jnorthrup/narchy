@@ -88,7 +88,7 @@ public class DefaultConceptBuilder extends ConceptBuilder {
 
     @Override
     public TemporalBeliefTable newTemporalTable(Term c) {
-        return new RTreeBeliefTable();
+        return new RTreeBeliefTable.RTreeBeliefTableEternalizing();
     }
 
     @Override
@@ -105,5 +105,6 @@ public class DefaultConceptBuilder extends ConceptBuilder {
     public void start(Concept c) {
         alloc.accept(c);
     }
+
 
 }

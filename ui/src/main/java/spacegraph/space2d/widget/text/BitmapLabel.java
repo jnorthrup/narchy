@@ -141,18 +141,5 @@ public class BitmapLabel extends BitmapTextGrid {
         return new TextCharacter(text.charAt(col), fgColor, bgColor);
     }
 
-    @Override
-    public Appendable append(CharSequence charSequence) {
-        throw new UnsupportedOperationException();
-    }
 
-    @Override
-    public Appendable append(CharSequence charSequence, int i, int i1) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Appendable append(char c) {
-        throw new UnsupportedOperationException();
-    }
 }

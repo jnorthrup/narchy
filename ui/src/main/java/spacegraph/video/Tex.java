@@ -215,6 +215,11 @@ public class Tex {
             tex.stop();
             return super.stop();
         }
+
+        public TexSurface update(BufferedImage img) {
+            tex.update(img);
+            return this;
+        }
     }
 
     public void stop() {

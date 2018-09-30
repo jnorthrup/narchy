@@ -3,11 +3,13 @@ package nars.op.rdfowl;
 import nars.$;
 import nars.NAR;
 import nars.Task;
+import nars.task.NALTask;
 import nars.task.TaskBuilder;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.semanticweb.yars.nx.Node;
@@ -453,11 +455,17 @@ public abstract class NQuadsRDF {
         }
 
         if (belief instanceof Compound) {
-            
 
-            return new TaskBuilder(belief, BELIEF,
-                    $.t(1f, nar.confDefault(BELIEF)))
-                    .eternal().apply(nar);
+            return new NALTask(belief, BELIEF,
+                    $.t(1f, nar.confDefault(BELIEF)),
+                    nar.time(), Tense.ETERNAL, Tense.ETERNAL,
+                    nar.evidence())
+                    .pri(nar)
+                    ;
+
+
+
+//                    .eternal().pri(nar).apply(nar);
         }
 
         return null;

@@ -7,14 +7,17 @@ import com.googlecode.lanterna.graphics.SimpleTheme;
 import com.googlecode.lanterna.graphics.Theme;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.screen.TerminalScreen;
+import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
+import com.googlecode.lanterna.terminal.virtual.VirtualTerminalListener;
 import jcog.event.Off;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.SurfaceBase;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 /** SpaceGraph surface for displaying and interacting with a TextGUI system */
@@ -27,14 +30,36 @@ public class ConsoleGUI extends ConsoleTerminal {
     private TerminalScreen screen = null;
     private Off updates = null;
     private BasicWindow window = null;
+    private VirtualTerminalListener listener;
 
-    ConsoleGUI(int cols, int rows) {
+
+    public ConsoleGUI(int cols, int rows) {
         this(new DefaultVirtualTerminal(new TerminalSize(cols, rows)));
     }
 
-    public ConsoleGUI(VirtualTerminal term) {
-        super(term);
+
+    public ConsoleGUI(VirtualTerminal t) {
+        super(t);
+        set(text);
+        resize(term.getTerminalSize().getColumns(), term.getTerminalSize().getRows());
     }
+
+    public OutputStream output() {
+        return new OutputStream() {
+
+            @Override
+            public void write(int i) {
+                append((char) i);
+            }
+
+            @Override
+            public void flush() {
+                term.flush();
+            }
+        };
+    }
+
+
 
     void init(BasicWindow window) {
 
@@ -58,6 +83,31 @@ public class ConsoleGUI extends ConsoleTerminal {
     @Override
     public boolean start(@Nullable SurfaceBase parent) {
         if (super.start(parent)) {
+
+            term.addVirtualTerminalListener(listener = new VirtualTerminalListener() {
+
+
+                @Override
+                public void onFlush() {
+                    text.invalidate();
+                }
+
+                @Override
+                public void onBell() {
+
+                }
+
+                @Override
+                public void onClose() {
+                }
+
+                @Override
+                public void onResized(Terminal terminal, TerminalSize terminalSize) {
+                    text.invalidate();
+                }
+            });
+
+            text.invalidate();
 
 
 
@@ -120,6 +170,9 @@ public class ConsoleGUI extends ConsoleTerminal {
     @Override
     public boolean stop() {
         if (super.stop()) {
+
+            term.removeVirtualTerminalListener(listener);
+            listener = null;
 
             if (gui!=null) {
                 gui.removeWindow(window);

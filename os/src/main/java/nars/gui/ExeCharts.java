@@ -12,6 +12,7 @@ import nars.exe.UniExec;
 import nars.time.clock.RealTime;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.*;
+import spacegraph.space2d.container.layout.ForceDirected2D;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.meta.LoopPanel;

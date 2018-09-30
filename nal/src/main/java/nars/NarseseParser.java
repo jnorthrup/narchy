@@ -62,7 +62,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 Term(),
                 s(),
                 eof(),
-                push(newTask(1f,';', the(pop()), null, new long[] { ETERNAL, ETERNAL }))
+                push(newTask(1f, ';', the(pop()), null, new long[]{ETERNAL, ETERNAL}))
         );
     }
 
@@ -71,7 +71,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         Var<Float> budget = new Var();
         Var<Character> punc = new Var(Op.COMMAND);
         Var<Object> truth = new Var();
-        Var<Object> occurr = new Var(new long[] { ETERNAL, ETERNAL });
+        Var<Object> occurr = new Var(new long[]{ETERNAL, ETERNAL});
 
         return sequence(
 
@@ -84,25 +84,25 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 SentencePunctuation(punc), s(),
 
                 optional(
-                    seq( firstOf(
+                        seq(firstOf(
 
-                        seq(OccurrenceTime(), "..", OccurrenceTime(),
-                            occurr.set(new Object[] { pop(1), pop() })),
+                                seq(OccurrenceTime(), "..", OccurrenceTime(),
+                                        occurr.set(new Object[]{pop(1), pop()})),
 
-                        seq(OccurrenceTime(), occurr.set(pop()))
+                                seq(OccurrenceTime(), occurr.set(pop()))
 
-                    ), s() )
+                        ), s())
                 ),
 
                 optional(Truth(truth), s()),
 
-                push(newTask(budget.get(), punc.get(),  the(pop()), truth.get(), occurr.get()))
+                push(newTask(budget.get(), punc.get(), the(pop()), truth.get(), occurr.get()))
 
         );
     }
 
     static Object newTask(Float budget, Character punc, Term term, Object truth, Object occ) {
-        return new Object[]{budget, term, punc, truth, occ };
+        return new Object[]{budget, term, punc, truth, occ};
     }
 
 
@@ -112,11 +112,9 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                 ShortFloat(),
 
-                
-                
-                
+
                 BudgetPriority(budget),
-                
+
 
                 optional(BUDGET_VALUE_MARK)
         );
@@ -126,50 +124,29 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         return budget.set((Float) (pop()));
     }
 
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-
-
-
-
-
-
-
-
 
     public Rule Truth(Var<Object> truth) {
         return sequence(
 
                 TRUTH_VALUE_MARK,
 
-                ShortFloat(), 
+                ShortFloat(),
 
                 firstOf(
 
-                    sequence(
+                        sequence(
 
-                            
-                            ";",
 
-                            ShortFloat(), 
+                                ";",
 
-                            optional(TRUTH_VALUE_MARK), 
+                                ShortFloat(),
 
-                            swap() && truth.set(PreciseTruth.byConf((float) pop(), (float) pop()))
-                    ),
+                                optional(TRUTH_VALUE_MARK),
 
-                    seq(TRUTH_VALUE_MARK, truth.set(pop()))
+                                swap() && truth.set(PreciseTruth.byConf((float) pop(), (float) pop()))
+                        ),
+
+                        seq(TRUTH_VALUE_MARK, truth.set(pop()))
                 )
                         /*,
 
@@ -178,7 +155,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                                 truth.set(new DefaultTruth((float) pop() ))
                         )*/
-                
+
         );
     }
 
@@ -203,30 +180,10 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     }
 
 
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-
     public Rule SentencePunctuation(Var<Character> punc) {
 
         return sequence(trie(".", "?", "!", "@", ";"), punc.set(matchedChar()));
-        
+
     }
 
 
@@ -234,10 +191,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     public Rule Term() {
         return Term(true, true);
     }
-
-    
-    
-    
 
 
     @Cached
@@ -249,20 +202,12 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         | <statement>                        
         */
 
-        return seq( s(),
+        return seq(s(),
 
                 firstOf(
 
                         QuotedAtom(),
                         URIAtom(),
-
-
-
-
-                        
-                        
-                        
-                        
 
 
                         Ellipsis(),
@@ -280,7 +225,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                         ),
 
-                        
+
                         seq(oper, Function()),
 
                         seq(temporal, TemporalRelation()),
@@ -288,9 +233,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         seq(COMPOUND_TERM_OPENER, s(),
                                 firstOf(
 
-                                        
-                                        
-                                        
 
                                         sequence(
                                                 COMPOUND_TERM_CLOSER, push(EmptyProduct)
@@ -302,7 +244,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                                         MultiArgTerm(null, COMPOUND_TERM_CLOSER, true, false),
 
-                                        
+
                                         MultiArgTerm(null, COMPOUND_TERM_CLOSER, false, false)
 
 
@@ -318,10 +260,10 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                         Variable(),
 
-                        
+
                         seq(NEG.str, Term(), push(($.the(pop())).neg())),
 
-                        
+
                         seq(OLD_STATEMENT_OPENER,
                                 MultiArgTerm(null, OLD_STATEMENT_CLOSER, false, true)
                         )
@@ -335,9 +277,9 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
     public Rule URIAtom() {
         return seq(
-            //https://stackoverflow.com/questions/163360/regular-expression-to-match-urls-in-java#163398
-            regex("^[a-z]+://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]"),
-            push($.quote(match()))
+                //https://stackoverflow.com/questions/163360/regular-expression-to-match-urls-in-java#163398
+                regex("^[a-z]+://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]"),
+                push($.quote(match()))
         );
     }
 
@@ -345,8 +287,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         return seq(
 
                 AtomStr(),
-                
-                
+
 
                 COMPOUND_TERM_OPENER, s(),
 
@@ -364,7 +305,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                     Object... moreRules) {
         return sequence(rule, rule2, moreRules);
     }
-
 
 
     @Deprecated
@@ -397,10 +337,10 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
             return null;
         else {
             if (timeDelta instanceof Integer) {
-                return o.the((int)timeDelta, subj, pred);
+                return o.the((int) timeDelta, subj, pred);
             } else {
-                
-                QuantityTerm q = (QuantityTerm)timeDelta;
+
+                QuantityTerm q = (QuantityTerm) timeDelta;
                 return $.func("term", o.strAtom, $.p(subj, pred), q);
             }
         }
@@ -411,51 +351,62 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     public Rule TimeDelta() {
         return
 
-                    firstOf(
-                            TimeUnit(),
+                firstOf(
+                        TimeUnit(),
 
-                            seq("+-", push(XTERNAL)),
-                            seq('+', oneOrMore(digit()),
-                                    push(Texts.i(matchOrDefault(invalidCycleDeltaString)))
-                            ),
-                            seq('-', oneOrMore(digit()),
-                                    push(-Texts.i(matchOrDefault(invalidCycleDeltaString)))
-                            )
-                    );
+                        seq("+-", push(XTERNAL)),
+                        seq('+', oneOrMore(digit()),
+                                push(Texts.i(matchOrDefault(invalidCycleDeltaString)))
+                        ),
+                        seq('-', oneOrMore(digit()),
+                                push(-Texts.i(matchOrDefault(invalidCycleDeltaString)))
+                        )
+                );
 
     }
 
     public Rule TimeUnit() {
         return firstOf(
-            seq("-", TimeUnit(true)),
-            seq("+", TimeUnit(false))
+                seq("-", TimeUnit(true)),
+                seq("+", TimeUnit(false))
         );
     }
 
     public Rule TimeUnit(boolean negate) {
         return
-            seq(oneOrMore(anyOf(".0123456789")), push(match()),
-                oneOrMore(alpha()), push(1,match()),
-                push(new QuantityTerm(
-                    AbstractQuantity.parse(
-                        pop() + " " +  timeUnitize((String)pop())
-                    ).multiply(negate? -1 : +1))
-                ))
-        ;
+                seq(oneOrMore(anyOf(".0123456789")), push(match()),
+                        oneOrMore(alpha()), push(1, match()),
+                        push(new QuantityTerm(
+                                AbstractQuantity.parse(
+                                        pop() + " " + timeUnitize((String) pop())
+                                ).multiply(negate ? -1 : +1))
+                        ))
+                ;
     }
 
-    /** translate shortcuts for time units */
+    /**
+     * translate shortcuts for time units
+     */
     protected static String timeUnitize(String u) {
         switch (u) {
-            case "years": return "year";
-            case "months": return "month";
-            case "weeks": return "week";
-            case "days": return "day";
-            case "hours": return "h"; 
-            case "hr": return "h"; 
-            case "m": return "min"; 
-            case "mins": return "min"; 
-            case "sec": return "s"; 
+            case "years":
+                return "year";
+            case "months":
+                return "month";
+            case "weeks":
+                return "week";
+            case "days":
+                return "day";
+            case "hours":
+                return "h";
+            case "hr":
+                return "h";
+            case "m":
+                return "min";
+            case "mins":
+                return "min";
+            case "sec":
+                return "s";
             default:
                 return u;
         }
@@ -464,8 +415,8 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     public Rule OccurrenceTime() {
         return
                 firstOf(
-                        seq(firstOf("now", "|", ":|:"), push(Tense.Present)), 
-                        
+                        seq(firstOf("now", "|", ":|:"), push(Tense.Present)),
+
                         TimeUnit(),
                         seq("-", oneOrMore(digit()), push(-Texts.i(match()))),
                         seq("+", oneOrMore(digit()), push(Texts.i(match())))
@@ -474,13 +425,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 )
                 ;
     }
-
-    
-    
-    
-    
-    
-    
 
 
     /**
@@ -545,14 +489,14 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
     public Rule QuotedAtom() {
         return sequence(
-                dquote(), 
+                dquote(),
                 firstOf(
-                        
+
                         seq(regex("\"\"[\\s\\S]+\"\"\""), push(Atomic.the('\"' + match()))),
 
-                        
+
                         seq(
-                                
+
                                 regex("(?:[^\"\\\\]|\\\\.)*\""),
                                 push(Atomic.the('\"' + match())))
                 )
@@ -576,14 +520,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     }
 
 
-
-
-
-
-
-
-
-
     Rule Variable() {
         return firstOf(
                 seq('_', push(Op.VarAuto)),
@@ -593,16 +529,16 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 seq(Op.VAR_DEP.ch, Variable(VAR_DEP)),
                 seq(Op.VAR_QUERY.ch, Variable(VAR_QUERY)),
                 seq(Op.VAR_PATTERN.ch, Variable(VAR_PATTERN))
-            );
+        );
     }
 
     Rule Variable(Op varType) {
         return
-            seq(
-                //unnormalized
-                AtomStr(),
-                push($.v(varType, (String) pop()))
-            );
+                seq(
+                        //unnormalized
+                        AtomStr(),
+                        push($.v(varType, (String) pop()))
+                );
     }
 
     
@@ -624,7 +560,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
         */
 
-    
 
     Rule Op() {
         return sequence(
@@ -673,15 +608,13 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     /**
      * list of terms prefixed by a particular compound term operate
      */
-    @Deprecated Rule MultiArgTerm(@Nullable Op defaultOp, char close, boolean initialOp, boolean allowInternalOp) {
+    @Deprecated
+    Rule MultiArgTerm(@Nullable Op defaultOp, char close, boolean initialOp, boolean allowInternalOp) {
 
         return sequence(
 
                 /*operatorPrecedes ? *OperationPrefixTerm()* true :*/
 
-                
-                
-                
                 push(Compound.class),
 
                 initialOp ? Op() : Term(),
@@ -708,13 +641,14 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     /**
      * HACK
      */
-    @Cached Rule CompoundPrefix() {
+    @Cached
+    Rule CompoundPrefix() {
 
         return sequence(
 
                 firstOf(
-                    Op.DISJstr,
-                        "&|", "&&+-","||+-",
+                        Op.DISJstr,
+                        "&|", "&&+-", "||+-",
                         Op.SECTe.str
                 ), push(match()),
 
@@ -730,7 +664,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                 COMPOUND_TERM_CLOSER,
 
-                push(buildCompound(popTerms(new Op[] { PROD } /* HACK */), (String)pop()))
+                push(buildCompound(popTerms(new Op[]{PROD} /* HACK */), (String) pop()))
         );
     }
 
@@ -767,7 +701,8 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         }
     }
 
-    @Cached Rule CompoundInfix() {
+    @Cached
+    Rule CompoundInfix() {
 
         return sequence(
 
@@ -792,29 +727,16 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         "-{-",
                         "-]-",
                         "{-]"
-                    ), push(2, match()),
+                ), push(2, match()),
                 s(),
                 Term(),
                 s(),
                 COMPOUND_TERM_CLOSER,
 
-                push(buildCompound(popTerms(new Op[] { PROD } /* HACK */), (String)pop()))
+                push(buildCompound(popTerms(new Op[]{PROD} /* HACK */), (String) pop()))
         );
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
     Rule AnyOperatorOrTerm() {
         return firstOf(Op(), Term());
@@ -824,27 +746,13 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     @Nullable
     static Term the(@Nullable Object o) {
         if (o instanceof Term) return (Term) o;
-        if (o == null) return null; 
+        if (o == null) return null;
         if (o instanceof String) {
             String s = (String) o;
-            
+
             return Atomic.the(s);
 
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
 
-            
         }
         throw new RuntimeException(o + " is not a term");
     }
@@ -856,7 +764,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     @Deprecated
     final Term popTerm(Op op /*default */) {
 
-        
 
         Op[] opp = new Op[1];
         opp[0] = op;
@@ -879,16 +786,11 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         ArrayValueStack<Object> stack = (ArrayValueStack) getContext().getValueStack();
 
 
-        
-        
-
-
-
         while (!stack.isEmpty()) {
             Object p = pop();
 
             if (p instanceof Object[]) {
-                
+
                 Object[] pp = (Object[]) p;
                 if (pp.length > 1) {
                     for (int i = pp.length - 1; i >= 1; i--) {
@@ -905,27 +807,21 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 break;
             }
 
-            if (p == Compound.class) break; 
+            if (p == Compound.class) break;
 
 
             if (p instanceof String) {
-                
-                
+
+
                 tt.add(Atomic.the((String) p));
             } else if (p instanceof Term) {
                 if (p == Bool.Null) {
                     stack.clear();
                     return new FasterList(1).addingAll(Bool.Null);
                 }
-                tt.add((Term)p);
+                tt.add((Term) p);
             } else if (p instanceof Op) {
 
-                
-                
-                
-                
-                
-                
 
                 if (op != null)
                     op[0] = (Op) p;
@@ -937,36 +833,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
         return tt;
     }
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
 
     /**
@@ -987,179 +853,5 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         return anyOf(" \t\f\n\r");
     }
 
-    
-    
-    
 
-    
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }

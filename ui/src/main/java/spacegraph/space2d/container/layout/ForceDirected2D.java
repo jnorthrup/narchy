@@ -1,10 +1,11 @@
-package spacegraph.space2d.container;
+package spacegraph.space2d.container.layout;
 
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.math.FloatRange;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
+import spacegraph.space2d.container.Graph2D;
 import spacegraph.util.MovingRectFloat2D;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
@@ -25,7 +26,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
     public final FloatRange repelSpeed = new FloatRange(4f, 0, 16f);
 
-    public final FloatRange attractSpeed = new FloatRange(0.25f, 0, 1f);
+    public final FloatRange attractSpeed = new FloatRange(0.25f, 0, 16f);
 
     public final FloatRange nodeScale = new FloatRange(0.25f, 0.04f, 1.5f);
 
