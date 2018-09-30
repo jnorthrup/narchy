@@ -8,6 +8,10 @@ mainClassName = 'nars.Shell'
 dependencies {
     compile project(':app')
 
+    compile(group: 'org.boofcv', name: 'boofcv-feature', version: '0.30')
+    compile(group: 'org.boofcv', name: 'boofcv-geo', version: '0.30')
+    compile(group: 'org.boofcv', name: 'boofcv-sfm', version: '0.30')
+
 
     compile (group: 'org.teavm', name: 'teavm-tooling', version: '0.6.0-dev-563') {
         exclude(group:'org.ow2.asm')

@@ -27,7 +27,6 @@ import nars.truth.func.TruthFunc;
 import nars.unify.constraint.*;
 import nars.unify.op.TaskPunctuation;
 import nars.unify.op.TermMatch;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.factory.Sets;
@@ -35,6 +34,7 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,6 +46,7 @@ import java.util.stream.Stream;
 import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.Op.*;
 import static nars.subterm.util.SubtermCondition.*;
+import static nars.term.control.PREDICATE.sortByCostIncreasing;
 import static nars.time.Tense.DTERNAL;
 import static nars.unify.op.TaskPunctuation.Belief;
 import static nars.unify.op.TaskPunctuation.Goal;
@@ -538,9 +539,12 @@ public class PremiseRuleSource extends ProxyTerm  {
 
         int rules = pre.size();
         PREDICATE[] PRE = pre.toArray(new PREDICATE[rules + 1 /* extra to be filled in later stage */]);
-        ArrayUtils.sort(PRE, 0, rules - 1, (x) -> -x.cost());
+        //ArrayUtils.sort(PRE, 0, rules - 1, (x) -> -x.cost());
+
+
+        Arrays.sort(PRE, 0, rules, sortByCostIncreasing);
+
         assert (PRE[PRE.length - 1] == null);
-        //Arrays.sort(PRE, 0, rules, sortByCostIncreasing);
         assert rules <= 1 || (PRE[0].cost() <= PRE[rules - 2].cost()); //increasing cost
         this.PRE = PRE;
 

@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 import static nars.$.$$;
@@ -123,17 +124,19 @@ public class Evaluation {
                 v.revert(before);
             }
         } else {
-            CartesianIterator<Predicate<VersionMap<Term,Term>>> ci =
-                    new CartesianIterator<Predicate<VersionMap<Term,Term>>>(
-                            Predicate[]::new, termutator.toArray(Iterable[]::new));
+            CartesianIterator<Predicate>/*<VersionMap<Term,Term>>>*/ ci =
+                    new CartesianIterator(
+                            Predicate[]::new, termutator.array()); //toArray((IntFunction<Iterable[]>)(Iterable[]::new)));
             termutator.clear();
             nextProduct: while (ci.hasNext()) {
 
                 v.revert(before);
 
-                Predicate<VersionMap<Term,Term>>[] c = ci.next();
+                Predicate/*<VersionMap<Term,Term>>*/[] c = ci.next();
 
                 for (Predicate<VersionMap<Term,Term>> cc : c) {
+                    if (cc == null)
+                        break; //null term list
                     if (!cc.test(subst))
                         break nextProduct;
                 }

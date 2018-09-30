@@ -49,7 +49,9 @@ public class Narsese {
     private static final Class parser;
     private static final ThreadLocal<Narsese> parsers;
 
+
     static {
+
 
         try {
 

@@ -8,13 +8,13 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
+import net.bytebuddy.jar.asm.ClassReader;
+import net.bytebuddy.jar.asm.ClassVisitor;
+import net.bytebuddy.jar.asm.ClassWriter;
+import net.bytebuddy.jar.asm.MethodVisitor;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.MethodVisitor;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -22,7 +22,13 @@ import java.util.concurrent.Callable;
 
 import static jcog.exe.flow.MetaFlow.exe;
 import static jcog.exe.flow.MetaFlow.stack;
-import static org.objectweb.asm.Opcodes.ASM7_EXPERIMENTAL;
+import static net.bytebuddy.jar.asm.Opcodes.ASM7_EXPERIMENTAL;
+
+//import org.objectweb.asm.ClassReader;
+//import org.objectweb.asm.ClassVisitor;
+//import org.objectweb.asm.ClassWriter;
+//import org.objectweb.asm.MethodVisitor;
+//import static org.objectweb.asm.Opcodes.ASM7_EXPERIMENTAL;
 
 class MetaFlowTest {
 

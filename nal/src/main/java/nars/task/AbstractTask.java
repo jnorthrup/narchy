@@ -197,6 +197,9 @@ public abstract class AbstractTask implements ITask, Priority {
             //FasterList<ITask> next = null;
             for (ITask t: tasks) {
                 t.run(n);
+                if (t == null)
+                    break; //null-term
+
 //                ITask p = t.next(n);
 //                if (p!=null) {
 //                    if (next == null) next = new FasterList(1);

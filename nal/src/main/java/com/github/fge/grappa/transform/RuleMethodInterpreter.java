@@ -67,7 +67,7 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
     public BasicValue newValue(final Type type) {
         BasicValue basicValue = super.newValue(type);
         if (basicValue == BasicValue.REFERENCE_VALUE)
-            
+
             basicValue = new BasicValue(type);
 
         return basicValue;
@@ -105,10 +105,10 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
     public BasicValue ternaryOperation(final AbstractInsnNode insn,
                                        final BasicValue v1, final BasicValue v2, final BasicValue v3)
             throws AnalyzerException {
-        
-        
-        
-        
+
+
+
+
         additionalEdges.add(new Edge(insn, findArrayCreatorPredecessor(v1)));
         return createNode(insn, super.ternaryOperation(insn, null, null, null),
                 v1, v2, v3);
@@ -143,8 +143,8 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
 
     @Override
     public BasicValue merge(final BasicValue v, final BasicValue w) {
-        
-        
+
+
         return v;
     }
 
@@ -187,7 +187,7 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
     }
 
     public void finish() {
-        
+
         for (final Edge edge : additionalEdges) {
             InstructionGraphNode node = getGraphNode(edge.from);
             if (node == null)
