@@ -129,7 +129,12 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
     @Override
     public boolean addAll(Collection<? extends X> c) {
-        throw new TODO("optimized bulk add");
+        //throw new TODO("optimized bulk add");
+        boolean added = false;
+        for (X x : c) {
+            added |= add(x);
+        }
+        return added;
     }
 
     @Override

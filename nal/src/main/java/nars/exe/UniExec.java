@@ -1,5 +1,6 @@
 package nars.exe;
 
+import jcog.Util;
 import jcog.data.bit.AtomicMetalBitSet;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
@@ -225,7 +226,7 @@ public class UniExec extends AbstractExec {
                                 } else {
                                     vv = 0;
                                 }
-                                s.valuePerSecondNormalized = Math.max(vv, explorationRate);
+                                s.valuePerSecondNormalized = Util.lerp(explorationRate, vv, 1);
                                 valueRateSum[0] += vv;
                             });
 
@@ -246,8 +247,6 @@ public class UniExec extends AbstractExec {
 //                                        s.pri(explorationRate);
 //                                    }
                                 });
-
-                                //print();
 
                                 return this;
                             }

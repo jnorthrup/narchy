@@ -24,6 +24,10 @@ public class Wiring extends FingerDragging {
     static {
         CAST.set(float[].class, Tensor.class, (Function<float[],Tensor>)(ArrayTensor::new));
 
+        CAST.set(Integer.class, Boolean.class, (Function<Integer, Boolean>) (i)->i >= 0);
+        CAST.set(Short.class, Boolean.class, (Function<Short, Boolean>) (i)->i >= 0);
+        CAST.set(Byte.class, Boolean.class, (Function<Byte, Boolean>) (i)->i >= 0);
+
         CAST.set(float[].class, double[].class, (Function<float[], double[]>) Util::toDouble);
         CAST.set(double[].class, float[].class, (Function<double[], float[]>)Util::toFloat);
 

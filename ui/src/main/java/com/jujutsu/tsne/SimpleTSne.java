@@ -24,7 +24,7 @@ public class SimpleTSne implements TSne {
     private double[][] iY;
     protected double[][] gains;
 
-    private double momentum = .1;
+    private double momentum = .5;
 
     private double eta =
             0.1f;

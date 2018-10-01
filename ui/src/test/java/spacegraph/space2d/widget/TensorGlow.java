@@ -15,10 +15,7 @@ import spacegraph.space2d.widget.chip.SwitchChip;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
-import spacegraph.space2d.widget.port.FloatPort;
-import spacegraph.space2d.widget.port.IntPort;
-import spacegraph.space2d.widget.port.Port;
-import spacegraph.space2d.widget.port.TypedPort;
+import spacegraph.space2d.widget.port.*;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.windo.GraphEdit;
@@ -123,10 +120,10 @@ public class TensorGlow {
             Windo trackWin = p.add(new Bordering(trackView).set(Bordering.S, state, 0.05f).set(Bordering.E, reward, 0.05f));
             trackWin.pos(500, 500, 600, 600);
 
-            p.sprout(trackWin, new Port((z)->{ if ((Boolean)z) track.control(-1, 0); }), 0.25f);
-            p.sprout(trackWin, new Port((z)->{ if ((Boolean)z) track.control(0, -1); }), 0.25f);
-            p.sprout(trackWin, new Port((z)->{ if ((Boolean)z) track.control(+1, 0); }), 0.25f);
-            p.sprout(trackWin, new Port((z)->{ if ((Boolean)z) track.control(0, +1); }), 0.25f);
+            p.sprout(trackWin, new BoolPort(z->{ if (z) track.control(-1, 0); }), 0.25f);
+            p.sprout(trackWin, new BoolPort(z->{ if (z) track.control(0, -1); }), 0.25f);
+            p.sprout(trackWin, new BoolPort(z->{ if (z) track.control(+1, 0); }), 0.25f);
+            p.sprout(trackWin, new BoolPort(z->{ if (z) track.control(0, +1); }), 0.25f);
         }
 
 

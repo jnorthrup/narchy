@@ -6,6 +6,7 @@ import jcog.Util;
 import jcog.data.set.ArrayHashSet;
 import jcog.io.Schema;
 import jcog.io.arff.ARFF;
+import jcog.math.FloatRange;
 import jcog.tree.rtree.rect.RectFloat;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -17,17 +18,28 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.video.Draw;
 
 import java.io.File;
-import java.util.stream.Stream;
 
 public class TsneTest {
 
+
     //TODO maxGain parameter for SimpleTsne
+    //TODO dynamic perplexity control
     public static class TsneModel implements Graph2D.Graph2DUpdater<Schema.Instance> {
 
+        public final FloatRange spaceScale = new FloatRange(0.2f, 0.001f, 100);
+        public final FloatRange nodeScale = new FloatRange(1f, 0, 10);
 
+        final int firstCol;
+        final int lastCol;
+
+        // = i.id.data.size()
+        public TsneModel(int firstCol, int lastCol) {
+            this.firstCol =firstCol;
+            this.lastCol = lastCol;
+        }
 
         final TSneConfig config = new TSneConfig(
-                 3, 4,
+                 2, 10,
                 false, true
         );
 
@@ -52,7 +64,7 @@ public class TsneTest {
                     }
                     int j = 0;
                     for (Graph2D.NodeVis<Schema.Instance> i : xx) {
-                        X[j++] = i.id.toDoubleArray(1,i.id.data.size());
+                        X[j++] = i.id.toDoubleArray(firstCol, lastCol);
                     }
                 } else {
                     X = new double[0][0];
@@ -62,23 +74,33 @@ public class TsneTest {
             }
             nn.clear();
 
-            double[][] Y = s.next(4);
+
+            double[][] Y = s.next(1);
             int j = 0;
 
             int n = X.length;
-            float space = (float) Math.sqrt(n+1)*3;
+            float space = 1; //(float) Math.sqrt(n+1)*100f;
             double cx = g.cx(), cy = g.cy();
-            float scale = g.radius()/ space;
+            float scale = spaceScale.floatValue() * Math.max(g.w(), g.h()) / space;
+            float nodeScale = this.nodeScale.floatValue();
             for (Graph2D.NodeVis<Schema.Instance> i : xx) {
                 double[] Yj = Y[j];
-                double x = (Yj[0] = Util.clamp(Yj[0], -space /2, space /2))*scale;
-                double y = (Yj[1] = Util.clamp(Yj[1], -space /2, space /2))*scale;
+                double x = (Yj[0] =
+                                //Util.clamp(Yj[0], -space /2, space /2)
+                                Yj[0]
+                        )*scale;
+                double y = (Yj[1] =
+                                //Util.clamp(Yj[1], -space /2, space /2)
+                                Yj[1]
+                        )*scale;
 
-                double z = (Yj[2] = Util.clamp(Yj[2], -0.5, +0.5)); //narrow but room to maneuver
+//                double z = (Yj[2] = Util.clamp(Yj[2], -0.5, +0.5)); //narrow but room to maneuver
 //                s.gains[j][2] = 0; //clear z gains
 //                //Arrays.fill(s.gains[j], 0.0); //reset gains
 
-                float w = ((float) (((Number)xx.get(j).id.data.get(0)).floatValue()) -400)*scale*0.01f; //customized: first column as size TODO normalize
+
+                float w = nodeScale *
+                        (((Number)xx.get(j).id.data.get(0)).floatValue() -400)*0.01f; //customized: first column as size TODO normalize
 
                 i.posXYWH((float)(x+cx), (float)(y+cy), w, w);
 //                i.fence(g.bounds);
@@ -103,21 +125,37 @@ public class TsneTest {
 
                 @Override
                 protected void paintBelow(GL2 gl, SurfaceRender r) {
-                    Draw.colorHash(gl, node.id.hashCode(), 0.8f);
-                    Draw.rect(bounds, gl);
+                    paintNode(gl, this, node.id);
                 }
             }.click(()->{
                 System.out.println(node.id);
             }));
+        }
+
+        protected void paintNode(GL2 gl, Surface surface, Schema.Instance id) {
+            Draw.colorHash(gl, id.hashCode(), 0.8f);
+            Draw.rect(surface.bounds, gl);
         }
     }
 
     @Test public void testTsneModel() {
 
         try {
-            SpaceGraph.window(new Graph2D<Schema.Instance>().
-                    update(new TsneModel()).
-                    render(new TsneRenderer()).set((Stream)new ARFF(new File("/tmp/x.arff")).stream()), 800, 800);
+            ARFF data = new ARFF(new File("/tmp/x.arff"));
+
+
+            SpaceGraph.window(
+                new Graph2D<Schema.Instance>().
+                    update(new TsneModel(1, 7)).
+                    render(new TsneRenderer() {
+                        @Override protected void paintNode(GL2 gl, Surface surface, Schema.Instance id) {
+                            float score = ((Double)(id.data.get(0))).floatValue();
+                            Draw.colorGrays(gl, 0.25f + 0.75f * Util.unitize((score - 1400)/200));
+                            Draw.rect(surface.bounds, gl);
+                        }
+                    }).
+                    set(data.stream()),
+                800, 800);
 
             Util.sleepMS(1000000);
 
