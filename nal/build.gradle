@@ -63,8 +63,8 @@ dependencies {
 //    compile group: 'net.openhft', name: 'chronicle-bytes', version: '1.10.4'
 
 
-    testCompile(group: 'org.pitest', name: 'pitest', version: '1.4.2')
-    testCompile(group: 'org.pitest', name: 'pitest-entry', version: '1.4.2')
+    testCompile(group: 'org.pitest', name: 'pitest', version: '1.4.3')
+    testCompile(group: 'org.pitest', name: 'pitest-entry', version: '1.4.3')
     testCompile(group: 'org.pitest', name: 'pitest-junit5-plugin', version: '0.7') {
         exclude(module: 'testng')
         exclude(module: 'junit')

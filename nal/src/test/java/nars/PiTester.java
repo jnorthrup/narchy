@@ -169,7 +169,7 @@ public class PiTester {
                             new PercentAndConstantTimeoutStrategy(
                                     data.getTimeoutFactor(),
                                     data.getTimeoutConstant()),
-                            data.isVerbose(), data.getClassPath()
+                            data.isVerbose(), true, data.getClassPath()
                             .getLocalClassPath()),
                     new IncrementalAnalyser(new DefaultCodeHistory(code,
                             new ObjectOutputStreamHistoryStore(

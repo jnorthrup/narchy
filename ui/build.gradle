@@ -19,7 +19,7 @@ dependencies {
         exclude(module:'ejml-core')
     }
     // https://mvnrepository.com/artifact/org.ejml/ejml-core
-    compile group: 'org.ejml', name: 'ejml-core', version: '0.35'
+    compile group: 'org.ejml', name: 'ejml-core', version: '0.36'
 
 
     compile group: 'com.googlecode.lanterna', name: 'lanterna', version: '3.0.1'
@@ -57,9 +57,12 @@ dependencies {
     }
     compile group: 'com.github.sarxos', name: 'webcam-capture', version: '0.3.12'
 
+//    compile group: 'org.jfxvnc', name: 'jfxvnc-net', version: '1.2.0'
+
+    //also see: https://flyingsaucerproject.github.io/flyingsaucer/r8/guide/users-guide-R8.html
     compile group: 'cz.vutbr.fit.layout', name: 'layout-cssbox', version: '0.0.4'
 
-//    compile group: 'org.jfxvnc', name: 'jfxvnc-net', version: '1.2.0'
+
 
 
 }

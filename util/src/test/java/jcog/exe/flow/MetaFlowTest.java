@@ -22,7 +22,7 @@ import java.util.concurrent.Callable;
 
 import static jcog.exe.flow.MetaFlow.exe;
 import static jcog.exe.flow.MetaFlow.stack;
-import static net.bytebuddy.jar.asm.Opcodes.ASM7_EXPERIMENTAL;
+import static net.bytebuddy.jar.asm.Opcodes.ASM7;
 
 //import org.objectweb.asm.ClassReader;
 //import org.objectweb.asm.ClassVisitor;
@@ -143,7 +143,7 @@ class MetaFlowTest {
     @Test
     void testASMClassReader() throws IOException {
         ClassReader cr = new ClassReader(MyClass.class.getName());
-        cr.accept(new ClassVisitor(ASM7_EXPERIMENTAL) {
+        cr.accept(new ClassVisitor(ASM7) {
             @Override
             public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
                 super.visit(version, access, name, signature, superName, interfaces);

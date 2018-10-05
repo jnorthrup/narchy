@@ -2,7 +2,9 @@ package nars;
 
 import org.reflections.Reflections;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.meta.ObjectSurface;
+import spacegraph.space2d.widget.windo.GraphEdit;
 
 import java.util.List;
 import java.util.Set;
@@ -67,18 +69,22 @@ public class Launcher {
 
 
         Set<Class<? extends NAgentX>> envs = new Reflections("nars").getSubTypesOf(NAgentX.class);
-        SpaceGraph.window(
-                grid(
-                    new ObjectSurface<>(
-                            envs.stream().map(Experiment::new).collect(toList())
-                    ),
-                    new ObjectSurface<>(
-                            List.of(new MainRunner(()->GUI.main(new String[] { })))
-//                            List.of(new MainRunner(OSMTest.class))
-                    )
+
+        Surface m = grid(
+                new ObjectSurface<>(
+                        envs.stream().map(Experiment::new).collect(toList())
                 ),
-                800, 800
+                new ObjectSurface<>(
+                        List.of(new MainRunner(() -> GUI.main(new String[]{})))
+//                            List.of(new MainRunner(OSMTest.class))
+                )
         );
+
+
+        GraphEdit g = new GraphEdit<>(1000, 1000);
+        g.add(m).pos(0, 0, 200, 200);
+
+        SpaceGraph.window(                 g, 800, 800        );
 
 
     }
