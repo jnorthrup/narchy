@@ -58,8 +58,8 @@ public class ProtoWidget extends Widget {
     private static final Supplier<Surface> TODO = () -> new VectorLabel("TODO");
     private static final WidgetLibrary LIBRARY  = new WidgetLibrary() {{
 
-        add("Keyboard", ()-> new KeyboardChip(), "Input");
-        add("ArrowKeys", ()-> new KeyboardChip.ArrowKeysChip(), "Input");
+        add("Keyboard", KeyboardChip::new, "Input");
+        add("ArrowKeys", KeyboardChip.ArrowKeysChip::new, "Input");
         add("QwertyPiano", TODO, "Input");
         add("Mouse", TODO, "Input");
         add("Gamepad", TODO, "Input");
@@ -73,9 +73,9 @@ public class ProtoWidget extends Widget {
             }
         }, "Audio");
 
-        add("int", ()->new IntPort(), "Value");
-        add("float", ()->new FloatPort(), "Value");
-        add("text", ()->new TextPort(), "Value");
+        add("int", IntPort::new, "Value");
+        add("float", FloatPort::new, "Value");
+        add("text", TextPort::new, "Value");
         add("float[-1..1]", ()->new FloatRangePort(0.5f, -1, 1f), "Value");
         add("float[0..1]", ()->new FloatRangePort(0.5f, 0, 1f), "Value");
 
@@ -153,10 +153,7 @@ public class ProtoWidget extends Widget {
                     .map(x -> becoming(x.getOne(), x.getTwo()))
                     .toArray(Surface[]::new);
             categories.put(t, () -> new Widget(new LabeledPane(new VectorLabel(t) {
-                {
-                    textColor.set(1,1,1,1);
-
-                }
+                {  textColor.set(1,1,1,1);   }
 
                 @Override
                 protected void paintBelow(GL2 gl, SurfaceRender r) {
@@ -172,17 +169,17 @@ public class ProtoWidget extends Widget {
                 case "Control":
                     icon = "cogs";
                     break;
-                case "Hear":
+                case "Audio":
                     icon = "volume-up";
                     break;
 
                 case "Signal":
                     icon = "sliders";
                     break;
-                case "See":
+                case "Data":
                     icon = "bar-chart-o";
                     break;
-                case "Hardware":
+                case "Reality":
                     icon = "wrench";
                     break;
                 default:

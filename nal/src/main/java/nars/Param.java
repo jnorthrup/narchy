@@ -42,8 +42,8 @@ public abstract class Param {
     public static final float DerivedTaskBagDrainRateLimit = 0.5f;
 
     /** TODO make an abstract TermLinkStrategy class responsible for this */
-    @Deprecated public static final int TermLinkFanoutMax =
-           //16;
+    @Deprecated public static int TermLinkFanoutMax =
+            //16;
             //10;
             8;
             //6;

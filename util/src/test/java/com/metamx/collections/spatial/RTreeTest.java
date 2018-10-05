@@ -27,46 +27,17 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
+ *
  */
 class RTreeTest {
     private RTree R;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         BitmapFactory rbf = new RoaringBitmapFactory();
         R = new RTree(2, new LinearGutmanSplitStrategy(0, 50, rbf), rbf);
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Test
@@ -77,6 +48,7 @@ class RTreeTest {
 
         assertEquals(R.root().children.size(), 3);
     }
+
     @Test
     void testRemoval() {
         R.insert(new float[]{1, 2}, 1);
@@ -87,25 +59,16 @@ class RTreeTest {
 
         RTreeUtils.print(R);
 
-        assertTrue( R.remove(new float[]{1, 3}, 3) );
+        assertTrue(R.remove(new float[]{1, 3}, 3));
 
         RTreeUtils.print(R);
 
         assertEquals(2, R.root().children.size());
         assertFalse(R.root().contains(new float[]{1, 3}));
 
-        assertEquals(2, R.root().max[1], 0.01f); 
+        assertEquals(2, R.root().max[1], 0.01f);
 
     }
-
-
-
-
-
-
-
-
-
 
 
     @Test

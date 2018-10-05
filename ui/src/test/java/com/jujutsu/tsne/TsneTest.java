@@ -39,7 +39,7 @@ public class TsneTest {
         }
 
         final TSneConfig config = new TSneConfig(
-                 2, 10,
+                 2, 4,
                 false, true
         );
 
@@ -78,7 +78,7 @@ public class TsneTest {
             double[][] Y = s.next(1);
             int j = 0;
 
-            int n = X.length;
+//            int n = X.length;
             float space = 1; //(float) Math.sqrt(n+1)*100f;
             double cx = g.cx(), cy = g.cy();
             float scale = spaceScale.floatValue() * Math.max(g.w(), g.h()) / space;
@@ -99,8 +99,8 @@ public class TsneTest {
 //                //Arrays.fill(s.gains[j], 0.0); //reset gains
 
 
-                float w = nodeScale *
-                        (((Number)xx.get(j).id.data.get(0)).floatValue() -400)*0.01f; //customized: first column as size TODO normalize
+                float w = 10+nodeScale *
+                        (((Number)xx.get(j).id.data.get(0)).floatValue() )*0.01f; //customized: first column as size TODO normalize
 
                 i.posXYWH((float)(x+cx), (float)(y+cy), w, w);
 //                i.fence(g.bounds);
@@ -146,7 +146,7 @@ public class TsneTest {
 
             SpaceGraph.window(
                 new Graph2D<Schema.Instance>().
-                    update(new TsneModel(1, 7)).
+                    update(new TsneModel(1, 4)).
                     render(new TsneRenderer() {
                         @Override protected void paintNode(GL2 gl, Surface surface, Schema.Instance id) {
                             float score = ((Double)(id.data.get(0))).floatValue();

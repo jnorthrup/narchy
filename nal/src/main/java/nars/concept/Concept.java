@@ -231,8 +231,8 @@ public interface Concept extends Termed, MetaMap {
 //        );
 //    }
 
-    default void remove(Task t) {
-        table(t.punc()).removeTask(t);
+    default boolean remove(Task t) {
+        return table(t.punc()).removeTask(t);
     }
 
 

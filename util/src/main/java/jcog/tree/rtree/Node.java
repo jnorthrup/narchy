@@ -89,7 +89,7 @@ public interface Node<X> extends Nodelike<X> {
      * @param model
      * @param removed
      */
-    Node<X> remove(X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed);
+    @Nullable Node<X> remove(X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed);
 
     /**
      * update an existing t in the index

@@ -88,20 +88,20 @@ public final class Leaf<X> extends AbstractNode<X> {
         return data[i];
     }
 
-    public double variance(int dim, Spatialization<X> model) {
-        int s = size();
-        if (s < 2)
-            return 0;
-        double mean = bounds().center(dim);
-        double sumDiffSq = 0;
-        for (int i = 0; i < s; i++) {
-            X c = get(i);
-            if (c == null) continue;
-            double diff = model.bounds(c).center(dim) - mean;
-            sumDiffSq += diff * diff;
-        }
-        return sumDiffSq / s - 1;
-    }
+//    public double variance(int dim, Spatialization<X> model) {
+//        int s = size();
+//        if (s < 2)
+//            return 0;
+//        double mean = bounds().center(dim);
+//        double sumDiffSq = 0;
+//        for (int i = 0; i < s; i++) {
+//            X c = get(i);
+//            if (c == null) continue;
+//            double diff = model.bounds(c).center(dim) - mean;
+//            sumDiffSq += diff * diff;
+//        }
+//        return sumDiffSq / s - 1;
+//    }
 
 
     @Override
@@ -198,8 +198,7 @@ public final class Leaf<X> extends AbstractNode<X> {
     public Node<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed) {
 
         final int size = this.size;
-        if (size == 0)
-            return this;
+        assert(size>0); //        if (size == 0)            return this;
         X[] data = this.data;
         int i;
         for (i = 0; i < size; i++) {
@@ -208,7 +207,7 @@ public final class Leaf<X> extends AbstractNode<X> {
                 break; 
         }
         if (i == size)
-            return this; 
+            return this; //not found
 
         final int j = i + 1;
         if (j < size) {
@@ -222,9 +221,13 @@ public final class Leaf<X> extends AbstractNode<X> {
         this.size--;
         removed[0] = true;
 
-        bounds = this.size > 0 ? HyperRegion.mbr(model.bounds, data, this.size) : null;
-
-        return this;
+        if (this.size > 0) {
+            bounds = HyperRegion.mbr(model.bounds, data, this.size);
+            return this;
+        } else {
+            bounds = null;
+            return null;
+        }
 
     }
 

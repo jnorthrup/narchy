@@ -200,29 +200,65 @@ public class Branch<X> extends AbstractNode<X> {
 
                 Node<X> cAfter = cBefore.remove(x, xBounds, model, removed);
 
+
                 if (removed[0]) {
-                    if (data[i].size() == 0) {
+
+                    if (cAfter == null) {
                         System.arraycopy(data, i + 1, data, i, size - i - 1);
                         data[--size] = null;
-
+                    } else {
+                        assert(cAfter.size() > 0);
+                        if (cAfter!=cBefore) {
+                            data[i] = cAfter;
+                        }
                     }
 
-                    if (size > 0) {
 
-                        if (size == 1) {
+                    switch (size) {
+                        case 0:
+                            bounds = null;
+                            break;
+                        case 1:
+                            return data[0]; //reduce to only leaf
+                        default: {
+                            //TODO possibly rebalance
+                            Node[] cc = this.data;
+                            {
+                                //HACK experimental rebalance heuristic
+                                if (size == 2) {
+                                    final Node[] tgt = {null};
+                                    Leaf src = null;
+                                    if (cc[0] instanceof Leaf && !(cc[1] instanceof Leaf) && cc[0].size() <= model.max ) {
+                                        tgt[0] = cc[1];
+                                        src = (Leaf) cc[0];
+                                    } else if (cc[1] instanceof Leaf && !(cc[0] instanceof Leaf) && cc[1].size() <= model.max ) {
+                                        tgt[0] = cc[0];
+                                        src = (Leaf) cc[1];
+                                    }
 
-                            return data[0];
+                                    if (tgt[0] !=null) {
+                                        src.forEach(s -> {
+                                            boolean[] added = new boolean[2];
+                                            tgt[0] = tgt[0].add(s, Branch.this, model, added);
+                                            assert(added[0]);
+                                        });
+                                        return tgt[0];
+                                    }
+                                }
+                            }
+                            HyperRegion region = cc[0].bounds();
+                            for (int j = 1; j < size; j++) {
+                                region = grow(region, cc[j]);
+                            }
+                            this.bounds = region;
+                            break;
                         }
 
-                        Node[] cc = this.data;
-                        HyperRegion region = cc[0].bounds();
-                        for (int j = 1; j < size; j++) {
-                            region = grow(region, cc[j]);
-                        }
-                        this.bounds = region;
                     }
 
                     break;
+                } else {
+                    assert(cAfter==cBefore);
                 }
             }
         }
@@ -316,8 +352,7 @@ public class Branch<X> extends AbstractNode<X> {
         if (s > 0) {
             Node<X>[] cc = this.data;
             for (int i = 0; i < s; i++) {
-                Node<X> x = cc[i];
-                c.accept(x);
+                c.accept(cc[i]);
             }
         }
     }
@@ -328,7 +363,7 @@ public class Branch<X> extends AbstractNode<X> {
         short s = this.size;
         for (int i = 0; i < s; i++) {
             Node<X> x = c[i];
-            if (x != null && !x.AND(p))
+            if (/*x != null && */!x.AND(p))
                 return false;
         }
         return true;
@@ -341,7 +376,7 @@ public class Branch<X> extends AbstractNode<X> {
         int s = size;
         for (int i = 0; i < s; i++) {
             Node<X> x = c[i];
-            if (x != null && x.OR(p))
+            if (/*x != null && */x.OR(p))
                 return true;
         }
         return false;
@@ -354,9 +389,9 @@ public class Branch<X> extends AbstractNode<X> {
             int s = size;
             for (int i = 0; i < s; i++) {
                 Node d = data[i];
-                if (d == null)
-                    continue;
-                else if (!d.containing(rect, t, model))
+//                if (d == null)
+//                    continue;
+                /*else */if (!d.containing(rect, t, model))
                     return false;
             }
         }
@@ -370,9 +405,9 @@ public class Branch<X> extends AbstractNode<X> {
             int s = size;
             for (int i = 0; i < s; i++) {
                 Node d = data[i];
-                if (d == null)
-                    continue;
-                else if (!d.intersecting(rect, t, model))
+//                if (d == null)
+//                    continue;
+                /*else */if (!d.intersecting(rect, t, model))
                     return false;
             }
         }
@@ -387,7 +422,9 @@ public class Branch<X> extends AbstractNode<X> {
     @Override
     public Stream<X> streamValues() {
         //TODO optimize
-        return size() > 1 ? streamNodes().flatMap(x -> ((Node)x).streamValues()).filter(Objects::nonNull) : data[0].streamValues();
+        return size() > 1 ? streamNodes().flatMap(
+                x -> x!=null ? ((Node)x).streamValues() : Stream.empty()
+        ).filter(Objects::nonNull) : data[0].streamValues();
     }
 
 
@@ -396,7 +433,7 @@ public class Branch<X> extends AbstractNode<X> {
     }
 
     @Override public Stream<?> streamLocal() {
-        return ArrayIterator.streamNonNull(data, size);
+        return streamNodes();
     }
 
     @Override

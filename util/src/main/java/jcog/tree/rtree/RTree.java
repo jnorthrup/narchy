@@ -107,14 +107,17 @@ public class RTree<T> implements Space<T> {
 
 
         boolean[] added = new boolean[1];
+
         Node<T> nextRoot = root.add(t, this, model, added);
-        if (nextRoot != null) {
-            this.root = nextRoot;
-            if (added[0]) {
-                SIZE.incrementAndGet(this);
-                return true;
-            }
+
+        if (added[0]) {
+
+            this.root = nextRoot!=null ? nextRoot : model.newLeaf();
+
+            SIZE.incrementAndGet(this);
+            return true;
         }
+
         return false;
     }
 
@@ -133,8 +136,11 @@ public class RTree<T> implements Space<T> {
         if (before == 0)
             return false;
         boolean[] removed = new boolean[1];
-        root = root.remove(x, model.bounds(x), model, removed);
+        @Nullable Node<T> nextRoot = root.remove(x, model.bounds(x), model, removed);
         if (removed[0]) {
+
+            root = nextRoot!=null ? nextRoot : model.newLeaf();
+
             SIZE.decrementAndGet(this);
             return true;
         }
@@ -155,13 +161,13 @@ public class RTree<T> implements Space<T> {
         } else {
 
             boolean removed = remove(told);
-            if (!removed) {
-                return false;
-            } else {
+            if (removed) {
                 boolean added = add(tnew);
                 if (!added)
                     throw new UnsupportedOperationException("error adding " + tnew);
                 return true;
+            } else {
+                return false;
             }
         }
     }

@@ -136,15 +136,13 @@ public class MatrixDeriver extends Deriver {
 
         nar.emotion.conceptFire.increment();
 
+        final ArrayHashSet<TaskLink> tasklinksFired = d.firedTaskLinks;
+        tasklinksFired.clear();
+
         Concept concept = a.id;
 
         Bag<?, TaskLink> tasklinks = concept.tasklinks();
         Bag<Term, PriReference<Term>> termlinks = concept.termlinks();
-
-        final ArrayHashSet<TaskLink> tasklinksFired = d.firedTaskLinks;
-        tasklinksFired.clear();
-
-        Random rng = d.random;
 
         if (commit(nar, tasklinks, termlinks)) {
 
@@ -158,6 +156,7 @@ public class MatrixDeriver extends Deriver {
 
             int maxTasks = Math.min(_tasklinks, nTaskLinks);
 
+            Random rng = d.random;
 
             tasklinks.sample(rng, maxTasks, tasklink -> {
 

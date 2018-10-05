@@ -5,11 +5,11 @@ import jcog.lab.util.Opti;
 import jcog.lab.util.Optimization;
 import nars.NAR;
 import nars.NARS;
+import nars.Param;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
-import nars.nal.nal5.NAL5Test;
 import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
@@ -25,7 +25,7 @@ class NARTestOptimize {
             Class[] testClasses = new Class[] {
                     NAL1Test.class, NAL1MultistepTest.class, NAL2Test.class, NAL3Test.class,//
 //                    NAL4Test.class, NAL4MultistepTest.class,
-                    NAL5Test.class,
+//                    NAL5Test.class,
 //                    NAL6Test.class,
 //                    NAL7Test.class, NAL8Test.class,
             };
@@ -39,19 +39,21 @@ class NARTestOptimize {
 //                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
                 .var("termlinkBalance", 0, 1f, 0.1f,
                         (NAR n, float f) -> n.termlinkBalance.set(f))
-                .var("activationRate", 0, 1f, 0.1f,
-                            (NAR n, float f) -> n.activateConceptRate.set(f))
-                .var("forgetRate", 0, 1f, 0.1f,
-                        (NAR n, float f) -> n.forgetRate.set(f))
-                .var("beliefPriDefault", 0, 1f, 0.1f,
-                        (NAR n, float f) -> n.beliefPriDefault.set(f))
-                .var("questionPriDefault", 0, 1f, 0.1f,
-                        (NAR n, float f) -> {
-                            n.questionPriDefault.set(f);
-                            n.questPriDefault.set(f);
-                        })
-                .var("goalPriDefault", 0, 1f, 0.1f,
-                        (NAR n, float f) -> n.goalPriDefault.set(f))
+                .var("termlinkFanOut", 2, 16, 1,
+                        (NAR n, int f) -> Param.TermLinkFanoutMax = f)
+//                .var("activationRate", 0, 1f, 0.1f,
+//                            (NAR n, float f) -> n.activateConceptRate.set(f))
+//                .var("forgetRate", 0, 1f, 0.1f,
+//                        (NAR n, float f) -> n.forgetRate.set(f))
+//                .var("beliefPriDefault", 0, 1f, 0.1f,
+//                        (NAR n, float f) -> n.beliefPriDefault.set(f))
+//                .var("questionPriDefault", 0, 1f, 0.1f,
+//                        (NAR n, float f) -> {
+//                            n.questionPriDefault.set(f);
+//                            n.questPriDefault.set(f);
+//                        })
+//                .var("goalPriDefault", 0, 1f, 0.1f,
+//                        (NAR n, float f) -> n.goalPriDefault.set(f))
 
 //                .var("derivationComplexityExponent", 1f, 2.5f, 0.5f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
