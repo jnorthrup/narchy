@@ -49,6 +49,9 @@ public class NALTask extends UnitPri implements Task {
         if (truth == null ^ (!((punc == BELIEF) || (punc == GOAL))))
             throw new TaskException(term, "null truth");
 
+//        if (truth!=null && truth.conf() < Param.TRUTH_EPSILON)
+//            throw new Truth.TruthException("evidence underflow: conf=", truth.conf());
+
         if (Param.DEBUG) {
             if (!Stamp.validStamp(stamp))
                 throw new TaskException(term, "invalid stamp: " + Arrays.toString(stamp));
@@ -65,7 +68,7 @@ public class NALTask extends UnitPri implements Task {
 
         this.hash = Task.hash(
                 this.term = term,
-                (this.truth = truth != null ? truth.truth() : null),
+                (this.truth = truth != null ? /*Truth.the*/(truth.truth()) : null),
                 this.punc = punc,
                 this.start = start,
                 this.end = end,

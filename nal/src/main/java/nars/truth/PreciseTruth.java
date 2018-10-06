@@ -44,11 +44,19 @@ public final class PreciseTruth extends DiscreteTruth {
     }
 
     static PreciseTruth theDithered(float f, float fRes, float evi, float cRes) {
-        return PreciseTruth.byConf(//byFreqConfEvi(
+
+        //keep evidence difference
+        return PreciseTruth.byFreqConfEvi(
                 Truth.freq(f, fRes),
-                Truth.w2cDithered(evi, cRes)
-                ); //discard evidence difference
-                //,evi); //keep evidence difference
+                Truth.w2cDithered(evi, cRes),
+                evi);
+
+        //discard evidence difference
+        //        return PreciseTruth.byConf(//byFreqConfEvi(
+        //                Truth.freq(f, fRes),
+        //                Truth.w2cDithered(evi, cRes)
+        //                ); //discard evidence difference
+        //                //,evi); //keep evidence difference
     }
 
     @Override

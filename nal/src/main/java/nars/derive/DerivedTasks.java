@@ -8,35 +8,41 @@ import nars.Task;
 import nars.task.NALTask;
 import nars.task.util.TaskBagDrainer;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiFunction;
 
-public interface DerivedTasks {
+public interface DerivedTasks extends PriMerge<Task, Task> {
     Task add(Task x, Derivation d);
+
     void commit(NAR n);
 
-    BiFunction<Task, Task, Task> DERIVATION_MERGE = (pp, tt) -> {
+    @Override
+    default float merge(Task pp, Task tt) {
+
         pp.priMax(tt.pri());
         if (pp instanceof NALTask)
             ((NALTask) pp).priCauseMerge(tt);
         if (pp.isCyclic() && !tt.isCyclic()) {
             pp.setCyclic(false);
         }
-        return pp;
-    };
+        return 0; //TODO calculate
 
-    /** TODO this is trivial. just input directly to NAR on add */
+    }
+
+    /**
+     * TODO this is trivial. just input directly to NAR on add
+     */
     abstract class DerivedTasksDirect implements DerivedTasks {
 
     }
 
     /**
      * buffers derivations in a Map<> for de-duplication prior to a commit that flushes them as input to NAR
-     * TODO find old implementation and re-implement this */
+     * TODO find old implementation and re-implement this
+     */
     abstract class DerivedTasksMap implements DerivedTasks {
-        private final Map<Task, Task> derivedTasks = new LinkedHashMap<>(4096,0.9f);
+        private final Map<Task, Task> derivedTasks = new LinkedHashMap<>(4096, 0.9f);
     }
 
 
@@ -45,7 +51,7 @@ public interface DerivedTasks {
      * lower priority inputs before they are flushed.  commits involve a multi-thread shareable drainer task
      * allowing multiple deriver threads to fill the bag, potentially deduplicating each's results,
      * while other thread(s) drain it in prioritized order as input to NAR.
-      */
+     */
     class DerivedTasksBag implements DerivedTasks {
 
         //final static Logger logger = LoggerFactory.getLogger(DerivedTasksBag.class);
@@ -53,13 +59,7 @@ public interface DerivedTasks {
         /**
          * temporary buffer for derivations before input so they can be merged in case of duplicates
          */
-        final PriArrayBag<Task> tasks = new PriArrayBag<>(PriMerge.max, new ConcurrentHashMap<>()) {
-            @Override
-            protected float merge(Task existing, Task incoming) {
-                if (incoming!=existing)
-                    DERIVATION_MERGE.apply(existing, incoming);
-                return super.merge(existing, incoming);
-            }
+        final PriArrayBag<Task> tasks = new PriArrayBag<Task>(this, new HashMap());
 
             //            @Override
 //            protected boolean fastMergeMaxReject() {
@@ -90,7 +90,7 @@ public interface DerivedTasks {
 //            }
 
 
-        };
+
 
         private final TaskBagDrainer derivedTasksDrainer = new TaskBagDrainer(tasks, true,
                 (size, capacity) -> Math.min(size, Math.round(capacity * Param.DerivedTaskBagDrainRateLimit))

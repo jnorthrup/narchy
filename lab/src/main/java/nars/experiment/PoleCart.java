@@ -123,10 +123,13 @@ public class PoleCart extends NAgentX {
 
 
         this.x = senseNumber($.the("x"),
-                new FloatPolarNormalized(() -> (float) pos));
+                //new FloatPolarNormalized(
+                () -> (float) pos);
         this.xVel = senseNumber($.the("dx"),
 
-                new FloatPolarNormalized(() -> (float) posDot)
+                //new FloatPolarNormalized(
+                        () -> (float) posDot
+                //)
         );
 
 
@@ -299,7 +302,7 @@ public class PoleCart extends NAgentX {
 
 
 
-    protected float update() {
+    protected synchronized float update() {
 
 
         double force = forceMag * action;
@@ -347,8 +350,8 @@ public class PoleCart extends NAgentX {
 
 
         float rewardLinear = (float) (Math.cos(angle));
-        //return rewardLinear;
-        return rewardLinear * rewardLinear * rewardLinear;
+        return rewardLinear;
+        //return rewardLinear * rewardLinear * rewardLinear;
 
 
     }

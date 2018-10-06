@@ -297,7 +297,7 @@ public final class Leaf<X> extends AbstractNode<X> {
             X[] data = this.data;
             for (int i = 0; i < s; i++) {
                 X d = data[i];
-                //if (d != null)
+                if (d != null)
                     consumer.accept(d);
             }
         }

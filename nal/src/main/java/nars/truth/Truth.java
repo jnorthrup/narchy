@@ -77,6 +77,14 @@ public interface Truth extends Truthed {
         return Math.abs(freq - 0.5f) * 2f;
     }
 
+    static DiscreteTruth the(Truth truth) {
+
+        if (truth instanceof PreciseTruth)
+            return ((PreciseTruth)truth).raw();
+        else
+            return (DiscreteTruth) truth;
+    }
+
     class TruthException extends RuntimeException {
         public TruthException(String reason, float value) {
             super(new StringBuilder(64).append(reason).append(": ").append(value).toString());

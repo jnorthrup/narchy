@@ -75,12 +75,12 @@ public abstract class DequePool<X> implements Pool<X> {
 
 
 
-    public void put(Collection<X> c) {
+    public void putAll(Collection<X> c) {
         c.forEach(this::put);
     }
 
     public void take(Collection<X> c) {
-        put(c);
+        putAll(c);
         c.clear();
     }
 

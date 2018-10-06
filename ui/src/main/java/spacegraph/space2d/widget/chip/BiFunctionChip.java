@@ -14,4 +14,9 @@ public class BiFunctionChip<X,Y,Z> extends AbstractBiFunctionChip<X,Y,Z> {
     protected BiFunction f() {
         return f;
     }
+
+    @Override
+    public String toString() {
+        return BiFunctionChip.class.getSimpleName() + "[" + f.toString() + "]";
+    }
 }

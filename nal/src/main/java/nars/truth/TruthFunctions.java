@@ -234,7 +234,7 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion
      */
     public static Truth anonymousAnalogy(Truth a, Truth b, float minConf) {
-        float v0c = w2c(a.conf());
+        float v0c = w2cSafe(a.conf());
 
         return v0c < minConf ? null : TruthFunctions2.analogyNew(b, a.freq(), v0c, minConf);
     }

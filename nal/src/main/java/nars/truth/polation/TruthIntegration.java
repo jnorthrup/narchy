@@ -3,7 +3,6 @@ package nars.truth.polation;
 
 import jcog.math.Longerval;
 import nars.Task;
-import nars.task.signal.TruthletTask;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 
@@ -55,31 +54,31 @@ public class TruthIntegration {
 
 
         long tEnd = t.end();
-        if (qStart >= tStart && qEnd <= tEnd) {
-            if (t instanceof TruthletTask) {
-                //quick points array determination
-                long d = qEnd - qStart;
-                long qMid = (qStart + qEnd) / 2L;
-                if (d == 0) {
-                    throw new UnsupportedOperationException(); //points = new long[] { qStart };
-                } else if (d < dur || (qMid == qStart) || (qMid == qEnd)) {
-                    //points = new long[] { qStart, qEnd };
-                    return t.evi(qStart, dur) + t.evi(qEnd, dur); //2 point samples summed
-//                } else if (d <= dur) {
-//                    points = new long[] { qStart, (qStart + qEnd)/2L, qEnd };
-                } else {
-                    //with midpoint supersample
-                    //points = new long[]{qStart, qMid, qEnd};
-                    //continue below
-                }
-            } else {
-                assert(qStart >= tStart && qEnd <= tEnd);
-                //for internal point of rectangular truth, simply use the point sample
-                return t.evi(qStart, dur) * range;
-            }
-        }
+//        if (qStart >= tStart && qEnd <= tEnd) {
+//            if (t instanceof TruthletTask) {
+//                //quick points array determination
+//                long d = qEnd - qStart;
+//                long qMid = (qStart + qEnd) / 2L;
+//                if (d == 0) {
+//                    throw new UnsupportedOperationException(); //points = new long[] { qStart };
+//                } else if (d < dur || (qMid == qStart) || (qMid == qEnd)) {
+//                    //points = new long[] { qStart, qEnd };
+//                    return t.evi(qStart, dur) + t.evi(qEnd, dur); //2 point samples summed
+////                } else if (d <= dur) {
+////                    points = new long[] { qStart, (qStart + qEnd)/2L, qEnd };
+//                } else {
+//                    //with midpoint supersample
+//                    //points = new long[]{qStart, qMid, qEnd};
+//                    //continue below
+//                }
+//            } else {
+//                assert(qStart >= tStart && qEnd <= tEnd);
+//                //for internal point of rectangular truth, simply use the point sample
+//                return t.evi(qStart, dur) * range;
+//            }
+//        }
 
-        long[] points;
+
 
 //        boolean mid = qStart + 1 != qEnd;
 
@@ -120,13 +119,13 @@ public class TruthIntegration {
 
             pp.add(qEnd);
 
-            points = pp.toSortedArray();
+            return t.eviIntegTrapezoidal(dur, pp.toSortedArray());
         } else {
-            points = new long[] { qStart, qEnd };
+            return t.eviIntegTrapezoidal(dur, qStart, qEnd);
         }
 
         //return x.eviIntegRectMid(dur, points);
-        return t.eviIntegTrapezoidal(dur, points);
+
 
     }
 

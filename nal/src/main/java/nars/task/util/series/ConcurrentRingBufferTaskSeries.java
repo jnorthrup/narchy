@@ -8,8 +8,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static jcog.math.LongInterval.ETERNAL;
 import static jcog.math.LongInterval.TIMELESS;
+import static nars.time.Tense.ETERNAL;
 
 abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable.SeriesTask> extends AbstractTaskSeries<T> {
 
@@ -32,10 +32,12 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
     }
 
 
-    /** binary search */
+    /**
+     * binary search
+     */
     public int indexOf(long when) {
         int low = 0;
-        int high = size()-1;
+        int high = size() - 1;
 
         int closest = -1;
         while (low <= high) {
@@ -63,7 +65,9 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
         return closest;
     }
 
-    /** binary search */
+    /**
+     * binary search
+     */
     public int[] indexOf(long start, long end) {
         throw new TODO();
 //        int low = 0;
@@ -95,48 +99,100 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
 //        return -1; //not found
     }
 
-    /** TODO obey exactRange flag */
-    @Override public boolean whileEach(long minT, long maxT, boolean exactRange, Predicate<? super T> x) {
-        assert(minT!=ETERNAL);
+    /**
+     * TODO obey exactRange flag
+     */
+    @Override
+    public boolean whileEach(long minT, long maxT, boolean exactRange, Predicate<? super T> whle) {
+        //assert (minT != ETERNAL);
 
-        /*if (exactRange)*/ {
-            long s = start(), e = end();
-            if (s == TIMELESS || maxT < s) {
-                T f = first();
-                return f == null || x.test(f); //OOB
-            }
+//        /*if (exactRange)*/ {
+        long s = start();
+        if (s == TIMELESS)
+            return true; //nothing
 
-            if (maxT!=minT) {
-                if (e == TIMELESS || minT > e) {
-                    T l = last();
-                    return l == null || x.test(l); //OOB
-                }
-            }
+        long e = end();
+//
+//            if (maxT!=minT) {
+//                if (e == TIMELESS || minT > e) {
+//                    T l = last();
+//                    return l == null || x.test(l); //OOB
+//                }
+//            }
 
+        if (minT != ETERNAL && minT != TIMELESS) {
             boolean point = maxT == minT;
+
+            int c = cap;
+
             int b = indexOf(Math.min(e, maxT));
             if (b != -1) {
 
                 int a = point ? b : indexOf(Math.max(s, minT));
-                if (a!=-1) {
+                if (a != -1) {
 
-                    if (a == b) {
-                        T aa = q.peek(a);
-                        if (aa!=null)
-                            return x.test(aa);
-                    } else {
-                        return q.whileEach(x, a, b+1);
-                    }
+                    int ab = (a + b) / 2;
+                    int r = 0;
+                    boolean done = false;
+                    T u, v;
+                    do {
+
+
+                        int yi = ab + r;
+                        if (yi < c) {
+                            v = q.peek(yi);
+                            if (v != null && !whle.test(v)) return false;
+                        } else {
+                            v = null;
+                        }
+
+                        r++;
+
+                        int ui = ab - r;
+                        if (ui >= 0) {
+                            u = q.peek(ui);
+                            if (u != null && !whle.test(u)) return false;
+                        } else {
+                            u = null;
+                        }
+
+
+                        if (u == null && v == null)
+                            done = true;
+
+                        r++;
+
+                    } while (!done);
+//                    if (a == b) {
+//                        T aa = q.peek(a);
+//                        if (aa!=null)
+//                            return x.test(aa);
+//                    } else {
+//                        return q.whileEach(x, a, b+1);
+//                    }
                 }
             }
 
-            return true;
-
         }
+
+
+        //just return the latest items while it keeps asking
+        int qs = q.size();
+        for (int i = qs-1; i >= 0; i--) {
+            T qq = q.peek(i);
+            if (qq == null)
+                break;
+            if (!whle.test(qq))
+                return false;
+        }
+
+
+        return true;
+
+    }
 //        else {
 //            throw new TODO();
 //        }
-    }
 
 
     @Override

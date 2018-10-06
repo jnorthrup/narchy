@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.meter;
 
 import com.jogamp.opengl.GL2;
 import jcog.math.FloatSupplier;
+import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.RingBufferTensor;
 import jcog.tree.rtree.rect.RectFloat;
@@ -37,7 +38,7 @@ public class BitmapMatrixView extends Surface {
     private BufferedImage buf;
     private int[] pix;
 
-    protected BitmapMatrixView(int w, int h) {
+    public BitmapMatrixView(int w, int h) {
         this(w, h, null);
     }
 
@@ -217,6 +218,16 @@ public class BitmapMatrixView extends Surface {
 
     public boolean alpha() {
         return false;
+    }
+
+    public boolean equalShape(Tensor x) {
+        int[] shape = x.shape();
+        if (shape.length == 1)
+            return h == 1 && w == shape[0];
+        else if (shape.length == 2) {
+            return w == shape[0] && h == shape[1];
+        } else
+            return false;
     }
 
     @FunctionalInterface  public interface ViewFunction1D {

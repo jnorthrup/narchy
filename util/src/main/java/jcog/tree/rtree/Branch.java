@@ -343,7 +343,7 @@ public class Branch<X> extends AbstractNode<X> {
             Node<X>[] cc = this.data;
             for (int i = 0; i < s; i++) {
                 Node<X> x = cc[i];
-                //if (x != null)
+                if (x != null)
                     x.forEach(consumer);
             }
         }
@@ -355,7 +355,9 @@ public class Branch<X> extends AbstractNode<X> {
         if (s > 0) {
             Node<X>[] cc = this.data;
             for (int i = 0; i < s; i++) {
-                c.accept(cc[i]);
+                Node<X> x = cc[i];
+                if (x!=null)
+                    c.accept(x);
             }
         }
     }
@@ -366,7 +368,7 @@ public class Branch<X> extends AbstractNode<X> {
         short s = this.size;
         for (int i = 0; i < s; i++) {
             Node<X> x = c[i];
-            if (/*x != null && */!x.AND(p))
+            if (x != null && !x.AND(p))
                 return false;
         }
         return true;
@@ -379,7 +381,7 @@ public class Branch<X> extends AbstractNode<X> {
         int s = size;
         for (int i = 0; i < s; i++) {
             Node<X> x = c[i];
-            if (/*x != null && */x.OR(p))
+            if (x != null && x.OR(p))
                 return true;
         }
         return false;

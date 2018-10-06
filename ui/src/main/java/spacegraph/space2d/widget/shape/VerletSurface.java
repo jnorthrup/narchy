@@ -199,7 +199,7 @@ public class VerletSurface extends Surface implements Animated {
                 //immediate
                 vv.next.set(pNext);
 
-                float density = 0.001f;
+                float density = 0.0001f;
                 vv.mass = ss.bounds.area() * density;
 
 //                    vv.set(pNext);

@@ -159,11 +159,9 @@ public class Wiring extends FingerDragging {
 
     protected boolean tryWire() {
         GraphEdit wall = graph();
-        Wire x = new Wire(start, end);
-        Wire y = typeAdapt(x, wall);
+        Wire y = typeAdapt(new Wire(start, end), wall);
         if (y == wall.addWire(y)) {
 
-            wall.link(y);
 
             start.root().debug(start, 1, () -> "wire(" + wall + ",(" + start + ',' + end + "))");
             //wire(start, end, y, wall);

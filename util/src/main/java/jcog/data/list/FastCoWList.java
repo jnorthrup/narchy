@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 /** be careful about synchronizing to instances of this class
@@ -22,7 +23,7 @@ import java.util.stream.Stream;
  *
  * TODO size inherited from FasterList is not volatile
  */
-public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ implements Iterable<X> {
+public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ implements Iterable<X>, UnaryOperator<X[]> {
 
     final FasterList<X> list;
 
@@ -142,13 +143,16 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
         }
     }
 
-    public X[] array() {
-        return copy.updateAndGet((current)->{
-            if (current == null) {
-                return list.fillArray(arrayBuilder.apply(list.size()), false);
-            } else
-                return current;
-        });
+    public final X[] array() {
+        return copy.updateAndGet(this);
+    }
+
+    @Override
+    public X[] apply(X[] current) {
+        if (current == null)
+            return list.fillArray(arrayBuilder.apply(list.size()), false);
+        else
+            return current;
     }
 
     //@Override

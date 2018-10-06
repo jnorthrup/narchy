@@ -193,6 +193,8 @@ public abstract class Param {
      */
     public final FloatRange intermpolationRangeLimit = new FloatRange(0.5f, 0, 1);
 
+    public final FloatRange tasklinkDecayRate = new FloatRange(0.5f, 0, 1);
+
     /**
      * creates instance of the default truthpolation implementation
      */

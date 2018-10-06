@@ -33,14 +33,14 @@ public class DiscreteTruth implements Truth {
         );
     }
 
-    DiscreteTruth(int hash) {
+    protected DiscreteTruth(int hash) {
         this.hash = hash;
     }
 
     @Override
     public Truth neg() {
-        return PreciseTruth.byConf(
-                1f - freq(), conf());
+        return PreciseTruth.byEvi(
+                1f - freq(), evi());
     }
 
     @Override

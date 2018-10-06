@@ -31,7 +31,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
         rank(rank);
     }
 
-    public TopN rank(FloatRank<X> rank) {
+    public TopN<X> rank(FloatRank<X> rank) {
         this.rank = rank;
         return this;
     }

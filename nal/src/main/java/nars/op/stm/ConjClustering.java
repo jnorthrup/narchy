@@ -80,13 +80,23 @@ public class ConjClustering extends Causable {
                 c[4] = t.range();
             }
 
+
+
+            /** # durs (in-)sensitivity factor */
+            static final double TIME_SENSITIVITY = 8;
+
             @Override
             public double distanceSq(double[] a, double[] b) {
-                return Math.abs(a[0] - b[0]) +
-                        Math.abs(a[1] - b[1]) +
-                        Math.abs(a[2] - b[2]) +
-                        Math.abs(a[3] - b[3]) +
-                        Math.abs(a[4] - b[4]) * 0.5; //range
+                double dMid = Math.abs(a[0] - b[0])/dur;
+                double dRange = Math.abs(a[4] - b[4]);
+                double dPri = Math.abs(a[1] - b[1]);
+                double dPolarity = Math.abs(a[2] - b[2]);
+                double dConf = Math.abs(a[3] - b[3]);
+                return dMid / (TIME_SENSITIVITY) +
+                        dPri +
+                        dPolarity +
+                        dConf +
+                        dRange/(1 + dMid) * 0.5;
 
 //                return (1 + (Math.abs(a[0] - b[0]) / Math.min(a[4], b[4])) + (Math.abs(a[4] - b[4]) / dur))
 //                        *

@@ -262,11 +262,13 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         if (start < 0)
             start += c;
 
+        if (mode != GET) {
+            mutexTicket = mutex.start(id, hash);
+        }
+
         try {
 
-            if (mode != GET) {
-                mutexTicket = mutex.start(id, hash);
-            }
+
 
             probing:
             for (int i = start, probe = reprobes; probe > 0; probe--) {
@@ -515,7 +517,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
 
     @Override
-    public @Nullable V get(/*@NotNull*/ Object key) {
+    public final @Nullable V get(/*@NotNull*/ Object key) {
         return update(key, null, GET, null);
     }
 
@@ -569,7 +571,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
                     if (v != null) {
                         wVal[windowCap - 1 - prefilled] = v;
-                        wPri[windowCap - 1 - prefilled] = pri(v);
+                        wPri[windowCap - 1 - prefilled] = priElse(v, 0);
 
 
                         if (++prefilled >= windowCap - 1) {

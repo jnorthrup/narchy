@@ -67,7 +67,7 @@ public class Link {
             int chainLen = 2 + 1 + (extraJoints*2); //should be an odd number
 
             Pair<List<VerletParticle2D>, List<VerletSpring2D>> chain = g.physics.addParticleChain(ap, bp,
-                    chainLen, 1f /* some minimal # */, 0.05f);
+                    chainLen, 1f /* some minimal # */, 0.25f);
 
             List<VerletSpring2D> springs = chain.getTwo();
             offs.add(()->{

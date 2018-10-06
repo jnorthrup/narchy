@@ -10,8 +10,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static jcog.math.LongInterval.ETERNAL;
-
 /**
  * fixed size buffer of Ts
  */
@@ -60,12 +58,12 @@ public interface TaskSeries<T extends Task> {
 
     default void forEach(long minT, long maxT, boolean exactRange, Consumer<? super T> x) {
         if (!isEmpty()) {
-            if (minT == ETERNAL) {
-                T l = last();
-                if(x!=null)
-                    x.accept(l);
-                return;
-            }
+//            if (minT == ETERNAL) {
+//                T l = last();
+//                if(x!=null)
+//                    x.accept(l);
+//                return;
+//            }
 
             whileEach(minT, maxT, exactRange, (t) -> {
                 x.accept(t);

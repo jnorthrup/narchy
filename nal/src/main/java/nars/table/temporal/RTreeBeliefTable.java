@@ -296,6 +296,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
                     while (ii.hasNext() && each.test(ii.next())) {
                     }
+
+                    ii.close();
                 });
 //            } else {
 //

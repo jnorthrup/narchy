@@ -13,7 +13,7 @@ import static jcog.pri.op.PriMerge.PriMergeOp.*;
  * Budget merge function, with input scale factor
  */
 @FunctionalInterface
-public interface PriMerge extends BiConsumer<Priority, Prioritized> {
+public interface PriMerge<E extends Priority, I extends Prioritized> extends BiConsumer<E, I> {
 
 
     /**
@@ -21,10 +21,10 @@ public interface PriMerge extends BiConsumer<Priority, Prioritized> {
      *
      * @return any resultng overflow priority which was not absorbed by the target, >=0
      */
-    float merge(Priority existing, Prioritized incoming);
+    float merge(E existing, I incoming);
 
     @Override
-    default void accept(Priority existing, Prioritized incoming) {
+    default void accept(E existing, I incoming) {
         merge(existing, incoming);
     }
 
@@ -103,31 +103,31 @@ public interface PriMerge extends BiConsumer<Priority, Prioritized> {
     /**
      * sum priority
      */
-    PriMerge plus = (tgt, src) -> blend(tgt, src, PLUS);
+    PriMerge<Priority,Prioritized> plus = (tgt, src) -> blend(tgt, src, PLUS);
 
     /**
      * avg priority
      */
-    PriMerge avg = (tgt, src) -> blend(tgt, src, AVG);
+    PriMerge<Priority,Prioritized> avg = (tgt, src) -> blend(tgt, src, AVG);
 
     /**
      * geometric mean
      */
-    PriMerge avgGeo = (tgt, src) -> blend(tgt, src, AVG_GEO);
+    PriMerge<Priority,Prioritized> avgGeo = (tgt, src) -> blend(tgt, src, AVG_GEO);
 
-    PriMerge avgGeoSlow = (tgt, src) -> blend(tgt, src, AVG_GEO_SLOW);
-    PriMerge avgGeoFast = (tgt, src) -> blend(tgt, src, AVG_GEO_FAST);
-
-
-    PriMerge or = (tgt, src) -> blend(tgt, src, OR);
+    PriMerge<Priority,Prioritized> avgGeoSlow = (tgt, src) -> blend(tgt, src, AVG_GEO_SLOW);
+    PriMerge<Priority,Prioritized> avgGeoFast = (tgt, src) -> blend(tgt, src, AVG_GEO_FAST);
 
 
-    PriMerge max = (tgt, src) -> blend(tgt, src, MAX);
+    PriMerge<Priority,Prioritized> or = (tgt, src) -> blend(tgt, src, OR);
+
+
+    PriMerge<Priority,Prioritized> max = (tgt, src) -> blend(tgt, src, MAX);
 
     /**
      * avg priority
      */
-    PriMerge replace = (tgt, src) -> tgt.pri((FloatSupplier)()-> src.pri());
+    PriMerge<Priority,Prioritized> replace = (tgt, src) -> tgt.pri((FloatSupplier)()-> src.pri());
 
 
 

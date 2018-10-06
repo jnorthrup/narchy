@@ -18,16 +18,12 @@ import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
-import spacegraph.space2d.widget.chip.BiFunctionChip;
-import spacegraph.space2d.widget.chip.Cluster2DChip;
-import spacegraph.space2d.widget.chip.KeyboardChip;
-import spacegraph.space2d.widget.chip.PlotChip;
+import spacegraph.space2d.widget.chip.*;
 import spacegraph.space2d.widget.port.*;
 import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
-import spacegraph.video.WebCam;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,7 +63,9 @@ public class ProtoWidget extends Bordering {
         add("Mouse", TODO, "Input");
         add("Gamepad", TODO, "Input");
 
-        add("WebCam", () -> new WebCam.WebCamSurface(WebCam.the()), "Video");
+        add("WebCam", () -> {
+            return new WebcamChip();
+        }, "Video");
         add("Microphone", ()->{
             {
                 WaveCapture au = new WaveCapture(new AudioSource(20), 4f);
@@ -120,6 +118,7 @@ public class ProtoWidget extends Bordering {
 
         add("Text", LabeledPort::generic, "Meter");
         add("Plot", PlotChip::new, "Meter");
+        add("MatrixView", ()-> new MatrixViewChip(), "Meter");
         add("Cluster2D", Cluster2DChip::new, "Meter");
 
 

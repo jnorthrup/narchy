@@ -5,6 +5,7 @@ import jcog.data.NumberX;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.pri.Prioritized;
+import jcog.pri.UnitPri;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -284,27 +285,27 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
         float linkRate = d.nar.activateLinkRate.floatValue();
 
-        taskLink(
-            d.firedTaskLinks,
-            conceptualizeAndTermLink(linkRate, a, d),
-            linkRate
-        );
-
-
-    }
-
-    private void taskLink(ArrayHashSet<TaskLink> firedTaskLinks, List<Concept> firedConcepts, float linkRate) {
+        List<Concept> firedConcepts = conceptualizeAndTermLink(linkRate, a, d);
         //default all to all exhausive matrix insertion
         //TODO configurable "termlink target concept x tasklink matrix" linking pattern: density, etc
         if (!firedConcepts.isEmpty()) {
 
-            for (TaskLink f : firedTaskLinks) {
+            float linkDecayRate = d.nar.tasklinkDecayRate.floatValue();
+
+            for (TaskLink f : d.firedTaskLinks) {
                 NumberX overflow = new MutableFloat(); //keep overflow specific to the tasklink
+
+                UnitPri allocated = new UnitPri();
+                allocated.take(f, linkDecayRate,false,false);
+                //float priDispersed = linkDecayRate * f.priElseZero();
+                //f.priSub(priDispersed);
                 Tasklinks.linkTask((TaskLink.GeneralTaskLink) f,
-                        Math.max(EPSILON, linkRate * f.priElseZero()), firedConcepts, overflow);
+                        Math.max(EPSILON, allocated.priElseZero()), firedConcepts, overflow);
             }
 
         }
+
+
     }
 
     private List<Concept> conceptualizeAndTermLink(float linkRate, Activate a, Derivation d) {

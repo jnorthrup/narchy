@@ -421,15 +421,15 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
                 return null;
             }
 
-            Iterable<FromTo<Node<spacegraph.space2d.Surface, Wire>, Wire>> edges = A.edges(false, true);
-            if (edges != null) {
-
-                for (FromTo<Node<spacegraph.space2d.Surface, Wire>, Wire> e : edges) {
-                    Wire ee = e.id();
-                    if (wire.equals(ee))
-                        return ee;
-                }
-            }
+//            Iterable<FromTo<Node<spacegraph.space2d.Surface, Wire>, Wire>> edges = A.edges(false, true);
+//            if (edges != null) {
+//
+//                for (FromTo<Node<spacegraph.space2d.Surface, Wire>, Wire> e : edges) {
+//                    Wire ee = e.id();
+//                    if (wire.equals(ee))
+//                        return ee;
+//                }
+//            }
 
             if (!wire.connect()) {
                 return null;
@@ -452,6 +452,8 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 //
 //                });
         }
+
+        link(wire);
 
         return wire;
 

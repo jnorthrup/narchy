@@ -17,7 +17,6 @@ import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
@@ -38,6 +37,12 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
 
     private long start, end;
 
+    @Override
+    protected void paintBelow(GL2 gl, SurfaceRender r) {
+        gl.glColor3f(0,0,0);
+        Draw.rect(bounds, gl);
+    }
+
     /**
      * TODO use double not float for precision that may be lost
      *
@@ -53,29 +58,22 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
         int dMargin = Math.round(dt/8);
         wave.forEach((freq, conf, start, end) -> {
 
+            //if ((start >= minT) && (start <= maxT)) {
 
-            float x;
-
-
-            if ((start >= minT) && (start <= maxT)) {
-                x = xTime(minT, maxT, start + dMargin);
-            } else {
-                return;
-            }
+//            } else {
+//                return;
+//            }
 
             colorize.colorize(gl, freq, conf);
 
-
             float Y = y.apply(freq, conf);
-            gl.glVertex2f(x, Y);
-
+            gl.glVertex2f(xTime(minT, maxT, start+dMargin), Y);
 
             if (start == end)
                 return;
 
             if ((end >= minT) && (end <= maxT)) {
-                x = xTime(minT, maxT, end-dMargin);
-                gl.glVertex2f(x, Y);
+                gl.glVertex2f(xTime(minT, maxT, end-dMargin), Y);
             }
 
         });
@@ -87,17 +85,19 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
         void colorize(GL2 gl, float f, float c);
     }
 
-    class TruthGrid extends BitmapMatrixView implements BitmapMatrixView.ViewFunction2D {
+    class TruthGrid extends Surface {
 
         private final TruthWave projected, tasks;
         private final boolean beliefOrGoal;
         private final Colorize colorize;
         private static final float taskWidthMin = 0.01f;
         private static final float taskHeightMin = 0.04f;
+        private final int projections;
 
-        public TruthGrid(int tDiv, int fDiv, boolean beliefOrGoal) {
-          super(tDiv, fDiv);
-          projected = new TruthWave(tDiv);
+        public TruthGrid(int projections, boolean beliefOrGoal) {
+          super();
+          this.projections = projections;
+          projected = new TruthWave(projections);
           tasks = new TruthWave(256);
           this.beliefOrGoal = beliefOrGoal;
           this.colorize = beliefOrGoal ?
@@ -114,23 +114,22 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
 
         void update(Concept c) {
             BeliefTable table = (BeliefTable) c.table(beliefOrGoal ? BELIEF : GOAL);
-            projected.project(table, start, end, w, term, nar);
+            projected.project(table, start, end, projections, term, nar);
             tasks.set(table, start, end);
         }
 
+
         @Override
         protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-            super.paint(gl, surfaceRender);
+
+
             Draw.bounds(bounds, gl, ggl->{
+
                 renderWaveLine( /*hack*/ start, end, ggl, projected, (f, c)->f, colorize);
                 renderTasks(start, end, ggl, tasks, colorize);
             });
         }
 
-        @Override
-        public int update(int x, int y) {
-            return Draw.rgbInt(nar.random().nextFloat(), 0, 0);
-        }
 
 
 
@@ -185,8 +184,8 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
     public BeliefTableChart(Termed term, NAR n) {
         super(new Stacking(), n);
         this.term = term.term();
-        the.add(beliefGrid = new TruthGrid(16, 10, true));
-        the.add(goalGrid = new TruthGrid(16, 10, false));
+        the.add(beliefGrid = new TruthGrid(16, true));
+        the.add(goalGrid = new TruthGrid(16, false));
     }
 
     @Override
