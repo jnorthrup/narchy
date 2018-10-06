@@ -293,14 +293,15 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
     }
 
-    public void taskLink(ArrayHashSet<TaskLink> firedTaskLinks, List<Concept> firedConcepts, float linkRate) {
+    private void taskLink(ArrayHashSet<TaskLink> firedTaskLinks, List<Concept> firedConcepts, float linkRate) {
         //default all to all exhausive matrix insertion
         //TODO configurable "termlink target concept x tasklink matrix" linking pattern: density, etc
         if (!firedConcepts.isEmpty()) {
 
             for (TaskLink f : firedTaskLinks) {
                 NumberX overflow = new MutableFloat(); //keep overflow specific to the tasklink
-                Tasklinks.linkTask((TaskLink.GeneralTaskLink) f, Math.max(EPSILON, linkRate * f.priElseZero()), firedConcepts, overflow);
+                Tasklinks.linkTask((TaskLink.GeneralTaskLink) f,
+                        Math.max(EPSILON, linkRate * f.priElseZero()), firedConcepts, overflow);
             }
 
         }
@@ -321,20 +322,24 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
             n = Math.min(n, Param.TermLinkFanoutMax);
 
-            float conceptForward = Math.max(EPSILON, a.priElseZero() / n);
-
-            float taskLinkPri = Math.max(EPSILON, (float) (((FasterList<TaskLink>) (d.firedTaskLinks.list))
+            float taskLinkPriSum = Math.max(EPSILON, (float) (((FasterList<TaskLink>) (d.firedTaskLinks.list))
                     .sumOfFloat(Prioritized::priElseZero)));
+
+            float conceptForward =
+                    //Math.max(EPSILON, a.priElseZero() / n);
+                    taskLinkPriSum / Math.max(1, concepts);
+
+
 
             float balance = nar.termlinkBalance.floatValue();
 
-            float termlinkReverse = Math.max(EPSILON, taskLinkPri * balance / n);
+            float termlinkReverse = Math.max(EPSILON, taskLinkPriSum * balance / n);
 
 //        //calculate exactly according to the size of the subset that are actually conceptualizable
 //        float budgetedForward = concepts == 0 ? 0 :
 //                Math.max(Prioritized.EPSILON, pri * (1f - balance) / concepts);
 
-            float termlinkForward = Math.max(EPSILON, taskLinkPri * (1 - balance) / n);
+            float termlinkForward = Math.max(EPSILON, taskLinkPriSum * (1 - balance) / n);
 
 
             NumberX refund = new MutableFloat(0);

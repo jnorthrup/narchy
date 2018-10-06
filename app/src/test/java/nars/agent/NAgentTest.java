@@ -1,8 +1,10 @@
 package nars.agent;
 
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
+import nars.control.DurService;
 import nars.term.Term;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
@@ -12,6 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.function.Consumer;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NAgentTest {
@@ -19,15 +22,10 @@ public class NAgentTest {
     static NAR nar() {
 
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(12);
+        n.termVolumeMax.set(9);
         n.freqResolution.set(0.1f);
         n.confResolution.set(0.01f);
         n.time.dur(1);
-
-
-//        n.emotion.want(MetaGoal.Perceive, -0.1f);
-//        n.emotion.want(MetaGoal.Desire, +0.1f);
-
 
         return n;
     }
@@ -188,5 +186,27 @@ public class NAgentTest {
 
     }
 
+    @Test void testAgentTimingDurs() {
+        int dur = 10;
+        int dursPerFrame = 2;
+        int dursPerService = 3;
+        LongArrayList aFrames = new LongArrayList();
+        LongArrayList sFrames = new LongArrayList();
+
+        NAR nar = NARS.tmp();
+        nar.time.dur(dur);
+        NAgent a = new NAgent("x", FrameTrigger.durs(dursPerFrame), nar);
+
+        a.onFrame(()->{
+            aFrames.add(nar.time());
+        });
+        DurService.on(nar,()->{
+            sFrames.add(nar.time());
+        }).durs(dursPerService);
+        nar.run(50);
+        assertEquals("[10, 30, 50]", aFrames.toString());
+        assertEquals("[0, 10, 40]", sFrames.toString());
+
+    }
 
 }

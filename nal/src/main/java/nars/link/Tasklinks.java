@@ -37,8 +37,8 @@ public class Tasklinks {
 //                priTransferred / nTargets
 //        );
         float pEach =
-                pri; //no division
-                //pri/nTargets; //no division
+                //pri; //no division
+                pri/nTargets; //no division
 
         TaskLink.Tasklike tlSeed = tasklink.id;
 

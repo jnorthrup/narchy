@@ -127,7 +127,7 @@ public class PatrickTests extends NALTest {
 
 
         tt.nar.time.dur(cycles);
-        tt.nar.termVolumeMax.set(8);
+        tt.nar.termVolumeMax.set(10);
 
 
         tt.input(
