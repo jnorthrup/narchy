@@ -228,10 +228,6 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
 
-    @Override
-    public final NAR nar() {
-        return nar;
-    }
 
 
     public Random random() {

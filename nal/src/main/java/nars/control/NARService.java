@@ -102,4 +102,7 @@ public class NARService extends Service<NAR> implements Termed {
         return id;
     }
 
+    @Nullable public final NAR nar() {
+        return nar;
+    }
 }

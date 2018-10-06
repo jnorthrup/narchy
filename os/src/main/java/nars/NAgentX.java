@@ -1,16 +1,17 @@
 package nars;
 
+import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.exe.Loop;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.signal.wave2d.Bitmap2D;
+import jcog.tree.rtree.rect.RectFloat;
 import jcog.util.Int2Function;
 import nars.agent.FrameTrigger;
 import nars.agent.NAgent;
 import nars.agent.SimpleReward;
-import nars.concept.action.AbstractGoalActionConcept;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
@@ -46,8 +47,10 @@ import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.meter.Cluster2DView;
+import spacegraph.video.Draw;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -60,7 +63,6 @@ import static java.util.stream.Collectors.toList;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -201,7 +203,7 @@ abstract public class NAgentX extends NAgent {
 //                }
 
 
-                //new Spider(n, Iterables.concat(java.util.List.of(a.id, n.self(), a.happy.id), Iterables.transform(a.always, Task::term)));
+                initPlugins2(n, a);
 
                 //System.gc();
             });
@@ -210,6 +212,10 @@ abstract public class NAgentX extends NAgent {
         Loop loop = n.startFPS(narFPS);
 
         return n;
+    }
+
+    static void initPlugins2(NAR n, NAgent a) {
+        //new Spider(n, Iterables.concat(Iterables.concat(java.util.List.of(a.id, n.self()), a.actions), a.sensors));
     }
 
     private static NAgent metavisor(NAgent a) {
@@ -343,18 +349,16 @@ abstract public class NAgentX extends NAgent {
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 96);
         {
-            Cluster2DView v = new Cluster2DView() {
 
-            };
-            DurService.on(n, ()->{
-                v.update(conjClusterBinput.data.net);
-            });
-            SpaceGraph.window(v, 500, 500);
+            SpaceGraph.window(
+                    new ConjClusterView(conjClusterBinput),
+                    500, 500);
+
         }
 
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 32);
-        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof AbstractGoalActionConcept.CuriosityTask) ),
-                8, 96);
+//        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof AbstractGoalActionConcept.CuriosityTask) ),
+//                8, 96);
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(64, n);
         Introduction factorizer = new Factorize.FactorIntroduction(64, n);
@@ -578,5 +582,25 @@ abstract public class NAgentX extends NAgent {
     }
 
 
+    static class ConjClusterView extends Cluster2DView {
+
+        private final ConjClustering conj;
+
+        public ConjClusterView(ConjClustering c) {
+            this.conj = c;
+            DurService.on(c.nar(), () -> update(c.data.net));
+        }
+
+        @Override
+        protected void paintBelow(GL2 gl, SurfaceRender r) {
+            conj.data.bag.forEach(l -> {
+                Task t = l.get();
+                RectFloat b = bounds(new double[]{t.mid(), t.priElseZero()}, 35);
+                gl.glColor3f(0.5f, 0.25f, 0f);
+                Draw.rect(b, gl);
+            });
+            super.paintBelow(gl, r);
+        }
+    }
 }
 

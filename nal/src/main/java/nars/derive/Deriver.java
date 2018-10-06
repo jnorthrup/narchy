@@ -14,7 +14,7 @@ import nars.derive.premise.DeriverRules;
 import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.premise.PremiseRuleProto;
-import nars.derive.timing.TaskOccurenceOrPresentDeriverTiming;
+import nars.derive.timing.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.exe.Attention;
 import nars.exe.Causable;
 import nars.link.Activate;
@@ -102,7 +102,7 @@ abstract public class Deriver extends Causable {
         this.timing =
                 //new AdHocDeriverTiming(nar);
                 //new TaskOccurenceDeriverTiming();
-                new TaskOccurenceOrPresentDeriverTiming(nar);
+                new NonEternalTaskOccurenceOrPresentDeriverTiming(nar);
 
 
         nar.on(this);

@@ -13,13 +13,13 @@ dependencies {
     compile(group: 'org.boofcv', name: 'boofcv-sfm', version: '0.30')
 
 
-    compile (group: 'org.teavm', name: 'teavm-tooling', version: '0.6.0-dev-563') {
+    compile (group: 'org.teavm', name: 'teavm-tooling', version: '0.6.0-dev-567') {
         exclude(group:'org.ow2.asm')
     }
-    compile (group: 'org.teavm', name: 'teavm-jso', version: '0.6.0-dev-563') {
+    compile (group: 'org.teavm', name: 'teavm-jso', version: '0.6.0-dev-567') {
         exclude(group:'org.ow2.asm')
     }
-    compile (group: 'org.teavm', name: 'teavm-classlib', version: '0.6.0-dev-563') {
+    compile (group: 'org.teavm', name: 'teavm-classlib', version: '0.6.0-dev-567') {
         exclude(group:'org.ow2.asm')
     }
 

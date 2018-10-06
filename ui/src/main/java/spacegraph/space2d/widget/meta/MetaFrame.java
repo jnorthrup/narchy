@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget.meta;
 
+import jcog.TODO;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
@@ -25,12 +26,17 @@ public class MetaFrame extends Bordering {
 
     protected Surface newMetaMenu() {
         return new Gridding(
+
             new PushButton("^").click(()->{
                 //pop-out
                 Surface s = get(0);
                 if (s.remove()) {
                     SpaceGraph.window(s, 500, 500); //TODO size by window TODO child window
                 }
+            }),
+            new PushButton("=").click(()->{
+                //tag
+                throw new TODO();
             }),
             new PushButton("?").click(()->{
                 //pop-up inspection view

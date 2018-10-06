@@ -6,16 +6,16 @@ import nars.term.Term;
 
 import java.util.function.BiFunction;
 
-public class TaskOccurenceOrPresentDeriverTiming implements BiFunction<Task, Term, long[]> {
+public class NonEternalTaskOccurenceOrPresentDeriverTiming implements BiFunction<Task, Term, long[]> {
 
     private final NAR nar;
 
-    public TaskOccurenceOrPresentDeriverTiming(NAR nar) {
+    public NonEternalTaskOccurenceOrPresentDeriverTiming(NAR nar) {
         this.nar = nar;
     }
 
     @Override public long[] apply(Task task, Term term) {
-        if (nar.random().nextBoolean()) {
+        if (!task.isEternal()) {
             return new long[]{task.start(), task.end()};
         } else {
             int dur = nar.dur();

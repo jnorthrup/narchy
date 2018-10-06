@@ -93,7 +93,7 @@ public abstract class ConceptIndex implements Iterable<Termed> {
 
         Term x = _x.term();
         if (!x.op().conceptualizable)
-            throw new WTF();
+            throw new WTF(_x + " not conceptualizable");
 
         Term xx = x.concept();
         if (x!=xx && (xx == null || !xx.op().conceptualizable)) {

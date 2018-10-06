@@ -51,8 +51,7 @@ public class ConjClustering extends Causable {
 
     private boolean popConjoinedTasks = false;
 
-    //temporary to the current singleton
-    transient private int tasksGenerated;
+
 
     private int learningIterations = 1;
 
@@ -138,9 +137,6 @@ public class ConjClustering extends Causable {
         this.ditherTime = nar.dtDither();
         this.confMin = nar.confMin.floatValue();
         this.volMax = Math.round(nar.termVolumeMax.intValue() * termVolumeMaxFactor);
-        this.tasksGenerated = 0;
-
-
 
         data.commit(forgetRate(), 1);
 
@@ -294,7 +290,7 @@ public class ConjClustering extends Causable {
                                         data.remove(aa);
                                 }
 
-                                tasksGenerated++;
+
                                 in.input(m);
 
                                 if (!kontinue.getAsBoolean())

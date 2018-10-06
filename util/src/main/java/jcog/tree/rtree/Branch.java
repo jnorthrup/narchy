@@ -223,34 +223,37 @@ public class Branch<X> extends AbstractNode<X> {
                         default: {
                             //TODO possibly rebalance
                             Node[] cc = this.data;
-                            {
-                                //HACK experimental rebalance heuristic
-                                if (size == 2) {
-                                    final Node[] tgt = {null};
-                                    Leaf src = null;
-                                    if (cc[0] instanceof Leaf && !(cc[1] instanceof Leaf) && cc[0].size() <= model.max ) {
-                                        tgt[0] = cc[1];
-                                        src = (Leaf) cc[0];
-                                    } else if (cc[1] instanceof Leaf && !(cc[0] instanceof Leaf) && cc[1].size() <= model.max ) {
-                                        tgt[0] = cc[0];
-                                        src = (Leaf) cc[1];
-                                    }
+//                            {
+//                                //HACK experimental rebalance heuristic
+//                                if (size == 2) {
+//                                    final Node[] tgt = {null};
+//                                    Leaf src = null;
+//                                    if (cc[0] instanceof Leaf && !(cc[1] instanceof Leaf) && cc[0].size() <= model.max ) {
+//                                        tgt[0] = cc[1];
+//                                        src = (Leaf) cc[0];
+//                                    } else if (cc[1] instanceof Leaf && !(cc[0] instanceof Leaf) && cc[1].size() <= model.max ) {
+//                                        tgt[0] = cc[0];
+//                                        src = (Leaf) cc[1];
+//                                    }
+//
+//                                    if (tgt[0] !=null) {
+//                                        src.forEach(s -> {
+//                                            boolean[] added = new boolean[2];
+//                                            tgt[0] = tgt[0].add(s, Branch.this, model, added);
+//                                            assert(added[0]);
+//                                        });
+//                                        return tgt[0];
+//                                    }
+//                                }
+//                            }
 
-                                    if (tgt[0] !=null) {
-                                        src.forEach(s -> {
-                                            boolean[] added = new boolean[2];
-                                            tgt[0] = tgt[0].add(s, Branch.this, model, added);
-                                            assert(added[0]);
-                                        });
-                                        return tgt[0];
-                                    }
-                                }
-                            }
+
                             HyperRegion region = cc[0].bounds();
                             for (int j = 1; j < size; j++) {
                                 region = grow(region, cc[j]);
                             }
                             this.bounds = region;
+
                             break;
                         }
 

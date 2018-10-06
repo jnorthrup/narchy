@@ -55,7 +55,7 @@ class AIMATests {
 //        n.beliefPriDefault.set(0.25f);
 //        n.questionPriDefault.set(0.5f);
 
-        n.termVolumeMax.set(14);
+        n.termVolumeMax.set(15);
        // n.log();
 
 
@@ -84,7 +84,7 @@ class AIMATests {
         //n.concept("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").print();
         //n.concept("Criminal").print();
 
-        n.run(9000);
+        n.run(12000);
 //        n.synch();
 
         n.concept(Q).print();

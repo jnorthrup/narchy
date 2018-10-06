@@ -4,7 +4,6 @@ import com.jogamp.opengl.GL2;
 import jcog.exe.Loop;
 import jcog.experiment.TrackXY;
 import jcog.learn.ql.HaiQae;
-import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Tensor;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.SurfaceRender;
@@ -15,20 +14,21 @@ import spacegraph.space2d.widget.chip.SwitchChip;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
-import spacegraph.space2d.widget.port.*;
+import spacegraph.space2d.widget.port.BoolPort;
+import spacegraph.space2d.widget.port.FloatPort;
+import spacegraph.space2d.widget.port.IntPort;
+import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.video.Draw;
 
-import java.util.Random;
-
 import static spacegraph.space2d.container.Gridding.VERTICAL;
 
 public class TensorGlow {
 
-    static final Random rng = new XoRoShiRo128PlusRandom(1);
+//    static final Random rng = new XoRoShiRo128PlusRandom(1);
 
 
     public static void main(String[] args) {

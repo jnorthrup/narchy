@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.meta;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.jogamp.opengl.GL2;
+import jcog.User;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.TensorChain;
@@ -11,6 +12,7 @@ import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
@@ -29,6 +31,7 @@ import spacegraph.video.WebCam;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Supplier;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -36,7 +39,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 /**
  * widget which can become "anything"
  */
-public class ProtoWidget extends Widget {
+public class ProtoWidget extends Bordering {
 
     public static class WidgetLibrary {
 
@@ -146,7 +149,7 @@ public class ProtoWidget extends Widget {
     private ProtoWidget(WidgetLibrary library) {
         super();
 
-        Map<String,Supplier<Surface>> categories = new HashMap<>();
+        Map<String,Supplier<Surface>> categories = new TreeMap<>();
         //categories.put("...", OmniBox::new);
         library.byTag.asMap().forEach((t,v)->{
             Surface[] fields = v.stream()
@@ -192,6 +195,15 @@ public class ProtoWidget extends Widget {
             } else {
                 return new CheckBox(l);
             }
+        }));
+
+        User u = new User();
+        library.byName.forEach((t,v)->{
+           u.put(t, t);
+        });
+
+        set(N, new OmniBox(new OmniBox.LuceneQueryModel(u) {
+
         }));
 
     }

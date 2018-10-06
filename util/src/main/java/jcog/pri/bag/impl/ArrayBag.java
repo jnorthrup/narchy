@@ -185,7 +185,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         final Object[] l = items2.array();
 
         float above = Float.POSITIVE_INFINITY;
-        int mustSort = -1;
+        int mustSortTo = -1;
         int s = size();
         float m = 0;
         for (int i = 0; i < s; ) {
@@ -202,7 +202,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
                 m += p;
                 if (p - above >= ScalarValue.EPSILON)
-                    mustSort = i;
+                    mustSortTo = i;
 
                 above = p;
                 i++;
@@ -225,8 +225,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         }
 
 
-        if (mustSort != -1)
-            sort(0, Math.min(s, mustSort));
+        if (mustSortTo != -1)
+            sort(0, Math.min(s, mustSortTo));
 
         return s;
     }
@@ -344,9 +344,9 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         boolean removed;
         synchronized (items) {
             if (items.get(suspectedPosition) == y) {
-                items.remove(suspectedPosition);
+                    items.remove(suspectedPosition);
                 removeFromMap(y);
-                removed = true;
+                    removed = true;
             } else {
                 removed = false;
             }
@@ -519,6 +519,10 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         Y removed = map.remove(key(x));
         if (removed == null)
             throw new WTF();
+        return removed;
+    }
+    @Nullable private Y tryRemoveFromMap(Y x) {
+        Y removed = map.remove(key(x));
         return removed;
     }
 

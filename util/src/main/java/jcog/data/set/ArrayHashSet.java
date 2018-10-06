@@ -188,7 +188,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
     }
 
-    private void addedUnique(X element) {
+    protected void addedUnique(X element) {
         list.add(element);
     }
 
