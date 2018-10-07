@@ -81,7 +81,9 @@ public final class TruthFunctions {
     public static Truth deduction(Truth a, float bF, float bC, float minConf) {
 
         float f = and(a.freq(), bF);
-        float c = and(f, confCompose(a.conf(), bC));
+        float c = and(f,
+                and(a.conf(), bC)
+        );
 
         return c >= minConf ? t(f, c) : null;
     }
@@ -96,7 +98,7 @@ public final class TruthFunctions {
      */
     @Nullable
     public static Truth analogy(Truth a, float bf, float bc, float minConf) {
-        float c = and(confCompose(a.conf(), bc), bf);
+        float c = and(and(a.conf(), bc), bf);
         return c >= minConf ? t(and(a.freq(), bf), c) : null;
     }
 
@@ -109,7 +111,7 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion, or null if either truth is analytic already
      */
     public static Truth induction(Truth a, Truth b, float minConf) {
-        float c = w2cSafe(confCompose(a, b) * b.freq());
+        float c = w2cSafe(and(a.conf(), b.conf()) * b.freq());
         return c >= minConf ? $.t(a.freq(), c) : null;
     }
 

@@ -20,7 +20,7 @@ public class NAL4Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(4);
-        n.termVolumeMax.set(12);
+        n.termVolumeMax.set(10);
         return n;
     }
 
@@ -178,8 +178,8 @@ public class NAL4Test extends NALTest {
         test
                 .believe("f(x,z)", 1.0f, 0.9f)
                 .believe("f(y,z)", 1.0f, 0.9f)
-                .mustBelieve(CYCLES * 4, "f((x|y),z)", 1.0f, 0.81f)
-                .mustBelieve(CYCLES * 4, "f((x&y),z)", 1.0f, 0.81f)
+                .mustBelieve(CYCLES * 8, "f((x|y),z)", 1.0f, 0.81f)
+                .mustBelieve(CYCLES * 8, "f((x&y),z)", 1.0f, 0.81f)
 //                .mustBelieve(CYCLES*5 , "f((x,z)&(y,z))", 1.0f, 0.81f)
 //                .mustBelieve(CYCLES*5 , "f((x,z)|(y,z))", 1.0f, 0.81f)
         ;

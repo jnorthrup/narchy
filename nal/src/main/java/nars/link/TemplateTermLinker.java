@@ -5,7 +5,6 @@ import jcog.data.NumberX;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.pri.Prioritized;
-import jcog.pri.UnitPri;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -285,22 +284,22 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
         float linkRate = d.nar.activateLinkRate.floatValue();
 
-        List<Concept> firedConcepts = conceptualizeAndTermLink(linkRate, a, d);
+        List<Concept> firedConcepts = conceptualizeAndTermLink(linkRate, a.id, d);
         //default all to all exhausive matrix insertion
         //TODO configurable "termlink target concept x tasklink matrix" linking pattern: density, etc
         if (!firedConcepts.isEmpty()) {
 
-            float linkDecayRate = d.nar.tasklinkDecayRate.floatValue();
-
             for (TaskLink f : d.firedTaskLinks) {
                 NumberX overflow = new MutableFloat(); //keep overflow specific to the tasklink
 
-                UnitPri allocated = new UnitPri();
-                allocated.take(f, linkDecayRate,false,false);
-                //float priDispersed = linkDecayRate * f.priElseZero();
-                //f.priSub(priDispersed);
-                Tasklinks.linkTask((TaskLink.GeneralTaskLink) f,
-                        Math.max(EPSILON, allocated.priElseZero()), firedConcepts, overflow);
+//                UnitPri allocated = new UnitPri();
+//                allocated.take(f, linkDecayRate,false,false);
+//                //float priDispersed = linkDecayRate * f.priElseZero();
+//                //f.priSub(priDispersed);
+//                float p = Math.max(EPSILON, allocated.priElseZero());
+
+                float p = Math.max(EPSILON, f.priElseZero());
+                Tasklinks.linkTask((TaskLink.GeneralTaskLink) f, p, firedConcepts, overflow);
             }
 
         }
@@ -308,7 +307,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
     }
 
-    private List<Concept> conceptualizeAndTermLink(float linkRate, Activate a, Derivation d) {
+    private List<Concept> conceptualizeAndTermLink(float linkRate, Concept src, Derivation d) {
 
 
 
@@ -318,7 +317,6 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
         int n = size();
         if (n > 0) {
 
-            Concept src = a.id;
             NAR nar = d.nar;
 
             n = Math.min(n, Param.TermLinkFanoutMax);

@@ -128,8 +128,7 @@ public class SetSectDiff {
         if (term1.equals(term2))
             return term1;
 
-        Op o1 = term1.op();
-        Op o2 = term2.op();
+        Op o1 = term1.op(), o2 = term2.op();
 
         if ((o1 == setUnion) && (o2 == setUnion)) {
 

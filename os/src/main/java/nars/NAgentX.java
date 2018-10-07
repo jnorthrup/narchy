@@ -19,9 +19,6 @@ import nars.control.DurService;
 import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.impl.MatrixDeriver;
-import nars.derive.impl.SimpleDeriver;
-import nars.derive.premise.PremiseDeriverRuleSet;
-import nars.derive.timing.ActionTiming;
 import nars.exe.Attention;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
@@ -57,9 +54,7 @@ import java.awt.image.BufferedImage;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
-import java.util.stream.StreamSupport;
 
-import static java.util.stream.Collectors.toList;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
@@ -182,18 +177,18 @@ abstract public class NAgentX extends NAgent {
 
             n.runLater(() -> {
 
-                PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8, "motivation.nal");
-                SimpleDeriver motivation = SimpleDeriver.forConcepts(n, rules,
-                        a.actions.stream().collect(toList()),
-                        a.sensors.stream().flatMap(x -> StreamSupport.stream(x.components().spliterator(), false)).map(x -> x.term()).collect(toList()));
-//                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
-//                        rules) {
-////                    @Override
-////                    public float puncFactor(byte conclusion) {
-////                        return conclusion == GOAL ? 1 : 0.5f;
-////                    }
-//                };
-                motivation.timing = new ActionTiming(n);
+//                PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8, "motivation.nal");
+//                SimpleDeriver sd = SimpleDeriver.forConcepts(n, rules,
+//                        a.actions.stream().collect(toList()),
+//                        a.sensors.stream().flatMap(x -> StreamSupport.stream(x.components().spliterator(), false)).map(x -> x.term()).collect(toList()));
+////                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
+////                        rules) {
+//////                    @Override
+//////                    public float puncFactor(byte conclusion) {
+//////                        return conclusion == GOAL ? 1 : 0.5f;
+//////                    }
+////                };
+//                sd.timing = new ActionTiming(n);
 
 
                 window(new Gridding(NARui.agent(a), NARui.top(n)), 1200, 900);

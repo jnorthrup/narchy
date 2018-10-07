@@ -46,8 +46,8 @@ public abstract class Param {
     /** TODO make an abstract TermLinkStrategy class responsible for this */
     @Deprecated public static final int TermLinkFanoutMax =
             //16;
-            10;
-            //8;
+            //10;
+            8;
             //6;
             //2;
             //4;
@@ -192,7 +192,7 @@ public abstract class Param {
      */
     public final FloatRange intermpolationRangeLimit = new FloatRange(0.5f, 0, 1);
 
-    public final FloatRange tasklinkDecayRate = new FloatRange(0.5f, 0, 1);
+
 
     /**
      * creates instance of the default truthpolation implementation

@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * ArrayBag with a randomized sampling range
  */
-public class CurveBag<X extends Priority> extends PriArrayBag<X> {
+@Deprecated public class CurveBag<X extends Priority> extends PriArrayBag<X> {
 
 
     public CurveBag(PriMerge mergeFunction, Map<X, X> map, int cap) {

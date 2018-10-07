@@ -297,7 +297,7 @@ class TermIOTest {
 
         Set<Task> aHas = new HashSet();
 
-        a.tasks().forEach((Task t) -> aHas.add(t) ); 
+        a.tasks().forEach((Task t) -> aHas.add(t) );
 
         assertEquals(count.get(), aHas.size());
 

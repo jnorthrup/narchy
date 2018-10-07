@@ -240,6 +240,17 @@ public class NAL3Test extends NALTest {
 
     }
     @Test
+    void testDisjoint2Learned() {
+
+
+        test
+                .believe("--(x-->ComplexNumber)")
+                .believe("(x-->RealNumber)")
+                .mustBelieve(cycles, "(x-->(RealNumber&ComplexNumber))", 0f, 0.81f);
+        ;
+
+    }
+    @Test
     void testDisjoint3() {
 
         test

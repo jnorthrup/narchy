@@ -26,8 +26,8 @@ import jcog.data.iterator.ArrayIterator;
 import jcog.tree.rtree.util.CounterNode;
 import jcog.tree.rtree.util.Stats;
 
+import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -126,7 +126,7 @@ public class Branch<X> extends AbstractNode<X> {
 
             for (int i = 0; i < size; i++) {
                 Node ci = child[i];
-                if (ci.bounds().contains(tRect)) {
+                if (ci!=null && ci.bounds().contains(tRect)) {
 
 
                     Node m = ci.add(x, null, model, null);
@@ -213,48 +213,91 @@ public class Branch<X> extends AbstractNode<X> {
                         }
                     }
 
-
+                    final Node[] me = new Branch[]{this};
+                    Node[] dd = this.data;
                     switch (size) {
                         case 0:
                             bounds = null;
                             break;
                         case 1:
-                            return data[0]; //reduce to only leaf
+                            return dd[0]; //reduce to only leaf
                         default: {
                             //TODO possibly rebalance
-                            Node[] cc = this.data;
-//                            {
-//                                //HACK experimental rebalance heuristic
-//                                if (size == 2) {
-//                                    final Node[] tgt = {null};
-//                                    Leaf src = null;
-//                                    if (cc[0] instanceof Leaf && !(cc[1] instanceof Leaf) && cc[0].size() <= model.max ) {
-//                                        tgt[0] = cc[1];
-//                                        src = (Leaf) cc[0];
-//                                    } else if (cc[1] instanceof Leaf && !(cc[0] instanceof Leaf) && cc[1].size() <= model.max ) {
-//                                        tgt[0] = cc[0];
-//                                        src = (Leaf) cc[1];
-//                                    }
+
+//                            int min = model.min;
 //
-//                                    if (tgt[0] !=null) {
-//                                        src.forEach(s -> {
-//                                            boolean[] added = new boolean[2];
-//                                            tgt[0] = tgt[0].add(s, Branch.this, model, added);
-//                                            assert(added[0]);
-//                                        });
-//                                        return tgt[0];
+//
+//                            if (min > 1) {
+//                                MetalBitSet b = MetalBitSet.bits(size);
+//                                for (int n = 0; n < size; n++) {
+//                                    if (dd[n].size() < min)
+//                                        b.set(n);
+//                                }
+//                                int toRemove = b.cardinality();
+//                                if (toRemove > 0) {
+//                                        for (int n = 0; n < size; n++) {
+//                                            if (b.get(n)) {
+//                                                Node ddd = dd[n];
+//                                                dd[n] = null;
+//
+//                                                ddd.streamValues().forEach(zzz->{
+//                                                    Node mm = me[0].add(zzz, null, model, new boolean[1]);
+//                                                    if (mm!=null)
+//                                                        me[0] = mm;
+//                                                });
+//                                            }
+//                                        }
+//                                        Arrays.sort(dd, NullCompactingComparator);
+//                                        int newSize = ArrayUtils.indexOf(dd, null);
+//                                        if (newSize == -1)
+//                                            newSize = dd.length;
+//                                        size = (short) newSize;
+//
+//
 //                                    }
 //                                }
+//
+////                            {
+////                                //HACK experimental rebalance heuristic
+////                                if (size == 2) {
+////                                    final Node[] tgt = {null};
+////                                    Leaf src = null;
+////                                    if (cc[0] instanceof Leaf && !(cc[1] instanceof Leaf) && cc[0].size() <= model.max ) {
+////                                        tgt[0] = cc[1];
+////                                        src = (Leaf) cc[0];
+////                                    } else if (cc[1] instanceof Leaf && !(cc[0] instanceof Leaf) && cc[1].size() <= model.max ) {
+////                                        tgt[0] = cc[0];
+////                                        src = (Leaf) cc[1];
+////                                    }
+////
+////                                    if (tgt[0] !=null) {
+////                                        src.forEach(s -> {
+////                                            boolean[] added = new boolean[2];
+////                                            tgt[0] = tgt[0].add(s, Branch.this, model, added);
+////                                            assert(added[0]);
+////                                        });
+////                                        return tgt[0];
+////                                    }
+////                                }
+////                            }
+//
+//
+//                            if (me[0]==this) {
+//                                if (size==0)
+//                                    return null;
+//                                if (size==1)
+//                                    return dd[0];
+//                                //recalculate
+//                                HyperRegion region = dd[0].bounds();
+//                                for (int j = 1; j < size; j++) {
+//                                    region = grow(region, dd[j]);
+//                                }
+//                                this.bounds = region;
+//
+//                                return this;
+//                            } else {
+//                                return me[0];
 //                            }
-
-
-                            HyperRegion region = cc[0].bounds();
-                            for (int j = 1; j < size; j++) {
-                                region = grow(region, cc[j]);
-                            }
-                            this.bounds = region;
-
-                            break;
                         }
 
                     }
@@ -427,9 +470,9 @@ public class Branch<X> extends AbstractNode<X> {
     @Override
     public Stream<X> streamValues() {
         //TODO optimize
-        return size() > 1 ? streamNodes().flatMap(
+        return streamNodes().flatMap(
                 x -> x!=null ? ((Node)x).streamValues() : Stream.empty()
-        ).filter(Objects::nonNull) : data[0].streamValues();
+        );
     }
 
 
@@ -460,5 +503,24 @@ public class Branch<X> extends AbstractNode<X> {
         return "Branch" + '{' + bounds + 'x' + size + ":\n\t" + Joiner.on("\n\t").skipNulls().join(data) + "\n}";
     }
 
+
+    private static final Comparator NullCompactingComparator = new Comparator() {
+        @Override
+        public int compare(Object o1, Object o2) {
+            if (o1 == null && o2 == null || o1 == o2) {
+                return 0;
+            }
+            if (o1 == null) {
+                return 1;
+            }
+            if (o2 == null) {
+                return -1;
+            }
+            return Integer.compare(
+                    System.identityHashCode(o1),
+                    System.identityHashCode(o2)
+            );
+        }
+    };
 
 }

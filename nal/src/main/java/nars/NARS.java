@@ -134,8 +134,8 @@ public class NARS {
 
                 n.beliefPriDefault.set(0.5f);
                 n.goalPriDefault.set(0.5f);
-                n.questionPriDefault.set(0.25f);
-                n.questPriDefault.set(0.25f);
+                n.questionPriDefault.set(0.1f);
+                n.questPriDefault.set(0.1f);
 
 //                n.emotion.want(MetaGoal.Perceive, -0.01f);
 //                n.emotion.want(MetaGoal.Believe, 0.1f);
@@ -177,21 +177,21 @@ public class NARS {
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
 
-        attention(()->new Attention(128));
+        attention(()->new Attention(64));
 
         conceptBuilder = ()->new DefaultConceptBuilder(
                 new ConceptAllocator(
                         //beliefs ete
                         curve(Concept::volume,
                         1, 8,
-                                16, 6,
-                                32, 3
+                                12, 5,
+                                18, 3
                         ),
                         //beliefs tmp
                         curve(Concept::volume,
                                 1, 64,
                                 16, 32,
-                                32, 16
+                                32, 8
                         ),
                         //goals ete
                         curve(Concept::volume,
@@ -203,7 +203,7 @@ public class NARS {
                         curve(Concept::volume,
                                 1, 64,
                                 16, 32,
-                                32, 16
+                                32, 8
                         ),
                         //questions
                         curve(Concept::volume,
@@ -219,14 +219,14 @@ public class NARS {
                         ),
                         //termlinks
                         curve(Concept::volume,
-                                1, 32,
+                                1, 64,
                                 8,24,
                                 24,16,
                                 48,12
                         ),
                         //tasklinks
                         curve(Concept::volume,
-                                1, 32,
+                                1, 64,
                                 8,24,
                                 24,16,
                                 48,12

@@ -14,7 +14,6 @@ import jcog.pri.bag.Sampler;
 import jcog.pri.op.PriMerge;
 import jcog.sort.SortedArray;
 import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -37,7 +36,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     private static final AtomicFloatFieldUpdater<ArrayBag> PRESSURE =
             new AtomicFloatFieldUpdater(ArrayBag.class, "pressure");
 
-    static final int SAMPLE_CONTIGUOUS_RUN = 3;
+
 
     final PriMerge mergeFunction;
 
@@ -45,8 +44,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
     protected ArrayBag(PriMerge mergeFunction, int capacity) {
         this(mergeFunction,
-                //new HashMap<>(capacity, 0.99f)
-                new UnifiedMap<>(capacity, 0.99f)
+                new HashMap<>(capacity, 0.99f)
+                //new UnifiedMap<>(capacity, 0.99f)
         );
         setCapacity(capacity);
     }
@@ -248,11 +247,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             int i = -1;
             while ((s = Math.min((ii = items.array()).length, size())) > 0) {
 
-                if (i < 0) {
-                    i = sampleStart(rng, s);
-                } else {
-                    i = sampleNext(rng, s, i);
-                }
+                i = sampleNext(rng, s);
 
                 Object x = ii[i];
 
@@ -283,48 +278,40 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     /**
      * size > 0
      */
-    protected static int sampleStart(@Nullable Random rng, int size) {
+    protected int sampleNext(@Nullable Random rng, int size) {
         assert (size > 0);
         if (size == 1 || rng == null)
             return 0;
         else {
-//            float min = this.priMin();
-//            float max = this.priMax();
-//            float diff = max - min;
-//            if (diff > Prioritized.EPSILON * size) {
-            float i = rng.nextFloat();
+            float min = this.priMin(), max = this.priMax();
+            float diff = max - min;
 
-            //i = Util.lerp(diff, i /* flat */, (i * i) /* curved */);
-            i = (i * i);
+            float h = rng.nextFloat();
 
-            return Util.clamp(0, Math.round(i * (size - 1)), size - 1);
-//            } else {
-//                return random.nextInt(size);
-//            }
+            float i = Util.lerp(diff, h /* flat */, (h * h) /* curved */);
+
+            int j = Math.round(i * (size-0.5f));
+            //assert(j >= 0 && j < size);
+            return j;
         }
     }
 
-    protected static int sampleNext(@Nullable Random rng, int size, int i) {
-        if (rng == null) {
-            if (++i >= size)
-                i = 0;
-
-            return i;
-        } else {
-
-            float runLength = SAMPLE_CONTIGUOUS_RUN;
-            float restartProb = (1f / (1 + runLength));
-            if (rng.nextFloat() < restartProb) {
-                return sampleStart(rng, size);
-            }
-
-            if (--i >= 0)
-                return i; //decrease toward high end
-            else
-                return sampleStart(rng, size);
-        }
-
-    }
+//    protected int sampleNext(@Nullable Random rng, int size, int i) {
+//        if (rng == null) {
+//            if (++i >= size)
+//                i = 0;
+//
+//            return i;
+//        } else {
+//
+//
+//            if (--i >= 0)
+//                return i; //decrease toward high end
+//            else
+//                return sampleStart(rng, size);
+//        }
+//
+//    }
 
     @Nullable
     @Override

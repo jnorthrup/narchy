@@ -404,9 +404,12 @@ abstract public class MultiExec extends UniExec {
                 double granularity = can.size();
 
                 //autojiffy
-                double jiffies = granularity/concurrency() //((double)granularity) * Math.max(1, (granularity - 1)) / concurrency();
-                                 * 2
+                double jiffies = granularity/(0.5f*concurrency()) //((double)granularity) * Math.max(1, (granularity - 1)) / concurrency();
                         ;
+                double jiffyTime = playTime / jiffies;
+                double minJiffyTime = jiffyTime;
+                double maxJiffyTime = playTime;
+
                 while (queueSafe() && (until > System.nanoTime())) {
                     //int ii = i;
                     InstrumentedCausable c = can.getIndex(rng);
@@ -421,16 +424,11 @@ abstract public class MultiExec extends UniExec {
                     if (!singleton || c.c.instance.tryAcquire()) {
                         try {
 
-                            double timeRemain = (until - System.nanoTime());
-                            double jiffyUntilPlayEnd = timeRemain / jiffies;
-                            if (jiffyUntilPlayEnd >= 0.5f) {
+                            long runtimeNS =
+                                    Math.round(Util.lerp(c.pri(), minJiffyTime, maxJiffyTime));
+                            if (runtimeNS > 0)
+                                c.runUntil(System.nanoTime(), runtimeNS);
 
-
-                                long runtimeNS =
-                                        Math.round(Math.min(timeRemain, timeRemain * ((c.pri() * granularity) / jiffies) ));
-                                if (runtimeNS > 0)
-                                    c.runUntil(System.nanoTime(), runtimeNS);
-                            }
 //                            if (c.c.sleeping(nar))
 //                                sleeping.set(id, true);
 
