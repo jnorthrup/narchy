@@ -15,6 +15,7 @@ public class SlidingDFTTensor extends ArrayTensor {
         super(fftSize+2); //todo maybe 2 separate dims, amp/phase
         this.src = wave;
         this.dft = new SlidingDFT(fftSize, 1);
+        update();
     }
 
     public void update() {

@@ -15,4 +15,17 @@ public class FunctionChip<X,Y> extends AbstractFunctionChip<X,Y> {
         return f;
     }
 
+    public FunctionChip<X,Y> buffered() {
+        return new FunctionChip<>(new Function<>() {
+            X last = null;
+            Y lastY = null;
+
+            @Override
+            public Y apply(X xx) {
+                if (last == xx)
+                    return lastY;
+                return lastY = f.apply(last = xx);
+            }
+        });
+    }
 }

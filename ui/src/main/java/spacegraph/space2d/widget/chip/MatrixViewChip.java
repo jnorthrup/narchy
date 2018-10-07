@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget.chip;
 
+import jcog.Util;
 import jcog.signal.Tensor;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Gridding;
@@ -40,7 +41,7 @@ public class MatrixViewChip extends Bordering {
                            shape.length == 2 ? new BitmapMatrixView(shape[0], shape[1],
                                    (cx, cy) -> Draw.rgbInt(x.get(cx, cy), 0, 0)) :
                                    new BitmapMatrixView(shape[0], 1,
-                                           (cx, cy) -> Draw.rgbInt(x.get(cx), 0, 0));
+                                           (cx, cy) -> Draw.rgbInt(Util.tanhFast(x.get(cx))/2+0.5f, 0, 0));
                }
                set(matrix);
                layout();

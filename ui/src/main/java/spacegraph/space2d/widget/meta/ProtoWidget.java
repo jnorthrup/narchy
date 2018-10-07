@@ -10,8 +10,6 @@ import jcog.signal.tensor.TensorChain;
 import jcog.signal.wave1d.HaarWaveletTensor;
 import jcog.signal.wave1d.SlidingDFTTensor;
 import org.eclipse.collections.api.tuple.Pair;
-import spacegraph.audio.AudioSource;
-import spacegraph.audio.WaveCapture;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
@@ -68,13 +66,7 @@ public class ProtoWidget extends Bordering {
         add("WebCam", () -> {
             return new WebcamChip();
         }, "Video");
-        add("Microphone", ()->{
-            {
-                WaveCapture au = new WaveCapture(new AudioSource(20), 4f);
-                au.setFPS(20f);
-                return au.view();
-            }
-        }, "Audio");
+        add("Microphone", AudioCaptureChip::new, "Audio");
 
         add("int", IntPort::new, "Value");
         add("float", FloatPort::new, "Value");
@@ -108,11 +100,11 @@ public class ProtoWidget extends Bordering {
             }
         }), "Tensor");
         add("HaarWavelet", ()->new FunctionChip<>((Tensor t)->{
-            return new HaarWaveletTensor(t, 8);
-        }), "Tensor");
+            return new HaarWaveletTensor(t, 64);
+        }).buffered(), "Tensor");
         add("SlidingDFT", ()->new FunctionChip<>((Tensor t)->{
-            return new SlidingDFTTensor(t, 8);
-        }), "Tensor");
+            return new SlidingDFTTensor(t, 64);
+        }).buffered(), "Tensor");
 
 
         add("mix", TODO, "Audio");

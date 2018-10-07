@@ -15,12 +15,14 @@ public class HaarWaveletTensor extends ArrayTensor {
     public HaarWaveletTensor(Tensor wave, int size) {
         super(Util.largestPowerOf2NoGreaterThan(size) /* specific to haar */);
         this.src = wave;
+        update();
     }
 
     private float[] tmp;
     public void update() {
-        if(tmp==null || tmp.length!=data.length) {
-            tmp = new float[data.length];
+        int v = Util.largestPowerOf2NoGreaterThan(src.volume())*2;
+        if(tmp==null || tmp.length!= v) {
+            tmp = new float[v];
         } else {
             Arrays.fill(tmp, 0);
         }
@@ -28,7 +30,8 @@ public class HaarWaveletTensor extends ArrayTensor {
         src.writeTo(tmp);
 
         OneDHaar.inPlaceFastHaarWaveletTransform(tmp);
-        System.arraycopy(tmp, 0, data, 0, tmp.length);
+        System.arraycopy(tmp, 0, data, 0, Math.min(data.length, tmp.length));
+        //TODO fill 0s elsewhere
     }
 
 }

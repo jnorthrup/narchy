@@ -1,12 +1,11 @@
 package spacegraph.space2d.widget.chip;
 
 import com.jogamp.newt.event.KeyEvent;
-import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.port.TypedPort;
-import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 
-public class KeyboardChip extends Bordering {
+public class KeyboardChip extends Stacking {
 
     private final VectorLabel txt;
     private final TypedPort<Integer> out;
@@ -14,10 +13,7 @@ public class KeyboardChip extends Bordering {
     public KeyboardChip() {
         super();
 
-        set(txt = new VectorLabel());
-        set(S, new LabeledPane("out", out = new TypedPort<>(Integer.class)), 0.1f);
-
-
+        set(out = new TypedPort<>(Integer.class), txt = new VectorLabel());
     }
 
     @Override

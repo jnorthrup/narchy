@@ -118,8 +118,9 @@ public class Cluster2DChip extends Bordering {
     protected void starting() {
         super.starting();
         update = root().animate((dt) -> {
-            assert (visible());
-            centroids.update(g);
+            //if (visible()) {
+                centroids.update(g);
+            //}
 //            for (Centroid c : g.centroids) {
 //                float a = (float) (1.0 / (1 + c.localError()));
 //                ae.put(Util.toFloat(c.getDataRef()), a * 0.05f, 0.001f, 0, false);
