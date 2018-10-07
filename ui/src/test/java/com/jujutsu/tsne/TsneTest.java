@@ -26,6 +26,7 @@ public class TsneTest {
     //TODO dynamic perplexity control
     public static class TsneModel implements Graph2D.Graph2DUpdater<Schema.Instance> {
 
+        public final int iters = 1;
         public final FloatRange spaceScale = new FloatRange(0.2f, 0.001f, 100);
         public final FloatRange nodeScale = new FloatRange(1f, 0, 10);
 
@@ -39,7 +40,7 @@ public class TsneTest {
         }
 
         final TSneConfig config = new TSneConfig(
-                 2, 4,
+                 2, 15,
                 false, true
         );
 
@@ -75,11 +76,11 @@ public class TsneTest {
             nn.clear();
 
 
-            double[][] Y = s.next(1);
+            double[][] Y = s.next(iters);
             int j = 0;
 
 //            int n = X.length;
-            float space = 1; //(float) Math.sqrt(n+1)*100f;
+            float space = 100; //(float) Math.sqrt(n+1)*100f;
             double cx = g.cx(), cy = g.cy();
             float scale = spaceScale.floatValue() * Math.max(g.w(), g.h()) / space;
             float nodeScale = this.nodeScale.floatValue();
@@ -146,7 +147,7 @@ public class TsneTest {
 
             SpaceGraph.window(
                 new Graph2D<Schema.Instance>().
-                    update(new TsneModel(1, 4)).
+                    update(new TsneModel(0, data.attrCount())).
                     render(new TsneRenderer() {
                         @Override protected void paintNode(GL2 gl, Surface surface, Schema.Instance id) {
                             float score = ((Double)(id.data.get(0))).floatValue();

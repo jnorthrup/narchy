@@ -37,7 +37,7 @@
 
 
 
-  (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,strict), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
+  //(&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,strict), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
   //chain:
   //(&&,(X<->Y),(Y<->Z),A..+), (X<->Y) |- substitute(substitute((&&,A..+),X,Z,strict),Y,Z,strict), (Belief:StructuralDeductionWeak, Goal:StructuralWeak)
 

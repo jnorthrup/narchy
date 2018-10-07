@@ -40,10 +40,10 @@ class NARTestOptimize {
                         (NAR n, float f) -> n.termlinkBalance.set(f))
 //                .var("termlinkFanOut", 2, 16, 1,
 //                        (NAR n, int f) -> Param.TermLinkFanoutMax = f)
-//                .var("activationRate", 0, 1f, 0.1f,
-//                            (NAR n, float f) -> n.activateConceptRate.set(f))
-//                .var("forgetRate", 0, 1f, 0.1f,
-//                        (NAR n, float f) -> n.forgetRate.set(f))
+                .var("activationRate", 0, 1f, 0.1f,
+                            (NAR n, float f) -> n.activateConceptRate.set(f))
+                .var("forgetRate", 0, 1f, 0.1f,
+                        (NAR n, float f) -> n.forgetRate.set(f))
 //                .var("beliefPriDefault", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.beliefPriDefault.set(f))
 //                .var("questionPriDefault", 0, 1f, 0.1f,
@@ -75,16 +75,16 @@ class NARTestOptimize {
                 (TestNARSuite t) -> (float) t.score()
             , samples);
 
-            o
-//            .sense("numConcepts",
-//                (TestNARSuite t) -> t.sum((NAR n) -> n.concepts.size()))
-            .sense("derivedTask",
-                (TestNARSuite t) -> t.sum((NAR n)->n.emotion.deriveTask.getValue()))
-            .sense("duplicateTask",
-                    (TestNARSuite t) -> t.sum((NAR n)->
-                            n.emotion.deriveFailParentDuplicate.getValue()) +
-                            t.sum((NAR n) -> n.emotion.deriveFailDerivationDuplicate.getValue())
-            );
+//            o
+////            .sense("numConcepts",
+////                (TestNARSuite t) -> t.sum((NAR n) -> n.concepts.size()))
+//            .sense("derivedTask",
+//                (TestNARSuite t) -> t.sum((NAR n)->n.emotion.deriveTask.getValue()))
+//            .sense("duplicateTask",
+//                    (TestNARSuite t) -> t.sum((NAR n)->
+//                            n.emotion.deriveFailParentDuplicate.getValue()) +
+//                            t.sum((NAR n) -> n.emotion.deriveFailDerivationDuplicate.getValue())
+//            );
 
             o.runSync().print();
 

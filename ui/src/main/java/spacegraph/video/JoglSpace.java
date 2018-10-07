@@ -4,7 +4,6 @@ import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.Threading;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.math.FloatUtil;
 import jcog.data.list.FastCoWList;

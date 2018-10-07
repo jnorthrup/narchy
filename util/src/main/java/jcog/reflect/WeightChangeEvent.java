@@ -25,9 +25,6 @@
 package jcog.reflect;
 
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * Сообщение о изменении веса
  *

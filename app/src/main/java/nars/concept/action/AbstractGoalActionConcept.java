@@ -148,15 +148,17 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
     @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
-        SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd);
+        if (goal!=null) {
+            SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd);
 
-        if (curiosity!=null) {
-            curiosity.pri(n.priDefault(GOAL));
-            return curiosity;
-            //return curiosity.input(c);
-        } else {
-            return null;
+            if (curiosity != null) {
+                curiosity.pri(n.priDefault(GOAL));
+                return curiosity;
+                //return curiosity.input(c);
+            }
         }
+
+        return null;
 
     }
 

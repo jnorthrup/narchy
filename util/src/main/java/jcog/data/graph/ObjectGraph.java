@@ -1,6 +1,5 @@
 package jcog.data.graph;
 
-import jcog.TODO;
 import jcog.data.list.FasterList;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.list.mutable.FastList;
@@ -260,12 +259,12 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
 
         @Override
         Object get(Object container) {
-            throw new TODO();
+            return Array.get(container, index);
         }
 
         @Override
         void set(Object container, Object value) {
-            throw new TODO();
+            Array.set(container, index, value);
         }
     }
 }

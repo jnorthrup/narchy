@@ -25,9 +25,9 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
     public final FloatRange eviRetention = new FloatRange(1f, 0f, 1f);
 
     /** importance of frequency polarity in result (distance from freq=0.5) */
-    public final FloatRange polarityImportance = new FloatRange(0.1f, 0f, 1f);
+    public final FloatRange polarityImportance = new FloatRange(0f, 0f, 1f);
 
-    public final FloatRange relGrowthExponent = new FloatRange(2f, 0f, 8f);
+    public final FloatRange relGrowthExponent = new FloatRange(3f, 0f, 8f);
 
     @Override
     public float pri(Task t, float f, float e, Derivation d) {

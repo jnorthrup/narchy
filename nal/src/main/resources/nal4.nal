@@ -21,7 +21,7 @@
 //(P-->I), (R-->I), is(P,"*"), subsMin(P,2), subsMin(R,2), neqAndCom(P,R) |- ...
 
 ////composition on both sides of a statement
-    ((X,P) --> ?Z) , (X --> Y), task("?") |- ((B,P) --> (A,P)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+    ((X,P) --> Z), (X --> Y), is(Z,"?"), task("?") |- ((B,P) --> (A,P)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
     //TODO generalize: imageComposition(A,X,B,Y)
     ((X,P) --> (Y,P)) , (X --> Y), neq(X,\), neq(Y,\), neq(X,/), neq(Y,/), task("?") |- ((X,P) --> (Y,P)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
     ((P,X) --> (P,Y)) , (X --> Y), neq(X,\), neq(Y,\), neq(X,/), neq(Y,/), task("?") |- ((P,X) --> (P,Y)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)

@@ -771,7 +771,7 @@ public enum Draw {
     }
 
     public static int rgbInt(float r, float g, float b) {
-        return ((int) (255 * r) << 16) | ((int) (255 * g) << 8) | ((int) (255 * b));
+        return (0xff << 24) | ((int) (255 * r) << 16) | ((int) (255 * g) << 8) | ((int) (255 * b));
     }
 
     public static void colorUnipolarHue(GL2 gl, float v, float hueMin, float hueMax) {

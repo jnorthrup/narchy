@@ -2,6 +2,8 @@ package spacegraph.space2d.widget.text;
 
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.container.Stacking;
+import spacegraph.video.ImageTexture;
 
 public class LabeledPane extends Splitting {
 
@@ -13,4 +15,7 @@ public class LabeledPane extends Splitting {
         super(label, content, 0.9f);
     }
 
+    public static Surface awesome(Surface x, String icon) {
+        return new Stacking(x, ImageTexture.awesome(icon).view(1));
+    }
 }

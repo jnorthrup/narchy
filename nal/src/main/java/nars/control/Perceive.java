@@ -4,12 +4,10 @@ import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Op;
-import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.control.proto.Reaction;
-import nars.op.stm.ConjClustering;
 import nars.task.ITask;
 import nars.term.Functor;
 import nars.term.Term;
@@ -26,8 +24,6 @@ import java.util.Collection;
 import java.util.List;
 
 import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
 
 /** transforms an input task into any smaller sub-tasks that constitute the perception process */
 public enum Perceive { ;
@@ -116,18 +112,6 @@ public enum Perceive { ;
                 return false;
         }
 
-
-
-        if (tto == CONJ) {
-            if (((punc == BELIEF && Param.AUTO_DECOMPOSE_CONJ_BELIEF) || (punc == GOAL && Param.AUTO_DECOMPOSE_CONJ_GOAL))) {
-                if (!(tt instanceof ConjClustering.STMClusterTask)) { //HACK
-                    int dt = tt.dt();
-                    if ((dt != DTERNAL && dt != XTERNAL) && !t.isEternal()) {
-                        conjDecompose(t, queue, n);
-                    }
-                }
-            }
-        }
 
         return true;
     }

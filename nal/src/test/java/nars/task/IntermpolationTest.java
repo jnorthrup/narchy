@@ -148,10 +148,16 @@ public class IntermpolationTest {
     }
 
     @Test
+    void testImplSimple() throws Narsese.NarseseException {
+        Compound a = $.$("(a ==>+4 b)");
+        Compound b = $.$("(a ==>+2 b))");
+        RevisionTest.permuteChoose(a, b, "[(a ==>+3 b)]");
+    }
+    @Test
     void testIntermpolationImplDirectionDternalAndTemporal() throws Narsese.NarseseException {
         Compound a = $.$("(a ==>+1 b)");
         Compound b = $.$("(a ==> b))");
-        RevisionTest.permuteChoose(a, b, "[(a==>b), (a ==>+1 b)]");
+        RevisionTest.permuteChoose(a, b, "[(a==>b)]");
     }
 
     @Test

@@ -116,10 +116,19 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
             Object guess = s.get(example);
 
 
-            min[i] = s.getMin();
-            max[i] = s.getMax();
-            mid[i] = guess != null ? Util.clamp((float) guess, min[i], max[i]) : (max[i] + min[i]) / 2f;
-            inc[i] = s.getInc();
+            double mi = min[i] = s.getMin();
+            double ma = max[i] = s.getMax();
+            double inc = this.inc[i] = s.getInc();
+
+            if (guess!=null && (mi!=mi || ma!=ma || inc!=inc)) {
+                float x = (float)guess;
+                //HACK assumption
+                mi = min[i] = x/2;
+                ma = max[i] = x*2;
+                inc = this.inc[i] = x/4;
+            }
+
+            mid[i] = guess != null ? Util.clamp((float) guess, mi, ma) : (mi + ma) / 2f;
 
             if (!(mid[i] >= min[i]))
                 throw new WTF();

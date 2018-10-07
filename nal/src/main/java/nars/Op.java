@@ -323,7 +323,7 @@ public enum Op {
 
     public static TermBuilder terms =
             //HeapTermBuilder.the;
-            new InterningTermBuilder();
+            new InterningTermBuilder("", 32*1024);
 
 
 

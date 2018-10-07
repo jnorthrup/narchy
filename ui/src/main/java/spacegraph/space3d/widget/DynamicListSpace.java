@@ -1,7 +1,7 @@
 package spacegraph.space3d.widget;
 
-import spacegraph.space2d.container.layout.EdgeDirected3D;
 import spacegraph.space2d.container.Flatten;
+import spacegraph.space2d.container.layout.EdgeDirected3D;
 import spacegraph.space3d.AbstractSpace;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.Spatial;

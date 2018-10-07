@@ -24,16 +24,16 @@ public class SimpleTSne implements TSne {
     private double[][] iY;
     protected double[][] gains;
 
-    private double momentum = .5;
+    private double momentum = .85;
 
     private double eta =
-            0.1f;
+            //0.1f;
             //0.5;
-            //1f;
+            1f;
 
     private double min_gain =
             //Double.MIN_NORMAL;
-            ScalarValue.EPSILON;
+            ScalarValue.EPSILONsqrt;
             //0.01f;
 
     private double[][] numMatrix;

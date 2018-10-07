@@ -51,7 +51,7 @@ public class FloatVar<X> extends Var<X,Float> {
         this.inc = unknown(this.inc, "inc", hints, unknown);
         if (this.inc!=this.inc && (max==max) && (min==min)) {
             
-            float autoInc = (Float)hints.getOrDefault("autoInc", Float.NaN);
+            float autoInc = ((Number)hints.getOrDefault("autoInc", Float.NaN)).floatValue();
             if (autoInc==autoInc) {
                 this.inc = (max-min)/autoInc;
                 unknown.removeLast();

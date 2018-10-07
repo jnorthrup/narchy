@@ -153,7 +153,8 @@ abstract public class Surface implements SurfaceBase {
     public boolean start(SurfaceBase parent) {
         assert(parent!=null);
         SurfaceBase p = PARENT.getAndSet(this, parent);
-        if (p == null || p == parent) {
+        if (p!=parent) {
+        //if (p == null || p == parent) {
             synchronized (this) {
                 starting();
             }
@@ -173,8 +174,8 @@ abstract public class Surface implements SurfaceBase {
 
     public boolean stop() {
         if (PARENT.getAndSet(this, null) != null) {
-            showing = false;
             synchronized (this) {
+                showing = false;
                 stopping();
             }
             return true;

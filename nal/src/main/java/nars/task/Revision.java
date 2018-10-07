@@ -159,8 +159,8 @@ public class Revision {
 
         } else if (adt == DTERNAL || bdt == DTERNAL) {
 
-            dt = adt == DTERNAL ? bdt : adt;
-            //dt = DTERNAL;
+            dt = DTERNAL;
+            //dt = adt == DTERNAL ? bdt : adt;
             //dt = choose(adt, bdt, aProp, nar.random());
 
         } else {
@@ -245,7 +245,7 @@ public class Revision {
 
         //allow overlap if the time ranges are disjoint
         if (Stamp.overlapsAny((Task)x, (Task)y))
-            if (Longerval.intersectLength(xs, x.end(), y.start(), y.end()) > 0)
+            if (Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME && Longerval.intersectLength(xs, x.end(), y.start(), y.end()) > 0)
                 return null;
 
         return merge(nar, new TaskRegion[] { x, y });

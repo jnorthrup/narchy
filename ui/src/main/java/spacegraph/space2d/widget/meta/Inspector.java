@@ -6,8 +6,8 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Container;
-import spacegraph.space2d.container.layout.ForceDirected2D;
 import spacegraph.space2d.container.Graph2D;
+import spacegraph.space2d.container.layout.ForceDirected2D;
 
 /** debugging/meta-view */
 public class Inspector extends Bordering {

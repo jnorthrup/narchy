@@ -219,17 +219,17 @@ public class NARS {
                         ),
                         //termlinks
                         curve(Concept::volume,
-                                1, 64,
-                                8,48,
-                                24,32,
-                                48,16
+                                1, 32,
+                                8,24,
+                                24,16,
+                                48,12
                         ),
                         //tasklinks
                         curve(Concept::volume,
-                                1, 64,
-                                8,48,
-                                24,32,
-                                48,16
+                                1, 32,
+                                8,24,
+                                24,16,
+                                48,12
                         ))
         );
 

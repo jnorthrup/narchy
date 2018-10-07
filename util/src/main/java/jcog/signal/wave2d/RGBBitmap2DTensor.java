@@ -15,10 +15,10 @@ public class RGBBitmap2DTensor extends Bitmap2DTensor {
     public float get(int... cell) {
         int x = cell[0];
         int y = cell[1];
-        int plane = cell[2];
 
         int p = img.getRGB(x, y);
 
+        int plane = cell[2];
         switch (plane) {
             case 0:
                 return Bitmap2D.decode8bRed(p);

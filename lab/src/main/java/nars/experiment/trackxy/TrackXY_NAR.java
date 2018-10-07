@@ -3,6 +3,8 @@ package nars.experiment.trackxy;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.experiment.TrackXY;
+import jcog.lab.Lab;
+import jcog.lab.util.Optimization;
 import jcog.learn.ql.HaiQae;
 import jcog.math.FloatNormalized;
 import jcog.tree.rtree.rect.RectFloat;
@@ -23,12 +25,15 @@ import nars.task.DerivedTask;
 import nars.time.clock.CycleTime;
 import nars.video.CameraSensorView;
 import org.eclipse.collections.impl.block.factory.Comparators;
+import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.video.Draw;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static nars.Op.*;
@@ -40,6 +45,7 @@ public class TrackXY_NAR extends NAgentX {
 
     final Bitmap2DSensor cam;
     private final TrackXY track;
+    private float rewardSum = 0;
 
     protected TrackXY_NAR(NAR nar, int W, int H) {
         super("trackXY",
@@ -72,7 +78,12 @@ public class TrackXY_NAR extends NAgentX {
         actionTriState();
 
 
-        reward(track::act);
+        reward(() -> {
+            float r = track.act();
+            if (r == r)
+                rewardSum += r;
+            return r;
+        });
 
         track.randomize();
 
@@ -85,7 +96,7 @@ public class TrackXY_NAR extends NAgentX {
         boolean nars = true, rl = false;
 //        boolean rl = false;
 
-        Param.DEBUG = true;
+//        Param.DEBUG = true;
         int W = 4;
         int H = 4;
         int dur =
@@ -288,14 +299,14 @@ public class TrackXY_NAR extends NAgentX {
     private void actionTriState() {
 
         if (track.grid.height() > 1) {
-            actionTriState($.inh($.the("Y"), id), (dy) -> {
+            actionTriState($.p($.the("Y"), id), (dy) -> {
                 float py = track.cy;
                 track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue() * dy, 0, track.grid.height() - 1);
                 return !Util.equals(py, track.cy, 0.01f);
             });
         }
 
-        actionTriState($.inh($.the("X"), id), (dx) -> {
+        actionTriState($.p($.the("X"), id), (dx) -> {
             float px = track.cx;
             track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue() * dx, 0, track.grid.width() - 1);
             return !Util.equals(px, track.cx, 0.01f);
@@ -341,5 +352,48 @@ public class TrackXY_NAR extends NAgentX {
         });
     }
 
+    static class Optimize {
+        public static void main(String[] args) {
+            Lab<NAR> l = new Lab<>(() -> {
+                NAR n = NARS.tmp();
+                n.random().setSeed(System.nanoTime());
+                return n;
+            });
+            l.hints.put("autoInc", 3);
+            l.varAuto(new Lab.DiscoveryFilter() {
+                @Override
+                protected boolean includeField(Field f) {
+                    if (f.getName().startsWith("DEBUG"))
+                        return false;
+
+                    return super.includeField(f);
+                }
+            });
+
+            int experiments = 256;
+            int experimentCycles = 4096;
+
+            Optimization<NAR, TrackXY_NAR> o = l.optimize((Supplier<NAR> s) -> {
+                        return new TrackXY_NAR(s.get(), 4, 4);
+                    },
+                    (TrackXY_NAR t) -> {
+                        t.nar.run(experimentCycles);
+                        return t.rewardSum;
+                    }
+                    , experiments);
+////            o.sense("numConcepts",
+////                (TestNARSuite t) -> t.sum((NAR n) -> n.concepts.size()))
+//                    .sense("derivedTask",
+//                            (TestNARSuite t) -> t.sum((NAR n)->n.emotion.deriveTask.getValue()))
+
+            o.runSync().print();
+
+            RealDecisionTree t = o.tree(4, 8);
+            t.print();
+            t.printExplanations();
+
+
+        }
+    }
 
 }

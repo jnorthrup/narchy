@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.chip;
 
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.port.Port;
+import spacegraph.space2d.widget.text.LabeledPane;
 
 import java.util.function.Function;
 
@@ -21,7 +22,7 @@ abstract public class AbstractFunctionChip<X,Y> extends Gridding {
                 e.printStackTrace();
             }
         });
-        set(out, in);
+        set(LabeledPane.awesome(out, "angle-right"), LabeledPane.awesome(in, "question-circle"));
     }
 
     abstract protected Function<X, Y> f();

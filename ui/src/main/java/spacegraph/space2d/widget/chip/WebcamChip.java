@@ -22,7 +22,7 @@ public class WebcamChip extends Bordering {
     @Override
     protected void starting() {
         set(new WebCam.WebCamSurface(wc));
-        set(S, new Gridding(enable, new LabeledPane("out", out)/*, device select, ... framerate, */));
+        set(S, new Gridding(enable, LabeledPane.awesome(out, "play")  /*, device select, ... framerate, */));
         on = wc.tensor.on((x)-> {
             if (enable.get() && out.active()) {
                 //out.out(x);

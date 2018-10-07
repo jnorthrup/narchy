@@ -97,6 +97,9 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
      * TODO abstract this to different underlying data model
      */
 
+    static final double valueIfNull =
+            //Double.NaN;
+            0;
 
     private String relation;
     private String comment;
@@ -318,7 +321,10 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
                 String name = attribute_names.get(i);
                 switch (attrTypes.get(name)) {
                     case Numeric:
-                        datum[i] = Double.parseDouble(tokens[i]);
+                        if (tokens[i] == null || tokens[i].equals("null"))
+                            datum[i] = valueIfNull;
+                        else
+                            datum[i] = Double.parseDouble(tokens[i]);
                         break;
                     case Text:
                         datum[i] = tokens[i];
@@ -540,8 +546,10 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
 
         for (ImmutableList exp : this.data) {
             float[] r = new float[cols];
-            for (int i = 0; i < cols; i++)
-                r[i] = ((Number) exp.get(i)).floatValue();
+            for (int i = 0; i < cols; i++) {
+                Number v = (Number) exp.get(i);
+                r[i] = v!=null ? v.floatValue() : Float.NaN;
+            }
             data.add(r);
         }
 

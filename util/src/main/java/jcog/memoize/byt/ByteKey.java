@@ -104,7 +104,7 @@ abstract public class ByteKey extends UnitPri {
             return internal(result, pri, true);
         }
 
-        private final  <Y> PriProxy<?,Y> internal(Y result, float pri, boolean forceNew) {
+        private <Y> PriProxy<?,Y> internal(Y result, float pri, boolean forceNew) {
             byte[] b = array();
             int l = length();
             if (!forceNew && l == b.length) {

@@ -26,8 +26,6 @@ package jcog.reflect.simple;
 
 import jcog.reflect.spi.ConvertToStringService;
 
-import java.util.function.Function;
-
 /**
  * @author user
  */

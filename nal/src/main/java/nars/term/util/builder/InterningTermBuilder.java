@@ -12,6 +12,7 @@ import nars.term.util.HijackTermCache;
 import nars.term.util.InternedCompound;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.UUID;
 import java.util.function.Function;
 
 import static nars.Op.*;
@@ -30,12 +31,14 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private final HijackTermCache normalize;
     private final HijackTermCache concept;
     private final HijackTermCache root;
+    private final String id;
 
     public InterningTermBuilder() {
-        this(32 * 1024);
+        this(UUID.randomUUID().toString(), 32 * 1024);
     }
 
-    public InterningTermBuilder(int cacheSizePerOp) {
+    public InterningTermBuilder(String id, int cacheSizePerOp) {
+        this.id = id;
         terms = new HijackTermCache[Op.ops.length];
 
         HijackTermCache statements = newOpCache("statement", this::_statement, cacheSizePerOp * 3);
@@ -70,9 +73,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
 
-    private static HijackTermCache newOpCache(String name, Function<InternedCompound, Term> f, int capacity) {
+    private HijackTermCache newOpCache(String name, Function<InternedCompound, Term> f, int capacity) {
         HijackTermCache h = new HijackTermCache(f, capacity, 4);
-        Memoizers.the.add(InterningTermBuilder.class.getSimpleName() + '_' + name, h);
+        Memoizers.the.add(id + "_" + InterningTermBuilder.class.getSimpleName() + '_' + name, h);
         return h;
     }
 
@@ -166,9 +169,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     //final static ThreadLocal<DynBytes> tmpkey = ThreadLocal.withInitial(()->new DynBytes(256));
-    private static DynBytes tmpKey() {
+    public static DynBytes tmpKey() {
         //return tmpkey.get();
-        return new DynBytes(128);
+        return new DynBytes(64);
     }
 
     private void resolve(Term[] t) {

@@ -9,7 +9,7 @@ import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.util.ByteAnonMap;
 import nars.term.util.TermBuilder;
-import nars.term.util.builder.HeapTermBuilder;
+import nars.term.util.builder.InterningTermBuilder;
 import nars.term.util.transform.TermTransform;
 import nars.term.var.ImDep;
 import nars.term.var.NormalizedVariable;
@@ -24,18 +24,22 @@ import org.jetbrains.annotations.Nullable;
  */
 public class Anon extends TermTransform.NegObliviousTermTransform {
 
-    final static TermBuilder localBuilder = HeapTermBuilder.the;
+    final static TermBuilder localBuilder =
+            new InterningTermBuilder(Anon.class.getSimpleName(), 8*1024);
+            //HeapTermBuilder.the;
+
+    final static TermBuilder globalBuilder = Op.terms;
 
     final ByteAnonMap map;
 
     @Override
     public Term the(Op op, int dt, Term[] t) {
-        return putOrGet ? localBuilder.theCompound(op, dt, t) : super.the(op, dt, t);
+        return (putOrGet ? localBuilder : globalBuilder).compound(op, dt, t);
     }
 
     @Override
     public Term the(Op op, int dt, Subterms t) {
-        return putOrGet ? localBuilder.theCompound(op, dt, t) : super.the(op, dt, t);
+        return (putOrGet ? localBuilder : globalBuilder).theCompound(op, dt, t.arrayShared());
     }
 
     private boolean putOrGet = true;

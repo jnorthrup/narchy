@@ -180,9 +180,9 @@ class RTreeBeliefTableTest {
 
         assertEquals("%1.0;.90%", r.truth(0, 0, ab, null, nar).toString());
         assertEquals("%1.0;.90%", r.truth(1, 1, ab, null, nar).toString());
-        assertEquals("%1.0;.90%", r.truth(0, 1, ab, null, nar).toString());
+        assertEquals("%1.0;.82%", r.truth(0, 1, ab, null, nar).toString());
 
-        assertEquals("%0.0;.90%", r.truth(2, 3, ab, null, nar).toString());
+        assertEquals("%0.0;.82%", r.truth(2, 3, ab, null, nar).toString());
         assertEquals("%0.0;.90%", r.truth(3, 3, ab, null, nar).toString());
 
         assertEquals("%.50;.82%", r.truth(1, 2, ab, null, nar).toString());

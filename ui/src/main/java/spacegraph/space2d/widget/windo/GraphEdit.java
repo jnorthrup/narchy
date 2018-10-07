@@ -317,8 +317,12 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 //        if (s != null && s != this && !(s instanceof PhyWindow))
 //            return s;
 
-        if (s == null || s == raw)
-            doubleClicking.update(finger);
+        if (s == null || s == raw) {
+            if (doubleClicking.update(finger))
+                return this;
+        } else {
+            doubleClicking.reset();
+        }
 
 
 //        if (finger.tryFingering(jointDrag))

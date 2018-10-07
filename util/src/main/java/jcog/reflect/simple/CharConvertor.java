@@ -23,7 +23,6 @@
  */
 package jcog.reflect.simple;
 
-import jcog.reflect.ToStringConverter;
 import jcog.reflect.ToValueConvertor;
 
 import java.util.function.Function;

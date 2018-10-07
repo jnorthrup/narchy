@@ -192,6 +192,7 @@ public class WebCam {
                             break;
                         case NEW_IMAGE:
                             ts.update(webcam.image);
+
                             break;
                     }
                 });

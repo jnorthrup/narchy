@@ -49,7 +49,7 @@ public class Lab<X> {
     final Supplier<X> subject;
     final Map<String, Sensor<X, ?>> sensors = new ConcurrentHashMap<>();
     public final Map<String, Var<X, ?>> vars = new ConcurrentHashMap<>();
-    final Map<String, Object> hints = new HashMap();
+    public final Map<String, Object> hints = new HashMap();
 
     public Lab() {
         this(null);
@@ -262,17 +262,6 @@ public class Lab<X> {
     public Lab<X> varAuto() {
         varAuto(DiscoveryFilter.all);
 
-        SortedSet<String> unknown = validate();
-
-        if (!unknown.isEmpty()) {
-            for (String w: unknown) {
-                logger.warn("unknown: {}", w);
-            }
-        }
-
-//        if (this.vars.isEmpty()) {
-//            throw new RuntimeException("tweaks not ready:\n" + Joiner.on('\n').join(unknown));
-//        }
 
 
         return this;
@@ -293,7 +282,7 @@ public class Lab<X> {
     /**
      * auto discovers Vars by reflecting a sample of the subject
      */
-    public Lab<X> varAuto(DiscoveryFilter filter, Discovery<X> each) {
+    private Lab<X> varAuto(DiscoveryFilter filter, Discovery<X> each) {
 
 
         X x = (this.subject.get());
@@ -349,6 +338,18 @@ public class Lab<X> {
         };
 
         o.add(DEFAULT_DEPTH, x);
+
+        SortedSet<String> unknown = validate();
+
+        if (!unknown.isEmpty()) {
+            for (String w: unknown) {
+                logger.warn("unknown: {}", w);
+            }
+        }
+
+//        if (this.vars.isEmpty()) {
+//            throw new RuntimeException("tweaks not ready:\n" + Joiner.on('\n').join(unknown));
+//        }
 
         return this;
     }

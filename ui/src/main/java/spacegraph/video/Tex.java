@@ -5,6 +5,7 @@ import boofcv.io.image.ConvertBufferedImage;
 import boofcv.struct.image.GrayU8;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
 import jcog.tree.rtree.rect.RectFloat;
@@ -57,8 +58,9 @@ public class Tex {
 
         commit(gl);
 
-        if (texture != null) {
-            Draw.rectTex(gl, texture, bounds.x, bounds.y, bounds.w, bounds.h, 0, repeatScale, alpha, inverted);
+        Texture t = this.texture;
+        if (t != null) {
+            Draw.rectTex(gl, t, bounds.x, bounds.y, bounds.w, bounds.h, 0, repeatScale, alpha, inverted);
         }
 
     }
@@ -218,6 +220,7 @@ public class Tex {
 
         public TexSurface update(BufferedImage img) {
             tex.update(img);
+
             return this;
         }
     }

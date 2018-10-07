@@ -41,11 +41,13 @@ public abstract class Param {
     /** max percent of capacity allowed input */
     public static final float DerivedTaskBagDrainRateLimit = 0.5f;
 
+    public static final boolean ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME = true;
+
     /** TODO make an abstract TermLinkStrategy class responsible for this */
-    @Deprecated public static int TermLinkFanoutMax =
+    @Deprecated public static final int TermLinkFanoutMax =
             //16;
-            //10;
-            8;
+            10;
+            //8;
             //6;
             //2;
             //4;
@@ -56,9 +58,6 @@ public abstract class Param {
     public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 512;
 //    public static final int CURIOSITY_BELIEF_TABLE_SERIES_SIZE = 64;
 
-    /** auto decompose conjunction beliefs and goals on input */
-    public static final boolean AUTO_DECOMPOSE_CONJ_BELIEF = false;
-    public static final boolean AUTO_DECOMPOSE_CONJ_GOAL = false;
 
     /** if true, then tasklinks are created for the concept() of the term.  this has consequences for temporal
      *  terms such that unique and specific temporal data is not preserved in the tasklink, thereby reducing
@@ -174,7 +173,7 @@ public abstract class Param {
     /**
      * maximum time (in durations) that a signal task can latch its last value before it becomes unknown
      */
-    public final static float SIGNAL_LATCH_DUR = 256;
+    public final static float SIGNAL_LATCH_DUR = 32;
     public final static float SIGNAL_STRETCH_DUR = 1f;
 
 

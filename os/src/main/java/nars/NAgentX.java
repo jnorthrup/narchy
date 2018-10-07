@@ -108,7 +108,7 @@ abstract public class NAgentX extends NAgent {
         */
 
 
-        Param.STRONG_COMPOSITION = false;
+        Param.STRONG_COMPOSITION = true;
         Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
@@ -172,6 +172,8 @@ abstract public class NAgentX extends NAgent {
 
             NAgent a = init.apply(n);
             //a.durs(2f); //nyquist?
+
+            a.pri.set(0.5f);
 
             a.curiosity.set(0.1f);
 

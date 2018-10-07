@@ -8,6 +8,7 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.compound.LighterCompound;
 import nars.term.compound.UnitCompound;
+import nars.term.util.builder.InterningTermBuilder;
 
 import java.util.function.Supplier;
 
@@ -63,7 +64,7 @@ public final class InternedCompound extends ByteKey.ByteKeyExternal  {
     }
 
     public static InternedCompound get(Op o, int dt, Term... subs) {
-        DynBytes key = new DynBytes(128 );//* subs.length /* ESTIMATE */);
+        DynBytes key = InterningTermBuilder.tmpKey();
 
         key.writeByte((o.id));
 

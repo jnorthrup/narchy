@@ -158,7 +158,7 @@ public abstract class TermBuilder {
         return theCompound(op, dt, subterms, null);
     }
 
-    public static Compound theCompound(Op op, int dt, Subterms subterms, @Nullable byte[] key) {
+    private static Compound theCompound(Op op, int dt, Subterms subterms, @Nullable byte[] key) {
 //        if (subterms instanceof DisposableTermList)
 //            throw new WTF();
         if (!op.temporal && !subterms.hasAny(Op.Temporal)) {

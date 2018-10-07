@@ -1,19 +1,8 @@
 package nars;
 
-import jcog.User;
-import jcog.data.list.FasterList;
 import nars.gui.NARui;
-import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.collection.MutableListContainer;
-import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.meta.OmniBox;
-
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Predicate;
 
 import static spacegraph.SpaceGraph.window;
 

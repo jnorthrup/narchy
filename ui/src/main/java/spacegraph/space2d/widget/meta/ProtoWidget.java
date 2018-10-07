@@ -7,6 +7,8 @@ import jcog.User;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.TensorChain;
+import jcog.signal.wave1d.HaarWaveletTensor;
+import jcog.signal.wave1d.SlidingDFTTensor;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
@@ -104,6 +106,12 @@ public class ProtoWidget extends Bordering {
             } else {
                 return null;
             }
+        }), "Tensor");
+        add("HaarWavelet", ()->new FunctionChip<>((Tensor t)->{
+            return new HaarWaveletTensor(t, 8);
+        }), "Tensor");
+        add("SlidingDFT", ()->new FunctionChip<>((Tensor t)->{
+            return new SlidingDFTTensor(t, 8);
         }), "Tensor");
 
 
