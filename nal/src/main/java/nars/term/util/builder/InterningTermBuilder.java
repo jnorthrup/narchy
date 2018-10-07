@@ -3,6 +3,7 @@ package nars.term.util.builder;
 import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.memoize.Memoizers;
+import nars.IO;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -171,7 +172,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     //final static ThreadLocal<DynBytes> tmpkey = ThreadLocal.withInitial(()->new DynBytes(256));
     public static DynBytes tmpKey() {
         //return tmpkey.get();
-        return new DynBytes(64);
+        return new DynBytes(IO.termBytesEstimate());
     }
 
     private void resolve(Term[] t) {

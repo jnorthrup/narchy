@@ -8,8 +8,6 @@ import nars.unify.Unify;
 
 import java.io.IOException;
 
-import static nars.Op.VAR_DEP;
-
 /** the / and \ Image operators */
 public final class ImDep extends AnonID {
 
@@ -18,12 +16,12 @@ public final class ImDep extends AnonID {
     private final int rank;
     private final byte[] bytes;
 
-    public ImDep(byte id, byte sym) {
-        super(VAR_DEP /* HACK */, id);
+    public ImDep(byte sym) {
+        super(Op.IMG, sym);
         this.str = String.valueOf((char) sym);
         this.symChar = (char) sym;
-        this.rank = Term.opX(Op.IMG, (short) id);
-        this.bytes = new byte[] { Op.IMG.id, id };
+        this.rank = Term.opX(Op.IMG, sym);
+        this.bytes = new byte[] { Op.IMG.id, sym };
     }
 
     @Override

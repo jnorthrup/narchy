@@ -190,7 +190,7 @@ public class IO {
                 case VAR_QUERY:
                     return readVariable(in, o);
                 case IMG:
-                    return in.readByte() == 127 ? Op.ImgExt : Op.ImgInt;
+                    return in.readByte() == '/' ? Op.ImgExt : Op.ImgInt;
                 case BOOL:
                     byte code = in.readByte();
                     switch (code) {
@@ -308,9 +308,23 @@ public class IO {
             return d.array();
         }
     }
+    public static DynBytes termToDynBytes(Term t) {
+        if (t instanceof Atomic) {
+            return new DynBytes(((Atomic) t).bytes());
+        } else {
+            DynBytes d = new DynBytes(termBytesEstimate(t) /* estimate */);
+            t.appendTo((ByteArrayDataOutput) d);
+            return d;
+        }
+    }
 
     public static int termBytesEstimate(Termlike t) {
         return t.volume() * 8;
+    }
+
+    /** default estimate */
+    public static int termBytesEstimate() {
+        return 64;
     }
 
 

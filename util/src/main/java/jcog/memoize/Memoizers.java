@@ -1,5 +1,8 @@
 package jcog.memoize;
 
+import jcog.memoize.byt.ByteHijackMemoize;
+import jcog.memoize.byt.ByteKey;
+
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
@@ -37,13 +40,17 @@ public class Memoizers {
     }
 
     @Deprecated public <X,Y> Function<X,Y> memoize(String id, Function<X,Y> computation) {
-        return memoize(id, 32*1024, computation);
+        return memoize(id, 16*1024, computation);
+    }
+
+    public <X,B extends ByteKey,Y> Function<X,Y> memoize(String id, Function<X,B> byter, Function<B,Y> computation, int capacity) {
+        Function<B, Y> b = add(id, new ByteHijackMemoize<>(computation, capacity, 3, false));
+        return (x) -> b.apply(byter.apply(x));
     }
 
     /** registers a new memoizer with a default memoization implementation */
     public <X,Y> Function<X,Y> memoize(String id, int capacity, Function<X,Y> computation) {
-        Memoize<X, Y> m = memoizer(computation, capacity);
-        return add(id, m);
+        return add(id, memoizer(computation, capacity));
     }
 
     public <X, Y, M extends Memoize<X,Y>> Function<X, Y> add(String id, M m) {

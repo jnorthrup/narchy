@@ -11,6 +11,7 @@ import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Variable;
+import nars.term.util.TermKey;
 import nars.time.Tense;
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.list.MutableList;
@@ -67,10 +68,13 @@ public class Factorize {
         return factorize.apply(x);
     }
 
-    static final Function<Term,Term> factorize = Memoizers.the.memoize(Factorize.class.getSimpleName() + "_factorize",
-            Factorize::_factorize);
+    static final Function<Term,Term> factorize = Memoizers.the.memoize(
+            Factorize.class.getSimpleName() + "_factorize",
+            TermKey::new,
+            Factorize::_factorize, 8 * 1024);
 
-    private static Term _factorize(Term x) {
+    private static Term _factorize(TermKey _x) {
+        Term x = _x.term;
         Subterms xx = x.subterms();
 
         Term[] xxx = distribute(xx);

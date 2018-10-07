@@ -3,7 +3,6 @@ package jcog.sort;
 import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -15,7 +14,7 @@ import java.util.function.IntFunction;
 import static java.lang.Float.NEGATIVE_INFINITY;
 
 /** warning: this keeps duplicate insertions */
-public class TopN<X> extends SortedArray<X> implements Consumer<X> {
+public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunction<X> {
 
     public FloatRank<X> rank;
     private float min;
@@ -40,13 +39,10 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
         return false;
     }
 
-    private float rank(X x) {
-        return rank.rank(x, min);
-    }
 
     /** invert the SortedArray's order so this isnt necessary */
     @Deprecated private float rankNeg(X x) {
-        return -rank(x);
+        return -rank.rank(x, min);
     }
 
     public void clear(int newCapacity, IntFunction<X[]> newArray) {
@@ -70,8 +66,8 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
 
 
     @Override
-    public final boolean add(@NotNull X e) {
-        int r = add(e, this::rankNeg);
+    public final boolean add(/*@NotNull */X e) {
+        int r = add(e, this);
         if (r >= 0) {
             commit();
             return true;
@@ -188,11 +184,16 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X> {
             case 1:
                 return get(0);
             default:
-                return get(Roulette.selectRoulette(n, i -> rank(get(i)), rng));
+                return get(Roulette.selectRoulette(n, i -> -rankNeg(get(i)), rng));
         }
     }
 
     public final float minValueIfFull() {
         return min;
+    }
+
+    @Override
+    public final float floatValueOf(X x) {
+        return rankNeg(x);
     }
 }

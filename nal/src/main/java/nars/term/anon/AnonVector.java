@@ -23,7 +23,7 @@ public class AnonVector extends TermVector implements FullyInternable {
     /*@Stable*/
     private final short[] subterms;
 
-    protected AnonVector(short[] s) {
+    private AnonVector(short[] s) {
         super(AnonID.subtermMetadata(s));
         this.subterms = s;
         testIfInitiallyNormalized();
@@ -204,7 +204,7 @@ public class AnonVector extends TermVector implements FullyInternable {
         return subterms.length;
     }
 
-    public int indexOf(short id) {
+    private int indexOf(short id) {
         return ArrayUtils.indexOf(subterms, id);
     }
 
@@ -222,7 +222,7 @@ public class AnonVector extends TermVector implements FullyInternable {
         return tid != 0 ? indexOf(tid) : -1;
     }
 
-    public int indexOfNeg(Term x) {
+    private int indexOfNeg(Term x) {
         short tid = AnonID.id(x);
         return tid != 0 ? indexOf((short) -tid) : -1;
     }

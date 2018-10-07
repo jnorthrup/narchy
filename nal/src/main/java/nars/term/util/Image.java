@@ -60,6 +60,10 @@ public enum Image { ;
         if (!(_t instanceof Compound) || !_t.hasAll(ImageBits))
             return _t;
 
+        return _imageNormalize(_t);
+    }
+
+    public static Term _imageNormalize(Term _t) {
         boolean negated;
         Term t;
         if (_t.op()==NEG) {
@@ -80,14 +84,14 @@ public enum Image { ;
             boolean isExt = p.op()==PROD && (pp = p.subterms()).contains(Op.ImgExt);// && !pp.contains(Op.ImgInt);
 
             if (isInt && !isExt) {
-                
-                
+
+
                 Term u = INH.the(ss.sub(0), PROD.the(Util.replaceDirect(ss.subRangeArray(1, ss.subs()), Op.ImgInt, p)));
                 if (!(u instanceof Bool))
                     return u.negIf(negated);
             } else if (isExt && !isInt) {
-                
-                
+
+
                 Term u = INH.the(PROD.the(Util.replaceDirect(pp.subRangeArray(1, pp.subs()), Op.ImgExt, s)), pp.sub(0));
                 if (!(u instanceof Bool))
                     return u.negIf(negated);

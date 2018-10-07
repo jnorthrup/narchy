@@ -220,6 +220,8 @@ public class NARS {
                         //termlinks
                         curve(Concept::volume,
                                 1, 64,
+                                2,32, //sharp dropoff
+                                4,28,
                                 8,24,
                                 24,16,
                                 48,12

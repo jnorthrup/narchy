@@ -2,12 +2,13 @@ package nars.term.util.transform;
 
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.util.Image;
 import org.jetbrains.annotations.Nullable;
 
 /** procedure for Compound term Normalization */
-public class CompoundNormalization extends VariableNormalization {
+public final class CompoundNormalization extends VariableNormalization {
 
     private final Term root;
 
@@ -15,31 +16,30 @@ public class CompoundNormalization extends VariableNormalization {
         super(root.vars() /* estimate */, varOffset);
         this.root = root;
     }
+
     @Override
     public Term transform(Term x) {
-        return x.hasVars() || x.hasAll(Image.ImageBits) ? ((x instanceof Compound) ?
-                transformCompound((Compound)x)
-                :
-                transformAtomic((Atomic)x)) : x;
+        if (x instanceof Compound) {
+            if (x.hasVars() || x.hasAll(Image.ImageBits))
+                return transformCompound((Compound)x);
+        } else {
+            if (x instanceof Variable) // || x instanceof ImDep)
+                return transformAtomic((Atomic)x);
+        }
+        return x;
     }
 
     @Override
     protected @Nullable Term transformNonNegCompound(Compound x) {
         /* if x is not the root term (ie. a subterm) */
-        boolean hasImg = x.hasAll(Image.ImageBits);
-        if (!x.equals(root)) {
+        if (x!=root) {
+            boolean hasImg = x.hasAll(Image.ImageBits);
             if (hasImg) {
-//            Term y = Image.imageNormalize(x);
-//            if (y!=x) {
-//                Termed yy = transform(y);
-//                if (yy != null)
-//                    return yy.term();
-//            }
-                x = (Compound) Image.imageNormalize(x);
+                x = (Compound) Image._imageNormalize(x);
             }
         }
         //return super.transformNonNegCompound(x);
-        return (x.hasVars() || hasImg) ?  transformCompoundPlease(x) : x;
+        return x.hasVars() ?  transformCompoundPlease(x) : x;
     }
 
 

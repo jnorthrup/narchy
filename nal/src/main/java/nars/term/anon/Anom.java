@@ -43,10 +43,7 @@ public final class Anom extends AnonID {
         return '_' +  Integer.toString(id);
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return this == obj;
-    }
+
 
 
     //    @Override
@@ -69,7 +66,7 @@ public final class Anom extends AnonID {
 //    }
 
     static final Anom[] the = Util.map(0, Byte.MAX_VALUE, (i) -> new Anom((byte) i), Anom[]::new);
-    static final Term[] theNeg = Util.map(0, Byte.MAX_VALUE, (i) -> new Neg(the[i]), Term[]::new);
+    private static final Term[] theNeg = Util.map(0, Byte.MAX_VALUE, (i) -> new Neg(the[i]), Term[]::new);
     static {
         the[0] = null;
         theNeg[0] = null;

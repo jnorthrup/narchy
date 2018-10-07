@@ -279,8 +279,8 @@ public enum Op {
 
     public static final int AtomicConstant = Op.ATOM.bit | Op.INT.bit | Op.BOOL.bit;
 
-    public static final ImDep ImgInt = new ImDep((byte) 126, (byte) '\\');
-    public static final ImDep ImgExt = new ImDep((byte) 127, (byte) '/');
+    public static final ImDep ImgInt = new ImDep((byte) '\\');
+    public static final ImDep ImgExt = new ImDep((byte) '/');
     public static final int Diff = Op.DIFFe.bit | Op.DIFFi.bit;
     public static final int Sect = or(Op.SECTe, Op.SECTi);
     public static final int Set = or(Op.SETe, Op.SETi);

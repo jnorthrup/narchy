@@ -7,7 +7,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.var.NormalizedVariable;
 
-import static nars.Op.NEG;
+import static nars.Op.*;
 
 /**
  * indicates the term has an anonymous, canonical identifier (16-bit short)
@@ -20,43 +20,43 @@ public abstract class AnonID implements Atomic, The {
     public static final short VARINDEP_MASK = 2 << 8;
     public static final short VARQUERY_MASK = 3 << 8;
     public static final short VARPATTERN_MASK = 4 << 8;
+    private static final short IMG_MASK = 5 << 8;
 
     /** meant to be a perfect hash among all normalized variables */
-    protected final short id;
+    final short id;
 
 
     protected AnonID(Op type, byte num) {
         this(AnonID.termToId(type, num));
     }
 
-    protected AnonID(short id) {
+    AnonID(short id) {
         this.id = id;
     }
 
-    public static short termToId(Op o, byte id) {
+    private static short termToId(Op o, byte id) {
+        return (short)(opToMask(o) | id);
+    }
 
-        short mask;
+    private static short opToMask(Op o) {
+
         switch (o) {
             case ATOM:
-                mask = ATOM_MASK;
-                break;
+                return ATOM_MASK;
             case VAR_DEP:
-                mask = VARDEP_MASK;
-                break;
+                return VARDEP_MASK;
             case VAR_INDEP:
-                mask = VARINDEP_MASK;
-                break;
+                return VARINDEP_MASK;
             case VAR_QUERY:
-                mask = VARQUERY_MASK;
-                break;
+                return VARQUERY_MASK;
             case VAR_PATTERN:
-                mask = VARPATTERN_MASK;
-                break;
+                return VARPATTERN_MASK;
+            case IMG:
+                return IMG_MASK;
             default:
                 throw new UnsupportedOperationException();
         }
 
-        return (short) (mask | id);
     }
 
 //    /** fast Anom (non-Var) test. works for either positive or negative */
@@ -64,10 +64,10 @@ public abstract class AnonID implements Atomic, The {
 //        return isAnom(Math.abs(i));
 //    }
 
-    /** fast Anom (non-Var) test. assumes positive */
-    public static boolean isAnom(int i) {
-        return (i & 0xff00) == ATOM_MASK;
-    }
+//    /** fast Anom (non-Var) test. assumes positive */
+//    public static boolean isAnom(int i) {
+//        return (i & 0xff00) == ATOM_MASK;
+//    }
 
     public static int isVariable(short i, int ifNot) {
         return ((i & 0xff00) != ATOM_MASK) ? (i & 0xff) : ifNot;
@@ -80,6 +80,8 @@ public abstract class AnonID implements Atomic, The {
         switch (m) {
             case ATOM_MASK:
                 return Anom.the[num];
+            case IMG_MASK:
+                return num == '/' ? ImgExt : ImgInt;
             case VARDEP_MASK:
                 return NormalizedVariable.the(Op.VAR_DEP.id, num);
             case VARINDEP_MASK:
@@ -97,24 +99,26 @@ public abstract class AnonID implements Atomic, The {
         if (neg)
             i = (short) -i;
 
-        byte num = (byte) (i & 0xff);
-        int m = idToMask(i);
-        byte varType;
-        switch (m) {
-            case ATOM_MASK:
-                return neg ? Anom.theNeg[num] : Anom.the[num];
-            case VARDEP_MASK:
-                varType = (Op.VAR_DEP.id); break;
-            case VARINDEP_MASK:
-                varType = (Op.VAR_INDEP.id); break;
-            case VARQUERY_MASK:
-                varType = (Op.VAR_QUERY.id); break;
-            case VARPATTERN_MASK:
-                varType = (Op.VAR_PATTERN.id); break;
-            default:
-                throw new UnsupportedOperationException();
-        }
-        return NormalizedVariable.the(varType, num).negIf(neg);
+        return idToTermPos(i).negIf(neg);
+//        byte num = (byte) (i & 0xff);
+//        byte varType;
+//        switch (idToMask(i)) {
+//            case ATOM_MASK:
+//                return neg ? Anom.theNeg[num] : Anom.the[num];
+//            case VARDEP_MASK:
+//                varType = (Op.VAR_DEP.id); break;
+//            case VARINDEP_MASK:
+//                varType = (Op.VAR_INDEP.id); break;
+//            case VARQUERY_MASK:
+//                varType = (Op.VAR_QUERY.id); break;
+//            case VARPATTERN_MASK:
+//                varType = (Op.VAR_PATTERN.id); break;
+//            case IMG_MASK:
+//                return (num == '/' ? ImgExt : ImgInt).negIf(neg);
+//            default:
+//                throw new UnsupportedOperationException();
+//        }
+//        return NormalizedVariable.the(varType, num).negIf(neg);
     }
 
     public static int idToMask(short i) {
@@ -170,10 +174,10 @@ public abstract class AnonID implements Atomic, The {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj == this
-                   ||
-              (obj instanceof AnonID) && id==((AnonID)obj).id;
+    public final boolean equals(Object obj) {
+        return obj == this;
+//                   ||
+//              (obj instanceof AnonID) && id==((AnonID)obj).id;
     }
 
 }

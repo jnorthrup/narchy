@@ -9,6 +9,7 @@ import nars.Op;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
+import nars.term.util.TermKey;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.Pair;
@@ -65,11 +66,13 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     private final static Function<Term,Term[]> select = Memoizers.the.memoize(
             DepIndepVarIntroduction.class.getSimpleName() + "_select",
-            DepIndepVarIntroduction::_select);
+            TermKey::new,
+            DepIndepVarIntroduction::_select, 8*1024);
 
-    static protected Term[] _select(Term input) {
-        return Terms.nextRepeat(input, depIndepFilter, 2);
+    static protected Term[] _select(TermKey input) {
+        return Terms.nextRepeat(input.term, depIndepFilter, 2);
     }
+
 
     @Override protected Term choose(Term[] x, Random rng) {
         IntToFloatFunction curve =

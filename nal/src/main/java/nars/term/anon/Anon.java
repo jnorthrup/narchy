@@ -5,7 +5,6 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.util.ByteAnonMap;
 import nars.term.util.transform.TermTransform;
@@ -26,7 +25,7 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
 //            new InterningTermBuilder(Anon.class.getSimpleName(), 8*1024);
             //HeapTermBuilder.the;
 
-    final ByteAnonMap map;
+    private final ByteAnonMap map;
 
     @Override
     public Term the(Op op, int dt, Term[] t) {
@@ -44,7 +43,7 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
         this(1);
     }
 
-    public Anon(int estSize) {
+    Anon(int estSize) {
         this.map = new ByteAnonMap(estSize);
     }
 
@@ -98,7 +97,7 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
     }
 
     /** anon filter in which subclasses can implement variable shifting */
-    protected Term putAnon(Term x) {
+    Term putAnon(Term x) {
         return x;
     }
 
@@ -107,24 +106,26 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
 
     public final Term get(Term x) {
         if (x instanceof Compound) {
-            return getCompound((Compound) x);
+            switch (map.size()) {
+                case 0:
+                    return x;
+                case 1:
+                    //optimized
+                    return x.replace(Anom.the(1), map.interned((byte)1));
+                default:
+                    putOrGet = false;
+                    return transformCompound((Compound) x);
+            }
         } else {
             if (x instanceof Anom) {
-                return map.interned((byte) ((Anom) x).id);
+                return map.interned((byte) ((AnonID) x).id);
             } else {
                 return x;
             }
         }
     }
 
-    protected final Term getCompound(Compound y) {
-        putOrGet = false;
-        Term x = transformCompound(y);
-//        validate(y, x, false);
-        return x;
-    }
-
-    protected final Term putCompound(Compound x) {
+    private Term putCompound(Compound x) {
         putOrGet = true;
 
         Term y = transformCompound(x);
@@ -146,7 +147,7 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
 
         @Override
         protected Term putAnon(Term x) {
-            if (x instanceof Variable && !(x instanceof ImDep)) {
+            if (x instanceof NormalizedVariable && !(x instanceof ImDep)) {
                 NormalizedVariable v = ((NormalizedVariable) x);
                 int shift;
                 Op vv = v.op();
@@ -171,14 +172,14 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
             return this;
         }
 
-        public AnonWithVarShift shift(Term base) {
+        AnonWithVarShift shift(Term base) {
             if (!base.hasVars())
                 return this;
             else
                 return shift(0 /*base.varIndep()*/, base.varDep(), base.varQuery());
         }
 
-        public AnonWithVarShift shift(int indep, int dep, int query) {
+        AnonWithVarShift shift(int indep, int dep, int query) {
             indepShift = indep;
             depShift = dep;
             queryShift = query;

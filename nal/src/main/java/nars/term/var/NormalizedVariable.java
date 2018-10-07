@@ -110,15 +110,7 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
             case VAR_QUERY:
                 return new VarQuery(id);
             case VAR_DEP:
-                switch (id) {
-                    case 126:
-                        return Op.ImgInt;
-                    case 127:
-                        return Op.ImgExt;
-                    default:
-                        assert (id > 0);
-                        return new VarDep(id);
-                }
+                return new VarDep(id);
             case VAR_INDEP:
                 return new VarIndep(id);
             default:
