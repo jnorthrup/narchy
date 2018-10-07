@@ -33,7 +33,6 @@ class ConceptGraph2DTest {
 
 
             NAR n = NARS.tmp();
-            n.activateLinkRate.set(0.5f);
             n.log();
 
             NQuadsRDF.input(n, new File("/home/me/d/valueflows.nquad"));

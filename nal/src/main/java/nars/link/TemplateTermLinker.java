@@ -282,9 +282,9 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
     /** balance = nar.termlinkBalance */
     @Override public void link(Activate a, Derivation d) {
 
-        float linkRate = d.nar.activateLinkRate.floatValue();
 
-        List<Concept> firedConcepts = conceptualizeAndTermLink(linkRate, a.id, d);
+
+        List<Concept> firedConcepts = conceptualizeAndTermLink(a.id, d);
         //default all to all exhausive matrix insertion
         //TODO configurable "termlink target concept x tasklink matrix" linking pattern: density, etc
         if (!firedConcepts.isEmpty()) {
@@ -307,7 +307,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
     }
 
-    private List<Concept> conceptualizeAndTermLink(float linkRate, Concept src, Derivation d) {
+    private List<Concept> conceptualizeAndTermLink(Concept src, Derivation d) {
 
 
 
@@ -362,7 +362,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
                         firedConcepts.add(tgt);
 
-                        linking.linkPlus(tgt, srcTerm, linkRate * termlinkForward, refund);
+                        linking.linkPlus(tgt, srcTerm, termlinkForward, refund);
 
                         tgtTerm = tgt.term();
 
@@ -372,7 +372,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
                     refund.add(termlinkForward);
                 }
 
-                linking.linkPlus(src, tgtTerm, linkRate * termlinkReverse, refund);
+                linking.linkPlus(src, tgtTerm, termlinkReverse, refund);
             }
 
         }

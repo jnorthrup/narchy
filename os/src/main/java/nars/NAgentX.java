@@ -313,7 +313,7 @@ abstract public class NAgentX extends NAgent {
 
         n.forgetRate.set(0.9f);
         n.activateConceptRate.set(0.01f);
-        n.activateLinkRate.set(1f);
+
 
 
         n.beliefConfDefault.set(0.9f);

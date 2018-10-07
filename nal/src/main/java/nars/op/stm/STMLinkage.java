@@ -95,7 +95,7 @@ public class STMLinkage extends NARService {
 
 
         if (target(t)) {
-            float p = this.strength.floatValue() * t.priElseZero() * nar.activateLinkRate.floatValue();
+            float p = this.strength.floatValue() * t.priElseZero();
             stm.forEach(u -> link(t, p * u.priElseZero(), u/*, cause.id*/, nar));
         }
 
