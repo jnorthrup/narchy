@@ -89,7 +89,7 @@ public interface TaskLink extends Priority, Termed {
 
             long[] se = new long[] { start , end };
 
-            Term t = term.unneg();
+            Term t = term;//.unneg();
             Concept c = n.conceptualizeDynamic(t);
             Task task;
             if (c != null) {

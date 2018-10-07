@@ -1,20 +1,20 @@
 //NAL6---------------
 
-    Z, (X==>Y), task("?"), neq(Y,Z) |- subIfUnifiesAny((X ==>+- Y), Y, Z, "$", strict), (Belief:BeliefStructuralReduction, Punctuation:Belief)
+    Z, (X==>Y), task("?"), neq(Y,Z) |- subIfUnifiesAny((X ==> Y), Y, Z, "$", strict), (Belief:BeliefStructuralReduction, Punctuation:Belief)
 
 
 //If S can stand for P, P can to a certain low degree also represent the class S
 //If after S usually P happens, then it might be a good guess that usually before P happens, S happens.
 
-    (P ==> S),   (S ==> P),  task("?") |-   (P ==>+- S),   (Belief:Conversion, Punctuation:Belief)
-    (P ==> S),   (S ==> P),  task("?") |- (--P ==>+- S),   (Belief:ConversionPN, Punctuation:Belief)
-    (P ==> S), (--S ==> P),  task("?") |-   (P ==>+- --S), (Belief:Conversion, Punctuation:Belief)
-    (P ==> S), (--S ==> P),  task("?") |- (--P ==>+- --S), (Belief:ConversionPN, Punctuation:Belief)
+    (P ==> S),   (S ==> P),  task("?") |-   (P ==> S),   (Belief:Conversion, Punctuation:Belief)
+    (P ==> S),   (S ==> P),  task("?") |- (--P ==> S),   (Belief:ConversionPN, Punctuation:Belief)
+    (P ==> S), (--S ==> P),  task("?") |-   (P ==> --S), (Belief:Conversion, Punctuation:Belief)
+    (P ==> S), (--S ==> P),  task("?") |- (--P ==> --S), (Belief:ConversionPN, Punctuation:Belief)
 
-    (--P ==> S),   (S ==> P),  task("?") |-   (P ==>+- --S), (Belief:Conversion, Punctuation:Belief)
-    (--P ==> S),   (S ==> P),  task("?") |- (--P ==>+- --S), (Belief:ConversionPN, Punctuation:Belief)
-    (--P ==> S), (--S ==> P),  task("?") |-   (P ==>+- S),   (Belief:Conversion, Punctuation:Belief)
-    (--P ==> S), (--S ==> P),  task("?") |- (--P ==>+- S),   (Belief:ConversionPN, Punctuation:Belief)
+    (--P ==> S),   (S ==> P),  task("?") |-   (P ==> --S), (Belief:Conversion, Punctuation:Belief)
+    (--P ==> S),   (S ==> P),  task("?") |- (--P ==> --S), (Belief:ConversionPN, Punctuation:Belief)
+    (--P ==> S), (--S ==> P),  task("?") |-   (P ==> S),   (Belief:Conversion, Punctuation:Belief)
+    (--P ==> S), (--S ==> P),  task("?") |- (--P ==> S),   (Belief:ConversionPN, Punctuation:Belief)
 
 //conj/impl question reduction
 
@@ -28,17 +28,17 @@
 
 
 //mutex induction from conjunction events
-//    (&&,X,--Y,A..*), X, task(".") |- (X ==>+- --Y), (Belief:StructuralDeduction)
+//    (&&,X,--Y,A..*), X, task(".") |- (X ==> --Y), (Belief:StructuralDeduction)
 
 //implication to similarity (equivalence emulation)
 //    (P ==> S), (S ==> P), task(".")   |-   (S <-> P),  (Punctuation:Question)
 //    (P ==> S), (--S ==> P), task(".") |- (--S <-> P),  (Punctuation:Question)
 
     //all these are probably wrong:
-        //(--P ==> S), (S ==> P),  task("?") |- (--P ==>+- --S), (Belief:ConversionPN, Punctuation:Belief)
-        //(P ==> S), (--S ==> P),  task("?") |- (P ==>+- --S), (Belief:Conversion, Punctuation:Belief)
-        //(P ==> S), (S ==> P),        task("?") |- ((--,%P) ==>+- S), (Belief:ConversionPN, Punctuation:Belief)
-        //(P ==> S), ((--,%S) ==> P),  task("?") |- (--,((--,%P) ==>+- S)), (Belief:ConversionPN, Punctuation:Belief)
+        //(--P ==> S), (S ==> P),  task("?") |- (--P ==> --S), (Belief:ConversionPN, Punctuation:Belief)
+        //(P ==> S), (--S ==> P),  task("?") |- (P ==> --S), (Belief:Conversion, Punctuation:Belief)
+        //(P ==> S), (S ==> P),        task("?") |- ((--,%P) ==> S), (Belief:ConversionPN, Punctuation:Belief)
+        //(P ==> S), ((--,%S) ==> P),  task("?") |- (--,((--,%P) ==> S)), (Belief:ConversionPN, Punctuation:Belief)
 
 //and the backward inference driven forward inference:
 
@@ -57,7 +57,7 @@
 
 
 //disjunction
-   //(&&,--B,A..+), B, task("?") |- (--,((&&,A..+) &&+- --B)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+   //(&&,--B,A..+), B, task("?") |- (--,((&&,A..+) && --B)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
 
 ////composition on both sides of a statement  TODO - quests handling of these
     //((A..+) --> Z), (X --> Y), task("?") |- ((A..+) --> substitute((A..+),X,Y,strict)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)

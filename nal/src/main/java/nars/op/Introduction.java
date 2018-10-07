@@ -25,19 +25,17 @@ public abstract class Introduction extends LeakBack  {
         if (y != null) {
             Term x = xx.term();
             if (!y.equals(x) && y.op().conceptualizable) {
-                //Task yy = Task.clone(xx, y);
-                Task yy = Task.clone(xx, y, xx.truth(), xx.punc(), (c, t) ->
-                        new UnevaluatedTask(c, xx, t));
+
+                Task yy = Task.clone(xx, y, xx.truth(), xx.punc(), (c, t) -> new UnevaluatedTask(c, xx, t));
 
                 if (yy != null) {
                     //discount pri by increase in term complexity
 
-                    float xc = x.complexity();
-                    int yc = y.complexity();
+                    float xc = x.voluplexity(), yc = y.voluplexity();
                     float priSharePct =
                             1f - (yc / (xc + yc));
                     yy.pri(0);
-                    yy.take(xx, priSharePct, false, false);
+                    yy.take(xx, priSharePct, false, true);
 
                     input(yy);
                     return 1;

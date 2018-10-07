@@ -3,6 +3,7 @@ package nars.gui;
 import com.googlecode.lanterna.input.KeyType;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
+import jcog.exe.Exe;
 import jcog.math.Quantiler;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
@@ -16,7 +17,6 @@ import nars.TextUI;
 import nars.agent.NAgent;
 import nars.concept.Concept;
 import nars.gui.graph.run.BagregateConceptGraph2D;
-import nars.term.Term;
 import nars.term.Termed;
 import nars.util.MemorySnapshot;
 import spacegraph.space2d.Surface;
@@ -29,11 +29,15 @@ import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meta.ServicesTable;
 import spacegraph.space2d.widget.slider.FloatGuage;
+import spacegraph.space2d.widget.tab.ButtonSet;
 import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.math.Color3f;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.StreamSupport;
@@ -103,7 +107,7 @@ public class NARui {
                 "nar", () -> new ObjectSurface<>(n),
                 "exe", () -> ExeCharts.exePanel(n),
                 "val", () -> ExeCharts.valuePanel(n),
-                "edt", () -> MemEdit(n),
+                "mem", () -> MemEdit(n),
                 "can", () -> ExeCharts.focusPanel(n), ///causePanel(n),
                 "grp", () -> BagregateConceptGraph2D.get(n).widget(),
                 "svc", () -> new ServicesTable(n.services),
@@ -117,14 +121,14 @@ public class NARui {
         mm.put(
                 "tsk", () -> taskView(n)
         );
-        mm.put("mem", () -> ScrollGrid.list(
-                (int x, int y, Term v) -> new PushButton(m.toString()).click(() ->
-                        window(
-                                ScrollGrid.list((xx, yy, zm) -> new PushButton(zm.toString()), n.memory.contents(v).collect(toList())), 800, 800, true)
-                ),
-                n.memory.roots().collect(toList())
-                )
-        );
+//        mm.put("mem", () -> ScrollGrid.list(
+//                (int x, int y, Term v) -> new PushButton(m.toString()).click(() ->
+//                        window(
+//                                ScrollGrid.list((xx, yy, zm) -> new PushButton(zm.toString()), n.memory.contents(v).collect(toList())), 800, 800, true)
+//                ),
+//                n.memory.roots().collect(toList())
+//                )
+//        );
         return
                 new Bordering(
                         new TabPane().addToggles(mm)
@@ -136,6 +140,8 @@ public class NARui {
 
     public static Surface MemEdit(NAR nar) {
         return new Gridding(
+                MemLoad(nar),
+                MemSave(nar),
                 new PushButton("remove weak beliefs", () -> {
                     nar.runLater(() -> {
                         nar.logger.info("Belief prune start");
@@ -178,6 +184,38 @@ public class NARui {
 
         );
 
+    }
+
+    public static Surface MemLoad(NAR nar) {
+        return new VectorLabel("Load: TODO");
+    }
+
+    public static Surface MemSave(NAR nar) {
+        TextEdit path = new TextEdit(20, 1);
+        try {
+            path.text(Files.createTempFile(nar.self().toString(), "" + System.currentTimeMillis()).toAbsolutePath().toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Object currentMode = null;
+        ButtonSet mode = new ButtonSet(ButtonSet.Mode.One,
+                new CheckBox("txt"), new CheckBox("bin")
+        );
+        return new Gridding(
+                path,
+                new Gridding(
+                        mode,
+                        new PushButton("save").click(() -> {
+                            Exe.invokeLater(() -> {
+                                try {
+                                    nar.output(new File(path.text()), false);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                            });
+                        })
+        ));
     }
 
     private static Surface taskView(NAR n) {

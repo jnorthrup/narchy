@@ -5,10 +5,7 @@ import jcog.lab.util.Opti;
 import jcog.lab.util.Optimization;
 import nars.NAR;
 import nars.NARS;
-import nars.nal.nal1.NAL1MultistepTest;
-import nars.nal.nal1.NAL1Test;
-import nars.nal.nal2.NAL2Test;
-import nars.nal.nal3.NAL3Test;
+import nars.nal.nal5.NAL5Test;
 import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
@@ -22,9 +19,9 @@ class NARTestOptimize {
 
             boolean parallel = true;
             Class[] testClasses = new Class[] {
-                    NAL1Test.class, NAL1MultistepTest.class, NAL2Test.class, NAL3Test.class,//
+//                    NAL1Test.class, NAL1MultistepTest.class, NAL2Test.class, NAL3Test.class,//
 //                    NAL4Test.class, NAL4MultistepTest.class,
-//                    NAL5Test.class,
+                    NAL5Test.class,
 //                    NAL6Test.class,
 //                    NAL7Test.class, NAL8Test.class,
             };
@@ -65,7 +62,7 @@ class NARTestOptimize {
             ;
 
 
-            int suiteIterations = 4;
+            int suiteIterations = 6;
             int samples = 128;
             Optimization<NAR, TestNARSuite> o = l.optimize((Supplier<NAR> s) -> {
                 TestNARSuite t = new TestNARSuite(s, testClasses);

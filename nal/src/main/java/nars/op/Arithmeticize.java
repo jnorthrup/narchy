@@ -47,6 +47,10 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 @Paper
 public class Arithmeticize {
 
+    private static int minInts = 2;
+
+    final static Variable V = $.varDep("A_");
+
     public static class ArithmeticIntroduction extends Introduction {
         public ArithmeticIntroduction(int taskCapacity, NAR n) {
             super(taskCapacity, n);
@@ -112,7 +116,7 @@ public class Arithmeticize {
         }, x);
 
         int ui = ints.size();
-        if (ui <= 1)
+        if (ui < minInts)
             return x; 
 
         int[] ii = ints.toSortedArray();  
@@ -127,9 +131,7 @@ public class Arithmeticize {
         if (anon!=null)
             baseTerm = anon.put(baseTerm);
 
-        Variable V =
-                $.varDep("b");
-                //$.varIndep("b");
+
 
         Term yy = x.replace(baseTerm, V);
 
@@ -178,14 +180,15 @@ public class Arithmeticize {
         }
     }
 
-    static final HijackMemoize<IntArrayListCached,List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>>>
-        modsCache = new HijackMemoize<>(Arithmeticize::_mods, 512, 3);
+    static final Function<IntArrayListCached,List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>>> cached;
     static {
-        Memoizers.the.add(Arithmeticize.class.getSimpleName() + "_mods", modsCache);
+        HijackMemoize<IntArrayListCached,List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>>>
+                modsCache = new HijackMemoize<>(Arithmeticize::_mods, 512, 3);
+        cached = Memoizers.the.add(Arithmeticize.class.getSimpleName() + "_mods", modsCache);
     }
 
     static List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> mods(int[] ii) {
-        return modsCache.apply(new IntArrayListCached(ii));
+        return cached.apply(new IntArrayListCached(ii));
     }
 
     static List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> _mods(IntArrayListCached iii) {
@@ -227,9 +230,10 @@ public class Arithmeticize {
                             Int.the(ib), v-> $.func(MathFunc.add, v, $.the(BMinA))
                     ));
 
-
-
-
+                } else if (ib < ia) {
+                    maybe(mods, ib).add(pair(
+                            Int.the(ia), v-> $.func(MathFunc.add, v, $.the(ia - ib))
+                    ));
 
                 }
 

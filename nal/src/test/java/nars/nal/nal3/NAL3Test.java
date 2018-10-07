@@ -3,7 +3,6 @@ package nars.nal.nal3;
 
 import nars.NAR;
 import nars.NARS;
-import nars.Narsese;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL3Test extends NALTest {
 
-    private static final int cycles = 100;
+    static final int cycles = 100;
     
     @Override protected NAR nar() {
         NAR n= NARS.tmp(3);
@@ -65,65 +64,7 @@ public class NAL3Test extends NALTest {
     }
 
 
-    @Test
-    void composition_on_both_sides_of_a_statement() throws Narsese.NarseseException {
 
-        TestNAR tester = test;
-        tester.believe("<bird --> animal>", 0.9f, 0.9f); 
-        tester.ask("<(&,bird,swimmer) --> (&,animal,swimmer)>"); 
-        tester.mustBelieve(cycles, "<(&,bird,swimmer) --> (&,animal,swimmer)>", 0.90f, 0.73f); 
-
-    }
-
-    @Test
-    void composition_on_both_sides_of_a_statement_2() throws Narsese.NarseseException {
-
-        TestNAR tester = test;
-        tester.believe("<bird --> animal>", 0.9f, 0.9f); 
-        tester.ask("<(|,bird,swimmer) --> (|,animal,swimmer)>"); 
-        tester.mustBelieve(cycles, "<(|,bird,swimmer) --> (|,animal,swimmer)>", 0.90f, 0.73f); 
-
-        /*<bird --> animal>. %0.9;0.9%
-                <(|,bird,swimmer) --> (|,animal,swimmer)>?*/
-    }
-
-    @Test
-    void composition_on_both_sides_of_a_statement2() throws Narsese.NarseseException {
-
-        TestNAR tester = test;
-        tester.believe("<bird --> animal>", 0.9f, 0.9f); 
-        tester.ask("<(-,swimmer,animal) --> (-,swimmer,bird)>"); 
-        tester.mustBelieve(cycles, "<(-,swimmer,animal) --> (-,swimmer,bird)>", 0.90f, 0.73f); 
-
-    }
-
-    @Test
-    void composition_on_both_sides_of_a_statement2_2() throws Narsese.NarseseException {
-
-        TestNAR tester = test;
-        tester.believe("<bird --> animal>", 0.9f, 0.9f); 
-        tester.ask("<(~,swimmer,animal) --> (~,swimmer,bird)>"); 
-        tester.mustBelieve(cycles, "<(~,swimmer,animal) --> (~,swimmer,bird)>", 0.90f, 0.73f); 
-
-    }
-
-    @Test
-    void compound_composition_one_premise() throws Narsese.NarseseException {
-
-        TestNAR tester = test;
-        tester.believe("<swan --> bird>", 0.9f, 0.9f); 
-        tester.ask("<swan --> (|,bird,swimmer)>"); 
-        tester.mustBelieve(cycles, "<swan --> (|,bird,swimmer)>", 0.90f, 0.73f); 
-
-    }
-
-    @Test
-    void compound_composition_one_premise2() throws Narsese.NarseseException {
-        test
-        .believe("(swan --> bird)", 0.9f, 0.9f)
-        .ask("((swan&swimmer) --> bird)")
-        .mustBelieve(cycles, "((swan&swimmer) --> bird)", 0.90f, 0.73f);
-    }
 
     @Test
     void intersectionComposition(){
@@ -141,25 +82,7 @@ public class NAL3Test extends NALTest {
                 .mustBelieve(cycles, "(((swan)&(swimmer)) --> bird)", 1f, 0.81f);
     }
 
-    @Test
-    void compound_composition_one_premise3() {
 
-        TestNAR tester = test;
-        tester.believe("<swan --> bird>", 0.9f, 0.9f);
-        tester.askAt(cycles / 2, "<swan --> (swimmer - bird)>"); 
-        tester.mustBelieve(cycles, "<swan --> (swimmer - bird)>", 0.10f, 0.73f); 
-
-    }
-
-    @Test
-    void compound_composition_one_premise4() {
-
-        TestNAR tester = test;
-        tester.believe("<swan --> bird>", 0.9f, 0.9f); 
-        tester.askAt(cycles / 2, "<(swimmer ~ swan) --> bird>"); 
-        tester.mustBelieve(cycles, "<(swimmer ~ swan) --> bird>", 0.10f, 0.73f); 
-
-    }
 
     @Test
     void compound_decomposition_one_premise() {
@@ -254,10 +177,10 @@ public class NAL3Test extends NALTest {
     void testDisjoint3() {
 
         test
-            .believe("--(x-->(&,RealNumber,ComplexNumber,Letter))")
-            .believe("(x-->RealNumber)")
-            .mustBelieve(cycles, "(x-->(ComplexNumber&Letter))", 0f, 0.81f)
-            .mustNotOutput(cycles, "(x-->((&,RealNumber,ComplexNumber,Letter)|RealNumber))", BELIEF, ETERNAL)
+                .believe("--(x-->(&,RealNumber,ComplexNumber,Letter))")
+                .believe("(x-->RealNumber)")
+                .mustBelieve(cycles, "(x-->(ComplexNumber&Letter))", 0f, 0.81f)
+                .mustNotOutput(cycles, "(x-->((&,RealNumber,ComplexNumber,Letter)|RealNumber))", BELIEF, ETERNAL)
         ;
 
     }

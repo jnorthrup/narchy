@@ -260,12 +260,14 @@ public class Opjects extends DefaultTermizer {
 
             float f = beliefFreq;
 
-            boolean isVoid = method.getReturnType() == void.class;
+            Class<?> methodReturnType = method.getReturnType();
+            boolean isVoid = methodReturnType == void.class;
 
             NALTask value;
 
             if (!isVoid) {
-                value = value(opTerm(instance, method, args, nextValue), f, start, end, nar);
+                Term t = opTerm(instance, method, args, nextValue);
+                value = value(t, f, start, end, nar);
             } else {
                 value = null;
             }
@@ -371,11 +373,13 @@ public class Opjects extends DefaultTermizer {
 
         Class<?> returnType = method.getReturnType();
         boolean isVoid = result == null && returnType == void.class;
+        boolean isBoolean = returnType == boolean.class || (returnType == Boolean.class && result!=null);
+
         int xn = 3;
         if (args.length == 0) {
             xn--;
         }
-        if (isVoid) {
+        if (isVoid || isBoolean) {
             xn--;
         }
 
@@ -411,17 +415,16 @@ public class Opjects extends DefaultTermizer {
             }
             x[resultTerm] = tr;
         } else {
-            boolean isBoolean = returnType == boolean.class || returnType == Boolean.class;
             if (isBoolean) {
 
                 boolean b = (Boolean) result;
                 if (!b) {
-                    result = true;
                     negate = true;
                 }
+                result = null;
             }
 
-            if (!isVoid) {
+            if (!isVoid && !isBoolean) {
                 x[resultTerm] = Opjects.this.term(result);
                 assert (x[resultTerm] != null) : "could not termize: " + result;
             }

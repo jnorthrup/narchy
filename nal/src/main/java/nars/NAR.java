@@ -1235,10 +1235,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         PrintStream ps = new PrintStream(o);
 
-        MutableInteger total = new MutableInteger(0), wrote = new MutableInteger(0);
+        MutableInteger total = new MutableInteger(0);
 
         StringBuilder sb = new StringBuilder();
-        tasks().map(each).forEach(x -> {
+        tasks().map(each).filter(Objects::nonNull).forEach(x -> {
 
             total.increment();
 
@@ -1249,18 +1249,24 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             ps.println(x.appendTo(sb, true));
         });
 
+        try {
+            o.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return this;
     }
 
 
+    final static private int outputBufferSize = 128 * 1024;
+
     public NAR output(File o, boolean binary) throws FileNotFoundException {
-        return output(new FileOutputStream(o), binary);
+        return output(new BufferedOutputStream(new FileOutputStream(o), outputBufferSize), binary);
     }
 
-
     public NAR output(File o, Function<Task, Task> f) throws FileNotFoundException {
-        return outputBinary(new FileOutputStream(o), f);
+        return outputBinary(new BufferedOutputStream(new FileOutputStream(o), outputBufferSize), f);
     }
 
     public NAR output(OutputStream o, boolean binary) {

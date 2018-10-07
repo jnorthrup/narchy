@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class OpjectsTest {
 
@@ -26,11 +25,21 @@ public class OpjectsTest {
         public int get() {
             return v;
         }
+
+        public boolean bool() {
+            return true;
+        }
+        public boolean boolFalse() {
+            return false;
+        }
     }
 
 
-    /** self invocation */
-    @Test public void testEvoke() throws Narsese.NarseseException {
+    /**
+     * self invocation
+     */
+    @Test
+    public void testEvoke() throws Narsese.NarseseException {
         final NAR n = NARS.tmp();
 
         int dur = 1;
@@ -51,7 +60,7 @@ public class OpjectsTest {
         final SimpleClass x = objs.the("x", new SimpleClass());
         StringBuilder sb = new StringBuilder();
         n.onTask(sb::append);
-        
+
 
         n.input("set(x,1)! :|:");
 
@@ -70,31 +79,53 @@ public class OpjectsTest {
         assertEquals(2, evokes.size());
     }
 
-   @Test
+    @Test
     public void testObjectMethods() throws Narsese.NarseseException {
         final NAR n = NARS.tmp();
 
 
-
-        
         final Opjects objs = new Opjects(n);
 
         final SimpleClass x = objs.a("x", SimpleClass.class);
         StringBuilder sb = new StringBuilder();
         n.onTask(sb::append);
 
-        
+
         n.input("hashCode(x,#h)! :|:");
         n.run(1);
         n.run(1);
-        assert(!sb.toString().contains("voke"));
+        assertTrue(!sb.toString().contains("voke"));
     }
-
-    /** invoked externally (ex: by user) */
-    @Test public void testInvokeInstanced() {
+    @Test
+    public void testBoolMethod() {
         final NAR n = NARS.tmp();
 
-        
+
+        final Opjects objs = new Opjects(n);
+
+        final SimpleClass x = objs.a("x", SimpleClass.class);
+        StringBuilder sb = new StringBuilder();
+        n.onTask(sb::append);
+
+
+        x.bool();
+        //n.input("hashCode(x,#h)! :|:");
+        //n.run(1);
+        n.run(1);
+        assertTrue(sb.toString().contains("bool(x). 0 %1.0;.90%"));
+
+        x.boolFalse();
+        n.run(1);
+        assertTrue(sb.toString().contains("boolFalse(x). 1 %0.0;.90%"));
+    }
+
+    /**
+     * invoked externally (ex: by user)
+     */
+    @Test
+    public void testInvokeInstanced() {
+        final NAR n = NARS.tmp();
+
 
         final SimpleClass y = new Opjects(n).a("y", SimpleClass.class);
         testInvoke(n, y);
@@ -118,10 +149,10 @@ public class OpjectsTest {
         assertTrue(s.contains("set(y,1)."));
     }
 
-    @Test public void testInvokeWrapped() {
+    @Test
+    public void testInvokeWrapped() {
         final NAR n = NARS.tmp();
 
-        
 
         final SimpleClass y = new Opjects(n).the("y", new SimpleClass());
         testInvoke(n, y);
@@ -132,14 +163,12 @@ public class OpjectsTest {
     public void learnMethodGoal() throws Narsese.NarseseException {
 
 
-
         final NAR n = NARS.tmp();
 
 
         final Opjects objs = new Opjects(n);
 
         final SimpleClass x = objs.a("x", SimpleClass.class);
-
 
 
         n.beliefPriDefault.set(0.05f);
@@ -150,11 +179,6 @@ public class OpjectsTest {
         n.termVolumeMax.set(30);
 
         n.logPriMin(System.out, 0.02f);
-
-
-
-
-
 
 
         int N = 2;
@@ -178,36 +202,14 @@ public class OpjectsTest {
                 }
 
 
-
-
-
                 n.input("$1.0 x(get,(),2)!");
 
                 n.run(50);
             }
 
-            
-
-
-
 
             n.run(50);
         }
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
 
 
     }

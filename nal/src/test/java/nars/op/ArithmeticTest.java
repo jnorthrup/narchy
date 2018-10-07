@@ -64,7 +64,6 @@ class ArithmeticTest {
     @Test
     void test1() throws Narsese.NarseseException {
         assertEquals(
-                //"((#1,add(#1,1))&&(#1<->2))",
                 "((#1,add(#1,1))&&equal(#1,2))",
                 Arithmeticize.apply($.$("(2,3)"), true, rng).toString());
     }
