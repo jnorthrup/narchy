@@ -742,7 +742,7 @@ public class RevisionTest {
         p(ac);
         p(ad);
         assertTrue(aa.conf() > a1.conf());
-        assertTrue(ab.conf() < a1.conf());
+        assertTrue(ab.conf() <= a1.conf());
         assertTrue(ac.conf() < ab.conf());
         assertTrue(ad.conf() < ac.conf());
     }

@@ -978,7 +978,7 @@ public class ConjTest {
 
     @Test
     void testStableConceptualization6() throws Narsese.NarseseException {
-        assertEq("( &&+- ,(--,(\"-\"-->move)),(--,(joy-->cart)),(happy-->cart),(\"+\"-->move))",
+        assertEq("( &&+- ,(--,(\"-\"-->move)),(--,(joy-->cart)),(\"+\"-->move),(happy-->cart))",
                 ceptualStable("((((--,(\"-\"-->move))&|(happy-->cart)) &&+334 (\"+\"-->move)) &&+5 (--,(joy-->cart)))").toString());
     }
 

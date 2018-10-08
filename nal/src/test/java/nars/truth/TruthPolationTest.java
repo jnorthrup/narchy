@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class TruthPolationTest {
 
@@ -22,10 +21,17 @@ class TruthPolationTest {
     public void testEqualEvidenceInSubInterval_of_Task() {
         //TODO repeat test for TruthletTask to test trapezoidal integration
         NALTask T = t(1f, 0.5f, 0, 4);
-        assertEquals(T.truth(), T.truth(2, 1));
+        for (int s = 0; s <=4; s++)
+            for (int e = s; e<=4; e++ )
+                assertEquals(T.truth(), T.truth(s, e, 0));
+        assertTrue( T.truth(2, 10, 1).conf() < T.truth(2, 5, 1).conf());
+        assertEquals(T.truth(), T.truth(0, 4, 0));
         assertEquals(T.truth(), T.truth(0, 4, 1));
         assertEquals(T.truth(), T.truth(2, 3, 1));
-        assertNotEquals(T.truth(), Truth.weaker(T.truth(), T.truth(2, 5, 1)));
+
+//        Truth wa = T.truth(2, 5, 1);
+//        Truth w = Truth.weaker(T.truth(), wa);
+//        assertNotEquals(T.truth(), w);
     }
 
     @Test

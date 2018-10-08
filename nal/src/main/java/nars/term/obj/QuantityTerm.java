@@ -15,7 +15,7 @@ public class QuantityTerm extends ProxyTerm {
     public final Quantity<?> quant;
 
     public QuantityTerm(Quantity<?> q) {
-        super( $.p( $.the(q.getUnit()), $.the( q.getValue() ) ) );
+        super( $.p( $.the(q.getUnit().toString()), $.the( q.getValue() ) ) );
         this.quant = q;
     }
 

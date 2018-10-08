@@ -1,7 +1,6 @@
 package nars;
 
 import jcog.Util;
-import jcog.WTF;
 import jcog.math.FloatRange;
 import jcog.math.FloatRangeRounded;
 import jcog.math.IntRange;
@@ -444,8 +443,7 @@ public abstract class Param {
     public static float evi(float evi, long dt, long dur) {
 
 
-        if (!(dur > 0 && dt >= 0))
-            throw new WTF();
+        assert(dur > 0);
 
         int falloffDurs =
                 1;

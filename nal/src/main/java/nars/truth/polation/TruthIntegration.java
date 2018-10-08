@@ -82,6 +82,10 @@ public class TruthIntegration {
 
 //        boolean mid = qStart + 1 != qEnd;
 
+        if (qStart >= tStart && qEnd <= tEnd) {
+            //internal
+            return t.eviIntegTrapezoidal(dur, qStart, qEnd);
+        }
 
         long[] qt = Longerval.intersectionArray(qStart, qEnd, tStart, tEnd);
         if (/*mid || */(qt != null)) {

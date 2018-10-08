@@ -3,7 +3,6 @@ package nars.term;
 import nars.$;
 import nars.term.atom.Int;
 import nars.term.util.Image;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -13,10 +12,15 @@ class ImageTest {
 
     @Test
     void testNormlizeExt() {
-        Assertions.assertEquals(
+        assertEquals(
                 "reaction(acid,base)",
                 Image.imageNormalize($$("(acid --> (reaction,/,base))")).toString()
         );
+        assertEquals(
+                "reaction(acid)",
+                Image.imageNormalize($$("(acid --> (reaction,/))")).toString()
+        );
+
     }
 
     @Test
@@ -24,6 +28,10 @@ class ImageTest {
         assertEquals(
                 "(neutralization-->(acid,base))",
                 Image.imageNormalize($$("((neutralization,\\,base) --> acid)")).toString()
+        );
+        assertEquals(
+                "(neutralization-->(acid))",
+                Image.imageNormalize($$("((neutralization,\\) --> acid)")).toString()
         );
     }
 
@@ -41,6 +49,10 @@ class ImageTest {
         assertEquals(
                 "(reaction(acid,base)<->x)",
                 $$("(x <-> (acid --> (reaction,/,base)))").toString()
+        );
+        assertEquals(
+                "(reaction(acid)<->x)",
+                $$("(x <-> (acid --> (reaction,/)))").toString()
         );
     }
 

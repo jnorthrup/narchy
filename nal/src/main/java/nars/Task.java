@@ -546,11 +546,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             if (dist == 0) {
                 return evi();
             } else {
-                if (dur == 0) {
-                    return 0;
-                } else {
-                    return Param.evi(evi(), dist, dur);
-                }
+                return (dur == 0) ? 0 : Param.evi(evi(), dist, dur);
             }
 
         }
@@ -928,24 +924,23 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
         int n = times.length; assert(n > 1);
 
-        float e = 0;
+        double e = 0;
         float eviPrev = evi(times[0], dur);
         for (int i = 1; i < n; i++) {
-            long b = times[i];
-            long a = times[i - 1];
+            long a = times[i - 1], b = times[i];
             long dt = b - a;
+            assert(dt > 0);
             if (dt == 0)
                 continue; //duplicate time point, skip
-            assert(dt > 0);
             //assert(ti != ETERNAL && ti != XTERNAL && ti > times[i - 1] && ti < times[i + 1]);
             float eviNext = evi(b, dur);
 
-            e += (eviNext+eviPrev)/2 * dt;
+            e += (eviNext+eviPrev)/2 * (dt+1);
 
             eviPrev = eviNext;
         }
 
-        return e; /* area */
+        return (float) e;
     }
 
     byte punc();
