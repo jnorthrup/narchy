@@ -34,9 +34,9 @@ public class UGenOutput extends AudioIO implements SoundProducer {
     @Override
     protected boolean start() {
 
-        IOAudioFormat ioAudioFormat = getContext().getAudioFormat();
-        AudioFormat audioFormat =
-                new AudioFormat(ioAudioFormat.sampleRate, ioAudioFormat.bitDepth, ioAudioFormat.outputs, ioAudioFormat.signed, ioAudioFormat.bigEndian);
+//        IOAudioFormat ioAudioFormat = getContext().getAudioFormat();
+//        AudioFormat audioFormat =
+//                new AudioFormat(ioAudioFormat.sampleRate, ioAudioFormat.bitDepth, ioAudioFormat.outputs, ioAudioFormat.signed, ioAudioFormat.bigEndian);
 
 //        this.channels = audioFormat.getChannels();
 
@@ -48,10 +48,11 @@ public class UGenOutput extends AudioIO implements SoundProducer {
     @Override
     protected UGen getAudioInput(int[] channels) {
 
-        IOAudioFormat ioAudioFormat = getContext().getAudioFormat();
+        AudioContext ctx = getContext();
+        IOAudioFormat ioAudioFormat = ctx.getAudioFormat();
         AudioFormat audioFormat =
                 new AudioFormat(ioAudioFormat.sampleRate, ioAudioFormat.bitDepth, ioAudioFormat.inputs, ioAudioFormat.signed, ioAudioFormat.bigEndian);
-        return new JavaSoundRTInput(getContext(), audioFormat);
+        return new JavaSoundRTInput(ctx, audioFormat);
     }
 
     @Override
@@ -66,8 +67,7 @@ public class UGenOutput extends AudioIO implements SoundProducer {
         for (int i = 0; i < samples; i++) {
 
             int j = 0;
-            float vi = context.out.getValue(j, i);
-            buf[c++] = vi;
+            buf[c++] = context.out.getValue(j, i);
         }
 
 

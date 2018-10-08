@@ -8,6 +8,7 @@ import nars.term.Variable;
 import nars.term.anon.Anom;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -160,7 +161,11 @@ class TermIOTest {
                 $.v(VAR_PATTERN, (byte)1),
                 Atomic.the("x"),
                 Int.the(1),
+                Int.the(-4),
                 Anom.the(1),
+                Anom.the(4),
+                Bool.True, Bool.False, Bool.Null,
+                ImgExt, ImgInt
         };
 
         for (Term a : anons) {

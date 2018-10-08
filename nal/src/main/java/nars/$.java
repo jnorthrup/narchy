@@ -264,7 +264,7 @@ public enum $ {
 
 
     public static Variable varDep(int i) {
-        return (nars.term.Variable) v(VAR_DEP, (byte) i);
+        return v(VAR_DEP, (byte) i);
     }
 
     public static Variable varDep(String s) {
@@ -272,7 +272,7 @@ public enum $ {
     }
 
     public static Variable varIndep(int i) {
-        return (nars.term.Variable) v(VAR_INDEP, (byte) i);
+        return v(VAR_INDEP, (byte) i);
     }
 
     public static Variable varIndep(String s) {
@@ -281,7 +281,7 @@ public enum $ {
 
 
     public static Variable varQuery(int i) {
-        return (nars.term.Variable) v(VAR_QUERY, (byte) i);
+        return v(VAR_QUERY, (byte) i);
     }
 
     public static Variable varQuery(String s) {
@@ -524,19 +524,26 @@ public enum $ {
         }
     }
 
+    private static final Atomic DIV = $.the("div");
     public static Term the(Fraction o) {
-        return $.func("div", $.the(o.getNumerator()), $.the(o.getDenominator()));
+        return $.func(DIV, $.the(o.getNumerator()), $.the(o.getDenominator()));
     }
 
     public static Term the(Object x) {
         if (x instanceof Term)
             return ((Term) x);
 
-        if (x instanceof Number) {
+        if (x instanceof Number)
             return the((Number) x);
-        }
 
-        return Atomic.the(x.toString());
+        if (x instanceof String)
+            return the((String)x);
+
+        throw new UnsupportedOperationException(x + " termize fail");
+    }
+
+    public static Atomic the(String x) {
+        return Atomic.the(x);
     }
 
     public static Term the(Path file) {
@@ -784,6 +791,12 @@ public enum $ {
 
     public static Term func(Atomic f, List<Term> args) {
         return $.func(f, args.toArray(Op.EmptyTermArray));
+    }
+
+    public static Term funcImageLast(Atomic f, Term... x) {
+        Term[] xx = ArrayUtils.insert(0, x, f);
+        xx[x.length] = ImgExt;
+        return INH.the(x[x.length-1], PROD.the(xx));
     }
 
 

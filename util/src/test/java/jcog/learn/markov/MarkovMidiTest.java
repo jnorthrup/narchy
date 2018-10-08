@@ -1,13 +1,11 @@
-package jcog.learn.markov.test;
+package jcog.learn.markov;
 
-
-import jcog.learn.markov.MarkovMIDI;
 
 import javax.sound.midi.*;
 import java.io.File;
 import java.io.IOException;
 
-public class TrackTest {
+public class MarkovMidiTest {
     public static final byte[] notes = {0x3C, 0x3E, 0x40, 0x41, 0x43};
 
     private static void makeSong(String filename)

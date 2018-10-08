@@ -51,7 +51,7 @@ public class Synthiano extends Widget {
 
         
         beatClock = new Clock(ac, 800.0f);
-        beatClock.setTicksPerBeat(4);
+        beatClock.ticksPerBeat(4);
         beatClock.on(arpeggiator);
         ac.out.dependsOn(beatClock);
 

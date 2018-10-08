@@ -49,10 +49,8 @@ public class arpeggiator_01 {
         WavePlayer wav = new WavePlayer(ac, arpeggiator, WaveFactory.SINE);
 
 
+        beatClock = ac.clock(800f, arpeggiator).ticksPerBeat(4);
 
-        beatClock = new Clock(ac, 800.0f);
-        beatClock.setTicksPerBeat(4);
-        beatClock.on(arpeggiator);
 
 
         gain = new Gain(ac, 1, gainEnvelope);

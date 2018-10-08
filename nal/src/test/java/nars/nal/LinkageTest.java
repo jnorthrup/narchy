@@ -31,22 +31,22 @@ class LinkageTest extends NALTest {
     private final int runCycles = 70;
 
 
-    private void ProperlyLinkedTest(@NotNull String premise1, @NotNull String premise2) throws Exception {
-
-        test.requireConditions = false;
-        TestNAR tester = test;
-        tester.believe(premise1); 
-        tester.believe(premise2); 
-
-        tester.run(runCycles);
-
-        Concept ret = tester.nar.conceptualize(premise1);
-        assertTrue(isPassed2(premise2, ret), ret + " termlinks contains " + premise2);
-
-        Concept ret2 = tester.nar.conceptualize(premise2);
-        assertTrue(isPassed2(premise1, ret2), ret2 + " termlinks contains " + premise1);
-
-    }
+//    private void ProperlyLinkedTest(@NotNull String premise1, @NotNull String premise2) throws Exception {
+//
+//        test.requireConditions = false;
+//        TestNAR tester = test;
+//        tester.believe(premise1);
+//        tester.believe(premise2);
+//
+//        tester.run(runCycles);
+//
+//        Concept ret = tester.nar.conceptualize(premise1);
+//        assertTrue(isPassed2(premise2, ret), ret + " termlinks contains " + premise2);
+//
+//        Concept ret2 = tester.nar.conceptualize(premise2);
+//        assertTrue(isPassed2(premise1, ret2), ret2 + " termlinks contains " + premise1);
+//
+//    }
 
     private boolean isPassed2(String premise1Str, @Nullable Concept ret2) {
         Term premise1 = null;
@@ -264,13 +264,13 @@ class LinkageTest extends NALTest {
 
     @Test
     void Linkage_NAL5_abduction() throws Exception {
-        ProperlyLinkedTest("((robin-->bird)==>(robin-->animal))", "(robin-->animal)");
+        ProperlyLinkedIndirectlyTest("((robin-->bird)==>(robin-->animal))", "(robin-->animal)");
     }
 
 
     @Test
     void Linkage_NAL5_detachment() throws Exception {
-        ProperlyLinkedTest("((robin-->bird)==>(robin-->animal))", "(robin-->bird)");
+        ProperlyLinkedIndirectlyTest("((robin-->bird)==>(robin-->animal))", "(robin-->bird)");
     }
 
     @Test

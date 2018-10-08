@@ -1,18 +1,18 @@
 //image structural transform forward
-(P --> I), X, is(P,"*"), --subOf(P,/), subsMin(P,2), subOf(P,X) |- imageExt((P-->I),X), (Belief:Identity, Goal:Identity)
-    (P --> I), X, is(P,"*"), --subOf(P,/), subsMin(P,2), subOf(P,X), task("?") |- imageExt((P-->I),X), (Punctuation:Question)
-    (P --> I), X, is(P,"*"), --subOf(P,/), subsMin(P,2), subOf(P,X), task("@") |- imageExt((P-->I),X), (Punctuation:Quest)
-(I --> P), X, is(P,"*"), --subOf(P,\), subsMin(P,2), subOf(P,X) |- imageInt((I-->P),X), (Belief:Identity, Goal:Identity)
-    (I --> P), X, is(P,"*"), --subOf(P,\), subsMin(P,2), subOf(P,X), task("?") |- imageInt((I-->P),X), (Punctuation:Question)
-    (I --> P), X, is(P,"*"), --subOf(P,\), subsMin(P,2), subOf(P,X), task("@") |- imageInt((I-->P),X), (Punctuation:Quest)
+(P --> I), X, is(P,"*"), subsMin(P,1), subOf(P,X) |- imageExt((P-->I),X), (Belief:Identity, Goal:Identity)
+    (P --> I), X, is(P,"*"), subsMin(P,1), subOf(P,X), task("?") |- imageExt((P-->I),X), (Punctuation:Question)
+    (P --> I), X, is(P,"*"), subsMin(P,1), subOf(P,X), task("@") |- imageExt((P-->I),X), (Punctuation:Quest)
+(I --> P), X, is(P,"*"), subsMin(P,1), subOf(P,X) |- imageInt((I-->P),X), (Belief:Identity, Goal:Identity)
+    (I --> P), X, is(P,"*"), subsMin(P,1), subOf(P,X), task("?") |- imageInt((I-->P),X), (Punctuation:Question)
+    (I --> P), X, is(P,"*"), subsMin(P,1), subOf(P,X), task("@") |- imageInt((I-->P),X), (Punctuation:Quest)
 
 
 
 //image structural transform reverse
-(X --> P), X, is(P,"*"), subsMin(P,2), subOf(P,/) |- imageNormalize((X-->P)), (Belief:Identity, Goal:Identity)
+(X --> P), X,                is(P,"*"), subsMin(P,2), subOf(P,/) |- imageNormalize((X-->P)), (Belief:Identity, Goal:Identity)
     (X --> P), X, task("?"), is(P,"*"), subsMin(P,2), subOf(P,/) |- imageNormalize((X-->P)), (Punctuation:Question)
     (X --> P), X, task("@"), is(P,"*"), subsMin(P,2), subOf(P,/) |- imageNormalize((X-->P)), (Punctuation:Quest)
-(P --> X), X, is(P,"*"), subsMin(P,2), subOf(P,\) |- imageNormalize((P-->X)), (Belief:Identity, Goal:Identity)
+(P --> X), X,                is(P,"*"), subsMin(P,2), subOf(P,\) |- imageNormalize((P-->X)), (Belief:Identity, Goal:Identity)
     (P --> X), X, task("?"), is(P,"*"), subsMin(P,2), subOf(P,\) |- imageNormalize((P-->X)), (Punctuation:Question)
     (P --> X), X, task("@"), is(P,"*"), subsMin(P,2), subOf(P,\) |- imageNormalize((P-->X)), (Punctuation:Quest)
 
@@ -21,10 +21,10 @@
 //(P-->I), (R-->I), is(P,"*"), subsMin(P,2), subsMin(R,2), neqAndCom(P,R) |- ...
 
 ////composition on both sides of a statement
-    ((X,P) --> Z), (X --> Y), is(Z,"?"), task("?") |- ((B,P) --> (A,P)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+    //((X,P) --> Z), (X --> Y), is(Z,"?"), task("?") |- ((X,P) --> (Y,P)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
     //TODO generalize: imageComposition(A,X,B,Y)
-    ((X,P) --> (Y,P)) , (X --> Y), neq(X,\), neq(Y,\), neq(X,/), neq(Y,/), task("?") |- ((X,P) --> (Y,P)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
-    ((P,X) --> (P,Y)) , (X --> Y), neq(X,\), neq(Y,\), neq(X,/), neq(Y,/), task("?") |- ((P,X) --> (P,Y)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+    ((X,P) --> (Y,P)) , (X --> Y), neq(X,\), neq(Y,\), neq(X,/), neq(Y,/), task("?") |- ((X,P) --> (Y,P)), (Belief:BeliefStructuralReduction, Punctuation:Belief)
+    ((P,X) --> (P,Y)) , (X --> Y), neq(X,\), neq(Y,\), neq(X,/), neq(Y,/), task("?") |- ((P,X) --> (P,Y)), (Belief:BeliefStructuralReduction, Punctuation:Belief)
 //
 //    ((\,N,A,_) --> ?X), (N --> R), task("?") |- ((\,N,A,_) --> (\,R,A,_)), (Truth:BeliefStructuralDeduction, Punctuation:Judgment)
 //    ((\,N,A,_) --> (\,R,A,_)), (N --> R), task("?") |- ((\,N,A,_) --> (\,R,A,_)), (Truth:BeliefStructuralDeduction, Punctuation:Judgment)

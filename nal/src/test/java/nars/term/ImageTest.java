@@ -1,8 +1,8 @@
-package nars.term.util;
+package nars.term;
 
 import nars.$;
-import nars.term.Term;
 import nars.term.atom.Int;
+import nars.term.util.Image;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -69,5 +69,9 @@ class ImageTest {
         Term y = Image.imageExt(x, $.varDep(1));
         assertEquals("(#1-->(reaction,acid,/))", y.toString());
         assertEquals(x, Image.imageNormalize(y));
+    }
+
+    @Test void testOneArgFunctionAsImage() {
+        assertEquals("(y-->(x,/))", $.funcImageLast($.the("x"), $.the("y")).toString());
     }
 }

@@ -90,9 +90,7 @@ public class MarkovChain<T> {
                 tu.add(t);
             } else {
                 current[0] = current[0].learn(getOrAdd(tu), strength);
-                tuple[0] = new FasterList<T>(1);
-                tuple[0].add(t);
-                
+                (tuple[0] = new FasterList<>(1)).add(t);
             }
         });
 

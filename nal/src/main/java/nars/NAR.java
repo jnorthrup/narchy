@@ -50,7 +50,7 @@ import nars.time.Tense;
 import nars.time.Time;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
-import nars.util.TimeAware;
+
 import org.HdrHistogram.Histogram;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
 import org.eclipse.collections.api.tuple.Pair;
@@ -427,7 +427,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return want(term, Tense.Eternal, freq, conf);
     }
 
-    public TimeAware believe(String term, Tense tense, float freq, float conf) {
+    public NAR believe(String term, Tense tense, float freq, float conf) {
         try {
             believe(priDefault(BELIEF), $(term), time(tense), freq, conf);
         } catch (NarseseException e) {
@@ -456,7 +456,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         }
     }
 
-    public TimeAware believe(String... tt) throws NarseseException {
+    public NAR believe(String... tt) throws NarseseException {
 
         for (String b : tt)
             believe(b, true);
@@ -464,7 +464,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return this;
     }
 
-    public TimeAware believe(String termString, boolean isTrue) throws NarseseException {
+    public NAR believe(String termString, boolean isTrue) throws NarseseException {
         believe($(termString), isTrue);
         return this;
     }
@@ -570,7 +570,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /**
      * logs tasks and other budgeted items with a summary exceeding a threshold
      */
-    public TimeAware logPriMin(Appendable out, float priThresh) {
+    public NAR logPriMin(Appendable out, float priThresh) {
         return log(out, v -> {
             Prioritized b = null;
             if (v instanceof Prioritized) {
@@ -584,7 +584,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         });
     }
 
-    public TimeAware logWhen(Appendable out, boolean past, boolean present, boolean future) {
+    public NAR logWhen(Appendable out, boolean past, boolean present, boolean future) {
 
         if (past && present && future)
             return log(out);
@@ -1083,7 +1083,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
 
-    public TimeAware trace() {
+    public NAR trace() {
         trace(System.out);
         return this;
     }
@@ -1107,7 +1107,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return this == obj;
     }
 
-    public TimeAware believe(Term c, Tense tense) {
+    public NAR believe(Term c, Tense tense) {
         believe(c, tense, 1f);
         return this;
     }
@@ -1161,19 +1161,19 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return inputBinary(new GZIPInputStream(new FileInputStream(input), FILE_STREAM_BUFFER_SIZE));
     }
 
-    public TimeAware outputBinary(File f) throws IOException {
+    public NAR outputBinary(File f) throws IOException {
         return outputBinary(f, false);
     }
 
-    public final TimeAware outputBinary(File f, boolean append) throws IOException {
+    public final NAR outputBinary(File f, boolean append) throws IOException {
         return outputBinary(f, append, ((Task t) -> t));
     }
 
-    public final TimeAware outputBinary(File f, boolean append, Predicate<Task> each) throws IOException {
+    public final NAR outputBinary(File f, boolean append, Predicate<Task> each) throws IOException {
         return outputBinary(f, append, (Task t) -> each.test(t) ? t : null);
     }
 
-    public TimeAware outputBinary(File f, boolean append, Function<Task, Task> each) throws IOException {
+    public NAR outputBinary(File f, boolean append, Function<Task, Task> each) throws IOException {
         FileOutputStream f1 = new FileOutputStream(f, append);
         OutputStream ff = new GZIPOutputStream(f1, FILE_STREAM_BUFFER_SIZE);
         outputBinary(ff, each);
@@ -1181,11 +1181,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return this;
     }
 
-    public final TimeAware outputBinary(OutputStream o) {
+    public final NAR outputBinary(OutputStream o) {
         return outputBinary(o, (Task x) -> x);
     }
 
-    public final TimeAware outputBinary(OutputStream o, Predicate<Task> filter) {
+    public final NAR outputBinary(OutputStream o, Predicate<Task> filter) {
         return outputBinary(o, (Task x) -> filter.test(x) ? x : null);
     }
 

@@ -27,6 +27,7 @@ import nars.index.concept.HijackConceptIndex;
 import nars.op.Arithmeticize;
 import nars.op.Factorize;
 import nars.op.Introduction;
+import nars.op.language.NARSpeak;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -51,6 +52,8 @@ import spacegraph.video.Draw;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
@@ -221,6 +224,31 @@ abstract public class NAgentX extends NAgent {
 
     static void initPlugins2(NAR n, NAgent a) {
         //new Spider(n, Iterables.concat(Iterables.concat(java.util.List.of(a.id, n.self()), a.actions), a.sensors));
+
+        new NARSpeak.VocalCommentary(n);
+
+        AudioContext cc = new AudioContext();
+        Clock c = cc.clock(200f);
+        new Metronome(a.id.term(), c, n);
+        cc.printCallChain();
+
+
+        Runtime.getRuntime().addShutdownHook(new Thread(()->{
+            try {
+
+                String path = System.getProperty("java.io.tmpdir") + "/" + a.getClass().getSimpleName() + ".nal";
+
+                n.outputBinary(new File(path),
+                        false, (Task t)->{
+                   return Task.eternalized(t,1, Param.TRUTH_MIN_EVI, n);
+                });
+
+                System.err.println("eternalized memory saved to: " + path);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
     }
 
     private static NAgent metavisor(NAgent a) {
@@ -533,7 +561,7 @@ abstract public class NAgentX extends NAgent {
 
 
     private static class Metronome {
-        public Metronome(Clock cc, NAR n) {
+        public Metronome(Term id, Clock cc, NAR n) {
             cc.on(new Auvent<Clock>() {
 
                 public final Envelope kickEnv, snareEnv;
@@ -573,14 +601,14 @@ abstract public class NAgentX extends NAgent {
                         snareEnv.add(0.5f, 2.00f);
                         snareEnv.add(0.2f, 8.0f);
                         snareEnv.add(0.0f, 80.0f);
-                        n.believe($.the("snare"), Tense.Present);
+                        n.believe($.inh("snare", id), Tense.Present);
                     }
                     if (c.isBeat(4)) {
 
                         kickEnv.add(0.5f, 2.0f);
                         kickEnv.add(0.2f, 5.0f);
                         kickEnv.add(0.0f, 50.0f);
-                        n.believe($.the("kick"), Tense.Present);
+                        n.believe($.inh("kick", id), Tense.Present);
 
 
                     }

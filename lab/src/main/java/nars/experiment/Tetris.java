@@ -89,8 +89,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
         addCamera(
                 pixels = new Bitmap2DSensor<>(
-                        (x, y) -> $.func((Atomic)id, $.the(x), $.the(y))
-                        , this, n)
+                        (x, y) -> $.funcImageLast((Atomic)id, $.p(x, y)),
+                        this, n)
 
         );
 

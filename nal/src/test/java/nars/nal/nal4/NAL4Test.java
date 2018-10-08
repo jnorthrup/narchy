@@ -124,6 +124,12 @@ public class NAL4Test extends NALTest {
     }
 
     @Test
+    void structural_transformation_one_arg() {
+        test.believe("reaction(acid)", 1.0f, 0.9f);
+        test.mustBelieve(CYCLES, "(acid --> (reaction,/))", 1.0f, 0.9f);
+    }
+
+    @Test
     public void structural_transformation6() {
         test.believe("((neutralization,acid,\\) --> base)", 1.0f, 0.9f) //en("Something that can neutralize a base is an acid.");
                 .mustBelieve(CYCLES, "(neutralization --> (acid,base))", 1.0f, 0.9f) //en("Something that can be neutralized by an acid is a base.");
@@ -300,7 +306,7 @@ public class NAL4Test extends NALTest {
     @Test
     public void composition_on_both_sides_of_a_statement_2() throws Narsese.NarseseException {
 
-        test.believe("animal:bird",1.0f,0.9f) //en("Bird is a type of animal.");
+        test.believe("(bird-->animal)",1.0f,0.9f) //en("Bird is a type of animal.");
         .ask("((bird,plant) --> (animal,plant))")
         .mustBelieve(CYCLES, "((bird,plant) --> (animal,plant))", 1.0f, 0.81f) //en("The relation between bird and plant is a type of relation between animal and plant.");
         ;

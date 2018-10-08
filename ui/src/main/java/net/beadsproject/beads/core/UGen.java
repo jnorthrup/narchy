@@ -83,9 +83,9 @@ public abstract class UGen extends Auvent {
      */
     private long lastTimeStep;
 
-    private boolean timerMode;
-    private long timeTakenLastUpdate;
-    private long timeTemp;
+    //private boolean timerMode;
+    //private long timeTakenLastUpdate;
+    //private long timeTemp;
 
     /**
      * Used to determine how a UGen sets its outputs up before calculateBuffer() is called.
@@ -135,8 +135,8 @@ public abstract class UGen extends Auvent {
         lastTimeStep = -1;
         outputInitializationRegime = OutputInitializationRegime.JUNK;
         outputPauseRegime = OutputPauseRegime.ZERO;
-        timerMode = false;
-        timeTemp = 0;
+        //timerMode = false;
+        //timeTemp = 0;
 
         setIns(ins);
         setOuts(outs);
@@ -302,14 +302,13 @@ public abstract class UGen extends Auvent {
             }
         });
 
-        int size = dependents.size();
-        
+
         if (!noInputs) {
             noInputs = true;
             for (int i = 0; i < inputsAtChannel.length; i++) {
                 
                 
-                size = inputsAtChannel[i].size();
+                int size = inputsAtChannel[i].size();
                 bufIn[i] = context.getZeroBuf();
                 if (size == 1) {
                     BufferPointer bp = inputsAtChannel[i].get(0);
@@ -365,21 +364,23 @@ public abstract class UGen extends Auvent {
     public void update() {
         if (!isPaused()) {
             if (!isUpdated()) {
-                if (timerMode) {
-                    timeTemp = System.nanoTime();
-                }
+                //if (timerMode) {
+                    //timeTemp = System.nanoTime();
+                //}
                 lastTimeStep = context.getTimeStep(); 
                 pullInputs();
                 
                 
                 initializeOuts();
                 gen();
-                if (timerMode) {
-                    timeTakenLastUpdate = System.nanoTime() - timeTemp;
-                }
+                //if (timerMode) {
+                    //timeTakenLastUpdate = System.nanoTime() - timeTemp;
+                //}
             }
             
-            if (isPaused()) setOutsToPause();
+
+        } else {
+            setOutsToPause();
         }
     }
 
@@ -817,18 +818,14 @@ public abstract class UGen extends Auvent {
         super.pause(paused);
     }
 
-    public boolean isTimerMode() {
-        return timerMode;
-    }
+//    public boolean isTimerMode() {
+//        return timerMode;
+//    }
+//
+//    public void setTimerMode(boolean timerMode) {
+//        this.timerMode = timerMode;
+//    }
 
-    public void setTimerMode(boolean timerMode) {
-        this.timerMode = timerMode;
-    }
-
-    
-    public long getTimeTakenLastUpdate() {
-        return timeTakenLastUpdate;
-    }
 
     /**
      * BufferPointer is a nested class used by UGens to keep track of the output buffers of other UGens connected to their inputs.

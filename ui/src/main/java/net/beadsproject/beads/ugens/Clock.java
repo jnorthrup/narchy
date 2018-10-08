@@ -3,14 +3,11 @@
  */
 package net.beadsproject.beads.ugens;
 
-import jcog.data.list.FasterList;
 import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.Auvent;
 import net.beadsproject.beads.core.AuventArray;
 import net.beadsproject.beads.core.UGen;
 import net.beadsproject.beads.events.IntegerBead;
-
-import java.util.List;
 
 /**
  * A sample rate Clock. A Clock generates timing data at two levels: ticks and beats. It notifies an {@link AuventArray} of listeners at each tick. These listeners can query the Clock to find out the current tick count, if it is on a beat, and the current beat count. The rate of ticking of the Clock is controlled by an interval envelope.
@@ -132,14 +129,14 @@ public class Clock extends UGen implements IntegerBead {
         listeners.remove(newListener);
     }
 
-    /**
-     * Gets an ArrayList of listeners.
-     *
-     * @return ArrayList of listeners.
-     */
-    public List<Auvent> getMessageListeners() {
-        return new FasterList(listeners.getBeads());
-    }
+//    /**
+//     * Gets an ArrayList of listeners.
+//     *
+//     * @return ArrayList of listeners.
+//     */
+//    public List<Auvent> getMessageListeners() {
+//        return new FasterList(listeners.getBeads());
+//    }
 
     /**
      * Resets the Clock immediately.
@@ -248,8 +245,9 @@ public class Clock extends UGen implements IntegerBead {
      *
      * @param ticksPerBeat the new ticks per beat.
      */
-    public void setTicksPerBeat(int ticksPerBeat) {
+    public Clock ticksPerBeat(int ticksPerBeat) {
         this.ticksPerBeat = Math.max(1, ticksPerBeat);
+        return this;
     }
 
     /**

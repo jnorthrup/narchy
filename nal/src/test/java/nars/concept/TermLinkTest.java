@@ -63,7 +63,12 @@ class TermLinkTest {
         );
     }
     @Test void testImplConjTemplates2() {
-        testTemplates("(( &&+- ,a($1,#2),b(#2)) ==>+- c($1))",
+        testTemplates("(( a($1,#2) &&+- b(#2)) ==>+- c($1))",
+                "TODO"
+        );
+    }
+    @Test void testImplConjTemplates2a() {
+        testTemplates("(( a(z,#1) &&+- b(#1)) ==>+- c(z))",
                 "TODO"
         );
     }
@@ -205,6 +210,11 @@ class TermLinkTest {
     void testTemplateSimProd() {
         testTemplates("(c<->a)",
                 "[a, c]");
+    }
+    @Test
+    void testTemplateSimWithIndep() {
+        testTemplates("(x($1)<->y($1))",
+                "[x($1), y($1)]");
     }
     @Test
     void testInheritSet() {

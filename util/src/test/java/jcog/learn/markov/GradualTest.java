@@ -1,8 +1,5 @@
-package jcog.learn.markov.test;
+package jcog.learn.markov;
 
-
-import jcog.learn.markov.MarkovChain;
-import jcog.learn.markov.MarkovSampler;
 
 /**
  * Tests the gradual chaining methods of the data structure.

@@ -20,7 +20,7 @@ public enum Image { ;
     public static final Functor imageInt = Functor.f2Inline("imageInt", Image::imageInt);
     public static final Functor imageExt = Functor.f2Inline("imageExt", Image::imageExt);
 
-    static Term imageExt(Term t, Term x) {
+    public static Term imageExt(Term t, Term x) {
         
         
         if (t.op()==INH) {

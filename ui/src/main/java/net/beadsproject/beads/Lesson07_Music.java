@@ -25,18 +25,15 @@ class Lesson07_Music {
              * This example is more sophisticated than the previous ones. It uses
              * nested code.
              */
-            Clock clock = new Clock(ac, 700);
-            clock.on(
-                    
-                    new Auvent() {
-                        
+            Clock clock = ac.clock(700f, new Auvent() {
+
                         int pitch;
 
                         @Override
                         public void on(Auvent message) {
                             Clock c = (Clock) message;
                             if (c.isBeat()) {
-                                
+
                                 if (random(1) < 0.5) return;
                                 pitch = Pitch.forceToScale((int) random(12), Pitch.dorian);
                                 float freq = Pitch.mtof(pitch + (int) random(5) * 12 + 32);
@@ -48,7 +45,7 @@ class Lesson07_Music {
                                 ((Envelope) g.getGainUGen()).add(0, random(7000), g.die());
                             }
                             if (c.getCount() % 4 == 0) {
-                                
+
                                 int pitchAlt = pitch;
                                 if (random(1) < 0.2)
                                     pitchAlt = Pitch.forceToScale((int) random(12), Pitch.dorian) + (int) random(2) * 12;
@@ -75,7 +72,7 @@ class Lesson07_Music {
                         }
                     }
             );
-            ac.out.dependsOn(clock);
+
 
             ac.start();
             Util.sleepMS(1000000L);

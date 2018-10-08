@@ -146,11 +146,8 @@ public enum ArrayUtils {;
      * @param array the array to shallow clone, may be {@code null}
      * @return the cloned array, {@code null} if {@code null} input
      */
-    public static <T> T[] clone(final T[] array) {
-        if (array == null) {
-            return null;
-        }
-        return array.clone();
+    private static <T> T[] clone(final T[] array) {
+        return array == null ? null : array.clone();
     }
 
     /**
@@ -8117,27 +8114,29 @@ public enum ArrayUtils {;
          * array, by inspecting the component type of 'array'.
          */
 
-        if (array == null) {
+        if (array == null)
             return null;
-        }
-        if (values == null || values.length == 0) {
-            return clone(array);
-        }
-        if (index < 0 || index > array.length) {
-            throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + array.length);
-        }
 
-        final Class<?> type = array.getClass().getComponentType();
+        if (values == null || values.length == 0)
+            return clone(array);
+
+        if (index < 0 || index > array.length)
+            throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + array.length);
+
+
+        //final Class<?> type = array.getClass().getComponentType();
         @SuppressWarnings("unchecked")
-        T[] result = (T[]) Array.newInstance(type, array.length + values.length);
+        //T[]) Array.newInstance(type,
+                T[] result = Arrays.copyOf(array, array.length + values.length);
 
         System.arraycopy(values, 0, result, index, values.length);
-        if (index > 0) {
+
+        if (index > 0)
             System.arraycopy(array, 0, result, 0, index);
-        }
-        if (index < array.length) {
+
+        if (index < array.length)
             System.arraycopy(array, index, result, index + values.length, array.length - index);
-        }
+
         return result;
     }
 
@@ -8724,6 +8723,7 @@ public enum ArrayUtils {;
         }
 
     }
+
     public static void sort(byte[] a, int left, int right /* inclusive */, ByteToByteFunction v) {
 
 
@@ -8738,6 +8738,7 @@ public enum ArrayUtils {;
         }
 
     }
+
     /**
      * sorts descending
      */

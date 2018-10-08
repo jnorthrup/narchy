@@ -1,4 +1,4 @@
 //raw image question
-P, X, is(P,"*"), subsMin(P,2), subOf(P,X), task("?") |- imageExt((P-->?1),X), (Punctuation:Question)
-P, X, is(P,"*"), subsMin(P,2), subOf(P,X), task("@") |- imageExt((P-->?1),X), (Punctuation:Quest)
+P, X, is(P,"*"), subsMin(P,1), subOf(P,X), task("?") |- imageExt((P-->?1),X), (Punctuation:Question)
+P, X, is(P,"*"), subsMin(P,1), subOf(P,X), task("@") |- imageExt((P-->?1),X), (Punctuation:Quest)
   //P, X, is(P,"*"), subsMin(P,2), subOf(P,X) |- imageExt((P-->#1),X), (Belief:Identity, Goal:Identity)

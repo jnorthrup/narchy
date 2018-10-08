@@ -20,7 +20,6 @@ import nars.term.Term;
 
 import java.util.Random;
 import java.util.Set;
-import java.util.function.BiPredicate;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -71,9 +70,9 @@ public class MatrixDeriver extends Deriver {
         do {
 
 
-            int premisesMax = conceptsPerIteration.intValue() * premisesPerConcept;
 
-            FasterList<Premise> premises = hypothesize(premisesMax, d);
+
+            FasterList<Premise> premises = hypothesize(d);
 
             for (Premise p : premises)
                 p.derive(d, matchTTL, deriveTTL);
@@ -89,10 +88,9 @@ public class MatrixDeriver extends Deriver {
     /**
      * forms premises
      */
-    private FasterList<Premise> hypothesize(int premisesMax, Derivation d) {
+    private FasterList<Premise> hypothesize(Derivation d) {
 
-        int[] premisesRemain = new int[]{premisesMax};
-        int[] premisePerConceptRemain = new int[1];
+        int premisesMax = conceptsPerIteration.intValue() * premisesPerConcept;
 
         int tasklinks = Math.max(1, Math.round(premisesMax / ((float) termLinksPerTaskLink)));
 
@@ -100,22 +98,17 @@ public class MatrixDeriver extends Deriver {
         FasterList<Premise> premises = d.premiseBuffer;
         premises.clear();
 
-        @Deprecated BiPredicate<Task, Term> continueHypothesizing = (task, beliefTerm) -> {
-            premises.add( new Premise(task, beliefTerm ));
-            return (premisePerConceptRemain[0]-- > 0) && (--premisesRemain[0] > 0);
-        };
 
-        int[] conceptsRemain = new int[]{2 * (int) Math.ceil(premisesMax / ((float) (termLinksPerTaskLink * termLinksPerTaskLink)))};
+
+
+
+        int[] conceptsRemain = new int[]{(int) Math.ceil(premisesMax / ((float) (termLinksPerTaskLink * termLinksPerTaskLink)))};
 
         source.accept(a -> {
 
-            premisePerConceptRemain[0] = premisesPerConcept;
+            premiseMatrix(a, premisesMax, tasklinks, termLinksPerTaskLink, d);
 
-            premiseMatrix(a,
-                    continueHypothesizing,
-                    tasklinks, termLinksPerTaskLink, d);
-
-            return premisesRemain[0] > 0 && conceptsRemain[0]-- > 0;
+            return (premises.size() < premisesMax) && conceptsRemain[0]-- > 0;
         });
 
 
@@ -132,7 +125,9 @@ public class MatrixDeriver extends Deriver {
     /**
      * hypothesize a matrix of premises, M tasklinks x N termlinks
      */
-    private void premiseMatrix(Activate a, BiPredicate<Task, Term> continueHypothesizing, int _tasklinks, int _termlinksPerTasklink, Derivation d) {
+    private void premiseMatrix(Activate a, int premisesMax, int _tasklinks, int _termlinksPerTasklink, Derivation d) {
+
+        int[] premisePerConceptRemain = new int[] { premisesPerConcept };
 
         nar.emotion.conceptFire.increment();
 
@@ -147,16 +142,16 @@ public class MatrixDeriver extends Deriver {
         if (commit(nar, tasklinks, termlinks)) {
 
 
-            int[] conceptTTL = {_tasklinks * (1 + _termlinksPerTasklink)};
+            int[] conceptTTL = {_tasklinks * ( _termlinksPerTasklink)};
 
 
-            int nTermLinks = termlinks.size();
-            int nTaskLinks = tasklinks.size();
+            int nTermLinks = termlinks.size(), nTaskLinks = tasklinks.size();
 //        final float[] taskPriSum = {0};
 
             int maxTasks = Math.min(_tasklinks, nTaskLinks);
 
             Random rng = d.random;
+            FasterList<Premise> premises = d.premiseBuffer;
 
             tasklinks.sample(rng, maxTasks, tasklink -> {
 
@@ -169,10 +164,14 @@ public class MatrixDeriver extends Deriver {
 
                     if (!termlinks.isEmpty()) {
                         termlinks.sample(rng, Math.min(nTermLinks, _termlinksPerTasklink), termlink -> {
-                            if (!continueHypothesizing.test(task, termlink.get())) {
-                                //conceptTTL[0] = 0;
+
+                            Term beliefTerm = termlink.get();
+                            premises.add( new Premise(task, beliefTerm ));
+                            if (premises.size() >= premisesMax) {
                                 return false;
                             } else {
+                                if (premisePerConceptRemain[0]-- <= 0)
+                                    return false;
                                 return (--conceptTTL[0] > 0);
                             }
                         });

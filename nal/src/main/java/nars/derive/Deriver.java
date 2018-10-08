@@ -21,7 +21,6 @@ import nars.link.Activate;
 import nars.link.ActivatedLinks;
 import nars.link.TaskLink;
 import nars.term.Term;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -145,17 +144,13 @@ abstract public class Deriver extends Causable {
 
 
     /** returns false if no tasklinks are present */
-    static protected boolean commit(NAR nar, Bag<?, TaskLink> tasklinks, @Nullable Bag<Term, PriReference<Term>> termlinks) {
+    static protected boolean commit(NAR nar, Bag<?, TaskLink> tasklinks, Bag<Term, PriReference<Term>> termlinks) {
         float linkForgetting = nar.forgetRate.floatValue();
         tasklinks.commit(tasklinks.forget(linkForgetting));
-        int ntasklinks = tasklinks.size();
-        if (ntasklinks == 0)
+        if (tasklinks.isEmpty())
             return false;
 
-
-        if (termlinks!=null)
-            termlinks.commit(termlinks.forget(linkForgetting));
-
+        termlinks.commit(termlinks.forget(linkForgetting));
         return true;
 
     }

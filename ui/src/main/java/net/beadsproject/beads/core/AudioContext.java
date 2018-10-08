@@ -5,20 +5,20 @@
  */
 package net.beadsproject.beads.core;
 
+import jcog.data.list.FasterList;
 import net.beadsproject.beads.core.io.UGenOutput;
 import net.beadsproject.beads.data.Sample;
 import net.beadsproject.beads.events.AudioContextStopTrigger;
-import net.beadsproject.beads.ugens.DelayTrigger;
+import net.beadsproject.beads.ugens.Clock;
 import net.beadsproject.beads.ugens.FuncGen;
 import net.beadsproject.beads.ugens.Gain;
 import net.beadsproject.beads.ugens.RecordToSample;
-import org.jetbrains.annotations.NotNull;
 import spacegraph.audio.Audio;
 import spacegraph.audio.SoundSource;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -65,10 +65,10 @@ public class AudioContext {
      */
     private long timeStep;
 
-    /**
-     * Flag for logging time to System.out.
-     */
-    private boolean logTime;
+//    /**
+//     * Flag for logging time to System.out.
+//     */
+//    private boolean logTime;
 
     /**
      * The buffer size in frames.
@@ -79,7 +79,7 @@ public class AudioContext {
      * Used for allocating buffers to UGens.
      */
     private final int maxReserveBufs;
-    private ArrayList<float[]> bufferStore;
+    private List<float[]> bufferStore;
     private int bufStoreIndex;
     private float[] zeroBuf;
 
@@ -88,44 +88,26 @@ public class AudioContext {
      */
     @SuppressWarnings("unused")
     private long nanoLeap;
+
     @SuppressWarnings("unused")
+
+
+    private Queue newQueue() {
+        return new ConcurrentLinkedQueue();
+    }
 
     /**
      * Used for concurrency-friendly method execution.
      */
     private final Queue<Auvent> beforeFrameQueue = newQueue();
-
-    @NotNull
-    private Queue newQueue() {
-        
-        return new ConcurrentLinkedQueue(); 
-    }
-
     private final Queue<Auvent> afterFrameQueue = newQueue();
     private final Queue<Auvent> beforeEveryFrameList = newQueue();
     private final Queue<Auvent> afterEveryFrameList = newQueue();
 
 
-	/*
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	 */
-
+    public AudioContext() {
+        this(Audio.the());
+    }
 
     /**
      * This constructor creates the default AudioContext, which means net.beadsproject.beads.core.io.JavaSoundAudioIO if it can find it, or net.beadsproject.beads.core.io.NonrealtimeIO otherwise.
@@ -134,40 +116,20 @@ public class AudioContext {
      * The libraries are decoupled like this so that the core beads library doesn't depend on JavaSound, which is not supported in various contexts, such as Android. At the moment there are in fact some
      * JavaSound dependencies still to be removed before this process is complete. Pro-users should familiarise themselves with the different IO options, particularly Jack.
      */
-    public AudioContext() {
+    public AudioContext(Audio audio) {
 
-        UGenOutput ioSystem = new UGenOutput();
-        Audio audio = Audio.the();
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
+        maxReserveBufs = 32;
+        setBufferSize(audio.bufferSizeInFrames());
 
         IOAudioFormat audioFormat = defaultAudioFormat(2, 2);
-        
-        this.audioIO = ioSystem;
-        this.audioIO.context = this;
-        
         this.audioFormat = audioFormat;
-        
-        setBufferSize(audio.bufferSizeInFrames());
-        
-        logTime = false;
-        maxReserveBufs = 50;
-        stopped = true;
-        
         out = new Gain(this, audioFormat.outputs);
-        AudioIO.prepare();
+
+        stopped = true;
+
+        UGenOutput ioSystem = new UGenOutput();
+        ioSystem.context = this;
+        this.audioIO = ioSystem;
 
         start();
 
@@ -202,38 +164,11 @@ public class AudioContext {
 //    }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * Sets up the reserve of buffers.
      */
     private void setupBufs() {
-        bufferStore = new ArrayList<>();
+        bufferStore = new FasterList<>(maxReserveBufs);
         while (bufferStore.size() < maxReserveBufs) {
             bufferStore.add(new float[bufferSizeInFrames]);
         }
@@ -244,23 +179,23 @@ public class AudioContext {
      * callback from AudioIO.
      */
     void update() {
-        try {
+//        try {
             bufStoreIndex = 0;
             Arrays.fill(zeroBuf, 0f);
             sendBeforeFrameMessages();
-            out.update(); 
+            out.update();
             sendAfterFrameMessages();
             timeStep++;
-            if (Thread.interrupted()) {
-                System.out.println("Thread interrupted");
-            }
-            if (logTime && timeStep % 100 == 0) {
-                System.out.println(samplesToMs(timeStep * bufferSizeInFrames)
-                        / 1000f + " (seconds)");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//            if (Thread.interrupted()) {
+//                System.out.println("Thread interrupted");
+//            }
+//            if (logTime && timeStep % 100 == 0) {
+//                System.out.println(samplesToMs(timeStep * bufferSizeInFrames)
+//                        / 1000f + " (seconds)");
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     /**
@@ -308,45 +243,41 @@ public class AudioContext {
         return zeroBuf;
     }
 
-    /**
-     * Starts the AudioContext running in non-realtime. This occurs in the
-     * current Thread.
-     */
-    private void runNonRealTime() {
-        if (stopped) {
-            stopped = false;
-            reset();
-            while (out != null && !stopped) {
-                bufStoreIndex = 0;
-                Arrays.fill(zeroBuf, 0f);
-                if (!out.isPaused()) {
-                    sendBeforeFrameMessages();
-                    out.update();
-                    sendAfterFrameMessages();
-                }
-                timeStep++;
-                if (logTime && timeStep % 100 == 0) {
-                    System.out.println(samplesToMs(timeStep
-                            * bufferSizeInFrames)
-                            / 1000f + " (seconds)");
-                }
-            }
-        }
-    }
+//    /**
+//     * Starts the AudioContext running in non-realtime. This occurs in the
+//     * current Thread.
+//     */
+//    private void runNonRealTime() {
+//        if (stopped) {
+//            stopped = false;
+//            reset();
+//            while (out != null && !stopped) {
+//                bufStoreIndex = 0;
+//                Arrays.fill(zeroBuf, 0f);
+//                if (!out.isPaused()) {
+//                    sendBeforeFrameMessages();
+//                    out.update();
+//                    sendAfterFrameMessages();
+//                }
+//                timeStep++;
+//
+//            }
+//        }
+//    }
 
-    /**
-     * Runs the AudioContext in non-realtime for n milliseconds (that's n
-     * non-realtime milliseconds).
-     *
-     * @param n number of milliseconds.
-     */
-    public void runForNMillisecondsNonRealTime(double n) {
-        
-        DelayTrigger dt = new DelayTrigger(this, n,
-                new AudioContextStopTrigger(this));
-        out.dependsOn(dt);
-        runNonRealTime();
-    }
+//    /**
+//     * Runs the AudioContext in non-realtime for n milliseconds (that's n
+//     * non-realtime milliseconds).
+//     *
+//     * @param n number of milliseconds.
+//     */
+//    public void runForNMillisecondsNonRealTime(double n) {
+//
+//        DelayTrigger dt = new DelayTrigger(this, n,
+//                new AudioContextStopTrigger(this));
+//        out.dependsOn(dt);
+//        runNonRealTime();
+//    }
 
     /**
      * Sets the buffer size.
@@ -499,15 +430,6 @@ public class AudioContext {
         return samplesToMs(getTimeStep() * getBufferSize());
     }
 
-    /**
-     * Switch on/off logging of time when running in realtime. The time is
-     * printed to System.out every 100 time steps.
-     *
-     * @param logTime set true to log time.
-     */
-    public void logTime(boolean logTime) {
-        this.logTime = logTime;
-    }
 
     /**
      * Tells the AudioContext to record all output for the given millisecond
@@ -543,12 +465,12 @@ public class AudioContext {
      */
     public void start() {
         if (stopped) {
-            
-            nanoLeap = (long) (1000000000L * (bufferSizeInFrames / audioFormat.sampleRate));
+
+            nanoLeap = Math.round(1000000000.0 * (bufferSizeInFrames / audioFormat.sampleRate));
 
             reset();
             stopped = false;
-            
+
             audioIO.start();
         }
     }
@@ -680,5 +602,16 @@ public class AudioContext {
 
     public void out(FuncGen f) {
         out.dependsOn(f);
+    }
+
+    public Clock clock(float intervalMS) {
+        Clock c = new Clock(this, intervalMS);
+        out.dependsOn(c);
+        return c;
+    }
+    public Clock clock(float intervalMS, Auvent e) {
+        Clock x = clock(intervalMS);
+        x.on(e);
+        return x;
     }
 }

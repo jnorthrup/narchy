@@ -146,14 +146,14 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
         Op xo = x.op();
         switch (root.op()) {
-            case SIM:
-            case INH:
-                if (depth == 1 && x.subterms().hasAny(
-                        //Op.Variable
-                        Op.VAR_INDEP.bit
-                ))
-                    return +1;
-                break;
+//            case SIM:
+//            case INH:
+//                if (depth == 1 && x.subterms().hasAny(
+//                        //Op.Variable
+//                        Op.VAR_INDEP.bit
+//                ))
+//                    return +1;
+//                break;
 //            case CONJ:
 ////                if (depth <=2 && x.hasAny(Op.Variable) )
 ////                    return +1;
@@ -347,9 +347,14 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
             Term srcTerm = src.term();
 
             int j = d.random.nextInt(n); //random starting position
+            boolean inc = d.random.nextBoolean();
             for (int i = 0; i < n; i++) {
+                if (inc) {
+                    if (++j == n) j = 0;
+                } else {
+                    if (--j == -1) j = n-1;
+                }
 
-                if (++j == n) j = 0;
                 Term tgtTerm = get(j);
 
                 boolean conceptualizable = j < concepts;

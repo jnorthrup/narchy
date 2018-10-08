@@ -19,16 +19,6 @@ public abstract class AudioIO {
     protected AudioContext context;
 
     /**
-     * Prepares the AudioIO. This method is called by {@link AudioContext}'s constructor.
-     * This has default implementation as it will not be needed by most implementation.
-     *
-     * @return true, if successful.
-     */
-    static boolean prepare() {
-        return true;
-    }
-
-    /**
      * Starts the AudioIO. When started, the AudioIO should repeatedly call {@link #update()}
      * and then gather the output of {@link AudioContext#out}.
      *
@@ -59,7 +49,7 @@ public abstract class AudioIO {
     /**
      * Updates the {@link AudioContext}.
      */
-    protected void update() {
+    protected final void update() {
         context.update();
     }
 

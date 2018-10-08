@@ -11,7 +11,7 @@ public class NAL4MultistepTest extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(4);
-        n.termVolumeMax.set(18);
+        n.termVolumeMax.set(12);
         return n;
     }
 
@@ -23,7 +23,7 @@ public class NAL4MultistepTest extends NALTest {
 
         TestNAR tester = test;
 
-        tester.nar.freqResolution.set(0.1f);
+        tester.nar.freqResolution.set(0.05f);
         tester.confTolerance(0.2f);
 
 
@@ -57,8 +57,8 @@ public class NAL4MultistepTest extends NALTest {
         int time = 2550;
 
         test.confTolerance(0.2f);
-        test.nar.termVolumeMax.set(9);
-        test.nar.freqResolution.set(0.1f);
+        test.nar.termVolumeMax.set(8);
+        test.nar.freqResolution.set(0.25f);
         test.nar.confResolution.set(0.1f);
         test.believe("blue:sky", 1.0f, 0.9f)
                 .believe("cat:tom", 1.0f, 0.9f)
