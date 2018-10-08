@@ -334,6 +334,7 @@ public class Answer implements Consumer<Task> {
         if (s == 0)
             return null;
         DynTruth d = new DynTruth(s);
+        //noinspection UseBulkOperation
         tasks.forEach(d::add);
         return d;
     }

@@ -30,9 +30,25 @@ public interface ITask extends Priority {
     byte punc();
 
     /** continues executing the chain of returned tasks until the end */
-    default void run(NAR nar) {
-        ITask x = this;
-        while ((x = x.next(nar)) != null) ;
+    static void run(ITask t, NAR nar) {
+        ITask x = t;
+        do {
+            try {
+
+                x = x.next(nar);
+
+            } catch (Throwable ee) {
+                error(t, x, ee, nar);
+                break;
+            }
+        } while (x != null) ;
+    }
+
+    static void error(ITask t, ITask x, Throwable ee, NAR nar) {
+        if (t==x)
+            nar.logger.error("{} {}", x, ee);
+        else
+            nar.logger.error("{}->{} {}", t, x, ee);
     }
 
 }

@@ -85,7 +85,7 @@ public enum ListFunc {
                 Subterms xys = xy.subterms();
 
                 Collection<Predicate<VersionMap<Term,Term>>> OR = IntStream.range(-1, l).mapToObj(finalI ->
-                        e.assign(
+                        Evaluation.assign(
                                 x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
                                 y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))
                 ).collect(toList());
@@ -147,7 +147,7 @@ public enum ListFunc {
     };
 
 
-    public static Functor reverse = new Functor.UnaryBidiFunctor("reverse") {
+    public static final Functor reverse = new Functor.UnaryBidiFunctor("reverse") {
 
         @Override
         protected Term compute(Term x) {
@@ -175,7 +175,7 @@ public enum ListFunc {
         }
     };
 
-    public static Functor sub = Functor.f2("sub", (x, n) -> {
+    public static final Functor sub = Functor.f2("sub", (x, n) -> {
         if (n.op() == INT) {
             return x.sub(((Int) n).id, Bool.Null);
         } else {
@@ -183,7 +183,7 @@ public enum ListFunc {
         }
     });
 
-    public static Functor subs = Functor.f2Or3("subs", (Term[] args) -> {
+    public static final Functor subs = Functor.f2Or3("subs", (Term[] args) -> {
         if (args.length == 2) {
 
             Term x = args[0];

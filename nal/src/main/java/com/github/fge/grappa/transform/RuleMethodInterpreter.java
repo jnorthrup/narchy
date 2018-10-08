@@ -47,7 +47,7 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
     private final List<Edge> additionalEdges = new ArrayList<>();
 
     public RuleMethodInterpreter(final RuleMethod method) {
-        super(ASM6);
+        super(ASM7);
         this.method = method;
         this.errorMessage = "Internal error during analysis of rule method: " + method.name;
     }

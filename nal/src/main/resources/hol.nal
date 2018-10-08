@@ -1,10 +1,11 @@
 //Higher-Order Logic Bridge  <a ==> c> <b ==> c>. |- <a <-> b>. %F_cmp%
 
 //impl/sim
-  (X ==> Z), (Y ==> Z), neqRCom(X,Y) |- (X <-> Y), (Belief:ComparisonSymmetric, Time:Intersect)
+  (X ==> Z), (Y ==> Z), neqRCom(X,Y) |- (X <-> Y), (Belief:ComparisonSymmetric)
+    (X ==> Z), (Y ==> Z), neqRCom(X,Y) |- ((X,polarized(Z,task)) <-> (Y,polarized(Z,belief))), (Belief:ComparisonSymmetricDepolarized)
 
-  (Z ==> X), (Z ==> Y),   neqRCom(X,Y) |-   (polarize(X,task) <-> polarize(Y,belief)), (Belief:ComparisonSymmetricDepolarized, Time:Intersect)
-  (Z ==> X), (--Z ==> Y), neqRCom(X,Y) |- --(polarize(X,task) <-> polarize(Y,belief)), (Belief:ComparisonSymmetricDepolarized, Time:Intersect)
+  (Z ==> X), (Z ==> Y),   neqRCom(X,Y) |-   (polarize(X,task) <-> polarize(Y,belief)), (Belief:ComparisonSymmetricDepolarized)
+  //(Z ==> X), (--Z ==> Y), neqRCom(X,Y) |- --(polarize(X,task) <-> polarize(Y,belief)), (Belief:ComparisonSymmetricDepolarized, Time:Intersect)
 
 //sim/impl = impl/sim in reverse
 //  (X <-> Y),   Y, task(".") |- (X ==> Y), (Punctuation:Question)

@@ -47,7 +47,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
     }
 
     float factorComplexityAbsolute(Task t, Derivation d) {
-        float f = (1f - (t.voluplexity() / ((float)(d.termVolMax+1))));
+        float f = (1f - (t.voluplexity() / (d.termVolMax+1)));
         return (float) Math.pow(f, relGrowthExponent.floatValue());
     }
 

@@ -6,17 +6,17 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.jogamp.opengl.GL2;
 import jcog.User;
 import jcog.Util;
-import jcog.exe.Loop;
-import jcog.io.FSWatch;
 import jcog.io.Grok;
 import jcog.net.UDPeer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.*;
+import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.Scale;
+import spacegraph.space2d.container.Timeline2D;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space3d.widget.OsmSpace;
 import spacegraph.util.geo.IRL;
 import spacegraph.video.Draw;
 
@@ -39,7 +39,7 @@ public class SpaceLog {
 
     /** time buffer */
     final Timeline2D.FixedSizeTimelineModel time =
-            new Timeline2D.FixedSizeTimelineModel(4096);
+            new Timeline2D.FixedSizeTimelineModel(512);
 
     public SpaceLog() throws IOException {
         this(0);
@@ -48,7 +48,7 @@ public class SpaceLog {
     public SpaceLog(int port) throws IOException {
         this.udp = new UDPeer(port);
         this.udp.receive.on(this::input);
-        this.udp.setFPS(10f);
+        this.udp.setFPS(20f);
 
         logger = LoggerFactory.getLogger(SpaceLog.class.getSimpleName() + "@" + udp.name());
 
@@ -110,7 +110,7 @@ public class SpaceLog {
             long e = x.get("t").get(1).asLong();
             Timeline2D.SimpleEvent event = new Timeline2D.SimpleEvent(id.asText(), s, e);
             time.add(event);
-            logger.info("recv: {}\n\t{}", origin, event);
+            //logger.info("recv: {}\n\t{}", origin, event);
             return true;
         }
 
@@ -123,7 +123,7 @@ public class SpaceLog {
         IRL i = new IRL(User.the());
         i.load(-80.65, 28.58, -80.60, 28.63);
 
-        Surface space = new OsmSpace(i.osm).surface();
+        //Surface space = new OsmSpace(i.osm).surface();
 
 
         Surface timeline = new Timeline2D<>(time,
@@ -155,32 +155,34 @@ public class SpaceLog {
 
             @Override
             protected boolean prePaint(SurfaceRender r) {
-                if (autoNow) {
+                if (autoNow && !time.isEmpty()) {
                     double when = System.nanoTime();
                     double range = tEnd - tStart;
                     assert (range > 0);
                     SimpleEvent lastEvent = time.last();
                     double end = Math.min(lastEvent.end + lastEvent.range() / 2, when);
                     double start = end - range;
-                    view(start, end);
+                    view(start, end /* TODO: false unless new data */);
                     
                 }
                 return super.prePaint(r);
             }
         }.view(0, 15_000_000_000L /* ns */).withControls();
-        SpaceGraph.window(new Gridding(new Clipped(space), timeline), 800, 600);
+        SpaceGraph.window(new Gridding(
+                //new Clipped(space),
+                timeline), 800, 600);
 
     }
 
     public static void main(String[] args) throws IOException {
         SpaceLog s = new SpaceLog();
 
-        Loop.of(new DummyLogGenerator(new UDPeer())).setFPS(0.75f);
-        Loop.of(new DummyLogGenerator(new UDPeer())).setFPS(0.2f);
+//        Loop.of(new DummyLogGenerator(new UDPeer())).setFPS(0.75f);
+//        Loop.of(new DummyLogGenerator(new UDPeer())).setFPS(0.2f);
 
-        new FSWatch("/tmp", (p)-> {
-            s.input("/tmp", p);
-        }).setFPS(1);
+//        new FSWatch("/tmp", (p)-> {
+//            s.input("/tmp", p);
+//        }).setFPS(1);
 
         s.gui();
     }

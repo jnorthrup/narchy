@@ -144,6 +144,7 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
 
 
     protected void receive(UDPeer.MsgReceived m) {
+
         try {
             Task x = IO.bytesToTask(m.data());
             if (x.isQuestionOrQuest()) {
@@ -158,7 +159,7 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
             logger.debug("recv {} from {}", x, m.from);
             recv.input(x);
         } catch (Exception e) {
-            logger.warn("receive {} from {}: {}", m, m.from, e.getMessage());
+            logger.warn("recv {} from {}: {}", m, m.from, e.getMessage());
             return;
         }
     }

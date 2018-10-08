@@ -23,12 +23,8 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
     }
 
     @Override
-    public void setCapacity(int newCapacity) {
-        synchronized (this) {
-            super.setCapacity(newCapacity);
-
-
-        }
+    public synchronized void setCapacity(int newCapacity) {
+        super.setCapacity(newCapacity);
     }
 
 
@@ -84,17 +80,13 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
     }
 
     @Override
-    public boolean removeTask(Task x) {
-        synchronized (this) {
-            return remove(x) != null;
-        }
+    public synchronized boolean removeTask(Task x) {
+        return remove(x) != null;
     }
 
     @Override
-    public void clear() {
-        synchronized (this) {
-            super.clear();
-        }
+    public synchronized void clear() {
+        super.clear();
     }
 
 }

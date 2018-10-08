@@ -103,7 +103,7 @@ public class AffinityExecutor implements Executor {
         execute(worker, count, true);
     }
 
-    public final <R extends Runnable> List<R> execute(Supplier<R> worker, int count, boolean tryPin) {
+    public synchronized  final <R extends Runnable> List<R> execute(Supplier<R> worker, int count, boolean tryPin) {
 
 
         FasterList<R> l = new FasterList(count);

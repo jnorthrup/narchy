@@ -146,23 +146,19 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
     /**
      * operator goes into active probing mode
      */
-    protected void enable(NAR n) {
-        synchronized (this) {
-            if (onCycle == null) {
-                onCycle = DurService.on(n, this::update);
-            }
+    protected synchronized void enable(NAR n) {
+        if (onCycle == null) {
+            onCycle = DurService.on(n, this::update);
         }
     }
 
     /**
      * operator leaves active probing mode
      */
-    protected void disable() {
-        synchronized (this) {
-            if (onCycle != null) {
-                onCycle.off();
-                onCycle = null;
-            }
+    protected synchronized void disable() {
+        if (onCycle != null) {
+            onCycle.off();
+            onCycle = null;
         }
     }
 

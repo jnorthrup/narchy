@@ -16,14 +16,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL2Test extends NALTest {
 
-    private static final int cycles = 150;
+    private static final int cycles = 350;
 
 
     @Override
     protected NAR nar() {
 
         NAR n = NARS.tmp(2);
-        n.termVolumeMax.set(7);
+        n.termVolumeMax.set(9);
         return n;
     }
 
@@ -178,9 +178,24 @@ public class NAL2Test extends NALTest {
     @Test
     void testSetDecomposePositive() {
         test
-                .believe("<{x,y}-->c>")
+                .believe("({x,y}-->c)")
                 .mustBelieve(cycles, "({x}-->c)", 1f, 0.81f)
                 .mustBelieve(cycles, "({y}-->c)", 1f, 0.81f)
+        ;
+    }
+
+    @Test
+    void testInstToNonSet() {
+        test
+                .believe("({x}-->c)")
+                .mustBelieve(cycles, "(x-->c)", 1f, 0.81f)
+        ;
+    }
+    @Test
+    void testPropToNonSet() {
+        test
+                .believe("(c --> [x])")
+                .mustBelieve(cycles, "(c-->x)", 1f, 0.81f)
         ;
     }
 

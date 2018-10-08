@@ -46,7 +46,7 @@ public final class DynamicTruthTable extends DynamicTaskTable {
         Term reconstruct = model.reconstruct(template, yy, nar);
         if (reconstruct == null) {
             if (Param.DEBUG)
-                throw new WTF("could not reconstruct: " + template + " " +  yy);
+                throw new WTF("could not reconstruct: " + template + ' ' +  yy);
             return null;
         }
 

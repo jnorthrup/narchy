@@ -177,4 +177,10 @@ abstract public class TermMetadata implements Termlike {
     public final int complexity() {
         return complexity;
     }
+
+    @Override
+    public final int hashCode() {
+        return hash;
+    }
+
 }

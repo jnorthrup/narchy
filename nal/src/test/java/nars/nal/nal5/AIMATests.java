@@ -25,7 +25,7 @@ class AIMATests {
     @ValueSource(doubles = {0.01, 0.05, 0.1, 0.25, 0.5})
     void testAIMAExample(double truthRes) throws Narsese.NarseseException {
 
-        n.termVolumeMax.set(10);
+        n.termVolumeMax.set(13);
         n.freqResolution.set((float) truthRes);
         n.confMin.set(0.05f);
         n.confResolution.set(0.05f);
@@ -55,7 +55,7 @@ class AIMATests {
 //        n.beliefPriDefault.set(0.25f);
         n.questionPriDefault.set(0.5f);
 
-        n.termVolumeMax.set(20);
+        n.termVolumeMax.set(18);
        // n.log();
 
 

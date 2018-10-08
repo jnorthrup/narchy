@@ -110,12 +110,10 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
         return super.delete();
     }
 
-    public void off() {
-        synchronized (this) {
-            if (this.onTask != null) {
-                this.onTask.off();
-                this.onTask = null;
-            }
+    public synchronized void off() {
+        if (this.onTask != null) {
+            this.onTask.off();
+            this.onTask = null;
         }
     }
 

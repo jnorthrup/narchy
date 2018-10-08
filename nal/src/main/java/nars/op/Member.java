@@ -16,7 +16,7 @@ import static nars.term.atom.Bool.True;
  */
 public final class Member extends Functor implements The, Functor.InlineFunctor {
 
-    public static Functor the = new Member();
+    public static final Functor the = new Member();
 
     private Member() {
         super("member");

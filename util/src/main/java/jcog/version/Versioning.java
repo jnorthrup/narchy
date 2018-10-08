@@ -53,7 +53,7 @@ public class Versioning<X> {
     public final boolean revert(int when) {
 
         int s = size;
-        if (s<=when || s == 0)
+        if (s == 0 || s <= when)
             return false;
 
         if (when == 0) {

@@ -91,8 +91,8 @@ public class MatrixDeriver extends Deriver {
      */
     private FasterList<Premise> hypothesize(int premisesMax, Derivation d) {
 
-        int premisesRemain[] = new int[]{premisesMax};
-        int premisePerConceptRemain[] = new int[1];
+        int[] premisesRemain = new int[]{premisesMax};
+        int[] premisePerConceptRemain = new int[1];
 
         int tasklinks = Math.max(1, Math.round(premisesMax / ((float) termLinksPerTaskLink)));
 

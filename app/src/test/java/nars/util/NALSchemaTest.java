@@ -8,6 +8,7 @@ import nars.NARS;
 import nars.Narsese;
 import nars.Task;
 import nars.task.util.DialogTask;
+import nars.term.Term;
 import nars.truth.Stamp;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.api.list.MutableList;
@@ -18,28 +19,38 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Random;
 
-import static nars.Op.QUESTION;
+import static nars.Op.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NALSchemaTest {
 
+    final NAR n = NARS.tmp();
+
     @Test
-    public void validatePredictionXOR() throws IOException, ARFF.ARFFParseError {
-        validatePrediction(xorARFF, "--(0<->1).");
+    public void validatePredictionXOR() throws Exception {
+        n.questionPriDefault.set(0.5f);
+        n.termVolumeMax.set(10);
+//        n.log();
+        validatePrediction(n, xorARFF
+                //,"--(0<->1)."
+        ,"XOR(?1,0)?" ,"XOR(?1,1)?"
+        );
     }
 
     @Test
-    public void validatePredictionShuttle() throws IOException, ARFF.ARFFParseError {
-        validatePrediction(shuttleARFF);
+    public void validatePredictionShuttle() throws Exception {
+        n.log();
+
+        validatePrediction(n, shuttleARFF);
     }
 
     @Test
-    public void validatePredictionIris() throws IOException, ARFF.ARFFParseError {
-        validatePrediction(irisARFF);
+    public void validatePredictionIris() throws Exception {
+        validatePrediction(n, irisARFF);
     }
 
 
-    static void validatePrediction(String arffData, String... hints) throws IOException, ARFF.ARFFParseError {
+    static NAR validatePrediction(NAR n, String arffData, String... hints) throws IOException, ARFF.ARFFParseError {
         ArrayHashSet<ImmutableList> data = new ArrayHashSet<>();
 
         ARFF dataset = new ARFF(arffData, data) {
@@ -81,21 +92,23 @@ public class NALSchemaTest {
 
         assertEquals(originalDataSetSize, validationPoints.size() + data.size());
 
-        NAR n = NARS.tmp();
 
 
-        n.log();
+        //n.log();
         
 
         LongHashSet questions = new LongHashSet();
         n.onTask(t->{
-            if (t.isInput() && t.isQuestionOrQuest())
+            if (t.isInput())
                 questions.add(t.stamp()[0]);
-            else if (t.isBeliefOrGoal() && Stamp.overlapsAny(questions, t.stamp())) {
+        }, QUESTION, QUEST);
+
+        n.onTask(t->{
+            if (Stamp.overlapsAny(questions, t.stamp())) {
                 //if (t.isInput())
                     System.out.println("ANSWER: " + t);
             }
-        });
+        }, BELIEF, GOAL);
 
         
 
@@ -106,20 +119,26 @@ public class NALSchemaTest {
         Task[] questions1 = NALSchema.data(n, validation, QUESTION, NALSchema.predictsLast).toArray(Task[]::new);
         new DialogTask(n, questions1) {
             @Override
-            protected boolean onTask(Task x) {
-                if (!x.isInput())
-                    System.out.println(x);
-                return true;
+            protected boolean onTask(Task x, Term unifiedWith) {
+                System.out.println(unifiedWith + ": " + x);
+                return super.onTask(x, unifiedWith);
             }
+            //            @Override
+//            protected boolean onTask(Task x) {
+//                if (!x.isInput())
+//                    System.out.println(x);
+//                return true;
+//            }
         };
-        for (String h : hints) {
-            try {
-                n.input(h);
-            } catch (Narsese.NarseseException e) {
-                e.printStackTrace();
-            }
+
+        try {
+            n.input(hints);
+        } catch (Narsese.NarseseException e) {
+            e.printStackTrace();
         }
-        n.run(1000);
+
+        n.run(5000);
+        return n;
     }
 
     /** https://github.com/renatopp/arff-datasets/blob/master/boolean/xor.arff */

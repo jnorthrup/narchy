@@ -1,7 +1,6 @@
 package nars.control;
 
 import jcog.WTF;
-import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -12,16 +11,12 @@ import nars.task.ITask;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.time.Tense;
-import nars.truth.Truth;
-import nars.truth.func.NALTruth;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.List;
 
 import static nars.Op.*;
 
@@ -116,44 +111,44 @@ public enum Perceive { ;
         return true;
     }
 
-    private static void conjDecompose(Task t, Collection<ITask> queue, NAR n) {
-        byte punc = t.punc();
-        Term tt = t.term();
-        Truth tTruth = t.truth();
-
-        Truth reducedTruth = NALTruth.StructuralDeduction.apply(tTruth, null, n, n.confMin.floatValue());
-        if (reducedTruth != null)
-            reducedTruth.dithered(n);
-
-        if (reducedTruth != null) {
-            long s = t.start();
-            long range = t.end() - s;
-            List<Task> subTasks = new FasterList(2);
-
-            tt.eventsWhile((when, what) -> {
-                assert (!what.equals(tt));
-
-                Task tSubEvent = Task.clone(t, what, reducedTruth, punc, Tense.dither(when, n), Tense.dither(when + range, n));
-
-                if (tSubEvent != null)
-                    subTasks.add(tSubEvent);
-                return true;
-            }, s, true, false, false, 0);
-
-
-            if (!subTasks.isEmpty()) {
-                int ns = subTasks.size();
-                float conf = tTruth.conf();
-                float pr = (reducedTruth.conf() / conf) * t.priElseZero() / ns;
-                for (Task ss : subTasks) {
-                    ss.pri(0);
-                    ss.take(t, pr, true, false);
-                    //ss.setCyclic(true);
-                }
-                queue.addAll(subTasks);
-            }
-        }
-    }
+//    private static void conjDecompose(Task t, Collection<ITask> queue, NAR n) {
+//        byte punc = t.punc();
+//        Term tt = t.term();
+//        Truth tTruth = t.truth();
+//
+//        Truth reducedTruth = NALTruth.StructuralDeduction.apply(tTruth, null, n, n.confMin.floatValue());
+//        if (reducedTruth != null)
+//            reducedTruth.dithered(n);
+//
+//        if (reducedTruth != null) {
+//            long s = t.start();
+//            long range = t.end() - s;
+//            List<Task> subTasks = new FasterList(2);
+//
+//            tt.eventsWhile((when, what) -> {
+//                assert (!what.equals(tt));
+//
+//                Task tSubEvent = Task.clone(t, what, reducedTruth, punc, Tense.dither(when, n), Tense.dither(when + range, n));
+//
+//                if (tSubEvent != null)
+//                    subTasks.add(tSubEvent);
+//                return true;
+//            }, s, true, false, false, 0);
+//
+//
+//            if (!subTasks.isEmpty()) {
+//                int ns = subTasks.size();
+//                float conf = tTruth.conf();
+//                float pr = (reducedTruth.conf() / conf) * t.priElseZero() / ns;
+//                for (Task ss : subTasks) {
+//                    ss.pri(0);
+//                    ss.take(t, pr, true, false);
+//                    //ss.setCyclic(true);
+//                }
+//                queue.addAll(subTasks);
+//            }
+//        }
+//    }
 
     private static boolean execute(Task t, Collection<ITask> queue, NAR n, boolean cmd) {
         Term maybeOperator = Functor.func(t.term());

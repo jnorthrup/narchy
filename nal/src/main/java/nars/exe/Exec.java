@@ -1,5 +1,6 @@
 package nars.exe;
 
+import jcog.exe.Exe;
 import nars.NAR;
 import nars.Param;
 import nars.task.ITask;
@@ -22,10 +23,10 @@ abstract public class Exec implements Executor {
     protected NAR nar;
 
 
-
     public void execute(/*@NotNull*/ Iterator<? extends ITask> input) {
         input.forEachRemaining(this::execute);
     }
+
     public void execute(/*@NotNull*/ Stream<? extends ITask> input) {
         input.forEach(this::execute);
     }
@@ -40,37 +41,35 @@ abstract public class Exec implements Executor {
     }
 
 
-    /** inline, synchronous */
+    /**
+     * inline, synchronous
+     */
     final void executeNow(Object t) {
-        try {
-            if (t instanceof ITask) {
-                executeNow((ITask) t);
-            } else if (t instanceof Runnable)
-                ((Runnable) t).run();
-            else 
-                ((Consumer) t).accept(nar);
-
-        } catch (Throwable e) {
-            logger.error("{} {}", t, Param.DEBUG ? e : e.getMessage());
+        if (t instanceof ITask)
+            executeNow((ITask) t);
+        else {
+            Exe.profiled(t, () -> {
+                try {
+                    if (t instanceof Runnable) {
+                        ((Runnable) t).run();
+                    } else {
+                        ((Consumer) t).accept(nar);
+                    }
+                } catch (Throwable e) {
+                    logger.error("{} {}", t, Param.DEBUG ? e : e.getMessage());
+                }
+            });
         }
-
     }
 
     final void executeNow(ITask t) {
-        try {
-            t.run(nar);
-        } catch (Throwable e) {
-            logger.error("{} {}", t,
-                    e
-                    //Param.DEBUG ? e : e.getMessage()
-            );
-        }
+        ITask.run(t, nar);
     }
 
-    @Override abstract public void execute(Runnable async);
+    @Override
+    abstract public void execute(Runnable async);
+
     abstract public void execute(Consumer<NAR> r);
-
-
 
 
     public void start(NAR nar) {
@@ -91,10 +90,14 @@ abstract public class Exec implements Executor {
      */
     public abstract boolean concurrent();
 
-    /** current concurrency level; may change */
+    /**
+     * current concurrency level; may change
+     */
     public abstract int concurrency();
 
-    /** maximum possible concurrency; should remain constant */
+    /**
+     * maximum possible concurrency; should remain constant
+     */
     abstract public int concurrencyMax();
 
 

@@ -8,6 +8,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
+import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.INT;
 
@@ -33,11 +34,9 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
 
             Term x = args.sub(0), y = args.sub(1);
 
-            if (x == Bool.Null || y == Bool.Null)
-                return Bool.Null;
-
-            if (x.equals(y)) return Bool.True;
-            if (x.equalsNeg(y)) return Bool.False;
+            Term p = pretest(x, y);
+            if (p != null)
+                return p;
 
             if (!x.hasVars() && !y.hasVars())
                 return Bool.False; //constant in-equal
@@ -50,15 +49,9 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
 
     @Override
     protected Term compute(Evaluation e, Term x, Term y) {
-
-        /** null != null, like NaN!=NaN .. it represents an unknokwn or invalid value.  who can know if it equals another one */
-        if (x == Bool.Null || y == Bool.Null)
-            return Bool.Null;
-
-        if (x.equals(y))
-            return Bool.True; //fast equality pre-test
-        if (x.equalsNeg(y))
-            return Bool.False;
+        Term p = pretest(x, y);
+        if (p != null)
+            return p;
 
         if (x.hasVars() || y.hasVars()) {
             //algebraic solutions TODO use symbolic algebra system
@@ -97,6 +90,20 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
             return Bool.False;
         }
 
+    }
+
+    @Nullable
+    private Term pretest(Term x, Term y) {
+        /** null != null, like NaN!=NaN .. it represents an unknokwn or invalid value.  who can know if it equals another one */
+        if (x == Bool.Null || y == Bool.Null)
+            return Bool.Null;
+
+        if (x.equals(y))
+            return Bool.True; //fast equality pre-test
+        if (x.equalsNeg(y))
+            return Bool.False;
+
+        return null;
     }
 
     @Override

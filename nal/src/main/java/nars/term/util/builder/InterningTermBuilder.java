@@ -76,7 +76,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     private HijackTermCache newOpCache(String name, Function<InternedCompound, Term> f, int capacity) {
         HijackTermCache h = new HijackTermCache(f, capacity, 4);
-        Memoizers.the.add(id + "_" + InterningTermBuilder.class.getSimpleName() + '_' + name, h);
+        Memoizers.the.add(id + '_' + InterningTermBuilder.class.getSimpleName() + '_' + name, h);
         return h;
     }
 

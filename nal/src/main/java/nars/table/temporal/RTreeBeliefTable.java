@@ -596,7 +596,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (W == null)
             return false;
 
-        float value[] = new float[4];
+        float[] value = new float[4];
         value[RejectInput] =
                 I != null ? -inputStrength : Float.NEGATIVE_INFINITY;
         value[EvictWeakest] =

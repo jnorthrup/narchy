@@ -172,7 +172,7 @@ public enum TruthFunctions2 {
         if (c < minConf) return null;
         float dF = Math.abs(t.freq() - b.freq());
         float sim = 1f - dF;
-        float cc = weak(c * sim);
+        float cc = /*weak*/(c * sim);
         return cc >= minConf ? $.t(sim, cc) : null;
     }
     public static float weak(float c) {

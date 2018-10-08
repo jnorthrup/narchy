@@ -68,6 +68,13 @@ import static spacegraph.SpaceGraph.window;
  */
 abstract public class NAgentX extends NAgent {
 
+//    static {
+//        try {
+//            Exe.setProfiler(new Exe.UDPeerProfiler());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Deprecated
     public NAgentX(String id, NAR nar) {
@@ -112,6 +119,7 @@ abstract public class NAgentX extends NAgent {
 
 
         clock.durFPS(clockFPS);
+
 
 
         NAR n = new NARS()
@@ -369,13 +377,16 @@ abstract public class NAgentX extends NAgent {
 
 
         try {
-            InterNAR i = new InterNAR(n, 0) {
-                @Override
-                protected void starting(NAR nar) {
-                    super.starting(nar);
-                    runFPS(4);
-                }
-            };
+//            InterNAR i = new InterNAR(n, 0) {
+//                @Override
+//                protected void starting(NAR nar) {
+//                    super.starting(nar);
+//                    runFPS(4);
+//                }
+//            };
+
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -400,12 +400,14 @@ public class Conj extends ByteAnonMap {
     private static Term conjSeqFinal(int dt, Term left, Term right) {
         assert (dt != XTERNAL);
 
-        if (left == Bool.False) return Bool.False;
         if (left == Bool.Null) return Bool.Null;
-        if (left == Bool.True) return right;
-
-        if (right == Bool.False) return Bool.False;
         if (right == Bool.Null) return Bool.Null;
+
+
+        if (left == Bool.False) return Bool.False;
+        if (right == Bool.False) return Bool.False;
+
+        if (left == Bool.True) return right;
         if (right == Bool.True) return left;
 
 //        if (dt == 0 || dt == DTERNAL) {

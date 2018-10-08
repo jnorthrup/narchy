@@ -73,7 +73,7 @@ public interface Truth extends Truthed {
         return (freqHash << 16) | confHash;
     }
 
-    public static float polarity(float freq) {
+    static float polarity(float freq) {
         return Math.abs(freq - 0.5f) * 2f;
     }
 

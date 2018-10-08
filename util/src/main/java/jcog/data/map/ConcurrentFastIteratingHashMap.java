@@ -3,6 +3,7 @@ package jcog.data.map;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FastCoWList;
 import jcog.data.list.FasterList;
+import jcog.random.SplitMix64Random;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -291,6 +292,11 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
         return l != null && l.length > i ? l[i] : null;
     }
     public Y getIndex(Random rng) {
+        Y[] l = valueArray();
+        return l != null && l.length > 0 ? l[rng.nextInt(l.length)] : null;
+    }
+
+    public Y getIndex(SplitMix64Random rng) {
         Y[] l = valueArray();
         return l != null && l.length > 0 ? l[rng.nextInt(l.length)] : null;
     }

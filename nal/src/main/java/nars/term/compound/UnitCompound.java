@@ -9,6 +9,7 @@ import nars.subterm.Subterms;
 import nars.subterm.UniSubterm;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.util.TermBuilder;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -107,7 +108,7 @@ public abstract class UnitCompound implements Compound {
         if (nextDT == XTERNAL) {
             if (op()==CONJ) {
                 //only case it's allowed
-                return Op.terms.theCompound(CONJ, XTERNAL, new ArrayTermVector(sub()));
+                return TermBuilder.theCompound(CONJ, XTERNAL, new ArrayTermVector(sub()));
             }
         }
         assert(nextDT == DTERNAL);

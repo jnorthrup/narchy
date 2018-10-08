@@ -3,6 +3,7 @@ package nars.table.eternal;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.pri.Priority;
+import jcog.pri.ScalarValue;
 import jcog.sort.SortedArray;
 import nars.$;
 import nars.NAR;
@@ -136,13 +137,9 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
 
     @Override
-    public void clear() {
-        synchronized (this) {
-            forEach(t -> {
-                t.delete();
-            });
-            super.clear();
-        }
+    public synchronized void clear() {
+        forEach(ScalarValue::delete);
+        super.clear();
     }
 
     /**
@@ -155,29 +152,27 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
 
     @Nullable
-    private Task put(final Task incoming) {
+    private synchronized Task put(final Task incoming) {
 
-        synchronized (this) {
-            Task displaced = null;
+        Task displaced = null;
 
-            if (size == capacity()) {
-                Task weakestPresent = last();
-                if (weakestPresent != null) {
-                    if (eternalTaskValueWithOriginality(weakestPresent)
-                            <=
-                            eternalTaskValueWithOriginality(incoming)) {
-                        displaced = removeLast();
-                    } else {
-                        return incoming; //rejected
-                    }
+        if (size == capacity()) {
+            Task weakestPresent = last();
+            if (weakestPresent != null) {
+                if (eternalTaskValueWithOriginality(weakestPresent)
+                        <=
+                        eternalTaskValueWithOriginality(incoming)) {
+                    displaced = removeLast();
+                } else {
+                    return incoming; //rejected
                 }
             }
-
-            int r = add(incoming, this);
-            assert (r != -1);
-
-            return displaced;
         }
+
+        int r = add(incoming, this);
+        assert (r != -1);
+
+        return displaced;
 
     }
 

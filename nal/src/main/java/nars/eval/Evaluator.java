@@ -50,7 +50,7 @@ public class Evaluator extends DirectTermTransform {
             //}
             return true;
         }, null);
-        return funcAble[0]==null ? null : funcAble[0];
+        return funcAble[0];
     }
 
 

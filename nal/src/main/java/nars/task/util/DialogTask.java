@@ -1,64 +1,114 @@
 package nars.task.util;
 
 import jcog.data.map.ConcurrentFastIteratingHashSet;
+import jcog.data.set.ArrayHashSet;
 import jcog.event.Off;
 import jcog.event.Offs;
 import nars.NAR;
+import nars.Op;
 import nars.Task;
+import nars.control.NARService;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.impl.SimpleDeriver;
+import nars.op.SubUnify;
+import nars.term.Term;
+import nars.term.util.Image;
 
-import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-public class DialogTask {
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
+
+public class DialogTask extends NARService {
 
     final ConcurrentFastIteratingHashSet<Task> tasks = new ConcurrentFastIteratingHashSet<>(new Task[0]);
     private final Deriver deriver;
-    private final Offs ons;
+    private Offs ons;
     private final Off monitor;
     private final NAR nar;
+    final Set<Term> unifyWith = new ArrayHashSet();
 
-    public void add(Task t) {
-        tasks.add(t);
+    public boolean add(Task t) {
+        return tasks.add(t);
     }
 
-    public DialogTask(NAR n,Task... input) {
+    public DialogTask(NAR n, Task... input) {
         this.nar = n;
+
+        assert (input.length > 0);
+        boolean questions = false, quests = false;
         for (Task i : input) {
-            add(i);
+            if (add(i)) {
+                unifyWith.add(i.term());
+            }
+            questions |= i.isQuestion();
+            quests |= i.isQuest();
         }
 
-        ons= new Offs(
 
-            deriver = SimpleDeriver.forConcepts(n, Derivers.nal(n, 1, 8),
-                    tasks.asList().stream().map(t -> {
+        deriver = SimpleDeriver.forConcepts(n, Derivers.nal(n, 1, 8),
+                tasks.asList().stream().map(t -> {
 
-                nar.input(t);
+                    nar.input(t);
 
-                if (t != null)
                     return nar.concept(t.term(), true);
-                else
-                    return null;
 
-            }).collect(Collectors.toList())),
+                }).collect(Collectors.toList()));
 
-            monitor = n.onTask(this::onTask)
-        );
+        byte[] listenPuncs;
+        if (questions && quests)
+            listenPuncs = new byte[] { BELIEF, GOAL };
+        else if (questions && !quests)
+            listenPuncs = new byte[] { BELIEF };
+        else if (!questions && quests)
+            listenPuncs = new byte[] { GOAL };
+        else
+            listenPuncs = new byte[] { };
+
+        monitor = n.onTask(this::onTask, listenPuncs);
+
+        n.on(this);
     }
 
-    public void off() {
+    @Override
+    protected void starting(NAR nar) {
+        ons = new Offs(deriver, monitor);
+    }
+
+    @Override
+    protected void stopping(NAR nar) {
         ons.off();
+        ons = null;
     }
 
-    protected void onTask(Collection<Task> x) {
-        x.removeIf(t -> !this.onTask(t));
-        nar.input(x);
-    }
+//    protected void onTask(Collection<Task> x) {
+//        x.removeIf(t -> !this.onTask(t));
+//        nar.input(x);
+//    }
 
-    /** return false to filter this task from input */
+    /**
+     * return false to filter this task from input
+     */
     protected boolean onTask(Task x) {
+
+        Term xx = Image.imageNormalize( x.term() );
+        Op xo = xx.op();
+
+        SubUnify uu = new SubUnify(nar.random());
+        for (Term u : unifyWith) {
+            if (u.op()==xo) { //prefilter
+                if (u.unify(xx, uu.clear())) {
+                    if (!onTask(x, u))
+                        return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    protected boolean onTask(Task x, Term unifiedWith) {
         return true;
     }
 

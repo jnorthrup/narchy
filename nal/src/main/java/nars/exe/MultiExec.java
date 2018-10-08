@@ -8,7 +8,7 @@ import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
 import jcog.exe.Exe;
 import jcog.exe.realtime.FixedRateTimedFuture;
-import jcog.random.XoRoShiRo128PlusRandom;
+import jcog.random.SplitMix64Random;
 import nars.NAR;
 import nars.control.DurService;
 import nars.task.AbstractTask;
@@ -18,7 +18,6 @@ import nars.task.TaskProxy;
 import nars.time.clock.RealTime;
 
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -327,19 +326,17 @@ abstract public class MultiExec extends UniExec {
 
 
         @Override
-        public void stop() {
-            synchronized (this) {
-                Exe.setExecutor(ForkJoinPool.commonPool()); //TODO use the actual executor replaced by the start() call instead of assuming FJP
+        public synchronized void stop() {
+            Exe.setExecutor(ForkJoinPool.commonPool()); //TODO use the actual executor replaced by the start() call instead of assuming FJP
 
-                workers.forEach(Worker::off);
-                workers.clear();
+            workers.forEach(Worker::off);
+            workers.clear();
 
-                exe.shutdownNow();
+            exe.shutdownNow();
 
-                sync();
+            sync();
 
-                super.stop();
-            }
+            super.stop();
         }
 
 
@@ -349,7 +346,11 @@ abstract public class MultiExec extends UniExec {
 
             private boolean alive = true;
 
-            final Random rng = new XoRoShiRo128PlusRandom((31L * System.identityHashCode(this)) + System.nanoTime());
+            final SplitMix64Random rng;
+
+            public Worker() {
+                 rng = new SplitMix64Random((31L * System.identityHashCode(this)) + System.nanoTime());
+            }
 
             @Override
             public void run() {
@@ -452,10 +453,7 @@ abstract public class MultiExec extends UniExec {
                 long i = WorkerExec.this.idleTimePerCycle;
                 if (i > 0) {
 
-                    Util.sleepNSwhile(i, NapTime, () ->
-                            //in.size() > 0 || !alive
-                            queueSafe()
-                    );
+                    Util.sleepNSwhile(i, NapTime, WorkerExec.this::queueSafe);
                 }
             }
 

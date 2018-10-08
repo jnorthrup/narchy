@@ -7,6 +7,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.util.TermBuilder;
 import org.eclipse.collections.api.block.function.primitive.ByteFunction0;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
@@ -371,7 +372,7 @@ abstract public class FastCompound implements Compound /* The */ {
         } else {
             
             
-            return Op.terms.theCompound(opAtSub,
+            return TermBuilder.theCompound(opAtSub,
                     Op.terms.subterms(new SubtermView(this, offset))
                     
             );

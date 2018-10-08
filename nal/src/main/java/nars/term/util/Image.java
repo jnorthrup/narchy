@@ -63,18 +63,22 @@ public enum Image { ;
         return _imageNormalize(_t);
     }
 
-    public static Term _imageNormalize(Term _t) {
+
+    public static Term _imageNormalize(Term z) {
         boolean negated;
+
         Term t;
-        if (_t.op()==NEG) {
-            t = _t.unneg();
+        Op o = z.op();
+        if (o==NEG) {
             negated = true;
+            t = z.unneg();
+            o = t.op();
         } else {
-            t = _t;
+            t = z;
             negated = false;
         }
 
-        if (t.op()==INH && t.hasAll(ImageBits)) {
+        if (o==INH && t.hasAll(ImageBits)) {
             Term s = t.sub(0);
             Subterms ss = null;
             boolean isInt = s.op()==PROD && (ss = s.subterms()).contains(Op.ImgInt);// && !ss.contains(Op.ImgExt);
@@ -88,17 +92,17 @@ public enum Image { ;
 
                 Term u = INH.the(ss.sub(0), PROD.the(Util.replaceDirect(ss.subRangeArray(1, ss.subs()), Op.ImgInt, p)));
                 if (!(u instanceof Bool))
-                    return u.negIf(negated);
+                    return Image.imageNormalize(u).negIf(negated);
             } else if (isExt && !isInt) {
 
 
                 Term u = INH.the(PROD.the(Util.replaceDirect(pp.subRangeArray(1, pp.subs()), Op.ImgExt, s)), pp.sub(0));
                 if (!(u instanceof Bool))
-                    return u.negIf(negated);
+                    return Image.imageNormalize(u).negIf(negated);
             }
         }
 
-        return _t;
+        return z;
     }
 
 }

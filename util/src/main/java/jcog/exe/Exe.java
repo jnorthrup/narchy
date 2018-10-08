@@ -2,7 +2,6 @@ package jcog.exe;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jcog.data.list.MetalConcurrentQueue;
@@ -13,16 +12,22 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/** static execution context: JVM-global dispatch, logging, profiling, etc. */
-public enum Exe { ;
+/**
+ * static execution context: JVM-global dispatch, logging, profiling, etc.
+ */
+public enum Exe {;
 
-    /** global timer */
-    private static volatile HashedWheelTimer timer =  new HashedWheelTimer(
+    /**
+     * global timer
+     */
+    private static volatile HashedWheelTimer timer = new HashedWheelTimer(
             new AdmissionQueueWheelModel(16,
                     TimeUnit.MILLISECONDS.toNanos(2)
             ),
@@ -37,9 +42,13 @@ public enum Exe { ;
     }
 
     public static void invoke(Runnable r) {
-        Profiler p = profiler;
-        executor.execute(p == null ? r : p.run(r));
+        executor.execute(r);
     }
+
+//    static Runnable runnable(Runnable r) {
+//        Profiler p = profiler;
+//        return p == null ? r : p.runnable(r);
+//    }
 
     public static void invokeLater(Runnable r) {
         timer.submit(r);
@@ -53,19 +62,44 @@ public enum Exe { ;
         executor = e;
     }
 
-    /** record an already-timed event */
+    /**
+     * record an already-timed event
+     */
     public static void profiled(Object what, long start, long end) {
         Profiler p = profiler;
-        if (p!=null)
+        if (p != null)
             p.profiled(what, start, end);
+    }
+
+    public static void profiled(Object what, Runnable r) {
+        Profiler p = profiler;
+        if (p != null) {
+            p.run(what, r);
+        } else {
+            r.run();
+        }
     }
 
     public static abstract class Profiler {
 
         abstract public void profiled(Object what, long startNS, long endNS);
 
-        public Runnable run(Runnable r) {
+        public Runnable runnable(Runnable r) {
             return new ProfiledRunnable(r);
+        }
+
+        public final void run(Runnable r) {
+            run(r, r);
+        }
+
+        public void run(Object what, Runnable r) {
+            long start = System.nanoTime();
+            try {
+                r.run();
+            } finally {
+                long end = System.nanoTime();
+                profiled(what, start, end);
+            }
         }
 
         private class ProfiledRunnable implements Runnable {
@@ -100,8 +134,11 @@ public enum Exe { ;
         final AtomicBoolean busy = new AtomicBoolean();
         final MetalConcurrentQueue<JsonNode> out = new MetalConcurrentQueue<>(2048);
 
+        /** max events per packet */
+        final static int batchSize = 16;
+
         public UDPeerProfiler() throws IOException {
-            p.setFPS(10f);
+            p.setFPS(20f);
         }
 
         @Override
@@ -109,36 +146,47 @@ public enum Exe { ;
             if (!p.connected())
                 return;
 
-            
-
-            ArrayNode range = JsonNodeFactory.instance.arrayNode(2);
-            range.add(startNS);
-            range.add(endNS);
-            ObjectNode newest = JsonNodeFactory.instance.objectNode();
-            newest.put("t", range);
-
-            String w = what.toString();
-            newest.put("_", w);
+            ObjectNode n = JsonNodeFactory.instance.objectNode();
+            n.putArray("t").add(startNS).add(endNS);
+            n.put("_",
+                    Thread.currentThread().getId() + ": " +
+                    what.toString()
+            );
 
 
             if (busy.compareAndSet(false, true)) {
-                int s = out.size();
-                ArrayNode a = JsonNodeFactory.instance.arrayNode(s + 1);
-                if (s > 0) {
-                    for ( ; s > 0; s--) {
-                        a.add(out.poll());
-                    }
-                }
-                a.add(newest);
                 try {
-                    p.tellSome(a, 2, true);
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                    int total = out.size();
+                    while (total > 0) {
+                        int s = Math.min(total, batchSize);
+                        List a = new ArrayList(s + 1);
+                        if (n != null) {
+                            a.add(n);
+                            n = null;
+                        }
+
+                        if (s > 0) {
+                            for (; s > 0; s--) {
+                                JsonNode o = out.poll();
+                                if (o == null)
+                                    break;
+                                a.add(o);
+                            }
+                        }
+
+                        if (!a.isEmpty()) {
+                            try {
+                                p.tellSome(a, 2, true);
+                            } catch (JsonProcessingException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
                 } finally {
                     busy.set(false);
                 }
             } else {
-                if (!out.offer(newest))
+                if (!out.offer(n))
                     logger.warn("dropped profiling msg");
             }
         }

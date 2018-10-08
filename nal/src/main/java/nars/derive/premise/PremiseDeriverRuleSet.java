@@ -21,7 +21,7 @@ import java.util.stream.Stream;
  */
 public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseRuleProto> {
 
-    public NAR nar;
+    public final NAR nar;
 
     public PremiseDeriverRuleSet(NAR nar, String... rules) {
         this(nar, PremiseRuleSource.parse(rules));

@@ -177,7 +177,7 @@ public class NARS {
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
 
-        attention(()->new Attention(64));
+        attention(()->new Attention(96));
 
         conceptBuilder = ()->new DefaultConceptBuilder(
                 new ConceptAllocator(
@@ -221,14 +221,13 @@ public class NARS {
                         curve(Concept::volume,
                                 1, 64,
                                 2,32, //sharp dropoff
-                                4,28,
                                 8,24,
                                 24,16,
                                 48,12
                         ),
                         //tasklinks
                         curve(Concept::volume,
-                                1, 64,
+                                1, 32,
                                 8,24,
                                 24,16,
                                 48,12

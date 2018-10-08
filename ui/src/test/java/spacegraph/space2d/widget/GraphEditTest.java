@@ -6,26 +6,20 @@ import jcog.exe.Loop;
 import jcog.signal.Tensor;
 import jcog.signal.buffer.CircularFloatBuffer;
 import jcog.tree.rtree.rect.RectFloat;
-import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
 import spacegraph.SpaceGraph;
 import spacegraph.audio.Audio;
 import spacegraph.audio.sample.SamplePlayer;
 import spacegraph.audio.sample.SoundSample;
 import spacegraph.audio.speech.TinySpeech;
-import spacegraph.audio.synth.string.GuitarHero;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.chip.AudioOutPort;
-import spacegraph.space2d.widget.chip.FunctionSelectChip;
-import spacegraph.space2d.widget.chip.PulseChip;
-import spacegraph.space2d.widget.chip.WaveViewChip;
+import spacegraph.space2d.widget.chip.*;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.meter.WaveView;
 import spacegraph.space2d.widget.port.*;
-import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.space2d.widget.windo.Wall;
@@ -34,7 +28,6 @@ import spacegraph.video.Draw;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 
 import static java.lang.Boolean.TRUE;
 import static spacegraph.space2d.container.Gridding.HORIZONTAL;
@@ -223,38 +216,19 @@ public class GraphEditTest {
     public static class StringSynthTest {
         public static void main(String[] args) {
             GraphEdit<Surface> g = new GraphEdit<>(1000, 1000);
-            GuitarHero h = new GuitarHero();
-            h.amp(1f);
-
-            {
-//                AtomicReference<CircularFloatBuffer> targetBuffer = new AtomicReference(null);
-                PushButton e = new PushButton("p");
-
-//                e.click(()->{
-//                    Synth
-//                })
-                TypedPort<ObjectIntPair<float[]>> p = new TypedPort(ObjectIntPair.class, (Consumer<ObjectIntPair<float[]>>) (ObjectIntPair<float[]> mixTarget) -> {
-                    h.next(mixTarget.getOne());
-                });
-                g.add(
-                        new Bordering(new Gridding(e, new FloatSlider(h.amp(), 0, 8f).on(a -> {
-                            h.amp(a);
-                        }))).set(Bordering.E, p, 0.1f)
-                ).pos(0, 0, 250, 250);
-
-            }
-
-            {
 
 
-                g.add(new WaveViewChip()).pos(300, 0, 850, 550);
+            g.add(new StringSynthChip()).pos(0, 0, 250, 250);
 
-                g.add(new AudioOutPort()).pos(500, 30, 450, 350);
-            }
+            g.add(new WaveViewChip()).pos(300, 0, 850, 550);
+
+            g.add(new AudioOutPort()).pos(500, 30, 450, 350);
+
 
             SpaceGraph.window(g, 1000, 1000);
 
         }
+
     }
 
     public static class SproutTest {
@@ -321,4 +295,5 @@ public class GraphEditTest {
             w.add(new TypedPort<Tensor>(Tensor.class)).pos(100, 100, 400, 400);
         }
     }
+
 }

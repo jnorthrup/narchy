@@ -2,6 +2,7 @@ package jcog.exe.valve;
 
 import jcog.Texts;
 import jcog.Util;
+import jcog.exe.Exe;
 import org.apache.commons.math3.stat.descriptive.SynchronizedDescriptiveStatistics;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -9,7 +10,7 @@ import java.util.function.BooleanSupplier;
 
 import static java.lang.System.nanoTime;
 
-public class InstrumentedWork<Who, What> extends Share<Who, What> implements Work {
+public class InstrumentedWork<Who, What> extends Share<Who, What> implements Work  {
 
     final Work work;
 
@@ -83,9 +84,12 @@ public class InstrumentedWork<Who, What> extends Share<Who, What> implements Wor
     }
 
 
-    private int worked(long a, int ran) {
+    private int worked(long start, int ran) {
         assert (ran >= 0);
-        commit(ran, nanoTime() - a);
+        long end = nanoTime();
+        commit(ran, end - start);
+
+        Exe.profiled(this.who, start, end);
 
         return ran;
     }
@@ -119,11 +123,12 @@ public class InstrumentedWork<Who, What> extends Share<Who, What> implements Wor
                 + "}";
     }
 
+
     public void runUntil(long start, long runForNS) {
         assert(runForNS > 0);
         long deadline = start + runForNS;
         BooleanSupplier kontinue = () -> System.nanoTime() < deadline;
-        worked(start, this.next(kontinue));
+        this.next(kontinue);
     }
 
     public void runFor(long cycleNS) {

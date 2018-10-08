@@ -481,21 +481,32 @@ class GameAnimatorControl extends AnimatorBase {
             }
 
 
+            /** waiting to be rendered */
+            final AtomicBoolean waiting = new AtomicBoolean();
+
+            private void render() {
+                try {
+                    updateWindow();
+
+                    if (!drawables.isEmpty()) {
+                        GLAutoDrawable d = drawables.get(0);
+                        if (d != null)
+                            d.display();
+                    }
+                } finally {
+                    waiting.set(false);
+                }
+            }
+
             @Override
             public boolean next() {
 
                 if (window != null) {
 
-                    updateWindow();
-
                     if (!paused) {
 
-                        if (!drawables.isEmpty()) {
-                            GLAutoDrawable d = drawables.get(0);
-                            if (d == null)
-                                return false;
-
-                            d.display();
+                        if (waiting.compareAndSet(false, true)) {
+                            window.runOnEDTIfAvail(false, this::render);
                         }
                     }
                     return true;

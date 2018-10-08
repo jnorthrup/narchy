@@ -95,10 +95,6 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
 
 
 
-    @Override
-    public final int hashCode() {
-        return hash;
-    }
 
 
 }

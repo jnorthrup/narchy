@@ -182,7 +182,7 @@ public class IO {
 
         byte opByte = in.readByte();
         if (opByte != SPECIAL_OP) {
-            Op o = Op.ops[(byte) (opByte & 0b00011111)];
+            Op o = Op.ops[opByte];
             switch (o) {
                 case VAR_DEP:
                 case VAR_INDEP:

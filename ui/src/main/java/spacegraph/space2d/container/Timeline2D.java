@@ -105,10 +105,20 @@ public class Timeline2D<E> extends Graph2D<E> {
     }
 
     public Timeline2D<E> view(double start, double end) {
+        return view(start, end, true);
+    }
+    public synchronized Timeline2D<E> view(double start, double end, boolean forceUpdate) {
         assert (start < end);
-        tStart = start;
-        tEnd = end;
-        return update();
+        if (start!=tStart || end!=tEnd) {
+            tStart = start;
+            tEnd = end;
+            return update();
+        } else {
+            if (forceUpdate)
+                return update();
+            else
+                return this;
+        }
     }
 
     private float x(double t) {

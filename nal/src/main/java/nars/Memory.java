@@ -147,10 +147,8 @@ public class Memory {
                         e.printStackTrace();
                     }
                 });
-            } catch (ArithmeticException f) {
+            } catch (ArithmeticException | IOException f) {
                 f.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     };

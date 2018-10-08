@@ -211,14 +211,12 @@ public enum MetaGoal {
             return this;
         }
 
-        public void print(PrintStream out) {
-            synchronized (this) {
-                keyValuesView().toSortedListBy(x -> -x.getTwo()).forEach(x ->
-                        out.println(
-                                n4(x.getTwo()) + '\t' + MetaGoal.values()[x.getOne().getTwo()] + '\t' + x.getOne().getOne()
-                        )
-                );
-            }
+        public synchronized void print(PrintStream out) {
+            keyValuesView().toSortedListBy(x -> -x.getTwo()).forEach(x ->
+                    out.println(
+                            n4(x.getTwo()) + '\t' + MetaGoal.values()[x.getOne().getTwo()] + '\t' + x.getOne().getOne()
+                    )
+            );
         }
     }
 

@@ -25,12 +25,10 @@ public abstract class AbstractTask implements ITask, Priority {
         switch (next.size()) {
             case 0:
                 return null;
-            case 1: {
+            case 1:
                 return Util.only(next);
-            }
-            default: {
+            default:
                 return new TasksArray(next.toArray(ITask[]::new), true);
-            }
         }
     }
 
@@ -195,17 +193,14 @@ public abstract class AbstractTask implements ITask, Priority {
         @Override
         public ITask next(NAR n) {
             //FasterList<ITask> next = null;
-            for (ITask t: tasks) {
-                t.run(n);
-                if (t == null)
-                    break; //null-term
+            for (ITask t: tasks)
+                ITask.run(t, n);
 
 //                ITask p = t.next(n);
 //                if (p!=null) {
 //                    if (next == null) next = new FasterList(1);
 //                    next.add(p);
 //                }
-            }
             return null;
         }
 

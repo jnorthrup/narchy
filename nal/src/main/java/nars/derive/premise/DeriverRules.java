@@ -71,7 +71,7 @@ public class DeriverRules {
     /**
      * choice id to branch id mapping
      */
-    private final boolean test(Derivation d, int branch) {
+    private boolean test(Derivation d, int branch) {
         return could[branch].test(d);
     }
 
