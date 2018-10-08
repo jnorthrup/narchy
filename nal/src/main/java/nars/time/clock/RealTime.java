@@ -19,12 +19,13 @@ public abstract class RealTime extends Time {
 
     private final int unitsPerSecond;
 
-    public final long t0;
+    protected long startNS;
+    protected long startMS;
+    private final boolean relativeToStart;
+    protected long start;
 
-    //final AtomicLong t = new AtomicLong();
-    long t;
+    volatile long t;
 
-    private long start;
 
     final long seed = Math.abs(UUID.randomUUID().getLeastSignificantBits() ) & 0xffff0000; 
 
@@ -37,13 +38,9 @@ public abstract class RealTime extends Time {
 
     protected RealTime(int unitsPerSecond, boolean relativeToStart) {
         super();
-        this.unitsPerSecond = unitsPerSecond;
 
-        long now = realtime();
-        this.t0 = relativeToStart ? 0 : now;
-        this.last = this.start = relativeToStart ? now : 0L;
-        //this.t.set(last);
-        t = last;
+        this.relativeToStart = relativeToStart;
+        this.unitsPerSecond = unitsPerSecond;
 
         reset();
     }
@@ -61,19 +58,18 @@ public abstract class RealTime extends Time {
 
     @Override
     public void reset() {
-        long rt = realtime();
-
-        if (start!=0)
-            start = rt;
-
-        //t.set(rt - start);
-        t = rt - start;
+        this.startMS = System.currentTimeMillis();
+        this.startNS = System.nanoTime();
+        this.start = relativeToStart ? Math.round((startMS/1000.0) * unitsPerSecond) : 0L;
+        this.t = this.last = realtime();
     }
 
     @Override
     public final void cycle(NAR n) {
         //last = t.getAndSet(realtime() - start);
-        last = t; t = realtime() - start;
+        long t0 = this.t;
+        this.t = realtime();
+        this.last = t0;
     }
 
     @Override
@@ -176,29 +172,11 @@ public abstract class RealTime extends Time {
 
         @Override
         protected long realtime() {
-            return System.currentTimeMillis() / 100;
+            return start + (System.nanoTime() - startNS) / (100 * 1_000_000);
         }
 
     }
 
-    /** half-decisecond (50ms ~ 20hz) accuracy */
-    public static class DSHalf extends RealTime {
-
-
-        public DSHalf() {
-            this(false);
-        }
-
-        public DSHalf(boolean relativeToStart) {
-            super(50, relativeToStart);
-        }
-
-        @Override
-        protected long realtime() {
-            return System.currentTimeMillis() / 20;
-        }
-
-    }
 
     /** centisecond (0.01) accuracy */
     public static class CS extends RealTime {
@@ -214,7 +192,7 @@ public abstract class RealTime extends Time {
 
         @Override
         protected long realtime() {
-            return System.currentTimeMillis() / 10;
+            return start + (System.nanoTime() - startNS) / (10 * 1_000_000);
         }
 
     }
@@ -234,7 +212,7 @@ public abstract class RealTime extends Time {
 
         @Override
         protected long realtime() {
-            return System.currentTimeMillis();
+            return start + (System.nanoTime() - startNS) / (1 * 1_000_000);
         }
 
     }
@@ -249,7 +227,7 @@ public abstract class RealTime extends Time {
 
         @Override
         protected long realtime() {
-            return System.nanoTime();
+            return start + (System.nanoTime() - startNS);
         }
 
     }

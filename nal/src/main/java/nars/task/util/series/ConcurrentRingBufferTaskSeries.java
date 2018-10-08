@@ -160,9 +160,8 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
                         if (u == null && v == null)
                             done = true;
 
-                        r++;
-
                     } while (!done);
+                    return true;
 //                    if (a == b) {
 //                        T aa = q.peek(a);
 //                        if (aa!=null)
@@ -177,12 +176,13 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
 
 
         //just return the latest items while it keeps asking
+        //TODO iterate from oldest to newest if the target time is before or near series start
         int qs = q.size();
         for (int i = qs-1; i >= 0; i--) {
-            T qq = q.peek(i);
-            if (qq == null)
-                break;
-            if (!whle.test(qq))
+            T qi = q.peek(i);
+            if (qi == null)
+                continue; //should only occurr at the ends
+            if (!whle.test(qi))
                 return false;
         }
 

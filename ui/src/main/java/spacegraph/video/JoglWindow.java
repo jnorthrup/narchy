@@ -56,7 +56,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      */
     private GameAnimatorControl renderer;
 
-    private long lastRenderMS = System.currentTimeMillis();
+    private long lastRenderNS = System.nanoTime();
     private volatile int nx, ny, nw, nh;
 
     private final AtomicBoolean updateWindow = new AtomicBoolean(true);
@@ -260,13 +260,14 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     @Override
     public final void display(GLAutoDrawable drawable) {
 
-        long nowMS = System.currentTimeMillis(), renderDTMS = nowMS - lastRenderMS;
-        if (renderDTMS > Integer.MAX_VALUE) renderDTMS = Integer.MAX_VALUE;
-        this.lastRenderMS = nowMS;
+        long nowNS = System.nanoTime(), renderDtNS = nowNS - lastRenderNS;
+        this.lastRenderNS = nowNS;
+
+        if (renderDtNS > Integer.MAX_VALUE) renderDtNS = Integer.MAX_VALUE;
 
 //        System.out.println(window.getStateMaskString());
 
-        render((int) renderDTMS);
+        render((int) (renderDtNS/1_000_000) /* ns -> ms */);
 
     }
 

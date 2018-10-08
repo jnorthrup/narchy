@@ -1124,17 +1124,17 @@ public enum Util {
         return new double[]{min, max/*, sum */};
     }
 
-    public static void time(Logger logger, String procName, Runnable procedure) {
-        long dt = time(procedure);
-        logger.info("{} ({} ms)", procName, dt);
-    }
-
-    public static long time(Runnable procedure) {
-        long start = System.currentTimeMillis();
-        procedure.run();
-        long end = System.currentTimeMillis();
-        return end - start;
-    }
+//    public static void time(Logger logger, String procName, Runnable procedure) {
+//        long dt = time(procedure);
+//        logger.info("{} ({} ms)", procName, dt);
+//    }
+//
+//    public static long time(Runnable procedure) {
+//        long start = System.currentTimeMillis();
+//        procedure.run();
+//        long end = System.currentTimeMillis();
+//        return end - start;
+//    }
 
     public static String tempDir() {
         return System.getProperty("java.io.tmpdir");

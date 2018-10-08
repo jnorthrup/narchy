@@ -71,8 +71,6 @@ public class Dynamics2D {
     
     private static final int CLEAR_FORCES = 0x0004;
 
-    /** set to System.currentTimeMS() at start of solver iteration */
-    public long realtimeMS;
 
     
 
@@ -529,7 +527,6 @@ public class Dynamics2D {
 
         //invoke(() -> {
 
-            realtimeMS = System.currentTimeMillis();
 
             stepTimer.reset();
             tempTimer.reset();
