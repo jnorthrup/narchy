@@ -46,7 +46,7 @@ class NormalizedVariableMap<X> extends AbstractMap<Variable, X> {
 
     @Override
     public X compute(Variable key, BiFunction<? super Variable, ? super X, ? extends X> f) {
-        short a = ((AnonID) key).anonID();
+        short a = ((AnonID) key).anonID;
 
         return id.updateValue(a, () -> f.apply(key, null), (p) ->
                 f.apply(key, p));
@@ -54,7 +54,7 @@ class NormalizedVariableMap<X> extends AbstractMap<Variable, X> {
 
     public X computeIfAbsent(Term key,
                              Function<? super Term, ? extends X> mappingFunction) {
-        short a = ((AnonID) key).anonID();
+        short a = ((AnonID) key).anonID;
 
         return id.getIfAbsentPut(a, () ->
                 mappingFunction.apply(key));
@@ -64,17 +64,17 @@ class NormalizedVariableMap<X> extends AbstractMap<Variable, X> {
 
     @Override
     public X get(Object key) {
-        return id.get(((AnonID) key).anonID());
+        return id.get(((AnonID) key).anonID);
     }
 
     @Override
     public X put(Variable key, X value) {
-        return id.put(((AnonID) key).anonID(), value);
+        return id.put(((AnonID) key).anonID, value);
     }
 
     @Override
     public X remove(Object key) {
-        return id.remove(((AnonID) key).anonID());
+        return id.remove(((AnonID) key).anonID);
     }
 
     @Override

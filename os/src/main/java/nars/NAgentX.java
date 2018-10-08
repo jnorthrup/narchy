@@ -27,7 +27,6 @@ import nars.index.concept.HijackConceptIndex;
 import nars.op.Arithmeticize;
 import nars.op.Factorize;
 import nars.op.Introduction;
-import nars.op.language.NARSpeak;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -61,6 +60,7 @@ import java.util.function.Supplier;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.truth.TruthFunctions.c2wSafe;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -225,26 +225,41 @@ abstract public class NAgentX extends NAgent {
     static void initPlugins2(NAR n, NAgent a) {
         //new Spider(n, Iterables.concat(Iterables.concat(java.util.List.of(a.id, n.self()), a.actions), a.sensors));
 
-        new NARSpeak.VocalCommentary(n);
+        //new NARSpeak.VocalCommentary(n);
 
-        AudioContext cc = new AudioContext();
-        Clock c = cc.clock(200f);
-        new Metronome(a.id.term(), c, n);
-        cc.printCallChain();
+//        AudioContext cc = new AudioContext();
+//        Clock c = cc.clock(200f);
+//        new Metronome(a.id.term(), c, n);
+//        cc.printCallChain();
+
+
+        String experiencePath = System.getProperty("java.io.tmpdir") + "/" + a.getClass().getSimpleName() + ".nal";
+
+
+        File f = new File(experiencePath);
+        if (f.exists()) {
+            n.runLater((nn)->{
+                try {
+                    nn.inputBinary(f);
+                } catch (IOException e) {
+                    //e.getCause().printStackTrace();
+                    e.printStackTrace();
+                }
+            });
+        }
 
 
         Runtime.getRuntime().addShutdownHook(new Thread(()->{
+            //n.pause();
+            //a.off();
+
             try {
+                n.outputBinary(new File(experiencePath), false,
+                        (Task t) -> !t.isGoal() ?
+                                Task.eternalized(t,1, c2wSafe(n.confMin.floatValue()), n) : null
+                );
 
-                String path = System.getProperty("java.io.tmpdir") + "/" + a.getClass().getSimpleName() + ".nal";
-
-                n.outputBinary(new File(path),
-                        false, (Task t)->{
-                   return Task.eternalized(t,1, Param.TRUTH_MIN_EVI, n);
-                });
-
-                System.err.println("eternalized memory saved to: " + path);
-
+                n.logger.info("eternalized memory saved to: " + experiencePath);
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -621,8 +621,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         for (int i = 0; i < s; i++) {
 
             Object y0 =
-                    ITEM.getOpaque(yy, i);
-                    //yy[i];
+                    //ITEM.getOpaque(yy, i);
+                    yy[i];
 
             if (y0 == null)
                 continue; //throw new WTF();

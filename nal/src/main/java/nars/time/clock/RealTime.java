@@ -10,6 +10,7 @@ import tec.uom.se.quantity.time.TimeQuantities;
 import javax.measure.Quantity;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 /**
  * Created by me on 7/2/15.
@@ -24,7 +25,8 @@ public abstract class RealTime extends Time {
     private final boolean relativeToStart;
     protected long start;
 
-    volatile long t;
+    final static AtomicLongFieldUpdater<RealTime> T = AtomicLongFieldUpdater.newUpdater(RealTime.class, "t");
+    private volatile long t;
 
 
     final long seed = Math.abs(UUID.randomUUID().getLeastSignificantBits() ) & 0xffff0000; 
@@ -61,29 +63,27 @@ public abstract class RealTime extends Time {
         this.startMS = System.currentTimeMillis();
         this.startNS = System.nanoTime();
         this.start = relativeToStart ? Math.round((startMS/1000.0) * unitsPerSecond) : 0L;
-        this.t = this.last = realtime();
+
+        T.set(this, this.last = realtime());
     }
 
     @Override
     public final void cycle(NAR n) {
-        //last = t.getAndSet(realtime() - start);
-        long t0 = this.t;
-        this.t = realtime();
-        this.last = t0;
+        this.last = T.getAndSet(this, realtime());
     }
 
     @Override
     public final long now() {
         //return t.getOpaque();
-        return t;
+        return T.get(this);
     }
 
 
     protected abstract long realtime();
 
-    double secondsSinceStart() {
-        return unitsToSeconds(now() - start);
-    }
+//    double secondsSinceStart() {
+//        return unitsToSeconds(now() - start);
+//    }
 
     protected final double unitsToSeconds(long l) {
         return l / ((double) unitsPerSecond);
@@ -97,7 +97,7 @@ public abstract class RealTime extends Time {
     @NotNull
     @Override
     public String toString() {
-        return secondsSinceStart() + "s";
+        return String.valueOf(now()); //TODO more descriptive
     }
 
     @Override

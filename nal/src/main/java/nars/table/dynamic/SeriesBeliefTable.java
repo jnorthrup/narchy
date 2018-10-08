@@ -1,7 +1,6 @@
 package nars.table.dynamic;
 
 import jcog.data.list.FasterList;
-import jcog.math.Longerval;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -206,13 +205,13 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
         /*if (!t.isInput())*/
         {
-            long tEnd = t.end();
 
-            long tStart = t.start();
-            if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
+            long tStart = t.start(), tEnd = t.end();
+//            if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
+//                return !series.isEmpty(tStart, tEnd);
+//            }
+            if (tStart >= seriesStart && tEnd <= seriesEnd)
                 return !series.isEmpty(tStart, tEnd);
-            }
-            //}
         }
 
         return false;

@@ -59,6 +59,12 @@ public class IO {
 
     public static final byte SPECIAL_OP = (byte) 0xff;
 
+    public static final int STREAM_BUFFER_SIZE = 64 * 1024;
+    static final int GZIP_BUFFER_SIZE =
+            //512; //default
+            1024;
+            //4 * 1024;
+
     public static int readTasks(byte[] t, Consumer<Task> each) throws IOException {
         return readTasks(new ByteArrayInputStream(t), each);
     }
@@ -70,8 +76,12 @@ public class IO {
         int count = 0;
         while (i.available() > 0 /*|| (i.available() > 0) || (ii.available() > 0)*/) {
             Task t = readTask(ii);
+            //try {
             each.accept(t);
             count++;
+//            } catch (Throwable t) {
+//
+//            }
         }
         ii.close();
         return count;
@@ -127,7 +137,7 @@ public class IO {
     /**
      * with Term first
      */
-    private static void bytes(DataOutput out, Task t) throws IOException {
+    public static void bytes(DataOutput out, Task t) throws IOException {
 
 
         byte p = t.punc();
@@ -264,7 +274,7 @@ public class IO {
         Term[] s = new Term[siz];
         for (int i = 0; i < siz; i++) {
             Term read = (s[i] = readTerm(in));
-            if (read == null || read instanceof Bool)
+            if (read == null)
                 throw new TermException(Op.PROD /* consider the termvector as a product */, s, "invalid");
         }
 
@@ -330,10 +340,13 @@ public class IO {
 
     @Nullable
     public static byte[] taskToBytes(Task x) {
-
-
         DynBytes dos = new DynBytes(termBytesEstimate(x));
 
+        return taskToBytes(x, dos);
+    }
+
+    public @Nullable static byte[] taskToBytes(Task x, DynBytes dos) {
+        dos.clear();
         return bytes(x, dos).array();
     }
 

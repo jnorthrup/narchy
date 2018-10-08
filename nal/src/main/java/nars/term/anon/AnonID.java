@@ -23,7 +23,9 @@ public abstract class AnonID implements Atomic, The {
     private static final short IMG_MASK = 5 << 8;
 
     /** meant to be a perfect hash among all normalized variables */
-    final short id;
+    public final short anonID;
+
+    public final byte serial;
 
 
     protected AnonID(Op type, byte num) {
@@ -31,7 +33,8 @@ public abstract class AnonID implements Atomic, The {
     }
 
     AnonID(short id) {
-        this.id = id;
+        this.anonID = id;
+        this.serial = (byte) (id & 0xff);
     }
 
     private static short termToId(Op o, byte id) {
@@ -132,12 +135,12 @@ public abstract class AnonID implements Atomic, The {
     /** returns 0 if the term is not anon ID */
     public static short id(Term t) {
         if (t instanceof AnonID) {
-            return ((AnonID)t).anonID();
+            return ((AnonID)t).anonID;
         }
         if (t.op()==NEG) {
             t = t.unneg();
             if (t instanceof AnonID)
-                return (short) -((AnonID)t).anonID();
+                return (short) -((AnonID)t).anonID;
         }
         return 0;
     }
@@ -150,27 +153,18 @@ public abstract class AnonID implements Atomic, The {
     }
 
     @Override
-    public Term anon() {
+    public final Term anon() {
         return this;
     }
 
-    public final short anonID() {
-        return id;
-    }
 
-    public byte anonNum() {
-        return (byte) (anonID() & 0xff);
-    }
-
-
-    public short anonID(boolean neg) {
-        short id = anonID();
-        return neg ? (short) (-id) : id;
+    public final short anonID(boolean neg) {
+        return neg ? (short) (-anonID) : anonID;
     }
 
     @Override
     public final int hashCode() {
-        return id;
+        return anonID;
     }
 
     @Override

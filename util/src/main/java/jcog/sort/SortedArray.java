@@ -74,13 +74,14 @@ public class SortedArray<X> extends AbstractList<X> {
     }
 
     private static void swap(Object[] l, int a, int b) {
-//        assert (a != b);
-//        Object x = l[b];
-//        l[b] = l[a];
-//        l[a] = x;
+        if (a!=b) {
+            Object x = l[b];
+            l[b] = l[a];
+            l[a] = x;
+        }
 
-        Object x = ITEM.getAcquire(l, b);
-        ITEM.setRelease(l, b, ITEM.getAndSetAcquire(l, a, x));
+//        Object x = ITEM.getAcquire(l, b);
+//        ITEM.setRelease(l, b, ITEM.getAndSetAcquire(l, a, x));
     }
 
 
@@ -680,7 +681,10 @@ public class SortedArray<X> extends AbstractList<X> {
      */
     @Nullable
     public final X first() {
-        return this.isEmpty() ? null : (X) ITEM.getOpaque(items, 0);
+        X[] ii = items;
+        return ii.length == 0 ? null :
+                //(X) ITEM.getOpaque(items, 0);
+                ii[0];
     }
 
     /**
@@ -691,7 +695,9 @@ public class SortedArray<X> extends AbstractList<X> {
         int size = this.size;
         if (size == 0) return null;
         X[] ll = items;
-        return (X) ITEM.getOpaque(ll, Math.min(ll.length - 1, size - 1));
+        int i = Math.min(ll.length - 1, size - 1);
+        //return (X) ITEM.getOpaque(ll, i);
+        return ll[i];
 
     }
 
@@ -705,7 +711,10 @@ public class SortedArray<X> extends AbstractList<X> {
         if (s > 0) {
             X[] ii = items;
             for (int i = 0; i < s; i++)
-                action.accept((X) ITEM.getOpaque(ii,i));
+                action.accept(
+                        //(X) ITEM.getOpaque(ii,i)
+                        ii[i]
+                );
         }
     }
 
@@ -752,7 +761,7 @@ public class SortedArray<X> extends AbstractList<X> {
 
     @Override
     public Iterator<X> iterator() {
-        return new ArrayIterator.AtomicArrayIterator(items, size());
+        return ArrayIterator.get(items, size());
     }
 
 }

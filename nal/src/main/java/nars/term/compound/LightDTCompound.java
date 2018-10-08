@@ -39,8 +39,8 @@ public final class LightDTCompound extends SeparateSubtermsCompound {
 
         this.ref = base;
 
-        if (!(dt == XTERNAL || Math.abs(dt) < Param.DT_ABS_LIMIT))
-            throw new TermException(base.op(), dt, s, "exceeded DT limit");
+//        if (!(dt == XTERNAL || Math.abs(dt) < Param.DT_ABS_LIMIT))
+//            throw new TermException(base.op(), dt, s, "exceeded DT limit");
 
         if (Param.DEBUG_EXTRA) {
 
@@ -66,7 +66,7 @@ public final class LightDTCompound extends SeparateSubtermsCompound {
         }
 
 
-        assert dt == DTERNAL || dt == XTERNAL || (Math.abs(dt) < Param.DT_ABS_LIMIT) : "abs(dt) limit reached: " + dt;
+        assert dt == DTERNAL || dt == XTERNAL;// || (Math.abs(dt) < Param.DT_ABS_LIMIT) : "abs(dt) limit reached: " + dt;
 
         this.dt = dt;
 

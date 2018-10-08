@@ -15,8 +15,6 @@ import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ListIterator;
 
@@ -36,7 +34,7 @@ public class Remember extends AbstractTask {
     public Concept concept;
 
 
-    static final Logger logger = LoggerFactory.getLogger(Remember.class);
+//    static final Logger logger = LoggerFactory.getLogger(Remember.class);
 
     @Nullable
     public static Remember the(Task input, NAR n) {

@@ -126,42 +126,45 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
             int c = cap;
 
             int b = indexOf(Math.min(e, maxT));
-            if (b != -1) {
-
-                int a = point ? b : indexOf(Math.max(s, minT));
-                if (a != -1) {
-
-                    int ab = (a + b) / 2;
-                    int r = 0;
-                    boolean done = false;
-                    T u, v;
-                    do {
+            if (b == -1)
+                b = size() - 1;
 
 
-                        int yi = ab + r;
-                        if (yi < c) {
-                            v = q.peek(yi);
-                            if (v != null && !whle.test(v)) return false;
-                        } else {
-                            v = null;
-                        }
+            int a = point ? b : indexOf(Math.max(s, minT));
+            if (a == -1)
+                a = 0;
 
-                        r++;
-
-                        int ui = ab - r;
-                        if (ui >= 0) {
-                            u = q.peek(ui);
-                            if (u != null && !whle.test(u)) return false;
-                        } else {
-                            u = null;
-                        }
+            int ab = (a + b) / 2;
+            int r = 0;
+            boolean done = false;
+            T u, v;
+            do {
 
 
-                        if (u == null && v == null)
-                            done = true;
+                int yi = ab + r;
+                if (yi < c) {
+                    v = q.peek(yi);
+                    if (v != null && !whle.test(v)) return false;
+                } else {
+                    v = null;
+                }
 
-                    } while (!done);
-                    return true;
+                r++;
+
+                int ui = ab - r;
+                if (ui >= 0) {
+                    u = q.peek(ui);
+                    if (u != null && !whle.test(u)) return false;
+                } else {
+                    u = null;
+                }
+
+
+                if (u == null && v == null)
+                    done = true;
+
+            } while (!done);
+            return true;
 //                    if (a == b) {
 //                        T aa = q.peek(a);
 //                        if (aa!=null)
@@ -169,21 +172,21 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
 //                    } else {
 //                        return q.whileEach(x, a, b+1);
 //                    }
-                }
+
+
+        } else {
+
+
+            //just return the latest items while it keeps asking
+            //TODO iterate from oldest to newest if the target time is before or near series start
+            int qs = q.size();
+            for (int i = qs - 1; i >= 0; i--) {
+                T qi = q.peek(i);
+                if (qi == null)
+                    continue; //should only occurr at the ends
+                if (!whle.test(qi))
+                    return false;
             }
-
-        }
-
-
-        //just return the latest items while it keeps asking
-        //TODO iterate from oldest to newest if the target time is before or near series start
-        int qs = q.size();
-        for (int i = qs-1; i >= 0; i--) {
-            T qi = q.peek(i);
-            if (qi == null)
-                continue; //should only occurr at the ends
-            if (!whle.test(qi))
-                return false;
         }
 
 

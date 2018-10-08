@@ -1,7 +1,5 @@
 package jcog.tree.rtree;
 
-import jcog.data.pool.DequePool;
-import jcog.math.CachedFloatFunction;
 import jcog.sort.TopN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -31,17 +29,7 @@ public class HyperIterator2<X> implements AutoCloseable {
     final TopN plan;
 
 
-    final static ThreadLocal<DequePool<TopN>> pool =
-            ThreadLocal.withInitial(()->
-                    new DequePool() {
-                        @Override
-                        public TopN create() {
-                            //return new CachedFloatRank(64);
-                            return new TopN(new Object[32], new CachedFloatFunction(64, x->Float.NaN));
-                        }
-                    });
-
-//                    new DequePool() {
+    //                    new DequePool() {
 //                        @Override
 //                        public TopN create() {
 //                            return new TopN(32, (x)->0);
@@ -54,25 +42,16 @@ public class HyperIterator2<X> implements AutoCloseable {
     }
 
     public HyperIterator2(Spatialization model, Node<X> start, FloatFunction<HyperRegion> rank) {
-//        CachedFloatFunction valueFn = pool.get().get().value(r -> rank.floatValueOf(
-//                r instanceof Node ? ((Node) r).bounds() : model.bounds(r)
-//        ));
-//
-//        this.plan = new TopN(new Object[32], valueFn);
-        this.plan = pool.get().get();
-        ((CachedFloatFunction)plan.rank).value(r -> rank.floatValueOf(
+        this.plan = TopN.pooled(64, r -> rank.floatValueOf(
                 r instanceof Node ? ((Node) r).bounds() : model.bounds(r)
                 //model.bounds(r)
-        ));
-
+                ));
 
         plan.accept(start);
     }
 
     @Override public final void close() {
-        ((CachedFloatFunction)plan.rank).value(r -> Float.NaN);
-        plan.clear();
-        pool.get().put(plan);
+        TopN.unpool(plan);
     }
 
 

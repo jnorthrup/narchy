@@ -1,8 +1,7 @@
 package nars.task.util;
 
-import jcog.data.pool.DequePool;
 import jcog.data.set.MetalLongSet;
-import jcog.math.CachedFloatRank;
+import jcog.math.CachedFloatFunction;
 import jcog.sort.FloatRank;
 import jcog.sort.TopN;
 import nars.NAR;
@@ -42,7 +41,6 @@ public class Answer implements Consumer<Task> {
     public TimeRangeFilter time;
     public Term template = null;
 
-    private final CachedFloatRank<Task> cache;
     private final TopN<Task> tasks;
     public final Predicate<Task> filter;
 
@@ -53,9 +51,8 @@ public class Answer implements Consumer<Task> {
     /** TODO filter needs to be more clear if it refers to the finished task (if dynamic) or a component in creating one */
     public Answer(int capacity, int maxTries, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
         this.nar = nar;
-        this.cache = start(rank.filter(filter));
+        this.tasks = TopN.pooled(capacity, rank.filter(filter));
         this.filter = filter;
-        this.tasks = new TopN<>(new Task[capacity], cache);
         this.triesRemain = maxTries;
     }
 
@@ -72,11 +69,6 @@ public class Answer implements Consumer<Task> {
         return tasks.rank;
     }
 
-
-    public void clear() {
-        cache.clear();
-        tasks.clear();
-    }
 
     @Deprecated
     public static Answer relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
@@ -252,8 +244,6 @@ public class Answer implements Consumer<Task> {
                 }
             }
 
-            clear();
-
             return t;
         } finally {
             end();
@@ -268,10 +258,7 @@ public class Answer implements Consumer<Task> {
         try {
             TruthPolation p = truthpolation();
             @Nullable TruthPolation t = p != null ? p.filtered() : null;
-            Truth result = t != null ? t.truth(nar) : null;
-
-
-            return result;
+            return t != null ? t.truth(nar) : null;
         } finally {
             end();
         }
@@ -361,35 +348,34 @@ public class Answer implements Consumer<Task> {
         return tp;
     }
 
-    public Answer match(TaskTable t) {
+    public final Answer match(TaskTable t) {
         t.match(this);
         return this;
     }
 
-    final static ThreadLocal<DequePool<CachedFloatRank<Task>>> pool =
-            //HEAP
-            //() -> new CachedFloatRank<>(64);
-
-            ThreadLocal.withInitial(()->
-                    new DequePool<CachedFloatRank<Task>>() {
-                        @Override
-                        public CachedFloatRank<Task> create() {
-                            return new CachedFloatRank<>(64);
-                        }
-                    }
-            );
-
-    static protected CachedFloatRank<Task> start(FloatRank<Task> rank) {
-        //return new CachedFloatFunction<>(4, 256, rank);
-        CachedFloatRank<Task> x = pool.get().get().value(rank);
-        assert (x.isEmpty());
-        //System.out.println(Thread.currentThread() + " got " + System.identityHashCode(x));
-        return x;
-    }
+//    final static ThreadLocal<DequePool<CachedFloatRank<Task>>> pool =
+//            //HEAP
+//            //() -> new CachedFloatRank<>(64);
+//
+//            ThreadLocal.withInitial(()->
+//                    new DequePool<CachedFloatRank<Task>>() {
+//                        @Override
+//                        public CachedFloatRank<Task> create() {
+//                            return new CachedFloatRank<>(64);
+//                        }
+//                    }
+//            );
+//
+//    static protected CachedFloatRank<Task> start(FloatRank<Task> rank) {
+//        //return new CachedFloatFunction<>(4, 256, rank);
+//        CachedFloatRank<Task> x = pool.get().get().value(rank);
+//        assert (x.isEmpty());
+//        //System.out.println(Thread.currentThread() + " got " + System.identityHashCode(x));
+//        return x;
+//    }
 
     private void end() {
-        clear();
-        pool.get().put(cache);
+        TopN.unpool(tasks);
     }
 
     public Answer time(TimeRangeFilter time) {
@@ -400,7 +386,7 @@ public class Answer implements Consumer<Task> {
     @Override
     public final void accept(Task task) {
         if (task != null) {
-            if (!cache.containsKey(task)) {
+            if (!(((CachedFloatFunction)(tasks.rank)).containsKey(task))) {
                 //if (time == null || time.accept(task.start(), task.end())) {
                 tasks.accept(task);
             }

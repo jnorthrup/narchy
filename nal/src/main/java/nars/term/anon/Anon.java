@@ -118,7 +118,7 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
             }
         } else {
             if (x instanceof Anom) {
-                return map.interned((byte) ((AnonID) x).id);
+                return map.interned((byte) ((AnonID) x).anonID);
             } else {
                 return x;
             }
@@ -159,7 +159,7 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
                         throw new UnsupportedOperationException();
                 }
                 if (shift!=0) {
-                    int newID = v.anonNum() + shift;
+                    int newID = v.serial + shift;
                     assert(newID < Byte.MAX_VALUE-3); //to be safe
                     x = v.normalize((byte) newID);
                 }

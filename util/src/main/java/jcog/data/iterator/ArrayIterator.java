@@ -11,8 +11,6 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static jcog.Util.ITEM;
-
 /** TODO optionally skip nulls */
 public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
 
@@ -144,15 +142,15 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
         }
     }
 
-    public static class AtomicArrayIterator<X> extends PartialArrayIterator<X> {
-
-        public AtomicArrayIterator(X[] array, int size) {
-            super(array, size);
-        }
-
-        @Override
-        public X next() {
-            return (X)ITEM.getOpaque(array, index++);
-        }
-    }
+//    public static class AtomicArrayIterator<X> extends PartialArrayIterator<X> {
+//
+//        public AtomicArrayIterator(X[] array, int size) {
+//            super(array, size);
+//        }
+//
+//        @Override
+//        public X next() {
+//            return (X)ITEM.getOpaque(array, index++);
+//        }
+//    }
 }

@@ -1,7 +1,9 @@
 package jcog.sort;
 
 import jcog.data.list.FasterList;
+import jcog.data.pool.DequePool;
 import jcog.decide.Roulette;
+import jcog.math.CachedFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,6 +18,7 @@ import static java.lang.Float.NEGATIVE_INFINITY;
 /** warning: this keeps duplicate insertions */
 public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunction<X> {
 
+
     public FloatRank<X> rank;
     private float min;
 
@@ -29,6 +32,8 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         this.min = NEGATIVE_INFINITY;
         rank(rank);
     }
+
+
 
     public TopN<X> rank(FloatRank<X> rank) {
         this.rank = rank;
@@ -195,5 +200,28 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     @Override
     public final float floatValueOf(X x) {
         return rankNeg(x);
+    }
+
+    public final static ThreadLocal<DequePool<TopN>> pool =
+            ThreadLocal.withInitial(()->
+                    new DequePool() {
+                        @Override
+                        public TopN create() {
+                            //return new CachedFloatRank(64);
+                            return new TopN(new Object[32], new CachedFloatFunction(64, x->Float.NaN));
+                        }
+                    });
+
+    public static <X> TopN<X> pooled(int capacity, FloatFunction<X> rank) {
+        TopN t = pool.get().get();
+        ((CachedFloatFunction)t.rank).value(rank);
+        if (t.items.length!=capacity)
+            t.items = new Object[capacity];
+        return t;
+    }
+    public static void unpool(TopN t) {
+        t.clear();
+        ((CachedFloatFunction)t.rank).value(r -> Float.NaN);
+        pool.get().put(t);
     }
 }

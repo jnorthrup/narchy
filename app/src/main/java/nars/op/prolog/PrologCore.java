@@ -425,8 +425,8 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                 case VAR_QUERY:
                 case VAR_PATTERN:
                 case VAR_DEP: 
-                case VAR_INDEP: 
-                    return new Var("_" + (((NormalizedVariable) term).anonNum()));
+                case VAR_INDEP:
+                    return new Var("_" + (((NormalizedVariable) term).serial));
 
                 
             }

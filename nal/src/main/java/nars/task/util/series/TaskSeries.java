@@ -28,29 +28,39 @@ public interface TaskSeries<T extends Task> {
 
         DynStampTruth d = new DynStampTruth(Math.min(size, limit));
 
-        TopN<Task> inner = new TopN<>(new Task[Math.min(size, limit)],
-                //this assumes they are all of the same evidence which is not true if the ranges differ
-                filter!=null ?
-                    (t, min) -> filter.test(t) ? -t.minTimeTo(start, end) : Float.NaN
-                    :
-                    (t, min) -> -t.minTimeTo(start, end)
-                //TruthIntegration.eviInteg(t, start, end, 1) //TODO this may be better as a double value comparison, long -> float could be lossy
-        );
+        TopN<Task> inner = TopN.pooled(Math.min(size, limit), filter != null ?
+                (t) -> filter.test(t) ? -t.minTimeTo(start, end) : Float.NaN
+                :
+                (t) -> -t.minTimeTo(start, end));
 
-        forEach(start, end, false, inner::add);
+        try {
+
+//        TopN<Task> inner = new TopN<>(new Task[Math.min(size, limit)],
+//                //this assumes they are all of the same evidence which is not true if the ranges differ
+//                filter!=null ?
+//                    (t, min) -> filter.test(t) ? -t.minTimeTo(start, end) : Float.NaN
+//                    :
+//                    (t, min) -> -t.minTimeTo(start, end)
+//                //TruthIntegration.eviInteg(t, start, end, 1) //TODO this may be better as a double value comparison, long -> float could be lossy
+//        );
+
+            forEach(start, end, false, inner::add);
 
 
-        int l = inner.size();
-        if (l > 0) {
-            Task[] ii = inner.items;
-            int i;
-            for (i = 0; i < l; i++)
-                d.add(ii[i]);
+            int l = inner.size();
+            if (l > 0) {
+                Object[] ii = inner.items;
+                int i;
+                for (i = 0; i < l; i++)
+                    d.add((Task) ii[i]);
 
-            return d;
+                return d;
+            }
+
+            return null;
+        } finally {
+            TopN.unpool(inner);
         }
-
-        return null;
 
     }
 

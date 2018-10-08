@@ -1,5 +1,6 @@
 package nars;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.Longerval;
@@ -204,8 +205,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
      * these can all be tested prenormalization, because normalization will not affect the result
      */
     static boolean validTaskCompound(Compound x, boolean safe) {
-        Op xo = x.op();
-        return xo.atomic ? xo.conceptualizable : validIndep(x, safe);
+        return validIndep(x, safe);
     }
 
     private static boolean validIndep(Term x, boolean safe) {
@@ -246,7 +246,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 (ByteList path, Term indepVarOrStatement) -> {
                     if (!path.isEmpty()) {
                         if (indepVarOrStatement.op() == VAR_INDEP) {
-                            indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).anonNum(),
+                            indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).serial,
                                     () -> new FasterList<>(2))
                                     .add(path.toImmutable());
                         } else {
@@ -466,16 +466,37 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 //    }
 
     /** leave n null to avoid dithering */
-    static NALTask eternalized(Task x, float eviFactor, float eviMin, @Nullable NAR n) {
-        Truth tt = x.truth().eternalized(eviFactor, eviMin, n);
-        if (tt == null)
-            return null;
+    static Task eternalized(Task x, float eviFactor, float eviMin, @Nullable NAR n) {
+        boolean isEternal = x.isEternal();
+        boolean hasTruth = x.isBeliefOrGoal();
+        if (isEternal) {
+            if (eviFactor!=1)
+                throw new TODO();
+            if (hasTruth) {
+                if (x.evi() < eviMin)
+                    return null;
+            }
+            return x;
+        }
+
+        Truth tt;
+
+        if (hasTruth) {
+            tt = x.truth().eternalized(eviFactor, eviMin, n);
+            if (tt == null)
+                return null;
+        } else {
+            tt = null;
+        }
+
+        byte punc = x.punc();
+
         return Task.clone(x, x.term(),
                 tt,
-                x.punc(),
+                punc,
                 /* TODO current time, from NAR */
                 (c, t) ->
-                        new UnevaluatedTask(c, x.punc(), t,
+                        new UnevaluatedTask(c, punc, t,
                                 x.creation(), ETERNAL, ETERNAL,
                                 x.stamp()
                         )
@@ -485,8 +506,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     static Term forceNormalizeForBelief(Term x) {
         x = x.normalize();
 
-        if (x instanceof Compound && x.hasAny(Op.VAR_INDEP) && !validTaskCompound((Compound)x, true)) {
+        if (x instanceof Compound && !validTaskCompound((Compound)x, true)) {
             x = VariableTransform.indepToDepVar.transform(x);
+            x = x.normalize();
         }
 
         return x;

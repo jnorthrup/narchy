@@ -801,6 +801,19 @@ public enum Texts {
         }
     }
 
+    /**
+     * 2 decimal representation of values between 0 and 1. only the tens and hundredth
+     * decimal point are displayed - not the ones, and not a decimal point.
+     * for compact display.
+     * if the value=1.0, then 'aa' is the result
+     */
+    public static String n2u(float x) {
+        if ((x < 0) || (x > 1)) throw new RuntimeException("values >=0 and <=1");
+        int hundreds = (int) hundredths(x);
+        if (x == 100) return "aa";
+        return hundreds < 10 ? "0" + hundreds : Integer.toString(hundreds);
+    }
+
 
     /**
      * This class implements fast, thread-safe format of a double value

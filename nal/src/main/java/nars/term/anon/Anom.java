@@ -40,7 +40,7 @@ public final class Anom extends AnonID {
 
     @Override
     public String toString() {
-        return '_' +  Integer.toString(id);
+        return '_' +  Integer.toString(anonID);
     }
 
 
@@ -78,6 +78,6 @@ public final class Anom extends AnonID {
 
     @Override
     public final Term neg() {
-        return theNeg[id];
+        return theNeg[anonID];
     }
 }

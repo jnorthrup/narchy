@@ -5,6 +5,7 @@ import com.google.common.collect.Iterators;
 import com.google.common.primitives.Longs;
 import jcog.Texts;
 import jcog.Util;
+import jcog.data.byt.DynBytes;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.event.ByteTopic;
@@ -50,7 +51,6 @@ import nars.time.Tense;
 import nars.time.Time;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
-
 import org.HdrHistogram.Histogram;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
 import org.eclipse.collections.api.tuple.Pair;
@@ -92,7 +92,6 @@ import static org.fusesource.jansi.Ansi.ansi;
 public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled, nars.util.TimeAware {
 
     static final String VERSION = "NARchy v?.?";
-    static final int FILE_STREAM_BUFFER_SIZE = 16 * 1024;
     private static final Set<String> loggedEvents = java.util.Set.of("eventTask");
     public final Exec exe;
     public final Topic<NAR> eventClear = new ListTopic<>();
@@ -351,9 +350,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public List<Task> input(String text) throws NarseseException, TaskException {
         List<Task> l = Narsese.the().tasks(text, this);
         switch (l.size()) {
-            case 0: return List.of();
-            case 1: input(l.get(0)); return l;
-            default: input(l); return l;
+            case 0:
+                return List.of();
+            case 1:
+                input(l.get(0));
+                return l;
+            default:
+                input(l);
+                return l;
         }
     }
 
@@ -441,8 +445,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     public NAR believe(String termString, float freq, float conf) throws NarseseException {
-        return believe(termString, freq, conf,ETERNAL,ETERNAL);
+        return believe(termString, freq, conf, ETERNAL, ETERNAL);
     }
+
     public NAR believe(String termString, float freq, float conf, long start, long end) throws NarseseException {
         believe($(termString), start, end, freq, conf);
         return this;
@@ -804,7 +809,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         String[] previous = {null};
 
-        eventTask.on( (v) -> {
+        eventTask.on((v) -> {
 
 //            if (includeValue != null && !includeValue.test(v))
 //                return;
@@ -972,7 +977,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 //        if (whenOrAfter <= time())
 //            run(then);
 //        else
-            time.runAt(whenOrAfter, then);
+        time.runAt(whenOrAfter, then);
     }
 
     /**
@@ -982,7 +987,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 //        if (whenOrAfter <= time())
 //            run(then);
 //        else
-            time.runAt(whenOrAfter, then);
+        time.runAt(whenOrAfter, then);
     }
 
     /**
@@ -1158,7 +1163,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     public NAR inputBinary(File input) throws IOException {
-        return inputBinary(new GZIPInputStream(new FileInputStream(input), FILE_STREAM_BUFFER_SIZE));
+        return inputBinary(new GZIPInputStream(new BufferedInputStream(new FileInputStream(input), IO.STREAM_BUFFER_SIZE), IO.GZIP_BUFFER_SIZE));
     }
 
     public NAR outputBinary(File f) throws IOException {
@@ -1175,9 +1180,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     public NAR outputBinary(File f, boolean append, Function<Task, Task> each) throws IOException {
         FileOutputStream f1 = new FileOutputStream(f, append);
-        OutputStream ff = new GZIPOutputStream(f1, FILE_STREAM_BUFFER_SIZE);
+        OutputStream ff = new GZIPOutputStream(f1, IO.GZIP_BUFFER_SIZE);
         outputBinary(ff, each);
-        ff.close();
         return this;
     }
 
@@ -1197,35 +1201,40 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     public NAR outputBinary(OutputStream o, Function<Task, Task> each) {
 
+        Util.time(logger, "outputBinary", () -> {
 
-        DataOutputStream oo = new DataOutputStream(o);
+            DataOutputStream oo = new DataOutputStream(o);
 
-        MutableInteger total = new MutableInteger(0), wrote = new MutableInteger(0);
+            MutableInteger total = new MutableInteger(0), wrote = new MutableInteger(0);
 
-        tasks().map(each).forEach(x -> {
+            DynBytes d = new DynBytes(128);
 
-            total.increment();
+            tasks().map(each).filter(Objects::nonNull).distinct().forEach(x -> {
 
-            byte[] b = IO.taskToBytes(x);
+                total.increment();
+
+                try {
+                    byte[] b = IO.taskToBytes(x, d);
+                    oo.write( b );
+                    wrote.increment();
+                } catch (IOException e) {
+                    if (Param.DEBUG)
+                        throw new RuntimeException(e);
+                    else
+                        logger.warn("{}", e);
+                }
+
+            });
+
+            logger.info("{} output {}/{} tasks ({} bytes uncompressed)", o, wrote, total, oo.size());
 
 
             try {
-                oo.write(b);
+                oo.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
-            wrote.increment();
         });
-
-        logger.debug("{} output {}/{} tasks ({} bytes)", o, wrote, total, oo.size());
-
-
-        try {
-            oo.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
         return this;
     }
@@ -1433,7 +1442,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         }
     }
 
-    @Nullable public final Concept activate(Termed t, float activationApplied) {
+    @Nullable
+    public final Concept activate(Termed t, float activationApplied) {
 
         /** conceptualize regardless */
         Concept c = conceptualize(t);
@@ -1467,16 +1477,16 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * invokes any pending tasks without advancing the clock
      */
     public final NAR synch() {
-        synchronized (exe) {
-            time.synch(this);
-        }
+        time.synch(this);
         return this;
     }
 
-    public void pause() {
+    public final boolean pause() {
         if (loop.stop()) {
             synch();
+            return true;
         }
+        return false;
     }
 
     /**
@@ -1510,8 +1520,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return answer(x, GOAL, start, end);
     }
 
-    /** creates a view for resolving unifiable terms with 'x'
-     * above provided absolute expectation.  negative terms can be returned negative */
+    /**
+     * creates a view for resolving unifiable terms with 'x'
+     * above provided absolute expectation.  negative terms can be returned negative
+     */
     public Function<Term, Stream<Term>> facts(float expMin, boolean beliefsOrGoals) {
         return new Facts(this, expMin, beliefsOrGoals);
     }
@@ -1524,7 +1536,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         TaskChannel(Cause cause) {
             super(cause);
             this.ci = cause.id;
-            uniqueCause = new short[] {ci};
+            uniqueCause = new short[]{ci};
         }
 
         @Override
@@ -1564,7 +1576,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 switch (tcl) {
                     case 0:
                         //shared one-element cause
-                        assert(uniqueCause[0] == ci);
+                        assert (uniqueCause[0] == ci);
                         t.cause(uniqueCause);
                         break;
                     case 1:
@@ -1581,8 +1593,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                         short[] tc = Arrays.copyOf(currentCause, Math.min(cc, tcl + 1));
                         if (tc.length == cc) {
                             //shift
-                            System.arraycopy(tc, 1, tc, 0, tc.length-1);
-                            tc[tc.length-1] = ci;
+                            System.arraycopy(tc, 1, tc, 0, tc.length - 1);
+                            tc[tc.length - 1] = ci;
                         } else {
                             tc[tcl] = ci;
                         }
@@ -1590,7 +1602,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                         break;
                 }
             } else if (x instanceof Remember) {
-                return process(((Remember)x).input);
+                return process(((Remember) x).input);
             } else
                 return x != null;
 

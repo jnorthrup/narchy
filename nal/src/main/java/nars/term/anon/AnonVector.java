@@ -52,7 +52,7 @@ public class AnonVector extends TermVector implements FullyInternable {
             } else {
                 neg = false;
             }
-            short tt = ((AnonID) ss).anonID();
+            short tt = ((AnonID) ss).anonID;
             if (neg)
                 tt = (short) -tt;
             t[i] = tt;
@@ -213,7 +213,7 @@ public class AnonVector extends TermVector implements FullyInternable {
     }
 
     private int indexOf(AnonID t) {
-        return indexOf(t.anonID());
+        return indexOf(t.anonID);
     }
 
     @Override

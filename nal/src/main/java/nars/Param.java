@@ -232,7 +232,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, 0, TTL_MIN * 16);
+    public final IntRange deriveBranchTTL = new IntRange(10 * TTL_MIN, 0, TTL_MIN * 16);
     public final IntRange subUnifyTTLMax = new IntRange( 8, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
@@ -304,7 +304,6 @@ public abstract class Param {
 
 
     public final FloatRange activateConceptRate = new FloatRange(1f, 0, 1f);
-    public final FloatRange activateLinkRate = new FloatRange(1f, 0, 1f);
 
 
     /**
@@ -334,13 +333,13 @@ public abstract class Param {
     abstract long time();
 
 
-    /**
-     * abs(term.dt()) safety limit for non-dternal/non-xternal temporal compounds
-     * exists for debugging
-     */
-    @Deprecated
-    public static int DT_ABS_LIMIT =
-            Integer.MAX_VALUE / 16384;
+//    /**
+//     * abs(term.dt()) safety limit for non-dternal/non-xternal temporal compounds
+//     * exists for debugging
+//     */
+//    @Deprecated
+//    public static int DT_ABS_LIMIT =
+//            Integer.MAX_VALUE / 16384;
 
 
     /**
@@ -388,7 +387,7 @@ public abstract class Param {
     public static final int STAMP_CAPACITY = 16;
 
     /** TODO make this NAR-specific */
-    public static final int CAUSE_MAX = 256;
+    public static final int CAUSE_MAX = 64;
     public static final IntRange causeCapacity = new IntRange(64, 0, CAUSE_MAX);
 
 

@@ -55,12 +55,14 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
 
     /*@Stable*/
     private final byte[] bytes;
+    private final byte varType;
 
     NormalizedVariable(/*@NotNull*/ Op type, byte num) {
         super(type, num);
         assert num > 0;
 
         this.bytes = new byte[] { type.id, num };
+        this.varType = type.id;
     }
 
 
@@ -135,18 +137,13 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
         return bytes;
     }
 
-    @Override
-    public byte anonNum() {
-        return bytes[1];
-    }
     public byte anonType() {
-        return bytes[0];
+        return varType;
     }
-
 
     @Override
     public @Nullable NormalizedVariable normalize(byte vid) {
-        if (anonNum() == vid)
+        if (serial == vid)
             return this;
         else
             return $.v(op(), vid);
@@ -158,7 +155,7 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
 
     @Override
     public String toString() {
-        return op().ch + Integer.toString(anonNum());
+        return op().ch + Integer.toString(serial);
     }
 
 

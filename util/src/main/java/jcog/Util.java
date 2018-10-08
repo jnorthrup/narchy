@@ -68,7 +68,6 @@ import java.util.stream.Stream;
 import static java.lang.Math.pow;
 import static java.lang.Thread.onSpinWait;
 import static java.util.Arrays.stream;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -819,22 +818,22 @@ public enum Util {
         return ((float) b) / bins;
     }
 
-    public static <D> D runProbability(Random rng, float[] probs, D[] choices) {
-        float tProb = 0;
-        for (int i = 0; i < probs.length; i++) {
-            tProb += probs[i];
-        }
-        float s = rng.nextFloat() * tProb;
-        int c = 0;
-        for (int i = 0; i < probs.length; i++) {
-            s -= probs[i];
-            if (s <= 0) {
-                c = i;
-                break;
-            }
-        }
-        return choices[c];
-    }
+//    public static <D> D runProbability(Random rng, float[] probs, D[] choices) {
+//        float tProb = 0;
+//        for (int i = 0; i < probs.length; i++) {
+//            tProb += probs[i];
+//        }
+//        float s = rng.nextFloat() * tProb;
+//        int c = 0;
+//        for (int i = 0; i < probs.length; i++) {
+//            s -= probs[i];
+//            if (s <= 0) {
+//                c = i;
+//                break;
+//            }
+//        }
+//        return choices[c];
+//    }
 
     public static MethodHandle mhRef(Class<?> type, String name) {
         try {
@@ -896,20 +895,6 @@ public enum Util {
         float delta = Math.abs(a - b);
         float deltaNorm = delta / sum;
         return sigmoid(deltaNorm);
-    }
-
-    /**
-     * 2 decimal representation of values between 0 and 1. only the tens and hundredth
-     * decimal point are displayed - not the ones, and not a decimal point.
-     * for compact display.
-     * if the value=1.0, then 'aa' is the result
-     */
-    @NotNull
-    public static String n2u(float x) {
-        if ((x < 0) || (x > 1)) throw new RuntimeException("values >=0 and <=1");
-        int hundreds = (int) Texts.hundredths(x);
-        if (x == 100) return "aa";
-        return hundreds < 10 ? "0" + hundreds : Integer.toString(hundreds);
     }
 
     public static List<String> inputToStrings(InputStream is) throws IOException {
@@ -1124,17 +1109,23 @@ public enum Util {
         return new double[]{min, max/*, sum */};
     }
 
-//    public static void time(Logger logger, String procName, Runnable procedure) {
-//        long dt = time(procedure);
-//        logger.info("{} ({} ms)", procName, dt);
-//    }
-//
-//    public static long time(Runnable procedure) {
-//        long start = System.currentTimeMillis();
-//        procedure.run();
-//        long end = System.currentTimeMillis();
-//        return end - start;
-//    }
+    public static void time(Logger logger, String procName, Runnable procedure) {
+        if (!logger.isInfoEnabled()) {
+            procedure.run();
+        } else {
+            long dtNS = timeNS(procedure);
+            logger.info("{} {}", procName, Texts.timeStr(dtNS));
+        }
+    }
+
+    public static long timeNS(Runnable procedure) {
+        long start = System.nanoTime();
+
+        procedure.run();
+
+        long end = System.nanoTime();
+        return end - start;
+    }
 
     public static String tempDir() {
         return System.getProperty("java.io.tmpdir");
@@ -1524,9 +1515,9 @@ public enum Util {
      * see: https:
      */
     public static void pauseNextIterative(int previousContiguousPauses) {
-        if (previousContiguousPauses < 64 /*512*/) {
+        if (previousContiguousPauses <512) {
             onSpinWait();
-        } else if (previousContiguousPauses < 128 /*1024*/) {
+        } else if (previousContiguousPauses < 1024) {
 
 
             if ((previousContiguousPauses & 31) == 0) {
@@ -1537,7 +1528,7 @@ public enum Util {
             } else {
                 onSpinWait();
             }
-        } else if (previousContiguousPauses < 256 /*2048*/) {
+        } else if (previousContiguousPauses < 2048) {
 
             if ((previousContiguousPauses & 15) == 0) {
                 Thread.yield();
@@ -1578,16 +1569,16 @@ public enum Util {
 
      */
 
-    /**
-     * adaptive spinlock behavior
-     * see: https:
-     */
-    public static void pauseNextCountDown(long timeRemainNS) {
-        if (timeRemainNS < 10 * (1000 /* uS */))
-            onSpinWait();
-        else
-            Thread.yield();
-    }
+//    /**
+//     * adaptive spinlock behavior
+//     * see: https:
+//     */
+//    public static void pauseNextCountDown(long timeRemainNS) {
+//        if (timeRemainNS < 10 * (1000 /* uS */))
+//            onSpinWait();
+//        else
+//            Thread.yield();
+//    }
 
     public static void sleepMS(long periodMS) {
         sleepNS(periodMS * 1_000_000);
@@ -1600,25 +1591,29 @@ public enum Util {
     }
 
     public static void sleepNS(long remainingNanos) {
+        sleepNS(remainingNanos, 100 * 1000 /* uS */);
+    }
+
+    public static void sleepNS(long remainingNanos, long thresholdNS) {
         //try {
 
             long end = System.nanoTime() + remainingNanos;
-            while (remainingNanos > 1000) {
-                if (remainingNanos < 10 * 1000) {
-                    Thread.onSpinWait();
-                } else if (remainingNanos < 2 * 1000 * 1000 /* 2ms */) {
+            while (remainingNanos > thresholdNS) {
+//                if (remainingNanos < 10 * 1000) {
+//                    Thread.onSpinWait();
+//                } else if (remainingNanos < 2 * 1000 * 1000 /* 2ms */) {
                     LockSupport.parkNanos(remainingNanos);
-                } else {
-
-                    try {
-                        // TimeUnit.sleep() treats negative timeouts just like zero.
-                        NANOSECONDS.sleep(remainingNanos);
-                    } catch (InterruptedException e) {
-                        //interrupted = true;
-                        //throw new RuntimeException(e);
-                        break;
-                    }
-                }
+//                } else {
+//
+//                    try {
+//                        // TimeUnit.sleep() treats negative timeouts just like zero.
+//                        NANOSECONDS.sleep(remainingNanos);
+//                    } catch (InterruptedException e) {
+//                        //interrupted = true;
+//                        //throw new RuntimeException(e);
+//                        break;
+//                    }
+//                }
 
                 remainingNanos = end - System.nanoTime();
             }

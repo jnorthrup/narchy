@@ -128,7 +128,7 @@ public abstract class Time implements Clock, Serializable {
     /**
      * flushes the pending work queued for the current time
      */
-    public void synch(NAR n) {
+    public synchronized void synch(NAR n) {
         schedule(n::input);
     }
 

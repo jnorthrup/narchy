@@ -12,7 +12,6 @@ import java.util.Map;
 
 /**
  * Java port of tss.js -- Tiny Speech Synthesizer in JavaScript
- * NOT WORKING YET
  * <p>
  * Original code: stan_1901 (Andrey Stephanov)
  * http://pouet.net/prod.php?which=50530
