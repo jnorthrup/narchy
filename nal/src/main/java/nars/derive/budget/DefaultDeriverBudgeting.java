@@ -78,8 +78,8 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
             return Util.lerp(eviLossFactor, 1f- eviRetention.floatValue(), 1);
         }
 
-        throw new RuntimeException("spontaneous belief/goal evidence generated from only question parent task");
-        //return 1; //
+        //throw new RuntimeException("spontaneous belief/goal evidence generated from only question parent task");
+        return 1; //
     }
 
 

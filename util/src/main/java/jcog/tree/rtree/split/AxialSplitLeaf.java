@@ -50,10 +50,10 @@ public final class AxialSplitLeaf<T> implements Split<T> {
 
         
         int axis = 0;
-        double rangeD = r.range(0);
-        for (int d = 1; d < nD; d++) {
+        double rangeD = Double.NEGATIVE_INFINITY;
+        for (int d = 0; d < nD; d++) {
             
-            final double dr = r.rangeIfFinite(d, 0);
+            final double dr = r.cost(d);
             if (dr > rangeD) {
                 axis = d;
                 rangeD = dr;
@@ -71,11 +71,7 @@ public final class AxialSplitLeaf<T> implements Split<T> {
             double span = model.bounds(ld[i]).center(splitDimension);
             sorted[i] = pair(i, -span /* negative since the ArrayUtils.sort below is descending */);
             if (lastSpan==lastSpan) {
-                if (span < lastSpan) {
-                    lastSpan = Double.NaN; 
-                } else {
-                    lastSpan = span;
-                }
+                lastSpan = span < lastSpan ? Double.NaN : span;
             }
         }
         if (lastSpan!=lastSpan) {

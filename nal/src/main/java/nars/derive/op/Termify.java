@@ -110,15 +110,16 @@ public final class Termify extends AbstractPred<Derivation> {
                         long commonRange = d.belief != null ? Longerval.intersectLength(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd) : 0;
 
                         long inputRange = taskEvidenceRange + beliefEviRange - (commonRange/2);
-                        assert(inputRange > 0);
+                        //assert(inputRange > 0);
 
                         long outputRange = (1 + (end - start));
                         long expanded = outputRange - inputRange;
                         if (expanded > nar.dtDither()) {
                             //dilute the conclusion truth in proportion to the extra space
                             double expansionFactor = ((double) expanded) / (expanded + inputRange);
-                            assert (expansionFactor < 1);
-                            d.concTruthEviMul((float) expansionFactor, false);
+                            if (Double.isFinite(expansionFactor))
+                                d.concTruthEviMul((float) expansionFactor, false);
+                            ////assert (expansionFactor < 1);
                         }
                     }
                 }

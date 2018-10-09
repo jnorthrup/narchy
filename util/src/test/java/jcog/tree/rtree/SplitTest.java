@@ -19,9 +19,10 @@ class SplitTest {
         final RectDouble[] rects = RTree2DTest.generateRandomRects(entryCount);
 
         for (Spatialization.DefaultSplits s : Spatialization.DefaultSplits.values()) {
-            for (int min : new int[]{2, 3, 4}) {
-                for (int max : new int[]{min, min+1, 8}) {
+            /*for (int min : new int[]{2, 3, 4})*/ {
+                for (int max : new int[]{2, 3, 8}) /*for (int max : new int[]{min, min+1, 8})*/ {
 
+                    int min = max;
                     int TOTAL = Math.round(max/8f * rects.length);
                     if (TOTAL%2==1) TOTAL++;
 

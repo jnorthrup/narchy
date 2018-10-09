@@ -22,8 +22,9 @@ class NAL7ImplProjectionTest {
         int dur = 1;
 
         /* eventTime, relative to impl belief */
-        for (int implTime = 0; implTime < 5; implTime+=2) {
-            for (int eventTime = 0; eventTime < 5; eventTime+=2) {
+        int ts = 2;
+        for (int implTime = 0; implTime < 5; implTime+= ts) {
+            for (int eventTime = 0; eventTime < 5; eventTime+= ts) {
 
                 Term y = $.the("y");
 
@@ -46,7 +47,7 @@ class NAL7ImplProjectionTest {
 
                 long yTimeEstimate = Math.round(max[0]);
                 long yTimeActual = eventTime + implDT;
-                assertTrue(Math.abs(yTimeEstimate - yTimeActual) <= 1);
+                assertTrue(Math.abs(yTimeEstimate - yTimeActual) <= ts, ()->yTimeEstimate + " estimated, " + yTimeActual + " actual");
 
                 double yConfMax = max[1];
                 long eventBeliefDelta = Math.abs(eventTime - implTime);

@@ -129,7 +129,7 @@ public class RevisionTest {
         {
             Task x = Revision.merge(n, t(1, 0.9f, 0, 3).apply(n),
                     t(1, 0.9f, 3, 5).apply(n));
-            assertEquals("(b-->a). 0⋈5 %1.0;.90%", x.toStringWithoutBudget());
+            assertEquals("(b-->a). 0⋈5 %1.0;.93%", x.toStringWithoutBudget());
         }
         {
             Task x = Revision.merge(n, t(1, 0.9f, 0, 2).apply(n),

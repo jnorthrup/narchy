@@ -7,16 +7,11 @@ abstract public class AbstractNode<V> implements Node<V> {
 
     protected final void grow(HyperRegion tb) {
         HyperRegion bounds = this.bounds;
-        HyperRegion nextBounds = bounds != null ? bounds.mbr(tb) : tb;
-        if (bounds != nextBounds)
-            this.bounds = nextBounds;
+        this.bounds = bounds != null ? bounds.mbr(tb) : tb;
     }
 
     protected void grow(Node node) {
-        HyperRegion bounds = this.bounds;
-        HyperRegion nextBounds = bounds.mbr(node.bounds());
-        if (bounds != nextBounds)
-            this.bounds = nextBounds;
+        grow(node.bounds());
     }
 
     @Override

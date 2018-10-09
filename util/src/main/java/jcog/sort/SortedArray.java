@@ -13,8 +13,6 @@ import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static jcog.Util.ITEM;
-
 /**
  * {@link SortedList_1x4} is a decorator which decorates {@link List}. Keep in
  * mind that {@link SortedList_1x4} violates the contract of {@link List}
@@ -87,7 +85,7 @@ public class SortedArray<X> extends AbstractList<X> {
 
     public void sort(FloatFunction<X> x, int from, int to) {
         int[] stack = new int[sortSize(to - from) /* estimate */];
-        qsortAtomic(stack, items, from /*dirtyStart - 1*/, to, x);
+        qsort(stack, items, from /*dirtyStart - 1*/, to, x);
     }
 
     public static <X> void qsort(int[] stack, X[] c, int left, int right, FloatFunction<X> pCmp) {
@@ -168,84 +166,84 @@ public class SortedArray<X> extends AbstractList<X> {
             }
         }
     }
-    /** untested, not finished */
-    public static void qsortAtomic(int[] stack, Object[] c, int left, int right, FloatFunction pCmp) {
-        int stack_pointer = -1;
-        int cLenMin1 = c.length - 1;
-        final int SCAN_THRESH = 7;
-        while (true) {
-            if (right - left <= SCAN_THRESH) {
-                for (int j = left + 1; j <= right; j++) {
-                    Object swap = ITEM.get(c, j);
-                    int i = j - 1;
-                    float swapV = pCmp.floatValueOf(swap);
-                    while (i >= left && pCmp.floatValueOf(ITEM.get(c,i)) < swapV) {
-                        swap(c, i + 1, i--);
-                    }
-                    ITEM.set(c, i+1, swap);
-                }
-                if (stack_pointer != -1) {
-                    right = stack[stack_pointer--];
-                    left = stack[stack_pointer--];
-                } else {
-                    break;
-                }
-            } else {
-
-                int median = (left + right) / 2;
-                int i = left + 1;
-
-                swap(c, i, median);
-
-                float cl = pCmp.floatValueOf(ITEM.get(c,left));
-                float cr = pCmp.floatValueOf(ITEM.get(c, right));
-                if (cl < cr) {
-                    swap(c, right, left);
-                    float x = cr;
-                    cr = cl;
-                    cl = x;
-                }
-                float ci = pCmp.floatValueOf(ITEM.get(c,i));
-                if (ci < cr) {
-                    swap(c, right, i);
-                    ci = cr;
-                }
-                if (cl < ci) {
-                    swap(c, i, left);
-                }
-
-                Object temp = ITEM.get(c,i);
-                float tempV = pCmp.floatValueOf(temp);
-                int j = right;
-
-                while (true) {
-                    while (i < cLenMin1 && pCmp.floatValueOf(ITEM.get(c,++i)) > tempV) ;
-                    while (j > 0 && /* <- that added */ pCmp.floatValueOf(ITEM.get(c,--j)) < tempV) ;
-                    if (j < i) {
-                        break;
-                    }
-                    swap(c, j, i);
-                }
-
-
-                ITEM.set(c,left+1, ITEM.getAndSet(c,j,temp));
-
-                int a, b;
-                if (right - i + 1 >= j - left) {
-                    a = i;
-                    b = right;
-                    right = j - 1;
-                } else {
-                    a = left;
-                    b = j - 1;
-                    left = i;
-                }
-
-                stack[++stack_pointer] = a;
-                stack[++stack_pointer] = b;
-            }
-        }
-    }
+//    /** untested, not finished */
+//    public static void qsortAtomic(int[] stack, Object[] c, int left, int right, FloatFunction pCmp) {
+//        int stack_pointer = -1;
+//        int cLenMin1 = c.length - 1;
+//        final int SCAN_THRESH = 7;
+//        while (true) {
+//            if (right - left <= SCAN_THRESH) {
+//                for (int j = left + 1; j <= right; j++) {
+//                    Object swap = ITEM.get(c, j);
+//                    int i = j - 1;
+//                    float swapV = pCmp.floatValueOf(swap);
+//                    while (i >= left && pCmp.floatValueOf(ITEM.get(c,i)) < swapV) {
+//                        swap(c, i + 1, i--);
+//                    }
+//                    ITEM.set(c, i+1, swap);
+//                }
+//                if (stack_pointer != -1) {
+//                    right = stack[stack_pointer--];
+//                    left = stack[stack_pointer--];
+//                } else {
+//                    break;
+//                }
+//            } else {
+//
+//                int median = (left + right) / 2;
+//                int i = left + 1;
+//
+//                swap(c, i, median);
+//
+//                float cl = pCmp.floatValueOf(ITEM.get(c,left));
+//                float cr = pCmp.floatValueOf(ITEM.get(c, right));
+//                if (cl < cr) {
+//                    swap(c, right, left);
+//                    float x = cr;
+//                    cr = cl;
+//                    cl = x;
+//                }
+//                float ci = pCmp.floatValueOf(ITEM.get(c,i));
+//                if (ci < cr) {
+//                    swap(c, right, i);
+//                    ci = cr;
+//                }
+//                if (cl < ci) {
+//                    swap(c, i, left);
+//                }
+//
+//                Object temp = ITEM.get(c,i);
+//                float tempV = pCmp.floatValueOf(temp);
+//                int j = right;
+//
+//                while (true) {
+//                    while (i < cLenMin1 && pCmp.floatValueOf(ITEM.get(c,++i)) > tempV) ;
+//                    while (j > 0 && /* <- that added */ pCmp.floatValueOf(ITEM.get(c,--j)) < tempV) ;
+//                    if (j < i) {
+//                        break;
+//                    }
+//                    swap(c, j, i);
+//                }
+//
+//
+//                ITEM.set(c,left+1, ITEM.getAndSet(c,j,temp));
+//
+//                int a, b;
+//                if (right - i + 1 >= j - left) {
+//                    a = i;
+//                    b = right;
+//                    right = j - 1;
+//                } else {
+//                    a = left;
+//                    b = j - 1;
+//                    left = i;
+//                }
+//
+//                stack[++stack_pointer] = a;
+//                stack[++stack_pointer] = b;
+//            }
+//        }
+//    }
 
 
     /** TODO find exact requirements */
@@ -269,14 +267,14 @@ public class SortedArray<X> extends AbstractList<X> {
 //        if (i >= s)
 //            throw new ArrayIndexOutOfBoundsException();
         //return items[i];
-        return (X) ITEM.getOpaque(items, i);
+        return items[i];//(X) ITEM.getOpaque(items, i);
     }
 
 
     /**
      * direct array access; use with caution ;)
      */
-    public Object[] array() {
+    public X[] array() {
         return items;
     }
 
@@ -416,7 +414,7 @@ public class SortedArray<X> extends AbstractList<X> {
         return s;
     }
 
-    protected Object[] resize(int newLen) {
+    protected X[] resize(int newLen) {
         assert(newLen >= size);
         return this.items = copyOfArray(items, newLen);
 //        X[] newList = newArray(newLen);
@@ -481,8 +479,8 @@ public class SortedArray<X> extends AbstractList<X> {
     /**
      * generally, uses grow(oldSize) (not oldSize directly!) to get the final constructed array length
      */
-    protected X[] copyOfArray(Object[] list, int s) {
-        return Arrays.copyOf(items, s);
+    protected X[] copyOfArray(X[] xx, int s) {
+        return Arrays.copyOf(xx, s);
     }
 
     @Nullable
@@ -755,8 +753,10 @@ public class SortedArray<X> extends AbstractList<X> {
 
     public Stream<X> stream() {
         //return ArrayIterator.stream(items, size());
+
+        X[] ii = items;
         int s = size();
-        return s > 0 ? IntStream.range(0, s).mapToObj(i -> (X) ITEM.getOpaque(items, i)) : Stream.empty();
+        return s > 0 ? IntStream.range(0, Math.min(ii.length, s)).mapToObj(i -> ii[i]/*(X) ITEM.getOpaque(items, i)*/) : Stream.empty();
     }
 
     @Override

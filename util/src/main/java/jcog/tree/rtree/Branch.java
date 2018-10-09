@@ -25,7 +25,9 @@ import com.google.common.base.Joiner;
 import jcog.data.iterator.ArrayIterator;
 import jcog.tree.rtree.util.CounterNode;
 import jcog.tree.rtree.util.Stats;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.function.Consumer;
@@ -126,14 +128,14 @@ public class Branch<X> extends AbstractNode<X> {
 
             for (int i = 0; i < size; i++) {
                 Node ci = child[i];
-                if (ci!=null && ci.bounds().contains(tRect)) {
+                if (ci != null && ci.bounds().contains(tRect)) {
 
-
-                    Node m = ci.add(x, null, model, null);
-                    if (m == null) {
-                        return null;
+                    Node di = ci.add(x, null, model, null);
+                    if (di == null)
+                        return null; //duplicate found
+                    if (ci!=di) {
+                        child[i] = di;
                     }
-
 
                 }
             }
@@ -196,121 +198,70 @@ public class Branch<X> extends AbstractNode<X> {
 
         for (int i = 0; i < size; i++) {
             Node<X> cBefore = data[i];
+            HyperRegion cBeforeBounds = cBefore.bounds();
             if (cBefore.bounds().contains(xBounds)) {
 
-                Node<X> cAfter = cBefore.remove(x, xBounds, model, removed);
-
+                @Nullable Node<X> cAfter = cBefore.remove(x, xBounds, model, removed);
 
                 if (removed[0]) {
 
+                    data[i] = cAfter;
+
                     if (cAfter == null) {
-                        System.arraycopy(data, i + 1, data, i, size - i - 1);
-                        data[--size] = null;
-                    } else {
-                        assert(cAfter.size() > 0);
-                        if (cAfter!=cBefore) {
-                            data[i] = cAfter;
-                        }
+                        if (i < size - 1)
+                            Arrays.sort(data, NullCompactingComparator);
+
+                        size--;
                     }
 
-                    final Node[] me = new Branch[]{this};
-                    Node[] dd = this.data;
+
                     switch (size) {
                         case 0:
                             bounds = null;
-                            break;
+                            return null;
                         case 1:
-                            return dd[0]; //reduce to only leaf
+                            return data[0]; //reduce to only leaf
                         default: {
                             //TODO possibly rebalance
+                            if (cBefore == cAfter) {
+                                if (!cBeforeBounds.equals(cAfter.bounds())) {
+                                    updateBounds();
+                                }
+                                return this;
+                            } else {
+//                                //rebalance
+//                                final Node<X>[] b = new Node[]{model.newLeaf()};
+//                                streamValues().forEach(v -> {
+//                                    Node<X> bc = b[0].add(v, b[0], model, new boolean[1]);
+//                                    if (bc != null)
+//                                        b[0] = bc;
+//                                });
+//                                return b[0];
+                                updateBounds();
+                                return this;
+                            }
 
-//                            int min = model.min;
-//
-//
-//                            if (min > 1) {
-//                                MetalBitSet b = MetalBitSet.bits(size);
-//                                for (int n = 0; n < size; n++) {
-//                                    if (dd[n].size() < min)
-//                                        b.set(n);
-//                                }
-//                                int toRemove = b.cardinality();
-//                                if (toRemove > 0) {
-//                                        for (int n = 0; n < size; n++) {
-//                                            if (b.get(n)) {
-//                                                Node ddd = dd[n];
-//                                                dd[n] = null;
-//
-//                                                ddd.streamValues().forEach(zzz->{
-//                                                    Node mm = me[0].add(zzz, null, model, new boolean[1]);
-//                                                    if (mm!=null)
-//                                                        me[0] = mm;
-//                                                });
-//                                            }
-//                                        }
-//                                        Arrays.sort(dd, NullCompactingComparator);
-//                                        int newSize = ArrayUtils.indexOf(dd, null);
-//                                        if (newSize == -1)
-//                                            newSize = dd.length;
-//                                        size = (short) newSize;
-//
-//
-//                                    }
-//                                }
-//
-////                            {
-////                                //HACK experimental rebalance heuristic
-////                                if (size == 2) {
-////                                    final Node[] tgt = {null};
-////                                    Leaf src = null;
-////                                    if (cc[0] instanceof Leaf && !(cc[1] instanceof Leaf) && cc[0].size() <= model.max ) {
-////                                        tgt[0] = cc[1];
-////                                        src = (Leaf) cc[0];
-////                                    } else if (cc[1] instanceof Leaf && !(cc[0] instanceof Leaf) && cc[1].size() <= model.max ) {
-////                                        tgt[0] = cc[0];
-////                                        src = (Leaf) cc[1];
-////                                    }
-////
-////                                    if (tgt[0] !=null) {
-////                                        src.forEach(s -> {
-////                                            boolean[] added = new boolean[2];
-////                                            tgt[0] = tgt[0].add(s, Branch.this, model, added);
-////                                            assert(added[0]);
-////                                        });
-////                                        return tgt[0];
-////                                    }
-////                                }
-////                            }
-//
-//
-//                            if (me[0]==this) {
-//                                if (size==0)
-//                                    return null;
-//                                if (size==1)
-//                                    return dd[0];
-//                                //recalculate
-//                                HyperRegion region = dd[0].bounds();
-//                                for (int j = 1; j < size; j++) {
-//                                    region = grow(region, dd[j]);
-//                                }
-//                                this.bounds = region;
-//
-//                                return this;
-//                            } else {
-//                                return me[0];
-//                            }
                         }
 
                     }
 
-                    break;
                 } else {
-                    assert(cAfter==cBefore);
+                    assert (cAfter == cBefore);
                 }
             }
         }
 
 
         return this;
+    }
+
+    private void updateBounds() {
+        Node<X>[] dd = this.data;
+        HyperRegion region = dd[0].bounds();
+        for (int j = 1; j < size; j++) {
+            region = grow(region, dd[j]);
+        }
+        this.bounds = region;
     }
 
     @Override
@@ -399,7 +350,7 @@ public class Branch<X> extends AbstractNode<X> {
             Node<X>[] cc = this.data;
             for (int i = 0; i < s; i++) {
                 Node<X> x = cc[i];
-                if (x!=null)
+                if (x != null)
                     c.accept(x);
             }
         }
@@ -439,7 +390,8 @@ public class Branch<X> extends AbstractNode<X> {
                 Node d = data[i];
 //                if (d == null)
 //                    continue;
-                /*else */if (!d.containing(rect, t, model))
+                /*else */
+                if (!d.containing(rect, t, model))
                     return false;
             }
         }
@@ -455,7 +407,8 @@ public class Branch<X> extends AbstractNode<X> {
                 Node d = data[i];
 //                if (d == null)
 //                    continue;
-                /*else */if (!d.intersecting(rect, t, model))
+                /*else */
+                if (!d.intersecting(rect, t, model))
                     return false;
             }
         }
@@ -471,16 +424,18 @@ public class Branch<X> extends AbstractNode<X> {
     public Stream<X> streamValues() {
         //TODO optimize
         return streamNodes().flatMap(
-                x -> x!=null ? ((Node)x).streamValues() : Stream.empty()
+                x -> x != null ? ((Node) x).streamValues() : Stream.empty()
         );
     }
 
 
-    @Override public Iterator<?> iterateLocal() {
+    @Override
+    public Iterator<?> iterateLocal() {
         return ArrayIterator.get(data, size);
     }
 
-    @Override public Stream<?> streamLocal() {
+    @Override
+    public Stream<?> streamLocal() {
         return streamNodes();
     }
 

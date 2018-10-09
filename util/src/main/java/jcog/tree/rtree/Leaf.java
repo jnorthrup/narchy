@@ -112,8 +112,6 @@ public final class Leaf<X> extends AbstractNode<X> {
         if (parent != null) {
             boolean mightContain = size > 0 && bounds.contains(tb);
 
-            Node<X> next;
-
             for (int i = 0, s = size; i < s; i++) {
                 X x = data[i];
 
@@ -127,20 +125,18 @@ public final class Leaf<X> extends AbstractNode<X> {
                 }
             }
 
+            added[0] = true;
 
-            if (size < model.max) {
+            if (size < data.length) {
 
                 grow(tb);
                 data[this.size++] = t;
 
-                next = this;
+                return this;
             } else {
-                next = model.split(t, this);
+                return model.split(t, this);
             }
 
-            added[0] = true;
-
-            return next;
         } else {
             return contains(t, tb, model) ? null : this;
         }
@@ -331,14 +327,14 @@ public final class Leaf<X> extends AbstractNode<X> {
         double tCost = tRect.cost();
 
         final HyperRegion l1Region = l1Node.bounds();
-        final HyperRegion l1Mbr = l1Region.mbr(tRect);
+        final HyperRegion l1Mbr = l1Region!=null ? l1Region.mbr(tRect) : tRect;
         double l1c = l1Mbr.cost();
-        final double l1CostInc = Math.max(l1c - (l1Region.cost() + tCost), 0.0);
+        final double l1CostInc = Math.max(l1c - ((l1Region!=null ? l1Region.cost() : 0) + tCost), 0.0);
 
         final HyperRegion l2Region = l2Node.bounds();
         final HyperRegion l2Mbr = l2Region.mbr(tRect);
         double l2c = l2Mbr.cost();
-        final double l2CostInc = Math.max(l2c - (l2Region.cost() + tCost), 0.0);
+        final double l2CostInc = Math.max(l2c - ((l2Region!=null ? l2Region.cost() : 0) + tCost), 0.0);
 
         Node<X> target;
         double eps = model.epsilon();

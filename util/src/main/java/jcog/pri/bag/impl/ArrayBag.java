@@ -22,7 +22,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static jcog.Util.ITEM;
+
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 
@@ -72,7 +72,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
 
     @Override
-    public float mass() {
+    public final float mass() {
         return MASS.getOpaque(this);
     }
 
@@ -87,7 +87,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         if (s == 0) return Stream.empty();
         else {
             Object[] x = items.array();
-            return IntStream.range(0, Math.min(s, x.length)).mapToObj(i -> (Y) x[i]).filter(y -> y != null && !y.isDeleted());
+            return IntStream.range(0, Math.min(s, x.length)).mapToObj(i -> (Y)x[i]).filter(y -> y != null && !y.isDeleted());
         }
     }
 
@@ -180,7 +180,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 //        float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY, mass = 0;
 
 
-        SortedArray items2 = this.items;
+        SortedArray<Y> items2 = this.items;
         final Object[] l = items2.array();
 
         float above = Float.POSITIVE_INFINITY;
@@ -620,14 +620,13 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         List<ObjectIntPair<Y>> removals = null;
         for (int i = 0; i < s; i++) {
 
-            Object y0 =
+            Y y =
                     //ITEM.getOpaque(yy, i);
-                    yy[i];
+                    (Y) yy[i];
 
-            if (y0 == null)
+            if (y == null)
                 continue; //throw new WTF();
 
-            Y y = (Y) y0;
             float p = pri(y);
             if (p == p) {
                 action.accept(y);

@@ -1,32 +1,34 @@
-    X, X, task("!") |-         (?1 ==> X) , (Punctuation:Question)
-    X, X, task("!") |-          (X ==> ?1), (Punctuation:Question)
-    X, X, task("!") |-        (--X ==> ?1), (Punctuation:Question)
-    X, X, task("!") |-           (?1 && X), (Punctuation:Quest)
-    X, X, task("!") |-         (?1 && --X), (Punctuation:Quest)
+    G, Y, task("!") |-         (?1 ==> G) , (Punctuation:Question)
+    G, Y, task("!") |-          (G ==> ?1), (Punctuation:Question)
+    G, Y, task("!") |-        (--G ==> ?1), (Punctuation:Question)
+    G, Y, task("!") |-           (?1 && G), (Punctuation:Quest)
+    G, Y, task("!") |-         (?1 && --G), (Punctuation:Quest)
 
-    X, X, task("!") |-           (?1 && X), (Punctuation:Question)
-    X, X, task("!") |-         (?1 && --X), (Punctuation:Question)
+    G, Y, task("!") |-           (?1 && G), (Punctuation:Question)
+    G, Y, task("!") |-         (?1 && --G), (Punctuation:Question)
+
+
 
 //--
 
-    X, Y, task("!") |-          (polarize(Y,belief) ==> X), (Punctuation:Question, Time:Relative)
-    X, Y, task("!") |-                           (X ==> Y), (Punctuation:Question, Time:Relative)
-    X, Y, task("!") |-                         (--X ==> Y), (Punctuation:Question, Time:Relative)
-    X, Y, task("!") |-           (X && polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
-    X, Y, task("!") |-         (--X && polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
-
-    X, Y, task("!") |-           (X && polarize(Y,belief)), (Punctuation:Question, Time:Relative)
-    X, Y, task("!") |-           (--X && polarize(Y,belief)), (Punctuation:Question, Time:Relative)
-
-//- ---
-    X, Y, task("@") |-          (polarize(Y,belief) ==> X), (Punctuation:Question, Time:Relative)
-    X, Y, task("@") |-                           (X ==> Y), (Punctuation:Question, Time:Relative)
-    X, Y, task("@") |-                         (--X ==> Y), (Punctuation:Question, Time:Relative)
-    X, Y, task("@") |-           (X && polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
-    X, Y, task("@") |-         (--X && polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
-
-    X, Y, task("@") |-           (X && polarize(Y,belief)), (Punctuation:Question, Time:Relative)
-    X, Y, task("@") |-           (--X && polarize(Y,belief)), (Punctuation:Question, Time:Relative)
+//    X, Y, task("!") |-          (polarize(Y,belief) ==> X), (Punctuation:Question, Time:Relative)
+//    X, Y, task("!") |-                           (X ==> Y), (Punctuation:Question, Time:Relative)
+//    X, Y, task("!") |-                         (--X ==> Y), (Punctuation:Question, Time:Relative)
+//    X, Y, task("!") |-           (X && polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
+//    X, Y, task("!") |-         (--X && polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
+//
+//    X, Y, task("!") |-           (X && polarize(Y,belief)), (Punctuation:Question, Time:Relative)
+//    X, Y, task("!") |-           (--X && polarize(Y,belief)), (Punctuation:Question, Time:Relative)
+//
+////- ---
+//    X, Y, task("@") |-          (polarize(Y,belief) ==> X), (Punctuation:Question, Time:Relative)
+//    X, Y, task("@") |-                           (X ==> Y), (Punctuation:Question, Time:Relative)
+//    X, Y, task("@") |-                         (--X ==> Y), (Punctuation:Question, Time:Relative)
+//    X, Y, task("@") |-           (X && polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
+//    X, Y, task("@") |-         (--X && polarize(Y,belief)), (Punctuation:Quest, Time:Relative)
+//
+//    X, Y, task("@") |-           (X && polarize(Y,belief)), (Punctuation:Question, Time:Relative)
+//    X, Y, task("@") |-           (--X && polarize(Y,belief)), (Punctuation:Question, Time:Relative)
 
 
 

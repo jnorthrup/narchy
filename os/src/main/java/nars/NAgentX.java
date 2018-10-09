@@ -127,7 +127,7 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
-                .attention(() -> new Attention(256))
+                .attention(() -> new Attention(512))
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
@@ -363,7 +363,7 @@ abstract public class NAgentX extends NAgent {
         n.termVolumeMax.set(24);
 
         n.forgetRate.set(0.9f);
-        n.activateConceptRate.set(0.01f);
+        n.activateConceptRate.set(0.1f);
 
 
 
@@ -392,6 +392,7 @@ abstract public class NAgentX extends NAgent {
         new MatrixDeriver(Derivers.nal(n, 4, 4));
         new MatrixDeriver(Derivers.nal(n, 5, 6));
         new MatrixDeriver(Derivers.rules(n, "motivation.nal"));
+        new MatrixDeriver(Derivers.rules(n, "induction.goal.nal"));
 
         //new STMLinkage(n, 1);
 

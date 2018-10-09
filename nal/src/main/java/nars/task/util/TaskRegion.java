@@ -10,10 +10,11 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-/** 3d cuboid region:
- *      time            start..end              64-bit signed long
- *      frequency:      min..max in [0..1]      32-bit float
- *      confidence:     min..max in [0..1)      32-bit float
+/**
+ * 3d cuboid region:
+ * time            start..end              64-bit signed long
+ * frequency:      min..max in [0..1]      32-bit float
+ * confidence:     min..max in [0..1)      32-bit float
  */
 public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
@@ -38,6 +39,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
             if (x != null && !x.isDeleted()) each.accept(x);
         };
     }
+
     static Predicate<TaskRegion> asTask(Predicate<? super Task> each) {
         return r -> {
             Task x = r.task();
@@ -64,138 +66,38 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     }
 
 
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//    @Override
+//    default double cost() {
+//        double x = timeCost() * freqCost() * confCost();
+//        assert (x == x);
+//        return x;
+//    }
+
+//    @Override
+//    default double perimeter() {
+//        return timeCost() + freqCost() + confCost();
+//    }
 
 
     @Override
-    default double cost() {
-        double x = timeCost() * freqCost() * confCost();
-        assert(x==x);
-        return x;
+    default double cost(final int dim) {
+        switch(dim) {
+            case 0:
+                return ((float) range(0)) * TIME_COST;
+            case 1:
+                return ((float) range(1)) * FREQ_COST;
+            case 2:
+                return ((float) range(2)) * CONF_COST;
+        }
+        throw new UnsupportedOperationException();
     }
 
-    @Override
-    default double perimeter() {
-        return timeCost() + freqCost() + confCost();
-    }
-
-
-    default float timeCost() {
-
-        return ((float) range(0)) * TIME_COST;
-
-
-
-    }
-
-    default float freqCost() {
-        return ((float) range(1)) * FREQ_COST;
-    }
-
-    default float confCost() {
-        return ((float) range(2)) * CONF_COST;
-    }
 
     @Override
     default double range(final int dim) {
         switch (dim) {
             case 0:
-                return 1 + end()-start();
+                return end() - start();
             default:
                 return /*Math.abs*/(coordF(dim, true) - coordF(dim, false));
         }
@@ -214,7 +116,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         else {
 
             if (r instanceof Task) {
-                
+
                 Task er = (Task) r;
                 float ef = er.freq();
                 float ec = er.conf();
@@ -243,19 +145,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
                         c0 = ec;
                         c1 = tc;
                     }
-                    long ts = start();
-                    long te = end();
-                    
-                    
-
-
-
-
-
-
-
-                    
-                    return new TasksRegion(Math.min(ts, es), Math.max(te, ee),
+                    return new TasksRegion(Math.min(start(), es), Math.max(end(), ee),
                             f0, f1, c0, c1
                     );
                 } else {
@@ -362,9 +252,11 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     }
 
 
-    /** intersects only the time dimension */
-    default boolean intersectsTime(LongInterval x) {
-        return this == x || intersects(x.start(), x.end());
-    }
+//    /**
+//     * intersects only the time dimension
+//     */
+//    default boolean intersectsTime(LongInterval x) {
+//        return this == x || intersects(x.start(), x.end());
+//    }
 
 }

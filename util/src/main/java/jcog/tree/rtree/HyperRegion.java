@@ -112,6 +112,11 @@ public interface HyperRegion<X> {
         return Math.abs(coord(dim, true) - coord(dim, false));
     }
 
+
+    default double cost(final int dim) {
+        return rangeIfFinite(dim, 0);
+    }
+
     default double rangeIfFinite(int dim, double elseValue) {
         double r = range(dim);
         if (!Double.isFinite(r)) {
@@ -168,7 +173,7 @@ public interface HyperRegion<X> {
         int n = dim();
         double a = 1.0;
         for (int d = 0; d < n; d++) {
-            a *= rangeIfFinite(d, 0);
+            a *= cost(d);
         }
         assert(a==a);
         return a;
@@ -183,7 +188,7 @@ public interface HyperRegion<X> {
         double p = 0.0;
         final int n = this.dim();
         for (int d = 0; d < n; d++) {
-            p += /*2.0 * */this.rangeIfFinite(d, 0);
+            p += /*2.0 * */this.cost(d);
         }
         return p;
     }

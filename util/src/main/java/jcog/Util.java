@@ -122,7 +122,7 @@ public enum Util {
 //    private static final double BIG_ENOUGH_ROUND = BIG_ENOUGH_INT + 0.5;
 
 
-    public static final VarHandle ITEM = MethodHandles.arrayElementVarHandle(Object[].class);
+    //public static final VarHandle ITEM = MethodHandles.arrayElementVarHandle(Object[].class);
 
     /**
      * It is basically the same as a lookup table with 2048 entries and linear interpolation between the entries, but all this with IEEE floating point tricks.
