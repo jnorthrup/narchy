@@ -7,7 +7,7 @@ import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.data.list.FasterList;
 import jcog.data.list.table.SortedListTable;
 import jcog.pri.Prioritized;
-import jcog.pri.Priority;
+import jcog.pri.Prioritizable;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
@@ -29,7 +29,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * A bag implemented as a combination of a Map and a SortedArrayList
  * TODO extract a version of this which will work for any Prioritized, not only BLink
  */
-abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X, Y> implements Bag<X, Y> {
+abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTable<X, Y> implements Bag<X, Y> {
     private static final AtomicFloatFieldUpdater<ArrayBag> MASS =
             new AtomicFloatFieldUpdater(ArrayBag.class, "mass");
     private static final AtomicFloatFieldUpdater<ArrayBag> PRESSURE =

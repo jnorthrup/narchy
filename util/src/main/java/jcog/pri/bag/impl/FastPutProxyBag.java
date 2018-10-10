@@ -3,7 +3,7 @@ package jcog.pri.bag.impl;
 import jcog.Util;
 import jcog.data.NumberX;
 import jcog.data.list.FasterList;
-import jcog.pri.Priority;
+import jcog.pri.Prioritizable;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.util.ProxyBag;
 
@@ -11,7 +11,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.StampedLock;
 
-public class FastPutProxyBag<K, X extends Priority> extends ProxyBag<K, X> {
+public class FastPutProxyBag<K, X extends Prioritizable> extends ProxyBag<K, X> {
 
 
     final StampedLock lock = new StampedLock();

@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * reverse osmosis read-only budget
  */
-public final class PriRO implements Priority {
+public final class PriRO implements Prioritizable {
 
     private final float pri;
 

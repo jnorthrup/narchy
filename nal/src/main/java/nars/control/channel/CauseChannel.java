@@ -1,6 +1,6 @@
 package nars.control.channel;
 
-import jcog.pri.Priority;
+import jcog.pri.Prioritizable;
 import nars.control.Cause;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 /**
  * metered and mixable extension of Cause base class
  */
-abstract public class CauseChannel<X extends Priority> implements Consumer<X> {
+abstract public class CauseChannel<X extends Prioritizable> implements Consumer<X> {
 
     public final Cause cause;
     public final short id;

@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 /**
  * prioritized reference
  */
-public interface PriReference<X> extends Priority, Supplier<X>, FloatSupplier {
+public interface PriReference<X> extends Prioritizable, Supplier<X>, FloatSupplier {
 
     @NotNull
     static float[] histogram(Iterable<? extends Prioritized> pp, float[] x) {

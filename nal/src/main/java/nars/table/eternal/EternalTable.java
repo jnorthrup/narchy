@@ -2,7 +2,7 @@ package nars.table.eternal;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.pri.Priority;
+import jcog.pri.Prioritizable;
 import jcog.pri.ScalarValue;
 import jcog.sort.SortedArray;
 import nars.$;
@@ -43,21 +43,22 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     }
 
     @Override
-    public void forEachTask(Consumer<? super Task> x) {
-        Task[] a = toArray();
-        for (int i = 0, aLength = Math.min(size, a.length); i < aLength; i++) {
-            Task y = a[i];
-            if (y == null)
-                break;
-            if (!y.isDeleted())
-                x.accept(y);
-        }
+    public final void forEachTask(Consumer<? super Task> x) {
+//        Task[] a = toArray();
+//        for (int i = 0, aLength = Math.min(size, a.length); i < aLength; i++) {
+//            Task y = a[i];
+//            if (y == null)
+//                break;
+//            if (!y.isDeleted())
+//                x.accept(y);
+//        }
+        this.forEach(x);
     }
 
 
 
     @Override
-    public Stream<? extends Task> streamTasks() {
+    public final Stream<? extends Task> streamTasks() {
 
 
 //        Object[] list = this.items;
@@ -70,11 +71,11 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         return stream();
     }
 
-    @Override protected final Task[] copyOfArray(Object[] x, int s) {
-        Task[] y = new Task[s];
-        System.arraycopy(x, 0, y, 0, Math.min(y.length, x.length));
-        return y;
-    }
+//    @Override protected final Task[] copyOfArray(Task[] x, int s) {
+//        Task[] y = new Task[s];
+//        System.arraycopy(x, 0, y, 0, Math.min(y.length, x.length));
+//        return y;
+//    }
 
     @Override
     public final void match(Answer t) {
@@ -299,7 +300,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             );
             if (revised != null) {
                 //TODO maybe based on relative evidence
-                revised.pri(Priority.fund(Math.max(prevBelief.priElseZero(), input.priElseZero()), false, prevBelief, input));
+                revised.pri(Prioritizable.fund(Math.max(prevBelief.priElseZero(), input.priElseZero()), false, prevBelief, input));
                 revised.cause(Cause.merge(Param.causeCapacity.intValue(), input, prevBelief));
 
                 if (Param.DEBUG)

@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import static jcog.Texts.n4;
 
 /** prioritized proxy pair, can be used to represent cached memoizable operation with input X and output Y */
-public interface PriProxy<X, Y> extends Priority, Supplier<Y> {
+public interface PriProxy<X, Y> extends Prioritizable, Supplier<Y> {
     /**
      * 'x', the parameter to the function
      */

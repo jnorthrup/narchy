@@ -8,15 +8,15 @@ import jcog.Util;
  * Mutable Prioritized
  * implementations need only implement priSet() and pri()
  */
-public interface Priority extends Prioritized, ScalarValue {
+public interface Prioritizable extends Prioritized, ScalarValue {
 
-    default Priority pri(Prioritized p) {
+    default Prioritizable pri(Prioritized p) {
         if (this != p)
             pri(p.pri());
         return this;
     }
 
-    default float take(Priority source, float p, boolean amountOrFraction, boolean copyOrMove) {
+    default float take(Prioritizable source, float p, boolean amountOrFraction, boolean copyOrMove) {
         float amount;
         if (amountOrFraction) {
             amount = p;
@@ -49,7 +49,7 @@ public interface Priority extends Prioritized, ScalarValue {
     }
 
 
-    @Deprecated default Priority setPriThen(float p) {
+    @Deprecated default Prioritizable setPriThen(float p) {
         pri(p);
         return this;
     }
@@ -94,7 +94,7 @@ public interface Priority extends Prioritized, ScalarValue {
 //        return this;
 //    }
 
-    static Prioritized fund(float maxPri, boolean copyOrTransfer, Priority... src) {
+    static Prioritized fund(float maxPri, boolean copyOrTransfer, Prioritizable... src) {
         return fund(maxPri, copyOrTransfer, (x -> x), src);
     }
 
@@ -102,7 +102,7 @@ public interface Priority extends Prioritized, ScalarValue {
      * X[] may contain nulls
      */
     @SafeVarargs
-    static <X> UnitPri fund(float maxPri, boolean copyOrTransfer, Function<X, Priority> getPri, X... src) {
+    static <X> UnitPri fund(float maxPri, boolean copyOrTransfer, Function<X, Prioritizable> getPri, X... src) {
 
         assert (src.length > 0);
 

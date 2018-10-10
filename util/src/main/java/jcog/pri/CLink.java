@@ -3,7 +3,7 @@ package jcog.pri;
 import org.roaringbitmap.RoaringBitmap;
 
 /** Priority implementatio nwhich proxies to another and attaches a bitmap feature vector */
-public class CLink<X extends Priority> extends RoaringBitmap implements Priority {
+public class CLink<X extends Prioritizable> extends RoaringBitmap implements Prioritizable {
 
     public final X ref;
 

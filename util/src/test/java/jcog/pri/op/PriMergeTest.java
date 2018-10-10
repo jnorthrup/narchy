@@ -2,7 +2,7 @@ package jcog.pri.op;
 
 import jcog.pri.PriRO;
 import jcog.pri.Prioritized;
-import jcog.pri.Priority;
+import jcog.pri.Prioritizable;
 import jcog.pri.UnitPri;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -74,10 +74,10 @@ class PriMergeTest {
 
 
 
-    private static Prioritized testMerge(Priority x, Prioritized y, @NotNull PriMerge m, float ouPri) {
+    private static Prioritized testMerge(Prioritizable x, Prioritized y, @NotNull PriMerge m, float ouPri) {
         return testMerge(x, y, m, ouPri, -1f);
     }
-    private static Prioritized testMerge(Priority _x, Prioritized y, @NotNull PriMerge m, float ouPri, float expectedOverflow) {
+    private static Prioritized testMerge(Prioritizable _x, Prioritized y, @NotNull PriMerge m, float ouPri, float expectedOverflow) {
         UnitPri x = new UnitPri(_x);
 
         UnitPri x0 = new UnitPri(x);

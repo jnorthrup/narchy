@@ -90,9 +90,9 @@ abstract public class Causable extends NARService {
         return true;
     }
 
-    protected void sleepRemainderOfCycle() {
-        sleepUntil(nar.time()+1);
-    }
+//    protected void sleepRemainderOfCycle() {
+//        sleepUntil(nar.time()+1);
+//    }
 
     /**
      * returns iterations actually completed

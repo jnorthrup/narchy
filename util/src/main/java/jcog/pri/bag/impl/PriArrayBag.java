@@ -1,13 +1,13 @@
 package jcog.pri.bag.impl;
 
-import jcog.pri.Priority;
+import jcog.pri.Prioritizable;
 import jcog.pri.op.PriMerge;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class PriArrayBag<X extends Priority> extends ArrayBag<X,X> {
+public class PriArrayBag<X extends Prioritizable> extends ArrayBag<X,X> {
 
 
     public PriArrayBag(PriMerge mergeFunction, int capacity) {

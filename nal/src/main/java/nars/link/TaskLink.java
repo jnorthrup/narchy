@@ -3,7 +3,7 @@ package nars.link;
 import jcog.Util;
 import jcog.pri.PLinkHashCached;
 import jcog.pri.PLinkUntilDeleted;
-import jcog.pri.Priority;
+import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -17,7 +17,7 @@ import nars.time.Tense;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
-public interface TaskLink extends Priority, Termed {
+public interface TaskLink extends Prioritizable, Termed {
 
     /**
      * resolves a task in the provided NAR
@@ -76,7 +76,7 @@ public interface TaskLink extends Priority, Termed {
             return hash;
         }
 
-        public Task get(NAR n, Priority link) {
+        public Task get(NAR n, Prioritizable link) {
 
 
             long start, end;

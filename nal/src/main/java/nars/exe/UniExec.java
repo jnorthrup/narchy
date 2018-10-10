@@ -10,6 +10,7 @@ import jcog.exe.valve.InstrumentedWork;
 import jcog.exe.valve.Sharing;
 import jcog.exe.valve.TimeSlicing;
 import jcog.math.FloatRange;
+import jcog.pri.Prioritizable;
 import jcog.service.Service;
 import nars.NAR;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -74,7 +75,13 @@ public class UniExec extends AbstractExec {
             this.c = c;
         }
 
-
+        @Override
+        public float pri(float p) {
+            if (c instanceof Prioritizable) {
+                ((Prioritizable)c).pri(p);
+            }
+            return super.pri(p);
+        }
     }
 
     private final class MyWork extends AbstractWork {
@@ -167,6 +174,7 @@ public class UniExec extends AbstractExec {
                     boolean sleeping = c.sleeping(now);
                     UniExec.this.sleeping.set(c.scheduledID, sleeping);
                     if (sleeping) {
+                        s.pri(0);
                         return;
                     }
 
@@ -237,16 +245,11 @@ public class UniExec extends AbstractExec {
                                 if (sleeping.get(c.scheduledID))
                                     return;
 
-                                double v = s.valuePerSecondNormalized;
-//                                    if (v == v) {
-                                    s.pri(
-                                            //((float)v)
-                                            (float) (v / valueRateSum[0]),
-                                            1-timeSliceMomentum
-                                    );
-//                                    } else {
-//                                        s.pri(explorationRate);
-//                                    }
+
+                                s.pri(
+                                        (float) (s.valuePerSecondNormalized / valueRateSum[0]),
+                                        1-timeSliceMomentum
+                                );
                             });
 
                             return this;
@@ -256,16 +259,11 @@ public class UniExec extends AbstractExec {
                 }
 
                 /** flat */
-                n -= sleeping.cardinality();
-                float flatDemand = n > 1 ? (1f / n) : 1f;
+                float flatDemand = n > 1 ? (1f / (n-sleeping.cardinality())) : 1f;
                 forEach((InstrumentedWork s) -> {
                     Causable c = (Causable) s.who;
-                    if (sleeping.get(c.scheduledID)) {
-                        s.pri(0);
-                        return;
-                    }
-
-                    s.pri(flatDemand);
+                    if (!sleeping.get(c.scheduledID))
+                        s.pri(flatDemand);
                 });
 
 

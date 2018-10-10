@@ -9,7 +9,7 @@ public class UnitPri extends Pri {
         super();
     }
 
-    public UnitPri(Priority x) {
+    public UnitPri(Prioritizable x) {
         super(x);
     }
 

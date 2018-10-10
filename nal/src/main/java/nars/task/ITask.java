@@ -1,6 +1,6 @@
 package nars.task;
 
-import jcog.pri.Priority;
+import jcog.pri.Prioritizable;
 import nars.NAR;
 
 /**
@@ -22,7 +22,7 @@ import nars.NAR;
  *
  * @param X identifier key
  */
-public interface ITask extends Priority {
+public interface ITask extends Prioritizable {
 
     /** process the next stage; returns null if finished */
     ITask next(NAR n);

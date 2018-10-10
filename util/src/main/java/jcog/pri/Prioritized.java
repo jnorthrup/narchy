@@ -90,7 +90,7 @@ public interface Prioritized extends Deleteable {
         }
     }
 
-    static <X extends Priority> void normalize(X[] xx, float target) {
+    static <X extends Prioritizable> void normalize(X[] xx, float target) {
         int l = xx.length;
         assert (target == target);
         assert (l > 0);

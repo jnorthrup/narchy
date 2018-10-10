@@ -15,7 +15,7 @@ import jcog.io.BinTxt;
 import jcog.math.FloatRange;
 import jcog.math.RecycledSummaryStatistics;
 import jcog.net.attn.HashMapTagSet;
-import jcog.pri.Priority;
+import jcog.pri.Prioritizable;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.HijackBag;
@@ -635,7 +635,7 @@ public class UDPeer extends UDP {
         }
     }
 
-    public static class Msg extends DynBytes implements Priority {
+    public static class Msg extends DynBytes implements Prioritizable {
 
         final static int TTL_BYTE = 0;
         final static int CMD_BYTE = 1;

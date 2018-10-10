@@ -1,11 +1,11 @@
 package nars.control.channel;
 
-import jcog.pri.Priority;
+import jcog.pri.Prioritizable;
 import nars.control.Cause;
 
 import java.util.function.Consumer;
 
-public class PriorityAdjustingCauseChannel<X extends Priority> extends CauseChannel<X> {
+public class PriorityAdjustingCauseChannel<X extends Prioritizable> extends CauseChannel<X> {
 
     /**
      * linear gain control
@@ -31,6 +31,7 @@ public class PriorityAdjustingCauseChannel<X extends Priority> extends CauseChan
         if (p == p && (preBias != 0 || preAmp != 1)) {
             x.pri(preBias + p * preAmp);
         }
+
         target.accept(x);
     }
 

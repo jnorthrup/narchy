@@ -3,7 +3,7 @@ package jcog.pri.op;
 import jcog.Util;
 import jcog.math.FloatSupplier;
 import jcog.pri.Prioritized;
-import jcog.pri.Priority;
+import jcog.pri.Prioritizable;
 
 import java.util.function.BiConsumer;
 
@@ -13,7 +13,7 @@ import static jcog.pri.op.PriMerge.PriMergeOp.*;
  * Budget merge function, with input scale factor
  */
 @FunctionalInterface
-public interface PriMerge<E extends Priority, I extends Prioritized> extends BiConsumer<E, I> {
+public interface PriMerge<E extends Prioritizable, I extends Prioritized> extends BiConsumer<E, I> {
 
 
     /**
@@ -28,7 +28,7 @@ public interface PriMerge<E extends Priority, I extends Prioritized> extends BiC
         merge(existing, incoming);
     }
 
-    static void max(Priority existing, Prioritized incoming) {
+    static void max(Prioritizable existing, Prioritized incoming) {
         float p = incoming.priElseZero();
         if (p > 0)
             existing.priMax(p);
@@ -56,7 +56,7 @@ public interface PriMerge<E extends Priority, I extends Prioritized> extends BiC
      * @param exi existing budget
      * @param inc incoming budget
      */
-    static float blend(Priority exi, Prioritized inc, PriMerge.PriMergeOp priMerge) {
+    static float blend(Prioritizable exi, Prioritized inc, PriMerge.PriMergeOp priMerge) {
 
         final float i = inc.priElseZero();
         final float[] e = new float[1];
@@ -103,31 +103,31 @@ public interface PriMerge<E extends Priority, I extends Prioritized> extends BiC
     /**
      * sum priority
      */
-    PriMerge<Priority,Prioritized> plus = (tgt, src) -> blend(tgt, src, PLUS);
+    PriMerge<Prioritizable,Prioritized> plus = (tgt, src) -> blend(tgt, src, PLUS);
 
     /**
      * avg priority
      */
-    PriMerge<Priority,Prioritized> avg = (tgt, src) -> blend(tgt, src, AVG);
+    PriMerge<Prioritizable,Prioritized> avg = (tgt, src) -> blend(tgt, src, AVG);
 
     /**
      * geometric mean
      */
-    PriMerge<Priority,Prioritized> avgGeo = (tgt, src) -> blend(tgt, src, AVG_GEO);
+    PriMerge<Prioritizable,Prioritized> avgGeo = (tgt, src) -> blend(tgt, src, AVG_GEO);
 
-    PriMerge<Priority,Prioritized> avgGeoSlow = (tgt, src) -> blend(tgt, src, AVG_GEO_SLOW);
-    PriMerge<Priority,Prioritized> avgGeoFast = (tgt, src) -> blend(tgt, src, AVG_GEO_FAST);
-
-
-    PriMerge<Priority,Prioritized> or = (tgt, src) -> blend(tgt, src, OR);
+    PriMerge<Prioritizable,Prioritized> avgGeoSlow = (tgt, src) -> blend(tgt, src, AVG_GEO_SLOW);
+    PriMerge<Prioritizable,Prioritized> avgGeoFast = (tgt, src) -> blend(tgt, src, AVG_GEO_FAST);
 
 
-    PriMerge<Priority,Prioritized> max = (tgt, src) -> blend(tgt, src, MAX);
+    PriMerge<Prioritizable,Prioritized> or = (tgt, src) -> blend(tgt, src, OR);
+
+
+    PriMerge<Prioritizable,Prioritized> max = (tgt, src) -> blend(tgt, src, MAX);
 
     /**
      * avg priority
      */
-    PriMerge<Priority,Prioritized> replace = (tgt, src) -> tgt.pri((FloatSupplier)()-> src.pri());
+    PriMerge<Prioritizable,Prioritized> replace = (tgt, src) -> tgt.pri((FloatSupplier)()-> src.pri());
 
 
 

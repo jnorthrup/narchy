@@ -1,6 +1,6 @@
 package jcog.pri.bag.impl;
 
-import jcog.pri.Priority;
+import jcog.pri.Prioritizable;
 import jcog.pri.op.PriMerge;
 
 import java.util.Map;
@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * ArrayBag with a randomized sampling range
  */
-@Deprecated public class CurveBag<X extends Priority> extends PriArrayBag<X> {
+@Deprecated public class CurveBag<X extends Prioritizable> extends PriArrayBag<X> {
 
 
     public CurveBag(PriMerge mergeFunction, Map<X, X> map, int cap) {

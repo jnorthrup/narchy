@@ -22,7 +22,7 @@ package nars.concept;
 
 import jcog.data.map.MetaMap;
 import jcog.pri.PriReference;
-import jcog.pri.Priority;
+import jcog.pri.Prioritizable;
 import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Task;
@@ -131,7 +131,7 @@ public interface Concept extends Termed, MetaMap {
         try {
             out.append("concept: ").append(toString()).append('\t').append(getClass().toString()).append('\n');
 
-            Consumer<Priority> printBagItem = b -> {
+            Consumer<Prioritizable> printBagItem = b -> {
                 try {
                     out.append(printIndent);
                     out.append(b.toString());

@@ -267,7 +267,8 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
         @Override
         public ITask next(NAR n) {
-            return commit();
+            commit(n);
+            return null;
         }
 
         @Override

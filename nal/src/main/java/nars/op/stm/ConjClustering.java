@@ -1,8 +1,10 @@
 package nars.op.stm;
 
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
-import jcog.pri.Priority;
+import jcog.pri.Prioritizable;
+import jcog.pri.UnitPri;
 import jcog.pri.VLink;
 import nars.NAR;
 import nars.Param;
@@ -34,8 +36,10 @@ import java.util.stream.Stream;
 import static nars.truth.TruthFunctions.c2wSafe;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
-public class ConjClustering extends Causable {
+public class ConjClustering extends Causable implements Prioritizable {
 
+
+    final UnitPri pri = new UnitPri();
 
     public final BagClustering<Task> data;
     private final BagClustering.Dimensionalize<Task> model;
@@ -161,6 +165,17 @@ public class ConjClustering extends Causable {
     }
 
     final CentroidConjoiner conjoiner = new CentroidConjoiner();
+
+    @Override
+    public float pri(float p) {
+        return pri.pri(p);
+    }
+
+    @Override
+    public float pri() {
+        return pri.pri();
+    }
+
 
     class CentroidConjoiner {
 
@@ -293,7 +308,7 @@ public class ConjClustering extends Causable {
                                 float confFactor =
                                         (conf / (conf + confMax));
 
-                                m.pri(Priority.fund(Math.min(priMax, priMin * freqFactor * cmplFactor * confFactor), false, uu));
+                                m.pri(Prioritizable.fund(Util.clamp((priMin*uu.length) * freqFactor * cmplFactor * confFactor, 0, pri.pri()), false, uu));
 
                                 if (popConjoinedTasks) {
                                     for (Task aa : actualTasks)

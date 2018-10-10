@@ -3,7 +3,7 @@ package nars.control.channel;
 import com.google.common.collect.AbstractIterator;
 import jcog.TODO;
 import jcog.data.list.MetalConcurrentQueue;
-import jcog.pri.Priority;
+import jcog.pri.Prioritizable;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 
-public class BufferedCauseChannel<X extends Priority> implements Consumer<X> {
+public class BufferedCauseChannel<X extends Prioritizable> implements Consumer<X> {
 
     final MetalConcurrentQueue<X> buffer;
     private final CauseChannel<X> target;

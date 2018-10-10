@@ -2,7 +2,7 @@ package nars.task;
 
 import com.google.common.primitives.Longs;
 import jcog.Util;
-import jcog.pri.Priority;
+import jcog.pri.Prioritizable;
 import nars.NAR;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +17,7 @@ import java.util.function.Consumer;
  * the reasoner remains oblivious of these.
  * but it holds a constant 1.0 priority.
  */
-public abstract class AbstractTask implements ITask, Priority {
+public abstract class AbstractTask implements ITask, Prioritizable {
 
     @Nullable
     public static ITask of(@Nullable Collection<ITask> next) {

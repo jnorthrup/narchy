@@ -84,7 +84,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 }
             }
 
-            return ((float)filled)/(state.rowsFilled * state.width);
+            int r = state.rowsFilled;
+            return r > 0 ? ((float)filled)/(r * state.width) : 0;
         });
 
         addCamera(

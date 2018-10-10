@@ -81,13 +81,16 @@ public class Remember extends AbstractTask {
 
         input(n);
 
-        return commit();
+        commit(n);
+
+        return null;
     }
 
     /**
      * finalization and cleanup work
+     * @param n
      */
-    protected @Nullable ITask commit() {
+    protected final void commit(NAR n) {
         if (forgotten!=null)
             forgotten.forEach(Task::delete);
 
@@ -108,10 +111,12 @@ public class Remember extends AbstractTask {
                  }
              }
 
-             return AbstractTask.of(remembered);
+             remembered.forEach(r -> ITask.run(r, n));
 
-         } else
-             return null;
+             //return AbstractTask.of(remembered);
+
+
+         }
 
     }
 
