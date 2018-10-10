@@ -244,9 +244,10 @@ public class Revision {
         long xs = x.start();
 
         //allow overlap if the time ranges are disjoint
-        if (Stamp.overlapsAny((Task)x, (Task)y))
-            if (Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME && Longerval.intersectLength(xs, x.end(), y.start(), y.end()) > 0)
+        if (Stamp.overlapsAny((Task)x, (Task)y)) {
+            if (!Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME || Longerval.intersectLength(xs, x.end(), y.start(), y.end()) > 0)
                 return null;
+        }
 
         return merge(nar, new TaskRegion[] { x, y });
     }

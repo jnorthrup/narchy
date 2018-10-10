@@ -9,6 +9,7 @@ import nars.term.util.Image;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
+import static nars.term.atom.Bool.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ImageTest {
@@ -93,5 +94,36 @@ class ImageTest {
         //"$.04 ((|,(--,(cart,"+")),(--,(cart,"-")),(--,angX))-->(believe,"-ß2~czîÊeå",/))! 406461⋈406503 %.06;.04%"
         NAR n = NARS.shell();
         assertEquals("(x,z(y))", n.conceptualize("(x, (y --> (z,/)))").term().toString());
+    }
+    @Test void testRecursiveUnwrapping() {
+        //assertEquals(
+                //"reaction(acid,base)",
+        Term a1 = $$("(((chemical,reaction),base)-->acid)");
+
+        Term a2Bad = Image.imageExt(a1, $$("reaction"));
+        assertEquals(Null, a2Bad); //not in the next reachable level
+
+        Term a2 = Image.imageExt(a1, $$("base"));
+        assertEquals("(base-->(acid,(chemical,reaction),/))", a2.toString());
+
+        Term a3Bad = Image.imageInt(a2, $$("reaction"));
+        assertEquals(Null, a3Bad); //not in the next reachable level
+//
+        Term a3 = Image.imageInt(a2, $$("acid"));
+        assertEquals("acid(base,\\,(chemical,reaction),/)", a3.toString());
+
+        //reverse
+
+        Term b2 = Image.imageNormalize(a3);
+        assertEquals(a1, b2);
+
+//        Term b1 = Image.imageNormalize(b2);
+//        assertEquals(a1, b1);
+
+    }
+
+    @Test void testNonRepeatableImage() {
+        Term ii = Image.imageExt($$("a(b,/,c)"), $$("c"));
+        assertEquals(Null, ii);
     }
 }

@@ -7,6 +7,7 @@ import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.var.ImDep;
 import org.apache.commons.lang3.ArrayUtils;
 
 import static nars.Op.*;
@@ -20,36 +21,47 @@ public enum Image { ;
     public static final Functor imageInt = Functor.f2Inline("imageInt", Image::imageInt);
     public static final Functor imageExt = Functor.f2Inline("imageExt", Image::imageExt);
 
+
+
+//    private static boolean imaged(Term p) {
+//        return p.hasAny(Op.IMG) && p.OR(x -> (x == Op.ImgInt || x == Op.ImgExt));
+//    }
+
+    public static Term imageInt(Term t, Term x) {
+        return image(true, t, x);
+    }
     public static Term imageExt(Term t, Term x) {
-        
-        
-        if (t.op()==INH) {
-            Term p = t.sub(0);
-            if (p.op()==PROD && !imaged(p)) {
-                Term r = p.replace(x, Op.ImgExt);
-                if (r!=p) {
-                    Term i = t.sub(1);
-                    return INH.the(x, PROD.the(ArrayUtils.prepend(i, r.subterms().arrayShared(), Term[]::new)));
-                }
-            }
-        }
-        return Bool.Null;
+        return image(false, t, x);
     }
+    public static Term image(boolean intOrExt, Term t, Term x) {
 
-    private static boolean imaged(Term p) {
-        return p.hasAny(Op.IMG) && p.OR(x -> (x == Op.ImgInt || x == Op.ImgExt));
-    }
 
-    private static Term imageInt(Term t, Term x) {
-        
-        
         if (t.op()==INH) {
-            Term p = t.sub(1);
-            if (p.op()==PROD && !imaged(p)) {
-                Term r = p.replace(x, Op.ImgInt);
-                if (r!=p) {
-                    Term i = t.sub(0);
-                    return INH.the(PROD.the(ArrayUtils.prepend(i, r.subterms().arrayShared(), Term[]::new)), x);
+
+            int prodSub = intOrExt ? 1 : 0;
+
+            Term s = t.sub(prodSub);
+
+            if (s.op()==PROD) {
+
+                ImDep target = intOrExt ? ImgInt : ImgExt;
+
+                Subterms ss = s.subterms();
+                if (!ss.contains(target)) {
+
+                    int index = ss.indexOf(x);
+                    if (index != -1) {
+                        Term[] qq = ArrayUtils.prepend(t.sub(1 - prodSub), ss.arrayShared(), Term[]::new);
+
+                        do {
+
+                            qq[index + 1] = target;
+                            index = ss.indexOf(x, index);
+                        } while (index != -1);
+
+                        Term q = PROD.the(qq);
+                        return intOrExt ? INH.the(q, x) : INH.the(x, q);
+                    }
                 }
             }
         }
@@ -78,7 +90,7 @@ public enum Image { ;
             negated = false;
         }
 
-        if (o==INH && t.hasAll(ImageBits)) {
+        if (o==INH /*&& t.hasAll(ImageBits)*/) {
             Term s = t.sub(0);
             Subterms ss = null;
             boolean isInt = s.op()==PROD && (ss = s.subterms()).contains(Op.ImgInt);// && !ss.contains(Op.ImgExt);
@@ -87,22 +99,26 @@ public enum Image { ;
             Subterms pp = null;
             boolean isExt = p.op()==PROD && (pp = p.subterms()).contains(Op.ImgExt);// && !pp.contains(Op.ImgInt);
 
+            Term u;
             if (isInt && !isExt) {
 
+                u = INH.the(ss.sub(0), PROD.the(Util.replaceDirect(ss.subRangeArray(1, ss.subs()), Op.ImgInt, p)));
 
-                Term u = INH.the(ss.sub(0), PROD.the(Util.replaceDirect(ss.subRangeArray(1, ss.subs()), Op.ImgInt, p)));
-                if (!(u instanceof Bool))
-                    return Image.imageNormalize(u).negIf(negated);
             } else if (isExt && !isInt) {
 
+                u = INH.the(PROD.the(Util.replaceDirect(pp.subRangeArray(1, pp.subs()), Op.ImgExt, s)), pp.sub(0));
 
-                Term u = INH.the(PROD.the(Util.replaceDirect(pp.subRangeArray(1, pp.subs()), Op.ImgExt, s)), pp.sub(0));
-                if (!(u instanceof Bool))
-                    return Image.imageNormalize(u).negIf(negated);
+            } else {
+                return z;
             }
+
+            if (!(u instanceof Bool))
+                return Image.imageNormalize(u).negIf(negated);
+
         }
 
         return z;
+
     }
 
 }

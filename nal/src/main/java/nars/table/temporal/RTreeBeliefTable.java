@@ -16,6 +16,7 @@ import nars.task.Revision;
 import nars.task.TaskProxy;
 import nars.task.signal.SignalTask;
 import nars.task.util.*;
+import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.TruthFunctions;
 import nars.truth.polation.TruthIntegration;
@@ -482,8 +483,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         while (treeRW.size() > (cap = capacity)) {
             if (taskStrength == null) {
                 long now = nar.time();
-                dur = nar.dur();
-                //  Math.max(1,Tense.occToDT(tableDur()/2));
+                dur =
+                    //nar.dur();
+                    Math.max(1, Tense.occToDT(tableDur()/2));
                 taskStrength = taskStrengthWithFutureBoost(now,
                         input.isBelief() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL,
                         now,
@@ -506,8 +508,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * returns true if at least one net task has been removed from the table.
      */
     /*@NotNull*/
-    private static boolean compress(Space<TaskRegion> tree, @Nullable Task
-            input, FloatFunction<Task> taskStrength, FloatFunction<TaskRegion> leafRegionWeakness, Remember
+    private static boolean compress(Space<TaskRegion> tree, @Nullable Task input, FloatFunction<Task> taskStrength, FloatFunction<TaskRegion> leafRegionWeakness, Remember
                                             remember, NAR nar) {
 
 
@@ -598,14 +599,14 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         float[] value = new float[4];
         value[RejectInput] =
-                I != null ? -inputStrength : Float.NEGATIVE_INFINITY;
+                I != null ? 0 : Float.NEGATIVE_INFINITY;
         value[EvictWeakest] =
                 (I != null ? +inputStrength : 0) - taskStrength.floatValueOf(W);
         value[MergeInputClosest] =
                 IC != null ? (
-                        +taskStrength.floatValueOf(IC)
-                                - taskStrength.floatValueOf(C)
-                                - inputStrength)
+                        + taskStrength.floatValueOf(IC)
+                        - taskStrength.floatValueOf(C)
+                                )
                         : Float.NEGATIVE_INFINITY;
 
         if (B == null) {

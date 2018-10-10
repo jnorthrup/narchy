@@ -497,6 +497,21 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return -1;
     }
 
+    default int indexOf(/*@NotNull*/ Term t, int after) {
+
+        int s = subs();
+        int i = after+1;
+        if (i >= s)
+            return -1;
+
+        for (; i < s; i++) {
+            if (t.equals(sub(i)))
+                return i;
+        }
+
+        return -1;
+    }
+
 
     /**
      * of all the matches to the predicate, chooses one at random and returns its index

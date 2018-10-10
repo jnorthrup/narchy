@@ -88,13 +88,13 @@ public class NARio extends NAgentX {
 
             final int tileTypes = 3; //0..4
 
-            senseSwitch((i)->$.funcImageLast($.the("tile"), $.the("nario"), $.the("right"), $.the(i)),
+            senseSwitch((i)->$.funcImageLast($.the("tile"), $.the("nario"), $.p($.the("right"), $.the(i))),
                      () -> tile(1, 0), 0, tileTypes);
-            senseSwitch((i)->$.funcImageLast($.the("tile"), $.the("nario"), $.the("below"), $.the(i)),
+            senseSwitch((i)->$.funcImageLast($.the("tile"), $.the("nario"), $.p($.the("below"), $.the(i))),
                     () -> tile(0, 1), 0, tileTypes);
-            senseSwitch((i)->$.funcImageLast($.the("tile"), $.the("nario"), $.the("left"), $.the(i)),
+            senseSwitch((i)->$.funcImageLast($.the("tile"), $.the("nario"), $.p($.the("left"), $.the(i))),
                     () -> tile(-1, 0), 0, tileTypes);
-            senseSwitch((i)->$.funcImageLast($.the("tile"), $.the("nario"), $.the("above"), $.the(i)),
+            senseSwitch((i)->$.funcImageLast($.the("tile"), $.the("nario"), $.p($.the("above"), $.the(i))),
                     () -> tile(0, -1), 0, tileTypes);
 
 

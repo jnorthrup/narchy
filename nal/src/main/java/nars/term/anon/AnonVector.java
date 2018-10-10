@@ -200,13 +200,22 @@ public class AnonVector extends TermVector implements FullyInternable {
     }
 
     @Override
-    public int subs() {
+    public final int subs() {
         return subterms.length;
     }
 
     private int indexOf(short id) {
+
+//        if (id < 0 && !anyNeg())
+//            return -1;
+
         return ArrayUtils.indexOf(subterms, id);
     }
+
+// TODO TEST
+//    private int indexOf(short id, int after) {
+//        return ArrayUtils.indexOf(subterms, id, after+1);
+//    }
 
     private int indexOf(AnonID t, boolean neg) {
         return indexOf(t.anonID(neg));
@@ -221,6 +230,12 @@ public class AnonVector extends TermVector implements FullyInternable {
         short tid = AnonID.id(t);
         return tid != 0 ? indexOf(tid) : -1;
     }
+
+// TODO TEST
+//    @Override
+//    public int indexOf(Term t, int after) {
+//        throw new TODO();
+//    }
 
     private int indexOfNeg(Term x) {
         short tid = AnonID.id(x);
