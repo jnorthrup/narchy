@@ -301,7 +301,7 @@ public class NARui {
 
         TabPane aa = new TabPane().addToggles(Map.of(
                 a.toString(), () -> new ObjectSurface<>(a, 4),
-                "emotion", () -> new EmotionPlot(128, a),
+                "emotion", () -> new EmotionPlot(512, a),
                 "reward", () -> NARui.beliefCharts(rewards, a.nar()),
                 "actions", () -> NARui.beliefCharts(actions, a.nar())
         ));

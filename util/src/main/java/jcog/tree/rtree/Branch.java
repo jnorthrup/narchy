@@ -22,6 +22,7 @@ package jcog.tree.rtree;
 
 
 import com.google.common.base.Joiner;
+import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
 import jcog.tree.rtree.util.CounterNode;
 import jcog.tree.rtree.util.Stats;
@@ -118,7 +119,7 @@ public class Branch<X> extends AbstractNode<X> {
      * @return Node that the entry was added to
      */
     @Override
-    public Node<X> add(final X x, Nodelike<X> parent, Spatialization<X> model, boolean[] added) {
+    public Node<X> add(final X x, boolean addOrMerge, Spatialization<X> model, boolean[] added) {
 
         final HyperRegion tRect = model.bounds(x);
 
@@ -130,7 +131,7 @@ public class Branch<X> extends AbstractNode<X> {
                 Node ci = child[i];
                 if (ci != null && ci.bounds().contains(tRect)) {
 
-                    Node di = ci.add(x, null, model, null);
+                    Node di = ci.add(x, false, model, null);
                     if (di == null)
                         return null; //duplicate found
                     if (ci!=di) {
@@ -139,7 +140,7 @@ public class Branch<X> extends AbstractNode<X> {
 
                 }
             }
-            if (parent == null)
+            if (!addOrMerge)
                 return this;
         }
 
@@ -152,7 +153,7 @@ public class Branch<X> extends AbstractNode<X> {
         if (size < child.length) {
 
 
-            grow(addChild(model.newLeaf().add(x, parent, model, added)));
+            grow(addChild(model.newLeaf().add(x, addOrMerge, model, added)));
             assert (added[0]);
 
             return this;
@@ -161,7 +162,7 @@ public class Branch<X> extends AbstractNode<X> {
 
             final int bestLeaf = chooseLeaf(tRect);
 
-            Node nextBest = child[bestLeaf].add(x, this, model, added);
+            Node nextBest = child[bestLeaf].add(x, true, model, added);
             if (nextBest == null) {
                 return null; /*merged*/
             }
@@ -223,23 +224,42 @@ public class Branch<X> extends AbstractNode<X> {
                             return data[0]; //reduce to only leaf
                         default: {
                             //TODO possibly rebalance
-                            if (cBefore == cAfter) {
-                                if (!cBeforeBounds.equals(cAfter.bounds())) {
-                                    updateBounds();
-                                }
-                                return this;
-                            } else {
+//                            if (cBefore == cAfter) {
+//                                if (!cBeforeBounds.equals(cAfter.bounds())) {
+//                                    updateBounds();
+//                                }
+//                                return this;
+//                            } else {
 //                                //rebalance
 //                                final Node<X>[] b = new Node[]{model.newLeaf()};
 //                                streamValues().forEach(v -> {
-//                                    Node<X> bc = b[0].add(v, b[0], model, new boolean[1]);
+//                                    Node<X> bc = b[0].add(v, true, model, new boolean[1]);
 //                                    if (bc != null)
 //                                        b[0] = bc;
 //                                });
 //                                return b[0];
+                                if (Util.and((Node z) -> z instanceof Leaf, data)) {
+                                    int values = Util.sum((Node z) -> z.size(), data);
+                                    if (values <= model.max) {
+                                        Leaf<X> compacted = model.newLeaf();
+                                        int p = 0;
+                                        for (int k = 0, dataLength = size(); k < dataLength; k++) {
+                                            Node<X> z = data[k];
+                                            X[] data1 = ((Leaf<X>) z).data;
+                                            for (int j = 0, data1Length = z.size(); j < data1Length; j++) {
+                                                X zz = data1[j];
+                                                compacted.data[p++] = zz;
+                                                compacted.grow(model.bounds(zz));
+                                            }
+                                        }
+                                        compacted.size = (short) p;
+                                        return compacted;
+                                    }
+                                }
+
                                 updateBounds();
                                 return this;
-                            }
+//                            }
 
                         }
 
@@ -261,7 +281,8 @@ public class Branch<X> extends AbstractNode<X> {
         for (int j = 1; j < size; j++) {
             region = grow(region, dd[j]);
         }
-        this.bounds = region;
+        if (bounds == null || !bounds.equals(region))
+            this.bounds = region;
     }
 
     @Override

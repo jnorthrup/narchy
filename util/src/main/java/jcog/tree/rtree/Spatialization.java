@@ -65,7 +65,7 @@ public class Spatialization<X> {
         final X[] ld = leaf.data;
         final Node<X> nl = l;
         for (int i = from; i < to; i++) {
-            nl.add(ld[sortedMbr[i].getOne()], leaf, this, new boolean[] { false });
+            nl.add(ld[sortedMbr[i].getOne()], true, this, new boolean[] { false });
         }
         return l;
     }

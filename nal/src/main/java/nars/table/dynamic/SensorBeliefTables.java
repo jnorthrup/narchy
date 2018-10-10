@@ -87,7 +87,7 @@ public class SensorBeliefTables extends BeliefTables {
                 series.term, series.punc(),
                 n);
 
-        series.clean(n, tables);
+        series.clean(tables);
 
         if (x!=null) {
             x.pri(pri.asFloat());

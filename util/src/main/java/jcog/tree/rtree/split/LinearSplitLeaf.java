@@ -111,8 +111,8 @@ public final class LinearSplitLeaf<T> implements Split<T> {
         }
 
         
-        l1Node.add(data[r1Ext], leaf, model, dummy);
-        l2Node.add(data[r2Ext], leaf, model, dummy);
+        l1Node.add(data[r1Ext], true, model, dummy);
+        l2Node.add(data[r2Ext], true, model, dummy);
 
         for (int i = 0; i < size; i++) {
             if ((i != r1Ext) && (i != r2Ext)) {

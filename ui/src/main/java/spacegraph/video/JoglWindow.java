@@ -23,10 +23,11 @@ import java.util.function.Consumer;
 public abstract class JoglWindow implements GLEventListener, WindowListener {
 
 
-    static {
-        Threading.disableSingleThreading();
+//    static final Executor renderThread = Executors.newSingleThreadExecutor();
 
-    }
+//    static {
+//        Threading.disableSingleThreading();
+//    }
 
     private static final Collection<JoglWindow> windows = new ConcurrentFastIteratingHashSet<>(new JoglWindow[0]);
     final Topic<JoglWindow> onUpdate = new ListTopic<>();
@@ -404,9 +405,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
     private void show(String title, int w, int h, boolean async) {
-        Threading.invokeOnOpenGLThread(false, ()->{
+        //Threading.invokeOnOpenGLThread(false, ()->{
             show(title, w, h, Integer.MIN_VALUE, Integer.MIN_VALUE, async);
-        });
+        //});
     }
 
     public void addMouseListenerPost(MouseListener m) {
@@ -507,7 +508,9 @@ class GameAnimatorControl extends AnimatorBase {
                     if (!paused) {
 
                         if (waiting.compareAndSet(false, true)) {
-                            window.runOnEDTIfAvail(false, this::render);
+                            //window.runOnEDTIfAvail(false, this::render);
+                            //renderThread.execute(this::render);
+                            Threading.invokeOnOpenGLThread(false, this::render);
                         }
                     }
                     return true;

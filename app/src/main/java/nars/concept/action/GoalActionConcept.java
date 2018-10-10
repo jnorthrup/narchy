@@ -7,7 +7,6 @@ import nars.control.channel.CauseChannel;
 import nars.control.proto.Remember;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.task.ITask;
-import nars.task.Revision;
 import nars.term.Term;
 import nars.truth.Truth;
 
@@ -70,7 +69,10 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
 
         Truth curi = curiosity(n);
 
-        Truth fb = this.motor.apply(null, curi!=null ? (goal!=null ? Revision.revise(curi, goal) : curi) : goal);
+        Truth fb = this.motor.apply(null,
+                //curi!=null ? (goal!=null ? Revision.revise(curi, goal) : curi) : goal
+                curi!=null ? curi : goal
+        );
 
         in.input(
             Stream.of(

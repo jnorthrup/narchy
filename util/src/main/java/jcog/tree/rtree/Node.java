@@ -80,7 +80,7 @@ public interface Node<X> extends Nodelike<X> {
      * @param added
      * @return null if Leaf merged it with existing item
      */
-    Node<X> add(/*@NotNull */X x, @Nullable Nodelike<X> parent, /*@NotNull */Spatialization<X> model, boolean[] added);
+    Node<X> add(/*@NotNull */X x, boolean addOrMerge, /*@NotNull */Spatialization<X> model, boolean[] added);
 
     /**
      * Remove t from the index

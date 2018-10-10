@@ -285,20 +285,20 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
 
-    public Off reward(FloatSupplier rewardfunc) {
+    public Reward  reward(FloatSupplier rewardfunc) {
         return reward(rewardTerm("reward"), rewardfunc);
     }
 
     @Deprecated
-    public Off rewardDetailed(FloatSupplier rewardfunc) {
+    public Reward rewardDetailed(FloatSupplier rewardfunc) {
         return rewardDetailed(rewardTerm("reward"), rewardfunc);
     }
     @Deprecated
-    public Off rewardDetailed(float min, float max, FloatSupplier rewardfunc) {
+    public Reward rewardDetailed(float min, float max, FloatSupplier rewardfunc) {
         return rewardDetailed(rewardTerm("reward"), min, max, rewardfunc);
     }
 
-    public Off reward(String reward, FloatSupplier rewardFunc) {
+    public Reward  reward(String reward, FloatSupplier rewardFunc) {
         return reward(rewardTerm(reward), rewardFunc);
     }
 
@@ -307,18 +307,18 @@ public class NAgent extends NARService implements NSense, NAct {
         return $.func($$(reward), id);
     }
 
-    public Off rewardNormalized(String reward, float min, float max, FloatSupplier rewardFunc) {
+    public Reward rewardNormalized(String reward, float min, float max, FloatSupplier rewardFunc) {
         return rewardNormalized(rewardTerm(reward), min, max, rewardFunc);
     }
 
-    public Off reward(Term reward, FloatSupplier rewardFunc) {
+    public Reward reward(Term reward, FloatSupplier rewardFunc) {
         return reward(new SimpleReward(reward, rewardFunc, this));
     }
 
     /**
      * set a default (bi-polar) reward supplier
      */
-    public Off rewardNormalized(Term reward, float min, float max, FloatSupplier rewardFunc) {
+    public Reward rewardNormalized(Term reward, float min, float max, FloatSupplier rewardFunc) {
         //.relax(Param.HAPPINESS_RE_SENSITIZATION_RATE);
         return reward(reward, normalize(rewardFunc, min, max));
     }
@@ -329,30 +329,30 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     @Deprecated
-    public Off rewardDetailed(String reward, FloatSupplier rewardFunc) {
+    public Reward rewardDetailed(String reward, FloatSupplier rewardFunc) {
         return rewardDetailed(rewardTerm(reward), rewardFunc);
     }
 
     @Deprecated
-    public Off rewardDetailed(Term reward, FloatSupplier rewardFunc) {
+    public Reward rewardDetailed(Term reward, FloatSupplier rewardFunc) {
         return reward(new DetailedReward(reward, rewardFunc, this));
     }
-    public Off rewardDetailed(String reward, float min, float max, FloatSupplier rewardFunc) {
+    public Reward rewardDetailed(String reward, float min, float max, FloatSupplier rewardFunc) {
         return rewardDetailed(rewardTerm(reward), min, max, rewardFunc);
     }
-    public Off rewardDetailed(Term reward, float min, float max, FloatSupplier rewardFunc) {
+    public Reward rewardDetailed(Term reward, float min, float max, FloatSupplier rewardFunc) {
         return reward(new DetailedReward(reward, normalize(rewardFunc, min, max), this));
     }
 
     /**
      * default reward module
      */
-    final public synchronized Off reward(Reward r) {
+    final public synchronized Reward reward(Reward r) {
         if (rewards.OR(e-> e.term().equals(r.term())))
             throw new RuntimeException("reward exists with the ID: " + r.term());
 
         rewards.add(r);
-        return () -> rewards.remove(r);
+        return r;
     }
 
     public interface NAgentCycle {
@@ -457,9 +457,9 @@ public class NAgent extends NARService implements NSense, NAct {
 //        ArrayUtils.shuffle(aaa, random());
 
         float curiConf =
-                        //nar.confMin.floatValue() * 4;
-                        //nar.confMin.floatValue() * 2;
                         //nar.confMin.floatValue();
+                        //nar.confMin.floatValue() * 2;
+                        //nar.confMin.floatValue() * 4;
                         nar.confDefault(GOAL)/3;
                         //nar.confDefault(GOAL)/2;
                         //w2c(c2w(nar.confDefault(GOAL))/3);

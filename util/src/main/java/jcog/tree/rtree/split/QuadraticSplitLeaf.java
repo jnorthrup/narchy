@@ -59,15 +59,13 @@ public final class QuadraticSplitLeaf<T> implements Split<T> {
         }
 
         
-        l1Node.add(data[r1Max], leaf, model, dummy);
+        l1Node.add(data[r1Max], true, model, dummy);
         dummy[0] = false;
-        l2Node.add(data[r2Max], leaf, model, dummy);
+        l2Node.add(data[r2Max], true, model, dummy);
 
         for (int i = 0; i < size; i++) {
-            if ((i != r1Max) && (i != r2Max)) {
-                
+            if ((i != r1Max) && (i != r2Max))
                 leaf.transfer(l1Node, l2Node, data[i], model);
-            }
         }
 
         leaf.transfer(l1Node, l2Node, t, model);

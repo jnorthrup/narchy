@@ -105,11 +105,11 @@ public final class Leaf<X> extends AbstractNode<X> {
 
 
     @Override
-    public Node<X> add(/*@NotNull*/ final X t, Nodelike<X> parent, /*@NotNull*/ Spatialization<X> model, boolean[] added) {
+    public Node<X> add(/*@NotNull*/ final X t, boolean addOrMerge, /*@NotNull*/ Spatialization<X> model, boolean[] added) {
 
         final HyperRegion tb = model.bounds(t);
 
-        if (parent != null) {
+        if (addOrMerge) {
             boolean mightContain = size > 0 && bounds.contains(tb);
 
             for (int i = 0, s = size; i < s; i++) {
@@ -357,7 +357,7 @@ public final class Leaf<X> extends AbstractNode<X> {
         }
 
         boolean[] added = new boolean[1];
-        target.add(x, this, model, added);
+        target.add(x, true, model, added);
         assert (added[0]);
     }
 

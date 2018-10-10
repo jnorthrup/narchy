@@ -7,14 +7,20 @@ import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.agent.Reward;
+import nars.concept.Concept;
+import nars.concept.TaskConcept;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.SwitchAction;
 import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Signal;
+import nars.control.DurService;
 import nars.sensor.Bitmap2DSensor;
+import nars.term.Term;
 import nars.time.Tense;
+import nars.truth.Truth;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
@@ -27,7 +33,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import static nars.$.$$;
-import static nars.Op.INH;
+import static nars.Op.*;
 import static nars.agent.FrameTrigger.fps;
 
 /**
@@ -96,7 +102,7 @@ public class FZero extends NAgentX {
                 //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(false, 0.9f);
-                initBipolarRotateDirect(false, 0.6f);
+                initBipolarRotateDirect(false, 0.2f);
 
 //        window(new Gridding(
 //                //new CameraSensorView(c, this).withControls(),
@@ -151,7 +157,7 @@ public class FZero extends NAgentX {
 //        });
 
 
-        rewardNormalized("race", -1, +1, ()->{
+        Reward rr = rewardNormalized("race", -1, +1, () -> {
             double distance = fz.vehicleMetrics[0][1];
             double deltaDistance = (distance - lastDistance);
 
@@ -176,6 +182,53 @@ public class FZero extends NAgentX {
         //reward("noCollide", ()->fz.power >= FZeroGame.FULL_POWER- ScalarValue.EPSILON ? +1 : -1 ); //dont bump edges
 
 
+        DurService.on(n, (nn)->{
+            int samples = 200;
+
+            long now = n.time();
+            int dur = nn.dur();
+            long start = now - dur/2, end = now + dur/2;
+
+            float c =
+                //nn.confMin.floatValue() * 2;
+                    //nn.confDefault(GOAL);
+                    nn.confDefault(GOAL)/2;
+            float confMin = nn.confMin.floatValue();
+
+            //Random rng = nn.random();
+            for (Concept reward : rr) {
+                float p = pri.floatValue() * nn.priDefault(GOAL);
+                Truth b = reward.beliefs().truth(start, end, nn);
+                if (b!=null) {
+                    Truth g = reward.goals().truth(start, end, nn);
+                    if (g!=null) {
+                        //float df = g.freq() - b.freq();
+                        float sat = 1 - Math.abs(g.freq() - b.freq());
+                        nn.attn.active.stream().limit(samples).forEach(xx -> {
+                            Concept x = xx.get();
+                            if (x == reward || !(x instanceof TaskConcept) || x instanceof ActionConcept) return;
+
+                            Term xt = x.term();
+                            if (!x.op().goalable) return;
+
+                            if (xt.hasXternal()) return;
+
+                            //TODO Use task answer() and get non-XTERNAL result
+                            //TODO use stamp from answer
+
+                            Truth t = x.beliefs().truth(start, end, nn);
+                            if (t != null) {
+                                float yc = c * t.conf();
+                                if (yc > confMin) {
+                                    float yf = Util.lerp(sat, 1 - t.freq(), t.freq());
+                                    nn.want(p * xx.pri(), xt, start, end, yf, yc);
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        });
 
     }
 

@@ -10,7 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TruthPolationTest {
 

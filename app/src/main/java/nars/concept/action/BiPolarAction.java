@@ -126,10 +126,10 @@ public class BiPolarAction extends AbstractSensor {
             float thresh = freqRes*1;
 //            if (Math.abs(y) <= thresh) { yp = yn = 0; } else if (y > 0) { yp = y; yn = 0; } else { yp = 0; yn = -y; }
 
-            if (Math.abs(y) <= thresh) {
+            if (Math.abs(y) < thresh) {
                 yp = yn =
-                        //0;
-                        Float.NaN;
+                        0;
+                        //Float.NaN;
             } else if (y > 0) { yp = 0.5f + y/2; yn = 0; }
             else { yn = 0.5f - y/2; yp = 0; }
 
@@ -191,8 +191,8 @@ public class BiPolarAction extends AbstractSensor {
         /** how much coherence can shrink the amplitude of the resulting bipolar signal. 0 means not at all, +1 means fully attenuable */
         private final boolean fair;
 
-        boolean freqOrExp;
-        boolean latch = false;
+        boolean freqOrExp = true;
+//        boolean latch = false;
 
         /** adjustable q+ lowpass filters */
         //final FloatAveraged fp = new FloatAveraged(0.99f, true);
@@ -203,7 +203,6 @@ public class BiPolarAction extends AbstractSensor {
         public DefaultPolarization(boolean fair, NSense s) {
             this.fair = fair;
             curiosity = ((NAct) s).curiosity();
-            freqOrExp = false;
 
         }
 

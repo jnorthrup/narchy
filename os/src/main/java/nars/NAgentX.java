@@ -179,7 +179,7 @@ abstract public class NAgentX extends NAgent {
             NAgent a = init.apply(n);
             //a.durs(2f); //nyquist?
 
-            a.pri.set(0.5f);
+            a.pri.set(1f);
 
             a.curiosity.set(0.1f);
 
@@ -390,9 +390,9 @@ abstract public class NAgentX extends NAgent {
         new MatrixDeriver(Derivers.nal(n, 1, 1));
         new MatrixDeriver(Derivers.nal(n, 2, 3));
         new MatrixDeriver(Derivers.nal(n, 4, 4));
-        new MatrixDeriver(Derivers.nal(n, 5, 6));
+        new MatrixDeriver(Derivers.nal(n, 5, 8));
         new MatrixDeriver(Derivers.rules(n, "motivation.nal"));
-        new MatrixDeriver(Derivers.rules(n, "induction.goal.nal"));
+        //new MatrixDeriver(Derivers.rules(n, "induction.goal.nal"));
 
         //new STMLinkage(n, 1);
 

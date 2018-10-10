@@ -137,7 +137,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
             return; //already owned, or was owned
 
         if (Param.FILTER_SIGNAL_TABLE_TEMPORAL_TASKS) {
-            Task y = absorbNonSignal(x, cleanMargin(n));
+            Task y = absorbNonSignal(x);
             if (y == null) {
                 r.reject();
             } else if (y != x) {
@@ -147,20 +147,14 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
     }
 
-    /**
-     * time margin to shrink the series end length allowing tasks to survive in the "present" before being cleaned
-     */
-    protected int cleanMargin(NAR n) {
-        return n.dur();
-    }
 
-    public void clean(NAR nar, List<BeliefTable> tables) {
+    public void clean(List<BeliefTable> tables) {
         if (!Param.FILTER_SIGNAL_TABLE_TEMPORAL_TASKS)
             return;
 
         long sStart = series.start(), e;
         if (sStart != TIMELESS && (e = series.end()) != TIMELESS) {
-            long sEnd = e - cleanMargin(nar);
+            long sEnd = e;
 
             List<Task> deleteAfter = new FasterList(4);
             for (TaskTable b : tables) {
@@ -181,18 +175,18 @@ public class SeriesBeliefTable extends DynamicTaskTable {
         }
     }
 
-    @Nullable Task absorbNonSignal(Task t, int dur) {
+    @Nullable Task absorbNonSignal(Task t) {
         if (t.isEternal())
             return t; //no change
 
-        long seriesEnd = series.end()-dur;
+        long seriesEnd = series.end();
 //        if (t.start() < seriesEnd && t.end() > seriesEnd) {
 //            return new SpecialOccurrenceTask(t, seriesEnd, t.end());
 //        }
 
         //similar for before the beginning
 
-        if (!series.isEmpty() && absorbNonSignal(t, series.start(), seriesEnd - dur))
+        if (!series.isEmpty() && absorbNonSignal(t, series.start(), seriesEnd))
             return null;
 
         return t;

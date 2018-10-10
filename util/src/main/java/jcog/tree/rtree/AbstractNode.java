@@ -10,7 +10,7 @@ abstract public class AbstractNode<V> implements Node<V> {
         this.bounds = bounds != null ? bounds.mbr(tb) : tb;
     }
 
-    protected void grow(Node node) {
+    protected final void grow(Node node) {
         grow(node.bounds());
     }
 

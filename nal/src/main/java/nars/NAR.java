@@ -402,9 +402,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     @Nullable
     public Task want(Term goalTerm, Tense tense, float freq, float conf) {
+        long now = time(tense);
         return want(
                 priDefault(GOAL),
-                goalTerm, time(tense), freq, conf);
+                goalTerm, now, now, freq, conf);
     }
 
     public Task believe(Term term, Tense tense, float freq, float conf) {
@@ -523,9 +524,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return input(pri, term, BELIEF, start, end, freq, conf);
     }
 
-    public Task want(float pri, Term goal, long when, float freq, float conf) throws TaskException {
-        return input(pri, goal, GOAL, when, when, freq, conf);
-    }
 
     public Task want(float pri, Term goal, long start, long end, float freq, float conf) throws TaskException {
         return input(pri, goal, GOAL, start, end, freq, conf);
@@ -1336,17 +1334,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return belief(c, time());
     }
 
-    /**
-     * strongest matching goal for the target time
-     */
-    @Nullable
-    public final Task goal(Termed c, long start, long end) {
-        return answer(c, GOAL, start, end);
-    }
 
-    public final Task goal(Termed c, long when) {
-        return goal(c, when, when);
-    }
 
     @Nullable
     public final Task answer(Term c, byte punc, long when) {

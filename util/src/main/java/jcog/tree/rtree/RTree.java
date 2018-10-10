@@ -108,7 +108,7 @@ public class RTree<T> implements Space<T> {
 
         boolean[] added = new boolean[1];
 
-        Node<T> nextRoot = root.add(t, this, model, added);
+        Node<T> nextRoot = root.add(t, true, model, added);
 
         if (added[0]) {
 

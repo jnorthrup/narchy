@@ -206,6 +206,9 @@ class RTree2DTest {
         for(int i = 0; i < rects.length; i++) {
             rTree.remove(rects[i]);
         }
+        assertEquals(0, rTree.size());
+        assertTrue( rTree.isEmpty());
+
         RectDouble[] searchResults = new RectDouble[10];
         for(int i = 0; i < rects.length; i++) {
             assertTrue(rTree.containedToArray(rects[i], searchResults) == 0, "Found hyperRect that should have been removed on search " + i);

@@ -38,6 +38,13 @@ import static nars.time.Tense.*;
  * "Imperience": http:
  */
 abstract public class Inperience extends LeakBack {
+    /**
+     * multiplier for he sensory task priority to determine inperienced task priority
+     * should be < 1.0 to avoid feedback overload
+     */
+    public final FloatRange priFactor = new FloatRange(0.5f, 0, 2);
+
+    private transient int volMaxPost, volMaxPre;
 
     public static final Logger logger = LoggerFactory.getLogger(Inperience.class);
 
@@ -122,13 +129,7 @@ abstract public class Inperience extends LeakBack {
     };
 
 
-    /**
-     * multiplier for he sensory task priority to determine inperienced task priority
-     * should be < 1.0 to avoid feedback overload
-     */
-    public final FloatRange priFactor = new FloatRange(0.75f, 0, 2);
 
-    private transient int volMaxPost, volMaxPre;
 
     public static class Believe extends Inperience {
 
