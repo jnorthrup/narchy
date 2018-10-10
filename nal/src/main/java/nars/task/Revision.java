@@ -269,12 +269,12 @@ public class Revision {
 
         assert(tasks.length > 1);
 
-        float range = start != ETERNAL ? end - start + 1 : 1;
-        float eviMinInteg = Param.TRUTH_MIN_EVI;
 
         TruthPolation T = Param.truth(start, end, 0).add(tasks);
 
-        MetalLongSet stamp = T.filterCyclic();
+        MetalLongSet stamp = T.filterCyclic(true, 2);
+        if (stamp == null)
+            return null;
 
         if (T.size() == 1)
             return null; //fail
@@ -283,9 +283,6 @@ public class Revision {
         if (truth == null)
             return null;
 
-        float truthEvi = truth.evi();
-        if (truthEvi * range < eviMinInteg)
-            return null;
 
         Truth cTruth = truth.dithered(nar);
         if (cTruth == null)

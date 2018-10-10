@@ -86,31 +86,18 @@ public class NARio extends NAgentX {
         camAE.alpha(0.15f);
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
-        try {
-            final int tileMax = 3; //0..4
-            senseSwitch($$("tile(nario,right)"), () -> {
-                int b = tile(1, 0);
-                //System.out.println("right: " + b);
-                return b;
-            }, 0, tileMax);
-            senseSwitch($$("tile(nario,below)"), () -> {
-                int b = tile(0, 1);
-                //System.out.println("below: " + b);
-                return b;
-            }, 0, tileMax);
-            senseSwitch($$("tile(nario,left)"), () -> {
-                int b = tile(-1, 0);
-                //System.out.println("left: " + b);
-                return b;
-            }, 0, tileMax);
-            senseSwitch($$("tile(nario,above)"), () -> {
-                int b = tile(0, -1);
-                //System.out.println("above: " + b);
-                return b;
-            }, 0, tileMax);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            final int tileTypes = 3; //0..4
+
+            senseSwitch((i)->$.funcImageLast($.the("tile"), $.the("nario"), $.the("right"), $.the(i)),
+                     () -> tile(1, 0), 0, tileTypes);
+            senseSwitch((i)->$.funcImageLast($.the("tile"), $.the("nario"), $.the("below"), $.the(i)),
+                    () -> tile(0, 1), 0, tileTypes);
+            senseSwitch((i)->$.funcImageLast($.the("tile"), $.the("nario"), $.the("left"), $.the(i)),
+                    () -> tile(-1, 0), 0, tileTypes);
+            senseSwitch((i)->$.funcImageLast($.the("tile"), $.the("nario"), $.the("above"), $.the(i)),
+                    () -> tile(0, -1), 0, tileTypes);
+
+
 
 
 

@@ -226,7 +226,7 @@
       (--(&&,X,A..+) ==> Z), (--(&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
 
     //Conditional Abduction via Multi-conditional Syllogism
-    (C ==> Y), (D ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)
+    (C ==> Y), (E ==> Y), eventsOf(C,E)          |- conjWithoutAll(C,E), (Belief:AbductionPB)
         //(--C ==> Y), (--D ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)
 
     ((&&,X,A..+) ==> Z), (X ==> Y)  |- ((&&,Y,A..+) ==> Z), (Belief:Abduction)

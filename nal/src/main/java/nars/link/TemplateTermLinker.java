@@ -146,14 +146,14 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
         Op xo = x.op();
         switch (root.op()) {
-//            case SIM:
-//            case INH:
-//                if (depth == 1 && x.subterms().hasAny(
-//                        //Op.Variable
-//                        Op.VAR_INDEP.bit
-//                ))
-//                    return +1;
-//                break;
+            case SIM:
+            case INH:
+                if (depth == 1 && x.hasAny(
+                        Op.Variable
+                        //Op.VAR_INDEP.bit
+                ))
+                    return +1;
+                break;
 //            case CONJ:
 ////                if (depth <=2 && x.hasAny(Op.Variable) )
 ////                    return +1;
@@ -167,7 +167,10 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 ////                        return -1; //event subterm without any var dep, dont actually recurse
 //                break;
             case IMPL:
-                if (depth >=1 && depth <=2 && ((xo == CONJ || x.hasAny(Op.VAR_INDEP.bit))))
+                if (depth >=1 && depth <=2 && ((xo == CONJ || x.hasAny(
+                        //Op.VAR_INDEP.bit
+                        Op.Variable
+                ))))
                     return +1;
 //                if (depth <=3 && xo.isAny(INH.bit | SETe.bit | SETi.bit | INH.bit) )
 //                    return +1;

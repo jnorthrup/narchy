@@ -252,7 +252,7 @@ public class NAL1Test extends NALTest {
     }
 
     @Test
-    void inheritanceToSimilarity4() throws nars.Narsese.NarseseException {
+    void similarityToInheritance4() throws nars.Narsese.NarseseException {
 
         TestNAR tester = test;
         tester.believe("<bird <-> swan>", 0.9f, 0.9f);

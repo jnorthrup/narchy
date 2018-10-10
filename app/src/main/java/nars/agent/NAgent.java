@@ -112,9 +112,9 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     protected <A extends ActionConcept> void actionAdded(A c) {
-        alwaysQuest(c,
-                true
-                //false
+        alwaysQuestionEternally(c,
+                false,
+                false
         );
 //        alwaysQuestion(IMPL.the(c.term, 0, $$("reward:#x")), true);
 //        alwaysQuestion(IMPL.the(c.term.neg(), 0, $$("reward:#x")), true);
@@ -193,7 +193,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
     }
 
-    private void alwaysQuestion(Termed x, boolean questionOrQuest, boolean stamped) {
+    private void alwaysQuestionEternally(Termed x, boolean questionOrQuest, boolean stamped) {
 
         NALTask etq = new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, nar.time(),
                 ETERNAL, ETERNAL,

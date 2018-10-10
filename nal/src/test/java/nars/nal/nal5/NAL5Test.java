@@ -54,7 +54,7 @@ public class NAL5Test extends NALTest {
 
     @Test
     void deductionPosCommon() {
-
+        test.nar.termVolumeMax.set(3);
         test
                 .believe("(x ==> z)")
                 .believe("(z ==> y)")
@@ -64,7 +64,7 @@ public class NAL5Test extends NALTest {
 
     @Test
     void deductionNegCommon() {
-
+        test.nar.termVolumeMax.set(3);
         test
                 .believe("(x ==> --z)")
                 .believe("(--z ==> y)")
@@ -473,7 +473,7 @@ public class NAL5Test extends NALTest {
 
     @Test
     void conditional_abduction_viaMultiConditionalSyllogismSimple() {
-        test.nar.termVolumeMax.set(9);
+        test.nar.termVolumeMax.set(1);
         test
             .believe("(x ==> y)")
             .believe("((z && x) ==> y)")
@@ -482,7 +482,7 @@ public class NAL5Test extends NALTest {
     }
     @Test
     void conditional_abduction_viaMultiConditionalSyllogismSimple2() {
-        test.nar.termVolumeMax.set(11);
+        test.nar.termVolumeMax.set(1);
 
         test
                 .believe("((&&,x1,x2) ==> y)")
@@ -492,7 +492,7 @@ public class NAL5Test extends NALTest {
     }
     @Test
     void conditional_abduction_viaMultiConditionalSyllogism() {
-
+        test.nar.termVolumeMax.set(3);
 
         TestNAR tester = test;
 
@@ -506,7 +506,7 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_abduction2_viaMultiConditionalSyllogism() {
 
-
+        test.nar.termVolumeMax.set(4);
         test
 
             .believe("<(&&,(robin --> [withWings]),(robin --> [chirping])) ==> (robin-->bird)>")
@@ -585,7 +585,7 @@ public class NAL5Test extends NALTest {
     }
     @Test
     void conditional_induction() {
-        test.nar.termVolumeMax.set(12);
+        test.nar.termVolumeMax.set(8);
         test
         .believe("((x&&y) ==> z)")
         .believe("(y ==> a)", 0.9f, 0.9f)
@@ -593,7 +593,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test void conditional_abduction() {
-        test.nar.termVolumeMax.set(13);
+        test.nar.termVolumeMax.set(8);
         test.nar.confMin.set(0.3);
         test
                 .believe("((x&&y) ==> z)")
@@ -603,8 +603,8 @@ public class NAL5Test extends NALTest {
 
     @Test
     void conditional_abduction2() {
-        test.nar.termVolumeMax.set(9);
-        test.nar.confMin.set(0.3);
+        test.nar.termVolumeMax.set(1);
+        test.nar.confMin.set(0.4);
         test
         .believe("((x && y) ==> z)")
         .believe("(y ==> z)")
@@ -765,7 +765,7 @@ public class NAL5Test extends NALTest {
 
     @Test
     void testAbductionNegPosImplicationPred() {
-
+        test.nar.termVolumeMax.set(1);
         test
 
                 .input("y. %1.0;0.90%")
@@ -809,7 +809,7 @@ public class NAL5Test extends NALTest {
 
     @Test
     void testDeductionPosNegImplicationPred() {
-
+        test.nar.termVolumeMax.set(1);
         test
                 .believe("y")
                 .believe("(y ==> --x)")

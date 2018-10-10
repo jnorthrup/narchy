@@ -56,6 +56,22 @@ public class GoalDecompositionTest extends NALTest {
     }
 
     @Test
+    void testIntersectionPosGoalSinglePremiseDecompose() {
+        test
+                .input("((a|b)-->g)!")
+                .mustGoal(cycles, "(a-->g)", 1f, 0.81f)
+                .mustGoal(cycles, "(b-->g)", 1f, 0.81f)
+        ;
+    }
+    @Test
+    void testIntersectionNegGoalSinglePremiseDecompose() {
+        test
+                .input("--((a|b)-->g)!")
+                .mustGoal(cycles, "(a-->g)", 0f, 0.81f)
+                .mustGoal(cycles, "(b-->g)", 0f, 0.81f)
+        ;
+    }
+    @Test
     void testIntersectionConditionalDecomposeGoalNeg() {
         test
                 .input("--((a|b)-->g)!")

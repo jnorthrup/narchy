@@ -77,8 +77,11 @@ public interface NSense {
     }
 
     default void senseSwitch(Term term, IntSupplier value, int min, int max) {
-        assert(max-min> 1): "too few options for switch";
-        senseSwitch(value, Util.intArray(min, max), (e) -> switchTerm(term, the(e)));
+        senseSwitch((e) -> switchTerm(term, the(e)), value, min, max);
+    }
+
+    default void senseSwitch(IntFunction<Term> termer, IntSupplier value, int min, int max) {
+        senseSwitch(value, Util.intArray(min, max), termer);
     }
 
 //    static class EnumSignal extends AbstractSensor {
@@ -98,6 +101,7 @@ public interface NSense {
      * interpret an int as a selector between (enumerated) integer values
      */
     default void senseSwitch(IntSupplier value, int[] values, IntFunction<Term> termizer) {
+        assert(values.length > 1);
         for (int e : values)
             sense(termizer.apply(e), () -> value.getAsInt() == e);
     }

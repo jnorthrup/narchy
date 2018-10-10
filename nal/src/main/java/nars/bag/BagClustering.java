@@ -106,9 +106,9 @@ public class BagClustering<X> {
         return bag.size();
     }
 
-    public <A> void cluster(A arg, @Nullable Random rng, BiPredicate<Stream<VLink<X>>, A> each) {
+    public <A> void forEachCentroid(A arg, @Nullable Random rng, BiPredicate<Stream<VLink<X>>, A> each) {
 
-        List<VLink<X>> sorted = cluster(rng);
+        List<VLink<X>> sorted = itemsSortedByCentroid(rng);
 
         int current = -1;
         int n = sorted.size();
@@ -129,7 +129,7 @@ public class BagClustering<X> {
 
     }
 
-    public void commit(float forgetRate, int learningIterations) {
+    public void learn(float forgetRate, int learningIterations) {
 
 
         bag.commit(t -> {
@@ -150,7 +150,7 @@ public class BagClustering<X> {
         }
     }
 
-    private List<VLink<X>> cluster(@Nullable Random rng) {
+    private List<VLink<X>> itemsSortedByCentroid(@Nullable Random rng) {
 
         int s = bag.size();
         if (s == 0)

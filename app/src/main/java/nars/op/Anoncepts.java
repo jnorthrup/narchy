@@ -5,7 +5,7 @@ import jcog.Skill;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
-import nars.bag.leak.LeakBack;
+import nars.bag.leak.TaskLeakTransform;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.link.CauseLink;
@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
  **/
 @Paper
 @Skill({"Data_compression","Graph_theory","Graph_matching"})
-public class Anoncepts extends LeakBack {
+public class Anoncepts extends TaskLeakTransform {
 
     private final NAR nar;
 

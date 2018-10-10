@@ -5,6 +5,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.test.NALTest;
 import nars.test.TestNAR;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
@@ -84,8 +85,17 @@ public class NAL3Test extends NALTest {
 
 
 
+
+    @Disabled @Test
+    void diff_compound_decomposition_single3() {
+
+        TestNAR tester = test;
+        tester.believe("<(boy ~ girl) --> [strong]>", 0.9f, 0.9f);
+        tester.mustBelieve(cycles, "<boy --> [strong]>", 0.90f, 0.73f);
+    }
+    @Disabled
     @Test
-    void compound_decomposition_one_premise() {
+    void diff_compound_decomposition_single() {
 
         TestNAR tester = test;
 
@@ -94,16 +104,9 @@ public class NAL3Test extends NALTest {
 
     }
 
-    @Test
-    void compound_decomposition_one_premise3() {
-
-        TestNAR tester = test;
-        tester.believe("<(boy ~ girl) --> [strong]>", 0.9f, 0.9f); 
-        tester.mustBelieve(cycles, "<boy --> [strong]>", 0.90f, 0.73f); 
-    }
 
     @Test
-    void compound_decomposition_one_premise2() {
+    void sect_compound_decomposition_single2() {
 
         TestNAR tester = test;
         tester.believe("<(boy | girl) --> youth>", 0.9f, 0.9f); 

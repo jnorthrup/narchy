@@ -3,11 +3,11 @@
 //      https://en.wikipedia.org/wiki/Fluid_Concepts_and_Creative_Analogies
 //      https://cogsci.indiana.edu/
 
-//  X, (X <-> Y)                        |- Y, (Belief:Analogy, Goal:Desire, Time:Task)
-//    X, (X <-> Y)                         |-  --Y, (Goal:DesireWeakPN, Time:Task)
-//  X, (--X <-> Y)                      |- Y, (Belief:AnalogyN, Goal:DesireN, Time:Task)
-//    X, (--X <-> Y)                       |-  --Y, (Goal:DesireWeakNN, Time:Task)
-//
+  X, (X <-> Y)                        |- Y, (Belief:Analogy, Goal:Desire, Time:Task)
+    X, (X <-> Y)                         |-  --Y, (Goal:DesireWeakPN, Time:Task)
+  X, (--X <-> Y)                      |- Y, (Belief:AnalogyN, Goal:DesireN, Time:Task)
+    X, (--X <-> Y)                       |-  --Y, (Goal:DesireWeakNN, Time:Task)
+
 //    X, (  X --> Y)                        |- Y, (Goal:DesireWeak, Time:Task)
 //    X, (--X --> Y)                     |- Y, (Goal:DesireWeakN, Time:Task)
 //        (X --> Y), X                         |- Y, (Goal:DesireWeak, Time:Task)
@@ -22,14 +22,13 @@
 //                                                           //DesireWeakNN
 
 
-    Z, (X <-> Y)   |- substitute(Z, X, Y), (Belief:Analogy, Goal:Desire, Time:Task)
-    Z, (--X <-> Y)   |- --substitute(Z, X, Y), (Belief:Analogy, Goal:Desire, Time:Task)
-      //Z, (X <-> Y), task(".")   |- substitute(Z, X, Y), (Punctuation:Question, Time:Task)
-      //Z, (X <-> Y), task("!")   |- substitute(Z, X, Y), (Punctuation:Quest, Time:Task)
 
-
-  Z, (X <-> Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, "$", strict), (Belief:Analogy, Goal:DesireWeak)
-  Z, (--X <-> Y), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Y, X, Z, "$", strict), (Belief:AnalogyN, Goal:DesireWeakN)
+  Z, (X <-> Y), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Belief:Analogy, Goal:Desire, Time:Task)
+  //Z, (X <-> Y), task("."), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Punctuation:Question, Time:Task)
+    //Z, (X <-> Y), task("!"), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Punctuation:Question, Time:Task)
+        //  Belief:Analogy, Goal:DesireWeak)
+  Z, (X <-> Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, "$", strict), (Belief:Analogy, Goal:DesireWeak, Time:Task)
+  Z, (--X <-> Y), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Y, X, Z, "$", strict), (Belief:AnalogyN, Goal:DesireWeakN, Time:Task)
       //Z, (X <-> Y), task("."), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, strict), (Punctuation:Question)
         //  Z, (X <-> Y), task("!"), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, strict), (Punctuation:Quest)
       //Z, (--X <-> Y), task("."), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Y, X, Z, strict), (Punctuation:Question)

@@ -71,8 +71,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
      * remove components contributing no evidence
      */
     public final TruthPolation filter() {
-        if (size() > 1)
-            removeIf(x -> update(x) == null);
+        removeIf(x -> update(x) == null);
         return this;
     }
 
@@ -120,12 +119,19 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     @Nullable public final MetalLongSet filterCyclic(boolean provideStampIfOneTask) {
         return filterCyclic(null, provideStampIfOneTask);
     }
+    @Nullable public final MetalLongSet filterCyclic(boolean provideStampIfOneTask, int minResults) {
+        return filterCyclic(null, provideStampIfOneTask, minResults);
+    }
+
+    @Nullable public final MetalLongSet filterCyclic(@Nullable Task selected, boolean provideStamp) {
+        return filterCyclic(selected, provideStamp, 1);
+    }
 
     /**
      * removes the weakest components sharing overlapping evidence with stronger ones.
      * should be called after all entries are added
      */
-    @Nullable public final MetalLongSet filterCyclic(@Nullable Task selected, boolean provideStamp) {
+    @Nullable public final MetalLongSet filterCyclic(@Nullable Task selected, boolean provideStamp, int minResults) {
 
         int s = size();
         if (s == 0) {
@@ -135,7 +141,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         }
 
         filter();
-        if (size() == 0)
+        if ((s = size()) < minResults)
             return null;
 
         sortThisByFloat(tc -> -tc.evi); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
@@ -143,7 +149,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         if (selected == null)
             selected = get(0).task; //strongest
 
-        s = size(); //update again
+
         if (s == 1)
             return only(provideStamp);
         else if (s == 2) {
@@ -222,8 +228,11 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     float intermpolate(NAR nar) {
         int thisSize = this.size();
         if (thisSize == 0) return 0;
-        if (thisSize == 1) {
-            term = get(0).task.term();
+
+        Term firstTerm = get(0).task.term();
+        if (thisSize == 1 || !firstTerm.hasAny(Op.Temporal)) {
+            //assumes that all the terms are from the same concept.  so if the first term has no temporal components the rest should not either.
+            this.term = firstTerm;
             return 1;
         }
 
@@ -321,7 +330,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     }
 
     @Nullable
-    public Truth truth() {
+    public final Truth truth() {
         return truth(null);
     }
 

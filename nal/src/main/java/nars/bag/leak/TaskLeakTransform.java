@@ -2,6 +2,7 @@ package nars.bag.leak;
 
 import jcog.Paper;
 import jcog.Skill;
+import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.control.channel.BufferedCauseChannel;
 import nars.task.ITask;
@@ -13,11 +14,11 @@ import java.util.function.BooleanSupplier;
  *  Leak it will receive. */
 @Paper
 @Skill({"Queing_theory","Feedback"})
-abstract public class LeakBack extends TaskLeak {
+abstract public class TaskLeakTransform extends TaskLeak  {
 
     protected final BufferedCauseChannel in;
 
-    protected LeakBack(int capacity, NAR nar, byte... puncs) {
+    protected TaskLeakTransform(int capacity, NAR nar, byte... puncs) {
         super(capacity, nar, puncs);
         this.in = nar.newChannel(this).buffered();
     }

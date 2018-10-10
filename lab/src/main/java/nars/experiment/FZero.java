@@ -7,22 +7,15 @@ import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.Task;
 import nars.agent.Reward;
-import nars.concept.Concept;
-import nars.concept.TaskConcept;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.SwitchAction;
 import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Signal;
-import nars.control.DurService;
 import nars.sensor.Bitmap2DSensor;
-import nars.task.UnevaluatedTask;
-import nars.term.Term;
 import nars.time.Tense;
-import nars.truth.Truth;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
@@ -35,7 +28,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import static nars.$.$$;
-import static nars.Op.*;
+import static nars.Op.INH;
 import static nars.agent.FrameTrigger.fps;
 
 /**
@@ -378,7 +371,7 @@ public class FZero extends NAgentX {
                     //_a[0] = (float) fwdFilter.out(_a[0], a0);
                     a0;
 
-            float thresh = nar.freqResolution.floatValue();
+            float thresh = nar.freqResolution.floatValue()*2;
             if (a > 0.5f + thresh) {
                 float thrust = /*+=*/ (2 * (a - 0.5f)) * (fwdFactor * fwdSpeed);
                 fz.vehicleMetrics[0][6] = thrust;

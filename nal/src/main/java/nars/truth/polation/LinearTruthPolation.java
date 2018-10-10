@@ -26,6 +26,7 @@ public class LinearTruthPolation extends TruthPolation {
     @Nullable
     public Truth truth(NAR nar) {
 
+
         float eviFactor = 1f;
         if (nar != null) {
             eviFactor *= intermpolate(nar);
@@ -33,10 +34,10 @@ public class LinearTruthPolation extends TruthPolation {
                 return null;
         }
 
-
         int s = size();
         if (s == 0)
             return null;
+
         float eSum, f;
 
         float wFreqSum = 0;

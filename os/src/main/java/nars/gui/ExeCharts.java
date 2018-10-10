@@ -3,8 +3,10 @@ package nars.gui;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.math.FloatRange;
+import jcog.sort.TopN;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.NAR;
+import nars.control.Cause;
 import nars.control.DurService;
 import nars.control.MetaGoal;
 import nars.exe.NARLoop;
@@ -15,6 +17,7 @@ import spacegraph.space2d.container.*;
 import spacegraph.space2d.container.layout.ForceDirected2D;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
+import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.LoopPanel;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
@@ -25,6 +28,7 @@ import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.lang.Math.sqrt;
 import static spacegraph.space2d.container.Gridding.*;
@@ -164,10 +168,28 @@ public class ExeCharts {
 
 
         return DurSurface.get(
-                new Splitting(s, s.configWidget(), 0.1f),
+                new Splitting(s, new Gridding(new PushButton("Stats").click(()->causeSummary(nar, 10)), s.configWidget()), 0.1f),
                 nar, () -> {
                     s.set(((UniExec) nar.exe).can::valueIterator);
                 });
+    }
+
+    private static void causeSummary(NAR nar, int top) {
+        TopN[] tops = Stream.of(MetaGoal.values()).map(v -> new TopN<>(new Cause[top], (c) ->
+                (float)c.goal[v.ordinal()].total)).toArray(TopN[]::new);
+        nar.causes.forEach((Cause c) -> {
+            for (TopN t : tops)
+                t.add(c);
+        });
+
+        for (int i = 0, topsLength = tops.length; i < topsLength; i++) {
+            TopN t = tops[i];
+            System.out.println(MetaGoal.values()[i]);
+            t.forEach(tt->{
+                System.out.println("\t" + tt);
+            });
+        }
+
     }
 
 

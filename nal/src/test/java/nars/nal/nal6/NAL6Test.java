@@ -177,6 +177,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination_impl_fwd_neg_pos() {
+        test.nar.termVolumeMax.set(3);
 
         test
                 .believe("(--($x --> --bird) ==> ($x --> animal))")
@@ -187,6 +188,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination_impl_rev() {
+        test.nar.termVolumeMax.set(3);
 
         TestNAR tester = test;
 
@@ -199,6 +201,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination_conj() {
+        test.nar.termVolumeMax.set(3);
 
         TestNAR tester = test;
 
@@ -211,6 +214,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination_sim_subj() {
+        test.nar.termVolumeMax.set(3);
 
         TestNAR tester = test;
         tester.believe("(($x --> bird) <-> ($x --> swimmer))");
@@ -222,6 +226,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination_analogy_substIfUnify() {
+        test.nar.termVolumeMax.set(3);
 
         TestNAR tester = test;
         tester.believe("((bird --> $x) <-> (swimmer --> $x))");
@@ -234,6 +239,7 @@ public class NAL6Test extends NALTest {
     @Test
     void variable_elimination_analogy_substIfUnifyOther() {
         //same as variable_elimination_analogy_substIfUnify but with sanity test for commutive equivalence
+        test.nar.termVolumeMax.set(3);
         TestNAR tester = test;
         tester.believe("((bird --> $x) <-> (swimmer --> $x))");
         tester.believe("(swimmer --> swan)", 0.80f, 0.9f);
@@ -244,7 +250,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination_analogy_substIfUnify_Neg() {
-
+        test.nar.termVolumeMax.set(3);
         TestNAR tester = test;
         tester.believe("(--(x --> $1) <-> (z --> $1))");
         tester.believe("(x --> y)", 0.10f, 0.9f);
@@ -305,6 +311,7 @@ public class NAL6Test extends NALTest {
 
 
     }
+
     @Test
     void variable_elimination6() {
 

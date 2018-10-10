@@ -20,8 +20,8 @@ class BagClusteringTest {
         b.put("z", 0.5f);
         assertEquals(8, b.size());
 
-        b.commit(1f, 1);
-        b.cluster(null, null, (x,y) -> { return true; });
+        b.learn(1f, 1);
+        b.forEachCentroid(null, null, (x, y) -> { return true; });
 
         assertEquals(8, b.size());
 

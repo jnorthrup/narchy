@@ -1,6 +1,6 @@
-    (X --> Y), Y, task("?"), --is(X,"?"), --is(Y,"?") |- (?1 --> Y),   (Punctuation:Question)
+    //(X --> Y), Y, task("?"), --is(X,"?"), --is(Y,"?") |- (?1 --> Y),   (Punctuation:Question)
         //(X --> Y), Y, task("@"), --is(X,"?"), --is(Y,"?") |- (?1 --> Y),   (Punctuation:Quest)
-    (Y --> X), Y, task("?"), --is(X,"?"), --is(Y,"?") |- (Y --> ?1),   (Punctuation:Question)
+    //(Y --> X), Y, task("?"), --is(X,"?"), --is(Y,"?") |- (Y --> ?1),   (Punctuation:Question)
         //(Y --> X), Y, task("@"), --is(X,"?"), --is(Y,"?") |- (Y --> ?1),   (Punctuation:Quest)
 
     //(A --> X), (B --> X), task("?"), neq(A,B) |- subIfUnifiesAny((A --> X), A, B, strict),   (Belief:BeliefStructuralReduction, Punctuation:Belief)
@@ -20,17 +20,20 @@
 
 //NAL1-------------
 //Conversion
-    (P --> S), (S --> P), task("?") |- (P --> S),   (Belief:Conversion, Punctuation:Belief)
-    //(P --> S), (S --> P), task("?"), belief(negative) |- (--,(P --> S)),   (Belief:ConversionPN, Punctuation:Belief)
+    //(P --> S), (S --> P), task("?") |- (P --> S),   (Belief:Conversion, Punctuation:Belief)
+      //(P --> S), (S --> P), task("?"), belief(negative) |- (--,(P --> S)),   (Belief:ConversionPN, Punctuation:Belief)
 
 //inheritance transform
     //X, (S --> P), task("?"), inPosOrNeg(X,P) |- substitute(X,P,S,strict),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
     //X, (S --> P), task("?"), inPosOrNeg(X,S) |- substitute(X,S,P,strict),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
 
 //Inheritance to Similarity
-    (S <-> P), (S --> P), task("?") |- (S <-> P),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
+    //(S <-> P), (S --> P), task("?") |- (S <-> P),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
     //(S <-> P), (S --> P), task("?") |- (--,(S <-> P)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
 
 //Similarity to Inheritance
-    (S --> P), (S <-> P), task("?") |- (S --> P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+    (S --> P),     (S <-> P),   task("?") |- (S --> P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+      (S --> P), (--S <-> P),   task("?") |- (--S --> P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+      (S --> P),   (S <-> --P), task("?") |- (S --> --P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+
     //(S --> P), (S <-> P), task("@") |- (S --> P),   (Goal:BeliefStructuralDeduction, Punctuation:Goal)

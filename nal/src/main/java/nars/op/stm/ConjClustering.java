@@ -4,14 +4,13 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import jcog.pri.Prioritizable;
-import jcog.pri.UnitPri;
 import jcog.pri.VLink;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.bag.BagClustering;
 import nars.control.Cause;
-import nars.control.channel.CauseChannel;
+import nars.control.channel.BufferedCauseChannel;
 import nars.exe.Causable;
 import nars.task.NALTask;
 import nars.task.util.TaskException;
@@ -36,14 +35,12 @@ import java.util.stream.Stream;
 import static nars.truth.TruthFunctions.c2wSafe;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
-public class ConjClustering extends Causable implements Prioritizable {
-
-
-    final UnitPri pri = new UnitPri();
+public class ConjClustering extends Causable {
 
     public final BagClustering<Task> data;
+    final CentroidConjoiner conjoiner = new CentroidConjoiner();
     private final BagClustering.Dimensionalize<Task> model;
-    private final CauseChannel in;
+    private final BufferedCauseChannel in;
     private final byte punc;
     private final float termVolumeMaxFactor = 0.9f;
     private final Predicate<Task> filter;
@@ -52,11 +49,7 @@ public class ConjClustering extends Causable implements Prioritizable {
     private float confMin;
     private int volMax;
     private int ditherTime;
-
     private boolean popConjoinedTasks = false;
-
-
-
     private int learningIterations = 1;
 
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
@@ -66,11 +59,14 @@ public class ConjClustering extends Causable implements Prioritizable {
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
         super();
 
-        this.in = nar.newChannel(this);//.buffered();
+        this.in = nar.newChannel(this).buffered();
 
         this.dur = nar.dur();
 
         this.model = new BagClustering.Dimensionalize<>(5) {
+
+            /** # durs (in-)sensitivity factor */
+            static final double TIME_SENSITIVITY = 8;
 
             @Override
             public void coord(Task t, double[] c) {
@@ -83,11 +79,6 @@ public class ConjClustering extends Causable implements Prioritizable {
 
                 c[4] = t.range();
             }
-
-
-
-            /** # durs (in-)sensitivity factor */
-            static final double TIME_SENSITIVITY = 8;
 
             @Override
             public double distanceSq(double[] a, double[] b) {
@@ -152,11 +143,12 @@ public class ConjClustering extends Causable implements Prioritizable {
         this.confMin = nar.confMin.floatValue();
         this.volMax = Math.round(nar.termVolumeMax.intValue() * termVolumeMaxFactor);
 
-        data.commit(forgetRate(), 1);
+        data.learn(forgetRate(), 1);
 
         conjoiner.kontinue = kontinue;
-        data.cluster(nar, nar.random(), conjoiner::conjoinCentroid);
+        data.forEachCentroid(nar, nar.random(), conjoiner::conjoinCentroid);
 
+        in.commit();
     }
 
     protected float forgetRate() {
@@ -164,18 +156,22 @@ public class ConjClustering extends Causable implements Prioritizable {
         return 0.5f;
     }
 
-    final CentroidConjoiner conjoiner = new CentroidConjoiner();
-
     @Override
-    public float pri(float p) {
-        return pri.pri(p);
+    public float value() {
+        return in.value();
     }
 
-    @Override
-    public float pri() {
-        return pri.pri();
-    }
+    public static class STMClusterTask extends NALTask {
 
+        STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, Truth t, long start, long end, long[] evidence, byte punc, long now) throws TaskException {
+            super(cp.getOne(), punc, t.negIf(cp.getTwo()), now, start, end, evidence);
+        }
+
+        @Override
+        public boolean isInput() {
+            return false;
+        }
+    }
 
     class CentroidConjoiner {
 
@@ -215,8 +211,7 @@ public class ConjClustering extends Causable implements Prioritizable {
                     if (!gg.hasNext())
                         break;
 
-                    Task t =
-                            gg.next().id;
+                    Task t = gg.next().id;
 
                     Term xt = t.term();
 
@@ -308,7 +303,7 @@ public class ConjClustering extends Causable implements Prioritizable {
                                 float confFactor =
                                         (conf / (conf + confMax));
 
-                                m.pri(Prioritizable.fund(Util.clamp((priMin*uu.length) * freqFactor * cmplFactor * confFactor, 0, pri.pri()), false, uu));
+                                m.pri(Prioritizable.fund(Util.unitize((priMin*uu.length) * freqFactor * cmplFactor * confFactor), false, uu));
 
                                 if (popConjoinedTasks) {
                                     for (Task aa : actualTasks)
@@ -333,24 +328,6 @@ public class ConjClustering extends Causable implements Prioritizable {
 
 
             return true;
-        }
-    }
-
-    @Override
-    public float value() {
-        return in.value();
-    }
-
-
-    public static class STMClusterTask extends NALTask {
-
-        STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, Truth t, long start, long end, long[] evidence, byte punc, long now) throws TaskException {
-            super(cp.getOne(), punc, t.negIf(cp.getTwo()), now, start, end, evidence);
-        }
-
-        @Override
-        public boolean isInput() {
-            return false;
         }
     }
 

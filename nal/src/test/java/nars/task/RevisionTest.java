@@ -43,16 +43,12 @@ public class RevisionTest {
         b.evidence(1);
 
 
-
-
         assertEquals(Revision.revise(a, b),
                 new FocusingLinearTruthPolation(0, 0, n.dur())
                         .add(Lists.newArrayList(a.apply(n), b.apply(n)))
                         .truth());
 
     }
-
-
 
 
     @Test
@@ -74,7 +70,7 @@ public class RevisionTest {
     void testRevisionEquivalence2Instant() throws Narsese.NarseseException {
         TaskBuilder a = t(1f, 0.5f, 0);
         TaskBuilder b = t(0f, 0.5f, 0);
-        assertEquals( Revision.revise(a, b), new FocusingLinearTruthPolation(0, 0, 1).add(Lists.newArrayList(a.apply(n), b.apply(n))).truth());
+        assertEquals(Revision.revise(a, b), new FocusingLinearTruthPolation(0, 0, 1).add(Lists.newArrayList(a.apply(n), b.apply(n))).truth());
     }
 
     @Test
@@ -92,15 +88,15 @@ public class RevisionTest {
         System.out.println();
 
         Truth ab2 = new FocusingLinearTruthPolation(3, 3, dur).add(Lists.newArrayList(a, b)).truth();
-        assertTrue( ab2.conf() >= 0.5f );
+        assertTrue(ab2.conf() >= 0.5f);
 
         Truth abneg1 = new FocusingLinearTruthPolation(3, 3, dur).add(Lists.newArrayList(a, b)).truth();
-        assertTrue( abneg1.freq() > 0.6f );
-        assertTrue( abneg1.conf() >= 0.5f );
+        assertTrue(abneg1.freq() > 0.6f);
+        assertTrue(abneg1.conf() >= 0.5f);
 
         Truth ab5 = new FocusingLinearTruthPolation(6, 6, dur).add(Lists.newArrayList(a, b)).truth();
-        assertTrue( ab5.freq() < 0.35f );
-        assertTrue( ab5.conf() >= 0.5f );
+        assertTrue(ab5.freq() < 0.35f);
+        assertTrue(ab5.conf() >= 0.5f);
     }
 
     @Test
@@ -120,43 +116,32 @@ public class RevisionTest {
     private static TaskBuilder t(float freq, float conf, long occ) throws Narsese.NarseseException {
         return new TaskBuilder("a:b", BELIEF, $.t(freq, conf)).time(0, occ);
     }
+
     static TaskBuilder t(float freq, float conf, long start, long end) throws Narsese.NarseseException {
         return new TaskBuilder("a:b", BELIEF, $.t(freq, conf)).time(0, start, end);
     }
 
-    @Test void testAdjacentTasks() throws Narsese.NarseseException {
+    @Test
+    void testAdjacentTasks() throws Narsese.NarseseException {
         NAR n = NARS.shell();
-        {
-            Task x = Revision.merge(n, t(1, 0.9f, 0, 3).apply(n),
-                    t(1, 0.9f, 3, 5).apply(n));
-            assertEquals("(b-->a). 0⋈5 %1.0;.93%", x.toStringWithoutBudget());
-        }
-        {
-            Task x = Revision.merge(n, t(1, 0.9f, 0, 2).apply(n),
-                    t(1, 0.9f, 4, 5).apply(n));
-            assertEquals("(b-->a). 0⋈5 %1.0;.86%", x.toStringWithoutBudget());
-        }
-        {
-            Task x = Revision.merge(n, t(1, 0.9f, 0, 2).apply(n),
-                    t(1, 0.9f, 100, 102).apply(n));
-            assertEquals("(b-->a). 0⋈102 %1.0;.30%", x.toStringWithoutBudget());
-        }
 
+        Task t01 = t(1, 0.9f, 0, 1).apply(n);
+        Task t02 = t(1, 0.9f, 0, 2).apply(n);
+        Task t03 = t(1, 0.9f, 0, 3).apply(n);
+        Task t35 = t(1, 0.9f, 3, 5).apply(n);
+        Task t45 = t(1, 0.9f, 4, 5).apply(n);
+        Task t100_102 = t(1, 0.9f, 100, 102).apply(n);
+
+        //evidence density
+        assertTrue(Revision.merge(n, t01, t45).evi() < Revision.merge(n, t02, t45).evi());
+        assertTrue(Revision.merge(n, t02, t45).evi() < Revision.merge(n, t03, t45).evi());
+
+        assertEquals("(b-->a). 0⋈102 %1.0;.41%", Revision.merge(n, t02, t100_102).toStringWithoutBudget());
+
+        assertEquals("(b-->a). 0⋈5 %1.0;.93%", Revision.merge(n, t03, t35).toStringWithoutBudget());
+        assertEquals("(b-->a). 0⋈5 %1.0;.90%", Revision.merge(n, t02, t35).toStringWithoutBudget());
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //
@@ -179,7 +164,6 @@ public class RevisionTest {
 
     @Test
     void testTemporalProjectionInterpolation() throws Narsese.NarseseException {
-
 
 
         int maxBeliefs = 12;
@@ -208,7 +192,7 @@ public class RevisionTest {
             Task tt = n.belief(b.concept().term(), now);
             tops.add(tt);
 
-            System.out.println(now + " " +  tt);
+            System.out.println(now + " " + tt);
 
         }
 
@@ -227,6 +211,7 @@ public class RevisionTest {
     void testTemporalProjectionConfidenceAccumulation2_5() {
         testConfidenceAccumulation(2, 1f, 0.5f);
     }
+
     @Test
     void testTemporalProjectionConfidenceAccumulation2_9() {
 
@@ -239,10 +224,12 @@ public class RevisionTest {
     void testTemporalProjectionConfidenceAccumulation3_1_pos() {
         testConfidenceAccumulation(3, 1f, 0.1f);
     }
+
     @Test
     void testTemporalProjectionConfidenceAccumulation3_1_neg() {
         testConfidenceAccumulation(3, 0f, 0.1f);
     }
+
     @Test
     void testTemporalProjectionConfidenceAccumulation3_1_mid() {
         testConfidenceAccumulation(3, 0.5f, 0.1f);
@@ -260,15 +247,14 @@ public class RevisionTest {
 
 
     private void testConfidenceAccumulation(int repeats, float freq, float inConf) {
-        int maxBeliefs = repeats*4;
+        int maxBeliefs = repeats * 4;
 
         NAR n = newNAR(maxBeliefs);
 
 
-
         long at = 5;
 
-        float outConf = w2c( c2w(inConf)*repeats);
+        float outConf = w2c(c2w(inConf) * repeats);
 
         BeliefAnalysis b = null;
         try {
@@ -283,7 +269,7 @@ public class RevisionTest {
         b.run(1);
 
         b.print();
-        assertTrue( repeats <= b.size(true));
+        assertTrue(repeats <= b.size(true));
 
         @Nullable Truth result = n.beliefTruth(b, at);
         assertEquals(freq, result.freq(), 0.25f);
@@ -295,15 +281,11 @@ public class RevisionTest {
     void testTemporalRevection() throws Narsese.NarseseException {
 
 
-
         int maxBeliefs = 4;
         NAR n = newNAR(maxBeliefs);
 
 
         BeliefAnalysis b = new BeliefAnalysis(n, "<a-->b>");
-
-
-
 
 
         b.believe(0.5f, 0.0f, 0.85f, 5);
@@ -350,7 +332,7 @@ public class RevisionTest {
         int misses = 0;
         for (int i = 0; i < 10; i++) {
             Term c = Revision.intermpolate(a, b, 0.5f, n);
-            if (c!=null) {
+            if (c != null) {
                 outcomes.add(c);
             } else
                 misses++;
@@ -435,16 +417,11 @@ public class RevisionTest {
         assertEquals(a.concept(), b.concept(), "concepts differ: " + a + " " + b);
 
 
-
         Set<Term> ss = new TreeSet();
 
         int n = 10 * (a.volume() + b.volume());
         for (int i = 0; i < n; i++) {
             Term ab = Revision.intermpolate(a, b, s.random().nextFloat(), s);
-
-
-
-
 
 
             ss.add(ab);
@@ -481,9 +458,8 @@ public class RevisionTest {
         NAR n = newNAR(6);
 
 
-
         BeliefAnalysis b = new BeliefAnalysis(n, x)
-            .input(beliefOrGoal, 1f, 0.9f).run(1);
+                .input(beliefOrGoal, 1f, 0.9f).run(1);
 
         assertEquals(1, b.size(beliefOrGoal));
 
@@ -492,9 +468,8 @@ public class RevisionTest {
         b.run(delay1);
 
 
-
         b.table(beliefOrGoal).print();
-        assertEquals( 3, b.size(beliefOrGoal));
+        assertEquals(3, b.size(beliefOrGoal));
 
         n.run(delay1);
 
@@ -513,7 +488,6 @@ public class RevisionTest {
         int offCycles = 2;
 
         BeliefAnalysis b = new BeliefAnalysis(n, x);
-
 
 
         b.believe(1.0f, 0.9f, Tense.Present);
@@ -550,14 +524,11 @@ public class RevisionTest {
     void testTruthOscillation2() {
 
 
-
         int maxBeliefs = 16;
         NAR n = newNAR(maxBeliefs);
 
 
-
         BeliefAnalysis b = new BeliefAnalysis(n, x);
-
 
 
         int period = 8;
@@ -621,7 +592,7 @@ public class RevisionTest {
         n.input("(a). %1.0;0.5%",
                 "(a). %0.0;0.5%",
                 "(a). %0.1;0.5%"
-                );
+        );
         n.run(1);
         Task t = n.conceptualize("(a)").beliefs().match(ETERNAL, null, n);
         assertEquals(0.37f, t.freq(), 0.02f);
@@ -631,8 +602,8 @@ public class RevisionTest {
     @Test
     void testRevision2EternalImpl() throws Narsese.NarseseException {
         NAR n = newNAR(3)
-            .input("(x ==> y). %1.0;0.9%",
-                   "(x ==> y). %0.0;0.9%" );
+                .input("(x ==> y). %1.0;0.9%",
+                        "(x ==> y). %0.0;0.9%");
 
         n.run(1);
 
@@ -647,7 +618,7 @@ public class RevisionTest {
     void testRevision2TemporalImpl() throws Narsese.NarseseException {
         NAR n = newNAR(3)
                 .input("(x ==> y). :|: %1.0;0.9%",
-                       "(x ==> y). :|: %0.0;0.9%" );
+                        "(x ==> y). :|: %0.0;0.9%");
 
         n.run(1);
 
@@ -661,8 +632,10 @@ public class RevisionTest {
         assertEquals(0.947f, t.conf(), 0.01f);
     }
 
-    /** test that budget is conserved during a revision between
-     * the input tasks and the result */
+    /**
+     * test that budget is conserved during a revision between
+     * the input tasks and the result
+     */
     @Test
     void testRevisionBudgeting() {
         NAR n = newNAR(6);
@@ -673,32 +646,33 @@ public class RevisionTest {
 
         b.believe(1.0f, 0.5f).run(1);
 
-        Bag<?,TaskLink> tasklinks = b.concept().tasklinks();
+        Bag<?, TaskLink> tasklinks = b.concept().tasklinks();
 
         assertEquals(0.5f, b.beliefs().match(ETERNAL, null, n).truth().conf(), 0.01f);
 
-        printTaskLinks(b);        System.out.println("--------");
+        printTaskLinks(b);
+        System.out.println("--------");
 
         float linksBeforeRevisionLink = tasklinks.priSum();
 
         b.believe(0.0f, 0.5f).run(1);
 
-        printTaskLinks(b);        System.out.println("--------");
+        printTaskLinks(b);
+        System.out.println("--------");
 
         b.run(1);
         tasklinks.commit();
 
-        printTaskLinks(b);        System.out.println("--------");
+        printTaskLinks(b);
+        System.out.println("--------");
 
-        System.out.println("Beliefs: "); b.print();
+        System.out.println("Beliefs: ");
+        b.print();
         System.out.println("\tSum Priority: " + b.priSum());
-
-
 
 
         float beliefAfter2;
         assertEquals(1.0f, beliefAfter2 = b.priSum(), 0.1f /* large delta to allow for forgetting */);
-
 
 
         assertEquals(0.71f, b.beliefs().match(ETERNAL, null, n).truth().conf(), 0.06f);
@@ -709,21 +683,13 @@ public class RevisionTest {
         assertEquals(3, b.size(true));
 
 
-
-
         assertEquals(beliefAfter2, b.priSum(), 0.01f);
-
-
-
-
-
-
-
 
 
     }
 
-    @Test public void testMergeTruthDilution() {
+    @Test
+    public void testMergeTruthDilution() {
         //presence or increase of empty space in the union of between merged tasks reduces truth proportionally
 
 
@@ -733,9 +699,9 @@ public class RevisionTest {
         Task c = n.believe(x, 4, 1f);
         Task d = n.believe(x, 8, 1f);
         Task aa = Revision.merge(n, a1, a2);
-        Task ab = Revision.merge(n, a1 ,b);
-        Task ac = Revision.merge(n, a1 ,c);
-        Task ad = Revision.merge(n, a1 ,d);
+        Task ab = Revision.merge(n, a1, b);
+        Task ac = Revision.merge(n, a1, c);
+        Task ad = Revision.merge(n, a1, d);
         System.out.println(a1.evi());
         p(aa);
         p(ab);

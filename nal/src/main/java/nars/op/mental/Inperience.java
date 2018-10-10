@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import nars.*;
-import nars.bag.leak.LeakBack;
+import nars.bag.leak.TaskLeakTransform;
 import nars.concept.Concept;
 import nars.task.signal.SignalTask;
 import nars.term.Compound;
@@ -37,7 +37,7 @@ import static nars.time.Tense.*;
  * https:
  * "Imperience": http:
  */
-abstract public class Inperience extends LeakBack {
+abstract public class Inperience extends TaskLeakTransform {
     /**
      * multiplier for he sensory task priority to determine inperienced task priority
      * should be < 1.0 to avoid feedback overload

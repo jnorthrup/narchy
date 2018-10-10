@@ -2,12 +2,12 @@ package nars.op;
 
 import nars.NAR;
 import nars.Task;
-import nars.bag.leak.LeakBack;
+import nars.bag.leak.TaskLeakTransform;
 import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class Introduction extends LeakBack  {
+public abstract class Introduction extends TaskLeakTransform {
 
     protected Introduction(int capacity, NAR nar) {
         super(capacity, nar);

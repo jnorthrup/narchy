@@ -10,7 +10,6 @@ import jcog.exe.valve.InstrumentedWork;
 import jcog.exe.valve.Sharing;
 import jcog.exe.valve.TimeSlicing;
 import jcog.math.FloatRange;
-import jcog.pri.Prioritizable;
 import jcog.service.Service;
 import nars.NAR;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -75,13 +74,13 @@ public class UniExec extends AbstractExec {
             this.c = c;
         }
 
-        @Override
-        public float pri(float p) {
-            if (c instanceof Prioritizable) {
-                ((Prioritizable)c).pri(p);
-            }
-            return super.pri(p);
-        }
+//        @Override
+//        public float pri(float p) {
+//            if (c instanceof Prioritizable) {
+//                ((Prioritizable)c).pri(p);
+//            }
+//            return super.pri(p);
+//        }
     }
 
     private final class MyWork extends AbstractWork {

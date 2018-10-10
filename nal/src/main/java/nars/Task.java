@@ -644,8 +644,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         return appendTo(sb, false);
     }
 
-    @NotNull
-    @Deprecated
     default String toStringWithoutBudget() {
         return appendTo(new StringBuilder(64), true, false,
                 false,
