@@ -27,6 +27,8 @@ import static spacegraph.SpaceGraph.window;
  */
 public class Tetris extends NAgentX implements Bitmap2D {
 
+    final static float FPS = 20f;
+
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
     static boolean easy = false;
@@ -112,7 +114,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
     public static void main(String[] args) {
 
-        NAgentX.runRT(n -> new Tetris(n, Tetris.tetris_width, Tetris.tetris_height), 30f);
+
+        NAgentX.runRT(n -> new Tetris(n, Tetris.tetris_width, Tetris.tetris_height), FPS);
 
     }
 

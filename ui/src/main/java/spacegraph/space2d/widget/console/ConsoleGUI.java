@@ -65,10 +65,7 @@ public class ConsoleGUI extends ConsoleTerminal {
 
     }
 
-    public ConsoleGUI scale(int scale) {
-        text.scale = scale;
-        return this;
-    }
+
 
     private static final Theme DARK = SimpleTheme.makeTheme(
             true,

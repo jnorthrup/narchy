@@ -13,8 +13,10 @@ abstract public class AbstractUnitContainer<S extends Surface> extends Container
 
     @Override
     protected void starting() {
-        if (parent!=null)
-        the().start(this);
+        synchronized (this) {
+            if (parent != null)
+                the().start(this);
+        }
     }
 
     /** default behavior: inherit bounds directly */

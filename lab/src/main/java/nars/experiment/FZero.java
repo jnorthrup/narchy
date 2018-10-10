@@ -325,8 +325,11 @@ public class FZero extends NAgentX {
                 1;
         //3;
 
+
         FloatToFloatFunction d = (dHeading) -> {
 
+            if (Math.abs(dHeading) < nar.freqResolution.floatValue()*2)
+                return Float.NaN;
             //float ddHeading = Math.abs(dHeading) >= inputThresh ? lp.valueOf(dHeading) : 0;
 
             fz.playerAngle += Math.pow((dHeading), curve) * rotFactor; //bipolar

@@ -7,7 +7,6 @@ import java.util.SortedMap;
 /** loop which collects timing measurements */
 abstract public class InstrumentedLoop extends Loop {
 
-    private long beforeIteration;
 
 
     protected final int windowLength = 4;
@@ -15,13 +14,14 @@ abstract public class InstrumentedLoop extends Loop {
     /**
      * in seconds
      */
-    public final DescriptiveStatistics dutyTime = new DescriptiveStatistics(windowLength); 
+    public final DescriptiveStatistics dutyTime = new DescriptiveStatistics(windowLength);
     public final DescriptiveStatistics cycleTime = new DescriptiveStatistics(windowLength); 
 
     public long cycleTimeNS = 0;
     public double cycleTimeS = 0;
 
-    protected volatile long last = System.nanoTime();
+    protected volatile long last;
+    protected volatile long beforeIteration;
 
     @Override
     protected void beforeNext() {
@@ -47,8 +47,19 @@ abstract public class InstrumentedLoop extends Loop {
     public void stats(String prefix, SortedMap<String, Object> x) {
         x.put(prefix + " cycle time mean", cycleTime.getMean()); 
         x.put(prefix + " cycle time vary", cycleTime.getVariance()); 
-        x.put(prefix + " duty time mean", dutyTime.getMean()); 
-        x.put(prefix + " duty time vary", dutyTime.getVariance()); 
-        
+        x.put(prefix + " duty time mean", dutyTime.getMean());
+        x.put(prefix + " duty time vary", dutyTime.getVariance());
+    }
+
+    @Override
+    protected void starting() {
+        last = System.nanoTime();
+        super.starting();
+    }
+
+    @Override
+    protected void stopping() {
+        cycleTime.clear();
+        dutyTime.clear();
     }
 }

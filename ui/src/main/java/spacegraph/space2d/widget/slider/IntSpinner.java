@@ -2,7 +2,6 @@ package spacegraph.space2d.widget.slider;
 
 import jcog.Util;
 import jcog.math.MutableInteger;
-import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.PushButton;
@@ -26,10 +25,10 @@ public class IntSpinner extends Widget {
         set(
             new Splitting(
                 label = new VectorLabel(),
-                new Gridding(Gridding.HORIZONTAL,
+                new Splitting(
                     new PushButton("+", ()-> update(+1)),
-                    new PushButton("-", ()-> update(-1))
-            ), 0.2f)
+                    new PushButton("-", ()-> update(-1)),0.5f),
+                    false, 0.8f)
         );
         update(0);
     }

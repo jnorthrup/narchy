@@ -100,12 +100,9 @@ public class BiPolarAction extends AbstractSensor {
 
         //System.out.println(p + " vs " + n + " -> " + x);
 
-        float freqRes = nar.freqResolution.floatValue();
+
         if (x==x) {
             x = Util.clamp(x, -1f, +1f);
-            if (Math.abs(x) < freqRes)
-                x = 0;
-
         }
 
         float y = motor.valueOf(x);
@@ -123,14 +120,15 @@ public class BiPolarAction extends AbstractSensor {
 //            yn = 1f - yp;
 
             //only one side gets feedback:
-            float thresh = freqRes*1;
+            float thresh = nar.freqResolution.floatValue()/2;
 //            if (Math.abs(y) <= thresh) { yp = yn = 0; } else if (y > 0) { yp = y; yn = 0; } else { yp = 0; yn = -y; }
 
             if (Math.abs(y) < thresh) {
                 yp = yn =
                         0;
                         //Float.NaN;
-            } else if (y > 0) { yp = 0.5f + y/2; yn = 0; }
+            }
+            else if (y > 0) { yp = 0.5f + y/2; yn = 0; }
             else { yn = 0.5f - y/2; yp = 0; }
 
 //            if ((p == null && n == null) /* curiosity */ || (p!=null && n!=null) /* both active */) {

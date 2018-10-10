@@ -110,7 +110,7 @@ public class OmniBox extends Widget {
         TextEdit te = new TextEdit(edit);
         te.resize(40, 1);
 
-        content.add(te.scale(2));
+        content.add(te);
         set(content);
 
         

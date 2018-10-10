@@ -11,6 +11,8 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,25 +27,46 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     private Font font;
     private Graphics2D backbufferGraphics;
     private Color cursorColor = new Color(255, 200, 0, 127);
-    private boolean antialias = false;
+
+    private boolean antialias = true;
     private boolean quality = true;
-    protected int cursorCol;
-    protected int cursorRow;
+
+    protected int cursorCol, cursorRow;
     private int fontWidth;
-    int fontHeight;
+    protected int fontHeight;
     //private float charAspect;
-    int scale = 16;
+
     private float alpha = 1f;
     private boolean fillTextBackground = true;
 
+    private static final Font defaultFont;
+    static {
+        Font f;
+        try (InputStream in = BitmapTextGrid.class.getClassLoader().getResourceAsStream("font/CourierPrimeCode.ttf")) {
+
+            f = Font.createFont(Font.TRUETYPE_FONT, in);
+
+
+        } catch (Exception e) {
+
+            f = new Font("monospace", 0, 28);
+
+        }
+
+        defaultFont = f;
+    }
 
     protected BitmapTextGrid() {
-        setBitmapFontSize(28);
+
+        font(defaultFont);
+        fontSize(28);
+
+
     }
 
-    protected BitmapTextGrid(int cols, int rows) {
-        resize(cols, rows);
-    }
+//    protected BitmapTextGrid(int cols, int rows) {
+//        resize(cols, rows);
+//    }
 
     private boolean ensureBufferSize() {
 
@@ -127,19 +150,43 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     }
 
 
-    public void setBitmapFontSize(int s) {
-        setFont(new Font("Monospaced", Font.PLAIN, s));
+    public BitmapTextGrid font(String fontName) {
+        font(new Font(fontName, font.getStyle(), font.getSize()));
+        return this;
     }
-    public void setFont(Font f) {
+    public BitmapTextGrid font(InputStream i) {
+        try {
+            font(Font.createFont(Font.TRUETYPE_FONT, i).deriveFont(font.getStyle(), font.getSize()));
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
 
-        this.font = f;
+    public BitmapTextGrid fontStyle(int style) {
+        font(this.font.deriveFont(style));
+        return this;
+    }
+    public BitmapTextGrid fontSize(float s) {
+        return font(this.font.deriveFont(s));
+    }
 
-        FontRenderContext ctx = this.getFontRenderContext();
-        Rectangle2D b = font.getStringBounds("W", ctx);
-        this.fontWidth = (int) Math.ceil((float)b.getWidth());
-        this.fontHeight = (int) Math.ceil((float)b.getHeight());
-        //this.charAspect = ((float)fontHeight) / fontWidth;
-        //layout();
+    public synchronized BitmapTextGrid font(Font f) {
+
+        if (!f.equals(this.font)) {
+            this.font = f;
+
+            FontRenderContext ctx = this.getFontRenderContext();
+            Rectangle2D b = font.getStringBounds("X", ctx);
+            this.fontWidth = (int) Math.ceil((float) b.getWidth());
+            this.fontHeight = (int) Math.ceil((float) b.getHeight());
+
+            if (backbufferGraphics != null)
+                backbufferGraphics.setFont(font);
+            //this.charAspect = ((float)fontHeight) / fontWidth;
+            //layout();
+        }
+        return this;
     }
 
 

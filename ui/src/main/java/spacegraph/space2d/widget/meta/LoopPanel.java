@@ -5,7 +5,7 @@ import jcog.exe.InstrumentedLoop;
 import jcog.exe.Loop;
 import jcog.math.MutableInteger;
 import spacegraph.space2d.container.Gridding;
-import spacegraph.space2d.widget.button.ToggleButton;
+import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.IntSpinner;
 import spacegraph.space2d.widget.tab.ButtonSet;
@@ -31,7 +31,8 @@ public class LoopPanel extends Gridding {
             InstrumentedLoop iloop = (InstrumentedLoop) loop;
             cycleTimePlot = new Plot2D(128, Plot2D.Line)
                     .add("cycleTime", iloop.cycleTime::getMean)
-                    .add("dutyTime", iloop.dutyTime::getMean);
+//                    .add("dutyTime", iloop.dutyTime::getMean)
+            ;
         } else {
             cycleTimePlot = null; 
         }
@@ -40,35 +41,47 @@ public class LoopPanel extends Gridding {
                 .add("heap", Util::memoryUsed, 0, 1);
 
         set(
-                new Gridding(
                         new ButtonSet(ButtonSet.Mode.One,
-                                ToggleButton.awesome("play").on((b) -> {
-                                    if (b) {
-                                        if (pause) {
+//                                ToggleButton.awesome("play").on((b) -> {
+//                                    if (b) {
+//                                        if (pause) {
+//                                            pause = false;
+//                                            update();
+//                                        }
+//
+//                                    }
+//                                }), ToggleButton.awesome("pause").on((b) -> {
+//                            if (b) {
+//
+//                                if (!pause) {
+//                                    pause = true;
+//                                    update();
+//                                }
+//                            }
+//                        })
+//                        ),
+                                new CheckBox("On").set(true).on((o)->{
+                                    synchronized(loop) {
+                                        if (o) {
                                             pause = false;
+                                            loop.setFPS(fps.intValue());
+                                            update();
+                                        } else {
+                                            pause = true;
+                                            loop.stop();
                                             update();
                                         }
-
                                     }
-                                }), ToggleButton.awesome("pause").on((b) -> {
-                            if (b) {
-
-                                if (!pause) {
-                                    pause = true;
-                                    update(); 
-                                }
-                            }
-                        })
-                        ),
+                                })),
                         fpsLabel, 
                         cycleTimePlot,
                         heapPlot
-                ));
+                );
         update();
     }
 
     public void update() {
-        synchronized (this) {
+        synchronized (loop) {
             if (!pause) {
                 int f = fps.intValue();
                 int g = Math.round(loop.getFPS());
@@ -85,13 +98,13 @@ public class LoopPanel extends Gridding {
                 heapPlot.update();
             } else {
                 if (loop.isRunning()) {
-                    
+
                     loop.stop();
                     fpsLabel.set(0);
                 }
-                
-            }
-        }
 
+            }
+
+        }
     }
 }

@@ -63,11 +63,11 @@ public class Link {
         public DefaultLink(@Nullable Wire w, Surface a, VerletParticle2D ap, Surface b, VerletParticle2D bp, GraphEdit<?> g) {
             super(w);
 
-            int extraJoints = 2;
+            int extraJoints = 3;
             int chainLen = 2 + 1 + (extraJoints*2); //should be an odd number
 
             Pair<List<VerletParticle2D>, List<VerletSpring2D>> chain = g.physics.addParticleChain(ap, bp,
-                    chainLen, 1f /* some minimal # */, 0.25f);
+                    chainLen, 0f /* some minimal # */, 0.5f);
 
             List<VerletSpring2D> springs = chain.getTwo();
             offs.add(()->{
@@ -153,8 +153,8 @@ public class Link {
                 float bb = id.activity(false, renderStart, window);
 
                 float base = Math.min(a.radius(), b.radius());
-                float baseA = base * Util.lerp( aa, 0.1f, 0.5f);
-                float baseB = base * Util.lerp(bb, 0.1f, 0.5f);
+                float baseA = base * Util.lerp( aa, 0.25f, 0.75f);
+                float baseB = base * Util.lerp(bb, 0.25f, 0.75f);
                 Draw.colorHash(gl, id.typeHash(true),  0.25f + 0.45f * aa);
                 for (VerletSpring2D s : chain.getTwo()) {
                     VerletParticle2D a = s.a, b = s.b;

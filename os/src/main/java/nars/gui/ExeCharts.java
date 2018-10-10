@@ -24,6 +24,7 @@ import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
+import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
@@ -112,8 +113,7 @@ public class ExeCharts {
                 .add("queueSize", ((UniExec) n.exe)::queueSize);
         Plot2D busy = new Plot2D(plotHistory, Plot2D.Line)
                 .add("Busy", n.emotion.busyVol::getSum);
-        return col(
-                new ObjectSurface<>(n.loop),
+        return grid(
                 DurSurface.get(exeQueue, n, exeQueue::update),
                 DurSurface.get(busy, n, busy::update)
         );
@@ -208,7 +208,8 @@ public class ExeCharts {
             if (nar.time instanceof RealTime) {
                 time = ((RealTime) nar.time);
                 add(
-                        new FloatSlider("Dur*", dur)
+                        new FloatSlider("Dur*", dur),
+                        new FloatSlider("Throttle", loop.throttle)
                 );
                 dur.set(time.durRatio(loop));
             } else {
@@ -231,11 +232,12 @@ public class ExeCharts {
     }
 
     public static Surface runPanel(NAR n) {
-        VectorLabel nameLabel;
+        BitmapLabel nameLabel;
         LoopPanel control = new NARLoopPanel(n.loop);
-        Surface p = new Gridding(
-                nameLabel = new VectorLabel(n.self().toString()),
-                control
+        Surface p = new Splitting(
+                nameLabel = new BitmapLabel(n.self().toString()),
+                control,
+                false, 0.25f
         );
         return DurSurface.get(p, n, control::update);
     }

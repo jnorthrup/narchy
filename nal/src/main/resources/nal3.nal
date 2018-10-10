@@ -85,10 +85,10 @@
     (S --> W), (B --> W), task("?"), is(S,"|"), neqRCom(S,B) |- ((|,S,B) --> W), (Punctuation:Question)
 
 //NAL3 single premise decompose
-    (M --> S), X, is(S,"&"), subOf(S,X) |- (M --> without(S,X)), (Belief:StructuralReduction, Goal:StructuralReduction)
+    (M --> S), X, is(S,"&"), subOf(S,X) |- (M --> without(S,X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
         //(M --> S), X, is(S,"&"), subOfNeg(S,X) |- (M --> without(S,--X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
-    (S --> M), X, is(S,"|"), subOf(S,X) |- (without(S,X) --> M), (Belief:StructuralReduction, Goal:StructuralReduction)
+    (S --> M), X, is(S,"|"), subOf(S,X) |- (without(S,X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
         //(S --> M), X, is(S,"|"), subOfNeg(S,X) |- (without(S,--X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 //    (S --> (B - G)), B |- (S --> B), (Belief:StructuralDeduction)

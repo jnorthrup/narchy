@@ -27,7 +27,7 @@ public class ConceptView extends Gridding {
         this.nar = n;
         this.sa = new StringBuilder();
         this.io = new ConsoleTerminal(120,60);
-        io.text.setBitmapFontSize(12);
+        io.text.fontSize(12);
 
         io.term.setForegroundColor(TextColor.ANSI.WHITE);
 

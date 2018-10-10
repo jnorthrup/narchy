@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.DoubleClicking;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.collection.MutableListContainer;
@@ -15,6 +16,7 @@ import spacegraph.space2d.widget.meta.WizardFrame;
 import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.space2d.widget.shape.VerletSurface;
 import spacegraph.util.math.v2;
+import toxi.geom.Vec2D;
 import toxi.physics2d.VerletParticle2D;
 import toxi.physics2d.behavior.AttractionBehavior2D;
 import toxi.physics2d.spring.VerletSpring2D;
@@ -73,6 +75,8 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     @Override
     protected void starting() {
 
+        physics.physics.setDrag(0.25f);
+
         physics.debugRender.set(false);
 
         physics.start(this);
@@ -85,18 +89,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     }
 
     public Windo add(Surface x) {
-        return add(x, (xx) -> new Windo(new Scale(new MetaFrame(xx), 0.98f)) {
-            @Override
-            protected void stopping() {
-                //remove any associated links, recursively
-                if (xx instanceof Container) {
-                    ((Container) xx).forEachRecursively(GraphEdit.this::removingComponent);
-                } else {
-                    removingComponent(xx);
-                }
-                super.stopping();
-            }
-        });
+        return add(x, (xx) -> new MyWindo(xx));
     }
 
     private void removingComponent(Surface s) {
@@ -480,6 +473,48 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
                 }
             }
             return null;
+        }
+    }
+
+    private class MyWindo extends Windo {
+
+        final Vec2D center;
+        private final Surface xx;
+        AttractionBehavior2D repel;
+
+        public MyWindo(Surface xx) {
+            super(new Scale(new MetaFrame(xx), 0.98f));
+            this.xx = xx;
+            center = new Vec2D();
+            repel = new AttractionBehavior2D(center, 1, 0);
+        }
+
+        @Override
+        protected void starting() {
+            super.starting();
+            physics.physics.addBehavior(repel);
+        }
+
+        @Override
+        protected boolean prePaint(SurfaceRender r) {
+            center.set(cx(), cy());
+            repel.setRadius(radius()*2);
+            repel.setStrength(-(float) (Math.sqrt(bounds.area())*0.1f));
+
+            return super.prePaint(r);
+        }
+
+        @Override
+        protected void stopping() {
+            physics.physics.removeBehavior(repel);
+
+            //remove any associated links, recursively
+            if (xx instanceof Container) {
+                ((Container) xx).forEachRecursively(GraphEdit.this::removingComponent);
+            } else {
+                removingComponent(xx);
+            }
+            super.stopping();
         }
     }
 

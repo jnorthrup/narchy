@@ -111,11 +111,13 @@ public class NAgent extends NARService implements NSense, NAct {
         return c;
     }
 
-    protected <A extends ActionConcept> void actionAdded(A c) {
-        alwaysQuestionEternally(c,
-                false,
-                false
-        );
+    protected <A extends ActionConcept> void actionAdded(A a) {
+        alwaysQuest(a, false);
+//        alwaysQuestionEternally(a,
+//                false,
+//                false
+//        );
+
 //        alwaysQuestion(IMPL.the(c.term, 0, $$("reward:#x")), true);
 //        alwaysQuestion(IMPL.the(c.term.neg(), 0, $$("reward:#x")), true);
         //alwaysQuestion(Op.CONJ.the(happy.term, a.term));
@@ -460,8 +462,8 @@ public class NAgent extends NARService implements NSense, NAct {
                         //nar.confMin.floatValue();
                         //nar.confMin.floatValue() * 2;
                         //nar.confMin.floatValue() * 4;
-                        nar.confDefault(GOAL)/3;
-                        //nar.confDefault(GOAL)/2;
+                        //nar.confDefault(GOAL)/3;
+                        nar.confDefault(GOAL)/2;
                         //w2c(c2w(nar.confDefault(GOAL))/3);
                         //w2c(c2w(nar.confDefault(GOAL))/2);
                         //nar.confDefault(GOAL);

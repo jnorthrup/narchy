@@ -56,7 +56,7 @@ public class VerletSurface extends Surface implements Animated {
         pos(bounds);
 
         physics = new VerletPhysics2D(2, 0);
-        physics.setDrag(0.05f);
+//        physics.setDrag(0.05f);
 
         physics.setIndex(
                 new QuadtreeIndex(bounds.x - 1, bounds.y - 1, bounds.w + 1, bounds.h + 1)
@@ -199,7 +199,7 @@ public class VerletSurface extends Surface implements Animated {
                 //immediate
                 vv.next.set(pNext);
 
-                float density = 0.0001f;
+                float density = 0.01f;
                 vv.mass = ss.bounds.area() * density;
 
 //                    vv.set(pNext);
@@ -232,8 +232,8 @@ public class VerletSurface extends Surface implements Animated {
                 if (sNext != null) {
                     //ss.pos(Util.lerp(0.5f, sNext.x, ss.x()))
                     //ss.pos(RectFloat2D.XYWH(sNext.x, sNext.y, ss.w(), ss.h()));
-                    ss.pos(ss.bounds.posLerp(sNext.x, sNext.y, 0.75f));
-                    //ss.pos(sNext.x, sNext.y);
+                    //ss.pos(ss.bounds.posLerp(sNext.x, sNext.y, 0.75f));
+                    ss.pos(ss.bounds.posLerp(sNext.x, sNext.y, 1f));
                 }
 //            } else {
 

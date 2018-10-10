@@ -163,7 +163,7 @@ public class TabPane extends Splitting {
 //
 //        public TabWall() {
 //            super();
-//            setContent(new Wall());
+//            setContent(new GraphEdit());
 //            setWrapper(x -> new Windo(new MetaFrame(x)).size(w()/2, h()/2));
 //        }
 //    }

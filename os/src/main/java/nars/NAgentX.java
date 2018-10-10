@@ -6,6 +6,7 @@ import jcog.exe.Loop;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
+import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.tree.rtree.rect.RectFloat;
 import jcog.util.Int2Function;
@@ -127,12 +128,12 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
-                .attention(() -> new Attention(512))
+                .attention(() -> new Attention(256))
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
-                        new Revaluator.DefaultRevaluator(),
-                        //new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
+                        //new Revaluator.DefaultRevaluator(),
+                        new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
 
                         Util.concurrencyExcept(2), false))
 
@@ -353,8 +354,9 @@ abstract public class NAgentX extends NAgent {
 
     public static void config(NAR n) {
         n.timeResolution.set(
-                //10
-                20
+                10
+                //20
+                //40
         );
 
 
@@ -363,7 +365,7 @@ abstract public class NAgentX extends NAgent {
         n.termVolumeMax.set(24);
 
         n.forgetRate.set(0.9f);
-        n.activateConceptRate.set(0.1f);
+        n.activateConceptRate.set(0.01f);
 
 
 
