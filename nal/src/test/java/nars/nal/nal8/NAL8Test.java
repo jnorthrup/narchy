@@ -420,7 +420,7 @@ public class NAL8Test extends NALTest {
                 .mustGoal(cycles, "G", 1.0f, 0.81f);
     }
 
-    @Test
+    @Disabled @Test
     void testGoalSimilaritySpreadingNeg() {
         test.nar.termVolumeMax.set(5);
         test

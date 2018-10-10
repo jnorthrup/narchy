@@ -22,9 +22,11 @@
 //                                                           //DesireWeakNN
 
 
-    Z, (X <-> Y), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Belief:Analogy, Goal:DesireWeak, Time:Task)
-    Z, (X <-> Y), task("."), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Punctuation:Question, Time:Task)
-    Z, (X <-> Y), task("!"), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Punctuation:Quest, Time:Task)
+    Z, (X <-> Y)   |- substitute(Z, X, Y), (Belief:Analogy, Goal:Desire, Time:Task)
+    Z, (--X <-> Y)   |- --substitute(Z, X, Y), (Belief:Analogy, Goal:Desire, Time:Task)
+      //Z, (X <-> Y), task(".")   |- substitute(Z, X, Y), (Punctuation:Question, Time:Task)
+      //Z, (X <-> Y), task("!")   |- substitute(Z, X, Y), (Punctuation:Quest, Time:Task)
+
 
   Z, (X <-> Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, "$", strict), (Belief:Analogy, Goal:DesireWeak)
   Z, (--X <-> Y), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Y, X, Z, "$", strict), (Belief:AnalogyN, Goal:DesireWeakN)

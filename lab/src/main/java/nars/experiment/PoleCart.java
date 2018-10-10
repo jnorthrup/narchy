@@ -9,6 +9,8 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.agent.NAgent;
+import nars.agent.Reward;
+import nars.agent.RewardBooster;
 import nars.concept.Concept;
 import nars.concept.action.BiPolarAction;
 import nars.gui.NARui;
@@ -297,12 +299,13 @@ public class PoleCart extends NAgentX {
         });
 
 
-        rewardNormalized("balanced", -1, +1, this::update);
+        Reward r = rewardNormalized("balanced", -1, +1, this::update);
+        new RewardBooster(r);
     }
 
 
 
-    protected synchronized float update() {
+    protected float update() {
 
 
         double force = forceMag * action;

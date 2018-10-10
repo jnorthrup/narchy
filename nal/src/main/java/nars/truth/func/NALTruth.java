@@ -404,7 +404,13 @@ public enum NALTruth implements TruthFunc {
             return TruthFunc.identity(T, minConf);
         }
     },
-
+    @SinglePremise @AllowOverlap
+    IdentityRecursive() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunc.identity(T, minConf);
+        }
+    },
 
     BeliefIdentity() {
         @Override

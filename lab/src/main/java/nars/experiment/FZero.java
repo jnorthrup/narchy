@@ -7,6 +7,7 @@ import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.Task;
 import nars.agent.Reward;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -18,6 +19,7 @@ import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Signal;
 import nars.control.DurService;
 import nars.sensor.Bitmap2DSensor;
+import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
@@ -78,8 +80,8 @@ public class FZero extends NAgentX {
         onFrame(vision::update);
         vision.update();
         //c = senseCamera($.func("cam", id), vision/*.blur()*/);//.diff()
-                //.resolution(0.05f);
-                ;
+        //.resolution(0.05f);
+        ;
 
         int nx = 4;
         AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p($.the("cae"), id), vision, nx, nx, (subX, subY) -> {
@@ -107,8 +109,6 @@ public class FZero extends NAgentX {
 //        window(new Gridding(
 //                //new CameraSensorView(c, this).withControls(),
 //                NARui.beliefCharts(nar, F, A.pos, A.neg)), 400, 400);
-
-
 
 
         float r = 0.05f;
@@ -182,53 +182,6 @@ public class FZero extends NAgentX {
         //reward("noCollide", ()->fz.power >= FZeroGame.FULL_POWER- ScalarValue.EPSILON ? +1 : -1 ); //dont bump edges
 
 
-        DurService.on(n, (nn)->{
-            int samples = 200;
-
-            long now = n.time();
-            int dur = nn.dur();
-            long start = now - dur/2, end = now + dur/2;
-
-            float c =
-                //nn.confMin.floatValue() * 2;
-                    //nn.confDefault(GOAL);
-                    nn.confDefault(GOAL)/2;
-            float confMin = nn.confMin.floatValue();
-
-            //Random rng = nn.random();
-            for (Concept reward : rr) {
-                float p = pri.floatValue() * nn.priDefault(GOAL);
-                Truth b = reward.beliefs().truth(start, end, nn);
-                if (b!=null) {
-                    Truth g = reward.goals().truth(start, end, nn);
-                    if (g!=null) {
-                        //float df = g.freq() - b.freq();
-                        float sat = 1 - Math.abs(g.freq() - b.freq());
-                        nn.attn.active.stream().limit(samples).forEach(xx -> {
-                            Concept x = xx.get();
-                            if (x == reward || !(x instanceof TaskConcept) || x instanceof ActionConcept) return;
-
-                            Term xt = x.term();
-                            if (!x.op().goalable) return;
-
-                            if (xt.hasXternal()) return;
-
-                            //TODO Use task answer() and get non-XTERNAL result
-                            //TODO use stamp from answer
-
-                            Truth t = x.beliefs().truth(start, end, nn);
-                            if (t != null) {
-                                float yc = c * t.conf();
-                                if (yc > confMin) {
-                                    float yf = Util.lerp(sat, 1 - t.freq(), t.freq());
-                                    nn.want(p * xx.pri(), xt, start, end, yf, yc);
-                                }
-                            }
-                        });
-                    }
-                }
-            }
-        });
 
     }
 
@@ -294,6 +247,7 @@ public class FZero extends NAgentX {
                 l -> fz.left = l, r -> fz.right = r
         );
     }
+
     private void initToggleFwdStop() {
         this.actionPushButtonMutex(
                 $.inh($$("fwd"), id), $.inh($$("stop"), id),
@@ -376,7 +330,7 @@ public class FZero extends NAgentX {
         float inputThresh = 0f;
         float curve = //curve exponent
                 1;
-                //3;
+        //3;
 
         FloatToFloatFunction d = (dHeading) -> {
 
@@ -390,14 +344,13 @@ public class FZero extends NAgentX {
                 //$.func("rotate", id),
                 //pn -> CONJ.the(XTERNAL, $.the("rotate"), $.func("rotate", id).negIf(!pn) ),
                 //pn -> CONJ.the(XTERNAL, $.func("rotate", id),
-                pn -> $.func(pn ? "left" : "right",id)
+                pn -> $.func(pn ? "left" : "right", id)
                 //)
                 , fair, d);
 
         A.resolution(0.1f);
 
         return A;
-
 
 
         //actionUnipolar($.the("heading"), d);
@@ -420,14 +373,14 @@ public class FZero extends NAgentX {
 //        final float[] _a = {0};
 //        final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
 
-        return actionUnipolar(/*$.inh(id,*/ $.func("vel", id,  $.the("move")), true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
+        return actionUnipolar(/*$.inh(id,*/ $.func("vel", id, $.the("move")), true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
             float a =
-                //_a[0] = (float) fwdFilter.out(_a[0], a0);
-                a0;
+                    //_a[0] = (float) fwdFilter.out(_a[0], a0);
+                    a0;
 
             float thresh = nar.freqResolution.floatValue();
             if (a > 0.5f + thresh) {
-                float thrust = /*+=*/ (2 * (a - 0.5f)) *  (fwdFactor * fwdSpeed);
+                float thrust = /*+=*/ (2 * (a - 0.5f)) * (fwdFactor * fwdSpeed);
                 fz.vehicleMetrics[0][6] = thrust;
             } else if (a < 0.5f - thresh)
                 fz.vehicleMetrics[0][6] *= Util.unitize(Math.max(0.5f, (1f - (0.5f - a) * 2f)));
@@ -446,7 +399,6 @@ public class FZero extends NAgentX {
 //    }
 
     double lastDistance;
-
 
 
     static class FZeroGame extends JFrame {

@@ -1,6 +1,9 @@
 package nars.term;
 
 import nars.$;
+import nars.NAR;
+import nars.NARS;
+import nars.Narsese;
 import nars.term.atom.Int;
 import nars.term.util.Image;
 import org.junit.jupiter.api.Test;
@@ -85,5 +88,10 @@ class ImageTest {
 
     @Test void testOneArgFunctionAsImage() {
         assertEquals("(y-->(x,/))", $.funcImageLast($.the("x"), $.the("y")).toString());
+    }
+    @Test void testConceptualizationNormalizesImages() throws Narsese.NarseseException {
+        //"$.04 ((|,(--,(cart,"+")),(--,(cart,"-")),(--,angX))-->(believe,"-ß2~czîÊeå",/))! 406461⋈406503 %.06;.04%"
+        NAR n = NARS.shell();
+        assertEquals("(x,z(y))", n.conceptualize("(x, (y --> (z,/)))").term().toString());
     }
 }
