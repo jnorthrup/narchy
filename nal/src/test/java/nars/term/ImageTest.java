@@ -103,14 +103,14 @@ class ImageTest {
         Term a2Bad = Image.imageExt(a1, $$("reaction"));
         assertEquals(Null, a2Bad); //not in the next reachable level
 
-        Term a2 = Image.imageExt(a1, $$("base"));
-        assertEquals("(base-->(acid,(chemical,reaction),/))", a2.toString());
+        Term a2 = Image.imageExt(a1, $$("(chemical,reaction)"));
+        assertEquals("((chemical,reaction)-->(acid,/,base))", a2.toString());
 
         Term a3Bad = Image.imageInt(a2, $$("reaction"));
-        assertEquals(Null, a3Bad); //not in the next reachable level
+        assertEquals(Null, a3Bad);
 //
-        Term a3 = Image.imageInt(a2, $$("acid"));
-        assertEquals("acid(base,\\,(chemical,reaction),/)", a3.toString());
+        Term a3 = Image.imageExt(a2, $$("reaction"));
+        assertEquals("(reaction-->((acid,/,base),chemical,/))", a3.toString());
 
         //reverse
 
@@ -126,4 +126,5 @@ class ImageTest {
         Term ii = Image.imageExt($$("a(b,/,c)"), $$("c"));
         assertEquals(Null, ii);
     }
+
 }

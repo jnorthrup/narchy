@@ -47,7 +47,7 @@ public enum Image { ;
                 ImDep target = intOrExt ? ImgInt : ImgExt;
 
                 Subterms ss = s.subterms();
-                if (!ss.contains(target)) {
+                if (!ss.hasAny(IMG) || (!ss.contains(ImgInt) && !ss.contains(ImgExt))) {
 
                     int index = ss.indexOf(x);
                     if (index != -1) {
