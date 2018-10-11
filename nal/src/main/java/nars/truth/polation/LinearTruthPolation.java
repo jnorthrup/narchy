@@ -32,6 +32,8 @@ public class LinearTruthPolation extends TruthPolation {
             eviFactor *= intermpolate(nar);
             if (eviFactor < Param.TRUTH_MIN_EVI)
                 return null;
+            if (term.volume() > nar.termVolumeMax.intValue())
+                return null;
         }
 
         int s = size();

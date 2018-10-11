@@ -18,8 +18,8 @@ public class UnevaluatedTask extends NALTask {
                 stamp /* TODO use an implementation which doenst need an array for this */);
     }
 
-    public UnevaluatedTask(Term c, Task xx, Truth t) throws TaskException {
-        super(c, xx.punc(), t, xx.creation(), xx.start(), xx.end(), xx.stamp());
+    public UnevaluatedTask(Term c, Task parent, Truth t) throws TaskException {
+        super(c, parent.punc(), t, parent.creation(), parent.start(), parent.end(), parent.stamp());
     }
 
 //    @Override

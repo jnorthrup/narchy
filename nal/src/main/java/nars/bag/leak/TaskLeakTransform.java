@@ -2,7 +2,6 @@ package nars.bag.leak;
 
 import jcog.Paper;
 import jcog.Skill;
-import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.control.channel.BufferedCauseChannel;
 import nars.task.ITask;

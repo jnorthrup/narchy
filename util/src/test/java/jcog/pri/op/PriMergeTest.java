@@ -1,8 +1,8 @@
 package jcog.pri.op;
 
 import jcog.pri.PriRO;
-import jcog.pri.Prioritized;
 import jcog.pri.Prioritizable;
+import jcog.pri.Prioritized;
 import jcog.pri.UnitPri;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;

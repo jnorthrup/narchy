@@ -2328,9 +2328,13 @@ public enum Util {
 
     public static void assertUnitized(float... f) {
         for (float x : f) {
-            if (!Float.isFinite(x) || x < 0 || x > 1)
-                throw new UnsupportedOperationException("non-unitized value: " + x);
+            assertUnitized(x);
         }
+    }
+    public static float assertUnitized(float x) {
+        if (!Float.isFinite(x) || x < 0 || x > 1)
+            throw new UnsupportedOperationException("non-unitized value: " + x);
+        return x;
     }
 
     /**

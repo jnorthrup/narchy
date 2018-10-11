@@ -27,7 +27,8 @@ import java.util.Random;
 
 import static nars.Op.CONJ;
 import static nars.Op.IMPL;
-import static nars.time.Tense.*;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * Revision / Projection / Revection Utilities
@@ -309,22 +310,21 @@ public class Revision {
      * XTERNAL matches anything
      */
     public static float dtDiff(Term a, Term b) {
-        return dtDiff(a, b, 1);
+        float d = dtDiff(a, b, 1);
+        //return Util.assertUnitized(d);
+        return d;
     }
 
     private static float dtDiff(Term a, Term b, int depth) {
-        if (a.equals(b)) return 0f;
+        if (a.equals(b))
+            return 0f;
 
-
-        Op ao = a.op();
-        Op bo = b.op();
+        Op ao = a.op(), bo = b.op();
         if (ao != bo)
             return Float.POSITIVE_INFINITY;
 
-
-        Subterms aa = a.subterms();
-        int len = aa.subs();
-        Subterms bb = b.subterms();
+        Subterms aa = a.subterms(), bb = b.subterms();
+        int len = bb.subs();
 
         float d = 0;
 
@@ -350,12 +350,13 @@ public class Revision {
             if (aa.subs() != bb.subs())
                 return Float.POSITIVE_INFINITY;
 
-            for (int i = 0; i < len; i++) {
-                float dx = dtDiff(aa.sub(i), bb.sub(i), depth + 1);
-                if (!Float.isFinite(dx))
-                    return Float.POSITIVE_INFINITY;
-                d += dx;
-            }
+            d = dtDiff(aa, bb, true, depth);
+
+//            if (!Float.isFinite(d) && len == 2 && ao.commutative && aa.hasAny(Op.Temporal) ) {
+//                //try reversing
+//                d = dtDiff(aa, bb, false, depth);
+//            }
+
 
         } else {
 
@@ -387,6 +388,20 @@ public class Revision {
         }
 
         return d / depth;
+    }
+
+    private static float dtDiff(Subterms aa, Subterms bb, boolean parity, int depth) {
+        float d = 0;
+        int len = aa.subs();
+        for (int i = 0; i < len; i++) {
+            Term ai = aa.sub(i);
+            float dx = dtDiff(ai, bb.sub(parity ? i : (len-1)-i), depth + 1);
+            if (!Float.isFinite(dx)) {
+                return Float.POSITIVE_INFINITY;
+            }
+            d += dx;
+        }
+        return d/len; // avg
     }
 
 //    public static Task mergeOrChoose(@Nullable Task x, @Nullable Task y, long start, long end, Predicate<Task> filter, NAR nar) {

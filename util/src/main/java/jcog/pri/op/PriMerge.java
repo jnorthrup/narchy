@@ -2,8 +2,8 @@ package jcog.pri.op;
 
 import jcog.Util;
 import jcog.math.FloatSupplier;
-import jcog.pri.Prioritized;
 import jcog.pri.Prioritizable;
+import jcog.pri.Prioritized;
 
 import java.util.function.BiConsumer;
 

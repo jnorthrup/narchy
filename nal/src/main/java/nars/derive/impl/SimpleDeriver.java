@@ -1,7 +1,6 @@
 package nars.derive.impl;
 
 import jcog.data.set.ArrayHashSet;
-import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
