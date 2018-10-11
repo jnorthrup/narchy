@@ -75,12 +75,13 @@ public class NAgentTest {
                 true);
 
 
+        a.curiosity.set(0.25f);
         init.accept(a);
 
-        n.run(100);
+        n.run(500);
 
         assertTrue(-(-1 - a.avgReward()) > 0.2f, ()->""+a.avgReward());
-        assertTrue(a.dex.getMean() > 0.1f, ()->a.dex.toString());
+        assertTrue(a.dex.getMean() > 0.01f, ()->a.dex.toString());
     }
 
 

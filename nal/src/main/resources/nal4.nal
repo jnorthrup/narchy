@@ -1,10 +1,10 @@
 //image structural transform forward
-(P --> I), X, is(P,"*"), subsMin(P,1), subOf(P,X) |- imageExt((P-->I),X), (Belief:IdentityRecursive, Goal:IdentityRecursive)
-    (P --> I), X, is(P,"*"), subsMin(P,1), subOf(P,X), task("?") |- imageExt((P-->I),X), (Punctuation:Question)
-    (P --> I), X, is(P,"*"), subsMin(P,1), subOf(P,X), task("@") |- imageExt((P-->I),X), (Punctuation:Quest)
-(I --> P), X, is(P,"*"), subsMin(P,1), subOf(P,X) |- imageInt((I-->P),X), (Belief:IdentityRecursive, Goal:IdentityRecursive)
-    (I --> P), X, is(P,"*"), subsMin(P,1), subOf(P,X), task("?") |- imageInt((I-->P),X), (Punctuation:Question)
-    (I --> P), X, is(P,"*"), subsMin(P,1), subOf(P,X), task("@") |- imageInt((I-->P),X), (Punctuation:Quest)
+(P --> I), X, is(P,"*"), --has(P,"/"), subsMin(P,1), subOf(P,X) |- imageExt((P-->I),X), (Belief:IdentityRecursive, Goal:IdentityRecursive)
+    (P --> I), X, is(P,"*"), --has(P,"/"), subsMin(P,1), subOf(P,X), task("?") |- imageExt((P-->I),X), (Punctuation:Question)
+    (P --> I), X, is(P,"*"), --has(P,"/"), subsMin(P,1), subOf(P,X), task("@") |- imageExt((P-->I),X), (Punctuation:Quest)
+(I --> P), X, is(P,"*"), --has(P,"/"), subsMin(P,1), subOf(P,X) |- imageInt((I-->P),X), (Belief:IdentityRecursive, Goal:IdentityRecursive)
+    (I --> P), X, is(P,"*"), --has(P,"/"), subsMin(P,1), subOf(P,X), task("?") |- imageInt((I-->P),X), (Punctuation:Question)
+    (I --> P), X, is(P,"*"), --has(P,"/"), subsMin(P,1), subOf(P,X), task("@") |- imageInt((I-->P),X), (Punctuation:Quest)
 
 
 

@@ -142,8 +142,8 @@ public class NAL4Test extends NALTest {
         test
                 .believe("(neutralization --> (acid,base))")
                 .believe("((acid,base) --> reaction)")
-                .mustBelieve(CYCLES * 2, "((neutralization,\\,base) --> (reaction,/,base))", 1.0f, 0.81f)
-                .mustBelieve(CYCLES * 2, "((neutralization,acid,\\) --> (reaction,acid,/))", 1.0f, 0.81f)
+                .mustBelieve(CYCLES * 4, "((neutralization,\\,base) --> (reaction,/,base))", 1.0f, 0.81f)
+                .mustBelieve(CYCLES * 4, "((neutralization,acid,\\) --> (reaction,acid,/))", 1.0f, 0.81f)
         ;
     }
 
