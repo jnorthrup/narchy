@@ -19,7 +19,10 @@ public class IntermpolationTest {
     void testIntermpolation0() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+3 (b &&+3 c))");
         Compound b = $.$("(a &&+3 (b &&+1 c))");
-        RevisionTest.permuteChoose(a, b, "[((a &&+3 b) &&+1 c), ((a &&+3 b) &&+2 c), ((a &&+3 b) &&+3 c)]");
+        RevisionTest.permuteChoose(a, b,
+                //"[((a &&+3 b) &&+1 c), ((a &&+3 b) &&+2 c), ((a &&+3 b) &&+3 c)]"
+                "[((a &&+3 b) &&+1 (c &&+2 c))]"
+        );
     }
 
     @Test

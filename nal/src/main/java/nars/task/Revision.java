@@ -19,7 +19,6 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.truth.polation.TruthPolation;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +58,6 @@ public class Revision {
     }
 
 
-    @NotNull
     static Term intermpolate(/*@NotNull*/ Term a, long bOffset, /*@NotNull*/ Term b, float aProp, float curDepth, NAR nar) {
 
         if (a.equals(b) && bOffset == 0)
@@ -86,7 +84,7 @@ public class Revision {
 
         if (ao.temporal) {
             if (ao == CONJ) {
-                return Conj.conjIntermpolate(a, b, aProp, bOffset, nar);
+                return Conj.conjIntermpolate(a, b, aProp, bOffset);
             } else if (ao == IMPL) {
                 return dtMergeDirect(a, b, aProp, curDepth, nar);
             } else
@@ -233,7 +231,7 @@ public class Revision {
     /**
      * a is left aligned, dt is any temporal shift between where the terms exist in the callee's context
      */
-    static Term intermpolate(/*@NotNull*/ Term a, long dt, /*@NotNull*/ Term b, float aProp, NAR nar) {
+    public static Term intermpolate(/*@NotNull*/ Term a, long dt, /*@NotNull*/ Term b, float aProp, NAR nar) {
         return intermpolate(a, dt, b, aProp, 1, nar);
     }
 

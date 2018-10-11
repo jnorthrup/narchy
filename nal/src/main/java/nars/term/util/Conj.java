@@ -9,7 +9,6 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.subterm.Subterms;
-import nars.task.Revision;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
@@ -444,20 +443,21 @@ public class Conj extends ByteAnonMap {
      * intermpolation is not considerably more complex than either of the inputs
      * assumes a and b are both conjunctions
      */
-    public static Term conjIntermpolate(Term a, Term b, float aProp, long bOffset, NAR nar) {
+    public static Term conjIntermpolate(Term a, Term b, float aProp, long bOffset) {
 
-        if (bOffset == 0) {
-            if (a.subterms().equals(b.subterms())) {
-                //special case: equal subs
-                Term ab = a;
-                if (a.op() == CONJ && Conj.concurrent(a.dt()))
-                    ab = b; //ab if conj must be non-concurrent as a seed for correctly ordering a result
-                return ab.dt(Revision.chooseDT(a, b, aProp, nar));
-            }
-        }
+//        if (bOffset == 0) {
+//            if (a.subterms().equals(b.subterms())) {
+//                //special case: equal subs
+//                Term ab = a;
+//                if (a.op() == CONJ && Conj.concurrent(a.dt()))
+//                    ab = b; //ab if conj must be non-concurrent as a seed for correctly ordering a result
+//                return ab.dt(Revision.chooseDT(a, b, aProp, nar));
+//            }
+//        }
+//return Bool.Null; //probably better not to bother
 
-        //return new Conjterpolate(a, b, bOffset, aProp, nar).term();
-        return Bool.Null; //probably better not to bother
+        return new Conjterpolate(a, b, bOffset, aProp).term();
+
     }
 
     public void clear() {
@@ -1342,9 +1342,8 @@ public class Conj extends ByteAnonMap {
         /**
          * proportion of a vs. b, ie: (a/(a+b))
          */
-        private final float aProp;
 
-        Conjterpolate(Term a, Term b, long bOffset, float aProp, NAR nar) {
+        Conjterpolate(Term a, Term b, long bOffset, float aProp) {
 
 //            this.b = b;
 //            this.nar = nar;
@@ -1353,7 +1352,6 @@ public class Conj extends ByteAnonMap {
 //            this.idToTerm.addAll(aa.idToTerm);
 //            this.termToId.putAll(aa.termToId);
 
-            this.aProp = aProp;
 
 
             addAuto(a);

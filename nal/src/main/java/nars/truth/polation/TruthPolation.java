@@ -236,13 +236,13 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
             return 1;
         }
 
-        Term first = null, second = null;
+        Task first = null, second = null;
 
         for (int i = 0; i < thisSize; i++) {
             TaskComponent t = this.get(i);
             Term ttt = t.task.term();
             if (i == 0) {
-                first = ttt;
+                first = t.task;
                 if (!ttt.hasAny(Op.Temporal))
                     break;
             } else {
@@ -252,7 +252,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
                         removeAbove(i);
                         break;
                     } else {
-                        second = ttt;
+                        second = t.task;
                     }
                 }
 
@@ -261,59 +261,93 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         }
 
         if (second == null) {
-            term = first;
+            term = first.term();
             return 1f;
         } else {
 
-            float differenceFactor;
+
             Term a = first.term();
             Term b = second.term();
+            long firstStart = first.start();
+            long secondStart = second.start();
+            final float[] e1Evi = {0};
+            final float[] e2Evi = { 0 };
+            Task finalFirst = first;
+            Task finalSecond = second;
+            removeIf(x -> {
+               if (x.task == finalFirst || x.task.term().equals(a)) {
+                   e1Evi[0] += x.evi;
+                   return false;
+               } else if (x.task == finalSecond || x.task.term().equals(b)) {
+                   e2Evi[0] += x.evi;
+                   return false;
+               } else {
+                   return true;
+               }
+            });
 
-
-            float diff = dtDiff(a, b);
-            if (!Float.isFinite(diff))
-                return 0;
-
-            differenceFactor = 1f / (1f + diff);
-
-
-            Term theFirst = first;
-            Term finalSecond = second;
-            float e1, e2;
-            if (size() > 2) {
-
-                e1 = (float) sumOfFloat(x -> x.task.term().equals(theFirst) ? x.evi : 0);
-                e2 = (float) sumOfFloat(x -> x.task.term().equals(finalSecond) ? x.evi : 0);
-            } else {
-                e1 = get(0).evi;
-                e2 = get(1).evi;
-            }
-            float firstProp = e1 / (e1 + e2);
-            Term term = Revision.intermpolate(first, second, firstProp, nar);
-
+            Term term = Revision.intermpolate(a,
+                    firstStart!=ETERNAL && secondStart!=ETERNAL ? secondStart - firstStart : 0,
+                    b, e1Evi[0] /(e1Evi[0] + e2Evi[0]), nar);
 
             if (Task.taskConceptTerm(term)) {
-                if (count(t -> !t.task.term().equals(theFirst)) > 1) {
-                    //remove any that are different and just combine what matches the first
-                    removeIfTermDiffers(theFirst);
-                    return 1;
-                } else {
-                    this.term = term;
-                    return differenceFactor;
-                }
+                float diff = dtDiff(a, b);
+                if (!Float.isFinite(diff))
+                    return 0;
+
+                //assert(diff >= 0 && diff <= 1.0);
+                //float differenceFactor = 1 - diff;
+
+                float differenceFactor = 1f / (1f + diff);
+
+                this.term = term;
+                return differenceFactor;
             } else {
-                removeIfTermDiffers(theFirst);
-                return 1f;
+                removeIf(x -> !x.task.term().equals(a));
+                assert(size() > 0);
+                this.term = a;
+                return 1;
             }
+
+
+
+
+//            Term theFirst = first;
+//            Term finalSecond = second;
+//            float e1, e2;
+//            if (size() > 2) {
+//
+//                e1 = (float) sumOfFloat(x -> x.task.term().equals(theFirst) ? x.evi : 0);
+//                e2 = (float) sumOfFloat(x -> x.task.term().equals(finalSecond) ? x.evi : 0);
+//            } else {
+//                e1 = get(0).evi;
+//                e2 = get(1).evi;
+//            }
+//            float firstProp = e1 / (e1 + e2);
+
+
+//            if (Task.taskConceptTerm(term)) {
+//                if (count(t -> !t.task.term().equals(theFirst)) > 1) {
+//                    //remove any that are different and just combine what matches the first
+//                    removeIfTermDiffers(theFirst);
+//                    return 1;
+//                } else {
+//                    this.term = term;
+//                    return differenceFactor;
+//                }
+//            } else {
+//                removeIfTermDiffers(theFirst);
+//                return 1f;
+//            }
         }
 
 
     }
 
-    private void removeIfTermDiffers(Term theFirst) {
-        removeIf(t -> !t.task.term().equals(theFirst));
-        this.term = theFirst;
-    }
+//    private void removeIfTermDiffers(Term theFirst) {
+//        removeIf(t -> !t.task.term().equals(theFirst));
+//        this.term = theFirst;
+//    }
 
     public byte punc() {
         if (isEmpty()) throw new RuntimeException();
