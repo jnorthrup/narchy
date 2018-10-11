@@ -340,6 +340,13 @@ public class Plot2D extends Widget {
 //    String minValueStr = "", maxValueStr = "";
 
     public static final PlotVis Line = (List<Series> series, GL2 gl, float minValue, float maxValue) -> {
+        plotLine(series, gl, minValue, maxValue, false);
+    };
+    public static final PlotVis LineLanes = (List<Series> series, GL2 gl, float minValue, float maxValue) -> {
+        plotLine(series, gl, minValue, maxValue, true);
+    };
+
+    private static void plotLine(List<Series> series, GL2 gl, float minValue, float maxValue, boolean lanes) {
         if (minValue == maxValue) {
             float center = minValue;
             minValue = center - (center / 2);
@@ -359,13 +366,12 @@ public class Plot2D extends Widget {
         Draw.hersheyText(gl, n4(maxValue), 0.04f, 0, H, 0, Draw.TextAlignment.Left);
 
 
-        for (Series s : series) {
+        for (int sn = 0, seriesSize = series.size(); sn < seriesSize; sn++) {
+            Series s = series.get(sn);
 
-            float mid = ypos(minValue, maxValue, (s.minValue() + s.maxValue()) / 2f);
-
+            float mid = lanes ? ypos(minValue, maxValue, (s.minValue() + s.maxValue()) / 2f, sn, seriesSize) : ypos(minValue, maxValue, (s.minValue() + s.maxValue()) / 2f);
 
             int ss = s.size();
-
 
             int histSize = ss;
 
@@ -376,25 +382,16 @@ public class Plot2D extends Widget {
 
                 gl.glLineWidth(3);
                 gl.glColor3fv(s.color(), 0);
-                gl.glBegin(
-                        GL.GL_LINE_STRIP
-
-
-                );
+                gl.glBegin(GL.GL_LINE_STRIP);
                 float x = 0;
                 float dx = (W / histSize);
 
-
-                int ns = s.size();
-                for (int i = 0; i < ns; i++) {
-
+                for (int i = 0; i < ss; i++) {
                     float v = s.get(i);
-                    float ny = (v == v) ? ypos(minValue, range, v) : mid /*HACK for NaN*/;
-
-
+                    float ny = (v == v) ?
+                            (lanes ? ypos(minValue, range, v, sn, seriesSize) : ypos(minValue, range, v))
+                            : mid /*HACK for NaN*/;
                     gl.glVertex2f(x, yy = ny);
-
-
                     x += dx;
                 }
                 gl.glEnd();
@@ -407,15 +404,14 @@ public class Plot2D extends Widget {
             Draw.hersheyText(gl, s.name(), 0.04f, W, yy, 0, Draw.TextAlignment.Right);
 
         }
-    };
-
-    private static float ypos(float minValue, float range, float v) {
-        float ny = (v - minValue) / range;
-
-
-        return ny;
     }
 
+    private static float ypos(float minValue, float range, float v) {
+        return (v - minValue) / range;
+    }
+    private static float ypos(float minValue, float range, float v, int lane, int numLanes) {
+        return ((v - minValue) / range) * (1f/numLanes) + (((float)lane)/numLanes);
+    }
 
     public void update() {
         synchronized (series) {
@@ -434,8 +430,11 @@ public class Plot2D extends Widget {
     }
 
 
-    /** TODO merge with BitmapWave */
-    @Deprecated public static class BitmapPlot implements PlotVis, BitmapMatrixView.BitmapPainter {
+    /**
+     * TODO merge with BitmapWave
+     */
+    @Deprecated
+    public static class BitmapPlot implements PlotVis, BitmapMatrixView.BitmapPainter {
         BitmapMatrixView bmp = null;
         private final int w;
         private final int h;
@@ -539,17 +538,17 @@ public class Plot2D extends Widget {
 
             float alpha = 1f / ns;
             int first = firstSample(), last = lastSample();
-            assert(series.size() == 1): "only size=1 support for now";
+            assert (series.size() == 1) : "only size=1 support for now";
             int sn = series.get(0).size();
             for (Series s : series) {
 
                 for (int x = 0; x < w; x++) {
 
-                    float sStart = first + (last - first) * (x/((float)w));
-                    float sEnd = first + (last - first) * ((x+1)/((float)w));
+                    float sStart = first + (last - first) * (x / ((float) w));
+                    float sEnd = first + (last - first) * ((x + 1) / ((float) w));
 
-                    int iStart = Util.clamp((int) Math.ceil(sStart ), 0, sn - 1);
-                    int iEnd = Util.clamp((int) Math.floor(sEnd ), 0, sn - 1);
+                    int iStart = Util.clamp((int) Math.ceil(sStart), 0, sn - 1);
+                    int iEnd = Util.clamp((int) Math.floor(sEnd), 0, sn - 1);
                     float amp = 0;
 
                     amp += (iStart - sStart) * s.get(iStart);
@@ -580,17 +579,17 @@ public class Plot2D extends Widget {
         public synchronized void pan(float pct) {
             float width = last - first;
             if (width < 1) {
-                float mid = ((first + last)/2);
+                float mid = ((first + last) / 2);
                 float nextMid = mid + (pct * width);
 
-                float first = nextMid - width/2;
-                float last = nextMid + width/2;
+                float first = nextMid - width / 2;
+                float last = nextMid + width / 2;
                 if (first < 0) {
                     first = 0;
                     last = first + width;
                 } else if (last > 1) {
                     last = 1;
-                    first = last -width;
+                    first = last - width;
                 }
 
                 this.first = first;

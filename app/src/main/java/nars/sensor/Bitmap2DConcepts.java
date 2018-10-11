@@ -262,14 +262,22 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
             }
 
             //TODO stop using Stream<> its not necessary here
-            int beforeStart = in.size();
-            int pixelsRead = (int) in.input(s.takeWhile((z) -> beforeStart == in.size() || kontinue.getAsBoolean() ) );
+//            int beforeStart = in.size();
+//            int pixelsRead =
+//                    //(int) in.input(s.takeWhile((z) -> beforeStart == in.size() || kontinue.getAsBoolean() ) );
+            final int[] pixelsRead = {0};
+            s.forEach(z -> {
+                if (z != null) {
+                    ITask.run(z, nar); //inline
+                }
+                pixelsRead[0]++;
+            });
 
             if (sinceLastFrameStart > dur) {
                 pixelsSinceLastStart = 0;
                 lastFrameStart = now;
             } else {
-                pixelsSinceLastStart += pixelsRead;
+                pixelsSinceLastStart += pixelsRead[0];
                 if (pixelsSinceLastStart >= area) {
                     long untilNext = Math.max(1, dur - 1) + lastFrameStart;
                     if (untilNext > now)
@@ -277,8 +285,8 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
                 }
             }
 
-            if (pixelsRead > 0) {
-                this.lastPixel = (pixelsRead + this.lastPixel ) % totalPixels;
+            if (pixelsRead[0] > 0) {
+                this.lastPixel = (pixelsRead[0] + this.lastPixel ) % totalPixels;
                 in.commit();
             }
         }

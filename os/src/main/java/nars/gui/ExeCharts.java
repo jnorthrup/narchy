@@ -7,19 +7,16 @@ import jcog.sort.TopN;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.NAR;
 import nars.control.Cause;
-import nars.control.DurService;
 import nars.control.MetaGoal;
 import nars.exe.NARLoop;
 import nars.exe.UniExec;
 import nars.time.clock.RealTime;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.*;
-import spacegraph.space2d.container.layout.ForceDirected2D;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.LoopPanel;
-import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.FloatSlider;
@@ -31,45 +28,24 @@ import spacegraph.video.Draw;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.lang.Math.sqrt;
-import static spacegraph.space2d.container.Gridding.*;
+import static spacegraph.space2d.container.Gridding.grid;
+import static spacegraph.space2d.container.Gridding.row;
 
 public class ExeCharts {
 
     public static Surface metaGoalPlot(NAR nar) {
 
-
         int s = nar.causes.size();
 
         FloatRange gain = new FloatRange(1f, 0f, 5f);
 
-        BitmapMatrixView bmp = new BitmapMatrixView((i) ->
+        BitmapMatrixView bmp = new BitmapMatrixView(i ->
                 Util.tanhFast(
-                        gain.floatValue() * nar.causes.get(i).value()
+                    gain.floatValue() * nar.causes.get(i).value()
                 ),
+                s, Draw::colorBipolar);
 
-                s, Math.max(1, (int) Math.ceil(sqrt(s))),
-                Draw::colorBipolar) {
-
-            DurService on;
-
-            {
-                on = DurService.on(nar, this::update);
-            }
-
-            @Override
-            public boolean stop() {
-                if (super.stop()) {
-                    on.off();
-                    on = null;
-                    return true;
-                }
-                return false;
-            }
-
-        };
-
-        return new Splitting(bmp, new ObjectSurface<>(gain), 0.1f);
+        return Splitting.column(DurSurface.get(bmp, nar), new FloatSlider("Display Gain", gain), 0.05f);
     }
 
     public static Surface metaGoalControls(NAR n) {
@@ -139,10 +115,43 @@ public class ExeCharts {
 
     }
 
+    public static Surface causeProfiler(NAR nar) {
+        UniExec.InstrumentedCausable[] cc = ((UniExec) nar.exe).can.valueArray();
+        int history = 256;
+        int n = cc.length;
+        Plot2D pp = new Plot2D(history,
+                Plot2D.LineLanes
+                //Plot2D.Line
+        );
+        //Plot2D[] pp = new Plot2D[n];
+        for (int i = 0, ccLength = cc.length; i < ccLength; i++) {
+            UniExec.InstrumentedCausable c = cc[i];
+            String label = c.c.id.toString();
+            //pp[i] = new Plot2D(history, Plot2D.Line).add(label,
+            pp.add(label,
+
+                        ()->
+                                //c.accumTimeNS.get()/1_000_000.0 //ms
+                                (c.iterations.getMean() * c.iterTimeNS.getMean())/1_000_000.0 //ms
+                                //c.valuePerSecondNormalized
+                                //c.valueNext
+                                //c.iterations.getN()
+                                //c...
+
+                        //,0,1
+                );
+        }
+        return DurSurface.get(new Gridding(pp), nar, ()->{
+            //for (Plot2D p : pp) {
+                pp.update();
+            //}
+        });
+    }
+
     public static Surface focusPanel(NAR nar) {
 
-        ForceDirected2D<UniExec.InstrumentedCausable> fd = new ForceDirected2D<>();
-        fd.repelSpeed.set(0.5f);
+//        ForceDirected2D<UniExec.InstrumentedCausable> fd = new ForceDirected2D<>();
+//        fd.repelSpeed.set(0.5f);
 
         Graph2D<UniExec.InstrumentedCausable> s = new Graph2D<UniExec.InstrumentedCausable>()
                 .render((node, g) -> {

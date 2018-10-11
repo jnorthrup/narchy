@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.control.DurService;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.UnitContainer;
+import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import java.util.function.Consumer;
 
@@ -52,6 +53,9 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
 
     public static DurSurface get(Surface x, NAR n, Runnable eachDur) {
         return get(x, n, (nn)->eachDur.run());
+    }
+    public static DurSurface get(BitmapMatrixView x, NAR n) {
+        return get(x, n, x::update);
     }
 
     public static DurSurface get(Surface x, NAR n, Consumer<NAR> eachDur) {

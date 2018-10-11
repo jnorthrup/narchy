@@ -631,7 +631,7 @@ public class Derivation extends PreDerivation {
         return concSingle ? taskEvi : Math.max(taskEvi, beliefEvi);
     }
 
-    public float parentPri() {
+    public final float parentPri() {
         return (concSingle ? priSingle : priDouble);
     }
 }

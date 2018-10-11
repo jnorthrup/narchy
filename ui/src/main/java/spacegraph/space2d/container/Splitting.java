@@ -30,6 +30,19 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
         split(split);
     }
 
+    public static Splitting<?,?> column(Surface x, Surface y, float v) {
+        return new Splitting(x, y, v, true);
+    }
+    public static Splitting<?,?> column(Surface x, Surface y) {
+        return column(x, y, 0.5f);
+    }
+    public static Splitting<?,?> row(Surface x, Surface y, float v) {
+        return new Splitting(x, y, v, false);
+    }
+    public static Splitting<?,?> row(Surface x, Surface y) {
+        return row(x, y, 0.5f);
+    }
+
     Splitting vertical() {
         if (!this.vertical) {
             vertical = true;

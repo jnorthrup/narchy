@@ -5,6 +5,7 @@ import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.util.TaskBagDrainer;
 
@@ -115,7 +116,8 @@ public interface DerivedTasks extends PriMerge<Task, Task> {
 
                 tasks.commit(null /* no forget */);
 
-                nar.input(derivedTasksDrainer);
+                //nar.input(derivedTasksDrainer);
+                ITask.run(derivedTasksDrainer, nar); //inline
             }
         }
     }

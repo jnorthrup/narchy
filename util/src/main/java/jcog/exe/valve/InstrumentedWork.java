@@ -131,7 +131,7 @@ public class InstrumentedWork<Who, What> extends Share<Who, What> implements Wor
         this.next(kontinue);
     }
 
-    public void runFor(long cycleNS) {
+    @Deprecated public void runFor(long cycleNS) {
 
 
         long now = nanoTime();

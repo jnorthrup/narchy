@@ -22,6 +22,7 @@ import java.util.function.Supplier;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
+import static java.lang.Math.sqrt;
 
 
 /**
@@ -72,6 +73,10 @@ public class BitmapMatrixView extends Surface {
             int i = y * stride + x;
             return i < d.length ? view.update(d[i]) : 0;
         });
+    }
+
+    public BitmapMatrixView(IntToFloatFunction d, int len, ViewFunction1D view) {
+        this(d, len, Math.max(1, (int) Math.ceil(sqrt(len))), view);
     }
 
     public BitmapMatrixView(IntToFloatFunction d, int len, int stride, ViewFunction1D view) {

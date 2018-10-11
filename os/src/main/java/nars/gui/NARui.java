@@ -108,7 +108,9 @@ public class NARui {
                 "exe", () -> ExeCharts.exePanel(n),
                 "val", () -> ExeCharts.valuePanel(n),
                 "mem", () -> MemEdit(n),
-                "can", () -> ExeCharts.focusPanel(n), ///causePanel(n),
+                "can", () -> ExeCharts.causeProfiler(n),
+                                //ExeCharts.focusPanel(n),
+                                ///causePanel(n),
                 "grp", () -> BagregateConceptGraph2D.get(n).widget(),
                 "svc", () -> new ServicesTable(n.services),
                 "cpt", () -> bagHistogram((Iterable) () -> n.conceptsActive().iterator(), 8, n)

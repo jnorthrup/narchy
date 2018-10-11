@@ -20,6 +20,7 @@ import nars.exe.Causable;
 import nars.link.Activate;
 import nars.link.ActivatedLinks;
 import nars.link.TaskLink;
+import nars.task.ITask;
 import nars.term.Term;
 
 import java.util.Set;
@@ -117,22 +118,21 @@ abstract public class Deriver extends Causable {
         on(DurService.on(nar, this::update));
     }
 
-    @Override
-    protected void stopping(NAR nar) {
-        super.stopping(nar);
-    }
+
 
     private void update() {
         budgeting.update(this, nar);
     }
 
     @Override
-    protected void next(NAR n, final BooleanSupplier kontinue) {
+    protected final void next(NAR n, final BooleanSupplier kontinue) {
 
         derive(derivation.get().next(n, this), kontinue);
 
-        if (!linked.isEmpty())
-            nar.input(linked);
+        if (!linked.isEmpty()) {
+            //nar.input(linked);
+            ITask.run(linked, n);//inline
+        }
 
         derived.commit(n);
 

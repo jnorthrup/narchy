@@ -10,6 +10,7 @@ import nars.concept.TaskConcept;
 import nars.control.DurService;
 import nars.control.channel.CauseChannel;
 import nars.table.dynamic.SensorBeliefTables;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -126,7 +127,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     }
 
     @Nullable
-    public ITask update(long start, long end, FloatFloatToObjectFunction<Truth> truther, float dur, NAR n) {
+    public SeriesBeliefTable.SeriesRemember update(long start, long end, FloatFloatToObjectFunction<Truth> truther, float dur, NAR n) {
 
         float prevValue = currentValue;
         float nextValue = floatValueOf(term);

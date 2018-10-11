@@ -29,11 +29,6 @@ import java.util.function.*;
 public class SimpleDeriver extends Deriver {
 
     /**
-     * iterations -> premises multiplier
-     * values less than one mean the deriver will operate with < 100% probability each potential invocation
-     */
-    public final FloatRange enable = new FloatRange(1, 0, 1);
-    /**
      * controls concentration per concept
      */
     public final IntRange tasklinksPerConcept = new IntRange(2, 1, 32);
@@ -91,17 +86,6 @@ public class SimpleDeriver extends Deriver {
         PremiseDeriverRuleSet rules = Derivers.nal(n, 1, 8);
 
         return new SimpleDeriver(forEach, rules, GlobalTermLinker);
-    }
-
-    @Override
-    protected void next(NAR n, BooleanSupplier kontinue) {
-        float p = enable.floatValue();
-        if (p < 1f) {
-            if (n.random().nextFloat() > p)
-                return;
-        }
-
-        super.next(n, kontinue);
     }
 
     @Override

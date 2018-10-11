@@ -250,7 +250,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
         /**
          * passive insertion subtask only
          */
-        @Deprecated
+
         public SeriesRemember input(TaskConcept concept) {
             //return new TaskLinkTaskAndEmit(this, priElseZero(), concept);
             return new SeriesRemember(this, concept);

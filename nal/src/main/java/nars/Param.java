@@ -38,7 +38,7 @@ public abstract class Param {
 
 
     /** max percent of capacity allowed input */
-    public static final float DerivedTaskBagDrainRateLimit = 0.5f;
+    public static final float DerivedTaskBagDrainRateLimit = 0.75f;
 
     public static final boolean ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME = true;
 
@@ -159,14 +159,14 @@ public abstract class Param {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-        Math::max;
+        Util::or;
+        //Math::max;
         //Util::and;
         //Util.unitize(t+b);
 
 
-    public static final PriMerge taskMerge =
-            PriMerge.max;
-    //PriMerge.plus;
+    public static final PriMerge taskMerge = PriMerge.max;
+
 
 
     /**
@@ -240,7 +240,7 @@ public abstract class Param {
      * extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static float TEST_TIME_MULTIPLIER = 3f;
+    public static float TEST_TIME_MULTIPLIER = 4f;
 
 
     @Range(min = 1, max = 32)
