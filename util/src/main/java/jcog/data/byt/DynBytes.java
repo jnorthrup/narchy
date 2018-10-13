@@ -200,7 +200,6 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
                     //space + Math.max(extra, MIN_GROWTH_BYTES)
                     ArrayUtil.oversize(current+extra, 1)
             );
-            free(x);
         }
         return p;
     }
@@ -213,9 +212,8 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         /* default impl: nothing */
     }
 
-    @Override public final void close() {
-        free(bytes);
-        bytes = ArrayUtils.EMPTY_BYTE_ARRAY;
+    @Override public void close() {
+        /** nothing */
     }
 
     protected byte[] realloc(byte[] b, int current, int newLen) {

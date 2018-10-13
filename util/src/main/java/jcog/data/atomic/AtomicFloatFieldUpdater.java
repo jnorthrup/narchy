@@ -6,6 +6,7 @@ import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToIntFunction;
 
+import java.util.function.IntBinaryOperator;
 import java.util.function.IntUnaryOperator;
 
 import static java.lang.Float.floatToIntBits;
@@ -54,6 +55,9 @@ public final class AtomicFloatFieldUpdater<X>  {
     private float updateGet(X x, IntUnaryOperator y) {
         return intBitsToFloat(updater.updateAndGet(x, y));
     }
+    private float updateGet(X x, IntBinaryOperator yMustFloatizeBothInts, float arg) {
+        return intBitsToFloat(updater.accumulateAndGet(x, Float.floatToIntBits(arg), yMustFloatizeBothInts));
+    }
 
     private void update(X x, IntUnaryOperator y) {
         updater.updateAndGet(x, y);
@@ -74,7 +78,9 @@ public final class AtomicFloatFieldUpdater<X>  {
 
     public float updateAndGet(X x, FloatFloatToFloatFunction f, float y) {
         return updateGet(x, v -> floatToIntBits(f.apply(intBitsToFloat(v), y)));
+        //return updateGet(x, (v, yy) -> floatToIntBits(f.apply(intBitsToFloat(v), intBitsToFloat(yy))), y);
     }
+
 
     public void update(X x, FloatFloatToFloatFunction f, float y) {
         update(x, v -> floatToIntBits(f.apply(intBitsToFloat(v), y)));

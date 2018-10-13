@@ -24,9 +24,6 @@ import nars.exe.MultiExec;
 import nars.exe.Revaluator;
 import nars.gui.NARui;
 import nars.index.concept.HijackConceptIndex;
-import nars.op.Arithmeticize;
-import nars.op.Factorize;
-import nars.op.Introduction;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -42,7 +39,6 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.SpaceGraph;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.meter.Cluster2DView;
@@ -112,7 +108,7 @@ abstract public class NAgentX extends NAgent {
         */
 
 
-        Param.STRONG_COMPOSITION = true;
+        //Param.STRONG_COMPOSITION = true;
         Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
@@ -397,20 +393,20 @@ abstract public class NAgentX extends NAgent {
         //new STMLinkage(n, 1);
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 96);
-        {
-
-            SpaceGraph.window(
-                    new ConjClusterView(conjClusterBinput),
-                    500, 500);
-
-        }
+//        {
+//
+//            SpaceGraph.window(
+//                    new ConjClusterView(conjClusterBinput),
+//                    500, 500);
+//
+//        }
 
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 32);
 //        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof AbstractGoalActionConcept.CuriosityTask) ),
 //                8, 96);
 
-        Introduction arith = new Arithmeticize.ArithmeticIntroduction(64, n);
-        Introduction factorizer = new Factorize.FactorIntroduction(64, n);
+//        Introduction arith = new Arithmeticize.ArithmeticIntroduction(64, n);
+//        Introduction factorizer = new Factorize.FactorIntroduction(64, n);
 
         {
 //            new Inperience.Believe(n, 32);
@@ -420,7 +416,7 @@ abstract public class NAgentX extends NAgent {
         }
 
 
-        try {
+//        try {
 //            InterNAR i = new InterNAR(n, 0) {
 //                @Override
 //                protected void starting(NAR nar) {
@@ -428,12 +424,12 @@ abstract public class NAgentX extends NAgent {
 //                    runFPS(4);
 //                }
 //            };
-
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//
+//
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         //new Abbreviation(n, "z", 5, 9, 0.1f, 8);
     }

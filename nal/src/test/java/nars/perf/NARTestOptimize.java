@@ -61,7 +61,7 @@ class NARTestOptimize {
 //                .var("goalPriDefault", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.goalPriDefault.set(f))
 
-                .var("derivationComplexityExponent", 1f, 2.5f, 0.5f,
+                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
                         (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
                                 ((DefaultDeriverBudgeting)(((MatrixDeriver)x).budgeting)).
                                         relGrowthExponent.set(f)))
@@ -72,7 +72,7 @@ class NARTestOptimize {
             ;
 
 
-            int suiteIterations = 4;
+            int suiteIterations = 1;
             int samples = 128;
             Optimization<NAR, TestNARSuite> o = l.optimize((Supplier<NAR> s) -> {
                 TestNARSuite t = new TestNARSuite(s, testClasses);

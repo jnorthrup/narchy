@@ -23,22 +23,49 @@
 
 package jcog.data.pool;
 
+import jcog.TODO;
+import jcog.WTF;
 import jcog.data.list.FasterList;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Object pool for arrays.
  *
  * @author jezek2
  */
-public class ArrayPool<T> extends FasterList {
+public class ArrayPool<T> extends FasterList<T> {
 
     private static final ThreadLocal<ArrayPool<byte[]>> bytes =
-            ThreadLocal.withInitial(() -> new ArrayPool(byte[].class));
+            ThreadLocal.withInitial(() -> new ArrayPool<byte[]>(byte[].class) {
+                @Override
+                protected byte[] create(int length) {
+                    return new byte[length];
+                }
+
+                @Override
+                protected int len(byte[] bytes) {
+                    return bytes.length;
+                }
+            });
     private static final ThreadLocal<ArrayPool<short[]>> shorts =
-            ThreadLocal.withInitial(() -> new ArrayPool(short[].class));
+            ThreadLocal.withInitial(() -> new ArrayPool<short[]>(short[].class) {
+                @Override
+                protected short[] create(int length) {
+                    return new short[length];
+                }
+
+                @Override
+                protected int len(short[] bytes) {
+                    return bytes.length;
+                }
+            });
+
+    final static int capacity = 16;
 
     private static final ThreadLocal<Map<Class, ArrayPool>> typed = ThreadLocal.withInitial(HashMap::new);
 
@@ -98,6 +125,8 @@ public class ArrayPool<T> extends FasterList {
      */
     public ArrayPool(Class arrayType) {
 
+        super(capacity);
+
         this.componentType = arrayType.getComponentType();
 
         this.primitive = componentType.isPrimitive();
@@ -129,7 +158,7 @@ public class ArrayPool<T> extends FasterList {
     }
 
     @SuppressWarnings("unchecked")
-    private T create(int length) {
+    protected T create(int length) {
         return (T) Array.newInstance(componentType, length);
     }
 
@@ -142,12 +171,13 @@ public class ArrayPool<T> extends FasterList {
      */
     @SuppressWarnings("unchecked")
     public T getExact(int length) {
-        comparator.value = length;
-        int index = Collections.binarySearch(this, comparator, comparator);
-        if (index < 0) {
-            return create(length);
-        }
-        return (T) remove(index);
+        throw new TODO();
+//        comparator.value = length;
+//        int index = Collections.binarySearch(this, comparator, comparator);
+//        if (index < 0) {
+//            return create(length);
+//        }
+//        return remove(index);
     }
 
     /**
@@ -159,13 +189,24 @@ public class ArrayPool<T> extends FasterList {
      */
     @SuppressWarnings("unchecked")
     public T getMin(int minLength) {
-        comparator.value = minLength;
-        int index = Collections.binarySearch(this, comparator, comparator);
-        if (index < 0) {
-            index = -index - 1;
-            return index < size ? (T) remove(index) : create(minLength);
+//        comparator.value = minLength;
+//        int index = Collections.binarySearch(this, comparator, comparator);
+//        if (index < 0) {
+//            index = -index - 1;
+//            return index < size ? remove(index) : create(minLength);
+//        }
+//        return remove(index);
+
+        //HACK TODO use binary selection
+        int s = this.size;
+        for (int i = s-1; i >= 0; i--) {
+            T t = get(i);
+            if (len(t) >= minLength) {
+                removeFast(i);
+                return t;
+            }
         }
-        return (T) remove(index);
+        return create(minLength);
     }
 
     /**
@@ -175,17 +216,75 @@ public class ArrayPool<T> extends FasterList {
      */
     @SuppressWarnings("unchecked")
     public void put(T array) {
-        int index = Collections.binarySearch(this, array, comparator);
-        if (index < 0) index = -index - 1;
-        add(index, array);
+//        if (contains(array)) //temporary for debug
+//            throw new WTF();
+
+        int s = this.size;
+        if (s+1 > capacity) {
+            //remove middle element to preserve dynamic range
+            removeFast(s/2);
+        }
+
+        switch (s) {
+            case 0:
+                add(array);
+                break;
+            case 1:
+                if (len(0) >= len(array))
+                    add(array);
+                else
+                    add(0, array);
+//                assertSorted(); //temporary
+                break;
+            default:
+
+//                int index = Collections.binarySearch(this, array, comparator);
+//                if (index < 0) {
+//                    //HACK
+//                    if (len(array) < len(0))
+//                        add(array);
+//                    else
+//                        add(0, array);
+//                }
+//                else { add(index, array); }
+//                assertSorted(); //temporary
+
+                //TODO use binary insertion
+                int l = len(array);
+                int index = s;
+                for (int i = 0; i < s; i++) {
+                    if (l > len(i)) {
+                        index = i;
+                        break;
+                    }
+                }
+                add(index, array);
+                //assertSorted();
+                break;
+        }
+        //System.out.println(System.identityHashCode(this) + " " + size());
 
         
-        if (!primitive) {
-            Object[] objArray = (Object[]) array;
-            Arrays.fill(objArray, null);
-        }
+        if (!primitive)
+            Arrays.fill((Object[]) array, null);
     }
 
+    private void assertSorted() {
+        if (size > 1) {
+            for (int i = 1; i < size; i++) {
+                if (len(i) > len(i - 1))
+                    throw new WTF();
+            }
+        }
+
+    }
+
+    protected final int len(int index) {
+        return len(get(index));
+    }
+    protected int len(T t) {
+        return ((Object[])t).length;
+    }
 
     private static class ByteArrayLengthMatcher extends ArrayLengthMatcher {
         @Override final int len(Object o) {
