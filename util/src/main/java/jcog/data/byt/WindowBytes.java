@@ -36,7 +36,7 @@ public class WindowBytes extends ArrayBytes /*implements CharSequence*/ {
     }
 
     @Override
-    public byte[] array() {
+    public byte[] arrayCompactDirect() {
         return Arrays.copyOfRange(bytes, start, end);
     }
 
@@ -64,7 +64,7 @@ public class WindowBytes extends ArrayBytes /*implements CharSequence*/ {
     }
 
     public String toString() {
-        return new String(array());
+        return new String(arrayCompactDirect());
     }
 
 

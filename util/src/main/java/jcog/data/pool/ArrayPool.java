@@ -174,7 +174,7 @@ public class ArrayPool<T> extends FasterList {
      * @param array previously obtained array from this pool
      */
     @SuppressWarnings("unchecked")
-    public void release(T array) {
+    public void put(T array) {
         int index = Collections.binarySearch(this, array, comparator);
         if (index < 0) index = -index - 1;
         add(index, array);

@@ -2,6 +2,7 @@ package jcog.memoize.byt;
 
 import jcog.Texts;
 import jcog.data.byt.DynBytes;
+import jcog.data.byt.RecycledDynBytes;
 import jcog.pri.PriProxy;
 import jcog.pri.UnitPri;
 
@@ -100,18 +101,8 @@ abstract public class ByteKey extends UnitPri {
             this.key = key;
         }
 
-        public final  <Y> PriProxy<?,Y> internal(Y result, float pri) {
-            return internal(result, pri, true);
-        }
-
-        private <Y> PriProxy<?,Y> internal(Y result, float pri, boolean forceNew) {
-            byte[] b = array();
-            int l = length();
-            if (!forceNew && l == b.length) {
-                //keep
-            } else {
-                b = Arrays.copyOf(b, l);
-            }
+        protected <Y> PriProxy<?,Y> internal(Y result, float pri) {
+            byte[] b = key instanceof RecycledDynBytes ? key.arrayCopyClose() : key.arrayCompactDirect();
 
             return new ByteKeyInternal<>(b, hash, result, pri);
         }

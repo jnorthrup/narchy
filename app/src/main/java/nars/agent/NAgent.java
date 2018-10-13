@@ -112,11 +112,11 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     protected <A extends ActionConcept> void actionAdded(A a) {
-        alwaysQuest(a, false);
-//        alwaysQuestionEternally(a,
-//                false,
-//                false
-//        );
+        //alwaysQuest(a, false);
+        alwaysQuestionEternally(a,
+                false,
+                false
+        );
 
 //        alwaysQuestion(IMPL.the(c.term, 0, $$("reward:#x")), true);
 //        alwaysQuestion(IMPL.the(c.term.neg(), 0, $$("reward:#x")), true);

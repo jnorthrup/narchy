@@ -1,5 +1,7 @@
 package nars.control.proto;
 
+import jcog.pri.PriReference;
+import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -8,6 +10,7 @@ import nars.link.TaskLink;
 import nars.link.Tasklinks;
 import nars.task.AbstractTask;
 import nars.task.ITask;
+import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 public class TaskLinkTask extends AbstractTask {
@@ -39,6 +42,14 @@ public class TaskLinkTask extends AbstractTask {
 
         //2. tasklink
         Tasklinks.linkTask(new TaskLink.GeneralTaskLink(task, n, pri), c.tasklinks(), null);
+
+        //2b. if termlinks is empty, pre-initialize templates
+        {
+            Bag<Term, PriReference<Term>> termlinks = c.termlinks();
+            if (termlinks.isEmpty()) {
+                c.linker().init(termlinks);
+            }
+        }
 
         //3. feel
         ((TaskConcept) c).value(task, n);

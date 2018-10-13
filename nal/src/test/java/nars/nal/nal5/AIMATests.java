@@ -25,10 +25,10 @@ class AIMATests {
     @ValueSource(doubles = {0.01, 0.05, 0.1, 0.25, 0.5})
     void testAIMAExample(double truthRes) throws Narsese.NarseseException {
 
-        n.termVolumeMax.set(9);
+        n.termVolumeMax.set(7);
         n.freqResolution.set((float) truthRes);
         n.confMin.set(0.05f);
-        n.confResolution.set(0.15f);
+        n.confResolution.set(0.1f);
 
         n.believe(
                 "(P ==> Q)",
@@ -39,7 +39,7 @@ class AIMATests {
                 "A",
                 "B");
 
-        assertBelief(n, true, "Q", 9500);
+        assertBelief(n, true, "Q", 500);
 
     }
 
@@ -48,15 +48,15 @@ class AIMATests {
 
         n.freqResolution.set(0.1f);
         n.confResolution.set(0.02f);
-        n.confMin.set(0.1f);
+        //n.confMin.set(0.1f);
 
         //n.activateConceptRate.set(0.5f);
 //        n.beliefPriDefault.set(0.3f);
 //        n.beliefPriDefault.set(0.25f);
-//        n.questionPriDefault.set(0.75f);
+//        n.questionPriDefault.set(0.9f);
 
-        n.termVolumeMax.set(17);
-       // n.log();
+        n.termVolumeMax.set(14);
+        //n.log();
 
 
         n.believe(
@@ -84,7 +84,7 @@ class AIMATests {
         //n.concept("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").print();
         //n.concept("Criminal").print();
 
-        n.run(15000);
+        n.run(5000);
 //        n.synch();
 
         n.concept(Q).print();

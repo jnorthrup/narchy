@@ -161,9 +161,9 @@ public abstract class Param {
     public static final FloatFloatToFloatFunction DerivationPri =
         //Util::or;
         //Math::max;
-        Util::mean;
+        //Util::mean;
         //Util::and;
-        //Util.unitize(t+b);
+        (t,b)->Util.unitize(t+b);
 
 
     public static final PriMerge taskMerge = PriMerge.max;

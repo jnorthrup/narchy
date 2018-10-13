@@ -2,6 +2,7 @@ package nars.term.util.builder;
 
 import jcog.WTF;
 import jcog.data.byt.DynBytes;
+import jcog.data.byt.RecycledDynBytes;
 import jcog.memoize.Memoizers;
 import nars.IO;
 import nars.Op;
@@ -169,10 +170,11 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return super.theSubterms(t);
     }
 
-    //final static ThreadLocal<DynBytes> tmpkey = ThreadLocal.withInitial(()->new DynBytes(256));
+
     public static DynBytes tmpKey() {
-        //return tmpkey.get();
-        return new DynBytes(IO.termBytesEstimate());
+
+        //return new DynBytes(IO.termBytesEstimate());
+        return new RecycledDynBytes(IO.termBytesEstimate());
     }
 
     private void resolve(Term[] t) {
@@ -192,6 +194,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
             if (y != null)
                 t[i] = y;
         }
+        if (tmp!=null)
+            tmp.close();
     }
 
     private static boolean internableRoot(Op op, int dt, Term[] u) {

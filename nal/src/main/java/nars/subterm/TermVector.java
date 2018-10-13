@@ -1,11 +1,11 @@
 package nars.subterm;
 
 import jcog.Util;
+import nars.Op;
 import nars.The;
 import nars.subterm.util.SubtermMetadataCollector;
 import nars.subterm.util.TermMetadata;
 import nars.term.Term;
-import nars.term.util.Image;
 
 import java.util.Iterator;
 
@@ -38,7 +38,7 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
     }
 
     protected void testIfInitiallyNormalized() {
-        if (!hasAll(Image.ImageBits)) {
+        if (!hasAny(Op.IMG)) {
             if (vars() == 0 || testIfInitiallyNormalized(this))
               setNormalized();
         }

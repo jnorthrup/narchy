@@ -820,7 +820,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default Subterms replaceSub(Term from, Term to, Op superOp) {
         if (containsRecursively(from)) {
             //if (!impossibleSubTerm(from)) {
-            return transformSubs(MapSubst.the(from, to), superOp);
+            return transformSubs(MapSubst.replace(from, to), superOp);
         } else {
             return this;
         }

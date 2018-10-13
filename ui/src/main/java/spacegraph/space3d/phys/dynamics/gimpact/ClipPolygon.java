@@ -122,7 +122,7 @@ class ClipPolygon {
 				clipped_count);
 
 		int ret = clipped_count[0];
-		intArrays.release(clipped_count);
+		intArrays.put(clipped_count);
 		return ret;
 	}
 
@@ -182,7 +182,7 @@ class ClipPolygon {
 				clipped_count);
 
 		int ret = clipped_count[0];
-		intArrays.release(clipped_count);
+		intArrays.put(clipped_count);
 		return ret;
 	}
 	

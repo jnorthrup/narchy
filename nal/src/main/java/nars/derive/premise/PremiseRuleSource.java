@@ -1,5 +1,6 @@
 package nars.derive.premise;
 
+import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.data.map.CustomConcurrentHashMap;
 import nars.$;
@@ -22,6 +23,7 @@ import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.term.util.Image;
 import nars.term.util.transform.TermTransform;
+import nars.term.var.VarPattern;
 import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
 import nars.unify.constraint.*;
@@ -173,13 +175,20 @@ public class PremiseRuleSource extends ProxyTerm  {
 
                 case "subOf": {
 
-                    if (!negated)
-                        neq(constraints, X, Y);
+                    if (!(Y instanceof VarPattern)) {
+                        if (negated)
+                            throw new TODO();
+                        match(X, new TermMatch.Contains(Y));
 
-                    constraints.add(new SubOfConstraint(X, Y, Subterm).negIf(negated));
+                    } else {
+                        if (!negated)
+                            neq(constraints, X, Y);
 
-                    if (negated)
-                        negationApplied = true;
+                        constraints.add(new SubOfConstraint(X, Y, Subterm).negIf(negated));
+
+                        if (negated)
+                            negationApplied = true;
+                    }
                     break;
                 }
 

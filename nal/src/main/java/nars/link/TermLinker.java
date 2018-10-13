@@ -1,6 +1,9 @@
 package nars.link;
 
+import jcog.pri.PriReference;
+import jcog.pri.bag.Bag;
 import nars.derive.Derivation;
+import nars.term.Term;
 import nars.term.Termed;
 
 import java.util.stream.Stream;
@@ -34,5 +37,9 @@ public interface TermLinker {
 
         }
     };
+
+    default void init(Bag<Term, PriReference<Term>> termlinks) {
+
+    }
 
 }

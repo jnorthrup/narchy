@@ -37,7 +37,7 @@ public class ArrayBytes implements AbstractBytes, Serializable, Comparable<Array
     }
 
     @Override
-    public byte[] array() {
+    public byte[] arrayCompactDirect() {
         return bytes;
     }
 

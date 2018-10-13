@@ -13,7 +13,6 @@ import java.util.Set;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -32,7 +31,7 @@ class DynamicTruthBeliefTableTest {
         Set<Task> tasks = new HashSet();
         for (int i = 0; i < 10; i++)
             tasks.add(tl.get(n));
-        assertEquals("[$.50 (x&&y). %0.0;.25%]", tasks.toString());
+        assertTrue(tasks.toString().contains("(x&&y). %0.0;.25%]"));
         tasks.forEach(System.out::println);
     }
 

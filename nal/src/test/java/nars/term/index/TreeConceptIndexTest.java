@@ -25,7 +25,7 @@ class TreeConceptIndexTest {
     @Test
     void testTermIndex() {
         TermRadixTree<Term> t = new TermRadixTree<>();
-        byte[] a = t.key($.func("x", $.the("y"))).array();
+        byte[] a = t.key($.func("x", $.the("y"))).arrayCompactDirect();
         System.out.println(Arrays.toString(a));
         t.put($.func("x", $.the("y")), $.the(1));
         t.put($.func("x", $.the("z")), $.the(2));

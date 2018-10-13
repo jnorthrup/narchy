@@ -644,16 +644,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
 
     @Nullable
     default Term replace(Map<? extends Term, Term> m) {
-        switch (m.size()) {
-            case 0:
-                return this;
-            case 1: {
-                Map.Entry<? extends Term, Term> e = m.entrySet().iterator().next();
-                return replace(e.getKey(), e.getValue());
-            }
-            default:
-                return new MapSubst(m).transform(this);
-        }
+        return MapSubst.replace(this, m);
     }
 
     Term replace(Term from, Term to);

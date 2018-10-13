@@ -108,7 +108,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
             if (knownKey == null) {
                 DynBytes d = new DynBytes(IO.termBytesEstimate(subterms) + 1);
                 super.appendTo((ByteArrayDataOutput) d);
-                key = d.array();
+                key = d.arrayCompactDirect();
             } else {
                 key = knownKey;
             }

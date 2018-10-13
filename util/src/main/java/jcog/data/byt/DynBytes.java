@@ -3,6 +3,7 @@ package jcog.data.byt;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.lucene.util.ArrayUtil;
 import org.iq80.snappy.Snappy;
 
 import java.io.DataOutput;
@@ -14,9 +15,8 @@ import java.util.Arrays;
 /**
  * dynamic byte array with mostly append-oriented functionality
  */
-public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes {
+public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes, AutoCloseable {
 
-    static final int MIN_GROWTH_BYTES = 64;
     /**
      * must remain final for global consistency
      * might as well be 1.0, if it's already compressed to discover what this is, just keep it
@@ -30,8 +30,10 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
     protected byte[] bytes;
 
     public DynBytes(int bufferSize) {
-        this.bytes = new byte[bufferSize];
+        this.bytes = alloc(bufferSize);
     }
+
+
 
     public DynBytes(byte[] zeroCopy) {
         this(zeroCopy, zeroCopy.length);
@@ -63,9 +65,9 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 
 
         int bufferLen = from + Snappy.maxCompressedLength(len);
-        
 
-        byte[] compressed = new byte[bufferLen]; 
+
+        byte[] compressed = new byte[bufferLen];
 
         int compressedLength = Snappy.compress(
                 this.bytes, from, len,
@@ -92,10 +94,10 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 
     @Override
     public int hashCode() {
-        return Util.hash(bytes, 0, len);
+        return hash(0, len);
     }
 
-    public int hash(int from, int to) {
+    public final int hash(int from, int to) {
         return Util.hash(bytes, from, to);
     }
 
@@ -105,13 +107,11 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
+        return this == obj || equivalent((DynBytes) obj);
 
-        return equivalent((DynBytes) obj);
     }
 
-    public boolean equivalent(DynBytes d) {
+    public final boolean equivalent(DynBytes d) {
         int len = this.len;
         return d.len == len && Arrays.equals(bytes, 0, len, d.bytes, 0, len);
     }
@@ -192,16 +192,37 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
     }
 
     private int ensureSized(int extra) {
-        byte[] b = this.bytes;
-        int space = b.length;
+        byte[] x = this.bytes;
+        int current = x.length;
         int p = this.len;
-        if (space - p < extra) {
-            this.bytes = Arrays.copyOf(b, space + Math.max(extra, MIN_GROWTH_BYTES));
+        if (current - p < extra) {
+            this.bytes = realloc(x, current,
+                    //space + Math.max(extra, MIN_GROWTH_BYTES)
+                    ArrayUtil.oversize(current+extra, 1)
+            );
+            free(x);
         }
         return p;
     }
 
-    @Override public final byte[] array() {
+    protected byte[] alloc(int bufferSize) {
+        return new byte[bufferSize];
+    }
+
+    protected void free(byte[] b) {
+        /* default impl: nothing */
+    }
+
+    @Override public final void close() {
+        free(bytes);
+        bytes = ArrayUtils.EMPTY_BYTE_ARRAY;
+    }
+
+    protected byte[] realloc(byte[] b, int current, int newLen) {
+        return Arrays.copyOf(b, newLen);
+    }
+
+    @Override public final byte[] arrayCompactDirect() {
         compact();
         return arrayDirect();
     }
@@ -234,7 +255,13 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 
 
     public final byte[] arrayCopy() {
-        return array().clone();
+        return Arrays.copyOf(bytes, len);
+    }
+    public byte[] arrayCopyClose() {
+        throw new UnsupportedOperationException("valid only with RecycledDynBytes");
+//        byte[] b = arrayCopy();
+//        close();
+//        return b;
     }
 
     public byte[] compact() {

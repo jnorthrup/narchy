@@ -51,7 +51,7 @@ public interface AbstractBytes {
     }
 
     /** clones a new copy TODO when can it share a ref, if start==0 and end==length ? */
-    default byte[] array() {
+    default byte[] arrayCompactDirect() {
         byte[] b = new byte[length()];
         toArray(b, 0);
         return b;
@@ -69,7 +69,7 @@ public interface AbstractBytes {
         public void toArray(byte[] c, int offset) { c[offset] = b; }
 
         @Override
-        public byte[] array() {
+        public byte[] arrayCompactDirect() {
             return new byte[] { b };
         }
 

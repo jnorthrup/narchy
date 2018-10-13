@@ -17,9 +17,10 @@ public enum Image { ;
 
     public static final int ImageBits = PROD.bit | Op.IMG.bit | INH.bit;
 
-    public static final Functor imageNormalize = Functor.f1Inline("imageNormalize", Image::imageNormalize);
-    public static final Functor imageInt = Functor.f2Inline("imageInt", Image::imageInt);
-    public static final Functor imageExt = Functor.f2Inline("imageExt", Image::imageExt);
+    public static final Functor
+        imageNormalize = Functor.f1Inline("imageNormalize", Image::imageNormalize),
+        imageInt = Functor.f2Inline("imageInt", Image::imageInt),
+        imageExt = Functor.f2Inline("imageExt", Image::imageExt);
 
 
 

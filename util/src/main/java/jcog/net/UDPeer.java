@@ -263,7 +263,7 @@ public class UDPeer extends UDP {
             if (onlyIfNotSeen && seen(o, pri))
                 return 0;
 
-            byte[] bytes = o.array();
+            byte[] bytes = o.arrayCompactDirect();
 
             final int[] remain = {Math.round(them.size() * pri)};
             them.sample(rng, (Function<UDProfile, Sampler.SampleReaction>)((to) -> {
@@ -336,7 +336,7 @@ public class UDPeer extends UDP {
      * send to a specific known recipient
      */
     public void send(Msg o, InetSocketAddress to) {
-        outBytes(o.array(), to);
+        outBytes(o.arrayCompactDirect(), to);
     }
 
     @Override
@@ -630,7 +630,7 @@ public class UDPeer extends UDP {
         public final UDProfile from;
 
         public MsgReceived(Msg m, @Nullable UDProfile from) {
-            super(m.array());
+            super(m.arrayCompactDirect());
             this.from = from;
         }
     }

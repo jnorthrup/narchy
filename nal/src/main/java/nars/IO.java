@@ -4,6 +4,7 @@ package nars;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
 import jcog.data.byt.DynBytes;
+import jcog.data.byt.RecycledDynBytes;
 import jcog.io.BytesInput;
 import jcog.pri.Prioritized;
 import nars.subterm.Subterms;
@@ -313,16 +314,16 @@ public class IO {
         if (t instanceof Atomic) {
             return ((Atomic) t).bytes();
         } else {
-            DynBytes d = new DynBytes(termBytesEstimate(t) /* estimate */);
+            DynBytes d = new RecycledDynBytes(termBytesEstimate(t) /* estimate */);
             t.appendTo((ByteArrayDataOutput) d);
-            return d.array();
+            return d.arrayCopyClose();
         }
     }
     public static DynBytes termToDynBytes(Term t) {
         if (t instanceof Atomic) {
-            return new DynBytes(((Atomic) t).bytes());
+            return new DynBytes(((Atomic) t).bytes()); //dont recycle
         } else {
-            DynBytes d = new DynBytes(termBytesEstimate(t) /* estimate */);
+            DynBytes d = new RecycledDynBytes(termBytesEstimate(t) /* estimate */);
             t.appendTo((ByteArrayDataOutput) d);
             return d;
         }
@@ -340,14 +341,17 @@ public class IO {
 
     @Nullable
     public static byte[] taskToBytes(Task x) {
-        DynBytes dos = new DynBytes(termBytesEstimate(x));
+        DynBytes dos = new RecycledDynBytes(termBytesEstimate(x));
 
-        return taskToBytes(x, dos);
+        byte[] b = taskToBytes(x, dos);
+
+        dos.close();
+
+        return b;
     }
 
     public @Nullable static byte[] taskToBytes(Task x, DynBytes dos) {
-        dos.clear();
-        return bytes(x, dos).array();
+        return bytes(x, dos).arrayCopy();
     }
 
     @Nullable

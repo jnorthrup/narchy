@@ -3,6 +3,7 @@ package nars.link;
 import jcog.Util;
 import jcog.data.NumberX;
 import jcog.pri.PLink;
+import jcog.pri.PLinkHashCached;
 import jcog.pri.UnitPri;
 import jcog.sort.SortedList;
 import nars.NAR;
@@ -77,9 +78,7 @@ public class ActivatedLinks extends AbstractTask {
             return "termlink(" + concept + ',' + target + ',' + pri() + ')';
         }
 
-        public PLink<Term> link() {
-            return new PLink<>(target, pri());
-        }
+
 
         @Override
         public int compareTo(@NotNull ActivatedLinks.TermLinkage x) {
@@ -112,7 +111,7 @@ public class ActivatedLinks extends AbstractTask {
             //l.sortThis(TermLinkage.comparator);
 
             for (TermLinkage x : l) {
-                x.concept.termlinks().put(x.link());
+                x.concept.termlinks().put(termlink(x.target, x.pri()));
             }
 
             //l.clearReallocate(1024, 8);
@@ -120,6 +119,10 @@ public class ActivatedLinks extends AbstractTask {
         }
 
         return null;
+    }
+
+    public static PLink<Term> termlink(Term target, float pri) {
+        return new PLinkHashCached<>(target, pri);
     }
 
     final static ThreadLocal<SortedList<TermLinkage>> drainageBuffers = ThreadLocal.withInitial(()->new SortedList<>(16));

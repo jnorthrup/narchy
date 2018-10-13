@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles =1700;
+    private static final int cycles = 900;
 
     @BeforeEach
     void setup() {
@@ -265,7 +265,7 @@ public class NAL6Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<{Tweety} --> [withWings]>");
         tester.believe("<(&&,<$x --> [chirping]>,<$x --> [withWings]>) ==> <$x --> bird>>");
-        tester.mustBelieve(cycles*2, "<<{Tweety} --> [chirping]> ==> <{Tweety} --> bird>>", 1.00f, 0.73f);
+        tester.mustBelieve(cycles, "<<{Tweety} --> [chirping]> ==> <{Tweety} --> bird>>", 1.00f, 0.73f);
 
     }
 
@@ -319,7 +319,7 @@ public class NAL6Test extends NALTest {
         test
                 .believe("((&&, flyer:$x, ($x-->[chirping]), food($x, worms)) ==> bird:$x)")
                 .believe("flyer:Tweety")
-                .mustBelieve(cycles * 2, "(((Tweety-->[chirping]) && food(Tweety,worms)) ==> bird:Tweety)",
+                .mustBelieve(cycles , "(((Tweety-->[chirping]) && food(Tweety,worms)) ==> bird:Tweety)",
                         1.0f,
                         0.73f);
 
@@ -341,7 +341,7 @@ public class NAL6Test extends NALTest {
     @Test
     void multiple_variable_elimination2() {
 
-
+        test.nar.termVolumeMax.set(10);
         TestNAR tester = test;
         tester.believe("(lock:$x ==> (key:#y && open(#y,$x)))");
         tester.believe("lock:{lock1}");
@@ -456,7 +456,8 @@ public class NAL6Test extends NALTest {
                 .believe("key:{key1}")
                 .mustBelieve(cycles, "(key:{$1} ==> open({$1},{lock1}))", 1.00f, 0.45f)
                 //.mustBelieve(cycles, "(key:$1 ==> open($1,{lock1}))", 1.00f, 0.45f)
-                .mustBelieve(cycles, "(&&,open(#1,{lock1}),key:#1)", 1.00f, 0.81f);
+                .mustBelieve(cycles, "(&&,open({#1},{lock1}),key:{#1})", 1.00f, 0.81f);
+                //.mustBelieve(cycles, "(&&,open(#1,{lock1}),key:#1)", 1.00f, 0.81f);
 
     }
 
@@ -742,7 +743,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void strong_elimination() {
-
+        test.nar.termVolumeMax.set(14);
         TestNAR tester = test;
         tester.believe("((test($a,is,cat) && sentence($a,is,$b)) ==> ($a --> $b))");
         tester.believe("test(tim,is,cat)");

@@ -249,9 +249,7 @@ public interface Truth extends Truthed {
         return freqRes != 0 ? PreciseTruth.byEvi(freq(freq(), freqRes), evi()) : this;
     }
 
-    default float freqTimesConf() {
-        return freq() * conf();
-    }
+
 
     default Truth eternalized(float factor, float eviMin, @Nullable NAR n) {
         float f = freq();

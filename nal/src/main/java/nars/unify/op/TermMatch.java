@@ -126,6 +126,36 @@ abstract public class TermMatch {
         }
     }
 
+    /** non-recursive containment */
+    public final static class Contains extends TermMatch {
+
+        public final Term x;
+
+        public Contains(Term x) {
+            this.x = x;
+        }
+
+        @Override
+        public Term param() {
+            return x;
+        }
+
+        @Override
+        public float cost() {
+            return 0.1f;
+        }
+
+        @Override
+        public boolean test(Term term) {
+            return term.contains(x);
+        }
+
+        @Override
+        public boolean testSuper(Term superTerm) {
+            return superTerm.containsRecursively(x);
+        }
+    }
+
     public final static class SubsMin extends TermMatch {
 
         final short subsMin;

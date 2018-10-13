@@ -52,11 +52,10 @@ public final class PreciseTruth extends DiscreteTruth {
                 evi);
 
         //discard evidence difference
-        //        return PreciseTruth.byConf(//byFreqConfEvi(
-        //                Truth.freq(f, fRes),
-        //                Truth.w2cDithered(evi, cRes)
-        //                ); //discard evidence difference
-        //                //,evi); //keep evidence difference
+//        return PreciseTruth.byConf(
+//                Truth.freq(f, fRes),
+//                Truth.w2cDithered(evi, cRes)
+//                );
     }
 
     @Override

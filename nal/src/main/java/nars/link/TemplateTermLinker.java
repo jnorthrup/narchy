@@ -4,7 +4,9 @@ import jcog.data.MutableFloat;
 import jcog.data.NumberX;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
+import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
+import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -14,6 +16,7 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
+import nars.term.var.ImDep;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -105,7 +108,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
      */
     private static void add(Term x, Set<Term> tc, int depth, Term root, int maxDepth) {
 
-        if (x instanceof Bool || x == Op.ImgExt || x == Op.ImgInt)
+        if (x instanceof Bool || x instanceof ImDep)
             return;
 
         Op xo = x.op();
@@ -149,11 +152,12 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
             case SIM:
             case INH:
                 if (depth == 1 && x.hasAny(
-                        Op.Variable
-                        //Op.VAR_INDEP.bit
+                        //Op.Variable
+                        Op.VAR_INDEP.bit
                 ))
                     return +1;
                 break;
+
 //            case CONJ:
 ////                if (depth <=2 && x.hasAny(Op.Variable) )
 ////                    return +1;
@@ -308,6 +312,13 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
         }
 
 
+    }
+
+    @Override
+    public void init(Bag<Term, PriReference<Term>> termlinks) {
+        for (Term template : this) {
+            termlinks.putAsync(ActivatedLinks.termlink(template, EPSILON));
+        }
     }
 
     private List<Concept> conceptualizeAndTermLink(Concept src, Derivation d) {
