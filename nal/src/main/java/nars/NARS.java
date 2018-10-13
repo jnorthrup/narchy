@@ -128,7 +128,7 @@ public class NARS {
 
 
                 n.activateConceptRate.set(0.53f);
-                n.forgetRate.set(0.47f);
+                n.forgetRate.set(0.1f);
 
 
 

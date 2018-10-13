@@ -360,10 +360,10 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         //n.freqResolution.set(0.03f);
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(28);
 
         n.forgetRate.set(0.9f);
-        n.activateConceptRate.set(0.01f);
+        n.activateConceptRate.set(0.1f);
 
 
 

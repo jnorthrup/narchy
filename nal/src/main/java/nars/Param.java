@@ -161,7 +161,8 @@ public abstract class Param {
     public static final FloatFloatToFloatFunction DerivationPri =
         //Util::or;
         //Math::max;
-        Util::and;
+        Util::mean;
+        //Util::and;
         //Util.unitize(t+b);
 
 
