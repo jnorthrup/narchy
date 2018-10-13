@@ -402,10 +402,10 @@ abstract public class MultiExec extends UniExec {
 
 
 
-                double granularity = can.size();
+                double granularity = Math.max(1, can.size() - sleeping.cardinality());
 
                 //autojiffy
-                double jiffies = granularity/(0.5f*concurrency()) //((double)granularity) * Math.max(1, (granularity - 1)) / concurrency();
+                double jiffies = Math.max(1, granularity/(concurrency())) //((double)granularity) * Math.max(1, (granularity - 1)) / concurrency();
                         ;
                 double jiffyTime = playTime / jiffies;
                 double minJiffyTime = jiffyTime;

@@ -440,17 +440,23 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             start = Tense.dither(start, n);
             end = Tense.dither(end, n);
         }
-        Truth tt = t.truth(start, end, n.dur());
-        if (tt == null)
-            return null;
-
-        if (ditherTruth) {
-            tt = tt.dithered(n);
+        Truth tt;
+        if (t.isBeliefOrGoal()) {
+            tt = t.truth(start, end, n.dur());
             if (tt == null)
                 return null;
+
+            if (ditherTruth) {
+                tt = tt.dithered(n);
+                if (tt == null)
+                    return null;
+            }
+            tt = tt.negIf(negated);
+        } else {
+            tt = null;
         }
 
-        return new SpecialTruthAndOccurrenceTask(t, start, end, negated, tt.negIf(negated));
+        return new SpecialTruthAndOccurrenceTask(t, start, end, negated, tt);
     }
 
 

@@ -214,9 +214,10 @@ public class Factorize {
         }
 
         @Override
-        protected boolean filter(Task next) {
+        protected boolean filter(Term next) {
             return next.op() == CONJ && Tense.dtSpecial(next.dt()) && next.term().subterms().subs(x -> x instanceof Compound) > 1;
         }
+
 
         @Override
         protected @Nullable Term newTerm(Task x) {

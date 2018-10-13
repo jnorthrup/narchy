@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 public class TaskConcept extends NodeConcept implements Concept {
 
@@ -120,7 +121,7 @@ public class TaskConcept extends NodeConcept implements Concept {
         byte punc = t.punc();
         if (punc == BELIEF || punc == GOAL)
             (punc == BELIEF ? MetaGoal.Believe : MetaGoal.Desire)
-                    .learn(t.cause(), TruthIntegration.evi(t), n.causes);
+                    .learn(t.cause(), w2cSafe(TruthIntegration.evi(t)), n.causes);
 
 
     }

@@ -98,12 +98,15 @@ public interface TaskTable {
     }
 
 
-    @Deprecated
     default Task sample(long start, long end, Term template, NAR nar) {
+        return sample(start, end, template, null, nar);
+    }
+
+    default Task sample(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
 
         if (isEmpty())
             return null;
 
-        return matching(start, end, template, null, nar).task(false, false, false);
+        return matching(start, end, template, filter, nar).task(false, false, false);
     }
 }

@@ -138,7 +138,7 @@ abstract public class Inperience extends TaskLeakTransform {
         }
 
         Believe(NAR n, byte punc, int capacity) {
-            super(n, punc, capacity);
+            super(n, punc);
         }
 
         /**
@@ -216,7 +216,7 @@ abstract public class Inperience extends TaskLeakTransform {
         }
 
         protected Wonder(NAR n, byte punc, int capacity) {
-            super(n, punc, capacity);
+            super(n, punc);
         }
 
         @Override
@@ -249,8 +249,8 @@ abstract public class Inperience extends TaskLeakTransform {
 
     }
 
-    protected Inperience(NAR n, byte punc, int capacity) {
-        super(capacity, n, punc);
+    protected Inperience(NAR n, byte punc) {
+        super(n, punc);
     }
 
 
@@ -279,6 +279,11 @@ abstract public class Inperience extends TaskLeakTransform {
     }
 
     @Override
+    protected boolean filter(Term nextTerm) {
+        return nextTerm.volume() <= volMaxPre;
+    }
+
+    @Override
     public boolean filter(Task next) {
 
         if (next.stamp().length == 0)
@@ -290,11 +295,8 @@ abstract public class Inperience extends TaskLeakTransform {
             return false;
 
 
-        Term nextTerm = next.term();
-        if (nextTerm.volume() > volMaxPre)
-            return false;
 
-        nextTerm = Image.imageNormalize(nextTerm);
+        Term nextTerm = Image.imageNormalize(next.term());
         if (nextTerm.op() == INH) {
             //prevent immediate cyclic feedback
             Term pred = nextTerm.sub(1);

@@ -57,8 +57,7 @@ public class Arithmeticize {
         }
 
         @Override
-        protected boolean filter(Task next) {
-            Term x = next.term();
+        protected boolean filter(Term x) {
             return
                     x.hasAny(Op.INT) &&
                             x.complexity() >= 3 &&

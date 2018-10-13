@@ -163,6 +163,10 @@ public class UniExec extends AbstractExec {
                 if (n == 0)
                     return this;
 
+                long accumEpsilon =
+                        1;
+                        //nar.loop.cycleTimeNS / (n * 2);
+
                 double[] valMin = {Double.POSITIVE_INFINITY}, valMax = {Double.NEGATIVE_INFINITY};
 
                 long now = nar.time();
@@ -208,11 +212,11 @@ public class UniExec extends AbstractExec {
                             value = valMin[0];
 
 
-                        long accumTime = Math.max(1, s.accumulatedTime(true));
-                        double valuePerSecond = (value / accumTime);
-                        s.valuePerSecond = valuePerSecond;
-                        if (valuePerSecond > valRateMax[0]) valRateMax[0] = valuePerSecond;
-                        if (valuePerSecond < valRateMin[0]) valRateMin[0] = valuePerSecond;
+                        long accumTimeNS = Math.max(accumEpsilon, s.accumulatedTime(true));
+                        double valuePerSecondMS = (value / (accumTimeNS/1_000_000.0));
+                        s.valuePerSecond = valuePerSecondMS;
+                        if (valuePerSecondMS > valRateMax[0]) valRateMax[0] = valuePerSecondMS;
+                        if (valuePerSecondMS < valRateMin[0]) valRateMin[0] = valuePerSecondMS;
                     });
                     double valRateRange = valRateMax[0] - valRateMin[0];
                     if (Double.isFinite(valRateRange) && valRateRange > Double.MIN_NORMAL * n) {
@@ -234,7 +238,7 @@ public class UniExec extends AbstractExec {
                             } else {
                                 vv = 0;
                             }
-                            s.valuePerSecondNormalized = Util.lerp(explorationRate, vv, 1);
+                            s.valuePerSecondNormalized = vv;
                             valueRateSum[0] += vv;
                         });
 
@@ -245,8 +249,9 @@ public class UniExec extends AbstractExec {
                                     return;
 
 
+                                float p = (float) (s.valuePerSecondNormalized / valueRateSum[0]);
                                 s.pri(
-                                        (float) (s.valuePerSecondNormalized / valueRateSum[0]),
+                                        Util.lerp(explorationRate, p, 1f/n),
                                         1-timeSliceMomentum
                                 );
                             });

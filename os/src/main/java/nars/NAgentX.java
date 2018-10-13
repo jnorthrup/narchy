@@ -27,7 +27,6 @@ import nars.index.concept.HijackConceptIndex;
 import nars.op.Arithmeticize;
 import nars.op.Factorize;
 import nars.op.Introduction;
-import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -414,10 +413,10 @@ abstract public class NAgentX extends NAgent {
         Introduction factorizer = new Factorize.FactorIntroduction(64, n);
 
         {
-            new Inperience.Believe(n, 32);
-            new Inperience.Want(n, 32);
-            new Inperience.Wonder(n, 16);
-            new Inperience.Plan(n, 16);
+//            new Inperience.Believe(n, 32);
+//            new Inperience.Want(n, 32);
+//            new Inperience.Wonder(n, 16);
+//            new Inperience.Plan(n, 16);
         }
 
 

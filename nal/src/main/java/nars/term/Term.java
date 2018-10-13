@@ -455,15 +455,22 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
             return vc;
 
         Op op = this.op();
-        int oc = op.compareTo(t.op()); //Integer.compare(op.id, t.op().id);
+        int oc = Integer.compare(op.id, t.op().id);
         if (oc != 0)
             return oc;
 
         if (volume == 1) {
             assert(this instanceof Atomic);
 
-            if (this instanceof AnonID && t instanceof AnonID) {
-                return Integer.compare(hashCode(), t.hashCode()); //same op, same hashcode
+            if (this instanceof AnonID) {
+                if (t instanceof AnonID){
+                    return Integer.compare(hashCode(), t.hashCode()); //same op, same hashcode
+                } else {
+                    return -1;
+                }
+            } else {
+                if (t instanceof AnonID)
+                    return +1;
             }
 
             return Util.compare(

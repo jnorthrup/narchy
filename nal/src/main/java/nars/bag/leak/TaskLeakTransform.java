@@ -17,6 +17,11 @@ abstract public class TaskLeakTransform extends TaskLeak  {
 
     protected final BufferedCauseChannel in;
 
+    protected TaskLeakTransform(NAR nar, byte... puncs) {
+        super(nar, puncs);
+        this.in = nar.newChannel(this).buffered();
+    }
+
     protected TaskLeakTransform(int capacity, NAR nar, byte... puncs) {
         super(capacity, nar, puncs);
         this.in = nar.newChannel(this).buffered();

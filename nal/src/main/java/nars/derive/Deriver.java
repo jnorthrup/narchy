@@ -175,7 +175,9 @@ abstract public class Deriver extends Causable {
     @Override
     public float value() {
         //TODO cache this between cycles
-        return Util.sum(Cause::value, rules.causes());
+        float v = Util.sum(Cause::value, rules.causes());
+        //System.out.println(this + " " + v);
+        return v;
     }
 
 
