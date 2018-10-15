@@ -1,7 +1,6 @@
 package jcog.decide;
 
-import jcog.Util;
-import jcog.random.XorShift128PlusRandom;
+import jcog.random.XoRoShiRo128PlusRandom;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Random;
@@ -12,7 +11,7 @@ import java.util.Random;
 public class DecideEpsilonGreedy implements Deciding {
 
     /** argmax, with shuffling in case of a tie */
-    public static final Deciding ArgMax = new DecideEpsilonGreedy(0, new XorShift128PlusRandom());
+    public static final Deciding ArgMax = new DecideEpsilonGreedy(0, new XoRoShiRo128PlusRandom(1));
 
     private final Random random;
     float epsilonRandom; 
@@ -46,7 +45,6 @@ public class DecideEpsilonGreedy implements Deciding {
         }
 
         int nextAction = -1;
-        boolean equalToPreviousAction = true;
         float nextMotivation = Float.NEGATIVE_INFINITY;
 
         ArrayUtils.shuffle(motivationOrder, random);
@@ -59,13 +57,11 @@ public class DecideEpsilonGreedy implements Deciding {
                 nextAction = i;
                 nextMotivation = m;
             }
-            if (equalToPreviousAction && j > 0 && !Util.equals(m, vector[motivationOrder[j - 1]])) {
-                equalToPreviousAction = false; 
-            }
+
 
         }
         
-        int a = equalToPreviousAction ? -1 : nextAction;
+        int a = nextAction;
         if (a < 0)
             return random.nextInt(actions);
         return a;

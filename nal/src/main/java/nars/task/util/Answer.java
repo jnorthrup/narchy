@@ -122,7 +122,7 @@ public class Answer implements Consumer<Task> {
 
         FloatFunction<TaskRegion> f = (TaskRegion t) -> {
 
-            if (Stamp.overlapsAny(xStamp, ((Task) t).stamp()))
+            if (t == x || Stamp.overlapsAny(xStamp, ((Task) t).stamp()))
                 return Float.NaN;
 
             return

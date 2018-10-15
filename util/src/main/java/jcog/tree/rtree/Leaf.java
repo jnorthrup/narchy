@@ -316,44 +316,44 @@ public final class Leaf<X> extends AbstractNode<X> {
     /**
      * Figures out which newly made leaf node (see split method) to add a data entry to.
      *
-     * @param l1Node left node
-     * @param l2Node right node
+     * @param a left node
+     * @param b right node
      * @param x      data entry to be added
      * @param model
      */
-    public final void transfer(final Node<X> l1Node, final Node<X> l2Node, final X x, Spatialization<X> model) {
+    public final void transfer(final Node<X> a, final Node<X> b, final X x, Spatialization<X> model) {
 
-        final HyperRegion tRect = model.bounds(x);
-        double tCost = tRect.cost();
+        final HyperRegion xReg = model.bounds(x);
+        double tCost = xReg.cost();
 
-        final HyperRegion l1Region = l1Node.bounds();
-        final HyperRegion l1Mbr = l1Region!=null ? l1Region.mbr(tRect) : tRect;
-        double l1c = l1Mbr.cost();
-        final double l1CostInc = Math.max(l1c - ((l1Region!=null ? l1Region.cost() : 0) + tCost), 0.0);
+        final HyperRegion aReg = a.bounds();
+        final HyperRegion aMbr = aReg!=null ? aReg.mbr(xReg) : xReg;
+        double axCost = aMbr.cost();
+        final double aCostInc = Math.max(axCost - ((/*aReg!=null ? */aReg.cost() /*: 0*/) + tCost), 0.0);
 
-        final HyperRegion l2Region = l2Node.bounds();
-        final HyperRegion l2Mbr = l2Region.mbr(tRect);
-        double l2c = l2Mbr.cost();
-        final double l2CostInc = Math.max(l2c - ((l2Region!=null ? l2Region.cost() : 0) + tCost), 0.0);
+        final HyperRegion bReg = b.bounds();
+        final HyperRegion bMbr = bReg.mbr(xReg);
+        double bxCost = bMbr.cost();
+        final double bCostInc = Math.max(bxCost - ((/*bReg!=null ? */ bReg.cost()/* : 0*/) + tCost), 0.0);
 
         Node<X> target;
         double eps = model.epsilon();
-        if (Util.equals(l1CostInc, l2CostInc, eps)) {
-            if (Util.equals(l1c, l2c, eps)) {
+        if (Util.equals(aCostInc, bCostInc, eps)) {
+            if (Util.equals(axCost, bxCost, eps)) {
 
-                final double l1MbrMargin = l1Mbr.perimeter(), l2MbrMargin = l2Mbr.perimeter();
+                final double aMbrMargin = aMbr.perimeter(), bMbrMargin = bMbr.perimeter();
 
-                if (Util.equals(l1MbrMargin, l2MbrMargin, eps)) {
+                if (Util.equals(aMbrMargin, bMbrMargin, eps)) {
                     
-                    target = ((l1Node.size() <= l2Node.size()) ? l1Node : l2Node);
+                    target = ((a.size() <= b.size()) ? a : b);
                 } else {
-                    target = (l1MbrMargin <= l2MbrMargin) ? l1Node : l2Node;
+                    target = (aMbrMargin <= bMbrMargin) ? a : b;
                 }
             } else {
-                target = (l1c <= l2c) ? l1Node : l2Node;
+                target = (axCost <= bxCost) ? a : b;
             }
         } else {
-            target = (l1CostInc <= l2CostInc) ? l1Node : l2Node;
+            target = (aCostInc <= bCostInc) ? a : b;
         }
 
         boolean[] added = new boolean[1];

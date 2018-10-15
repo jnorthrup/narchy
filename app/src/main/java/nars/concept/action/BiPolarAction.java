@@ -19,6 +19,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static java.lang.Float.MIN_NORMAL;
 import static nars.Op.BELIEF;
@@ -59,8 +60,14 @@ public class BiPolarAction extends AbstractSensor {
         feedback = nar.newChannel(id);
 
 
-        this.pos = new AbstractGoalActionConcept(pos, TemplateTermLinker.of(pos, 4, neg), nar);
-        this.neg = new AbstractGoalActionConcept(neg, TemplateTermLinker.of(neg, 4, pos), nar);
+        this.pos = new AbstractGoalActionConcept(pos,
+                TemplateTermLinker.of(pos),
+                //TemplateTermLinker.of(pos, 4, neg),
+                nar);
+        this.neg = new AbstractGoalActionConcept(neg,
+                TemplateTermLinker.of(neg),
+                //TemplateTermLinker.of(neg, 4, pos),
+                nar);
 
         this.model = model;
         this.motor = motor;
@@ -68,10 +75,10 @@ public class BiPolarAction extends AbstractSensor {
     }
 
 
-    @Override
-    public void update(long prev, long now, long next, NAR nar) {
-        pos.update(prev, now, next, nar);
-        neg.update(prev, now, next, nar);
+    /** the pos and neg .update() method should have been called just prior to this since this is
+     * invoked by the frame listeners at the end of the NAgent cycle
+     */
+    @Override public void update(long prev, long now, long next, NAR nar) {
 
         Random rng = nar.random();
 
@@ -119,17 +126,18 @@ public class BiPolarAction extends AbstractSensor {
 //            yp = 0.5f + y / 2f;
 //            yn = 1f - yp;
 
-            //only one side gets feedback:
-            float thresh = nar.freqResolution.floatValue()/2;
-//            if (Math.abs(y) <= thresh) { yp = yn = 0; } else if (y > 0) { yp = y; yn = 0; } else { yp = 0; yn = -y; }
+            float thresh = nar.freqResolution.floatValue();
+            if (Math.abs(y) < thresh) { yp = yn = 0; } else if (y > 0) { yp = y; yn = 0; } else { yp = 0; yn = -y; }
 
-            if (Math.abs(y) < thresh) {
-                yp = yn =
-                        0;
-                        //Float.NaN;
-            }
-            else if (y > 0) { yp = 0.5f + y/2; yn = 0; }
-            else { yn = 0.5f - y/2; yp = 0; }
+            //only one side gets feedback:
+//            float thresh = nar.freqResolution.floatValue()/2;
+//            if (Math.abs(y) < thresh) {
+//                yp = yn =
+//                        0;
+//                        //Float.NaN;
+//            }
+//            else if (y > 0) { yp = 0.5f + y/2; yn = 0; }
+//            else { yn = 0.5f - y/2; yp = 0; }
 
 //            if ((p == null && n == null) /* curiosity */ || (p!=null && n!=null) /* both active */) {
 //                float zeroThresh = ScalarValue.EPSILON;
@@ -219,20 +227,33 @@ public class BiPolarAction extends AbstractSensor {
             pg = pq == pq ? pq : 0;
             ng = nq == nq ? nq : 0;
 
-            float pe = c(pos), ne = c(neg);
-            float eMax = Math.max(pe, ne);
 
-            //TODO make as an adaptive AGC
-            if (normalize && eMax > MIN_NORMAL) {
-                pe/=eMax;
-                ne/=eMax;
+
+            float x;
+            //x = //(pg - ng);
+
+
+            if (pq==pq && nq==nq) {
+                x = ThreadLocalRandom.current().nextBoolean() ? pg : -ng;
+            } else {
+                if (pq == pq)
+                    x = pg;
+                else
+                    x = -ng;
             }
-
-            float x = (pg - ng);
 
             //System.out.println(pg + "|" + ng + "=" + x);
 
             if (fair) {
+                float pe = c(pos), ne = c(neg);
+                float eMax = Math.max(pe, ne);
+
+                //TODO make as an adaptive AGC
+                if (normalize && eMax > MIN_NORMAL) {
+                    pe/=eMax;
+                    ne/=eMax;
+                }
+
                 float eMin = Math.min(pe, ne);
 
                 //coherence: either they are equally confident, or they specify the same net x value
@@ -282,8 +303,8 @@ public class BiPolarAction extends AbstractSensor {
          * used in the difference comparison. return NaN or value  */
         public float q(Truth t) {
 
-            return t != null ? ((freqOrExp ? t.freq() : t.expectation()) ) : Float.NaN;
-            //return t != null ? ((freqOrExp ? t.freq() : t.expectation()) - 0.5f)*2 : Float.NaN;
+            //return t != null ? ((freqOrExp ? t.freq() : t.expectation()) ) : Float.NaN;
+            return t != null ? ((freqOrExp ? t.freq() : t.expectation()) - 0.5f)*2 : Float.NaN;
             //return t != null ? ((freqOrExp ? (t.freq()>=0.5f ? t.freq() : 0) : t.expectation()) ) : Float.NaN;
         }
 

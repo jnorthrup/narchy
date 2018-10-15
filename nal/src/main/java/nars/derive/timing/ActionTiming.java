@@ -12,7 +12,7 @@ public class ActionTiming implements BiFunction<Task, Term, long[]> {
 
     private final NAR nar;
     public final FloatRange horizonDurs = new FloatRange(3, 0, 32);
-    public final FloatRange widthDurs = new FloatRange(2, 0, 8);
+    //public final FloatRange widthDurs = new FloatRange(2, 0, 8);
 
     public ActionTiming(NAR n) {
         this.nar = n;
@@ -20,8 +20,10 @@ public class ActionTiming implements BiFunction<Task, Term, long[]> {
 
     @Override
     public long[] apply(Task task, Term term) {
-        long start = nar.time() + Math.round( ( nar.random().nextDouble() * horizonDurs.floatValue() ) * nar.dur() );
-        long end = start + Math.round(widthDurs.doubleValue()*nar.dur());
+        long start = nar.time();// + Math.round( ( nar.random().nextDouble() * horizonDurs.floatValue() ) * nar.dur() );
+        long end = start +
+                //Math.round(widthDurs.doubleValue()*nar.dur());
+                Math.round( ( nar.random().nextDouble() * horizonDurs.floatValue() ) * nar.dur() );
         return new long[] { start, end };
     }
 }

@@ -16,7 +16,6 @@ import nars.task.Revision;
 import nars.task.TaskProxy;
 import nars.task.signal.SignalTask;
 import nars.task.util.*;
-import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.TruthFunctions;
 import nars.truth.polation.TruthIntegration;
@@ -35,7 +34,7 @@ import static nars.truth.TruthFunctions.w2cSafe;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
-    private static final float PRESENT_AND_FUTURE_BOOST_BELIEF = 2f;
+    private static final float PRESENT_AND_FUTURE_BOOST_BELIEF = 5f;
     private static final float PRESENT_AND_FUTURE_BOOST_GOAL = 10f;
 
 
@@ -146,15 +145,14 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        };
 //    }
 
-    static private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long when, int perceptDur) {
-        return taskStrengthWithFutureBoost(now, presentAndFutureBoost, when - perceptDur / 2, when + perceptDur / 2, perceptDur);
-    }
-
-    static private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long start, long end, int perceptDur) {
-        long futureStarts = now;
-        // - perceptDur;
-        return (Task x) -> (x.endsAfter(futureStarts) ? presentAndFutureBoost : 1f) *
-                TruthIntegration.evi(x, start, end, perceptDur);
+    static private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long when, int dur) {
+//        return taskStrengthWithFutureBoost(now, presentAndFutureBoost, when - perceptDur / 2, when + perceptDur / 2, perceptDur);
+//    }
+//
+//    static private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long start, long end, int dur) {
+//
+        return (Task x) -> (x.endsAfter(now) ? presentAndFutureBoost : 1f) *
+                TruthIntegration.evi(x) / x.midTimeTo(now);
     }
 
 
@@ -293,7 +291,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                     if (tree.root().size()==0)
                         return; //became null while waiting for lock
 
-                    HyperIterator2<TaskRegion> ii = new HyperIterator2(tree, timeDist);
+                    HyperIterator<TaskRegion> ii = new HyperIterator(tree, timeDist);
 
                     while (ii.hasNext() && each.test(ii.next())) {
                     }
@@ -484,8 +482,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             if (taskStrength == null) {
                 long now = nar.time();
                 dur =
-                    //nar.dur();
-                    Math.max(1, Tense.occToDT(tableDur()/2));
+                    nar.dur();
+                    //Math.max(1, Tense.occToDT(tableDur()/2));
                 taskStrength = taskStrengthWithFutureBoost(now,
                         input.isBelief() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL,
                         now,
@@ -520,8 +518,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         Top<Leaf<TaskRegion>> mergeableLeaf = new Top<>(leafWeakness);
 
-        FloatFunction<Task> weakestTask = t ->
-                -taskStrength.floatValueOf(t);
+        FloatFunction<Task> weakestTask =
+        input == null ?
+                t -> -taskStrength.floatValueOf(t)
+                :
+                t -> !input.equals(t) ? -taskStrength.floatValueOf(t) : Float.NaN;
+
 //                (float) (-1 * Param.evi(taskStrength.floatValueOf((Task) t),
 //                        //t.midTimeTo(now)
 //                         t.maxTimeTo(now)
@@ -559,6 +561,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         if (I != null && closest != null && closest.the != null) {
             C = (Task) closest.the;
+            assert(I==null || !C.equals(I));
             IC = Revision.merge(nar, I, C);
             if (IC != null && (IC.equals(I) || IC.equals(C)))
                 IC = null;
@@ -584,16 +587,20 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 throw new UnsupportedOperationException("should not have chosen leaf with size < 2");
             }
 
-
-            A = (Task) a;
-            B = (Task) b;
+            if (a == I || b == I) {
+                A = B = null; //HACK
+            } else {
+                A = (Task) a;
+                B = (Task) b;
+            }
         } else {
-            A = null;
-            B = null;
+            A = B = null;
         }
 
 
-        W = (weakest != null && weakest.the != null) ? weakest.the : A;
+        W = //(weakest != null && weakest.the != null) ? weakest.the : A; //not valid due to mergeability heuristic not necessarily the same as weakness
+            (weakest != null ? weakest.the : null);
+        assert(I == null || W == null || !I.equals(W));
         if (W == null)
             return false;
 
@@ -604,7 +611,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 (I != null ? +inputStrength : 0) - taskStrength.floatValueOf(W);
         value[MergeInputClosest] =
                 IC != null ? (
-                        + taskStrength.floatValueOf(IC)
+                        + mergeScoreFactor(I,C) * taskStrength.floatValueOf(IC)
                         - taskStrength.floatValueOf(C)
                                 )
                         : Float.NEGATIVE_INFINITY;
@@ -619,7 +626,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             } else {
                 value[MergeLeaf] =
                         (I != null ? +inputStrength : 0)
-                                + taskStrength.floatValueOf(AB)
+                                + mergeScoreFactor(A,B) * taskStrength.floatValueOf(AB)
                                 - taskStrength.floatValueOf(A)
                                 - taskStrength.floatValueOf(B)
                 ;
@@ -649,7 +656,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
             case MergeInputClosest: {
-                if (treeRW.remove(C)) {
+                if (treeRW.remove(I) && treeRW.remove(C)) {
                     if (treeRW.add(IC)) {
                         TemporalBeliefTable.fundMerge(IC, r, I, C);
                     } //else: possibly already contained the merger
@@ -673,6 +680,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         throw new UnsupportedOperationException();
 
+    }
+
+    private static float mergeScoreFactor(Task a, Task b) {
+        return 1 / (1 + Math.abs(a.freq() - b.freq()));
     }
 
 

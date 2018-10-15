@@ -5,7 +5,8 @@ G, B, task("!")  |- (polarize(G,task) && polarize(B,belief)), (Goal:Intersection
     //,--eventOfNeg(S,G) //<- TODO verify this will work if S isnt even a conj
 
 //curiosity
-//G, B, task("@")  |- G, (Goal:Curiosity, Punctuation:Goal)
+G, B, task("@")  |- B, (Goal:Curiosity, Punctuation:Goal)
+G, B, task("@")  |- (polarize(B,belief)==>G), (Goal:Curiosity, Punctuation:Goal)
 //G, B, task("@")  |- (polarize(G,task) && polarize(B,belief)), (Goal:Curiosity, Punctuation:Goal, Time:Relative)
 
 

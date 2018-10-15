@@ -11,6 +11,7 @@ import jcog.tree.rtree.rect.RectFloat;
 import jcog.util.Int2Function;
 import nars.agent.FrameTrigger;
 import nars.agent.NAgent;
+import nars.agent.Reward;
 import nars.agent.SimpleReward;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Sensor;
@@ -19,6 +20,9 @@ import nars.control.DurService;
 import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.impl.MatrixDeriver;
+import nars.derive.impl.SimpleDeriver;
+import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.derive.timing.ActionTiming;
 import nars.exe.Attention;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
@@ -51,7 +55,10 @@ import java.io.IOException;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.stream.StreamSupport.stream;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
@@ -183,10 +190,18 @@ abstract public class NAgentX extends NAgent {
 
             n.runLater(() -> {
 
-//                PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8, "motivation.nal");
-//                SimpleDeriver sd = SimpleDeriver.forConcepts(n, rules,
-//                        a.actions.stream().collect(toList()),
-//                        a.sensors.stream().flatMap(x -> StreamSupport.stream(x.components().spliterator(), false)).map(x -> x.term()).collect(toList()));
+                PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8
+                ,"induction.goal.nal"
+                //        , "motivation.nal"
+                );
+                SimpleDeriver sd = SimpleDeriver.forConcepts(n, rules,
+                        a.rewards.stream().flatMap((Reward x) -> stream(x.spliterator(), false)).collect(Collectors.toList()),
+                        Stream.concat(
+                            a.actions.stream(),
+                            a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false))
+                        ).map(x -> x.term()).collect(Collectors.toList())
+                );
+
 ////                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
 ////                        rules) {
 //////                    @Override
@@ -194,7 +209,7 @@ abstract public class NAgentX extends NAgent {
 //////                        return conclusion == GOAL ? 1 : 0.5f;
 //////                    }
 ////                };
-//                sd.timing = new ActionTiming(n);
+                sd.timing = new ActionTiming(n);
 
 
                 window(new Gridding(NARui.agent(a), NARui.top(n)), 1200, 900);

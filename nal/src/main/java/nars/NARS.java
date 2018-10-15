@@ -108,11 +108,11 @@ public class NARS {
 
         public DefaultNAR(int nal, boolean threadSafe) {
 
-            if (nal > 0)
-                withNAL(1, nal);
-
             if (threadSafe)
                 index = () -> new CaffeineIndex(64 * 1024);
+
+            if (nal > 0)
+                withNAL(1, nal);
 
             if (nal >= 7) {
                 then((nn)->new STMLinkage(nn, 1));
@@ -220,8 +220,6 @@ public class NARS {
                         //termlinks
                         curve(Concept::volume,
                                 1, 64,
-                                2,32, //sharp dropoff
-                                8,24,
                                 24,16,
                                 48,12
                         ),

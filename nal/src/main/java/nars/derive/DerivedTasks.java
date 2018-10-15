@@ -60,7 +60,7 @@ public interface DerivedTasks extends PriMerge<Task, Task> {
         /**
          * temporary buffer for derivations before input so they can be merged in case of duplicates
          */
-        final PriArrayBag<Task> tasks = new PriArrayBag<Task>(this, new HashMap());
+        public final PriArrayBag<Task> tasks = new PriArrayBag<Task>(this, new HashMap());
 
             //            @Override
 //            protected boolean fastMergeMaxReject() {

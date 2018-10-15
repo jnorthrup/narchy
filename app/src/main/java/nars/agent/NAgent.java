@@ -43,8 +43,6 @@ import java.util.function.Supplier;
 import static nars.$.$$;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.c2w;
-import static nars.truth.TruthFunctions.w2c;
 
 /**
  * an integration of sensor concepts and motor functions
@@ -74,6 +72,8 @@ public class NAgent extends NARService implements NSense, NAct {
 
     public final AtomicInteger iteration = new AtomicInteger(0);
 
+    protected volatile long prev, now, next;
+
     @FunctionalInterface  public interface ReinforcedTask {
         @Nullable Task get(long prev, long now, long next);
     }
@@ -87,7 +87,7 @@ public class NAgent extends NARService implements NSense, NAct {
             //Cycles.Biphasic;
             Cycles.Interleaved;
 
-    private volatile long last;
+
 
     public NAgent(String id, FrameTrigger frameTrigger, NAR nar) {
         this(id.isEmpty() ? null : Atomic.the(id), frameTrigger, nar);
@@ -97,7 +97,7 @@ public class NAgent extends NARService implements NSense, NAct {
         super(id);
         this.nar = nar;
         this.frameTrigger = frameTrigger;
-        this.last = ETERNAL;
+        this.prev = ETERNAL;
 
         nar.on(this);
     }
@@ -114,11 +114,13 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     protected <A extends ActionConcept> void actionAdded(A a) {
-        //alwaysQuest(a, false);
-        alwaysQuestionEternally(a,
-                false,
-                false
-        );
+
+        alwaysQuest(a, true);
+
+//        alwaysQuestionEternally(a,
+//                false,
+//                false
+//        );
 
 //        alwaysQuestion(IMPL.the(c.term, 0, $$("reward:#x")), true);
 //        alwaysQuestion(IMPL.the(c.term.neg(), 0, $$("reward:#x")), true);
@@ -259,7 +261,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
         //Term id = (this.id == null) ? nar.self() : this.id;
 
-        this.last = Tense.dither(nar.time(), nar);
+        this.prev = Tense.dither(nar.time(), nar);
 
 
         this.in = nar.newChannel(this);
@@ -387,12 +389,12 @@ public class NAgent extends NARService implements NSense, NAct {
 
                 a.reinforce(prev, now, next);
 
-                a.frame();
-
                 a.sense(prev, now, next);
 
-                long adjustedPrev = Math.max(prev, now - (next-now)); //prevent stretching and evaluating too far in the past
-                a.act(adjustedPrev, now, next);
+                //long adjustedPrev = Math.max(prev, now - (next-now)); //prevent stretching and evaluating too far in the past
+                a.act(prev, now, next);
+
+                a.frame();
             }
 
         },
@@ -410,12 +412,12 @@ public class NAgent extends NARService implements NSense, NAct {
                     case 0:
                         //SENSE
                         a.sense(prev, now, next);
-                        a.frame();
                         break;
                     case 1:
                         //ACT
                         a.reinforce(prev, now, next);
                         a.act(prev, now, next);
+                        a.frame();
                         break;
                 }
             }
@@ -434,7 +436,7 @@ public class NAgent extends NARService implements NSense, NAct {
         try {
             int d = nar.timeResolution.intValue();
             long now = Tense.dither(nar.time(), d);
-            long prev = this.last;
+            long prev = this.prev;
             if (prev == ETERNAL)
                 prev = now;
             else if (now <= prev)
@@ -442,9 +444,12 @@ public class NAgent extends NARService implements NSense, NAct {
 
             long next = Tense.dither(Math.max(now, frameTrigger.next(now)), d);
 
+            this.now = now;
+            this.next = next;
+
             cycle.next(this, iteration.getAndIncrement(), prev, now, next);
 
-            this.last = now;
+            this.prev = now;
 
             if (trace.getOpaque())
                 logger.info(summary());
@@ -463,10 +468,11 @@ public class NAgent extends NARService implements NSense, NAct {
         float curiConf =
                         //nar.confMin.floatValue();
                         //nar.confMin.floatValue() * 2;
-                        //nar.confMin.floatValue() * 4;
+                        nar.confMin.floatValue() * 4;
                         //nar.confDefault(GOAL)/3;
                         //nar.confDefault(GOAL)/2;
-                        w2c(c2w(nar.confDefault(GOAL))/3);
+                        //nar.confDefault(GOAL)/3;
+                        //w2c(c2w(nar.confDefault(GOAL))/3);
                         //w2c(c2w(nar.confDefault(GOAL))/2);
                         //nar.confDefault(GOAL);
 

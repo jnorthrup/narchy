@@ -3,7 +3,7 @@ package nars.task;
 import jcog.data.list.FasterList;
 import jcog.math.MultiStatistics;
 import jcog.signal.meter.event.CSVOutput;
-import jcog.tree.rtree.HyperIterator2;
+import jcog.tree.rtree.HyperIterator;
 import nars.*;
 import nars.concept.TaskConcept;
 import nars.control.proto.Remember;
@@ -269,7 +269,7 @@ class RTreeBeliefTableTest {
         List<TaskRegion> seq = new FasterList(table.capacity());
         table.read(t->{
 
-            HyperIterator2<TaskRegion> h = new HyperIterator2(t, TimeConfRange.distanceFunction( new TimeRange(s, e)));
+            HyperIterator<TaskRegion> h = new HyperIterator(t, TimeConfRange.distanceFunction( new TimeRange(s, e)));
             while (h.hasNext()) {
                 seq.add(h.next());
             }

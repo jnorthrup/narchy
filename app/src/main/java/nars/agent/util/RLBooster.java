@@ -116,39 +116,38 @@ public class RLBooster implements Consumer<NAR> {
 
     @Override
     public void accept(NAR ignored) {
+        NAR nar = env.nar();
 
         float reward = env.reward();
 
 //        long start = env.last; //now() - dur/2;
 //        long end = env.now(); //+ dur/2;
         //HACK
-        int dur = env.nar().dur();
-        long start = env.nar().time() - dur/2;
-        long end = env.nar().time() + dur/2;
+        int dur = nar.dur();
+        long now = nar.time();
+        long start = now - dur/2;
+        long end = now + dur/2;
         int O = rl.act(reward, input(start, end));
 
-        float OFFfreq
-                = 0f;
+        float OFFfreq = 0f;
+        float ONfreq = 1f;
 
 
-
-        NAR nar = env.nar();
-
+        float conf = this.conf.floatValue();
+        Truth off = OFFfreq == OFFfreq ? $.t(OFFfreq, conf) : null;
+        Truth on = $.t(ONfreq, conf);
 
         List<Task> e = new FasterList(actions.length);
         for (int o = 0; o < actions.length; o++) {
-            Truth off = OFFfreq == OFFfreq ? $.t(OFFfreq, conf.floatValue()) : null;
 
-
-            float value = 1f;
-
-            Truth tK;
+            Truth t;
             if (o == O) {
-                tK = $.t(value, conf.floatValue());
+                t = on;
             } else {
-                tK = off;
+                t = off;
             }
-            Task tt = new SignalTask(actions[o].term(), GOAL, tK, start, start, end, nar.time.nextStamp());
+
+            Task tt = new SignalTask(actions[o].term(), GOAL, t, start, start, end, nar.time.nextStamp());
             tt.pri(nar);
             if (tt != null)
                 e.add(tt);

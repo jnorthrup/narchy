@@ -24,6 +24,7 @@ public class SimpleReward extends Reward {
         super(a, r);
         NAR nar = nar();
         concept = new Signal(id, () -> reward, nar);
+
         truther = truther();
         agent.//alwaysWant
                 alwaysWantEternally

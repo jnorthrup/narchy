@@ -36,7 +36,7 @@ public class TaskLinkTask extends AbstractTask {
 
         pri = Math.max(EPSILON, pri);
 
-        Concept c = n.activate(this.concept == null ? task.term() : this.concept, pri);
+        Concept c = n.activate(this.concept == null ? task.term() : this.concept, pri, true);
         if (c == null)
             return null;
 

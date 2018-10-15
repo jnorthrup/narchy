@@ -46,7 +46,10 @@ public class FZero extends NAgentX {
 
 
     public static void main(String[] args) {
-        NAgentX.runRT(FZero::new, fps);
+        NAgentX.runRT(n -> {
+            n.freqResolution.set(0.05f);
+            return new FZero(n);
+        }, fps);
     }
 
     public FZero(NAR n) {

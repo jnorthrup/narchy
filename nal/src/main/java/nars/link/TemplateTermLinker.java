@@ -375,7 +375,15 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
                 if (conceptualizable) {
 
                     /** TODO batch activations */
-                    @Nullable Concept tgt = nar.activate(tgtTerm, conceptForward);
+                    @Nullable Concept tgt = nar.activate(tgtTerm,
+                            //conceptForward
+                            EPSILON
+
+                            ,
+
+                            //tgtTerm instanceof Atomic
+                            true
+                    );
 
                     if (tgt != null) {
 

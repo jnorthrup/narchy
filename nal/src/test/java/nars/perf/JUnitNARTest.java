@@ -19,7 +19,7 @@ class JUnitNARTest {
     /** junit test for running NALTest outside of Junit lol */
     @Test
     void testTestNAROutsideJUnit() {
-        TestNAR tt = new TestNAR(NARS.tmp());
+        TestNAR tt = new TestNAR(NARS.tmp(1));
 
         List<Method> nal1TestMethods = NALTest.tests(NAL1Test.class).collect(toList());
         assertTrue(nal1TestMethods.size() > 5);

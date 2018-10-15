@@ -22,7 +22,7 @@ package jcog.tree.rtree.split;
 
 import jcog.tree.rtree.*;
 import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.collections.api.tuple.primitive.IntDoublePair;
+import org.eclipse.collections.api.tuple.primitive.ObjectDoublePair;
 
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -33,7 +33,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * <p>
  * Created by jcairns on 5/5/15.
  */
-public final class AxialSplitLeaf<T> implements Split<T> {
+public final class AxialSplitLeaf<X> implements Split<X> {
 
     /** default stateless instance which can be re-used */
     public static final Split<?> the = new AxialSplitLeaf<>();
@@ -41,67 +41,55 @@ public final class AxialSplitLeaf<T> implements Split<T> {
     public AxialSplitLeaf() { }
 
     @Override
-    public Node<T> split(T t, Leaf<T> leaf, Spatialization<T> model) {
+    public Node<X> split(X x, Leaf<X> leaf, Spatialization<X> model) {
 
 
-        HyperRegion r = leaf.bounds;
+        HyperRegion rCombined = leaf.bounds.mbr(model.bounds(x));
 
-        final int nD = r.dim();
+        final int nD = rCombined.dim();
 
         
         int axis = 0;
-        double rangeD = Double.NEGATIVE_INFINITY;
+        double mostCost = Double.NEGATIVE_INFINITY;
         for (int d = 0; d < nD; d++) {
             
-            final double dr = r.cost(d);
-            if (dr > rangeD) {
+            final double axisCost = rCombined.cost(d);
+            if (axisCost > mostCost) {
                 axis = d;
-                rangeD = dr;
+                mostCost = axisCost;
             }
         }
 
         
         final int splitDimension = axis;
 
-        short size = leaf.size;
-        IntDoublePair[] sorted = new IntDoublePair[size];
-        double lastSpan = Double.NEGATIVE_INFINITY;
-        T[] ld = leaf.data;
+        short size = (short) (leaf.size+1);
+        ObjectDoublePair<X>[] sorted = new ObjectDoublePair[size];
+        X[] ld = leaf.data;
         for (int i = 0; i < size; i++) {
-            double span = model.bounds(ld[i]).center(splitDimension);
-            sorted[i] = pair(i, -span /* negative since the ArrayUtils.sort below is descending */);
-            if (lastSpan==lastSpan) {
-                lastSpan = span < lastSpan ? Double.NaN : span;
-            }
+            X li = i < size-1 ? ld[i] : x;
+            double c = model.bounds(li).center(splitDimension);
+            sorted[i] = pair(li, -c /* negative since the ArrayUtils.sort below is descending */);
         }
-        if (lastSpan!=lastSpan) {
-            if (size > 2) {
-                ArrayUtils.sort(sorted, IntDoublePair::getTwo);
-            } else {
-                assert(size==2);
-                
-                IntDoublePair x = sorted[0];
-                sorted[0] = sorted[1];
-                sorted[1] = x;
-            }
-        }
+
+
+        ArrayUtils.sort(sorted, ObjectDoublePair::getTwo);
+
 
 
 
 
         
-        final Leaf<T> l1Node = model.transfer(leaf, sorted, 0, size/2);
-        final Leaf<T> l2Node = model.transfer(leaf, sorted, size / 2, size);
+        final Leaf<X> l1Node = model.transfer(sorted, 0, size/2);
+        final Leaf<X> l2Node = model.transfer(sorted, size / 2, size);
 
 
+
+        //assert (l1Node.size()+l2Node.size() == size);
+
+        //leaf.transfer(l1Node, l2Node, x, model);
 
         assert (l1Node.size()+l2Node.size() == size);
-
-        leaf.transfer(l1Node, l2Node, t, model);
-
-
-
-        assert (l1Node.size()+l2Node.size() == size+1);
 
         return model.newBranch(l1Node, l2Node);
     }

@@ -10,7 +10,7 @@ public class FloatNormalizer implements FloatToFloatFunction  {
     protected float min;
     protected float max;
     /** relaxation rate: brings min and max closer to each other in proportion to the value. if == 0, disables */
-    private float relax;
+    private float relax = 0;
 
     public FloatNormalizer() {
         this(Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY);

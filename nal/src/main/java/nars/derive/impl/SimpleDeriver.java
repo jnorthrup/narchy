@@ -8,10 +8,7 @@ import jcog.pri.bag.Sampler;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
-import nars.derive.Derivation;
-import nars.derive.Deriver;
-import nars.derive.Derivers;
-import nars.derive.Premise;
+import nars.derive.*;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.link.Activate;
 import nars.link.TaskLink;
@@ -125,13 +122,16 @@ public class SimpleDeriver extends Deriver {
                     for (int z = 0; z < termlinks; z++) {
 
                         Term b = beliefTerms.get();
-                        if (b != null)
+                        if (b != null) {
                             new Premise(task, b).derive(d, matchTTL, deriveTTL);
+                        }
 
                     }
 
                 }
             });
+
+            //System.out.println((((DerivedTasks.DerivedTasksBag)d.deriver.derived).tasks.map.values()));
 
             concept.linker().link(a, d);
 

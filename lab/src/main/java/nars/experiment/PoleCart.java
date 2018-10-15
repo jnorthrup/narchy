@@ -1,7 +1,6 @@
 package nars.experiment;
 
 import jcog.Util;
-import jcog.learn.LivePredictor;
 import jcog.math.FloatPolarNormalized;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
@@ -10,11 +9,8 @@ import nars.NAR;
 import nars.NAgentX;
 import nars.agent.NAgent;
 import nars.agent.Reward;
-import nars.agent.RewardBooster;
 import nars.concept.Concept;
 import nars.concept.action.BiPolarAction;
-import nars.gui.NARui;
-import nars.op.BeliefPredict;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -25,7 +21,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jcog.Texts.n2;
 import static nars.agent.FrameTrigger.fps;
-import static spacegraph.SpaceGraph.window;
 
 /**
  * adapted from:
@@ -181,18 +176,6 @@ public class PoleCart extends NAgentX {
 
 
 
-        new BeliefPredict(
-                java.util.List.of(
-                        x, xVel,
-                        angVel, angX, angY),
-                8,
-                4 * nar.dur(),
-                4,
-                new LivePredictor.LSTMPredictor(0.1f, 1),
-                //new LivePredictor.MLPPredictor(0.1f),
-                nar
-        );
-        window(NARui.beliefCharts(nar, F.pos, F.neg, x, xVel), 700, 700);
 
 
 //        SpaceGraph.window(NARui.beliefCharts(512,
@@ -300,7 +283,22 @@ public class PoleCart extends NAgentX {
 
 
         Reward r = rewardNormalized("balanced", -1, +1, this::update);
-        new RewardBooster(r);
+
+        //new RewardBooster(r);
+
+//        new BeliefPredict(
+//                java.util.List.of(
+//                        x, xVel,
+//                        angVel, angX, angY),
+//                8,
+//                4 * nar.dur(),
+//                4,
+//                new LivePredictor.LSTMPredictor(0.1f, 1),
+//                //new LivePredictor.MLPPredictor(0.1f),
+//                nar
+//        );
+//        window(NARui.beliefCharts(nar, F.pos, F.neg, x, xVel), 700, 700);
+
     }
 
 

@@ -53,7 +53,7 @@ abstract public class Deriver extends Causable {
     public BiFunction<Task,Term,long[]> timing;
 
 
-    protected final DerivedTasks derived =
+    public final DerivedTasks derived =
             new DerivedTasks.DerivedTasksBag(Param.DerivedTaskBagCapacity);
 
     public final ActivatedLinks linked = new ActivatedLinks();
@@ -150,7 +150,8 @@ abstract public class Deriver extends Causable {
         if (tasklinks.isEmpty())
             return false;
 
-        termlinks.commit(termlinks.forget(linkForgetting));
+        if (termlinks!=null)
+            termlinks.commit(termlinks.forget(linkForgetting));
         return true;
 
     }

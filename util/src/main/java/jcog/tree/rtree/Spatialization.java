@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.tree.rtree.split.AxialSplitLeaf;
 import jcog.tree.rtree.split.LinearSplitLeaf;
 import jcog.tree.rtree.split.QuadraticSplitLeaf;
-import org.eclipse.collections.api.tuple.primitive.IntDoublePair;
+import org.eclipse.collections.api.tuple.primitive.ObjectDoublePair;
 
 import java.util.function.Function;
 
@@ -60,13 +60,10 @@ public class Spatialization<X> {
 
     }
 
-    public final Leaf<X> transfer(Leaf<X> leaf, IntDoublePair[] sortedMbr, int from, int to) {
+    public final Leaf<X> transfer(ObjectDoublePair<X>[] sortedMbr, int from, int to) {
         final Leaf<X> l = newLeaf();
-        final X[] ld = leaf.data;
-        final Node<X> nl = l;
-        for (int i = from; i < to; i++) {
-            nl.add(ld[sortedMbr[i].getOne()], true, this, new boolean[] { false });
-        }
+        for (int i = from; i < to; i++)
+            l.add(sortedMbr[i].getOne(), true, this, new boolean[] { false });
         return l;
     }
 

@@ -26,12 +26,12 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     /**
      * cost of splitting a node by freq
      */
-    float FREQ_COST = 2f;
+    float FREQ_COST = 0.5f;
 
     /**
      * cost of splitting a node by conf
      */
-    float CONF_COST = 4f;
+    float CONF_COST = 0.25f;
 
     static Consumer<TaskRegion> asTask(Consumer<? super Task> each) {
         return r -> {

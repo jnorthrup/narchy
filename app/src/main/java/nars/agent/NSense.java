@@ -233,18 +233,18 @@ public interface NSense {
     }
 
     default BiPolarAction actionBipolarFrequencyDifferential(Term id, boolean fair, FloatToFloatFunction motor) {
-        return actionBipolarFrequencyDifferential(posOrNeg -> $.p(id, posOrNeg ? PLUS : NEG), fair, motor);
+        return actionBipolarFrequencyDifferential(posOrNeg -> $.inh(posOrNeg ? PLUS : NEG, id), fair, motor);
     }
     default BiPolarAction actionBipolarFrequencyDifferential(BooleanToObjectFunction<Term> s, boolean fair, FloatToFloatFunction motor) {
-        BiPolarAction a = addSensor(new BiPolarAction(s,
+        BiPolarAction pn = new BiPolarAction(s,
                 new BiPolarAction.DefaultPolarization(fair, this),
-                motor, nar()));
+                motor, nar());
 
-        nar().on(a.pos);
-        nar().on(a.neg);
-        ((NAgent)this).addAction(a.pos);
-        ((NAgent)this).addAction(a.neg);
-        return a;
+        NAgent a = (NAgent) this;
+        a.addAction(pn.pos);
+        a.addAction(pn.neg);
+        onFrame(x -> pn.update(a.prev, a.now, a.next, a.nar()));
+        return pn;
     }
 
     /**

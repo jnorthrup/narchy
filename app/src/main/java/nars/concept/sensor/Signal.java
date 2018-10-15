@@ -9,6 +9,7 @@ import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.control.DurService;
 import nars.control.channel.CauseChannel;
+import nars.link.TermLinker;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.ITask;
@@ -51,14 +52,15 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
 
     private volatile float currentValue = Float.NaN;
 
-    public Signal(Term c, FloatSupplier signal, NAR n) {
-        this(c, BELIEF, signal, n);
+    public Signal(Term term, FloatSupplier signal, NAR n) {
+        this(term, BELIEF, signal, n.conceptBuilder.termlinker(term), n);
     }
 
-    public Signal(Term term, byte punc, FloatSupplier signal, NAR n) {
+    public Signal(Term term, byte punc, FloatSupplier signal, TermLinker linker, NAR n) {
         super(term,
                 punc == BELIEF ? new SensorBeliefTables(term, true, n.conceptBuilder) : n.conceptBuilder.newTable(term, true),
                 punc == GOAL ? new SensorBeliefTables(term, false, n.conceptBuilder) : n.conceptBuilder.newTable(term, false),
+                linker,
                 n.conceptBuilder);
 
         this.source = signal;

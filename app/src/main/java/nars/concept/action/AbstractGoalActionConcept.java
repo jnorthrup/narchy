@@ -19,8 +19,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-import static nars.Op.GOAL;
-
 
 /**
  * ActionConcept which is driven by Goals that are interpreted into feedback Beliefs
@@ -30,11 +28,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
 
     /** current calculated goalTask */
-    protected volatile @Nullable TruthPolation action;
     protected volatile @Nullable Truth actionTruth;
 
     /** truth calculated (in attempt to) excluding curiosity */
-    protected volatile @Nullable Truth actionTruthAuthentic;
+    protected volatile @Nullable Truth actionDex;
 
 
     public AbstractGoalActionConcept(Term c, TermLinker linker, NAR n) {
@@ -49,17 +46,18 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
     @Override
     public float dexterity() {
-        Truth t = this.actionTruthAuthentic;
+        Truth t = this.actionDex;
         return t!=null ? t.conf() : 0;
     }
 
 
-    int actionDur =
+    /** in cycles; controls https://en.wikipedia.org/wiki/Legato vs. https://en.wikipedia.org/wiki/Staccato */
+    int actionSustain =
             //0;
             -1;
 
     public AbstractGoalActionConcept actionDur(int actionDur) {
-        this.actionDur = actionDur;
+        this.actionSustain = actionDur;
         return this;
     }
 
@@ -74,23 +72,26 @@ public class AbstractGoalActionConcept extends ActionConcept {
         Predicate<Task> withoutCuriosity = t -> !(t instanceof CuriosityTask);  /* filter curiosity tasks? */
 
 
-        int actionDur = this.actionDur;
+        int actionDur = this.actionSustain;
         if (actionDur < 0) actionDur = n.dur();
 
-        long rad = (now - prev);
-        long s = now - rad;
-        long e = now + rad;
-                //0;
-                //1;
-                //Tense.occToDT(rad); //controls fall-off / bleed-through of goal across time
+        //long rad = (now - prev);
+        //long s = prev, e = now;
+        //long s = now, e = next;
+        long s = prev, e = next;
+//        long s = now - rad;
+//        long e = now + rad;
+//                //0;
+//                //1;
+//                //Tense.occToDT(rad); //controls fall-off / bleed-through of goal across time
+
         int limit = Answer.TASK_LIMIT_DEFAULT;
 
-        TruthPolation aWithCuri = Answer.
+        TruthPolation a = Answer.
                 relevance(true, limit, s, e, term, null, n).match(goals()).truthpolation(actionDur);
-        Truth actionNonAuthentic;
-        if (aWithCuri!=null) {
-            aWithCuri = aWithCuri.filtered();
-            actionNonAuthentic = aWithCuri.truth();
+        if (a!=null) {
+            a = a.filtered();
+            actionTruth = a.truth();
 
 //            System.out.println(actionNonAuthentic);
 //            aWithCuri.print();
@@ -98,7 +99,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
 //            System.out.println();
 
         } else
-            actionNonAuthentic = null;
+            actionTruth = null;
 
         TruthPolation aWithoutCuri = Answer.
                 relevance(true, limit, s, e, term, withoutCuriosity, n).match(goals()).truthpolation(actionDur);
@@ -106,12 +107,11 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
 
             //aWithoutCuri = aWithoutCuri.filtered();
-            actionTruthAuthentic = aWithoutCuri.truth();
+            actionDex = aWithoutCuri.truth();
         } else {
-            actionTruthAuthentic = null;
+            actionDex = null;
         }
-        actionTruth = actionNonAuthentic;
-        action = aWithCuri;
+
 
 //        if (a!=null) {
 //            System.out.println(a);
@@ -148,15 +148,15 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
     @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
-        if (goal!=null) {
-            SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd);
-
-            if (curiosity != null) {
-                curiosity.pri(n.priDefault(GOAL));
-                return curiosity;
-                //return curiosity.input(c);
-            }
-        }
+//        if (goal!=null) {
+//            SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd);
+//
+//            if (curiosity != null) {
+//                curiosity.pri(n.priDefault(GOAL));
+//                return curiosity;
+//                //return curiosity.input(c);
+//            }
+//        }
 
         return null;
 

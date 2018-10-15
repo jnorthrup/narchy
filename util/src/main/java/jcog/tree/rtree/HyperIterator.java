@@ -1,40 +1,18 @@
 package jcog.tree.rtree;
 
-import jcog.TODO;
-import jcog.data.list.FasterList;
-import org.eclipse.collections.api.block.SerializableComparator;
-import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
-import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.impl.block.factory.Functions;
+import jcog.sort.TopN;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.NoSuchElementException;
 
-import static jcog.tree.rtree.Space.BoundsMatch.ANY;
-import static org.eclipse.collections.impl.tuple.Tuples.pair;
-
 /**
- * TODO Hyperdimensional Iterator
- * an iterator/cursor that traverses a the tree along a mutable trajectory (ex: per-dimension range conditions)
- * with ability for traversing results (sorted approximately or perfectly) along specified gradients, if provided
+ * BFS that descends through RTree visiting nodes and leaves in an order determined
+ * by a score function that ranks the next nodes to either provide via an Iterator<X>-like interface
+ * or to expand the ranked buffer to find more results.
  */
-@Deprecated public class HyperIterator<X> {
+public class HyperIterator<X> implements AutoCloseable {
 
-    //string of -1, 0, +1 for each dimension, indicating direction
-    @Nullable
-    final byte[] gradient;
-
-    final HyperRegion target;
-
-    final Space.BoundsMatch mode;
-
-    final Node<X> start;
-    private final Spatialization<X> model;
-
-    /**
-     * current node
-     */
-    Node<X> at;
 
     /**
      * next available item
@@ -42,149 +20,100 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
     X next;
 
 
-    @Nullable private NodeFilter<X> nodeFilter = null;
+    @Nullable
+    private NodeFilter<X> nodeFilter = null;
 
-    /** at each level, the plan is slowly popped from the end growing to the beginning (sorted in reverse) */
-    FasterList<FasterList> plan = null;
+    /**
+     * at each level, the plan is slowly popped from the end growing to the beginning (sorted in reverse)
+     */
+    final TopN plan;
 
 
-    @Nullable private SerializableComparator<Pair<Object, HyperRegion>> distanceComparator;
+    //                    new DequePool() {
+//                        @Override
+//                        public TopN create() {
+//                            return new TopN(32, (x)->0);
+//                        }
+//                    }
+//            );
 
-    private HyperIterator() {
-        model = null;
-        mode = null;
-        start = null;
-        target = null;
-        gradient = null;
+    public HyperIterator(RTree<X> tree, FloatFunction<HyperRegion> rank) {
+        this(tree.model, tree.root(), rank);
+    }
+
+    public HyperIterator(Spatialization model, Node<X> start, FloatFunction<HyperRegion> rank) {
+        this.plan = TopN.pooled(64, r -> rank.floatValueOf(
+                r instanceof Node ? ((Node) r).bounds() : model.bounds(r)
+                //model.bounds(r)
+                ));
+
+        plan.accept(start);
+    }
+
+    @Override public final void close() {
+        TopN.unpool(plan);
     }
 
 
-    protected HyperIterator(Spatialization<X> model, Node<X> start, HyperRegion<X> target, Space.BoundsMatch mode, @Nullable byte[] gradient) {
-        this.model = model;
-        this.start = this.at = start;
-        this.target = target;
-        this.mode = mode;
-        this.gradient = gradient;
-    }
-
-    private FasterList level() {
-        return plan.getLast();
-    }
 
     /**
      * finds the next item given the current item and
      */
-    @Nullable private X find() {
-        if (plan == null) {
-            FasterList firstLevel = push(start);
-            if (firstLevel != null) {
-                this.plan = new FasterList<>(8);
-                this.plan.add(firstLevel);
-            } else
-                return null;
-        }
+    @Nullable
+    private X find() {
 
-        do {
-            FasterList p = level();
-//            if (p == null)
-//                return null;
-
-            while (!p.isEmpty()) {
-
-                Object z = p.removeLast();
-                if (z instanceof Node) {
-                    FasterList nextLevel = push((Node<X>) z);
-                    if (nextLevel != null && !nextLevel.isEmpty()) {
-                        //System.out.println("[" + plan.size() + "] push: " + nextLevel.size());
-                        plan.add(p = nextLevel);
-                    }
-
-                } else {
-                    return (X) z;
-                }
-
+        Object z;
+        while ((z = plan.pop())!=null) {
+            if (z instanceof Node) {
+                expand((Node<X>) z);
+            } else {
+                return (X) z;
             }
-
-            plan.removeLast();
-
-        } while (!plan.isEmpty());
+        }
 
         return null;
     }
 
 
-
     /**
      * surveys the contents of the node, producing a new 'stack frame' for navigation
      */
-    private FasterList<Object> push(Node<X> at) {
-        //initialize plan at current node
+    private void expand(Node<X> at) {
         int atSize = at.size();
-        if (atSize == 0) {
-            return null;
-        } /* TODO : else if (at.isLeaf() && atSize == 1) {
+        if (atSize == 0)
+            return;
 
-        } */
-
-        FasterList p = new FasterList<>(atSize);
-
-        boolean notNodeFiltering = (nodeFilter==null || plan==null ); //dont filter root node (traversed while plan is null)
+        boolean notNodeFiltering = (nodeFilter == null || plan.isEmpty()); //dont filter root node (traversed while plan is null)
 
         at.forEachLocal(itemOrNode -> {
             if (itemOrNode instanceof Node) {
                 Node node = (Node) itemOrNode;
-                HyperRegion nodeBounds = node.bounds();
-                if (mode.acceptNode(target, nodeBounds)) {
 
-                    //inline 1-arity branches for optimization
-                    while (node.size() == 1) {
-                        Object first = node.get(0);
-                        if (first instanceof Node)
-                            node = (Node) first; //this might indicate a problem in the tree structure that could have been flattened automatically
-                        else {
-                            if (notNodeFiltering || nodeFilter.tryVisit(node)) {
-                                tryItem(p, (X) first);
-                            }
-                            return;
+                //inline 1-arity branches for optimization
+                while (node.size() == 1) {
+                    Object first = node.get(0);
+                    if (first instanceof Node)
+                        node = (Node) first; //this might indicate a problem in the tree structure that could have been flattened automatically
+                    else {
+
+                        if (notNodeFiltering || nodeFilter.tryVisit(node)) {
+                            plan.accept(first);
                         }
+                        return;
                     }
-
-                    if (notNodeFiltering || nodeFilter.tryVisit(node))
-                        p.add(pair(node, nodeBounds));
                 }
+
+                if (notNodeFiltering || nodeFilter.tryVisit(node))
+                    plan.accept(node);
+
             } else {
-                tryItem(p, (X) itemOrNode);
+                plan.accept(itemOrNode);
             }
         });
 
-        int pn = p.size();
-        if (pn == 0) return null;
 
-        if (pn > 1)
-            sort(p);
-
-        //replace pair(item,bounds) to items in the list
-        p.replaceAll(x -> ((Pair)x).getOne());
-
-        return p;
     }
 
-    private void tryItem(FasterList p, X item) {
-        HyperRegion<X> itemBounds = model.bounds(item);
-        if (mode.acceptItem(target, itemBounds))
-            p.add(pair(item, itemBounds));
-    }
-
-    /** sort highest priority to the end of the list so it will be popped first */
-    private void sort(FasterList<Pair<Object,HyperRegion>> p) {
-        if (mode == ANY) {
-
-            p.sortThis(distanceComparator);
-
-        } else if (gradient!=null) {
-            throw new TODO();
-        }
-    }
 
     public boolean hasNext() {
         return (this.next = find()) != null;
@@ -201,33 +130,21 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
         this.nodeFilter = n;
     }
 
-    public final HyperIterator<X> fork(Node<X> start, HyperRegion bounds, Space.BoundsMatch mode) {
-        return fork(start, bounds, mode, null);
-    }
 
-    /**
-     * for changing direction without affecting current state
-     */
-    public final HyperIterator<X> fork(Node<X> start, HyperRegion bounds, Space.BoundsMatch mode, @Nullable byte[] gradient) {
-        return new HyperIterator<>(model, start, bounds, mode, gradient);
-    }
+//    public static final HyperIterator2 Empty = new HyperIterator2() {
+//
+//        @Override
+//        public boolean hasNext() {
+//            return false;
+//        }
+//
+//        @Override
+//        public Object next() {
+//            throw new NoSuchElementException();
+//        }
+//    };
 
 
-    public static final HyperIterator Empty = new HyperIterator() {
 
-        @Override
-        public boolean hasNext() {
-            return false;
-        }
-
-        @Override
-        public Object next() {
-            throw new NoSuchElementException();
-        }
-    };
-
-    public void setDistanceFunction(DoubleFunction h) {
-        this.distanceComparator = Functions.toDoubleComparator((Pair<Object,HyperRegion> b) -> h.applyAsDouble(b.getTwo()));
-    }
 
 }

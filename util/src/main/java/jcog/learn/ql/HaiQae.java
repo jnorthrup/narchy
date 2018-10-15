@@ -3,7 +3,6 @@ package jcog.learn.ql;
 import jcog.decide.DecideEpsilonGreedy;
 import jcog.decide.Deciding;
 import jcog.learn.Autoencoder;
-import jcog.math.FloatSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,10 +19,9 @@ public class HaiQae extends HaiQ {
     public Autoencoder ae;
     float perceptionAlpha;
     float perceptionNoise = 0.01f;
-    float perceptionCorruption = 0.01f;
-    float perceptionForget;
-    public FloatSupplier perceptionError;
-    public float lastPerceptionError;
+    float perceptionCorruption = 0; //0.01f;
+//    float perceptionForget;
+    public float perceptionError;
 
     
 
@@ -34,7 +32,7 @@ public class HaiQae extends HaiQ {
 
     public HaiQae(int inputs, int outputs) {
         this(inputs,
-                (i,o)->(int) Math.ceil(Math.sqrt(1 + (1+i)*(1+o))), outputs);
+                (i,o)->(int) Math.ceil(/*Math.sqrt*/(1 + (1+i)*(1+o))), outputs);
     }
 
     public HaiQae(int inputs, BiFunction<Integer,Integer,Integer> states, int outputs) {
@@ -46,8 +44,7 @@ public class HaiQae extends HaiQ {
         
         this.perceptionAlpha =
                 0.05f;
-        this.perceptionError =
-                ()->0.01f;
+
                 
 
         this.decideState =
@@ -72,18 +69,18 @@ public class HaiQae extends HaiQ {
 
     @Override
     protected int perceive(float[] input) {
-        lastPerceptionError = ae.put(input, perceptionAlpha, perceptionNoise, perceptionCorruption, true);
+        perceptionError = ae.put(input, perceptionAlpha, perceptionNoise, perceptionCorruption, true)
+            / input.length;
+
+
         int w = ae.decide(decideState);
-        if (perceptionForget > 0)
-            ae.forget(perceptionForget);
+//        if (perceptionForget > 0)
+//            ae.forget(perceptionForget);
         return w;
     }
     @Override
     public int act(float reward, float[] input) {
-
-        
-        float pErr = perceptionError.asFloat();
-        return act(reward, input, pErr);
+        return act(reward, input, perceptionError);
     }
 
     protected int act(float reward, float[] input, float pErr) {

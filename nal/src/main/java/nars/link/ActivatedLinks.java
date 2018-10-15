@@ -111,7 +111,7 @@ public class ActivatedLinks extends AbstractTask {
             //l.sortThis(TermLinkage.comparator);
 
             for (TermLinkage x : l) {
-                x.concept.termlinks().put(termlink(x.target, x.pri()));
+                x.concept.termlinks().putAsync(termlink(x.target, x.pri()));
             }
 
             //l.clearReallocate(1024, 8);

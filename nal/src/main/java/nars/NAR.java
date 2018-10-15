@@ -1429,12 +1429,15 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             return c;
         }
     }
-
     @Nullable
     public final Concept activate(Termed t, float activationApplied) {
+        return activate(t, activationApplied, false);
+    }
+    @Nullable
+    public final Concept activate(Termed t, float activationApplied, boolean forceConceptualize) {
 
         /** conceptualize regardless */
-        Concept c = conceptualize(t);
+        Concept c =forceConceptualize ? conceptualize(t) : concept(t);
 
         if (c != null && !eventActivate.isEmpty()) {
             eventActivate.emit(new Activate(c, activationApplied * activateConceptRate.floatValue()));

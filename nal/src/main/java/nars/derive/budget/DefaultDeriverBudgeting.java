@@ -8,6 +8,8 @@ import nars.derive.Derivation;
 import nars.derive.DeriverBudgeting;
 import nars.truth.Truth;
 
+import static nars.truth.TruthFunctions.w2cSafe;
+
 /**
  * TODO parameterize, modularize, refactor etc
  */
@@ -41,6 +43,8 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
             //belief or goal:
             factor *= factorEvi(e, d);
             factor *= factorPolarity(f);
+        } else {
+            factor *= factor; //re-apply for single-premise case
         }
 
         return Util.clamp( d.parentPri() * factor, ScalarValue.EPSILON, 1f);
@@ -70,10 +74,14 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
     }
 
     float factorEvi(float dEvi, Derivation d) {
-        float pEvi = d.parentEvi();
-        if (pEvi > 0) {
 
-            float eviLossFactor = 1f-Util.unitize((pEvi - dEvi) / pEvi);
+        float pEvi = d.parentEvi();
+
+        if (pEvi > dEvi) {
+
+            float pConf = w2cSafe(pEvi);
+            float dConf = w2cSafe(dEvi);
+            float eviLossFactor = 1f-Util.unitize((pConf - dConf) / pConf);
 
             return Util.lerp(eviLossFactor, 1f- eviRetention.floatValue(), 1);
         }

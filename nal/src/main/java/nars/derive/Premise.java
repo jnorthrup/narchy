@@ -152,9 +152,9 @@ public class Premise {
         NAR n = d.nar;
 
         Concept beliefConcept = beliefTerm.op().conceptualizable ?
-                n.concept(beliefTerm)
+                //n.concept(beliefTerm)
                 //n.conceptualize(beliefTerm)
-                //n.conceptualizeDynamic(beliefTerm)
+                n.conceptualizeDynamic(beliefTerm)
                 :
                 null;
 

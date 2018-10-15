@@ -41,7 +41,10 @@ import static spacegraph.SpaceGraph.window;
 
 public class TrackXY_NAR extends NAgentX {
 
-    static boolean targetNumerics = false, targetCam = true;
+    static boolean
+            targetNumerics = false,
+            targetCam = true,
+            gui = true;
 
     final Bitmap2DSensor cam;
     private final TrackXY track;
@@ -93,18 +96,18 @@ public class TrackXY_NAR extends NAgentX {
 
     public static void main(String[] args) {
 
-        boolean nars = true, rl = false;
+        boolean nars = false, rl = true;
 //        boolean rl = false;
 
 //        Param.DEBUG = true;
-        int W = 4;
-        int H = 4;
+        int W = 2;
+        int H = 1;
         int dur =
                 4;
         //8;
         //2 * (W * H) /* to allow pixels to be read at the rate of 1 pixel per cycle */;
 
-        NARS nb = new NARS.DefaultNAR(1, true)
+        NARS nb = new NARS.DefaultNAR(0, true)
                 .attention(() -> new Attention(96))
                 .exe(new UniExec())
                 .time(new CycleTime().dur(dur))
@@ -146,7 +149,7 @@ public class TrackXY_NAR extends NAgentX {
 
 
             Deriver d = new MatrixDeriver(Derivers.nal(n,
-//                        6, 8
+                        //6, 8
                     1, 8
 //                    //,"curiosity.nal"
                     , "motivation.nal"
@@ -191,36 +194,50 @@ public class TrackXY_NAR extends NAgentX {
         }
 
 
-        n.runLater(() -> {
-            window(
-                    //new CameraSensorView(c, this).withControls(),
-                    NARui.agent(a)
-                    , 400, 400);
-            window(new Gridding(NARui.top(n), new ObjectSurface(a.track)), 800, 250);
+        if (gui) {
+            n.runLater(() -> {
+                window(
+                        NARui.agent(a)
+                        , 400, 400);
+                window(new Gridding(NARui.top(n), new ObjectSurface(a.track)), 800, 250);
 
 //            NARui.agentWindow(t);
-            if (a.cam != null) {
-                window(new CameraSensorView(a.cam, n) {
-                    @Override
-                    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-                        super.paint(gl, surfaceRender);
-                        RectFloat at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
-                        gl.glColor4f(1, 0, 0, 0.9f);
-                        Draw.rect(at.move(x(), y(), 0.01f), gl);
-                    }
-                }.withControls(), 800, 800);
-            }
+                if (a.cam != null) {
+                    window(new CameraSensorView(a.cam, n) {
+                        @Override
+                        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+                            super.paint(gl, surfaceRender);
+                            RectFloat at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
+                            gl.glColor4f(1, 0, 0, 0.9f);
+                            Draw.rect(at.move(x(), y(), 0.01f), gl);
+                        }
+                    }.withControls(), 800, 800);
+                }
+            });
+        }
+
+        a.onFrame(()->{
+            Util.sleepMS(10);
         });
+//        a.onFrame(() -> {
+//            long now = n.time();
+//            if (now % 1000 == 0) {
+//                System.out.println(
+//                        //"reward mean: " +
+//                        a.rewardSum / now);
+//                a.rewardSum = 0;
+//            }
+//        });
 
-
-        int experimentTime = 16000;
+        int experimentTime = 56000;
         n.run(experimentTime);
 
-        printGoals(n);
-        printImpls(n);
 
-        n.stats(System.out);
-        n.conceptsActive().forEach(System.out::println);
+        //printGoals(n);
+        //printImpls(n);
+
+        //n.stats(System.out);
+        //n.conceptsActive().forEach(System.out::println);
 
     }
 
