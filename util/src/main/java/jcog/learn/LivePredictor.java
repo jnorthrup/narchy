@@ -3,6 +3,7 @@ package jcog.learn;
 import jcog.Util;
 import jcog.learn.lstm.Interaction;
 import jcog.learn.lstm.test.LiveSTM;
+import jcog.learn.ntm.control.SigmoidActivation;
 import jcog.random.XoRoShiRo128PlusRandom;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 
@@ -161,16 +162,14 @@ public class LivePredictor {
         @Override
         public void learn(double[] ins, double[] outs) {
             if (mlp == null /*|| mlp.inputs()!=ins.length ...*/) {
-                 mlp = new MLPMap(ins.length,
-                         new int[] {
-                                 2 * (ins.length + outs.length),
-                                 ins.length + outs.length,
-                                 outs.length},
-                         rng, true);
-                 Util.last(mlp.layers).setIsSigmoid(false);
+                 mlp = new MLPMap(rng, ins.length,
+                         new MLPMap.Layer(2 * (ins.length + outs.length), SigmoidActivation.the),
+                         new MLPMap.Layer( (ins.length + outs.length), SigmoidActivation.the),
+                         new MLPMap.Layer( outs.length, null)
+                 );
             }
             float[] fIns = Util.toFloat(ins);
-            mlp.put(fIns, Util.toFloat(outs), learningRate, momentum);
+            mlp.put(fIns, Util.toFloat(outs), learningRate);
             next = mlp.get(fIns);
         }
 

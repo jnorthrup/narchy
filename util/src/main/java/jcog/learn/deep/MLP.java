@@ -3,7 +3,6 @@ package jcog.learn.deep;
 import java.util.Random;
 
 public class MLP {
-    public int N;
     public int n_in;
     public int n_hidden;
     public int n_out;
@@ -12,9 +11,8 @@ public class MLP {
     public Random rng;
 
 
-    public MLP(int N, int n_in, int n_hidden, int n_out, Random rng) {
+    public MLP(int n_in, int n_hidden, int n_out, Random rng) {
 
-        this.N = N;
         this.n_in = n_in;
         this.n_hidden = n_hidden;
         this.n_out = n_out;
@@ -35,6 +33,7 @@ public class MLP {
         double[] logistic_layer_input;
         double[] dy;
 
+        int N = train_X.length;
         for(int n=0; n<N; n++) {
             hidden_layer_input = new double[n_in];
             logistic_layer_input = new double[n_hidden];
@@ -89,7 +88,7 @@ public class MLP {
         };
 
         
-        MLP classifier = new MLP(train_N, n_in, n_hidden, n_out, rng);
+        MLP classifier = new MLP(n_in, n_hidden, n_out, rng);
 
         
         for(int epoch=0; epoch<n_epochs; epoch++) {

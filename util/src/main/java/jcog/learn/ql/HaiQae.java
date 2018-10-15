@@ -32,7 +32,7 @@ public class HaiQae extends HaiQ {
 
     public HaiQae(int inputs, int outputs) {
         this(inputs,
-                (i,o)->(int) Math.ceil(/*Math.sqrt*/(1 + (1+i)*(1+o))), outputs);
+                (i,o)->(int) Math.ceil(Math.sqrt(1 + (1+i)*(1+o))), outputs);
     }
 
     public HaiQae(int inputs, BiFunction<Integer,Integer,Integer> states, int outputs) {
@@ -69,6 +69,8 @@ public class HaiQae extends HaiQ {
 
     @Override
     protected int perceive(float[] input) {
+        //System.out.println(Texts.n2(input));
+
         perceptionError = ae.put(input, perceptionAlpha, perceptionNoise, perceptionCorruption, true)
             / input.length;
 

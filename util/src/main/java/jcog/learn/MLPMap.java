@@ -1,5 +1,10 @@
 package jcog.learn;
 
+import jcog.learn.ntm.control.IDifferentiableFunction;
+import jcog.learn.ntm.control.SigmoidActivation;
+import jcog.random.XoRoShiRo128PlusRandom;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Random;
 
 /**
@@ -23,30 +28,39 @@ import java.util.Random;
  */
 public class MLPMap {
 
+    /** layer def */
+    public static class Layer {
+        final int size;
+        final IDifferentiableFunction activation;
+
+        public Layer(int size, IDifferentiableFunction activation) {
+            this.size = size;
+            this.activation = activation;
+        }
+    }
     public static class MLPLayer {
 
         final float[] output;
         final float[] input;
         final float[] weights;
         final float[] dweights;
-        boolean isSigmoid = true;
+        @Nullable
+        final IDifferentiableFunction activation;
 
-        public MLPLayer(int inputSize, int outputSize, Random r, boolean sigmoid) {
+
+        public MLPLayer(int inputSize, int outputSize, @Nullable IDifferentiableFunction activation) {
             output = new float[outputSize];
             input = new float[inputSize + 1];
             weights = new float[(1 + inputSize) * outputSize];
             dweights = new float[weights.length];
-            this.isSigmoid = sigmoid;
-            initWeights(r);
+            this.activation = activation;
         }
 
-        public void setIsSigmoid(boolean isSigmoid) {
-            this.isSigmoid = isSigmoid;
-        }
 
-        public void initWeights(Random r) {
+
+        public void randomizeWeights(Random r) {
             for (int i = 0; i < weights.length; i++) {
-                weights[i] = (r.nextFloat() - 0.5f) * 4f;
+                weights[i] = (r.nextFloat() - 0.5f) * 2f;
             }
         }
 
@@ -60,16 +74,15 @@ public class MLPMap {
                 for (int j = 0; j < il; j++) {
                     o += weights[offs + j] * input[j];
                 }
-                if (isSigmoid) {
-                    o = (float) (1 / (1 + Math.exp(-o)));
-                }
+                if (activation!=null)
+                    o = (float) activation.value(o);
                 output[i] = o;
                 offs += il;
             }
             return output;
         }
 
-        public float[] train(float[] inError, float learningRate, float momentum) {
+        public float[] train(float[] inError, float learningRate) {
 
             float[] outError = new float[input.length];
             int inLength = input.length;
@@ -77,16 +90,14 @@ public class MLPMap {
             int offs = 0;
             for (int i = 0; i < output.length; i++) {
                 float d = inError[i];
-                if (isSigmoid) {
-                    float oi = output[i];
-                    d *= oi * (1 - oi);
-                }
+                if (activation!=null)
+                    d *= activation.derivative(output[i]);
                 float dLR = d * learningRate;
                 for (int j = 0; j < inLength; j++) {
                     int idx = offs + j;
                     outError[j] += weights[idx] * d;
                     float dw = input[j] * dLR;
-                    weights[idx] += dweights[idx] * momentum + dw;
+                    weights[idx] += dw;// * dweights[idx];
                     dweights[idx] = dw;
                 }
                 offs += inLength;
@@ -97,11 +108,29 @@ public class MLPMap {
 
     public final MLPLayer[] layers;
 
-    public MLPMap(int inputSize, int[] layersSize, Random r, boolean sigmoid) {
+    @Deprecated public MLPMap(int inputSize, int[] layersSize, Random r, boolean sigmoid) {
         layers = new MLPLayer[layersSize.length];
         for (int i = 0; i < layersSize.length; i++) {
             int inSize = i == 0 ? inputSize : layersSize[i - 1];
-            layers[i] = new MLPLayer(inSize, layersSize[i], r, sigmoid);
+            layers[i] = new MLPLayer(inSize, layersSize[i], sigmoid ? SigmoidActivation.the : null);
+        }
+        randomize(r);
+    }
+
+    public MLPMap(Random r, int inputs, Layer... layer) {
+        assert(layer.length > 0);
+        layers = new MLPLayer[layer.length];
+        for (int i = 0; i < layer.length; i++) {
+            int inSize = i > 0 ? layer[i-1].size : inputs;
+            int outSize = layer[i].size;
+            layers[i] = new MLPLayer(inSize, outSize, layer[i].activation);
+        }
+        randomize(r);
+    }
+
+    public void randomize(Random r) {
+        for (MLPLayer m : layers) {
+            m.randomizeWeights(r);
         }
     }
 
@@ -114,14 +143,14 @@ public class MLPMap {
     }
 
     /** returns an error vector */
-    public float[] put(float[] input, float[] targetOutput, float learningRate, float momentum) {
+    public float[] put(float[] input, float[] targetOutput, float learningRate) {
         float[] calcOut = get(input);
         float[] error = new float[calcOut.length];
         for (int i = 0; i < error.length; i++) {
             error[i] = targetOutput[i] - calcOut[i]; 
         }
         for (int i = layers.length - 1; i >= 0; i--) {
-            error = layers[i].train(error, learningRate, momentum);
+            error = layers[i].train(error, learningRate);
         }
         return error;
     }
@@ -132,15 +161,19 @@ public class MLPMap {
 
         float[][] res = {new float[]{0}, new float[]{1}, new float[]{1}, new float[]{0}};
 
-        MLPMap mlp = new MLPMap(2, new int[]{2, 1}, new Random(), true);
-        mlp.layers[1].setIsSigmoid(false);
+        MLPMap mlp = new MLPMap(new XoRoShiRo128PlusRandom(1),2,
+                new Layer(2,SigmoidActivation.the),
+                new Layer(1,null)
+        );
+                //, new int[]{2, 1}, new Random(), true);
+
         Random r = new Random();
         int en = 500;
         for (int e = 0; e < en; e++) {
 
             for (int i = 0; i < res.length; i++) {
                 int idx = r.nextInt(res.length);
-                mlp.put(train[idx], res[idx], 0.3f, 0.6f);
+                mlp.put(train[idx], res[idx], 0.5f);
             }
 
             if ((e + 1) % 100 == 0) {

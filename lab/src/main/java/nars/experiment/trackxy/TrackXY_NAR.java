@@ -100,7 +100,7 @@ public class TrackXY_NAR extends NAgentX {
 //        boolean rl = false;
 
 //        Param.DEBUG = true;
-        int W = 2;
+        int W = 4;
         int H = 1;
         int dur =
                 4;
@@ -129,8 +129,8 @@ public class TrackXY_NAR extends NAgentX {
 
 
 //            n.termVolumeMax.set(9);
-        n.freqResolution.set(0.1f);
-        n.confResolution.set(0.05f);
+//        n.freqResolution.set(0.1f);
+//        n.confResolution.set(0.05f);
 
 
         TrackXY_NAR a = new TrackXY_NAR(n, W, H);

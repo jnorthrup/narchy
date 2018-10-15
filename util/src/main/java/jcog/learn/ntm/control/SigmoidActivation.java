@@ -4,15 +4,17 @@
 
 package jcog.learn.ntm.control;
 
-public class SigmoidActivationFunction   implements IDifferentiableFunction
+public class SigmoidActivation implements IDifferentiableFunction
 {
+    public static final SigmoidActivation the = new SigmoidActivation();
+
     private final double _alpha;
 
-    public SigmoidActivationFunction() {
+    public SigmoidActivation() {
         this(1.0);
     }
 
-    public SigmoidActivationFunction(double alpha) {
+    public SigmoidActivation(double alpha) {
         _alpha = alpha;
     }
 

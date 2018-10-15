@@ -190,9 +190,11 @@ abstract public class NAgentX extends NAgent {
 
             n.runLater(() -> {
 
-                PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8
-                ,"induction.goal.nal"
-                //        , "motivation.nal"
+                PremiseDeriverRuleSet rules = Derivers.rules(n, //6, 8
+                        "induction.nal",
+                        "induction.goal.nal"
+                        //"curiosity.nal"
+                        //, "motivation.nal"
                 );
                 SimpleDeriver sd = SimpleDeriver.forConcepts(n, rules,
                         a.rewards.stream().flatMap((Reward x) -> stream(x.spliterator(), false)).collect(Collectors.toList()),

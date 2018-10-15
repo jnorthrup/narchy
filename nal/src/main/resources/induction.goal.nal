@@ -1,14 +1,9 @@
 
 //goal induction
 //  experimental
-G, B, task("!")  |- (polarize(G,task) && polarize(B,belief)), (Goal:IntersectionDepolarized, Time:Relative)
+G, B, task("!")  |- (polarize(G,task) && polarize(B,belief)), (Goal:IntersectionDepolarized, Punctuation:Goal)
+G, B, task("@")  |- (polarize(B,belief) ==> G), (Time:Relative, Punctuation:Question, Time:Task)
     //,--eventOfNeg(S,G) //<- TODO verify this will work if S isnt even a conj
-
-//curiosity
-G, B, task("@")  |- B, (Goal:Curiosity, Punctuation:Goal)
-G, B, task("@")  |- (polarize(B,belief)==>G), (Goal:Curiosity, Punctuation:Goal)
-//G, B, task("@")  |- (polarize(G,task) && polarize(B,belief)), (Goal:Curiosity, Punctuation:Goal, Time:Relative)
-
 
 
 

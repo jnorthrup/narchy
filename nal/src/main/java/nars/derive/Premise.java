@@ -208,13 +208,13 @@ public class Premise {
         NAR nar = d.nar;
         Tense.dither(focus, nar);
 
-        Predicate<Task> beliefFilter = beliefFilter();
+        Predicate<Task> beliefFilter = beliefTerm.concept().equals(task.term().concept()) ? beliefFilter() : null;
 
         //dont dither because this task isnt directly input to the system.  derivations will be dithered at the end
         //TODO factor in the Task's stamp so it can try to avoid those tasks, thus causing overlap in double premise cases
         return Answer.relevance(true, Answer.TASK_LIMIT_DEFAULT, focus[0], focus[1], beliefTerm, beliefFilter, nar)
                 .match(bb)
-                .task(false, true, false);
+                .task(true, false, false);
     }
 
 

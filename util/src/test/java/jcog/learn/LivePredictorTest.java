@@ -44,7 +44,7 @@ class LivePredictorTest {
         IntToFloatFunction ii = x -> (float)Math.sin(x/8f);
         IntToFloatFunction oo = x -> (float)Math.cos(x/8f);
         LivePredictor.MLPPredictor model =
-                new LivePredictor.MLPPredictor(0.03f);
+                new LivePredictor.MLPPredictor(0.05f);
         int iHistory = 4;
         int totalTime = 1024;
         float maxMeanError = 0.15f;

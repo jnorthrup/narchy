@@ -152,7 +152,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //    static private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long start, long end, int dur) {
 //
         return (Task x) -> (x.endsAfter(now) ? presentAndFutureBoost : 1f) *
-                TruthIntegration.evi(x) / x.midTimeTo(now);
+                //(TruthIntegration.eviAvg(x, 0))/ (1 + x.maxTimeTo(now)/((float)dur));
+                ///w2cSafe(TruthIntegration.evi(x));
+                w2cSafe(TruthIntegration.evi(x)) / (1 + x.maxTimeTo(now)/((float)dur));
     }
 
 
@@ -561,7 +563,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         if (I != null && closest != null && closest.the != null) {
             C = (Task) closest.the;
-            assert(I==null || !C.equals(I));
+            assert(!C.equals(I));
             IC = Revision.merge(nar, I, C);
             if (IC != null && (IC.equals(I) || IC.equals(C)))
                 IC = null;

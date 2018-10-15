@@ -129,7 +129,9 @@ public class RLBooster implements Consumer<NAR> {
         long end = now + dur/2;
         int O = rl.act(reward, input(start, end));
 
-        float OFFfreq = 0f;
+        float OFFfreq =
+                0f;
+                //Float.NaN;
         float ONfreq = 1f;
 
 
@@ -147,10 +149,12 @@ public class RLBooster implements Consumer<NAR> {
                 t = off;
             }
 
-            Task tt = new SignalTask(actions[o].term(), GOAL, t, start, start, end, nar.time.nextStamp());
-            tt.pri(nar);
-            if (tt != null)
-                e.add(tt);
+            if (t !=null) {
+                Task tt = new SignalTask(actions[o].term(), GOAL, t, start, start, end, nar.time.nextStamp());
+                tt.pri(nar);
+                if (tt != null)
+                    e.add(tt);
+            }
         }
         in.input(e);
     }

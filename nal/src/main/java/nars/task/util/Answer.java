@@ -24,7 +24,6 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
@@ -122,22 +121,21 @@ public class Answer implements Consumer<Task> {
 
         FloatFunction<TaskRegion> f = (TaskRegion t) -> {
 
-            if (t == x || Stamp.overlapsAny(xStamp, ((Task) t).stamp()))
+            if (t.equals(x)) // || Stamp.overlapsAny(xStamp, ((Task) t).stamp()))
                 return Float.NaN;
 
             return
-                    (1 + 1f / (1f +
-                            (Math.abs(t.start() - xStart) + Math.abs(t.end() - xEnd))));
+                -(1 + Math.abs(t.start() - xStart) + Math.abs(t.end() - xEnd));
         };
 
         Term xt = x.term();
         if (xt.hasAny(Op.Temporal)) {
 
             return (t) -> {
-                float v1 = f.floatValueOf(t);
+                float v1 = f.floatValueOf(t); //will be negative
                 if (v1 != v1) return Float.NaN;
 
-                return 1f / (1f + Revision.dtDiff(xt, ((Task) t).term()));
+                return v1 * (1f + Revision.dtDiff(xt, ((Task) t).term()));
             };
         } else {
             return f;
@@ -150,7 +148,7 @@ public class Answer implements Consumer<Task> {
             if (base < min || base != base)
                 return Float.NaN;
 
-            return base * (1 + 1 / Revision.dtDiff(template, x.term()));
+            return base * (1 / (1+Revision.dtDiff(template, x.term())));
         };
     }
 
@@ -179,11 +177,11 @@ public class Answer implements Consumer<Task> {
 
 
     public static FloatFunction<Task> eternalTaskStrength() {
-        return x -> w2cSafe(x.isEternal() ? x.evi() : x.eviEternalized() * x.range());
+        return x -> /*w2cSafe*/(x.isEternal() ? x.evi() : x.eviEternalized() * x.range());
     }
 
     public static FloatFunction<Task> temporalTaskStrength(long start, long end, int dur) {
-        return x -> w2cSafe(TruthIntegration.evi(x, start, end, dur));
+        return x -> /*w2cSafe*/(TruthIntegration.evi(x, start, end, dur));
     }
 
     boolean ditherTruth = false;

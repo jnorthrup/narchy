@@ -1,6 +1,12 @@
 
-X, X, task("@"), --has(X,"?") |- X,       (Goal:Curiosity, Punctuation:Goal, Time:TaskInstant)
+//X, X, task("@"), --has(X,"?") |- X,       (Goal:Curiosity, Punctuation:Goal, Time:TaskInstant)
 //X, X, task("?"), --has(X,"?") |- X,       (Belief:Curiosity, Punctuation:Belief, Time:TaskInstant)
+
+
+//curiosity
+G, B, task("@")  |- B, (Goal:Curiosity, Punctuation:Goal, Time:Task)
+G, B, task("@")  |- (polarize(B,belief)==>G), (Belief:Curiosity, Punctuation:Goal, Time:Task)
+//G, B, task("@")  |- (polarize(G,task) && polarize(B,belief)), (Goal:Curiosity, Punctuation:Goal, Time:Relative)
 
 
 

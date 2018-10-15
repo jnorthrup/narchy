@@ -2,19 +2,16 @@ package nars.experiment;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.learn.MLPMap;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.agent.NAgent;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.concept.sensor.Sensor;
 import nars.gui.BeliefTableChart;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.time.Tense;
 import nars.truth.Truth;
 import nars.video.CameraSensorView;
 import nars.video.Scale;
@@ -32,12 +29,10 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
-import static nars.Op.BELIEF;
 
 /**
  * Created by me on 10/8/16.
@@ -50,14 +45,14 @@ public class Recog2D extends NAgentX {
     private final int w;
     private final BeliefVector outs;
 
-    private final Training train;
+//    private final Training train;
     private final Bitmap2DSensor<?> sp;
 
-    boolean mlpLearn = true, mlpSupport = true;
+//    boolean mlpLearn = true, mlpSupport = true;
 
     BufferedImage canvas;
 
-    public final AtomicBoolean neural = new AtomicBoolean(false);
+//    public final AtomicBoolean neural = new AtomicBoolean(false);
 
 
     int image;
@@ -96,7 +91,7 @@ public class Recog2D extends NAgentX {
 //                sp.src instanceof PixelBag ?
 //                    new FasterList(sensors).with(((PixelBag) sp.src).actions) : sensors,
 //                outs, nar);
-        train = null;
+//        train = null;
 
         rewardNormalized("correct", -1, +1, ()->{
             float error = 0;
@@ -194,9 +189,9 @@ public class Recog2D extends NAgentX {
             outs.expect(image);
 
 
-            if (neural.get()) {
-                train.update(mlpLearn, mlpSupport);
-            }
+//            if (neural.get()) {
+//                train.update(mlpLearn, mlpSupport);
+//            }
 
             //p.update();
 
@@ -248,82 +243,82 @@ public class Recog2D extends NAgentX {
         }, 15);
     }
 
-    public static class Training {
-        private final List<Sensor> ins;
-        private final BeliefVector outs;
-        private final MLPMap trainer;
-        private final NAR nar;
-
-        private final float learningRate = 0.3f;
-
-        /**
-         * Introduction of the momentum rate allows the attenuation of oscillations in the gradient descent. The geometric idea behind this idea can probably best be understood in terms of an eigenspace analysis in the linear case. If the ratio between lowest and largest eigenvalue is large then performing a gradient descent is slow even if the learning rate large due to the conditioning of the matrix. The momentum introduces some balancing in the update between the eigenvectors associated to lower and larger eigenvalues.
-         * <p>
-         * For more detail I refer to
-         * <p>
-         * http:
-         */
-        private final float momentum = 0.6f;
-
-        public Training(java.util.List<Sensor> ins, BeliefVector outs, NAR nar) {
-
-            this.nar = nar;
-            this.ins = ins;
-            this.outs = outs;
-
-
-            this.trainer = new MLPMap(ins.size(), new int[]{(ins.size() + outs.states) / 2, outs.states}, nar.random(), true);
-            trainer.layers[1].setIsSigmoid(false);
-
-        }
-
-
-        float[] in(float[] i, long when) {
-            int s = ins.size();
-
-            if (i == null || i.length != s)
-                i = new float[s];
-            for (int j = 0, insSize = ins.size(); j < insSize; j++) {
-                float b = nar.beliefTruth(ins.get(j), when).freq();
-                if (b != b)
-                    b = 0.5f;
-                i[j] = b;
-            }
-
-            return i;
-        }
-
-        protected void update(boolean train, boolean apply) {
-            float[] i = in(null, nar.time());
-
-            float errSum;
-            if (train) {
-                float[] err = trainer.put(i, outs.expected(null), learningRate, momentum);
-
-                errSum = Util.sumAbs(err) / err.length;
-                System.err.println("  error sum=" + errSum);
-            } else {
-                errSum = 0f;
-            }
-
-            if (apply/* && errSum < 0.25f*/) {
-                float[] o = trainer.get(i);
-                for (int j = 0, oLength = o.length; j < oLength; j++) {
-                    float y = o[j];
-
-                    float c = nar.confDefault(BELIEF) * (1f - errSum);
-                    if (c > 0) {
-                        nar.believe(
-                                outs.concepts[j].term(),
-                                Tense.Present, y, c);
-                    }
-
-                }
-
-            }
-        }
-    }
-
+//    public static class Training {
+//        private final List<Sensor> ins;
+//        private final BeliefVector outs;
+//        private final MLPMap trainer;
+//        private final NAR nar;
+//
+//        private final float learningRate = 0.3f;
+//
+//        /**
+//         * Introduction of the momentum rate allows the attenuation of oscillations in the gradient descent. The geometric idea behind this idea can probably best be understood in terms of an eigenspace analysis in the linear case. If the ratio between lowest and largest eigenvalue is large then performing a gradient descent is slow even if the learning rate large due to the conditioning of the matrix. The momentum introduces some balancing in the update between the eigenvectors associated to lower and larger eigenvalues.
+//         * <p>
+//         * For more detail I refer to
+//         * <p>
+//         * http:
+//         */
+//        private final float momentum = 0.6f;
+//
+//        public Training(java.util.List<Sensor> ins, BeliefVector outs, NAR nar) {
+//
+//            this.nar = nar;
+//            this.ins = ins;
+//            this.outs = outs;
+//
+//
+//            this.trainer = new MLPMap(ins.size(), new int[]{(ins.size() + outs.states) / 2, outs.states}, nar.random(), true);
+//            trainer.layers[1].setIsSigmoid(false);
+//
+//        }
+//
+//
+//        float[] in(float[] i, long when) {
+//            int s = ins.size();
+//
+//            if (i == null || i.length != s)
+//                i = new float[s];
+//            for (int j = 0, insSize = ins.size(); j < insSize; j++) {
+//                float b = nar.beliefTruth(ins.get(j), when).freq();
+//                if (b != b)
+//                    b = 0.5f;
+//                i[j] = b;
+//            }
+//
+//            return i;
+//        }
+//
+//        protected void update(boolean train, boolean apply) {
+//            float[] i = in(null, nar.time());
+//
+//            float errSum;
+//            if (train) {
+//                float[] err = trainer.put(i, outs.expected(null), learningRate);
+//
+//                errSum = Util.sumAbs(err) / err.length;
+//                System.err.println("  error sum=" + errSum);
+//            } else {
+//                errSum = 0f;
+//            }
+//
+//            if (apply/* && errSum < 0.25f*/) {
+//                float[] o = trainer.get(i);
+//                for (int j = 0, oLength = o.length; j < oLength; j++) {
+//                    float y = o[j];
+//
+//                    float c = nar.confDefault(BELIEF) * (1f - errSum);
+//                    if (c > 0) {
+//                        nar.believe(
+//                                outs.concepts[j].term(),
+//                                Tense.Present, y, c);
+//                    }
+//
+//                }
+//
+//            }
+//        }
+//    }
+//
 
     /**
      * Created by me on 10/15/16.

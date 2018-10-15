@@ -27,7 +27,7 @@ public class HiddenLayer
         heads = headCount;
         this.memoryUnitSizeM = memoryUnitSizeM;
         this.neurons = new UVector(controllerSize);
-        activation = new SigmoidActivationFunction();
+        activation = new SigmoidActivation();
         readDataToHiddenLayerWeights = UnitFactory.getTensor3(controllerSize,headCount,memoryUnitSizeM);
         inputToHiddenLayerWeights = new UMatrix(controllerSize,inputSize);
         hiddenLayerThresholds = new UVector(controllerSize);

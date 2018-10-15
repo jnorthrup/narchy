@@ -1,7 +1,6 @@
 package nars.concept.action;
 
 import nars.NAR;
-import nars.Op;
 import nars.Task;
 import nars.control.proto.Remember;
 import nars.link.TermLinker;
@@ -18,6 +17,8 @@ import nars.truth.polation.TruthPolation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
+
+import static nars.Op.GOAL;
 
 
 /**
@@ -148,15 +149,15 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
     @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
-//        if (goal!=null) {
-//            SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd);
-//
-//            if (curiosity != null) {
-//                curiosity.pri(n.priDefault(GOAL));
-//                return curiosity;
-//                //return curiosity.input(c);
-//            }
-//        }
+        if (goal!=null) {
+            SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd);
+
+            if (curiosity != null) {
+                curiosity.pri(n.priDefault(GOAL));
+                return curiosity;
+                //return curiosity.input(c);
+            }
+        }
 
         return null;
 
@@ -180,7 +181,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
     public static class CuriosityTask extends SignalTask {
         public CuriosityTask(Term term, Truth goal, NAR n, long pStart, long pEnd) {
-            super(term, Op.GOAL, goal, n.time(), pStart, pEnd, n.evidence());
+            super(term, GOAL, goal, n.time(), pStart, pEnd, n.evidence());
         }
     }
 

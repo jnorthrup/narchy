@@ -986,8 +986,8 @@ var DQNAgent = function(env, opt) {
   this.epsilon = getopt(opt, 'epsilon', 0.1); // for epsilon-greedy policy
   this.alpha = getopt(opt, 'alpha', 0.01); // value function learning rate
 
-  this.experience_add_every = getopt(opt, 'experience_add_every', 25); // number of time steps before we add another experience to replay memory
-  this.experience_size = getopt(opt, 'experience_size', 5000); // size of experience replay
+  this.experience_add_every = getopt(opt, 'experience_add_every', 10); // number of time steps before we add another experience to replay memory
+  this.experience_size = getopt(opt, 'experience_size', 4096); // size of experience replay
   this.learning_steps_per_iteration = getopt(opt, 'learning_steps_per_iteration', 10);
   this.tderror_clamp = getopt(opt, 'tderror_clamp', 1.0);
 

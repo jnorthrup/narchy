@@ -474,7 +474,7 @@ public enum NALTruth implements TruthFunc {
     @SinglePremise @AllowOverlap Curiosity() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return $.t(m.random().nextFloat(), m.confMin.floatValue()*1);
+            return $.t(m.random().nextFloat(), m.confMin.floatValue()*2);
         }
     },
 
