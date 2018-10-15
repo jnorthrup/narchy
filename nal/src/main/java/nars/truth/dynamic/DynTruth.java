@@ -157,7 +157,7 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
 
 
             } else {
-                long[] u = Param.DynamicTruthTimeMerge(this.array());
+                long[] u = Tense.union(this.array());
                 start = u[0];
                 end = u[1];
             }

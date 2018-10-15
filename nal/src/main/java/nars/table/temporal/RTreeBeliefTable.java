@@ -688,10 +688,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     private static float mergeScoreFactor(Task a, Task b) {
-        float dFreq = Math.abs(a.freq() - b.freq());
-        if (dFreq > 0.5f)
-            return 1 / (1 + dFreq);
-        else
+//        float dFreq = Math.abs(a.freq() - b.freq());
+//        if (dFreq > 0.5f)
+//            return 1 / (1 + dFreq);
+//        else
             return 1;
     }
 

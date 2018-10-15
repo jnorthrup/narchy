@@ -7,9 +7,7 @@ import jcog.math.IntRange;
 import jcog.math.Range;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
-import nars.task.util.TaskRegion;
 import nars.term.atom.Atom;
-import nars.time.Tense;
 import nars.truth.polation.LinearTruthPolation;
 import nars.truth.polation.TruthPolation;
 
@@ -313,13 +311,6 @@ public abstract class Param {
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
      */
     public final IntRange timeResolution = new IntRange(1, 1, 1024);
-
-    /** how occurrence time is computed for dynamic truth tasks */
-    public static long[] DynamicTruthTimeMerge(TaskRegion[] components) {
-        return
-            Tense.union(components);
-            //Tense.intersection(components);
-    }
 
     /**
      * number of time units (cycles) to dither into

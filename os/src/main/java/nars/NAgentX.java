@@ -11,7 +11,9 @@ import jcog.tree.rtree.rect.RectFloat;
 import jcog.util.Int2Function;
 import nars.agent.FrameTrigger;
 import nars.agent.NAgent;
+import nars.agent.Reward;
 import nars.agent.SimpleReward;
+import nars.concept.Concept;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
@@ -19,6 +21,8 @@ import nars.control.DurService;
 import nars.control.MetaGoal;
 import nars.derive.Derivers;
 import nars.derive.impl.MatrixDeriver;
+import nars.derive.impl.SimpleDeriver;
+import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.exe.Attention;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
@@ -51,7 +55,10 @@ import java.io.IOException;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.stream.StreamSupport.stream;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
@@ -183,20 +190,20 @@ abstract public class NAgentX extends NAgent {
 
             n.runLater(() -> {
 
-//                PremiseDeriverRuleSet rules = Derivers.rules(n, //6, 8
-//                        "induction.nal",
-//                        "induction.goal.nal"
-//                        //"curiosity.nal"
-//                        //, "motivation.nal"
-//                );
-//                SimpleDeriver sd = SimpleDeriver.forConcepts(n, rules,
-//                        a.rewards.stream().flatMap((Reward x) -> stream(x.spliterator(), false)).collect(Collectors.toList()),
-//                        Stream.concat(
-//                            a.actions.stream(),
-//                            a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false))
-//                        ).map(x -> x.term()).collect(Collectors.toList())
-//                );
-//                sd.timing = new ActionTiming(n);
+                PremiseDeriverRuleSet rules = Derivers.rules(n, //6, 8
+                        "induction.nal",
+                        "induction.goal.nal"
+                        //"curiosity.nal"
+                        //, "motivation.nal"
+                );
+                SimpleDeriver sd = SimpleDeriver.forConcepts(n, rules,
+                        (java.util.List<Concept>)(a.rewards.stream().flatMap((Reward x) -> stream(x.spliterator(), false)).collect(Collectors.toList())),
+                        (java.util.List<Term>)Stream.concat(
+                            a.actions.stream(),
+                            a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false))
+                        ).map(x -> x.term()).collect(Collectors.toList())
+                );
+                //sd.timing = new ActionTiming(n);
 ////                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
 ////                        rules) {
 //////                    @Override
@@ -393,12 +400,12 @@ abstract public class NAgentX extends NAgent {
 
     public static void initPlugins(NAR n) {
 
-//        new MatrixDeriver(Derivers.nal(n, 1, 1));
-//        new MatrixDeriver(Derivers.nal(n, 2, 3));
-//        new MatrixDeriver(Derivers.nal(n, 4, 4));
-//        new MatrixDeriver(Derivers.nal(n, 5, 8));
+        new MatrixDeriver(Derivers.nal(n, 1, 1));
+        new MatrixDeriver(Derivers.nal(n, 2, 3));
+        new MatrixDeriver(Derivers.nal(n, 4, 4));
+        new MatrixDeriver(Derivers.nal(n, 5, 8));
 
-//        new MatrixDeriver(Derivers.rules(n, "motivation.nal"));
+        new MatrixDeriver(Derivers.rules(n, "motivation.nal"));
         new MatrixDeriver(Derivers.rules(n, "induction.goal.nal"));
 
         //new STMLinkage(n, 1);
