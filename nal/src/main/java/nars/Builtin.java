@@ -379,35 +379,35 @@ public class Builtin {
         });
 
 
-        /**
-         * TODO rename this to 'dropAnyCommutive'
-         * remove an element from a commutive conjunction (or set), at random, and try re-creating
-         * the compound. wont necessarily work in all situations.
-         * TODO move the type restriction to another functor to wrap this
-         *
-         * this also filter a single variable (depvar) from being a result
-         */
-        nar.on(Functor.f1Inline("dropAnySet", (Term t) -> {
-            Op oo = t.op();
-
-            if (!oo.in(SETi.bit | SETe.bit | SECTi.bit | SECTe.bit))
-                return Bool.Null;
-
-            int size = t.subs();
-            switch (size) {
-                case 0:
-                    assert (false) : "empty set impossible here";
-                    return Bool.Null;
-                case 1:
-                    return Bool.Null; /* can't shrink below one element */
-                case 2:
-                    int n = nar.random().nextInt(2);
-                    return oo.the(t.sub(n)) /* keep the remaining term wrapped in a set */;
-                default:
-                    Term[] y = Terms.dropRandom(nar.random(), t.subterms());
-                    return oo.the(y);
-            }
-        }));
+//        /**
+//         * TODO rename this to 'dropAnyCommutive'
+//         * remove an element from a commutive conjunction (or set), at random, and try re-creating
+//         * the compound. wont necessarily work in all situations.
+//         * TODO move the type restriction to another functor to wrap this
+//         *
+//         * this also filter a single variable (depvar) from being a result
+//         */
+//        nar.on(Functor.f1Inline("dropAnySet", (Term t) -> {
+//            Op oo = t.op();
+//
+//            if (!oo.in(SETi.bit | SETe.bit | SECTi.bit | SECTe.bit))
+//                return Bool.Null;
+//
+//            int size = t.subs();
+//            switch (size) {
+//                case 0:
+//                    assert (false) : "empty set impossible here";
+//                    return Bool.Null;
+//                case 1:
+//                    return Bool.Null; /* can't shrink below one element */
+//                case 2:
+//                    int n = nar.random().nextInt(2);
+//                    return oo.the(t.sub(n)) /* keep the remaining term wrapped in a set */;
+//                default:
+//                    Term[] y = Terms.dropRandom(nar.random(), t.subterms());
+//                    return oo.the(y);
+//            }
+//        }));
 
 
 //        /** depvar cleaning from commutive conj */

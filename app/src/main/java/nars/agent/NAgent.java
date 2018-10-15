@@ -115,7 +115,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
     protected <A extends ActionConcept> void actionAdded(A a) {
 
-        alwaysQuest(a, true);
+//        alwaysQuest(a, true);
 
 //        alwaysQuestionEternally(a,
 //                false,
@@ -467,8 +467,8 @@ public class NAgent extends NARService implements NSense, NAct {
 
         float curiConf =
                         //nar.confMin.floatValue();
-                        //nar.confMin.floatValue() * 2;
-                        nar.confMin.floatValue() * 4;
+                        nar.confMin.floatValue() * 2;
+                        //nar.confMin.floatValue() * 4;
                         //nar.confDefault(GOAL)/3;
                         //nar.confDefault(GOAL)/2;
                         //nar.confDefault(GOAL)/3;

@@ -10,7 +10,6 @@ import nars.NAgentX;
 import nars.agent.NAgent;
 import nars.agent.Reward;
 import nars.concept.Concept;
-import nars.concept.action.BiPolarAction;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -155,24 +154,24 @@ public class PoleCart extends NAgentX {
 
 
         final float SPEED = 3f;
-        BiPolarAction F = actionBipolarFrequencyDifferential(id, false, (x) -> {
-            float a =
-                    x * SPEED;
-                    //(x * x * x) * SPEED;
-            this.action = a;
-            return x;
-        });
+//        BiPolarAction F = actionBipolarFrequencyDifferential(id, false, (x) -> {
+//            float a =
+//                    x * SPEED;
+//                    //(x * x * x) * SPEED;
+//            this.action = a;
+//            return x;
+//        });
 
-//        actionUnipolar($.p($.the("L"),id), (a) -> {
-//            if (!manualOverride)
-//                action = Util.clampBi((float) (action + a));
-//            return a;
-//        });
-//        actionUnipolar($.p($.the("R"),id), (a) -> {
-//            if (!manualOverride)
-//                action = Util.clampBi((float) (action - a));
-//            return a;
-//        });
+        actionUnipolar($.p($.the("L"),id), (a) -> {
+            if (!manualOverride)
+                action = Util.clampBi((float) (action + a));
+            return a;
+        });
+        actionUnipolar($.p($.the("R"),id), (a) -> {
+            if (!manualOverride)
+                action = Util.clampBi((float) (action - a));
+            return a;
+        });
 
 
 

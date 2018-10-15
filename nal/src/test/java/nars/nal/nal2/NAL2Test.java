@@ -1,10 +1,7 @@
 package nars.nal.nal2;
 
 
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
+import nars.*;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Disabled;
@@ -16,14 +13,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL2Test extends NALTest {
 
-    private static final int cycles = 350;
+    private static final int cycles = 400;
 
 
     @Override
     protected NAR nar() {
 
         NAR n = NARS.tmp(2);
-        n.termVolumeMax.set(9);
+        n.termVolumeMax.set(8);
         return n;
     }
 

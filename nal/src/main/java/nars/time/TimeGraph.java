@@ -671,7 +671,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     }
                 } else {
 
-                    int early = Op.conjEarlyLate(x, true);
+                    int early = Conj.conjEarlyLate(x, true);
                     if (early == 1)
                         dt = -dt;
 

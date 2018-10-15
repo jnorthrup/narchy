@@ -6,10 +6,8 @@ import jcog.data.list.MetalConcurrentQueue;
 import jcog.pri.Prioritizable;
 
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 
 public class BufferedCauseChannel<X extends Prioritizable> implements Consumer<X> {
@@ -37,13 +35,13 @@ public class BufferedCauseChannel<X extends Prioritizable> implements Consumer<X
         return buffer.offer(x);
     }
 
-    /** returns # input */
-    public long input(Stream<X> x) {
-        return //Math.min(buffer.capacity(),
-                x.filter(Objects::nonNull).peek(this::input).count()
-                //)
-        ;
-    }
+//    /** returns # input */
+//    public long input(Stream<X> x) {
+//        return //Math.min(buffer.capacity(),
+//                x.filter(Objects::nonNull).peek(this::input).count()
+//                //)
+//        ;
+//    }
 
     @SafeVarargs
     public final void input(X... xx) {
@@ -60,7 +58,7 @@ public class BufferedCauseChannel<X extends Prioritizable> implements Consumer<X
     }
 
     public void commit() {
-        if (inputPending.weakCompareAndSetAcquire(false, true)) {
+        if (inputPending.compareAndSet(false, true)) {
             target.input(inputDrainer);
         }
     }
@@ -78,10 +76,11 @@ public class BufferedCauseChannel<X extends Prioritizable> implements Consumer<X
     private final Iterable inputDrainer = ()-> new AbstractIterator() {
         @Override
         protected Object computeNext() {
-            inputPending.setRelease(false);
             Object t = buffer.poll();
-            if (t == null)
+            if (t == null) {
+                inputPending.set(false);
                 endOfData();
+            }
             return t;
         }
     };

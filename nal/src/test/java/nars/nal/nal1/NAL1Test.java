@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 public class NAL1Test extends NALTest {
 
-    private final int cycles = 20;
+    private final int cycles = 50;
 
     @Override protected NAR nar() {
 
@@ -102,12 +102,8 @@ public class NAL1Test extends NALTest {
             .mustOutput(cycles, "<animal --> robin>. %1.00;0.4475%");
     }
 
-    @Test
-    void conversion() throws nars.Narsese.NarseseException {
-        test.believe("<bird --> swimmer>")
-            .ask("<swimmer --> bird>") 
-            .mustOutput(cycles, "<swimmer --> bird>. %1.00;0.47%");
-    }
+
+
 
 
 
@@ -237,19 +233,10 @@ public class NAL1Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<swan --> bird>");
         tester.believe("<bird <-> swan>", 0.1f, 0.9f);
-        tester.mustBelieve(cycles * 4, "<bird --> swan>",
+        tester.mustBelieve(cycles, "<bird --> swan>",
                 0.1f, 0.73f);
     }
 
-    @Test
-    void inheritanceToSimilarity3() throws nars.Narsese.NarseseException {
-
-        TestNAR tester = test;
-        tester.believe("<swan --> bird>", 0.9f, 0.9f);
-        tester.ask("<bird <-> swan>");
-        tester.mustBelieve(cycles, "<bird <-> swan>", 0.9f, 0.45f);
-
-    }
 
     @Test
     void similarityToInheritance4() throws nars.Narsese.NarseseException {

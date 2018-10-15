@@ -1253,19 +1253,19 @@ public class ConjTest {
     void testConjEarlyLate() throws Narsese.NarseseException {
         {
             Term yThenZ = $("(y &&+1 z)");
-            assertEquals("y", yThenZ.sub(Op.conjEarlyLate(yThenZ, true)).toString());
-            assertEquals("z", yThenZ.sub(Op.conjEarlyLate(yThenZ, false)).toString());
+            assertEquals("y", yThenZ.sub(Conj.conjEarlyLate(yThenZ, true)).toString());
+            assertEquals("z", yThenZ.sub(Conj.conjEarlyLate(yThenZ, false)).toString());
         }
         {
             Term yThenZ = $("(y &| z)");
-            assertEquals("y", yThenZ.sub(Op.conjEarlyLate(yThenZ, true)).toString());
-            assertEquals("z", yThenZ.sub(Op.conjEarlyLate(yThenZ, false)).toString());
+            assertEquals("y", yThenZ.sub(Conj.conjEarlyLate(yThenZ, true)).toString());
+            assertEquals("z", yThenZ.sub(Conj.conjEarlyLate(yThenZ, false)).toString());
         }
 
         {
             Term zThenY = $("(z &&+1 y)");
-            assertEquals("z", zThenY.sub(Op.conjEarlyLate(zThenY, true)).toString());
-            assertEquals("y", zThenY.sub(Op.conjEarlyLate(zThenY, false)).toString());
+            assertEquals("z", zThenY.sub(Conj.conjEarlyLate(zThenY, true)).toString());
+            assertEquals("y", zThenY.sub(Conj.conjEarlyLate(zThenY, false)).toString());
         }
 
     }

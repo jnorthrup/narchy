@@ -552,17 +552,17 @@ public enum Op {
     }
 
 
-    public static boolean hasNull(Term[] t) {
-        for (Term x : t)
-            if (x == Bool.Null)
-                return true;
-        return false;
-    }
+//    public static boolean hasNull(Term[] t) {
+//        for (Term x : t)
+//            if (x == Bool.Null)
+//                return true;
+//        return false;
+//    }
 
 
-    static boolean in(int needle, int haystack) {
-        return (needle & haystack) == needle;
-    }
+//    static boolean in(int needle, int haystack) {
+//        return (needle & haystack) == needle;
+//    }
 
     public static int or(/*@NotNull*/ Op... o) {
         int bits = 0;
@@ -592,10 +592,7 @@ public enum Op {
 
     public static Object theIfPresent(String s) {
         Op x = stringToOperator.get(s);
-        if (x != null)
-            return x;
-        else
-            return s;
+        return x != null ? x : s;
     }
 
 
@@ -629,25 +626,6 @@ public enum Op {
                 return container.op().the(container.dt(), cs.subsExcept(i));
         }
 
-    }
-
-    public static int conjEarlyLate(Term x, boolean earlyOrLate) {
-        assert (x.op() == CONJ);
-        int dt = x.dt();
-        switch (dt) {
-            case XTERNAL:
-                throw new UnsupportedOperationException();
-
-            case DTERNAL:
-            case 0:
-                return earlyOrLate ? 0 : 1;
-
-            default: {
-
-
-                return (dt < 0) ? (earlyOrLate ? 1 : 0) : (earlyOrLate ? 0 : 1);
-            }
-        }
     }
 
 
@@ -789,12 +767,12 @@ public enum Op {
         return terms.compound(o, dt, u);
     }
 
-    /**
-     * true if matches any of the on bits of the vector
-     */
-    public final boolean in(int vector) {
-        return in(bit, vector);
-    }
+//    /**
+//     * true if matches any of the on bits of the vector
+//     */
+//    public final boolean in(int vector) {
+//        return in(bit, vector);
+//    }
 
     public boolean isSet() {
         return false;

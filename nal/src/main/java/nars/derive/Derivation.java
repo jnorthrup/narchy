@@ -13,6 +13,8 @@ import nars.derive.op.Occurrify;
 import nars.derive.premise.PreDerivation;
 import nars.eval.Evaluation;
 import nars.link.TaskLink;
+import nars.op.Equal;
+import nars.op.SetFunc;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
 import nars.subterm.Subterms;
@@ -238,10 +240,10 @@ public class Derivation extends PreDerivation {
                     Image.imageExt,
                     Image.imageInt,
                     Image.imageNormalize,
-                    nar.concept("union"),
-                    nar.concept("differ"),
-                    nar.concept("intersect"),
-                    nar.concept("equal"),
+                    SetFunc.union,
+                    SetFunc.differ,
+                    SetFunc.intersect,
+                    Equal.the,
                     nar.concept("conjWithout"),
                     nar.concept("conjWithoutAll"),
                     nar.concept("conjWithoutPosOrNeg"),
@@ -249,7 +251,7 @@ public class Derivation extends PreDerivation {
                     //nar.concept("conjDropIfEarliestFiltered"),
                     nar.concept("conjDropIfLatest"),
                     //nar.concept("conjDropIfLatestFiltered"),
-                    nar.concept("dropAnySet"),
+//                    nar.concept("dropAnySet"),
                     nar.concept("dropAnyEvent"),
                     nar.concept("without"),
                     nar.concept("withoutPosOrNeg"),

@@ -46,7 +46,7 @@ class BeliefTableTest {
     void testEternalBeliefRanking() {
 
 
-        int cap = 10;
+//        int cap = 10;
 
         NAR n = NARS.shell();
         BeliefAnalysis b = new BeliefAnalysis(n, x);

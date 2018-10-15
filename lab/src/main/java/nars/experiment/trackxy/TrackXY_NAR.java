@@ -42,6 +42,7 @@ import static spacegraph.SpaceGraph.window;
 public class TrackXY_NAR extends NAgentX {
 
     static boolean
+            nars = true, rl = false,
             targetNumerics = false,
             targetCam = true,
             gui = true;
@@ -76,9 +77,9 @@ public class TrackXY_NAR extends NAgentX {
             this.cam = null;
         }
 
-        //actionPushButtonMutex();
+        actionPushButtonMutex();
         //actionSwitch();
-        actionTriState();
+        //actionTriState();
 
 
         reward(() -> {
@@ -96,7 +97,6 @@ public class TrackXY_NAR extends NAgentX {
 
     public static void main(String[] args) {
 
-        boolean nars = false, rl = true;
 //        boolean rl = false;
 
 //        Param.DEBUG = true;
@@ -149,7 +149,7 @@ public class TrackXY_NAR extends NAgentX {
 
 
             Deriver d = new MatrixDeriver(Derivers.nal(n,
-                        //6, 8
+                    //6, 8
                     1, 8
 //                    //,"curiosity.nal"
                     , "motivation.nal"
@@ -216,9 +216,9 @@ public class TrackXY_NAR extends NAgentX {
             });
         }
 
-        a.onFrame(()->{
-            Util.sleepMS(10);
-        });
+//        a.onFrame(() -> {
+//            Util.sleepMS(10);
+//        });
 //        a.onFrame(() -> {
 //            long now = n.time();
 //            if (now % 1000 == 0) {

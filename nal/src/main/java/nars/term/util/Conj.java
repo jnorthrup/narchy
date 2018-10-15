@@ -207,6 +207,25 @@ public class Conj extends ByteAnonMap {
         return false;
     }
 
+    public static int conjEarlyLate(Term x, boolean earlyOrLate) {
+        assert (x.op() == CONJ);
+        int dt = x.dt();
+        switch (dt) {
+            case XTERNAL:
+                throw new UnsupportedOperationException();
+
+            case DTERNAL:
+            case 0:
+                return earlyOrLate ? 0 : 1;
+
+            default: {
+
+
+                return (dt < 0) ? (earlyOrLate ? 1 : 0) : (earlyOrLate ? 0 : 1);
+            }
+        }
+    }
+
     boolean addAuto(Term t) {
         return add(t.dt() == DTERNAL ? ETERNAL : 0, t);
     }

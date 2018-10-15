@@ -324,7 +324,7 @@ public class Revision {
             return Float.POSITIVE_INFINITY;
 
         Subterms aa = a.subterms(), bb = b.subterms();
-        int len = bb.subs();
+//        int len = bb.subs();
 
         float d = 0;
 
@@ -401,7 +401,8 @@ public class Revision {
             }
             d += dx;
         }
-        return d/len; // avg
+        return d;
+        //return d/len; // avg
     }
 
 //    public static Task mergeOrChoose(@Nullable Task x, @Nullable Task y, long start, long end, Predicate<Task> filter, NAR nar) {

@@ -10,7 +10,6 @@ import nars.agent.FrameTrigger;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
-import nars.term.atom.Atomic;
 import nars.video.CameraSensorView;
 import org.eclipse.collections.api.block.function.primitive.BooleanToBooleanFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
@@ -27,7 +26,7 @@ import static spacegraph.SpaceGraph.window;
  */
 public class Tetris extends NAgentX implements Bitmap2D {
 
-    final static float FPS = 20f;
+    final static float FPS = 24f;
 
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
@@ -92,7 +91,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
         addCamera(
                 pixels = new Bitmap2DSensor<>(
-                        (x, y) -> $.funcImageLast((Atomic)id, $.p(x, y)),
+                        (x, y) -> $.inh($.p(x, y), id),
                         this, n)
 
         );
