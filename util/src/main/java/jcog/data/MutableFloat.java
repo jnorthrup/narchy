@@ -207,30 +207,11 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      * @throws NullPointerException if the object is null
      * @since Commons Lang 2.2
      */
-    public void add(final Number operand) {
-        this.value += operand.floatValue();
+    public final void add(final Number operand) {
+        add(operand.floatValue());
     }
 
-    /**
-     * Subtracts a value from the value of this instance.
-     *
-     * @param operand  the value to subtract
-     * @since Commons Lang 2.2
-     */
-    public void subtract(final float operand) {
-        this.value -= operand;
-    }
 
-    /**
-     * Subtracts a value from the value of this instance.
-     *
-     * @param operand  the value to subtract, not null
-     * @throws NullPointerException if the object is null
-     * @since Commons Lang 2.2
-     */
-    public void subtract(final Number operand) {
-        this.value -= operand.floatValue();
-    }
 
     /**
      * Increments this instance's value by {@code operand}; this method returns the value associated with the instance

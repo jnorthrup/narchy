@@ -71,12 +71,12 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         int nw = this.nw, nh = this.nh;
 
         if (nw == 0 || nh == 0) {
-            if (w.isVisible())
-                w.setVisible(false);
+//            if (w.isVisible())
+//                w.setVisible(false);
 
         } else {
-            if (!w.isVisible())
-                w.setVisible(true);
+//            if (!w.isVisible())
+//                w.setVisible(true);
 
             if (nw != getWidth() || nh != getHeight()) {
                 w.setSize(nw, nh);
@@ -283,6 +283,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     private void show(String title, int w, int h, int x, int y, @Deprecated boolean async) {
 
+        Threading.invokeOnOpenGLThread(false, ()->{
+        //GLWorkerThread.invokeLater(()->{
         //Exe.invokeLater(() -> {
 
         if (window != null) {
@@ -307,9 +309,14 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         W.setTitle(title);
         if (x != Integer.MIN_VALUE) {
             setPositionAndSize(x, y, w, h);
+            W.setPosition(x, y);
+            W.setSize(w,h);
         } else {
             setSize(w, h);
+            W.setSize(w, h);
         }
+        W.setVisible(true);
+
         //});
 
         if (!async) {
@@ -319,7 +326,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //                Util.sleepMS(syncConstructionDelay);
 //            }
         }
-
+        });
 
     }
 

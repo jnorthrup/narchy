@@ -1,12 +1,11 @@
 package jcog.math;
 
-import jcog.data.atomic.AtomicFloat;
+import jcog.data.MutableFloat;
 
 
-public class FloatRange extends /*MutableFloat*/ AtomicFloat {
+public class FloatRange extends MutableFloat /*AtomicFloat*/ {
 
-    public final float max;
-    public final float min;
+    public final float max, min;
     
     public FloatRange(float value, float min, float max) {
         super(value);
@@ -21,7 +20,4 @@ public class FloatRange extends /*MutableFloat*/ AtomicFloat {
         return unit(initialValue.asFloat());
     }
 
-    public final void subtract(float v) {
-        add(-v);
-    }
 }

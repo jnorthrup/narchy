@@ -153,7 +153,8 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
             case INH:
                 if (depth == 1 && x.hasAny(
                         //Op.Variable
-                        Op.VAR_INDEP.bit
+                        //Op.VAR_INDEP.bit
+                        Op.VAR_INDEP.bit | Op.Sect | Op.Set
                 ))
                     return +1;
                 break;

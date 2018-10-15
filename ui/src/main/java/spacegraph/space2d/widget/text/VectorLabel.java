@@ -48,22 +48,20 @@ public class VectorLabel extends EmptyContainer {
 
         float charAspect = 1.4f;
         this.textScaleX = 1f / len;
-        this.textScaleY = 1 * charAspect;
+        this.textScaleY = charAspect;
 
-        float tw = w();
-        float th = h();
+        float tw = w(), th = h();
         float visAspect = th / tw;
-        if (textScaleY / textScaleX <= visAspect) {
-            this.textScaleX = 1f / (charAspect * len);
-            this.textScaleY = textScaleX * charAspect;
-        } else {
+//        if (textScaleY / textScaleX <= visAspect) {
+//            this.textScaleX = 1f / (charAspect * len);
+//            this.textScaleY = textScaleX * charAspect;
+//        } else {
             this.textScaleY = textScaleX / visAspect;
-        }
+//        }
 
         if (textScaleY > 1f) {
             textScaleX = 1f / (len * textScaleY);
             textScaleY = 1f;
-
         }
 
         textY = 0.5f - textScaleY / 2f;

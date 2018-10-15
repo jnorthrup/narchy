@@ -88,7 +88,7 @@ public class FZero extends NAgentX {
 
         ActionConcept F = initUnipolarLinear(5f);
 
-//        initToggleLeftRight();
+        initToggleLeftRight();
 //        initToggleFwdStop();
 //        window(new Gridding(
 //                //new CameraSensorView(c, this).withControls(),
@@ -96,11 +96,11 @@ public class FZero extends NAgentX {
 
 
         //initTankContinuous();
-        BiPolarAction A =
-                //initBipolarRotateRelative(true, 1f);
-                //initBipolarRotateAbsolute(true);
-                //initBipolarRotateDirect(false, 0.9f);
-                initBipolarRotateDirect(false, 0.2f);
+//        BiPolarAction A =
+//                //initBipolarRotateRelative(true, 1f);
+//                //initBipolarRotateAbsolute(true);
+//                //initBipolarRotateDirect(false, 0.9f);
+//                initBipolarRotateDirect(false, 0.2f);
 
 //        window(new Gridding(
 //                //new CameraSensorView(c, this).withControls(),
@@ -108,18 +108,18 @@ public class FZero extends NAgentX {
 
 
         float r = 0.05f;
-        Signal dVelX = senseNumberDifference($.func("vel", id, $$("x")), () -> (float) fz.vehicleMetrics[0][7]).resolution(r);
-        Signal dVelY = senseNumberDifference($.func("vel", id, $$("y")), () -> (float) fz.vehicleMetrics[0][8]).resolution(r);
-        Signal dAccel = senseNumberDifference($.func("accel", id), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
+        Signal dVelX = senseNumberDifference($.funcImageLast("vel", id, $$("x")), () -> (float) fz.vehicleMetrics[0][7]).resolution(r);
+        Signal dVelY = senseNumberDifference($.funcImageLast("vel", id, $$("y")), () -> (float) fz.vehicleMetrics[0][8]).resolution(r);
+        Signal dAccel = senseNumberDifference($.funcImageLast("accel", id), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
 
         FloatSupplier playerAngle = Util.compose(() -> (float) fz.playerAngle,
                 new FloatAveraged(0.5f, true));
-        Signal dAngVel = senseNumberDifference($.func("ang", id, $$("dTheta")), playerAngle).resolution(r);
+        Signal dAngVel = senseNumberDifference($.funcImageLast("ang", id, $$("dTheta")), playerAngle).resolution(r);
 
         int angles = 9;
         AbstractSensor ang = senseNumber(angle ->
                         //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
-                        $.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
+                        $.funcImageLast("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 angles,
                 DigitizedScalar.Needle

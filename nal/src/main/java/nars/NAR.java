@@ -896,13 +896,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         time.runAt(time(), t);
     }
 
-    /**
-     * adds a task to the queue of task which will be executed in batch
-     * after the end of the current frame before the next frame.
-     */
-    public final void runLater(Consumer<NAR> t) {
-        time.runAt(time(), t);
-    }
 
 
     @Override
@@ -978,15 +971,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         time.runAt(whenOrAfter, then);
     }
 
-    /**
-     * schedule a task to be executed no sooner than a given NAR time
-     */
-    public final void runAt(long whenOrAfter, Consumer<NAR> then) {
-//        if (whenOrAfter <= time())
-//            run(then);
-//        else
-        time.runAt(whenOrAfter, then);
-    }
+
 
     /**
      * tasks in concepts

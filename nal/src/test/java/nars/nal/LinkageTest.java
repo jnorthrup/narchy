@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LinkageTest extends NALTest {
 
-    private final int runCycles = 70;
+    private final int runCycles = 170;
 
 
 //    private void ProperlyLinkedTest(@NotNull String premise1, @NotNull String premise2) throws Exception {

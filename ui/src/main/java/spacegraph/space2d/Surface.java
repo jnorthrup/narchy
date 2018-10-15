@@ -4,8 +4,10 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.Util;
+import jcog.WTF;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.container.AbstractMutableContainer;
 import spacegraph.space2d.container.AspectAlign;
@@ -24,6 +26,8 @@ abstract public class Surface implements SurfaceBase {
 
     private static final AtomicReferenceFieldUpdater<Surface, RectFloat> BOUNDS = AtomicReferenceFieldUpdater.newUpdater(Surface.class, RectFloat.class, "bounds");
     private final static AtomicReferenceFieldUpdater<Surface,SurfaceBase> PARENT = AtomicReferenceFieldUpdater.newUpdater(Surface.class, SurfaceBase.class, "parent");
+
+
 
     public static final Surface[] EmptySurfaceArray = new Surface[0];
 
@@ -153,11 +157,12 @@ abstract public class Surface implements SurfaceBase {
     public boolean start(SurfaceBase parent) {
         assert(parent!=null);
         SurfaceBase p = PARENT.getAndSet(this, parent);
+        if (p!=null)
+            throw new WTF();
         if (p!=parent) {
-        //if (p == null || p == parent) {
-            synchronized (this) {
+            //synchronized (this) {
                 starting();
-            }
+            //}
             return true;
         }
         return false;
@@ -174,10 +179,10 @@ abstract public class Surface implements SurfaceBase {
 
     public boolean stop() {
         if (PARENT.getAndSet(this, null) != null) {
-            synchronized (this) {
+            //synchronized (this) {
                 showing = false;
                 stopping();
-            }
+            //}
             return true;
         }
         return false;

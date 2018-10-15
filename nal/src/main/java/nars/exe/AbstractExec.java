@@ -10,13 +10,12 @@ import java.util.function.Consumer;
  */
 abstract public class AbstractExec extends Exec {
 
-    private final int concurrency;
-    private final int concurrencyMax;
+    private final int concurrency, concurrencyMax;
 
     public AbstractExec(int concurrency, int concurrencyMax) {
         super();
         this.concurrency = concurrency;
-        this.concurrencyMax = concurrency; //TODO this will be a value like Runtime.getRuntime().availableProcessors() when concurrency can be adjusted dynamically
+        this.concurrencyMax = concurrencyMax; //TODO this will be a value like Runtime.getRuntime().availableProcessors() when concurrency can be adjusted dynamically
     }
 
     @Override

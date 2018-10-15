@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 /**
  * executes approximately once every N durations
  */
-abstract public class DurService extends NARService implements Consumer<NAR> {
+abstract public class DurService extends NARService  {
 
     private static final Logger logger = LoggerFactory.getLogger(DurService.class);
 
@@ -102,11 +102,10 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
         lastStarted = now;// - durCycles;
         //lastFinished = lastStarted - durCycles;
         //spawn(nar, now + durCycles);
-        accept(nar);
+        run();
     }
 
-    @Override
-    public final void accept(NAR nar) {
+    private void run() {
 
         if (!busy.compareAndSet(false, true))
             return;
@@ -148,7 +147,7 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
 
             //System.out.println(this + "\tnext=" + next);
 
-            nar.runAt(next, this);
+            nar.runAt(next, this::run);
 
     }
 

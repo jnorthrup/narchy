@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.function.Consumer;
 
 /**
  * indestructible system/natively impl tasks
@@ -87,18 +86,15 @@ public abstract class AbstractTask implements ITask, Prioritizable {
 //    }
 
 
-    public static final class SchedTask extends AbstractTask implements Comparable<SchedTask> {
+    public static final class SchedTask implements Runnable,Comparable<SchedTask> {
 
         public final long when;
-        public final Consumer<NAR> what;
+        public final Runnable what;
 
-        public SchedTask(long whenOrAfter, Consumer<NAR> what) {
-            this.when = whenOrAfter;
-            this.what = what;
-        }
 
         public SchedTask(long whenOrAfter, Runnable what) {
-            this(whenOrAfter, (n) -> what.run());
+            this.when = whenOrAfter;
+            this.what = what;
         }
 
         @Override
@@ -106,10 +102,16 @@ public abstract class AbstractTask implements ITask, Prioritizable {
             return "@" + when + ':' + what;
         }
 
+//        @Override
+//        public final ITask next(NAR n) {
+//            what.run();
+//            return null;
+//        }
+
+
         @Override
-        public final ITask next(NAR n) {
-            what.accept(n);
-            return null;
+        public final void run() {
+            what.run();
         }
 
         @Override

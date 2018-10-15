@@ -9,12 +9,17 @@ import jcog.pri.bag.util.ProxyBag;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.StampedLock;
+import java.util.function.Consumer;
 
 public class FastPutProxyBag<K, X extends Prioritizable> extends ProxyBag<K, X> {
 
 
     final StampedLock lock = new StampedLock();
+
+    final AtomicBoolean commitBusy = new AtomicBoolean(false);
+
     //    final AtomicBoolean dirty = new AtomicBoolean(false);
     private final BlockingQueue putQueue;
 
@@ -26,6 +31,19 @@ public class FastPutProxyBag<K, X extends Prioritizable> extends ProxyBag<K, X> 
     }
 
 
+    /** folds simultaneous commits into one */
+    @Override public Bag<K, X> commit(Consumer<X> update) {
+        if (commitBusy.compareAndSet(false, true)) {
+            try {
+                return super.commit(update);
+            } finally {
+                commitBusy.set(false);
+            }
+        } else {
+            //System.out.println("commit elided");
+        }
+        return this;
+    }
 
     @Override
     public X put(X b, NumberX overflowing) {

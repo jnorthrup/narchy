@@ -71,9 +71,7 @@ public abstract class Time implements Clock, Serializable {
         runAt(new SchedTask(whenOrAfter, then));
     }
 
-    public void runAt(long whenOrAfter, Consumer<NAR> then) {
-        runAt(new SchedTask(whenOrAfter, then));
-    }
+
 
     private void runAt(SchedTask event) {
         if (!incoming.offer(event)) {
@@ -129,7 +127,7 @@ public abstract class Time implements Clock, Serializable {
      * flushes the pending work queued for the current time
      */
     public synchronized void synch(NAR n) {
-        schedule(n::input);
+        schedule(n.exe::execute);
     }
 
 

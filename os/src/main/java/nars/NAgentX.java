@@ -250,9 +250,9 @@ abstract public class NAgentX extends NAgent {
 
         File f = new File(experiencePath);
         if (f.exists()) {
-            n.runLater((nn)->{
+            n.runLater(()->{
                 try {
-                    nn.inputBinary(f);
+                    n.inputBinary(f);
                 } catch (IOException e) {
                     //e.getCause().printStackTrace();
                     e.printStackTrace();
@@ -376,7 +376,7 @@ abstract public class NAgentX extends NAgent {
         n.termVolumeMax.set(28);
 
         n.forgetRate.set(0.9f);
-        n.activateConceptRate.set(0.1f);
+        n.activateConceptRate.set(0.5f);
 
 
 
@@ -419,7 +419,8 @@ abstract public class NAgentX extends NAgent {
 //
 //        }
 
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 32);
+//        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 32);
+
 //        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof AbstractGoalActionConcept.CuriosityTask) ),
 //                8, 96);
 

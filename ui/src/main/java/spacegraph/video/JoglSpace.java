@@ -7,6 +7,7 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.math.FloatUtil;
 import jcog.data.list.FastCoWList;
+import jcog.exe.Exe;
 import spacegraph.input.key.KeyXYZ;
 import spacegraph.input.key.WindowKeyControls;
 import spacegraph.space2d.Surface;
@@ -75,13 +76,18 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     public JoglSpace add(Surface layer) {
         if (layer instanceof Ortho) {
             pending.add(() -> {
-                ((Ortho) layer).start(this);
-                this.layers.add(layer);
+                Exe.invoke(()->{
+                    this.layers.add(layer);
+                    ((Ortho) layer).start(this);
+                });
             });
         } else {
             pending.add(() -> {
-                layer.start(null);
-                this.layers.add(layer);
+                Exe.invoke(()-> {
+                    this.layers.add(layer);
+                    layer.start(null);
+                });
+
             });
         }
         return this;

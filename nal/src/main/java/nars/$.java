@@ -793,6 +793,10 @@ public enum $ {
         return $.func(f, args.toArray(Op.EmptyTermArray));
     }
 
+    public static Term funcImageLast(String f, Term... x) {
+        return funcImageLast($.the(f), x);
+    }
+
     public static Term funcImageLast(Atomic f, Term... x) {
         Term[] xx = ArrayUtils.insert(0, x, f);
         xx[x.length] = ImgExt;

@@ -40,7 +40,12 @@ public class TimeConfRange extends TimeRange {
             //return b -> -(Util.mean(b.minTimeTo(a.start), b.minTimeTo(a.end))) -b.range()/tableDur;
             //return b -> -(Util.mean(b.midTimeTo(a.start), b.minTimeTo(a.end))); // -b.range()/tableDur;
             // -b.minTimeTo(a.start, a.end); // -b.range()/tableDur;
-            return b -> -Util.mean(a.minTimeTo(b.start()), a.minTimeTo(b.end()));
+            return b -> {
+                long bs = b.start(), be = b.end();
+                long abs = a.minTimeTo(bs);
+                float r = -(bs!=be ? Util.mean(abs, a.minTimeTo(be)) : abs);
+                return r; //TODO make sure that the long cast to float is ok
+            };
         } else {
             return b -> -b.minTimeTo(a.start); // -b.range()/tableDur;
         }

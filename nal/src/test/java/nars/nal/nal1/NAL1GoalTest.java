@@ -5,6 +5,8 @@ import nars.NARS;
 import nars.test.NALTest;
 import org.junit.jupiter.api.Test;
 
+import static nars.Op.GOAL;
+
 public class NAL1GoalTest extends NALTest {
 
 
@@ -48,10 +50,10 @@ public class NAL1GoalTest extends NALTest {
     void deductionNegativeGoalPositiveBeliefSwap() {
         //(B --> C), (A --> B), neqRCom(A,C)    |- (A --> C), (Belief:DeductionX)
         test
-                .log()
                 .input("--(nars --> stupid)!")
                 .input("(derivation --> nars).")
                 .mustGoal(cycles, "(derivation-->stupid)", 0f, 0.81f)
+                .mustNotOutput(cycles, "(stupid-->derivation)", GOAL, 0, 1, 0, 1, (t)->true)
         ;
     }
 

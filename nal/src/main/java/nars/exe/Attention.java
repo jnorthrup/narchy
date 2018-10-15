@@ -3,7 +3,7 @@ package nars.exe;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
-import jcog.pri.bag.impl.hijack.PriHijackBag;
+import jcog.pri.bag.impl.FastPutProxyBag;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
@@ -31,7 +31,7 @@ public class Attention extends DurService implements Sampler<Concept> {
     public Bag<Term, Activate> active;
 
     public Attention(int concepts) {
-        super((NAR)null);
+        super((NAR) null);
 
         this.concepts = concepts;
     }
@@ -52,14 +52,15 @@ public class Attention extends DurService implements Sampler<Concept> {
     /**
      * TODO abstract
      */
-   public void activate(Activate a) {
+    public void activate(Activate a) {
         active.putAsync(a);
     }
 
     /**
      * TODO abstract
      */
-    @Deprecated public Activate fire() {
+    @Deprecated
+    public Activate fire() {
         return active.sample(nar.random());
     }
 
@@ -68,7 +69,8 @@ public class Attention extends DurService implements Sampler<Concept> {
      * invoke predicate while it returns true
      * TODO abstract
      */
-    @Deprecated public void fire(Predicate<Activate> each) {
+    @Deprecated
+    public void fire(Predicate<Activate> each) {
         active.sample(nar.random(), each);
     }
 
@@ -76,33 +78,38 @@ public class Attention extends DurService implements Sampler<Concept> {
     protected void starting(NAR nar) {
 
 
+        ArrayBag<Term, Activate> arrayBag = new ArrayBag<>(
+                concepts,
+                Param.conceptMerge,
+                new HashMap<>(concepts * 2, 0.99f)
+        ) {
+
+            @Override
+            public Term key(Activate value) {
+                return value.term();
+            }
+
+        };
         active =
                 nar.exe.concurrent() ?
+//
+//                        new PriHijackBag<>(Math.round(concepts * 1.5f /* estimate */), 4) {
+//
+//                            @Override
+//                            public Term key(Activate value) {
+//                                return value.term();
+//                            }
+//
+//
+//                        }
 
-                        new PriHijackBag<>(Math.round(concepts * 1.5f /* estimate */), 4) {
-
-                            @Override
-                            public Term key(Activate value) {
-                                return value.term();
-                            }
-
-
-                        }
+                        new FastPutProxyBag<>(arrayBag,
+                                1024)
 
                         :
+                        arrayBag;
 
-                        new ArrayBag<>(
-                                concepts,
-                                Param.conceptMerge,
-                                new HashMap<>(concepts * 2, 0.99f)
-                        ) {
 
-                            @Override
-                            public Term key(Activate value) {
-                                return value.term();
-                            }
-
-                        }
         ;
 
         on(
@@ -127,8 +134,8 @@ public class Attention extends DurService implements Sampler<Concept> {
     @Override
     protected void stopping(NAR nar) {
         //if (active != null) {
-            active.clear();
-            //active = null;
+        active.clear();
+        //active = null;
         //}
 
         super.stopping(nar);
@@ -136,7 +143,7 @@ public class Attention extends DurService implements Sampler<Concept> {
 
     @Override
     public void sample(Random rng, Function<? super Concept, SampleReaction> each) {
-        active.sample(rng, (Activate a)->each.apply(a.get()));
+        active.sample(rng, (Activate a) -> each.apply(a.get()));
     }
 
     public float pri(Termed id, float ifMissing) {
