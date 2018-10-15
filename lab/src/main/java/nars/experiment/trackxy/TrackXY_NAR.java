@@ -5,7 +5,7 @@ import jcog.Util;
 import jcog.experiment.TrackXY;
 import jcog.lab.Lab;
 import jcog.lab.util.Optimization;
-import jcog.learn.ql.HaiQae;
+import jcog.learn.ql.DQN2;
 import jcog.math.FloatNormalized;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
@@ -29,20 +29,22 @@ import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
+import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.video.Draw;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static nars.Op.*;
 import static spacegraph.SpaceGraph.window;
 
 public class TrackXY_NAR extends NAgentX {
 
     static boolean
-            nars = true, rl = false,
+            nars = false, rl = true,
             targetNumerics = false,
             targetCam = true,
             gui = true;
@@ -77,9 +79,9 @@ public class TrackXY_NAR extends NAgentX {
             this.cam = null;
         }
 
-        actionPushButtonMutex();
+        //actionPushButtonMutex();
         //actionSwitch();
-        //actionTriState();
+        actionTriState();
 
 
         reward(() -> {
@@ -100,10 +102,10 @@ public class TrackXY_NAR extends NAgentX {
 //        boolean rl = false;
 
 //        Param.DEBUG = true;
-        int W = 4;
-        int H = 1;
+        int W = 3;
+        int H = 3;
         int dur =
-                4;
+                1;
         //8;
         //2 * (W * H) /* to allow pixels to be read at the rate of 1 pixel per cycle */;
 
@@ -137,13 +139,32 @@ public class TrackXY_NAR extends NAgentX {
 
 
         if (rl) {
-            new RLBooster(a,
+            RLBooster rlb = new RLBooster(a,
 
-                    HaiQae::new,
+                    DQN2::new,
+                    //HaiQae::new,
                     //HaiQ::new,
 
                     true);
             a.curiosity.set(0);
+
+
+            window(new Gridding(
+                Stream.of(((DQN2) (rlb.agent)).network.layers).map(
+                        l -> {
+
+                            BitmapMatrixView i = new BitmapMatrixView(l.input);
+                            BitmapMatrixView w = new BitmapMatrixView(l.weights);
+                            BitmapMatrixView o = new BitmapMatrixView(l.output);
+
+                            a.onFrame(i::update);
+                            a.onFrame(w::update);
+                            a.onFrame(o::update);
+
+                            return new Gridding(i, w, o);
+                        }
+                ).collect(toList()))
+            , 800, 800);
         }
         if (nars) {
 
@@ -219,15 +240,15 @@ public class TrackXY_NAR extends NAgentX {
 //        a.onFrame(() -> {
 //            Util.sleepMS(10);
 //        });
-//        a.onFrame(() -> {
-//            long now = n.time();
-//            if (now % 1000 == 0) {
-//                System.out.println(
-//                        //"reward mean: " +
-//                        a.rewardSum / now);
-//                a.rewardSum = 0;
-//            }
-//        });
+        a.onFrame(() -> {
+            long now = n.time();
+            if (now % 1000 == 0) {
+                System.out.println(
+                        //"reward mean: " +
+                        a.rewardSum / now);
+                a.rewardSum = 0;
+            }
+        });
 
         int experimentTime = 56000;
         n.run(experimentTime);
@@ -247,7 +268,7 @@ public class TrackXY_NAR extends NAgentX {
         long now = n.time();
         List<Task> l = n.tasks(false, false, true, false)
                 .sorted(Comparators.byFloatFunction(tt -> -tt.evi(now, dur)))
-                .collect(Collectors.toList());
+                .collect(toList());
         l.forEach(System.out::println);
         System.out.println();
     }
@@ -258,7 +279,7 @@ public class TrackXY_NAR extends NAgentX {
         List<Task> l = n.tasks(true, false, false, false)
                 .filter(x -> x.op() == IMPL)
                 .sorted(Comparators.byFloatFunction(tt -> -tt.evi(now, dur)))
-                .collect(Collectors.toList());
+                .collect(toList());
         l.forEach(System.out::println);
         System.out.println();
     }

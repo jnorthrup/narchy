@@ -1176,12 +1176,13 @@ var RL = {};
             s.setFrom(slist);
 
             // epsilon greedy policy
+            var a;
             if (Math.random() < this.epsilon) {
-                var a = randi(0, this.na);
+                a = randi(0, this.na);
             } else {
                 // greedy wrt Q function
                 var amat = this.forwardQ(this.net, s, false);
-                var a = R.maxi(amat.w); // returns index of argmax action
+                a = R.maxi(amat.w); // returns index of argmax action
             }
 
             // shift state memory

@@ -1248,6 +1248,22 @@ public enum Util {
             y += f;
         return y;
     }
+    public static float max(float... x) {
+        float y = Float.NEGATIVE_INFINITY;
+        for (float f : x) {
+            if (f > y)
+                y = f;
+        }
+        return y;
+    }
+    public static float min(float... x) {
+        float y = Float.POSITIVE_INFINITY;
+        for (float f : x) {
+            if (f < y)
+                y = f;
+        }
+        return y;
+    }
 
     public static float sum(float... x) {
         float y = 0;

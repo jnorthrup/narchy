@@ -40,13 +40,14 @@ public class MLPMap {
     }
     public static class MLPLayer {
 
-        final float[] output;
-        final float[] input;
-        final float[] weights;
+        public final float[] output;
+        public final float[] input;
+        public final float[] weights;
         final float[] dweights;
         @Nullable
         final IDifferentiableFunction activation;
 
+        float momentum = 0.5f;
 
         public MLPLayer(int inputSize, int outputSize, @Nullable IDifferentiableFunction activation) {
             output = new float[outputSize];
@@ -59,8 +60,12 @@ public class MLPMap {
 
 
         public void randomizeWeights(Random r) {
+            randomizeWeights(r, 1f);
+        }
+
+        public void randomizeWeights(Random r, float scale) {
             for (int i = 0; i < weights.length; i++) {
-                weights[i] = (r.nextFloat() - 0.5f) * 2f;
+                weights[i] = (r.nextFloat() - 0.5f) * 2f * scale;
             }
         }
 
@@ -97,8 +102,10 @@ public class MLPMap {
                     int idx = offs + j;
                     outError[j] += weights[idx] * d;
                     float dw = input[j] * dLR;
-                    weights[idx] += dw;// * dweights[idx];
+                    weights[idx] += dweights[idx] * (1-momentum) + dw;
                     dweights[idx] = dw;
+//                    weights[idx] += dw * dweights[idx];
+//                    dweights[idx] += dw;
                 }
                 offs += inLength;
             }

@@ -145,7 +145,7 @@ public class LivePredictor {
 
         private final Random rng;
         float learningRate;
-        float momentum = 0f;
+
         MLPMap mlp;
         private float[] next;
 

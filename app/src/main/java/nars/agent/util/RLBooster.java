@@ -32,7 +32,7 @@ public class RLBooster implements Consumer<NAR> {
     public static final Logger logger = LoggerFactory.getLogger(RLBooster.class);
 
     public final NAgent env;
-    public final Agent rl;
+    public final Agent agent;
     public final FloatRange conf = new FloatRange(0.5f, 0f, 1f);
     final float[] input;
     final int inD, outD;
@@ -47,10 +47,10 @@ public class RLBooster implements Consumer<NAR> {
 
     /**
      * @param env
-     * @param rl
+     * @param agent
      * @param nothingAction        reserve 0 for nothing
      */
-    public RLBooster(NAgent env, IntIntToObjectFunc<Agent> rl, boolean nothingAction) {
+    public RLBooster(NAgent env, IntIntToObjectFunc<Agent> agent, boolean nothingAction) {
 
 
 
@@ -78,7 +78,7 @@ public class RLBooster implements Consumer<NAR> {
         this.actions = env.actions().array();
         this.outD = (nothingAction ? 1 : 0) /* nothing */ + actions.length * actionDiscretization /* pos/neg for each action */;
 
-        logger.info("{} {} in={} out={}", rl, env, inD, outD);
+        logger.info("{} {} in={} out={}", agent, env, inD, outD);
         assert(inD > 0);
         assert(outD > 0);
 
@@ -91,7 +91,7 @@ public class RLBooster implements Consumer<NAR> {
 
         in = env.nar().newChannel(this);
 
-        this.rl = rl.apply(inD, outD);
+        this.agent = agent.apply(inD, outD);
 
         env.onFrame(this);
     }
@@ -122,12 +122,15 @@ public class RLBooster implements Consumer<NAR> {
 
 //        long start = env.last; //now() - dur/2;
 //        long end = env.now(); //+ dur/2;
-        //HACK
-        int dur = nar.dur();
+//        //HACK
+//        int dur = nar.dur();
         long now = nar.time();
-        long start = now - dur/2;
-        long end = now + dur/2;
-        int O = rl.act(reward, input(start, end));
+        long start = now;
+        long end = env.next;
+//        long start = now - dur/2;
+//        long end = now + dur/2;
+
+        int O = agent.act(reward, input(start, end));
 
         float OFFfreq =
                 0f;

@@ -72,7 +72,9 @@ public class NAgent extends NARService implements NSense, NAct {
 
     public final AtomicInteger iteration = new AtomicInteger(0);
 
-    protected volatile long prev, now, next;
+    public volatile long prev;
+    protected volatile long now;
+    public volatile long next;
 
     @FunctionalInterface  public interface ReinforcedTask {
         @Nullable Task get(long prev, long now, long next);

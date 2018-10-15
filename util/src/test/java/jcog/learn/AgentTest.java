@@ -1,9 +1,6 @@
 package jcog.learn;
 
-import jcog.learn.ql.DPG;
-import jcog.learn.ql.DQN;
-import jcog.learn.ql.HaiQ;
-import jcog.learn.ql.HaiQae;
+import jcog.learn.ql.*;
 import jcog.random.XoRoShiRo128PlusRandom;
 import org.eclipse.collections.impl.map.mutable.primitive.IntIntHashMap;
 import org.junit.jupiter.api.Disabled;
@@ -21,6 +18,11 @@ class AgentTest {
         testAgentObviousChoice( new HaiQ(1, 2) );
         testAgentTwoToTwoBoolean( new HaiQ(2, 2) );
     }
+    @Test
+    void testDQN2() {
+        testAgentObviousChoice( new DQN2(1, 2) );
+        testAgentTwoToTwoBoolean( new DQN2(2, 2) );
+    }
 
     @Test
     void testHaiQAgent() {
@@ -36,7 +38,7 @@ class AgentTest {
     }
 
 
-    @Test
+    @Disabled @Test
     void testDQNAgent() {
         testAgentTwoToTwoBoolean( new DQN(2, 2) );
         testAgentObviousChoice( new DQN(1, 2) );
