@@ -51,9 +51,9 @@ public class STMLinkage extends NARService {
 
 
         /** current task's... */
-        Concept a = nar.conceptualize(ta);
+        Concept a = nar.concept(ta);
         if (a != null) {
-            Concept b = nar.conceptualize(tb);
+            Concept b = nar.concept(tb);
             if (b != null) {
                 if (a!=b) {
 
@@ -88,21 +88,23 @@ public class STMLinkage extends NARService {
         stm.clear();
     }
 
-    public final void accept(Task t) {
+    public final void accept(Task y) {
 
-        if (t.isEternal())
+        if (y.isEternal())
             return;
 
 
-        if (target(t)) {
-            float p = this.strength.floatValue() * t.priElseZero();
-            stm.forEach(u -> link(t, p * u.priElseZero(), u/*, cause.id*/, nar));
+        if (target(y)) {
+            float py = this.strength.floatValue() * y.priElseZero();
+            stm.forEach(x -> link(y,
+                    py * x.priElseZero(),
+                    x/*, cause.id*/, nar));
         }
 
-        if (hold(t)) {
+        if (hold(y)) {
             if (stm.isFull(1))
                 stm.poll();
-            stm.offer(t);
+            stm.offer(y);
         }
     }
 }

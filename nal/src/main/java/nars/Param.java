@@ -157,10 +157,10 @@ public abstract class Param {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
+        //Util::and;
         //Util::or;
         //Math::max;
         //Util::mean;
-        //Util::and;
         (t,b)->Util.unitize(t+b);
 
 

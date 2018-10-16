@@ -733,6 +733,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void strong_unification_neg() {
+        test.nar.termVolumeMax.set(5);
 
         TestNAR tester = test;
         tester.believe("( --sentence($a,is,$b) ==> ($a --> $b) )", 1.00f, 0.90f);
@@ -743,7 +744,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void strong_elimination() {
-        test.nar.termVolumeMax.set(14);
+        test.nar.termVolumeMax.set(12);
         TestNAR tester = test;
         tester.believe("((test($a,is,cat) && sentence($a,is,$b)) ==> ($a --> $b))");
         tester.believe("test(tim,is,cat)");

@@ -171,7 +171,10 @@ public class FZero extends NAgentX {
 
             fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
 
-            float bias = 0.25f;
+            float bias =
+                    //0.25f;
+                    //0.01f;
+                    0f;
             return race - bias;
         });
 

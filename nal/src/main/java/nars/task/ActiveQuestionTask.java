@@ -7,16 +7,17 @@ import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
+import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.term.Term;
 import nars.unify.Unify;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import static nars.Op.*;
 
@@ -39,6 +40,8 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
     final ArrayBag<Task, PriReference<Task>> answers;
     private Off onTask;
 
+    final Predicate<Term> preFilterTerm;
+
     private transient int ttl;
     private transient Random random;
 
@@ -49,17 +52,24 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
         this(q.term(), q.punc(), q.mid() /*, q.end()*/, history, nar, eachAnswer);
     }
 
-    public ActiveQuestionTask(@NotNull Term term, byte punc, long occ, int history, NAR nar, Consumer<Task> eachAnswer) {
+    public ActiveQuestionTask(Term term, byte punc, long occ, int history, NAR nar, Consumer<Task> eachAnswer) {
         this(term, punc, occ, history, nar, (q, a) -> eachAnswer.accept(a));
     }
 
-    public ActiveQuestionTask(@NotNull Term term, byte punc, long occ, int history, NAR nar,  BiConsumer<? super ActiveQuestionTask, Task> eachAnswer) {
+    public ActiveQuestionTask(Term term, byte punc, long occ, int history, NAR nar,  BiConsumer<? super ActiveQuestionTask, Task> eachAnswer) {
         super(term, punc, null, nar.time(), occ, occ, nar.evidence());
 
         budget(nar);
 
         this.answers = newBag(history);
         this.eachAnswer = eachAnswer;
+
+        Op o = term.op();
+        if (o.var) {
+            this.preFilterTerm = (tt) -> true; //anything
+        } else {
+            this.preFilterTerm = (tt) -> tt.op()==o; //TODO better
+        }
     }
 
     @Override
@@ -67,24 +77,27 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
         ITask next = super.next(nar);
         this.random = nar.random();
         this.ttl = nar.deriveBranchTTL.intValue();
-        this.onTask = nar.onTask(this);
+        this.onTask = nar.onTask(this, punc()==QUESTION ? BELIEF : /* quest */ GOAL);
         return next;
     }
 
     @Override
     public void accept(Task t) {
-        byte tp = t.punc();
-
-        if (((punc == QUESTION && tp == BELIEF) || (punc == QUEST && tp == GOAL))) {
-            MySubUnify u = new MySubUnify(random, ttl);
-            u.unify(term(), t.term());
+//        byte tp = t.punc();
+        //if (((punc == QUESTION && tp == BELIEF) || (punc == QUEST && tp == GOAL))) {
+        Term tt = t.term();
+        if (preFilterTerm.test(tt)) {
+            MySubUnify u = new MySubUnify(random, ttl); //TODO pool ThreadLocal
+            u.unify(term(), tt);
             if (u.match) {
                 onAnswer(t);
             }
         }
+        //}
 
         
     }
+
 
     private static class MySubUnify extends Unify {
 

@@ -119,7 +119,7 @@ class TemporalInductionTest {
 
         
         assertEquals(
-                "(b-->a). 5 %0.0;.90%"
+                "(b-->a). 5 %0.19;.92%"
                 
                 , n.belief(c.term(), 5).toStringWithoutBudget());
 

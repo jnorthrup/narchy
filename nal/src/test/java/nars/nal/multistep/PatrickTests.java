@@ -117,7 +117,7 @@ public class PatrickTests extends NALTest {
         TestNAR tt = test;
 
 
-        int cycles = 1000;
+        int cycles = 3000;
 
         tt.confTolerance(0.9f);
 
