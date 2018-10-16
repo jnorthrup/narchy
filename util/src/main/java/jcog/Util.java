@@ -32,13 +32,16 @@ import org.eclipse.collections.api.block.predicate.primitive.FloatPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.list.primitive.ImmutableByteList;
 import org.eclipse.collections.api.set.MutableSet;
+import org.eclipse.collections.api.set.primitive.IntSet;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.bag.mutable.HashBag;
 import org.eclipse.collections.impl.factory.primitive.ByteLists;
+import org.eclipse.collections.impl.factory.primitive.IntSets;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import org.eclipse.collections.impl.list.mutable.primitive.DoubleArrayList;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
+import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -2546,5 +2549,20 @@ public enum Util {
         else
             return next.iterator().next();
         //TODO SortedSet.getFirst() etc
+    }
+
+    public static <X> IntSet intSet(ToIntFunction<X> f, X... items) {
+        switch(items.length) {
+            case 0: return IntSets.immutable.empty();
+            case 1: return IntSets.immutable.of(f.applyAsInt(items[0]));
+            case 2: return IntSets.immutable.of(f.applyAsInt(items[0]), f.applyAsInt(items[1]));
+            //...
+            default:
+                IntHashSet i = new IntHashSet(items.length);
+                for (X x : items) {
+                    i.add(f.applyAsInt(x));
+                }
+                return i;
+        }
     }
 }

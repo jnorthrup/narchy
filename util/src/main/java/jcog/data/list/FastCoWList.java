@@ -61,6 +61,23 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
 
     //@Override
+    public void clear() {
+//        X[] empty = arrayBuilder.apply(0);
+//        copy.updateAndGet((p)->{
+//            if (p.length > 0) {
+//                synchronized (list) {
+//                    list.clear();
+//                }
+//                return empty;
+//            } else
+//                return p;
+//        });
+        synchronized (list) {
+            if (list.clearIfChanged())
+                commit();
+        }
+    }
+    //@Override
     public Iterator<X> iterator() {
         return ArrayIterator.get(array());
     }
@@ -74,13 +91,6 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
         return x.length;
     }
 
-    //@Override
-    public void clear() {
-        synchronized (list) {
-            if (list.clearIfChanged())
-                commit();
-        }
-    }
 
     //@Override
     public X set(int index, X element) {
@@ -94,16 +104,18 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
                     commit();
                 }
                 return null;
+            } else {
+                X[] ii = list.array();
+                X old = ii[index];
+                if (old!=element) {
+                    ii[index] = element;
+                    commit();
+                }
+                return old;
             }
         }
 
-        X[] ii = list.array();
-        X old = ii[index];
-        if (old!=element) {
-            ii[index] = element;
-            commit();
-        }
-        return old;
+
     }
 
     public void set(Collection<X> newContent) {
@@ -255,16 +267,21 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
      */
     public void set(X[] newValues) {
 
-
-        synchronized (list) {
-            if (newValues.length == 0) {
-                clear();
-            } else {
-                list.clear();
-                list.addingAll(newValues);
-                commit();
+        copy.updateAndGet((p)->{
+            synchronized(list) {
+                list.setArray(newValues);
+                return newValues;
             }
-        }
+        });
+//        synchronized (list) {
+//            if (newValues.length == 0) {
+//                clear();
+//            } else {
+//                list.clear();
+//                list.addingAll(newValues);
+//                commit();
+//            }
+//        }
     }
 
     public boolean isEmpty() { return size() == 0; }

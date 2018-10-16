@@ -16,7 +16,7 @@ import spacegraph.space2d.container.collection.MutableMapContainer;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.windo.Windo;
-import spacegraph.util.MovingRectFloat2D;
+import spacegraph.util.MutableFloatRect;
 import spacegraph.video.Draw;
 
 import java.util.LinkedHashSet;
@@ -419,7 +419,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         /**
          * current layout movement instance
          */
-        public /*volatile*/ transient MovingRectFloat2D mover = null;
+        public /*volatile*/ transient MutableFloatRect mover = null;
 
         /**
          * outgoing edges

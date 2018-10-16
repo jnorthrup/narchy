@@ -9,7 +9,7 @@ import spacegraph.util.math.v2;
  * similar to RectFloat2D with additional
  * except the x,y components are mutable
  */
-public class MovingRectFloat2D {
+public class MutableFloatRect {
 
     public float x, y;
     public float x0, y0;
@@ -18,7 +18,7 @@ public class MovingRectFloat2D {
     public Graph2D.NodeVis node;
     private transient float rad;
 
-    public MovingRectFloat2D() {
+    public MutableFloatRect() {
         clear();
     }
 
@@ -36,13 +36,13 @@ public class MovingRectFloat2D {
         return r;
     }
 
-    public MovingRectFloat2D pos(float dx, float dy) {
+    public MutableFloatRect pos(float dx, float dy) {
         this.x = dx + w / 2;
         this.y = dy + h / 2;
         return this;
     }
 
-    public MovingRectFloat2D move(float dx, float dy) {
+    public MutableFloatRect move(float dx, float dy) {
         this.x += dx;
         this.y += dy;
         return this;

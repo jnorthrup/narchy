@@ -31,6 +31,8 @@ public class PushButton extends AbstractButton {
         );
     }
 
+
+
     public PushButton(Surface content) {
         super(content);
     }
@@ -41,13 +43,15 @@ public class PushButton extends AbstractButton {
     }
 
     public PushButton(String s, Runnable onClick) {
-        this(s, (p) -> onClick.run());
-    }
-
-    public PushButton(String s, @Nullable Consumer<PushButton> onClick) {
+        //this(s, (p) -> onClick.run());
         this(s);
         click(onClick);
     }
+
+//    public PushButton(String s, @Nullable Consumer<PushButton> onClick) {
+//        this(s);
+//        click(onClick);
+//    }
 
     public PushButton(ImageTexture tex) {
         this(tex.view());

@@ -6,13 +6,13 @@ import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.Graph2D;
-import spacegraph.util.MovingRectFloat2D;
+import spacegraph.util.MutableFloatRect;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import java.util.Random;
 
-public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
+public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect> {
 
     final Random rng = new XoRoShiRo128PlusRandom(1);
     private int iterations = 1;
@@ -20,8 +20,8 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
 
     @Override
-    protected MovingRectFloat2D newContainer() {
-        return new MovingRectFloat2D();
+    protected MutableFloatRect newContainer() {
+        return new MutableFloatRect();
     }
 
     public final FloatRange repelSpeed = new FloatRange(4f, 0, 16f);
@@ -68,7 +68,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
         assert (AUTOSCALE == AUTOSCALE);
 
-        for (MovingRectFloat2D m : nodes) {
+        for (MutableFloatRect m : nodes) {
             float pri = m.node.pri;
             float p = (float) (1f + Math.sqrt(pri)) * AUTOSCALE;
             m.size(p, p);
@@ -88,7 +88,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
         for (int ii = 0; ii < iterations; ii++) {
 
             for (int x = 0; x < n; x++) {
-                MovingRectFloat2D a = nodes.get(x);
+                MutableFloatRect a = nodes.get(x);
 
                 attract(a, attractSpeed);
 
@@ -102,7 +102,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
             RectFloat gg = g.bounds;
             float momentum = nodeMomentum.floatValue();
-            for (MovingRectFloat2D b : nodes) {
+            for (MutableFloatRect b : nodes) {
                 b.commit(maxSpeedPerIter, momentum);
                 b.fence(gg);
             }
@@ -116,7 +116,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
     /**
      * HACK this reads the positions from the nodevis not the rectangle
      */
-    private void attract(MovingRectFloat2D b, float attractSpeed) {
+    private void attract(MutableFloatRect b, float attractSpeed) {
 
         Graph2D.NodeVis<X> from = b.node;
         float px = b.cx(), py = b.cy();
@@ -136,7 +136,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
             if (who == null)
                 return;
 
-            MovingRectFloat2D to = who.mover;
+            MutableFloatRect to = who.mover;
             if (to == null)
                 return;
 
@@ -163,7 +163,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
         return weight * weight;
     }
 
-    private void repel(MovingRectFloat2D a, v2 aCenter, float ar, MovingRectFloat2D b, float repelSpeed) {
+    private void repel(MutableFloatRect a, v2 aCenter, float ar, MutableFloatRect b, float repelSpeed) {
 
         Tuple2f delta = aCenter.clone().subbed(b.cx(), b.cy());
 

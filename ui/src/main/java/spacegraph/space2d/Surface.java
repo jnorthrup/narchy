@@ -7,7 +7,6 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.container.AbstractMutableContainer;
 import spacegraph.space2d.container.AspectAlign;
@@ -157,14 +156,17 @@ abstract public class Surface implements SurfaceBase {
     public boolean start(SurfaceBase parent) {
         assert(parent!=null);
         SurfaceBase p = PARENT.getAndSet(this, parent);
-        if (p!=null)
-            throw new WTF();
-        if (p!=parent) {
-            //synchronized (this) {
+
+            if (p != parent) {
+                if (p != null)
+                    throw new WTF();
+
+                //synchronized (this) {
                 starting();
-            //}
-            return true;
-        }
+                //}
+                return true;
+            }
+
         return false;
     }
 

@@ -3,9 +3,9 @@ package spacegraph.space2d.container.layout;
 import jcog.data.list.FasterList;
 import jcog.data.pool.DequePool;
 import spacegraph.space2d.container.Graph2D;
-import spacegraph.util.MovingRectFloat2D;
+import spacegraph.util.MutableFloatRect;
 
-public abstract class DynamicLayout2D<X, M extends MovingRectFloat2D> implements Graph2D.Graph2DUpdater<X> {
+public abstract class DynamicLayout2D<X, M extends MutableFloatRect> implements Graph2D.Graph2DUpdater<X> {
     protected final FasterList<M> nodes = new FasterList();
     private final DequePool<M> nodesPool = new DequePool<>() {
         @Override

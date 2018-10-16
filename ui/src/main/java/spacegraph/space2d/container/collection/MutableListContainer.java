@@ -1,14 +1,15 @@
 package spacegraph.space2d.container.collection;
 
-import com.google.common.collect.Sets;
+import jcog.Util;
 import jcog.data.list.FastCoWList;
+import org.eclipse.collections.api.set.primitive.IntSet;
+import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.AbstractMutableContainer;
 import spacegraph.space2d.container.Container;
 
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -146,20 +147,26 @@ public class MutableListContainer extends AbstractMutableContainer {
                 } else {
 
 
-                    Surface[] cc = children.array();
-                    Sets.SetView unchanged = Sets.intersection(
-                            Set.of(cc), Set.of(next)
-                    );
-                    if (unchanged.isEmpty()) unchanged = null;
+                    Surface[] ee = children.array();
+                    if (ee!=next) {
+                        IntSet pi = Util.intSet(x -> x.id, ee);
+                        IntSet ni = Util.intSet(x -> x.id, next);
+                        IntHashSet unchanged = new IntHashSet().withAll(pi.select(ni::contains));
 
-                    for (Surface existing : cc) {
-                        if (unchanged == null || !unchanged.contains(existing))
-                            removeChild(existing);
-                    }
+//                    Sets.SetView unchanged = Sets.intersection(
+//                            Set.of(cc), Set.of(next)
+//                    );
+                        if (unchanged.isEmpty()) unchanged = null;
 
-                    for (Surface n : next) {
-                        if (unchanged == null || !unchanged.contains(n))
-                            add(n);
+                        for (Surface existing : ee) {
+                            if (unchanged == null || !unchanged.contains(existing.id))
+                                removeChild(existing);
+                        }
+
+                        for (Surface n : next) {
+                            if (unchanged == null || !unchanged.contains(n.id))
+                                add(n);
+                        }
                     }
 
                 }

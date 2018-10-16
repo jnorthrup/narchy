@@ -3,6 +3,7 @@ package nars.nal.multistep;
 /** http://web.cecs.pdx.edu/~mm/analogy-problems.html */
 public class CopyCatTests {
     /*
+    TODO
 
     abc -> abd, ijk -> ?
     abc -> abd, ijklmnop -> ?

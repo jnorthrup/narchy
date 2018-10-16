@@ -12,7 +12,6 @@ import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Bool;
