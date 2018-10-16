@@ -3,7 +3,6 @@ package nars.exe;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
-import jcog.pri.bag.impl.FastPutProxyBag;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
@@ -103,8 +102,10 @@ public class Attention extends DurService implements Sampler<Concept> {
 //
 //                        }
 
-                        new FastPutProxyBag<>(arrayBag,
-                                1024)
+                        //new FastPutProxyBag<>(arrayBag,
+                          //      1024)
+
+                        arrayBag
 
                         :
                         arrayBag;

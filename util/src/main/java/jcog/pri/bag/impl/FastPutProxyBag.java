@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.Consumer;
 
+/** TODO needs tested */
 public class FastPutProxyBag<K, X extends Prioritizable> extends ProxyBag<K, X> {
 
 

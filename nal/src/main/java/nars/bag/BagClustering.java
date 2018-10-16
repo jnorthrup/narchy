@@ -66,13 +66,16 @@ public class BagClustering<X> {
 
         this.net = new NeuralGasNet(model.dims, centroids, model::distanceSq);
 
-        this.bag = new FastPutProxyBag<>(new ArrayBag<X,VLink<X>>(PriMerge.max, initialCap) {
+        ArrayBag<X, VLink<X>> b = new ArrayBag<>(PriMerge.max, initialCap) {
 
             @Override
             public X key(VLink<X> xvLink) {
                 return xvLink.id;
             }
-        }, 1024);
+        };
+
+        this.bag = b;
+//        this.bag = new FastPutProxyBag<>(b, 1024);
 //        this.bag = new PriLinkHijackBag<X,VLink<X>>(PriMerge.max, initialCap, 4) {
 //
 //        };
