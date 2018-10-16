@@ -2,6 +2,7 @@ package nars.concept.dynamic;
 
 import nars.NAR;
 import nars.NARS;
+import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthTable;
 import nars.term.Term;
 
@@ -16,7 +17,7 @@ public class AbstractDynamicTaskTest {
     }
 
     protected boolean isDynamicTable(Term $$) {
-        return n.conceptualize($$).beliefs().tableFirst(DynamicTruthTable.class) != null;
+        return ((BeliefTables)n.conceptualize($$).beliefs()).tableFirst(DynamicTruthTable.class) != null;
     }
     protected void assertDynamicTable(String s) {
         assertTrue(isDynamicTable(s));

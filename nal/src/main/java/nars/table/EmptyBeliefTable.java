@@ -38,6 +38,11 @@ public class EmptyBeliefTable implements BeliefTable {
 
     }
 
+    @Override
+    public void setTaskCapacity(int newCapacity) {
+
+    }
+
 
     @Override
     public int size() {

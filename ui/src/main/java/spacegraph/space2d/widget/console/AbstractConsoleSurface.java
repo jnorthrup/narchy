@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.console;
 
-import com.googlecode.lanterna.TextCharacter;
 import spacegraph.space2d.container.EmptyContainer;
 
 public abstract class AbstractConsoleSurface extends EmptyContainer {
@@ -13,7 +12,7 @@ public abstract class AbstractConsoleSurface extends EmptyContainer {
     }
 
 
-    abstract public TextCharacter charAt(int col, int row);
+//    abstract public TextCharacter charAt(int col, int row);
 
 //
 //    @Override

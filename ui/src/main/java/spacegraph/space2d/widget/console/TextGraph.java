@@ -6,8 +6,6 @@ import spacegraph.space2d.widget.meta.ClassReloadingSurface;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.text.VectorLabel;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 
 /** experimental text editor based on character-level graphical representation
@@ -25,10 +23,9 @@ public class TextGraph extends Graph2D { //extends Graph2D {
     }
 
 
-    public static void main(String[] args) throws ClassNotFoundException, IOException, URISyntaxException {
+    public static void main(String[] args)  {
 
-        ClassReloadingSurface c = new ClassReloadingSurface(TextGraph.class);
-        SpaceGraph.window(new MetaFrame(c), 800, 800);
+        SpaceGraph.window(new MetaFrame(new ClassReloadingSurface<>(TextGraph.class)), 800, 800);
 
 //        Loop.of(c::reload).setFPS(0.25f);
 

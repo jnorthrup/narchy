@@ -9,6 +9,7 @@ import nars.concept.util.ConceptBuilder;
 import nars.control.MetaGoal;
 import nars.control.proto.Remember;
 import nars.link.TermLinker;
+import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.TaskTable;
 import nars.table.question.QuestionTable;
@@ -27,8 +28,8 @@ import static nars.truth.TruthFunctions.w2cSafe;
 
 public class TaskConcept extends NodeConcept implements Concept {
 
-    private final BeliefTables beliefs;
-    private final BeliefTables goals;
+    private final BeliefTable beliefs;
+    private final BeliefTable goals;
     private final QuestionTable quests;
     private final QuestionTable questions;
 
@@ -48,13 +49,6 @@ public class TaskConcept extends NodeConcept implements Concept {
     }
 
 
-    public TaskConcept(Term term, ConceptBuilder b) {
-        this(term, b.newTable(term, true), b.newTable(term, false),
-                b.questionTable(term, true), b.questionTable(term, false),
-                b.termlinker(term),
-                b.newLinkBags(term));
-    }
-
     /**
      * Constructor, called in Memory.getConcept only
      *
@@ -63,7 +57,7 @@ public class TaskConcept extends NodeConcept implements Concept {
      * @param taskLinks
      */
     public TaskConcept(Term term,
-                       BeliefTables beliefs, BeliefTables goals,
+                       BeliefTable beliefs, BeliefTable goals,
                        QuestionTable questions, QuestionTable quests,
                        TermLinker linker,
                        Bag[] bags) {
@@ -91,7 +85,7 @@ public class TaskConcept extends NodeConcept implements Concept {
      * and insertion in the middle
      */
     @Override
-    public BeliefTables beliefs() {
+    public BeliefTable beliefs() {
         return beliefs;
     }
 
@@ -99,7 +93,7 @@ public class TaskConcept extends NodeConcept implements Concept {
      * Desire values on the term, similar to the above one
      */
     @Override
-    public BeliefTables goals() {
+    public BeliefTable goals() {
         return goals;
     }
 
@@ -168,8 +162,8 @@ public class TaskConcept extends NodeConcept implements Concept {
         super.delete(nar);
         if (beliefs != null) beliefs.delete();
         if (goals != null) goals.delete();
-        if (questions != null) questions.clear();
-        if (quests != null) quests.clear();
+        if (questions != null) questions.delete();
+        if (quests != null) quests.delete();
     }
 
 }

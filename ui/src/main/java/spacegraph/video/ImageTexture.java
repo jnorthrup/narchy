@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import static jcog.data.map.CustomConcurrentHashMap.STRONG;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public class ImageTexture extends Tex {
@@ -65,7 +66,7 @@ public class ImageTexture extends Tex {
         } catch (IOException e) {
             return null;
         }
-    }, 4096, true /* weak */);
+    }, 1024, STRONG);
 
 
 

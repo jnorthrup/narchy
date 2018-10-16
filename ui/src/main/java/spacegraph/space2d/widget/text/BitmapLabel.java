@@ -1,17 +1,14 @@
 package spacegraph.space2d.widget.text;
 
 
-import com.googlecode.lanterna.TextCharacter;
-import com.googlecode.lanterna.TextColor;
 import jcog.Texts;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.AspectAlign;
+import spacegraph.space2d.phys.common.Color3f;
 import spacegraph.space2d.widget.console.BitmapTextGrid;
 
 import java.util.Arrays;
-
-import static java.lang.Math.round;
 
 public class BitmapLabel extends BitmapTextGrid {
 
@@ -19,7 +16,7 @@ public class BitmapLabel extends BitmapTextGrid {
     static final int minPixelsToBeVisible = 7;
 
     private volatile String text = "";
-    private volatile TextColor fgColor = TextColor.ANSI.WHITE, bgColor= TextColor.ANSI.BLACK;
+    private volatile Color3f fgColor = Color3f.WHITE, bgColor= Color3f.BLACK;
     private volatile RectFloat textBounds;
 
     public BitmapLabel(String text) {
@@ -29,7 +26,7 @@ public class BitmapLabel extends BitmapTextGrid {
         cursorCol = cursorRow = -1; //hidden
 
         setFillTextBackground(false);
-        colorText(1f,1f,1f);
+        textColor(1f,1f,1f);
 
         text(text);
 
@@ -90,35 +87,22 @@ public class BitmapLabel extends BitmapTextGrid {
         return text;
     }
 
-    public BitmapLabel colorText(float rr, float gg, float bb) {
-        return colorText(round(rr * 255), round(gg * 255), round(bb * 255));
-    }
-
-    private BitmapLabel colorBackground(float rr, float gg, float bb) {
-        return colorBackground(round(rr * 255), round(gg * 255), round(bb * 255));
-    }
-
-    public BitmapLabel colorText(int rr, int gg, int bb) {
-        fgColor = (new TextColor.RGB(
-                rr,
-                gg,
-                bb));
+    public BitmapLabel textColor(float rr, float gg, float bb) {
+        fgColor.set((rr), (gg), (bb));
         return this;
     }
 
-    private BitmapLabel colorBackground(int rr, int gg, int bb) {
-        bgColor = (new TextColor.RGB(
-                rr,
-                gg,
-                bb));
+    public BitmapLabel backgroundColor(float rr, float gg, float bb) {
+        bgColor.set((rr), (gg), (bb));
         return this;
     }
+
 
 
 
 
     @Override
-    protected boolean updateBackBuffer() {
+    protected boolean renderText() {
 
         clearBackground(); //may not be necessary if only one line and all characters are used but in multiline the matrix currently isnt regular so some chars will not be redrawn
 
@@ -130,16 +114,13 @@ public class BitmapLabel extends BitmapTextGrid {
                 row++;
                 col = 0;
             } else {
-                redraw(new TextCharacter(c, fgColor, bgColor), col++, row);
+                redraw(c, col++, row, fgColor, bgColor);
             }
         }
         return true;
     }
 
-    @Override
-    @Deprecated public TextCharacter charAt(int col, int row) {
-        return new TextCharacter(text.charAt(col), fgColor, bgColor);
-    }
+
 
 
 }

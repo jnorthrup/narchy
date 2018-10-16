@@ -280,7 +280,7 @@ public class ConsoleTerminal extends Widget implements Appendable {
 
 
         @Override
-        protected boolean updateBackBuffer() {
+        protected boolean renderText() {
 
 
             final TerminalPosition cursorPosition = term.getCursorBufferPosition();
@@ -340,7 +340,6 @@ public class ConsoleTerminal extends Widget implements Appendable {
             redraw(term.getBufferCharacter(column, row), column, row);
         }
 
-        @Override
         public TextCharacter charAt(int col, int row) {
             return term.getCharacter(col, row);
         }

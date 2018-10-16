@@ -9,7 +9,7 @@ import nars.Task;
 import nars.concept.util.ConceptBuilder;
 import nars.link.TaskLink;
 import nars.link.TermLinker;
-import nars.table.BeliefTables;
+import nars.table.BeliefTable;
 import nars.table.question.QuestionTable;
 import nars.term.Term;
 import nars.term.Termed;
@@ -67,9 +67,9 @@ public class NodeConcept implements Concept {
     }
 
 
-    @Override public BeliefTables beliefs() { return BeliefTables.Empty; }
+    @Override public BeliefTable beliefs() { return BeliefTable.Empty; }
 
-    @Override public BeliefTables goals() { return BeliefTables.Empty; }
+    @Override public BeliefTable goals() { return BeliefTable.Empty; }
 
     @Override public QuestionTable questions() { return QuestionTable.Empty; }
 
@@ -130,8 +130,8 @@ public class NodeConcept implements Concept {
     @Override
     public void delete( NAR nar) {
         meta.clearPut(DELETED, DELETED);
-        termLinks.delete();
-        taskLinks.delete();
+        termLinks.clear();
+        taskLinks.clear();
     }
 
     @Override

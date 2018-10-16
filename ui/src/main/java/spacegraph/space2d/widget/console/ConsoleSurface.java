@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.console;
 
 import com.googlecode.lanterna.TextCharacter;
 import com.jogamp.opengl.GL2;
+import jcog.TODO;
 import spacegraph.video.Draw;
 
 import java.awt.*;
@@ -142,6 +143,11 @@ public abstract class ConsoleSurface extends AbstractConsoleSurface {
 
         gl.glPopMatrix();
 
+    }
+
+    @Deprecated public TextCharacter charAt(int col, int row) {
+        //return new TextCharacter(text.charAt(col), fgColor, bgColor);
+        throw new TODO();
     }
 
     /** x,y aka col,row */

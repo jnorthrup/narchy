@@ -748,7 +748,7 @@ public class CSSBoxHTMLSurface extends MutableListContainer {
             //box.drawContent();
             label.
                     //colorText(c.getRGB())
-                    colorText(c.getRed(), c.getGreen(), c.getBlue())
+                            textColor(c.getRed(), c.getGreen(), c.getBlue())
                     .text(box.getText());
             label.pos(bounds);
         }

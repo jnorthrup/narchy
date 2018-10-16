@@ -60,7 +60,7 @@ public interface QuestionTable extends TaskTable {
 
 
         @Override
-        public void setCapacity(int newCapacity) {
+        public void setTaskCapacity(int newCapacity) {
 
         }
 
@@ -72,7 +72,6 @@ public interface QuestionTable extends TaskTable {
 
     };
 
-    void setCapacity(int newCapacity);
 
 
 }

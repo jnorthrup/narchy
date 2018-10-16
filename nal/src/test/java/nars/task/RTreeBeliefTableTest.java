@@ -51,10 +51,10 @@ class RTreeBeliefTableTest {
         Term term = $.p("x");
 
         TaskConcept c = (TaskConcept) n.conceptualize(term);
-        @NotNull BeliefTables cb = true ? c.beliefs() : c.goals();
+        @NotNull BeliefTables cb = (BeliefTables) (true ? c.beliefs() : c.goals());
 
-        cb.tableFirst(EternalTable.class).setCapacity(0);
-        cb.tableFirst(TemporalBeliefTable.class).setCapacity(cap);
+        cb.tableFirst(EternalTable.class).setTaskCapacity(0);
+        cb.tableFirst(TemporalBeliefTable.class).setTaskCapacity(cap);
 
         
         System.out.println("points:");
@@ -123,7 +123,7 @@ class RTreeBeliefTableTest {
         Term ab = nars.$.$("a:b");
         TaskConcept X = (TaskConcept) n.conceptualize(ab);
         RTreeBeliefTable r = new RTreeBeliefTable();
-        r.setCapacity(4);
+        r.setTaskCapacity(4);
 
         assertEquals(0, r.size());
 
@@ -172,7 +172,7 @@ class RTreeBeliefTableTest {
         Term ab = nars.$.$("a:b");
         TaskConcept AB = (TaskConcept) nar.conceptualize(ab);
         RTreeBeliefTable r = new RTreeBeliefTable();
-        r.setCapacity(4);
+        r.setTaskCapacity(4);
 
         add(r, AB, 1f, 0.9f, 0, 1, nar);
         add(r, AB, 0f, 0.9f, 2, 3, nar);
@@ -237,12 +237,12 @@ class RTreeBeliefTableTest {
         Term term = $.p("x");
 
         TaskConcept c = (TaskConcept) n.conceptualize(term);
-        BeliefTables cb = true ? c.beliefs() : c.goals();
+        BeliefTables cb = (BeliefTables) (true ? c.beliefs() : c.goals());
 
         int cap = 16;
 
         RTreeBeliefTable table = cb.tableFirst(RTreeBeliefTable.class);
-        table.setCapacity(cap);
+        table.setTaskCapacity(cap);
 
 
         int horizon = 50;
@@ -293,12 +293,12 @@ class RTreeBeliefTableTest {
         Term term = $.p("x");
 
         TaskConcept c = (TaskConcept) n.conceptualize(term);
-        BeliefTables cb = true ? c.beliefs() : c.goals();
+        BeliefTables cb = (BeliefTables) (true ? c.beliefs() : c.goals());
 
         int cap = 64;
 
         RTreeBeliefTable table = cb.tableFirst(RTreeBeliefTable.class);
-        table.setCapacity(cap);
+        table.setTaskCapacity(cap);
 
 
         int horizon = 50;

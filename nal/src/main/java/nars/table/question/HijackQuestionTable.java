@@ -73,6 +73,11 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
     }
 
     @Override
+    public final void setTaskCapacity(int newCapacity) {
+        setCapacity(newCapacity);
+    }
+
+    @Override
     public void forEachTask(Consumer<? super Task> x) {
         forEachKey(x);
     }

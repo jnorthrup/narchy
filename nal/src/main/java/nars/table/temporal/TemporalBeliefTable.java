@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 public interface TemporalBeliefTable extends BeliefTable {
 
 
-    void setCapacity(int temporals);
+    void setTaskCapacity(int temporals);
 
     void update(SignalTask x, Runnable change);
 

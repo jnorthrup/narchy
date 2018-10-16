@@ -6,6 +6,7 @@ import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.link.TaskLink;
+import nars.table.BeliefTables;
 import nars.table.eternal.EternalTable;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Compound;
@@ -359,8 +360,8 @@ public class RevisionTest {
 
         Task at = n.believe(a, Tense.Present, 1f);
         n.believe(b, Tense.Present);
-        n.concept(a).beliefs().tableFirst(EternalTable.class).setCapacity(1);
-        n.concept(a).beliefs().tableFirst(TemporalBeliefTable.class).setCapacity(1);
+        ((BeliefTables)n.concept(a).beliefs()).tableFirst(EternalTable.class).setTaskCapacity(1);
+        ((BeliefTables)n.concept(a).beliefs()).tableFirst(TemporalBeliefTable.class).setTaskCapacity(1);
         n.input(at);
 
 

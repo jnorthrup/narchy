@@ -426,7 +426,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //    }
 
     @Override
-    public void setCapacity(int capacity) {
+    public void setTaskCapacity(int capacity) {
         this.capacity = capacity;
     }
 

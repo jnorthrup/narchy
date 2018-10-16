@@ -3,6 +3,7 @@ package nars.concept.dynamic;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthTable;
 import nars.term.Compound;
@@ -219,7 +220,7 @@ class DynamicConjTest {
         n.time.dur(8);
         TaskConcept cc = (TaskConcept) n.conceptualize($("((x) && (y))"));
 
-        BeliefTables xtable = cc.beliefs();
+        BeliefTable xtable = cc.beliefs();
 
 
         assertEquals(0.81f, xtable.answer(0, 0, $("((x) &&+4 (y))"), n).conf(), 0.05f);
@@ -308,8 +309,8 @@ class DynamicConjTest {
                 "(--(y-->t) &&+1 --(t-->happy))",
         }) {
             Concept c = n.conceptualize($.$(s));
-            assertTrue(c.beliefs().tableFirst(DynamicTruthTable.class)!=null);
-            assertTrue(c.goals().tableFirst(DynamicTruthTable.class)!=null);
+            assertTrue(((BeliefTables)c.beliefs()).tableFirst(DynamicTruthTable.class)!=null);
+            assertTrue(((BeliefTables)c.goals()).tableFirst(DynamicTruthTable.class)!=null);
         }
 
     }

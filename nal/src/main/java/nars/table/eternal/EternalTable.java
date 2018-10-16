@@ -39,7 +39,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     public EternalTable(int initialCapacity) {
         super();
-        setCapacity(initialCapacity);
+        setTaskCapacity(initialCapacity);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     }
 
 
-    public void setCapacity(int c) {
+    public void setTaskCapacity(int c) {
         assert( c>= 0);
 
         int wasCapacity = this.capacity();

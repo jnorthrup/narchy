@@ -180,7 +180,7 @@ public class Opjects extends DefaultTermizer {
             e.printStackTrace();
         }
         return null;
-    }, 512, true);
+    }, 512, STRONG, SOFT);
 
 
     /**
@@ -514,7 +514,7 @@ public class Opjects extends DefaultTermizer {
 
                 };
 
-            }, 512, true);
+            }, 512, STRONG, SOFT);
         }
 
         @Override

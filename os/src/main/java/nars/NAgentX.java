@@ -50,8 +50,6 @@ import spacegraph.video.Draw;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
@@ -62,7 +60,6 @@ import static java.util.stream.StreamSupport.stream;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.truth.TruthFunctions.c2wSafe;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -245,37 +242,35 @@ abstract public class NAgentX extends NAgent {
 //        cc.printCallChain();
 
 
-        String experiencePath = System.getProperty("java.io.tmpdir") + "/" + a.getClass().getSimpleName() + ".nal";
+//        String experiencePath = System.getProperty("java.io.tmpdir") + "/" + a.getClass().getSimpleName() + ".nal";
+//        File f = new File(experiencePath);
+//        if (f.exists()) {
+//            n.runLater(()->{
+//                try {
+//                    n.inputBinary(f);
+//                } catch (IOException e) {
+//                    //e.getCause().printStackTrace();
+//                    e.printStackTrace();
+//                }
+//            });
+//        }
 
 
-        File f = new File(experiencePath);
-        if (f.exists()) {
-            n.runLater(()->{
-                try {
-                    n.inputBinary(f);
-                } catch (IOException e) {
-                    //e.getCause().printStackTrace();
-                    e.printStackTrace();
-                }
-            });
-        }
-
-
-        Runtime.getRuntime().addShutdownHook(new Thread(()->{
-            //n.pause();
-            //a.off();
-
-            try {
-                n.outputBinary(new File(experiencePath), false,
-                        (Task t) -> !t.isGoal() ?
-                                Task.eternalized(t,1, c2wSafe(n.confMin.floatValue()), n) : null
-                );
-
-                n.logger.info("eternalized memory saved to: " + experiencePath);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }));
+//        Runtime.getRuntime().addShutdownHook(new Thread(()->{
+//            //n.pause();
+//            //a.off();
+//
+//            try {
+//                n.outputBinary(new File(experiencePath), false,
+//                        (Task t) -> !t.isGoal() ?
+//                                Task.eternalized(t,1, c2wSafe(n.confMin.floatValue()), n) : null
+//                );
+//
+//                n.logger.info("eternalized memory saved to: " + experiencePath);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }));
     }
 
     private static NAgent metavisor(NAgent a) {

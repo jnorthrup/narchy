@@ -1,6 +1,5 @@
 package spacegraph.space2d;
 
-import jcog.Texts;
 import jcog.Util;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Container;
@@ -27,9 +26,7 @@ public class WidgetTest {
     public static Container widgetDemo() {
         return
                 grid(
-                        row(new PushButton("row1"), new PushButton("row2"), new PushButton("clickMe()", (p) -> {
-                            p.label(Texts.n2(Math.random()));
-                        })),
+                        row(new PushButton("row1"), new PushButton("row2"), new PushButton("clickMe()")),
                         new Splitting(
                                 new PushButton("vsplit"),
                                 row(

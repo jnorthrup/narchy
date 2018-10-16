@@ -29,7 +29,6 @@ import nars.Task;
 import nars.link.TaskLink;
 import nars.link.TermLinker;
 import nars.table.BeliefTable;
-import nars.table.BeliefTables;
 import nars.table.TaskTable;
 import nars.table.question.QuestionTable;
 import nars.term.Term;
@@ -50,9 +49,9 @@ public interface Concept extends Termed, MetaMap {
 
     Bag<Term,PriReference<Term>> termlinks();
 
-    BeliefTables beliefs();
+    BeliefTable beliefs();
 
-    BeliefTables goals();
+    BeliefTable goals();
 
     QuestionTable questions();
 

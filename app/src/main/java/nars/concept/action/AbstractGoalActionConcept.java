@@ -123,7 +123,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
     @Override
     public void add(Remember t, NAR n) {
         if (t.input.isGoal()) {
-            RTreeBeliefTable gg = goals().tableFirst(RTreeBeliefTable.class);
+            RTreeBeliefTable gg = ((BeliefTables)goals()).tableFirst(RTreeBeliefTable.class);
             if (gg.size()+1 >= gg.capacity()) {
                 //HACK
                 //search for oldest curiosity task to eliminate

@@ -47,6 +47,7 @@
 package spacegraph.space2d.phys.common;
 
 
+import java.awt.*;
 
 /**
  * Similar to javax.vecmath.Color3f holder
@@ -86,5 +87,9 @@ public class Color3f {
         x = argColor.x;
         y = argColor.y;
         z = argColor.z;
+    }
+
+    public Color toAWT() {
+        return new Color(x, y, z);
     }
 }

@@ -3,6 +3,7 @@ package nars.concept.util;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
+import nars.table.BeliefTables;
 import nars.table.eternal.EternalTable;
 import nars.table.temporal.TemporalBeliefTable;
 
@@ -88,19 +89,23 @@ public final class ConceptAllocator implements Consumer<Concept> {
     }
 
 
-    private void setBeliefTableCapacity(TaskConcept c, BeliefTable t, boolean beliefOrGoal) {
+    private void setTaskCapacity(TaskConcept c, BeliefTable t, boolean beliefOrGoal) {
         if (t instanceof EternalTable) {
-            ((EternalTable) t).setCapacity(beliefCap(c, beliefOrGoal, true));
+            t.setTaskCapacity(beliefCap(c, beliefOrGoal, true));
         } else if (t instanceof TemporalBeliefTable) {
-            ((TemporalBeliefTable) t).setCapacity(beliefCap(c, beliefOrGoal, false));
+            t.setTaskCapacity(beliefCap(c, beliefOrGoal, false));
         }
     }
 
     private void apply(TaskConcept c) {
-        c.beliefs().tables.forEach(t -> setBeliefTableCapacity(c, t, true));
-        c.goals().tables.forEach(t -> setBeliefTableCapacity(c, t, false));
-        c.questions().setCapacity(questionCap(c, true));
-        c.quests().setCapacity(questionCap(c, false));
+        BeliefTable cb = c.beliefs();
+        if (cb instanceof BeliefTables)
+            ((BeliefTables)cb).tables.forEach(t -> setTaskCapacity(c, t, true));
+        BeliefTable cg = c.goals();
+        if (cg instanceof BeliefTables)
+            ((BeliefTables)cg).tables.forEach(t -> setTaskCapacity(c, t, false));
+        c.questions().setTaskCapacity(questionCap(c, true));
+        c.quests().setTaskCapacity(questionCap(c, false));
     }
 
 

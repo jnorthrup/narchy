@@ -9,6 +9,7 @@ import nars.concept.Operator;
 import nars.concept.TaskConcept;
 import nars.link.TermLinker;
 import nars.subterm.Subterms;
+import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthTable;
 import nars.table.eternal.EternalTable;
@@ -46,35 +47,50 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
     public abstract Bag[] newLinkBags(Term term);
 
     private Concept taskConcept(final Term t) {
-        DynamicTruthModel dmt = ConceptBuilder.dynamicModel(t);
-        if (dmt != null) {
 
-            return new TaskConcept(t,
+        BeliefTable B, G;
 
-                    //belief table
-                    newDynamicBeliefTable(t, dmt, true),
-
-                    //goal table
-                    goalable(t) ?
-                            newDynamicBeliefTable(t, dmt, false) :
-                            BeliefTables.Empty,
-
-                    this);
-
+        //1. handle images
+        Term it = Image.imageNormalize(t);
+        if (it!=t) {
+            assert(t.op()==INH);
+            B = new Image.ImageBeliefTable(t, it, true);
+            G = new Image.ImageBeliefTable(t, it, false);
         } else {
-            Term conceptor = Functor.func(t);
-            if (conceptor != Bool.Null) {
-                @Nullable Conceptor cc = conceptors.get(conceptor);
-                if (cc instanceof Conceptor) {
 
-                    Concept x = cc.apply(conceptor, Operator.args(t));
-                    if (x != null)
-                        return x;
+            DynamicTruthModel dmt = ConceptBuilder.dynamicModel(t);
+            if (dmt != null) {
+
+                //2. handle dynamic truth tables
+                B = newDynamicBeliefTable(t, dmt, true);
+                G = goalable(t) ?
+                        newDynamicBeliefTable(t, dmt, false) :
+                        BeliefTable.Empty;
+            } else {
+                //3. handle dynamic conceptualizers (experimental)
+                Term conceptor = Functor.func(t);
+                if (conceptor != Bool.Null) {
+                    @Nullable Conceptor cc = conceptors.get(conceptor);
+                    if (cc instanceof Conceptor) {
+
+                        Concept x = cc.apply(conceptor, Operator.args(t));
+                        if (x != null)
+                            return x;
+                    }
                 }
-            }
 
-            return new TaskConcept(t, this);
+                //4. default task concept
+                B = this.newTable(t, true);
+                G = this.newTable(t, false);
+
+            }
         }
+
+
+        return new TaskConcept(t, B, G,
+                        this.questionTable(t, true), this.questionTable(t, false),
+                        this.termlinker(t),
+                        this.newLinkBags(t));
     }
 
     private BeliefTables newDynamicBeliefTable(Term t, DynamicTruthModel dmt, boolean beliefOrGoal) {
@@ -259,10 +275,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
                 }
             }
         }
-        Term iNorm = Image.imageNormalize(t);
-        if (!iNorm.equals(t)) {
-            return DynamicTruthModel.ImageIdentity;
-        }
+
         return null;
     }
 

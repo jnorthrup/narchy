@@ -28,6 +28,7 @@ public interface TaskTable {
 
     /**
      * number of items in this collection
+     * warning: size()==0 does not necessarily mean that isEmpty(), although this is true for the default implementation
      */
     int size();
 
@@ -36,7 +37,9 @@ public interface TaskTable {
     }
 
 
-    void forEachTask(Consumer<? super Task> x);
+    default void forEachTask(Consumer<? super Task> x) {
+        streamTasks().forEach(x);
+    }
 
     /**
      * TODO add 'intersects or contains' option
@@ -52,6 +55,7 @@ public interface TaskTable {
         }
     }
 
+    void setTaskCapacity(int newCapacity);
 
     /**
      * returns true if the task was removed
@@ -60,6 +64,7 @@ public interface TaskTable {
 
     void clear();
 
+    /** in dynamic implementations, this will be an empty stream */
     Stream<? extends Task> streamTasks();
 
     default Task[] toArray() {
@@ -109,4 +114,10 @@ public interface TaskTable {
 
         return matching(start, end, template, filter, nar).task(false, false, false);
     }
+
+    /** clear and fully deallocate if possible */
+    default void delete() {
+        clear();
+    }
+
 }

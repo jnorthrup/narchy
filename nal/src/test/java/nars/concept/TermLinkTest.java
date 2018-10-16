@@ -82,9 +82,14 @@ class TermLinkTest {
     }
     @Test
     void testIntersection() {
-        testTemplates("((0|1)-->2)",
-                "[(0|1), 2]"
-        );
+
+
+        String x = "[(0|1), 0, 1, 2]";
+        testTemplates("(2-->(0|1))", x);
+        testTemplates("((0|1)-->2)", x);
+        String y = "[(0&1), 0, 1, 2]";
+        testTemplates("(2-->(0&1))", y);
+        testTemplates("((0&1)-->2)", y);
     }
 
     @Test
@@ -219,7 +224,8 @@ class TermLinkTest {
     @Test
     void testInheritSet() {
         testTemplates("(x-->[y])",
-                "[[y], x]");
+                //"[[y], x]" +
+        "[[y], x, y]");
     }
     @Test
     void testImplicateInhSet() {

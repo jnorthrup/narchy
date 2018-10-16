@@ -23,7 +23,7 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
     }
 
     @Override
-    public synchronized void setCapacity(int newCapacity) {
+    public synchronized void setTaskCapacity(int newCapacity) {
         super.setCapacity(newCapacity);
     }
 

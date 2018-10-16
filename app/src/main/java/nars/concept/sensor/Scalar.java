@@ -48,12 +48,12 @@ public class Scalar extends TaskConcept implements Sensor, PermanentConcept {
         res = FloatRange.unit(n.freqResolution);
 
         if (belief!=null) {
-            ScalarBeliefTable b = beliefs().tableFirst(ScalarBeliefTable.class);
+            ScalarBeliefTable b = ((BeliefTables)beliefs()).tableFirst(ScalarBeliefTable.class);
             b.setPri(pri);
             b.setRes(res);
         }
         if (goal!=null) {
-            ScalarBeliefTable g = goals().tableFirst(ScalarBeliefTable.class);
+            ScalarBeliefTable g = ((BeliefTables)goals()).tableFirst(ScalarBeliefTable.class);
             g.setPri(pri);
             g.setRes(res);
         }

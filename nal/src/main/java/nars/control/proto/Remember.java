@@ -29,7 +29,7 @@ import static nars.time.Tense.ETERNAL;
 public class Remember extends AbstractTask {
     public Task input;
 
-    final FasterList<ITask> remembered = new FasterList(2);
+    public final FasterList<ITask> remembered = new FasterList(2);
     @Nullable FasterList<Task> forgotten = null;
     public Concept concept;
 
@@ -62,7 +62,7 @@ public class Remember extends AbstractTask {
     }
 
     /** concept must correspond to the input task */
-    private void setInput(Task input, @Nullable Concept c) {
+    public void setInput(Task input, @Nullable Concept c) {
         if (c != null) {
             this.input = input;
             this.concept = c;
@@ -100,10 +100,10 @@ public class Remember extends AbstractTask {
              ListIterator<ITask> ll = remembered.listIterator();
              while (ll.hasNext()) {
                  ITask r = ll.next();
-                 if (r instanceof NALTask) {
+                 if (r instanceof Task) {
                      ll.remove();
 
-                     NALTask rr = (NALTask)r;
+                     Task rr = (Task)r;
                      Concept c = r == input || (inputConceptTerm!=null && rr.term().concept().equals(inputConceptTerm)) ? concept
                              : null /* determine later */;
                      ll.add(new TaskLinkTask(rr, c));

@@ -11,6 +11,7 @@ import nars.Param;
 import nars.concept.Concept;
 import nars.concept.sensor.FilteredScalar;
 import nars.concept.sensor.Signal;
+import nars.table.BeliefTables;
 import nars.table.eternal.EternalTable;
 import nars.term.Term;
 
@@ -62,9 +63,9 @@ public class DetailedReward extends Reward {
             agent.//alwaysWant/*Eternally*/
                     alwaysWantEternally(concept.components.get(2).term, nar.confDefault(GOAL) * 0.5f); //acute
             for (Signal x : concept.components) {
-                EternalTable ete = x.beliefs().tableFirst(EternalTable.class);
+                EternalTable ete = ((BeliefTables)x.beliefs()).tableFirst(EternalTable.class);
                 if (ete!=null)
-                    ete.setCapacity(0); //HACK this should be an Empty table
+                    ete.setTaskCapacity(0); //HACK this should be an Empty table
 
                 //should normally be able to create these beliefs but if you want to filter more broadly:
                 //((DefaultBeliefTable)x.goals()).temporal.setCapacity(0); //HACK this should be an Empty table

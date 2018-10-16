@@ -119,6 +119,11 @@ public class BeliefTables implements BeliefTable {
         tables.forEach(t -> t.forEachTask(minT, maxT, x));
     }
 
+    @Override
+    public void setTaskCapacity(int newCapacity) {
+        throw new UnsupportedOperationException("can only set capacity to individual tables contained by this");
+    }
+
 
     @Override
     public void forEachTask(Consumer<? super Task> action) {

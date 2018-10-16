@@ -4,6 +4,7 @@ import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat;
+import spacegraph.space2d.phys.common.Color3f;
 import spacegraph.video.Tex;
 
 import java.awt.*;
@@ -32,9 +33,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     private boolean quality = true;
 
     protected int cursorCol, cursorRow;
-    private int fontWidth;
-    protected int fontHeight;
-    //private float charAspect;
+    protected int fontWidth, fontHeight;
 
     private float alpha = 1f;
     private boolean fillTextBackground = true;
@@ -133,10 +132,10 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     }
 
     @Override
-    protected void paintIt(GL2 gl) {
+    protected final void paintIt(GL2 gl) {
         if (needUpdate.compareAndSet(true, false)) {
             if (ensureBufferSize()) {
-                updateBackBuffer();
+                renderText();
                 if (!tex.update(backbuffer)) {
                     needUpdate.set(true); //try again
                 }
@@ -223,20 +222,35 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         return fontHeight * rows;
     }
 
-    protected abstract boolean updateBackBuffer();
+    /** render text to texture, invokes redraw method appropriately */
+    protected abstract boolean renderText();
 
 
-    void redraw(VirtualTerminal.BufferLine bufferLine, int column, int row) {
+    @Deprecated void redraw(VirtualTerminal.BufferLine bufferLine, int column, int row) {
         redraw(bufferLine.getCharacterAt(column), column, row);
     }
 
-    public void redraw(TextCharacter textCharacter, int column, int row) {
-        redraw(backbufferGraphics, textCharacter, column, row,
-                fontWidth, fontHeight, fontWidth
+    @Deprecated public void redraw(TextCharacter character, int columnIndex, int rowIndex) {
+        Color backgroundColor = character.getBackgroundColor().toColor();
+        Color foregroundColor = character.getForegroundColor().toColor();
+        redraw(character.getCharacter(), columnIndex, rowIndex, foregroundColor, backgroundColor,
+                character.isUnderlined(),
+                character.isCrossedOut()
         );
     }
 
-    private void redraw(Graphics g, TextCharacter character, int columnIndex, int rowIndex, int fontWidth, int fontHeight, int characterWidth) {
+    public void redraw(char c, int columnIndex, int rowIndex, Color3f foregroundColor, Color3f backgroundColor) {
+        redraw(c, columnIndex, rowIndex, foregroundColor.toAWT(), backgroundColor.toAWT(), false, false);
+    }
+
+    public void redraw(char c, int columnIndex, int rowIndex, Color foregroundColor, Color backgroundColor) {
+        redraw(c, columnIndex, rowIndex, foregroundColor, backgroundColor, false, false);
+    }
+    public void redraw(char c, int columnIndex, int rowIndex, Color foregroundColor, Color backgroundColor, boolean underlined, boolean crossedOut) {
+        redraw(backbufferGraphics, c, backgroundColor, foregroundColor, underlined, crossedOut, columnIndex, rowIndex, fontWidth, fontHeight, fontWidth);
+    }
+
+    private void redraw(Graphics g, char c, Color backgroundColor, Color foregroundColor, boolean underlined, boolean crossedOut, int columnIndex, int rowIndex, int fontWidth, int fontHeight, int characterWidth) {
         if (g == null)
             return;
 
@@ -244,31 +258,29 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         int y = rowIndex * fontHeight;
 
         if (fillTextBackground) {
-            Color backgroundColor = character.getBackgroundColor().toColor();
+
             g.setColor(backgroundColor);
             
             g.fillRect(x, y, characterWidth, fontHeight);
         } else {
         }
 
-        Color foregroundColor = character.getForegroundColor().toColor();
         g.setColor(foregroundColor);
 
         
         
         final int descent = 8;
-        char c = character.getCharacter();
         if (c != ' ')
             g.drawChars(new char[]{c}, 0, 1, x, y + fontHeight + 1 - descent);
 
 
-        if (character.isCrossedOut()) {
+        if (crossedOut) {
             int lineStartY = y + fontHeight / 2;
             int lineEndX = x + characterWidth;
             g.drawLine(x, lineStartY, lineEndX, lineStartY);
         }
 
-        if (character.isUnderlined()) {
+        if (underlined) {
             int lineStartY = y + fontHeight - descent + 1;
             int lineEndX = x + characterWidth;
             g.drawLine(x, lineStartY, lineEndX, lineStartY);

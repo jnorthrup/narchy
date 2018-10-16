@@ -3,6 +3,7 @@ package nars.concept.dynamic;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthTable;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
@@ -40,8 +41,8 @@ class DynamicDiffTest extends AbstractDynamicTaskTest {
         n.run(1);
         Term xMinY = $("c:(x ~ y)");
         Term yMinX = $("c:(y ~ x)");
-        assertNotNull(n.conceptualize(xMinY).beliefs().tableFirst(DynamicTruthTable.class));
-        assertNotNull(n.conceptualize(yMinX).beliefs().tableFirst(DynamicTruthTable.class));
+        assertNotNull(((BeliefTables)n.conceptualize(xMinY).beliefs()).tableFirst(DynamicTruthTable.class));
+        assertNotNull(((BeliefTables)n.conceptualize(yMinX).beliefs()).tableFirst(DynamicTruthTable.class));
         assertEquals(
                 "%.56;.25%", n.beliefTruth(xMinY, n.time()).toString()
         );

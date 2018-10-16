@@ -253,23 +253,23 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         public static final Difference DiffPred = new DiffInh(false);
     }
 
-    public static final DynamicTruthModel ImageIdentity = new DynamicTruthModel() {
-
-        @Override
-        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-            return each.accept(Image.imageNormalize(superterm), start, end);
-        }
-
-        @Override
-        public Term reconstruct(Term superterm, List<Task> c, NAR nar) {
-            return superterm; //exact
-        }
-
-        @Override
-        public Truth apply(DynTruth taskRegions, NAR nar) {
-            return taskRegions.get(0).truth();
-        }
-    };
+//    public static final DynamicTruthModel ImageIdentity = new DynamicTruthModel() {
+//
+//        @Override
+//        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+//            return each.accept(Image.imageNormalize(superterm), start, end);
+//        }
+//
+//        @Override
+//        public Term reconstruct(Term superterm, List<Task> c, NAR nar) {
+//            return superterm; //exact
+//        }
+//
+//        @Override
+//        public Truth apply(DynTruth taskRegions, NAR nar) {
+//            return taskRegions.get(0).truth();
+//        }
+//    };
 
     public static class DynamicConjTruth {
 

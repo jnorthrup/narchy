@@ -1,7 +1,6 @@
 package jcog.memoize;
 
 import jcog.data.map.CustomConcurrentHashMap;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -14,8 +13,11 @@ public class SoftMemoize<X, Y> extends CustomConcurrentHashMap<X, Object> implem
 
     final private Object NULL = new Object();
 
-    public SoftMemoize(@NotNull Function<X, Y> g, int expSize, boolean softOrWeak) {
-        super(SOFT, EQUALS, softOrWeak ? SOFT : WEAK, EQUALS, expSize);
+    public SoftMemoize(Function<X, Y> g, int expSize, Strength strength) {
+        this(g, expSize, strength, strength);
+    }
+    public SoftMemoize(Function<X, Y> g, int expSize, Strength keyStrength, Strength valueStrength) {
+        super(keyStrength, EQUALS, valueStrength, EQUALS, expSize);
         this.f = (x) -> {
             Y y = g.apply(x);
             return y == null ?

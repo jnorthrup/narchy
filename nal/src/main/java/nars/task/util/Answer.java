@@ -40,7 +40,7 @@ public class Answer implements Consumer<Task> {
     public TimeRangeFilter time;
     public Term template = null;
 
-    private final TopN<Task> tasks;
+    public final TopN<Task> tasks;
     public final Predicate<Task> filter;
 
     public Answer(int capacity, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {

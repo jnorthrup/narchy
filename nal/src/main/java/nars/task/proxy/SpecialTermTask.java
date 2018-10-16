@@ -17,7 +17,10 @@ public class SpecialTermTask extends TaskProxy {
 
 
     public SpecialTermTask(Term term, Task task) {
-        super(task);
+        super(task instanceof SpecialTermTask ?
+                ((SpecialTermTask)task).task  //unwrap to core
+                :
+                task);
 
         if (Param.DEBUG) {
             @Nullable ObjectBooleanPair<Term> z = Task.tryContent(term, task.punc(), false);
