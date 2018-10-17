@@ -15,7 +15,7 @@ public class XRollPlusAction implements Action {
 
   @Override
   public void execute(Editor editor, String... args) {
-    List<Base> drawables = editor.getDrawables();
+    List<Base> drawables = editor.drawables();
     for (Base base : drawables) {
       base.getAngle().getX().addValue(10);
     }

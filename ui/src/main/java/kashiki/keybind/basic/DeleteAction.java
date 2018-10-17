@@ -12,7 +12,7 @@ public class DeleteAction implements Action {
 
   @Override
   public void execute(Editor editor, String... args) {
-    editor.getCurrentBuffer().delete();
+    editor.buffer().delete();
   }
 
 }

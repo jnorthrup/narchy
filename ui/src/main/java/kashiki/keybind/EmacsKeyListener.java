@@ -2,6 +2,7 @@ package kashiki.keybind;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import jcog.data.list.FasterList;
 import kashiki.Editor;
 
 import java.io.IOException;
@@ -11,14 +12,14 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.awt.event.KeyEvent.*;
+import static com.jogamp.newt.event.KeyEvent.*;
 import static kashiki.keybind.SupportKey.*;
 
 public class EmacsKeyListener implements KashikiKeyListener {
     private static final Pattern ACTION_PATTERN = Pattern.compile("-?([^\\-]+)\\z");
-    private static final Map<String, Integer> CODE_MAPPING = new HashMap<>();
+    private static final Map<String, Short> CODE_MAPPING = new HashMap<>();
 
-    private static final long delta = 100;
+//    private static final long delta = 100;
     private final Editor editor;
 
     public EmacsKeyListener(Editor editor) {
@@ -30,6 +31,11 @@ public class EmacsKeyListener implements KashikiKeyListener {
         }
     }
 
+    public void setup() throws IOException {
+        URL url = Resources.getResource("kashiki/emacs.setting");
+        List<String> lines = Resources.readLines(url, Charsets.UTF_8);
+        lines.forEach(this::parseSetting);
+    }
     static {
         // alpha num
         CODE_MAPPING.put("a", VK_A);
@@ -71,8 +77,8 @@ public class EmacsKeyListener implements KashikiKeyListener {
 
         CODE_MAPPING.put(";", VK_SEMICOLON);
         CODE_MAPPING.put(":", VK_COLON);
-        CODE_MAPPING.put("{", VK_BRACELEFT);
-        CODE_MAPPING.put("}", VK_BRACERIGHT);
+        CODE_MAPPING.put("{", VK_LEFT_BRACE);
+        CODE_MAPPING.put("}", VK_RIGHT_BRACE);
         CODE_MAPPING.put("[", VK_OPEN_BRACKET);
         CODE_MAPPING.put("]", VK_CLOSE_BRACKET);
         CODE_MAPPING.put("minus", VK_MINUS);
@@ -129,24 +135,22 @@ public class EmacsKeyListener implements KashikiKeyListener {
     private long when;
     private boolean executed;
     private boolean inStroke;
-    final Map<List<Stroke>, String> keybinds = new HashMap<>();
-    private final List<Stroke> currentStrokes = new ArrayList<>();
 
-    public void setup() throws IOException {
-        URL url = Resources.getResource("kashiki/emacs.setting");
-        List<String> lines = Resources.readLines(url, Charsets.UTF_8);
-        lines.forEach(this::parseSetting);
-    }
+    /** TODO use Trie */
+    final Map<List<Stroke>, String> keybinds = new LinkedHashMap<>();
+
+    private final List<Stroke> currentStrokes = new FasterList();
+
 
     private void parseSetting(String line) {
         if (line.isEmpty() || line.startsWith("#")) {
             return;
         }
-        List<Stroke> strokes = new ArrayList<>();
         String[] split = line.split(" ");
         String[] keys = Arrays.copyOfRange(split, 0, split.length - 1);
         String action = split[split.length - 1];
 
+        List<Stroke> strokes = new FasterList<>(keys.length);
         Arrays.stream(keys).forEach((key) -> strokes.add(getStroke(key)));
         keybinds.put(strokes, action);
     }
@@ -188,25 +192,29 @@ public class EmacsKeyListener implements KashikiKeyListener {
 
         Stroke stroke = new Stroke(supportKey, keyCode);
 
-        currentStrokes.add(stroke);
-        String actionName = getActionName();
-        if (actionName != null) {
-            editor.executeAction(actionName);
-            this.executed = true;
-        } else {
-            this.executed = inStroke;
+        synchronized(this) {
+            currentStrokes.add(stroke);
+            String actionName = getActionName();
+            if (actionName != null) {
+                editor.executeAction(actionName);
+                this.executed = true;
+            } else {
+                this.executed = inStroke;
+            }
+            return executed;
         }
-        return executed;
     }
 
     private String getActionName() {
         inStroke = false;
+        String v = keybinds.get(currentStrokes);
+        if (v!=null) {
+            currentStrokes.clear();
+            return v;
+        }
         for (Entry<List<Stroke>, String> keybind : keybinds.entrySet()) {
             List<Stroke> keybindStrokes = keybind.getKey();
-            if (keybindStrokes.equals(currentStrokes)) {
-                currentStrokes.clear();
-                return keybind.getValue();
-            }
+            //if (((FasterList)keybindStrokes).indexOf..
             if (containStroke(keybindStrokes, currentStrokes)) {
                 inStroke = true;
             }
@@ -218,23 +226,22 @@ public class EmacsKeyListener implements KashikiKeyListener {
     }
 
     private static boolean containStroke(List<Stroke> keybinding, List<Stroke> current) {
-        if (current.size() > keybinding.size()) {
+        int cs = current.size();
+        if (cs > keybinding.size()) {
             return false;
         }
-        for (int i = 0; i < current.size(); i++) {
-            Stroke s = current.get(i);
-            if (!s.equals(keybinding.get(i))) {
+        for (int i = 0; i < cs; i++)
+            if (!current.get(i).equals(keybinding.get(i))) {
                 return false;
-            }
         }
         return true;
     }
 
     @Override
     public boolean keyTyped(char typedString, long when) {
-        if (this.when + delta > when && executed) {
-            return false;
-        }
+//        if (this.when + delta > when && executed) {
+//            return false;
+//        }
         editor.executeAction("type", String.valueOf(typedString));
         return false;
     }

@@ -18,7 +18,7 @@ public class PasteAction implements Action {
 
   @Override
   public void execute(Editor editor, String... args) {
-    editor.getCurrentBuffer().insertString(getClipboardString());
+    editor.buffer().insertString(getClipboardString());
   }
 
   private static String getClipboardString() {

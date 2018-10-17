@@ -12,7 +12,7 @@ public class BufferLastAction implements Action {
 
   @Override
   public void execute(Editor editor, String... args) {
-    editor.getCurrentBuffer().bufferLast();
+    editor.buffer().bufferLast();
   }
 
 }

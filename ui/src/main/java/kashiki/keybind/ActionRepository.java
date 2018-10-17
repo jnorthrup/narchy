@@ -12,7 +12,7 @@ public class ActionRepository {
     private final Map<String, Action> actionMap = new HashMap<>(128);
 
     public ActionRepository() {
-        add(new ExitNavyAction());
+//        add(new ExitNavyAction());
 
         add(new NoopAction());
         add(new TypeAction());
@@ -51,7 +51,7 @@ public class ActionRepository {
         add(new ZRollPlusAction());
         add(new ZRollMinusAction());
 
-        add(new FullScreenAction());
+//        add(new FullScreenAction());
     }
 
     private void add(Action action) {

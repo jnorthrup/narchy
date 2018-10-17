@@ -27,7 +27,7 @@ public class OpenFileAction implements Action {
       try {
         String textString = Files.toString(fileChooser.getSelectedFile(), Charsets.UTF_8);
         editor.createNewBuffer();
-        editor.getCurrentBuffer().insertString(textString);
+        editor.buffer().insertString(textString);
       } catch (IOException e) {
         e.printStackTrace();
       }

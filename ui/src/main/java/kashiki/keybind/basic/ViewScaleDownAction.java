@@ -13,7 +13,7 @@ public class ViewScaleDownAction implements Action {
 
   @Override
   public void execute(Editor editor, String... args) {
-    SmoothValue scale = editor.getScale();
+    SmoothValue scale = editor.scale();
     scale.setValue(scale.getLastValue() / 1.25);
   }
 

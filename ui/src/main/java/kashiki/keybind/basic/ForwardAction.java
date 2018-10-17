@@ -12,7 +12,7 @@ public class ForwardAction implements Action {
 
   @Override
   public void execute(Editor editor, String... args) {
-    editor.getCurrentBuffer().forward();
+    editor.buffer().forward();
   }
 
 }

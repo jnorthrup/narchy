@@ -24,7 +24,7 @@ public class SaveFileAction implements Action {
       try (OutputStreamWriter writer =
           new OutputStreamWriter(new FileOutputStream(fileChooser.getSelectedFile()),
               Charsets.UTF_8)) {
-        editor.getCurrentBuffer().getLines().forEach(l -> {
+        editor.buffer().getLines().forEach(l -> {
           try {
             writer.append(l.toLineString());
             writer.append("\n");

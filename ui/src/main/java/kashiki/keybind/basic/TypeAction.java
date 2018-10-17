@@ -13,7 +13,7 @@ public class TypeAction implements Action {
   @Override
   public void execute(Editor editor, String... args) {
     for (String string : args) {
-      editor.getCurrentBuffer().insertString(string);
+      editor.buffer().insertString(string);
     }
   }
 

@@ -8,13 +8,13 @@ public class Kashiki {
 
   public static void main(String[] args) {
     Editor e = new Editor();
-    e.actionRepository = new ActionRepository();
-    e.keyListener = new EmacsKeyListener(e);
+    e.actions = new ActionRepository();
+    e.keys = new EmacsKeyListener(e);
 
     e.executeAction("type", "x");
     e.executeAction("type", "y");
     e.executeAction("type", "z");
-    SpaceGraph.window(new KashikiGLCanvas(e), 800, 800);
+    SpaceGraph.window(new KashikiSurface(e), 800, 800);
 
 //    Frame frame = new Frame("Kashiki");
 //

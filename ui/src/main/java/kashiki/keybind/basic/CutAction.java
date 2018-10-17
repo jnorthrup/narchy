@@ -17,7 +17,7 @@ public class CutAction implements Action {
 
   @Override
   public void execute(Editor editor, String... args) {
-    Buffer currentBuffer = editor.getCurrentBuffer();
+    Buffer currentBuffer = editor.buffer();
     setClipboardString(currentBuffer.copy());
     currentBuffer.cut();
   }

@@ -12,7 +12,7 @@ public class NextAction implements Action {
 
   @Override
   public void execute(Editor editor, String... args) {
-    editor.getCurrentBuffer().next();
+    editor.buffer().next();
   }
 
 }

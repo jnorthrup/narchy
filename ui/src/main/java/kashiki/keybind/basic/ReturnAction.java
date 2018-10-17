@@ -12,7 +12,7 @@ public class ReturnAction implements Action {
 
   @Override
   public void execute(Editor editor, String... args) {
-    editor.getCurrentBuffer().insertString("\n");
+    editor.buffer().insertString("\n");
   }
 
 }

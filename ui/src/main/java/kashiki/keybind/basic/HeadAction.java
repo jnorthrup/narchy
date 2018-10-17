@@ -12,7 +12,7 @@ public class HeadAction implements Action {
 
   @Override
   public void execute(Editor editor, String... args) {
-    editor.getCurrentBuffer().head();
+    editor.buffer().head();
   }
 
 }

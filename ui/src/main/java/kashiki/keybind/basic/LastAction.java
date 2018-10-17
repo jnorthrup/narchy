@@ -12,7 +12,7 @@ public class LastAction implements Action {
 
   @Override
   public void execute(Editor editor, String... args) {
-    editor.getCurrentBuffer().last();
+    editor.buffer().last();
   }
 
 }

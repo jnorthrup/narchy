@@ -17,7 +17,7 @@ public class KillRingAction implements Action {
 
   @Override
   public void execute(Editor editor, String... args) {
-    Buffer currentBuffer = editor.getCurrentBuffer();
+    Buffer currentBuffer = editor.buffer();
     if (currentBuffer.isLineLast()) {
       currentBuffer.delete();
     } else {

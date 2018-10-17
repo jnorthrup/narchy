@@ -12,7 +12,7 @@ public class BackspaceAction implements Action {
 
   @Override
   public void execute(Editor editor, String... args) {
-    editor.getCurrentBuffer().backspace();
+    editor.buffer().backspace();
   }
 
 }

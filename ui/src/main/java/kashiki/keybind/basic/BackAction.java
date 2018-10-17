@@ -12,7 +12,7 @@ public class BackAction implements Action {
 
   @Override
   public void execute(Editor editor, String... args) {
-    editor.getCurrentBuffer().back();
+    editor.buffer().back();
   }
 
 }

@@ -12,6 +12,6 @@ public class MarkAction implements Action {
 
   @Override
   public void execute(Editor editor, String... args) {
-    editor.getCurrentBuffer().mark();
+    editor.buffer().mark();
   }
 }
