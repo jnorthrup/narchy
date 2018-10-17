@@ -16,13 +16,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL2Test extends NALTest {
 
-    private static final int cycles = 800;
+    private static final int cycles = 300;
 
 
     @Override
     protected NAR nar() {
 
         NAR n = NARS.tmp(2);
+        n.confMin.set(0.5f);
         n.termVolumeMax.set(8);
         return n;
     }
@@ -285,6 +286,7 @@ public class NAL2Test extends NALTest {
     void set_operationsSetInt_union1_1_2_3() {
 
         TestNAR tester = test;
+        tester.nar.termVolumeMax.set(6);
         tester.believe("<planetX --> [marsy,venusy]>", 1.0f, 0.9f);
         tester.believe("<planetX --> [earthly]>", 0.1f, 0.9f);
         tester.mustBelieve(cycles, "<planetX --> [marsy,earthly,venusy]>", 0.1f, 0.81f);

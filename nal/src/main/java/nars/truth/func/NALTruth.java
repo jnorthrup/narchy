@@ -91,6 +91,14 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
+//    /** experiment */ @AllowOverlap @SinglePremise MaybeDuction() {
+//        @Override
+//        public @Nullable Truth apply(@Nullable Truth task, @Nullable Truth belief, nars.NAR m, float minConf) {
+//            return TruthFunctions2.maybeDuction(task, confDefault(m), minConf);
+//        }
+//    },
+
+
     @SinglePremise @AllowOverlap StructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {

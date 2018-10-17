@@ -32,27 +32,30 @@ abstract public class AbstractTaskSeries<T extends SeriesBeliefTable.SeriesTask>
         return Param.SIGNAL_STRETCH_DUR;
     }
 
-    public T add(Truth next, long nextStart, long nextEnd, float dur, Term term, byte punc, NAR nar) {
+    public T add(@Nullable Truth next, long nextStart, long nextEnd, float dur, Term term, byte punc, NAR nar) {
 
         T nextT = null;
         T last = last();
         boolean stretchPrev = false;
-        if (next != null && last != null) {
+        if (last != null) {
             long lastStart = last.start();
             long lastEnd = last.end();
             if (lastEnd > nextStart)
                 return null;
 
+
             double gapDurs = ((double)(nextStart - lastEnd)) / dur;
             if (gapDurs <= stretchDurs()) {
 
-                double stretchDurs = ((double)(nextEnd - lastStart)) / dur;
-                if (stretchDurs <= latchDur()) {
-                    Truth lastEnds = last.truth(lastEnd, 0);
-                    if (lastEnds.equals(next)) {
-                        //stretch
-                        last.setEnd(nextEnd);
-                        return last;
+                if (next!=null) {
+                    double stretchDurs = ((double) (nextEnd - lastStart)) / dur;
+                    if (stretchDurs <= latchDur()) {
+                        Truth lastEnds = last.truth(lastEnd, 0);
+                        if (lastEnds.equals(next)) {
+                            //stretch
+                            last.setEnd(nextEnd);
+                            return last;
+                        }
                     }
                 }
 
@@ -60,6 +63,10 @@ abstract public class AbstractTaskSeries<T extends SeriesBeliefTable.SeriesTask>
                 long midGap = Math.max(lastEnd, (lastEnd + nextStart)/2L);
                 assert(midGap >= lastEnd): lastEnd + " " + midGap + ' ' + nextStart;
                 last.setEnd(midGap);
+                if (next == null) {
+                    return last; //TODO check right time
+                }
+
                 nextStart =
                         Tense.dither(midGap, nar);
                         //midGap+1; //start the new task directly after the midpoint between its start and the end of the last task

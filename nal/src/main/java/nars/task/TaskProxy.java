@@ -47,7 +47,7 @@ public class TaskProxy extends UnitPri implements Task {
     }
 
     @Override
-    public void setCyclic(boolean b) {
+    public final void setCyclic(boolean b) {
         this.cyclic = b;
     }
 
@@ -57,7 +57,7 @@ public class TaskProxy extends UnitPri implements Task {
     }
 
     @Override
-    public boolean isCyclic() {
+    public final boolean isCyclic() {
         return cyclic;
     }
 

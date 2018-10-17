@@ -73,7 +73,7 @@ public class Tex {
             profile = gl.getGLProfile();
         }
 
-        if (nextData != null && textureUpdated.compareAndSet(true, false)) {
+        if (nextData != null && (texture == null || textureUpdated.compareAndSet(true, false))) {
 
             if (texture == null) {
                 texture = TextureIO.newTexture(gl, nextData);

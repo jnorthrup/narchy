@@ -312,7 +312,8 @@ public class NAgent extends NARService implements NSense, NAct {
 
     /** default reward term builder from String */
     protected Term rewardTerm(String reward) {
-        return $.func($$(reward), id);
+        //return $.func($$(reward), id);
+        return $.inh($$(reward), id);
     }
 
     public Reward rewardNormalized(String reward, float min, float max, FloatSupplier rewardFunc) {
@@ -471,7 +472,8 @@ public class NAgent extends NARService implements NSense, NAct {
                         //nar.confMin.floatValue();
                         //nar.confMin.floatValue() * 2;
                         //nar.confMin.floatValue() * 4;
-                        nar.confDefault(GOAL)/3;
+                        nar.confDefault(GOAL)/4;
+                        //nar.confDefault(GOAL)/3;
                         //nar.confDefault(GOAL)/2;
                         //nar.confDefault(GOAL)/3;
                         //w2c(c2w(nar.confDefault(GOAL))/3);

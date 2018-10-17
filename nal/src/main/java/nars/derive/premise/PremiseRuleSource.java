@@ -22,7 +22,7 @@ import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.term.util.Image;
-import nars.term.util.transform.TermTransform;
+import nars.term.util.transform.DirectTermTransform;
 import nars.term.var.VarPattern;
 import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
@@ -117,12 +117,14 @@ public class PremiseRuleSource extends ProxyTerm  {
 
         Term originalConcPattern = PatternIndex.patternify(postcon[0]);
         Term filteredConcPattern = originalConcPattern;
-        {
-            if (!filteredConcPattern.equals(taskPattern))
-                filteredConcPattern = filteredConcPattern.replace(taskPattern, Derivation.TaskTerm); //fast substitute
-            if (!filteredConcPattern.equals(beliefPattern))
-                filteredConcPattern = filteredConcPattern.replace(beliefPattern, Derivation.BeliefTerm); //fast substitute
-        }
+
+        //TODO there is a problem with this an ellipsis-containing patterns
+//        {
+//            if (!filteredConcPattern.equals(taskPattern))
+//                filteredConcPattern = filteredConcPattern.replace(taskPattern, Derivation.TaskTerm); //fast substitute
+//            if (!filteredConcPattern.equals(beliefPattern))
+//                filteredConcPattern = filteredConcPattern.replace(beliefPattern, Derivation.BeliefTerm); //fast substitute
+//        }
 
         byte taskPunc = 0;
         for (int i = 2; i < precon.length; i++) {
@@ -1026,7 +1028,9 @@ public class PremiseRuleSource extends ProxyTerm  {
     };
 
 
-    static class UppercaseAtomsToPatternVariables extends UnifiedMap<String, Term> implements TermTransform {
+    static class UppercaseAtomsToPatternVariables extends DirectTermTransform {
+
+        final UnifiedMap<String, Term> map = new UnifiedMap<>(4);
 
         static final ImmutableSet<Atomic> reservedMetaInfoCategories = Sets.immutable.of(
                 Atomic.the("Belief"),
@@ -1036,17 +1040,13 @@ public class PremiseRuleSource extends ProxyTerm  {
         );
 
 
-        UppercaseAtomsToPatternVariables() {
-            super(8);
-        }
-
         @Override
         public Term transformAtomic(Atomic atomic) {
             if (atomic instanceof Atom) {
                 if (!reservedMetaInfoCategories.contains(atomic)) {
                     String name = atomic.toString();
                     if (name.length() == 1 && Character.isUpperCase(name.charAt(0))) {
-                        return this.computeIfAbsent(name, (n) -> $.varPattern(1 + this.size()));
+                        return map.computeIfAbsent(name, (n) -> $.varPattern(1 + map.size()));
 
                     }
                 }

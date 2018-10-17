@@ -101,13 +101,11 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
         //actionsReflect();
 
+        actionsPushButton();
         //actionsToggle();
-        actionsTriState();
+        //actionsTriState();
 
         state.reset();
-//
-//        Impiler.ImpilerTracker t = new Impiler.ImpilerTracker(8, 16, n);
-//        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(8, 8, n);
 
     }
 
@@ -128,7 +126,24 @@ public class Tetris extends NAgentX implements Bitmap2D {
         state = oo.a("tetris", TetrisState.class, tetris_width, tetris_height, 2);
 
     }
+    void actionsPushButton() {
+        final Term LEFT = $.inh("left", id);
+        final Term RIGHT = $.inh("right", id);
+        final Term ROT = $.inh("rotate", id);
+        final Term FALL = $.inh("fall", id);
 
+        int debounceDurs = 1;
+
+        actionPushButton(LEFT, debounce(() -> state.act(TetrisState.LEFT), debounceDurs));
+        actionPushButton(RIGHT, debounce(() -> state.act(TetrisState.RIGHT), debounceDurs));
+
+
+        actionPushButton(ROT, debounce(() -> state.act(CW), debounceDurs));
+
+        if (canFall)
+            actionPushButton(FALL, debounce(() -> state.act(TetrisState.FALL), debounceDurs*2));
+
+    }
     void actionsToggle() {
         final Term LEFT = $.inh("left", id);
         final Term RIGHT = $.inh("right", id);
@@ -139,7 +154,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 b -> state.act(TetrisState.LEFT, b),
                 b -> state.act(TetrisState.RIGHT, b));
 
-        int debounceDurs = 4;
+        int debounceDurs = 1;
 
         actionPushButton(ROT, debounce(() -> state.act(CW), debounceDurs));
 

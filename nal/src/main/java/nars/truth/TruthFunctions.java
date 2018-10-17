@@ -82,7 +82,8 @@ public final class TruthFunctions {
 
         float f = and(a.freq(), bF);
         float c = and(f,
-                and(a.conf(), bC)
+                //and(a.conf(), bC)
+                confCompose(a.conf(), bC)
         );
 
         return c >= minConf ? t(f, c) : null;

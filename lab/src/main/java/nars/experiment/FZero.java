@@ -88,7 +88,8 @@ public class FZero extends NAgentX {
 
         ActionConcept F = initUnipolarLinear(5f);
 
-        initToggleLeftRight();
+        initPushButtonTank();
+        //initToggleLeftRight();
 //        initToggleFwdStop();
 //        window(new Gridding(
 //                //new CameraSensorView(c, this).withControls(),
@@ -239,15 +240,8 @@ public class FZero extends NAgentX {
         //window(NARui.beliefCharts(s.sensors, nar), 300, 300);
     }
 
-    private void initToggleLeftRight() {
 
-        this.actionPushButtonMutex(
-                $.inh($$("left"), id), $.inh($$("right"), id),
-                l -> fz.left = l, r -> fz.right = r
-        );
-    }
-
-    private void initToggleFwdStop() {
+    private void initPushButtonMutex() {
         this.actionPushButtonMutex(
                 $.inh($$("fwd"), id), $.inh($$("stop"), id),
                 f -> fz.thrust = f,
@@ -257,15 +251,19 @@ public class FZero extends NAgentX {
                     }
                 }
         );
+//        this.actionPushButtonMutex(
+//                $.inh($$("left"), id), $.inh($$("right"), id),
+//                l -> fz.left = l, r -> fz.right = r
+//        );
     }
 
-    private void initTankDiscrete() {
+    private void initPushButtonTank() {
 
-        actionToggle($.inh($.the("left"), id), (b) -> {
+        actionPushButton($.inh($.the("left"), id), (b) -> {
             fz.left = b;
             fz.thrust = fz.left && fz.right;
         });
-        actionToggle($.inh($.the("right"), id), (b) -> {
+        actionPushButton($.inh($.the("right"), id), (b) -> {
             fz.right = b;
             fz.thrust = fz.left && fz.right;
         });
@@ -375,12 +373,12 @@ public class FZero extends NAgentX {
 //        final float[] _a = {0};
 //        final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
 
-        return actionUnipolar(/*$.inh(id,*/ $.func("vel", id, $.the("move")), true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
+        return actionUnipolar($.inh($.the("fwd"), id) /* $.func("vel", id, $.the("move"))*/, true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
             float a =
                     //_a[0] = (float) fwdFilter.out(_a[0], a0);
                     a0;
 
-            float thresh = nar.freqResolution.floatValue()*2;
+            float thresh = 0.1f; //nar.freqResolution.floatValue()*2;
             if (a > 0.5f + thresh) {
                 float thrust = /*+=*/ (2 * (a - 0.5f)) * (fwdFactor * fwdSpeed);
                 fz.vehicleMetrics[0][6] = thrust;

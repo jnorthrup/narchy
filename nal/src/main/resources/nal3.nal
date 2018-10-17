@@ -91,14 +91,14 @@
     (S --> M), X, is(S,"|"), subOf(S,X) |- (without(S,X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
         //(S --> M), X, is(S,"|"), subOfNeg(S,X) |- (without(S,--X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
-//    (S --> (B - G)), B |- (S --> B), (Belief:StructuralDeduction)
-//        (S --> (B - G)), G |- --(S --> G), (Belief:StructuralDeduction)
-//
-//    ((B ~ G) --> S), B |- (B --> S), (Belief:StructuralDeduction)
-//        ((B ~ G) --> S), G |- --(G --> S), (Belief:StructuralDeduction)
-//
-//        (B ~ G), B |- B, (Belief:StructuralDeduction)
-//            (B ~ G), G |- --G, (Belief:StructuralDeduction)
+    (S --> (B - G)), B |- (S --> B), (Belief:StructuralDeduction)
+        (S --> (B - G)), G |- --(S --> G), (Belief:StructuralDeduction)
+
+    ((B ~ G) --> S), B |- (B --> S), (Belief:StructuralDeduction)
+        ((B ~ G) --> S), G |- --(G --> S), (Belief:StructuralDeduction)
+
+        (B ~ G), B |- B, (Belief:StructuralDeduction)
+            (B ~ G), G |- --G, (Belief:StructuralDeduction)
 
 
         //if want X > Y ie. (X ~ Y), then to the extent that X == Y, decrease Y while increasing X

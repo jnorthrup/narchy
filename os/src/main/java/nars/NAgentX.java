@@ -112,7 +112,7 @@ abstract public class NAgentX extends NAgent {
         */
 
 
-        Param.STRONG_COMPOSITION = true;
+        Param.STRONG_COMPOSITION = false;
         Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
@@ -446,6 +446,10 @@ abstract public class NAgentX extends NAgent {
 //        }
 
         //new Abbreviation(n, "z", 5, 9, 0.1f, 8);
+
+//        Impiler.ImpilerTracker t = new Impiler.ImpilerTracker(8, 16, n);
+//        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(8, 8, n);
+
     }
 
 

@@ -191,7 +191,11 @@ public enum Image {;
             //HACK rewrite the tasks directly in the TopN selection
                 Object[] tt = m.tasks.items;
                 for (int i = 0; i < results; i++) {
-                    tt[i] = new SpecialTermTask(image, (Task) tt[i]);
+                    Task x = (Task) tt[i];
+                    SpecialTermTask y = new SpecialTermTask(image, x);
+                    if (x.isCyclic())
+                        y.setCyclic(true); //cyclic propagation is fine here but only here
+                    tt[i] = y;
                 }
             }
         }
@@ -205,6 +209,7 @@ public enum Image {;
                 return;
             }
             SpecialTermTask transformedInput = new SpecialTermTask(normal, originalInput);
+
             r.setInput(transformedInput, host);
             table.add(r, nar);
 

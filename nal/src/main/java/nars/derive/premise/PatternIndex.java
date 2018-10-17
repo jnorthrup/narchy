@@ -1,10 +1,12 @@
 package nars.derive.premise;
 
 import jcog.TODO;
+import jcog.WTF;
 import nars.Builtin;
 import nars.NAR;
 import nars.Op;
 import nars.index.concept.MapConceptIndex;
+import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
 import nars.term.Variable;
 import nars.term.*;
@@ -58,7 +60,7 @@ public class PatternIndex extends MapConceptIndex {
         if (commutative) {
             return new PremisePatternCompound.PremisePatternCompoundWithEllipsisCommutive(seed.op(), seed.dt(), e, v);
         } else {
-            return new PremisePatternCompound.PremisePatternCompoundWithEllipsisLinear(seed.op(), seed.dt(), e, v);
+            return PremisePatternCompound.PremisePatternCompoundWithEllipsisLinear.the(seed.op(), seed.dt(), e, v);
         }
 
     }
@@ -114,6 +116,7 @@ public class PatternIndex extends MapConceptIndex {
     }
 
     public static final class PremiseRuleNormalization extends VariableNormalization {
+
 
 
         @Override
@@ -218,8 +221,28 @@ public class PatternIndex extends MapConceptIndex {
 
         public static class PremisePatternCompoundWithEllipsisLinear extends PremisePatternCompoundWithEllipsis {
 
-            public PremisePatternCompoundWithEllipsisLinear(/*@NotNull*/ Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
+            public static PremisePatternCompoundWithEllipsisLinear the( Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
+                if (op.statement) {
+                    //HACK
+                    Term x = subterms.sub(0);
+                    Term y = subterms.sub(1);
+                    if (x instanceof Ellipsislike) {
+                        //raw ellipsis, the conjunction got removed somewhere. HACK re-add it
+                        x = CONJ.the(x);
+                    }
+                    if (y instanceof Ellipsislike) {
+                        //raw ellipsis, the conjunction got removed somewhere. HACK re-add it
+                        y = CONJ.the(y);
+                    }
+                    subterms = new BiSubterm(x, y); //avoid interning
+                }
+                return new PremisePatternCompoundWithEllipsisLinear(op, dt, ellipsis, subterms);
+            }
+
+            private PremisePatternCompoundWithEllipsisLinear(/*@NotNull*/ Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
                 super(op, dt, ellipsis, subterms);
+                if (op.statement && subterms.OR(x -> x instanceof Ellipsislike))
+                    throw new WTF("raw ellipsis subj/pred makes no sense here");
             }
 
             /**

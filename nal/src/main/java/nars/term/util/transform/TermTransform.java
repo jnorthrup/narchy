@@ -11,7 +11,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.LazyCompound;
 import nars.term.var.UnnormalizedVariable;
-import nars.unify.match.Ellipsis;
+import nars.unify.match.Ellipsislike;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
@@ -79,7 +79,7 @@ public interface TermTransform {
                 case 0: return Bool.True;
                 case 1: {
                     Term yyy = yy.sub(0);
-                    if (!(yyy instanceof Ellipsis))
+                    if (!(yyy instanceof Ellipsislike))
                         return yyy;
                 }
             }

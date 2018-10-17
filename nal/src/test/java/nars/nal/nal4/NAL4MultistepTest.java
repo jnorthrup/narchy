@@ -5,12 +5,14 @@ import nars.NARS;
 import nars.Narsese;
 import nars.test.NALTest;
 import nars.test.TestNAR;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class NAL4MultistepTest extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(4);
+        n.confMin.set(0.25f);
         n.termVolumeMax.set(12);
         return n;
     }
@@ -41,7 +43,7 @@ public class NAL4MultistepTest extends NALTest {
 
     }
 
-    @Test
+    @Disabled @Test
     void nal4_everyday_reasoning_easiest() throws Narsese.NarseseException {
 
 
@@ -52,6 +54,7 @@ public class NAL4MultistepTest extends NALTest {
 
     }
 
+    @Disabled
     @Test
     void nal4_everyday_reasoning_easier() {
         int time = 2550;

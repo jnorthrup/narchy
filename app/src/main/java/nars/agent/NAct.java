@@ -9,7 +9,12 @@ import nars.NAR;
 import nars.Narsese;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.GoalActionConcept;
+import nars.control.proto.Remember;
+import nars.table.BeliefTables;
+import nars.table.eternal.EternalTable;
+import nars.task.NALTask;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.BooleanToBooleanFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
@@ -21,6 +26,7 @@ import java.util.function.IntPredicate;
 
 import static jcog.Util.unitize;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 /**
  * Created by me on 9/30/16.
@@ -233,39 +239,12 @@ public interface NAct {
         });
     }
 
-    default void actionPushButtonMutex0(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
-        FloatSupplier thresh = () ->
-                //0.66f;
-                0.5f;
-
-
-        boolean[] lr = new boolean[2];
-
-        actionPushButton(l, thresh, ll -> {
-            boolean x = ll;
-            if (x && lr[1]) {
-                x = false;
-            }
-            lr[0] = x;
-            L.value(x);
-            return x;
-        });
-        actionPushButton(r, thresh, rr -> {
-            boolean x = rr;
-            if (x && lr[0]) {
-                x = false;
-            }
-            lr[1] = x;
-            R.value(x);
-            return x;
-        });
-    }
 
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
 
         float thresh =
                 0.5f;
-                //0.66f;
+        //0.66f;
 
         float[] lr = new float[2];
 
@@ -282,7 +261,7 @@ public interface NAct {
             lr[0] = ll;
             L.value(x);
             //System.out.println("L=" + x  + " <- " + ll );
-            return $.t(x?1:0, n.confDefault(BELIEF));
+            return $.t(x ? 1 : 0, n.confDefault(BELIEF));
         });
         GoalActionConcept RA = action(r, (b, g) -> {
             float rr = g != null ? g.freq() : 0;
@@ -296,10 +275,10 @@ public interface NAct {
             lr[1] = rr;
             R.value(x);
             //System.out.println("R=" + x  + " <- " + rr );
-            return $.t(x?1:0, n.confDefault(BELIEF));
+            return $.t(x ? 1 : 0, n.confDefault(BELIEF));
         });
 
-        for (GoalActionConcept x : new GoalActionConcept[] {LA,RA}) {
+        for (GoalActionConcept x : new GoalActionConcept[]{LA, RA}) {
 //            float freq = 0.5f;
 //            float conf = 0.05f; //less than curiosity
 //            x.goals().tables.add(new EternalTable(1));
@@ -314,28 +293,46 @@ public interface NAct {
             x.resolution(1f);
         }
 
-        return new GoalActionConcept[] {LA,RA};
+        return new GoalActionConcept[]{LA, RA};
     }
 
     default GoalActionConcept actionPushButton(Term t, BooleanToBooleanFunction on) {
-        return actionPushButton(t, () -> 0.5f /*+ nar().freqResolution.get()*/, on);
+        return actionPushButton(t, () -> 0.5f + nar().freqResolution.get(), on);
     }
 
     default GoalActionConcept actionPushButton(Term t, FloatSupplier thresh, BooleanToBooleanFunction on) {
 
 
         FloatToFloatFunction ifGoalMissing =
-                //x -> Float.NaN;
-                x -> 0;
+                x -> 0; //Float.NaN;
 
-        GoalActionConcept b = actionUnipolar(t, true, ifGoalMissing, (f) -> {
-            boolean posOrNeg = f > thresh.asFloat();
+        GoalActionConcept x = actionUnipolar(t, true, ifGoalMissing, (f) -> {
+            boolean posOrNeg = f >= thresh.asFloat();
             return on.valueOf(posOrNeg) ?
                     1f :
-                    0f;
+                    //0;  //deliberate off
+                    Float.NaN; //default off
         });
-        b.resolution(1f);
-        return b;
+        x.resolution(1f);
+
+        {
+            //resting state
+            NAR n = nar();
+            float conf =
+                    n.confMin.floatValue() * 4;
+                    //n.confDefault(BELIEF)/2;
+            BeliefTables xb = (BeliefTables) x.beliefs();
+            BeliefTables xg = (BeliefTables) x.goals();
+            //xg.tables.add(new EternalTable(1));
+            xg.tableFirst(EternalTable.class).add(
+                    Remember.the(new NALTask(x.term(), GOAL,
+                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()).pri(n), n), n);
+            xb.tables.add(new EternalTable(1));
+            xb.tableFirst(EternalTable.class).add(
+                    Remember.the(new NALTask(x.term(), BELIEF,
+                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()).pri(n), n), n);
+        }
+        return x;
     }
 
 
@@ -359,9 +356,6 @@ public interface NAct {
 //    default BeliefActionConcept react( Term s,  Consumer<Truth> update) {
 //        return addAction(new BeliefActionConcept(s, nar(), update));
 //    }
-
-
-
 
 
     default GoalActionConcept actionUnipolar(Term s, FloatConsumer update) {

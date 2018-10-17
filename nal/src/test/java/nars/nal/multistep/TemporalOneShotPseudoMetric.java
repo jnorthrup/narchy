@@ -7,6 +7,7 @@ import nars.Narsese;
 import nars.Task;
 import nars.task.ActiveQuestionTask;
 import nars.term.Term;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * temporal metric to test and quantify the capability of a NARS implementation to retain a temporal relationship it had learned a long time ago with events.
  * https://github.com/opennars/opennars/blob/01c0a6242acc9a1a6fe12533c4a55ec3481fbfd1/src/test/java/org/opennars/metrics/TemporalOneShotPseudoMetric.java
  */
+@Disabled
 public class TemporalOneShotPseudoMetric implements BiConsumer<ActiveQuestionTask, Task> {
     private Random rng = new XoRoShiRo128PlusRandom(1);
 

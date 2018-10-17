@@ -1,10 +1,12 @@
 package nars.truth;
 
+import jcog.Util;
 import nars.$;
 import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.and;
 import static nars.$.t;
+import static nars.truth.TruthFunctions.confCompose;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 public enum TruthFunctions2 {
@@ -132,7 +134,7 @@ public enum TruthFunctions2 {
 
         float c = and(belief.freq(),
                 //(
-                        TruthFunctions.confCompose(belief, goal)
+                        confCompose(belief, goal)
 
                 )
         ;
@@ -168,7 +170,7 @@ public enum TruthFunctions2 {
      * strong frequency and confidence the closer in frequency they are
      */
     public static Truth comparisonSymmetric(Truth t, Truth b, float minConf) {
-        float c = TruthFunctions.confCompose(t, b);
+        float c = confCompose(t, b);
         if (c < minConf) return null;
         float dF = Math.abs(t.freq() - b.freq());
         float sim = 1f - dF;
@@ -211,7 +213,7 @@ public enum TruthFunctions2 {
      * frequency determined by the impl
      * */
     public static Truth pre(Truth X, Truth XimplY, boolean weak, float minConf) {
-        float c = TruthFunctions.confCompose(X, XimplY);
+        float c = confCompose(X, XimplY);
         if(c < minConf) return null;
         float cc = c * X.freq(); //match amplitude
         if (weak)
@@ -225,7 +227,7 @@ public enum TruthFunctions2 {
      * */
     public static Truth post(Truth Y, Truth XimplY, boolean strong, float minConf) {
 
-        float c = TruthFunctions.confCompose(Y, XimplY);
+        float c = confCompose(Y, XimplY);
         if(c < minConf) return null;
 
         //frequency alignment
@@ -245,4 +247,15 @@ public enum TruthFunctions2 {
         return $.t(f, cc);
     }
 
+    public static Truth maybeDuction(Truth a, float bC, float minConf) {
+
+        float freqDiff = a.freq();
+        float f = Util.lerp(freqDiff, 0.5f, 1f);
+            float c = and(freqDiff,
+                    //and(a.conf(), bC)
+                    confCompose(a.conf(), bC)
+            );
+
+            return c >= minConf ? t(f, c) : null;
+    }
 }

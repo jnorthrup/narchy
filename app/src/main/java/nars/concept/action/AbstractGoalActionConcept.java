@@ -70,18 +70,18 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         //TODO mine truthpolation .stamp()'s and .cause()'s for clues
 
-        Predicate<Task> withoutCuriosity = t -> !(t instanceof CuriosityTask);  /* filter curiosity tasks? */
+        Predicate<Task> withoutCuriosity = t -> !(t instanceof CuriosityTask) && !t.isEternal();  /* filter curiosity tasks? */
 
 
         int actionDur = this.actionSustain;
         if (actionDur < 0) actionDur = n.dur();
 
-        //long rad = (now - prev);
+        long rad = (now - prev);
         //long s = prev, e = now;
         //long s = now, e = next;
-        long s = prev, e = next;
-//        long s = now - rad;
-//        long e = now + rad;
+        //long s = prev, e = next;
+        long s = now - rad/2;
+        long e = now + rad/2;
 //                //0;
 //                //1;
 //                //Tense.occToDT(rad); //controls fall-off / bleed-through of goal across time
