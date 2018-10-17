@@ -4,7 +4,9 @@ import it.unimi.dsi.fastutil.longs.LongArrayList;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
+import nars.Param;
 import nars.control.DurService;
+import nars.task.DerivedTask;
 import nars.term.Term;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
@@ -14,6 +16,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.function.Consumer;
 
+import static nars.Op.GOAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -56,12 +59,20 @@ public class NAgentTest {
         NAR n = nar();
 
         n.log();
+
+        Param.DEBUG = true;
         n.onTask(x -> {
-           if (x.isGoal() && !x.isInput())
-               System.out.println(x.proof());
-        });
+           if (x instanceof DerivedTask)
+               System.err.println(x.proof());
+        }, GOAL);
+
+//        n.onCycle(()->{
+//            n.attn.active.print();
+//            System.out.println();
+//        });
 
         assertOscillatesAction(n, (a) -> {
+
         });
     }
 
@@ -74,8 +85,6 @@ public class NAgentTest {
 
                 true);
 
-
-        a.curiosity.set(0.25f);
         init.accept(a);
 
         n.run(500);
@@ -85,16 +94,16 @@ public class NAgentTest {
     }
 
 
-    abstract static class MiniTest extends NAgent {
-        private final Runnable statPrint;
+    @Deprecated abstract static class MiniTest extends NAgent {
+
         public float rewardSum = 0;
         final SummaryStatistics dex = new SummaryStatistics();
 
         public MiniTest(Term id, NAR n) {
             super(id, FrameTrigger.durs(1), n);
-            statPrint = n.emotion.printer(System.out);
+            //statPrint = n.emotion.printer(System.out);
 
-            reward(() -> {
+            reward($.the("reward"), () -> {
 //                System.out.println(this + " avgReward=" + avgReward() + " dexMean=" + dex.getMean() + " dexMax=" + dex.getMax());
 //                statPrint.run();
 //                nar.stats(System.out);

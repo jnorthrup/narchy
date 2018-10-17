@@ -10,10 +10,10 @@
 
 
     //antigoal in sequence
-    X, C, eventOfNeg(C,X) |- --C, (Goal:DesireWeak, Time:TaskInBelief)
-    //X, C, eventOfNeg(C,X) |- --conjWithout(C,--X), (Goal:DesireWeak)
-    X, C, eventOf(C,X)    |- --C, (Goal:DesireWeakN, Time:TaskInBelief)
-    //X, C, eventOf(C,X)    |- --conjWithout(C,X), (Goal:DesireWeakN)
+    //X, C, eventOfNeg(C,X) |- --C, (Goal:DesireWeak, Time:TaskInBelief)
+    X, C, eventOfNeg(C,X) |- --conjWithout(C,--X), (Goal:DesireWeak, Time:BeliefSubSequence)
+    //X, C, eventOf(C,X)    |- --C, (Goal:DesireWeakN, Time:TaskInBelief)
+    X, C, eventOf(C,X)    |- --conjWithout(C,X), (Goal:DesireWeakN, Time:BeliefSubSequence)
 
     //D, X, --is(X,"#"),                     eventOf(D,X)     |- --X,  (Belief:StructuralDeductionWeakN, Time:TaskSubEventPos)
     //D, X, --is(X,"#"),conjSimultaneous(D), eventOf(D,X)     |- --X,  (  Goal:StructuralDeductionWeakN, Time:TaskSubEventPos)

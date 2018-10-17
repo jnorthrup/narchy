@@ -7,6 +7,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.NAgentX;
 import nars.agent.FrameTrigger;
+import nars.op.Arithmeticize;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -112,7 +113,10 @@ public class Tetris extends NAgentX implements Bitmap2D {
     public static void main(String[] args) {
 
 
-        NAgentX.runRT(n -> new Tetris(n, Tetris.tetris_width, Tetris.tetris_height), FPS);
+        NAgentX.runRT(n -> {
+            new Arithmeticize.ArithmeticIntroduction(32, n);
+            return new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
+        }, FPS);
 
     }
 
