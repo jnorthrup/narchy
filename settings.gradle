@@ -17,4 +17,5 @@ include ':app'
 //project(':nal').projectDir = "$rootDir/nal" as File
 //project(':app').projectDir = "$rootDir/app" as File
 //project(':lab').projectDir = "$rootDir/lab" as File
+include 'test'
 

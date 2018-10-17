@@ -25,6 +25,7 @@ repositories {
 dependencies {
 //    compile 'com.github.kotlin-graphics:imgui:-SNAPSHOT'
 
+    compile project(':test')
     compile project(':gp')
     compile project(':os')
 

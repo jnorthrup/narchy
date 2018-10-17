@@ -2,12 +2,12 @@ package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.experiment.TrackXY;
 import jcog.lab.Lab;
 import jcog.lab.util.Optimization;
 import jcog.learn.LivePredictor;
 import jcog.learn.ql.DQN2;
 import jcog.math.FloatNormalized;
+import jcog.test.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
 import nars.agent.FrameTrigger;

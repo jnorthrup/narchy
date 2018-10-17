@@ -91,6 +91,10 @@ public class NAgent extends NARService implements NSense, NAct {
 
 
 
+    public NAgent(String id, NAR nar) {
+        this(id, FrameTrigger.durs(1), nar);
+    }
+
     public NAgent(String id, FrameTrigger frameTrigger, NAR nar) {
         this(id.isEmpty() ? null : Atomic.the(id), frameTrigger, nar);
     }

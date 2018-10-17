@@ -2,7 +2,7 @@ package spacegraph.space2d.widget;
 
 import com.jogamp.opengl.GL2;
 import jcog.exe.Loop;
-import jcog.experiment.TrackXY;
+import test.TrackXY;
 import jcog.learn.ql.HaiQae;
 import jcog.signal.Tensor;
 import jcog.tree.rtree.rect.RectFloat;

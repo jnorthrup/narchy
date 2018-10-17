@@ -1,4 +1,4 @@
-package jcog.experiment;
+package jcog.test;
 
 import jcog.Util;
 import jcog.math.FloatRange;
