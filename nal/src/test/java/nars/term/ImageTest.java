@@ -4,7 +4,6 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.concept.Concept;
 import nars.term.atom.Int;
 import nars.term.util.Image;
 import org.junit.jupiter.api.Test;
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import static nars.$.$$;
 import static nars.term.atom.Bool.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ImageTest {
 
@@ -129,16 +127,5 @@ class ImageTest {
         assertEquals(Null, ii);
     }
 
-    @Test void testInternalImageTaskTermRepresentation() {
-        NAR n = NARS.tmp(4);
-        Term it = $$("(x --> (y,/))");
-        n.believe(it);
-        Concept i = n.concept(it);
-        Term pt = Image.imageNormalize(it);
-        Concept p = n.concept(pt);
-        assertTrue(i!=p);
 
-        assertEquals(Image.ImageBeliefTable.class, i.beliefs().getClass());
-
-    }
 }

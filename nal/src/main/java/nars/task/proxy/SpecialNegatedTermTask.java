@@ -7,12 +7,12 @@ import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 /** reported truth value is inverted */
-public class SpecialNegatedTermTask extends TaskProxy {
+public final class SpecialNegatedTermTask extends TaskProxy {
 
 
     public SpecialNegatedTermTask(Task task) {
         super(task);
-        assert(task.isBeliefOrGoal());
+        assert(!(task instanceof SpecialNegatedTermTask) && task.isBeliefOrGoal());
     }
 
     @Override

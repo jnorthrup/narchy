@@ -47,6 +47,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.util.Image;
 import nars.time.Tense;
 import nars.time.Time;
 import nars.truth.PreciseTruth;
@@ -1472,7 +1473,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         Concept x = concept(concept);
         if (x == null) {
-            if (ConceptBuilder.dynamicModel(concept.term()) != null) {
+            Term ct = concept.term();
+            if (ConceptBuilder.dynamicModel(ct) != null  || Image.imageNormalize(ct)!=ct) {
                 //try conceptualizing the dynamic
                 return conceptualize(concept);
             }

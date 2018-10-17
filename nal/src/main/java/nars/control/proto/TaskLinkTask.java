@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class TaskLinkTask extends AbstractTask {
 
-    protected final Task task;
+    public final Task task;
     @Nullable private final Concept concept;
 
     public TaskLinkTask(Task task) {

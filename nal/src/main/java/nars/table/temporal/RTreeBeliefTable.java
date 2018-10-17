@@ -14,6 +14,7 @@ import nars.control.proto.Remember;
 import nars.task.NALTask;
 import nars.task.Revision;
 import nars.task.TaskProxy;
+import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.signal.SignalTask;
 import nars.task.util.*;
 import nars.truth.Truth;
@@ -442,8 +443,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         /** buffer removal handling until outside of the locked section */
 
+
         Task input;
-        if (r.input instanceof TaskProxy) {
+        if (r.input instanceof SpecialTruthAndOccurrenceTask) {
+            //dont do this for SpecialTermTask coming from Image belief table
             input = ((TaskProxy) r.input).the();
         } else {
             input = r.input;

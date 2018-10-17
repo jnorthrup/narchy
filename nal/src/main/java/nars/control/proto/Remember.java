@@ -10,7 +10,6 @@ import nars.concept.TaskConcept;
 import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.NALTask;
-import nars.task.TaskProxy;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
@@ -96,7 +95,6 @@ public class Remember extends AbstractTask {
 
          if (!remembered.isEmpty()) {
 
-             Term inputConceptTerm = input!=null ? concept.term() : null;
              ListIterator<ITask> ll = remembered.listIterator();
              while (ll.hasNext()) {
                  ITask r = ll.next();
@@ -104,9 +102,7 @@ public class Remember extends AbstractTask {
                      ll.remove();
 
                      Task rr = (Task)r;
-                     Concept c = r == input || (inputConceptTerm!=null && rr.term().concept().equals(inputConceptTerm)) ? concept
-                             : null /* determine later */;
-                     ll.add(new TaskLinkTask(rr, c));
+                     ll.add(new TaskLinkTask(rr));
                      ll.add(new Reaction(rr));
                  }
              }
@@ -124,9 +120,9 @@ public class Remember extends AbstractTask {
      * attempt to insert into belief table
      */
     protected void input(NAR n) {
-        if (input instanceof TaskProxy) {
-            input = ((TaskProxy)input).the(); //create concrete copy
-        }
+//        if (input instanceof TaskProxy) {
+//            input = ((TaskProxy)input).the(); //create concrete copy
+//        }
         ((TaskConcept) concept).add(this, n);
     }
 

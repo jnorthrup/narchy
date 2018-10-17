@@ -180,7 +180,7 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
 
         NALTask dyn = new DynamicTruthTask(
                 r.getOne(), beliefOrGoal,
-                r.getTwo() ? t.neg() : t,
+                t.negIf(r.getTwo()),
                 nar, start, end,
                 stamp.apply(nar.random()));
 

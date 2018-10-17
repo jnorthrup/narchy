@@ -7,9 +7,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
-import nars.control.proto.Reaction;
 import nars.control.proto.Remember;
-import nars.control.proto.TaskLinkTask;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.table.EmptyBeliefTable;
@@ -174,7 +172,9 @@ public enum Image {;
         @Override
         public boolean isEmpty() {
             BeliefTable t = table();
-            return t == null || t.isEmpty();
+            //if t is null, it just means this table isnt currently linked to the referent table.  so must report false
+            return t != null && t.isEmpty();
+
         }
 
         @Override
@@ -212,9 +212,23 @@ public enum Image {;
 //            if (rememberance.contains(transformedInput))
 //                rememberance.replaceAll((x)->x == transformedInput ? originalInput : x); //for TaskEvent emission
 //            else {
+//            rememberance.replaceAll(x -> {
+//                if (x == transformedInput)
+//                    return originalInput;
+////               if (x instanceof Reaction) {
+////                   if (((Reaction)x).task == transformedInput)
+////                       return true;
+////               }
+////                if (x instanceof TaskLinkTask) {
+////                    if (((TaskLinkTask)x).task == transformedInput)
+////                        return true;
+////                }
+//
+//               return x;
+//            });
                 if (!transformedInput.isDeleted()) {
-                    rememberance.add(new TaskLinkTask(originalInput));
-                    rememberance.add(new Reaction(originalInput));
+                    //rememberance.remove(transformedInput); //if it's present, it may not
+                    rememberance.add(originalInput);
                 }
 //            }
         }

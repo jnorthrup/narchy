@@ -5,6 +5,7 @@ import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
+import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
 import nars.*;
 import nars.concept.Concept;
@@ -18,7 +19,6 @@ import nars.op.SetFunc;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
 import nars.subterm.Subterms;
-import nars.task.proxy.SpecialTermTask;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
@@ -198,7 +198,8 @@ public class Derivation extends PreDerivation {
     public transient Truth concTruth;
     public transient byte concPunc;
     public transient Term concTerm;
-    public transient Task _task, task, _belief, belief;
+    public transient Task _task, _belief;
+
     public transient int dur;
 
     /**
@@ -309,7 +310,7 @@ public class Derivation extends PreDerivation {
             this.taskStamp = null; //force (re-)compute in post-derivation stage
         }
         if (this._task == null || this._task != nextTask) {
-            this.task = new SpecialTermTask(taskTerm, nextTask);
+            //this.task = new SpecialTermTask(taskTerm, nextTask);
             this.taskEvi = Float.NaN; //invalidate
         }
 
@@ -356,7 +357,7 @@ public class Derivation extends PreDerivation {
         if (this._belief != null) {
 
             beliefTerm = anon.putShift(this._beliefTerm = nextBelief.term(), taskTerm);
-            this.belief = new SpecialTermTask(beliefTerm, nextBelief);
+            //this.belief = new SpecialTermTask(beliefTerm, nextBelief);
             this.beliefEvi = Float.NaN;
         } else {
 
@@ -366,7 +367,7 @@ public class Derivation extends PreDerivation {
                         anon.putShift(this._beliefTerm = nextBeliefTerm, taskTerm) :
                         anon.put(this._beliefTerm = nextBeliefTerm); //unshifted, since the term may be structural
 
-            this.belief = null;
+            //this.belief = null;
             this.beliefStart = this.beliefEnd = TIMELESS;
             this.beliefTruthRaw = this.beliefTruthProjectedToTask = null;
         }
@@ -399,9 +400,9 @@ public class Derivation extends PreDerivation {
         reset();
 
         this.taskBeliefTimeIntersects =
-                this.belief == null
+                this._belief == null
                         ||
-                        this.belief.intersects(taskStart, taskEnd);
+                Longerval.intersects(taskStart, taskEnd, beliefStart, beliefEnd);
 
         this.forEachMatch = null;
         this.concTruth = null;
@@ -627,8 +628,8 @@ public class Derivation extends PreDerivation {
         if (taskEvi!=taskEvi) {
             this.taskEvi = taskTruth != null ? TruthIntegration.evi(_task) : 0;
         }
-        if (!concSingle && beliefEvi!=beliefEvi) {
-            this.beliefEvi = belief != null ? TruthIntegration.evi(_belief) : 0;
+        if (beliefEvi!=beliefEvi) {
+            this.beliefEvi = _belief != null ? TruthIntegration.evi(_belief) : 0;
         }
         return concSingle ? taskEvi : Math.max(taskEvi, beliefEvi);
     }

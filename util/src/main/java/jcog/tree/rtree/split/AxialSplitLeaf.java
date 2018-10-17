@@ -89,7 +89,7 @@ public final class AxialSplitLeaf<X> implements Split<X> {
 
         //leaf.transfer(l1Node, l2Node, x, model);
 
-        assert (l1Node.size()+l2Node.size() == size);
+        //assert (l1Node.size()+l2Node.size() == size);
 
         return model.newBranch(l1Node, l2Node);
     }

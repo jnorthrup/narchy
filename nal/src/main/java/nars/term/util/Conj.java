@@ -1373,13 +1373,14 @@ public class Conj extends ByteAnonMap {
 
 
 
-            addAuto(a);
+            if (addAuto(a)) {
 
 
-            if (bOffset == 0)
-                addAuto(b);
-            else
-                add(bOffset, b);
+                if (bOffset == 0)
+                    addAuto(b);
+                else
+                    add(bOffset, b);
+            }
 
 //            compress(Math.max(a.volume(), b.volume()), Math.round(nar.intermpolationDurLimit.floatValue()*nar.dur()));
 

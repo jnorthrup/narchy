@@ -1,6 +1,9 @@
 package nars.concept.dynamic;
 
+import nars.NAR;
+import nars.NARS;
 import nars.Narsese;
+import nars.concept.Concept;
 import nars.term.Term;
 import nars.term.util.Image;
 import org.junit.jupiter.api.Test;
@@ -9,6 +12,7 @@ import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DynamicImageTest extends AbstractDynamicTaskTest {
 
@@ -31,8 +35,6 @@ class DynamicImageTest extends AbstractDynamicTaskTest {
 
         n.believe(x, 0.75f, 0.50f);
 
-        assertDynamicTable(i1);
-        assertDynamicTable(i2);
 
         long when = n.time();
         assertEquals(
@@ -46,4 +48,16 @@ class DynamicImageTest extends AbstractDynamicTaskTest {
         );
     }
 
+    @Test void testInternalImageTaskTermRepresentation() {
+        NAR n = NARS.tmp(4);
+        Term it = $$("(x --> (y,/))");
+        n.believe(it);
+        Concept i = n.concept(it);
+        Term pt = Image.imageNormalize(it);
+        Concept p = n.concept(pt);
+        assertTrue(i!=p);
+
+        assertEquals(Image.ImageBeliefTable.class, i.beliefs().getClass());
+
+    }
 }
