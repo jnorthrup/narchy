@@ -39,6 +39,6 @@ public abstract class Agent {
     }
 
     public String summary() {
-        return getClass() + "<ins=" + inputs + ", acts=" + actions + ">";
+        return getClass().getSimpleName() + "<in=" + inputs + ", act=" + actions + ">";
     }
 }

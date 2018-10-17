@@ -356,10 +356,6 @@ public class Autoencoder {
         return decode(encode(x,yTmp, 0, 0, sigmoidEnc, false), sigmoidDec);
     }
 
-    public int decide(Deciding d) {
-        return d.decide(y, -1);
-    }
-
     /**
      * finds the index of the highest output value, or returns a random one if
      * none are

@@ -122,8 +122,7 @@ public class SimpleLSTM  {
 
 	public double[] learn(double[] input, @Nullable double[] target_output, float learningRate) {
 
-		final int cell_blocks = this.cell_blocks;
-		final int full_input_dimension = this.full_input_dimension;
+		final int cell_blocks = this.cell_blocks, full_input_dimension = this.full_input_dimension;
 
 		
 

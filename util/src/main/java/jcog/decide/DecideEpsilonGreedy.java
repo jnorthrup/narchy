@@ -31,7 +31,7 @@ public class DecideEpsilonGreedy implements Deciding {
     int motivationOrder[];
 
     @Override
-    public int decide(float[] vector, int lastAction) {
+    public int applyAsInt(float[] vector) {
         int actions = vector.length;
 
         if (motivationOrder == null || motivationOrder.length!=actions) {

@@ -1,5 +1,7 @@
 package jcog.io;
 
+import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -33,14 +35,21 @@ public enum SparkLine {
 		}
 		return accumulator.toString();
 	}
-	public static String renderFloats(Collection<Float> values, int scaleDivisor) {
-		float max = Collections.max(values), min = Collections.min(values);
-		float scale = (max - min) / 7.0f;
+
+	/** normalized to min/max */
+	public static String renderFloats(FloatArrayList values) {
+		//float max = Collections.max(values), min = Collections.min(values);
+		float max = values.max(), min = values.min();
+		return renderFloats(values, min, max);
+	}
+
+	public static String renderFloats(FloatArrayList values, float min, float max) {
+		float scale = (max - min);
 		StringBuilder accumulator = new StringBuilder();
-		for (Float value : values) {
-			int index = Math.round((value - min) / scale);
+		values.forEach(value -> {
+			int index = Math.round((value - min) / scale) * 7;
 			accumulator.append(ticks.get(index));
-		}
+		});
 		return accumulator.toString();
 	}
 

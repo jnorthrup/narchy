@@ -52,7 +52,7 @@ class LivePredictorTest {
         assertCorrect(ii, oo, model, iHistory, totalTime, maxMeanError);
     }
 
-    private static void assertCorrect(IntToFloatFunction ii, IntToFloatFunction oo, LivePredictor.Predictor model, int iHistory, int totalTime, float maxMeanError) {
+    private static void assertCorrect(IntToFloatFunction ii, IntToFloatFunction oo, Predictor model, int iHistory, int totalTime, float maxMeanError) {
         MutableInteger m = new MutableInteger();
 
 

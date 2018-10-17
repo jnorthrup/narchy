@@ -1,8 +1,16 @@
 package jcog.decide;
 
+import jcog.Util;
+
+import java.util.function.ToIntFunction;
+
 /**
- * Created by me on 6/9/16.
+ * returns an integer in the range of 0..n for the input vector of length n
  */
-public interface Deciding {
-    int decide(float[] vector, int lastAction);
+public interface Deciding extends ToIntFunction<float[]> {
+
+    default int applyAsInt(double[] x) {
+        return applyAsInt(Util.toFloat(x));
+    }
+
 }

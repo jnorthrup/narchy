@@ -17,7 +17,7 @@ import java.util.List;
 
 public class PredictDemo {
     public static void main(String[] args) {
-        float fps = 50f;
+        float fps = 20f;
 
         NAR n = new NARS.DefaultNAR(0, true)
                 .time(new RealTime.MS(true).durFPS(fps))

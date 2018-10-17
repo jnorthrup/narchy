@@ -1254,10 +1254,26 @@ public enum Util {
             y += f;
         return y;
     }
+    public static double max(double... x) {
+        double y = Double.NEGATIVE_INFINITY;
+        for (double f : x) {
+            if (f > y)
+                y = f;
+        }
+        return y;
+    }
     public static float max(float... x) {
         float y = Float.NEGATIVE_INFINITY;
         for (float f : x) {
             if (f > y)
+                y = f;
+        }
+        return y;
+    }
+    public static double min(double... x) {
+        double y = Double.POSITIVE_INFINITY;
+        for (double f : x) {
+            if (f < y)
                 y = f;
         }
         return y;

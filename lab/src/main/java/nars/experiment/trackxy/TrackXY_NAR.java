@@ -5,6 +5,7 @@ import jcog.Util;
 import jcog.experiment.TrackXY;
 import jcog.lab.Lab;
 import jcog.lab.util.Optimization;
+import jcog.learn.LivePredictor;
 import jcog.learn.ql.DQN2;
 import jcog.math.FloatNormalized;
 import jcog.tree.rtree.rect.RectFloat;
@@ -16,6 +17,7 @@ import nars.derive.Derivers;
 import nars.derive.impl.MatrixDeriver;
 import nars.exe.Attention;
 import nars.exe.UniExec;
+import nars.gui.LSTMView;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
 import nars.op.stm.ConjClustering;
@@ -29,13 +31,11 @@ import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.video.Draw;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static nars.Op.*;
@@ -44,7 +44,7 @@ import static spacegraph.SpaceGraph.window;
 public class TrackXY_NAR extends NAgentX {
 
     static boolean
-            nars = true, rl = false,
+            nars = false, rl = true,
             targetNumerics = false,
             targetCam = true,
             gui = true;
@@ -79,9 +79,9 @@ public class TrackXY_NAR extends NAgentX {
             this.cam = null;
         }
 
-        actionPushButtonMutex();
+        //actionPushButtonMutex();
         //actionSwitch();
-        //actionTriState();
+        actionTriState();
 
 
         reward(() -> {
@@ -151,23 +151,28 @@ public class TrackXY_NAR extends NAgentX {
                     true);
             a.curiosity.set(0);
 
+            window(
+                new LSTMView(
+                        ((LivePredictor.LSTMPredictor)((DQN2)rlb.agent).valuePredict).lstm.agent
+                ), 800, 800
+            );
 
-            window(new Gridding(
-                Stream.of(((DQN2) (rlb.agent)).network.layers).map(
-                        l -> {
-
-                            BitmapMatrixView i = new BitmapMatrixView(l.input);
-                            BitmapMatrixView w = new BitmapMatrixView(l.weights);
-                            BitmapMatrixView o = new BitmapMatrixView(l.output);
-
-                            a.onFrame(i::update);
-                            a.onFrame(w::update);
-                            a.onFrame(o::update);
-
-                            return new Gridding(i, w, o);
-                        }
-                ).collect(toList()))
-            , 800, 800);
+//            window(new Gridding(
+//                Stream.of(((DQN2) (rlb.agent)).valuePredict.layers).map(
+//                        l -> {
+//
+//                            BitmapMatrixView i = new BitmapMatrixView(l.input);
+//                            BitmapMatrixView w = new BitmapMatrixView(l.weights);
+//                            BitmapMatrixView o = new BitmapMatrixView(l.output);
+//
+//                            a.onFrame(i::update);
+//                            a.onFrame(w::update);
+//                            a.onFrame(o::update);
+//
+//                            return new Gridding(i, w, o);
+//                        }
+//                ).collect(toList()))
+//            , 800, 800);
         }
         if (nars) {
 
@@ -240,9 +245,9 @@ public class TrackXY_NAR extends NAgentX {
             });
         }
 
-//        a.onFrame(() -> {
-//            Util.sleepMS(10);
-//        });
+        a.onFrame(() -> {
+            Util.sleepMS(10);
+        });
         a.onFrame(() -> {
             long now = n.time();
             if (now % 1000 == 0) {

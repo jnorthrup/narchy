@@ -42,7 +42,7 @@ public class DecideSoftmax implements Deciding {
     }
 
     @Override
-    public int decide(float[] vector, int lastAction) {
+    public int applyAsInt(float[] vector) {
 
         try {
             temperature = Math.max(minTemperature, temperature * temperatureDecay);

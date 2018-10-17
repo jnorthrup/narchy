@@ -5,12 +5,11 @@ import jcog.data.list.FasterList;
 import jcog.io.SparkLine;
 import nars.*;
 import nars.term.Term;
+import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import java.util.List;
 
 import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
@@ -101,7 +100,7 @@ class AIMATests {
         PairedStatsAccumulator timeVsConf = new PairedStatsAccumulator();
 
 
-        List<Float> evis = new FasterList();
+        FloatArrayList evis = new FloatArrayList();
         for (int i = 0; i < time; i += metricPeriod) {
             n.run(metricPeriod);
 
@@ -129,7 +128,7 @@ class AIMATests {
         }
         System.out.println(timeVsConf.yStats());
         System.out.println(
-                SparkLine.renderFloats(evis, 8)
+                SparkLine.renderFloats(evis)
         );
     }
 

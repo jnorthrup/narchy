@@ -4,8 +4,8 @@ import jcog.Util;
 import jcog.decide.DecideEpsilonGreedy;
 import jcog.decide.Deciding;
 import jcog.learn.Agent;
-import jcog.learn.MLPMap;
-import jcog.learn.ntm.control.TanhActivation;
+import jcog.learn.LivePredictor;
+import jcog.learn.Predictor;
 import jcog.random.XoRoShiRo128PlusRandom;
 
 import java.util.Arrays;
@@ -30,13 +30,15 @@ public class DQN2 extends Agent {
 //
 //    /* backpropagation for trainign the NN*/
 //    private ResilientPropagation train;
-    public final MLPMap network;
-    float stateLearningRate = 0.02f;
+    //public final MLPMap valuePredict;
+    public final Predictor valuePredict;
+
+
     final Deciding actionDecider;
 
     /* Deep Q-learning configuration */
     final QLearningConfig learnConfig;
-    private float[] targetFuture;
+    private double[] targetFuture;
 
     public DQN2(int inputs, int actions) {
         this(inputs, actions, new XoRoShiRo128PlusRandom(1));
@@ -52,24 +54,29 @@ public class DQN2 extends Agent {
         //mem = new FasterList<Memory>( experienceCapacity  );
 
         this.lastState = new float[inputs];
-        this.targetFuture = new float[actions];
+        this.targetFuture = new double[actions];
         this.actions = actions;
 
-        network = new MLPMap(new XoRoShiRo128PlusRandom(1), inputs,
-                new MLPMap.Layer(
-                        //inputs*actions,
-                        //inputs + actions,
-                        (inputs + actions)/2,
-                        TanhActivation.the),
+        valuePredict = new LivePredictor.LSTMPredictor(0.04f, 4);
+
+        /** initialize */
+        valuePredict.learn(new double[inputs], new double[actions]);
+
+//        valuePredict = new MLPMap(new XoRoShiRo128PlusRandom(1), inputs,
 //                new MLPMap.Layer(
+//                        //inputs*actions,
 //                        //inputs + actions,
 //                        (inputs + actions)/2,
 //                        TanhActivation.the),
-                new MLPMap.Layer(actions,
-                        //SigmoidActivation.the
-                        TanhActivation.the
-                )
-        );
+////                new MLPMap.Layer(
+////                        //inputs + actions,
+////                        (inputs + actions)/2,
+////                        TanhActivation.the),
+//                new MLPMap.Layer(actions,
+//                        //SigmoidActivation.the
+//                        TanhActivation.the
+//                )
+//        );
 
 //            network = new BasicNetwork();
 //            network.addLayer( new BasicLayer( null, true, 9 ) );
@@ -104,7 +111,7 @@ public class DQN2 extends Agent {
      */
     @Override public int act( float reward, float[] nextState ) {
 
-        float[] rewardPrediction = network.get(nextState);
+        double[] rewardPrediction = valuePredict.predict(nextState);
 
         //train the network with a memory
         if (lastAction!=-1) {
@@ -134,7 +141,7 @@ public class DQN2 extends Agent {
 
             //predict the future discounted reward
             float target =
-
+                    //reward;
                     (float) ((reward) + learnConfig.getGamma() *
                             //Util.max(rewardPrediction));
                             Util.max(rewardPrediction)-Util.min(rewardPrediction));
@@ -147,16 +154,16 @@ public class DQN2 extends Agent {
             //System.arraycopy(rewardPrediction, 0, targetFuture, 0, actions);
 
             targetFuture[lastAction] =
-                    //rewardPrediction[lastAction] - target;
+                    //Util.clamp((float) (rewardPrediction[lastAction] - target), -1, +1);
+                    //(float) (rewardPrediction[lastAction] - target);
                     target;
 
-            float[] err = network.put(lastState, targetFuture, stateLearningRate );
-
+            valuePredict.learn(Util.toDouble(lastState), targetFuture);
 
         }
 
         ((DecideEpsilonGreedy)actionDecider).epsilonRandom = (float) learnConfig.getEpsilon();
-        int nextAction = actionDecider.decide(rewardPrediction, -1);
+        int nextAction = actionDecider.applyAsInt(rewardPrediction);
 
         System.arraycopy(nextState, 0, lastState, 0, nextState.length);
 

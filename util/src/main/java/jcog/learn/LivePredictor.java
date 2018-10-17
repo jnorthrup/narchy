@@ -9,8 +9,6 @@ import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 
 import java.util.Random;
 
-import static jcog.Util.toDouble;
-
 /**
  * NOT TESTED YET
  * http:
@@ -20,7 +18,8 @@ public class LivePredictor {
 
 
 
-    public interface Framer {
+    /** TODO use or rewrite with Tensor api */
+    @Deprecated public interface Framer {
         /** computes training vector from current observations */
         double[] inputs(long now);
 
@@ -94,18 +93,11 @@ public class LivePredictor {
         }
     }
 
-    public interface Predictor {
-
-        void learn(double[] ins, double[] outs);
-
-        double[] predict();
-    }
-
     public static class LSTMPredictor implements Predictor {
         private final int memoryScale;
         float learningRate;
-        private LiveSTM net;
-        private double[] nextPredictions;
+        public LiveSTM lstm;
+
 
         public LSTMPredictor(float learningRate, int memoryScale) {
             this.learningRate = learningRate;
@@ -114,29 +106,34 @@ public class LivePredictor {
 
         @Override
         public String toString() {
-            return super.toString() + "[" + net + "]";
+            return super.toString() + "[" + lstm + "]";
         }
 
         @Override
-        public void learn(double[] ins, double[] outs) {
+        public void learn(double[] x, double[] y) {
             synchronized (this) {
-                if (net == null || net.inputs != ins.length || net.outputs != outs.length) {
-                    net = new LiveSTM(ins.length, outs.length,
-                            Math.max(ins.length,outs.length) * memoryScale) {
-                        @Deprecated
-                        @Override
-                        protected Interaction observe() {
-                            throw new UnsupportedOperationException();
-                        }
-                    };
-                }
-                nextPredictions = net.agent.learn(ins, outs, learningRate);
+                ensureSize(x.length, y.length);
+                lstm.agent.learn(x, y, learningRate);
+            }
+        }
+
+        private void ensureSize(int xLen, int yLen) {
+            if (lstm == null || lstm.inputs != xLen || lstm.outputs != yLen) {
+                lstm = new LiveSTM(xLen, yLen,
+                        Math.max(xLen, yLen) * memoryScale) {
+                    @Deprecated
+                    @Override
+                    protected Interaction observe() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
             }
         }
 
         @Override
-        public double[] predict() {
-            return nextPredictions;
+        public double[] predict(double[] x) {
+            ensureSize(x.length, lstm.outputs);
+            return lstm.agent.predict(x);
         }
 
     }
@@ -147,8 +144,6 @@ public class LivePredictor {
         float learningRate;
 
         MLPMap mlp;
-        private float[] next;
-
 
         public MLPPredictor(float learningRate) {
             this(learningRate, new XoRoShiRo128PlusRandom(1));
@@ -160,22 +155,21 @@ public class LivePredictor {
         }
 
         @Override
-        public void learn(double[] ins, double[] outs) {
+        public void learn(double[] x, double[] y) {
             if (mlp == null /*|| mlp.inputs()!=ins.length ...*/) {
-                 mlp = new MLPMap(rng, ins.length,
-                         new MLPMap.Layer(2 * (ins.length + outs.length), SigmoidActivation.the),
-                         new MLPMap.Layer( (ins.length + outs.length), SigmoidActivation.the),
-                         new MLPMap.Layer( outs.length, null)
+                 mlp = new MLPMap(rng, x.length,
+                         new MLPMap.Layer(2 * (x.length + y.length), SigmoidActivation.the),
+                         new MLPMap.Layer( (x.length + y.length), SigmoidActivation.the),
+                         new MLPMap.Layer( y.length, null)
                  );
             }
-            float[] fIns = Util.toFloat(ins);
-            mlp.put(fIns, Util.toFloat(outs), learningRate);
-            next = mlp.get(fIns);
+            float[] fIns = Util.toFloat(x);
+            mlp.put(fIns, Util.toFloat(y), learningRate);
         }
 
         @Override
-        public double[] predict() {
-            return toDouble(next);
+        public double[] predict(double[] x) {
+            return Util.toDouble(mlp.get(Util.toFloat(x)));
         }
     }
 
@@ -193,36 +187,14 @@ public class LivePredictor {
     }
 
 
+    public double[] next(long when) {
+        synchronized (model) {
+            double[] x = framer.inputs(when);
+            model.learn(x, framer.outputs());
+            framer.shift();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public synchronized double[] next(long when) {
-        model.learn(framer.inputs(when), framer.outputs());
-        framer.shift();
-
-        return model.predict();
+            return model.predict(x);
+        }
     }
 
     /** applies the vector as new hypothetical present inputs,
@@ -230,11 +202,14 @@ public class LivePredictor {
      * down one time slot.
      * then prediction can proceed again
      */
-    public synchronized double[] project(double[] prevOut) {
-        model.learn(((DenseShiftFramer)framer).pastVector, prevOut);
-        double[] nextIn = framer.shift();
+    public double[] project(double[] prevOut) {
+        synchronized (model) {
+            double[] x = ((DenseShiftFramer) framer).pastVector;
+            model.learn(x, prevOut);
+            double[] nextIn = framer.shift();
 
-        return model.predict(); 
+            return model.predict(x);
+        }
     }
 
 

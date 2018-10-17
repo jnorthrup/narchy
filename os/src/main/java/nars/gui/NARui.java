@@ -53,9 +53,6 @@ import static spacegraph.SpaceGraph.window;
 public class NARui {
 
 
-    public static Surface inputEditor() {
-        return new TextEdit(40, 8);
-    }
 
     public static Surface beliefCharts(NAR nar, Object... x) {
         return beliefCharts(List.of(x), nar);

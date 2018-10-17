@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.learn.LivePredictor;
+import jcog.learn.Predictor;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Op;
@@ -53,18 +54,18 @@ public class BeliefPredict {
     /** if the past and present set of monitored concepts are equal, then iterative projections
      * into the future are possible to compute each cycle.
      */
-    public BeliefPredict(Iterable<Termed> concepts, int history, int sampleDur, int extraProjections, LivePredictor.Predictor m, NAR nar) {
+    public BeliefPredict(Iterable<Termed> concepts, int history, int sampleDur, int extraProjections, Predictor m, NAR nar) {
         this(concepts, history, sampleDur, concepts, m, nar);
         this.projections = extraProjections;
     }
 
-    public BeliefPredict(Iterable<Termed> inConcepts, int history, int sampleDur, Iterable<Termed> outConcepts, LivePredictor.Predictor m, NAR nar) {
+    public BeliefPredict(Iterable<Termed> inConcepts, int history, int sampleDur, Iterable<Termed> outConcepts, Predictor m, NAR nar) {
         this(Iterables.toArray(inConcepts, Termed.class),
                 history, sampleDur,
                 Iterables.toArray(outConcepts, Termed.class), m, nar);
     }
 
-    public BeliefPredict(Termed[] pastSampling, int history, int sampleDur, Termed[] presentSampling, LivePredictor.Predictor m, NAR nar) {
+    public BeliefPredict(Termed[] pastSampling, int history, int sampleDur, Termed[] presentSampling, Predictor m, NAR nar) {
 
         this.nar = nar;
         this.sampleDur = sampleDur;

@@ -37,7 +37,7 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
             exp[i] = g != null ? q(g) : EXP_IF_UNKNOWN;
         }
 
-        return decider.decide(exp, -1);
+        return decider.applyAsInt(exp);
 
     }
 
