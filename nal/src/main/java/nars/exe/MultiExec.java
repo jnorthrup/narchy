@@ -41,7 +41,7 @@ abstract public class MultiExec extends UniExec {
     }
 
     @Override
-    public void execute(Object x) {
+    public final void execute(Object x) {
         if (x instanceof NALTask || x instanceof TaskProxy)
             executeNow((ITask) x);
         else

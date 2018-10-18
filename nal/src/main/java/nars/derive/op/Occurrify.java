@@ -919,8 +919,14 @@ public class Occurrify extends TimeGraph {
                 //return solveOccDTWithGoalOverride(d, x);
                 @Nullable Pair<Term, long[]> p = solveDT(d, x, d.occ.reset(x));
                 if (p != null) {
-                    p.getTwo()[0] = d.taskStart;
-                    p.getTwo()[1] = d.taskEnd;
+                    long s, e;
+                    if (d.taskStart == ETERNAL && !d.occ.validEternal()) {
+                        s = d.beliefStart; e = d.beliefEnd;
+                    } else {
+                        s = d.taskStart; e = d.taskEnd;
+                    }
+                    p.getTwo()[0] = s;
+                    p.getTwo()[1] = e;
                     return p;
                 }
                 return p;
@@ -1046,7 +1052,7 @@ public class Occurrify extends TimeGraph {
 
 
             if (o[0] == ETERNAL) {
-                if (d.taskStart == ETERNAL && (d._belief == null || d.beliefStart == ETERNAL))
+                if (d.taskStart == ETERNAL && (d.concSingle || d.beliefStart == ETERNAL))
                     return true; //both task and belief are eternal; keep eternal
 
                 long NOW = d.time;
@@ -1058,7 +1064,8 @@ public class Occurrify extends TimeGraph {
 
             long target =
                     //d.time;
-                    d.taskStart;
+                    d.taskStart!=ETERNAL || d.beliefStart == TIMELESS ? d.taskStart : d.beliefStart;
+                    //Math.max(d.taskStart, d.time);
 
             if (o[0] < target) {
 

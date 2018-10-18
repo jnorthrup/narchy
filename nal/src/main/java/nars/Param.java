@@ -106,12 +106,12 @@ public abstract class Param {
 //    public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
 
 
-    public static boolean STRONG_COMPOSITION = false;
+    public static final boolean STRONG_COMPOSITION = false;
 
     /**
      * default bag forget rate
      */
-    public final FloatRange forgetRate = new FloatRange(1f, 0f, 2f);
+    public final FloatRange forgetRate = new FloatRange(1f, 0f, 1f);
 
 
     public static final boolean FILTER_SIMILAR_DERIVATIONS = true;
@@ -239,7 +239,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static float TEST_TIME_MULTIPLIER = 3f;
+    public static final float TEST_TIME_MULTIPLIER = 3f;
 
 
     @Range(min = 1, max = 32)

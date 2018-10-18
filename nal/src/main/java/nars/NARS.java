@@ -1,6 +1,5 @@
 package nars;
 
-import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.data.map.MRUMap;
 import jcog.random.XoRoShiRo128PlusRandom;
@@ -157,12 +156,13 @@ public class NARS {
                 
                 new MapConceptIndex(
 
-                        new MRUMap<>(4*1024) {
+                        new MRUMap<>(8*1024) {
                             @Override
                             protected void onEvict(Map.Entry<Term, Termed> entry) {
                                 Termed c = entry.getValue();
                                 if (c instanceof PermanentConcept) {
-                                    throw new TODO("Should not evict " + c);
+                                    //throw new TODO("Should not evict " + c);
+                                    put(entry.getKey(), c);
                                 } else {
                                     ((Concept)c).delete(null /* HACK */);
                                 }

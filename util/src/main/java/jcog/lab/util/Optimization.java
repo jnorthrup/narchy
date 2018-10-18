@@ -22,6 +22,7 @@ import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.NelderMeadSimplex
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.util.MathArrays;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 
@@ -61,6 +62,9 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
     private double[] mid;
     private final List<Sensor<S, ?>> varSensors;
 
+    /** enable to print exceptions */
+    private boolean debug = false;
+
     public Optimization(Supplier<S> subj,
                         Function<Supplier<S>, E> procedure, Goal<E> goal,
                         List<Var<S, ?>> vars,
@@ -81,6 +85,19 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
         this.strategy = strategy;
 
         this.data = new ARFF();
+    }
+
+    public static <X> FloatFunction<X> repeat(FloatFunction<X> f, int repeats) {
+        return (x) -> {
+            double sum = 0;
+            for (int i = 0; i < repeats; i++) {
+                float y = f.floatValueOf(x);
+                if (!Float.isFinite(y))
+                    return y;
+                sum += y;
+            }
+            return (float) (sum / repeats);
+        };
     }
 
     @Override
@@ -180,7 +197,8 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
 
         } catch (Throwable t) {
             //System.err.println(t.getMessage());
-            t.printStackTrace();
+            if (this.debug)
+                t.printStackTrace();
             return Double.NEGATIVE_INFINITY;
         }
 

@@ -22,9 +22,9 @@ import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
-import nars.task.DerivedTask;
 import nars.time.clock.CycleTime;
 import nars.video.CameraSensorView;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 import spacegraph.space2d.SurfaceRender;
@@ -37,16 +37,17 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
-import static nars.Op.*;
+import static jcog.Texts.n4;
+import static nars.Op.IMPL;
 import static spacegraph.SpaceGraph.window;
 
 public class TrackXY_NAR extends NAgentX {
 
     static boolean
-            nars = true, rl = false,
+            nars = true, rl = !nars,
             targetNumerics = false,
             targetCam = true,
-            gui = true;
+            gui = false;
 
     final Bitmap2DSensor cam;
     private final TrackXY track;
@@ -78,12 +79,13 @@ public class TrackXY_NAR extends NAgentX {
             this.cam = null;
         }
 
-        actionPushButtonMutex();
+        actionPushButton();
+        //actionPushButtonMutex();
         //actionSwitch();
         //actionTriState();
 
 
-        reward(() -> {
+        rewardNormalized("reward", -1, 1, () -> {
             float r = track.act();
             if (r == r)
                 rewardSum += r;
@@ -102,14 +104,14 @@ public class TrackXY_NAR extends NAgentX {
 
 
         int W = 3;
-        int H = 3;
+        int H = 1;
         int dur =
-                1;
+                2;
         //8;
         //2 * (W * H) /* to allow pixels to be read at the rate of 1 pixel per cycle */;
 
         NARS nb = new NARS.DefaultNAR(0, true)
-                .attention(() -> new Attention(96))
+                .attention(() -> new Attention(64))
                 .exe(new UniExec())
                 .time(new CycleTime().dur(dur))
                 .index(
@@ -118,18 +120,16 @@ public class TrackXY_NAR extends NAgentX {
                 );
 
 
-        Param.DEBUG = true;
         NAR n = nb.get();
 
-        n.run(10); //skip:
-        n.onTask((t)->{
-            if (!t.isEternal() && t.range() > n.time()) {
-                System.err.println("long-range:\n" + t.proof());
-            }
-        });
+//        Param.DEBUG = true;
+//        n.run(10); //skip:
+//        n.onTask((t)->{
+//            if (!t.isEternal() && t.range() > n.time()) {
+//                System.err.println("long-range:\n" + t.proof());
+//            }
+//        });
 
-        n.timeResolution.set(dur);
-        n.freqResolution.set(0.1f);
 //        n.beliefConfDefault.set(0.5f);
 //        n.goalConfDefault.set(0.5f);
 
@@ -140,13 +140,16 @@ public class TrackXY_NAR extends NAgentX {
 //        n.questPriDefault.set(0.01f);
 
 
-//            n.termVolumeMax.set(9);
 //        n.freqResolution.set(0.1f);
 //        n.confResolution.set(0.05f);
 
 
         TrackXY_NAR a = new TrackXY_NAR(n, W, H);
 
+        a.curiosity.set(0.02f);
+        n.freqResolution.set(0.04f);
+        n.termVolumeMax.set(6);
+        n.timeResolution.set(dur);
 
         if (rl) {
             RLBooster rlb = new RLBooster(a,
@@ -159,9 +162,9 @@ public class TrackXY_NAR extends NAgentX {
             a.curiosity.set(0);
 
             window(
-                new LSTMView(
-                        ((LivePredictor.LSTMPredictor)((DQN2)rlb.agent).valuePredict).lstm.agent
-                ), 800, 800
+                    new LSTMView(
+                            ((LivePredictor.LSTMPredictor) ((DQN2) rlb.agent).valuePredict).lstm.agent
+                    ), 800, 800
             );
 
 //            window(new Gridding(
@@ -188,7 +191,7 @@ public class TrackXY_NAR extends NAgentX {
                     //6, 8
                     1, 8
 //                    //,"curiosity.nal"
-          //          , "motivation.nal"
+                    //          , "motivation.nal"
             )) {
 //                    @Override
 //                    public float puncFactor(byte conclusion) {
@@ -221,11 +224,11 @@ public class TrackXY_NAR extends NAgentX {
 
             //n.log();
 
-            n.onTask(tt -> {
-                if (tt instanceof DerivedTask && tt.isGoal()) {
-                    System.out.println(tt.proof());
-                }
-            }, GOAL);
+//            n.onTask(tt -> {
+//                if (tt instanceof DerivedTask && tt.isGoal()) {
+//                    System.out.println(tt.proof());
+//                }
+//            }, GOAL);
 
         }
 
@@ -252,20 +255,29 @@ public class TrackXY_NAR extends NAgentX {
             });
         }
 
+//        a.onFrame(() -> {
+//            Util.sleepMS(10);
+//        });
+        int epoch = 500;
+
+        DescriptiveStatistics rh = new DescriptiveStatistics(epoch);
         a.onFrame(() -> {
-            Util.sleepMS(10);
-        });
-        a.onFrame(() -> {
-            long now = n.time();
-            if (now % 1000 == 0) {
-                System.out.println(
-                        //"reward mean: " +
-                        a.rewardSum / now);
-                a.rewardSum = 0;
+            float r = a.reward();
+            rh.addValue(r);
+            if (n.time() % 100 == 0) {
+                System.out.println(n4(rh.getMean()));
             }
+
+//            long now = n.time();
+//            if (now % epoch == 0) {
+//                System.out.println(
+//                        //"reward mean: " +
+//                        a.rewardSum / epoch);
+//                a.rewardSum = 0;
+//            }
         });
 
-        int experimentTime = 56000;
+        int experimentTime = 20000;
         n.run(experimentTime);
 
 
@@ -366,28 +378,32 @@ public class TrackXY_NAR extends NAgentX {
         });
     }
 
+
     private void actionPushButton() {
         if (track.grid.height() > 1) {
-            actionPushButton(INH.the($.the("up"), id), () -> {
-                track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
-
+            actionPushButton($.inh("up", id), (b) -> {
+                if (b)
+                    track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
             });
-            actionPushButton(INH.the($.the("down"), id), () -> {
-                track.cy = Util.clamp(track.cy - track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
+            actionPushButton($.inh("down", id), (b) -> {
+                if (b)
+                    track.cy = Util.clamp(track.cy - track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
             });
         }
 
-        actionPushButton(INH.the($.the("right"), id), () -> {
-            track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
+        actionPushButton($.inh("right", id), (b) -> {
+            if (b)
+                track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
         });
-        actionPushButton(INH.the($.the("left"), id), () -> {
-            track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
+        actionPushButton($.inh("left", id), (b) -> {
+            if (b)
+                track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
         });
     }
 
     private void actionPushButtonMutex() {
         if (track.grid.height() > 1) {
-            actionPushButtonMutex($.func("up", id), $.func("down", id), (b) -> {
+            actionPushButtonMutex($.inh("up", id), $.inh("down", id), (b) -> {
                 if (b)
                     track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
             }, (b) -> {
@@ -396,7 +412,7 @@ public class TrackXY_NAR extends NAgentX {
             });
         }
 
-        actionPushButtonMutex($.func("right", id), $.func("left", id), (b) -> {
+        actionPushButtonMutex($.inh("right", id), $.inh("left", id), (b) -> {
             if (b)
                 track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
         }, (b) -> {
@@ -423,16 +439,23 @@ public class TrackXY_NAR extends NAgentX {
                 }
             });
 
-            int experiments = 256;
-            int experimentCycles = 4096;
+            int experiments = 64;
+            int experimentCycles = 1024;
+            int repeats = 3;
 
             Optimization<NAR, TrackXY_NAR> o = l.optimize((Supplier<NAR> s) -> {
-                        return new TrackXY_NAR(s.get(), 4, 4);
+                        return new TrackXY_NAR(s.get(), 3, 1);
                     },
-                    (TrackXY_NAR t) -> {
-                        t.nar.run(experimentCycles);
+                    Optimization.repeat((TrackXY_NAR t) -> {
+                        try {
+                            t.nar.run(experimentCycles);
+                        } catch (Throwable ee) {
+                            if (Param.DEBUG)
+                                ee.printStackTrace();
+                            return Float.NEGATIVE_INFINITY;
+                        }
                         return t.rewardSum;
-                    }
+                    }, repeats)
                     , experiments);
 ////            o.sense("numConcepts",
 ////                (TestNARSuite t) -> t.sum((NAR n) -> n.concepts.size()))

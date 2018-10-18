@@ -24,11 +24,11 @@ public class TrackXY  {
     /** current coordinates: to be moved by the experiment */
     public volatile float cx, cy;
 
-    public final FloatRange controlSpeed = new FloatRange(0.25f, 0, 4f);
+    public final FloatRange controlSpeed = new FloatRange(0.2f, 0, 4f);
 
-    public final FloatRange targetSpeed = new FloatRange(0.02f, 0, 2f);
+    public final FloatRange targetSpeed = new FloatRange(0.04f, 0, 2f);
 
-    public final FloatRange visionContrast = new FloatRange(0.9f, 0, 1f);
+    public final FloatRange visionContrast = new FloatRange(0.95f, 0, 1f);
 
     public final MutableEnum<TrackXYMode> mode =
             new MutableEnum<TrackXYMode>(TrackXYMode.class).set(TrackXYMode.CircleTarget);
@@ -72,10 +72,17 @@ public class TrackXY  {
 
         });
 
-        float maxDist = (float) Math.sqrt(W * W + H * H);
+        float maxDist = (float) Math.sqrt(Util.sqr(W-1) + Util.sqr(H-1));
         float distance = (float) Math.sqrt(Util.sqr(tx - cx) + Util.sqr(ty - cy));
 
-        return (-2 * distance / maxDist) + 1;
+        assert(distance <= maxDist);
+
+        float exp =
+                //1;
+                //2;
+                3;
+        double r = 2 * (-0.5f + Math.pow( 1 - (distance / maxDist), exp));
+        return (float) r;
     }
 
     public void control(float dcx, float dcy) {

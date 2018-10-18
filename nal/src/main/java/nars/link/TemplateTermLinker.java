@@ -318,7 +318,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
     @Override
     public void init(Bag<Term, PriReference<Term>> termlinks) {
         for (Term template : this) {
-            termlinks.putAsync(ActivatedLinks.termlink(template, EPSILON));
+            termlinks.putAsync(Activator.termlink(template, EPSILON));
         }
     }
 
@@ -358,7 +358,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
             NumberX refund = new MutableFloat(0);
 
-            ActivatedLinks linking = d.deriver.linked;
+            Activator linking = d.deriver.linked;
             Term srcTerm = src.term();
 
             int j = d.random.nextInt(n); //random starting position
@@ -375,16 +375,8 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
                 boolean conceptualizable = j < concepts;
                 if (conceptualizable) {
 
-                    /** TODO batch activations */
-                    @Nullable Concept tgt = nar.activate(tgtTerm,
-                            //conceptForward
-                            EPSILON
+                    @Nullable Concept tgt = linking.activate(tgtTerm, conceptForward, nar);
 
-                            ,
-
-                            //tgtTerm instanceof Atomic
-                            true
-                    );
 
                     if (tgt != null) {
 

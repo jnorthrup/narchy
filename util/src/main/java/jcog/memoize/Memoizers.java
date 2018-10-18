@@ -40,7 +40,7 @@ public class Memoizers {
     }
 
     @Deprecated public <X,Y> Function<X,Y> memoize(String id, Function<X,Y> computation) {
-        return memoize(id, 16*1024, computation);
+        return memoize(id, 32*1024, computation);
     }
 
     public <X,B extends ByteKey,Y> Function<X,Y> memoize(String id, Function<X,B> byter, Function<B,Y> computation, int capacity) {

@@ -101,7 +101,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
     /**
      * this is the fast value iterating method
      */
-    public void forEachValue(Consumer<? super Y> action) {
+    public final void forEachValue(Consumer<? super Y> action) {
         for (Y y : valueArray()) {
             if (y !=null)
                 action.accept(y);

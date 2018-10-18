@@ -57,6 +57,7 @@ public interface DerivedTasks extends PriMerge<Task, Task> {
 
         //final static Logger logger = LoggerFactory.getLogger(DerivedTasksBag.class);
 
+        final boolean inlineOrDeferredInput;
         /**
          * temporary buffer for derivations before input so they can be merged in case of duplicates
          */
@@ -97,7 +98,8 @@ public interface DerivedTasks extends PriMerge<Task, Task> {
                 (size, capacity) -> Math.min(size, Math.round(capacity * Param.DerivedTaskBagDrainRateLimit))
         );
 
-        public DerivedTasksBag(int capacity) {
+        public DerivedTasksBag(int capacity, boolean inlineOrDeferredInput) {
+            this.inlineOrDeferredInput = inlineOrDeferredInput;
             this.tasks.setCapacity(capacity);
         }
 
@@ -116,8 +118,13 @@ public interface DerivedTasks extends PriMerge<Task, Task> {
 
                 tasks.commit(null /* no forget */);
 
-                //nar.input(derivedTasksDrainer);
-                ITask.run(derivedTasksDrainer, nar); //inline
+                if (inlineOrDeferredInput) {
+                    ITask.run(derivedTasksDrainer, nar); //inline
+                } else {
+                    nar.exe.execute(derivedTasksDrainer);
+                }
+
+
             }
         }
     }

@@ -127,6 +127,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Attention attn;
 
     public volatile Logger logger;
+
     public final Topic<Activate> eventActivate = new ListTopic();
 
     public NAR(ConceptIndex concepts, Exec exe, Attention attn, Time time, Random rng, ConceptBuilder conceptBuilder) {
@@ -1423,10 +1424,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Concept activate(Termed t, float activationApplied, boolean forceConceptualize) {
 
         /** conceptualize regardless */
-        Concept c =forceConceptualize ? conceptualize(t) : concept(t);
+        Concept c = forceConceptualize ? conceptualize(t) : concept(t);
 
-        if (c != null && !eventActivate.isEmpty()) {
-            eventActivate.emit(new Activate(c, activationApplied * activateConceptRate.floatValue()));
+        if (activationApplied >= 0 && c != null /*&& !eventActivate.isEmpty()*/) {
+            eventActivate.emit(new Activate(c, activationApplied));
         }
 
         return c;
