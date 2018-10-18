@@ -5,7 +5,6 @@ import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import nars.$;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.control.Cause;
 import nars.control.DurService;
@@ -53,7 +52,8 @@ abstract public class Deriver extends Causable {
 
 
     public final DerivedTasks derived =
-            new DerivedTasks.DerivedTasksBag(Param.DerivedTaskBagCapacity, false);
+            new DerivedTasks.DerivedTasksMap(4096);
+            //new DerivedTasks.DerivedTasksBag(Param.DerivedTaskBagCapacity, false);
 
     public final Activator linked = new Activator(true);
 
@@ -117,21 +117,18 @@ abstract public class Deriver extends Causable {
         on(DurService.on(nar, this::update));
     }
 
-
-
     private void update() {
         budgeting.update(this, nar);
+
+        linked.commit(nar);
+
+        derived.commit(nar);
     }
 
     @Override
     protected final void next(NAR n, final BooleanSupplier kontinue) {
 
         derive(derivation.get().next(n, this), kontinue);
-
-        linked.commit(n);
-
-
-        derived.commit(n);
 
     }
 

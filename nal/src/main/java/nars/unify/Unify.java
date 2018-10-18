@@ -59,7 +59,7 @@ public abstract class Unify extends Versioning implements Subst {
 
     public int dtTolerance = 0;
 
-    public final int varBits;
+    public int varBits;
 
 
     /**

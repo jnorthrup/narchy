@@ -17,7 +17,6 @@ import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.Conj;
-import nars.term.util.Image;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
@@ -45,6 +44,8 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 
         Predicate<Task> filter = Answer.filter(superFilter, d::doesntOverlap);
 
+        //TODO expand the callback interface allowing models more specific control over matching/answering/sampling subtasks
+        
         return components(superterm, start, end, (Term subTerm, long subStart, long subEnd) -> {
             boolean negated = subTerm.op() == Op.NEG;
             if (negated)
@@ -300,12 +301,12 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                     Subterms subterms = superterm.subterms();
                     if (subterms.subs() == 2) {
 
-                        Term a = subterms.sub(0);
-                        Term b = subterms.sub(1);
+                        Term a = subterms.sub(0), b = subterms.sub(1);
                         if (a.equals(b)) {
                             if (end == start)
                                 //return false; //repeat term sampled at same point, give up
                                 return each.accept(a, start, start); //just one component should work
+
                             else {
                                 if (start == ETERNAL) //watch out for end==XTERNAL
                                     return each.accept(a, ETERNAL, ETERNAL) && each.accept(b, ETERNAL, ETERNAL);

@@ -10,7 +10,6 @@ import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.util.Image;
-import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.VAR_DEP;
 import static nars.term.atom.Bool.Null;
@@ -72,11 +71,14 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
     public final static Term DEP_VAR = $.quote("#");
     public static final Atom SubIfUnify = (Atom) Atomic.the("subIfUnifiesAny");
 
+    private final MySubUnify u;
+
     private final Derivation parent;
 
     public SubIfUnify(Derivation parent) {
         super(SubIfUnify);
         this.parent = parent;
+        u = new MySubUnify();
     }
 
     @Override
@@ -127,8 +129,7 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
                 output = null;
             } else {
                 int ttl = parent.nar.subUnifyTTLMax.intValue();
-                SubUnify u = new MySubUnify(op, strict);
-                output = u.tryMatch(c, x, y, ttl);
+                output = u.reset(op, strict).tryMatch(c, x, y, ttl);
                 parent.use(ttl - u.ttl);
             }
 
@@ -144,12 +145,20 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
         return (strict && c.equals(output)) ? Null : output;
     }
 
-    private class MySubUnify extends SubUnify {
-        private final boolean strict;
+    private final class MySubUnify extends SubUnify {
 
-        MySubUnify(@Nullable int varBits, boolean strict) {
-            super(parent.random, varBits);
+        private boolean strict;
+
+        MySubUnify() {
+            super(null, Op.Variable);
+        }
+
+        private MySubUnify reset(int op, boolean strict) {
+            this.random = parent.random;
             this.strict = strict;
+            this.varBits = op;
+            clear();
+            return this;
         }
 
         @Override

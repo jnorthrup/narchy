@@ -2,11 +2,11 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.data.byt.DynBytes;
-import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
+import jcog.sort.SortedList;
 import nars.*;
 import nars.concept.Concept;
 import nars.control.Cause;
@@ -67,8 +67,8 @@ public class Derivation extends PreDerivation {
 
 
 //    //    private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
-    public final FasterList<Premise> premiseBuffer =
-        new FasterList<>(1024);
+    public final SortedList<Premise> premiseBuffer =
+        new SortedList<>(1024);
 //            new ArrayHashSet<>(256) {
 //                @Override
 //                public Set<Premise> newSet() {

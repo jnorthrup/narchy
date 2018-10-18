@@ -1,9 +1,11 @@
 package jcog.learn;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.learn.lstm.Interaction;
 import jcog.learn.lstm.test.LiveSTM;
 import jcog.learn.ntm.control.SigmoidActivation;
+import jcog.learn.ntm.control.TanhActivation;
 import jcog.random.XoRoShiRo128PlusRandom;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 
@@ -138,6 +140,19 @@ public class LivePredictor {
 
     }
 
+    public static class NTMPredictor implements Predictor {
+
+        @Override
+        public void learn(double[] x, double[] y) {
+            throw new TODO();
+        }
+
+        @Override
+        public double[] predict(double[] x) {
+            throw new TODO();
+        }
+    }
+
     public static class MLPPredictor implements Predictor {
 
         private final Random rng;
@@ -158,13 +173,12 @@ public class LivePredictor {
         public void learn(double[] x, double[] y) {
             if (mlp == null /*|| mlp.inputs()!=ins.length ...*/) {
                  mlp = new MLPMap(rng, x.length,
-                         new MLPMap.Layer(2 * (x.length + y.length), SigmoidActivation.the),
+                         new MLPMap.Layer(2 * (x.length + y.length), TanhActivation.the),
                          new MLPMap.Layer( (x.length + y.length), SigmoidActivation.the),
                          new MLPMap.Layer( y.length, null)
                  );
             }
-            float[] fIns = Util.toFloat(x);
-            mlp.put(fIns, Util.toFloat(y), learningRate);
+            mlp.put(Util.toFloat(x), Util.toFloat(y), learningRate);
         }
 
         @Override

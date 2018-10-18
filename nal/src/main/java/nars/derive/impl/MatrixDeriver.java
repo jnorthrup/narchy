@@ -6,6 +6,7 @@ import jcog.math.IntRange;
 import jcog.math.Range;
 import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
+import jcog.sort.SortedList;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -95,7 +96,7 @@ public class MatrixDeriver extends Deriver {
         int tasklinks = Math.max(1, Math.round(premisesMax / ((float) termLinksPerTaskLink)));
 
 
-        FasterList<Premise> premises = d.premiseBuffer;
+        SortedList<Premise> premises = d.premiseBuffer;
         premises.clear();
 
 
@@ -111,12 +112,9 @@ public class MatrixDeriver extends Deriver {
             return (premises.size() < premisesMax) && conceptsRemain[0]-- > 0;
         });
 
-
-        int s = premises.size();
-
-        if (s > 2)
-            premises.sortThis((a, b) -> Long.compareUnsigned(a.hash, b.hash));
-
+//        int s = premises.size();
+//        if (s > 2)
+//            premises.sortThis((a, b) -> Long.compareUnsigned(a.hash, b.hash));
 
         return premises;
     }
@@ -127,12 +125,8 @@ public class MatrixDeriver extends Deriver {
      */
     private void premiseMatrix(Activate a, int premisesMax, int _tasklinks, int _termlinksPerTasklink, Derivation d) {
 
-        int[] premisePerConceptRemain = new int[] { premisesPerConcept };
-
         nar.emotion.conceptFire.increment();
 
-        final ArrayHashSet<TaskLink> tasklinksFired = d.firedTaskLinks;
-        tasklinksFired.clear();
 
         Concept concept = a.id;
 
@@ -141,19 +135,19 @@ public class MatrixDeriver extends Deriver {
 
         if (commit(nar, tasklinks, termlinks)) {
 
+            final ArrayHashSet<TaskLink> tasklinksFired = d.firedTaskLinks;
+            tasklinksFired.clear();
 
-            int[] conceptTTL = {_tasklinks * ( _termlinksPerTasklink)};
+            int[] premisesPerConcept = { _tasklinks *  _termlinksPerTasklink };
+
 
 
             int nTermLinks = termlinks.size(), nTaskLinks = tasklinks.size();
-//        final float[] taskPriSum = {0};
-
-            int maxTasks = Math.min(_tasklinks, nTaskLinks);
 
             Random rng = d.random;
             FasterList<Premise> premises = d.premiseBuffer;
 
-            tasklinks.sample(rng, maxTasks, tasklink -> {
+            tasklinks.sample(rng, Math.min(_tasklinks, nTaskLinks), tasklink -> {
 
                 Task task = tasklink.get(nar);
                 if (task != null) {
@@ -162,29 +156,27 @@ public class MatrixDeriver extends Deriver {
 
                     tasklinksFired.add(tasklink);
 
-                    if (!termlinks.isEmpty()) {
+                    if (nTermLinks > 0) {
                         termlinks.sample(rng, Math.min(nTermLinks, _termlinksPerTasklink), termlink -> {
 
                             Term beliefTerm = termlink.get();
-                            premises.add( new Premise(task, beliefTerm ));
-                            if (premises.size() >= premisesMax) {
-                                return false;
-                            } else {
-                                if (premisePerConceptRemain[0]-- <= 0)
+                            if (premises.add( new Premise(task, beliefTerm ))) {
+                                if ((--premisesPerConcept[0] <= 0) || (premises.size() >= premisesMax))
                                     return false;
-                                return (--conceptTTL[0] > 0);
                             }
+
+                            return true;
                         });
                     }
-                } /*else {
-                    tasklink.delete();
-                }*/
+                }
 
-                return (--conceptTTL[0] > 0);
+                return (--premisesPerConcept[0] > 0);
             });
+
+            concept.linker().link(a, d);
+
         }
 
-        concept.linker().link(a, d);
     }
 
 

@@ -29,8 +29,11 @@ import static nars.Op.VAR_QUERY;
  * <p>
  * It is meant to be disposable and should not be kept referenced longer than necessary
  * to avoid GC loops, so it may need to be weakly referenced.
+ *
+ * note: Comparable as implemented here is not 100% consistent with Task.equals and Term.equals.  it is
+ * sloppily consistent for its purpose in collating Premises in optimal sorts during hypothesizing
  */
-public class Premise {
+public class Premise implements Comparable<Premise> {
 
     public final Task task;
 
@@ -336,5 +339,29 @@ public class Premise {
         result.increment();
 
 
+    }
+
+    @Override
+    public int compareTo(Premise premise) {
+        if (this == premise)
+            return 0;
+
+        int h = Long.compare(hash, premise.hash);
+        if (h!=0)
+            return h;
+
+        if (task.equals(premise.task) && beliefTerm.equals(premise.beliefTerm))
+            return 0;
+
+        //TODO since Task doesnt implement Comparable, they could be compared by their byte[] serialization
+//        int t = Integer.compare(System.identityHashCode(task), System.identityHashCode(premise.task));
+//        if (t!=0)
+//            return t;
+//
+//        int b = Integer.compare(System.identityHashCode(beliefTerm.hashCode()), System.identityHashCode(premise.beliefTerm.hashCode()));
+//        if (b!=0)
+//            return b;
+
+        return Integer.compare(System.identityHashCode(this), System.identityHashCode(premise));
     }
 }

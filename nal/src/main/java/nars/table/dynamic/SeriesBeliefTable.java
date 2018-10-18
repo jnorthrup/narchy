@@ -1,6 +1,7 @@
 package nars.table.dynamic;
 
 import jcog.data.list.FasterList;
+import jcog.math.Longerval;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -15,7 +16,6 @@ import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -138,7 +138,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
             return; //already owned, or was owned
 
         if (Param.FILTER_SIGNAL_TABLE_TEMPORAL_TASKS) {
-            Task y = absorbNonSignal(x);
+            Task y = absorbNonSignal(x, series.start(), series.end()) ? null : x;
             if (y == null) {
                 r.reject();
             } else if (y != x) {
@@ -176,39 +176,26 @@ public class SeriesBeliefTable extends DynamicTaskTable {
         }
     }
 
-    @Nullable Task absorbNonSignal(Task t) {
-        if (t.isEternal())
-            return t; //no change
-
-        long seriesEnd = series.end();
-//        if (t.start() < seriesEnd && t.end() > seriesEnd) {
-//            return new SpecialOccurrenceTask(t, seriesEnd, t.end());
-//        }
-
-        //similar for before the beginning
-
-        if (!series.isEmpty() && absorbNonSignal(t, series.start(), seriesEnd))
-            return null;
-
-        return t;
-    }
-
     /**
      * used for if you can cache seriesStart,seriesEnd for a batch of calls
      */
     boolean absorbNonSignal(Task t, long seriesStart, long seriesEnd) {
 
         /*if (!t.isInput())*/
-        {
 
-            long tStart = t.start(), tEnd = t.end();
-//            if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
-//                return !series.isEmpty(tStart, tEnd);
-//            }
-            if (tStart >= seriesStart && tEnd <= seriesEnd)
-                return !series.isEmpty(tStart, tEnd);
+        boolean allowIfBeforeOrAfter =
+                false;
+                //TODO if t range is less than 1/n of the series range
+
+
+        long tStart = t.start(), tEnd = t.end();
+        if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
+            if (!allowIfBeforeOrAfter || (tStart >= seriesStart && tEnd <= seriesEnd)) {
+                boolean seriesDefinedThere = !series.isEmpty(tStart, tEnd);
+
+                return seriesDefinedThere;
+            }
         }
-
         return false;
     }
 

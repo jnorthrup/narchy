@@ -10,8 +10,9 @@ import nars.task.NALTask;
 import nars.task.util.TaskBagDrainer;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public interface DerivedTasks extends PriMerge<Task, Task> {
     Task add(Task x, Derivation d);
@@ -20,13 +21,17 @@ public interface DerivedTasks extends PriMerge<Task, Task> {
 
     @Override
     default float merge(Task pp, Task tt) {
+        if (pp == tt)
+            return 0;
 
-        pp.priMax(tt.pri());
         if (pp instanceof NALTask)
             ((NALTask) pp).priCauseMerge(tt);
-        if (pp.isCyclic() && !tt.isCyclic()) {
+        else
+            pp.priMax(tt.pri()); //just without cause update
+
+        if (pp.isCyclic() && !tt.isCyclic())
             pp.setCyclic(false);
-        }
+
         return 0; //TODO calculate
 
     }
@@ -42,8 +47,35 @@ public interface DerivedTasks extends PriMerge<Task, Task> {
      * buffers derivations in a Map<> for de-duplication prior to a commit that flushes them as input to NAR
      * TODO find old implementation and re-implement this
      */
-    abstract class DerivedTasksMap implements DerivedTasks {
-        private final Map<Task, Task> derivedTasks = new LinkedHashMap<>(4096, 0.9f);
+    class DerivedTasksMap implements DerivedTasks {
+        private final Map<Task, Task> derivedTasks;
+
+        public DerivedTasksMap(int initialCapacity) {
+             derivedTasks = new ConcurrentHashMap<>(initialCapacity, 0.99f);
+        }
+
+        @Override
+        public Task add(Task n, Derivation d) {
+//            return derivedTasks.compute(x, (p, n)->{
+//                merge(p, n);
+//                return p;
+//            });
+            Task p = derivedTasks.putIfAbsent(n, n);
+            if (p!=null) {
+                merge(p, n);
+                return p;
+            }
+            return n;
+        }
+
+        @Override
+        public void commit(NAR n) {
+            Iterator<Task> ii = derivedTasks.values().iterator();
+            while (ii.hasNext()) {
+                n.input(ii.next());
+                ii.remove();
+            }
+        }
     }
 
 

@@ -5,6 +5,7 @@ import jcog.learn.ntm.control.SigmoidActivation;
 import jcog.random.XoRoShiRo128PlusRandom;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -40,20 +41,26 @@ public class MLPMap {
     }
     public static class MLPLayer {
 
-        public final float[] output;
-        public final float[] input;
-        public final float[] weights;
+        public final float[] out;
+        public final float[] in;
+        final float[] inError;
+        public final float[] W;
         final float[] dweights;
         @Nullable
         final IDifferentiableFunction activation;
 
-        float momentum = 0.5f;
+        /**
+         * The momentum.  The coefficient for how much of the previous delta is applied to each weight.
+         * In theory, prevents local minima stall.
+         */
+        float momentum = 0.1f;
 
         public MLPLayer(int inputSize, int outputSize, @Nullable IDifferentiableFunction activation) {
-            output = new float[outputSize];
-            input = new float[inputSize + 1];
-            weights = new float[(1 + inputSize) * outputSize];
-            dweights = new float[weights.length];
+            out = new float[outputSize];
+            in = new float[inputSize + 1];
+            inError = new float[in.length];
+            W = new float[(1 + inputSize) * outputSize];
+            dweights = new float[W.length];
             this.activation = activation;
         }
 
@@ -64,49 +71,55 @@ public class MLPMap {
         }
 
         public void randomizeWeights(Random r, float scale) {
-            for (int i = 0; i < weights.length; i++) {
-                weights[i] = (r.nextFloat() - 0.5f) * 2f * scale;
+            for (int i = 0; i < W.length; i++) {
+                W[i] = (r.nextFloat() - 0.5f) * 2f * scale;
             }
         }
 
         public float[] run(float[] in) {
-            System.arraycopy(in, 0, input, 0, in.length);
-            input[input.length - 1] = 1;
+            System.arraycopy(in, 0, this.in, 0, in.length);
+            this.in[this.in.length - 1] = 1;
             int offs = 0;
-            int il = input.length;
-            for (int i = 0; i < output.length; i++) {
+            int il = this.in.length;
+            for (int i = 0; i < out.length; i++) {
                 float o = 0;
                 for (int j = 0; j < il; j++) {
-                    o += weights[offs + j] * input[j];
+                    o += W[offs + j] * this.in[j];
                 }
                 if (activation!=null)
                     o = (float) activation.value(o);
-                output[i] = o;
+                out[i] = o;
                 offs += il;
             }
-            return output;
+            return out;
         }
 
         public float[] train(float[] inError, float learningRate) {
 
-            float[] outError = new float[input.length];
-            int inLength = input.length;
+
+            Arrays.fill(this.inError, 0);
+            int inLength = in.length;
 
             int offs = 0;
-            for (int i = 0; i < output.length; i++) {
-                float d = inError[i];
+            for (int o = 0; o < out.length; o++) {
+                float gradient = inError[o];
                 if (activation!=null)
-                    d *= activation.derivative(output[i]);
-                float dLR = d * learningRate;
-                for (int j = 0; j < inLength; j++) {
-                    int idx = offs + j;
-                    outError[j] += weights[idx] * d;
-                    float dw = input[j] * dLR;
+                    gradient *= activation.derivative(out[o]);
+
+                float outputDelta = gradient * learningRate;
+
+                for (int i = 0; i < inLength; i++) {
+                    int ij = offs + i;
+
+                    this.inError[i] += W[ij] * gradient;
+
+                    float dw = in[i] * outputDelta;
 
                     //TODO check this
 
-                    weights[idx] += dweights[idx] * (1-momentum) + dw;
-                    dweights[idx] = dw;
+                    float delta = (dw) + (dweights[ij] * momentum);
+                    W[ij] += delta;
+                    dweights[ij] = delta;
 //                    weights[idx] += dw * dweights[idx];
 //                    dweights[idx] += dw;
 
@@ -114,7 +127,7 @@ public class MLPMap {
                 }
                 offs += inLength;
             }
-            return outError;
+            return this.inError;
         }
     }
 

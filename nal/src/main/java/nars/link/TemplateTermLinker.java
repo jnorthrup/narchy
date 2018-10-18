@@ -297,8 +297,10 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
         //TODO configurable "termlink target concept x tasklink matrix" linking pattern: density, etc
         if (!firedConcepts.isEmpty()) {
 
+            NumberX overflow = new MutableFloat();
+
             for (TaskLink f : d.firedTaskLinks) {
-                NumberX overflow = new MutableFloat(); //keep overflow specific to the tasklink
+
 
 //                UnitPri allocated = new UnitPri();
 //                allocated.take(f, linkDecayRate,false,false);
