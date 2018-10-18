@@ -157,7 +157,7 @@ public class NARS {
                 
                 new MapConceptIndex(
 
-                        new MRUMap<>(8*1024) {
+                        new MRUMap<>(4*1024) {
                             @Override
                             protected void onEvict(Map.Entry<Term, Termed> entry) {
                                 Termed c = entry.getValue();
@@ -177,7 +177,7 @@ public class NARS {
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
 
-        attention(()->new Attention(96));
+        attention(()->new Attention(64));
 
         conceptBuilder = ()->new DefaultConceptBuilder(
                 new ConceptAllocator(
@@ -220,15 +220,14 @@ public class NARS {
                         //termlinks
                         curve(Concept::volume,
                                 1, 64,
-                                24,16,
-                                48,12
+                                24,32,
+                                48,16
                         ),
                         //tasklinks
                         curve(Concept::volume,
                                 1, 32,
-                                8,24,
                                 24,16,
-                                48,12
+                                48,8
                         ))
         );
 

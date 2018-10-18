@@ -255,8 +255,12 @@ public class Answer implements Consumer<Task> {
     public Truth truth() {
         try {
             TruthPolation p = truthpolation();
-            @Nullable TruthPolation t = p != null ? p.filtered() : null;
-            return t != null ? t.truth(nar) : null;
+            if (p!=null) {
+                TruthPolation t = p.filtered();
+                if (t!=null)
+                    return t.truth(nar);
+            }
+            return null;
         } finally {
             end();
         }

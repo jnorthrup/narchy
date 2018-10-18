@@ -112,7 +112,14 @@ public interface TaskTable {
         if (isEmpty())
             return null;
 
-        return matching(start, end, template, filter, nar).task(false, false, false);
+        return Answer.relevance(!(this instanceof QuestionTable),
+                1,
+                start, end, template, filter, nar)
+            .match(this)
+            .task(false, false, false);
+
+//        return matching(start, end, template, filter, nar).task(false, false, false);
+
     }
 
     /** clear and fully deallocate if possible */

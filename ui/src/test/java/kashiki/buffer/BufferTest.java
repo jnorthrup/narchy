@@ -1,114 +1,107 @@
 package kashiki.buffer;
 
-import org.junit.Before;
-import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertThat;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BufferTest {
 
-  private Buffer buf;
+  private Buffer buf= new Buffer("testBuffer", "");;
 
-  @Before
-  public void setup() {
-    buf = new Buffer("testBuffer", "");
-  }
 
   @Test
   public void initialState() {
-    assertThat(buf.getLines().size(), is(1));
-    assertThat(buf.getLines().get(0).getLength(), is(0));
-    assertThat(buf.getCaret(), is(new CursorPosition(0, 0)));
+    assertEquals(buf.getLines().size(), (1));
+    assertEquals(buf.getLines().get(0).getLength(), (0));
+    assertEquals(buf.getCaret(), (new CursorPosition(0, 0)));
     buf.forward();
-    assertThat(buf.getCaret(), is(new CursorPosition(0, 0)));
+    assertEquals(buf.getCaret(), (new CursorPosition(0, 0)));
     buf.back();
-    assertThat(buf.getCaret(), is(new CursorPosition(0, 0)));
+    assertEquals(buf.getCaret(), (new CursorPosition(0, 0)));
     buf.previous();
-    assertThat(buf.getCaret(), is(new CursorPosition(0, 0)));
+    assertEquals(buf.getCaret(), (new CursorPosition(0, 0)));
     buf.next();
-    assertThat(buf.getCaret(), is(new CursorPosition(0, 0)));
+    assertEquals(buf.getCaret(), (new CursorPosition(0, 0)));
   }
 
   @Test
   public void insertString1() {
     buf.insertString("abcde");
-    assertThat(buf.getCaret(), is(new CursorPosition(0, 5)));
+    assertEquals(buf.getCaret(), (new CursorPosition(0, 5)));
     buf.insertEnter();
-    assertThat(buf.getCaret(), is(new CursorPosition(1, 0)));
+    assertEquals(buf.getCaret(), (new CursorPosition(1, 0)));
   }
 
   @Test
   public void insertCRLF() {
     buf.insertString("\r\n");
-    assertThat(buf.getCaret(), is(new CursorPosition(1, 0)));
+    assertEquals(buf.getCaret(), (new CursorPosition(1, 0)));
   }
 
   @Test
   public void insertLF() {
     buf.insertString("\n");
-    assertThat(buf.getCaret(), is(new CursorPosition(1, 0)));
+    assertEquals(buf.getCaret(), (new CursorPosition(1, 0)));
   }
 
   @Test
   public void insertEmpty() {
     buf.insertString("");
-    assertThat(buf.getCaret(), is(new CursorPosition(0, 0)));
+    assertEquals(buf.getCaret(), (new CursorPosition(0, 0)));
   }
 
   @Test
   public void insertEnter() {
     buf.insertString("abcde\n12345\n");
-    assertThat(buf.getCaret(), is(new CursorPosition(2, 0)));
+    assertEquals(buf.getCaret(), (new CursorPosition(2, 0)));
     buf.back();
-    assertThat(buf.getCaret(), is(new CursorPosition(1, 5)));
+    assertEquals(buf.getCaret(), (new CursorPosition(1, 5)));
     buf.head();
     buf.previous();
-    assertThat(buf.getCaret(), is(new CursorPosition(0, 0)));
+    assertEquals(buf.getCaret(), (new CursorPosition(0, 0)));
     buf.forward();
     buf.forward();
     buf.insertEnter();
-    assertThat(buf.getCaret(), is(new CursorPosition(1, 0)));
-    assertThat(buf.toBufferString(), is("ab\ncde\n12345\n"));
+    assertEquals(buf.getCaret(), (new CursorPosition(1, 0)));
+    assertEquals(buf.toBufferString(), ("ab\ncde\n12345\n"));
   }
 
   @Test
   public void backspace() {
     buf.insertString("abcde\n12345\n");
-    assertThat(buf.getCaret(), is(new CursorPosition(2, 0)));
+    assertEquals(buf.getCaret(), (new CursorPosition(2, 0)));
     buf.backspace();
-    assertThat(buf.toBufferString(), is("abcde\n12345"));
+    assertEquals(buf.toBufferString(), ("abcde\n12345"));
     for (int i = 0; i < 5; i++) {
       buf.backspace();
     }
-    assertThat(buf.toBufferString(), is("abcde\n"));
+    assertEquals(buf.toBufferString(), ("abcde\n"));
     for (int i = 0; i < 5; i++) {
       buf.backspace();
     }
-    assertThat(buf.toBufferString(), is("a"));
+    assertEquals(buf.toBufferString(), ("a"));
     buf.backspace();
-    assertThat(buf.toBufferString(), is(""));
+    assertEquals(buf.toBufferString(), (""));
   }
 
   @Test
   public void delete() {
     buf.insertString("abcde\n12345\n");
-    assertThat(buf.getCaret(), is(new CursorPosition(2, 0)));
+    assertEquals(buf.getCaret(), (new CursorPosition(2, 0)));
     buf.previous();
     buf.forward();
     buf.forward();
-    assertThat(buf.getCaret(), is(new CursorPosition(1, 2)));
+    assertEquals(buf.getCaret(), (new CursorPosition(1, 2)));
     buf.delete();
     buf.delete();
     buf.delete();
-    assertThat(buf.toBufferString(), is("abcde\n12\n"));
+    assertEquals(buf.toBufferString(), ("abcde\n12\n"));
     buf.delete();
     buf.delete();
     buf.delete();
-    assertThat(buf.toBufferString(), is("abcde\n12"));
-    assertThat(buf.getCaret(), is(new CursorPosition(1, 2)));
+    assertEquals(buf.toBufferString(), ("abcde\n12"));
+    assertEquals(buf.getCaret(), (new CursorPosition(1, 2)));
     buf.bufferHead();
     buf.delete();
     buf.delete();
@@ -116,12 +109,12 @@ public class BufferTest {
     buf.delete();
     buf.delete();
     buf.delete();
-    assertThat(buf.toBufferString(), is("12"));
+    assertEquals(buf.toBufferString(), ("12"));
     buf.delete();
     buf.delete();
-    assertThat(buf.toBufferString(), is(""));
+    assertEquals(buf.toBufferString(), (""));
     buf.delete();
-    assertThat(buf.toBufferString(), is(""));
+    assertEquals(buf.toBufferString(), (""));
   }
 
 }

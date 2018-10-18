@@ -10,7 +10,6 @@ import nars.control.MetaGoal;
 import nars.control.proto.Remember;
 import nars.link.TermLinker;
 import nars.table.BeliefTable;
-import nars.table.BeliefTables;
 import nars.table.TaskTable;
 import nars.table.question.QuestionTable;
 import nars.term.Term;
@@ -34,11 +33,11 @@ public class TaskConcept extends NodeConcept implements Concept {
     private final QuestionTable questions;
 
 
-    public TaskConcept(Term term, @Nullable BeliefTables beliefs, @Nullable BeliefTables goals, ConceptBuilder b) {
+    public TaskConcept(Term term, @Nullable BeliefTable beliefs, @Nullable BeliefTable goals, ConceptBuilder b) {
         this(term, beliefs, goals, b.termlinker(term), b);
     }
 
-    public TaskConcept(Term term, @Nullable BeliefTables beliefs, @Nullable BeliefTables goals, TermLinker linker, ConceptBuilder b) {
+    public TaskConcept(Term term, @Nullable BeliefTable beliefs, @Nullable BeliefTable goals, TermLinker linker, ConceptBuilder b) {
         this(term,
                 beliefs != null ? beliefs : b.newTable(term, true),
                 goals != null ? goals : b.newTable(term, false),

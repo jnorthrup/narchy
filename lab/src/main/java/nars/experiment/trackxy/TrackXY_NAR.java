@@ -20,7 +20,6 @@ import nars.exe.UniExec;
 import nars.gui.LSTMView;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
-import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.task.DerivedTask;
@@ -44,7 +43,7 @@ import static spacegraph.SpaceGraph.window;
 public class TrackXY_NAR extends NAgentX {
 
     static boolean
-            nars = false, rl = true,
+            nars = true, rl = false,
             targetNumerics = false,
             targetCam = true,
             gui = true;
@@ -79,9 +78,9 @@ public class TrackXY_NAR extends NAgentX {
             this.cam = null;
         }
 
-        //actionPushButtonMutex();
+        actionPushButtonMutex();
         //actionSwitch();
-        actionTriState();
+        //actionTriState();
 
 
         reward(() -> {
@@ -101,7 +100,7 @@ public class TrackXY_NAR extends NAgentX {
 
 //        boolean rl = false;
 
-//        Param.DEBUG = true;
+
         int W = 3;
         int H = 3;
         int dur =
@@ -119,7 +118,15 @@ public class TrackXY_NAR extends NAgentX {
                 );
 
 
+        Param.DEBUG = true;
         NAR n = nb.get();
+
+        n.run(10); //skip:
+        n.onTask((t)->{
+            if (!t.isEternal() && t.range() > n.time()) {
+                System.err.println("long-range:\n" + t.proof());
+            }
+        });
 
         n.timeResolution.set(dur);
         n.freqResolution.set(0.1f);
@@ -179,9 +186,9 @@ public class TrackXY_NAR extends NAgentX {
 
             Deriver d = new MatrixDeriver(Derivers.nal(n,
                     //6, 8
-                    3, 8
+                    1, 8
 //                    //,"curiosity.nal"
-                    , "motivation.nal"
+          //          , "motivation.nal"
             )) {
 //                    @Override
 //                    public float puncFactor(byte conclusion) {
@@ -190,7 +197,7 @@ public class TrackXY_NAR extends NAgentX {
             };
 
 
-            ((MatrixDeriver) d).conceptsPerIteration.set(4);
+            ((MatrixDeriver) d).conceptsPerIteration.set(1);
 
 
             new STMLinkage(n, 1) {
@@ -200,10 +207,10 @@ public class TrackXY_NAR extends NAgentX {
                 }
             };
 
-            ConjClustering cjB = new ConjClustering(n, BELIEF,
-                    //x -> true,
-                    Task::isInput,
-                    2, 8);
+//            ConjClustering cjB = new ConjClustering(n, BELIEF,
+//                    //x -> true,
+//                    Task::isInput,
+//                    2, 8);
 
 
 //            window(new Gridding(

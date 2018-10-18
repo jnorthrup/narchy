@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
 import nars.link.TermLinker;
+import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.table.dynamic.SeriesBeliefTable;
@@ -39,7 +40,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
         super(c, linker, n);
     }
 
-    protected AbstractGoalActionConcept(Term term, SensorBeliefTables sensorBeliefTables, BeliefTables newTable, NAR n) {
+    protected AbstractGoalActionConcept(Term term, SensorBeliefTables sensorBeliefTables, BeliefTable newTable, NAR n) {
         super(term, sensorBeliefTables, newTable, n);
 
 

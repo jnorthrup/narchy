@@ -4,9 +4,7 @@ import it.unimi.dsi.fastutil.longs.LongArrayList;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
 import nars.control.DurService;
-import nars.task.DerivedTask;
 import nars.term.Term;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
@@ -16,7 +14,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.function.Consumer;
 
-import static nars.Op.GOAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -58,13 +55,12 @@ public class NAgentTest {
 
         NAR n = nar();
 
-        n.log();
-
-        Param.DEBUG = true;
-        n.onTask(x -> {
-           if (x instanceof DerivedTask)
-               System.err.println(x.proof());
-        }, GOAL);
+//        n.log();
+//        Param.DEBUG = true;
+//        n.onTask(x -> {
+//           if (x instanceof DerivedTask)
+//               System.err.println(x.proof());
+//        }, GOAL);
 
 //        n.onCycle(()->{
 //            n.attn.active.print();

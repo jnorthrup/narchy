@@ -366,7 +366,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     }
 
     @Override
-    public Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR n) {
+    public final Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR n) {
         return truth();
     }
 

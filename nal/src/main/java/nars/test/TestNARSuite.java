@@ -35,9 +35,11 @@ public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
     public void run(boolean parallel, int iterations) {
 
 
+
         List<Method> mm = testMethods.collect(Collectors.toList());
 
         for (int i = 0; i < iterations; i++) {
+
 
             (parallel ? mm.stream().parallel() : mm.stream()).forEach(m -> {
                 try {

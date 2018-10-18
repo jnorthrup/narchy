@@ -27,8 +27,17 @@ public final class DynamicTruthTable extends DynamicTaskTable {
         this.model = model;
     }
 
-
     @Override
+    public final void match(Answer t) {
+        if (t.template == null)
+            t.template(term);
+        t.accept(taskDynamic(t));
+    }
+
+
+    /**
+     * generates a dynamic matching task
+     */
     @Nullable public Task taskDynamic(Answer a) {
         Term template = a.template;
 
@@ -54,14 +63,14 @@ public final class DynamicTruthTable extends DynamicTaskTable {
     }
 
 
-    @Override
-    protected Truth truthDynamic(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
-
-        DynStampTruth d = model.eval(template, beliefOrGoal, start, end, filter, true, nar);
-
-        return d != null ? d.truth(template, model, beliefOrGoal, nar) : null;
-
-    }
+//    @Override
+//    protected Truth truthDynamic(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
+//
+//        DynStampTruth d = model.eval(template, beliefOrGoal, start, end, filter, true, nar);
+//
+//        return d != null ? d.truth(template, model, beliefOrGoal, nar) : null;
+//
+//    }
 
 
 }

@@ -15,6 +15,7 @@ import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;
 import org.apache.commons.math3.optim.SimpleBounds;
+import org.apache.commons.math3.optim.SimpleValueChecker;
 import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.NelderMeadSimplex;
@@ -23,8 +24,6 @@ import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.util.MathArrays;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +41,7 @@ import static java.util.stream.Collectors.toList;
 public class Optimization<S, E> extends Lab<E> implements Runnable {
 
     static final int goalColumn = 0;
-    private final static Logger logger = LoggerFactory.getLogger(Optimization.class);
+    //private final static Logger logger = LoggerFactory.getLogger(Optimization.class);
 
     /**
      * history of experiments. TODO use ranking like TopN etc
@@ -296,24 +295,51 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
         @Override
         protected void run(Optimization o, ObjectiveFunction func) {
 
+            /** cache the points, becaues if integers are involved, it could confuse the simplex solver when it makes duplicate samples */
+            //TODO discretization must be applied correctly here for this to work
+//            func = new ObjectiveFunction( cache( func.getObjectiveFunction() ) );
+
             try {
                 int dim = o.inc.length;
-                double[] range = new double[dim];
-                for (int i = 0; i < dim; i++)
-                    range[i] = o.inc[i]; //(o.max[i] - o.min[i]);
+                //double[] range = new double[dim];
+                double[] step = new double[dim];
+                double[] init = new double[dim];
+                for (int i = 0; i < dim; i++) {
+                    double min = o.min[i];
+                    double max = o.max[i];
+                    double range = max - min;
+                    step[i] = range / o.inc[i];
+                    init[i] = (Math.random() * range) + min;
+                }
 
-                new SimplexOptimizer(1e-10, 1e-30).optimize(
+
+                new SimplexOptimizer(new SimpleValueChecker(1e-10, 1e-30, maxIter))
+                    .optimize(
                         new MaxEval(maxIter),
                         func,
                         GoalType.MAXIMIZE,
-                        new InitialGuess(o.mid),
+                        new InitialGuess(init),
                         //new MultiDirectionalSimplex(steps)
-                        new NelderMeadSimplex(range, 1.1f, 1.1f, 0.8f, 0.8f)
+                        new NelderMeadSimplex(step)
                 );
             } catch (TooManyEvaluationsException e) {
                 e.printStackTrace();
             }
         }
+
+//        private static MultivariateFunction cache(MultivariateFunction objectiveFunction) {
+//            return new MultivariateFunction() {
+//
+//                final ObjectDoubleHashMap<ImmutableDoubleList> map = new ObjectDoubleHashMap<>();
+//
+//                @Override
+//                public double value(double[] point) {
+//                    return map.getIfAbsentPutWithKey(DoubleLists.immutable.of(point),
+//                            p-> objectiveFunction.value(p.toArray()));
+//                }
+//            };
+//
+//        }
 
     }
 

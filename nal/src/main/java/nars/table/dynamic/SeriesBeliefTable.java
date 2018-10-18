@@ -15,14 +15,10 @@ import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.truth.Truthed;
-import nars.truth.dynamic.DynStampTruth;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static jcog.math.LongInterval.TIMELESS;
@@ -46,60 +42,65 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 //        series.forEach(t.time.start, t.time.end, false, t);
 //    }
 
-    @Override
-    protected Task taskDynamic(Answer a) {
-        return (Task) (eval(true, a.time.start, a.time.end, a.filter, a.nar));
-    }
+//    @Override
+//    protected Task taskDynamic(Answer a) {
+//        return (Task) (eval(true, a.time.start, a.time.end, a.filter, a.nar));
+//    }
 
     @Override
     public int size() {
         return series.size();
     }
 
-    protected Truthed eval(boolean taskOrJustTruth, long start, long end, @Nullable Predicate<Task> filter, NAR nar) {
-
-//        Task exact = series.firstContaining(start, end);
-//        if (exact != null && (filter==null || filter.test(exact)))
-//            return exact;
-
-
-
-        DynStampTruth d = series.truth(start, end, filter);
-        if (d == null || d.isEmpty())
-            return null;
-        if (d.size() == 1)
-            return d.get(0);
-
-
-//        if (taskOrJustTruth) {
-//            if (d.size() == 1) {
-//                TaskRegion d0 = d.get(0);
-//                if (d0 instanceof TaskProxy) {
-//                    d0 = ((TaskProxy) d0).clone();
-//                }
-//                return (Truthed) d0; //only task
-//            } else {
-//                //adjust the start, end time to match the tasks found
-//                long s = d.start();
-//                if (s != ETERNAL) {
-//                    start = s;
-//                    end = d.end();
-//                } else {
-//                    start = end = ETERNAL;
-//                }
-//            }
-//        }
-
-        int dur = nar.dur();
-        Truth pp = Param.truth(start, end, dur).add((Collection) d).filter().truth();
-        if (pp == null) return null;
-
-//        float freqRes = taskOrJustTruth ? Math.max(nar.freqResolution.floatValue(), res.asFloat()) : 0;
-//        float confRes = taskOrJustTruth ? nar.confResolution.floatValue() : 0;
-//        float eviMin = taskOrJustTruth ? w2cSafe(nar.confMin.floatValue()) : Float.MIN_NORMAL;
-        Truth finalPp = pp;
-        return d.eval(SeriesBeliefTable.taskTerm(term), (dd, n) -> finalPp, taskOrJustTruth, beliefOrGoal, nar);
+    @Override
+    public final void match(Answer t) {
+        series.forEach(t.time.start, t.time.end, false, t);
     }
+
+    //    private Truthed eval(boolean taskOrJustTruth, long start, long end, @Nullable Predicate<Task> filter, NAR nar) {
+//
+////        Task exact = series.firstContaining(start, end);
+////        if (exact != null && (filter==null || filter.test(exact)))
+////            return exact;
+//
+//
+//
+//        DynStampTruth d = series.truth(start, end, filter);
+//        if (d == null || d.isEmpty())
+//            return null;
+//        if (d.size() == 1)
+//            return d.get(0);
+//
+//
+////        if (taskOrJustTruth) {
+////            if (d.size() == 1) {
+////                TaskRegion d0 = d.get(0);
+////                if (d0 instanceof TaskProxy) {
+////                    d0 = ((TaskProxy) d0).clone();
+////                }
+////                return (Truthed) d0; //only task
+////            } else {
+////                //adjust the start, end time to match the tasks found
+////                long s = d.start();
+////                if (s != ETERNAL) {
+////                    start = s;
+////                    end = d.end();
+////                } else {
+////                    start = end = ETERNAL;
+////                }
+////            }
+////        }
+//
+//        int dur = nar.dur();
+//        Truth pp = Param.truth(start, end, dur).add((Collection) d).filter().truth();
+//        if (pp == null) return null;
+//
+////        float freqRes = taskOrJustTruth ? Math.max(nar.freqResolution.floatValue(), res.asFloat()) : 0;
+////        float confRes = taskOrJustTruth ? nar.confResolution.floatValue() : 0;
+////        float eviMin = taskOrJustTruth ? w2cSafe(nar.confMin.floatValue()) : Float.MIN_NORMAL;
+//        Truth finalPp = pp;
+//        return d.eval(SeriesBeliefTable.taskTerm(term), (dd, n) -> finalPp, taskOrJustTruth, beliefOrGoal, nar);
+//    }
 
     @Override
     public void clear() {
@@ -122,10 +123,10 @@ public class SeriesBeliefTable extends DynamicTaskTable {
     }
 
 
-    @Override
-    protected Truth truthDynamic(long start, long end, Term templateIgnored, Predicate filter, NAR nar) {
-        return (Truth) (eval(false, start, end, filter, nar));
-    }
+//    @Override
+//    protected Truth truthDynamic(long start, long end, Term templateIgnored, Predicate filter, NAR nar) {
+//        return (Truth) (eval(false, start, end, filter, nar));
+//    }
 
 
     @Override

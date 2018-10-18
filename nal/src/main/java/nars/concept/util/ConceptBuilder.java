@@ -38,7 +38,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
     public abstract QuestionTable questionTable(Term term, boolean questionOrQuest);
 
-    public abstract BeliefTables newTable(Term t, boolean beliefOrGoal);
+    public abstract BeliefTable newTable(Term t, boolean beliefOrGoal);
 
     protected abstract EternalTable newEternalTable(Term c);
 
@@ -339,8 +339,8 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
         }
 
         @Override
-        public BeliefTables newTable(Term t, boolean beliefOrGoal) {
-            return BeliefTables.Empty;
+        public BeliefTable newTable(Term t, boolean beliefOrGoal) {
+            return BeliefTable.Empty;
         }
 
         @Override

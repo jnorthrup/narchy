@@ -752,33 +752,10 @@ public class Occurrify extends TimeGraph {
         TaskSubSequence() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-
                 if (d.taskStart == ETERNAL) {
                     return pair(x, new long[]{ETERNAL, ETERNAL});
-                } else {
-                    if (d.taskTerm.eventRange() == 0) {
-                        return pair(x, new long[]{d.taskStart, d.taskEnd});
-                    } else {
-                        final Term[] first = {null};
-                        x.eventsWhile((when, what) -> {
-                            first[0] = what;
-                            return false;
-                        }, 0, true, true, false, 0);
-                        if (first[0] != null) {
-                            int offset = d.taskTerm.subTimeFirst(first[0]);
-                            if (offset == DTERNAL)
-                                offset = d.taskTerm.subTimeFirst(first[0].neg());
-                            if (offset != DTERNAL)
-                                return pair(x, new long[]{d.taskStart + offset, d.taskEnd + offset});
-                        }
-
-                        if (Param.DEBUG)
-                            throw new WTF();
-
-                        return null;
-
-                    }
                 }
+                return solveSubSequence(x, d.taskTerm, d.taskStart, d.taskEnd);
             }
             @Override
             long[] occurrence(Derivation d) {
@@ -791,39 +768,19 @@ public class Occurrify extends TimeGraph {
             }
         },
 
+        /**
+         * used for single premise conjunction within conjunction result
+         */
         BeliefSubSequence() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+                if (d.taskStart == ETERNAL && d.beliefStart == ETERNAL)
+                    return pair(x, new long[]{ETERNAL, ETERNAL});
 
-                if (d.beliefStart == ETERNAL) {
-                    return pair(x, new long[]{d.taskStart, d.taskEnd});
-                } else {
-                    if (d.beliefTerm.eventRange() == 0) {
-                        return pair(x, new long[]{d.beliefStart, d.beliefEnd});
-                    } else {
+                if (d.beliefStart == ETERNAL)
+                    return pair(x, new long[] { d.taskStart, d.taskEnd });
 
-                        //TODO combine with TaskSubSequence which is similar
-
-                        final Term[] first = {null};
-                        x.eventsWhile((when, what) -> {
-                            first[0] = what;
-                            return false;
-                        }, 0, true, true, false, 0);
-                        if (first[0] != null) {
-                            int offset = d.beliefTerm.subTimeFirst(first[0]);
-                            if (offset == DTERNAL)
-                                offset = d.beliefTerm.subTimeFirst(first[0].neg());
-                            if (offset != DTERNAL)
-                                return pair(x, new long[]{d.beliefStart + offset, d.beliefEnd + offset});
-                        }
-
-                        if (Param.DEBUG)
-                            throw new WTF();
-
-                        return null;
-
-                    }
-                }
+                return solveSubSequence(x, d.beliefTerm, d.beliefStart, d.beliefEnd);
             }
 
             @Override
@@ -1270,6 +1227,42 @@ public class Occurrify extends TimeGraph {
 
         public BeliefProjection beliefProjection() {
             return BeliefProjection.Task;
+        }
+    }
+
+    @Nullable
+    public static Pair<Term, long[]> solveSubSequence(Term x, Term src, long srcStart, long srcEnd) {
+
+
+        if (src.eventRange() == 0) {
+            return pair(x, new long[]{srcStart, srcEnd});
+        } else {
+            int offset = src.subTimeFirst(x);
+            if (offset==DTERNAL) {
+                offset = src.subTimeFirst(x.neg());
+                if (offset==DTERNAL) {
+                    final Term[] first = {null};
+                    x.eventsWhile((when, what) -> {
+                        first[0] = what;
+                        return false;
+                    }, 0, true, true, false, 0);
+                    if (first[0] != null && !first[0].equals(x)) {
+                        offset = src.subTimeFirst(first[0]);
+                        if (offset == DTERNAL) {
+                            offset = src.subTimeFirst(first[0].neg());
+                        }
+                    }
+                }
+            }
+
+            if (offset != DTERNAL)
+                return pair(x, new long[]{srcStart + offset, srcEnd + offset});
+
+            if (Param.DEBUG)
+                throw new WTF();
+
+            return null;
+
         }
     }
 

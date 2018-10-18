@@ -10,11 +10,14 @@ public class MRUMap<K, V> extends LinkedHashMap<K, V> {
 
     protected int capacity;
 
-    public MRUMap(int capacity) {
-        super(capacity, 0.99f, true);
+    public MRUMap(int capacity, float loadFactor) {
+        super(capacity, loadFactor, true);
         this.capacity = capacity;
     }
 
+    public MRUMap(int capacity) {
+        this(capacity, 0.99f);
+    }
 
     public void setCapacity(int capacity) {
         this.capacity = capacity;

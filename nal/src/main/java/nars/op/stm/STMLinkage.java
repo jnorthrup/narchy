@@ -24,8 +24,9 @@ public class STMLinkage extends NARService {
     public final MetalConcurrentQueue<Task> stm;
 
     final FloatRange strength = new FloatRange(1f, 0f, 1f);
-    
+
     private boolean eternalize = true;
+
 //    private final Cause cause;
 
 

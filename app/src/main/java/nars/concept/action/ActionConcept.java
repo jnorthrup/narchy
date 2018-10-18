@@ -9,7 +9,7 @@ import nars.concept.TaskConcept;
 import nars.concept.sensor.Sensor;
 import nars.control.MetaGoal;
 import nars.link.TermLinker;
-import nars.table.BeliefTables;
+import nars.table.BeliefTable;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.term.Term;
 import nars.term.Termed;
@@ -32,11 +32,11 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
                 n);
     }
 
-    protected ActionConcept(Term term, BeliefTables beliefs, BeliefTables goals, NAR n) {
+    protected ActionConcept(Term term, BeliefTable beliefs, BeliefTable goals, NAR n) {
         this(term, beliefs, goals, n.conceptBuilder.termlinker(term), n);
     }
 
-    protected ActionConcept(Term term, BeliefTables beliefs, BeliefTables goals, TermLinker l, NAR n) {
+    protected ActionConcept(Term term, BeliefTable beliefs, BeliefTable goals, TermLinker l, NAR n) {
         super(term, beliefs, goals, l, n.conceptBuilder);
 
         ((SensorBeliefTables) beliefs()).setPri(
