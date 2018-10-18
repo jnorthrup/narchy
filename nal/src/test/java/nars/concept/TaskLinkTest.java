@@ -29,7 +29,7 @@ public class TaskLinkTest {
             } catch (Narsese.NarseseException e) {
                 e.printStackTrace();
             }
-        });
+        }, 64);
 
         System.out.println(f);
 
@@ -54,7 +54,7 @@ public class TaskLinkTest {
             } catch (Narsese.NarseseException e) {
                 e.printStackTrace();
             }
-        });
+        },64);
 
         System.out.println(f);
         assertEquals(2, f.getUniqueCount());
@@ -66,7 +66,7 @@ public class TaskLinkTest {
         assertTrue((f.getPct(bb) / f.getPct(aa)) > 1.75f);  //some significant difference
     }
 
-    private static Frequency sampleLink(Consumer<NAR> setup) {
+    private static Frequency sampleLink(Consumer<NAR> setup, int samples) {
         NAR n = NARS.shell();
         setup.accept(n);
         n.run(1);
@@ -76,7 +76,6 @@ public class TaskLinkTest {
         @Nullable TaskLink l = links.iterator().next();
         assertNotNull(l);
 
-        int samples = 64;
         Frequency f = new Frequency();
         for (int i = 0; i < samples; i++)
             f.addValue(l.get(n).toString());

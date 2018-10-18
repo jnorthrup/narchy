@@ -113,7 +113,7 @@ public interface TaskTable {
             return null;
 
         return Answer.relevance(!(this instanceof QuestionTable),
-                1,
+                Answer.TASK_LIMIT_SAMPLE,
                 start, end, template, filter, nar)
             .match(this)
             .task(false, false, false);

@@ -47,7 +47,7 @@ public class TrackXY_NAR extends NAgentX {
             nars = true, rl = !nars,
             targetNumerics = false,
             targetCam = true,
-            gui = false;
+            gui = true;
 
     final Bitmap2DSensor cam;
     private final TrackXY track;
@@ -205,7 +205,7 @@ public class TrackXY_NAR extends NAgentX {
 
             new STMLinkage(n, 1) {
                 @Override
-                public boolean hold(Task newEvent) {
+                public boolean keep(Task newEvent) {
                     return newEvent.isGoal();
                 }
             };

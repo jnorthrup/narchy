@@ -606,7 +606,7 @@ class NAL8EternalMixTest extends NALTest {
                 .mustGoal(cycles, "in", 0f, 0.42f, 0);
     }
 
-    @Test
+    @Disabled @Test
     void testGoalImplComponentWithVar() {
 
         test.nar.runAt(cycles * 4, () -> {

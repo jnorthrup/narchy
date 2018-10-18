@@ -7,8 +7,8 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.control.NARService;
-import nars.task.proxy.SpecialOccurrenceTask;
-import nars.term.Termed;
+import nars.link.Activate;
+import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
@@ -21,11 +21,9 @@ import static nars.Op.GOAL;
  */
 public class STMLinkage extends NARService {
 
-    public final MetalConcurrentQueue<Task> stm;
+    public final MetalConcurrentQueue<Activate> stm;
 
     final FloatRange strength = new FloatRange(1f, 0f, 1f);
-
-    private boolean eternalize = true;
 
 //    private final Cause cause;
 
@@ -51,16 +49,16 @@ public class STMLinkage extends NARService {
         );
     }
 
-    public static void link(Termed ta, float pri, Termed tb/*, short cid*/, NAR nar) {
+    public static void link(Concept a, float pri, Concept b/*, short cid*/, NAR nar) {
 
-        if (ta.term().equals(tb.term()))
-            return;
+        //if (a==b) ta.term().equals(tb.term()))
+            //return;
 
         /** current task's... */
-        Concept a = nar.concept(ta);
-        if (a != null) {
-            Concept b = nar.concept(tb);
-            if (b != null) {
+        //Concept a = nar.concept(ta);
+        //if (a != null) {
+            //Concept b = nar.concept(tb);
+            //if (b != null) {
                 if (a!=b) {
 
 
@@ -69,23 +67,23 @@ public class STMLinkage extends NARService {
                     //ca.termlinks().putAsync(new CauseLink.PriCauseLink(cb.term(), pri, cid));
 
 
-
-
-                } else {
-                    a.termlinks().putAsync(/*new CauseLink.PriCauseLink*/new PLink<>(a.term(), pri/*, cid*/));
-                    //ca.termlinks().putAsync(new CauseLink.PriCauseLink(ca.term(), pri, cid));
                 }
-            }
-        }
+
+//                } else {
+//                    a.termlinks().putAsync(/*new CauseLink.PriCauseLink*/new PLink<>(a.term(), pri/*, cid*/));
+//                    //ca.termlinks().putAsync(new CauseLink.PriCauseLink(ca.term(), pri, cid));
+//                }
+          //  }
+       // }
 
     }
 
 
-    public boolean hold(Task x) {
+    public boolean keep(Task x) {
         return x.isInput();
     }
 
-    public boolean target(Task x) {
+    public boolean filter(Task x) {
         return x.isInput();
     }
 
@@ -96,31 +94,42 @@ public class STMLinkage extends NARService {
 
     public final void accept(Task y) {
 
-        if (target(y)) {
 
-            if (y.isEternal()) {
-                if (eternalize) {
-                    //project to present moment
-                    long now = nar.time();
-                    int dur = nar.dur();
-                    y = new SpecialOccurrenceTask(y, now - dur / 2, now + dur / 2);
-                } else {
-                    return;
-                }
+        float yp;
+        if (filter(y)) {
+            @Nullable Concept yc;
+            yc = nar.concept(y);
+            if (yc == null)
+                return;
+            yp = y.priElseZero();
 
-            }
+//            if (y.isEternal()) {
+//                if (eternalize) {
+//                    //project to present moment
+//                    long now = nar.time();
+//                    int dur = nar.dur();
+//                    y = new SpecialOccurrenceTask(y, now - dur / 2, now + dur / 2);
+//                } else {
+//                    return;
+//                }
+//
+//            }
 
-            float py = this.strength.floatValue() * y.priElseZero();
+
+            float py = this.strength.floatValue() * yp;
             Task yy = y;
-            stm.forEach(x -> link(yy,
+            stm.forEach(x -> link(yc,
                     py * x.priElseZero(),
-                    x/*, cause.id*/, nar));
+                    x.id/*, cause.id*/, nar));
+
+            if (keep(y)) {
+                if (stm.isFull(1))
+                    stm.poll();
+
+                stm.offer(new Activate(yc, yp));
+            }
         }
 
-        if (hold(y)) {
-            if (stm.isFull(1))
-                stm.poll();
-            stm.offer(y);
-        }
+
     }
 }

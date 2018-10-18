@@ -34,6 +34,9 @@ public class Answer implements Consumer<Task> {
             Param.STAMP_CAPACITY-1;
             //Param.STAMP_CAPACITY / 2;
 
+    public static final int TASK_LIMIT_SAMPLE = Math.max(1, TASK_LIMIT_DEFAULT / 2);
+
+
 
     public final NAR nar;
     private int triesRemain;
