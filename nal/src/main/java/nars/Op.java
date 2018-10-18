@@ -458,7 +458,7 @@ public enum Op {
 
         this.bit = (1 << ordinal());
 
-        final Set<String> ATOMICS = java.util.Set.of(".", "+", "B");
+        final Set<String> ATOMICS = java.util.Set.of(".", "+", "B", "/");
         this.atomic = var || ATOMICS.contains(str);
 
         boolean isBool = str.equals("B");

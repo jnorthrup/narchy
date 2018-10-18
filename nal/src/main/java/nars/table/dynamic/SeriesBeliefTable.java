@@ -54,7 +54,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
     @Override
     public final void match(Answer t) {
-        series.forEach(t.time.start, t.time.end, false, t);
+        series.whileEach(t.time.start, t.time.end, false, t::tryAccept);
     }
 
     //    private Truthed eval(boolean taskOrJustTruth, long start, long end, @Nullable Predicate<Task> filter, NAR nar) {

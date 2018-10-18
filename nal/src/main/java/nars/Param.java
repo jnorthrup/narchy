@@ -95,7 +95,7 @@ public abstract class Param {
     public static final int TASK_EVAL_FORK_LIMIT = 8;
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
-    public static float ANSWER_COMPLETENESS = 2f;
+    public static float ANSWER_COMPLETENESS = 1f;
 
 
 //    public static final int EVALUATION_MAX_TERMUTATORS = 8;

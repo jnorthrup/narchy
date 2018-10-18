@@ -123,47 +123,46 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
         if (minT != ETERNAL && minT != TIMELESS) {
             boolean point = maxT == minT;
 
-            int c = cap;
-
             int b = indexOf(Math.min(e, maxT));
             if (b == -1)
-                b = size() - 1;
-
+                return true; //b = size() - 1;
 
             int a = point ? b : indexOf(Math.max(s, minT));
             if (a == -1)
-                a = 0;
+                return true; //a = 0;
 
-            int ab = (a + b) / 2;
-            int r = 0;
-            boolean done = false;
+            int center = (a + b) / 2;
+            int cap = this.cap;
+            int r = 0, radius = cap / 2 + 1;
             T u, v;
             do {
 
-
-                int yi = ab + r;
-                if (yi < c) {
-                    v = q.peek(yi);
-                    if (v != null && !whle.test(v)) return false;
+                int yi = center + r;
+                v = q.peek(yi);
+                if (v!=null && (!exactRange || v.intersects(minT, maxT))) {
+                    if (!whle.test(v))
+                        return false;
                 } else {
                     v = null;
                 }
 
+
                 r++;
 
-                int ui = ab - r;
-                if (ui >= 0) {
-                    u = q.peek(ui);
-                    if (u != null && !whle.test(u)) return false;
+                int ui = center - r;
+                {
+                    int uui = ui; if (uui < 0) uui += cap; //HACK prevent negative value
+                    u = q.peek(uui);
+                }
+                if (u!=null && (!exactRange || u.intersects(minT, maxT))) {
+                    if (!whle.test(u))
+                        return false;
                 } else {
                     u = null;
                 }
 
+            } while (u!=null && v!=null && r < radius);
 
-                if (u == null && v == null)
-                    done = true;
-
-            } while (!done);
             return true;
 //                    if (a == b) {
 //                        T aa = q.peek(a);

@@ -102,10 +102,15 @@ public class MLPMap {
                     int idx = offs + j;
                     outError[j] += weights[idx] * d;
                     float dw = input[j] * dLR;
+
+                    //TODO check this
+
                     weights[idx] += dweights[idx] * (1-momentum) + dw;
                     dweights[idx] = dw;
 //                    weights[idx] += dw * dweights[idx];
 //                    dweights[idx] += dw;
+
+
                 }
                 offs += inLength;
             }

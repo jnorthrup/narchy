@@ -44,7 +44,7 @@ public interface TaskSeries<T extends Task> {
 //                //TruthIntegration.eviInteg(t, start, end, 1) //TODO this may be better as a double value comparison, long -> float could be lossy
 //        );
 
-            forEach(start, end, false, inner::add);
+            forEach(start, end, true, inner::add);
 
 
             int l = inner.size();

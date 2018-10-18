@@ -78,9 +78,9 @@ public class TrackXY  {
         assert(distance <= maxDist);
 
         float exp =
-                //1;
+                1;
                 //2;
-                3;
+                //3;
         double r = 2 * (-0.5f + Math.pow( 1 - (distance / maxDist), exp));
         return (float) r;
     }

@@ -75,6 +75,7 @@ public class TrackXY_NAR extends NAgentX {
 
         if (targetCam) {
             this.cam = addCamera(new Bitmap2DSensor<>(id /* (Term) null*/, track.grid, nar));
+            cam.resolution(0.25f);
         } else {
             this.cam = null;
         }
@@ -255,16 +256,16 @@ public class TrackXY_NAR extends NAgentX {
             });
         }
 
-//        a.onFrame(() -> {
-//            Util.sleepMS(10);
-//        });
-        int epoch = 500;
+        a.onFrame(() -> {
+            Util.sleepMS(10);
+        });
+        int epoch = 200;
 
         DescriptiveStatistics rh = new DescriptiveStatistics(epoch);
         a.onFrame(() -> {
             float r = a.reward();
             rh.addValue(r);
-            if (n.time() % 100 == 0) {
+            if (n.time() % epoch == 0) {
                 System.out.println(n4(rh.getMean()));
             }
 
@@ -423,6 +424,7 @@ public class TrackXY_NAR extends NAgentX {
 
     static class Optimize {
         public static void main(String[] args) {
+
             Lab<NAR> l = new Lab<>(() -> {
                 NAR n = NARS.tmp();
                 n.random().setSeed(System.nanoTime());
@@ -432,19 +434,20 @@ public class TrackXY_NAR extends NAgentX {
             l.varAuto(new Lab.DiscoveryFilter() {
                 @Override
                 protected boolean includeField(Field f) {
-                    if (f.getName().startsWith("DEBUG"))
+                    String fieldName = f.getName();
+                    if (fieldName.startsWith("DEBUG") || fieldName.contains("throttle"))
                         return false;
 
                     return super.includeField(f);
                 }
             });
 
-            int experiments = 64;
-            int experimentCycles = 1024;
+            int experiments = 1024;
+            int experimentCycles = 2048;
             int repeats = 3;
 
             Optimization<NAR, TrackXY_NAR> o = l.optimize((Supplier<NAR> s) -> {
-                        return new TrackXY_NAR(s.get(), 3, 1);
+                        return new TrackXY_NAR(s.get(), 4, 1);
                     },
                     Optimization.repeat((TrackXY_NAR t) -> {
                         try {
@@ -467,6 +470,7 @@ public class TrackXY_NAR extends NAgentX {
             RealDecisionTree t = o.tree(4, 8);
             t.print();
             t.printExplanations();
+
 
 
         }

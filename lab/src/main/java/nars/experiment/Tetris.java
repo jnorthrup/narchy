@@ -34,7 +34,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
     static boolean easy = false;
     private boolean canFall = false;
 
-    public final FloatRange timePerFall = new FloatRange(3f, 1f, 32f);
+    public final FloatRange timePerFall = new FloatRange(1f, 1f, 32f);
     public final Bitmap2DSensor<Bitmap2D> pixels;
     private TetrisState state;
 
