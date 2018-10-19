@@ -132,17 +132,18 @@ public enum TruthFunctions2 {
     @Nullable
     public static Truth desire(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean strong) {
 
-        float c = and(belief.freq(),
-                //(
-                        confCompose(belief, goal)
+        float cc = confCompose(belief, goal);
+        if (!strong)
+            cc = weak(cc);
 
-                )
+        float c = and(belief.freq(),
+                cc)
         ;
 
 
-        if (!strong) {
-            c = weak(c);
-        }
+//        if (!strong)
+//            c = weak(c);
+//
 
         if (c >= minConf) {
 

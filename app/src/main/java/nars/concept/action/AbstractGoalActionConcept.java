@@ -77,9 +77,9 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         //long s = prev, e = now;
         //long s = now, e = next;
-        long s = prev, e = next;
-        //long agentDur = (now - prev);
-        //long s = now - agentDur/2, e = now + agentDur/2;
+        //long s = prev, e = next;
+        long agentDur = (now - prev);
+        long s = now - agentDur/2, e = now + agentDur/2;
 
         int actionDur = this.actionSustain;
         if (actionDur < 0)

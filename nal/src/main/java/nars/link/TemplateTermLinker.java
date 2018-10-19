@@ -310,6 +310,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
                 float p = Math.max(EPSILON, f.priElseZero());
                 Tasklinks.linkTask((TaskLink.GeneralTaskLink) f, p, firedConcepts, overflow);
+                overflow.set(0); //clear after each and re-use
             }
 
         }

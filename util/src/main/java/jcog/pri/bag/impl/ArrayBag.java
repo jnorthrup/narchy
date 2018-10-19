@@ -281,24 +281,87 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         if (size == 1 || rng == null)
             return 0;
         else {
+            float min = this.priMin(), max = this.priMax();
 
-            float h = rng.nextFloat();
+            float targetPercentile = rng.nextFloat();
 
-            float i;
-            {
-                //probably slow to calculate all of this; much can be cached and done in better ways to approximate the percentile curvature
-                float min = this.priMin(), max = this.priMax(), mid = priMid();
-                float deltaFlat = (mid - (max - min) / 2) / (max - min);
-                if (!Float.isFinite(deltaFlat))
-                    i = h; /* flat */
-                else
-                    i = Util.lerp(deltaFlat, h /* flat */, deltaFlat > 0 ? ((float) Math.sqrt(h)) : (h * h) /* curved */);
-            }
+            float indexNorm =
+                    Util.lerp((max-min), targetPercentile /* flat */, (targetPercentile * targetPercentile) /* curved */);
 
-            int j = Math.round(i * (size-0.5f)); //assert(j >= 0 && j < size);
+
+            int j = Math.round(indexNorm * (size-0.5f));
+            //assert(j >= 0 && j < size);
             return j;
         }
     }
+
+//    /**
+//     * size > 0
+//     */
+//    protected int sampleNext(@Nullable Random rng, int size) {
+//        assert (size > 0);
+//        if (size == 1 || rng == null)
+//            return 0;
+//        else {
+//            float min = this.priMin(), max = this.priMax();
+//            float diff = max - min;
+//
+//            float h = rng.nextFloat();
+//
+//            float i = Util.lerp(diff, h /* flat */, (h * h) /* curved */);
+//
+//            int j = Math.round(i * (size-0.5f));
+//            //assert(j >= 0 && j < size);
+//            return j;
+//        }
+//    }
+
+//    /** experimental / notes */
+//    protected int sampleNext0(@Nullable Random rng, int size) {
+//        assert (size > 0);
+//        if (size == 1 || rng == null)
+//            return 0;
+//        else {
+//
+//            float h = rng.nextFloat();
+//
+//            float min = this.priMin(), max = this.priMax(), median = priMedian();
+//            float i;
+//
+//            {
+//              /*
+//
+//              https://en.wikipedia.org/wiki/Median#Inequality_relating_means_and_medians
+//
+//              https://en.wikipedia.org/wiki/Importance_sampling
+//              https://en.wikipedia.org/wiki/Inverse_transform_sampling\
+//              https://en.wikipedia.org/wiki/Selection_algorithm#Median_selection_as_pivot_strategy
+//
+//                top heavy   bottom heavy    flat
+//                      x          xxxx           xx
+//                     xx        xxxxxx         xxxx
+//                xxxxxxx       xxxxxxx       xxxxxx
+//               med < mid     mid > med
+//
+//              */
+//
+//                //probably slow to calculate all of this; much can be cached and done in better ways to approximate the percentile curvature
+////                float mean = (max + min) / 2;
+////                float range = max - min;
+////                float divergence = (median - mean) / range; //normalized
+////
+////                if (!Float.isFinite(divergence))
+////                    i = h; /* flat */
+////                else
+////                    i = Util.lerp(divergence,
+////                            divergence > 0 ? ((float) Math.sqrt(h)) : h /* flat */,
+////                            divergence > 0 ? h : (h * h) /* curved */);
+//            }
+//
+//            int j = Math.round(i * (size-0.5f)); //assert(j >= 0 && j < size);
+//            return j;
+//        }
+//    }
 
 //    protected int sampleNext(@Nullable Random rng, int size, int i) {
 //        if (rng == null) {
@@ -662,7 +725,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     }
 
     /** priority of the middle index item, if exists; else returns average of priMin and priMax */
-    public float priMid() {
+    public float priMedian() {
 
         Object[] ii = items.items;
         int s = Math.min(ii.length, size());

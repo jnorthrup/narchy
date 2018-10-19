@@ -15,6 +15,7 @@ import jcog.signal.tensor.ArrayTensor;
 import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.apache.commons.math3.stat.Frequency;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -165,6 +166,13 @@ class BagTest {
         fillLinear(bag, bag.capacity());
         testBagSamplingDistribution(bag, batchSizeProp);
     }
+
+    static void testBagSamplingDistributionSquashed(Bag<PLink<String>, PLink<String>> bag, float batchSizeProp) {
+        /** 0.25 .. 0.75 */
+        fill(bag, bag.capacity(), (x)->x/2 + 0.25f);
+        testBagSamplingDistribution(bag, batchSizeProp);
+    }
+
     static void testBagSamplingDistributionRandom(ArrayBag<PLink<String>, PLink<String>> bag, float batchSizeProp) {
         fillRandom(bag);
         testBagSamplingDistribution(bag, batchSizeProp);
@@ -179,7 +187,7 @@ class BagTest {
         int batchSize = (int)Math.ceil(batchSizeProp * cap);
         int batches = cap * 1000 / batchSize;
 
-        Tensor f1 = samplingPriDist(bag, batches, batchSize, Math.min(10,Math.max(3, cap/2)));
+        Tensor f1 = samplingPriDist(bag, batches, batchSize, Math.min(10,Math.max(2, cap/2)));
 
         String h = "cap=" + cap + " total=" + (batches * batchSize);
         System.out.println(h + ":\n\t" + f1.tsv2());
@@ -196,7 +204,7 @@ class BagTest {
                 float diff = ff[j] - ff[i];
                 boolean unordered = diff > orderThresh;
                 if (unordered) {
-                    fail("sampling distribution not ordered. contents=" + bag.toString());
+                    fail("sampling distribution not ordered. contents=" + bag);
                 }
             }
         }
@@ -314,15 +322,18 @@ class BagTest {
      * fill it exactly to capacity
      */
     public static void fillLinear(Bag<PLink<String>, PLink<String>> bag, int c) {
+        fill(bag, c, (x)->x);
+    }
+    public static void fill(Bag<PLink<String>, PLink<String>> bag, int c, FloatToFloatFunction priCurve) {
         assertTrue(bag.isEmpty());
 
         
         for (int i = c-1; i >= 0; i--) {
-            PLink inserted = bag.put(new PLink(i + "x", (i + 0.5f) / c)); 
-            if (inserted==null) {
-                fail("");
-            }
+            float x = (i + 0.5f) / c; //center of index
+            PLink inserted = bag.put(new PLink(i + "x", priCurve.valueOf(x)));
+            assert(inserted!=null);
         }
+
         bag.commit(null);
         assertEquals(c, bag.size());
         assertEquals(0.5f / c, bag.priMin(), 0.03f);
