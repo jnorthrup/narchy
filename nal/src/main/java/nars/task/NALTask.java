@@ -238,9 +238,10 @@ public class NALTask extends UnitPri implements Task {
         }
 
         @Override
-        public void meta(String key, Object value) {
+        public Object meta(String key, Object value) {
             CompactArrayMap<String, Object> m = this.meta;
             if (m != null) m.put(key, value);
+            return value;
         }
 
         @Override

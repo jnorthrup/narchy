@@ -42,7 +42,8 @@ public class CompactArrayMap<K, V>  {
         return i.length/2;
     }
 
-    public void put(K key, V value) {
+    /** returns previous value, or null if none - like Map.put */
+    public V put(K key, V value) {
         synchronized (this) {
             Object[] a = items;
             if (a == null) {
@@ -51,8 +52,9 @@ public class CompactArrayMap<K, V>  {
                 int s = a.length;
                 for (int i = 0; i < s; ) {
                     if (keyEquals(a[i], key)) {
+                        Object e = a[i + 1];
                         a[i + 1] = value; 
-                        return;
+                        return (V) e;
                     }
                     i += 2;
                 }
@@ -62,6 +64,7 @@ public class CompactArrayMap<K, V>  {
                 this.items = a;
             }
         }
+        return null;
     }
 
     public V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {

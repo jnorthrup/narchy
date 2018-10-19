@@ -350,7 +350,10 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
     //            float eachMustForgetPct =
     //                        Util.unitize(totalQuell / s);
 
-                float eachMustForgetPct = Util.unitize(pressure * temperature / mass);
+                float eachMustForgetPct =
+                        temperature * Util.unitize(pressure / mass);
+                        //temperature * Util.unitize(pressure / (pressure + mass));
+                        //Util.unitize(pressure * temperature / mass);
 
                 if (eachMustForgetPct > cap * ScalarValue.EPSILON) {
                     return new PriForget(eachMustForgetPct);

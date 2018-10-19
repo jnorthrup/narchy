@@ -29,8 +29,6 @@ public class Attention extends DurService implements Sampler<Concept> {
 
     public Bag<Term, Activate> active;
 
-    /** current activation rate, cached per cycle */
-    transient private float activationRate = 1;
 
     public Attention(int concepts) {
         super((NAR) null);
@@ -55,8 +53,7 @@ public class Attention extends DurService implements Sampler<Concept> {
      * TODO abstract
      */
     public void activate(Activate a) {
-        //this shouldnt be applied on this instance which may be held by another thread, or already in the bag
-        active.putAsync(new Activate(a.id, a.hashCode(), a.priElseZero() * activationRate));
+        active.putAsync(new Activate(a.id, a.hashCode(), a.priElseZero()));
     }
 
     /**
@@ -128,7 +125,6 @@ public class Attention extends DurService implements Sampler<Concept> {
 
     @Override
     protected void run(NAR n, long dt) {
-        activationRate = n.activateConceptRate.floatValue();
         active.commit(active.forget(n.forgetRate.floatValue()));
     }
 

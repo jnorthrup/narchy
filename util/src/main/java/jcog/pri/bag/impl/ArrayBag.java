@@ -235,7 +235,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
      * at the top of the list. so for large amounts of samples
      * it will be helpful to call this in batches << the size of the bag.
      */
-
     @Override
     public void sample(Random rng, Function<? super Y, SampleReaction> each) {
 
@@ -282,15 +281,21 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         if (size == 1 || rng == null)
             return 0;
         else {
-            float min = this.priMin(), max = this.priMax();
-            float diff = max - min;
 
             float h = rng.nextFloat();
 
-            float i = Util.lerp(diff, h /* flat */, (h * h) /* curved */);
+            float i;
+            {
+                //probably slow to calculate all of this; much can be cached and done in better ways to approximate the percentile curvature
+                float min = this.priMin(), max = this.priMax(), mid = priMid();
+                float deltaFlat = (mid - (max - min) / 2) / (max - min);
+                if (!Float.isFinite(deltaFlat))
+                    i = h; /* flat */
+                else
+                    i = Util.lerp(deltaFlat, h /* flat */, deltaFlat > 0 ? ((float) Math.sqrt(h)) : (h * h) /* curved */);
+            }
 
-            int j = Math.round(i * (size-0.5f));
-            //assert(j >= 0 && j < size);
+            int j = Math.round(i * (size-0.5f)); //assert(j >= 0 && j < size);
             return j;
         }
     }
@@ -654,6 +659,19 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     public float priMax() {
         Y x = items.first();
         return x != null ? priElse(x, -1) : 0;
+    }
+
+    /** priority of the middle index item, if exists; else returns average of priMin and priMax */
+    public float priMid() {
+
+        Object[] ii = items.items;
+        int s = Math.min(ii.length, size());
+        if (s > 2)
+            return pri((Y) ii[s/2]);
+        else if (s > 1)
+            return (priMin() + priMax())/2;
+        else
+            return priMin();
     }
 
     @Override

@@ -39,7 +39,7 @@ public class Answer implements Consumer<Task> {
 
 
     public final NAR nar;
-    private int triesRemain;
+    public int triesRemain;
     public TimeRangeFilter time;
     public Term template = null;
 

@@ -133,7 +133,9 @@ public class MatrixDeriver extends Deriver {
         Bag<?, TaskLink> tasklinks = concept.tasklinks();
         Bag<Term, PriReference<Term>> termlinks = concept.termlinks();
 
-        if (commit(nar, tasklinks, termlinks)) {
+        commit(d, concept, tasklinks, termlinks);
+
+        if (!tasklinks.isEmpty()) {
 
             final ArrayHashSet<TaskLink> tasklinksFired = d.firedTaskLinks;
             tasklinksFired.clear();

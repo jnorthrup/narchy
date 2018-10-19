@@ -158,7 +158,7 @@ public class SimpleDeriver extends Deriver {
         private final Random rng = d.random;
 
         {
-            Deriver.commit(d.nar, c.tasklinks(), c.termlinks());
+            Deriver.commit(d, c, c.tasklinks(), c.termlinks());
         }
 
         @Override
@@ -192,7 +192,7 @@ public class SimpleDeriver extends Deriver {
         final Random rng = d.random;
 
         {
-            Deriver.commit(n, c.tasklinks(), null);
+            Deriver.commit(d, c, c.tasklinks(), null);
         }
 
         @Override
@@ -219,7 +219,7 @@ public class SimpleDeriver extends Deriver {
             final Random rng = d.random;
 
             {
-                Deriver.commit(n, c.tasklinks(), null);
+                Deriver.commit(d, c, c.tasklinks(), null);
             }
 
             @Override

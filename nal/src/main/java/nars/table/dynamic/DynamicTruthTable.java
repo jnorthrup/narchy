@@ -11,8 +11,6 @@ import nars.truth.dynamic.DynStampTruth;
 import nars.truth.dynamic.DynamicTruthModel;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Predicate;
-
 
 /**
  * computes dynamic truth according to implicit truth functions
@@ -26,6 +24,7 @@ public final class DynamicTruthTable extends DynamicTaskTable {
         super(c, beliefOrGoal);
         this.model = model;
     }
+
 
     @Override
     public final void match(Answer t) {

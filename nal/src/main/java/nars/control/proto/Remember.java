@@ -13,6 +13,7 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
+import nars.truth.dynamic.DynTruth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ListIterator;
@@ -55,10 +56,10 @@ public class Remember extends AbstractTask {
         setInput(input, c);
     }
 
-    public void setInput(@Nullable Task input, NAR n) {
-        if (input!=null)
-            setInput(input, n.conceptualize(input));
-    }
+//    public void setInput(@Nullable Task input, NAR n) {
+//        if (input!=null)
+//            setInput(input, n.conceptualize(input));
+//    }
 
     /** concept must correspond to the input task */
     public void setInput(Task input, @Nullable Concept c) {
@@ -95,6 +96,8 @@ public class Remember extends AbstractTask {
 
          if (!remembered.isEmpty()) {
 
+             Term conceptTerm = concept!=null ? concept.term() : null;
+
              ListIterator<ITask> ll = remembered.listIterator();
              while (ll.hasNext()) {
                  ITask r = ll.next();
@@ -102,12 +105,13 @@ public class Remember extends AbstractTask {
                      ll.remove();
 
                      Task rr = (Task)r;
-                     ll.add(new TaskLinkTask(rr));
+                     ll.add(new TaskLinkTask(rr, conceptTerm !=null && conceptTerm.equals(rr.term().concept()) ? concept : null));
                      ll.add(new Reaction(rr));
                  }
              }
 
              remembered.forEach(r -> ITask.run(r, n));
+             remembered.clear();
 
              //return AbstractTask.of(remembered);
 
@@ -120,10 +124,8 @@ public class Remember extends AbstractTask {
      * attempt to insert into belief table
      */
     protected void input(NAR n) {
-//        if (input instanceof TaskProxy) {
-//            input = ((TaskProxy)input).the(); //create concrete copy
-//        }
-        ((TaskConcept) concept).add(this, n);
+        if (!(input instanceof DynTruth.DynamicTruthTask))
+            ((TaskConcept) concept).add(this, n);
     }
 
     private void validate(NAR n) {

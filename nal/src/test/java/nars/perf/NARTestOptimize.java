@@ -45,8 +45,8 @@ class NARTestOptimize {
                 n.random().setSeed(System.nanoTime());
                 return n;
             })
-                .var("attnCapacity", 4, 128, 8,
-                        (NAR n, int i) -> n.attn.active.setCapacity(i))
+//                .var("attnCapacity", 4, 128, 8,
+//                        (NAR n, int i) -> n.attn.active.setCapacity(i))
 
 //                .var("ttlMax", 6, 20, 3,
 //                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
@@ -65,8 +65,8 @@ class NARTestOptimize {
 //                            n.questionPriDefault.set(f);
 //                            n.questPriDefault.set(f);
 //                        })
-                .var("goalPriDefault", 0, 1f, 0.1f,
-                        (NAR n, float f) -> n.goalPriDefault.set(f))
+//                .var("goalPriDefault", 0, 1f, 0.1f,
+//                        (NAR n, float f) -> n.goalPriDefault.set(f))
 
                 .var("derivationComplexityExponent", 1f, 3f, 0.5f,
                         (NAR n, float f) -> derivers(n).forEach(x ->
@@ -79,8 +79,8 @@ class NARTestOptimize {
             ;
 
 
-            int suiteIterations = 4;
-            int samples = 256;
+            int suiteIterations = 3;
+            int samples = 128;
             Optimization<NAR, TestNARSuite> o = l.optimize((Supplier<NAR> s) -> {
                 TestNARSuite t = new TestNARSuite(s, testClasses);
                 t.run(parallel, suiteIterations);

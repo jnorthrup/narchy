@@ -74,50 +74,47 @@ public class AbstractGoalActionConcept extends ActionConcept {
         Predicate<Task> withoutCuriosity = t -> !(t instanceof CuriosityTask) && !t.isEternal();  /* filter curiosity tasks? */
 
 
-        int actionDur = this.actionSustain;
-        if (actionDur < 0) actionDur = n.dur();
 
-        long rad = (now - prev);
         //long s = prev, e = now;
         //long s = now, e = next;
-        //long s = prev, e = next;
-        long s = now - rad/2;
-        long e = now + rad/2;
-//                //0;
-//                //1;
-//                //Tense.occToDT(rad); //controls fall-off / bleed-through of goal across time
+        long s = prev, e = next;
+        //long agentDur = (now - prev);
+        //long s = now - agentDur/2, e = now + agentDur/2;
+
+        int actionDur = this.actionSustain;
+        if (actionDur < 0)
+            actionDur =
+                    n.dur();
+                    //Tense.occToDT(agentDur);
 
         int limit = Answer.TASK_LIMIT_DEFAULT;
 
-        TruthPolation a = Answer.
-                relevance(true, limit, s, e, term, null, n).match(goals()).truthpolation(actionDur);
-        if (a!=null) {
-            a = a.filtered();
-            actionTruth = a.truth();
-
-//            System.out.println(actionNonAuthentic);
-//            aWithCuri.print();
-//            System.out.println();
-//            System.out.println();
-
-        } else
-            actionTruth = null;
-
-        TruthPolation aWithoutCuri = Answer.
-                relevance(true, limit, s, e, term, withoutCuriosity, n).match(goals()).truthpolation(actionDur);
-        if (aWithoutCuri!=null) {
+        BeliefTable table = goals();
 
 
-            //aWithoutCuri = aWithoutCuri.filtered();
-            actionDex = aWithoutCuri.truth();
+        Answer o = Answer.
+                relevance(true, limit, s, e, term, withoutCuriosity, n);
+        o.triesRemain = table.size()+1; //dont give up, otherwise the filtered curiosity tasks will consume the remaining tries
+        TruthPolation organic = o.match(table).truthpolation(actionDur);
+        if (organic!=null) {
+            actionDex = organic.filtered().truth();
         } else {
             actionDex = null;
         }
 
 
-//        if (a!=null) {
-//            System.out.println(a);
-//        }
+        TruthPolation raw = Answer.
+                relevance(true, limit, s, e, term, null, n).match(table).truthpolation(actionDur);
+        if (raw!=null) {
+             actionTruth = raw.filtered().truth();
+        } else
+            actionTruth = null;
+
+
+
+        //if this happens, for whatever reason..
+        if (actionTruth == null && actionDex!=null)
+            actionTruth = actionDex;
     }
 
 

@@ -157,7 +157,7 @@ public class PoleCart extends NAgentX {
         );
 
 
-        final float SPEED = 3f;
+//        final float SPEED = 3f;
 //        BiPolarAction F = actionBipolarFrequencyDifferential(id, false, (x) -> {
 //            float a =
 //                    x * SPEED;

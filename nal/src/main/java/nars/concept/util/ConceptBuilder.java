@@ -95,9 +95,9 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
     private BeliefTables newDynamicBeliefTable(Term t, DynamicTruthModel dmt, boolean beliefOrGoal) {
         return new BeliefTables(
+                new DynamicTruthTable(t, dmt, beliefOrGoal),
                 newTemporalTable(t, beliefOrGoal),
-                newEternalTable(t),
-                new DynamicTruthTable(t, dmt, beliefOrGoal)
+                newEternalTable(t)
         );
     }
 

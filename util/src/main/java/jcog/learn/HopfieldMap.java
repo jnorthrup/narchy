@@ -10,6 +10,7 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedur
 
 import java.util.Random;
 
+/** untested */
 public class HopfieldMap<X> {
 
     private final X[] x;

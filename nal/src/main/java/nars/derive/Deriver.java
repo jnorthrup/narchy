@@ -6,6 +6,7 @@ import jcog.pri.bag.Bag;
 import nars.$;
 import nars.NAR;
 import nars.Task;
+import nars.concept.Concept;
 import nars.control.Cause;
 import nars.control.DurService;
 import nars.derive.budget.DefaultPriWeightedDeriverBudgeting;
@@ -137,16 +138,22 @@ abstract public class Deriver extends Causable {
     abstract protected void derive(Derivation d, BooleanSupplier kontinue);
 
 
-    /** returns false if no tasklinks are present */
-    static protected boolean commit(NAR nar, Bag<?, TaskLink> tasklinks, Bag<Term, PriReference<Term>> termlinks) {
-        float linkForgetting = nar.forgetRate.floatValue();
-        tasklinks.commit(tasklinks.forget(linkForgetting));
-        if (tasklinks.isEmpty())
-            return false;
 
-        if (termlinks!=null)
-            termlinks.commit(termlinks.forget(linkForgetting));
-        return true;
+    static protected void commit(Derivation d, Concept concept, Bag<?, TaskLink> tasklinks, Bag<Term, PriReference<Term>> termlinks) {
+
+        long curTime = d.time;
+        Long prevCommit = concept.meta("DeriverCommit", curTime);
+
+        if ((prevCommit == null || prevCommit!=curTime)) {
+
+            double deltaDurs = (prevCommit == null) ? 0 : ((double)(curTime - prevCommit)) / d.dur;
+
+            float forgetRate = (float)(1 - Math.exp(-deltaDurs)) * d.nar.forgetRate.floatValue();
+
+            tasklinks.commit(tasklinks.forget(forgetRate));
+            if (termlinks != null)
+                termlinks.commit(termlinks.forget(forgetRate));
+        }
 
     }
 

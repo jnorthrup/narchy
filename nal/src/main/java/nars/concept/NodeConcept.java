@@ -140,8 +140,8 @@ public class NodeConcept implements Concept {
     }
 
     @Override
-    public void meta(String key, Object value) {
-        meta.put(key, value);
+    public <X> X meta(String key, Object value) {
+        return (X) meta.put(key, value);
     }
 
     @Override
