@@ -96,6 +96,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
                         this, n)
 
         );
+        pixels.resolution(0.2f);
 
         window(new CameraSensorView(pixels, this), 400, 900);
 

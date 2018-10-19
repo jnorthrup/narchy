@@ -57,7 +57,7 @@ class NARTestOptimize {
                 .var("activationRate", 0, 1f, 0.1f,
                             (NAR n, float f) -> n.activateConceptRate.set(f))
                 .var("forgetRate", 0, 1f, 0.1f,
-                        (NAR n, float f) -> n.forgetRate.set(f))
+                        (NAR n, float f) -> n.forgetDurs.set(f))
                 .var("beliefPriDefault", 0, 1f, 0.1f,
                         (NAR n, float f) -> n.beliefPriDefault.set(f))
 //                .var("questionPriDefault", 0, 1f, 0.1f,
@@ -120,7 +120,7 @@ class NARTestOptimize {
             }).var("ttlMax", 6, 100, 20, (DeductiveMeshTest t, int i) -> {
                 t.test.nar.deriveBranchTTL.set(i);
             }).var("forgetRate", 0, 1f, 0.2f, (DeductiveMeshTest t, float f) -> {
-                t.test.nar.forgetRate.set(f);
+                t.test.nar.forgetDurs.set(f);
             });
 
 

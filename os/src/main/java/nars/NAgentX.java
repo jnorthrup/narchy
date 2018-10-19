@@ -299,7 +299,7 @@ abstract public class NAgentX extends NAgent {
         );
 
         m.actionUnipolar($.func("forget", a.id), (f)->{
-            nar.forgetRate.set(Util.lerp(f, 0.5f, 0.99f));
+            nar.forgetDurs.set(Util.lerp(f, 0.5f, 0.99f));
         });
         m.actionUnipolar($.func("awake", a.id), (f)->{
             nar.activateConceptRate.set(Util.lerp(f, 0.1f, 0.99f));
@@ -374,7 +374,7 @@ abstract public class NAgentX extends NAgent {
         //n.freqResolution.set(0.03f);
         n.termVolumeMax.set(22);
 
-        n.forgetRate.set(0.9f);
+        n.forgetDurs.set(0.9f);
         n.activateConceptRate.set(0.01f);
 
 

@@ -25,6 +25,8 @@ import static java.util.stream.Collectors.toList;
  * applies forgetting, and this is applied at commit time by separate
  * positive and negative decay rates.  the value is clamped to a range
  * (ex: 0..+1) so it doesn't explode.
+ *
+ * https://cogsci.indiana.edu/pub/parallel-terraced-scan.pdf
  */
 public class Cause implements Comparable<Cause> {
 

@@ -42,9 +42,9 @@ public abstract class Param {
 
     /** TODO make an abstract TermLinkStrategy class responsible for this */
     @Deprecated public static final int TermLinkFanoutMax =
-            //16;
+            16;
             //10;
-            8;
+            //8;
             //6;
             //2;
             //4;
@@ -111,7 +111,7 @@ public abstract class Param {
     /**
      * default bag forget rate
      */
-    public final FloatRange forgetRate = new FloatRange(1f, 0f, 1f);
+    public final FloatRange forgetDurs = new FloatRange(1f, 0f, 8f);
 
 
     public static final boolean FILTER_SIMILAR_DERIVATIONS = true;
@@ -376,11 +376,11 @@ public abstract class Param {
      * Maximum length of the evidental base of the Stamp, a power of 2
      * TODO IntRange
      */
-    public static final int STAMP_CAPACITY = 16;
+    public static final int STAMP_CAPACITY = 12;
 
     /** TODO make this NAR-specific */
-    public static final int CAUSE_MAX = 64;
-    public static final IntRange causeCapacity = new IntRange(64, 0, CAUSE_MAX);
+    public static final int CAUSE_MAX = 32;
+    public static final IntRange causeCapacity = new IntRange(32, 0, CAUSE_MAX);
 
 
     public final static int UnificationStackMax = 128;
