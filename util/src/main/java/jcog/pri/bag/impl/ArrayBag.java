@@ -22,6 +22,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static jcog.Util.lerp;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 
@@ -34,7 +35,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             new AtomicFloatFieldUpdater(ArrayBag.class, "mass");
     private static final AtomicFloatFieldUpdater<ArrayBag> PRESSURE =
             new AtomicFloatFieldUpdater(ArrayBag.class, "pressure");
-
 
 
     final PriMerge mergeFunction;
@@ -86,7 +86,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         if (s == 0) return Stream.empty();
         else {
             Object[] x = items.array();
-            return IntStream.range(0, Math.min(s, x.length)).mapToObj(i -> (Y)x[i]).filter(y -> y != null && !y.isDeleted());
+            return IntStream.range(0, Math.min(s, x.length)).mapToObj(i -> (Y) x[i]).filter(y -> y != null && !y.isDeleted());
         }
     }
 
@@ -281,19 +281,56 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         if (size == 1 || rng == null)
             return 0;
         else {
-            float min = this.priMin(), max = this.priMax();
-
-            float targetPercentile = rng.nextFloat();
-
-            float indexNorm =
-                    Util.lerp((max-min), targetPercentile /* flat */, (targetPercentile * targetPercentile) /* curved */);
-
-
-            int j = Math.round(indexNorm * (size-0.5f));
-            //assert(j >= 0 && j < size);
-            return j;
+            return sampleNextLinear(rng, size);
+            //return sampleNextBiLinear(rng, size);
         }
     }
+
+    /**
+     * samples the distribution with the assumption that it is flat
+     */
+    private int sampleNextLinear(Random rng, int size) {
+        float min = this.priMin(), max = this.priMax();
+
+        float targetPercentile = rng.nextFloat();
+
+        float indexNorm =
+                lerp((max - min), targetPercentile /* flat */, (targetPercentile * targetPercentile) /* curved */);
+
+        return Util.bin(indexNorm, size);
+    }
+
+    /**
+     * evaluates the median value to model the distribution as 2-linear piecewise function
+     * experimental NOT working yet
+     */
+    private int sampleNextBiLinear(Random rng, int size) {
+        if (size == 2) {
+            //special case
+            return sampleNextLinear(rng, size);
+        }
+
+        float targetPercentile = rng.nextFloat();
+        float min = this.priMin(), max = this.priMax(), med = priMedian();
+        float range = max - min;
+        float indexNorm;
+
+        if (range > ScalarValue.EPSILON) {
+            float balance = (max-med) / range; //measure of skewness or something; 0.5 = centered (median~=mean)
+            //balance < 0.5: denser distribution of elements below the median
+            //        > 0.5: denser dist above
+            if (balance >= 0.5f)
+                targetPercentile = Util.lerp(2 * (balance - 0.5f), targetPercentile, 1); //distort to the extremum
+            else
+                targetPercentile = Util.lerp(2 * (0.5f - balance), targetPercentile, 0); //distort to the extremum
+        }
+
+        indexNorm =
+                lerp(range, targetPercentile /* flat */, (targetPercentile * targetPercentile) /* curved */);
+
+        return Util.bin(indexNorm, size);
+    }
+
 
 //    /**
 //     * size > 0
@@ -331,6 +368,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 //            {
 //              /*
 //
+//              https://en.wikipedia.org/wiki/Quantile_function
 //              https://en.wikipedia.org/wiki/Median#Inequality_relating_means_and_medians
 //
 //              https://en.wikipedia.org/wiki/Importance_sampling
@@ -398,9 +436,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         boolean removed;
         synchronized (items) {
             if (items.get(suspectedPosition) == y) {
-                    items.remove(suspectedPosition);
+                items.remove(suspectedPosition);
                 removeFromMap(y);
-                    removed = true;
+                removed = true;
             } else {
                 removed = false;
             }
@@ -575,7 +613,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             throw new WTF();
         return removed;
     }
-    @Nullable private Y tryRemoveFromMap(Y x) {
+
+    @Nullable
+    private Y tryRemoveFromMap(Y x) {
         Y removed = map.remove(key(x));
         return removed;
     }
@@ -698,12 +738,12 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             if (p == p) {
                 action.accept(y);
             } else {
-                if (removals==null)
+                if (removals == null)
                     removals = new LinkedList();
                 removals.add(pair(y, i));
             }
         }
-        if (removals!=null) {
+        if (removals != null) {
             for (ObjectIntPair<Y> r : removals) {
                 remove(r.getOne(), r.getTwo());
             }
@@ -724,15 +764,17 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         return x != null ? priElse(x, -1) : 0;
     }
 
-    /** priority of the middle index item, if exists; else returns average of priMin and priMax */
+    /**
+     * priority of the middle index item, if exists; else returns average of priMin and priMax
+     */
     public float priMedian() {
 
         Object[] ii = items.items;
         int s = Math.min(ii.length, size());
         if (s > 2)
-            return pri((Y) ii[s/2]);
+            return pri((Y) ii[s / 2]);
         else if (s > 1)
-            return (priMin() + priMax())/2;
+            return (priMin() + priMax()) / 2;
         else
             return priMin();
     }

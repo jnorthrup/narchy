@@ -167,11 +167,12 @@ class ArrayBagTest {
         for (int cap : new int[] { 2, 3, 4, 5, 6, 7, 8 }) {
             for (float batchSizeProp : new float[]{0.001f, 0.1f, 0.3f }) {
 
-                System.out.println("linear");
                 BagTest.testBagSamplingDistributionLinear(curveBag(cap, PriMerge.plus), batchSizeProp);
 
-                System.out.println("linear squashed");
                 BagTest.testBagSamplingDistributionSquashed(curveBag(cap, PriMerge.plus), batchSizeProp);
+
+                BagTest.testBagSamplingDistributionCurved(curveBag(cap, PriMerge.plus), batchSizeProp);
+
             }
         }
     }
@@ -180,10 +181,8 @@ class ArrayBagTest {
     void testCurveBagDistribution8_BiggerBatch() {
         for (float batchSizeProp : new float[]{0.5f}) {
 
-            System.out.println("linear");
             BagTest.testBagSamplingDistributionLinear(curveBag(8, PriMerge.plus), batchSizeProp);
 
-            System.out.println("squashed");
             BagTest.testBagSamplingDistributionSquashed(curveBag(8, PriMerge.plus), batchSizeProp);
         }
     }

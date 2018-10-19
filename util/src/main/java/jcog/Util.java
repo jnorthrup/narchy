@@ -805,8 +805,11 @@ public enum Util {
     }
 
     public static int bin(float x, int bins) {
-        return (int) ((x - (0.5f / bins)) * bins);
-        //        int b = (int) Math.floor((x + (0.5 / bins)) * bins);
+        //return (int) (x  * bins);
+        return Math.round( x * (bins - 1) );
+
+        //return (int) ((x + 0.5f) * bins);
+        //        return (int) Math.floor((x + (0.5 / bins)) * bins);
         //        return Util.clamp(b, 0, bins-1);
     }
 

@@ -318,7 +318,18 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
     }
 
     default float depressurize() {
-        return 0;
+        return depressurize(1);
+    }
+
+    default float depressurize(float rate) {
+        //HACK TODO atomic
+        float maxPressurePerItem = 1;
+        float p = Math.min(size() * maxPressurePerItem, depressurize());
+        float released = p * rate;
+        float returned = p * (1 - rate);
+        if (returned > ScalarValue.EPSILON)
+            pressurize(returned);
+        return released;
     }
 
     default Iterable<V> commit() {
@@ -332,32 +343,20 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
      * how fast the bag should allow new items. 0.5 is a default value
      */
     default @Nullable Consumer<V> forget(float temperature) {
-        //float m =
-        //0.5f / size();
-        //0.5f / Util.sqrt(size());
-        //Math.max(m, ScalarValue.EPSILON);
-        //ScalarValue.EPSILON;
+
         int size = size();
         if (size > 0) {
             int cap = capacity();
-            float pressure = depressurize();
+            float pressure = depressurize(temperature);
             float mass = mass();
 
             if ((size > 0) && (pressure > 0) && (cap > 0) && (mass > 0) && temperature > 0) {
+                Consumer eachMustForgetPct =
+                        PriForget.forgetPressure(temperature, cap, pressure, mass);
+                        //PriForget.forgetIdeal(temperature, 0.5f, size, cap, pressure, mass);
 
-    //            float idealPri = 1 - temperature; //headroom median balanced
-    //            float totalQuell = (mass + pressure ) - (s * idealPri);
-    //            float eachMustForgetPct =
-    //                        Util.unitize(totalQuell / s);
-
-                float eachMustForgetPct =
-                        temperature * Util.unitize(pressure / mass);
-                        //temperature * Util.unitize(pressure / (pressure + mass));
-                        //Util.unitize(pressure * temperature / mass);
-
-                if (eachMustForgetPct > cap * ScalarValue.EPSILON) {
-                    return new PriForget(eachMustForgetPct);
-                }
+                if (eachMustForgetPct != null)
+                    return eachMustForgetPct;
 
             }
             return null;

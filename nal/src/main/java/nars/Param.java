@@ -28,15 +28,6 @@ public abstract class Param {
     public static final boolean SHUFFLE_TERMUTES = true;
 
 
-    /**
-     * size of buffer for tasks that have been derived (and are being de-duplicated) but not yet input.
-     * input may happen concurrently (draining the bag) while derivations are inserted from another thread.
-     */
-    public static final int DerivedTaskBagCapacity = 2048;
-
-
-    /** max percent of capacity allowed input */
-    public static final float DerivedTaskBagDrainRateLimit = 0.5f;
 
     public static final boolean ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME = true;
 
@@ -231,7 +222,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, 0, TTL_MIN * 16);
+    public final IntRange deriveBranchTTL = new IntRange(24 * TTL_MIN, 0, TTL_MIN * 16);
     public final IntRange subUnifyTTLMax = new IntRange( 8, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 

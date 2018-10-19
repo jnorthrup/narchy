@@ -142,12 +142,19 @@ abstract public class Deriver extends Causable {
     static protected void commit(Derivation d, Concept concept, Bag<?, TaskLink> tasklinks, Bag<Term, PriReference<Term>> termlinks) {
 
         long curTime = d.time;
-        Long prevCommit = concept.meta("DeriverCommit", curTime);
+        Long prevCommit = concept.meta("C", curTime);
 
         int dur = d.dur;
-        if ((prevCommit == null || (curTime - prevCommit >= dur))) {
+        int minForgetTime =
+                1;
+                //dur;
 
-            double deltaDurs = (prevCommit == null) ? 0 : ((double)(curTime - prevCommit)) / dur;
+        if (prevCommit == null) {
+            tasklinks.commit(null);
+            termlinks.commit(null);
+        } else if ((curTime - prevCommit >= minForgetTime)) {
+
+            double deltaDurs = ((double)(curTime - prevCommit)) / dur;
 
             float forgetDurs = d.nar.forgetDurs.floatValue();
             float forgetRate = (float)(1 - Math.exp(-deltaDurs/forgetDurs));
