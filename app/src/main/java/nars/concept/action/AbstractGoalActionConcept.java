@@ -3,7 +3,6 @@ package nars.concept.action;
 import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
-import nars.link.TermLinker;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
@@ -11,7 +10,6 @@ import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.temporal.RTreeBeliefTable;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
-import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
@@ -28,6 +26,7 @@ import static nars.Op.GOAL;
 public class AbstractGoalActionConcept extends ActionConcept {
 
 
+    private final RTreeBeliefTable curiosityTable;
 
     /** current calculated goalTask */
     protected volatile @Nullable Truth actionTruth;
@@ -36,13 +35,14 @@ public class AbstractGoalActionConcept extends ActionConcept {
     protected volatile @Nullable Truth actionDex;
 
 
-    public AbstractGoalActionConcept(Term c, TermLinker linker, NAR n) {
-        super(c, linker, n);
+    public AbstractGoalActionConcept(Term term,  NAR n) {
+        this(term, n.conceptBuilder.newTable(term, false), n);
     }
 
-    protected AbstractGoalActionConcept(Term term, SensorBeliefTables sensorBeliefTables, BeliefTable newTable, NAR n) {
-        super(term, sensorBeliefTables, newTable, n);
+    protected AbstractGoalActionConcept(Term term, BeliefTable goals, NAR n) {
+        super(term, new SensorBeliefTables(term, true, n.conceptBuilder), goals, n);
 
+        ((BeliefTables)goals()).tables.add(curiosityTable = new RTreeBeliefTable());
 
     }
 
@@ -119,31 +119,15 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
 
     @Override
-    public void add(Remember t, NAR n) {
-        if (t.input.isGoal()) {
-            RTreeBeliefTable gg = ((BeliefTables)goals()).tableFirst(RTreeBeliefTable.class);
-            if (gg.size()+1 >= gg.capacity()) {
-                //HACK
-                //search for oldest curiosity task to eliminate
-                TaskRegion bb = gg.bounds();
-                if (bb!=null) {
-                    long s = bb.start();
-                    Task tc = Answer.relevance(true, 1,
-                            s, s, term, x -> x instanceof CuriosityTask, n)
-                            .match(gg).any();
-                    if (tc!=null) {
-                        gg.removeTask(tc);
-                        t.forget(tc );
-                        return;
-                    }
-                }
+    public void add(Remember r, NAR n) {
 
-//                if (bb!=null) {
-//                    bb.start()
-//                }
-            }
+        if (r.input instanceof CuriosityTask) {
+            //intercept curiosity goals for the curiosity table
+            curiosityTable.add(r, n);
+        } else {
+            super.add(r, n);
         }
-        super.add(t, n);
+
     }
 
     @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {

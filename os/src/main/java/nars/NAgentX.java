@@ -126,11 +126,11 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
-                .attention(() -> new Attention(256))
+                .attention(() -> new Attention(512))
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
-                        new Revaluator.DefaultRevaluator(0.5f),
+                        new Revaluator.DefaultRevaluator(0.75f),
                         //new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
 
                         Util.concurrencyExcept(2), false))
@@ -157,7 +157,7 @@ abstract public class NAgentX extends NAgent {
 
                         //new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
                         new HijackConceptIndex(
-                                128 * 1024,
+                                64 * 1024,
                                 //64 * 1024,
                                 //8 * 1024,
                                 4)

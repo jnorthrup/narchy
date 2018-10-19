@@ -322,14 +322,22 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
     }
 
     default float depressurize(float rate) {
-        //HACK TODO atomic
+
+        rate = Math.min(1, rate);
+
+        //HACK TODO atomic instead of release/return
+
         float maxPressurePerItem = 1;
-        float p = Math.min(size() * maxPressurePerItem, depressurize());
-        float released = p * rate;
+
+        float release = depressurize();
+
+        float p = Math.min(size() * maxPressurePerItem, release);
+        float freed = p * rate;
         float returned = p * (1 - rate);
         if (returned > ScalarValue.EPSILON)
             pressurize(returned);
-        return released;
+
+        return freed;
     }
 
     default Iterable<V> commit() {

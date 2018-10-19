@@ -4,8 +4,6 @@ import jcog.Util;
 import nars.$;
 import nars.NAR;
 import nars.control.channel.CauseChannel;
-import nars.control.proto.Remember;
-import nars.table.dynamic.SensorBeliefTables;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -27,9 +25,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
 
     public GoalActionConcept(Term term, NAR n, MotorFunction motor) {
         super(term,
-                new SensorBeliefTables(term, true, n.conceptBuilder),
                 n.conceptBuilder.newTable(term, false),
-                //new CuriosityGoalTable(term, false, n),
                 n);
 
 
@@ -42,23 +38,6 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
     }
 
 
-    @Override
-    public void add(Remember r, NAR n) {
-
-//        //TEMPORARY
-//        Param.DEBUG = true;
-//        if (r.input.isGoal() && !r.input.isEternal() && r.input.range() > 1000*15) {
-//            System.out.println(r.input.proof());
-//        }
-
-//        if (r.input!=null && r.input.isGoal()) {
-//            if (r.input.range() > n.dur() * 256) {
-//                System.err.println("caught long goal task: " + r.input);
-//                System.err.println(r.input.proof());
-//            }
-//        }
-        super.add(r, n);
-    }
 
     @Override
     public void update(long prev, long now, long next, NAR n) {

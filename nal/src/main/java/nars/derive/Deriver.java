@@ -54,7 +54,7 @@ abstract public class Deriver extends Causable {
 
     public final DerivedTasks derived =
             //new DerivedTasks.DerivedTasksMap(4096);
-            new DerivedTasks.DerivedTasksBag(4096, 0.01f,false);
+            new DerivedTasks.DerivedTasksBag(1024, 0.1f,false);
 
     public final Activator linked = new Activator(true);
 
@@ -141,29 +141,38 @@ abstract public class Deriver extends Causable {
 
     static protected void commit(Derivation d, Concept concept, Bag<?, TaskLink> tasklinks, Bag<Term, PriReference<Term>> termlinks) {
 
-        long curTime = d.time;
-        Long prevCommit = concept.meta("C", curTime);
 
         int dur = d.dur;
         int minForgetTime =
                 1;
                 //dur;
 
-        if (prevCommit == null) {
-            tasklinks.commit(null);
-            termlinks.commit(null);
-        } else if ((curTime - prevCommit >= minForgetTime)) {
+        Consumer<TaskLink> tasklinkUpdate;
+        Consumer<PriReference<Term>> termlinkUpdate;
+
+        long curTime = d.time;
+        Long prevCommit = concept.meta("C", curTime);
+        if (prevCommit!=null && (curTime - prevCommit >= minForgetTime)) {
 
             double deltaDurs = ((double)(curTime - prevCommit)) / dur;
 
             float forgetDurs = d.nar.forgetDurs.floatValue();
             float forgetRate = (float)(1 - Math.exp(-deltaDurs/forgetDurs));
 
-            tasklinks.commit(tasklinks.forget(forgetRate));
+            tasklinkUpdate = tasklinks.forget(forgetRate);
+
             if (termlinks != null)
-                termlinks.commit(termlinks.forget(forgetRate));
+                termlinkUpdate = termlinks.forget(forgetRate);
+            else
+                termlinkUpdate = null;
+        } else {
+            tasklinkUpdate = null;
+            termlinkUpdate = null;
         }
 
+        tasklinks.commit(tasklinkUpdate);
+        if (termlinks!=null)
+            termlinks.commit(termlinkUpdate);
     }
 
     /** punctuation equalizer: value factor for the conclusion punctuation type [0..1.0] */

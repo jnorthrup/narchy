@@ -60,7 +60,7 @@ class NARTestOptimize {
 //                        (NAR n, int f) -> Param.TermLinkFanoutMax = f)
                 .var("activationRate", 0, 1f, 0.1f,
                             (NAR n, float f) -> n.activateConceptRate.set(f))
-                .var("forgetRate", 0, 4f, 0.1f,
+                .var("forgetRate", 0, 4f, 0.5f,
                         (NAR n, float f) -> n.forgetDurs.set(f))
                 .var("beliefPriDefault", 0, 1f, 0.1f,
                         (NAR n, float f) -> n.beliefPriDefault.set(f))
@@ -83,7 +83,7 @@ class NARTestOptimize {
             ;
 
 
-            int suiteIterations = 2;
+            int suiteIterations = 3;
             int samples = 128;
             Optimization<NAR, TestNARSuite> o = l.optimize((Supplier<NAR> s) -> {
                 TestNARSuite t = new TestNARSuite(s, testClasses);

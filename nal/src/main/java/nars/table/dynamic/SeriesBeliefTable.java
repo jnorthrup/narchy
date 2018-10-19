@@ -32,6 +32,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
     public final AbstractTaskSeries<SeriesTask> series;
 
+
     public SeriesBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<SeriesTask> s) {
         super(c, beliefOrGoal);
         this.series = s;
@@ -190,7 +191,11 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
         long tStart = t.start(), tEnd = t.end();
         if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
-            if (!allowIfBeforeOrAfter || (tStart >= seriesStart && tEnd <= seriesEnd)) {
+            if (!allowIfBeforeOrAfter ||
+                    //(tStart >= seriesStart && tEnd <= seriesEnd) //any intersection
+                    (tStart >= seriesStart && tEnd <= seriesEnd) //only if any future predicting component is not completely contained.  allows predition to occurr until completely swallowed
+            ) {
+                //TODO actually absorb (transfer) the non-series task priority in proportion to the amount predicted, gradually until complete absorption
                 boolean seriesDefinedThere = !series.isEmpty(tStart, tEnd);
 
                 return seriesDefinedThere;

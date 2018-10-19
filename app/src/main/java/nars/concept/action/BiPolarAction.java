@@ -8,7 +8,6 @@ import nars.agent.NAct;
 import nars.agent.NSense;
 import nars.concept.sensor.AbstractSensor;
 import nars.control.channel.CauseChannel;
-import nars.link.TemplateTermLinker;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -61,11 +60,11 @@ public class BiPolarAction extends AbstractSensor {
 
 
         this.pos = new AbstractGoalActionConcept(pos,
-                TemplateTermLinker.of(pos),
+                //TemplateTermLinker.of(pos),
                 //TemplateTermLinker.of(pos, 4, neg),
                 nar);
         this.neg = new AbstractGoalActionConcept(neg,
-                TemplateTermLinker.of(neg),
+                //TemplateTermLinker.of(neg),
                 //TemplateTermLinker.of(neg, 4, pos),
                 nar);
 
