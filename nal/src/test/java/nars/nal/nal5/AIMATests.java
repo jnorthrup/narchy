@@ -1,7 +1,6 @@
 package nars.nal.nal5;
 
 import com.google.common.math.PairedStatsAccumulator;
-import jcog.data.list.FasterList;
 import jcog.io.SparkLine;
 import nars.*;
 import nars.term.Term;
@@ -54,7 +53,7 @@ class AIMATests {
 //        n.beliefPriDefault.set(0.25f);
 //        n.questionPriDefault.set(0.9f);
 
-        n.termVolumeMax.set(14);
+        n.termVolumeMax.set(12);
         //n.log();
 
 

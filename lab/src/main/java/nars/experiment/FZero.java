@@ -154,7 +154,8 @@ public class FZero extends NAgentX {
 //        });
 
 
-        Reward rr = rewardNormalized("race", -1, +1, () -> {
+        FloatAveraged avgRR = new FloatAveraged(0.6f);
+        Reward rr = rewardNormalized("race", -1, +1, (() -> {
             double distance = fz.vehicleMetrics[0][1];
             double deltaDistance = (distance - lastDistance);
 
@@ -176,8 +177,10 @@ public class FZero extends NAgentX {
                     //0.25f;
                     //0.01f;
                     0f;
-            return race - bias;
-        });
+            float R = race - bias;
+
+            return avgRR.valueOf(R);
+        }));
 
         //reward("noCollide", ()->fz.power >= FZeroGame.FULL_POWER- ScalarValue.EPSILON ? +1 : -1 ); //dont bump edges
 

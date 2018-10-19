@@ -54,19 +54,19 @@ class NARTestOptimize {
 //                        (NAR n, float f) -> n.termlinkBalance.set(f))
 //                .var("termlinkFanOut", 2, 16, 1,
 //                        (NAR n, int f) -> Param.TermLinkFanoutMax = f)
-//                .var("activationRate", 0, 1f, 0.1f,
-//                            (NAR n, float f) -> n.activateConceptRate.set(f))
-//                .var("forgetRate", 0, 1f, 0.1f,
-//                        (NAR n, float f) -> n.forgetRate.set(f))
-//                .var("beliefPriDefault", 0, 1f, 0.1f,
-//                        (NAR n, float f) -> n.beliefPriDefault.set(f))
+                .var("activationRate", 0, 1f, 0.1f,
+                            (NAR n, float f) -> n.activateConceptRate.set(f))
+                .var("forgetRate", 0, 1f, 0.1f,
+                        (NAR n, float f) -> n.forgetRate.set(f))
+                .var("beliefPriDefault", 0, 1f, 0.1f,
+                        (NAR n, float f) -> n.beliefPriDefault.set(f))
 //                .var("questionPriDefault", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> {
 //                            n.questionPriDefault.set(f);
 //                            n.questPriDefault.set(f);
 //                        })
-//                .var("goalPriDefault", 0, 1f, 0.1f,
-//                        (NAR n, float f) -> n.goalPriDefault.set(f))
+                .var("goalPriDefault", 0, 1f, 0.1f,
+                        (NAR n, float f) -> n.goalPriDefault.set(f))
 
                 .var("derivationComplexityExponent", 1f, 3f, 0.5f,
                         (NAR n, float f) -> derivers(n).forEach(x ->
@@ -80,7 +80,7 @@ class NARTestOptimize {
 
 
             int suiteIterations = 4;
-            int samples = 64;
+            int samples = 256;
             Optimization<NAR, TestNARSuite> o = l.optimize((Supplier<NAR> s) -> {
                 TestNARSuite t = new TestNARSuite(s, testClasses);
                 t.run(parallel, suiteIterations);

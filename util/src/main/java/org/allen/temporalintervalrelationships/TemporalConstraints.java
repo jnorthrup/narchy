@@ -28,6 +28,8 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * An Allen Temporal Constraints Network
  *
  * @author Jörn Franke <jornfranke@gmail.com>
+ *
+ * see also: https://github.com/anskarl/LoMRF/blob/develop/docs/2_2_temporal_inference_examples.md#predicate-schemas
  */
 public class TemporalConstraints<E> {
 

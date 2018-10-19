@@ -161,7 +161,7 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
                     u = null;
                 }
 
-            } while (u!=null && v!=null && r < radius);
+            } while ((u!=null || v!=null) && r <= radius);
 
             return true;
 //                    if (a == b) {

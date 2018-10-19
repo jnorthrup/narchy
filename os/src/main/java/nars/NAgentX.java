@@ -191,7 +191,7 @@ abstract public class NAgentX extends NAgent {
                         "induction.nal",
                         "induction.goal.nal"
                         //"curiosity.nal"
-                        //, "motivation.nal"
+                        , "motivation.nal"
                 );
                 SimpleDeriver sd = SimpleDeriver.forConcepts(n, rules,
                         (java.util.List<Concept>)(a.rewards.stream().flatMap((Reward x) -> stream(x.spliterator(), false)).collect(Collectors.toList())),
@@ -232,6 +232,10 @@ abstract public class NAgentX extends NAgent {
     }
 
     static void initPlugins2(NAR n, NAgent a) {
+
+
+        //new AgentControlFeedback(a);
+
         //new Spider(n, Iterables.concat(Iterables.concat(java.util.List.of(a.id, n.self()), a.actions), a.sensors));
 
         //new NARSpeak.VocalCommentary(n);
@@ -449,6 +453,8 @@ abstract public class NAgentX extends NAgent {
 
 //        Impiler.ImpilerTracker t = new Impiler.ImpilerTracker(8, 16, n);
 //        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(8, 8, n);
+
+
 
     }
 
@@ -668,5 +674,6 @@ abstract public class NAgentX extends NAgent {
             super.paintBelow(gl, r);
         }
     }
+
 }
 

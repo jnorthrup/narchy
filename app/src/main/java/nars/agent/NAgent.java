@@ -608,6 +608,6 @@ public class NAgent extends NARService implements NSense, NAct {
         for (Reward r : rewards) {
             total += r.summary();
         }
-        return total;
+        return total/rewards.size();
     }
 }

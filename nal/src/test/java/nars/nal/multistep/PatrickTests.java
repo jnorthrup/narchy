@@ -117,15 +117,15 @@ public class PatrickTests extends NALTest {
         TestNAR tt = test;
 
 
-        int cycles = 3000;
+        int cycles = 6000;
 
         tt.confTolerance(0.9f);
 
         tt.nar.freqResolution.set(0.05f);
-        tt.nar.confResolution.set(0.05f);
+//        tt.nar.confResolution.set(0.05f);
 
 
-        tt.nar.time.dur(cycles);
+        tt.nar.time.dur(cycles/3);
         tt.nar.termVolumeMax.set(10);
 
 
@@ -137,7 +137,7 @@ public class PatrickTests extends NALTest {
                 "(pliable:$1 =|> molten:$1).",
                 "( (pliable:$1 &| reshape($1)) ==>+10 hard:$1).",
                 "(hard:$1 =|> unscrews:$1).",
-                "$1.0 unscrews:toothbrush! :|:"
+                "$1.0 unscrews:toothbrush! |"
         );
 
         tt.mustGoal(cycles, "hot:toothbrush", 1f, 0.5f, (t) -> t >= 0);
