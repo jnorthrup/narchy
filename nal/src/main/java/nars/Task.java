@@ -960,9 +960,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             long a = times[i - 1], b = times[i];
 
             long dt = b - a;
+            if (dt == 0) continue;
             assert(dt > 0);
-//            if (dt == 0)
-//                continue; //duplicate time point, skip
 
             //assert(ti != ETERNAL && ti != XTERNAL && ti > times[i - 1] && ti < times[i + 1]);
             float eviNext = evi(b, dur);

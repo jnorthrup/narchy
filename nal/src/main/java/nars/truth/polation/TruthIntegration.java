@@ -1,12 +1,7 @@
 package nars.truth.polation;
 
 
-import jcog.math.Longerval;
 import nars.Task;
-import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
-
-import java.util.Arrays;
 
 import static nars.time.Tense.ETERNAL;
 
@@ -54,121 +49,91 @@ public class TruthIntegration {
 
         long tEnd = t.end();
         if (
-                (qStart >= tStart && qEnd <= tEnd)  //contained
+                (qEnd <= tStart) //disjoint before
                 ||
-                (qStart <= tStart && qEnd >= tEnd) //disjoint
-            )
-        {
+                (qStart >= tEnd) //disjoint after
+                ||
+                (qStart >= tStart && qEnd <= tEnd)  //contained
+            ) {
             //simple 1-component trapezoid
             return t.eviIntegTrapezoidal(dur, qStart, qEnd);
         }
 
-
-        //two remaining cases:
-        //  a) intersects the task and hangs before or after it
-        //  b) contains the entire task
-
-        
-        long[] qt = Longerval.intersectionArray(qStart, qEnd, tStart, tEnd);
-        //piecewise trapezoid.  TODO optimize this
-        {
-
-            TempLongArrayList pp = new TempLongArrayList(/*(mid ? 1 : 0) + (qt == null ? 2 : 4)*/6);
-
-            pp.add(qStart);
-
-//            if (mid)
-//                pp.add((qStart + qEnd) / 2L); //mid
-
-            if (qt != null) {
-                //inner points
-                long qta = qt[0];
-                if (qta > qStart && qta < qEnd) //quick test to avoid set add
-                    pp.add(qta);
-                /*else */{
-                    //pp.add((qta + ((qStart + qEnd) / 2L)) / 2L);
-                    long before = qta - Math.max(1, dur);
-                    if (before > qStart)
-                        pp.add(before); //right before qta
-                }
-
-                long qtb = qt[1];
-                if (qta != qtb && qtb > qStart && qtb < qEnd)  //quick test to avoid set add
-                    pp.add(qtb);
-                /*else*/ {
-                    //pp.add((qtb + ((qStart + qEnd) / 2L)) / 2L);
-                    long after = qtb + Math.max(1, dur);
-                    if (after < qEnd)
-                        pp.add(after); //right after qtb
-                }
-            }
-
-
-            pp.add(qEnd);
-
-            return t.eviIntegTrapezoidal(dur, pp.toSortedArray());
+        if (qStart <= tStart && qEnd >= tEnd) {
+            //contains the point: need to evaluate in 2 piecewise sections (3 points)
+            //contains the task: need to evaluate in 3 piecewise sections (4 points)
+            return t.eviIntegTrapezoidal(dur, qStart, tStart, tEnd, qEnd);
         }
 
-        //return x.eviIntegRectMid(dur, points);
+        //remaining cases:
+        //  ntersects the task and includes time
+        //          a) before
+        //          OR
+        //          b) after
 
+        if (qStart <= tStart) {
+            return t.eviIntegTrapezoidal(dur, qStart, tStart, qEnd);
+        } else {
+            return t.eviIntegTrapezoidal(dur, qStart, tEnd, qEnd);
+        }
 
     }
 
-    private static final class TempLongArrayList extends LongArrayList {
-
-        public TempLongArrayList(int cap) {
-            items = new long[cap];
-        }
-
-        @Override
-        public boolean add(long newItem) {
-            int size = this.size;
-            if (size > 0 && items[size-1] == newItem)
-                return true; //equal to the last value
-            return super.add(newItem);
-        }
-
-        @Override
-        public long[] toArray() {
-            int size = this.size;
-            if (size == 0)
-                return ArrayUtils.EMPTY_LONG_ARRAY;
-
-            long[] x = items;
-            if (x.length == size)
-                return x;
-
-            return Arrays.copyOf(x, size);
-        }
-
-        /** the input is likely already sorted so do a few extra comparisons to avoid a sort() */
-        @Override public long[] toSortedArray() {
-            long[] array = this.toArray();
-            switch (array.length) {
-                case 0:
-                case 1:
-                    return array;
-                case 2:
-                    if (array[0] > array[1]) {
-                        long x = array[0];
-                        array[0] = array[1];
-                        array[1] = x;
-                    }
-                    return array;
-                case 3:
-                    if (array[0] <= array[1] && array[1] <= array[2])
-                        return array;
-                    break;
-                case 4:
-                    if (array[0] <= array[1] && array[1] <= array[2] && array[2] <= array[3])
-                        return array;
-                    break;
-                default:
-                    break;
-            }
-            //Arrays.sort(array);
-            ArrayUtils.sort(array, (l)->-l);
-            return array;
-        }
-    }
+//    private static final class TempLongArrayList extends LongArrayList {
+//
+//        public TempLongArrayList(int cap) {
+//            items = new long[cap];
+//        }
+//
+//        @Override
+//        public boolean add(long newItem) {
+//            int size = this.size;
+//            if (size > 0 && items[size-1] == newItem)
+//                return true; //equal to the last value
+//            return super.add(newItem);
+//        }
+//
+//        @Override
+//        public long[] toArray() {
+//            int size = this.size;
+//            if (size == 0)
+//                return ArrayUtils.EMPTY_LONG_ARRAY;
+//
+//            long[] x = items;
+//            if (x.length == size)
+//                return x;
+//
+//            return Arrays.copyOf(x, size);
+//        }
+//
+//        /** the input is likely already sorted so do a few extra comparisons to avoid a sort() */
+//        @Override public long[] toSortedArray() {
+//            long[] array = this.toArray();
+//            switch (array.length) {
+//                case 0:
+//                case 1:
+//                    return array;
+//                case 2:
+//                    if (array[0] > array[1]) {
+//                        long x = array[0];
+//                        array[0] = array[1];
+//                        array[1] = x;
+//                    }
+//                    return array;
+//                case 3:
+//                    if (array[0] <= array[1] && array[1] <= array[2])
+//                        return array;
+//                    break;
+//                case 4:
+//                    if (array[0] <= array[1] && array[1] <= array[2] && array[2] <= array[3])
+//                        return array;
+//                    break;
+//                default:
+//                    break;
+//            }
+//            //Arrays.sort(array);
+//            ArrayUtils.sort(array, (l)->-l);
+//            return array;
+//        }
+//    }
 }
