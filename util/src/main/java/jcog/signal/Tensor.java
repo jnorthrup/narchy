@@ -156,11 +156,9 @@ public interface Tensor  {
 
 
     public static int[] stride(int[] shape) {
-        int size = shape[0];
-        int[] stride = new int[size - 1];
+        int[] stride = new int[shape.length - 1];
         int striding = shape[0];
         for (int i = 1, dimsLength = shape.length; i < dimsLength; i++) {
-            size *= shape[i];
             stride[i-1] = striding;
             striding *= shape[i];
         }

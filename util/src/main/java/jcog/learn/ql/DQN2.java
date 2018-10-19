@@ -57,26 +57,13 @@ public class DQN2 extends Agent {
         this.targetFuture = new double[actions];
         this.actions = actions;
 
-        valuePredict = new LivePredictor.LSTMPredictor(0.04f, 4);
+        //LSTM
+        //valuePredict = new LivePredictor.LSTMPredictor(0.04f, 4);
 
-        /** initialize */
-        valuePredict.learn(new double[inputs], new double[actions]);
+        //MLP
+        valuePredict = new LivePredictor.MLPPredictor(0.05f, new XoRoShiRo128PlusRandom(1));
 
-//        valuePredict = new MLPMap(new XoRoShiRo128PlusRandom(1), inputs,
-//                new MLPMap.Layer(
-//                        //inputs*actions,
-//                        //inputs + actions,
-//                        (inputs + actions)/2,
-//                        TanhActivation.the),
-////                new MLPMap.Layer(
-////                        //inputs + actions,
-////                        (inputs + actions)/2,
-////                        TanhActivation.the),
-//                new MLPMap.Layer(actions,
-//                        //SigmoidActivation.the
-//                        TanhActivation.the
-//                )
-//        );
+        valuePredict.learn(new double[inputs], new double[actions]); /** HACK initialize */
 
 //            network = new BasicNetwork();
 //            network.addLayer( new BasicLayer( null, true, 9 ) );

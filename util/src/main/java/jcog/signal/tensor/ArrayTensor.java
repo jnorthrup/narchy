@@ -32,17 +32,12 @@ public class ArrayTensor implements
         b.readFully(data, start, end-start);
     }
 
-    public ArrayTensor(float... oneD) {
+    public ArrayTensor(float[] oneD) {
         this.shape = new int[]{oneD.length};
         this.stride = ArrayUtils.EMPTY_INT_ARRAY;
         this.data = oneD;
     }
 
-    public ArrayTensor(int dim, float... data) {
-        this.shape = new int[]{dim};
-        this.stride = ArrayUtils.EMPTY_INT_ARRAY;
-        this.data = data;
-    }
 
     public ArrayTensor(int... shape) {
         int size;
@@ -147,7 +142,7 @@ public class ArrayTensor implements
     }
 
     public static ArrayTensor vector(float... data) {
-        return new ArrayTensor(data.length, data);
+        return new ArrayTensor(data);
     }
 
 

@@ -13,7 +13,7 @@ dependencies {
     compile group: 'tec.uom', name: 'uom-se', version: '1.0.9'
     compile group: 'org.hdrhistogram', name: 'HdrHistogram', version: '2.1.10'
     compile group: 'org.msgpack', name: 'jackson-dataformat-msgpack', version: '0.8.16'
-    compile (group: 'org.roaringbitmap', name: 'RoaringBitmap', version: '0.7.18') {
+    compile (group: 'org.roaringbitmap', name: 'RoaringBitmap', version: '0.7.21') {
         exclude(module: 'commons-lang3')
         exclude(module: 'guava')
     }

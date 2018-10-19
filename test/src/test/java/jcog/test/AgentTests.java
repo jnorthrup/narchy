@@ -35,10 +35,11 @@ class AgentTests implements AfterAllCallback {
     @ParameterizedTest() void testAll(Class<? extends AbstractAgentTest> envClass, IntIntToObjectFunction<Agent> agent) {
         try {
             env = envClass.getConstructor().newInstance();
-            env.test(agent);
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
+
+        env.test(agent);
     }
 
     private static Stream<Arguments> args() {
