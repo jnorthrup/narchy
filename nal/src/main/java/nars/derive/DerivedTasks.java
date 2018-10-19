@@ -1,5 +1,6 @@
 package nars.derive;
 
+import jcog.math.FloatRange;
 import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
@@ -126,18 +127,20 @@ public interface DerivedTasks extends PriMerge<Task, Task> {
 
 
         /** max percent of capacity allowed input */
-        float DerivedTaskBagDrainRateLimit = 0.5f;
+        public final FloatRange DerivedTaskBagDrainRateLimit = new FloatRange(0.5f, 0, 1f);
 
         private final TaskBagDrainer derivedTasksDrainer = new TaskBagDrainer(tasks, true,
-                (size, capacity) -> Math.min(size, Math.round(capacity * DerivedTaskBagDrainRateLimit))
+                (size, capacity) -> Math.min(size, Math.round(capacity * DerivedTaskBagDrainRateLimit.floatValue()))
         );
+
 
         /**
          * @capacity size of buffer for tasks that have been derived (and are being de-duplicated) but not yet input.
          * input may happen concurrently (draining the bag) while derivations are inserted from another thread.
          */
-        public DerivedTasksBag(int capacity, boolean inlineOrDeferredInput) {
+        public DerivedTasksBag(int capacity, float drainLimitInitial, boolean inlineOrDeferredInput) {
             this.inlineOrDeferredInput = inlineOrDeferredInput;
+            this.DerivedTaskBagDrainRateLimit.set(drainLimitInitial);
             this.tasks.setCapacity(capacity);
         }
 

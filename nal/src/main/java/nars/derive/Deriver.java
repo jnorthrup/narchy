@@ -53,8 +53,8 @@ abstract public class Deriver extends Causable {
 
 
     public final DerivedTasks derived =
-            new DerivedTasks.DerivedTasksMap(4096);
-            //new DerivedTasks.DerivedTasksBag(Param.DerivedTaskBagCapacity, false);
+            //new DerivedTasks.DerivedTasksMap(4096);
+            new DerivedTasks.DerivedTasksBag(4096, 0.01f,false);
 
     public final Activator linked = new Activator(true);
 

@@ -66,7 +66,7 @@ public class TruthIntegration {
         }
 
         //remaining cases:
-        //  ntersects the task and includes time
+        //  intersects the task and includes time
         //          a) before
         //          OR
         //          b) after
