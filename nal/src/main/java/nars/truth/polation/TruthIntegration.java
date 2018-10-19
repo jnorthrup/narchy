@@ -52,43 +52,26 @@ public class TruthIntegration {
             return t.evi() * range;
         }
 
-
         long tEnd = t.end();
-//        if (qStart >= tStart && qEnd <= tEnd) {
-//            if (t instanceof TruthletTask) {
-//                //quick points array determination
-//                long d = qEnd - qStart;
-//                long qMid = (qStart + qEnd) / 2L;
-//                if (d == 0) {
-//                    throw new UnsupportedOperationException(); //points = new long[] { qStart };
-//                } else if (d < dur || (qMid == qStart) || (qMid == qEnd)) {
-//                    //points = new long[] { qStart, qEnd };
-//                    return t.evi(qStart, dur) + t.evi(qEnd, dur); //2 point samples summed
-////                } else if (d <= dur) {
-////                    points = new long[] { qStart, (qStart + qEnd)/2L, qEnd };
-//                } else {
-//                    //with midpoint supersample
-//                    //points = new long[]{qStart, qMid, qEnd};
-//                    //continue below
-//                }
-//            } else {
-//                assert(qStart >= tStart && qEnd <= tEnd);
-//                //for internal point of rectangular truth, simply use the point sample
-//                return t.evi(qStart, dur) * range;
-//            }
-//        }
-
-
-
-//        boolean mid = qStart + 1 != qEnd;
-
-        if (qStart >= tStart && qEnd <= tEnd) {
-            //internal
+        if (
+                (qStart >= tStart && qEnd <= tEnd)  //contained
+                ||
+                (qStart <= tStart && qEnd >= tEnd) //disjoint
+            )
+        {
+            //simple 1-component trapezoid
             return t.eviIntegTrapezoidal(dur, qStart, qEnd);
         }
 
+
+        //two remaining cases:
+        //  a) intersects the task and hangs before or after it
+        //  b) contains the entire task
+
+        
         long[] qt = Longerval.intersectionArray(qStart, qEnd, tStart, tEnd);
-        if (/*mid || */(qt != null)) {
+        //piecewise trapezoid.  TODO optimize this
+        {
 
             TempLongArrayList pp = new TempLongArrayList(/*(mid ? 1 : 0) + (qt == null ? 2 : 4)*/6);
 
@@ -124,8 +107,6 @@ public class TruthIntegration {
             pp.add(qEnd);
 
             return t.eviIntegTrapezoidal(dur, pp.toSortedArray());
-        } else {
-            return t.eviIntegTrapezoidal(dur, qStart, qEnd);
         }
 
         //return x.eviIntegRectMid(dur, points);

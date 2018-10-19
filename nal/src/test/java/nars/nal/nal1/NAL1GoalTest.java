@@ -10,22 +10,14 @@ import static nars.Op.GOAL;
 public class NAL1GoalTest extends NALTest {
 
 
-    private final int cycles = 120;
+    private final int cycles = 40;
 
     @Override protected NAR nar() {
         return NARS.tmp(1);
     }
 
 
-    @Test
-    void testBeliefDeductionReverse() {
-        test
-                .input("(b-->c).")
-                .input("(a-->b).")
-                .mustBelieve(cycles, "(a-->c)", 1f, 0.81f)
-                .mustBelieve(cycles, "(c-->a)", 1f, 0.45f)
-        ;
-    }
+
 
     @Test
     void deductionPositiveGoalNegativeBelief() {
@@ -40,12 +32,12 @@ public class NAL1GoalTest extends NALTest {
     @Test
     void deductionNegativeGoalPositiveBelief() {
         test
-                .log()
                 .input("--(nars --> stupid)!")
                 .input("(stupid --> dangerous).")
                 .mustGoal(cycles, "(nars-->dangerous)", 0f, 0.81f)
         ;
     }
+
     @Test
     void deductionNegativeGoalPositiveBeliefSwap() {
         //(B --> C), (A --> B), neqRCom(A,C)    |- (A --> C), (Belief:DeductionX)
@@ -53,7 +45,7 @@ public class NAL1GoalTest extends NALTest {
                 .input("--(nars --> stupid)!")
                 .input("(derivation --> nars).")
                 .mustGoal(cycles, "(derivation-->stupid)", 0f, 0.81f)
-                .mustNotOutput(cycles, "(stupid-->derivation)", GOAL, 0, 1, 0, 1, (t)->true)
+                .mustNotOutput(cycles, "(stupid-->derivation)", GOAL, 0, 1, 0.5f, 1, (t)->true)
         ;
     }
 
@@ -62,6 +54,14 @@ public class NAL1GoalTest extends NALTest {
         test
                 .goal("--(nars --> stupid)")
                 .believe("(human --> stupid)")
+                .mustGoal(cycles, "(nars --> human)", 0f, 0.4f)
+                .mustGoal(cycles, "(human --> nars)", 0f, 0.42f);
+    }
+    @Test
+    void inductionNegativeGoalPositiveBelief()  {
+        test
+                .goal("--(human --> stupid)")
+                .believe("(nars --> stupid)")
                 .mustGoal(cycles, "(nars --> human)", 0f, 0.4f)
                 .mustGoal(cycles, "(human --> nars)", 0f, 0.42f);
     }

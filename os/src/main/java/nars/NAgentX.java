@@ -399,13 +399,10 @@ abstract public class NAgentX extends NAgent {
 
     public static void initPlugins(NAR n) {
 
-        new MatrixDeriver(Derivers.nal(n, 1, 1));
-        new MatrixDeriver(Derivers.nal(n, 2, 3));
-        new MatrixDeriver(Derivers.nal(n, 4, 4));
-        new MatrixDeriver(Derivers.nal(n, 5, 8));
-
-        new MatrixDeriver(Derivers.rules(n, "motivation.nal"));
-        new MatrixDeriver(Derivers.rules(n, "induction.goal.nal"));
+        new MatrixDeriver(Derivers.nal(n, 1, 8,
+            "motivation.nal",
+                "induction.goal.nal"
+        ));
 
         //new STMLinkage(n, 1);
 

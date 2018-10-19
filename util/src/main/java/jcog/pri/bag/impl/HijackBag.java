@@ -279,8 +279,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                     switch (mode) {
 
                         case GET:
-                            toReturn = p;
-                            break;
+                            return p;
+
 
                         case PUT:
                             if (p == incoming) {

@@ -47,7 +47,7 @@
             //(A --> C), (B --> C), task("@"), neqRCom(A,B)  |- (B --> A), (Punctuation:Quest)
 
     (A --> B), (B --> C), neqRCom(A,C)      |- (C --> A), (Belief:Exemplification, Goal:DesireWeakPB)
-     (B --> C), (A --> B), neqRCom(A,C)      |- (C --> A), (Belief:ExemplificationX)
+     (B --> C), (A --> B), neqRCom(A,C)      |- (C --> A), (Belief:ExemplificationX, Goal:DesireWeakPB)
         (A --> B), (B --> C), task("?"), neqRCom(A,C)  |- (C --> A), (Punctuation:Question)
         (B --> C), (A --> B), task("?"), neqRCom(A,C)  |- (C --> A), (Punctuation:Question)
             //(A --> B), (B --> C), task("@"), neqRCom(A,C)  |- (C --> A), (Punctuation:Quest)
@@ -57,14 +57,14 @@
 //If S is a special case of P, and P is a special case of S, then S and P are similar
 
     (S --> P), (P --> S) |- (S <-> P), (Belief:Intersection, Goal:DesireWeakPB)
-    (S --> P), (P --> S) |- --(S <-> P), (Belief:ComparisonSymmetric, Goal:DesireWeakPB)
+    (S --> P), (P --> S) |- --(S <-> P), (Belief:ComparisonSymmetric)
 
 //// similarity-based syllogism ////////////////////////////////////////////////////////////////////////////////////
 //If P and S are a special case of M, then they might be similar (weak),
 //also if P and S are a general case of M
 
-    (P --> M), (S --> M), neqRCom(S,P) |- (S <-> P), (Belief:Comparison)
-    (M --> P), (M --> S), neqRCom(S,P) |- (S <-> P), (Belief:Comparison)
+    (P --> M), (S --> M), neqRCom(S,P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeakPB)
+    (M --> P), (M --> S), neqRCom(S,P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeakPB)
 
 
     //this is basically a duplicate of the generalized analogy; see analogy.nal

@@ -8,7 +8,6 @@ import org.java_websocket.WebSocketImpl;
 import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.handshake.Handshakedata;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -35,7 +34,7 @@ class WebSocketSelector extends WebSocketAdapter {
         this.listener = listener;
     }
 
-    @Nullable
+
     private boolean registerNext() {
         NewChannel newChannel = newChannels.poll();
         if (newChannel == null) {

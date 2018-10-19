@@ -2,6 +2,7 @@ package nars.task.util.series;
 
 import jcog.TODO;
 import jcog.data.list.MetalConcurrentQueue;
+import jcog.math.Longerval;
 import nars.table.dynamic.SeriesBeliefTable;
 
 import java.util.function.Consumer;
@@ -120,6 +121,7 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
 //                }
 //            }
 
+
         if (minT != ETERNAL && minT != TIMELESS) {
             boolean point = maxT == minT;
 
@@ -132,9 +134,14 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
                 return true; //a = 0;
 
             int center = (a + b) / 2;
+
+            boolean fullyDisjoint = Longerval.intersectLength(minT, maxT, s, e) == -1;
+
             int cap = this.cap;
-            int r = 0, radius = cap / 2 + 1;
+            int r = 0, capacityRadius = cap / 2 + 1;
             T u, v;
+            int supplied = 0;
+            long suppliedMin = Long.MAX_VALUE, suppliedMax = Long.MIN_VALUE;
             do {
 
                 int yi = center + r;
@@ -142,6 +149,7 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
                 if (v!=null && (!exactRange || v.intersects(minT, maxT))) {
                     if (!whle.test(v))
                         return false;
+                    supplied++; if (!fullyDisjoint) { long zs = v.start(), ze = v.end(); if (zs < suppliedMin) suppliedMin = zs; if (ze > suppliedMax) suppliedMax = ze; }
                 } else {
                     v = null;
                 }
@@ -157,11 +165,15 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
                 if (u!=null && (!exactRange || u.intersects(minT, maxT))) {
                     if (!whle.test(u))
                         return false;
+                    supplied++; if (!fullyDisjoint) { long zs = u.start(), ze = u.end(); if (zs < suppliedMin) suppliedMin = zs; if (ze > suppliedMax) suppliedMax = ze; }
                 } else {
                     u = null;
                 }
 
-            } while ((u!=null || v!=null) && r <= radius);
+                if (!exactRange && supplied > 0 && (fullyDisjoint || ((suppliedMin <= minT) && (suppliedMax >= maxT))))
+                    break; //early exit heuristic
+
+            } while ((u!=null || v!=null) && r <= capacityRadius);
 
             return true;
 //                    if (a == b) {

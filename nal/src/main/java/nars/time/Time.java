@@ -4,7 +4,6 @@ import com.netflix.servo.util.Clock;
 import jcog.data.list.MetalConcurrentQueue;
 import nars.NAR;
 import nars.task.AbstractTask.SchedTask;
-import org.jetbrains.annotations.Nullable;
 
 import javax.measure.Quantity;
 import java.io.Serializable;
@@ -85,7 +84,6 @@ public abstract class Time implements Clock, Serializable {
     /**
      * drain scheduled tasks ready to be executed
      */
-    @Nullable
     public void schedule(Consumer<SchedTask> each) {
 
         long now = now();

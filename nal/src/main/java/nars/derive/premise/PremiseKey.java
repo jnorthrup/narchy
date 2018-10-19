@@ -14,27 +14,30 @@ public class PremiseKey extends ByteKey.ByteKeyExternal {
         DynBytes k = d.tmpPremiseKey;
         k.clear();
 
+        /** bits 0..1 */
         byte taskPuncAndIfDouble;
-        switch (d.taskPunc) {
-            case BELIEF:
-                taskPuncAndIfDouble = 0;
-                break;
-            case GOAL:
-                taskPuncAndIfDouble = 1;
-                break;
-            case QUESTION:
-                taskPuncAndIfDouble = 2;
-                break;
-            case QUEST:
-                taskPuncAndIfDouble = 3;
-                break;
-            default:
-                throw new UnsupportedOperationException();
+        {
+            switch (d.taskPunc) {
+                case BELIEF:
+                    taskPuncAndIfDouble = 0;
+                    break;
+                case GOAL:
+                    taskPuncAndIfDouble = 1;
+                    break;
+                case QUESTION:
+                    taskPuncAndIfDouble = 2;
+                    break;
+                case QUEST:
+                    taskPuncAndIfDouble = 3;
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+
+            /* bit 3 */
+            if (d.hasBeliefTruth())
+                taskPuncAndIfDouble |= 1 << 3;
         }
-
-        if (d.hasBeliefTruth())
-            taskPuncAndIfDouble |= 1 << 3;
-
         k.writeByte(taskPuncAndIfDouble);
 
 

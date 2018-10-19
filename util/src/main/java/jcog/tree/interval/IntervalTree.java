@@ -51,7 +51,6 @@ public class IntervalTree<K extends Comparable<? super K>, V> {
 		}
 		return c;
 	}
-	@NotNull
 	public void forEachContainedBy(Between<K> range, BiConsumer<Between<K>,V> each){
 		if(root != null){
 			root.forEachContainedBy(range, each);

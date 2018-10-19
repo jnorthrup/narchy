@@ -29,6 +29,15 @@ public class NAL1Test extends NALTest {
                 .mustBelieve(cycles, "<robin --> animal>", 0.81f);
     }
 
+    @Test
+    void deductionReverseAndAbduction() {
+        test
+                .input("(b-->c).")
+                .input("(a-->b).")
+                .mustBelieve(cycles, "(a-->c)", 1f, 0.81f)
+                .mustBelieve(cycles, "(c-->a)", 1f, 0.45f)
+        ;
+    }
 
 
     @Test

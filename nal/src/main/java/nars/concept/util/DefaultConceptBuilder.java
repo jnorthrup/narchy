@@ -50,8 +50,8 @@ public class DefaultConceptBuilder extends ConceptBuilder {
     private static Map newBagMap(int volume) {
 
 
-        return new UnifiedMap(0, 0.99f);
-        //return new UnifiedMap(0);
+        //return new UnifiedMap(0, 0.99f);
+        return new UnifiedMap(0);
         //return new HashMap(0);
 
     }

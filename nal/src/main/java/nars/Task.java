@@ -47,6 +47,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 /**
  * NAL Task to be processed, consists of a Sentence, stamp, time, and budget.
  */
+@SuppressWarnings("ALL")
 public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Prioritizable {
 
 
@@ -230,7 +231,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
     }
 
-    @Nullable
     static boolean validIndepBalance(Term t, boolean safe) {
 
 
@@ -953,14 +953,17 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
         int n = times.length; assert(n > 1);
 
-        double e = 0;
+        //double e = 0;
+        float e = 0;
         float eviPrev = evi(times[0], dur);
         for (int i = 1; i < n; i++) {
             long a = times[i - 1], b = times[i];
+
             long dt = b - a;
             assert(dt > 0);
-            if (dt == 0)
-                continue; //duplicate time point, skip
+//            if (dt == 0)
+//                continue; //duplicate time point, skip
+
             //assert(ti != ETERNAL && ti != XTERNAL && ti > times[i - 1] && ti < times[i + 1]);
             float eviNext = evi(b, dur);
 

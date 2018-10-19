@@ -431,7 +431,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         return removed;
     }
 
-    @Nullable
+
     private void remove(Y y, int suspectedPosition) {
         boolean removed;
         synchronized (items) {
