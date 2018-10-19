@@ -18,8 +18,8 @@ import nars.table.question.QuestionTable;
 import nars.table.temporal.RTreeBeliefTable;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Term;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -50,9 +50,9 @@ public class DefaultConceptBuilder extends ConceptBuilder {
     private static Map newBagMap(int volume) {
 
 
-        //return new UnifiedMap(0, 0.99f);
+        return new UnifiedMap(0, 0.99f);
         //return new UnifiedMap(0);
-        return new HashMap(0);
+        //return new HashMap(0);
 
     }
 

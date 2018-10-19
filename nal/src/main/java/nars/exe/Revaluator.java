@@ -200,7 +200,7 @@ public interface Revaluator {
                 final float momentum = (float) Math.pow(this.momentum.floatValue(), dt);
                 for (int i = 0; i < cc; i++) {
 
-                    Traffic[] cg = ccc[i].goal;
+                    Traffic[] cg = ccc[i].credit;
 
                     ccc[i].commitFast();
 

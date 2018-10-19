@@ -181,42 +181,44 @@ public class Emotion implements Meter {
     public void perceive(Task t) {
 
         int vol = t.volume();
-        float cost = ((float)vol) / Param.COMPOUND_VOLUME_MAX;
-
-        MetaGoal.Perceive.learn(t.cause(), cost, nar.causes);
-
         float pri = t.priElseZero();
+
+        short[] cause = t.cause();
+        MetaGoal.PerceiveCmplx.learn(cause, ((float)vol) / Param.COMPOUND_VOLUME_MAX, nar.causes);
+        MetaGoal.PerceivePri.learn(cause, pri, nar.causes);
+
+
         busy(pri, vol);
 
         taskFire.increment();
     }
 
-    public void onAnswer(Task questionTask, Task answer) {
-
-
-        if (questionTask == null)
-            return;
-
-        float ansConf = answer.conf();
-//        float qOrig = questionTask.originality();
+//    public void onAnswer(Task questionTask, Task answer) {
 //
-//        float qPriBefore = questionTask.priElseZero();
-//        if (qPriBefore > ScalarValue.EPSILON) {
-//            //float fraction = ansConf * (1 - qOrig);
-//            //float fraction = qOrig / 2f;
-//            float fraction = 0.5f * (1f - qOrig);
-//            answer.take(questionTask, fraction, false,
-//                    /*true */ false);
 //
-//            //HACK append the question as a cause to the task.  ideally this would only happen for dynamic/revised tasks but for all tasks is ok for now
-//            if (answer instanceof NALTask)
-//                ((NALTask) answer).priCauseMerge(questionTask);
-//        }
-
-
-        float str = ansConf;// * qOrig;
-        MetaGoal.Answer.learn(answer.cause(), str, nar.causes);
-    }
+//        if (questionTask == null)
+//            return;
+//
+//        float ansConf = answer.conf();
+////        float qOrig = questionTask.originality();
+////
+////        float qPriBefore = questionTask.priElseZero();
+////        if (qPriBefore > ScalarValue.EPSILON) {
+////            //float fraction = ansConf * (1 - qOrig);
+////            //float fraction = qOrig / 2f;
+////            float fraction = 0.5f * (1f - qOrig);
+////            answer.take(questionTask, fraction, false,
+////                    /*true */ false);
+////
+////            //HACK append the question as a cause to the task.  ideally this would only happen for dynamic/revised tasks but for all tasks is ok for now
+////            if (answer instanceof NALTask)
+////                ((NALTask) answer).priCauseMerge(questionTask);
+////        }
+//
+//
+//        float str = ansConf;// * qOrig;
+//        MetaGoal.Answer.learn(answer.cause(), str, nar.causes);
+//    }
 
 
 

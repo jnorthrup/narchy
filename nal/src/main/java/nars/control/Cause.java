@@ -39,7 +39,7 @@ public class Cause implements Comparable<Cause> {
      * the index corresponds to the ordinal of MetaGoal enum entries.
      * these values are used in determining the scalar 'value' field on each update.
      */
-    public final Traffic[] goal;
+    public final Traffic[] credit;
 
 
     public float value() {
@@ -83,9 +83,9 @@ public class Cause implements Comparable<Cause> {
     public Cause(short id, @Nullable Object name) {
         this.id = id;
         this.name = name != null ? name : id;
-        goal = new Traffic[MetaGoal.values().length];
-        for (int i = 0; i < goal.length; i++) {
-            goal[i] = new Traffic();
+        credit = new Traffic[MetaGoal.values().length];
+        for (int i = 0; i < credit.length; i++) {
+            credit[i] = new Traffic();
         }
     }
 
@@ -251,27 +251,27 @@ public class Cause implements Comparable<Cause> {
 
 
     public void commit(RecycledSummaryStatistics[] valueSummary) {
-        for (int i = 0, purposeLength = goal.length; i < purposeLength; i++) {
-            Traffic p = goal[i];
+        for (int i = 0, purposeLength = credit.length; i < purposeLength; i++) {
+            Traffic p = credit[i];
             p.commit();
             valueSummary[i].accept(p.last);
         }
     }
 
     public void commit() {
-        for (Traffic aGoal : goal)
+        for (Traffic aGoal : credit)
             aGoal.commit();
     }
 
     public void commitFast() {
-        for (Traffic aGoal : goal)
+        for (Traffic aGoal : credit)
             aGoal.commitFast();
     }
 
     public void print(PrintStream out) {
         out.println(this + "\t" +
-                IntStream.range(0, goal.length).mapToObj(x->
-                    MetaGoal.values()[x] + "=" + goal[x]
+                IntStream.range(0, credit.length).mapToObj(x->
+                    MetaGoal.values()[x] + "=" + credit[x]
                 ).collect(toList())
         );
 

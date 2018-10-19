@@ -3,6 +3,7 @@ package jcog.pri.bag;
 import jcog.Util;
 import jcog.data.NumberX;
 import jcog.data.list.table.Table;
+import jcog.pri.ScalarValue;
 import jcog.pri.op.PriForget;
 import jcog.util.FloatFloatToFloatFunction;
 import org.jetbrains.annotations.NotNull;
@@ -331,16 +332,35 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
      * how fast the bag should allow new items. 0.5 is a default value
      */
     default @Nullable Consumer<V> forget(float temperature) {
-        return PriForget.forget(this, temperature, (x)-> {
-            //float m =
-                    //0.5f / size();
-                    //0.5f / Util.sqrt(size());
-            float minPossible =
-                    //Math.max(m, ScalarValue.EPSILON);
-                    //ScalarValue.EPSILON;
-                    0;
-            return new PriForget(x, minPossible);
-        });
+        //float m =
+        //0.5f / size();
+        //0.5f / Util.sqrt(size());
+        //Math.max(m, ScalarValue.EPSILON);
+        //ScalarValue.EPSILON;
+        int size = size();
+        if (size > 0) {
+            int cap = capacity();
+            float pressure = depressurize();
+            float mass = mass();
+
+            if ((size > 0) && (pressure > 0) && (cap > 0) && (mass > 0) && temperature > 0) {
+
+    //            float idealPri = 1 - temperature; //headroom median balanced
+    //            float totalQuell = (mass + pressure ) - (s * idealPri);
+    //            float eachMustForgetPct =
+    //                        Util.unitize(totalQuell / s);
+
+                float eachMustForgetPct = Util.unitize(pressure * temperature / mass);
+
+                if (eachMustForgetPct > cap * ScalarValue.EPSILON) {
+                    return new PriForget(eachMustForgetPct);
+                }
+
+            }
+            return null;
+        } else {
+            return null;
+        }
     }
 
     float mass();

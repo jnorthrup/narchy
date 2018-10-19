@@ -145,13 +145,13 @@ public class PoleCart extends NAgentX {
 //
 //        angX.resolution(0.02f);
 //        angY.resolution(0.02f);
-        this.angX = senseNumber($.the("angX"),
+        this.angX = senseNumber($.inh("angX",id),
                 () -> (float) (0.5f + 0.5f * (Math.sin(angle))));
-        this.angY = senseNumber($.the("angY"),
+        this.angY = senseNumber($.inh("angY",id),
                 () -> (float) (0.5f + 0.5f * (Math.cos(angle))));
 
 
-        this.angVel = senseNumber($.the("angVel"),
+        this.angVel = senseNumber($.inh("angVel",id),
 
                 new FloatPolarNormalized(() -> (float) angleDot)
         );
@@ -166,12 +166,12 @@ public class PoleCart extends NAgentX {
 //            return x;
 //        });
 
-        actionUnipolar($.p($.the("L"),id), (a) -> {
+        actionUnipolar($.inh($.the("L"),id), (a) -> {
             if (!manualOverride)
                 action = Util.clampBi((float) (action + a));
             return a;
         });
-        actionUnipolar($.p($.the("R"),id), (a) -> {
+        actionUnipolar($.inh($.the("R"),id), (a) -> {
             if (!manualOverride)
                 action = Util.clampBi((float) (action - a));
             return a;

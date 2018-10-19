@@ -28,7 +28,9 @@ import static jcog.Texts.n4;
  */
 @Paper
 public enum MetaGoal {
-    Perceive,
+
+    PerceiveCmplx,  //by complexity
+    PerceivePri, //by priority
 
     /**
      * pos: accepted as belief
@@ -40,10 +42,10 @@ public enum MetaGoal {
      */
     Desire,
 
-    /**
-     * pos: anwers a question
-     */
-    Answer,
+//    /**
+//     * pos: anwers a question
+//     */
+//    Answer,
 
     /**
      * pos: actuated a goal concept
@@ -70,7 +72,7 @@ public enum MetaGoal {
         int ordinal = ordinal();
         Cause[] cc = causes.array();
         for (short c : cause) {
-            MetaGoal.learn(cc[c].goal, ordinal, s);
+            MetaGoal.learn(cc[c].credit, ordinal, s);
         }
     }
 
@@ -196,7 +198,7 @@ public enum MetaGoal {
             cc.forEach(c -> {
 
                 int i = 0;
-                for (Traffic t : c.goal) {
+                for (Traffic t : c.credit) {
                     MetaGoal m = MetaGoal.values()[i];
                     double tt = t.total;
                     if (tt != 0) {

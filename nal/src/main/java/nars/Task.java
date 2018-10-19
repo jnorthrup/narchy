@@ -643,7 +643,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
         answer.take(question, answer.priElseZero() * question.priElseZero(), true, false);
 
-        n.emotion.onAnswer(this, answer);
+//        n.emotion.onAnswer(this, answer);
 
         return answer;
     }

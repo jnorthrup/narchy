@@ -17,7 +17,7 @@ class MetaGoalTest {
         NAR n = NARS.tmp(6);
 
         n.emotion.want(MetaGoal.Believe, 0.05f);
-        n.emotion.want(MetaGoal.Perceive, -0.05f);
+        n.emotion.want(MetaGoal.PerceiveCmplx, -0.05f);
 
         DeductiveMeshTest m = new DeductiveMeshTest(n, new int[] { 3, 3 }, 3500);
         m.test.test();
@@ -34,9 +34,9 @@ class MetaGoalTest {
 
         n.causes.forEach(c -> {
             c.commit();
-            double perceive = c.goal[MetaGoal.Perceive.ordinal()].total;
-            double believe = c.goal[MetaGoal.Believe.ordinal()].total;
-            double desire = c.goal[MetaGoal.Desire.ordinal()].total;
+            double perceive = c.credit[MetaGoal.PerceiveCmplx.ordinal()].total;
+            double believe = c.credit[MetaGoal.Believe.ordinal()].total;
+            double desire = c.credit[MetaGoal.Desire.ordinal()].total;
             if (perceive > 0) {
                 c.print(System.out);
             }
