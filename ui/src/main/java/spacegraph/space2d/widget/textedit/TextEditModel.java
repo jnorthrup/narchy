@@ -1,14 +1,8 @@
 package spacegraph.space2d.widget.textedit;
 
-import jcog.data.list.FasterList;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.widget.textedit.buffer.Buffer;
-import spacegraph.space2d.widget.textedit.keybind.ActionRepository;
 import spacegraph.space2d.widget.textedit.view.BufferView;
-import spacegraph.space2d.widget.textedit.view.SmoothValue;
-import spacegraph.space2d.widget.textedit.view.TextEditView;
-
-import java.util.List;
 
 public final class TextEditModel  {
 
@@ -21,12 +15,13 @@ public final class TextEditModel  {
 //        @Nullable Consumer<GL> render;
 //    }
 
-    private Buffer currentBuffer;
-    private final List<TextEditView> drawn = new FasterList<>();
+    /** current buffer */
+    private Buffer buffer;
 
-    public ActionRepository actions;
+    public BufferView view = null;
+
+    public TextEditActions actions;
     public KeyPressed keys;
-    private final SmoothValue scale = new SmoothValue(1);
 
     public TextEditModel() {
         this(new Buffer("", ""));
@@ -37,10 +32,9 @@ public final class TextEditModel  {
     }
 
     public synchronized void setBuffer(Buffer buf) {
-        if (currentBuffer != buf) {
-            drawn.clear();
-            currentBuffer = buf;
-            drawn.add(new BufferView(buf));
+        if (buffer != buf) {
+            buffer = buf;
+            view = new BufferView(buf);
         }
     }
 
@@ -52,29 +46,17 @@ public final class TextEditModel  {
 //        return keys.keyTyped(typedString, when);
 //    }
 
-    public void executeAction(String name, String... args) {
+    public void execute(String name, String... args) {
         actions.run(this, name, args);
     }
 
-    public Buffer buffer() {
-        return this.currentBuffer;
+    public final Buffer buffer() {
+        return this.buffer;
     }
 
-    public List<TextEditView> drawables() {
-        return drawn;
-    }
-
-    public SmoothValue scale() {
-        return this.scale;
-    }
 
     public void createNewBuffer() {
         setBuffer(new Buffer("scratch-" + System.currentTimeMillis(), ""));
-    }
-
-    public void reflesh() {
-        drawn.clear();
-        drawn.add(new BufferView(currentBuffer));
     }
 
 

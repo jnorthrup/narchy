@@ -24,7 +24,7 @@ public class BufferView extends TextEditView implements BufferListener {
         buildLines();
     }
 
-    public void preDraw(GL2 gl) {
+    @Override public void preDraw(GL2 gl) {
         gl.glPushMatrix();
         angle.updateRotate(gl);
         scale.updateScale(gl);

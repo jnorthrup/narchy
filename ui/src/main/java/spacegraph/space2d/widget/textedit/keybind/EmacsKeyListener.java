@@ -199,7 +199,7 @@ public class EmacsKeyListener implements KeyPressed {
 
         } else {
             if (e.isPrintableKey()) {
-                editor.executeAction(/* TODO: "insert" ? */"type", String.valueOf(e.getKeyChar()));
+                editor.execute(/* TODO: "insert" ? */"type", String.valueOf(e.getKeyChar()));
             }
         }
         return true;
@@ -219,7 +219,7 @@ public class EmacsKeyListener implements KeyPressed {
             currentStrokes.add(stroke);
             String actionName = getActionName();
             if (actionName != null) {
-                editor.executeAction(actionName);
+                editor.execute(actionName);
                 this.executed = true;
             } else {
                 this.executed = inStroke;

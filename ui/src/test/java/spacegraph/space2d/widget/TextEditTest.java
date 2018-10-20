@@ -15,9 +15,9 @@ public class TextEditTest  {
     public static void main(String[] args) {
         TextEdit t = new TextEdit();
         TextEditModel e = t.model;
-        e.executeAction("type", "x");
-        e.executeAction("type", "y");
-        e.executeAction("type", "z");
+        e.execute("type", "x");
+        e.execute("type", "y");
+        e.execute("type", "z");
 
         SpaceGraph.window(t, 800, 800);
 

@@ -1,17 +1,18 @@
-package spacegraph.space2d.widget.textedit.keybind;
+package spacegraph.space2d.widget.textedit;
 
 import spacegraph.space2d.widget.textedit.TextEditModel;
+import spacegraph.space2d.widget.textedit.keybind.Action;
+import spacegraph.space2d.widget.textedit.keybind.NoopAction;
 import spacegraph.space2d.widget.textedit.keybind.basic.*;
-import spacegraph.space2d.widget.textedit.keybind.demo.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ActionRepository {
+public class TextEditActions {
 
     private final Map<String, Action> actionMap = new HashMap<>(128);
 
-    public ActionRepository() {
+    public TextEditActions() {
 //        add(new ExitNavyAction());
 
         add(new NoopAction());
@@ -39,17 +40,7 @@ public class ActionRepository {
         add(new OpenFileAction());
         add(new SaveFileAction());
 
-        add(new ViewRefleshAction());
-        add(new ViewScaleUpAction());
-        add(new ViewScaleDownAction());
 
-        // demo
-        add(new XRollPlusAction());
-        add(new XRollMinusAction());
-        add(new YRollPlusAction());
-        add(new YRollMinusAction());
-        add(new ZRollPlusAction());
-        add(new ZRollMinusAction());
 
 //        add(new FullScreenAction());
     }

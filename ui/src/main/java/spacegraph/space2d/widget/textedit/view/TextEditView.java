@@ -11,6 +11,7 @@ public abstract class TextEditView {
     public final Color color = new Color();
 
     public void draw(GL2 gl) {
+        preDraw(gl);
         gl.glPushMatrix();
         position.updateTranslate(gl);
         angle.updateRotate(gl);
@@ -18,6 +19,10 @@ public abstract class TextEditView {
         color.updateColor(gl);
         innerDraw(gl);
         gl.glPopMatrix();
+    }
+
+    protected void preDraw(GL2 gl) {
+
     }
 
     protected abstract void innerDraw(GL2 gl);

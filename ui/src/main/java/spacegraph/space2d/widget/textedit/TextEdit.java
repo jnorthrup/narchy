@@ -4,8 +4,8 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.widget.Widget;
-import spacegraph.space2d.widget.textedit.keybind.ActionRepository;
 import spacegraph.space2d.widget.textedit.keybind.EmacsKeyListener;
+import spacegraph.space2d.widget.textedit.view.BufferView;
 import spacegraph.video.Draw;
 
 
@@ -15,7 +15,7 @@ public class TextEdit extends Widget {
 
     public static TextEditModel defaultModel() {
         TextEditModel e = new TextEditModel();
-        e.actions = new ActionRepository();
+        e.actions = new TextEditActions();
         e.keys = new EmacsKeyListener(e);
         return e;
     }
@@ -35,7 +35,9 @@ public class TextEdit extends Widget {
             gl.glTranslatef(0.5f, 0.5f, 0); //HACK
             gl.glScalef(0.25f, 0.25f, 0.25f); //HACK
 
-            model.drawables().forEach(base -> base.draw(g));
+            BufferView v = model.view;
+            if (v!=null)
+                v.draw(g);
         });
     }
 

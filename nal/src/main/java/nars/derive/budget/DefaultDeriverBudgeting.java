@@ -29,6 +29,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
     /** importance of frequency polarity in result (distance from freq=0.5) */
     public final FloatRange polarityImportance = new FloatRange(0f, 0f, 1f);
 
+    /** increase this discriminate more heavily against more complex derivations */
     public final FloatRange relGrowthExponent = new FloatRange(2.5f, 0f, 8f);
 
     @Override
