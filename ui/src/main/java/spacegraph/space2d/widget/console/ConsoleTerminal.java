@@ -145,18 +145,18 @@ public class ConsoleTerminal extends Widget implements Appendable {
 
 
     @Override
-    public boolean key(KeyEvent e, boolean pressed) {
+    public boolean key(KeyEvent e, boolean pressedOrReleased) {
 
         int cc = e.getKeyCode();
-        if (pressed && cc == 13) {
+        if (pressedOrReleased && cc == 13) {
             term.addInput(new KeyStroke(KeyType.Enter, e.isControlDown(), e.isAltDown(), e.isShiftDown()));
-        } else if (pressed && cc == 8) {
+        } else if (pressedOrReleased && cc == 8) {
             term.addInput(new KeyStroke(KeyType.Backspace, e.isControlDown(), e.isAltDown(), e.isShiftDown()));
-        } else if (pressed && cc == 27) {
+        } else if (pressedOrReleased && cc == 27) {
             term.addInput(new KeyStroke(KeyType.Escape, e.isControlDown(), e.isAltDown(), e.isShiftDown()));
         } else if (e.isPrintableKey() && !e.isActionKey() && !e.isModifierKey()) {
             char c = e.getKeyChar();
-            if (!TerminalTextUtils.isControlCharacter(c) && pressed /* release */) {
+            if (!TerminalTextUtils.isControlCharacter(c) && pressedOrReleased /* release */) {
                 
                 term.addInput(
                         
@@ -166,7 +166,7 @@ public class ConsoleTerminal extends Widget implements Appendable {
             } else {
                 return false;
             }
-        } else if (pressed) {
+        } else if (pressedOrReleased) {
             KeyType c = null;
             
             switch (e.getKeyCode()) {

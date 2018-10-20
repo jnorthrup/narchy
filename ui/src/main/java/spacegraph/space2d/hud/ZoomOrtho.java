@@ -99,12 +99,6 @@ public class ZoomOrtho extends Ortho {
         return true;
     }
 
-
-    @Override
-    public Off onUpdate(Consumer<JoglWindow> c) {
-        return super.onUpdate(c);
-    }
-
     @Override
     public void mouseReleased(MouseEvent e) {
         hud.dragMode = null;

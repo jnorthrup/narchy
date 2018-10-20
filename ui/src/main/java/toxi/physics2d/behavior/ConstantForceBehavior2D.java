@@ -82,8 +82,4 @@ public class ConstantForceBehavior2D<V extends Vec2D> implements ParticleBehavio
         this.scaledForce = force.scale(timeStep);
     }
 
-    public boolean supportsSpatialIndex() {
-        return false;
-    }
-
 }

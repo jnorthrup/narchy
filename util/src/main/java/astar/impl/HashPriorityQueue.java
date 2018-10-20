@@ -15,8 +15,8 @@ public class HashPriorityQueue<K, V> {
     final TreeMap<V, K> treeMap;
 
     public HashPriorityQueue(Comparator<V> comp) {
-        this.hashMap = new HashMap<K, V>();
-        this.treeMap = new TreeMap<V, K>(comp);
+        this.hashMap = new HashMap<>();
+        this.treeMap = new TreeMap<>(comp);
     }
 
     public int size() {

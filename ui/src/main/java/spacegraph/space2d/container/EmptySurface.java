@@ -13,20 +13,6 @@ public class EmptySurface extends Surface {
         visible = false;
     }
 
-    @Override
-    public boolean key(KeyEvent e, boolean pressed) {
-        return false;
-    }
-
-    @Override
-    public boolean key(v2 hitPoint, char charCode, boolean pressed) {
-        return false;
-    }
-
-    @Override
-    public Surface finger(Finger finger) {
-        return null;
-    }
 
     @Override
     public Surface visible(boolean b) {

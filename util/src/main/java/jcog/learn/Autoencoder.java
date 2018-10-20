@@ -1,7 +1,6 @@
 package jcog.learn;
 
 import jcog.Util;
-import jcog.decide.Deciding;
 import jcog.pri.ScalarValue;
 import org.eclipse.collections.impl.list.mutable.primitive.ShortArrayList;
 

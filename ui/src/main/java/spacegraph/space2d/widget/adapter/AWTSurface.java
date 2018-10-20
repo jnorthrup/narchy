@@ -134,7 +134,7 @@ public class AWTSurface extends Widget {
     }
 
     @Override
-    public boolean key(KeyEvent e, boolean pressed) {
+    public boolean key(KeyEvent e, boolean pressedOrReleased) {
         int code = Keyboard.newtKeyCode2AWTKeyCode(e.getKeyCode());
 
         /*
@@ -164,7 +164,7 @@ public class AWTSurface extends Widget {
             Component m = myFocus;
             int modifers = 0;
             Component src = component;
-            if (pressed && e.isPrintableKey()) {
+            if (pressedOrReleased && e.isPrintableKey()) {
 
                 try {
                     processKeyEvent.invoke(m, new java.awt.event.KeyEvent(src,
@@ -179,7 +179,7 @@ public class AWTSurface extends Widget {
 
             try {
                 processKeyEvent.invoke(m, new java.awt.event.KeyEvent(src,
-                        pressed ? java.awt.event.KeyEvent.KEY_PRESSED : java.awt.event.KeyEvent.KEY_RELEASED,
+                        pressedOrReleased ? java.awt.event.KeyEvent.KEY_PRESSED : java.awt.event.KeyEvent.KEY_RELEASED,
                         System.currentTimeMillis(),
                         modifers, code, e.getKeyChar()
                 ));

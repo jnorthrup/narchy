@@ -10,7 +10,7 @@ import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.console.TextEdit;
+import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 
@@ -23,7 +23,7 @@ import java.util.function.Predicate;
  */
 public class OmniBox extends Widget {
 
-    private final TextEdit.TextEditUI edit;
+    private final TextEdit0.TextEditUI edit;
 
 
     private final Gridding results;
@@ -79,7 +79,7 @@ public class OmniBox extends Widget {
 
 
 
-        edit = new TextEdit.TextEditUI() {
+        edit = new TextEdit0.TextEditUI() {
 
             @Override
             protected void onKeyCtrlEnter() {
@@ -107,7 +107,7 @@ public class OmniBox extends Widget {
         };
 
 
-        TextEdit te = new TextEdit(edit);
+        TextEdit0 te = new TextEdit0(edit);
         te.resize(40, 1);
 
         content.add(te);

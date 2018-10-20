@@ -34,7 +34,7 @@ public class Wiring extends FingerDragging {
         CAST.set(Float.class, Double.class, (Function<Float,Double>)(Float::doubleValue)); //1-element
         CAST.set(Double.class, Float.class, (Function<Double,Float>)(Double::floatValue)); //1-element
         CAST.set(Float.class, float[].class, (Function<Float,float[]>)(v -> new float[] { v })); //1-element
-        CAST.set(Float.class, Tensor.class, (Function<Float,Tensor>)(ArrayTensor::new)); //1-element
+        CAST.set(Float.class, Tensor.class, (Function<Float,Tensor>)((f) -> new ArrayTensor(new float[] { f} ))); //1-element
         CAST.set(Tensor.class, ArrayTensor.class, (Function<Tensor,ArrayTensor>)(t -> {
             if (t instanceof ArrayTensor) {
                 return (ArrayTensor) t; //does this happen

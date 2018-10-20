@@ -17,9 +17,9 @@ public class KeyboardChip extends Stacking {
     }
 
     @Override
-    public boolean key(KeyEvent e, boolean pressed) {
+    public boolean key(KeyEvent e, boolean pressedOrReleased) {
         //FIFO, 0=unpressed
-        if (pressed)
+        if (pressedOrReleased)
             out((e.isPrintableKey() ? e.getKeyChar() : e.getKeyCode()));
         else
             out(0);

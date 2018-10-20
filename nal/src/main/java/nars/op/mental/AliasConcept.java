@@ -7,7 +7,6 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.proto.Remember;
 import nars.table.BeliefTable;
-import nars.table.BeliefTables;
 import nars.table.question.QuestionTable;
 import nars.term.Term;
 import nars.term.atom.Atom;

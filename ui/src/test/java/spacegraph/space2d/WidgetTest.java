@@ -6,7 +6,7 @@ import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.console.TextEdit;
+import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
 import spacegraph.space2d.widget.slider.FloatSlider;
@@ -45,12 +45,12 @@ public class WidgetTest {
                                 new FloatSlider("knob slider", 0.75f, 0, 1).type(SliderModel.KnobHoriz)
                         ),
                         new XYSlider(),
-                        new TextEdit(new DummyConsole()),
+                        new TextEdit0(new DummyConsole()),
                         new MetaFrame(new Sketch2DBitmap(256, 256))
                 );
     }
 
-    private static class DummyConsole extends TextEdit.TextEditUI implements Runnable {
+    private static class DummyConsole extends TextEdit0.TextEditUI implements Runnable {
 
         public DummyConsole() {
             super(15, 15);

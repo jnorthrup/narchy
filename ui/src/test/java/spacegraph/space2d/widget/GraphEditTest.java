@@ -17,7 +17,7 @@ import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.chip.*;
-import spacegraph.space2d.widget.console.TextEdit;
+import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.meter.WaveView;
 import spacegraph.space2d.widget.port.*;
 import spacegraph.space2d.widget.text.LabeledPane;
@@ -166,7 +166,7 @@ public class GraphEditTest {
             GraphEdit<Surface> g = new GraphEdit<>(1000, 1000);
 
             {
-                TextEdit e = new TextEdit("a b c d e", true);
+                TextEdit0 e = new TextEdit0("a b c d e", true);
                 e.resize(16, 3);
                 Port p = new Port();
                 e.on(p::out);

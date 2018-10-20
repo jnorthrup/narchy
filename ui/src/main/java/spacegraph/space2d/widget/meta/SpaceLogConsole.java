@@ -7,7 +7,7 @@ import org.slf4j.event.Level;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.console.ConsoleGUI;
-import spacegraph.space2d.widget.console.TextEdit;
+import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.util.SpaceLogger;
 
 import java.util.function.Supplier;
@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 public class SpaceLogConsole extends Gridding implements SpaceLogger {
 
     private final int MAX_LINES = 5;
-    private final TextEdit.TextEditUI text = new TextEdit.TextEditUI(40, MAX_LINES);
+    private final TextEdit0.TextEditUI text = new TextEdit0.TextEditUI(40, MAX_LINES);
     private ConsoleGUI textGUI;
 
     public SpaceLogConsole() {
@@ -34,7 +34,7 @@ public class SpaceLogConsole extends Gridding implements SpaceLogger {
     public boolean start(SurfaceBase parent) {
         if (super.start(parent)) {
 
-            textGUI = new TextEdit(text);
+            textGUI = new TextEdit0(text);
 
             set(textGUI);
             return true;

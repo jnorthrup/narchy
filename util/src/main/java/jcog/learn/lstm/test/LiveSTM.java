@@ -1,7 +1,7 @@
 package jcog.learn.lstm.test;
 
 import jcog.learn.lstm.AbstractTraining;
-import jcog.learn.lstm.Interaction;
+import jcog.learn.lstm.ExpectedVsActual;
 import jcog.learn.lstm.SimpleLSTM;
 import jcog.random.XorShift128PlusRandom;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -44,7 +44,7 @@ abstract public class LiveSTM extends AbstractTraining {
     public double next() {
 
 
-        Interaction inter = observe();
+        ExpectedVsActual inter = observe();
 
 
         double[] predicted;
@@ -90,10 +90,10 @@ abstract public class LiveSTM extends AbstractTraining {
      * <p>
      * the input and output arrays are not modified or retained, so you may re-use them
      */
-    protected abstract Interaction observe();
+    protected abstract ExpectedVsActual observe();
 
     @Override
-    protected void interact(Consumer<Interaction> each) {
+    protected void interact(Consumer<ExpectedVsActual> each) {
         throw new UnsupportedOperationException();
     }
 }

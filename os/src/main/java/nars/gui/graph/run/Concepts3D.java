@@ -13,7 +13,7 @@ import nars.gui.graph.DynamicConceptSpace;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.hud.SubOrtho;
 import spacegraph.space2d.widget.console.ConsoleGUI;
-import spacegraph.space2d.widget.console.TextEdit;
+import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space3d.SpaceGraphPhys3D;
 
@@ -51,7 +51,7 @@ public class Concepts3D extends DynamicConceptSpace {
         //                            e.printStackTrace();
         //                        }
         Surface inputPanel =
-                new TextEdit((/*inputbox = */new TextEdit.TextEditUI() {
+                new TextEdit0((/*inputbox = */new TextEdit0.TextEditUI() {
                     @Override
                     protected void onKeyCtrlEnter() {
 

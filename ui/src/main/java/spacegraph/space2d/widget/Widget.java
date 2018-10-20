@@ -105,15 +105,15 @@ public class Widget extends MutableUnitContainer<Surface> {
         paintWidget(gl, bounds);
     }
 
-    @Override
-    protected void paintAbove(GL2 gl, SurfaceRender r) {
+//    @Override
+//    protected void paintAbove(GL2 gl, SurfaceRender r) {
 //        if (touchedBy != null) {
 //            Draw.colorHash(gl, getClass().hashCode(), 0.5f + dz / 2f);
 //
 //            gl.glLineWidth(6 + dz * 6);
 //            Draw.rectStroke(gl, x(), y(), w(), h());
 //        }
-    }
+//    }
 
 
     protected void paintWidget(GL2 gl, RectFloat bounds) {

@@ -24,7 +24,7 @@ import spacegraph.space2d.container.*;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
-import spacegraph.space2d.widget.console.TextEdit;
+import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meta.ServicesTable;
@@ -190,7 +190,7 @@ public class NARui {
     }
 
     public static Surface MemSave(NAR nar) {
-        TextEdit path = new TextEdit(20, 1);
+        TextEdit0 path = new TextEdit0(20, 1);
         try {
             path.text(Files.createTempFile(nar.self().toString(), "" + System.currentTimeMillis()).toAbsolutePath().toString());
         } catch (IOException e) {
@@ -237,7 +237,7 @@ public class NARui {
                                 false, 0.1f),
                 taskList, 64);
 
-        TextEdit input = new TextEdit(16, 1);
+        TextEdit0 input = new TextEdit0(16, 1);
         input.onKey((k) -> {
             if (k.getKeyType() == KeyType.Enter) {
                 //input

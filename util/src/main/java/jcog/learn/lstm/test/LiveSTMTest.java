@@ -1,7 +1,7 @@
 package jcog.learn.lstm.test;
 
 import jcog.Texts;
-import jcog.learn.lstm.Interaction;
+import jcog.learn.lstm.ExpectedVsActual;
 
 import java.util.Arrays;
 
@@ -18,7 +18,7 @@ public class LiveSTMTest {
         int outputs = 8;
         int cells = 8;
 
-        Interaction i = Interaction.the(inputs, outputs);
+        ExpectedVsActual i = ExpectedVsActual.the(inputs, outputs);
         double[] expect = i.expected;
         i.zero();
 
@@ -29,7 +29,7 @@ public class LiveSTMTest {
 
 
             @Override
-            protected Interaction observe() {
+            protected ExpectedVsActual observe() {
 
 
                 i.expected = expect;

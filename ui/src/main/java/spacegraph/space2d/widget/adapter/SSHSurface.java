@@ -224,7 +224,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal {
     }
 
     @Override
-    public boolean key(com.jogamp.newt.event.KeyEvent e, boolean pressed) {
+    public boolean key(com.jogamp.newt.event.KeyEvent e, boolean pressedOrReleased) {
 
         //return super.key(e, pressed);
         //if (myFocus != null) {
@@ -248,7 +248,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal {
 //            );
 
             int code = Keyboard.newtKeyCode2AWTKeyCode(e.getKeyCode());
-            if (pressed) {
+            if (pressedOrReleased) {
                 keyPressed( code, e.getKeyChar() );
 
             } else {

@@ -1,16 +1,14 @@
 package spacegraph.space2d;
 
-import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.Util;
 import jcog.WTF;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
-import spacegraph.input.finger.Finger;
+import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.container.AbstractMutableContainer;
 import spacegraph.space2d.container.AspectAlign;
-import spacegraph.util.math.v2;
 
 import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -21,7 +19,7 @@ import java.util.function.Predicate;
  * planar subspace.
  * (fractal) 2D Surface embedded relative to a parent 2D surface or 3D space
  */
-abstract public class Surface implements SurfaceBase {
+abstract public class Surface implements SurfaceBase, KeyPressed, spacegraph.input.finger.Fingered {
 
     private static final AtomicReferenceFieldUpdater<Surface, RectFloat> BOUNDS = AtomicReferenceFieldUpdater.newUpdater(Surface.class, RectFloat.class, "bounds");
     private final static AtomicReferenceFieldUpdater<Surface,SurfaceBase> PARENT = AtomicReferenceFieldUpdater.newUpdater(Surface.class, SurfaceBase.class, "parent");
@@ -230,25 +228,9 @@ abstract public class Surface implements SurfaceBase {
     }
 
 
-    public boolean key(KeyEvent e, boolean pressed) {
-        return false;
-    }
-
-    /**
-     * returns true if the event has been absorbed, false if it should continue propagating
-     */
-    public boolean key(v2 hitPoint, char charCode, boolean pressed) {
-        return false;
-    }
 
 
-    /**
-     * returns non-null if the event has been absorbed by a speciifc sub-surface
-     * or null if nothing absorbed the gesture
-     */
-    public Surface finger(Finger finger) {
-        return null;
-    }
+
 
     public Surface hide() {
         visible = false;
@@ -309,8 +291,4 @@ abstract public class Surface implements SurfaceBase {
         return false;
     }
 
-    /** may implement state-changing behavior */
-    public void fingerTouch(Finger finger, boolean touching) {
-
-    }
 }

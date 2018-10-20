@@ -2,7 +2,7 @@ package jcog.learn;
 
 import jcog.TODO;
 import jcog.Util;
-import jcog.learn.lstm.Interaction;
+import jcog.learn.lstm.ExpectedVsActual;
 import jcog.learn.lstm.test.LiveSTM;
 import jcog.learn.ntm.control.SigmoidActivation;
 import jcog.learn.ntm.control.TanhActivation;
@@ -125,7 +125,7 @@ public class LivePredictor {
                         Math.max(xLen, yLen) * memoryScale) {
                     @Deprecated
                     @Override
-                    protected Interaction observe() {
+                    protected ExpectedVsActual observe() {
                         throw new UnsupportedOperationException();
                     }
                 };

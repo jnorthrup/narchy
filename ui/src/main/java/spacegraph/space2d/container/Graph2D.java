@@ -189,11 +189,6 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
 
     @Override
-    protected void doLayout(int dtMS) {
-
-    }
-
-    @Override
     protected void paintBelow(GL2 gl, SurfaceRender r) {
         cells.forEachValue(n -> {
             if (n.visible())

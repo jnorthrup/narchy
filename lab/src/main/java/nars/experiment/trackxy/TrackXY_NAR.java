@@ -7,7 +7,7 @@ import jcog.lab.util.Optimization;
 import jcog.learn.LivePredictor;
 import jcog.learn.ql.DQN2;
 import jcog.math.FloatNormalized;
-import jcog.test.TrackXY;
+import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
 import nars.agent.FrameTrigger;

@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.meta;
 
 import jcog.data.list.FasterList;
 import spacegraph.space2d.container.Gridding;
-import spacegraph.space2d.widget.console.TextEdit;
+import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.lang.reflect.Method;
@@ -42,8 +42,8 @@ public class MethodSurface extends Gridding {
         if (t == float.class) {
             //..
         } else if (t == String.class) {
-            TextEdit.TextEditUI te = new TextEdit.TextEditUI(8, 1);
-            pp.add(new TextEdit(te));
+            TextEdit0.TextEditUI te = new TextEdit0.TextEditUI(8, 1);
+            pp.add(new TextEdit0(te));
             Object d = defaults.get(pName);
             if (d!=null) {
                 te.text(d.toString());

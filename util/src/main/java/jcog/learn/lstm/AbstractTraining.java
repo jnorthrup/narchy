@@ -83,7 +83,7 @@ public abstract class AbstractTraining {
     protected int batches; 
     protected boolean validation_mode;
 
-    @Deprecated protected abstract void interact(Consumer<Interaction> each);
+    @Deprecated protected abstract void interact(Consumer<ExpectedVsActual> each);
 
     public final int inputs;
     public final int outputs;

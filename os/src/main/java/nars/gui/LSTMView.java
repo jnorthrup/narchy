@@ -1,15 +1,9 @@
 package nars.gui;
 
-import jcog.Util;
-import jcog.learn.lstm.DistractedSequenceRecall;
 import jcog.learn.lstm.SimpleLSTM;
-import jcog.random.XorShift128PlusRandom;
-import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.meter.MatrixView;
 import spacegraph.video.Draw;
-
-import java.util.Random;
 
 /**
  * Created by me on 11/22/16.
@@ -43,31 +37,31 @@ public class LSTMView extends Gridding {
         );
     }
 
-    public static void main(String[] arg) {
-
-
-        Random r = new XorShift128PlusRandom(1234);
-
-        DistractedSequenceRecall task =
-                new DistractedSequenceRecall(r, 32, 8, 8, 100);
-
-        int cell_blocks = 16;
-        SimpleLSTM lstm = task.lstm(cell_blocks);
-
-        float lr = 0.1f;
-
-        
-        task.scoreSupervised(lstm, lr);
-
-        SpaceGraph.window(new LSTMView(lstm), 800, 800);
-
-        int epochs = 5000;
-        for (int epoch = 0; epoch < epochs; epoch++) {
-            double fit = task.scoreSupervised(lstm, lr);
-            if (epoch % 10 == 0)
-                System.out.println("["+epoch+"] error = " + (1 - fit));
-            Util.sleepMS(1);
-        }
-        System.out.println("done.");
-    }
+//    public static void main(String[] arg) {
+//
+//
+//        Random r = new XorShift128PlusRandom(1234);
+//
+//        DistractedSequenceRecall task =
+//                new DistractedSequenceRecall(r, 32, 8, 8, 100);
+//
+//        int cell_blocks = 16;
+//        SimpleLSTM lstm = task.lstm(cell_blocks);
+//
+//        float lr = 0.1f;
+//
+//
+//        task.scoreSupervised(lstm, lr);
+//
+//        SpaceGraph.window(new LSTMView(lstm), 800, 800);
+//
+//        int epochs = 5000;
+//        for (int epoch = 0; epoch < epochs; epoch++) {
+//            double fit = task.scoreSupervised(lstm, lr);
+//            if (epoch % 10 == 0)
+//                System.out.println("["+epoch+"] error = " + (1 - fit));
+//            Util.sleepMS(1);
+//        }
+//        System.out.println("done.");
+//    }
 }
