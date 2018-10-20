@@ -31,13 +31,16 @@ public class TextEdit extends Widget {
     @Override
     protected void paintWidget(GL2 gl, RectFloat bounds) {
 
+        //float charAspect = 1.4f;
+        int charsWide = 16;
+        int charsHigh = 8;
         Draw.bounds(bounds, gl, g -> {
-            gl.glTranslatef(0.5f, 0.5f, 0); //HACK
-            gl.glScalef(0.25f, 0.25f, 0.25f); //HACK
+            gl.glTranslatef(0f, 1f - 1f/charsHigh, 0);
+            gl.glScalef(1f/charsWide, 1f/charsHigh, 1f);
 
             BufferView v = model.view;
             if (v!=null)
-                v.draw(g);
+                v.paint(g);
         });
     }
 

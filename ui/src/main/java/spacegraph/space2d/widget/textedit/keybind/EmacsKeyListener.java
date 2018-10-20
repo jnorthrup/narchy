@@ -10,7 +10,6 @@ import spacegraph.space2d.widget.textedit.TextEditModel;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -134,14 +133,15 @@ public class EmacsKeyListener implements KeyPressed {
     }
 
 
-    private long when;
-    private boolean executed;
-    private boolean inStroke;
+    //private long when;
+    //private boolean executed;
+    //private boolean inStroke;
 
     /** TODO use Trie */
     final Map<List<Stroke>, String> keybinds = new LinkedHashMap<>();
 
-    private final List<Stroke> currentStrokes = new FasterList();
+    //TODO
+    //private final ArrayDeque<Stroke> currentStrokes = new ArrayDeque(4);
 
 
     private void parseSetting(String line) {
@@ -185,7 +185,7 @@ public class EmacsKeyListener implements KeyPressed {
 
     @Override
     public boolean key(KeyEvent e, boolean pressedOrReleased) {
-        System.out.println(e + " " + pressedOrReleased);
+        //System.out.println(e + " " + pressedOrReleased);
 
 //        if (pressedOrReleased) {
 //            if (!e.isPrintableKey())
@@ -197,55 +197,62 @@ public class EmacsKeyListener implements KeyPressed {
 //        }
         if (pressedOrReleased) {
 
-        } else {
-            if (e.isPrintableKey()) {
-                editor.execute(/* TODO: "insert" ? */"type", String.valueOf(e.getKeyChar()));
+            if (!keyPressed(SupportKey.NONE, e.getKeyCode(), e.getWhen())) {
+                if (e.isPrintableKey()) {
+
+                    editor.execute(/* TODO: "insert" ? */"type", String.valueOf(e.getKeyChar()));
+                }
             }
         }
         return true;
     }
 
     boolean keyPressed(SupportKey supportKey, int keyCode, long when) {
-        this.when = when;
+//        this.when = when;
 
         if (keyCode == VK_SHIFT || keyCode == VK_ALT || keyCode == VK_CONTROL) {
-            this.executed = true;
+//            this.executed = true;
             return true;
         }
 
         Stroke stroke = new Stroke(supportKey, keyCode);
 
         synchronized(this) {
-            currentStrokes.add(stroke);
-            String actionName = getActionName();
+//            currentStrokes.add(stroke);
+            String actionName = getActionName(stroke);
             if (actionName != null) {
                 editor.execute(actionName);
-                this.executed = true;
+                //this.executed = true;
+                return true;
             } else {
-                this.executed = inStroke;
+//                this.executed = inStroke;
             }
-            return executed;
+            return false;
+            //return executed;
         }
     }
 
-    private String getActionName() {
-        inStroke = false;
-        String v = keybinds.get(currentStrokes);
-        if (v!=null) {
-            currentStrokes.clear();
-            return v;
-        }
-        for (Entry<List<Stroke>, String> keybind : keybinds.entrySet()) {
-            List<Stroke> keybindStrokes = keybind.getKey();
-            //if (((FasterList)keybindStrokes).indexOf..
-            if (containStroke(keybindStrokes, currentStrokes)) {
-                inStroke = true;
-            }
-        }
-        if (!inStroke) {
-            currentStrokes.clear();
-        }
-        return null;
+    /** single stroke */
+    private String getActionName(Stroke s) {
+        //inStroke = false;
+        String v = keybinds.get(List.of(s));
+        return v;
+//        if (v!=null) {
+//            //currentStrokes.clear();
+//            return v;
+//        }
+//        for (Entry<List<Stroke>, String> keybind : keybinds.entrySet()) {
+//            List<Stroke> keybindStrokes = keybind.getKey();
+//            //if (((FasterList)keybindStrokes).indexOf..
+//            if (containStroke(keybindStrokes, currentStrokes)) {
+//                inStroke = true;
+//                break;
+//            }
+//        }
+//        if (!inStroke) {
+//            currentStrokes.clear();
+//        }
+//        return null;
     }
 
     private static boolean containStroke(List<Stroke> keybinding, List<Stroke> current) {
@@ -254,10 +261,10 @@ public class EmacsKeyListener implements KeyPressed {
             return false;
         }
         for (int i = 0; i < cs; i++)
-            if (!current.get(i).equals(keybinding.get(i))) {
-                return false;
+            if (current.get(i).equals(keybinding.get(i))) {
+                return true;
         }
-        return true;
+        return false;
     }
 
 

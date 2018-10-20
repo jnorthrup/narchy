@@ -1,4 +1,4 @@
-package spacegraph.video;
+package spacegraph.video.font;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.util.texture.TextureData;
@@ -6,6 +6,7 @@ import com.jogamp.opengl.util.texture.TextureIO;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
+import spacegraph.video.Draw;
 
 import java.io.InputStream;
 import java.nio.ByteBuffer;

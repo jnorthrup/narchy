@@ -10,6 +10,7 @@ import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.video.Draw;
+import spacegraph.video.font.HersheyFont;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -261,7 +262,7 @@ public class Plot2D extends Widget {
 
             gl.glColor3f(1f, 1f, 1f);
             gl.glLineWidth(1f);
-            Draw.hersheyText(gl, title, 0.1f, 0.5f, 0.5f, 0);
+            HersheyFont.hersheyText(gl, title, 0.1f, 0.5f, 0.5f, 0);
 
         }
 
@@ -362,8 +363,8 @@ public class Plot2D extends Widget {
         float H = 1.0f;
         Draw.line(0, H, W, H, gl);
 
-        Draw.hersheyText(gl, n4(minValue), 0.04f, 0, 0, 0, Draw.TextAlignment.Left);
-        Draw.hersheyText(gl, n4(maxValue), 0.04f, 0, H, 0, Draw.TextAlignment.Left);
+        HersheyFont.hersheyText(gl, n4(minValue), 0.04f, 0, 0, 0, Draw.TextAlignment.Left);
+        HersheyFont.hersheyText(gl, n4(maxValue), 0.04f, 0, H, 0, Draw.TextAlignment.Left);
 
 
         for (int sn = 0, seriesSize = series.size(); sn < seriesSize; sn++) {
@@ -401,7 +402,7 @@ public class Plot2D extends Widget {
                 yy = 0.5f;
 
             gl.glLineWidth(2);
-            Draw.hersheyText(gl, s.name(), 0.04f, W, yy, 0, Draw.TextAlignment.Right);
+            HersheyFont.hersheyText(gl, s.name(), 0.04f, W, yy, 0, Draw.TextAlignment.Right);
 
         }
     }

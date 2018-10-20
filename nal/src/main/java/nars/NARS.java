@@ -177,7 +177,7 @@ public class NARS {
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
 
-        attention(()->new Attention(64));
+        attention(()->new Attention(52));
 
         conceptBuilder = ()->new DefaultConceptBuilder(
                 new ConceptAllocator(

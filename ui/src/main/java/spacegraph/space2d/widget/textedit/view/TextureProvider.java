@@ -13,33 +13,23 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 public final class TextureProvider {
     private final int FONT_SIZE = 64;
+    private final int FONT_BITMAP_WIDTH = 48;
+    private final int FONT_BITMAP_HEIGHT = FONT_SIZE;
 
     private final LoadingCache<String, Tex> textureCache = CacheBuilder.newBuilder().maximumSize(10000)
             .build(new CacheLoader<String, Tex>() {
                 @Override
                 public Tex load(String c) {
                     //return AWTTextureIO.newTexture(gl.getGLProfile(), getTexture(c, FONT_SIZE), true);
-
-
-                    Tex t = new Tex();
-                    return t;
+                    return new Tex();
                     //return TextureIO.newTexture(gl.getGLProfile(), charTex, true);
                 }
             });
-    private final LoadingCache<String, Double> sizeCache = CacheBuilder.newBuilder().maximumSize(10000)
-            .build(new CacheLoader<String, Double>() {
 
-                @Override
-                public Double load(String c) {
-                    return rawGetWidth(c);
-                }
-            });
 
-    private GL2 gl;
 
     private static TextureProvider INSTANCE = null;
 
@@ -64,7 +54,6 @@ public final class TextureProvider {
     }
 
     public Texture getTexture(GL2 gl, String c) {
-        this.gl = gl;
 
             Tex tt = textureCache.getUnchecked(c);
             Texture ttt = tt.texture;
@@ -72,7 +61,7 @@ public final class TextureProvider {
                 synchronized (tt) {
                     //HACK
                     if ((ttt = tt.texture) == null) {
-                        BufferedImage charTex = getTexture(c, FONT_SIZE);
+                        BufferedImage charTex = getTexture(c, FONT_BITMAP_WIDTH, FONT_BITMAP_HEIGHT);
                         tt.commit(gl);
                         tt.update(charTex);
                         tt.commit(gl); //HACK
@@ -89,25 +78,18 @@ public final class TextureProvider {
 
     }
 
-    public double getWidth(String c) {
-        try {
-            return sizeCache.get(c);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
-    private double rawGetWidth(String singleCharString) {
+    private float rawGetWidth(String singleCharString) {
         BufferedImage image = new BufferedImage(FONT_SIZE, FONT_SIZE, BufferedImage.TYPE_BYTE_GRAY);
         Graphics2D g2d = (Graphics2D) image.getGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         FontMetrics fm = g2d.getFontMetrics(font);
-        return (double) fm.charWidth(singleCharString.codePointAt(0)) / FONT_SIZE;
+        return fm.charWidth(singleCharString.codePointAt(0)) / FONT_SIZE;
     }
 
-    private BufferedImage getTexture(String c, int size) {
-        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+    private BufferedImage getTexture(String c, int sizeX, int sizeY) {
+        BufferedImage image = new BufferedImage(sizeX, sizeY, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = (Graphics2D) image.getGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -117,7 +99,8 @@ public final class TextureProvider {
 
         FontMetrics fm = g2d.getFontMetrics(font);
 
-        g2d.drawGlyphVector(gv, (FONT_SIZE - fm.charWidth(c.codePointAt(0))) / 2f, fm.getMaxAscent());
+
+        g2d.drawGlyphVector(gv, 0 /*(FONT_SIZE - fm.charWidth(c.codePointAt(0)))*/, fm.getMaxAscent());
         return image;
     }
 }

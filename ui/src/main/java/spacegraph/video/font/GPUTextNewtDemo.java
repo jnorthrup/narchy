@@ -25,7 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
-package spacegraph.video;
+package spacegraph.video.font;
 
 import com.jogamp.graph.curve.Region;
 import com.jogamp.graph.curve.opengl.GLRegion;
@@ -48,6 +48,7 @@ import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.hud.Ortho;
+import spacegraph.video.JoglSpace;
 
 import java.io.File;
 import java.io.IOException;

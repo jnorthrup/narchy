@@ -1,12 +1,16 @@
 package spacegraph.space2d.widget.textedit.keybind;
 
+import jcog.Util;
+
 class Stroke {
     public final SupportKey supportKey;
     public final int key;
+    private final int hash;
 
     public Stroke(SupportKey supportKey, int key) {
         this.supportKey = supportKey;
         this.key = key;
+        this.hash = Util.hashCombine(supportKey, key);
     }
 
     @Override
@@ -22,4 +26,10 @@ class Stroke {
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        return hash;
+    }
 }
+

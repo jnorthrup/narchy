@@ -8,29 +8,20 @@ import spacegraph.space2d.widget.textedit.buffer.*;
 import java.util.Collections;
 import java.util.List;
 
-public class BufferView extends TextEditView implements BufferListener {
+public class BufferView implements BufferListener {
 
     private final Buffer document;
-    private final CaretView caret;
+    private final CursorView caret;
     private final List<LineView> lines = new FasterList<>();
-    private final SmoothValue width = new SmoothValue();
-    private final SmoothValue height = new SmoothValue();
+
 
     public BufferView(Buffer buffer) {
         this.document = buffer;
-        this.caret = new CaretView(buffer.getCaret());
-        color.update(0.5, 0.5, 0.5, 0.5);
+        this.caret = new CursorView(buffer.getCaret());
         buffer.addListener(this);
         buildLines();
     }
 
-    @Override public void preDraw(GL2 gl) {
-        gl.glPushMatrix();
-        angle.updateRotate(gl);
-        scale.updateScale(gl);
-        position.updateTranslate(gl);
-        color.updateColor(gl);
-    }
 
     private void buildLines() {
         document.getLines().forEach(this::addLine);
@@ -53,27 +44,20 @@ public class BufferView extends TextEditView implements BufferListener {
         return maxWidth;
     }
 
-    @Override
-    public void innerDraw(GL2 gl) {
-        double w = documentWidth() + 2;
-        double h = documentHeight();
+    public void paint(GL2 gl) {
+//        double w = documentWidth() + 2;
+//        double h = documentHeight();
 
-        Position position = this.position;
-        Position cPos = caret.position;
-        position.update(-cPos.getX().value(false), -cPos.getY().value(false), 0);
-
-        width.set(w);
-        height.set(-h);
 
         gl.glDisable(GL.GL_TEXTURE_2D);
 
-        gl.glRectd(-1, 1, width.value(), height.value());
-        for (LineView line : lines) {
-            line.draw(gl);
-        }
-
         updateCaret(document.getCaret());
         caret.draw(gl);
+
+        for (LineView line : lines)
+            line.draw(gl);
+
+
     }
 
     @Override
@@ -81,19 +65,19 @@ public class BufferView extends TextEditView implements BufferListener {
         LineView lv = lines.get(c.getRow());
         List<CharView> cvl = lv.getChars();
 
-        double x;
+        float x;
         if (document.isLineHead()) {
             x =
-                    lv.getChars().stream().mapToDouble(cv -> cv.width() / 2).findFirst()
+                    (float) lv.getChars().stream().mapToDouble(cv -> cv.width() / 2).findFirst()
                             .orElse(caret.getWidth() / 2);
         } else if (document.isLineLast()) {
             x = lv.getWidth() + (caret.getWidth() / 2);
         } else {
-            x = cvl.get(c.getCol()).position.getX().getLastValue();
+            x = cvl.get(c.getCol()).position.x;
         }
-        double y = -lv.position.getY().getLastValue();
+        float y = +lv.position.y;
 
-        caret.updatePosition(x, y);
+        caret.position.set(x, y, 0);
     }
 
     @Override
@@ -106,13 +90,9 @@ public class BufferView extends TextEditView implements BufferListener {
         LineView lv1 = new LineView(bufferLine);
         lines.add(lv1);
         Collections.sort(lines);
-        double h = 0;
+        float h = 0;
         for (LineView lv2 : lines) {
-            if (bufferLine == lv2.getBufferLine()) {
-                lv2.position.getY().setWithoutSmooth(h);
-            } else {
-                lv2.position.getY().set(h);
-            }
+            lv2.position.y = h;
             h -= LineView.getHeight();
         }
     }
@@ -131,19 +111,19 @@ public class BufferView extends TextEditView implements BufferListener {
     @Override
     public void moveChar(BufferLine fromLine, BufferLine toLine, BufferChar c) {
         lines.stream().filter(l -> l.getBufferLine() == fromLine).findFirst().ifPresent((from) -> lines.stream().filter(l -> l.getBufferLine() == toLine).findFirst().ifPresent((to) -> {
-            double fromY = from.position.getY().value(false);
-            double toY = to.position.getY().getLastValue();
+            float fromY = from.position.y;
+            float toY = to.position.y;
             CharView leaveChar = from.leaveChar(c);
-            leaveChar.position.getY().setWithoutSmooth(-(toY - fromY));
+            leaveChar.position.y = (-(toY - fromY));
             to.visitChar(leaveChar);
         }));
     }
 
     private void updatePositions() {
         Collections.sort(lines);
-        double h = 0;
+        float h = 0f;
         for (LineView lv : lines) {
-            lv.position.getY().set(h);
+            lv.position.y = h;
             h -= LineView.getHeight();
         }
     }

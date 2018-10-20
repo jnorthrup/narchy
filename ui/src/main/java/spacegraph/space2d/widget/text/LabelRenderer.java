@@ -11,6 +11,7 @@ import com.jogamp.opengl.util.PMVMatrix;
 import jcog.tree.rtree.rect.RectFloat;
 import jogamp.graph.font.typecast.TypecastFontConstructor;
 import spacegraph.video.Draw;
+import spacegraph.video.font.HersheyFont;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +27,7 @@ public interface LabelRenderer extends BiConsumer<VectorLabel, GL2> {
         label.textColor.apply(gl);
         gl.glLineWidth(label.textThickness);
 
-        Draw.hersheyText(gl, label.text, label.textScaleX, label.textScaleY, 0, label.textY, 0, Draw.TextAlignment.Left);
+        HersheyFont.hersheyText(gl, label.text, label.textScaleX, label.textScaleY, 0, label.textY, 0, Draw.TextAlignment.Left);
     });
 
 

@@ -4,6 +4,7 @@ import com.googlecode.lanterna.TextCharacter;
 import com.jogamp.opengl.GL2;
 import jcog.TODO;
 import spacegraph.video.Draw;
+import spacegraph.video.font.HersheyFont;
 
 import java.awt.*;
 
@@ -77,7 +78,7 @@ public abstract class ConsoleSurface extends AbstractConsoleSurface {
 
             gl.glPushMatrix();
 
-            Draw.textStart(gl,
+            HersheyFont.textStart(gl,
                     charScaleX, charScaleY,
                     
                     0.5f, (rows - 1 - row),
@@ -116,7 +117,7 @@ public abstract class ConsoleSurface extends AbstractConsoleSurface {
                     Color fg = c.getForegroundColor().toColor();
                     gl.glColor4f(fg.getRed() / 256f, fg.getGreen() / 256f, fg.getBlue() / 256f, fgAlpha);
 
-                    Draw.textNext(gl, cc, col / charScaleX);
+                    HersheyFont.textNext(gl, cc, col / charScaleX);
 
                 }
             }

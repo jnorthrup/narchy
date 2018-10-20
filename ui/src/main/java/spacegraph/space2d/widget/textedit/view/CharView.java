@@ -8,24 +8,25 @@ import spacegraph.space2d.widget.textedit.buffer.BufferChar;
 
 import java.util.function.Consumer;
 
-public class CharView extends TextEditView implements Consumer<BufferChar>, Comparable<CharView> {
-  private final TextureProvider textureProvider;
+public class CharView extends TextEditRenderable implements Consumer<BufferChar>, Comparable<CharView> {
   private final BufferChar bufferChar;
+  private Texture texture;
 
   public CharView(BufferChar bufferChar) {
-    this.textureProvider = TextureProvider.getInstance();
     this.bufferChar = bufferChar;
     bufferChar.addListener(this);
     accept(bufferChar);
   }
 
-  public double width() {
-    return textureProvider.getWidth(String.valueOf(bufferChar.getChar()));
+  public float width() {
+    return 1; //textureProvider.getWidth(String.valueOf(bufferChar.getChar()));
   }
 
   @Override
   protected void innerDraw(GL2 gl) {
-    Texture texture = textureProvider.getTexture(gl, String.valueOf(bufferChar.getChar()));
+    if (texture == null) {
+       texture = TextureProvider.getInstance().getTexture(gl, String.valueOf(bufferChar.getChar()));
+    }
     texture.enable(gl);
     texture.bind(gl);
     gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
