@@ -31,11 +31,15 @@ public final class TextureProvider {
 
 
 
-    private static TextureProvider INSTANCE = null;
+    @Deprecated private static TextureProvider INSTANCE = null;
 
     public static TextureProvider getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new TextureProvider();
+            synchronized (TextureProvider.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new TextureProvider();
+                }
+            }
         }
         return INSTANCE;
     }

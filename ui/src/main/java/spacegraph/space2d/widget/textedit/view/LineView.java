@@ -1,10 +1,12 @@
 package spacegraph.space2d.widget.textedit.view;
 
 import com.jogamp.opengl.GL2;
+import jcog.TODO;
 import jcog.data.list.FasterList;
 import spacegraph.space2d.widget.textedit.buffer.BufferChar;
 import spacegraph.space2d.widget.textedit.buffer.BufferLine;
 import spacegraph.space2d.widget.textedit.buffer.BufferLineListener;
+import spacegraph.space2d.widget.textedit.hilite.TextStyle;
 
 import java.util.Collections;
 import java.util.List;
@@ -95,5 +97,17 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
     public void visitChar(CharView cv) {
         chars.add(cv);
         updatePositions();
+    }
+
+    public LineView apply(int from, int to, TextStyle highlight) {
+        throw new TODO();
+    }
+
+    public String substring(int from, int to) {
+        throw new TODO();
+    }
+
+    public int length() {
+        return chars.size();
     }
 }

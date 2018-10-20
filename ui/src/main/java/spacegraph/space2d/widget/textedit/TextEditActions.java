@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.textedit;
 
-import spacegraph.space2d.widget.textedit.TextEditModel;
 import spacegraph.space2d.widget.textedit.keybind.Action;
 import spacegraph.space2d.widget.textedit.keybind.NoopAction;
 import spacegraph.space2d.widget.textedit.keybind.basic.*;
