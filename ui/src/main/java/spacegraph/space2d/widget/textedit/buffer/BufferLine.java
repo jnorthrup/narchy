@@ -24,7 +24,7 @@ public class BufferLine implements Comparable<BufferLine> {
     observer.update(this);
   }
 
-  public int getLength() {
+  public int length() {
     return chars.size();
   }
 

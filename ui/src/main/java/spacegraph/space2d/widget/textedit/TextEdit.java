@@ -50,4 +50,21 @@ public class TextEdit extends Widget {
         return true;
     }
 
+    public void append(String text) {
+        synchronized (model) {
+            model.buffer().insert(text);
+        }
+    }
+    public void text(String text) {
+        synchronized (model) {
+            model.buffer().set(text);
+        }
+    }
+
+    public String text() {
+        synchronized (model) {
+            return model.buffer().text();
+        }
+    }
+
 }

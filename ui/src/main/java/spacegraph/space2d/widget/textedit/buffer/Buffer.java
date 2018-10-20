@@ -13,16 +13,35 @@ public class Buffer {
     final String bufferName;
     private CursorPosition currentCursor = new CursorPosition(0, 0);
     private CursorPosition mark = new CursorPosition(0, 0);
-    final List<BufferLine> lines = new FasterList<>();
+    public final List<BufferLine> lines = new FasterList<>();
     private final BufferListener.BufferObserver observer = new BufferListener.BufferObserver();
 
     public Buffer(String bufferName, String value) {
         this.bufferName = bufferName;
-        BufferLine bl = new BufferLine();
-        lines.add(bl);
-        observer.addLine(bl);
-        update();
-        insertString(value);
+        clear();
+        insert(value);
+    }
+
+    public void clear() {
+
+        int l = lines.size();
+        if (l != 1 || lines.get(0).length()!=0) {
+            if (l > 0) {
+                lines.forEach(observer::removeLine);
+                lines.clear();
+            }
+
+            BufferLine bl = new BufferLine();
+            lines.add(bl);
+            observer.addLine(bl);
+
+            currentCursor.setCol(0);
+            currentCursor.setRow(0);
+            mark.setCol(0);
+            mark.setRow(0);
+
+            update();
+        }
     }
 
     public void addListener(BufferListener listener) {
@@ -35,7 +54,7 @@ public class Buffer {
         observer.updateCaret(currentCursor);
     }
 
-    public void insertString(String string) {
+    public void insert(String string) {
         switch (string) {
             case "\r":
             case "\n":
@@ -81,12 +100,8 @@ public class Buffer {
     }
 
     public int getMaxColNum() {
-        return lines.stream().max(Comparator.comparingInt(BufferLine::getLength))
-                .orElse(new BufferLine()).getLength();
-    }
-
-    public List<BufferLine> getLines() {
-        return lines;
+        return lines.stream().max(Comparator.comparingInt(BufferLine::length))
+                .orElse(new BufferLine()).length();
     }
 
     private BufferLine currentLine() {
@@ -107,14 +122,30 @@ public class Buffer {
         return lines.get(currentCursor.getRow() - 1);
     }
 
-    public String toBufferString() {
+    public void set(String text) {
+        clear();
+        insert(text);
+    }
+
+
+
+    public boolean textEquals(String s) {
+        if (s.isEmpty()) {
+            return lines.isEmpty();
+        } else {
+            //TODO optimize without necessarily constructing String
+            return text().equals(s);
+        }
+    }
+
+    public String text() {
         return lines.stream().map(BufferLine::toLineString).collect(Collectors.joining("\n"));
     }
 
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-        buf.append(toBufferString());
+        buf.append(text());
         buf.append(String.format("Caret:[%d,%d]", currentCursor.getCol(), currentCursor.getRow()));
         return buf.toString();
     }
@@ -154,7 +185,7 @@ public class Buffer {
     }
 
     public void last() {
-        currentCursor.setCol(currentLine().getLength());
+        currentCursor.setCol(currentLine().length());
         observer.updateCaret(currentCursor);
     }
 
@@ -189,7 +220,7 @@ public class Buffer {
             return;
         }
         currentCursor.decRow(1);
-        if (currentCursor.getCol() > currentLine().getLength()) {
+        if (currentCursor.getCol() > currentLine().length()) {
             last();
         }
         observer.updateCaret(currentCursor);
@@ -200,7 +231,7 @@ public class Buffer {
             return;
         }
         currentCursor.incRow(1);
-        if (currentCursor.getCol() > currentLine().getLength()) {
+        if (currentCursor.getCol() > currentLine().length()) {
             last();
         }
         observer.updateCaret(currentCursor);
@@ -214,7 +245,7 @@ public class Buffer {
 
     public void bufferLast() {
         currentCursor.setRow(lines.size() - 1);
-        currentCursor.setCol(currentLine().getLength());
+        currentCursor.setCol(currentLine().length());
         observer.updateCaret(currentCursor);
     }
 
@@ -231,7 +262,7 @@ public class Buffer {
     }
 
     public boolean isLineLast() {
-        return currentCursor.getCol() == currentLine().getLength();
+        return currentCursor.getCol() == currentLine().length();
     }
 
 

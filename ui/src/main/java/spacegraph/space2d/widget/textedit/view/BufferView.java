@@ -24,7 +24,7 @@ public class BufferView implements BufferListener {
 
 
     private void buildLines() {
-        document.getLines().forEach(this::addLine);
+        document.lines.forEach(this::addLine);
     }
 
     private double documentHeight() {

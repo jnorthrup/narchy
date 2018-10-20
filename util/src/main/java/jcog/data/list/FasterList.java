@@ -154,7 +154,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     @Override
-    public X get(int index) {
+    public final X get(int index) {
         return items[index];
     }
 
@@ -406,11 +406,13 @@ public class FasterList<X> extends FastList<X> {
     @Override
     public void forEach(Consumer c) {
         int s = size;
-        X[] ii = items;
-        for (int i = 0; i < s; i++) {
-            X j = ii[i];
-            if (j != null)
-                c.accept(j);
+        if (s > 0) {
+            X[] ii = items;
+            for (int i = 0; i < s; i++) {
+                X j = ii[i];
+                if (j != null)
+                    c.accept(j);
+            }
         }
     }
 
@@ -581,7 +583,7 @@ public class FasterList<X> extends FastList<X> {
 
     @Override
     public FasterList<X> clone() {
-        return new FasterList<>(size, items.clone());
+        return new FasterList<>(size, items.length > 0 ? items.clone() : items);
     }
 
     /**
@@ -618,11 +620,13 @@ public class FasterList<X> extends FastList<X> {
      */
     public void clear(Consumer<? super X> procedure) {
         int s = this.size;
-        for (int i = 0; i < s; i++) {
-            procedure.accept(this.items[i]);
-            this.items[i] = null;
+        if (s > 0) {
+            for (int i = 0; i < s; i++) {
+                procedure.accept(this.items[i]);
+                this.items[i] = null;
+            }
+            this.size = 0;
         }
-        this.size = 0;
     }
 
     @Override
@@ -736,10 +740,12 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public void swap(int a, int b) {
-        X x = get(a);
-        X y = get(b);
-        set(a, y);
-        set(b, x);
+        if (a!=b) {
+            X x = get(a);
+            X y = get(b);
+            set(a, y);
+            set(b, x);
+        }
     }
 
     /**
@@ -751,11 +757,13 @@ public class FasterList<X> extends FastList<X> {
 
     public boolean removeFirst(X x) {
         int s = this.size;
-        X[] ii = items;
-        for (int i = 0; i < s; i++) {
-            if (ii[i].equals(x)) {
-                removeFast(i);
-                return true;
+        if (s > 0) {
+            X[] ii = items;
+            for (int i = 0; i < s; i++) {
+                if (ii[i].equals(x)) {
+                    removeFast(i);
+                    return true;
+                }
             }
         }
         return false;
@@ -781,12 +789,7 @@ public class FasterList<X> extends FastList<X> {
 
         @Override
         public T next() {
-
-            T next = this.list.get(this.currentIndex);
-            this.lastIndex = this.currentIndex++;
-            return next;
-
-
+            return this.list.get(this.lastIndex = this.currentIndex++);
         }
 
         @Override
@@ -804,20 +807,24 @@ public class FasterList<X> extends FastList<X> {
 
     public <P> boolean anySatisfyWith(Predicate2<? super X, ? super P> predicate2, P parameter) {
         int s = size;
-        X[] items = this.items;
-        for (int i = 0; i < s; i++) {
-            if (predicate2.accept(items[i], parameter))
-                return true;
+        if (s > 0) {
+            X[] items = this.items;
+            for (int i = 0; i < s; i++) {
+                if (predicate2.accept(items[i], parameter))
+                    return true;
+            }
         }
         return false;
     }
 
     public <P> boolean allSatisfyWith(Predicate2<? super X, ? super P> predicate2, P parameter) {
         int s = size;
-        X[] items = this.items;
-        for (int i = 0; i < s; i++) {
-            if (!predicate2.accept(items[i], parameter))
-                return false;
+        if (s > 0) {
+            X[] items = this.items;
+            for (int i = 0; i < s; i++) {
+                if (!predicate2.accept(items[i], parameter))
+                    return false;
+            }
         }
         return true;
     }

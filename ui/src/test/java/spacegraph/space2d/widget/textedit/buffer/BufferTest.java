@@ -12,8 +12,8 @@ public class BufferTest {
 
   @Test
   public void initialState() {
-    assertEquals(buf.getLines().size(), (1));
-    assertEquals(buf.getLines().get(0).getLength(), (0));
+    assertEquals(buf.lines.size(), (1));
+    assertEquals(buf.lines.get(0).length(), (0));
     assertEquals(buf.getCaret(), (new CursorPosition(0, 0)));
     buf.forward();
     assertEquals(buf.getCaret(), (new CursorPosition(0, 0)));
@@ -27,7 +27,7 @@ public class BufferTest {
 
   @Test
   public void insertString1() {
-    buf.insertString("abcde");
+    buf.insert("abcde");
     assertEquals(buf.getCaret(), (new CursorPosition(0, 5)));
     buf.insertEnter();
     assertEquals(buf.getCaret(), (new CursorPosition(1, 0)));
@@ -35,25 +35,25 @@ public class BufferTest {
 
   @Test
   public void insertCRLF() {
-    buf.insertString("\r\n");
+    buf.insert("\r\n");
     assertEquals(buf.getCaret(), (new CursorPosition(1, 0)));
   }
 
   @Test
   public void insertLF() {
-    buf.insertString("\n");
+    buf.insert("\n");
     assertEquals(buf.getCaret(), (new CursorPosition(1, 0)));
   }
 
   @Test
   public void insertEmpty() {
-    buf.insertString("");
+    buf.insert("");
     assertEquals(buf.getCaret(), (new CursorPosition(0, 0)));
   }
 
   @Test
   public void insertEnter() {
-    buf.insertString("abcde\n12345\n");
+    buf.insert("abcde\n12345\n");
     assertEquals(buf.getCaret(), (new CursorPosition(2, 0)));
     buf.back();
     assertEquals(buf.getCaret(), (new CursorPosition(1, 5)));
@@ -64,30 +64,30 @@ public class BufferTest {
     buf.forward();
     buf.insertEnter();
     assertEquals(buf.getCaret(), (new CursorPosition(1, 0)));
-    assertEquals(buf.toBufferString(), ("ab\ncde\n12345\n"));
+    assertEquals(buf.text(), ("ab\ncde\n12345\n"));
   }
 
   @Test
   public void backspace() {
-    buf.insertString("abcde\n12345\n");
+    buf.insert("abcde\n12345\n");
     assertEquals(buf.getCaret(), (new CursorPosition(2, 0)));
     buf.backspace();
-    assertEquals(buf.toBufferString(), ("abcde\n12345"));
+    assertEquals(buf.text(), ("abcde\n12345"));
     for (int i = 0; i < 5; i++) {
       buf.backspace();
     }
-    assertEquals(buf.toBufferString(), ("abcde\n"));
+    assertEquals(buf.text(), ("abcde\n"));
     for (int i = 0; i < 5; i++) {
       buf.backspace();
     }
-    assertEquals(buf.toBufferString(), ("a"));
+    assertEquals(buf.text(), ("a"));
     buf.backspace();
-    assertEquals(buf.toBufferString(), (""));
+    assertEquals(buf.text(), (""));
   }
 
   @Test
   public void delete() {
-    buf.insertString("abcde\n12345\n");
+    buf.insert("abcde\n12345\n");
     assertEquals(buf.getCaret(), (new CursorPosition(2, 0)));
     buf.previous();
     buf.forward();
@@ -96,11 +96,11 @@ public class BufferTest {
     buf.delete();
     buf.delete();
     buf.delete();
-    assertEquals(buf.toBufferString(), ("abcde\n12\n"));
+    assertEquals(buf.text(), ("abcde\n12\n"));
     buf.delete();
     buf.delete();
     buf.delete();
-    assertEquals(buf.toBufferString(), ("abcde\n12"));
+    assertEquals(buf.text(), ("abcde\n12"));
     assertEquals(buf.getCaret(), (new CursorPosition(1, 2)));
     buf.bufferHead();
     buf.delete();
@@ -109,12 +109,12 @@ public class BufferTest {
     buf.delete();
     buf.delete();
     buf.delete();
-    assertEquals(buf.toBufferString(), ("12"));
+    assertEquals(buf.text(), ("12"));
     buf.delete();
     buf.delete();
-    assertEquals(buf.toBufferString(), (""));
+    assertEquals(buf.text(), (""));
     buf.delete();
-    assertEquals(buf.toBufferString(), (""));
+    assertEquals(buf.text(), (""));
   }
 
 }
