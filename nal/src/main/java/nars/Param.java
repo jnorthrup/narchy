@@ -14,6 +14,7 @@ import nars.truth.polation.TruthPolation;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
+import static nars.truth.TruthFunctions.c2wSafe;
 
 /**
  * NAR Parameters
@@ -175,8 +176,8 @@ public abstract class Param {
 
 
     /**
-     * when merging dt's, maximum difference in dt allowed
-     * determined according to the ratio of the dt difference compared to the smaller dt of the two being merged
+     * when merging dt's, ratio of the maximum difference in dt allowed
+     * ratio of the dt difference compared to the smaller dt of the two being merged
      * probably values less than 0.5 are safe
      */
     public final FloatRange intermpolationRangeLimit = new FloatRange(0.5f, 0, 1);
@@ -367,7 +368,7 @@ public abstract class Param {
      * Maximum length of the evidental base of the Stamp, a power of 2
      * TODO IntRange
      */
-    public static final int STAMP_CAPACITY = 12;
+    public static final int STAMP_CAPACITY = 16;
 
     /** TODO make this NAR-specific */
     public static final int CAUSE_MAX = 32;
@@ -384,13 +385,15 @@ public abstract class Param {
      */
     public static final float TRUTH_EPSILON = 0.01f;
     public static final float TRUTH_MAX_CONF = 1f - TRUTH_EPSILON;
-    public static final float TRUTH_MIN_EVI = Float.MIN_NORMAL;
+    public static final float TRUTH_MIN_EVI = c2wSafe(TRUTH_EPSILON);
+                        //ScalarValue.EPSILON;
+                        //Float.MIN_NORMAL;
 
 
     /**
      * how precise unit test results must match expected values to pass
      */
-    public static final float TESTS_TRUTH_ERROR_TOLERANCE = TRUTH_EPSILON * 4;
+    public static final float TESTS_TRUTH_ERROR_TOLERANCE = TRUTH_EPSILON * 2;
 
 
     /**

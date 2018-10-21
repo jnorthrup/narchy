@@ -5,7 +5,6 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
 import jcog.pri.Prioritized;
-import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -184,7 +183,7 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
 
         dyn.cause( cause() );
 
-        dyn.pri(Math.max(ScalarValue.EPSILON, pri(start, end)));
+        dyn.pri(pri(start, end));
 
         if (Param.DEBUG_EXTRA)
             dyn.log("Dynamic");

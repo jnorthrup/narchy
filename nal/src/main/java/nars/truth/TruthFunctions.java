@@ -258,7 +258,12 @@ public final class TruthFunctions {
 
 
     public static float c2w(float c) {
-        return c2w(c, Param.HORIZON);
+        if (c > Param.TRUTH_MAX_CONF)
+            throw new Truth.TruthException("confidence overflow", c);
+        if (c < Param.TRUTH_EPSILON)
+            throw new Truth.TruthException("confidence underflow", c);
+
+        return c2wSafe(c);
     }
 
     public static float c2wSafe(float c) {
@@ -272,14 +277,17 @@ public final class TruthFunctions {
      * @param c confidence, in [0, 1)
      * @return The corresponding weight of evidence, a non-negative real number
      */
-    private static float c2w(float c, float horizon) {
-        if (!Float.isFinite(c) || (c > Param.TRUTH_MAX_CONF) || (c < 0))
-            throw new RuntimeException("invalid confidence: " + c);
-        return c2wSafe(c, horizon);
-    }
-
     public static float c2wSafe(float c, float horizon) {
-        return horizon * c / (1f - c);
+        if (!Float.isFinite(c))
+            throw new Truth.TruthException("non-finite confidence", c);
+
+        return horizon * c / (1 - c);
+    }
+    public static float w2cSafe(float w, float horizon) {
+        if (!Float.isFinite(w))
+            throw new Truth.TruthException("non-finite evidence", w);
+
+        return w / (w + horizon);
     }
 
     /**
@@ -289,8 +297,8 @@ public final class TruthFunctions {
      * @return The corresponding confidence, in [0, 1)
      */
     public static float w2c(float w) {
-        if (!((Float.isFinite(w) && w >= Param.TRUTH_MIN_EVI)))
-            throw new RuntimeException("invalid evidence");
+        if (w < Param.TRUTH_MIN_EVI)
+            throw new Truth.TruthException("insufficient evidence", w);
 
         return w2cSafe(w);
     }
@@ -299,9 +307,6 @@ public final class TruthFunctions {
         return w2cSafe(w, Param.HORIZON);
     }
 
-    public static float w2cSafe(float w, float horizon) {
-        return w / (w + horizon);
-    }
 
     public static float originality(int evidenceLength) {
         if (evidenceLength <= 1) {
@@ -316,7 +321,7 @@ public final class TruthFunctions {
     }
 
     public static float eternalize(float evi) {
-        return w2cSafe(evi);
+        return w2c(evi);
     }
 }
 

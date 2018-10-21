@@ -77,9 +77,9 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         //long s = prev, e = now;
         //long s = now, e = next;
-        //long s = prev, e = next;
-        long agentDur = (now - prev);
-        long s = now - agentDur/2, e = now + agentDur/2;
+        long s = prev, e = next;
+        //long agentDur = (now - prev);
+        //long s = now - agentDur/2, e = now + agentDur/2;
 
         int actionDur = this.actionSustain;
         if (actionDur < 0)
@@ -94,7 +94,6 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         Answer o = Answer.
                 relevance(true, limit, s, e, term, withoutCuriosity, n);
-        o.triesRemain = table.size()+1; //dont give up, otherwise the filtered curiosity tasks will consume the remaining tries
         TruthPolation organic = o.match(table).truthpolation(actionDur);
         if (organic!=null) {
             actionDex = organic.filtered().truth();
@@ -111,6 +110,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
             actionTruth = null;
 
 
+
+        //System.out.println(actionTruth + " " + actionDex);
 
         //if this happens, for whatever reason..
         if (actionTruth == null && actionDex!=null)

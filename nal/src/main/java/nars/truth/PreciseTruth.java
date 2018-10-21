@@ -2,8 +2,7 @@ package nars.truth;
 
 import nars.Param;
 
-import static nars.truth.TruthFunctions.c2wSafe;
-import static nars.truth.TruthFunctions.w2cSafe;
+import static nars.truth.TruthFunctions.*;
 
 /**
  * extends DiscreteTruth's raw hash representation with
@@ -23,11 +22,11 @@ public final class PreciseTruth extends DiscreteTruth {
 
 
     public static PreciseTruth byConf(float freq, float conf) {
-        return byFreqConfEvi(freq, conf, c2wSafe(conf));
+        return byFreqConfEvi(freq, conf, c2w(conf));
     }
 
     public static PreciseTruth byEvi(float freq, float evi) {
-        return byFreqConfEvi(freq, w2cSafe(evi), evi);
+        return byFreqConfEvi(freq, w2c(evi), evi);
     }
 
     /** use with caution, if you are calculating a precise evi and a dithered conf, they should correspond */

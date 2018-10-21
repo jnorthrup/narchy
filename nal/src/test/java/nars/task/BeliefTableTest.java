@@ -5,7 +5,6 @@ import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthTable;
-import nars.table.temporal.TemporalBeliefTable;
 import nars.test.TestNAR;
 import nars.test.analyze.BeliefAnalysis;
 import nars.time.Tense;
@@ -212,53 +211,6 @@ class BeliefTableTest {
 
     }
 
-    @Test
-    void testConceptualizationIntermpolation() throws Narsese.NarseseException {
-
-
-        for (Tense t : new Tense[]{Present, Eternal}) {
-            NAR n = NARS.shell();
-            //n.log();
-            n.time.dur(8);
-
-            //extreme example: too far distance, so results in DTERNAL
-            assertEquals(DTERNAL, Revision.chooseDT(1,100,0.5f,n));
-
-            int a = 2;
-            int b = 4;
-            int ab = 3; //expected
-
-            assertEquals(ab, Revision.chooseDT(a,b,0.5f,n));
-
-            n.believe("((a ==>+" + a + " b)-->[pill])", t, 1f, 0.9f);
-            n.believe("((a ==>+" + b + " b)-->[pill])", t, 1f, 0.9f);
-            n.run(1);
-
-
-            String abpill = "((a==>b)-->[pill])";
-            assertEquals("((a ==>+- b)-->[pill])", $$("((a ==>+- b)-->[pill])").concept().toString());
-            assertEquals("((a ==>+- b)-->[pill])", $$(abpill).concept().toString());
-
-            TaskConcept cc = (TaskConcept) n.conceptualize(abpill);
-            assertNotNull(cc);
-
-            String correctMerge = "((a ==>+" + ab +" b)-->[pill])";
-            cc.beliefs().print();
-
-
-            long when = t == Present ? 0 : ETERNAL;
-            Task m = cc.beliefs().match(when, null, n);
-            assertEquals(correctMerge, m.term().toString());
-
-
-            ((BeliefTables)cc.beliefs()).tableFirst(TemporalBeliefTable.class).setTaskCapacity(1);
-
-            cc.print();
-
-
-            assertEquals(correctMerge, cc.beliefs().match(0, null, n).term().toString());
-        }
-    }
 
     @Test
     void testBestMatchConjSimple() {

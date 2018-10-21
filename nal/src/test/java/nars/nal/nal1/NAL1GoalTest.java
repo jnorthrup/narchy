@@ -24,7 +24,7 @@ public class NAL1GoalTest extends NALTest {
         test
                 .input("(a-->b)!")
                 .input("(b-->c). %0.1%")
-                .mustGoal(cycles, "(a-->c)", 1f, 0.1f)
+                .mustGoal(cycles, "(a-->c)", 1f, 0.08f)
         ;
     }
 
@@ -55,7 +55,7 @@ public class NAL1GoalTest extends NALTest {
                 .goal("--(nars --> stupid)")
                 .believe("(human --> stupid)")
                 .mustGoal(cycles, "(nars --> human)", 0f, 0.4f)
-                .mustGoal(cycles, "(human --> nars)", 0f, 0.42f);
+                .mustGoal(cycles, "(human --> nars)", 0f, 0.4f);
     }
     @Test
     void inductionNegativeGoalPositiveBelief()  {
@@ -63,7 +63,7 @@ public class NAL1GoalTest extends NALTest {
                 .goal("--(human --> stupid)")
                 .believe("(nars --> stupid)")
                 .mustGoal(cycles, "(nars --> human)", 0f, 0.4f)
-                .mustGoal(cycles, "(human --> nars)", 0f, 0.42f);
+                .mustGoal(cycles, "(human --> nars)", 0f, 0.4f);
     }
 
 }

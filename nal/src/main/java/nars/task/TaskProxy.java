@@ -68,7 +68,7 @@ public class TaskProxy extends UnitPri implements Task {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Task && Task.equal(this, (Task) obj);
+        return this == obj || (obj instanceof Task && hashCode()==obj.hashCode() && Task.equal(this, (Task) obj));
     }
 
     @Override

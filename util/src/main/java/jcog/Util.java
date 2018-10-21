@@ -444,6 +444,18 @@ public enum Util {
         return a ^ (b + 0x9e3779b9 + (a << 6) + (a >> 2));
     }
 
+    public static int hashCombine(int a, long b) {
+        return Util.hashCombine(a, (int)b, (int) (b >> 32));
+    }
+
+    public static int hashCombine(int a, long[] b) {
+        int x = Util.hashCombine(a, b[0]);
+        for (int i = 1; i < b.length; i++) {
+            x = Util.hashCombine(x, b[i]);
+        }
+        return x;
+    }
+
     public static int hashCombine(int a, Object b) {
         return hashCombine(a, b.hashCode());
     }

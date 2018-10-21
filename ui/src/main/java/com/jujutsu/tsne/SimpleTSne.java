@@ -33,7 +33,8 @@ public class SimpleTSne implements TSne {
 
     private double min_gain =
             //Double.MIN_NORMAL;
-            ScalarValue.EPSILONsqrt;
+            ScalarValue.EPSILON;
+            //ScalarValue.EPSILONsqrt;
             //0.01f;
 
     private double[][] numMatrix;

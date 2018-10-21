@@ -126,7 +126,7 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
-                .attention(() -> new Attention(512))
+                .attention(() -> new Attention(256))
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
@@ -374,19 +374,19 @@ abstract public class NAgentX extends NAgent {
         //n.freqResolution.set(0.03f);
         n.termVolumeMax.set(22);
 
-        n.forgetDurs.set(0.9f);
-        n.activateConceptRate.set(0.01f);
+        n.forgetDurs.set(4f);
+        n.activateConceptRate.set(1f);
 
 
 
-        n.beliefConfDefault.set(0.9f);
+        n.beliefConfDefault.set(0.95f);
         n.goalConfDefault.set(0.9f);
 
         float base = 0.5f;
-        n.beliefPriDefault.set(base * 0.5f);
-        n.goalPriDefault.set(base * 0.75f);
-        n.questionPriDefault.set(base * 0.2f);
-        n.questPriDefault.set(base * 0.25f);
+        n.beliefPriDefault.set(base * 0.2f);
+        n.goalPriDefault.set(base * 0.9f);
+        n.questionPriDefault.set(base * 0.05f);
+        n.questPriDefault.set(base * 0.1f);
 
         n.emotion.want(MetaGoal.PerceiveCmplx, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
@@ -415,7 +415,7 @@ abstract public class NAgentX extends NAgent {
 //
 //        }
 
-//        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 4, 32);
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 2, 8);
 
 //        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof AbstractGoalActionConcept.CuriosityTask) ),
 //                8, 96);

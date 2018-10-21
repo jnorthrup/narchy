@@ -15,6 +15,7 @@ import nars.test.analyze.BeliefAnalysis;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.polation.FocusingLinearTruthPolation;
+import nars.truth.polation.TruthIntegration;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
@@ -137,9 +138,9 @@ public class RevisionTest {
         assertTrue(Revision.merge(n, t01, t45).evi() < Revision.merge(n, t02, t45).evi());
         assertTrue(Revision.merge(n, t02, t45).evi() < Revision.merge(n, t03, t45).evi());
 
-        assertEquals("(b-->a). 0⋈102 %1.0;.41%", Revision.merge(n, t02, t100_102).toStringWithoutBudget());
+        assertEquals("(b-->a). 0⋈102 %1.0;.34%", Revision.merge(n, t02, t100_102).toStringWithoutBudget());
 
-        assertEquals("(b-->a). 0⋈5 %1.0;.93%", Revision.merge(n, t03, t35).toStringWithoutBudget());
+        assertEquals("(b-->a). 0⋈5 %1.0;.91%", Revision.merge(n, t03, t35).toStringWithoutBudget());
         assertEquals("(b-->a). 0⋈5 %1.0;.90%", Revision.merge(n, t02, t35).toStringWithoutBudget());
 
     }
@@ -694,23 +695,26 @@ public class RevisionTest {
         //presence or increase of empty space in the union of between merged tasks reduces truth proportionally
 
 
-        Task a1 = n.believe(x, 1, 1f);
+        Task a = n.believe(x, 1, 1f);
+
+        assertTrue(TruthIntegration.eviAvg(a, 1, 1, 0) > TruthIntegration.eviAvg(a, 1, 2, 0));
+        assertEquals(0, TruthIntegration.eviAvg(a, 2, 2, 0));
+
         Task a2 = n.believe(x, 1, 1f);
         Task b = n.believe(x, 2, 1f);
         Task c = n.believe(x, 4, 1f);
         Task d = n.believe(x, 8, 1f);
-        Task aa = Revision.merge(n, a1, a2);
-        Task ab = Revision.merge(n, a1, b);
-        Task ac = Revision.merge(n, a1, c);
-        Task ad = Revision.merge(n, a1, d);
-        System.out.println(a1.evi());
+        Task aa = Revision.merge(n, a, a2);
         p(aa);
+        assertTrue(aa.conf() > a.conf());
+        Task ab = Revision.merge(n, a, b);
         p(ab);
+        assertTrue(ab.conf() == a.conf());
+        Task ac = Revision.merge(n, a, c);
         p(ac);
+        assertTrue(ac.conf() < ab.conf(), ()->ac + " must have less conf than " + ab);
+        Task ad = Revision.merge(n, a, d);
         p(ad);
-        assertTrue(aa.conf() > a1.conf());
-        assertTrue(ab.conf() <= a1.conf());
-        assertTrue(ac.conf() < ab.conf());
         assertTrue(ad.conf() < ac.conf());
     }
 

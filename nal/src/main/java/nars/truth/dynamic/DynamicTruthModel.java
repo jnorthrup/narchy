@@ -207,7 +207,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                 if (b == null)
                     return null;
 
-                return NALTruth.Difference.apply(a, b, n, Float.MIN_NORMAL);
+                return NALTruth.Difference.apply(a, b, n);
             }
 
 
@@ -569,7 +569,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                 if (y == null) {
                     y = x;
                 } else {
-                    y = NALTruth.Intersection.apply(y, x, nar, Float.MIN_NORMAL);
+                    y = NALTruth.Intersection.apply(y, x, nar);
                     if (y == null)
                         return null;
                 }

@@ -54,7 +54,7 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
         this.attractor = attractor;
         this.strength = strength;
         this.jitter = jitter;
-        this.rng = rng;
+        this.rng = rng!=null ? rng : ThreadLocalRandom.current();
         setRadius(radius);
     }
 
@@ -75,7 +75,7 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
         if (distSq <= ScalarValue.EPSILONsqrt) {
            if (strength < 0) {
                //random direction
-               float theta = (float) (((rng==null ? ThreadLocalRandom.current() : rng).nextFloat()) * Math.PI * 2);
+               float theta = (float) ((rng.nextFloat()) * Math.PI * 2);
                float rx = (float) (Math.cos(theta) * strength * timeStep);
                float ry = (float) (Math.sin(theta) * strength * timeStep);
                f = new Vec2D(rx, ry);

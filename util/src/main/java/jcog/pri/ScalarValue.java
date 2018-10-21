@@ -18,7 +18,7 @@ public interface ScalarValue {
      * global minimum difference necessary to indicate a significant modification in budget float number components
      * TODO find if there is a better number
      */
-    float EPSILON = 0.00001f;
+    float EPSILON = 0.000001f;
     float EPSILONsqrt = (float)Math.sqrt(EPSILON);
 
     /** setter

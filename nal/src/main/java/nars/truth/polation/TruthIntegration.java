@@ -42,12 +42,22 @@ public class TruthIntegration {
         }
 
         long tStart = t.start();
-        long range = (qEnd - qStart + 1);
         if (tStart == ETERNAL) {
+            long range = (qEnd - qStart + 1);
             return t.evi() * range;
         }
 
         long tEnd = t.end();
+        if (dur == 0) {
+            //trim the question to the task because dur=0 means no residual evidence is measured outside of the task's bounds
+            qStart = Math.max(qStart, tStart);
+            qEnd = Math.min(qEnd, tEnd);
+            if (qEnd < qStart)
+                return 0; //no intersection
+            if (qStart == qEnd)
+                return t.evi(qStart, 0); //point
+        }
+
         if (
                 (qEnd <= tStart) //disjoint before
                 ||
@@ -55,13 +65,12 @@ public class TruthIntegration {
                 ||
                 (qStart >= tStart && qEnd <= tEnd)  //contained
             ) {
-            //simple 1-component trapezoid
+            //task contains question
             return t.eviIntegTrapezoidal(dur, qStart, qEnd);
         }
 
         if (qStart <= tStart && qEnd >= tEnd) {
-            //contains the point: need to evaluate in 2 piecewise sections (3 points)
-            //contains the task: need to evaluate in 3 piecewise sections (4 points)
+            //question contains task
             return t.eviIntegTrapezoidal(dur, qStart, tStart, tEnd, qEnd);
         }
 

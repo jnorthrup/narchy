@@ -15,7 +15,6 @@ import jcog.event.Topic;
 import jcog.exe.Cycled;
 import jcog.math.MutableInteger;
 import jcog.pri.Prioritized;
-import jcog.pri.ScalarValue;
 import jcog.service.Service;
 import jcog.service.Services;
 import jcog.util.TriConsumer;
@@ -1378,7 +1377,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * +Infinity -> amp=2
      */
     public float amp(short[] effect) {
-        return Math.max(ScalarValue.EPSILON, 1f + Util.tanhFast(value(effect)));
+        return 1f + Util.tanhFast(value(effect));
     }
 
     public final float amp(Task task) {

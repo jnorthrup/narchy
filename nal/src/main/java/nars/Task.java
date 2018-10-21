@@ -71,21 +71,20 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
      */
     static boolean equal(Task a, Task b) {
 
-        if (a.punc() != b.punc())
+        byte p = a.punc();
+        if (p != b.punc())
             return false;
+
+        if (p == BELIEF || p == GOAL) {
+            Truth at = a.truth();
+            Truth bt = b.truth();
+            if (!at.equals(bt)) return false;
+        }
 
         long[] evidence = a.stamp();
         if ((!Arrays.equals(evidence, b.stamp())))
             return false;
 
-
-        Truth at = a.truth();
-        Truth bt = b.truth();
-        if (at == null) {
-            if (bt != null) return false;
-        } else {
-            if (!at.equals(bt)) return false;
-        }
 
         if ((a.start() != b.start()) || (a.end() != b.end()))
             return false;
@@ -103,20 +102,20 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 punc
         );
 
-        if (stamp.length > 1) {
+        //if (stamp.length > 1) {
 
             if (truth != null)
                 h = Util.hashCombine(h, truth.hashCode());
 
             if (start != ETERNAL) {
-                h = Util.hashCombine(h, Long.hashCode(start));
+                h = Util.hashCombine(h, start);
                 if (end!=start)
-                    h = Util.hashCombine(h,  Long.hashCode(end));
+                    h = Util.hashCombine(h,  end);
             }
-        }
+        //}
 
         if (stamp.length > 0)
-            h = Util.hashCombine(h, Arrays.hashCode(stamp));
+            h = Util.hashCombine(h, stamp);
 
         return h;
     }
@@ -125,6 +124,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
     static void proof(/*@NotNull*/Task task, int indent, /*@NotNull*/StringBuilder sb) {
 
+        sb.ensureCapacity(1024);
 
         for (int i = 0; i < indent; i++)
             sb.append("  ");

@@ -20,6 +20,7 @@ import nars.exe.UniExec;
 import nars.gui.LSTMView;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
+import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.time.clock.CycleTime;
@@ -38,6 +39,7 @@ import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
 import static jcog.Texts.n4;
+import static nars.Op.BELIEF;
 import static nars.Op.IMPL;
 import static spacegraph.SpaceGraph.window;
 
@@ -104,7 +106,7 @@ public class TrackXY_NAR extends NAgentX {
 //        boolean rl = false;
 
 
-        int W = 3;
+        int W = 4;
         int H = 1;
         int dur =
                 2;
@@ -149,7 +151,7 @@ public class TrackXY_NAR extends NAgentX {
 
         a.curiosity.set(0.02f);
         n.freqResolution.set(0.04f);
-        n.termVolumeMax.set(6);
+        n.termVolumeMax.set(10);
         n.timeResolution.set(dur);
 
         if (rl) {
@@ -201,7 +203,7 @@ public class TrackXY_NAR extends NAgentX {
             };
 
 
-            ((MatrixDeriver) d).conceptsPerIteration.set(1);
+            ((MatrixDeriver) d).conceptsPerIteration.set(8);
 
 
             new STMLinkage(n, 1) {
@@ -211,10 +213,10 @@ public class TrackXY_NAR extends NAgentX {
                 }
             };
 
-//            ConjClustering cjB = new ConjClustering(n, BELIEF,
-//                    //x -> true,
-//                    Task::isInput,
-//                    2, 8);
+            ConjClustering cjB = new ConjClustering(n, BELIEF,
+                    //x -> true,
+                    Task::isInput,
+                    2, 8);
 
 
 //            window(new Gridding(
@@ -259,9 +261,9 @@ public class TrackXY_NAR extends NAgentX {
         a.onFrame(() -> {
             Util.sleepMS(10);
         });
-        int epoch = 200;
 
-        DescriptiveStatistics rh = new DescriptiveStatistics(epoch);
+        int epoch = 200;
+        DescriptiveStatistics rh = new DescriptiveStatistics(epoch * 4);
         a.onFrame(() -> {
             float r = a.reward();
             rh.addValue(r);

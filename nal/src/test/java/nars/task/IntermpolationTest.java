@@ -1,16 +1,18 @@
 package nars.task;
 
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
+import nars.*;
+import nars.concept.TaskConcept;
+import nars.table.BeliefTables;
+import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.time.Tense;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
 import static nars.$.$$;
+import static nars.time.Tense.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class IntermpolationTest {
@@ -195,22 +197,78 @@ public class IntermpolationTest {
 
     @Test
     void testEmbeddedIntermpolation() {
-        Term a = $$("(a, (b ==>+2 c))");
-        Term b = $$("(a, (b ==>+10 c))");
         NAR nar = NARS.shell();
-        nar.time.dur(6);
-        {
-            Term c = Revision.intermpolate(a, b, 0.5f, nar);
-            assertEquals("(a,(b ==>+6 c))", c.toString());
-        }
+        nar.time.dur(8);
+
+        Term a0 = $$("(b ==>+6 c)");
+        Term b0 = $$("(b ==>+10 c)");
+
+        Term c0 = Revision.intermpolate(a0, b0, 0.5f, nar);
+        assertEquals("(b ==>+8 c)", c0.toString());
+
+
+        Term a = $$("(a, (b ==>+6 c))");
+        Term b = $$("(a, (b ==>+10 c))");
+
+        Term c = Revision.intermpolate(a, b, 0.5f, nar);
+        assertEquals("(a,(b ==>+8 c))", c.toString());
+
         {
 
+            assertEquals("(a,(b ==>+6 c))",
+                    Revision.intermpolate(a, b, 1f, nar).toString());
             assertEquals("(a,(b ==>+10 c))",
                     Revision.intermpolate(a, b, 0f, nar).toString());
-            assertEquals("(a,(b ==>+2 c))",
-                    Revision.intermpolate(a, b, 1f, nar).toString());
 
 
         }
     }
+    @Test
+    void testConceptualizationIntermpolation() throws Narsese.NarseseException {
+
+
+        for (Tense t : new Tense[]{Present, Eternal}) {
+            NAR n = NARS.shell();
+            //n.log();
+            n.time.dur(8);
+
+            //extreme example: too far distance, so results in DTERNAL
+            assertEquals(DTERNAL, Revision.chooseDT(1,100,0.5f,n));
+
+            int a = 2;
+            int b = 4;
+            int ab = 3; //expected
+
+            assertEquals(ab, Revision.chooseDT(a,b,0.5f,n));
+
+            n.believe("((a ==>+" + a + " b)-->[pill])", t, 1f, 0.9f);
+            n.believe("((a ==>+" + b + " b)-->[pill])", t, 1f, 0.9f);
+            n.run(1);
+
+
+            String abpill = "((a==>b)-->[pill])";
+            assertEquals("((a ==>+- b)-->[pill])", $$("((a ==>+- b)-->[pill])").concept().toString());
+            assertEquals("((a ==>+- b)-->[pill])", $$(abpill).concept().toString());
+
+            TaskConcept cc = (TaskConcept) n.conceptualize(abpill);
+            assertNotNull(cc);
+
+            String correctMerge = "((a ==>+" + ab +" b)-->[pill])";
+            cc.beliefs().print();
+
+
+            long when = t == Present ? 0 : ETERNAL;
+            Task m = cc.beliefs().match(when, null, n);
+            assertEquals(correctMerge, m.term().toString());
+
+
+            ((BeliefTables)cc.beliefs()).tableFirst(TemporalBeliefTable.class).setTaskCapacity(1);
+
+            cc.print();
+
+
+            assertEquals(correctMerge, cc.beliefs().match(0, null, n).term().toString());
+        }
+    }
+
 }
