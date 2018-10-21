@@ -1,5 +1,6 @@
 package jcog.pri.bag.util;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public interface SpinMutex {
@@ -20,6 +21,15 @@ public interface SpinMutex {
         int ticket = start(context, key);
         try {
             what.run();
+        } finally {
+            end(ticket);
+        }
+    }
+
+    default <X> void runWith(int context, int key, Consumer<X> what, X arg) {
+        int ticket = start(context, key);
+        try {
+            what.accept(arg);
         } finally {
             end(ticket);
         }

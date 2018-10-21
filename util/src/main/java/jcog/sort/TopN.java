@@ -1,7 +1,7 @@
 package jcog.sort;
 
 import jcog.data.list.FasterList;
-import jcog.data.pool.DequePool;
+import jcog.data.pool.MetalPool;
 import jcog.decide.Roulette;
 import jcog.math.CachedFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -203,8 +203,8 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     }
 
 
-    public final static ThreadLocal<DequePool<TopN<?>>> pool =
-            DequePool.threadLocal(()->new TopN<>(new Object[32], new CachedFloatFunction<>(64, x->Float.NaN)));
+    public final static ThreadLocal<MetalPool<TopN<?>>> pool =
+            MetalPool.threadLocal(()->new TopN<>(new Object[32], new CachedFloatFunction<>(64, x->Float.NaN)));
 
     public static <X> TopN<X> pooled(int capacity, FloatFunction<X> rank) {
         TopN t = pool.get().get();

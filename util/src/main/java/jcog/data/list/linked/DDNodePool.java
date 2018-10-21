@@ -1,15 +1,15 @@
 package jcog.data.list.linked;
 
 
-import jcog.data.pool.DequePool;
+import jcog.data.pool.MetalPool;
 
 /**
 * Created by me on 1/20/15.
 */
-public class DDNodePool<E> extends DequePool<DD<E>> {
+public class DDNodePool<E> extends MetalPool<DD<E>> {
 
     public DDNodePool(int initialCapacity) {
-        super(initialCapacity);
+        super(initialCapacity, Integer.MAX_VALUE);
     }
 
     @Override

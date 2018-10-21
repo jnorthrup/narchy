@@ -130,7 +130,7 @@ abstract public class NAgentX extends NAgent {
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
-                        new Revaluator.DefaultRevaluator(0.75f),
+                        new Revaluator.DefaultRevaluator(0.5f),
                         //new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
 
                         Util.concurrencyExcept(2), false))
@@ -299,10 +299,10 @@ abstract public class NAgentX extends NAgent {
         );
 
         m.actionUnipolar($.func("forget", a.id), (f)->{
-            nar.forgetDurs.set(Util.lerp(f, 0.5f, 0.99f));
+            nar.memoryDuration.set(Util.lerp(f, 0.5f, 0.99f));
         });
         m.actionUnipolar($.func("awake", a.id), (f)->{
-            nar.activateConceptRate.set(Util.lerp(f, 0.1f, 0.99f));
+            nar.activation.set(Util.lerp(f, 0.1f, 0.99f));
         });
         m.senseNumber($.func("busy", a.id), new FloatNormalized(()->
                 (float) Math.log(1+m.nar().emotion.busyVol.getMean()), 0, 1).relax(0.05f));
@@ -364,8 +364,8 @@ abstract public class NAgentX extends NAgent {
 
     public static void config(NAR n) {
         n.timeResolution.set(
-                10
-                //20
+                //10
+                20
                 //40
         );
 
@@ -374,8 +374,8 @@ abstract public class NAgentX extends NAgent {
         //n.freqResolution.set(0.03f);
         n.termVolumeMax.set(22);
 
-        n.forgetDurs.set(4f);
-        n.activateConceptRate.set(1f);
+        n.memoryDuration.set(4f);
+        n.activation.set(1f);
 
 
 

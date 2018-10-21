@@ -7,7 +7,7 @@ import jcog.data.list.FasterList;
 import jcog.data.map.CellMap;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.data.map.MRUMap;
-import jcog.data.pool.DequePool;
+import jcog.data.pool.MetalPool;
 import jcog.data.pool.Pool;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
@@ -50,7 +50,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 //            return v;
 //        }
 //    };
-    private final DequePool<EdgeVis<X>> edgePool = new DequePool<>() {
+    private final MetalPool<EdgeVis<X>> edgePool = new MetalPool<>() {
         @Override
         public EdgeVis<X> create() {
             return new EdgeVis<>();

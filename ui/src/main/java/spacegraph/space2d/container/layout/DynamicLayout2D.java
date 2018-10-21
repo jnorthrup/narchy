@@ -1,13 +1,13 @@
 package spacegraph.space2d.container.layout;
 
 import jcog.data.list.FasterList;
-import jcog.data.pool.DequePool;
+import jcog.data.pool.MetalPool;
 import spacegraph.space2d.container.Graph2D;
 import spacegraph.util.MutableFloatRect;
 
 public abstract class DynamicLayout2D<X, M extends MutableFloatRect> implements Graph2D.Graph2DUpdater<X> {
     protected final FasterList<M> nodes = new FasterList();
-    private final DequePool<M> nodesPool = new DequePool<>() {
+    private final MetalPool<M> nodesPool = new MetalPool<>() {
         @Override
         public M create() {
             return newContainer();
@@ -49,7 +49,7 @@ public abstract class DynamicLayout2D<X, M extends MutableFloatRect> implements 
     private void put() {
         nodes.forEach(m -> put(m, m.node));
 
-        nodesPool.take(nodes);
+        nodesPool.steal(nodes);
     }
 
     /** apply to node after layout

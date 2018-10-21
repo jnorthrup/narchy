@@ -43,7 +43,7 @@ public class TaskLinkTask extends AbstractTask {
             return null;
 
         //scale by concept activation rate to keep things at same scale
-        pri *= n.activateConceptRate.floatValue();
+        pri *= n.activation.floatValue();
 
         //2. tasklink
         Tasklinks.linkTask(new TaskLink.GeneralTaskLink(task, n, pri), c.tasklinks(), null);

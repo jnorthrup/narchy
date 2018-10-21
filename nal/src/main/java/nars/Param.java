@@ -98,12 +98,12 @@ public abstract class Param {
 //    public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
 
 
-    public static final boolean STRONG_COMPOSITION = false;
+    public final static boolean STRONG_COMPOSITION = false;
 
     /**
-     * default bag forget rate
+     * number of clock durations composing a unit of short term memory decay (used by bag forgetting)
      */
-    public final FloatRange forgetDurs = new FloatRange(1f, 0f, 8f);
+    public final FloatRange memoryDuration = new FloatRange(1f, 0f, 8f);
 
 
     public static final boolean FILTER_SIMILAR_DERIVATIONS = true;
@@ -223,7 +223,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(17 * TTL_MIN, 0, 128 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(12 * TTL_MIN, 0, 128 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 8, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
@@ -291,10 +291,17 @@ public abstract class Param {
                     (Param.TTL_BRANCH * 1) + Param.TTL_DERIVE_TASK_SUCCESS;
 
 
+    /** controls structural integration/disintegration tendency by adjusting the proportional
+     *  amount in which termlinks are created.  values closer to zero set priority more toward
+     *  subterms while values closer to one set priority more toward superterms.
+     * 0.5 is balanced. */
     public final FloatRange termlinkBalance = new FloatRange(0.5f, 0, 1f);
 
 
-    public final FloatRange activateConceptRate = new FloatRange(1f, 0, 1f);
+    /** primary activation amplifier.  affects both conceptualization priority (Attention)
+     *  and the relative priority of created tasklinks from input tasks.
+     */
+    public final FloatRange activation = new FloatRange(1f, 0, 2f);
 
 
     /**

@@ -1,6 +1,6 @@
 package jcog.data.map;
 
-import jcog.data.pool.DequePool;
+import jcog.data.pool.MetalPool;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -26,7 +26,7 @@ public class CellMap<K, V> {
     public final ConcurrentFastIteratingHashMap<K, CacheCell<K, V>> map =
             new ConcurrentFastIteratingHashMap<>(new CacheCell[0]);
 
-    public final DequePool<CacheCell<K, V>> cellPool = new DequePool<>() {
+    public final MetalPool<CacheCell<K, V>> cellPool = new MetalPool<>() {
         @Override
         public CacheCell<K, V> create() {
             return newCell();

@@ -182,8 +182,8 @@ public class IRCNLP extends IRC {
                 .exe(new MultiExec.WorkerExec(new Revaluator.DefaultRevaluator(0.5f),2))
                 .time(new RealTime.MS(false).durFPS(durFPS)).get();
 
-        n.activateConceptRate.set(0.5f);
-        n.forgetDurs.set(0.5f);
+        n.activation.set(0.5f);
+        n.memoryDuration.set(0.5f);
 
         n.freqResolution.set(0.1f);
         n.confResolution.set(0.05f);

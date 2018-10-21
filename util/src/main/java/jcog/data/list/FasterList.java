@@ -144,13 +144,19 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public X removeLast() {
-
-        if (size == 0)
-            throw new ArrayIndexOutOfBoundsException();
+//        if (size == 0)
+//            throw new ArrayIndexOutOfBoundsException(); //it will be obvious if this happens
         X[] ii = this.items;
         X x = ii[--size];
         ii[size] = null;
         return x;
+    }
+
+    /** removes last item or returns null if empty, similar to Queue.poll() */
+    public final X poll() {
+        if (size == 0)
+            return null;
+        return removeLast();
     }
 
     @Override
@@ -463,7 +469,7 @@ public class FasterList<X> extends FastList<X> {
     public void ensureCapacityForAdditional(int num) {
         X[] ii = this.items;
         int s = this.size, l = ii.length;
-        if (l == 0 || (items.length < (s + num))) {
+        if (l < (s + num)) {
             this.items = (X[]) (
                     (l == 0) ?
                             newArray(Math.max(num, INITIAL_SIZE_IF_GROWING_FROM_EMPTY))
@@ -474,9 +480,10 @@ public class FasterList<X> extends FastList<X> {
     }
 
     private Object[] copyItemsWithNewCapacity(int newCapacity) {
-        Object[] newItems = newArray(newCapacity);
-        System.arraycopy(this.items, 0, newItems, 0, Math.min(this.size, newCapacity));
-        return newItems;
+//        Object[] newItems = newArray(newCapacity);
+//        System.arraycopy(this.items, 0, newItems, 0, Math.min(this.size, newCapacity));
+//        return newItems;
+        return items!=null ? Arrays.copyOf(items, newCapacity) : newArray(newCapacity);
     }
 
     protected Object[] newArray(int newCapacity) {

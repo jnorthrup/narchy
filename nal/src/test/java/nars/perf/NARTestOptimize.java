@@ -117,7 +117,7 @@ class NARTestOptimize {
             }).var("ttlMax", 6, 100, 20, (DeductiveMeshTest t, int i) -> {
                 t.test.nar.deriveBranchTTL.set(i);
             }).var("forgetRate", 0, 1f, 0.2f, (DeductiveMeshTest t, float f) -> {
-                t.test.nar.forgetDurs.set(f);
+                t.test.nar.memoryDuration.set(f);
             });
 
 
