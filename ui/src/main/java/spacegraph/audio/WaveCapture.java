@@ -8,7 +8,7 @@ import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.AsyncTensor;
 import jcog.signal.wave1d.SlidingDFTTensor;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.FloatSlider;
 

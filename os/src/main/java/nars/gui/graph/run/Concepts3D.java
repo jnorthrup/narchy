@@ -17,7 +17,7 @@ import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space3d.SpaceGraphPhys3D;
 
-import static spacegraph.space2d.container.Gridding.grid;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 public class Concepts3D extends DynamicConceptSpace {
 

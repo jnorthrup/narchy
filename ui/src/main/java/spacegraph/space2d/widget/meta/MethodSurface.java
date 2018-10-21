@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.meta;
 
 import jcog.data.list.FasterList;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.text.VectorLabel;
 

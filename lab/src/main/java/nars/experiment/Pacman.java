@@ -11,7 +11,7 @@ import nars.video.BufferedImageBitmap2D;
 import nars.video.CameraSensorView;
 import nars.video.Scale;
 import nars.video.SwingBitmap2D;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 
 import static spacegraph.SpaceGraph.window;
 

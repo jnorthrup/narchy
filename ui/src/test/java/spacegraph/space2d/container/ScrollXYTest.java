@@ -4,17 +4,23 @@ import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.grid.DynGrid;
+import spacegraph.space2d.container.grid.GridModel;
+import spacegraph.space2d.container.grid.GridRenderer;
+import spacegraph.space2d.container.grid.KeyValueGrid;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.VectorLabel;
+import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.video.Draw;
 
 import java.util.Map;
 
 import static spacegraph.SpaceGraph.window;
 
-class ScrollGridTest {
+class ScrollXYTest {
+
 
     static class ScrollGridTest1 {
         public static void main(String[] args) {
@@ -37,7 +43,7 @@ class ScrollGridTest {
                 }
             };
 
-            ScrollGrid<String> grid = new ScrollGrid<>(model,
+            ScrollXY<DynGrid<String>> grid = new ScrollXY<>(new DynGrid<>(model,
                     (x, y, s) -> {
                         if (Math.random() < 0.5f) {
                             Surface p = new PushButton(s) {
@@ -51,7 +57,7 @@ class ScrollGridTest {
                         } else {
                             return new VectorLabel(s);
                         }
-                    }, 8, 4);
+                    })).view(0,0,8,4);
 
 
             grid.setScrollBar(true, true, false);
@@ -62,14 +68,12 @@ class ScrollGridTest {
     }
     static class ListTest1 {
         public static void main(String[] args) {
+
             String[] list = {"a", "b", "c", "d", "e", "f"};
-            ScrollGrid.GridRenderer<String> builder = (x, y, n) -> {
-                System.out.println("constructing: " + n);
-                return new CheckBox(n);
-            } ;
-            SpaceGraph.window(
-                    ScrollGrid.array(builder, list)
-                    , 800, 800);
+
+            GridRenderer<String> builder = (x, y, n) -> new CheckBox(n);
+
+            SpaceGraph.window( ScrollXY.array(builder, list) , 800, 800);
         }
 
     }
@@ -77,14 +81,22 @@ class ScrollGridTest {
     static class MapTest1 {
         public static void main(String[] args) {
             SpaceGraph.window(
-                new ScrollGrid<>(
-                        new KeyValueModel(
+                debugScroll(new DynGrid<>(
+                        new KeyValueGrid(
                             Map.of("wtf", "ok", "sdfj", "xcv", "sdf", "fdfs")
                         ),
                         (x, y, n)->
-                            x == 0 ? new VectorLabel(n.toString()) : new CheckBox(n.toString()))
+                            x == 0 ? new VectorLabel(n.toString()) : new CheckBox(n.toString())))
                 , 800, 800);
         }
+
+
     }
 
+    private static Object debugScroll(ScrollXY.ScrolledXY x) {
+
+        ScrollXY<ScrollXY.ScrolledXY> s = new ScrollXY<>(x);
+        Surface debug = new TextEdit("x");
+        return Splitting.row(new Clipped(s), debug, 0.75f);
+    }
 }

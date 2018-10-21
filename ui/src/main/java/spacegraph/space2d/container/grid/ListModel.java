@@ -1,4 +1,4 @@
-package spacegraph.space2d.container;
+package spacegraph.space2d.container.grid;
 
 import jcog.TODO;
 import org.jetbrains.annotations.Nullable;
@@ -10,7 +10,7 @@ abstract public class ListModel<X> implements GridModel<X> {
     /** orientation, dynamically changeable. true=vertical, false=horizontal. default=vertical */
     private boolean vertical = true;
 
-    private ScrollGrid<X> surface;
+    private DynGrid<X> surface;
 
     public static <X> ListModel<X> of(X... items) {
         return of(List.of(items));
@@ -37,24 +37,24 @@ abstract public class ListModel<X> implements GridModel<X> {
     }
 
     @Override
-    public synchronized void start(ScrollGrid<X> x) {
+    public synchronized void start(DynGrid<X> x) {
         if (surface!=null)
             throw new TODO("support multiple observers");
         this.surface = x;
     }
 
     @Override
-    public void stop(ScrollGrid<X> x) {
+    public void stop(DynGrid<X> x) {
         this.surface = null;
     }
 
-    public void onChange() {
-        surface.refresh();
-    }
-
-    public void setOrientation(boolean vertical) {
-        this.vertical = vertical;
-    }
+//    public void onChange() {
+//        surface.refresh();
+//    }
+//
+//    public void setOrientation(boolean vertical) {
+//        this.vertical = vertical;
+//    }
 
     protected abstract X get(int index);
     protected abstract int size();

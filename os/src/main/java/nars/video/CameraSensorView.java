@@ -16,7 +16,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerDragging;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;

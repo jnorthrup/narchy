@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.slider;
 
 import spacegraph.SpaceGraph;
 
-import static spacegraph.space2d.container.Gridding.*;
+import static spacegraph.space2d.container.grid.Gridding.*;
 
 class SliderModelTest {
     public static void main(String[] args) {

@@ -5,7 +5,7 @@ import com.googlecode.lanterna.graphics.SimpleTheme;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.event.Level;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.console.ConsoleGUI;
 import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.util.SpaceLogger;

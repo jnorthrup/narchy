@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.port;
 
 import com.jogamp.opengl.GL2;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.video.Draw;
 

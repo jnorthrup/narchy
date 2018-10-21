@@ -5,7 +5,7 @@ import jcog.pri.bag.util.Bagregate;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.control.DurService;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 
 public class BagregateConceptGraph2D extends ConceptGraph2D {

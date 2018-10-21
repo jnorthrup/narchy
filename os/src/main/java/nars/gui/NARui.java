@@ -21,6 +21,8 @@ import nars.term.Termed;
 import nars.util.MemorySnapshot;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.*;
+import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.grid.KeyValueGrid;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
@@ -229,7 +231,7 @@ public class NARui {
         PLinkArrayBag<Task> b = new PLinkArrayBag<>(PriMerge.replace, cap);
         List<Task> taskList = new FasterList();
 
-        ScrollGrid<Task> tasks = ScrollGrid.listCached(t ->
+        ScrollXY tasks = ScrollXY.listCached(t ->
                         new Splitting(new FloatGuage(0, 1, t::priElseZero),
                                 new PushButton(new VectorLabel(t.toStringWithoutBudget())).click(() -> {
                                     conceptWindow(t, n);
@@ -273,7 +275,7 @@ public class NARui {
 
     private static Surface memoryView(NAR n) {
 
-        return new ScrollGrid<>(new KeyValueModel(new MemorySnapshot(n).byAnon),
+        return new ScrollXY<>(new KeyValueGrid(new MemorySnapshot(n).byAnon),
                 (x, y, v) -> {
                     if (x == 0) {
                         return new PushButton(v.toString()).click(() -> {

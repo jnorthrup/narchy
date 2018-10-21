@@ -7,8 +7,6 @@ import org.ujmp.core.util.matrices.SystemEnvironmentMatrix;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.layout.ForceDirected2D;
 
-import java.io.IOException;
-
 public class Graph2DTest {
 
 
@@ -44,7 +42,7 @@ public class Graph2DTest {
     }
 
     static class Ujmp1 {
-        public static void main(String[] args) throws IOException {
+        public static void main(String[] args) {
 
 
             MapNodeGraph<Object,Object> h = new MapNodeGraph();

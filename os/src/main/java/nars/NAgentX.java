@@ -44,7 +44,7 @@ import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meter.Cluster2DView;
 import spacegraph.video.Draw;
 

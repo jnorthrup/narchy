@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.port;
 
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 
 import java.util.function.Function;
 

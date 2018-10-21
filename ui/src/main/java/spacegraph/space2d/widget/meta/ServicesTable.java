@@ -9,9 +9,11 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.GridModel;
-import spacegraph.space2d.container.Gridding;
-import spacegraph.space2d.container.ScrollGrid;
+import spacegraph.space2d.container.ScrollXY;
+import spacegraph.space2d.container.grid.DynGrid;
+import spacegraph.space2d.container.grid.GridModel;
+import spacegraph.space2d.container.grid.GridRenderer;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
@@ -21,20 +23,20 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
-public class ServicesTable extends Gridding implements GridModel, ScrollGrid.GridRenderer {
+public class ServicesTable extends Gridding implements GridModel, GridRenderer {
 
     private final Services context;
     private Off updater;
-    private ScrollGrid grid;
+    private DynGrid grid;
 
     
-    private final List<Service> services = new CopyOnWriteArrayList();
+    private final List<Service> services = new CopyOnWriteArrayList<>();
 
     public ServicesTable(Services<?,?> s) {
         super();
 
         this.context = s;
-        set(new ScrollGrid(this, this).view(0, 0, 2, 16));
+        set(new ScrollXY<>(new DynGrid<>(this, this)).view(0, 0, 2, 16));
     }
 
     @Override
@@ -58,12 +60,12 @@ public class ServicesTable extends Gridding implements GridModel, ScrollGrid.Gri
     }
 
     @Override
-    public void start(ScrollGrid x) {
+    public void start(DynGrid x) {
         this.grid = x;
     }
 
     @Override
-    public void stop(ScrollGrid x) {
+    public void stop(DynGrid x) {
         this.grid = null;
     }
 
@@ -72,7 +74,7 @@ public class ServicesTable extends Gridding implements GridModel, ScrollGrid.Gri
             services.clear();
             context.stream().collect(Collectors.toCollection(()-> services));
         }
-        grid.refresh();
+//        grid.refresh();
     }
 
     @Override

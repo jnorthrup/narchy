@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.chip;
 
 import jcog.exe.Loop;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.port.IntPort;
 import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.text.LabeledPane;

@@ -1,8 +1,11 @@
 package spacegraph.space2d.widget;
 
+import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
+import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
+import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.SurfaceRoot;
@@ -13,10 +16,10 @@ import spacegraph.video.Draw;
 /**
  * Base class for GUI widgets, similarly designed to JComponent
  */
-public class Widget extends MutableUnitContainer<Surface> {
+public class Widget extends MutableUnitContainer<Surface> implements KeyPressed {
 
 
-    private static final float border = 0.05f;
+        private static final float border = 0.05f;
 
     /**
      * z-raise/depth: a state indicating push/pull (ex: buttons)
@@ -26,6 +29,7 @@ public class Widget extends MutableUnitContainer<Surface> {
      */
     protected float dz = 0;
 
+    protected boolean focused;
 
     /**
      * indicates current level of activity of this component, which can be raised by various
@@ -36,7 +40,7 @@ public class Widget extends MutableUnitContainer<Surface> {
      */
     private float temperature = 0;
 
-    private transient Finger touchedBy = null;
+    protected transient Finger touchedBy = null;
 
     public Widget() {
         this(new EmptySurface());
@@ -45,6 +49,14 @@ public class Widget extends MutableUnitContainer<Surface> {
 
     public Widget(Surface content) {
         super(content);
+    }
+
+
+    public void requestFocus() {
+        SurfaceRoot r = root();
+        if (r!=null) {
+            r.keyFocus(this);
+        }
     }
 
     @Override
@@ -74,30 +86,33 @@ public class Widget extends MutableUnitContainer<Surface> {
     @Override
     protected void paintBelow(GL2 gl, SurfaceRender rr) {
 
-        /*if (Widget.this.tangible())*/ {
-            float dim = 1f - (dz /* + if disabled, dim further */) / 3f;
-            float bri = 0.25f * dim;
-            float r, g, b;
-            r = g = b = bri;
+        float dim = 1f - (dz /* + if disabled, dim further */) / 3f;
+        float bri = 0.25f * dim;
+        float r, g, b;
+        r = g = b = bri;
 
 
-            float t = this.temperature;
-            if (t >= 0) {
+        float t = this.temperature;
+        temperature = Util.clamp(temperature * 0.95f, 0, 1f);
+        if (t >= 0) {
 
 
-                r += t / 4f;
-                g += t / 4f;
-                b += t / 4f;
-            } else {
+            r += t / 4f;
+            g += t / 4f;
+            b += t / 4f;
+        } else {
 
-                b += -t / 2f;
-                g += -t / 4f;
-            }
-
-            Draw.rectRGBA(bounds, r, g, b, 0.5f, gl);
+            b += -t / 2f;
+            g += -t / 4f;
         }
 
+        Draw.rectRGBA(bounds, r, g, b, 0.5f, gl);
 
+        if (focused) {
+            gl.glColor4f(1,0.7f, 0.1f, 0.2f);
+            gl.glLineWidth(30);
+            Draw.rectStroke(bounds, gl);
+        }
     }
 
     @Override
@@ -160,10 +175,45 @@ public class Widget extends MutableUnitContainer<Surface> {
     @Override
     public void fingerTouch(Finger finger, boolean touching) {
         if (touching) {
+            activate(0.5f);
             touchedBy = finger;
         } else {
             touchedBy = null;
         }
     }
 
+    /** add temperature to this widget, affecting its display and possibly other behavior.  useful for indicating
+     *  transient activity */
+    public void activate(float inc) {
+        this.temperature = Util.clamp(temperature + inc, 0, 1f);
+    }
+
+
+    @Override
+    public void keyStart() {
+        focused = true;
+        activate(1f);
+    }
+
+    @Override
+    public void keyEnd() {
+        focused = false;
+    }
+
+
+    @Override
+    public boolean key(KeyEvent e, boolean pressedOrReleased) {
+        if (pressedOrReleased) {
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_TAB:
+                    //TODO
+                    // focus traversal
+                    break;
+                case KeyEvent.VK_PRINTSCREEN:
+                    System.out.println(this); //TODO debugging
+                    return true;
+            }
+        }
+        return false;
+    }
 }

@@ -5,7 +5,7 @@ import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import spacegraph.audio.Audio;
 import spacegraph.audio.Sound;
 import spacegraph.audio.SoundProducer;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.IconToggleButton;
 import spacegraph.space2d.widget.port.Port;

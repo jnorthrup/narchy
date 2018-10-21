@@ -8,7 +8,7 @@ import jcog.signal.Tensor;
 import jcog.signal.tensor.TensorFunc;
 import jcog.signal.tensor.TensorLERP;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.port.TypedPort;

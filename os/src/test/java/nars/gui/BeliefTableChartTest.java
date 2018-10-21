@@ -7,7 +7,7 @@ import nars.concept.sensor.Signal;
 import nars.term.Term;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.MetaFrame;
 
 import static nars.$.$$;

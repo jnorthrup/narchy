@@ -1,7 +1,7 @@
 package nars.gui;
 
 import jcog.learn.lstm.SimpleLSTM;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meter.MatrixView;
 import spacegraph.video.Draw;
 

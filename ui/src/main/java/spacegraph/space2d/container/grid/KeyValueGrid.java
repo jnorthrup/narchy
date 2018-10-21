@@ -1,4 +1,4 @@
-package spacegraph.space2d.container;
+package spacegraph.space2d.container.grid;
 
 
 
@@ -9,22 +9,22 @@ import java.util.Map;
 import java.util.function.Function;
 
 /** simple 2-column/2-row key->value table */
-public class KeyValueModel implements GridModel {
+public class KeyValueGrid implements GridModel {
 
     private final Function map;
 
     /** cached keys as an array for fast access */
     private final transient Object[] keys;
 
-    public KeyValueModel(Map map) {
+    public KeyValueGrid(Map map) {
         this.map = map::get;
         this.keys = map.keySet().toArray();
     }
-    public KeyValueModel(com.google.common.collect.Multimap map) {
+    public KeyValueGrid(com.google.common.collect.Multimap map) {
         this.map = map::get;
         this.keys = map.keySet().toArray();
     }
-    public KeyValueModel(Multimap map) {
+    public KeyValueGrid(Multimap map) {
         this.map = map::get;
         this.keys = map.keySet().toArray();
     }

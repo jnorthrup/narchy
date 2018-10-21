@@ -13,6 +13,7 @@ import nars.exe.UniExec;
 import nars.time.clock.RealTime;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.*;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
@@ -28,8 +29,8 @@ import spacegraph.video.Draw;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static spacegraph.space2d.container.Gridding.grid;
-import static spacegraph.space2d.container.Gridding.row;
+import static spacegraph.space2d.container.grid.Gridding.grid;
+import static spacegraph.space2d.container.grid.Gridding.row;
 
 public class ExeCharts {
 

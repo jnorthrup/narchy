@@ -19,7 +19,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
-import static spacegraph.space2d.container.Gridding.grid;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /** see: http://perfectionkills.com/exploring-canvas-drawing-techniques/ */
 public class Sketch2DBitmap extends Surface implements MetaFrame.Menu {

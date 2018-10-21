@@ -1,9 +1,10 @@
-package spacegraph.space2d.container;
+package spacegraph.space2d.container.grid;
 
 import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.collection.MutableListContainer;
 
 import java.util.Collection;

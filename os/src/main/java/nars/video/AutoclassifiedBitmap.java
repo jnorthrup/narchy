@@ -19,7 +19,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import org.apache.commons.lang3.ArrayUtils;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 

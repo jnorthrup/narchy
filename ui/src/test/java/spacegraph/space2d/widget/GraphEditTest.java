@@ -14,7 +14,7 @@ import spacegraph.audio.speech.TinySpeech;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.chip.*;
 import spacegraph.space2d.widget.console.TextEdit0;
@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Boolean.TRUE;
-import static spacegraph.space2d.container.Gridding.HORIZONTAL;
-import static spacegraph.space2d.container.Gridding.VERTICAL;
+import static spacegraph.space2d.container.grid.Gridding.HORIZONTAL;
+import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
 
 public class GraphEditTest {
 

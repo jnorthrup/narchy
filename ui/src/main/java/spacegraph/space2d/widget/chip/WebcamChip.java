@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.chip;
 import jcog.event.Off;
 import jcog.signal.Tensor;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.text.LabeledPane;

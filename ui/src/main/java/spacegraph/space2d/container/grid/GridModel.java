@@ -1,4 +1,4 @@
-package spacegraph.space2d.container;
+package spacegraph.space2d.container.grid;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -12,9 +12,9 @@ public interface GridModel<X> {
      */
     @Nullable X get(int x, int y);
 
-    default void start(ScrollGrid<X> x) {
+    default void start(DynGrid<X> x) {
     }
 
-    default void stop(ScrollGrid<X> x) {
+    default void stop(DynGrid<X> x) {
     }
 }

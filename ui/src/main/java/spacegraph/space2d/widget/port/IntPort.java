@@ -6,7 +6,7 @@ import spacegraph.space2d.widget.button.PushButton;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntConsumer;
 
-import static spacegraph.space2d.container.Gridding.col;
+import static spacegraph.space2d.container.grid.Gridding.col;
 
 /** TODO add both text and spinner methods */
 public class IntPort extends EditablePort<Integer> {

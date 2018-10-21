@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.Timeline2D;
 import spacegraph.space2d.widget.button.CheckBox;

@@ -6,7 +6,7 @@ import jcog.learn.gng.impl.Centroid;
 import jcog.math.IntRange;
 import jcog.signal.Tensor;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.Cluster2DView;
 import spacegraph.space2d.widget.port.Port;

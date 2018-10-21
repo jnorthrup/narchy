@@ -3,7 +3,6 @@ package spacegraph.space2d.widget.button;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.video.ImageTexture;
@@ -74,7 +73,7 @@ public class ToggleButton extends AbstractButton {
 
 
     @Override
-    protected void onClick(Finger f) {
+    protected void onClick() {
         toggle();
     }
 

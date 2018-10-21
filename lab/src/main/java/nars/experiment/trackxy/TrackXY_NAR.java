@@ -29,7 +29,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.video.Draw;
 

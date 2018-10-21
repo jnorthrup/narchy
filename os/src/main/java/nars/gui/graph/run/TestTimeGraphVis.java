@@ -11,7 +11,7 @@ import spacegraph.space3d.widget.SimpleGraph3D;
 import spacegraph.space3d.widget.SpaceWidget;
 
 import static nars.time.Tense.ETERNAL;
-import static spacegraph.space2d.container.Gridding.grid;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 public class TestTimeGraphVis extends SimpleGraph3D<Event> {
 
