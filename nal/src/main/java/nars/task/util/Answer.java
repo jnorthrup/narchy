@@ -19,7 +19,6 @@ import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
@@ -28,7 +27,7 @@ import static nars.time.Tense.ETERNAL;
 /**
  * heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
  */
-public class Answer implements Consumer<Task>, AutoCloseable {
+public class Answer implements AutoCloseable {
 
     public final static int TASK_LIMIT_DEFAULT =
             Param.STAMP_CAPACITY - 1;
@@ -38,7 +37,8 @@ public class Answer implements Consumer<Task>, AutoCloseable {
      *  prevents table from trying to answer with all the tasks that a non-specific time-range might cause */
     public static final int TASK_LIMIT_ETERNAL_QUESTION = Math.max(1, TASK_LIMIT_DEFAULT / 3);
 
-    public static final int TASK_LIMIT_SAMPLE = Math.max(1, TASK_LIMIT_DEFAULT / 2);
+    public static final int BELIEF_SAMPLE_LIMIT = Math.max(1, TASK_LIMIT_DEFAULT / 2);
+    public static final int QUESTION_SAMPLE_LIMIT = Math.max(1, BELIEF_SAMPLE_LIMIT/2);
 
 
 
@@ -395,38 +395,41 @@ public class Answer implements Consumer<Task>, AutoCloseable {
         return this;
     }
 
-    @Override
-    public final void accept(Task task) {
-        if (task != null) {
-            if (!(((CachedFloatFunction)(tasks.rank)).containsKey(task))) {
-                //if (time == null || time.accept(task.start(), task.end())) {
-                tasks.accept(task);
-            }
-        }
-        //}
-    }
 
     public boolean isEmpty() {
         return tasks.isEmpty();
     }
 
     @Nullable public Task any() {
-        if (tasks.isEmpty())
-            return null;
-        return tasks.top();
+        return tasks.isEmpty() ? null : tasks.top();
     }
 
     /** consume a limited 'tries' iteration. also applies the filter.
      *  a false return value should signal a stop to any iteration supplying results */
     public boolean tryAccept(Task t) {
-        if (triesRemain-- < 0)
+        if (triesRemain <= 0)
             return false;
+
+        triesRemain--;
 
         if (filter==null || filter.test(t)) {
             accept(t);
         }
 
         return true;
+    }
+
+    private void accept(Task task) {
+        assert(task!=null);
+
+        if (!(((CachedFloatFunction)(tasks.rank)).containsKey(task))) {
+            //if (time == null || time.accept(task.start(), task.end())) {
+            tasks.accept(task);
+        }
+    }
+
+    public boolean active() {
+        return triesRemain > 0;
     }
 
 //

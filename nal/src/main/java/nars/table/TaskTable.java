@@ -112,8 +112,9 @@ public interface TaskTable {
         if (isEmpty())
             return null;
 
-        return Answer.relevance(!(this instanceof QuestionTable),
-                Answer.TASK_LIMIT_SAMPLE,
+        boolean isBeliefOrGoal = !(this instanceof QuestionTable);
+        return Answer.relevance(isBeliefOrGoal,
+                isBeliefOrGoal ? Answer.BELIEF_SAMPLE_LIMIT : Answer.QUESTION_SAMPLE_LIMIT,
                 start, end, template, filter, nar)
             .match(this)
             .task(false, false, false);

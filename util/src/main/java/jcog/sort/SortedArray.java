@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -705,15 +706,25 @@ public class SortedArray<X> extends AbstractList<X> {
     }
 
     public final void forEach(int n, Consumer<? super X> action) {
+        whileEach(n, x -> { action.accept(x); return true; } );
+    }
+
+    public final boolean whileEach(Predicate<? super X> action) {
+        return whileEach(-1, action);
+    }
+
+    public final boolean whileEach(int n, Predicate<? super X> action) {
         int s = (n == -1) ? size : Math.min(size, n);
         if (s > 0) {
             X[] ii = items;
             for (int i = 0; i < s; i++)
-                action.accept(
+                if (!action.test(
                         //(X) ITEM.getOpaque(ii,i)
                         ii[i]
-                );
+                ))
+                    return false;
         }
+        return true;
     }
 
     public final void removeRange(int start, int _end, Consumer<? super X> action) {

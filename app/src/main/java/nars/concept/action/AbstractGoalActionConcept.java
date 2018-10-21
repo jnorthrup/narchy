@@ -52,7 +52,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
     protected AbstractGoalActionConcept(Term term, BeliefTable goals, NAR n) {
         super(term, new SensorBeliefTables(term, true, n.conceptBuilder), goals, n);
 
-        ((BeliefTables)goals()).tables.add(curiosityTable = new CuriosityGoalTable(term, 32));
+        ((BeliefTables)goals()).tables.add(curiosityTable = new CuriosityGoalTable(term, 64));
 
         in = n.newChannel(this);
     }
@@ -103,7 +103,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
                     n.dur();
                     //Tense.occToDT(agentDur);
 
-        int limit = Answer.TASK_LIMIT_DEFAULT;
+        int limit = Answer.TASK_LIMIT_DEFAULT * 2;
 
         BeliefTable table = goals();
 
@@ -113,15 +113,13 @@ public class AbstractGoalActionConcept extends ActionConcept {
             TruthPolation organic = a.match(table).truthpolation(actionDur);
             if (organic != null) {
                 actionDex = organic.filtered().truth();
-                if (actionDex!=null)
+                if (actionDex!=null) {
                     lastActionDex = actionDex;
+                }
             } else {
                 actionDex = null;
             }
         }
-
-
-
 
 
         try (Answer a = Answer.
@@ -173,18 +171,9 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
     @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
-        if (goal!=null) {
-            SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd);
-
-            if (curiosity != null) {
-                curiosity.pri(n.priDefault(GOAL));
-                return curiosity;
-                //return curiosity.input(c);
-            }
-        }
-
-        return null;
-
+        SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd);
+        curiosity.pri(this.curiosity.agent.pri.floatValue() * n.priDefault(GOAL));
+        return curiosity;
     }
 
     @Nullable public SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long now, long next, float dur, NAR nar) {

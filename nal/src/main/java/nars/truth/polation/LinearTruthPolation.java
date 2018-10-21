@@ -1,5 +1,6 @@
 package nars.truth.polation;
 
+import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Param;
 import nars.truth.PreciseTruth;
@@ -30,10 +31,10 @@ public class LinearTruthPolation extends TruthPolation {
         float eviFactor = 1f;
         if (nar != null) {
             eviFactor *= intermpolate(nar);
-            if (eviFactor < Param.TRUTH_MIN_EVI)
+            if (eviFactor < ScalarValue.EPSILON)
                 return null;
-            if (term.volume() > nar.termVolumeMax.intValue())
-                return null;
+            /*if (term.volume() > nar.termVolumeMax.intValue())
+                return null;*/
         }
 
         int s = size();

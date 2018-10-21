@@ -28,22 +28,27 @@ public final class DynamicTruthTable extends DynamicTaskTable {
 
     @Override
     public final void match(Answer t) {
+
         if (t.template == null)
             t.template(term);
-        t.accept(taskDynamic(t));
+
+        Task tt = taskDynamic(t);
+        if (tt!=null)
+            t.tryAccept(tt);
     }
 
 
     /**
      * generates a dynamic matching task
      */
-    @Nullable public Task taskDynamic(Answer a) {
+    @Nullable
+    public Task taskDynamic(Answer a) {
         Term template = a.template;
 
         NAR nar = a.nar;
 
         //TODO allow use of time's specified intersect/contain mode
-        DynStampTruth yy = model.eval(template, beliefOrGoal, a.time.start, a.time.end, a.filter, false , nar);
+        DynStampTruth yy = model.eval(template, beliefOrGoal, a.time.start, a.time.end, a.filter, false, nar);
         if (yy == null)
             return null;
 
@@ -54,11 +59,11 @@ public final class DynamicTruthTable extends DynamicTaskTable {
         Term reconstruct = model.reconstruct(template, yy, nar);
         if (reconstruct == null) {
             if (Param.DEBUG)
-                throw new WTF("could not reconstruct: " + template + ' ' +  yy);
+                throw new WTF("could not reconstruct: " + template + ' ' + yy);
             return null;
         }
 
-        return yy.task(reconstruct, t, yy::stamp,  beliefOrGoal, nar);
+        return yy.task(reconstruct, t, yy::stamp, beliefOrGoal, nar);
     }
 
 

@@ -273,7 +273,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             probing:
             for (int i = start, probe = reprobes; probe > 0; probe--) {
 
-                V p = map.getOpaque(i);
+                V p = //map.getOpaque(i);
+                        map.get(i);
 
                 if (p != null && keyEquals(k, p)) {
                     switch (mode) {

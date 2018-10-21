@@ -67,8 +67,13 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
                 r.reject();
         } else {
             r.remember(x);
-            commit();
+
+            commit(forget(1f/capacity()));
         }
+
+
+
+
         //TODO track displaced questions
     }
 

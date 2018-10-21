@@ -376,7 +376,7 @@ abstract public class NAgentX extends NAgent {
 
 
 
-        n.beliefConfDefault.set(0.95f);
+        n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
 
         float base = 0.5f;

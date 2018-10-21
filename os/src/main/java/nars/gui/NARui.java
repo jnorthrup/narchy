@@ -141,12 +141,12 @@ public class NARui {
         return new Gridding(
                 MemLoad(nar),
                 MemSave(nar),
-                new PushButton("remove weak beliefs", () -> {
+                new PushButton("Prune Beliefs", () -> {
                     nar.runLater(() -> {
                         nar.logger.info("Belief prune start");
 //                        final long scaleFactor = 1_000_000;
                         //Histogram i = new Histogram(1<<20, 5);
-                        Quantiler q = new Quantiler(16 * 1024);
+                        Quantiler q = new Quantiler(128 * 1024);
                         long now = nar.time();
                         int dur = nar.dur();
                         nar.tasks(true, false, false, false).forEach(t ->
@@ -164,8 +164,8 @@ public class NARui {
                         //Texts.histogramPrint(i, System.out);
 
                         //float confThresh = i.getValueAtPercentile(50)/ scaleFactor;
-                        float confThresh = q.quantile(0.9f);
-                        if (confThresh > Param.TRUTH_MIN_EVI) {
+                        float confThresh = q.quantile(0.5f);
+                        if (confThresh > Param.TRUTH_EPSILON) {
                             final int[] removed = {0};
                             nar.tasks(true, false, false, false, (c, t) -> {
                                 try {

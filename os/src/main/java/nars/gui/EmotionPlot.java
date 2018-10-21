@@ -1,7 +1,6 @@
 package nars.gui;
 
 import jcog.event.Off;
-import nars.NAR;
 import nars.agent.NAgent;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.meter.Plot2D;
@@ -14,10 +13,6 @@ public class EmotionPlot extends Gridding {
 
 
     public EmotionPlot(int plotHistory, NAgent a) {
-        this(plotHistory, a, a.nar());
-    }
-
-    public EmotionPlot(int plotHistory, NAgent a, NAR x) {
 
 
         this.a = a;

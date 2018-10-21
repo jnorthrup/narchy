@@ -54,15 +54,21 @@ public class BeliefTables implements BeliefTable {
 
     @Override
     public void match(Answer r) {
-        tables.each(t -> t.match(r));
+        tables.allSatisfyWith((t,rr) -> {
+            if (rr.active()) {
+                t.match(rr);
+                return true;
+            }
+            return false;
+        }, r);
     }
 
     @Override
     public void add(Remember r, NAR n) {
-        tables.allSatisfy(t -> {
-            t.add(r, n);
-            return !r.done(); //if one of the tables cancelled it, stop here
-        });
+        tables.allSatisfyWith((t,rr) -> {
+            t.add(rr, n);
+            return !rr.done(); //if one of the tables cancelled it, stop here
+        }, r);
 
 //        if (Param.ETERNALIZE_FORGOTTEN_TEMPORALS) {
 //            if (eternal != EternalTable.EMPTY && !r.forgotten.isEmpty() &&

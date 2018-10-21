@@ -220,7 +220,7 @@ public class Premise implements Comparable<Premise> {
 
         //dont dither because this task isnt directly input to the system.  derivations will be dithered at the end
         //TODO factor in the Task's stamp so it can try to avoid those tasks, thus causing overlap in double premise cases
-        return Answer.relevance(true, Answer.TASK_LIMIT_SAMPLE,
+        return Answer.relevance(true, Answer.BELIEF_SAMPLE_LIMIT,
                 focus[0], focus[1], beliefTerm, beliefFilter, nar)
                 .match(bb)
                 .task(false, false, false);
@@ -245,16 +245,11 @@ public class Premise implements Comparable<Premise> {
                 @Nullable Task answered = task.onAnswered(match, d.nar);
                 if (answered != null) {
 
-//                    if (!(answered instanceof SignalTask))
-//                        d.add(answered); //TODO inputting here is really only useful if revised or dynamic
+                    if (!(answered instanceof SignalTask) && !(answered instanceof DerivedTask))
+                        d.add(answered); //TODO inputting here is really only useful if revised or dynamic
 
                     if (answered.isBelief())
                         return answered;
-                    else {
-                        if (!(answered instanceof SignalTask) && !(answered instanceof DerivedTask))
-                            d.add(answered); //TODO inputting here is really only useful if revised or dynamic
-
-                    }
 
                 }
 

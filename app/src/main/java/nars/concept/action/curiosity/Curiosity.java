@@ -23,7 +23,7 @@ public class Curiosity {
     public final FasterList<CuriosityMode> curiosity = new FasterList<>(8); //new FastCoWList(8, CuriosityMode[]::new);
 
     private final IntToFloatFunction weigher = i -> curiosity.get(i).weight.floatValue();
-    protected final NAgent agent;
+    public final NAgent agent;
 
     private MutableRoulette select = null;
 

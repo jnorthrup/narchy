@@ -79,7 +79,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     @Override
     public final void match(Answer t) {
-        forEach(t);
+        whileEach(t::tryAccept);
     }
 
 

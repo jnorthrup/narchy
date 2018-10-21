@@ -360,8 +360,18 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
 
             if ((size > 0) && (pressure > 0) && (cap > 0) && (mass > 0) && temperature > 0) {
                 Consumer eachMustForgetPct =
+
+                        //FAIR
                         PriForget.forgetPressure(temperature, cap, pressure, mass);
-                        //PriForget.forgetIdeal(temperature, 0.5f, size, cap, pressure, mass);
+
+                        //OVERDRIVE (attenuated by size/capacity ratio)
+                        //PriForget.forgetPressure(temperature * (((float)size)/cap), cap, pressure, mass);
+
+                        //..?
+//                        PriForget.forgetIdeal(temperature,
+//                                //0.5f,
+//                                0f,
+//                                size, cap, pressure, mass);
 
                 if (eachMustForgetPct != null)
                     return eachMustForgetPct;

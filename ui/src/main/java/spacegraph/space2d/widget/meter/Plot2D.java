@@ -417,14 +417,15 @@ public class Plot2D extends Widget {
     public void update() {
         synchronized (series) {
 
-            series.forEach(Series::update);
 
-            minValue = Float.POSITIVE_INFINITY;
-            maxValue = Float.NEGATIVE_INFINITY;
+            final float[] minValue = {Float.POSITIVE_INFINITY};
+            final float[] maxValue = {Float.NEGATIVE_INFINITY};
             series.forEach((Series s) -> {
-                minValue = Math.min(minValue, s.minValue());
-                maxValue = Math.max(maxValue, s.maxValue());
+                s.update();
+                minValue[0] = Math.min(minValue[0], s.minValue());
+                maxValue[0] = Math.max(maxValue[0], s.maxValue());
             });
+            this.minValue = minValue[0]; this.maxValue = maxValue[0];
 
             vis.update();
         }

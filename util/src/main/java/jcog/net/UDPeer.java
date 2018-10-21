@@ -66,7 +66,7 @@ public class UDPeer extends UDP {
     public final PriHijackBag<Msg, Msg> seen;
 
     public final UDiscover<Discoverability> discover;
-    public Every discoverEvery;
+    public Every discoverEvery = Every.Never;
 
     /**
      * TODO use a variable size identifier, 32+ bit. ethereumj uses 512bits.
@@ -295,7 +295,7 @@ public class UDPeer extends UDP {
         synchronized (this) {
             if (discover != null) {
                 discover.stop();
-                discoverEvery = null;
+                discoverEvery = Every.Never;
             }
             them.clear();
             super.stopping();
