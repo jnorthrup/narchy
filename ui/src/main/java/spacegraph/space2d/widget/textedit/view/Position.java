@@ -23,15 +23,7 @@ public class Position {
     this.z.setWithoutSmooth(z);
   }
 
-  public void updateTranslate(GL2 gl) {
-    double _x = x.value();
-    double _y = y.value();
-    double _z = z.value();
-    if (_x == 0 && _y == 0 && _z == 0) {
-      return;
-    }
-    gl.glTranslated(_x, _y, _z);
-  }
+
 
   public SmoothValue getX() {
     return x;

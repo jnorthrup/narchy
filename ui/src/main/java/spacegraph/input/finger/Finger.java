@@ -8,8 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.hud.Ortho;
+import spacegraph.space2d.hud.SurfaceHiliteOverlay;
 import spacegraph.util.math.v2;
-import spacegraph.video.Draw;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -275,7 +275,7 @@ public class Finger {
      * additionally tests for no dragging while pressed
      */
     public boolean clickedNow(int button) {
-        return releasedNow(button) && !dragging(button);
+        return releasedNow(button); // && !dragging(button);
     }
 
     public boolean clickedNow(int button, Surface c) {
@@ -402,44 +402,18 @@ public class Finger {
                 renderer.paint(posPixel, Finger.this, surfaceRender.dtMS, gl);
         }
     }
-    private final class FingerZoomBoundsSurface extends Surface {
-
-        private final Ortho.Camera cam;
-
-        {
-            clipBounds = false;
-        }
+    private final class FingerZoomBoundsSurface extends SurfaceHiliteOverlay {
 
         public FingerZoomBoundsSurface(Ortho.Camera cam) {
-            this.cam = cam;
+            super(cam);
         }
 
-        @Override
-        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-            if (focused) {
-                //renderer.paint(posPixel, Finger.this, surfaceRender.dtMS, gl);
-                Surface t = touching();
+        @Override protected boolean enabled() {
+            return focused;
+        }
 
-                if (t!=null && t.showing()) {
-
-                    float alpha = 0.75f;
-
-                    float sw = surfaceRender.pw, sh = surfaceRender.ph;
-                    v2 p = cam.worldToScreen(sw, sh, t.x(), t.y());
-                    v2 q = cam.worldToScreen(sw, sh,t.x()+t.w(), t.y() + t.h());
-
-                    //System.out.println(t.bounds +" -> " + p + ", " + q);
-
-                    float thick = 6;
-
-                    float px = p.x - thick;
-                    float py = p.y - thick;
-
-                    gl.glLineWidth(thick);
-                    Draw.colorHash(gl, t.getClass().hashCode(), alpha);
-                    Draw.rectStroke(gl, px, py, q.x+thick-px, q.y+thick-py);
-                }
-            }
+        @Override protected Surface target() {
+            return touching();
         }
     }
 

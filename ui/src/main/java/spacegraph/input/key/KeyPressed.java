@@ -3,8 +3,19 @@ package spacegraph.input.key;
 import com.jogamp.newt.event.KeyEvent;
 import spacegraph.util.math.v2;
 
+/** for surfaces which react to key presses */
 public interface KeyPressed {
 
+
+    /** called when component begins keyboard focus */
+    default void keyStart() {
+
+    }
+
+    /** called when component ends keyboard focus */
+    default void keyEnd() {
+
+    }
 
     /**
      * for receiving keyboard events in 2d context

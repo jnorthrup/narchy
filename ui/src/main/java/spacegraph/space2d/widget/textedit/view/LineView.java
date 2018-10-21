@@ -2,28 +2,34 @@ package spacegraph.space2d.widget.textedit.view;
 
 import com.jogamp.opengl.GL2;
 import jcog.TODO;
+import jcog.data.list.FastCoWList;
 import jcog.data.list.FasterList;
 import spacegraph.space2d.widget.textedit.buffer.BufferChar;
 import spacegraph.space2d.widget.textedit.buffer.BufferLine;
 import spacegraph.space2d.widget.textedit.buffer.BufferLineListener;
 import spacegraph.space2d.widget.textedit.hilite.TextStyle;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class LineView extends TextEditRenderable implements BufferLineListener, Comparable<LineView> {
 
     private final BufferLine bufferLine;
-    private final List<CharView> chars = new FasterList<>();
+    private final FastCoWList<CharView> chars;
+    private float width;
 
     public LineView(BufferLine bufferLine) {
         this.bufferLine = bufferLine;
         bufferLine.addListener(this);
         List<BufferChar> bufferChars = bufferLine.getChars();
-        for (BufferChar bc : bufferChars) {
-            chars.add(new CharView(bc));
+        chars = new FastCoWList<>(bufferChars.size(), CharView[]::new);
+        if (!bufferChars.isEmpty()) {
+            update((c) -> {
+                for (BufferChar bc : bufferChars)
+                    c.add(new CharView(bc));
+                //return true;
+            });
         }
-        updatePositions();
     }
 
     public static double getHeight() {
@@ -31,54 +37,62 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
     }
 
     public float getWidth() {
-        float width = 0;
-        for (CharView c : chars) {
-            width += c.width();
-        }
         return width;
     }
 
     @Override
     public void innerDraw(GL2 gl) {
-        for (CharView c : chars)
-            c.draw(gl);
+        for (CharView c : chars) {
+            if (c != null)
+                c.draw(gl);
+        }
     }
 
-    private void updatePositions() {
-        Collections.sort(chars);
-        float width = 0;
-        for (CharView c : chars) {
-            float w = c.width() / 2;
-            width += w;
-            c.position.set(width, 0, 0);
-            width += w;
-        }
+    private void update() {
+        update((c) -> {  /* */ });
+    }
+
+    private void update(Consumer<FasterList<CharView>> with) {
+        chars.synchDirect((cc) -> {
+
+            with.accept(cc);
+
+            if (cc.size() > 1)
+                cc.sortThis();
+
+            float width = 0;
+            for (CharView c : cc) {
+                float w = c.width() / 2;
+                width += w;
+                c.position.set(width, 0, 0);
+                width += w;
+            }
+            this.width = width;
+
+            return true; //TODO commit only if sort changed the order
+        });
     }
 
     @Override
     public void update(BufferLine bl) {
-        updatePositions();
+        update();
     }
 
     @Override
     public void addChar(BufferChar bufferChar) {
-        CharView cv = new CharView(bufferChar);
-        chars.add(cv);
-        updatePositions();
+        addChar(new CharView(bufferChar));
     }
 
     @Override
     public void removeChar(BufferChar removed) {
-        if (chars.removeIf(x -> x.bufferChar() == removed)) {
-            updatePositions();
-        }
+        update((chars) -> chars.removeIf(x -> x.bufferChar() == removed));
     }
 
     public BufferLine getBufferLine() {
         return bufferLine;
     }
 
-    public List<CharView> getChars() {
+    public FastCoWList<CharView> getChars() {
         return chars;
     }
 
@@ -88,15 +102,20 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
     }
 
     public CharView leaveChar(BufferChar bc) {
-        CharView leave = chars.stream().filter(c -> c.bufferChar() == bc).findFirst().orElse(null);
-        chars.remove(leave);
-        updatePositions();
-        return leave;
+
+        final CharView[] leaved = new CharView[1];
+        update((chars) -> {
+            CharView leave = chars.stream().filter(c -> c.bufferChar() == bc).findFirst().orElse(null);
+            leaved[0] = leave;
+            chars.remove(leave);
+        });
+        return leaved[0];
     }
 
-    public void visitChar(CharView cv) {
-        chars.add(cv);
-        updatePositions();
+    public void addChar(CharView cv) {
+        update((chars)->{
+            chars.add(cv);
+        });
     }
 
     public LineView apply(int from, int to, TextStyle highlight) {
@@ -109,5 +128,6 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
 
     public int length() {
         return chars.size();
+        //return width;
     }
 }

@@ -275,14 +275,11 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
 
     public void show(int w, int h) {
-        show("", w, h, true);
+        show("", w, h);
     }
 
-    public void show(int w, int h, boolean async) {
-        show("", w, h, async);
-    }
 
-    private void show(String title, int w, int h, int x, int y, @Deprecated boolean async) {
+    private void show(String title, int w, int h, int x, int y) {
 
         Threading.invokeOnOpenGLThread(false, ()->{
         //GLWorkerThread.invokeLater(()->{
@@ -320,13 +317,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
         //});
 
-        if (!async) {
-            throw new UnsupportedOperationException();
-//            Thread.yield();
-//            while (gl == null) {
-//                Util.sleepMS(syncConstructionDelay);
-//            }
-        }
+
         });
 
     }
@@ -412,9 +403,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     }
 
-    private void show(String title, int w, int h, boolean async) {
+    private void show(String title, int w, int h) {
         //Threading.invokeOnOpenGLThread(false, ()->{
-            show(title, w, h, Integer.MIN_VALUE, Integer.MIN_VALUE, async);
+            show(title, w, h, Integer.MIN_VALUE, Integer.MIN_VALUE);
         //});
     }
 

@@ -6,6 +6,7 @@ import jcog.Util;
 import jcog.event.Off;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
+import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space3d.SimpleSpatial;
@@ -37,12 +38,11 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
     @Nullable
     private Finger finger;
     private v3 mousePick;
-    
+
 
     Cuboid(X x, float w, float h) {
         this(x, null, w, h);
     }
-
 
 
     private Cuboid(X x, Surface front, float w, float h) {
@@ -62,7 +62,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
     void setFront(Surface front) {
         synchronized (this) {
             this.front = front;
-            this.finger = null; 
+            this.finger = null;
             if (front != null) {
                 front.start(this);
             }
@@ -73,7 +73,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
     public boolean onKey(Collidable body, v3 hitPoint, char charCode, boolean pressed) {
         if (!super.onKey(body, hitPoint, charCode, pressed)) {
 
-            return front != null && front.key(null, charCode, pressed);
+            return front instanceof KeyPressed && ((KeyPressed) front).key(null, charCode, pressed);
         }
         return true;
     }
@@ -83,32 +83,12 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
 
         if (body != null) {
 
-            
+
             Object d = body.data();
-            if (d instanceof SimpleSpatial) {
-                
-                
-                
-
-                
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            }
+//            if (d instanceof SimpleSpatial) {
+//
+//
+//            }
 
             Surface s0 = super.onTouch(finger, body, r, buttons, space);
             if (s0 != null)
@@ -125,20 +105,20 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
                 float frontZ = shape.z() / 2;
                 float zTolerance = frontZ / 4f;
 
-                if (Util.equals(localPoint.z, frontZ, zTolerance)) { 
+                if (Util.equals(localPoint.z, frontZ, zTolerance)) {
 
                     this.mousePick = r.hitPointWorld;
 
                     this.finger = finger;
-                    
+
 
                     finger.pos.set(
-                        localPoint.x / shape.x() + 0.5f, localPoint.y / shape.y() + 0.5f
+                            localPoint.x / shape.x() + 0.5f, localPoint.y / shape.y() + 0.5f
                     );
                     Surface f = this.finger.on(front);
                     finger.update(buttons);
                     return f;
-                    
+
                 }
             } else {
 
@@ -161,17 +141,8 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
 
         if (front != null) {
 
-            
 
-            
-
-            
-            
-
-            gl.glTranslatef(-0.5f, -0.5f, 0.5f + (shape instanceof SphereShape ? 5 : 0)+zOffset);
-
-
-
+            gl.glTranslatef(-0.5f, -0.5f, 0.5f + (shape instanceof SphereShape ? 5 : 0) + zOffset);
 
 
             gl.glDepthMask(false);
@@ -180,7 +151,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
             front.render(gl, pixelScale, pixelScale, dtMS);
 
             gl.glDepthMask(true);
-            
+
         }
     }
 
@@ -188,16 +159,16 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
     public void renderAbsolute(GL2 gl, int dtMS) {
         super.renderAbsolute(gl, dtMS);
 
-        
+
         if (mousePick != null) {
             gl.glPushMatrix();
             gl.glTranslatef(mousePick.x, mousePick.y, mousePick.z);
             gl.glScalef(0.25f, 0.25f, 0.25f);
             gl.glColor4f(1f, 1f, 1f, 0.5f);
             gl.glRotated(Math.random() * 360.0, Math.random() - 0.5f, Math.random() - 0.5f, Math.random() - 0.5f);
-            
+
             Draw.rect(-0.5f, -0.5f, 1, 1, gl);
-            
+
             gl.glPopMatrix();
         }
     }
@@ -205,12 +176,12 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
 
     @Override
     public void the(String key, @Nullable Object added, @Nullable Runnable onRemove) {
-        
+
     }
 
     @Override
     public Object the(String key) {
-        
+
         return null;
     }
 

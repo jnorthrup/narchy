@@ -15,38 +15,45 @@ public interface SurfaceRoot extends SurfaceBase, SpaceLogger {
     }
 
     default void zoom(Surface s) {
-        
-    }
-    default void unzoom() {
-        
+
     }
 
-    
-    
+    default void unzoom() {
+
+    }
 
 
     /**
      * puts value into singleton table
      * can provide special handling for lifecycle states of stored entries
      * by providing a callback which will be invoked when the value is replaced.
-     *
+     * <p>
      * if 'added' == null, it will attempt to remove any set value.
      */
     void the(String key, @Nullable Object added, @Nullable Runnable onRemove);
 
-    /** gets value from the singleton table */
+    /**
+     * gets value from the singleton table
+     */
     Object the(String key);
 
     default void the(Class key, @Nullable Object added, @Nullable Runnable onRemove) {
         the(key.toString(), added, onRemove);
     }
+
     default Object the(Class key) {
         return the(key.toString());
     }
 
 
-    /** attaches an event handler for updates (less frequent than render cycle) */
+    /**
+     * attaches an event handler for updates (less frequent than render cycle)
+     */
     Off onUpdate(Consumer<JoglWindow> c);
+
     Off animate(Animated c);
 
+    default boolean keyFocus(Surface textEdit) {
+        return false;
+    }
 }

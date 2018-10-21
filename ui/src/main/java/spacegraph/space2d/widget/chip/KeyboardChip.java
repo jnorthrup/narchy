@@ -1,11 +1,14 @@
 package spacegraph.space2d.widget.chip;
 
 import com.jogamp.newt.event.KeyEvent;
+import spacegraph.input.finger.Finger;
+import spacegraph.input.key.KeyPressed;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.text.VectorLabel;
 
-public class KeyboardChip extends Stacking {
+public class KeyboardChip extends Stacking implements KeyPressed {
 
     private final VectorLabel txt;
     private final TypedPort<Integer> out;
@@ -14,6 +17,12 @@ public class KeyboardChip extends Stacking {
         super();
 
         set(out = new TypedPort<>(Integer.class), txt = new VectorLabel());
+    }
+
+    @Override
+    public Surface finger(Finger finger) {
+        //TODO request focus
+        return super.finger(finger);
     }
 
     @Override

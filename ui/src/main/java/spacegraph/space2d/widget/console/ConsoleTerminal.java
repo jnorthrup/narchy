@@ -10,6 +10,7 @@ import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.jogamp.newt.event.KeyEvent;
 import spacegraph.input.finger.Finger;
+import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.Widget;
 
@@ -17,7 +18,8 @@ import java.io.OutputStream;
 import java.util.TreeSet;
 
 
-public class ConsoleTerminal extends Widget implements Appendable {
+/** TODO request key focus */
+public class ConsoleTerminal extends Widget implements Appendable, KeyPressed {
 
     public final VirtualTerminal term;
     public final MyBitmapTextGrid text = new MyBitmapTextGrid();
@@ -51,99 +53,6 @@ public class ConsoleTerminal extends Widget implements Appendable {
     }
 
 
-    
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public boolean key(KeyEvent e, boolean pressedOrReleased) {
 
@@ -157,9 +66,9 @@ public class ConsoleTerminal extends Widget implements Appendable {
         } else if (e.isPrintableKey() && !e.isActionKey() && !e.isModifierKey()) {
             char c = e.getKeyChar();
             if (!TerminalTextUtils.isControlCharacter(c) && pressedOrReleased /* release */) {
-                
+
                 term.addInput(
-                        
+
                         new KeyStroke(c, e.isControlDown(), e.isAltDown(), e.isShiftDown())
                 );
 
@@ -168,7 +77,7 @@ public class ConsoleTerminal extends Widget implements Appendable {
             }
         } else if (pressedOrReleased) {
             KeyType c = null;
-            
+
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_BACK_SPACE:
                     c = KeyType.Backspace;
@@ -202,26 +111,20 @@ public class ConsoleTerminal extends Widget implements Appendable {
                     c = KeyType.ArrowDown;
                     break;
 
-                
 
                 default:
-                    
+
                     return false;
             }
 
 
-            
-
-            
             term.addInput(
                     new KeyStroke(c, e.isControlDown(), e.isAltDown(), e.isShiftDown())
             );
-            
-            
-            
-            
+
+
         } else {
-            
+
         }
 
         return true;
@@ -269,11 +172,10 @@ public class ConsoleTerminal extends Widget implements Appendable {
 //        }
 
 
-
         @Override
         protected void doLayout(int dtMS) {
             TerminalSize ts = term.getTerminalSize();
-            if (ts.getColumns()!=cols || ts.getRows()!=rows) {
+            if (ts.getColumns() != cols || ts.getRows() != rows) {
                 term.setTerminalSize(new TerminalSize(cols, rows));
             }
         }
@@ -299,7 +201,7 @@ public class ConsoleTerminal extends Widget implements Appendable {
 
             boolean allDirty;
             if (term instanceof DefaultVirtualTerminal) {
-                allDirty = ((DefaultVirtualTerminal)term).isWholeBufferDirtyThenReset();
+                allDirty = ((DefaultVirtualTerminal) term).isWholeBufferDirtyThenReset();
             } else {
                 allDirty = true;
             }
@@ -311,23 +213,19 @@ public class ConsoleTerminal extends Widget implements Appendable {
                         redraw(bufferLine, column, row);
                     }
 
-    
-    
-    
-    
 
                 });
             } else {
-                if (lastCol!=this.cursorCol || lastRow!=this.cursorRow) {
+                if (lastCol != this.cursorCol || lastRow != this.cursorRow) {
                     redraw(lastCol, lastRow);
                     redraw(cursorCol, cursorRow);
                 }
                 TreeSet<TerminalPosition> dirty = ((DefaultVirtualTerminal) term).getAndResetDirtyCells();
                 if (!dirty.isEmpty()) {
-                    for (TerminalPosition e: dirty) {
+                    for (TerminalPosition e : dirty) {
                         redraw(e.getColumn(), e.getRow());
-    
-    
+
+
                     }
                 }
 
@@ -352,174 +250,6 @@ public class ConsoleTerminal extends Widget implements Appendable {
         text.resize(cols, rows);
         layout();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

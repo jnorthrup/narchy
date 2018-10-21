@@ -6,7 +6,6 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
-import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.container.AbstractMutableContainer;
 import spacegraph.space2d.container.AspectAlign;
 
@@ -19,7 +18,7 @@ import java.util.function.Predicate;
  * planar subspace.
  * (fractal) 2D Surface embedded relative to a parent 2D surface or 3D space
  */
-abstract public class Surface implements SurfaceBase, KeyPressed, spacegraph.input.finger.Fingered {
+abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fingered {
 
     private static final AtomicReferenceFieldUpdater<Surface, RectFloat> BOUNDS = AtomicReferenceFieldUpdater.newUpdater(Surface.class, RectFloat.class, "bounds");
     private final static AtomicReferenceFieldUpdater<Surface,SurfaceBase> PARENT = AtomicReferenceFieldUpdater.newUpdater(Surface.class, SurfaceBase.class, "parent");

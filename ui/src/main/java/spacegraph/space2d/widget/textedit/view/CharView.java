@@ -44,6 +44,8 @@ public class CharView extends TextEditRenderable implements Consumer<BufferChar>
     gl.glTexCoord2f(1, 1);
     gl.glVertex2d(0.5, -0.5);
     gl.glEnd();
+
+    texture.disable(gl);
   }
 
   @Override

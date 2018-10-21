@@ -13,12 +13,12 @@ public enum SpaceGraph { ;
 
 
     /** creates window with 2d with single surface layer, maximized to the size of the window */
-    public static JoglSpace window(Surface s, int w, int h, boolean async) {
+    public static JoglSpace window(Surface s, int w, int h) {
         JoglSpace win = new SpaceGraphFlat(
                 new ZoomOrtho(s)
         );
         if (w > 0 && h > 0) {
-            win.show(w, h, async);
+            win.show(w, h);
         }
         return win;
     }
@@ -31,16 +31,16 @@ public enum SpaceGraph { ;
     public static JoglSpace window(Object o, int w, int h, boolean async) {
         if (o instanceof JoglSpace) {
             JoglSpace s = (JoglSpace) o;
-            s.show(w, h, async);
+            s.show(w, h);
             return s;
         } else if (o instanceof Spatial) {
             SpaceGraphPhys3D win = new SpaceGraphPhys3D(((Spatial) o));
-            win.show(w, h,async);
+            win.show(w, h);
             return win;
         } else if (o instanceof Surface) {
-            return window(((Surface) o), w, h, async);
+            return window(((Surface) o), w, h);
         } else {
-            return window(new ObjectSurface<>(o), w, h, async);
+            return window(new ObjectSurface<>(o), w, h);
         }
     }
 

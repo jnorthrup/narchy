@@ -1,19 +1,21 @@
 package spacegraph.space2d.widget.textedit.buffer;
 
 
-import jcog.data.list.FasterList;
+import jcog.data.list.FastCoWList;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Buffer {
+
     final String bufferName;
-    private CursorPosition currentCursor = new CursorPosition(0, 0);
-    private CursorPosition mark = new CursorPosition(0, 0);
-    public final List<BufferLine> lines = new FasterList<>();
+
+    private CursorPosition currentCursor = new CursorPosition(0, 0), mark = new CursorPosition(0, 0);
+
+    public final FastCoWList<BufferLine> lines = new FastCoWList<>(BufferLine[]::new);
+
     private final BufferListener.BufferObserver observer = new BufferListener.BufferObserver();
 
     public Buffer(String bufferName, String value) {
@@ -24,23 +26,25 @@ public class Buffer {
 
     public void clear() {
 
-        int l = lines.size();
-        if (l != 1 || lines.get(0).length()!=0) {
-            if (l > 0) {
-                lines.forEach(observer::removeLine);
-                lines.clear();
+        synchronized (this) {
+            int l = lines.size();
+            if (l != 1 || lines.get(0).length() != 0) {
+                if (l > 0) {
+                    lines.forEach(observer::removeLine);
+                    lines.clear();
+                }
+
+                BufferLine bl = new BufferLine();
+                lines.add(bl);
+                observer.addLine(bl);
+
+                currentCursor.setCol(0);
+                currentCursor.setRow(0);
+                mark.setCol(0);
+                mark.setRow(0);
+
+                update();
             }
-
-            BufferLine bl = new BufferLine();
-            lines.add(bl);
-            observer.addLine(bl);
-
-            currentCursor.setCol(0);
-            currentCursor.setRow(0);
-            mark.setCol(0);
-            mark.setRow(0);
-
-            update();
         }
     }
 
@@ -56,75 +60,103 @@ public class Buffer {
 
     public void insert(String string) {
         switch (string) {
+            case "":
+                break;
             case "\r":
             case "\n":
             case "\r\n":
                 insertEnter();
                 break;
             default:
-                String[] values = string.split("(\r\n|\n|\r)");
-                if (values.length == 1) {
-                    values[0].codePoints().forEach(
-                            codePoint -> insertChar(new String(Character.toChars(codePoint))));
+                if (string.contains("\n")) {
+                    String[] values = string.split("\n");
+                    synchronized(this) {
+                        for (String x : values) {
+                            insertChars(x);
+                            insertEnter();
+                        }
+                    }
                 } else {
-                    Arrays.stream(values).forEach(v -> {
-                        v.codePoints().forEach(codePoint -> insertChar(new String(Character.toChars(codePoint))));
-                        insertEnter();
-                    });
+                    insertChars(string);
                 }
+//                String[] values = string.split("(\r\n|\n|\r)");
+//                if (values.length == 1) {
+//                    values[0].codePoints().forEach(
+//                            codePoint -> insertChar(new String(Character.toChars(codePoint))));
+//                } else {
+//                    Arrays.stream(values).forEach(v -> {
+//                        v.codePoints().forEach(codePoint -> insertChar(new String(Character.toChars(codePoint))));
+//                        insertEnter();
+//                    });
+//                }
                 break;
         }
 
     }
 
-    private void insertChar(String c) {
-        currentLine().insertChar(currentCursor.getCol(), c);
-        currentCursor.incCol(1);
-        observer.updateCaret(currentCursor);
+    public void insertChars(CharSequence string) {
+        synchronized (this) {
+            BufferLine line = currentLine();
+            int n = string.length();
+            int colStart = currentCursor.getCol();
+            for (int i = 0; i < n; i++) {
+                line.insertChar(colStart + i, string.charAt(i));
+            }
+            currentCursor.incCol(n);
+            observer.updateCaret(currentCursor);
+        }
     }
 
     public void insertEnter() {
-        BufferLine currentLine = currentLine();
-        BufferLine nextLine = new BufferLine();
-        List<BufferChar> leaveChars = currentLine.insertEnter(currentCursor.getCol());
-        lines.add(currentCursor.getRow() + 1, nextLine);
-        update();
-        observer.addLine(nextLine);
-        leaveChars.forEach(c -> {
-            nextLine.getChars().add(c);
-            observer.moveChar(currentLine, nextLine, c);
-        });
-        currentCursor.setCol(0);
-        currentCursor.incRow(1);
-        observer.updateCaret(currentCursor);
+        synchronized (this) {
+            BufferLine currentLine = currentLine();
+            BufferLine nextLine = new BufferLine();
+            List<BufferChar> leaveChars = currentLine.insertEnter(currentCursor.getCol());
+            lines.add(currentCursor.getRow() + 1, nextLine);
+            update();
+            observer.addLine(nextLine);
+            leaveChars.forEach(c -> {
+                nextLine.getChars().add(c);
+                observer.moveChar(currentLine, nextLine, c);
+            });
+            currentCursor.setCol(0);
+            currentCursor.incRow(1);
+            observer.updateCaret(currentCursor);
+        }
     }
 
     public int getMaxColNum() {
-        return lines.stream().max(Comparator.comparingInt(BufferLine::length))
-                .orElse(new BufferLine()).length();
+        synchronized (this) {
+            return lines.stream().max(Comparator.comparingInt(BufferLine::length))
+                    .orElse(new BufferLine()).length();
+        }
     }
 
     private BufferLine currentLine() {
-        return lines.get(currentCursor.getRow());
+        synchronized (this) {
+            return lines.get(currentCursor.getRow());
+        }
     }
 
-    public BufferLine preLine() {
-        if (currentCursor.getRow() == 0) {
-            return null;
-        }
-        return lines.get(currentCursor.getRow() - 1);
-    }
-
-    public BufferLine postLine() {
-        if (currentCursor.getRow() == lines.size() - 1) {
-            return null;
-        }
-        return lines.get(currentCursor.getRow() - 1);
-    }
+//    public BufferLine preLine() {
+//        if (currentCursor.getRow() == 0) {
+//            return null;
+//        }
+//        return lines.get(currentCursor.getRow() - 1);
+//    }
+//
+//    public BufferLine postLine() {
+//        if (currentCursor.getRow() == lines.size() - 1) {
+//            return null;
+//        }
+//        return lines.get(currentCursor.getRow() - 1);
+//    }
 
     public void set(String text) {
-        clear();
-        insert(text);
+        synchronized (this) {
+            clear();
+            insert(text);
+        }
     }
 
 
@@ -139,7 +171,9 @@ public class Buffer {
     }
 
     public String text() {
-        return lines.stream().map(BufferLine::toLineString).collect(Collectors.joining("\n"));
+        synchronized (this) {
+            return lines.stream().map(BufferLine::toLineString).collect(Collectors.joining("\n"));
+        }
     }
 
     @Override

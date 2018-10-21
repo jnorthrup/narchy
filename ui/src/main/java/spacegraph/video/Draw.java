@@ -33,8 +33,6 @@ import com.jogamp.opengl.util.texture.Texture;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.tree.rtree.rect.RectFloat;
-import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
@@ -48,13 +46,8 @@ import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.shape.*;
 import spacegraph.space3d.phys.util.BulletStack;
 import spacegraph.space3d.widget.EDraw;
-import spacegraph.util.math.Quat4f;
-import spacegraph.util.math.Tuple2f;
-import spacegraph.util.math.v2;
-import spacegraph.util.math.v3;
+import spacegraph.util.math.*;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.function.Consumer;
 
 import static com.jogamp.opengl.GL.*;
@@ -974,6 +967,11 @@ public enum Draw {
         gl.glRotatef(theta, 0, 0, 1);
         tri2f(gl, -base / 2, -len / 2, +base / 2, -len / 2, 0, +len / 2);
         gl.glPopMatrix();
+    }
+
+    /** draws unit rectangle */
+    public static void rectUnit(GL2 g) {
+        Draw.rect(g, 0, 0, 1, 1);
     }
 
     public enum TextAlignment {

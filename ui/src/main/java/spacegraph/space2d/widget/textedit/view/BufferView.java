@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.textedit.view;
 
-import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
+import jcog.data.list.FastCoWList;
 import jcog.data.list.FasterList;
 import spacegraph.space2d.widget.textedit.buffer.*;
 
@@ -11,13 +11,13 @@ import java.util.List;
 public class BufferView implements BufferListener {
 
     private final Buffer document;
-    private final CursorView caret;
+    private final CursorView cursor;
     private final List<LineView> lines = new FasterList<>();
 
 
     public BufferView(Buffer buffer) {
         this.document = buffer;
-        this.caret = new CursorView(buffer.getCaret());
+        this.cursor = new CursorView(buffer.getCaret());
         buffer.addListener(this);
         buildLines();
     }
@@ -44,15 +44,15 @@ public class BufferView implements BufferListener {
         return maxWidth;
     }
 
-    public void paint(GL2 gl) {
+    public void paint(boolean cursor, GL2 gl) {
 //        double w = documentWidth() + 2;
 //        double h = documentHeight();
 
 
-        gl.glDisable(GL.GL_TEXTURE_2D);
+        //gl.glDisable(GL.GL_TEXTURE_2D);
 
-        updateCaret(document.getCaret());
-        caret.draw(gl);
+        if (cursor)
+            this.cursor.draw(gl);
 
         for (LineView line : lines)
             line.draw(gl);
@@ -63,26 +63,28 @@ public class BufferView implements BufferListener {
     @Override
     public void updateCaret(CursorPosition c) {
         LineView lv = lines.get(c.getRow());
-        List<CharView> cvl = lv.getChars();
+
 
         float x;
         if (document.isLineHead()) {
             x =
                     (float) lv.getChars().stream().mapToDouble(cv -> cv.width() / 2).findFirst()
-                            .orElse(caret.getWidth() / 2);
+                            .orElse(cursor.getWidth() / 2);
         } else if (document.isLineLast()) {
-            x = lv.getWidth() + (caret.getWidth() / 2);
+            x = lv.getWidth() + (cursor.getWidth() / 2);
         } else {
+            FastCoWList<CharView> cvl = lv.getChars();
             x = cvl.get(c.getCol()).position.x;
         }
         float y = +lv.position.y;
 
-        caret.position.set(x, y, 0);
+        cursor.position.set(x, y, 0);
     }
 
     @Override
     public void update(Buffer buffer) {
         updatePositions();
+        updateCaret(document.getCaret());
     }
 
     @Override
@@ -115,7 +117,7 @@ public class BufferView implements BufferListener {
             float toY = to.position.y;
             CharView leaveChar = from.leaveChar(c);
             leaveChar.position.y = (-(toY - fromY));
-            to.visitChar(leaveChar);
+            to.addChar(leaveChar);
         }));
     }
 

@@ -4,6 +4,7 @@ import com.jogamp.newt.event.KeyEvent;
 import jcog.event.Off;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
+import spacegraph.input.key.KeyPressed;
 import spacegraph.input.key.Keyboard;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
@@ -24,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static java.awt.event.KeyEvent.VK_UNDEFINED;
 import static java.awt.event.MouseEvent.NOBUTTON;
 
-public class AWTSurface extends Widget {
+public class AWTSurface extends Widget implements KeyPressed {
 
     private static Method processKeyEvent;
 

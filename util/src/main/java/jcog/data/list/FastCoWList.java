@@ -46,6 +46,19 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
         return arrayBuilder.apply(newCapacity);
     }
 
+    public void synch(Consumer<FastCoWList<X>> with) {
+        synchronized(list) {
+            with.accept(this);
+        }
+    }
+
+    public void synchDirect(Predicate<FasterList<X>> with) {
+        synchronized(list) {
+            if (with.test(list))
+                commit();
+        }
+    }
+
     public void sort() {
         synchronized (list) {
             if (list.size() > 1) {
@@ -177,6 +190,15 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
             return false;
         }
     }
+    public X remove(int index) {
+        synchronized (list) {
+            X removed = list.remove(index);
+            if (removed!=null) {
+                commit();
+            }
+            return removed;
+        }
+    }
 
     private boolean addDirect(X o) {
         return list.add(o);
@@ -219,7 +241,10 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     //@Override
     public void add(int index, X element) {
-        throw new TODO();
+        synchronized (list) {
+            list.add(index, element);
+            commit();
+        }
     }
 
     public boolean removeIf(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {

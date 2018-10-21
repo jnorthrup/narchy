@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.adapter;
 import com.jcraft.jcterm.*;
 import com.jcraft.jsch.JSchException;
 import spacegraph.input.finger.Finger;
+import spacegraph.input.key.KeyPressed;
 import spacegraph.input.key.Keyboard;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.MutableUnitContainer;
@@ -22,7 +23,7 @@ import static spacegraph.SpaceGraph.window;
 /**
  * Created by me on 11/13/16.
  */
-public class SSHSurface extends MutableUnitContainer implements Terminal {
+public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPressed {
 
 
     private Dimension pixelSize;

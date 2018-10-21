@@ -167,15 +167,6 @@ abstract public class Container extends Surface {
     protected abstract int childrenCount();
 
 
-    @Override
-    public boolean key(KeyEvent e, boolean pressedOrReleased) {
-        return showing() && whileEach(c -> c.key(e, pressedOrReleased));
-    }
-
-    @Override
-    public boolean key(v2 hitPoint, char charCode, boolean pressedOrReleased) {
-        return showing() && whileEach(c -> c.key(hitPoint, charCode, pressedOrReleased));
-    }
 
     @Override
     public boolean stop() {

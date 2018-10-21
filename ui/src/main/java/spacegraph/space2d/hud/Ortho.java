@@ -9,6 +9,7 @@ import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
+import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.SurfaceRoot;
@@ -24,6 +25,7 @@ import spacegraph.video.JoglWindow;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -33,12 +35,13 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 /**
  * orthographic widget adapter. something which goes on the "face" of a HUD ("head"s-up-display)
  */
-public class Ortho extends Container implements SurfaceRoot, WindowListener, MouseListener, KeyListener {
+public class Ortho extends Container implements SurfaceRoot, WindowListener, MouseListener, KeyPressed {
 
 
     private final static float focusAngle = (float) Math.toRadians(45);
     private static final int ZOOM_STACK_MAX = 8;
     public final Finger finger;
+    private final NewtKeyboard keyboard;
     public final Camera cam;
     /**
      * current view area, in absolute world coords
@@ -67,6 +70,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         this.cam = new Camera();
 
+        this.keyboard = new NewtKeyboard();
 
         this.finger = new Finger();
         this.fingerUpdate = () -> {
@@ -76,6 +80,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         addOverlay(this.finger.cursorSurface());
         addOverlay(this.finger.zoomBoundsSurface(cam));
+        addOverlay(this.keyboard.keyFocusSurface(cam));
 
         setSurface(content);
     }
@@ -102,6 +107,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     @Override
     public void windowResized(WindowEvent e) {
 
+        layout();
 
         //doLayout(0);
     }
@@ -127,7 +133,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         }
         return false;
     }
-
 
 
     @Override
@@ -210,7 +215,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
             s.addMouseListenerPre(this);
 
-            s.addKeyListener(this);
+            s.addKeyListener(keyboard);
 
             animate(cam);
             animate(fingerUpdate);
@@ -242,7 +247,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
             //System.out.println("before: " + zoomStack);
             if (zoomStack.isEmpty()) {
-                zoomStack.add( cam.snapshot() );
+                zoomStack.add(cam.snapshot());
             }
 
             float epsilon = Math.min(h() / scale.y, w() / scale.x);
@@ -306,7 +311,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     private void zoom(float x, float y, float sx, float sy, float margin) {
-        zoom(x, y, targetDepth( /*Math.max(sx, sy)*/ (float) (Math.sqrt(sx*sx + sy*sy) * (1 + margin))));
+        zoom(x, y, targetDepth( /*Math.max(sx, sy)*/ (float) (Math.sqrt(sx * sx + sy * sy) * (1 + margin))));
     }
 
     public final void zoom(v3 v) {
@@ -379,26 +384,10 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     @Override
-    public void keyPressed(KeyEvent e) {
-        setKey(e, true);
+    public boolean keyFocus(Surface s) {
+        return keyboard.focus(s);
     }
 
-    @Override
-    public void keyReleased(KeyEvent e) {
-        setKey(e, false);
-    }
-
-    private void setKey(KeyEvent e, boolean pressOrRelease) {
-        if (e.isConsumed())
-            return;
-
-        Surface t = finger.touching();
-        if (t != null) {
-            if (!t.key(e, pressOrRelease))
-                e.setConsumed(true);
-        }
-
-    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -569,7 +558,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     public void addOverlay(Surface s) {
-        synchronized(overlays) {
+        synchronized (overlays) {
             if (s.start(this)) {
                 overlays.add(s);
             }
@@ -577,7 +566,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     public void removeOverlay(Surface s) {
-        synchronized(overlays) {
+        synchronized (overlays) {
             boolean ss = overlays.remove(s);
             if (ss) {
                 s.stop();
@@ -600,8 +589,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 //
 //        layout();
 //    }
-
-
 
 
     public class Camera extends AnimVector3f {
@@ -631,7 +618,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         }
 
         protected void update() {
-            if (!Ortho.this.focused())
+            if (!Ortho.this.visible())
                 return;
 
             //System.out.println(z);
@@ -685,15 +672,79 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         public float motionSq() {
             v3 t = new v3(target);
-            t.add(-x,-y,-z);
+            t.add(-x, -y, -z);
             return t.lengthSquared();
         }
 
         public v2 worldToScreen(float sw, float sh, float wx, float wy) {
             return new v2(
-                    ((wx - cam.x) * scale.x) + sw/2,
-                    ((wy - cam.y) * scale.y) + sh/2
+                    ((wx - cam.x) * scale.x) + sw / 2,
+                    ((wy - cam.y) * scale.y) + sh / 2
             );
+        }
+    }
+
+    /** interface for NEWT keyboard */
+    private class NewtKeyboard implements KeyListener {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            setKey(e, true);
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            setKey(e, false);
+        }
+
+        private void setKey(KeyEvent e, boolean pressOrRelease) {
+            if (e.isConsumed())
+                return;
+
+//        Surface t = finger.touching();
+//        if (t != null) {
+//            if (!t.key(e, pressOrRelease))
+//                e.setConsumed(true);
+//        }
+            Surface s = keyFocus.getOpaque();
+            if (s != null) {
+                Surface ss = s;
+                if (!ss.showing()) {
+                    keyFocus.compareAndSet(s, null); //free the focus
+                    return;
+                }
+
+                ((KeyPressed)s).key(e, pressOrRelease);
+                e.setConsumed(true);
+            }
+
+        }
+
+        final AtomicReference<Surface> keyFocus = new AtomicReference<>(null);
+
+
+        boolean focus(Surface s) {
+            if (!(s instanceof KeyPressed))
+                throw new UnsupportedOperationException(s + " does not implement " + KeyPressed.class);
+
+            KeyPressed ss = (KeyPressed) s;
+            Surface r = keyFocus.getAndSet(s);
+            if (r!=s) {
+                if (r!=null)
+                    ((KeyPressed)r).keyEnd();
+                ss.keyStart();
+            }
+
+            return true;
+        }
+
+        public Surface keyFocusSurface(Camera cam) {
+            return new SurfaceHiliteOverlay(cam) {
+                @Override
+                protected Surface target() {
+                    return keyFocus.getOpaque();
+                }
+
+            };
         }
     }
 }
