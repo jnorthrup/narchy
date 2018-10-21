@@ -11,10 +11,13 @@ import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
+import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.action.AbstractGoalActionConcept;
 import nars.concept.action.ActionConcept;
+import nars.concept.action.curiosity.Curiosity;
+import nars.concept.action.curiosity.DefaultCuriosity;
 import nars.concept.sensor.Sensor;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
@@ -55,8 +58,6 @@ public class NAgent extends NARService implements NSense, NAct {
 
     public final FrameTrigger frameTrigger;
 
-    public final FloatRange curiosity = new FloatRange(0.10f, 0f, 1f);
-
     public final FloatRange pri = new FloatRange(1f, 0, 2f);
 
     public final AtomicBoolean enabled = new AtomicBoolean(false);
@@ -71,6 +72,8 @@ public class NAgent extends NARService implements NSense, NAct {
     public final FastCoWList<Reward> rewards = new FastCoWList<>(Reward[]::new);
 
     public final AtomicInteger iteration = new AtomicInteger(0);
+
+    public final Curiosity curiosity = DefaultCuriosity.defaultCuriosity(this);
 
     public volatile long prev;
     protected volatile long now;
@@ -121,17 +124,17 @@ public class NAgent extends NARService implements NSense, NAct {
 
     protected <A extends ActionConcept> void actionAdded(A a) {
 
-//        alwaysQuest(a, true);
+        //alwaysQuest(a, true);
 
-//        alwaysQuestionEternally(a,
-//                false,
-//                false
-//        );
+        alwaysQuestionEternally(a,
+                false,
+                false
+        );
 
 //        alwaysQuestion(IMPL.the(c.term, 0, $$("reward:#x")), true);
 //        alwaysQuestion(IMPL.the(c.term.neg(), 0, $$("reward:#x")), true);
-        //alwaysQuestion(Op.CONJ.the(happy.term, a.term));
-        //alwaysQuestion(Op.CONJ.the(happy.term, a.term.neg()));
+        alwaysQuestionEternally(Op.IMPL.the($.varQuery(1), a.term), true, false);
+        //alwaysQuestionEternally(Op.CONJ.the($.varDep(1), a.term.neg()));
     }
 
     @Override
@@ -233,14 +236,6 @@ public class NAgent extends NARService implements NSense, NAct {
 //            }
 //        }
 //    }
-
-    @Override
-    public FloatRange curiosity() {
-        return curiosity;
-    }
-
-
-
 
     public Random random() {
         NAR n = this.nar;
@@ -472,23 +467,29 @@ public class NAgent extends NARService implements NSense, NAct {
 //        ActionConcept[] aaa = actions.copy.clone(); //HACK shuffle cloned copy for thread safety
 //        ArrayUtils.shuffle(aaa, random());
 
-        float curiConf =
-                        //nar.confMin.floatValue();
-                        //nar.confMin.floatValue() * 2;
-                        //nar.confMin.floatValue() * 4;
-                        //nar.confDefault(GOAL)/4;
-                        //nar.confDefault(GOAL)/3;
-                        nar.confDefault(GOAL)/2;
-                        //nar.confDefault(GOAL)/3;
-                        //w2c(c2w(nar.confDefault(GOAL))/3);
-                        //w2c(c2w(nar.confDefault(GOAL))/2);
-                        //nar.confDefault(GOAL);
+        //curiosity conf initial setting  HACK
+        if (curiosity.conf.floatValue() == 0) {
+
+            float curiConf =
+                    //nar.confMin.floatValue();
+                    //nar.confMin.floatValue() * 2;
+                    //nar.confMin.floatValue() * 4;
+                    //nar.confDefault(GOAL)/4;
+                    nar.confDefault(GOAL)/3;
+                    //nar.confDefault(GOAL)/2;
+                    //nar.confDefault(GOAL)/3;
+                    //w2c(c2w(nar.confDefault(GOAL))/3);
+                    //w2c(c2w(nar.confDefault(GOAL))/2);
+                    //nar.confDefault(GOAL);
+
+            curiosity.conf.set(curiConf);
+        }
 
         for (ActionConcept a : aaa) {
 
             //HACK temporary
             if (a instanceof AbstractGoalActionConcept) {
-                ((AbstractGoalActionConcept) a).curiosity(curiosity.get(), curiConf);
+                ((AbstractGoalActionConcept) a).curiosity(curiosity);
             }
 
             a.update(prev, now, next, nar);

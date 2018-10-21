@@ -31,8 +31,12 @@ import static nars.time.Tense.ETERNAL;
 public class Answer implements Consumer<Task>, AutoCloseable {
 
     public final static int TASK_LIMIT_DEFAULT =
-            Param.STAMP_CAPACITY-1;
+            Param.STAMP_CAPACITY - 1;
             //Param.STAMP_CAPACITY / 2;
+
+    /** reduced # of returned results in an eternal question/quest.
+     *  prevents table from trying to answer with all the tasks that a non-specific time-range might cause */
+    public static final int TASK_LIMIT_ETERNAL_QUESTION = Math.max(1, TASK_LIMIT_DEFAULT / 3);
 
     public static final int TASK_LIMIT_SAMPLE = Math.max(1, TASK_LIMIT_DEFAULT / 2);
 

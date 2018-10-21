@@ -1,7 +1,6 @@
 package nars.agent;
 
 import jcog.Util;
-import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.util.FloatConsumer;
 import nars.$;
@@ -39,10 +38,6 @@ public interface NAct {
 
     NAR nar();
 
-    /**
-     * master curiosity factor, for all actions
-     */
-    FloatRange curiosity();
 
     /**
      * TODO make BooleanPredicate version for feedback
@@ -319,8 +314,8 @@ public interface NAct {
             //resting state
             NAR n = nar();
             float conf =
-                    //n.confMin.floatValue() * 4;
-                    n.confDefault(BELIEF)/4;
+                    n.confMin.floatValue();
+                    //n.confDefault(BELIEF)/4;
             BeliefTables xb = (BeliefTables) x.beliefs();
             BeliefTables xg = (BeliefTables) x.goals();
             //xg.tables.add(new EternalTable(1));

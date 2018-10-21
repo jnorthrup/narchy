@@ -149,7 +149,6 @@ public class TrackXY_NAR extends NAgentX {
 
         TrackXY_NAR a = new TrackXY_NAR(n, W, H);
 
-        a.curiosity.set(0.02f);
         n.freqResolution.set(0.04f);
         n.termVolumeMax.set(10);
         n.timeResolution.set(dur);
@@ -162,7 +161,7 @@ public class TrackXY_NAR extends NAgentX {
                     //HaiQ::new,
 
                     true);
-            a.curiosity.set(0);
+            a.curiosity.enable.set(false);
 
             window(
                     new LSTMView(

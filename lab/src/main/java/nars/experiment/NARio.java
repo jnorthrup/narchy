@@ -206,7 +206,7 @@ public class NARio extends NAgentX {
                 $$("right(nario)"),
                 n -> game.scene.key(Mario.KEY_LEFT, n),
                 n -> game.scene.key(Mario.KEY_RIGHT, n))) {
-            c.actionDur(1);
+            //c.actionDur(1);
         }
 
         GoalActionConcept j = actionPushButton($$("jump(nario)"),
@@ -240,7 +240,7 @@ public class NARio extends NAgentX {
                     game.scene.key(Mario.KEY_JUMP, n);
                     return n;
                 });
-        j.actionDur(1);
+        //j.actionDur(1);
 
 
         actionToggle($$("down(nario)"),
@@ -248,7 +248,7 @@ public class NARio extends NAgentX {
 
         GoalActionConcept s = actionToggle($$("speed(nario)"),
                 n -> game.scene.key(Mario.KEY_SPEED, n));
-        s.actionDur(1);
+        //s.actionDur(1);
 
     }
 

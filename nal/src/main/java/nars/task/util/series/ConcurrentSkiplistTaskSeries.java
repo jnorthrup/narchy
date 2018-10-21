@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 import static jcog.math.LongInterval.ETERNAL;
 import static jcog.math.LongInterval.TIMELESS;
 
-abstract public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask> extends AbstractTaskSeries<T> {
+public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask> extends AbstractTaskSeries<T> {
 
     /**
      * tasks are indexed by their midpoint. since the series
@@ -148,7 +148,7 @@ abstract public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.S
     }
 
     @Override
-    protected void push(T t) {
+    public void push(T t) {
         at.put(t.start(), t);
     }
 }

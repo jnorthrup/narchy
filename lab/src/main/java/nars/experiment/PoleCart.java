@@ -2,6 +2,7 @@ package nars.experiment;
 
 import jcog.Util;
 import jcog.learn.LivePredictor;
+import jcog.math.FloatNormalized;
 import jcog.math.FloatPolarNormalized;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
@@ -70,7 +71,7 @@ public class PoleCart extends NAgentX {
 
     double pos, posDot, angle, angleDot;
 
-    float posMin = -2f, posMax = +2f;
+    final float posMin = -2f, posMax = +2f;
     float velMax = 10;
     boolean manualOverride;
 
@@ -122,14 +123,10 @@ public class PoleCart extends NAgentX {
          */
 
 
-        this.x = senseNumber($.the("x"),
-                //new FloatPolarNormalized(
-                () -> (float) pos);
-        this.xVel = senseNumber($.the("dx"),
-
-                //new FloatPolarNormalized(
-                        () -> (float) posDot
-                //)
+        this.x = senseNumber($.inh("x", id),
+                new FloatNormalized(() -> (float) pos, posMin, posMax));
+        this.xVel = senseNumber($.inh("dx", id),
+                new FloatNormalized(() -> (float) posDot)
         );
 
 
@@ -166,12 +163,12 @@ public class PoleCart extends NAgentX {
 //            return x;
 //        });
 
-        actionUnipolar($.inh($.the("L"),id), (a) -> {
+        actionUnipolar($.inh(("L"),id), (a) -> {
             if (!manualOverride)
                 action = Util.clampBi((float) (action + a));
             return a;
         });
-        actionUnipolar($.inh($.the("R"),id), (a) -> {
+        actionUnipolar($.inh(("R"),id), (a) -> {
             if (!manualOverride)
                 action = Util.clampBi((float) (action - a));
             return a;

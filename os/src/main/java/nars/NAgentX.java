@@ -180,9 +180,6 @@ abstract public class NAgentX extends NAgent {
 
             a.pri.set(1f);
 
-            a.curiosity.set(0.1f);
-
-
             n.on(a);
 
             n.runLater(() -> {
@@ -352,9 +349,9 @@ abstract public class NAgentX extends NAgent {
 //            return a;
 //        });
 
-        m.actionUnipolar($.func("curious", a.id), (cur) -> {
-            a.curiosity.set(lerp(cur, 0.01f, 0.25f));
-        });//.resolution(0.05f);
+//        m.actionUnipolar($.func("curious", a.id), (cur) -> {
+//            a.curiosity.set(lerp(cur, 0.01f, 0.25f));
+//        });//.resolution(0.05f);
 
 
 

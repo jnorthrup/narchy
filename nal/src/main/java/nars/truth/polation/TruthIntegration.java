@@ -55,7 +55,7 @@ public class TruthIntegration {
             if (qEnd < qStart)
                 return 0; //no intersection
             if (qStart == qEnd)
-                return t.evi(qStart, 0); //point
+                return t.evi(qStart, dur); //point
         }
 
         if (

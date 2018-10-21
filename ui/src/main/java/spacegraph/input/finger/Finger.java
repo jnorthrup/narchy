@@ -27,7 +27,7 @@ public class Finger {
 
     private final static int MAX_BUTTONS = 5;
 
-    private final static float DRAG_THRESHOLD_PIXELS = 3f;
+    private final static float DRAG_THRESHOLD_PIXELS = 5f;
 
     public final v2 pos = new v2(), posPixel = new v2(), posScreen = new v2();
 
@@ -275,7 +275,7 @@ public class Finger {
      * additionally tests for no dragging while pressed
      */
     public boolean clickedNow(int button) {
-        return releasedNow(button); // && !dragging(button);
+        return releasedNow(button) && !dragging(button);
     }
 
     public boolean clickedNow(int button, Surface c) {

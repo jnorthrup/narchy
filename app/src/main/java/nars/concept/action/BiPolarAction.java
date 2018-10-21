@@ -1,10 +1,8 @@
 package nars.concept.action;
 
 import jcog.Util;
-import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
-import nars.agent.NAct;
 import nars.agent.NSense;
 import nars.concept.sensor.AbstractSensor;
 import nars.control.channel.CauseChannel;
@@ -17,7 +15,6 @@ import org.eclipse.collections.api.block.function.primitive.BooleanToObjectFunct
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static java.lang.Float.MIN_NORMAL;
@@ -79,27 +76,12 @@ public class BiPolarAction extends AbstractSensor {
      */
     @Override public void update(long prev, long now, long next, NAR nar) {
 
-        Random rng = nar.random();
-
-
 
         Truth p, n;
-        boolean pCuri, nCuri;
-        if (rng.nextFloat() < pos.curiosityRate) {
-            p = $.t(rng.nextFloat(), pos.curiConf);
-            pCuri = true;
-        } else {
-            p = pos.actionTruth();
-            pCuri = false;
-        }
-        if (rng.nextFloat() < neg.curiosityRate) {
-            n = $.t(rng.nextFloat(), neg.curiConf);
-            nCuri = true;
-        } else {
-            n = neg.actionTruth();
-            nCuri = false;
-        }
 
+            p = pos.actionTruth();
+
+            n = neg.actionTruth();
 
 
         float x = model.update(p, n, prev, now);
@@ -172,10 +154,7 @@ public class BiPolarAction extends AbstractSensor {
 
         float dur = now - prev;
         feedback.input(
-                pos.feedback(Pb, now, next, dur, nar), neg.feedback(Nb, now, next, dur, nar),
-
-                (pCuri && Pb!=null) ? pos.curiosity($.t(Pb.freq(), pos.curiConf).dithered(nar)/* p*/, prev, now, nar) : null,
-                (nCuri && Nb!=null) ? neg.curiosity($.t(Nb.freq(), neg.curiConf).dithered(nar)/* n*/, prev, now, nar) : null
+                pos.feedback(Pb, now, next, dur, nar), neg.feedback(Nb, now, next, dur, nar)
         );
     }
 
@@ -190,7 +169,6 @@ public class BiPolarAction extends AbstractSensor {
 
         final float[] lastX = new float[] { 0};
 
-        final FloatSupplier curiosity; //HACK
 
 
         /** how much coherence can shrink the amplitude of the resulting bipolar signal. 0 means not at all, +1 means fully attenuable */
@@ -207,7 +185,6 @@ public class BiPolarAction extends AbstractSensor {
 
         public DefaultPolarization(boolean fair, NSense s) {
             this.fair = fair;
-            curiosity = ((NAct) s).curiosity();
 
         }
 

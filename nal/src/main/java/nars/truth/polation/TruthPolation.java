@@ -86,26 +86,18 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
             Task task = tc.task;
 
-            float eContrib = TruthIntegration.evi(task, start, end, dur);
-
-            if (eContrib < Param.TRUTH_MIN_EVI) {
-                tc.evi = -1;
-                return null;
-            } else {
+            if ((tc.evi = TruthIntegration.evi(task, start, end, dur)) >= Float.MIN_NORMAL) {
                 tc.freq = task.freq(start, end);
-                tc.evi = eContrib;
-                return tc;
             }
-        } else {
-            return tc.evi >= Param.TRUTH_MIN_EVI ? tc : null;
         }
 
-
+        //Float.MIN_NORMAL is used here to allow sub-MIN_EVI contributions
+        return tc.evi >= Float.MIN_NORMAL ? tc : null;
     }
 
-    public final MetalLongSet filterCyclic() {
-        return filterCyclic(true);
-    }
+//    public final MetalLongSet filterCyclic() {
+//        return filterCyclic(true);
+//    }
 
     public final TruthPolation filtered() {
         return filtered(null);

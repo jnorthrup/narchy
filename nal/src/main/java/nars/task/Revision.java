@@ -237,10 +237,10 @@ public class Revision {
     }
 
 
-
     /** 2-ary merge with quick overlap filter */
-    @Nullable public static Task merge(NAR nar, TaskRegion x, TaskRegion y) {
+    public static Task merge(TaskRegion x, TaskRegion y, NAR nar) {
         long xs = x.start();
+
 
         //allow overlap if the time ranges are disjoint
         if (Stamp.overlapsAny((Task)x, (Task)y)) {

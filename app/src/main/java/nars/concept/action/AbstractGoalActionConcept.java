@@ -2,12 +2,16 @@ package nars.concept.action;
 
 import nars.NAR;
 import nars.Task;
+import nars.concept.action.curiosity.Curiosity;
+import nars.concept.action.curiosity.CuriosityGoalTable;
+import nars.concept.action.curiosity.CuriosityTask;
+import nars.control.channel.CauseChannel;
 import nars.control.proto.Remember;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.table.dynamic.SeriesBeliefTable;
-import nars.table.temporal.RTreeBeliefTable;
+import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.term.Term;
@@ -18,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Predicate;
 
 import static nars.Op.GOAL;
+import static nars.time.Tense.TIMELESS;
 
 
 /**
@@ -25,8 +30,9 @@ import static nars.Op.GOAL;
  */
 public class AbstractGoalActionConcept extends ActionConcept {
 
+    @Nullable private Curiosity curiosity = null;
 
-    private final RTreeBeliefTable curiosityTable;
+    private final CuriosityGoalTable curiosityTable;
 
     /** current calculated goalTask */
     protected volatile @Nullable Truth actionTruth;
@@ -34,6 +40,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
     /** truth calculated (in attempt to) excluding curiosity */
     protected volatile @Nullable Truth actionDex;
 
+    /** latches the last non-null actionDex, used for echo/sustain */
+    public volatile @Nullable Truth lastActionDex;
+
+    protected final CauseChannel<ITask> in;
 
     public AbstractGoalActionConcept(Term term,  NAR n) {
         this(term, n.conceptBuilder.newTable(term, false), n);
@@ -42,8 +52,14 @@ public class AbstractGoalActionConcept extends ActionConcept {
     protected AbstractGoalActionConcept(Term term, BeliefTable goals, NAR n) {
         super(term, new SensorBeliefTables(term, true, n.conceptBuilder), goals, n);
 
-        ((BeliefTables)goals()).tables.add(curiosityTable = new RTreeBeliefTable());
+        ((BeliefTables)goals()).tables.add(curiosityTable = new CuriosityGoalTable(term, 32));
 
+        in = n.newChannel(this);
+    }
+
+    public AbstractGoalActionConcept curiosity(Curiosity curiosity) {
+        this.curiosity = curiosity;
+        return this;
     }
 
     @Override
@@ -97,13 +113,18 @@ public class AbstractGoalActionConcept extends ActionConcept {
             TruthPolation organic = a.match(table).truthpolation(actionDur);
             if (organic != null) {
                 actionDex = organic.filtered().truth();
+                if (actionDex!=null)
+                    lastActionDex = actionDex;
             } else {
                 actionDex = null;
             }
         }
 
 
-        try(Answer a = Answer.
+
+
+
+        try (Answer a = Answer.
                 relevance(true, limit, s, e, term, null, n).match(table)) {
             TruthPolation raw = a.truthpolation(actionDur);
             if (raw != null) {
@@ -112,14 +133,30 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 actionTruth = null;
         }
 
-
-
-
-        //System.out.println(actionTruth + " " + actionDex);
-
         //if this happens, for whatever reason..
         if (actionTruth == null && actionDex!=null)
             actionTruth = actionDex;
+
+
+
+        Truth curi = curiosity.curiosity(this);
+        if (curi!=null) {
+
+            curi = curi.ditherFreq(resolution().floatValue()).dithered(n);
+
+            //pre-load curiosity for the future
+            long lastCuriosity = curiosityTable.series.end();
+            long curiStart = lastCuriosity!=TIMELESS ? Math.max(s, lastCuriosity +1) : now;
+            long curiEnd = Math.max(curiStart, e);
+            in.input(
+                    curiosity(curi /*goal*/, curiStart, curiEnd, n)
+            );
+
+            actionTruth = curi; //overrides
+        }
+
+        //System.out.println(actionTruth + " " + actionDex);
+
     }
 
 
@@ -159,17 +196,5 @@ public class AbstractGoalActionConcept extends ActionConcept {
         return actionTruth;
     }
 
-    protected float curiConf;
-    protected volatile float curiosityRate = 0;
-    public void curiosity(float curiRate, float curiConf) {
-        this.curiosityRate = curiRate;
-        this.curiConf = curiConf;
-    }
-
-    public static class CuriosityTask extends SignalTask {
-        public CuriosityTask(Term term, Truth goal, NAR n, long pStart, long pEnd) {
-            super(term, GOAL, goal, n.time(), pStart, pEnd, n.evidence());
-        }
-    }
 
 }

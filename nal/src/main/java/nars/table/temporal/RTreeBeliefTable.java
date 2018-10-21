@@ -36,11 +36,11 @@ import static nars.truth.TruthFunctions.w2cSafe;
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
     private static final float PRESENT_AND_FUTURE_BOOST_BELIEF = 2f;
-    private static final float PRESENT_AND_FUTURE_BOOST_GOAL = 3f;
+    private static final float PRESENT_AND_FUTURE_BOOST_GOAL = 4f;
 
 
     private static final int MIN_TASKS_PER_LEAF = 2;
-    private static final int MAX_TASKS_PER_LEAF = 4;
+    private static final int MAX_TASKS_PER_LEAF = 3;
     private static final Split SPLIT = AxialSplitLeaf.the;
 
 
@@ -511,7 +511,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * returns true if at least one net task has been removed from the table.
      */
     /*@NotNull*/
-    private static boolean compress(Space<TaskRegion> tree, @Nullable Task input, FloatFunction<Task> taskStrength, FloatFunction<TaskRegion> leafRegionWeakness, Remember
+    private boolean compress(Space<TaskRegion> tree, @Nullable Task input, FloatFunction<Task> taskStrength, FloatFunction<TaskRegion> leafRegionWeakness, Remember
                                             remember, NAR nar) {
 
 
@@ -551,7 +551,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     }
 
-    private static boolean mergeOrDelete(Space<TaskRegion> treeRW,
+    private boolean mergeOrDelete(Space<TaskRegion> treeRW,
                                          @Nullable Task I /* input */,
                                          @Nullable Top<TaskRegion> closest,
                                          Top<Task> weakest,
@@ -567,7 +567,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (I != null && closest != null && closest.the != null) {
             C = (Task) closest.the;
             assert(!C.equals(I));
-            IC = Revision.merge(nar, I, C);
+            IC = revise(I, C, nar);
             if (IC != null && (IC.equals(I) || IC.equals(C)))
                 IC = null;
         } else {
@@ -625,7 +625,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             AB = null;
             value[MergeLeaf] = Float.NEGATIVE_INFINITY;
         } else {
-            AB = Revision.merge(nar, A, B);
+            AB = revise(A, B, nar);
             if (AB == null || (AB.equals(A) || AB.equals(B))) {
                 value[MergeLeaf] = Float.NEGATIVE_INFINITY;
             } else {
@@ -688,6 +688,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         throw new UnsupportedOperationException();
 
+    }
+
+    @Nullable protected Task revise(@Nullable Task x, Task y, NAR nar) {
+        return Revision.merge(x, y, nar);
     }
 
     private static float mergeScoreFactor(Task a, Task b) {

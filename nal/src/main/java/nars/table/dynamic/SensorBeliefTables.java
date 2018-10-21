@@ -13,6 +13,7 @@ import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.series.ConcurrentRingBufferTaskSeries;
 import nars.term.Term;
 import nars.truth.Truth;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * special belief tables implementation
@@ -21,7 +22,7 @@ import nars.truth.Truth;
  */
 public class SensorBeliefTables extends BeliefTables {
 
-    public final SeriesBeliefTable series;
+    public final SensorBeliefTable series;
 
     /**
      * prioritizes generated tasks
@@ -38,27 +39,13 @@ public class SensorBeliefTables extends BeliefTables {
         this(c, beliefOrGoal,
                 //TODO impl time series with concurrent ring buffer from gluegen
                 t,
-                //new ConcurrentSkiplistTaskSeries( /*@Deprecated*/ Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE)
-                new ConcurrentRingBufferTaskSeries( /*@Deprecated*/ Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE)
-                {
-
-                    @Override
-                    protected SeriesBeliefTable.SeriesTask newTask(Term term, byte punc, long nextStart, long nextEnd, Truth next, NAR nar) {
-                        nextEnd = Math.max(nextStart, nextEnd); //HACK
-                        SeriesBeliefTable.SeriesTask nextT = new SeriesBeliefTable.SeriesTask(
-                                term,
-                                punc,
-                                next,
-                                nextStart, nextEnd,
-                                nar.evidence());
-                        return nextT;
-                    }
-                });
+                //new ConcurrentSkiplistTaskSeries<>( /*@Deprecated*/ Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE)
+                new ConcurrentRingBufferTaskSeries<>( /*@Deprecated*/ Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE));
     }
 
-    SensorBeliefTables(Term term, boolean beliefOrGoal, TemporalBeliefTable t, AbstractTaskSeries s) {
-        super(new SeriesBeliefTable(term, beliefOrGoal, s), t);
-        this.series = tableFirst(SeriesBeliefTable.class);
+    SensorBeliefTables(Term term, boolean beliefOrGoal, TemporalBeliefTable t, AbstractTaskSeries<SeriesBeliefTable.SeriesTask> s) {
+        super(new SensorBeliefTable(term, beliefOrGoal, s), t);
+        this.series = tableFirst(SensorBeliefTable.class);
     }
 
     @Override
@@ -82,7 +69,7 @@ public class SensorBeliefTables extends BeliefTables {
             value = value.ditherFreq(Math.max(n.freqResolution.asFloat(), res.asFloat()));
         }
 
-        SeriesBeliefTable.SeriesTask x = series.series.add(value,
+        SeriesBeliefTable.SeriesTask x = add(value,
                 start, end, dur,
                 series.term, series.punc(),
                 n);
@@ -96,6 +83,94 @@ public class SensorBeliefTables extends BeliefTables {
 
         return null;
     }
+
+
+
+
+    protected SeriesBeliefTable.SeriesTask newTask(Term term, byte punc, long nextStart, long nextEnd, Truth next, NAR nar) {
+//        nextEnd = Math.max(nextStart, nextEnd); //HACK
+        return new SeriesBeliefTable.SeriesTask(
+                term,
+                punc,
+                next,
+                nextStart, nextEnd,
+                nar.evidence());
+    }
+
+
+    public SeriesBeliefTable.SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, float dur, Term term, byte punc, NAR nar) {
+
+        SeriesBeliefTable.SeriesTask nextT = null;
+        SeriesBeliefTable.SeriesTask last = series.series.last();
+        boolean stretchPrev = false;
+        if (last != null) {
+            long lastStart = last.start();
+            long lastEnd = last.end();
+            if (lastEnd > nextStart)
+                return null;
+
+
+            double gapDurs = ((double)(nextStart - lastEnd)) / dur;
+            if (gapDurs <= series.series.stretchDurs()) {
+
+                if (next!=null) {
+                    double stretchDurs = ((double) (nextEnd - lastStart)) / dur;
+                    if (stretchDurs <= series.series.latchDur()) {
+                        Truth lastEnds = last.truth(lastEnd, 0);
+                        if (lastEnds.equals(next)) {
+                            //stretch
+                            last.setEnd(nextEnd);
+                            return last;
+                        }
+                    }
+                }
+
+                //form new task either because the value changed, or because the latch duration was exceeded
+                long midGap = Math.max(lastEnd, (lastEnd + nextStart)/2L);
+                assert(midGap >= lastEnd): lastEnd + " " + midGap + ' ' + nextStart;
+                last.setEnd(midGap);
+                if (next == null) {
+                    return last; //TODO check right time
+                }
+
+                nextStart = midGap+1; //Tense.dither(midGap, nar);
+                //midGap+1; //start the new task directly after the midpoint between its start and the end of the last task
+                nextEnd = Math.max(nextStart, nextEnd);
+                stretchPrev = false;
+
+            } else {
+
+                stretchPrev = false;
+                nextStart = Math.max(nextStart, lastEnd/* +1 */);
+                nextEnd = Math.max(nextEnd, nextStart);
+
+                //form new task at the specified interval, regardless of the previous task since it was excessively long ago
+                //TODO maybe grow the previous task half a gap duration
+            }
+
+        }
+
+        //assert(nextStart <= nextEnd);
+
+        if (!stretchPrev && next != null) {
+            nextT = newTask(term, punc, nextStart, nextEnd, next, nar);
+            if (nextT == null)
+                return null;
+
+            synchronized (this) {
+
+                series.series.compress();
+
+                series.series.push(nextT);
+
+            }
+        }
+
+        return nextT;
+
+    }
+
+
 
     @Override
     public void match(Answer r) {

@@ -20,7 +20,7 @@ public class NAL4Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(4);
-        n.termVolumeMax.set(10);
+        n.termVolumeMax.set(8);
         return n;
     }
 
@@ -140,6 +140,7 @@ public class NAL4Test extends NALTest {
 
     @Test
     void concludeImageIntInheritImageExt() {
+        test.nar.termVolumeMax.set(9);
         test
                 .believe("(neutralization --> (acid,base))")
                 .believe("((acid,base) --> reaction)")
@@ -307,9 +308,10 @@ public class NAL4Test extends NALTest {
     @Test
     public void composition_on_both_sides_of_a_statement_2() throws Narsese.NarseseException {
 
+        test.nar.termVolumeMax.set(9);
         test.believe("(bird-->animal)",1.0f,0.9f) //en("Bird is a type of animal.");
         .ask("((bird,plant) --> (animal,plant))")
-        .mustBelieve(CYCLES, "((bird,plant) --> (animal,plant))", 1.0f, 0.81f) //en("The relation between bird and plant is a type of relation between animal and plant.");
+        .mustBelieve(CYCLES*6, "((bird,plant) --> (animal,plant))", 1.0f, 0.81f) //en("The relation between bird and plant is a type of relation between animal and plant.");
         ;
     }
 }

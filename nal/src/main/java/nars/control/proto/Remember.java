@@ -270,4 +270,8 @@ public class Remember extends AbstractTask {
         return forgotten.containsInstance(input);
     }
 
+    public final boolean done() {
+        return input==null || remembered.containsInstance(input);
+    }
+
 }

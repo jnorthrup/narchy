@@ -1,9 +1,11 @@
 package nars.task.util.series;
 
 import jcog.TODO;
+import jcog.WTF;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.math.Longerval;
-import nars.table.dynamic.SeriesBeliefTable;
+import nars.Task;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -12,7 +14,7 @@ import java.util.stream.Stream;
 import static jcog.math.LongInterval.TIMELESS;
 import static nars.time.Tense.ETERNAL;
 
-abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable.SeriesTask> extends AbstractTaskSeries<T> {
+public class ConcurrentRingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> {
 
     final MetalConcurrentQueue<T> q;
 
@@ -23,13 +25,27 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
 
 
     @Override
-    protected void push(T t) {
-        q.offer(t);
+    public final void push(T t) {
+        long last = end();
+        if (last!=TIMELESS && last >= t.start())
+            throw new RuntimeException(ConcurrentRingBufferTaskSeries.class + " only supports appending in linear, non-overlapping time sequence");
+
+        if (!q.offer(t)) {
+            pop();
+            if (!q.offer(t)) {
+                throw new WTF(); //TODO handle better
+            }
+        }
     }
 
+    @Nullable
     @Override
     protected T pop() {
-        return q.poll();
+        T t = q.poll();
+        if (t!=null) {
+            t.delete();
+        }
+        return t;
     }
 
 
@@ -175,16 +191,6 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
 
             } while ((u!=null || v!=null) && r <= capacityRadius);
 
-            return true;
-//                    if (a == b) {
-//                        T aa = q.peek(a);
-//                        if (aa!=null)
-//                            return x.test(aa);
-//                    } else {
-//                        return q.whileEach(x, a, b+1);
-//                    }
-
-
         } else {
 
 
@@ -193,9 +199,7 @@ abstract public class ConcurrentRingBufferTaskSeries<T extends SeriesBeliefTable
             int qs = q.size();
             for (int i = qs - 1; i >= 0; i--) {
                 T qi = q.peek(i);
-                if (qi == null)
-                    continue; //should only occurr at the ends
-                if (!whle.test(qi))
+                if (qi!=null && !whle.test(qi))
                     return false;
             }
         }

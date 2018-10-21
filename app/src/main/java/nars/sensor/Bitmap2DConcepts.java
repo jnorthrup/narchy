@@ -247,18 +247,18 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
 
 
-            int start = this.lastPixel;
-            int end = (start + totalPixels);
+            int firstPixel = this.lastPixel;
+            int lastPixel = (firstPixel + totalPixels);
             Stream<ITask> s;
             int dur = nar.dur();
 
-            if (end > totalPixels) {
+            if (lastPixel > totalPixels) {
                 s = Stream.concat(
-                        stream(mode, start, totalPixels, nar),
-                        stream(mode, 0, end - totalPixels, nar)
+                        stream(mode, firstPixel, totalPixels, nar),
+                        stream(mode, 0, lastPixel - totalPixels, nar)
                 );
             } else {
-                s = Bitmap2DConcepts.this.stream(mode, start, end, nar);
+                s = Bitmap2DConcepts.this.stream(mode, firstPixel, lastPixel, nar);
             }
 
             //TODO stop using Stream<> its not necessary here

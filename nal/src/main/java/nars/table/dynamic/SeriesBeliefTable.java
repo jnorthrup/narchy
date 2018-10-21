@@ -28,25 +28,14 @@ import static nars.Op.CONJ;
  * adds a TaskSeries additional Task buffer which can be evaluated from, or not depending
  * if a stored task is available or not.
  */
-public class SeriesBeliefTable extends DynamicTaskTable {
+abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
 
-    public final AbstractTaskSeries<SeriesTask> series;
+    public final AbstractTaskSeries<T> series;
 
-
-    public SeriesBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<SeriesTask> s) {
+    public SeriesBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<T> s) {
         super(c, beliefOrGoal);
         this.series = s;
     }
-
-//    @Override
-//    public void match(Answer t) {
-//        series.forEach(t.time.start, t.time.end, false, t);
-//    }
-
-//    @Override
-//    protected Task taskDynamic(Answer a) {
-//        return (Task) (eval(true, a.time.start, a.time.end, a.filter, a.nar));
-//    }
 
     @Override
     public int size() {
@@ -57,51 +46,6 @@ public class SeriesBeliefTable extends DynamicTaskTable {
     public final void match(Answer t) {
         series.whileEach(t.time.start, t.time.end, false, t::tryAccept);
     }
-
-    //    private Truthed eval(boolean taskOrJustTruth, long start, long end, @Nullable Predicate<Task> filter, NAR nar) {
-//
-////        Task exact = series.firstContaining(start, end);
-////        if (exact != null && (filter==null || filter.test(exact)))
-////            return exact;
-//
-//
-//
-//        DynStampTruth d = series.truth(start, end, filter);
-//        if (d == null || d.isEmpty())
-//            return null;
-//        if (d.size() == 1)
-//            return d.get(0);
-//
-//
-////        if (taskOrJustTruth) {
-////            if (d.size() == 1) {
-////                TaskRegion d0 = d.get(0);
-////                if (d0 instanceof TaskProxy) {
-////                    d0 = ((TaskProxy) d0).clone();
-////                }
-////                return (Truthed) d0; //only task
-////            } else {
-////                //adjust the start, end time to match the tasks found
-////                long s = d.start();
-////                if (s != ETERNAL) {
-////                    start = s;
-////                    end = d.end();
-////                } else {
-////                    start = end = ETERNAL;
-////                }
-////            }
-////        }
-//
-//        int dur = nar.dur();
-//        Truth pp = Param.truth(start, end, dur).add((Collection) d).filter().truth();
-//        if (pp == null) return null;
-//
-////        float freqRes = taskOrJustTruth ? Math.max(nar.freqResolution.floatValue(), res.asFloat()) : 0;
-////        float confRes = taskOrJustTruth ? nar.confResolution.floatValue() : 0;
-////        float eviMin = taskOrJustTruth ? w2cSafe(nar.confMin.floatValue()) : Float.MIN_NORMAL;
-//        Truth finalPp = pp;
-//        return d.eval(SeriesBeliefTable.taskTerm(term), (dd, n) -> finalPp, taskOrJustTruth, beliefOrGoal, nar);
-//    }
 
     @Override
     public void clear() {
@@ -128,26 +72,6 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 //    protected Truth truthDynamic(long start, long end, Term templateIgnored, Predicate filter, NAR nar) {
 //        return (Truth) (eval(false, start, end, filter, nar));
 //    }
-
-
-    @Override
-    public void add(Remember r, NAR n) {
-
-        Task x = r.input;
-
-        if (x.isEternal() || x instanceof SeriesTask)
-            return; //already owned, or was owned
-
-        if (Param.FILTER_SIGNAL_TABLE_TEMPORAL_TASKS) {
-            Task y = absorbNonSignal(x, series.start(), series.end()) ? null : x;
-            if (y == null) {
-                r.reject();
-            } else if (y != x) {
-                r.input = y; //assume same concept
-            }
-        }
-
-    }
 
 
     public void clean(List<BeliefTable> tables) {

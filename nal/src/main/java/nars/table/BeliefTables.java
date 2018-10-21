@@ -61,7 +61,7 @@ public class BeliefTables implements BeliefTable {
     public void add(Remember r, NAR n) {
         tables.allSatisfy(t -> {
             t.add(r, n);
-            return r.input!=null; //if one of the tables cancelled it, stop here
+            return !r.done(); //if one of the tables cancelled it, stop here
         });
 
 //        if (Param.ETERNALIZE_FORGOTTEN_TEMPORALS) {

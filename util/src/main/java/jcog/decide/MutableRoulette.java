@@ -200,4 +200,9 @@ public final class MutableRoulette {
     public float weightSum() {
         return weightSum;
     }
+
+    public int size() {
+        return w.length;
+    }
+
 }

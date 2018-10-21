@@ -6,6 +6,7 @@ import nars.Param;
 import nars.Task;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
+import nars.concept.action.curiosity.CuriosityTask;
 import nars.concept.sensor.Sensor;
 import nars.control.MetaGoal;
 import nars.link.TermLinker;
@@ -72,7 +73,7 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
 
         super.value(t, n);
 
-        if (t.isGoal() && !(t instanceof AbstractGoalActionConcept.CuriosityTask)) {
+        if (t.isGoal() && !(t instanceof CuriosityTask)) {
             long now = n.time();
             long dt = t.minTimeTo(now);
             int dur = n.dur();

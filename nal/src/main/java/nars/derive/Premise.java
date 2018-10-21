@@ -13,6 +13,8 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
+import nars.task.DerivedTask;
+import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.time.Tense;
@@ -22,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Predicate;
 
 import static nars.Op.VAR_QUERY;
+import static nars.time.Tense.ETERNAL;
 
 /**
  * Defines the conditions used in an instance of a derivation
@@ -74,7 +77,7 @@ public class Premise implements Comparable<Premise> {
      */
     final static int var =
             Op.VAR_QUERY.bit;
-    //Op.Variable; //all
+            //Op.Variable; //all
 
 
     /**
@@ -229,8 +232,10 @@ public class Premise implements Comparable<Premise> {
 
         if (!answerTable.isEmpty()) {
 
+            long qStart = task.start();
+            int limit = qStart == ETERNAL ? Answer.TASK_LIMIT_ETERNAL_QUESTION : Answer.TASK_LIMIT_DEFAULT;
             Task match =
-                    Answer.relevance(true, task.start(), task.end(), beliefTerm, null /*beliefFilter*/, d.nar)
+                    Answer.relevance(true, limit, qStart, task.end(), beliefTerm, null /*beliefFilter*/, d.nar)
                             .ditherTruth(true)
                             .match(answerTable).task(true, true, true);
 
@@ -240,10 +245,17 @@ public class Premise implements Comparable<Premise> {
                 @Nullable Task answered = task.onAnswered(match, d.nar);
                 if (answered != null) {
 
-                    d.add(answered);
+//                    if (!(answered instanceof SignalTask))
+//                        d.add(answered); //TODO inputting here is really only useful if revised or dynamic
 
                     if (answered.isBelief())
                         return answered;
+                    else {
+                        if (!(answered instanceof SignalTask) && !(answered instanceof DerivedTask))
+                            d.add(answered); //TODO inputting here is really only useful if revised or dynamic
+
+                    }
+
                 }
 
             }

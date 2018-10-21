@@ -135,13 +135,13 @@ public class RevisionTest {
         Task t100_102 = t(1, 0.9f, 100, 102).apply(n);
 
         //evidence density
-        assertTrue(Revision.merge(n, t01, t45).evi() < Revision.merge(n, t02, t45).evi());
-        assertTrue(Revision.merge(n, t02, t45).evi() < Revision.merge(n, t03, t45).evi());
+        assertTrue(Revision.merge(t01, t45, n).evi() < Revision.merge(t02, t45, n).evi());
+        assertTrue(Revision.merge(t02, t45, n).evi() < Revision.merge(t03, t45, n).evi());
 
-        assertEquals("(b-->a). 0⋈102 %1.0;.34%", Revision.merge(n, t02, t100_102).toStringWithoutBudget());
+        assertEquals("(b-->a). 0⋈102 %1.0;.34%", Revision.merge(t02, t100_102, n).toStringWithoutBudget());
 
-        assertEquals("(b-->a). 0⋈5 %1.0;.91%", Revision.merge(n, t03, t35).toStringWithoutBudget());
-        assertEquals("(b-->a). 0⋈5 %1.0;.90%", Revision.merge(n, t02, t35).toStringWithoutBudget());
+        assertEquals("(b-->a). 0⋈5 %1.0;.91%", Revision.merge(t03, t35, n).toStringWithoutBudget());
+        assertEquals("(b-->a). 0⋈5 %1.0;.90%", Revision.merge(t02, t35, n).toStringWithoutBudget());
 
     }
 
@@ -704,16 +704,16 @@ public class RevisionTest {
         Task b = n.believe(x, 2, 1f);
         Task c = n.believe(x, 4, 1f);
         Task d = n.believe(x, 8, 1f);
-        Task aa = Revision.merge(n, a, a2);
+        Task aa = Revision.merge(a, a2, n);
         p(aa);
         assertTrue(aa.conf() > a.conf());
-        Task ab = Revision.merge(n, a, b);
+        Task ab = Revision.merge(a, b, n);
         p(ab);
         assertTrue(ab.conf() == a.conf());
-        Task ac = Revision.merge(n, a, c);
+        Task ac = Revision.merge(a, c, n);
         p(ac);
         assertTrue(ac.conf() < ab.conf(), ()->ac + " must have less conf than " + ab);
-        Task ad = Revision.merge(n, a, d);
+        Task ad = Revision.merge(a, d, n);
         p(ad);
         assertTrue(ad.conf() < ac.conf());
     }
