@@ -97,7 +97,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 
     @Override
     @Nullable
-    public final Y apply(X x) {
+    public Y apply(X x) {
         Y y = getIfPresent(x);
         if (y == null) {
             y = func.apply(x);

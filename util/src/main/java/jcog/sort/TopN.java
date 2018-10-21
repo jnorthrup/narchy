@@ -202,15 +202,9 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         return rankNeg(x);
     }
 
-    public final static ThreadLocal<DequePool<TopN>> pool =
-            ThreadLocal.withInitial(()->
-                    new DequePool() {
-                        @Override
-                        public TopN create() {
-                            //return new CachedFloatRank(64);
-                            return new TopN(new Object[32], new CachedFloatFunction(64, x->Float.NaN));
-                        }
-                    });
+
+    public final static ThreadLocal<DequePool<TopN<?>>> pool =
+            DequePool.threadLocal(()->new TopN<>(new Object[32], new CachedFloatFunction<>(64, x->Float.NaN)));
 
     public static <X> TopN<X> pooled(int capacity, FloatFunction<X> rank) {
         TopN t = pool.get().get();

@@ -28,7 +28,7 @@ import static nars.time.Tense.ETERNAL;
 /**
  * heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
  */
-public class Answer implements Consumer<Task> {
+public class Answer implements Consumer<Task>, AutoCloseable {
 
     public final static int TASK_LIMIT_DEFAULT =
             Param.STAMP_CAPACITY-1;
@@ -43,7 +43,7 @@ public class Answer implements Consumer<Task> {
     public TimeRangeFilter time;
     public Term template = null;
 
-    public final TopN<Task> tasks;
+    public TopN<Task> tasks;
     public final Predicate<Task> filter;
 
     public Answer(int capacity, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
@@ -247,7 +247,7 @@ public class Answer implements Consumer<Task> {
 
             return t;
         } finally {
-            end();
+            close();
         }
     }
 
@@ -265,7 +265,7 @@ public class Answer implements Consumer<Task> {
             }
             return null;
         } finally {
-            end();
+            close();
         }
     }
 
@@ -379,8 +379,11 @@ public class Answer implements Consumer<Task> {
 //        return x;
 //    }
 
-    private void end() {
-        TopN.unpool(tasks);
+    public void close() {
+        if (tasks!=null) {
+            TopN.unpool(tasks);
+            tasks = null;
+        }
     }
 
     public Answer time(TimeRangeFilter time) {

@@ -77,9 +77,9 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         //long s = prev, e = now;
         //long s = now, e = next;
-        long s = prev, e = next;
-        //long agentDur = (now - prev);
-        //long s = now - agentDur/2, e = now + agentDur/2;
+        //long s = prev, e = next;
+        long agentDur = (now - prev);
+        long s = now - agentDur/2, e = now + agentDur/2;
 
         int actionDur = this.actionSustain;
         if (actionDur < 0)
@@ -92,22 +92,26 @@ public class AbstractGoalActionConcept extends ActionConcept {
         BeliefTable table = goals();
 
 
-        Answer o = Answer.
-                relevance(true, limit, s, e, term, withoutCuriosity, n);
-        TruthPolation organic = o.match(table).truthpolation(actionDur);
-        if (organic!=null) {
-            actionDex = organic.filtered().truth();
-        } else {
-            actionDex = null;
+        try(Answer a = Answer.
+                relevance(true, limit, s, e, term, withoutCuriosity, n)) {
+            TruthPolation organic = a.match(table).truthpolation(actionDur);
+            if (organic != null) {
+                actionDex = organic.filtered().truth();
+            } else {
+                actionDex = null;
+            }
         }
 
 
-        TruthPolation raw = Answer.
-                relevance(true, limit, s, e, term, null, n).match(table).truthpolation(actionDur);
-        if (raw!=null) {
-             actionTruth = raw.filtered().truth();
-        } else
-            actionTruth = null;
+        try(Answer a = Answer.
+                relevance(true, limit, s, e, term, null, n).match(table)) {
+            TruthPolation raw = a.truthpolation(actionDur);
+            if (raw != null) {
+                actionTruth = raw.filtered().truth();
+            } else
+                actionTruth = null;
+        }
+
 
 
 

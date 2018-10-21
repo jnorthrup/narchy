@@ -3,10 +3,13 @@ package nars.task.util.series;
 import nars.NAR;
 import nars.Param;
 import nars.table.dynamic.SeriesBeliefTable;
+import nars.task.util.TimeRangeFilter;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
+
+import static nars.time.Tense.TIMELESS;
 
 abstract public class AbstractTaskSeries<T extends SeriesBeliefTable.SeriesTask> implements TaskSeries<T> {
 
@@ -115,5 +118,13 @@ abstract public class AbstractTaskSeries<T extends SeriesBeliefTable.SeriesTask>
             if (x!=null)
                 x.delete();
         }
+    }
+
+    public boolean contains(TimeRangeFilter time) {
+        long s = start();
+        if (s!=TIMELESS){
+            return time.containedBy(s, end());
+        }
+        return false;
     }
 }

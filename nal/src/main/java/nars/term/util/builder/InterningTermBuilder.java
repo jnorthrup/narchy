@@ -86,7 +86,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     @Nullable
-    private Term get(Term x, DynBytes tmp) {
+    private Term get(Term x) {
         Op xo = x.op();
         boolean negate = xo == NEG;
         if (negate) {
@@ -95,8 +95,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
         }
         if (internableRoot(xo, x.dt())) {
             HijackTermCache c = terms[xo.id];
-            Term y = c.apply(InternedCompound.get(x, tmp));
+            InternedCompound xx = InternedCompound.get(x);
+            Term y = c.apply(xx);
             //Term y = c.getIfPresent(InternedCompound.get(x, tmp));
+
             if (y != null)
                 return y.negIf(negate);
         }
@@ -172,13 +174,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     public static DynBytes tmpKey() {
-
-        //return new DynBytes(IO.termBytesEstimate());
-        return new RecycledDynBytes(IO.termBytesEstimate());
+        return RecycledDynBytes.get();
     }
 
     private void resolve(Term[] t) {
-        DynBytes tmp = null;
         for (int i = 0, tLength = t.length; i < tLength; i++) {
             Term x = t[i];
             if (x instanceof Atomic)
@@ -186,16 +185,11 @@ public class InterningTermBuilder extends HeapTermBuilder {
             if (!internableSub(x))
                 continue;
 
-            if (tmp == null)
-                tmp = tmpKey();
-
-            Term y = get(x, tmp);
+            Term y = get(x);
 
             if (y != null)
                 t[i] = y;
         }
-        if (tmp!=null)
-            tmp.close();
     }
 
     private static boolean internableRoot(Op op, int dt, Term[] u) {

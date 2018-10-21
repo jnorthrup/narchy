@@ -143,28 +143,30 @@ abstract public class Deriver extends Causable {
 
 
         int dur = d.dur;
-        int minForgetTime =
-                1;
-                //dur;
 
         Consumer<TaskLink> tasklinkUpdate;
         Consumer<PriReference<Term>> termlinkUpdate;
 
         long curTime = d.time;
         Long prevCommit = concept.meta("C", curTime);
-        if (prevCommit!=null && (curTime - prevCommit >= minForgetTime)) {
+        if (prevCommit!=null) {
+            if (curTime - prevCommit > 0) {
 
-            double deltaDurs = ((double)(curTime - prevCommit)) / dur;
+                double deltaDurs = ((double) (curTime - prevCommit)) / dur;
 
-            float forgetDurs = d.nar.forgetDurs.floatValue();
-            float forgetRate = (float)(1 - Math.exp(-deltaDurs/forgetDurs));
+                float forgetDurs = d.nar.forgetDurs.floatValue();
+                float forgetRate = (float) (1 - Math.exp(-deltaDurs / forgetDurs));
 
-            tasklinkUpdate = tasklinks.forget(forgetRate);
+                tasklinkUpdate = tasklinks.forget(forgetRate);
 
-            if (termlinks != null)
-                termlinkUpdate = termlinks.forget(forgetRate);
-            else
-                termlinkUpdate = null;
+                if (termlinks != null)
+                    termlinkUpdate = termlinks.forget(forgetRate);
+                else
+                    termlinkUpdate = null;
+            } else {
+                //dont need to commit, it already happened in this cycle
+                return;
+            }
         } else {
             tasklinkUpdate = null;
             termlinkUpdate = null;

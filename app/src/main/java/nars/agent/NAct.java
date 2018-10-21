@@ -319,8 +319,8 @@ public interface NAct {
             //resting state
             NAR n = nar();
             float conf =
-                    n.confMin.floatValue() * 4;
-                    //n.confDefault(BELIEF)/2;
+                    //n.confMin.floatValue() * 4;
+                    n.confDefault(BELIEF)/4;
             BeliefTables xb = (BeliefTables) x.beliefs();
             BeliefTables xg = (BeliefTables) x.goals();
             //xg.tables.add(new EternalTable(1));

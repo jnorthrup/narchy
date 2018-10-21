@@ -1,6 +1,7 @@
 package jcog.data.byt;
 
 import com.google.common.io.ByteArrayDataOutput;
+import jcog.TODO;
 import jcog.Util;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.lucene.util.ArrayUtil;
@@ -34,7 +35,6 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     }
 
 
-
     public DynBytes(byte[] zeroCopy) {
         this(zeroCopy, zeroCopy.length);
     }
@@ -55,7 +55,6 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
      */
     public int compress(int from) {
 
-        
 
         int to = length();
         int len = to - from;
@@ -77,15 +76,15 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         if (compressedLength < (len * minCompressionRatio)) {
 
             if (from > 0)
-                System.arraycopy(this.bytes, 0, compressed, 0, from); 
-            
+                System.arraycopy(this.bytes, 0, compressed, 0, from);
+
 
             this.bytes = compressed;
             this.len = from + compressedLength;
             return compressedLength;
         } else {
             return -1;
-            
+
         }
 
 
@@ -100,9 +99,6 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     public final int hash(int from, int to) {
         return Util.hash(bytes, from, to);
     }
-
-
-
 
 
     @Override
@@ -140,7 +136,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
             return new OneByteSeq(at(start));
 
         if (start == 0 && end == length())
-            return this; 
+            return this;
 
         return new ArrayBytes(bytes, start, end); //not window since this is mutable
     }
@@ -198,7 +194,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         if (current - p < extra) {
             this.bytes = realloc(x, current,
                     //space + Math.max(extra, MIN_GROWTH_BYTES)
-                    ArrayUtil.oversize(current+extra, 1)
+                    ArrayUtil.oversize(current + extra, 1)
             );
         }
         return p;
@@ -208,11 +204,9 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         return new byte[bufferSize];
     }
 
-    protected void free(byte[] b) {
-        /* default impl: nothing */
-    }
 
-    @Override public void close() {
+    @Override
+    public void close() {
         /** nothing */
     }
 
@@ -220,7 +214,8 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         return Arrays.copyOf(b, newLen);
     }
 
-    @Override public final byte[] arrayCompactDirect() {
+    @Override
+    public final byte[] arrayCompactDirect() {
         compact();
         return arrayDirect();
     }
@@ -255,12 +250,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     public final byte[] arrayCopy() {
         return Arrays.copyOf(bytes, len);
     }
-    public byte[] arrayCopyClose() {
-        throw new UnsupportedOperationException("valid only with RecycledDynBytes");
-//        byte[] b = arrayCopy();
-//        close();
-//        return b;
-    }
+
 
     public byte[] compact() {
         return compact(false);
@@ -301,8 +291,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     @Override
     public final void writeBoolean(boolean v) {
         ensureSized(1);
-        byte[] e = this.bytes;
-        e[this.len++] = (byte) (v ? 1 : 0);
+        this.bytes[this.len++] = (byte) (v ? 1 : 0);
     }
 
     @Override
@@ -368,46 +357,12 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
 
     @Override
     public final void writeDouble(double v) {
-        throw new UnsupportedOperationException("yet");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        throw new TODO();
     }
 
     @Override
     public void writeBytes(String s) {
-
-
-
-
-
-        throw new UnsupportedOperationException("TODO");
-
+        throw new TODO();
     }
 
 
@@ -419,13 +374,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
 
     @Override
     public void writeChars(String s) {
-
-
-
-
-
-        throw new UnsupportedOperationException("TODO");
-
+        throw new TODO();
     }
 
     //final UTF8Writer utf8 = new UTF8Writer();
@@ -444,7 +393,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     @Override
     public Appendable append(CharSequence csq, int start, int end) {
         for (int i = start; i < end; i++) {
-            writeChar(csq.charAt(i)); 
+            writeChar(csq.charAt(i));
         }
         return this;
     }
@@ -475,53 +424,6 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     public void appendTo(OutputStream o) throws IOException {
         o.write(bytes, 0, len);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

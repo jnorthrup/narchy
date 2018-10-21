@@ -8,6 +8,7 @@ import nars.concept.util.ConceptBuilder;
 import nars.control.proto.Remember;
 import nars.table.BeliefTables;
 import nars.table.temporal.TemporalBeliefTable;
+import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.series.ConcurrentRingBufferTaskSeries;
 import nars.term.Term;
@@ -94,6 +95,23 @@ public class SensorBeliefTables extends BeliefTables {
         }
 
         return null;
+    }
+
+    @Override
+    public void match(Answer r) {
+        if (series.series.contains(r.time)) {
+            //try to allow the series to be the only authority in reporting
+            series.match(r);
+            if (r.tasks.isEmpty()) {
+                //if nothing was found, then search other tables
+                tables.each(t -> {
+                    if (t!=series)
+                        t.match(r);
+                });
+            }
+        } else {
+            super.match(r);
+        }
     }
 
     public FloatRange pri() {

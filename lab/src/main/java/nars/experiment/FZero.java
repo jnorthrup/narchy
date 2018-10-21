@@ -83,7 +83,8 @@ public class FZero extends NAgentX {
         AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p($.the("cae"), id), vision, nx, nx, (subX, subY) -> {
             return new float[]{/*cc.X, cc.Y*/};
         }, 8, this);
-        camAE.alpha(0.07f);
+        camAE.alpha(0.04f);
+        camAE.noise.set(0.05f);
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
         ActionConcept F = initUnipolarLinear(5f);
@@ -117,7 +118,7 @@ public class FZero extends NAgentX {
                 new FloatAveraged(0.5f, true));
         Signal dAngVel = senseNumberDifference($.funcImageLast("ang", id, $$("dTheta")), playerAngle).resolution(r);
 
-        int angles = 9;
+        int angles = 15;
         AbstractSensor ang = senseNumber(angle ->
                         //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         $.funcImageLast("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
@@ -125,7 +126,7 @@ public class FZero extends NAgentX {
                 angles,
                 DigitizedScalar.Needle
                 //DigitizedScalar.FuzzyNeedle
-        ).resolution(r);
+        ).resolution(0.25f);
 
 //        nar.goal($.sim($.func("ang", id, $.varDep(1)),$.func("ang", id, $.varDep(2)).neg()), Tense.ETERNAL);
 //        nar.onTask(t -> {
@@ -419,7 +420,7 @@ public class FZero extends NAgentX {
         boolean[] K = new boolean[65535];
         public double power;
         public int rank;
-        double rotVel = 0.06;
+        double rotVel = 0.12;
         float fwdVel = 1.5f;
         final double VIEWER_X = 159.5;
         final double VIEWER_Y = 32;

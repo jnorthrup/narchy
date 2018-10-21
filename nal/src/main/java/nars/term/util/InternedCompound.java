@@ -8,10 +8,10 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.compound.LighterCompound;
 import nars.term.compound.UnitCompound;
-import nars.term.util.builder.InterningTermBuilder;
 
 import java.util.function.Supplier;
 
+import static nars.term.util.builder.InterningTermBuilder.tmpKey;
 import static nars.time.Tense.DTERNAL;
 
 public final class InternedCompound extends ByteKey.ByteKeyExternal  {
@@ -30,9 +30,9 @@ public final class InternedCompound extends ByteKey.ByteKeyExternal  {
     }
 
     /** for look-up */
-    public static InternedCompound get(Term x, DynBytes tmp) {
+    public static InternedCompound get(Term x) {
 
-        tmp.clear();
+        DynBytes tmp = tmpKey();
 
         Op o = x.op();
         tmp.writeByte(o.id);
@@ -64,7 +64,7 @@ public final class InternedCompound extends ByteKey.ByteKeyExternal  {
     }
 
     public static InternedCompound get(Op o, int dt, Term... subs) {
-        DynBytes key = InterningTermBuilder.tmpKey();
+        DynBytes key = tmpKey();
 
         key.writeByte((o.id));
 

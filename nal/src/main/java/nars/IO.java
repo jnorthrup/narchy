@@ -314,16 +314,19 @@ public class IO {
         if (t instanceof Atomic) {
             return ((Atomic) t).bytes();
         } else {
-            DynBytes d = new RecycledDynBytes(termBytesEstimate(t) /* estimate */);
-            t.appendTo((ByteArrayDataOutput) d);
-            return d.arrayCopyClose();
+            try(RecycledDynBytes d = RecycledDynBytes.get()) { //termBytesEstimate(t) /* estimate */);
+                t.appendTo((ByteArrayDataOutput) d);
+                return d.arrayCopy();
+            }
         }
     }
+
+    /** warning: result may be RecycledDynBytes */
     public static DynBytes termToDynBytes(Term t) {
         if (t instanceof Atomic) {
             return new DynBytes(((Atomic) t).bytes()); //dont recycle
         } else {
-            DynBytes d = new RecycledDynBytes(termBytesEstimate(t) /* estimate */);
+            DynBytes d = RecycledDynBytes.get();
             t.appendTo((ByteArrayDataOutput) d);
             return d;
         }
@@ -341,7 +344,7 @@ public class IO {
 
     @Nullable
     public static byte[] taskToBytes(Task x) {
-        DynBytes dos = new RecycledDynBytes(termBytesEstimate(x));
+        DynBytes dos = new DynBytes(termBytesEstimate(x));
 
         byte[] b = taskToBytes(x, dos);
 

@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 /**
  * Simple object pool implemented by a Deque (ex: ArrayDeque)
@@ -33,6 +34,16 @@ public abstract class DequePool<X> implements Pool<X> {
                 //new ConcurrentLinkedDeque<>();
 
         capacity(initialCapacity);
+    }
+
+    public static <X> ThreadLocal<DequePool<X>> threadLocal(Supplier<X> o) {
+        //noinspection Convert2Diamond
+        return ThreadLocal.withInitial(() -> new DequePool<X>() {
+            @Override
+            public X create() {
+                return o.get();
+            }
+        });
     }
 
     public DequePool prepare(int preallocate) {
@@ -94,4 +105,6 @@ public abstract class DequePool<X> implements Pool<X> {
     public int size() {
         return data.size();
     }
+
+
 }

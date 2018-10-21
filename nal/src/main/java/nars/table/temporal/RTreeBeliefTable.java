@@ -35,8 +35,8 @@ import static nars.truth.TruthFunctions.w2cSafe;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
-    private static final float PRESENT_AND_FUTURE_BOOST_BELIEF = 5f;
-    private static final float PRESENT_AND_FUTURE_BOOST_GOAL = 10f;
+    private static final float PRESENT_AND_FUTURE_BOOST_BELIEF = 2f;
+    private static final float PRESENT_AND_FUTURE_BOOST_GOAL = 3f;
 
 
     private static final int MIN_TASKS_PER_LEAF = 2;
