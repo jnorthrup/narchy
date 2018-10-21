@@ -308,8 +308,7 @@ public interface NAct {
                     //0;  //deliberate off
                     Float.NaN; //default off
         });
-        x.resolution(1f);
-
+        //x.resolution(1f);
         {
             //resting state
             NAR n = nar();

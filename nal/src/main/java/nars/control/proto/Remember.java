@@ -13,7 +13,6 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.truth.dynamic.DynTruth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ListIterator;
@@ -124,7 +123,7 @@ public class Remember extends AbstractTask {
      * attempt to insert into belief table
      */
     protected void input(NAR n) {
-        if (!(input instanceof DynTruth.DynamicTruthTask))
+        //if (!(input instanceof DynTruth.DynamicTruthTask))
             ((TaskConcept) concept).add(this, n);
     }
 

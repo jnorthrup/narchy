@@ -1,17 +1,18 @@
 package jcog.math;
 
-/**
- * Created by me on 5/16/17.
- */
+
 public final class NumberException extends RuntimeException {
 
 
-    public NumberException(String message) {
+    private final Number value;
+
+    public NumberException(String message, Number value) {
         super(message);
+        this.value = value;
     }
 
-
-
-
-
+    @Override
+    public String toString() {
+        return super.toString() + ": " + value;
+    }
 }

@@ -18,6 +18,8 @@ import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.function.Predicate;
 
@@ -29,6 +31,8 @@ import static nars.time.Tense.TIMELESS;
  * ActionConcept which is driven by Goals that are interpreted into feedback Beliefs
  */
 public class AbstractGoalActionConcept extends ActionConcept {
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractGoalActionConcept.class);
 
     @Nullable private Curiosity curiosity = null;
 
@@ -140,17 +144,24 @@ public class AbstractGoalActionConcept extends ActionConcept {
         Truth curi = curiosity.curiosity(this);
         if (curi!=null) {
 
-            curi = curi.ditherFreq(resolution().floatValue()).dithered(n);
+            Truth curiDithered = curi.ditherFreq(resolution().floatValue()).dithered(n);
+            if (curiDithered != null) {
 
-            //pre-load curiosity for the future
-            long lastCuriosity = curiosityTable.series.end();
-            long curiStart = lastCuriosity!=TIMELESS ? Math.max(s, lastCuriosity +1) : now;
-            long curiEnd = Math.max(curiStart, e);
-            in.input(
-                    curiosity(curi /*goal*/, curiStart, curiEnd, n)
-            );
+                curi = curiDithered;
 
-            actionTruth = curi; //overrides
+                //pre-load curiosity for the future
+                long lastCuriosity = curiosityTable.series.end();
+                long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : now;
+                long curiEnd = Math.max(curiStart, e);
+                in.input(
+                        curiosity(curi /*goal*/, curiStart, curiEnd, n)
+                );
+
+                actionTruth = curi; //overrides
+            } /*else {
+                logger.info("curiosity too weak for NAR: {} confMin > {} ( from: {} )",
+                        n.confMin.floatValue(), curiDithered, curi);
+            }*/
         }
 
         //System.out.println(actionTruth + " " + actionDex);

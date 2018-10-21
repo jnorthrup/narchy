@@ -26,7 +26,7 @@ public final class PreciseTruth extends DiscreteTruth {
     }
 
     public static PreciseTruth byEvi(float freq, float evi) {
-        return byFreqConfEvi(freq, w2c(evi), evi);
+        return byFreqConfEvi(freq, w2cSafe(evi), evi);
     }
 
     /** use with caution, if you are calculating a precise evi and a dithered conf, they should correspond */

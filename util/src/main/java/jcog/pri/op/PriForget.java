@@ -28,13 +28,17 @@ public class PriForget<P extends Prioritizable> implements Consumer<P> {
         //            float eachMustForgetPct =
         //                        Util.unitize(totalQuell / s);
 
-        float eachMustForgetPct =
-                temperature * Util.unitize(pressure / mass);
-        //temperature * Util.unitize(pressure / (pressure + mass));
-        //Util.unitize(pressure * temperature / mass);
+        if (pressure > Float.MIN_NORMAL) {
 
-        if (eachMustForgetPct > cap * ScalarValue.EPSILON) {
-            return new PriForget<>(eachMustForgetPct);
+            float eachMustForgetPct =
+                    temperature * Util.unitize(pressure / mass);
+
+            //temperature * Util.unitize(pressure / (pressure + mass));
+            //Util.unitize(pressure * temperature / mass);
+
+            if (eachMustForgetPct > cap * ScalarValue.EPSILON) {
+                return new PriForget<>(eachMustForgetPct);
+            }
         }
         return null;
     }

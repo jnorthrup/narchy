@@ -670,25 +670,25 @@ public enum Util {
     @Contract("_ -> param1")
     public static float assertFinite(float x) throws NumberException {
         if (!Float.isFinite(x))
-            throw new NumberException("non-finite: " + x);
+            throw new NumberException("non-finite",x);
         return x;
     }
 
     public static double assertFinite(double x) throws NumberException {
         if (!Double.isFinite(x))
-            throw new NumberException("non-finite: " + x);
+            throw new NumberException("non-finite",x);
         return x;
     }
 
     public static float notNaN(float x) throws NumberException {
         if (x != x)
-            throw new NumberException("NaN");
+            throw new NumberException("NaN",x);
         return x;
     }
 
     public static double notNaN(double x) throws NumberException {
         if (x != x)
-            throw new NumberException("NaN");
+            throw new NumberException("NaN",x);
         return x;
     }
 
