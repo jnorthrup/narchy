@@ -27,6 +27,7 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -87,6 +88,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
         int s = subs();
         for (int i = 0; i < s; i++)
             t.accept(sub(i), i);
+    }
+    default <X> void forEachWith(BiConsumer<Term,X> t, X argConst) {
+        int s = subs();
+        for (int i = 0; i < s; i++)
+            t.accept(sub(i), argConst);
     }
 
     /**

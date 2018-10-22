@@ -4,7 +4,6 @@ import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.data.byt.RecycledDynBytes;
 import jcog.memoize.Memoizers;
-import nars.IO;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -95,10 +94,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         }
         if (internableRoot(xo, x.dt())) {
             HijackTermCache c = terms[xo.id];
-            InternedCompound xx = InternedCompound.get(x);
-            Term y = c.apply(xx);
-            //Term y = c.getIfPresent(InternedCompound.get(x, tmp));
-
+            Term y = c.apply(InternedCompound.get(x));
             if (y != null)
                 return y.negIf(negate);
         }

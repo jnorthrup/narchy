@@ -30,7 +30,8 @@ public abstract class AtomicPri implements ScalarValue {
 
     private final static int iNaN = floatToIntBits(Float.NaN);
 
-    private volatile int pri;
+    /** initialized to zero */
+    private volatile int pri = floatToIntBits(0);
 
     @Override
     public String toString() {

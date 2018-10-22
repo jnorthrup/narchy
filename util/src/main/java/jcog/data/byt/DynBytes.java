@@ -214,8 +214,8 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         return Arrays.copyOf(b, newLen);
     }
 
-    @Override
-    public final byte[] arrayCompactDirect() {
+    /** isnt this the same as just compact()? */
+    @Override @Deprecated public final byte[] arrayCompactDirect() {
         compact();
         return arrayDirect();
     }

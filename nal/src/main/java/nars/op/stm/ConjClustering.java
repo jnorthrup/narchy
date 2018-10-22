@@ -20,7 +20,6 @@ import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.TruthFunctions;
-import nars.truth.polation.TruthIntegration;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
@@ -127,7 +126,8 @@ public class ConjClustering extends Causable {
     }
 
     public float pri(Task t) {
-        return t.priElseZero() * TruthIntegration.evi(t);
+        return t.priElseZero();
+                //* TruthIntegration.evi(t);
                 // * t.originality()l
 
     }
@@ -143,6 +143,7 @@ public class ConjClustering extends Causable {
         this.confMin = nar.confMin.floatValue();
         this.volMax = Math.round(nar.termVolumeMax.intValue() * termVolumeMaxFactor);
 
+        //TODO use real 'dt' timing
         data.learn(forgetRate(), 1);
 
         conjoiner.kontinue = kontinue;
@@ -296,14 +297,14 @@ public class ConjClustering extends Causable {
 
                                 int v = cp.getOne().volume();
                                 float cmplFactor =
-                                        ((float) v) / (v + volMax);
+                                        Util.unitize(((float) v) / (v + volMax));
 
-                                float freqFactor =
-                                        t.freq();
-                                float confFactor =
-                                        (conf / (conf + confMax));
+//                                float freqFactor =
+//                                        t.freq();
+//                                float confFactor =
+//                                        (conf / (conf + confMax));
 
-                                m.pri(Prioritizable.fund(Util.unitize((priMin*uu.length) * freqFactor * cmplFactor * confFactor), false, uu));
+                                m.pri(Prioritizable.fund(Util.unitize((priMin*uu.length) * cmplFactor /* * freqFactor  * confFactor*/ ), false, uu));
 
                                 if (popConjoinedTasks) {
                                     for (Task aa : actualTasks)

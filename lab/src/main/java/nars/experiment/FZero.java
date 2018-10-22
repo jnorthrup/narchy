@@ -420,7 +420,7 @@ public class FZero extends NAgentX {
         boolean[] K = new boolean[65535];
         public double power;
         public int rank;
-        double rotVel = 0.12;
+        double rotVel = 0.08;
         float fwdVel = 1.5f;
         final double VIEWER_X = 159.5;
         final double VIEWER_Y = 32;

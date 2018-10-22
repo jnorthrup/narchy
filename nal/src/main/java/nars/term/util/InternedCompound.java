@@ -32,7 +32,7 @@ public final class InternedCompound extends ByteKey.ByteKeyExternal  {
     /** for look-up */
     public static InternedCompound get(Term x) {
 
-        DynBytes tmp = tmpKey();
+        ByteArrayDataOutput tmp = tmpKey();
 
         Op o = x.op();
         tmp.writeByte(o.id);
@@ -44,19 +44,22 @@ public final class InternedCompound extends ByteKey.ByteKeyExternal  {
             assert(dt == DTERNAL);
         }
 
-        if (x instanceof LighterCompound || x instanceof UnitCompound) {
+        if (x instanceof UnitCompound) {
+            tmp.writeByte(1);
+            x.sub(0).appendTo(tmp);
+        } else if (x instanceof LighterCompound) {
             //HACK
             int s = x.subs();
             tmp.writeByte(s);
             for (int i = 0; i < s; i++)
-                x.sub(i).appendTo((ByteArrayDataOutput) tmp);
+                x.sub(i).appendTo(tmp);
         } else {
             Subterms xx = x.subterms();
             tmp.writeByte(xx.subs());
-            xx.forEach(s -> s.appendTo((ByteArrayDataOutput) tmp));
+            xx.forEachWith(Term::appendTo, tmp);
         }
 
-        return new InternedCompound(tmp, o, dt, x::arrayShared);
+        return new InternedCompound((DynBytes) tmp, o, dt, x::arrayShared);
     }
 
     public static InternedCompound get(Op o, Term... subs) {

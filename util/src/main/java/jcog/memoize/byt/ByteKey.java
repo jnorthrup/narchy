@@ -101,8 +101,9 @@ abstract public class ByteKey extends UnitPri {
         }
 
         protected <Y> PriProxy<?,Y> internal(Y result, float pri) {
-            byte[] b = //key instanceof RecycledDynBytes ? key.arrayCopy() : key.arrayCopy();
+            byte[] b =
                     key.arrayCopy();
+                    //key instanceof RecycledDynBytes ? key.arrayCopy() : key.compact();
 
             return new ByteKeyInternal<>(b, hash, result, pri);
         }

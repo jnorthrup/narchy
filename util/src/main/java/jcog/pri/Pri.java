@@ -22,7 +22,8 @@ abstract public class Pri extends AtomicPri implements Prioritizable {
      * default: pri=0
      */
     public Pri() {
-        pri(0);
+        super();
+        //no further initialization required;  the initial value is 0.0f
     }
 
     /**
@@ -35,7 +36,4 @@ abstract public class Pri extends AtomicPri implements Prioritizable {
         return getBudgetString();
     }
 
-//    public float v(float x) {
-//        return x;
-//    }
 }
