@@ -91,6 +91,10 @@ class TermLinkTest {
         testTemplates("(2-->(0&1))", y);
         testTemplates("((0&1)-->2)", y);
     }
+    @Test
+    void testEmbeddedIntersection() {
+        testTemplates("(2-->(x<->(0|1)))", "[((0|1)<->x), 2]");
+    }
 
     @Test
     void testTemplatesWithInt2() {

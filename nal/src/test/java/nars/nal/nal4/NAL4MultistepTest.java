@@ -20,13 +20,13 @@ public class NAL4MultistepTest extends NALTest {
 
     @Test
     void nal4_everyday_reasoning() {
-        int time = 500;
+        int time = 1000;
 
 
         TestNAR tester = test;
 
         tester.nar.freqResolution.set(0.05f);
-        tester.confTolerance(0.2f);
+        tester.confTolerance(0.4f);
 
 
         tester.input("({sky} --> [blue]).");

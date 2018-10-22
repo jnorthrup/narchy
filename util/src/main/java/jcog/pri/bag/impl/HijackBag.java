@@ -9,8 +9,8 @@ import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 import jcog.decide.MutableRoulette;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
-import jcog.pri.bag.util.SpinMutex;
-import jcog.pri.bag.util.Treadmill2;
+import jcog.mutex.SpinMutex;
+import jcog.mutex.TreadmillPair64;
 import jcog.random.SplitMix64Random;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
@@ -48,7 +48,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     private static final AtomicReferenceFieldUpdater<HijackBag, AtomicReferenceArray> MAP =
             AtomicReferenceFieldUpdater.newUpdater(HijackBag.class, AtomicReferenceArray.class, "map");
 
-    private static final SpinMutex mutex = new Treadmill2();
+    private static final SpinMutex mutex = new TreadmillPair64();
     private static final AtomicInteger serial = new AtomicInteger();
 
     /**

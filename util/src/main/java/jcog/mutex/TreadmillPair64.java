@@ -1,21 +1,21 @@
-package jcog.pri.bag.util;
+package jcog.mutex;
 
 
 /** contains 2 sub-treadmills
  * TODO parameterize the bit which it checks adjustable so these can be chained arbitrarily */
-public final class Treadmill2 implements SpinMutex {
+public final class TreadmillPair64 implements SpinMutex {
 
-    private final SpinMutex a;
-    private final SpinMutex b;
+    private final SpinMutex a, b;
     private final int cHalf;
 
-    public Treadmill2() {
+    public TreadmillPair64() {
         this(Runtime.getRuntime().availableProcessors());
     }
-    private Treadmill2(int concurrency) {
+
+    private TreadmillPair64(int concurrency) {
         cHalf = Math.max(1, concurrency/2);
-        a = new Treadmill( cHalf );
-        b = new Treadmill( cHalf );
+        a = new Treadmill64( cHalf );
+        b = new Treadmill64( cHalf );
     }
 
 

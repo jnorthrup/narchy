@@ -1,4 +1,4 @@
-package jcog.pri.bag.util;
+package jcog.mutex;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;

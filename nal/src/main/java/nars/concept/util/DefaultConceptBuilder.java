@@ -61,11 +61,13 @@ public class DefaultConceptBuilder extends ConceptBuilder {
         int v = t.volume();
 
 
+        Map shared = newBagMap(v);
+        
         Bag<Term, PriReference<Term>> termbag =
-                new CurveBag<>(Param.termlinkMerge, newBagMap(v), 0);
+                new CurveBag<>(Param.termlinkMerge, shared, 0);
 
         ArrayBag<nars.link.TaskLink,nars.link.TaskLink> taskbag =
-                new TaskLinkCurveBag(Param.tasklinkMerge, newBagMap(v), 0);
+                new TaskLinkCurveBag(Param.tasklinkMerge, shared, 0);
 
         return new Bag[]{termbag, taskbag};
 

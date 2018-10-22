@@ -466,7 +466,7 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    //@AllowOverlap
+
     Desire() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -500,13 +500,14 @@ public enum NALTruth implements TruthFunc {
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions2.desire(T, B, minConf, false);
         }
-    },
-    @SinglePremise @AllowOverlap Curiosity() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return $.t(m.random().nextFloat(), m.confMin.floatValue()*2);
-        }
-    },
+    }
+
+//    @SinglePremise @AllowOverlap Curiosity() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+//            return $.t(m.random().nextFloat(), m.confMin.floatValue()*2);
+//        }
+//    },
 
     ;
 
