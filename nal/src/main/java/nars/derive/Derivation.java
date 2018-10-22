@@ -211,6 +211,7 @@ public class Derivation extends PreDerivation {
                 , null, Param.UnificationStackMax
         );
 
+        this.symmetric = true;
         this.anon = new Anon.AnonWithVarShift(ANON_INITIAL_CAPACITY);
     }
 

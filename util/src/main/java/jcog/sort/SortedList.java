@@ -49,42 +49,35 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
 
 
         int s = size;
-        if (s == 0) {
-            super.addWithoutResizeCheck(o);
-            return true;
-        }
+        if (s > 0) {
 
+            int high = s - 1;
 
-        int high = s - 1;
+            while (low <= high) {
+                int mid = (low + high) / 2;
+                E midVal = get(mid);
 
+                int cmp = midVal.compareTo(o);
 
-        while (low <= high) {
-            int mid = (low + high) / 2;
-            E midVal = get(mid);
-
-            int cmp = midVal.compareTo(o);
-
-            if (cmp < 0) {
-                low = mid + 1;
-            } else if (cmp > 0) {
-                high = mid - 1;
-            } else {
-
-
-                orderChangedOrDeduplicated = true;
-                return false;
-
-
+                if (cmp < 0) {
+                    low = mid + 1;
+                } else if (cmp > 0) {
+                    high = mid - 1;
+                } else {
+                    orderChangedOrDeduplicated = true;
+                    return false;
+                }
             }
+
+            if (low != s) {
+                orderChangedOrDeduplicated = true;
+                super.add(low, o);
+                return true;
+            }
+
         }
 
-        if (low == s) {
-            super.addWithoutResizeCheck(o);
-        } else {
-            orderChangedOrDeduplicated = true;
-            super.add(low, o);
-        }
-
+        super.addWithoutResizeCheck(o);
         return true;
     }
 
