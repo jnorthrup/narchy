@@ -210,6 +210,7 @@ public abstract class Unify extends Versioning implements Subst {
     @Override
     public Unify clear() {
         super.clear();
+        termutes.clear();
         return this;
     }
 

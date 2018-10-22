@@ -67,8 +67,11 @@ public class PatternIndex extends MapConceptIndex {
 
     @SuppressWarnings("Java8MapApi")
     @Override
-    public Termed get(/*@NotNull*/ Term x, boolean createIfMissing) {
+    public Term get(/*@NotNull*/ Term x, boolean createIfMissing) {
         //return x.term();
+        if (x.op()==NEG)
+            return get(x.unneg(), createIfMissing).neg();
+
         if (!x.op().conceptualizable)
             return x;
 
@@ -80,7 +83,7 @@ public class PatternIndex extends MapConceptIndex {
                 Termed xx = nar.concepts.get(x, false);
                 if (xx != null) {
                     concepts.put(xx.term(), xx);
-                    return xx;
+                    return (Term)xx;
                 }
             }
 
@@ -88,7 +91,7 @@ public class PatternIndex extends MapConceptIndex {
             concepts.put(yy, yy);
             return yy;
         } else {
-            return y;
+            return (Term)y;
         }
     }
 

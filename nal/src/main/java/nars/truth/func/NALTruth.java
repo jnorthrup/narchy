@@ -140,16 +140,7 @@ public enum NALTruth implements TruthFunc {
 
 
 
-    /**
-     * maintains input frequency but reduces confidence
-     */
-    @AllowOverlap @SinglePremise BeliefStructuralReduction() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            if (B == null) return null;
-            return BeliefStructuralDeduction.apply(B, null, m, minConf);
-        }
-    },
+
 
 
 //    /**
@@ -428,12 +419,30 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    @AllowOverlap
+    /**
+     * maintains input frequency but reduces confidence
+     */
+    BeliefStructuralReduction() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            if (B == null) return null;
+            return StructuralReduction.apply(B, null, m, minConf);
+        }
+    },
     BeliefStructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             if (B == null) return null;
             return StructuralDeduction.apply(B, null, m, minConf);
+        }
+    },
+
+    BeliefStructuralDifference() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            if (B == null) return null;
+            Truth res = BeliefStructuralDeduction.apply(T, B, m, minConf);
+            return (res != null) ? res.neg() : null;
         }
     },
 
@@ -446,25 +455,15 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    @AllowOverlap
-    BeliefStructuralAbduction() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+//    BeliefStructuralAbduction() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+//
+//            return Abduction.apply($.t(1f, confDefault(m)), B, m, minConf);
+//        }
+//    },
 
-            return Abduction.apply($.t(1f, confDefault(m)), B, m, minConf);
-        }
-    },
 
-
-    @AllowOverlap
-    BeliefStructuralDifference() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            if (B == null) return null;
-            Truth res = BeliefStructuralDeduction.apply(T, B, m, minConf);
-            return (res != null) ? res.neg() : null;
-        }
-    },
 
 
     Desire() {

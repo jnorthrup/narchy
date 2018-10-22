@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.CurveBag;
+import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.$;
@@ -100,11 +100,11 @@ public class BagLab {
         int capacity = 512;
         BagLab bagLab;
         bagLab = new BagLab(
-                new CurveBag(
+                new PLinkArrayBag(capacity,
                         //plus,
                         //replace,
                         PriMerge.avg,
-                        new HashMap(), capacity)
+                        new HashMap())
 
                 //new DefaultHijackBag<>(avg,capacity,4)
                 

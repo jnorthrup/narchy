@@ -13,11 +13,9 @@ import nars.derive.Derivation;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.term.util.Conj;
-import nars.term.util.Image;
 import nars.time.Event;
 import nars.time.Tense;
 import nars.time.TimeGraph;
@@ -32,8 +30,10 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
-import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -88,15 +88,14 @@ public class Occurrify extends TimeGraph {
      * temporary set for filtering duplicates
      */
     private final Set<Event> solutionSeen = new UnifiedSet(Param.TEMPORAL_SOLVER_ITERATIONS * 2, 0.99f);
-    private final Set<Term> expandedUntransforms = new UnifiedSet<>();
-    private final Set<Term> expanded = new UnifiedSet<>();
+
 
     private final Derivation d;
 
 
     private transient Term curTaskTerm;
     private transient Term curBeliefTerm;
-    private transient Map<Term, Term> prevUntransform = Map.of();
+
     private transient boolean single;
     private boolean decomposeEvents;
     private long[] occurrenceQuad = new long[4];
@@ -197,9 +196,9 @@ public class Occurrify extends TimeGraph {
         solutionSeen.clear();
 
 
-        Term taskTerm = d.taskTerm;
+        Term taskTerm = d.reResolve(d.taskTerm);
         final boolean single = d.concSingle;
-        Term beliefTerm = d.beliefTerm;
+        Term beliefTerm = d.reResolve(d.beliefTerm);
 
         long taskStart = taskOccurrence ? d.taskStart : TIMELESS,
                 taskEnd = taskOccurrence ? d.taskEnd : TIMELESS,
@@ -236,15 +235,7 @@ public class Occurrify extends TimeGraph {
                         Objects.equals(beliefTerm, curBeliefTerm) &&
                         Objects.equals(autoNeg, autoNegNext);
 
-        //determine re-usability:
-        Map<Term, Term> nextUntransform = d.untransform;
 
-        if (reUse) {
-            if (expandedUntransforms.isEmpty())
-                prevUntransform = Map.of(); //if expanded was empty then the previous usage's untransforms had no effect, so pretend like they are empty in case they are empty this time then we can re-use the graph
-
-            reUse &= nextUntransform.equals(prevUntransform);
-        }
 
 
         if (!reUse) {
@@ -262,8 +253,6 @@ public class Occurrify extends TimeGraph {
 
             this.single = single;
 
-            expanded.clear();
-            expandedUntransforms.clear();
 
             autoNeg.clear();
             autoNegNext.forEach(x -> autoNeg.add(x.unneg()));
@@ -282,18 +271,6 @@ public class Occurrify extends TimeGraph {
                     know(beliefTerm, beliefStart, beliefEnd);
                 else
                     know(beliefTerm);
-            }
-
-            if (!nextUntransform.isEmpty()) {
-                this.prevUntransform = Map.copyOf(nextUntransform);
-
-                nextUntransform.forEach((x, y) -> {
-                    if (!y.isAny(Op.BOOL.bit | Op.INT.bit)) {
-                        link(shadow(x), 0, shadow(y)); //weak
-                    }
-                });
-            } else {
-                this.prevUntransform = Map.of();
             }
 
         }
@@ -330,30 +307,6 @@ public class Occurrify extends TimeGraph {
 
         pp.clear();
         nn.clear();
-    }
-
-
-    @Override
-    protected void onNewTerm(Term t) {
-        if (!expanded.add(t))
-            return;
-
-        super.onNewTerm(t);
-
-        Event tt = shadow(t);
-
-        Term u = d.untransform(t);
-        if (u != t && u != null && !(u instanceof Bool) && !u.equals(t)) {
-            expandedUntransforms.add(u);
-            expanded.add(u);
-            link(tt, 0, shadow(u));
-        }
-        Term v = Image.imageNormalize(t);
-        if (v != t && !v.equals(t)) {
-            expanded.add(v);
-            link(tt, 0, shadow(v));
-        }
-
     }
 
 

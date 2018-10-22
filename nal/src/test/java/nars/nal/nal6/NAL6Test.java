@@ -302,6 +302,7 @@ public class NAL6Test extends NALTest {
     void variable_elimination6simplerReverse() {
 
 
+        test.nar.termVolumeMax.set(11);
         test
                 .believe("(bird:$x ==> (&&, flyer:$x, chirping:$x, food:worms))")
                 .believe("flyer:Tweety")
@@ -982,7 +983,7 @@ public class NAL6Test extends NALTest {
 
 
     @Test
-    void testRawProductDifference() {
+    void inductRawProductDifference() {
         test
                 .believe("(x,0)", 1f, 0.9f)
                 .believe("(x,1)", 0.6f, 0.9f)
@@ -990,11 +991,31 @@ public class NAL6Test extends NALTest {
                 .mustBelieve(cycles, "((x,0)~(x,1))", 0.4f, 0.81f, ETERNAL);
     }
     @Test
-    void testRawProductDifference2() {
+    void inductRawProductDifference2() {
         test
                 .believe("(x,0)", 1f, 0.9f)
                 .believe("(x,1)", 0.5f, 0.9f)
                 .mustBelieve(cycles, "((x,1)~(x,0))", 0.0f, 0.81f, ETERNAL)
                 .mustBelieve(cycles, "((x,0)~(x,1))", 0.5f, 0.81f, ETERNAL);
+    }
+
+    @Test void testHypothesizeSubconditionIdentityPre() {
+        test
+                .believe("((f(x) && f($1)) ==> g($1))", 1f, 0.9f)
+                .mustBelieve(cycles, "(f(x) ==> g(x))", 1f, 0.81f)
+                ;
+    }
+    @Test void testHypothesizeSubconditionIdentityPost() {
+        test
+                .believe("(g($1) ==> (f(x) && f($1)))", 1f, 0.9f)
+                .mustBelieve(cycles, "(g(x) ==> f(x))", 1f, 0.81f)
+        ;
+    }
+
+    @Test void testHypothesizeSubconditionIdentityConj() {
+        test
+                .believe("(&&,f(x),f(#1),g(#1))", 1f, 0.9f)
+                .mustBelieve(cycles, "(&&,f(x),g(x))", 1f, 0.81f)
+        ;
     }
 }

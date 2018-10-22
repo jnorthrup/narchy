@@ -126,7 +126,7 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
-                .attention(() -> new Attention(256))
+                .attention(() -> new Attention(512))
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(

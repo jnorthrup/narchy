@@ -200,10 +200,10 @@ public class ConceptGraph2D extends Graph2D<Concept> {
             if (n==null)
                 return;
 
-            Term sourceTerm = n.term();
+//            Term sourceTerm = n.term();
             n.tasklinks().forEach(l -> {
 
-                Term targetTerm = l.term();
+                Term targetTerm = l.get().term;
 //                if (targetTerm.equals(sourceTerm.term()))
 //                    return; //ignore
 

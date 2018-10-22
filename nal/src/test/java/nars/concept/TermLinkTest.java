@@ -98,10 +98,7 @@ class TermLinkTest {
 
     @Test
     void testTemplatesWithInt2() {
-        testTemplates("num((0))",
-                
-                "[((0)), num]"
-        );
+        testTemplates("num((0))", "[((0)), num]");
     }
 
     @Test

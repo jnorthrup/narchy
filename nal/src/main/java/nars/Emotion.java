@@ -51,7 +51,6 @@ public class Emotion implements Meter {
 
     public final Counter deriveTask = new FastCounter("derive task");
     public final Counter deriveTermify = new FastCounter("derive termify");
-    public final Counter deriveEval = new FastCounter("derive eval");
     public final ExplainedCounter deriveFailTemporal = new ExplainedCounter("derive fail temporal");
     public final ExplainedCounter deriveFailEval = new ExplainedCounter("derive fail eval");
     public final Counter deriveFailVolLimit = new FastCounter("derive fail vol limit");

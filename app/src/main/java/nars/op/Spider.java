@@ -7,7 +7,7 @@ import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
-import jcog.pri.bag.impl.CurveBag;
+import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.NAR;
@@ -47,7 +47,7 @@ public class Spider extends Causable {
     //final SplitMix64Random rng = new SplitMix64Random(1);
 
     final Random rng = new XoRoShiRo128PlusRandom(1);
-    final ArrayBag<nars.op.Spider.SpiderAction,nars.op.Spider.SpiderAction> actions = new CurveBag<>(PriMerge.replace, new HashMap());
+    final ArrayBag<nars.op.Spider.SpiderAction,nars.op.Spider.SpiderAction> actions = new PLinkArrayBag(0, PriMerge.replace, new HashMap());
     /**
      * leaky novelty buffer
      */
@@ -271,7 +271,7 @@ public class Spider extends Causable {
         }
 
         protected Term term(Object x) {
-            return ((TaskLink) x).term();
+            return ((TaskLink) x).get().term;
         }
 
         protected Sampler bag(Concept c) {

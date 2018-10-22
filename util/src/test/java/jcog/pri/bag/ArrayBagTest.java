@@ -5,7 +5,6 @@ import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.UnitPri;
 import jcog.pri.bag.impl.ArrayBag;
-import jcog.pri.bag.impl.CurveBag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import org.jetbrains.annotations.NotNull;
@@ -24,10 +23,7 @@ class ArrayBagTest {
 
 
     private ArrayBag<PLink<String>, PLink<String>> curveBag(int n, PriMerge mergeFunction) {
-        return new CurveBag<>(mergeFunction, new HashMap<>(n),
-                
-                
-                n);
+        return new PLinkArrayBag(n, mergeFunction, new HashMap<>(n));
     }
 
     @Test
@@ -136,7 +132,7 @@ class ArrayBagTest {
     @Test
     void testInsertOrBoostDoesntCauseSort() {
         final int[] sorts = {0};
-        @NotNull ArrayBag<PLink<String>, PLink<String>> x = new CurveBag(PriMerge.plus, new HashMap<>(), 4) {
+        @NotNull ArrayBag<PLink<String>, PLink<String>> x = new PLinkArrayBag(4, PriMerge.plus, new HashMap<>()) {
             @Override
             protected void sort(int from, int to) {
                 sorts[0]++;

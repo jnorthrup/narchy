@@ -99,11 +99,11 @@ public class Derivation extends PreDerivation {
         }
     };
     public NAR nar;
-//    private final Functor.LambdaFunctor termlinkRandomProxy;
+
     /**
-     * temporary un-transform map
+     * second layer additional substitutions
      */
-    public final Map<Term, Term> untransform = new UnifiedMap<>() {
+    public final Map<Term, Term> retranform = new UnifiedMap<>() {
         @Override
         public Term put(Term key, Term value) {
             if (key.equals(value))
@@ -131,7 +131,7 @@ public class Derivation extends PreDerivation {
             if (y != null && !(y instanceof Bool)) {
 
 
-                untransform.put(y, input);
+                retranform.put(y, input);
 
 
             }
@@ -479,12 +479,6 @@ public class Derivation extends PreDerivation {
 
         forEachMatch.test(this);
 
-
-
-        /* finally {
-            revert(now);
-        }*/
-
     }
 
 
@@ -538,6 +532,7 @@ public class Derivation extends PreDerivation {
 
         }
 
+
         this.deriver = deri;
 
         return this;
@@ -586,17 +581,15 @@ public class Derivation extends PreDerivation {
     public Derivation clear() {
         anon.clear();
         taskUniques = 0;
-//        premiseBuffer.clear();
-        untransform.clear();
-        termutes.clear();
         time = ETERNAL;
         super.clear();
         return this;
     }
 
 
-    public Term untransform(Term t) {
-        return t.replace(untransform);
+    /** resolve a term (ex: task term or belief term) with the result of 2nd-layer substitutions */
+    public Term reResolve(Term t) {
+        return /*Image.imageNormalize*/(t.replace(retranform));
     }
 
     public final Task add(Task t) {

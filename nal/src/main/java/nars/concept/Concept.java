@@ -31,6 +31,7 @@ import nars.link.TermLinker;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.question.QuestionTable;
+import nars.task.Tasklike;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.util.SoftException;
@@ -45,7 +46,7 @@ import static nars.Op.*;
 public interface Concept extends Termed, MetaMap {
 //    Concept[] EmptyArray = new Concept[0];
 
-    Bag<?,TaskLink> tasklinks();
+    Bag<Tasklike,TaskLink> tasklinks();
 
     Bag<Term,PriReference<Term>> termlinks();
 

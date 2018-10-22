@@ -3,6 +3,7 @@ package nars.link;
 import jcog.data.NumberX;
 import jcog.pri.bag.Bag;
 import nars.concept.Concept;
+import nars.task.Tasklike;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class Tasklinks {
                 //pri; //no division
                 pri/nTargets; //no division
 
-        TaskLink.Tasklike tlSeed = tasklink.id;
+        Tasklike tlSeed = tasklink.id;
 
         final float headRoom = 1f - pEach;
 

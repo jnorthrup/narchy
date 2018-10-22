@@ -18,7 +18,7 @@ public class SubUnify extends Unify {
 
 
     @Nullable
-    private Term result;
+    protected Term result;
 
 
     public SubUnify(Random rng) {

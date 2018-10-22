@@ -54,11 +54,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     }
 
     protected ArrayBag(@Deprecated int cap, PriMerge mergeFunction, Map<X, Y> map) {
-        super(new SortedArray(), map);
+        super(new SortedArray<>(), map);
         this.mergeFunction = mergeFunction;
         setCapacity(cap);
-
-
     }
 
     /**
@@ -614,11 +612,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         return removed;
     }
 
-    @Nullable
-    private Y tryRemoveFromMap(Y x) {
-        Y removed = map.remove(key(x));
-        return removed;
-    }
+//    @Nullable
+//    private Y tryRemoveFromMap(Y x) {
+//        Y removed = map.remove(key(x));
+//        return removed;
+//    }
 
     @Override
     public Bag<X, Y> commit(Consumer<Y> update) {

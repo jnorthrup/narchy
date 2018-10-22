@@ -11,6 +11,7 @@ import nars.link.TaskLink;
 import nars.link.TermLinker;
 import nars.table.BeliefTable;
 import nars.table.question.QuestionTable;
+import nars.task.Tasklike;
 import nars.term.Term;
 import nars.term.Termed;
 
@@ -23,7 +24,7 @@ import java.util.stream.Stream;
 public class NodeConcept implements Concept {
 
     public final Term term;
-    private final Bag<?, TaskLink> taskLinks;
+    private final Bag<Tasklike, TaskLink> taskLinks;
     private final Bag<Term, PriReference<Term>> termLinks;
 
     private final TermLinker linker;
@@ -88,7 +89,7 @@ public class NodeConcept implements Concept {
 
 
     @Override
-    public Bag<?, TaskLink> tasklinks() {
+    public Bag<Tasklike, TaskLink> tasklinks() {
         return taskLinks;
     }
 

@@ -158,16 +158,19 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
             this.random = parent.random;
             this.strict = strict;
             this.varBits = op;
+            this.result = null;
             clear();
             return this;
         }
+
 
         @Override
         protected boolean tryMatch(Term result) {
             if (!strict || !result.equals(transformed)) {
 
 
-                this.xy.forEach(parent.untransform::put);
+                this.xy.forEach(parent.retranform::put);
+                //parent.untransform.put(result, transformed);
 
 
                 return true;

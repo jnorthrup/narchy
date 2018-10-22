@@ -67,3 +67,15 @@
     //((A..+) <-> Z), (X <-> Y), task("?") |- ((A..+) <-> substitute((A..+),X,Y,strict)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
         //this one needs reviewed, it might need to be subIfUnified, and other problems
 
+
+
+//Hypothesize Subcondition Identity
+//      hypothesize that two subconditions which unify actually refer to the same term,
+//      eliminating the variable and simplifying the statement
+
+//      ex: ((f(x) && f($1)) ==> g($1))  |-   (f(x) ==> g(x))
+
+    ((&&,X,Y,A..*) ==> Z), X, neq(X,Y) |- subIfUnifiesAny(((&&,Y,A..*) ==> Z),X,Y,strict), (Belief:StructuralReduction)
+    (Z ==> (&&,X,Y,A..*)), X, neq(X,Y) |- subIfUnifiesAny((Z ==> (&&,Y,A..*)),X,Y,strict), (Belief:StructuralReduction)
+
+    (&&,X,Y,A..*), X, neq(X,Y) |- subIfUnifiesAny((&&,Y,A..*),X,Y,strict), (Belief:StructuralDeduction)
