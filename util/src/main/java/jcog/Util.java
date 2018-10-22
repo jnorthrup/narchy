@@ -595,7 +595,14 @@ public enum Util {
      * targetFactor=0:   full current
      */
     public static float lerp(float x, float min, float max) {
-        return min + (max - min) * unitize(x);
+        return min + (max - min) *
+                //unitize(x);
+                clampSafe(x, 0, 1);
+    }
+
+    /** no checking of x */
+    public static float lerpSafe(float x, float min, float max) {
+        return min + (max - min) * x;
     }
 
     public static double lerp(double x, double min, double max) {
@@ -1398,7 +1405,7 @@ public enum Util {
      */
     public static int unitize(int x, int min, int max) {
         if (x < min) x = min;
-        else if (x > --max) x = max;
+        else if (x > max) x = max;
         return x;
     }
 
@@ -1491,6 +1498,10 @@ public enum Util {
         assertFinite(min);
         assertFinite(max);
         assert (min <= max);
+        return clampSafe(f, min, max);
+    }
+
+    public static double clampSafe(double f, double min, double max) {
         return Math.max(Math.min(f, max), min);
     }
 
@@ -2225,11 +2236,11 @@ public enum Util {
         return (float) (a * Math.sqrt(1f - x0 * x0 * 4) + b);
     }
 
-    /* domain: [0..1], range: [0..1] */
-    public static float smoothDischarge(float x) {
-        x = unitize(x);
-        return 2 * (x - 1) / (x - 2);
-    }
+//    /* domain: [0..1], range: [0..1] */
+//    public static float smoothDischarge(float x) {
+//        x = unitize(x);
+//        return 2 * (x - 1) / (x - 2);
+//    }
 
     /**
      * Get the location from which the supplied object's class was loaded.

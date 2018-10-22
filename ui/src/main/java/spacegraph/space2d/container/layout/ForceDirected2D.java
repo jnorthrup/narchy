@@ -85,6 +85,8 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect> {
 
         float maxSpeedPerIter = needSpeedLimit.floatValue() / iterations;
 
+
+        final v2 aCenter = new v2();
         for (int ii = 0; ii < iterations; ii++) {
 
             for (int x = 0; x < n; x++) {
@@ -93,7 +95,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect> {
                 attract(a, attractSpeed);
 
                 final float ar = a.radius();
-                final v2 aCenter = new v2(a.cx(), a.cy());
+                aCenter.set(a.cx(), a.cy());
 
                 for (int y = x + 1; y < n; y++)
                     repel(a, aCenter, ar, nodes.get(y), repelSpeed);
@@ -127,7 +129,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect> {
         ConcurrentFastIteratingHashMap<X, Graph2D.EdgeVis<X>> read = from.outs;
         //int neighbors = read.size();
 
-        v2 total = new v2();
+        v2 total = new v2(), delta = new v2();
         read.forEachValue(edge -> {
             if (edge == null)
                 return; //wtf
@@ -140,8 +142,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect> {
             if (to == null)
                 return;
 
-            v2 delta = new v2(to.cx(), to.cy());
-            delta.subbed(px, py);
+            delta.set(to.cx() - px, to.cy() - py);
 
             float scale = fromRad + to.radius();
             float len = delta.normalize();

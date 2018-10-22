@@ -81,7 +81,9 @@ public class RectFloat implements HyperRegion<Float2D>, Comparable<RectFloat> {
         return RectFloat.XYWH(cx, cy, wh, wh);
     }
 
-
+    public static RectFloat WH(float w, float h) {
+        return XYWH(0, 0, w, h);
+    }
 
     public RectFloat move(double dx, double dy) {
         return move((float) dx, (float) dy);

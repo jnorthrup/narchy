@@ -284,16 +284,24 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         }
     }
 
+
+    /** raw selection by index, with x^2 bias towards higher pri indexed items */
+    private int sampleNextLinear(Random rng, int size) {
+        float targetIndex = rng.nextFloat();
+
+        return Util.bin(targetIndex*targetIndex, size);
+    }
+
     /**
      * samples the distribution with the assumption that it is flat
      */
-    private int sampleNextLinear(Random rng, int size) {
+    private int sampleNextLinearNormalized(Random rng, int size) {
         float min = this.priMin(), max = this.priMax();
 
         float targetPercentile = rng.nextFloat();
 
         float indexNorm =
-                lerp((max - min), targetPercentile /* flat */, (targetPercentile * targetPercentile) /* curved */);
+                Util.lerpSafe((max - min), targetPercentile /* flat */, (targetPercentile * targetPercentile) /* curved */);
 
         return Util.bin(indexNorm, size);
     }

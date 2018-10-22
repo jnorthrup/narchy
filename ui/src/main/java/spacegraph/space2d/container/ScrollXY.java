@@ -23,11 +23,9 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
     private static final float MIN_DISPLAYED_CELLS = 0.25f;
 //    private static final int MAX_DISPLAYED_CELLS_X = 32;
-    private static final int MAX_DISPLAYED_CELLS = 32;
+    private static final int MAX_DEFAULT_VISIBLE_CELLS = 32;
 
     private final S model;
-
-
 
 
     /** proportional in scale to bounds */
@@ -38,7 +36,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     /**
      * current view, in local grid coordinate
      */
-    private volatile RectFloat view = RectFloat.Zero;
+    private volatile RectFloat view;
 
     private static final boolean autoHideScrollForSingleColumnOrRow = true;
 
@@ -54,6 +52,10 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         super();
         borderSize(defaultScrollEdge);
 
+        view = RectFloat.WH(
+                Math.min(MAX_DEFAULT_VISIBLE_CELLS, scrollable.cellsX()),
+                Math.min(MAX_DEFAULT_VISIBLE_CELLS, scrollable.cellsY())
+        );
 
         set(C, new Clipped((Surface)(model = scrollable)));
 
@@ -100,7 +102,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
                             @Override
                             public float max() {
-                                return Util.clamp(model.cellsX() * 1.25f, MIN_DISPLAYED_CELLS, MAX_DISPLAYED_CELLS);
+                                return Util.clamp(model.cellsX() * 1.25f, MIN_DISPLAYED_CELLS, MAX_DEFAULT_VISIBLE_CELLS);
                             }
                         }
                 ),
@@ -120,7 +122,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
                             @Override
                             public float max() {
-                                return Util.clamp(model.cellsY() * 1.25f, MIN_DISPLAYED_CELLS, MAX_DISPLAYED_CELLS);
+                                return Util.clamp(model.cellsY() * 1.25f, MIN_DISPLAYED_CELLS, MAX_DEFAULT_VISIBLE_CELLS);
                             }
                         }
                 ).type(KnobVert),
