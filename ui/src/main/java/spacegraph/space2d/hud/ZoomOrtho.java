@@ -3,16 +3,12 @@ package spacegraph.space2d.hud;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.opengl.GL2;
-import jcog.event.Off;
 import spacegraph.input.finger.*;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.math.v2;
 import spacegraph.util.math.v3;
 import spacegraph.video.JoglSpace;
-import spacegraph.video.JoglWindow;
-
-import java.util.function.Consumer;
 
 /**
  * Ortho with mouse zoom controls

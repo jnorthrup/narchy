@@ -37,6 +37,7 @@ import java.util.function.IntPredicate;
 import static java.lang.System.arraycopy;
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -115,7 +116,7 @@ public class Conj extends ByteAnonMap {
     @Nullable
     public static Term conjDrop(Term conj, Term event, boolean earlyOrLate, boolean filterContradiction) {
         if (conj.op() != CONJ || conj.impossibleSubTerm(event))
-            return Bool.Null;
+            return Null;
 
         int cdt = conj.dt();
 
@@ -169,13 +170,13 @@ public class Conj extends ByteAnonMap {
                         contradiction[0] = true;
                 });
                 if (contradiction[0])
-                    return Bool.Null;
+                    return Null;
             }
 
 
             boolean removed = c.remove(event, targetTime);
             if (!removed) {
-                return Bool.Null;
+                return Null;
             }
 
             return c.term();
@@ -235,7 +236,7 @@ public class Conj extends ByteAnonMap {
         int eventsSize = events.size();
         switch (eventsSize) {
             case 0:
-                return Bool.Null;
+                return Null;
             case 1:
                 return events.get(0).getTwo();
         }
@@ -255,7 +256,7 @@ public class Conj extends ByteAnonMap {
         int eventsSize = events.size();
         switch (eventsSize) {
             case 0:
-                return Bool.Null;
+                return Null;
             case 1:
                 return events.iterator().next().getTwo();
         }
@@ -403,11 +404,11 @@ public class Conj extends ByteAnonMap {
 
 
         Term left = conjSeq(events, start, center + 1);
-        if (left == Bool.Null) return Bool.Null;
+        if (left == Null) return Null;
         if (left == Bool.False) return Bool.False;
 
         Term right = conjSeq(events, center + 1, end);
-        if (right == Bool.Null) return Bool.Null;
+        if (right == Null) return Null;
         if (right == Bool.False) return Bool.False;
 
         int dt = (int) (events.get(center + 1).getOne() - first.getOne() - left.eventRange());
@@ -418,8 +419,8 @@ public class Conj extends ByteAnonMap {
     private static Term conjSeqFinal(int dt, Term left, Term right) {
         assert (dt != XTERNAL);
 
-        if (left == Bool.Null) return Bool.Null;
-        if (right == Bool.Null) return Bool.Null;
+        if (left == Null) return Null;
+        if (right == Null) return Null;
 
 
         if (left == Bool.False) return Bool.False;
@@ -598,8 +599,8 @@ public class Conj extends ByteAnonMap {
             else if (x == Bool.False) {
                 this.term = Bool.False;
                 return false;
-            } else if (x == Bool.Null) {
-                this.term = Bool.Null;
+            } else if (x == Null) {
+                this.term = Null;
                 return false;
             }
         }
@@ -634,7 +635,7 @@ public class Conj extends ByteAnonMap {
                     if (result != null) {
                         if (result == Bool.True)
                             return true; //absorbed input
-                        if (result == Bool.False || result == Bool.Null) {
+                        if (result == Bool.False || result == Null) {
                             this.term = result;
                             return false;
                         } else  {
@@ -668,7 +669,7 @@ public class Conj extends ByteAnonMap {
 
             return true;
         } else {
-            throw new TODO();
+            return todoOrFalse();
 //
 //            RoaringBitmap r = (RoaringBitmap) events;
 //            if (!r.contains(-id)) {
@@ -807,11 +808,11 @@ public class Conj extends ByteAnonMap {
                         //reconstitute the two terms, glue them together as a new super-disjunction to replace the existing (and interrupt adding the incoming)
 
                         Term A = CONJ.the(adt, aa).neg();
-                        if (A == Bool.False || A == Bool.Null || aa.equals(bb))
+                        if (A == Bool.False || A == Null || aa.equals(bb))
                             return A;
 
                         Term B = CONJ.the(bdt, bb).neg();
-                        if (B == Bool.True || B == Bool.False || B == Bool.Null || A.equals(B))
+                        if (B == Bool.True || B == Bool.False || B == Null || A.equals(B))
                             return B;
 
                         return CONJ.the(eternal ? DTERNAL : 0, A, B);
@@ -822,7 +823,7 @@ public class Conj extends ByteAnonMap {
         } else {
             //TODO sequence conditions
             //throw new TODO(a + " vs " + b);
-            return Bool.Null; //disallow for now. the complexity might be excessive
+            return Null; //disallow for now. the complexity might be excessive
         }
     }
 
@@ -1155,8 +1156,8 @@ public class Conj extends ByteAnonMap {
                     continue;
                 } else if (wt == Bool.False) {
                     return this.term = Bool.False;
-                } else if (wt == Bool.Null) {
-                    return this.term = Bool.Null;
+                } else if (wt == Null) {
+                    return this.term = Null;
                 }
 
                 temporals.add(pair(when, wt));
@@ -1287,7 +1288,7 @@ public class Conj extends ByteAnonMap {
                     break;
                 Term s = sub(x, negatives, validator);
                 if (s instanceof Bool) {
-                    if (s == Bool.False || s == Bool.Null)
+                    if (s == Bool.False || s == Null)
                         return s;
                     else {
                         //ignore True case
@@ -1296,7 +1297,7 @@ public class Conj extends ByteAnonMap {
                 t.add(s);
             }
         } else {
-            throw new TODO();
+            return todoOrNull();
         }
 
         int ts = t.size();
@@ -1318,6 +1319,19 @@ public class Conj extends ByteAnonMap {
             }
 
         }
+    }
+
+    private static Term todoOrNull() {
+        if (Param.DEBUG)
+            throw new TODO();
+        else
+            return Null;
+    }
+    private static boolean todoOrFalse() {
+        if (Param.DEBUG)
+            throw new TODO();
+        else
+            return false;
     }
 
     private Term sub(int termIndex, @Nullable boolean[] negatives, @Nullable IntPredicate validator) {

@@ -408,12 +408,18 @@ public class Finger {
             super(cam);
         }
 
+
         @Override protected boolean enabled() {
             return focused;
         }
 
         @Override protected Surface target() {
-            return touching();
+            Surface s = touching();
+            if (s!=null) {
+                //color HASH
+                //color.set()
+            }
+            return s;
         }
     }
 

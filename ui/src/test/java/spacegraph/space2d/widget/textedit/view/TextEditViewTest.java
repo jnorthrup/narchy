@@ -1,9 +1,9 @@
 package spacegraph.space2d.widget.textedit.view;
 
-import spacegraph.space2d.widget.textedit.buffer.Buffer;
-import spacegraph.space2d.widget.textedit.buffer.BufferListener;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import spacegraph.space2d.widget.textedit.buffer.Buffer;
+import spacegraph.space2d.widget.textedit.buffer.BufferListener;
 
 
 public class TextEditViewTest {

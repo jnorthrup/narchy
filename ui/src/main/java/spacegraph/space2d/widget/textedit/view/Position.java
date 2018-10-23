@@ -1,7 +1,5 @@
 package spacegraph.space2d.widget.textedit.view;
 
-import com.jogamp.opengl.GL2;
-
 public class Position {
   private SmoothValue x = new SmoothValue(0);
   private SmoothValue y = new SmoothValue(0);

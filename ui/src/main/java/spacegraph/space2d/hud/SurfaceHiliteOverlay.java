@@ -11,8 +11,8 @@ public abstract class SurfaceHiliteOverlay extends Surface {
 
     protected final Ortho.Camera cam;
 
-    protected float thick = 6;
-    protected final Color4f color = new Color4f(0.5f, 0.5f, 0.5f, 0.75f);
+    protected float thick = 16;
+    protected final Color4f color = new Color4f(0.5f, 0.5f, 0.5f, 0.5f);
 
     public SurfaceHiliteOverlay(Ortho.Camera cam) {
         this.cam = cam;
@@ -32,13 +32,15 @@ public abstract class SurfaceHiliteOverlay extends Surface {
                 v2 p = cam.worldToScreen(sw, sh, t.x(), t.y());
                 v2 q = cam.worldToScreen(sw, sh,t.x()+t.w(), t.y() + t.h());
 
-                //TODO margin
-                float px = p.x - thick;
-                float py = p.y - thick;
-
-                gl.glLineWidth(thick);
                 color.apply(gl);
-                Draw.rectStroke(gl, px, py, q.x+thick-px, q.y+thick-py);
+
+                //TODO margin
+//                float px = p.x - thick;
+//                float py = p.y - thick;
+                //gl.glLineWidth(thick);
+                //Draw.rectStroke(gl, px, py, q.x+thick-px, q.y+thick-py);
+
+                Draw.rectFrame(gl, (p.x + q.x)/2, (p.y + q.y)/2, q.x - p.x, q.y - p.y, thick);
             }
         }
     }

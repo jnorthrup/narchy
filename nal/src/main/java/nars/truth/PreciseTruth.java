@@ -2,7 +2,8 @@ package nars.truth;
 
 import nars.Param;
 
-import static nars.truth.TruthFunctions.*;
+import static nars.truth.TruthFunctions.c2w;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * extends DiscreteTruth's raw hash representation with

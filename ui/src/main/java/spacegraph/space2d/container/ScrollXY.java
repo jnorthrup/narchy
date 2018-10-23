@@ -1,7 +1,7 @@
 package spacegraph.space2d.container;
 
 import jcog.TODO;
-import jcog.exe.Exe;
+import jcog.Util;
 import jcog.math.FloatSupplier;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
@@ -55,12 +55,12 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         borderSize(defaultScrollEdge);
 
         scrollable.update(this);
-        if (view == null)
-            throw new NullPointerException("view not set by " + scrollable);
         if (viewMin == null)
             throw new NullPointerException("view min set by " + scrollable);
         if (viewMax == null)
             throw new NullPointerException("view max set by " + scrollable);
+        if (view == null)
+            view = RectFloat.WH(viewMax.x, viewMax.y); //TODO max reasonable limit
 
 
         set(C, new Clipped((Surface) (model = scrollable)));
@@ -136,13 +136,19 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         } else {
 
             //break suspected deadlock
-            Exe.invoke(() -> {
+            //Exe.invoke(() -> {
                 //this.view = view.fence(RectFloat.WH(viewMax.x, viewMax.y)); //TODO cache
                 this.view = view;
                 layoutModel();
-            });
+            //});
         }
         return this;
+    }
+
+    /** manually trigger layout */
+    public final void update() {
+        model.update(this);
+        layoutModel();
     }
 
     private void layoutModel() {
@@ -263,6 +269,8 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     }
 
 
+
+
 //    public final void refresh() {
 //        view(view);
 //    }
@@ -320,6 +328,12 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         public boolean prePaint(SurfaceRender r) {
 
             float k = knob.asFloat();
+
+            if (!Float.isFinite(k)) //HACK
+                k = 1f;
+            else
+                k = Util.unitize(k);
+
             ((FloatSliderModel.Knob)slider.ui).knob = k;
 
             return super.prePaint(r);

@@ -80,7 +80,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         addOverlay(this.finger.cursorSurface());
         addOverlay(this.finger.zoomBoundsSurface(cam));
-        addOverlay(this.keyboard.keyFocusSurface(cam));
+        //addOverlay(this.keyboard.keyFocusSurface(cam));
 
         setSurface(content);
     }
@@ -739,6 +739,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         public Surface keyFocusSurface(Camera cam) {
             return new SurfaceHiliteOverlay(cam) {
+
                 @Override
                 protected Surface target() {
                     return keyFocus.getOpaque();

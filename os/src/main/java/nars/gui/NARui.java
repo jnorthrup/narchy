@@ -5,7 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.exe.Exe;
 import jcog.math.Quantiler;
-import jcog.pri.PLink;
+import jcog.pri.PLinkHashCached;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import jcog.pri.bag.impl.PLinkArrayBag;
@@ -20,7 +20,10 @@ import nars.gui.graph.run.BagregateConceptGraph2D;
 import nars.term.Termed;
 import nars.util.MemorySnapshot;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.*;
+import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.ScrollXY;
+import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.KeyValueGrid;
 import spacegraph.space2d.widget.button.CheckBox;
@@ -254,7 +257,7 @@ public class NARui {
 
         Off onTask = n.onTask((t) -> {
             if (updating.get()) {
-                b.put(new PLink<>(t, t.pri() * rate));
+                b.put(new PLinkHashCached<>(t, t.priElseZero() * rate));
             }
         });
         return DurSurface.get(s, n, (nn) -> {
@@ -265,7 +268,7 @@ public class NARui {
                     taskList.clear();
                     b.commit();
                     b.forEach(x -> taskList.add(x.get()));
-                    tasks.layout(); //HACK
+                    tasks.update();
                 }
             }
         }, (nn) -> {

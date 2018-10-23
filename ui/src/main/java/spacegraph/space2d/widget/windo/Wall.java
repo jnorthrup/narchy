@@ -5,8 +5,8 @@ import com.google.common.collect.Iterables;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Animating;
-import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.collection.MutableMapContainer;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.text.BitmapLabel;
 

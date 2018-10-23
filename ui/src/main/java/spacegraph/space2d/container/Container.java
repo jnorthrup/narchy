@@ -1,6 +1,5 @@
 package spacegraph.space2d.container;
 
-import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.tree.rtree.rect.RectFloat;
@@ -8,7 +7,6 @@ import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.util.math.v2;
 
 import java.io.PrintStream;
 import java.util.function.Consumer;

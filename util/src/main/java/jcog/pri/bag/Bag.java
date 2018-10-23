@@ -370,8 +370,8 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
 
                         //..?
                         PriForget.forgetIdeal(temperature,
-                                0.5f,
-                                //0f,
+                                //0.5f,
+                                0f,
                                 size, cap, pressure, mass);
 
                 if (eachMustForgetPct != null)

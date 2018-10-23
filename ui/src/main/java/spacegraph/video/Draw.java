@@ -46,7 +46,10 @@ import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.shape.*;
 import spacegraph.space3d.phys.util.BulletStack;
 import spacegraph.space3d.widget.EDraw;
-import spacegraph.util.math.*;
+import spacegraph.util.math.Quat4f;
+import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
+import spacegraph.util.math.v3;
 
 import java.util.function.Consumer;
 
@@ -391,8 +394,30 @@ public enum Draw {
         gl.glVertex2f(x1, y1 + h);
         gl.glVertex2f(x1, y1);
         gl.glEnd();
+    }
 
+    public static void rectFrame(GL2 gl, float cx, float cy, float wi, float hi, float thick) {
+        rectFrame(gl, cx, cy, wi, hi, wi + thick, hi + thick);
+    }
 
+    public static void rectFrame(RectFloat bounds, float thick, GL2 gl) {
+        rectFrame(gl, bounds.cx(), bounds.cy(), bounds.w, bounds.h, thick);
+    }
+    /** wi,hi - inner width/height
+     *  wo,ho - outer width/height
+     *  */
+    public static void rectFrame(GL2 gl, float cx, float cy, float wi, float hi, float wo, float ho) {
+        //N
+        float vthick = (ho - hi) / 2;
+        Draw.rect(cx-wo/2, cy-ho/2, wo, vthick, gl );
+        //S
+        Draw.rect(cx-wo/2, cy+ho/2 - vthick, wo, vthick, gl );
+
+        float hthick = (wo - wi) / 2;
+        //W
+        Draw.rect(cx-wo/2, cy - hi/2, hthick, hi, gl );
+        //E
+        Draw.rect(cx+wo/2 - hthick, cy - hi/2, hthick, hi, gl );
     }
 
     public static void circle(GL2 gl, v2 center, boolean solid, float radius, int NUM_CIRCLE_POINTS) {
@@ -451,10 +476,7 @@ public enum Draw {
     }
 
     public static void rect(float x1, float y1, float w, float h, GL2 gl) {
-
         gl.glRectf(x1, y1, x1 + w, y1 + h);
-
-
     }
 
     public static void rectAlphaCorners(float x1, float y1, float x2, float y2, float[] color, float[] cornerAlphas, GL2 gl) {

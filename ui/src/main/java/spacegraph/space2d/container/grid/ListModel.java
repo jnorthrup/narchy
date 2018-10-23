@@ -82,17 +82,6 @@ abstract public class ListModel<X> implements GridModel<X> {
         return get(vertical ? y : x);
     }
 
-    
-
-
-
-
-
-
-
-
-
-
 
 
 }

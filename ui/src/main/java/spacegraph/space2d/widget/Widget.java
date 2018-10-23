@@ -59,29 +59,29 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         }
     }
 
-    @Override
-    public boolean prePaint(SurfaceRender r) {
-        if (super.prePaint(r)) {
-
-//            int dtMS = r.dtMS;
+//    @Override
+//    public boolean prePaint(SurfaceRender r) {
+//        if (super.prePaint(r)) {
 //
-//            if (dtMS > 0) {
-//                if (touchedBy != null) {
-//                    temperature = Math.min(1f, temperature + dtMS / 100f);
-//                }
+////            int dtMS = r.dtMS;
+////
+////            if (dtMS > 0) {
+////                if (touchedBy != null) {
+////                    temperature = Math.min(1f, temperature + dtMS / 100f);
+////                }
+////
+////                if (temperature != 0) {
+////                    float decayRate = (float) Math.exp(-dtMS / 1000f);
+////                    temperature *= decayRate;
+////                    if (Math.abs(temperature) < 0.01f)
+////                        temperature = 0f;
+////                }
+////            }
+//            return true;
+//        }
+//        return false;
 //
-//                if (temperature != 0) {
-//                    float decayRate = (float) Math.exp(-dtMS / 1000f);
-//                    temperature *= decayRate;
-//                    if (Math.abs(temperature) < 0.01f)
-//                        temperature = 0f;
-//                }
-//            }
-            return true;
-        }
-        return false;
-
-    }
+//    }
 
     @Override
     protected void paintBelow(GL2 gl, SurfaceRender rr) {
@@ -108,10 +108,14 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
         Draw.rectRGBA(bounds, r, g, b, 0.5f, gl);
 
+    }
+
+    @Override
+    protected void paintAbove(GL2 gl, SurfaceRender r) {
+
         if (focused) {
             gl.glColor4f(1,0.7f, 0.1f, 0.2f);
-            gl.glLineWidth(30);
-            Draw.rectStroke(bounds, gl);
+            Draw.rectFrame( bounds,  16, gl);
         }
     }
 

@@ -42,13 +42,13 @@ public class SliderModel extends Surface {
 
     @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-        Draw.bounds(bounds, gl, g-> ui.draw(this.p, g));
+        Draw.bounds(bounds, gl, g -> ui.paint(this.p, g));
     }
 
     public SliderUI ui = SolidLeft;
 
     public interface SliderUI {
-        void draw(float p, GL2 gl);
+        void paint(float p, GL2 gl);
 
         /** resolves the 2d hit point to a 1d slider value */
         float p(v2 hitPoint);
@@ -151,7 +151,7 @@ public class SliderModel extends Surface {
 
     private static final SliderUI SolidLeft = new SliderUI() {
         @Override
-        public void draw(float p, GL2 gl) {
+        public void paint(float p, GL2 gl) {
             float W = 1; 
             float H = 1;
             float barSize = W * p;
@@ -190,7 +190,7 @@ public class SliderModel extends Surface {
     public static class KnobVert extends Knob {
 
         @Override
-        public void draw(float p, GL2 gl) {
+        public void paint(float p, GL2 gl) {
 
 
             float y = H * p;
@@ -211,7 +211,7 @@ public class SliderModel extends Surface {
     public static class KnobHoriz extends Knob {
 
         @Override
-        public void draw(float p, GL2 gl) {
+        public void paint(float p, GL2 gl) {
             float x = W * p;
 
             gl.glColor4f(0f, 0f, 0f, 0.5f);

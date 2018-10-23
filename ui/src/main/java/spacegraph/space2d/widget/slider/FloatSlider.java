@@ -59,7 +59,7 @@ public class FloatSlider extends Widget {
         super();
 
         set(new Stacking(
-                new Scale(slider = m, 0.95f),
+            slider = m,
                 new Scale(label, 0.85f)
         ));
     }
@@ -158,8 +158,9 @@ public class FloatSlider extends Widget {
 
         @Override
         protected float p(float v) {
-            float min = min();
-            float max = max();
+            float min = min(), max = max();
+            min = Math.min(min, max); //HAcK
+            max = Math.max(min, max); //HAcK
             return Util.equals(min, max, ScalarValue.EPSILON) ? 0.5f : (Util.clamp(v, min, max) - min) / (max - min);
         }
 
