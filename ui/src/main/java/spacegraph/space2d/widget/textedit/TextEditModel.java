@@ -1,27 +1,22 @@
 package spacegraph.space2d.widget.textedit;
 
-import spacegraph.input.key.KeyPressed;
+import com.jogamp.opengl.GL2;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.widget.textedit.buffer.Buffer;
-import spacegraph.space2d.widget.textedit.view.BufferView;
+import spacegraph.space2d.widget.textedit.keybind.TextEditKeys;
+import spacegraph.space2d.widget.textedit.view.TextEditView;
+import spacegraph.video.Draw;
 
 public final class TextEditModel  {
 
-//    int cursorX = 0, cursorY = 0;
-//
-//    public static class TextCell {
-//        char c;
-//        float r, g, b;
-//        //TODO other properties
-//        @Nullable Consumer<GL> render;
-//    }
 
     /** current buffer */
-    private Buffer buffer;
+    protected Buffer buffer;
 
-    public BufferView view = null;
+    public TextEditView view = null;
 
     public TextEditActions actions;
-    public KeyPressed keys;
+    public TextEditKeys keys;
 
     public TextEditModel() {
         this(new Buffer("", ""));
@@ -34,17 +29,9 @@ public final class TextEditModel  {
     public synchronized void setBuffer(Buffer buf) {
         if (buffer != buf) {
             buffer = buf;
-            view = new BufferView(buf);
+            view = new TextEditView(buf);
         }
     }
-
-//    public boolean keyPressed(SupportKey supportKey, int keyCode, long when) {
-//        return keys.keyPressed(supportKey, keyCode, when);
-//    }
-//
-//    public boolean keyTyped(char typedString, long when) {
-//        return keys.keyTyped(typedString, when);
-//    }
 
     public void execute(String name, String... args) {
         actions.run(this, name, args);
@@ -60,4 +47,17 @@ public final class TextEditModel  {
     }
 
 
+
+    public void paint(RectFloat bounds, RectFloat viewed, boolean cursorVisible, GL2 gl) {
+
+        TextEditView v = view;
+        if (v!=null) {
+            Draw.bounds(bounds, gl, gg ->
+                Draw.stencilMask(gg, true, Draw::rectUnit,
+                    g -> v.paint(cursorVisible, viewed, g)
+                )
+            );
+        }
+
+    }
 }

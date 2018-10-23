@@ -161,7 +161,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
 
 
     @Override
-    protected void paintWidget(GL2 gl, RectFloat bounds) {
+    protected void paintWidget(RectFloat bounds, GL2 gl) {
 
         if (beingWiredOut !=null) {
             gl.glColor4f(0.5f, 1, 0, 0.35f);

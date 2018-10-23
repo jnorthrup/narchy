@@ -152,7 +152,7 @@ public class OsmSpace implements GLUtessellatorCallback {
         }
 
         @Override
-        protected void paintWidget(GL2 gl, RectFloat bounds) {
+        protected void paintWidget(RectFloat bounds, GL2 gl) {
             if (render == null) {
                 render = compile(gl, osm);
             }

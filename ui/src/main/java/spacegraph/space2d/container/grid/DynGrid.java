@@ -7,6 +7,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.container.collection.MutableMapContainer;
+import spacegraph.util.math.v2;
 
 import static jcog.Util.short2Int;
 
@@ -16,8 +17,7 @@ import static jcog.Util.short2Int;
  */
 public class DynGrid<X> extends MutableMapContainer<Integer, X> implements ScrollXY.ScrolledXY {
 
-    volatile short x1 = 0, y1 = 0, x2 = 1, y2 = 1;
-    private transient RectFloat view;
+    volatile int x1 = 0, y1 = 0, x2 = 1, y2 = 1;
     private transient float dx, dy, cw, ch;
 
     private final GridModel<X> model;
@@ -96,16 +96,7 @@ public class DynGrid<X> extends MutableMapContainer<Integer, X> implements Scrol
                 (y >= y1 && y < y2);
     }
 
-    @Override public void layout(RectFloat view, short x1, short y1, short x2, short y2) {
-        this.view = view;
 
-        this.x1 = x1;
-        this.y1 = y1;
-        this.x2 = x2;
-        this.y2 = y2;
-
-        layout();
-    }
 
 
     @Override
@@ -114,12 +105,20 @@ public class DynGrid<X> extends MutableMapContainer<Integer, X> implements Scrol
         if (parent == null)
             return;
 
+        ScrollXY xy = parent(ScrollXY.class);
+        RectFloat v = xy.view();
+        float vx = v.x, vy = v.y, vw = v.w, vh = v.h;
+        this.x1 = Math.max(0, (int) Math.floor(vx));
+        this.y1 = Math.max(0, (int) Math.floor(vy));
+        this.x2 = Math.min(cellsX(),(int) Math.ceil(vx + vw));
+        this.y2 = Math.min(cellsY(), (int) Math.ceil(vy + vh));
+
         dx = x();
         dy = y();
         float ww = w();
         float hh = h();
-        cw = ww / view.w;
-        ch = hh / view.h;
+        cw = ww / vw;
+        ch = hh / vh;
 
 
         cells.map.removeIf(e -> {
@@ -131,38 +130,38 @@ public class DynGrid<X> extends MutableMapContainer<Integer, X> implements Scrol
                 int cellID = e.key;
                 short sx = (short) (cellID >> 16);
                 short sy = (short) (cellID & 0xffff);
-                if (!cellVisible(sx, sy)) {
-                    return true;
-                }
+                return !cellVisible(sx, sy);
             }
 
             return false;
         });
 
 
-        short x1 = this.x1, y1 = this.y1, x2 = this.x2, y2 = this.y2;
 
-        for (short sx = x1; sx < x2; sx++) {
-            for (short sy = y1; sy < y2; sy++) {
+
+
+        for (short sx = (short) x1; sx < x2; sx++) {
+            for (short sy = (short) y1; sy < y2; sy++) {
                 SurfaceCacheCell e = (SurfaceCacheCell) set(sx, sy, value(sx, sy), true);
                 if (e != null) {
                     Surface s = e.surface;
                     if (s == null)
                         continue;
 
-                    doLayout(s, sx, sy);
+                    doLayout(s, vx, vy, sx, sy);
                     if (s.parent == null)
                         s.start(this);
                 }
             }
         }
 
+
     }
 
 
-    void doLayout(Surface s, short sx, short sy) {
-        float cx = dx + (sx - view.x + 0.5f) * cw;
-        float cy = dy + h() - ((sy - view.y + 0.5f) * ch);
+    void doLayout(Surface s, float vx, float vy, short sx, short sy) {
+        float cx = dx + (sx - vx + 0.5f) * cw;
+        float cy = dy + h() - ((sy - vy + 0.5f) * ch);
         cellVisible(s, cw, ch, cx, cy);
     }
 
@@ -196,15 +195,19 @@ public class DynGrid<X> extends MutableMapContainer<Integer, X> implements Scrol
     }
 
 
-    @Override
     public int cellsX() {
         return model.cellsX();
     }
 
-    @Override
+
     public int cellsY() {
         return model.cellsY();
     }
 
-
+    @Override
+    public void update(ScrollXY s) {
+        s.viewMin(new v2(1, 1));
+        s.viewMax(new v2(cellsX(), cellsY()));
+        s.view(0, 0, cellsX(), cellsY());
+    }
 }

@@ -65,7 +65,7 @@ public class ExeCharts {
                             return new FloatSlider(want[w], min, max) {
 
                                 @Override
-                                protected void paintWidget(GL2 gl, RectFloat bounds) {
+                                protected void paintWidget(RectFloat bounds, GL2 gl) {
                                     if (auto.get()) {
                                         set(want[w]);
                                     }

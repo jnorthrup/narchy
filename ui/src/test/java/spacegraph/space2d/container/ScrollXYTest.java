@@ -48,7 +48,7 @@ class ScrollXYTest {
                         if (Math.random() < 0.5f) {
                             Surface p = new PushButton(s) {
                                 @Override
-                                protected void paintWidget(GL2 gl, RectFloat bounds) {
+                                protected void paintWidget(RectFloat bounds, GL2 gl) {
                                     Draw.colorHash(gl, x ^ y, 0.2f, 0.3f, 0.85f);
                                     Draw.rect(bounds, gl);
                                 }

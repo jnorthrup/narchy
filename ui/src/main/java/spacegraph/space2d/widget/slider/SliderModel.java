@@ -45,7 +45,7 @@ public class SliderModel extends Surface {
         Draw.bounds(bounds, gl, g-> ui.draw(this.p, g));
     }
 
-    private SliderUI ui = SolidLeft;
+    public SliderUI ui = SolidLeft;
 
     public interface SliderUI {
         void draw(float p, GL2 gl);
@@ -127,23 +127,27 @@ public class SliderModel extends Surface {
     }
 
     private static float pHorizontal(v2 hitPoint) {
-        float x = hitPoint.x;
+        return pTarget(hitPoint.x);
+    }
+    private static float pVertical(v2 hitPoint) {
+        return pTarget(1 - hitPoint.y);
+    }
+
+    private static float pTarget(float x) {
         if (x <= margin)
             return 0;
-        else if (x >= (1f-margin))
+        else if (x >= (1f - margin))
             return 1f;
         else
             return x;
     }
-    private static float pVertical(v2 hitPoint) {
-        float y = 1 - hitPoint.y;
-        if (y <= margin)
-            return 0;
-        else if (y >= (1f-margin))
-            return 1f;
-        else
-            return y;
+
+    /** resulting value is lower aligned */
+    private static float pTarget(float x, float knob) {
+        return Util.clamp(pTarget(x) - knob/2, 0, 1-knob);
     }
+
+
 
     private static final SliderUI SolidLeft = new SliderUI() {
         @Override
@@ -167,285 +171,69 @@ public class SliderModel extends Surface {
         }
     };
 
+    /** default impl, with point-center */
+    public static final SliderUI KnobVert = new KnobVert() {
+        @Override
+        public float p(v2 hitPoint) {
+            return pTarget(hitPoint.y, 0);
+        }
+    };
 
-    public static final SliderUI KnobHoriz = new SliderUI() {
+    /** default impl, with point-center */
+    public static final SliderUI KnobHoriz = new KnobHoriz() {
+        @Override
+        public float p(v2 hitPoint) {
+            return pTarget(hitPoint.x, 0);
+        }
+    };
+
+    public static class KnobVert extends Knob {
+
         @Override
         public void draw(float p, GL2 gl) {
-            float knobWidth = 0.05f;
-            float W = 1;
-            float H = 1;
+
+
+            float y = H * p;
+
+            gl.glColor4f(0f, 0f, 0f, 0.5f);
+            Draw.rect(0, 0, W, H, gl);
+
+            gl.glColor4f(1f - p, p, 0f, 0.75f);
+            Draw.rect(0, H - y - knob, W, knob, gl);
+        }
+
+        @Override
+        public float p(v2 hitPoint) {
+            return pTarget(1 - hitPoint.y, knob);
+        }
+    }
+
+    public static class KnobHoriz extends Knob {
+
+        @Override
+        public void draw(float p, GL2 gl) {
             float x = W * p;
 
             gl.glColor4f(0f, 0f, 0f, 0.5f);
             Draw.rect(0, 0, W, H, gl);
 
             gl.glColor4f(1f - p, p, 0f, 0.75f);
-            Draw.rect(x-knobWidth/2f, 0, knobWidth, H, gl);
+            Draw.rect(x , 0, knob, H, gl);
         }
 
         @Override
         public float p(v2 hitPoint) {
-            return pHorizontal(hitPoint);
+            return pTarget(hitPoint.x, knob);
         }
-    };
+    }
 
-    public static final SliderUI KnobVert = new SliderUI() {
-        @Override
-        public void draw(float p, GL2 gl) {
-            float knobWidth = 0.05f;
-            float W = 1;
-            float H = 1;
-            float y = H * (1-p);
+    abstract public static class Knob implements SliderUI {
 
-            gl.glColor4f(0f, 0f, 0f, 0.5f);
-            Draw.rect(0, 0, W, H, gl);
+        /** proportion of the total range of which the knob is visible */
+        public float knob = 0.05f;
 
-            gl.glColor4f(1f - p, p, 0f, 0.75f);
-            Draw.rect(0, y-knobWidth/2f, W, knobWidth, gl);
-        }
+        public float W = 1;
+        public float H = 1;
 
-        @Override
-        public float p(v2 hitPoint) {
-            return pVertical(hitPoint);
-        }
-    };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    }
 }

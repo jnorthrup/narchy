@@ -34,8 +34,6 @@ public abstract class AbstractButton extends Widget {
     public Surface finger(Finger finger) {
         Surface f = super.finger(finger);
         if (f == this) {
-            if (finger.pressedNow(0) || finger.pressedNow(2))
-                requestFocus();
 
             if (pressable.test(finger))
                 return this;

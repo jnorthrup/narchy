@@ -3,7 +3,6 @@ package spacegraph.space2d.widget.textedit.buffer;
 
 import jcog.data.list.FastCoWList;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -55,7 +54,7 @@ public class Buffer {
     private void update() {
         IntStream.range(0, lines.size()).forEach(i -> lines.get(i).updatePosition(i));
         observer.update(this);
-        observer.updateCaret(currentCursor);
+        observer.updateCursor(currentCursor);
     }
 
     public void insert(String string) {
@@ -103,7 +102,7 @@ public class Buffer {
                 line.insertChar(colStart + i, string.charAt(i));
             }
             currentCursor.incCol(n);
-            observer.updateCaret(currentCursor);
+            observer.updateCursor(currentCursor);
         }
     }
 
@@ -121,21 +120,22 @@ public class Buffer {
             });
             currentCursor.setCol(0);
             currentCursor.incRow(1);
-            observer.updateCaret(currentCursor);
+            observer.updateCursor(currentCursor);
         }
     }
 
-    public int getMaxColNum() {
-        synchronized (this) {
-            return lines.stream().max(Comparator.comparingInt(BufferLine::length))
-                    .orElse(new BufferLine()).length();
-        }
+    /** width in columns */
+    public int width() {
+        return lines.stream().mapToInt(l -> l.length()).max().orElse(0);
     }
+
+    /** height in lines aka rows */
+    public int height() { return lines.size(); }
 
     private BufferLine currentLine() {
-        synchronized (this) {
+        //synchronized (this) {
             return lines.get(currentCursor.getRow());
-        }
+        //}
     }
 
 //    public BufferLine preLine() {
@@ -171,9 +171,9 @@ public class Buffer {
     }
 
     public String text() {
-        synchronized (this) {
+        //synchronized (this) {
             return lines.stream().map(BufferLine::toLineString).collect(Collectors.joining("\n"));
-        }
+        //}
     }
 
     @Override
@@ -184,7 +184,7 @@ public class Buffer {
         return buf.toString();
     }
 
-    public CursorPosition getCaret() {
+    public CursorPosition cursor() {
         return currentCursor;
     }
 
@@ -215,12 +215,12 @@ public class Buffer {
 
     public void head() {
         currentCursor.setCol(0);
-        observer.updateCaret(currentCursor);
+        observer.updateCursor(currentCursor);
     }
 
     public void last() {
         currentCursor.setCol(currentLine().length());
-        observer.updateCaret(currentCursor);
+        observer.updateCursor(currentCursor);
     }
 
     public void back() {
@@ -233,7 +233,7 @@ public class Buffer {
             return;
         }
         currentCursor.decCol(1);
-        observer.updateCaret(currentCursor);
+        observer.updateCursor(currentCursor);
     }
 
     public void forward() {
@@ -246,7 +246,7 @@ public class Buffer {
             return;
         }
         currentCursor.incCol(1);
-        observer.updateCaret(currentCursor);
+        observer.updateCursor(currentCursor);
     }
 
     public void previous() {
@@ -257,7 +257,7 @@ public class Buffer {
         if (currentCursor.getCol() > currentLine().length()) {
             last();
         }
-        observer.updateCaret(currentCursor);
+        observer.updateCursor(currentCursor);
     }
 
     public void next() {
@@ -268,19 +268,19 @@ public class Buffer {
         if (currentCursor.getCol() > currentLine().length()) {
             last();
         }
-        observer.updateCaret(currentCursor);
+        observer.updateCursor(currentCursor);
     }
 
     public void bufferHead() {
         currentCursor.setRow(0);
         currentCursor.setCol(0);
-        observer.updateCaret(currentCursor);
+        observer.updateCursor(currentCursor);
     }
 
     public void bufferLast() {
         currentCursor.setRow(lines.size() - 1);
         currentCursor.setCol(currentLine().length());
-        observer.updateCaret(currentCursor);
+        observer.updateCursor(currentCursor);
     }
 
     private boolean isBufferHead() {

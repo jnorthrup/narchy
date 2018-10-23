@@ -4,7 +4,6 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import com.jogamp.newt.event.KeyEvent;
 import jcog.data.list.FasterList;
-import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.widget.textedit.TextEditModel;
 
 import java.io.IOException;
@@ -16,15 +15,14 @@ import java.util.regex.Pattern;
 import static com.jogamp.newt.event.KeyEvent.*;
 import static spacegraph.space2d.widget.textedit.keybind.SupportKey.*;
 
-public class EmacsKeyListener implements KeyPressed {
+public class EmacsKeyListener implements TextEditKeys {
     private static final Pattern ACTION_PATTERN = Pattern.compile("-?([^\\-]+)\\z");
     private static final Map<String, Short> CODE_MAPPING = new HashMap<>();
 
 //    private static final long delta = 100;
-    private final TextEditModel editor;
 
-    public EmacsKeyListener(TextEditModel editor) {
-        this.editor = editor;
+
+    public EmacsKeyListener() {
         try {
             setup();
         } catch (IOException e) {
@@ -184,7 +182,7 @@ public class EmacsKeyListener implements KeyPressed {
     }
 
     @Override
-    public boolean key(KeyEvent e, boolean pressedOrReleased) {
+    public boolean key(KeyEvent e, boolean pressedOrReleased, TextEditModel editor) {
         //System.out.println(e + " " + pressedOrReleased);
 
 //        if (pressedOrReleased) {
@@ -197,17 +195,17 @@ public class EmacsKeyListener implements KeyPressed {
 //        }
         if (pressedOrReleased) {
 
-            if (!keyPressed(SupportKey.NONE, e.getKeyCode(), e.getWhen())) {
+            TextEditModel model = editor;
+            if (!keyPressed(SupportKey.NONE, e.getKeyCode(), e.getWhen(), model)) {
                 if (e.isPrintableKey()) {
-
-                    editor.execute(/* TODO: "insert" ? */"type", String.valueOf(e.getKeyChar()));
+                    model.execute(/* TODO: "insert" ? */"type", String.valueOf(e.getKeyChar()));
                 }
             }
         }
         return true;
     }
 
-    boolean keyPressed(SupportKey supportKey, int keyCode, long when) {
+    boolean keyPressed(SupportKey supportKey, int keyCode, long when, TextEditModel model) {
 //        this.when = when;
 
         if (keyCode == VK_SHIFT || keyCode == VK_ALT || keyCode == VK_CONTROL) {
@@ -221,7 +219,7 @@ public class EmacsKeyListener implements KeyPressed {
 //            currentStrokes.add(stroke);
             String actionName = getActionName(stroke);
             if (actionName != null) {
-                editor.execute(actionName);
+                model.execute(actionName);
                 //this.executed = true;
                 return true;
             } else {

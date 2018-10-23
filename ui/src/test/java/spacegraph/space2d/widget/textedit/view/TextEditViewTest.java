@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class BufferViewTest {
+public class TextEditViewTest {
 
   private Buffer buffer;
 
@@ -14,7 +14,7 @@ public class BufferViewTest {
   public void setup() {
     buffer = new Buffer("testBuffer", "あいうえお");
 
-    BufferListener listener = new BufferView(buffer);
+    BufferListener listener = new TextEditView(buffer);
     buffer.addListener(listener);
   }
 

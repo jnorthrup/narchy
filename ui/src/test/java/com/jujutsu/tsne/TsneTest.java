@@ -120,7 +120,7 @@ public class TsneTest {
         public void node(Graph2D.NodeVis<Schema.Instance> node, Graph2D.GraphEditing<Schema.Instance> graph) {
             node.set(new PushButton() {
                 @Override
-                protected void paintWidget(GL2 gl, RectFloat bounds) {
+                protected void paintWidget(RectFloat bounds, GL2 gl) {
 
                 }
 

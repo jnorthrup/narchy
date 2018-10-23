@@ -9,7 +9,7 @@ public interface BufferListener {
 
     void update(Buffer buffer);
 
-    void updateCaret(CursorPosition cursor);
+    void updateCursor(CursorPosition cursor);
 
     void addLine(BufferLine bufferLine);
 
@@ -31,8 +31,8 @@ public interface BufferListener {
         }
 
         @Override
-        public void updateCaret(CursorPosition cursor) {
-            listeners.forEach((l) -> l.updateCaret(cursor));
+        public void updateCursor(CursorPosition cursor) {
+            listeners.forEach((l) -> l.updateCursor(cursor));
         }
 
         @Override

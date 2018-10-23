@@ -233,7 +233,7 @@ public class Plot2D extends Widget {
     }
 
     @Override
-    protected void paintWidget(GL2 gl, RectFloat bounds) {
+    protected void paintWidget(RectFloat bounds, GL2 gl) {
         Draw.bounds(bounds, gl, this::paintUnit);
     }
 

@@ -9,13 +9,17 @@ public abstract class TextEditRenderable {
 
     public final v3 position = new v3();
 //    public final v3 angle = new v3();
-    public final v3 scale = new v3(1,1,1);
+    public final v3 scale = null;
     public final Color4f color = new Color4f(1,1,1,1);
 
     public void draw(GL2 gl) {
         gl.glPushMatrix();
         gl.glTranslatef(position.x, position.y, position.z);
-        gl.glScalef(scale.x, scale.y, scale.z);
+
+        v3 scale = this.scale;
+        if (scale!=null)
+            gl.glScalef(scale.x, scale.y, scale.z);
+        
         gl.glColor4f(color.x, color.y, color.z, color.w);
         innerDraw(gl);
         gl.glPopMatrix();

@@ -161,7 +161,7 @@ import java.util.function.Supplier;
     }
 
     @Override
-    protected void paintWidget(GL2 gl, RectFloat bounds) {
+    protected void paintWidget(RectFloat bounds, GL2 gl) {
 
         float h = this.h;
         float w = this.w;

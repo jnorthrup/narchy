@@ -117,7 +117,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
     @Override
     protected final void paintIt(GL2 gl) {
-        paintWidget(gl, bounds);
+        paintWidget(bounds, gl);
     }
 
 //    @Override
@@ -131,7 +131,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 //    }
 
 
-    protected void paintWidget(GL2 gl, RectFloat bounds) {
+    protected void paintWidget(RectFloat bounds, GL2 gl) {
 
     }
 
@@ -140,6 +140,9 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     public Surface finger(Finger finger) {
         Surface s = super.finger(finger);
         if (s == null) {
+            if (!focused && finger.pressedNow(0) || finger.pressedNow(2))
+                requestFocus();
+
             if (finger.clickedNow(2 /*right button*/, this)) {
 
 
@@ -215,5 +218,9 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
             }
         }
         return false;
+    }
+
+    public final boolean focused() {
+        return focused;
     }
 }

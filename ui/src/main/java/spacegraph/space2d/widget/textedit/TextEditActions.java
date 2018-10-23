@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.textedit;
 
 import spacegraph.space2d.widget.textedit.keybind.Action;
+import spacegraph.space2d.widget.textedit.keybind.EmacsKeyListener;
 import spacegraph.space2d.widget.textedit.keybind.NoopAction;
 import spacegraph.space2d.widget.textedit.keybind.basic.*;
 
@@ -8,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TextEditActions {
+
+    public static final TextEditActions DEFAULT_ACTIONS = new TextEditActions();
+    public static final EmacsKeyListener DEFAULT_KEYS = new EmacsKeyListener();
 
     private final Map<String, Action> actionMap = new HashMap<>(128);
 

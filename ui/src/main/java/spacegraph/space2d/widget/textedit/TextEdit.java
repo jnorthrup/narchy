@@ -3,26 +3,19 @@ package spacegraph.space2d.widget.textedit;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat;
-import spacegraph.input.finger.Finger;
-import spacegraph.input.key.KeyPressed;
-import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRoot;
+import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.widget.Widget;
-import spacegraph.space2d.widget.textedit.keybind.EmacsKeyListener;
-import spacegraph.space2d.widget.textedit.view.BufferView;
-import spacegraph.video.Draw;
-
-import java.util.function.Predicate;
+import spacegraph.space2d.widget.textedit.buffer.*;
+import spacegraph.util.math.v2;
 
 
-public class TextEdit extends Widget implements KeyPressed {
+public class TextEdit extends Widget implements ScrollXY.ScrolledXY {
 
     public final TextEditModel model;
 
-
-    final Predicate<Finger> grabFocus = Finger.clicked(0, this::keyFocus);
-
-    private boolean keyFocused = false;
+    @Nullable
+    private ScrollXY scroll = null;
 
     public TextEdit(String initialText) {
         this();
@@ -30,41 +23,44 @@ public class TextEdit extends Widget implements KeyPressed {
         text(initialText);
     }
 
-    @Override
-    public void keyStart() {
-        keyFocused = true;
-    }
+    public ScrollXY scrolled() {
+        ScrollXY s = new ScrollXY<>(this);
 
-    @Override
-    public void keyEnd() {
-        keyFocused = false;
-    }
-
-    /** request keyboard focus */
-    public boolean keyFocus() {
-        SurfaceRoot r = root();
-        if (r == null)
-            return false;
-
-        return r.keyFocus(this);
-    }
+        model.buffer.addListener(new BufferListener() {
 
 
-    @Override
-    public Surface finger(Finger finger) {
-//        Surface s = super.finger(finger);
-//        if (s == this) {
-            if (grabFocus.test(finger)) {
-                //return this;
+            @Override
+            public void update(Buffer buffer) {
+
             }
-//        }
-        return this;
+
+            @Override
+            public void updateCursor(CursorPosition cursor) {
+
+            }
+
+            @Override
+            public void addLine(BufferLine bufferLine) {
+
+            }
+
+            @Override
+            public void removeLine(BufferLine bufferLine) {
+
+            }
+
+            @Override
+            public void moveChar(BufferLine fromLine, BufferLine toLine, BufferChar c) {
+
+            }
+        });
+        return s;
     }
 
     public static TextEditModel defaultModel() {
         TextEditModel e = new TextEditModel();
-        e.actions = new TextEditActions();
-        e.keys = new EmacsKeyListener(e);
+        e.actions = TextEditActions.DEFAULT_ACTIONS;
+        e.keys = TextEditActions.DEFAULT_KEYS;
         return e;
     }
 
@@ -77,35 +73,15 @@ public class TextEdit extends Widget implements KeyPressed {
     }
 
     @Override
-    protected void paintWidget(GL2 gl, RectFloat bounds) {
-
-        //float charAspect = 1.4f;
-        int charsWide = 16;
-        int charsHigh = 8;
-        Draw.bounds(bounds, gl, gg -> {
-            Draw.stencilMask(gg, true, (g)->{
-                Draw.rectUnit(g);
-            }, (g)->{
-                g.glPushMatrix();
-                g.glTranslatef(0f, 1f - 1f/charsHigh, 0);
-                g.glScalef(1f/charsWide, 1f/charsHigh, 1f);
-
-                BufferView v = model.view;
-                if (v!=null)
-                    v.paint(cursorVisible(), g);
-                g.glPopMatrix();
-            });
-        });
-    }
-
-    public boolean cursorVisible() {
-        return keyFocused;
+    protected final void paintWidget(RectFloat bounds, GL2 gl) {
+        ScrollXY s = this.scroll;
+        model.paint(bounds, s !=null ? s.view() : RectFloat.X0Y0WH(0, 0, model.buffer.width(), model.buffer.height()), focused, gl);
     }
 
     @Override
     public final boolean key(KeyEvent e, boolean pressedOrReleased) {
-        model.keys.key(e, pressedOrReleased);
-        return true;
+        //TODO anything from super.key(..) ?
+        return model.keys.key(e, pressedOrReleased, model);
     }
 
     public void append(String text) {
@@ -120,4 +96,15 @@ public class TextEdit extends Widget implements KeyPressed {
         return model.buffer().text();
     }
 
+    @Override
+    public void update(ScrollXY s) {
+        this.scroll = s;
+        s.viewMin(new v2(1,1));
+        updateScroll();
+        s.view(0, 0, Math.min(model.buffer.width(),80), Math.min(model.buffer.height(), 20));
+    }
+
+    private void updateScroll() {
+        scroll.viewMax(new v2(model.buffer.width(), model.buffer.height()));
+    }
 }
