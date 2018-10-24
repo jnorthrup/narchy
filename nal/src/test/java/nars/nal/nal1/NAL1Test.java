@@ -11,7 +11,7 @@ import static nars.Op.BELIEF;
 
 public class NAL1Test extends NALTest {
 
-    private final int cycles = 150;
+    private final int cycles = 350;
 
     @Override protected NAR nar() {
 

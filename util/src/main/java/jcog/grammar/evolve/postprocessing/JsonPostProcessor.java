@@ -24,7 +24,6 @@ import jcog.grammar.evolve.outputs.Results;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,9 +34,6 @@ import java.util.logging.Logger;
  */
 public class JsonPostProcessor extends BasicPostprocessor {
 
-    @Override
-    public void setup(Map<String, String> parameters) {
-    }
 
     @Override
     public void elaborate(Configuration config, Results results, long timeTaken) {

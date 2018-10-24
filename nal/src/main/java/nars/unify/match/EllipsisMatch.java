@@ -57,12 +57,6 @@ public final class EllipsisMatch extends LightCompound {
 //    }
 
 
-
-    @Override
-    public boolean the() {
-        return false;
-    }
-
     /** the ellipsis itself contributes no op */
     @Override public int structure() {
         return subterms().structure();

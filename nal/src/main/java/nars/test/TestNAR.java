@@ -139,9 +139,12 @@ public class TestNAR {
 
         this.score = success ?
 
-                1 + (+1f / (1f + ((1f + runtime) / (1f + Math.max(0,finalCycle - startTime)))))
-                :
-                0;
+//                1 + (+1f / (1f + ((1f + runtime) / (1f + Math.max(0,finalCycle - startTime)))))
+//                :
+//                0
+
+                -runtime : -finalCycle*2
+                ;
 
         {
 

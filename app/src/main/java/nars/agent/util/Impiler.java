@@ -102,13 +102,8 @@ public class Impiler {
      */
     public static class ImpilerDeduction extends TaskLeak {
 
-        public ImpilerDeduction(int capacity, float ratePerDuration, NAR n) {
+        public ImpilerDeduction(int capacity, NAR n) {
             super(capacity, n);
-        }
-
-        @Override
-        protected boolean filter(Task next) {
-            return true;
         }
 
         @Override

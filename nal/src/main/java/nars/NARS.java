@@ -119,26 +119,19 @@ public class NARS {
 
             then((n)->{
 
-                n.freqResolution.set(0.01f);
-                n.confResolution.set(0.01f);
-
-                n.termlinkBalance.set(0.5f);
                 n.termVolumeMax.set(26);
 
 
-                n.activation.set(0.5f);
-                n.memoryDuration.set(3.25f);
+                n.activation.set(0.7f);
+                n.memoryDuration.set(4f);
 
 
 
-                n.beliefPriDefault.set(0.5f);
-                n.goalPriDefault.set(0.5f);
-                n.questionPriDefault.set(0.5f);
-                n.questPriDefault.set(0.5f);
+                n.beliefPriDefault.set(0.65f);
+                n.goalPriDefault.set(0.65f);
+                n.questionPriDefault.set(0.15f);
+                n.questPriDefault.set(0.15f);
 
-//                n.emotion.want(MetaGoal.Perceive, -0.01f);
-//                n.emotion.want(MetaGoal.Believe, 0.1f);
-//                n.emotion.want(MetaGoal.Desire, 0.1f);
 
             });
         }

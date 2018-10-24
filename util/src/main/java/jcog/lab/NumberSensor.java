@@ -54,10 +54,6 @@ public abstract class NumberSensor<X> extends Sensor<X,Number> {
             this.func = f;
         }
 
-        @Override
-        public void addToSchema(Schema data) {
-            data.defineNumeric(id);
-        }
 
         @Override
         public Number apply(X e) {

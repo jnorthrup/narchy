@@ -19,7 +19,7 @@ class ImpilerTest {
 
         Impiler.ImpilerTracker t = new Impiler.ImpilerTracker(32, 2, n);
         Impiler.ImpilerSolver s = new Impiler.ImpilerSolver(32, 2, n);
-        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(32, 2, n);
+        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(32, n);
 
         n.input("(a ==> b).");
         n.input("(--a ==> c). %0.9;0.5%");
@@ -55,7 +55,7 @@ class ImpilerTest {
         };
 
 
-        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(8, 4, n) {
+        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(8, n) {
 
         };
 

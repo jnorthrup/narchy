@@ -180,11 +180,6 @@ public class UDPeer extends UDP {
                 
             }
 
-            @Override
-            protected boolean replace(float incoming, float existing) {
-                return super.replace(incoming, existing);
-                
-            }
 
             @NotNull
             @Override

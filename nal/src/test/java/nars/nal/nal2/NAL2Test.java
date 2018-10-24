@@ -1,10 +1,7 @@
 package nars.nal.nal2;
 
 
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
+import nars.*;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Disabled;
@@ -23,8 +20,8 @@ public class NAL2Test extends NALTest {
     protected NAR nar() {
 
         NAR n = NARS.tmp(2);
-        n.confMin.set(0.5f);
-        n.termVolumeMax.set(8);
+        n.confMin.set(0.3f);
+        n.termVolumeMax.set(10);
         return n;
     }
 

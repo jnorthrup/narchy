@@ -26,8 +26,6 @@ package jcog.reflect.simple;
 
 import jcog.reflect.spi.ConvertToStringService;
 
-import java.util.function.Function;
-
 /**
  * 
  * @author user
@@ -39,8 +37,4 @@ public class CharSequenceToStringSrvc implements ConvertToStringService
         return CharSequence.class;
     }
 
-    @Override
-    public Function<Object, String> getConvertor() {
-        return String::valueOf;
-    }
 }

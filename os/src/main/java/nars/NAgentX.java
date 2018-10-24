@@ -369,21 +369,23 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         //n.freqResolution.set(0.03f);
-        n.termVolumeMax.set(16);
+        n.termVolumeMax.set(20);
 
+
+        n.activation.set(0.7f);
         n.memoryDuration.set(4f);
-        n.activation.set(1f);
 
 
+
+        n.beliefPriDefault.set(0.65f);
+        n.goalPriDefault.set(0.65f);
+        n.questionPriDefault.set(0.5f);
+        n.questPriDefault.set(0.5f);
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
 
-        float base = 0.5f;
-        n.beliefPriDefault.set(base * 0.2f);
-        n.goalPriDefault.set(base * 0.9f);
-        n.questionPriDefault.set(base * 0.05f);
-        n.questPriDefault.set(base * 0.1f);
+
 
         n.emotion.want(MetaGoal.PerceiveCmplx, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 

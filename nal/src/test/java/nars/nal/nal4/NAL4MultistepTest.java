@@ -20,7 +20,7 @@ public class NAL4MultistepTest extends NALTest {
 
     @Test
     void nal4_everyday_reasoning() {
-        int time = 1000;
+        int time = 2000;
 
 
         TestNAR tester = test;

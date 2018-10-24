@@ -77,10 +77,6 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
         }
     }
 
-    @Override
-    public void onRemove(InstrumentedWork<Who, What> value) {
-
-    }
 
 
     public void stop() {

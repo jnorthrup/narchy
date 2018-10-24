@@ -34,14 +34,6 @@ public final class TasksRegion implements TaskRegion {
     }
 
     @Override
-    public boolean contains(HyperRegion x) {
-//        if (x instanceof SeriesBeliefTable.SeriesTask) {
-//            return intersects(x); //since series task can grow, be extra careful
-//        }
-        return TaskRegion.super.contains(x);
-    }
-
-    @Override
     public final long start() {
         return start;
     }
