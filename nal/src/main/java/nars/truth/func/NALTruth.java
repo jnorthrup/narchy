@@ -99,7 +99,16 @@ public enum NALTruth implements TruthFunc {
 //        }
 //    },
 
-
+    /**
+     * similar to structural deduction but keeps the same input frequency, only reducing confidence
+     */
+    @SinglePremise @AllowOverlap StructuralReduction() {
+        @Override
+        public Truth apply(final Truth T, final Truth Bignored, NAR m, float minConf) {
+            float c = T.conf() * NALTruth.confDefault(m);
+            return c >= minConf ? $.t(T.freq(), c) : null;
+        }
+    },
     @SinglePremise @AllowOverlap StructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -113,16 +122,7 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    /**
-     * similar to structural deduction but keeps the same input frequency, only reducing confidence
-     */
-    @AllowOverlap @SinglePremise StructuralReduction() {
-        @Override
-        public Truth apply(final Truth T, final Truth Bignored, NAR m, float minConf) {
-            float c = T.conf() * NALTruth.confDefault(m);
-            return c >= minConf ? $.t(T.freq(), c) : null;
-        }
-    },
+
 //
 //    @SinglePremise @AllowOverlap
 //    StructuralStrong() {

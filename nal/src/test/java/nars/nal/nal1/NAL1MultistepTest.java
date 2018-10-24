@@ -60,7 +60,7 @@ public class NAL1MultistepTest extends NALTest {
 
     @Test
     void multistepImpl5() {
-        new DeductiveChainTest(test, 5, 1500, impl);
+        new DeductiveChainTest(test, 5, 2500, impl);
     }
 
 }

@@ -408,7 +408,7 @@ public class EllipsisTest {
     private static void testCombinations(Compound _X, Compound Y, int expect) {
         Compound X = (Compound) new PatternIndex().rule(_X);
 
-        for (int seed = 0; seed < 3 /*expect*5*/; seed++) {
+        for (int seed = 0; seed < expect*expect; seed++) {
 
             Set<String> results = $.newHashSet(0);
 
@@ -458,7 +458,7 @@ public class EllipsisTest {
         testCombinations(
                 $("((|,%X,%Y) --> (|,%Y,%Z))"),
                 $("((|,bird,swimmer)-->(|,animal,swimmer))"),
-                1 /* weird */);
+                1);
     }
 
     @Test

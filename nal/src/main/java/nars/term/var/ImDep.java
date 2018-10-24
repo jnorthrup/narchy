@@ -46,10 +46,6 @@ public final class ImDep extends AnonID {
         return y == this;
     }
 
-    @Override
-    public boolean unifyReverse(Term x, Unify u) {
-        return false;
-    }
 
     @Override
     public final void appendTo(Appendable w) throws IOException {

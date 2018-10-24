@@ -2,7 +2,6 @@ package nars.concept.util;
 
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PLinkArrayBag;
-import jcog.pri.bag.impl.PriArrayBag;
 import nars.Op;
 import nars.Param;
 import nars.concept.Concept;
@@ -63,7 +62,7 @@ public class DefaultConceptBuilder extends ConceptBuilder {
 
         return new Bag[]{
                 new PLinkArrayBag<Term>(0, Param.termlinkMerge, shared),
-                new PriArrayBag<TaskLink>(Param.tasklinkMerge, shared)
+                new PLinkArrayBag<TaskLink>(0, Param.tasklinkMerge, shared)
         };
     }
 

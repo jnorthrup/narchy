@@ -66,4 +66,5 @@ public class TaskBagDrainer extends AbstractTask {
     public String toString() {
         return "drainDerivations(" + bag.getClass()+ '@' + System.identityHashCode(bag) + ')';
     }
+
 }

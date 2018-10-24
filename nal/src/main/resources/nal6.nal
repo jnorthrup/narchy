@@ -226,11 +226,11 @@
       (--(&&,X,A..+) ==> Z), (--(&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
 
     //Conditional Abduction via Multi-conditional Syllogism
-    (C ==> Y), (E ==> Y), eventsOf(C,E)          |- conjWithoutAll(C,E), (Belief:AbductionPB)
-        //(--C ==> Y), (--D ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)
+    (C ==> Y), (E ==> Y), eventsOf(C,E)          |-    conjWithoutAll(C,E), (Belief:AbductionPB)
+        (--C ==> Y), (D ==> Y), eventsOf(C,D)    |-  --conjWithoutAll(C,D), (Belief:AbductionPB)
 
-    ((&&,X,A..+) ==> Z), (X ==> Y)  |- ((&&,Y,A..+) ==> Z), (Belief:Abduction)
-        ((&&,X,A..+) ==> Z), (X ==> Y)  |- ((&&,--Y,A..+) ==> Z), (Belief:AbductionPN)
+    ((&&,X,A..+) ==> Z), (Y ==> X)  |- ((&&,Y,A..+) ==> Z), (Belief:Abduction)
+        ((&&,--X,A..+) ==> Z), (Y ==> X)  |- ((&&,Y,A..+) ==> Z), (Belief:AbductionPN)
 
 
     (C ==> Z), X, --is(X,"==>") |- ((C && X) ==> Z), (Belief:Induction)
@@ -260,15 +260,21 @@
 
     //TODO disjunction decompose
     (M ==> C), X, eventOf(C,X) |- (M ==> conjWithout(C,X)), (Belief:StructuralReduction)
+     //(M ==> C), X, eventOf(C,X) |- (M ==> X), (Belief:StructuralReduction)
     (M ==> C), X, eventOfNeg(C,X) |- (M ==> conjWithout(C,--X)), (Belief:StructuralReduction)
+     //(M ==> C), X, eventOfNeg(C,X) |- (M ==> --X), (Belief:StructuralReduction)
         //(M ==> C), X, eventOfPosOrNeg(C,X) |- (M ==> conjWithoutPosOrNeg(C,X)), (Belief:StructuralReduction)
 
     (C ==> M), X, eventOf(C,X) |- (conjWithout(C,X) ==> M), (Belief:StructuralReduction)
+     //(C ==> M), X, eventOf(C,X) |- (X ==> M), (Belief:StructuralReduction)
     (C ==> M), X, eventOfNeg(C,X) |- (conjWithout(C,--X) ==> M), (Belief:StructuralReduction)
+     //(C ==> M), X, eventOfNeg(C,X) |- (--X ==> M), (Belief:StructuralReduction)
         //(C ==> M), X, eventOfPosOrNeg(C,X) |- (conjWithoutPosOrNeg(C,X) ==> M), (Belief:StructuralReduction)
 
     (--C ==> M), X, eventOf(C,X) |- (--conjWithout(C,X) ==> M), (Belief:StructuralReduction)
+     //(--C ==> M), X, eventOf(C,X) |- (--X ==> M), (Belief:StructuralReduction)
     (--C ==> M), X, eventOfNeg(C,X) |- (--conjWithout(C,--X) ==> M), (Belief:StructuralReduction)
+     //(--C ==> M), X, eventOfNeg(C,X) |- (X ==> M), (Belief:StructuralReduction)
         //(--C ==> M), X, eventOfPosOrNeg(C,X) |- (--conjWithoutPosOrNeg(C,X) ==> M), (Belief:StructuralReduction)
 
             //(M ==> C), X, task("?"), eventOfPosOrNeg(C,X) |- (M ==> conjWithoutPosOrNeg(C,X)), (Punctuation:Question)

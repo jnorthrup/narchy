@@ -516,6 +516,7 @@ public class Derivation extends PreDerivation {
 
         if (pnar != nar) {
             init(nar);
+            time = TIMELESS;
         }
 
         long now = nar.time();

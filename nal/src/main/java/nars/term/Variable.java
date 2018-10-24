@@ -61,8 +61,6 @@ public interface Variable extends Atomic {
 
         Term y;
         if (_y instanceof Variable) {
-            if (_y instanceof ImDep)
-                return false;
             y = u.resolve(_y);
         } else
             y = _y;

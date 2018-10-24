@@ -39,20 +39,20 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
     }
 
     @Override
-    public void mutate(Unify f, Termutator[] chain, int current) {
-        int start = f.now();
+    public void mutate(Unify u, Termutator[] chain, int current) {
+        int start = u.now();
 
-        ShuffledSubterms p = new ShuffledSubterms(x, f.random);
+        ShuffledSubterms p = new ShuffledSubterms(x, u.random);
 
 
         while (p.shuffle()) {
 
-            if (p.unifyLinear(y, f)) {
-                if (!f.tryMutate(chain, current))
+            if (p.unifyLinear(y, u)) {
+                if (!u.tryMutate(chain, current))
                     break;
             }
 
-            if (!f.revertLive(start))
+            if (!u.revertLive(start))
                 break;
         }
 

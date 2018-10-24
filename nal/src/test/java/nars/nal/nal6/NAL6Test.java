@@ -26,7 +26,7 @@ public class NAL6Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(16);
+        n.termVolumeMax.set(18);
         //n.freqResolution.set(0.1f);
         n.confMin.set(0.3f);
         return n;
@@ -334,7 +334,9 @@ public class NAL6Test extends NALTest {
         TestNAR tester = test;
         tester.believe("((($x --> key) && ($y --> lock)) ==> open($x, $y))");
         tester.believe("({lock1} --> lock)");
-        tester.mustBelieve(cycles , "(($1 --> key) ==> open($1, {lock1}))", 1.00f, 0.73f);
+        tester.mustBelieve(cycles , "(($1 --> key) ==> open($1, {lock1}))", 1.00f,
+                0.36f);
+                //0.73f);
 
     }
 
@@ -372,7 +374,8 @@ public class NAL6Test extends NALTest {
         tester.believe("({lock1} --> lock)");
         tester.mustBelieve(cycles, "((#1-->key) && open(#1,{lock1}))",
                 1.00f,
-                0.43f
+                0.66f
+                //0.43f
         );
     }
 
@@ -546,8 +549,9 @@ public class NAL6Test extends NALTest {
         tester.believe("<<$1 --> lock> ==> (&&,<#2 --> key>,open(#2,$1))>", 1.00f, 0.90f);
         tester.believe("<{key1} --> key>", 1.00f, 0.90f);
         tester.mustBelieve(cycles, "<<$1 --> lock> ==> open({key1},$1)>", 1.00f,
+                0.81f);
                 //0.73f
-                0.43f);
+                //0.43f);
 
     }
 
@@ -872,6 +876,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testDecomposeImplSubj1b() {
         test.confTolerance(0.03f)
+                .log()
                 .believe("( (&&, y, z, w) ==> x )")
                 .mustBelieve(cycles, "( y ==> x )", 1f, 0.73f)
                 .mustBelieve(cycles, "( z ==> x )", 1f, 0.73f)

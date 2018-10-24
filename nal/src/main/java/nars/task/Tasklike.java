@@ -48,7 +48,7 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
-
+        if (!(o instanceof Tasklike)) return false;
         Tasklike oo = (Tasklike) o;
         return (hash == oo.hash) && (punc == oo.punc) && (when == oo.when) && (term.equals(oo.term));
     }

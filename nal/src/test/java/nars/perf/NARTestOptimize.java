@@ -75,7 +75,7 @@ class NARTestOptimize {
             ;
 
 
-            int suiteIterations = 2;
+            int suiteIterations = 1;
             int samples = 64;
             Optimization<NAR, TestNARSuite> o = l.optimize((Supplier<NAR> s) -> {
                 TestNARSuite t = new TestNARSuite(s, testClasses);

@@ -126,15 +126,15 @@ public class NARS {
                 n.termVolumeMax.set(26);
 
 
-                n.activation.set(1f);
-                n.memoryDuration.set(4.5f);
+                n.activation.set(0.5f);
+                n.memoryDuration.set(3.25f);
 
 
 
-                n.beliefPriDefault.set(0.85f);
-                n.goalPriDefault.set(0.85f);
-                n.questionPriDefault.set(0.4f);
-                n.questPriDefault.set(0.4f);
+                n.beliefPriDefault.set(0.5f);
+                n.goalPriDefault.set(0.5f);
+                n.questionPriDefault.set(0.5f);
+                n.questPriDefault.set(0.5f);
 
 //                n.emotion.want(MetaGoal.Perceive, -0.01f);
 //                n.emotion.want(MetaGoal.Believe, 0.1f);

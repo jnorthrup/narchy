@@ -71,14 +71,14 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
     public final static Term DEP_VAR = $.quote("#");
     public static final Atom SubIfUnify = (Atom) Atomic.the("subIfUnifiesAny");
 
-    private final MySubUnify u;
+//    private final MySubUnify u; //TODO find what state is being held that contaminated repeated use of this
 
     private final Derivation parent;
 
     public SubIfUnify(Derivation parent) {
         super(SubIfUnify);
         this.parent = parent;
-        u = new MySubUnify();
+//        u = new MySubUnify();
     }
 
     @Override
@@ -129,6 +129,7 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
                 output = null;
             } else {
                 int ttl = parent.nar.subUnifyTTLMax.intValue();
+                MySubUnify u = new MySubUnify();
                 output = u.reset(op, strict).tryMatch(c, x, y, ttl);
                 parent.use(ttl - u.ttl);
             }
@@ -158,7 +159,7 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
             this.random = parent.random;
             this.strict = strict;
             this.varBits = op;
-            this.result = null;
+            this.result = this.transformed = null;
             clear();
             return this;
         }
@@ -166,6 +167,7 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
 
         @Override
         protected boolean tryMatch(Term result) {
+            result = result.normalize();
             if (!strict || !result.equals(transformed)) {
 
 

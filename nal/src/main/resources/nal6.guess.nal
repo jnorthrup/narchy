@@ -75,7 +75,16 @@
 
 //      ex: ((f(x) && f($1)) ==> g($1))  |-   (f(x) ==> g(x))
 
-    ((&&,X,Y,A..*) ==> Z), X, neq(X,Y) |- subIfUnifiesAny(((&&,Y,A..*) ==> Z),X,Y,strict), (Belief:StructuralReduction)
-    (Z ==> (&&,X,Y,A..*)), X, neq(X,Y) |- subIfUnifiesAny((Z ==> (&&,Y,A..*)),X,Y,strict), (Belief:StructuralReduction)
+    ((&&,X,Y,A..*) ==> Z), X, neq(X,Y)       |- subIfUnifiesAny(((&&,Y,A..*) ==> Z),X,Y,strict), (Belief:StructuralReduction)
+      ((&&,--X,Y,A..*) ==> Z), X, neq(X,Y)   |- subIfUnifiesAny(((&&,Y,A..*) ==> Z),X,Y,strict), (Belief:StructuralReduction)
+      ((&&,X,--Y,A..*) ==> Z), X, neq(X,Y)   |- subIfUnifiesAny(((&&,--Y,A..*) ==> Z),X,Y,strict), (Belief:StructuralReduction)
+      ((&&,--X,--Y,A..*) ==> Z), X, neq(X,Y) |- subIfUnifiesAny(((&&,--Y,A..*) ==> Z),X,Y,strict), (Belief:StructuralReduction)
+    (Z ==> (&&,X,Y,A..*)), X, neq(X,Y)       |- subIfUnifiesAny((Z ==> (&&,Y,A..*)),X,Y,strict), (Belief:StructuralReduction)
+      (Z ==> (&&,--X,Y,A..*)), X, neq(X,Y)   |- subIfUnifiesAny((Z ==> (&&,Y,A..*)),X,Y,strict), (Belief:StructuralReduction)
+      (Z ==> (&&,X,--Y,A..*)), X, neq(X,Y)   |- subIfUnifiesAny((Z ==> (&&,--Y,A..*)),X,Y,strict), (Belief:StructuralReduction)
+      (Z ==> (&&,--X,--Y,A..*)), X, neq(X,Y) |- subIfUnifiesAny((Z ==> (&&,--Y,A..*)),X,Y,strict), (Belief:StructuralReduction)
 
-    (&&,X,Y,A..*), X, neq(X,Y) |- subIfUnifiesAny((&&,Y,A..*),X,Y,strict), (Belief:StructuralDeduction)
+    (&&,  X,Y,A..*), X, neq(X,Y)     |- subIfUnifiesAny((&&,Y,A..*),X,Y,strict), (Belief:StructuralDeduction)
+      (&&,--X,Y,A..*), X, neq(X,Y)   |- subIfUnifiesAny((&&,Y,A..*),X,Y,strict), (Belief:StructuralDeduction)
+      (&&,X,--Y,A..*), X, neq(X,Y)   |- subIfUnifiesAny((&&,--Y,A..*),X,Y,strict), (Belief:StructuralDeduction)
+      (&&,--X,--Y,A..*), X, neq(X,Y) |- subIfUnifiesAny((&&,--Y,A..*),X,Y,strict), (Belief:StructuralDeduction)

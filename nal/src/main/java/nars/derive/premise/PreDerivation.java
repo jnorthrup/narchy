@@ -30,7 +30,6 @@ public abstract class PreDerivation extends Unify {
 
     public PreDerivation(@Nullable Op type, Random random, int stackMax) {
         super(type, random, stackMax);
-        symmetric = false;
     }
 
     public boolean hasBeliefTruth() {
