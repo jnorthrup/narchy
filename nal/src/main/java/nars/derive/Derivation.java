@@ -41,7 +41,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,7 +102,7 @@ public class Derivation extends PreDerivation {
     /**
      * second layer additional substitutions
      */
-    public final Map<Term, Term> retranform = new UnifiedMap<>() {
+    public final Map<Term, Term> retransform = new UnifiedMap<>() {
         @Override
         public Term put(Term key, Term value) {
             if (key.equals(value))
@@ -131,8 +130,8 @@ public class Derivation extends PreDerivation {
             if (y != null && !(y instanceof Bool)) {
 
 
-                retranform.put(y, input);
-
+                //retransform.put(y, input);
+                retransform.putIfAbsent(input, y);
 
             }
             return y;
@@ -187,7 +186,7 @@ public class Derivation extends PreDerivation {
     private transient Term _beliefTerm;
     private transient long[] evidenceDouble, evidenceSingle;
     private transient int taskUniques;
-    private transient MetalLongSet taskStamp;
+    private final transient MetalLongSet taskStamp = new MetalLongSet(Param.STAMP_CAPACITY);
     public transient boolean overlapDouble, overlapSingle;
     public transient float priSingle, priDouble;
     public transient short[] parentCause;
@@ -225,6 +224,9 @@ public class Derivation extends PreDerivation {
         this.clear();
 
         this.nar = nar;
+
+        this.random = nar.random();
+        //this.random.setSeed(nar.random().nextLong());
 
         {
 
@@ -287,53 +289,44 @@ public class Derivation extends PreDerivation {
     public void reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
 
 
-        if (taskUniques > 0 && this._task != null && this._task.term().equals(nextTask.term())) {
+        Term nextTaskTerm = nextTask.term();
 
+        if (this._task != null && this._task.term().equals(nextTaskTerm)) {
 
             anon.rollback(taskUniques);
-
 
         } else {
             anon.clear();
 
-            anon.unshift();
-            this.taskTerm = anon.put(nextTask.term());
-
-
-
+            this.taskTerm = anon.put(nextTaskTerm);
             this.taskUniques = anon.uniques();
         }
 
-        assert (taskTerm != null) : (nextTask + " could not be anonymized: " + nextTask.term().anon() + " , " + taskTerm);
 
-
-        if (this._task == null || !Arrays.equals(this._task.stamp(), nextTask.stamp())) {
-            this.taskStamp = null; //force (re-)compute in post-derivation stage
-        }
         if (this._task == null || this._task != nextTask) {
-            //this.task = new SpecialTermTask(taskTerm, nextTask);
+
+            this._task = nextTask;
+
+            assert (taskTerm != null) : (nextTask + " could not be anonymized: " + nextTaskTerm.anon() + " , " + taskTerm);
+
+            this.taskStamp.clear(); //force (re-)compute in post-derivation stage
             this.taskEvi = Float.NaN; //invalidate
+
+            this.taskPunc = nextTask.punc();
+            if ((taskPunc == BELIEF || taskPunc == GOAL)) {
+                this.taskTruth = nextTask.truth();
+
+                assert (taskTruth != null);
+            } else {
+                this.taskTruth = null;
+            }
+
+            this.taskStart = nextTask.start();
+            this.taskEnd = nextTask.end();
+
         }
 
 
-
-
-        this._task = nextTask;
-
-        this.taskPunc = nextTask.punc();
-        if ((taskPunc == BELIEF || taskPunc == GOAL)) {
-            this.taskTruth = nextTask.truth();
-            
-            assert (taskTruth != null);
-        } else {
-            this.taskTruth = null;
-        }
-
-        long taskStart = nextTask.start();
-        this.taskStart = taskStart;
-        this.taskEnd = _task.end();
-
-        long taskEnd = nextTask.end();
         if (nextBelief != null) {
             this.beliefTruthRaw = nextBelief.truth();
             this.beliefStart = nextBelief.start();
@@ -398,8 +391,6 @@ public class Derivation extends PreDerivation {
      */
     public void derive(int ttl) {
 
-        reset();
-
         this.taskBeliefTimeIntersects =
                 this._belief == null
                         ||
@@ -418,7 +409,6 @@ public class Derivation extends PreDerivation {
                         taskTerm.voluplexity(), beliefTerm.voluplexity()
                 );
 
-        this.taskStamp = Stamp.toSet(_task);
 
         this.overlapSingle = _task.isCyclic();
 
@@ -428,6 +418,10 @@ public class Derivation extends PreDerivation {
              *  of the tasks considering their dtRange
              */
 
+
+            if (taskStamp.isEmpty()) {
+                taskStamp.addAll(_task.stamp());
+            }
 
             this.overlapDouble = Stamp.overlapsAny(this.taskStamp, _belief.stamp());
 
@@ -468,7 +462,12 @@ public class Derivation extends PreDerivation {
 
         deriver.budgeting.premise(this);
 
-        deriver.rules.run(this);
+        try {
+            deriver.rules.run(this);
+        } catch (Exception e) {
+            clear();
+            throw e;
+        }
 
 
     }
@@ -527,10 +526,6 @@ public class Derivation extends PreDerivation {
             this.ditherTime = nar.dtDither();
             this.confMin = nar.confMin.floatValue();
             this.termVolMax = nar.termVolumeMax.intValue();
-
-            this.random = nar.random();
-            //this.random.setSeed(nar.random().nextLong());
-
         }
 
 
@@ -581,16 +576,35 @@ public class Derivation extends PreDerivation {
     @Override
     public Derivation clear() {
         anon.clear();
-        taskUniques = 0;
         time = ETERNAL;
+        premiseBuffer.clear();
+        retransform.clear();
+        occ.clear();
+        firedTaskLinks.clear();
+        firedConcepts.clear();
+        _belief = null;
+        _task = null;
+        taskStamp.clear();
+        parentCause = null;
+        concTruth = null;
+        concTerm = null;
+        taskTerm = beliefTerm = null;
+        taskTruth = beliefTruthProjectedToTask = beliefTruthRaw = null;
+        can.clear();
+        will = null;
+        ttl = 0;
+        taskUniques = 0;
+        time = TIMELESS;
+
         super.clear();
+
         return this;
     }
 
 
     /** resolve a term (ex: task term or belief term) with the result of 2nd-layer substitutions */
     public Term reResolve(Term t) {
-        return /*Image.imageNormalize*/(t.replace(retranform));
+        return /*Image.imageNormalize*/(t.replace(retransform));
     }
 
     public final Task add(Task t) {

@@ -53,7 +53,7 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
      */
     public boolean rollback(int toUniques) {
         if (toUniques == 0) {
-            map.clear();
+            clear();
             return true;
         }
 
@@ -140,6 +140,12 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
 
         public AnonWithVarShift(int cap) {
             super(cap);
+        }
+
+        @Override
+        public void clear() {
+            indepShift = depShift = queryShift = 0;
+            super.clear();
         }
 
         @Override

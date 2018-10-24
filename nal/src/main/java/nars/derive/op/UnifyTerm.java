@@ -8,10 +8,13 @@ import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 
+import static nars.$.$$;
+
 /**
  * Created by me on 5/26/16.
  */
 abstract public class UnifyTerm extends AbstractPred<Derivation> {
+
 
     public final Term pattern;
 
@@ -86,4 +89,13 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
             return d.use(Param.TTL_UNIFY);
         }
     }
+
+
+    public final static PREDICATE<Derivation> preUnify = new AbstractPred<>($$("preUnify")) {
+        @Override
+        public boolean test(Derivation derivation) {
+            derivation.termutes.clear();
+            return true;
+        }
+    };
 }

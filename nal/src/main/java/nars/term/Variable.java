@@ -3,9 +3,10 @@ package nars.term;
 import nars.Op;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
-import nars.term.var.ImDep;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
+
+import static nars.Op.NEG;
 
 /**
  * similar to a plain atom, but applies altered operating semantics according to the specific
@@ -66,8 +67,14 @@ public interface Variable extends Atomic {
             y = _y;
 
         if (x!=this || _y != y) {
+            if (x!=this && x.op()==NEG && y.op()==NEG) {
+                x = x.unneg();
+                y = y.unneg(); //could be variable wrapped in negation. prevents infinite loop
+            }
+
             if (x.equals(y))
                 return true;
+
             if (x instanceof Compound || y instanceof Compound) {
                 int xv = x.volume(), yv = y.volume();
                 if (xv != yv) {
@@ -89,7 +96,12 @@ public interface Variable extends Atomic {
         }
 
         if (x != this) {
-            return x.unify(y, u);
+            //try {
+                return x.unify(y, u);
+//            } catch (StackOverflowError e) {
+//                System.out.println(x + " " + y);
+//                return false;
+//            }
         } else {
             if (y instanceof Variable) {
                 return unifyVar((Variable) y, u);
@@ -118,7 +130,6 @@ public interface Variable extends Atomic {
 
 
             Term common = x.compareTo(y) < 0 ? CommonVariable.common(x, y) : CommonVariable.common(y, x);
-
 
             if (u.putXY(x, common) && u.putXY(y, common)) {
 

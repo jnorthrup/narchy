@@ -116,19 +116,20 @@ public class DeriverRules {
             switch (fanOut) {
                 case 1: {
                     test(d, can[0]);
-                    //d.revertLive(1); //not necessary
+
+                    d.revert(0);
+
                     break;
                 }
                 default: {
 
-                    @Deprecated int before = d.now();
-                    assert (before == 0);
+
 
                     MutableRoulette.run(maybe, d.random, wi -> 0, b -> {
 
                         test(d, can[b]);
 
-                        return d.revertLive(before, 1);
+                        return d.revertLive(0, 1);
                     });
                     break;
                 }

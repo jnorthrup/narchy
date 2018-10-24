@@ -38,12 +38,14 @@ public class Versioning<X> {
     public void reset() {
 
         int s = this.size;
-        for (int i = 0; i < s; i++) {
-            items[i].clear();
-            items[i] = null;
-        }
+        if (s > 0) {
+            for (int i = 0; i < s; i++) {
+                items[i].clear();
+                items[i] = null;
+            }
 
-        this.size = 0; 
+            this.size = 0;
+        }
     }
 
     /**

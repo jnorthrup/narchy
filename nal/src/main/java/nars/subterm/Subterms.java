@@ -9,6 +9,7 @@ import jcog.data.list.FasterList;
 import jcog.data.set.ArrayUnenforcedSortedSet;
 import nars.$;
 import nars.Op;
+import nars.Param;
 import nars.subterm.util.DisposableTermList;
 import nars.term.*;
 import nars.term.atom.Bool;
@@ -892,10 +893,16 @@ public interface Subterms extends Termlike, Iterable<Term> {
                         y.ensureExtraCapacityExact(xes-1);
 
                     for (int j = 0; j < xes; j++) {
-                        @Nullable Term k = f.transform(xe.sub(j));
-                        assert(!(k instanceof EllipsisMatch)): "recursive EllipsisMatch unsupported";
+
+                        Term k = f.transform(xe.sub(j));
+
                         if (k == null || k == Bool.Null) {
                             return null;
+                        } else if (k instanceof EllipsisMatch) {
+                            if (Param.DEBUG)
+                                throw new TODO("recursive EllipsisMatch unsupported");
+                            else
+                                return null;
                         } else {
                             y.addWithoutResizeCheck(k);
                         }

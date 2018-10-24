@@ -111,12 +111,6 @@ public abstract class Unify extends Versioning implements Subst {
     protected abstract void tryMatch();
 
 
-    @Override
-    public void reset() {
-        super.reset();
-        this.termutes.clear();
-    }
-
     public final boolean tryMutate(Termutator[] chain, int next) {
 
         if (++next < chain.length) {
@@ -172,7 +166,6 @@ public abstract class Unify extends Versioning implements Subst {
 
         if (!(ttl > 0))
             throw new WTF("likely needs some TTL");
-
 
         if (x.unify(y, this)) {
             if (finish) {

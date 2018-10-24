@@ -589,7 +589,7 @@ public class NAL5Test extends NALTest {
         test
         .believe("((x&&y) ==> z)")
         .believe("(y ==> a)", 0.9f, 0.9f)
-        .mustBelieve(cycles, "((&&,x,a) ==> z)", 1.00f, 0.45f);
+        .mustBelieve(cycles, "((a && x) ==> z)", 1.00f, 0.45f);
     }
 
     @Test void conditional_abduction() {
@@ -597,7 +597,7 @@ public class NAL5Test extends NALTest {
         test
                 .believe("((x&&y) ==> z)")
                 .believe("(a ==> y)", 0.9f, 0.9f)
-                .mustBelieve(cycles, "((a && x) ==> z)", 0.9f, 0.73f);
+                .mustBelieve(cycles, "((a && x) ==> z)", 0.9f, 0.45f);
     }
 
     @Test

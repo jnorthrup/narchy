@@ -62,26 +62,16 @@ public class MatrixDeriver extends Deriver {
     }
 
     @Override
-    protected void derive(Derivation d, BooleanSupplier kontinue) {
+    protected final void derive(Derivation d, BooleanSupplier kontinue) {
 
-        NAR n = d.nar;
-
-        int matchTTL = matchTTL(), deriveTTL = n.deriveBranchTTL.intValue();
+        int matchTTL = matchTTL(), deriveTTL = d.nar.deriveBranchTTL.intValue();
 
         do {
 
-
-
-
-            FasterList<Premise> premises = hypothesize(d);
-
-            for (Premise p : premises)
+            for (Premise p : hypothesize(d))
                 p.derive(d, matchTTL, deriveTTL);
 
-            premises.clear();
-
         } while (kontinue.getAsBoolean());
-
 
     }
 

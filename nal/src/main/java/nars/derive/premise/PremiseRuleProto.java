@@ -50,7 +50,9 @@ public class PremiseRuleProto extends PremiseRuleSource {
 
         final List<PREDICATE<Derivation>> post = new FasterList<>(8);
 
-        if (taskPattern.equals(beliefPattern)) {
+        post.add(UnifyTerm.preUnify);
+
+        if (taskPattern.equals(beliefPattern) || taskPattern.containsRecursively(beliefPattern)) {
             post.add(new UnifyTerm.NextUnifyTransform(0, taskPattern, conc));
         } else {
             post.add(new UnifyTerm.NextUnify(0, taskPattern));

@@ -142,6 +142,7 @@ public interface Stamp {
         return new MetalLongSet(task.stamp());
     }
 
+
     static MetalLongSet toSet(int expectedCap, Task... t) {
         MetalLongSet e = new MetalLongSet(expectedCap);
         for (Task tt : t)

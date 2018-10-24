@@ -72,14 +72,14 @@ public class Taskify extends AbstractPred<Derivation> {
         }
 
         Term x1;
-        try {
+//        try {
             x1 = d.anon.get(x0);
             if (x1 == null)
                 throw new NullPointerException(); //return spam(d, Param.TTL_DERIVE_TASK_FAIL);
-        } catch (RuntimeException r) {
-            d.concTerm = null; //HACK
-            return Derivation.fatal(r);
-        }
+//        } catch (RuntimeException r) {
+//            d.concTerm = null; //HACK
+//            return Derivation.fatal(r);
+//        }
 
         Term x = Task.forceNormalizeForBelief(x1);
         if (!x.op().conceptualizable)
