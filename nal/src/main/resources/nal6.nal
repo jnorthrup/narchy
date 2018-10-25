@@ -436,10 +436,10 @@
 //        Y, (&&,--X,A..+), task("@")     |- subIfUnifiesAny((&&,--X,A..+),X,Y,"#",strict), (Punctuation:Quest)
 
 //Anonymous Deduction and Abduction
-    (V ==> X), X, is(V,"#")         |- X, (Belief:StructuralReduction)
-    ((--,V) ==> X), X, is(V,"#")    |- X, (Belief:StructuralReduction)
-    (X ==> V), X, is(V,"#")         |- X,   (Belief:StructuralAbduction)
-    ((--,X) ==> V), X, is(V,"#")    |- --X, (Belief:StructuralAbduction)
+    (V ==> X), X, is(V,"#"), --is(X,"#")      |- X, (Belief:StructuralReduction)
+    (--V ==> X), X, is(V,"#"), --is(X,"#")    |- X, (Belief:StructuralReduction)
+    (X ==> V), X, is(V,"#"), --is(X,"#")      |- X,   (Belief:StructuralAbduction)
+    (--X ==> V), X, is(V,"#"), --is(X,"#")    |- --X, (Belief:StructuralAbduction)
 
 
 

@@ -93,8 +93,8 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
 
     public final static PREDICATE<Derivation> preUnify = new AbstractPred<>($$("preUnify")) {
         @Override
-        public boolean test(Derivation derivation) {
-            derivation.termutes.clear();
+        public boolean test(Derivation d) {
+            d.termutes.clear();
             return true;
         }
     };

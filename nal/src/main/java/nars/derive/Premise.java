@@ -337,7 +337,6 @@ public class Premise implements Comparable<Premise> {
             d.derive(deriveTTL);
 
             result = e.premiseFire; //premiseFired(p, d);
-
         } else {
             result = e.premiseUnderivable; //premiseUnderivable(p, d);
         }

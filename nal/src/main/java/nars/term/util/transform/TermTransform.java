@@ -66,9 +66,15 @@ public interface TermTransform {
         Op targetOp = sameOpAndDT ? xop : op;
 
         Subterms xx = x.subterms();
-        Subterms yy = xx.transformSubs(this, targetOp);
+        Subterms yy = null;
+//        try {
+            yy = xx.transformSubs(this, targetOp);
+//        } catch (StackOverflowError e) {
+//            System.err.println(this + " " + xx + " " + targetOp);
+//        }
         if (yy == null)
             return Bool.Null;
+
 
         if (yy == xx && (sameOpAndDT || (x.op() == targetOp && x.dt() == dt)))
             return x; //no change

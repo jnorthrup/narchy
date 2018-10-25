@@ -39,8 +39,7 @@ public class Subst extends Functor implements Functor.InlineFunctor, The {
         return apply(xx, input, x, y);
     }
 
-    public @Nullable
-    static Term apply(Subterms xx, Term input, Term x, Term y) {
+    public @Nullable static Term apply(Subterms xx, Term input, Term x, Term y) {
         Term result = !x.equals(y) ? input.replace(x, y) : input;
         if (xx.subEquals(3, SubIfUnify.STRICT) && input.equals(result))
             return Null;

@@ -1,6 +1,7 @@
 package nars.term;
 
 import nars.Op;
+import nars.derive.premise.PatternIndex;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
 import nars.unify.Unify;
@@ -66,14 +67,15 @@ public interface Variable extends Atomic {
         } else
             y = _y;
 
+        if (x.equals(y))
+            return true;
+
         if (x!=this || _y != y) {
             if (x!=this && x.op()==NEG && y.op()==NEG) {
                 x = x.unneg();
                 y = y.unneg(); //could be variable wrapped in negation. prevents infinite loop
             }
 
-            if (x.equals(y))
-                return true;
 
             if (x instanceof Compound || y instanceof Compound) {
                 int xv = x.volume(), yv = y.volume();
@@ -96,7 +98,7 @@ public interface Variable extends Atomic {
         }
 
         if (x != this) {
-            //try {
+//            try {
                 return x.unify(y, u);
 //            } catch (StackOverflowError e) {
 //                System.out.println(x + " " + y);
@@ -122,6 +124,11 @@ public interface Variable extends Atomic {
     }
 
     static boolean unifyVar(Variable x, Variable y, Unify u) {
+
+        if (x instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsis)
+            return false;
+        if (y instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsis)
+            return false;
 
 
         Op xOp = x.op();

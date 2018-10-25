@@ -182,7 +182,12 @@ public class PatternIndex extends MapConceptIndex {
 
         PremisePatternCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
             super(op, dt, subterms);
-            //super((Compound) HeapTermBuilder.the.compound(op, subterms.arrayShared()), dt);
+
+        }
+
+        @Override
+        public boolean unifyReverse(Term x, Unify u) {
+            return false; //disable
         }
 
         @Override

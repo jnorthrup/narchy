@@ -74,8 +74,14 @@ public class Taskify extends AbstractPred<Derivation> {
         Term x1;
 //        try {
             x1 = d.anon.get(x0);
-            if (x1 == null)
-                throw new NullPointerException(); //return spam(d, Param.TTL_DERIVE_TASK_FAIL);
+            if (x1 == null) {
+                if (Param.DEBUG)
+                    return spam(d, Param.TTL_DERIVE_TASK_FAIL);
+                else {
+                    return Derivation.fatal(new NullPointerException());
+                }
+
+            }
 //        } catch (RuntimeException r) {
 //            d.concTerm = null; //HACK
 //            return Derivation.fatal(r);

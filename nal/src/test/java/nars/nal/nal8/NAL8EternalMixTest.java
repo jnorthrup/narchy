@@ -21,7 +21,7 @@ import static nars.time.Tense.ETERNAL;
  */
 class NAL8EternalMixTest extends NALTest {
 
-    public static final LongPredicate WHEN_REALIZED = t -> t >= 0;
+    public static final LongPredicate ZERO = t -> t >= 0;
     private final int cycles = 500;
 
     @BeforeEach
@@ -257,9 +257,10 @@ class NAL8EternalMixTest extends NALTest {
     void further_detachment_2() {
 
         test
-                .input("reachable(SELF,{t002}). :|:")
+                .input("reachable(SELF,{t002}). | %1.0;0.7%")
                 .inputAt(3, "((reachable(SELF,{t002}) &&+5 pick({t002})) ==>+7 hold(SELF,{t002})).")
-                .mustBelieve(cycles, "(pick({t002}) ==>+7 hold(SELF, {t002}))", 1.0f, 0.81f, 5)
+                .mustBelieve(cycles, "(pick({t002}) ==>+7 hold(SELF,{t002}))", 1.0f, 0.81f, 5)
+                .mustBelieve(cycles, "(pick({t002}) ==>+7 hold(SELF,{t002}))", 1.0f, 0.81f, ETERNAL) //via structural reduction
 
         ;
 
@@ -507,7 +508,7 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .goal("R")
                 .input("((--,a:b) =|> R). |")
-                .mustGoal(cycles, "a:b", 0.0f, 0.43f, WHEN_REALIZED);
+                .mustGoal(cycles, "a:b", 0.0f, 0.43f, ZERO);
     }
 
 //    @Test
@@ -583,7 +584,7 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .input("R. :|:")
                 .input("((--,a:b) &&+0 R)!")
-                .mustGoal(cycles, "a:b", 0.0f, 0.81f, WHEN_REALIZED);
+                .mustGoal(cycles, "a:b", 0.0f, 0.81f, ZERO);
     }
 
 

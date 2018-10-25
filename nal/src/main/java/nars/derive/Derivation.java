@@ -118,10 +118,10 @@ public class Derivation extends PreDerivation {
             Term input = xx.sub(0);
             Term replaced = xx.sub(1);
             Term replacement = xx.sub(2);
-            if (replaced instanceof Atom) {
-
-                replaced = anon.put(replaced);
-            }
+//            if (replaced instanceof Atom) {
+//
+//                replaced = anon.put(replaced);
+//            }
 
             Term y = apply(xx, input, replaced, replacement);
 
@@ -130,8 +130,8 @@ public class Derivation extends PreDerivation {
             if (y != null && !(y instanceof Bool)) {
 
 
-                //retransform.put(y, input);
-                retransform.putIfAbsent(input, y);
+                retransform.put(y, input);
+                //retransform.putIfAbsent(input, y);
 
             }
             return y;
@@ -345,6 +345,7 @@ public class Derivation extends PreDerivation {
 
             this._belief = beliefTruthRaw != null || beliefTruthProjectedToTask != null ? nextBelief : null;
         } else {
+            this.beliefStart = this.beliefEnd = TIMELESS;
             this._belief = null;
         }
 
@@ -362,7 +363,6 @@ public class Derivation extends PreDerivation {
                         anon.put(this._beliefTerm = nextBeliefTerm); //unshifted, since the term may be structural
 
             //this.belief = null;
-            this.beliefStart = this.beliefEnd = TIMELESS;
             this.beliefTruthRaw = this.beliefTruthProjectedToTask = null;
         }
 

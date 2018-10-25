@@ -131,8 +131,10 @@ public class NodeConcept implements Concept {
     @Override
     public void delete( NAR nar) {
         meta.clearPut(DELETED, DELETED);
-        termLinks.clear();
-        taskLinks.clear();
+
+        //not necessary:
+//        termLinks.clear();
+//        taskLinks.clear();
     }
 
     @Override

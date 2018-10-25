@@ -52,7 +52,9 @@ public class PremiseRuleProto extends PremiseRuleSource {
 
         post.add(UnifyTerm.preUnify);
 
-        if (taskPattern.equals(beliefPattern) || taskPattern.containsRecursively(beliefPattern)) {
+        if (taskPattern.equals(beliefPattern) || (
+                !taskPattern.OR(x->x instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsis)
+                    && taskPattern.containsRecursively(beliefPattern))) {
             post.add(new UnifyTerm.NextUnifyTransform(0, taskPattern, conc));
         } else {
             post.add(new UnifyTerm.NextUnify(0, taskPattern));

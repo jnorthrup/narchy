@@ -5,7 +5,11 @@ import jcog.lab.util.Opti;
 import jcog.lab.util.Optimization;
 import nars.NAR;
 import nars.NARS;
+import nars.derive.Deriver;
+import nars.derive.budget.DefaultDeriverBudgeting;
+import nars.derive.impl.MatrixDeriver;
 import nars.nal.nal1.NAL1MultistepTest;
+import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
 import nars.nal.nal5.NAL5Test;
 import nars.test.TestNARSuite;
@@ -26,7 +30,7 @@ class NARTestOptimize {
             boolean parallel = true;
             Class[] testClasses = new Class[] {
                     //NAL1Test.class,
-                    //NAL2Test.class,
+                    NAL2Test.class,
                     NAL3Test.class,
 //                    NAL4Test.class,
                     NAL1MultistepTest.class,
@@ -64,10 +68,10 @@ class NARTestOptimize {
 //                .var("goalPriDefault", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.goalPriDefault.set(f))
 
-//                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
-//                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
-//                                ((DefaultDeriverBudgeting)(((MatrixDeriver)x).budgeting)).
-//                                        relGrowthExponent.set(f)))
+                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
+                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
+                                ((DefaultDeriverBudgeting)(((MatrixDeriver)x).budgeting)).
+                                        relGrowthExponent.set(f)))
 //                .var("derivationScale", 0.5f, 2f, 0.1f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
 //                                ((DefaultDeriverBudgeting)(((MatrixDeriver)x).budgeting)).

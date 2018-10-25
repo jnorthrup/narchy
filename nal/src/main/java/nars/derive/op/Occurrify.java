@@ -197,35 +197,33 @@ public class Occurrify extends TimeGraph {
 
 
         Term taskTerm = d.reResolve(d.taskTerm);
-        final boolean single = d.concSingle;
         Term beliefTerm = d.reResolve(d.beliefTerm);
 
         long taskStart = taskOccurrence ? d.taskStart : TIMELESS,
                 taskEnd = taskOccurrence ? d.taskEnd : TIMELESS,
-                beliefStart = (single || !beliefOccurrence) ? TIMELESS : d.beliefStart,
-                beliefEnd = (single || !beliefOccurrence) ? TIMELESS : d.beliefEnd;
+                beliefStart = ( !beliefOccurrence) ? TIMELESS : d.beliefStart,
+                beliefEnd = ( !beliefOccurrence) ? TIMELESS : d.beliefEnd;
 
 
         if (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG)) {
 
-            setAutoNeg(pattern, taskTerm, single, beliefTerm);
+            setAutoNeg(pattern, taskTerm, beliefTerm);
         }
 
-        if (!single) {
-            boolean taskEte = taskStart == ETERNAL;
-            boolean beliefEte = beliefStart == ETERNAL;
-            if (taskEte && !beliefEte && beliefStart != TIMELESS) {
-                taskStart = beliefStart; //use belief time for eternal task
-                taskEnd = beliefEnd;
-            } else if (beliefEte && !taskEte && taskStart != TIMELESS) {
-                beliefStart = taskStart; //use task time for eternal belief
-                beliefEnd = taskEnd;
-            }
+//        if (!single) {
+        boolean taskEte = taskStart == ETERNAL;
+        boolean beliefEte = beliefStart == ETERNAL;
+        if (taskEte && !beliefEte && beliefStart != TIMELESS) {
+            taskStart = beliefStart; //use belief time for eternal task
+            taskEnd = beliefEnd;
+        } else if (beliefEte && !taskEte && taskStart != TIMELESS) {
+            beliefStart = taskStart; //use task time for eternal belief
+            beliefEnd = taskEnd;
         }
+//        }
 
 
         boolean reUse =
-                this.single == single &&
                         this.decomposeEvents == decomposeEvents &&
                         occurrenceQuad[0] == taskStart &&
                         occurrenceQuad[1] == taskEnd &&
@@ -234,8 +232,6 @@ public class Occurrify extends TimeGraph {
                         Objects.equals(taskTerm, curTaskTerm) &&
                         Objects.equals(beliefTerm, curBeliefTerm) &&
                         Objects.equals(autoNeg, autoNegNext);
-
-
 
 
         if (!reUse) {
@@ -251,9 +247,6 @@ public class Occurrify extends TimeGraph {
             occurrenceQuad[2] = beliefStart;
             occurrenceQuad[3] = beliefEnd;
 
-            this.single = single;
-
-
             autoNeg.clear();
             autoNegNext.forEach(x -> autoNeg.add(x.unneg()));
 
@@ -266,19 +259,19 @@ public class Occurrify extends TimeGraph {
                 know(taskTerm);
 
 
-            if (!(this.single)) {
-                if (beliefStart != TIMELESS)
-                    know(beliefTerm, beliefStart, beliefEnd);
-                else
-                    know(beliefTerm);
-            }
+//            if (!(this.single)) {
+            if (beliefStart != TIMELESS)
+                know(beliefTerm, beliefStart, beliefEnd);
+            else
+                know(beliefTerm);
+//            }
 
         }
 
         return this;
     }
 
-    private void setAutoNeg(Term pattern, Term taskTerm, boolean single, Term beliefTerm) {
+    private void setAutoNeg(Term pattern, Term taskTerm, Term beliefTerm) {
         assert (nextPos.isEmpty() && nextNeg.isEmpty());
 
         UnifiedSet<Term> pp = nextPos;
@@ -299,7 +292,7 @@ public class Occurrify extends TimeGraph {
                 pp.remove(sub); //dont add the inner positive unneg'd term of a negation unless conj (ie. disj)
         };
         taskTerm.recurseTerms(provide);
-        if (!single && (!pp.isEmpty() || !nn.isEmpty()))
+        if (!pp.isEmpty() || !nn.isEmpty())
             beliefTerm.recurseTerms(provide);
 
 
@@ -710,6 +703,7 @@ public class Occurrify extends TimeGraph {
                 }
                 return solveSubSequence(x, d.taskTerm, d.taskStart, d.taskEnd);
             }
+
             @Override
             long[] occurrence(Derivation d) {
                 throw new UnsupportedOperationException();
@@ -731,7 +725,7 @@ public class Occurrify extends TimeGraph {
                     return pair(x, new long[]{ETERNAL, ETERNAL});
 
                 if (d.beliefStart == ETERNAL)
-                    return pair(x, new long[] { d.taskStart, d.taskEnd });
+                    return pair(x, new long[]{d.taskStart, d.taskEnd});
 
                 return solveSubSequence(x, d.beliefTerm, d.beliefStart, d.beliefEnd);
             }
@@ -874,9 +868,11 @@ public class Occurrify extends TimeGraph {
                 if (p != null) {
                     long s, e;
                     if (d.taskStart == ETERNAL && !d.occ.validEternal()) {
-                        s = d.beliefStart; e = d.beliefEnd;
+                        s = d.beliefStart;
+                        e = d.beliefEnd;
                     } else {
-                        s = d.taskStart; e = d.taskEnd;
+                        s = d.taskStart;
+                        e = d.taskEnd;
                     }
                     p.getTwo()[0] = s;
                     p.getTwo()[1] = e;
@@ -1017,8 +1013,8 @@ public class Occurrify extends TimeGraph {
 
             long target =
                     //d.time;
-                    d.taskStart!=ETERNAL || d.beliefStart == TIMELESS ? d.taskStart : d.beliefStart;
-                    //Math.max(d.taskStart, d.time);
+                    d.taskStart != ETERNAL || d.beliefStart == TIMELESS ? d.taskStart : d.beliefStart;
+            //Math.max(d.taskStart, d.time);
 
             if (o[0] < target) {
 
@@ -1198,9 +1194,9 @@ public class Occurrify extends TimeGraph {
             return pair(x, new long[]{srcStart, srcEnd});
         } else {
             int offset = src.subTimeFirst(x);
-            if (offset==DTERNAL) {
+            if (offset == DTERNAL) {
                 offset = src.subTimeFirst(x.neg());
-                if (offset==DTERNAL) {
+                if (offset == DTERNAL) {
                     final Term[] first = {null};
                     x.eventsWhile((when, what) -> {
                         first[0] = what;
