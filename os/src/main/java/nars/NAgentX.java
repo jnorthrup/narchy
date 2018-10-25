@@ -60,6 +60,7 @@ import static java.util.stream.StreamSupport.stream;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -398,6 +399,8 @@ abstract public class NAgentX extends NAgent {
     }
 
     public static void initPlugins(NAR n) {
+
+
 
         new BatchDeriver(Derivers.nal(n, 1, 8,
             "motivation.nal",

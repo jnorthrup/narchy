@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.NARS;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.AccessibleObject;
@@ -59,8 +60,10 @@ public abstract class NALTest {
 
             t.test.test();
 
+        } catch (AssertionFailedError ae) {
+          //ignore
         } catch (Throwable ee) {
-            t.test.score = -1;
+          ee.printStackTrace();
         }
         return t;
 

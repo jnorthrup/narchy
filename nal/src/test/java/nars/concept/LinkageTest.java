@@ -1,11 +1,10 @@
-package nars.nal;
+package nars.concept;
 
 
 import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.concept.Concept;
 import nars.term.Termed;
 import nars.term.Variable;
 import nars.test.NALTest;

@@ -36,6 +36,7 @@
 package jcog.io.arff;
 
 import com.google.common.primitives.Primitives;
+import jcog.TODO;
 import jcog.Texts;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
@@ -46,18 +47,17 @@ import org.intelligentjava.machinelearning.decisiontree.FloatTable;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.tablesaw.api.ColumnType;
+import tech.tablesaw.columns.numbers.DoubleColumnType;
+import tech.tablesaw.columns.strings.StringColumnType;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import static jcog.io.arff.ARFF.AttributeType.*;
 
 /**
  * https:
@@ -85,7 +85,7 @@ import static jcog.io.arff.ARFF.AttributeType.*;
  * https:
  * https:
  */
-public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
+public class ARFF extends jcog.io.Schema  {
 
 
     static final String NEW_LINE = System.getProperty("line.separator");
@@ -286,9 +286,9 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
         String lowertype = type.toLowerCase();
 
         if (lowertype.equals("real") || lowertype.equals("numeric") || lowertype.equals("integer")) {
-            define(name, Numeric);
+            defineNumeric(name);
         } else if (lowertype.equals("string")) {
-            define(name, Text);
+            defineText(name);
         } else  {
             int a = line.indexOf('{');
             if (a != -1) {
@@ -304,7 +304,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
     }
 
     private void parseData(int lineno, String line) throws ARFFParseError {
-        int num_attributes = attribute_names.size();
+        int num_attributes = columnCount();
 //        if (line.charAt(0) == '{' && line.charAt(line.length() - 1) == '}') {
 //            throw new ARFFParseError(lineno, "Sparse data not supported (yet).");
 //        } else {
@@ -318,24 +318,22 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
             Object[] datum = new Object[num_attributes];
             for (int i = 0; i < num_attributes; i++) {
                 
-                String name = attribute_names.get(i);
-                switch (attrTypes.get(name)) {
-                    case Numeric:
-                        if (tokens[i] == null || tokens[i].equals("null"))
-                            datum[i] = valueIfNull;
-                        else
-                            datum[i] = Double.parseDouble(tokens[i]);
-                        break;
-                    case Text:
-                        datum[i] = tokens[i];
-                        break;
-                    case Nominal:
-                        if (!isNominalValueValid(name, tokens[i])) {
-                            throw new ARFFParseError(lineno, "Undefined nominal value \"" +
-                                    tokens[i] + "\" for field " + name + ".");
-                        }
-                        datum[i] = tokens[i];
-                        break;
+                String name = attrName(i);
+                ColumnType t = column(i).type();
+                if (t == DoubleColumnType.INSTANCE) {
+                    if (tokens[i] == null || tokens[i].equals("null"))
+                        datum[i] = valueIfNull;
+                    else
+                        datum[i] = Double.parseDouble(tokens[i]);
+                } else if (t == StringColumnType.INSTANCE) {
+                    datum[i] = tokens[i];
+                } else {
+//                    if (!isNominalValueValid(name, tokens[i])) {
+//                        throw new ARFFParseError(lineno, "Undefined nominal value \"" +
+//                                tokens[i] + "\" for field " + name + ".");
+//                    }
+//                    datum[i] = tokens[i];
+                    throw new TODO();
                 }
             }
 
@@ -369,9 +367,10 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
 
         try {
             s.append("Relation " + relation).append(NEW_LINE).append("with attributes").append(NEW_LINE);
-            for (String n : attribute_names) {
-                s.append("   " + n + " of type " + attrTypes.get(n));
-                if (attrTypes.get(n) == Nominal) {
+            for (String n : columnNames()) {
+                ColumnType at = attrType(n);
+                s.append("   " + n + " of type " + at);
+                if (at instanceof NominalColumnType) {
                     s.append(" with values ");
                     joinWith(nominalCats.get(n), s, ", ");
                 }
@@ -404,23 +403,24 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
 
         s.append("@relation ").append(relation).append(NEW_LINE);
 
-        for (String name : attribute_names) {
+        for (String name : columnNames()) {
             s.append("@attribute ").append(quoteIfNecessary(name)).append(" ");
 
-            switch (attrTypes.get(name)) {
-                case Numeric:
-                    s.append("numeric");
-                    break;
-                case Text:
-                    s.append("string");
-                    break;
-                case Nominal:
-                    s.append("{");
-                    joinWith(nominalCats.get(name), s, ",");
-                    s.append("}");
-                    break;
-            }
-            s.append(NEW_LINE);
+            throw new TODO();
+//            switch (attrTypes.get(name)) {
+//                case Numeric:
+//                    s.append("numeric");
+//                    break;
+//                case Text:
+//                    s.append("string");
+//                    break;
+//                case Nominal:
+//                    s.append("{");
+//                    joinWith(nominalCats.get(name), s, ",");
+//                    s.append("}");
+//                    break;
+//            }
+//            s.append(NEW_LINE);
         }
 
         s.append("@data").append(NEW_LINE);
@@ -498,25 +498,26 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
     }
 
     public boolean add(ImmutableList point) {
-        if (point.size() != attribute_names.size())
-            throw new UnsupportedOperationException("row structure mismatch: provided " + point.size() + " != expected " + attribute_names.size());
+        if (point.size() != columnCount())
+            throw new UnsupportedOperationException("row structure mismatch: provided " + point.size() + " != expected " + columnCount());
         return this.data.add(point);
     }
 
-    public Iterator<ImmutableList> iterator() {
-        return data.iterator();
-    }
+//    public Iterator<ImmutableList> iterator() {
+//        return data.iterator();
+//    }
 
-    public void print() {
-        try {
-            write(System.out);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public void print() {
+//        try {
+//            write(System.out);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     public Stream<Instance> stream() {
-        return data.stream().map(x -> new Instance(this, x));
+        throw new TODO();
+        //return data.stream().map(x -> new Instance(this, x));
     }
 
     public boolean addAll(ARFF incoming) {
@@ -540,7 +541,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
 
     @Deprecated public FloatTable<String> toFloatTable() {
 
-        FloatTable<String> data = new FloatTable<>(this.attrNames() );
+        FloatTable<String> data = new FloatTable<>(columnNames().toArray(new String[0]) );
 
         int cols = data.cols.length;
 
@@ -581,27 +582,6 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
 //
 //    }
 
-
-
-    public enum AttributeType {
-        /*
-        boolean?
-        numeric
-        integer is treated as numeric
-        real is treated as numeric
-         */
-        Numeric,
-
-        Text,
-
-        Nominal
-
-        /*
-        TODO
-        date [<date-format>]
-        relational for multi-instance data (for future use)
-        */
-    }
 
     public static class ARFFParseError extends Exception {
 
@@ -691,7 +671,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
         }
 
         public boolean put(X x) {
-            int n = attrCount();
+            int n = columnCount();
             Object[] o = new Object[n];
             for (int i = 0; i < n; i++) {
                 o[i] = extractor[i].apply(x);

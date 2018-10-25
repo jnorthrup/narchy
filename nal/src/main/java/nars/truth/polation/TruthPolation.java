@@ -2,7 +2,6 @@ package nars.truth.polation;
 
 import jcog.Paper;
 import jcog.Skill;
-import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import nars.NAR;
@@ -12,7 +11,6 @@ import nars.Task;
 import nars.task.Revision;
 import nars.task.Tasked;
 import nars.task.util.TaskRegion;
-import nars.task.util.TimeRange;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -86,13 +84,13 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
             Task task = tc.task;
 
-            if ((tc.evi = TruthIntegration.evi(task, start, end, dur)) >= Float.MIN_NORMAL) {
+            if ((tc.evi = TruthIntegration.evi(task, start, end, dur)) >= Param.TRUTH_MIN_EVI) {
                 tc.freq = task.freq(start, end);
             }
         }
 
         //Float.MIN_NORMAL is used here to allow sub-MIN_EVI contributions
-        return tc.evi >= Float.MIN_NORMAL ? tc : null;
+        return tc.evi >= Param.TRUTH_MIN_EVI ? tc : null;
     }
 
 //    public final MetalLongSet filterCyclic() {
@@ -108,9 +106,9 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         return this;
     }
 
-    @Nullable public final MetalLongSet filterCyclic(boolean provideStampIfOneTask) {
-        return filterCyclic(null, provideStampIfOneTask);
-    }
+//    @Nullable public final MetalLongSet filterCyclic(boolean provideStampIfOneTask) {
+//        return filterCyclic(null, provideStampIfOneTask);
+//    }
     @Nullable public final MetalLongSet filterCyclic(boolean provideStampIfOneTask, int minResults) {
         return filterCyclic(null, provideStampIfOneTask, minResults);
     }
@@ -360,42 +358,42 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         return truth(null);
     }
 
-    /** refined time involving the actual contained tasks.  the pre-specified interval may be larger but
-     * after filtering tasks, it may have shrunk.
-     */
-    public TimeRange taskRange() {
-        long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
+//    /** refined time involving the actual contained tasks.  the pre-specified interval may be larger but
+//     * after filtering tasks, it may have shrunk.
+//     */
+//    public TimeRange taskRange() {
+//        long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
+//
+//        for (TaskComponent x : this) {
+//            long a = x.task.start();
+//            if (a!=ETERNAL) {
+//                a = Math.min(end, a);
+//                if (a < s)
+//                    s = a;
+//                long b = x.task.end();
+//                b = Math.max(start, b);
+//                if (b > e)
+//                    e = b;
+//            }
+//        }
+//
+//        if (s == Long.MAX_VALUE)
+//            return TimeRange.ETERNAL; //unchanged, must be due to eternal content only
+//        else if (start == ETERNAL)
+//            return new TimeRange(new long[] { s, e });
+//        else {
+//            long[] t = new long[]{
+//                    Math.max(s, start), Math.min(e, end)
+//            };
+//            if (t[0] > t[1])
+//                throw new WTF();
+//            return new TimeRange(t);
+//        }
+//    }
 
-        for (TaskComponent x : this) {
-            long a = x.task.start();
-            if (a!=ETERNAL) {
-                a = Math.min(end, a);
-                if (a < s)
-                    s = a;
-                long b = x.task.end();
-                b = Math.max(start, b);
-                if (b > e)
-                    e = b;
-            }
-        }
-
-        if (s == Long.MAX_VALUE)
-            return TimeRange.ETERNAL; //unchanged, must be due to eternal content only
-        else if (start == ETERNAL)
-            return new TimeRange(new long[] { s, e });
-        else {
-            long[] t = new long[]{
-                    Math.max(s, start), Math.min(e, end)
-            };
-            if (t[0] > t[1])
-                throw new WTF();
-            return new TimeRange(t);
-        }
-    }
-
-    public Task getTask(int i) {
-        return get(i).task;
-    }
+//    public Task getTask(int i) {
+//        return get(i).task;
+//    }
 
     public void print() {
         forEach(t -> System.out.println(t.task.proof()));

@@ -147,7 +147,7 @@ public class TsneTest {
 
             SpaceGraph.window(
                 new Graph2D<Schema.Instance>().
-                    update(new TsneModel(0, data.attrCount())).
+                    update(new TsneModel(0, data.columnCount())).
                     render(new TsneRenderer() {
                         @Override protected void paintNode(GL2 gl, Surface surface, Schema.Instance id) {
                             float score = ((Double)(id.data.get(0))).floatValue();

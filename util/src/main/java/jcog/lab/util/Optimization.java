@@ -10,7 +10,6 @@ import jcog.lab.Lab;
 import jcog.lab.Sensor;
 import jcog.lab.Var;
 import jcog.lab.var.FloatVar;
-import jcog.math.Quantiler;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;
@@ -251,26 +250,26 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
     }
 
 
-    /**
-     * remove entries below a given percentile
-     */
-    public void cull(float minPct, float maxPct) {
-
-        int n = data.data.size();
-        if (n < 6)
-            return;
-
-        Quantiler q = new Quantiler((int) Math.ceil((n - 1) / 2f));
-        data.forEach(r -> {
-            q.add(((Number) r.get(0)).floatValue());
-        });
-        float minValue = q.quantile(minPct);
-        float maxValue = q.quantile(maxPct);
-        data.data.removeIf(r -> {
-            float v = ((Number) r.get(0)).floatValue();
-            return v <= maxValue && v >= minValue;
-        });
-    }
+//    /**
+//     * remove entries below a given percentile
+//     */
+//    public void cull(float minPct, float maxPct) {
+//
+//        int n = data.data.size();
+//        if (n < 6)
+//            return;
+//
+//        Quantiler q = new Quantiler((int) Math.ceil((n - 1) / 2f));
+//        data.forEach(r -> {
+//            q.add(((Number) r.get(0)).floatValue());
+//        });
+//        float minValue = q.quantile(minPct);
+//        float maxValue = q.quantile(maxPct);
+//        data.data.removeIf(r -> {
+//            float v = ((Number) r.get(0)).floatValue();
+//            return v <= maxValue && v >= minValue;
+//        });
+//    }
 
 //    public List<DecisionTree> forest(int discretization, int maxDepth) {
 //        if (data.isEmpty())

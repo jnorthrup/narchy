@@ -35,7 +35,7 @@ public class LabTest {
 
         assertTrue(((Number) best.get(0)).doubleValue() >= 4.9f);
         assertTrue(a.vars.size() >= 4);
-        assertEquals(5, r.data().attrCount());
+        assertEquals(5, r.data().columnCount());
 
 
     }

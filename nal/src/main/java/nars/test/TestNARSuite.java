@@ -42,12 +42,13 @@ public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
 
 
             (parallel ? mm.stream().parallel() : mm.stream()).forEach(m -> {
+                String testName = m.getDeclaringClass().getName() + ' ' + m.getName();
+                MyTestNAR t = new MyTestNAR(narBuilder.get(), testName);
+                synchronized (TestNARSuite.this) {
+                    add(t); //allow repeats
+                }
+
                 try {
-                    String testName = m.getDeclaringClass().getName() + ' ' + m.getName();
-                    MyTestNAR t = new MyTestNAR(narBuilder.get(), testName);
-                    synchronized (TestNARSuite.this) {
-                        add(t); //allow repeats
-                    }
                     NALTest.test(t, m);
                 } catch (Throwable e) {
                     e.printStackTrace();

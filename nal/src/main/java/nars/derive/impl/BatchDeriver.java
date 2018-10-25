@@ -40,7 +40,7 @@ public class BatchDeriver extends Deriver {
         }
     }
 
-    public final IntRange conceptsPerIteration = new IntRange(3, 1, 32);
+    public final IntRange conceptsPerIteration = new IntRange(2, 1, 32);
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
@@ -130,6 +130,8 @@ public class BatchDeriver extends Deriver {
         Concept concept = conceptActivation.id;
 
         Bag<?, TaskLink> tasklinks = concept.tasklinks();
+        if (tasklinks.isEmpty())
+            return;
 
         commit(d, concept, tasklinks);
 
@@ -142,40 +144,40 @@ public class BatchDeriver extends Deriver {
             beliefSrc = ()->concept.linker().sample(rng);
         }
 
-        if (!tasklinks.isEmpty()) {
+        final ArrayHashSet<TaskLink> tasklinksFired = d.firedTaskLinks;
+        tasklinksFired.clear();
 
-            final ArrayHashSet<TaskLink> tasklinksFired = d.firedTaskLinks;
-            tasklinksFired.clear();
 
-            int[] premisesPerConcept = { _tasklinks *  _termlinksPerTasklink };
+        int nTaskLinks = tasklinks.size();
 
-            int nTaskLinks = tasklinks.size();
+        FasterList<Premise> premises = d.premiseBuffer;
 
-            FasterList<Premise> premises = d.premiseBuffer;
+//        int[] tasklinksPerConcept = { nTaskLinks };
 
-            tasklinks.sample(rng, Math.min(_tasklinks, nTaskLinks), tasklink -> {
+        tasklinks.sample(rng, Math.min(_tasklinks, nTaskLinks), tasklink -> {
 
-                Task task = tasklink.get(nar);
-                if (task != null) {
+            Task task = tasklink.get(nar);
+            if (task != null) {
 
-                    tasklinksFired.add(tasklink);
+                int[] premisesPerTaskLink = { _termlinksPerTasklink };
 
-                    do {
-                        Term b = beliefSrc.get();
-                        if (b!=null) {
-                            if (premises.add(new Premise(task, b)))
-                                if (premises.size() >= premisesMax)
-                                    return false;
-                        }
-                    } while (premisesPerConcept[0]-- > 0);
-                }
+                tasklinksFired.add(tasklink);
 
-                return (premisesPerConcept[0]-- > 0);
-            });
+                do {
+                    Term b = beliefSrc.get();
+                    if (b!=null) {
+                        if (premises.add(new Premise(task, b)))
+                            if (premises.size() >= premisesMax)
+                                return false;
+                    }
+                } while (premisesPerTaskLink[0]-- > 0);
+            }
 
-            concept.linker().link(conceptActivation, d);
+            //return (premisesPerConcept[0]-- > 0);
+            return true;
+        });
 
-        }
+        concept.linker().link(conceptActivation, d);
 
     }
 

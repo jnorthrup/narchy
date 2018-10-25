@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * table of float[]'s of uniform length, each column labeled by a unique header (H)
  */
-public class FloatTable<H> {
+@Deprecated public class FloatTable<H> {
 
     public final List<float[]> rows = new FasterList();
     public final H[] cols;

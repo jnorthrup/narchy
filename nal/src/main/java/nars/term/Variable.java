@@ -65,8 +65,6 @@ public interface Variable extends Atomic {
         } else
             y = _y;
 
-        if (x.equals(y))
-            return true;
 
 //        if (x!=this || _y != y) {
 //            if (x!=this && x.op()==NEG && y.op()==NEG) {
@@ -95,17 +93,22 @@ public interface Variable extends Atomic {
 //            }
 //        }
 
+        if (y instanceof Variable) {
+            if (x.equals(y))
+                return true;
+
+            return unifyVar((Variable) y, u);
+        }
+
         if (x != this) {
-//            try {
+            try {
                 return x.unify(y, u);
-//            } catch (StackOverflowError e) {
-//                System.out.println(x + " " + y);
-//                return false;
-//            }
+            } catch (StackOverflowError e) {
+                System.out.println(x + " " + y);
+                return false;
+            }
         } else {
-            if (y instanceof Variable) {
-                return unifyVar((Variable) y, u);
-            } else {
+            {
                 return u.matchType(this.op()) && u.putXY(this, y);
             }
         }

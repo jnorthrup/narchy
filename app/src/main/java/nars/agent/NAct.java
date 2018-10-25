@@ -25,7 +25,6 @@ import java.util.function.IntPredicate;
 
 import static jcog.Util.unitize;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 
 /**
  * Created by me on 9/30/16.
@@ -316,11 +315,11 @@ public interface NAct {
                     n.confMin.floatValue();
                     //n.confDefault(BELIEF)/4;
             BeliefTables xb = (BeliefTables) x.beliefs();
-            BeliefTables xg = (BeliefTables) x.goals();
+            //BeliefTables xg = (BeliefTables) x.goals();
             //xg.tables.add(new EternalTable(1));
-            xg.tableFirst(EternalTable.class).add(
-                    Remember.the(new NALTask(x.term(), GOAL,
-                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()).pri(n), n), n);
+//            xg.tableFirst(EternalTable.class).add(
+//                    Remember.the(new NALTask(x.term(), GOAL,
+//                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()).pri(n), n), n);
             xb.tables.add(new EternalTable(1));
             xb.tableFirst(EternalTable.class).add(
                     Remember.the(new NALTask(x.term(), BELIEF,

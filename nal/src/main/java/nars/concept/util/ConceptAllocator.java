@@ -18,8 +18,7 @@ public final class ConceptAllocator implements Consumer<Concept> {
             beliefsEteCapacity, beliefsTempCapacity,
             goalsEteCapacity, goalsTempCapacity, questionsCapacity, questsCapacity,
             tasklinksCapacity;
-    @Deprecated private final ToIntFunction<Concept>
-            termlinksCapacity;
+
 
 
 //    /**
@@ -64,17 +63,16 @@ public final class ConceptAllocator implements Consumer<Concept> {
 //    }
 
     public ConceptAllocator(
-                     ToIntFunction<Concept> beliefsEteCapacity, ToIntFunction<Concept> beliefsTempCapacity,
-                     ToIntFunction<Concept> goalsEteCapacity, ToIntFunction<Concept> goalsTempCapacity,
-                     ToIntFunction<Concept> questionsCapacity, ToIntFunction<Concept> questsCapacity,
-                     ToIntFunction<Concept> termlinksCapacity, ToIntFunction<Concept> taskLinksCapacity) {
+            ToIntFunction<Concept> beliefsEteCapacity, ToIntFunction<Concept> beliefsTempCapacity,
+            ToIntFunction<Concept> goalsEteCapacity, ToIntFunction<Concept> goalsTempCapacity,
+            ToIntFunction<Concept> questionsCapacity, ToIntFunction<Concept> questsCapacity,
+            ToIntFunction<Concept> taskLinksCapacity) {
         this.beliefsEteCapacity = beliefsEteCapacity;
         this.beliefsTempCapacity = beliefsTempCapacity;
         this.goalsEteCapacity = goalsEteCapacity;
         this.goalsTempCapacity = goalsTempCapacity;
         this.questionsCapacity = questionsCapacity;
         this.questsCapacity = questsCapacity;
-        this.termlinksCapacity = termlinksCapacity;
         this.tasklinksCapacity = taskLinksCapacity;
     }
 
@@ -87,7 +85,7 @@ public final class ConceptAllocator implements Consumer<Concept> {
     }
 
     private void apply(Concept c) {
-        c.tasklinks().setCapacity(linkCap(c, false));
+        c.tasklinks().setCapacity(tasklinkCap(c));
     }
 
 
@@ -119,8 +117,8 @@ public final class ConceptAllocator implements Consumer<Concept> {
                         goalsEteCapacity : goalsTempCapacity)).applyAsInt(concept);
     }
 
-    @Deprecated private int linkCap(Concept concept, boolean termOrTask) {
-        return (termOrTask ?  termlinksCapacity : tasklinksCapacity).applyAsInt(concept);
+    @Deprecated private int tasklinkCap(Concept concept) {
+        return tasklinksCapacity.applyAsInt(concept);
     }
 
     private int questionCap(TaskConcept concept, boolean questionOrQuest) {

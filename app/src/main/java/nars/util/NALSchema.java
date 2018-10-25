@@ -1,5 +1,6 @@
 package nars.util;
 
+import com.google.common.collect.ImmutableList;
 import jcog.Texts;
 import jcog.data.list.FasterList;
 import jcog.io.arff.ARFF;
@@ -11,7 +12,6 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
-import org.eclipse.collections.api.list.ImmutableList;
 
 import java.util.Arrays;
 import java.util.List;
@@ -64,7 +64,7 @@ public class NALSchema {
     public static Stream<Task> metaBeliefs(NAR nar, ARFF a, BiFunction<Term, Term[], Term> pointGenerator) {
         List<Term> meta = new FasterList();
 
-        int n = a.attrCount();
+        int n = a.columnCount();
         Term pattern = pointGenerator.apply(
             name(a),
             IntStream.range(0,n).mapToObj(i -> $.varDep(i+1)).toArray(Term[]::new)

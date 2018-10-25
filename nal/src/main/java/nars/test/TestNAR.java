@@ -145,7 +145,7 @@ public class TestNAR {
 //                :
 //                0
 
-                -runtime : -finalCycle*2
+                -runtime : -finalCycle
                 ;
 
         {

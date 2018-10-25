@@ -123,14 +123,14 @@ public class NARS {
 
 
                 n.activation.set(0.3f);
-                n.memoryDuration.set(4.5f);
+                n.memoryDuration.set(5.5f);
 
 
 
-                n.beliefPriDefault.set(0.65f);
-                n.goalPriDefault.set(0.65f);
-                n.questionPriDefault.set(0.15f);
-                n.questPriDefault.set(0.15f);
+                n.beliefPriDefault.set(0.9f);
+                n.goalPriDefault.set(0.9f);
+                n.questionPriDefault.set(0.5f);
+                n.questPriDefault.set(0.5f);
 
 
             });
@@ -210,16 +210,10 @@ public class NARS {
                                 12, 6,
                                 24, 4
                         ),
-                        //termlinks
+                        //tasklinks
                         curve(Concept::volume,
                                 1, 64,
                                 24,32,
-                                48,16
-                        ),
-                        //tasklinks
-                        curve(Concept::volume,
-                                1, 32,
-                                24,16,
                                 48,8
                         ))
         );
