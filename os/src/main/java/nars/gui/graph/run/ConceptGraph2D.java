@@ -66,7 +66,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 //        })
                 .render(
                         Graph2D.InvalidateEdges,
-                        new TermlinkVis(n),
+  //                      new TermlinkVis(n),
                         new TasklinkVis(n),
                         new StatementVis(n)
                 );
@@ -149,42 +149,42 @@ public class ConceptGraph2D extends Graph2D<Concept> {
     final static float COLOR_UPDATE_RATE = 0.5f;
     final static float COLOR_FADE_RATE = 0.05f;
 
-    private static class TermlinkVis implements Graph2DRenderer<Concept> {
-        public final AtomicBoolean termlinks = new AtomicBoolean(true);
-        final NAR n;
-
-        private TermlinkVis(NAR n) {
-            this.n = n;
-        }
-
-        @Override
-        public void node(NodeVis<Concept> node, GraphEditing<Concept> graph) {
-            if (!termlinks.get())
-                return;
-
-            Concept id = node.id;
-            if (id!=null) {
-                id.termlinks().forEach(l -> {
-                    Graph2D.EdgeVis<Concept> e = graph.edge(node, wrap(l.get()));
-                    if (e != null) {
-                        float p = l.priElseZero();
-                        e.weightLerp(p, WEIGHT_UPDATE_RATE)
-                                .colorLerp((0.9f * p) + 0.1f, Float.NaN, Float.NaN, COLOR_UPDATE_RATE)
-                                .colorLerp(Float.NaN,0,0,COLOR_FADE_RATE)
-                        ;
-
-                    }
-                });
-            }
-        }
-    }
+//    private static class TermlinkVis implements Graph2DRenderer<Concept> {
+//        public final AtomicBoolean termlinks = new AtomicBoolean(true);
+//        final NAR n;
+//
+//        private TermlinkVis(NAR n) {
+//            this.n = n;
+//        }
+//
+//        @Override
+//        public void node(NodeVis<Concept> node, GraphEditing<Concept> graph) {
+//            if (!termlinks.get())
+//                return;
+//
+//            Concept id = node.id;
+//            if (id!=null) {
+//                id.termlinks().forEach(l -> {
+//                    Graph2D.EdgeVis<Concept> e = graph.edge(node, wrap(l.get()));
+//                    if (e != null) {
+//                        float p = l.priElseZero();
+//                        e.weightLerp(p, WEIGHT_UPDATE_RATE)
+//                                .colorLerp((0.9f * p) + 0.1f, Float.NaN, Float.NaN, COLOR_UPDATE_RATE)
+//                                .colorLerp(Float.NaN,0,0,COLOR_FADE_RATE)
+//                        ;
+//
+//                    }
+//                });
+//            }
+//        }
+//    }
 
     /** bad HACK to avoid a term/concept equality issue */
     @Deprecated public static ProxyTerm wrap(Term l) {
         return new ProxyTerm(l);
     }
 
-    private static class TasklinkVis implements Graph2DRenderer<Concept> {
+    private static class TasklinkVis implements Graph2D.Graph2DRenderer<Concept> {
         public final AtomicBoolean tasklinks = new AtomicBoolean(true);
         final NAR n;
 

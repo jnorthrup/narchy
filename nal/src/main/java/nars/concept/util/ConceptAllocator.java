@@ -17,7 +17,10 @@ public final class ConceptAllocator implements Consumer<Concept> {
     private final ToIntFunction<Concept>
             beliefsEteCapacity, beliefsTempCapacity,
             goalsEteCapacity, goalsTempCapacity, questionsCapacity, questsCapacity,
-            termlinksCapacity, tasklinksCapacity;
+            tasklinksCapacity;
+    @Deprecated private final ToIntFunction<Concept>
+            termlinksCapacity;
+
 
 //    /**
 //     * minimum of 3 beliefs per belief table. for eternal, this allows revision between two goals to produce a third
@@ -84,7 +87,6 @@ public final class ConceptAllocator implements Consumer<Concept> {
     }
 
     private void apply(Concept c) {
-        c.termlinks().setCapacity(linkCap(c, true));
         c.tasklinks().setCapacity(linkCap(c, false));
     }
 
@@ -117,7 +119,7 @@ public final class ConceptAllocator implements Consumer<Concept> {
                         goalsEteCapacity : goalsTempCapacity)).applyAsInt(concept);
     }
 
-    private int linkCap(Concept concept, boolean termOrTask) {
+    @Deprecated private int linkCap(Concept concept, boolean termOrTask) {
         return (termOrTask ?  termlinksCapacity : tasklinksCapacity).applyAsInt(concept);
     }
 

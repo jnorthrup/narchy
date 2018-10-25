@@ -1,11 +1,10 @@
 package nars.link;
 
-import jcog.pri.PriReference;
-import jcog.pri.bag.Bag;
 import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.Termed;
 
+import java.util.Random;
 import java.util.stream.Stream;
 
 /** creates termlinks during concept activation */
@@ -36,10 +35,14 @@ public interface TermLinker {
         public void link(Activate asrc, Derivation d) {
 
         }
+
+        @Override
+        public Term sample(Random rng) {
+            return null;
+        }
     };
 
-    default void init(Bag<Term, PriReference<Term>> termlinks) {
+    @Deprecated Term sample(Random rng);
 
-    }
 
 }

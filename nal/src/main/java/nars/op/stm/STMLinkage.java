@@ -2,16 +2,18 @@ package nars.op.stm;
 
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.math.FloatRange;
-import jcog.pri.PLink;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.control.NARService;
-import nars.link.Activate;
+import nars.link.TaskLink;
+import nars.link.Tasklinks;
+import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
+import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 
 /**
@@ -21,7 +23,7 @@ import static nars.Op.GOAL;
  */
 public class STMLinkage extends NARService {
 
-    public final MetalConcurrentQueue<Activate> stm;
+    public final MetalConcurrentQueue<Pair<Task,Concept>> stm;
 
     final FloatRange strength = new FloatRange(1f, 0f, 1f);
 
@@ -49,7 +51,7 @@ public class STMLinkage extends NARService {
         );
     }
 
-    public static void link(Concept a, float pri, Concept b/*, short cid*/, NAR nar) {
+    public static void link(Task at, Concept ac, Pair<Task,Concept> b/*, short cid*/, NAR nar) {
 
         //if (a==b) ta.term().equals(tb.term()))
             //return;
@@ -59,13 +61,13 @@ public class STMLinkage extends NARService {
         //if (a != null) {
             //Concept b = nar.concept(tb);
             //if (b != null) {
-                if (a!=b) {
+                Concept bc = b.getTwo();
+                if (ac!=bc) {
 
 
-                    b.termlinks().putAsync(/*new CauseLink.PriCauseLink*/new PLink(a.term(), pri/*, cid*/));
-                    a.termlinks().putAsync(/*new CauseLink.PriCauseLink*/new PLink(b.term(), pri/*, cid*/));
-                    //ca.termlinks().putAsync(new CauseLink.PriCauseLink(cb.term(), pri, cid));
-
+                    Task bt = b.getOne();
+                    Tasklinks.linkTask(new TaskLink.GeneralTaskLink(bt, nar, bt.priElseZero()), ac.tasklinks(), null);
+                    Tasklinks.linkTask(new TaskLink.GeneralTaskLink(at, nar, at.priElseZero()), b.getTwo().tasklinks(), null);
 
                 }
 
@@ -117,16 +119,13 @@ public class STMLinkage extends NARService {
 
 
             float py = this.strength.floatValue() * yp;
-            Task yy = y;
-            stm.forEach(x -> link(yc,
-                    py * x.priElseZero(),
-                    x.id/*, cause.id*/, nar));
+            stm.forEach(x -> link(y, yc, x, nar));
 
             if (keep(y)) {
                 if (stm.isFull(1))
                     stm.poll();
 
-                stm.offer(new Activate(yc, yp));
+                stm.offer(pair(y, yc));
             }
         }
 

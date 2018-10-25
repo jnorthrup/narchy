@@ -21,7 +21,6 @@
 package nars.concept;
 
 import jcog.data.map.MetaMap;
-import jcog.pri.PriReference;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Bag;
 import nars.NAR;
@@ -32,7 +31,6 @@ import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.question.QuestionTable;
 import nars.task.Tasklike;
-import nars.term.Term;
 import nars.term.Termed;
 import nars.util.SoftException;
 import org.jetbrains.annotations.NotNull;
@@ -47,8 +45,6 @@ public interface Concept extends Termed, MetaMap {
 //    Concept[] EmptyArray = new Concept[0];
 
     Bag<Tasklike,TaskLink> tasklinks();
-
-    Bag<Term,PriReference<Term>> termlinks();
 
     BeliefTable beliefs();
 
@@ -86,7 +82,7 @@ public interface Concept extends Termed, MetaMap {
 //    }
 
     default <A extends Appendable> A print(@NotNull A out) {
-        print(out, true, true, true, true);
+        print(out, true, true, true);
         return out;
     }
 
@@ -126,7 +122,7 @@ public interface Concept extends Termed, MetaMap {
     /**
      * prints a summary of all termlink, tasklink, etc..
      */
-    default void print(Appendable out, boolean showbeliefs, boolean showgoals, boolean showtermlinks, boolean showtasklinks) {
+    default void print(Appendable out, boolean showbeliefs, boolean showgoals, boolean showtasklinks) {
 
         try {
             out.append("concept: ").append(toString()).append('\t').append(getClass().toString()).append('\n');
@@ -142,14 +138,6 @@ public interface Concept extends Termed, MetaMap {
                 }
             };
 
-            if (showtermlinks) {
-                
-                
-
-                out.append("\n TermLinks: ").append(String.valueOf(termlinks().size())).append(String.valueOf('/')).append(String.valueOf(termlinks().capacity())).append('\n');
-
-                termlinks().forEach(printBagItem);
-            }
 
             if (showtasklinks) {
                 out.append("\n TaskLinks: ").append(String.valueOf(tasklinks().size())).append(String.valueOf('/')).append(String.valueOf(tasklinks().capacity())).append('\n');

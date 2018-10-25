@@ -60,7 +60,7 @@ public class ConceptSurface extends TabPane {
                             });
                         },
                         "beliefs", () -> NARui.beliefCharts(n, n.concept(id)),
-                        "termlinks", () -> new BagView("TermLinks", n.concept(id).termlinks(), n),
+//                        "termlinks", () -> new BagView("TermLinks", n.concept(id).termlinks(), n),
                         "tasklinks", () -> new BagView("TaskLinks", n.concept(id).tasklinks(), n),
                         "goal", () -> {
                             return new Gridding(

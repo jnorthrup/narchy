@@ -467,7 +467,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
             cw.edges.write().clear();
             cw.id.tasklinks().forEach(x -> this.accept(cw, x));
-            cw.id.termlinks().forEach(x -> this.accept(cw, x));
+//            cw.id.termlinks().forEach(x -> this.accept(cw, x));
 
 
         }

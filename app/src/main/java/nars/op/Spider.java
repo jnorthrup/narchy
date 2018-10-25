@@ -3,7 +3,6 @@ package nars.op;
 import jcog.data.set.ArrayHashRing;
 import jcog.data.set.ArrayHashSet;
 import jcog.pri.Pri;
-import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
@@ -65,7 +64,7 @@ public class Spider extends Causable {
 
         //actions.put(new DeleteConcept(0.0001f));
 
-        actions.put(new TravelTermlink(0.9f));
+//        actions.put(new TravelTermlink(0.9f));
         actions.put(new TravelTasklink(0.9f));
 
         actions.put(new SqueezeTaskLinks(0.1f, 0.6f)); //soft
@@ -226,9 +225,47 @@ public class Spider extends Causable {
         }
     }
 
-    private class TravelTermlink extends SpiderAction {
+//    private class TravelTermlink extends SpiderAction {
+//
+//        public TravelTermlink(float p) {
+//            super(p);
+//        }
+//
+//        @Override
+//        public void accept(Spider spider) {
+//            Concept c = at;
+//            if (c == null)
+//                return;
+//            sampleAndVisitUnique(4, c);
+//        }
+//
+//
+//        protected void sampleAndVisitUnique(int maxTries, Concept c) {
+//            bag(c).sample(rng, maxTries, x -> {
+//                Term t = term(x);
+//                if (t!=null) {
+//                    if (!recentlyVisited(t)) {
+//                        if (tryGo(t)) {
+//                            return false; //done
+//                        }
+//                    }
+//                }
+//                return true; //keep trying
+//            });
+//        }
+//
+//        protected Term term(Object x) {
+//            return ((PriReference<Term>) x).get();
+//        }
+//
+//        protected Sampler bag(Concept c) {
+//            return c.termlinks();
+//        }
+//    }
 
-        public TravelTermlink(float p) {
+    private class TravelTasklink extends SpiderAction {
+
+        public TravelTasklink(float p) {
             super(p);
         }
 
@@ -239,8 +276,13 @@ public class Spider extends Causable {
                 return;
             sampleAndVisitUnique(4, c);
         }
+        protected Term term(Object x) {
+            return ((TaskLink) x).get().term;
+        }
 
-
+        protected Sampler bag(Concept c) {
+            return c.tasklinks();
+        }
         protected void sampleAndVisitUnique(int maxTries, Concept c) {
             bag(c).sample(rng, maxTries, x -> {
                 Term t = term(x);
@@ -254,30 +296,6 @@ public class Spider extends Causable {
                 return true; //keep trying
             });
         }
-
-        protected Term term(Object x) {
-            return ((PriReference<Term>) x).get();
-        }
-
-        protected Sampler bag(Concept c) {
-            return c.termlinks();
-        }
-    }
-
-    private class TravelTasklink extends TravelTermlink {
-
-        public TravelTasklink(float p) {
-            super(p);
-        }
-
-        protected Term term(Object x) {
-            return ((TaskLink) x).get().term;
-        }
-
-        protected Sampler bag(Concept c) {
-            return c.tasklinks();
-        }
-
     }
 
     private class DeleteConcept extends SpiderAction {

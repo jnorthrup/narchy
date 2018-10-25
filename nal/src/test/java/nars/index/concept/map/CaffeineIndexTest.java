@@ -16,10 +16,7 @@ class CaffeineIndexTest {
         CaffeineIndex index;
         NAR n = new NARS().index(
             index = new CaffeineIndex(4000, (w) -> {
-                int newWeight = Math.round(1000 *
-                        (w.tasklinks().priSum() +
-                        w.termlinks().priSum())
-                );
+                int newWeight = Math.round(1000 * (w.tasklinks().priSum()));
                 log.append("weigh ").append(w).append(' ').append(newWeight).append('\n');
 
 

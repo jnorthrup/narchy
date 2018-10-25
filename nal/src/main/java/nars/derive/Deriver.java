@@ -1,7 +1,6 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import nars.$;
 import nars.NAR;
@@ -139,13 +138,12 @@ abstract public class Deriver extends Causable {
 
 
 
-    static protected void commit(Derivation d, Concept concept, Bag<?, TaskLink> tasklinks, Bag<Term, PriReference<Term>> termlinks) {
+    public static void commit(Derivation d, Concept concept, Bag<?, TaskLink> tasklinks) {
 
 
         int dur = d.dur;
 
         Consumer<TaskLink> tasklinkUpdate;
-        Consumer<PriReference<Term>> termlinkUpdate;
 
         long curTime = d.time;
         Long prevCommit = concept.meta("C", curTime);
@@ -159,22 +157,17 @@ abstract public class Deriver extends Causable {
 
                 tasklinkUpdate = tasklinks.forget(forgetRate);
 
-                if (termlinks != null)
-                    termlinkUpdate = termlinks.forget(forgetRate);
-                else
-                    termlinkUpdate = null;
             } else {
                 //dont need to commit, it already happened in this cycle
                 return;
             }
         } else {
             tasklinkUpdate = null;
-            termlinkUpdate = null;
+
         }
 
         tasklinks.commit(tasklinkUpdate);
-        if (termlinks!=null)
-            termlinks.commit(termlinkUpdate);
+
     }
 
     /** punctuation equalizer: value factor for the conclusion punctuation type [0..1.0] */

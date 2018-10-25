@@ -3,16 +3,14 @@ package nars.concept.util;
 import jcog.event.Offs;
 import nars.NAR;
 import nars.concept.Concept;
-import nars.util.TimeAware;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * TODO this is not updated to latest API
  */
 public abstract class ConceptMap {
 
-	@NotNull
-	private final TimeAware timeAware;
+
+	private final NAR nar;
 
 	private final Offs regs;
 	private int frame = -1;
@@ -42,7 +40,7 @@ public abstract class ConceptMap {
 
 
 
-        this.timeAware = nar;
+        this.nar = nar;
 
     }
 	public void off() {

@@ -1,43 +1,35 @@
 package nars.util.graph;
 
-import jcog.data.graph.AdjGraph;
-import nars.NAR;
-import nars.concept.Concept;
-import nars.term.Term;
-import nars.term.Termed;
-
-import java.util.stream.Stream;
-
 public enum TermGraph {
     ;
 
-    public static AdjGraph<Term, Float> termlink(NAR nar) {
-        AdjGraph<Term, Float> g = new AdjGraph<>(true);
-        return termlink(nar, g);
-    }
-
-    public static AdjGraph<Term, Float> termlink(NAR nar, AdjGraph<Term, Float> g) {
-        return termlink(nar, nar.conceptsActive(), g);
-    }
-
-    public static AdjGraph<Term, Float> termlink(NAR n, Stream<? extends Termed> it, AdjGraph<Term, Float> g) {
-        it.forEach(st -> {
-            Term s = st.term();
-            if (g.addIfNew(s)) {
-                Concept c = n.concept(s);
-                c.termlinks().forEach(tl -> {
-                    Term t = tl.get();
-                    if (t.equals(s))
-                        return;
-                    g.addNode(t);
-                    float p = tl.pri();
-                    if (p == p)
-                        g.setEdge(s, t, p);
-                });
-            }
-        });
-        return g;
-    }
+//    public static AdjGraph<Term, Float> termlink(NAR nar) {
+//        AdjGraph<Term, Float> g = new AdjGraph<>(true);
+//        return termlink(nar, g);
+//    }
+//
+//    public static AdjGraph<Term, Float> termlink(NAR nar, AdjGraph<Term, Float> g) {
+//        return termlink(nar, nar.conceptsActive(), g);
+//    }
+//
+//    public static AdjGraph<Term, Float> termlink(NAR n, Stream<? extends Termed> it, AdjGraph<Term, Float> g) {
+//        it.forEach(st -> {
+//            Term s = st.term();
+//            if (g.addIfNew(s)) {
+//                Concept c = n.concept(s);
+//                c.termlinks().forEach(tl -> {
+//                    Term t = tl.get();
+//                    if (t.equals(s))
+//                        return;
+//                    g.addNode(t);
+//                    float p = tl.pri();
+//                    if (p == p)
+//                        g.setEdge(s, t, p);
+//                });
+//            }
+//        });
+//        return g;
+//    }
 
 
 //    public enum Statements {

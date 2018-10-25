@@ -4,7 +4,6 @@ import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.math.IntRange;
 import jcog.math.Range;
-import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import jcog.sort.SortedList;
 import nars.NAR;
@@ -24,6 +23,7 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * forms matrices of premises of M tasklinks and N termlinks which
@@ -113,17 +113,16 @@ public class MatrixDeriver extends Deriver {
     /**
      * hypothesize a matrix of premises, M tasklinks x N termlinks
      */
-    private void premiseMatrix(Activate a, int premisesMax, int _tasklinks, int _termlinksPerTasklink, Derivation d) {
+    private void premiseMatrix(Activate conceptActivation, int premisesMax, int _tasklinks, int _termlinksPerTasklink, Derivation d) {
 
         nar.emotion.conceptFire.increment();
 
 
-        Concept concept = a.id;
+        Concept concept = conceptActivation.id;
 
         Bag<?, TaskLink> tasklinks = concept.tasklinks();
-        Bag<Term, PriReference<Term>> termlinks = concept.termlinks();
 
-        commit(d, concept, tasklinks, termlinks);
+        commit(d, concept, tasklinks);
 
         if (!tasklinks.isEmpty()) {
 
@@ -132,9 +131,7 @@ public class MatrixDeriver extends Deriver {
 
             int[] premisesPerConcept = { _tasklinks *  _termlinksPerTasklink };
 
-
-
-            int nTermLinks = termlinks.size(), nTaskLinks = tasklinks.size();
+            int nTaskLinks = tasklinks.size();
 
             Random rng = d.random;
             FasterList<Premise> premises = d.premiseBuffer;
@@ -147,25 +144,43 @@ public class MatrixDeriver extends Deriver {
 //                taskPriSum[0] += task.priElseZero();
 
                     tasklinksFired.add(tasklink);
+//
+//                    if (nTermLinks > 0) {
+//                        termlinks.sample(rng, Math.min(nTermLinks, _termlinksPerTasklink), termlink -> {
+//
+//                            Term beliefTerm = termlink.get();
+//                            if (premises.add( new Premise(task, beliefTerm ))) {
+//                                if ((--premisesPerConcept[0] <= 0) || (premises.size() >= premisesMax))
+//                                    return false;
+//                            }
+//
+//                            return true;
+//                        });
+//                    }
 
-                    if (nTermLinks > 0) {
-                        termlinks.sample(rng, Math.min(nTermLinks, _termlinksPerTasklink), termlink -> {
-
-                            Term beliefTerm = termlink.get();
-                            if (premises.add( new Premise(task, beliefTerm ))) {
-                                if ((--premisesPerConcept[0] <= 0) || (premises.size() >= premisesMax))
-                                    return false;
-                            }
-
-                            return true;
-                        });
+                    Supplier<Term> beliefSrc;
+                    if (concept.term().op().atomic) {
+                        beliefSrc = ()->((TaskLink.GeneralTaskLink)concept.tasklinks().sample(rng)).term();
+                    } else {
+                        //TODO sample
+                        beliefSrc = ()->concept.linker().sample(rng);
                     }
+
+
+                    //beliefSrc.limit(_termlinksPerTasklink).takeWhile((x) -> {
+                    do {
+                        Term b = beliefSrc.get();
+                        if (b!=null)
+                            premises.add(new Premise(task, b));
+                    } while (
+                        !((premisesPerConcept[0]-- <= 0) || (premises.size() >= premisesMax))
+                    );// .forEach(beliefTerm -> {
                 }
 
-                return (--premisesPerConcept[0] > 0);
+                return (premisesPerConcept[0]-- > 0);
             });
 
-            concept.linker().link(a, d);
+            concept.linker().link(conceptActivation, d);
 
         }
 

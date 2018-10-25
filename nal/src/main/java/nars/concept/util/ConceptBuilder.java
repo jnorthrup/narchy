@@ -44,7 +44,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
     public abstract TemporalBeliefTable newTemporalTable(Term c, boolean beliefOrGoal);
 
-    public abstract Bag[] newLinkBags(Term term);
+    @Deprecated public abstract Bag[] newLinkBags(Term term);
 
     private Concept taskConcept(final Term t) {
 

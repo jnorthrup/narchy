@@ -8,9 +8,9 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.control.NARService;
+import nars.derive.BeliefSource;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
-import nars.derive.impl.SimpleDeriver;
 import nars.op.SubUnify;
 import nars.term.Term;
 import nars.term.util.Image;
@@ -48,7 +48,7 @@ public class DialogTask extends NARService {
         }
 
 
-        deriver = SimpleDeriver.forConcepts(n, Derivers.nal(n, 1, 8),
+        deriver = BeliefSource.forConcepts(n, Derivers.nal(n, 1, 8),
                 tasks.asList().stream().map(t -> {
 
                     nar.input(t);

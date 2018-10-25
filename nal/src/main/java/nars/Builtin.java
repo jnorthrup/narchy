@@ -321,15 +321,7 @@ public class Builtin {
             return result != null ? result.getOne() : Bool.Null;
         }));
 
-        nar.on(Functor.f1((Atom) $.the("termlinkRandom"), (Term t) -> {
-            @Nullable Concept c = nar.conceptualize(t);
-            if (c == null)
-                return Bool.Null;
-            @Nullable PriReference<Term> tl = c.termlinks().sample(nar.random());
-            if (tl == null)
-                return Bool.Null;
-            return tl.get();
-        }));
+
 
 
         /** subterm, but specifically inside an ellipsis. otherwise pass through */

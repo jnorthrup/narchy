@@ -1,8 +1,6 @@
 package nars.link;
 
 import jcog.data.NumberX;
-import jcog.pri.PLink;
-import jcog.pri.PLinkHashCached;
 import jcog.pri.UnitPri;
 import jcog.sort.SortedList;
 import nars.NAR;
@@ -173,19 +171,12 @@ public class Activator extends AbstractTask {
 
             }
 
-            for (TermLinkage x : l) {
-                x.concept.termlinks().putAsync(termlink(x.target, x.pri()));
-            }
 
             //l.clearReallocate(1024, 8);
             l.clear();
         }
 
         return null;
-    }
-
-    public static PLink<Term> termlink(Term target, float pri) {
-        return new PLinkHashCached<>(target, pri);
     }
 
     final static ThreadLocal<SortedList<TermLinkage>> drainageBuffers = ThreadLocal.withInitial(()->new SortedList<>(16));

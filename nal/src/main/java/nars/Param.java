@@ -124,10 +124,10 @@ public abstract class Param {
             PriMerge.plus;
 
 
-    public static final PriMerge termlinkMerge =
-            PriMerge.plus;
-            //PriMerge.max;
-            //PriMerge.or;
+//    public static final PriMerge termlinkMerge =
+//            PriMerge.plus;
+//            //PriMerge.max;
+//            //PriMerge.or;
 
     public static final PriMerge tasklinkMerge =
             PriMerge.plus;

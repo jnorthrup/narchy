@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -323,10 +324,8 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
     }
 
     @Override
-    public void init(Bag<Term, PriReference<Term>> termlinks) {
-        for (Term template : this) {
-            termlinks.putAsync(Activator.termlink(template, EPSILON));
-        }
+    public Term sample(Random rng) {
+        return items[rng.nextInt(this.items.length)];
     }
 
     private List<Concept> conceptualizeAndTermLink(Concept src, Derivation d) {
@@ -352,21 +351,21 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
 
 
-            float balance = nar.termlinkBalance.floatValue();
+//            float balance = nar.termlinkBalance.floatValue();
 
-            float termlinkReverse = Math.max(EPSILON, taskLinkPriSum * balance / n);
+//            float termlinkReverse = Math.max(EPSILON, taskLinkPriSum * balance / n);
 
 //        //calculate exactly according to the size of the subset that are actually conceptualizable
 //        float budgetedForward = concepts == 0 ? 0 :
 //                Math.max(Prioritized.EPSILON, pri * (1f - balance) / concepts);
 
-            float termlinkForward = Math.max(EPSILON, taskLinkPriSum * (1 - balance) / n);
+//            float termlinkForward = Math.max(EPSILON, taskLinkPriSum * (1 - balance) / n);
 
 
             NumberX refund = new MutableFloat(0);
 
             Activator linking = d.deriver.linked;
-            Term srcTerm = src.term();
+//            Term srcTerm = src.term();
 
             int j = d.random.nextInt(n); //random starting position
             boolean inc = d.random.nextBoolean();
@@ -389,17 +388,17 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
                         firedConcepts.add(tgt);
 
-                        linking.linkPlus(tgt, srcTerm, termlinkForward, refund);
+//                        linking.linkPlus(tgt, srcTerm, termlinkForward, refund);
 
                         tgtTerm = tgt.term();
 
                     }
 
                 } else {
-                    refund.add(termlinkForward);
+//                    refund.add(termlinkForward);
                 }
 
-                linking.linkPlus(src, tgtTerm, termlinkReverse, refund);
+//                linking.linkPlus(src, tgtTerm, termlinkReverse, refund);
             }
 
         }

@@ -40,7 +40,7 @@ public class ConceptView extends Gridding {
         if (c!=null) {
 
             sa.setLength(0);
-            c.print(sa, false, false, true, false);
+            c.print(sa, false, false, false);
 
             io.term.clearScreen();
             io.append(sa);

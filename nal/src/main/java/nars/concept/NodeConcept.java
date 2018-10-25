@@ -1,7 +1,6 @@
 package nars.concept;
 
 import jcog.data.map.CompactArrayMap;
-import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Op;
@@ -25,7 +24,6 @@ public class NodeConcept implements Concept {
 
     public final Term term;
     private final Bag<Tasklike, TaskLink> taskLinks;
-    private final Bag<Term, PriReference<Term>> termLinks;
 
     private final TermLinker linker;
 
@@ -52,8 +50,7 @@ public class NodeConcept implements Concept {
     NodeConcept(Term term, TermLinker linker, Bag[] bags) {
         assert (term.op().conceptualizable): term + " not conceptualizable";
         this.term = term;
-        this.termLinks = bags[0];
-        this.taskLinks = bags[1];
+        this.taskLinks = bags[0];
         this.hash = term.hashCode();
 
         this.linker = linker;
@@ -91,11 +88,6 @@ public class NodeConcept implements Concept {
     @Override
     public Bag<Tasklike, TaskLink> tasklinks() {
         return taskLinks;
-    }
-
-    @Override
-    public Bag<Term, PriReference<Term>> termlinks() {
-        return termLinks;
     }
 
 

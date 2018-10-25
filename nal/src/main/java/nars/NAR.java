@@ -217,7 +217,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         LongSummaryStatistics goals = new LongSummaryStatistics();
         LongSummaryStatistics questions = new LongSummaryStatistics();
         LongSummaryStatistics quests = new LongSummaryStatistics();
-        Histogram termlinkCount = new Histogram(1, 1024, 3);
         Histogram tasklinkCount = new Histogram(1, 1024, 3);
 
         HashBag clazz = new HashBag();
@@ -237,9 +236,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 volume.recordValue(ct.volume());
                 rootOp.add(ct.op());
                 clazz.add(ct.getClass().toString());
-
-
-                termlinkCount.recordValue(c.termlinks().size());
 
 
                 tasklinkCount.recordValue(c.tasklinks().size());
@@ -267,9 +263,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         Texts.histogramDecode(tasklinkCount, "tasklink count", 4, x::put);
 
         x.put("tasklink total", ((double) tasklinkCount.getTotalCount()));
-        Texts.histogramDecode(termlinkCount, "termlink count", 4, x::put);
 
-        x.put("termlink total", ((double) termlinkCount.getTotalCount()));
 
         Util.toMap(rootOp, "concept op", x::put);
 

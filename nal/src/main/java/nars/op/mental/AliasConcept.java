@@ -32,7 +32,7 @@ public final class AliasConcept extends TaskConcept {
                 id,
                 null, null, null, null,
                 abbr.linker(), //shared
-                new Bag[]{abbr.termlinks(), abbr.tasklinks()});
+                new Bag[]{abbr.tasklinks()});
 
         this.abbr = abbr;
 
