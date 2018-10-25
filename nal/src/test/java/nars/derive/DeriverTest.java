@@ -4,7 +4,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.derive.impl.MatrixDeriver;
+import nars.derive.impl.BatchDeriver;
 import nars.derive.op.Occurrify;
 import nars.derive.premise.DeriverRules;
 import nars.derive.premise.PremiseDeriverCompiler;
@@ -157,7 +157,7 @@ class DeriverTest {
 
     private TestNAR test(String... rules) {
         NAR n = new NARS().get();
-        new MatrixDeriver(new PremiseDeriverRuleSet(n, rules));
+        new BatchDeriver(new PremiseDeriverRuleSet(n, rules));
         TestNAR t = new TestNAR(n);
         tests.add(t);
         return t;

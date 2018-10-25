@@ -7,7 +7,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.derive.Deriver;
 import nars.derive.budget.DefaultDeriverBudgeting;
-import nars.derive.impl.MatrixDeriver;
+import nars.derive.impl.BatchDeriver;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
@@ -70,7 +70,7 @@ class NARTestOptimize {
 
                 .var("derivationComplexityExponent", 1f, 3f, 0.5f,
                         (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
-                                ((DefaultDeriverBudgeting)(((MatrixDeriver)x).budgeting)).
+                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
                                         relGrowthExponent.set(f)))
 //                .var("derivationScale", 0.5f, 2f, 0.1f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->

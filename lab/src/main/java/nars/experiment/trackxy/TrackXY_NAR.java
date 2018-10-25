@@ -14,7 +14,7 @@ import nars.agent.FrameTrigger;
 import nars.agent.util.RLBooster;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
-import nars.derive.impl.MatrixDeriver;
+import nars.derive.impl.BatchDeriver;
 import nars.exe.Attention;
 import nars.exe.UniExec;
 import nars.gui.LSTMView;
@@ -189,7 +189,7 @@ public class TrackXY_NAR extends NAgentX {
         if (nars) {
 
 
-            Deriver d = new MatrixDeriver(Derivers.nal(n,
+            Deriver d = new BatchDeriver(Derivers.nal(n,
                     //6, 8
                     1, 8
 //                    //,"curiosity.nal"
@@ -202,7 +202,7 @@ public class TrackXY_NAR extends NAgentX {
             };
 
 
-            ((MatrixDeriver) d).conceptsPerIteration.set(8);
+            ((BatchDeriver) d).conceptsPerIteration.set(8);
 
 
             new STMLinkage(n, 1) {

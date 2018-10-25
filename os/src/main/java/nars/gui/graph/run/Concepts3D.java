@@ -7,7 +7,7 @@ import nars.NARS;
 import nars.Narsese;
 import nars.concept.Concept;
 import nars.derive.Derivers;
-import nars.derive.impl.MatrixDeriver;
+import nars.derive.impl.BatchDeriver;
 import nars.gui.NARui;
 import nars.gui.graph.DynamicConceptSpace;
 import spacegraph.space2d.Surface;
@@ -103,7 +103,7 @@ public class Concepts3D extends DynamicConceptSpace {
 
 
         NAR n = NARS.threadSafe();
-        new MatrixDeriver(Derivers.nal(n, 1, 8));
+        new BatchDeriver(Derivers.nal(n, 1, 8));
 
 
 

@@ -18,7 +18,7 @@ import nars.concept.sensor.Signal;
 import nars.control.DurService;
 import nars.control.MetaGoal;
 import nars.derive.Derivers;
-import nars.derive.impl.MatrixDeriver;
+import nars.derive.impl.BatchDeriver;
 import nars.exe.Attention;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
@@ -392,7 +392,7 @@ abstract public class NAgentX extends NAgent {
 
     public static void initPlugins(NAR n) {
 
-        new MatrixDeriver(Derivers.nal(n, 1, 8,
+        new BatchDeriver(Derivers.nal(n, 1, 8,
             "motivation.nal",
                 "induction.goal.nal"
         ));

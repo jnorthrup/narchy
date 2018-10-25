@@ -22,7 +22,6 @@ import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
-import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
@@ -236,40 +235,40 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
             switch (eventTerm.op()) {
 
-                case DIFFe:
-                case DIFFi:
-                case SECTi:
-                case SECTe:
-                case SIM:
-                case INH:
-                case SETe:
-                case SETi: {
-                    if (!(event instanceof Absolute)) {
-                        //naive estimate method 1:
-                        //if all components of the compound are known, assign the average of their occurrence for the compound
-                        Subterms ess = eventTerm.subterms();
-                        int essn = ess.subs();
-                        LongArrayList subOcc = new LongArrayList(essn);
-
-                        nextTerm:
-                        for (Term s : eventTerm.subterms()) {
-                            for (Event es : events().get(s)) {
-                                if (es instanceof Absolute) {
-                                    //TODO select more carefully
-                                    subOcc.add(es.mid());
-                                    continue nextTerm;
-                                }
-                            }
-                            //occurrence not found
-                            subOcc = null;
-                            break;
-                        }
-                        if (subOcc != null) {
-                            know(eventTerm, Math.round(subOcc.average())); //TODO estimate start/end range
-                        }
-                    }
-                }
-                break;
+//                case DIFFe:
+//                case DIFFi:
+//                case SECTi:
+//                case SECTe:
+//                case SIM:
+//                case INH:
+//                case SETe:
+//                case SETi: {
+//                    if (!(event instanceof Absolute)) {
+//                        //naive estimate method 1:
+//                        //if all components of the compound are known, assign the average of their occurrence for the compound
+//                        Subterms ess = eventTerm.subterms();
+//                        int essn = ess.subs();
+//                        LongArrayList subOcc = new LongArrayList(essn);
+//
+//                        nextTerm:
+//                        for (Term s : eventTerm.subterms()) {
+//                            for (Event es : events().get(s)) {
+//                                if (es instanceof Absolute) {
+//                                    //TODO select more carefully
+//                                    subOcc.add(es.mid());
+//                                    continue nextTerm;
+//                                }
+//                            }
+//                            //occurrence not found
+//                            subOcc = null;
+//                            break;
+//                        }
+//                        if (subOcc != null) {
+//                            know(eventTerm, Math.round(subOcc.average())); //TODO estimate start/end range
+//                        }
+//                    }
+//                }
+//                break;
 
                 case IMPL:
 

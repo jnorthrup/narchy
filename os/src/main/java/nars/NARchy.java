@@ -2,7 +2,7 @@ package nars;
 
 import nars.audio.NARAudio;
 import nars.derive.Derivers;
-import nars.derive.impl.MatrixDeriver;
+import nars.derive.impl.BatchDeriver;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
 import nars.index.concept.CaffeineIndex;
@@ -54,7 +54,7 @@ public class NARchy extends NARS {
                 t -> !t.isInput()
                 , 16, 64);
 
-        new MatrixDeriver(Derivers.nal(nar, 1, 8, "motivation.nal"));
+        new BatchDeriver(Derivers.nal(nar, 1, 8, "motivation.nal"));
 
         new Arithmeticize.ArithmeticIntroduction(32, nar);
 

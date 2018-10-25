@@ -1,5 +1,6 @@
 package nars.link;
 
+import jcog.Util;
 import jcog.data.MutableFloat;
 import jcog.data.NumberX;
 import jcog.data.list.FasterList;
@@ -21,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static jcog.pri.ScalarValue.EPSILON;
@@ -143,23 +145,23 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
     /** depth extensions */
     private static int deeper(int depth, Term root, Term x) {
 
-        if (depth < 1 || depth >= 4)
-            return 0; //no change
+//        if (depth < 1 || depth >= 4)
+//            return 0; //no change
 
-        Op xo = x.op();
-        Op ro = root.op();
-        switch (ro) {
-            case SIM:
-            case INH:
-                if (depth == 1 && x.hasAny(
-                        //Op.Variable
-                        Op.VAR_INDEP.bit
-                )
-                        //||
-                        //(x.isAny(Op.Sect | Op.Set | Op.Diff))
-                )
-                    return +1;
-                break;
+//        Op xo = x.op();
+//        Op ro = root.op();
+//        switch (ro) {
+//            case SIM:
+//            case INH:
+//                if (depth == 1 && x.hasAny(
+//                        //Op.Variable
+//                        Op.VAR_INDEP.bit
+//                )
+////                        ||
+////                        (x.isAny(Op.Sect | Op.Set | Op.Diff))
+//                )
+//                    return +1;
+//                break;
 
 //            case CONJ:
 ////                if (depth <=2 && x.hasAny(Op.Variable) )
@@ -173,29 +175,17 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 ////                    if (depth > 1 && !x.hasAny(Op.VAR_DEP))
 ////                        return -1; //event subterm without any var dep, dont actually recurse
 //                break;
-            case IMPL:
-                if (depth >=1 && depth <=2 && ((xo == CONJ || x.hasAny(
-                        Op.VAR_INDEP.bit | Op.VAR_DEP.bit
-                        //Op.VAR_INDEP.bit
-                        //Op.Variable
-                ))))
-                        return +1;
-//                if (depth <=3 && xo.isAny(INH.bit | SETe.bit | SETi.bit | INH.bit) )
-//                    return +1;
-//                    if (depth == 1 && (xo.statement && x.hasAny(Op.VariableBits) ) )
+//            case IMPL:
+//                if (depth >=1 && depth <=2 && ((xo == CONJ || x.hasAny(
+//                        Op.VAR_INDEP.bit | Op.VAR_DEP.bit
+//                        //Op.VAR_INDEP.bit
+//                        //Op.Variable
+//                ))))
 //                        return +1;
-//                    if (depth > 1 && (!xo.isAny(CONJ.bit | SETe.bit | SETi.bit | PROD.bit)) && !x.hasAny(Op.VariableBits))
-//                        return -1;
-//                    if (depth >= 1 && depth <= 2 && xo.isAny(CONJ.bit | SETe.bit | SETi.bit | PROD.bit | INH.bit))
-//                        return +1;
-
-//                    if (depth ==1 && (xo ==CONJ || (xo.statement)))
-//                        return +1;
-//                    if (depth > 1 && !x.hasAny(Op.VAR_INDEP))
-//                        return -1;
-
-                break;
-        }
+//
+//
+//                break;
+//        }
 
         return 0;
     }
@@ -205,61 +195,62 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
      * includes the host as layer 0, so if this returns 1 it will only include the host
      */
     private static int layers(Term x) {
-        switch (x.op()) {
-
-            case PROD:
-                return 2;
-
-            case SETe:
-            case SETi:
-                return 2;
-
-            case SECTi:
-            case SECTe:
-                return 2;
-
-            case DIFFe:
-            case DIFFi:
-                return 2;
-
-
-            case SIM: {
-
-
-//                if (x.subterms().OR(xx -> xx.unneg().isAny(SetBits | Op.SectBits | Op.PROD.bit)))
-//                    return 3;
-//                else
-                    return 2;
-            }
-
-            case INH: {
-//                if (x.subterms().OR(xx -> xx.unneg().isAny(Op.SetBits | Op.SectBits
-//                        | Op.PROD.bit
-//                        )))
-//                    return 3;
-
-                return 2;
-            }
-
-            case IMPL:
-//                if (x./*subterms().*/hasAny(Op.CONJ.bit))
-//                    return 3;
-//                else
-                    return 2;
-//                }
-
-
-            case CONJ:
-//                if (x.hasAny(Op.IMPL))
-//                    return 3;
-                return 2;
-
-
-            default:
-                /** atomics,etc */
-                return 0;
-
-        }
+        return 2;
+//        switch (x.op()) {
+//
+//            case PROD:
+//                return 2;
+//
+//            case SETe:
+//            case SETi:
+//                return 2;
+//
+//            case SECTi:
+//            case SECTe:
+//                return 2;
+//
+//            case DIFFe:
+//            case DIFFi:
+//                return 2;
+//
+//
+//            case SIM: {
+//
+//
+////                if (x.subterms().OR(xx -> xx.unneg().isAny(SetBits | Op.SectBits | Op.PROD.bit)))
+////                    return 3;
+////                else
+//                    return 2;
+//            }
+//
+//            case INH: {
+////                if (x.subterms().OR(xx -> xx.unneg().isAny(Op.SetBits | Op.SectBits
+////                        | Op.PROD.bit
+////                        )))
+////                    return 3;
+//
+//                return 2;
+//            }
+//
+//            case IMPL:
+////                if (x./*subterms().*/hasAny(Op.CONJ.bit))
+////                    return 3;
+////                else
+//                    return 2;
+////                }
+//
+//
+//            case CONJ:
+////                if (x.hasAny(Op.IMPL))
+////                    return 3;
+//                return 2;
+//
+//
+//            default:
+//                /** atomics,etc */
+//                return 0;
+//
+//        }
     }
 
     private static boolean conceptualizable(Term x) {
@@ -322,9 +313,10 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
     }
 
     @Override
-    public Term sample(Random rng) {
-        return items[rng.nextInt(this.items.length)];
+    public void sample(Random rng, Function<? super Term, SampleReaction> each) {
+        each.apply(items[rng.nextInt(this.items.length)]);
     }
+
 
     private List<Concept> conceptualizeAndTermLink(Concept src, Derivation d) {
 
@@ -345,7 +337,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
             float conceptForward =
                     //Math.max(EPSILON, a.priElseZero() / n);
-                    taskLinkPriSum / Math.max(1, concepts);
+                    taskLinkPriSum / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
 
 
 
@@ -360,7 +352,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 //            float termlinkForward = Math.max(EPSILON, taskLinkPriSum * (1 - balance) / n);
 
 
-            NumberX refund = new MutableFloat(0);
+//            NumberX refund = new MutableFloat(0);
 
             Activator linking = d.deriver.linked;
 //            Term srcTerm = src.term();
@@ -379,7 +371,9 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
                 boolean conceptualizable = j < concepts;
                 if (conceptualizable) {
 
-                    @Nullable Concept tgt = linking.activate(tgtTerm, conceptForward, nar);
+                    @Nullable Concept tgt =
+                            linking.activate(tgtTerm, conceptForward, nar);
+                            //nar.concept(tgtTerm, true);
 
 
                     if (tgt != null) {
@@ -388,7 +382,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
 //                        linking.linkPlus(tgt, srcTerm, termlinkForward, refund);
 
-                        tgtTerm = tgt.term();
+//                        tgtTerm = tgt.term();
 
                     }
 

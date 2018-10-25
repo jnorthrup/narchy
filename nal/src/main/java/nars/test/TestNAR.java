@@ -137,6 +137,8 @@ public class TestNAR {
         long time = nar.time();
         int runtime = Math.max(0, (int) (time - startTime));
 
+        assert(runtime <= finalCycle);
+
         this.score = success ?
 
 //                1 + (+1f / (1f + ((1f + runtime) / (1f + Math.max(0,finalCycle - startTime)))))

@@ -7,8 +7,6 @@ import nars.term.var.CommonVariable;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.NEG;
-
 /**
  * similar to a plain atom, but applies altered operating semantics according to the specific
  * varible type, as well as serving as something like the "marker interfaces" of Atomic, Compound, ..
@@ -70,32 +68,32 @@ public interface Variable extends Atomic {
         if (x.equals(y))
             return true;
 
-        if (x!=this || _y != y) {
-            if (x!=this && x.op()==NEG && y.op()==NEG) {
-                x = x.unneg();
-                y = y.unneg(); //could be variable wrapped in negation. prevents infinite loop
-            }
-
-
-            if (x instanceof Compound || y instanceof Compound) {
-                int xv = x.volume(), yv = y.volume();
-                if (xv != yv) {
-                    Term bigger, smaller;
-                    if (xv > yv) {
-                        bigger = x;
-                        smaller = y;
-                    } else {
-                        bigger = y;
-                        smaller = x;
-                    }
-                    if (bigger.containsRecursively(smaller))
-                        return false; //prevent infinite recursion
-                }
-
-//                if (x.containsRecursively(y) || y.containsRecursively(x))
-//                    return false; //prevent infinite recursion
-            }
-        }
+//        if (x!=this || _y != y) {
+//            if (x!=this && x.op()==NEG && y.op()==NEG) {
+//                x = x.unneg();
+//                y = y.unneg(); //could be variable wrapped in negation. prevents infinite loop
+//            }
+//
+//
+//            if (x instanceof Compound || y instanceof Compound) {
+//                int xv = x.volume(), yv = y.volume();
+//                if (xv != yv) {
+//                    Term bigger, smaller;
+//                    if (xv > yv) {
+//                        bigger = x;
+//                        smaller = y;
+//                    } else {
+//                        bigger = y;
+//                        smaller = x;
+//                    }
+//                    if (bigger.containsRecursively(smaller))
+//                        return false; //prevent infinite recursion
+//                }
+//
+////                if (x.containsRecursively(y) || y.containsRecursively(x))
+////                    return false; //prevent infinite recursion
+//            }
+//        }
 
         if (x != this) {
 //            try {

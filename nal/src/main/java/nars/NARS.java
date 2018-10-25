@@ -9,7 +9,7 @@ import nars.concept.util.ConceptAllocator;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.DefaultConceptBuilder;
 import nars.derive.Derivers;
-import nars.derive.impl.MatrixDeriver;
+import nars.derive.impl.BatchDeriver;
 import nars.exe.Attention;
 import nars.exe.Exec;
 import nars.exe.UniExec;
@@ -95,7 +95,7 @@ public class NARS {
      */
     @Deprecated public NARS withNAL(int minLevel, int maxLevel) {
         return then((n)->
-                new MatrixDeriver(Derivers.nal(n, minLevel, maxLevel))
+                new BatchDeriver(Derivers.nal(n, minLevel, maxLevel))
         );
     }
     /**
@@ -122,8 +122,8 @@ public class NARS {
                 n.termVolumeMax.set(26);
 
 
-                n.activation.set(0.7f);
-                n.memoryDuration.set(4f);
+                n.activation.set(0.3f);
+                n.memoryDuration.set(4.5f);
 
 
 

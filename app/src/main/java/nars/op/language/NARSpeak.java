@@ -10,7 +10,7 @@ import nars.Narsese;
 import nars.agent.NAgent;
 import nars.concept.Concept;
 import nars.derive.Derivers;
-import nars.derive.impl.MatrixDeriver;
+import nars.derive.impl.BatchDeriver;
 import nars.op.java.Opjects;
 import nars.term.Functor;
 import nars.term.Term;
@@ -149,7 +149,7 @@ public class NARSpeak {
     public static void main(String[] args) throws Narsese.NarseseException {
         NAR n = NARS.realtime(10f).get();
 
-        new MatrixDeriver(Derivers.nal(n, 1, 8
+        new BatchDeriver(Derivers.nal(n, 1, 8
                 //"curiosity.nal"
                 , "motivation.nal"));
 

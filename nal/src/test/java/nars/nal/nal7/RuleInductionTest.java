@@ -5,7 +5,7 @@ import jcog.Texts;
 import nars.NAR;
 import nars.NARS;
 import nars.Task;
-import nars.derive.impl.MatrixDeriver;
+import nars.derive.impl.BatchDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.op.stm.STMLinkage;
 import nars.term.Term;
@@ -37,7 +37,7 @@ class RuleInductionTest {
             8
         );
 
-        MatrixDeriver d = new MatrixDeriver(new PremiseDeriverRuleSet(n,
+        BatchDeriver d = new BatchDeriver(new PremiseDeriverRuleSet(n,
             
         "B, A, --is(A,\"==>\"),--is(B,\"==>\")                  |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized, Time:TaskRelative)"
             

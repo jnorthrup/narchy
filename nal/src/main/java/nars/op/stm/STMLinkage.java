@@ -23,18 +23,15 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 public class STMLinkage extends NARService {
 
-    public final MetalConcurrentQueue<Pair<Task,Concept>> stm;
 
-    final FloatRange strength = new FloatRange(1f, 0f, 1f);
+    public final FloatRange strength = new FloatRange(0.5f, 0f, 1f);
 
 //    private final Cause cause;
 
+    private final MetalConcurrentQueue<Pair<Task,Concept>> stm;
 
     public STMLinkage(NAR nar, int capacity) {
         super();
-
-
-        strength.set(1f / capacity);
 
         stm = //Util.blockingQueue(capacity + 1 );
                 new MetalConcurrentQueue<>(capacity);
@@ -51,7 +48,7 @@ public class STMLinkage extends NARService {
         );
     }
 
-    public static void link(Task at, Concept ac, Pair<Task,Concept> b/*, short cid*/, NAR nar) {
+    public static void link(Task at, Concept ac, Pair<Task,Concept> b/*, short cid*/, float factor, NAR nar) {
 
         //if (a==b) ta.term().equals(tb.term()))
             //return;
@@ -66,8 +63,8 @@ public class STMLinkage extends NARService {
 
 
                     Task bt = b.getOne();
-                    Tasklinks.linkTask(new TaskLink.GeneralTaskLink(bt, nar, bt.priElseZero()), ac.tasklinks(), null);
-                    Tasklinks.linkTask(new TaskLink.GeneralTaskLink(at, nar, at.priElseZero()), b.getTwo().tasklinks(), null);
+                    Tasklinks.linkTask(new TaskLink.GeneralTaskLink(bt, nar, bt.priElseZero() * factor), ac.tasklinks(), null);
+                    Tasklinks.linkTask(new TaskLink.GeneralTaskLink(at, nar, at.priElseZero() * factor), b.getTwo().tasklinks(), null);
 
                 }
 
@@ -118,8 +115,8 @@ public class STMLinkage extends NARService {
 //            }
 
 
-            float py = this.strength.floatValue() * yp;
-            stm.forEach(x -> link(y, yc, x, nar));
+            float factor = this.strength.floatValue();
+            stm.forEach(x -> link(y, yc, x, factor, nar));
 
             if (keep(y)) {
                 if (stm.isFull(1))

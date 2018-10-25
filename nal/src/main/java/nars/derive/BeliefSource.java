@@ -51,8 +51,11 @@ public class BeliefSource {
 //                @Nullable PriReference<Term> t = ct.sample(rng);
 //                return t != null ? t.get() : null;
 //            };
-
-            return ()->c.linker().sample(rng);
+            if (c.term().op().atomic) {
+                return ()->((TaskLink.GeneralTaskLink)c.tasklinks().sample(rng)).term();
+            } else {
+                return ()->c.linker().sample(rng);
+            }
         }
     };
     /**

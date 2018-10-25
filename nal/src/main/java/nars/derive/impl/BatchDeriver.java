@@ -25,13 +25,22 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-/**
- * forms matrices of premises of M tasklinks and N termlinks which
- * are evaluated after buffering some limited amount of these in a set
- */
-public class MatrixDeriver extends Deriver {
 
-    public final IntRange conceptsPerIteration = new IntRange(1, 1, 32);
+/** buffers premises in batches*/
+public class BatchDeriver extends Deriver {
+
+    /**
+     * forms matrices of premises of M tasklinks and N termlinks which
+     * are evaluated after buffering some limited amount of these in a set
+     */
+    abstract static class MatrixDeriver extends Deriver {
+        /* TODO */
+        protected MatrixDeriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
+            super(source, rules, nar);
+        }
+    }
+
+    public final IntRange conceptsPerIteration = new IntRange(3, 1, 32);
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
@@ -45,19 +54,19 @@ public class MatrixDeriver extends Deriver {
     private final int termLinksPerTaskLink = 2;
 
 
-    public MatrixDeriver(PremiseDeriverRuleSet rules) {
+    public BatchDeriver(PremiseDeriverRuleSet rules) {
         this(rules, rules.nar);
     }
 
-    public MatrixDeriver(Set<PremiseRuleProto> rules, NAR nar) {
+    public BatchDeriver(Set<PremiseRuleProto> rules, NAR nar) {
         super(nar.attn, rules, nar);
     }
 
-    public MatrixDeriver(Consumer<Predicate<Activate>> source, PremiseDeriverRuleSet rules) {
+    public BatchDeriver(Consumer<Predicate<Activate>> source, PremiseDeriverRuleSet rules) {
         super(source, rules, rules.nar);
     }
 
-    public MatrixDeriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
+    public BatchDeriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
         super(source, rules, nar);
     }
 
@@ -124,6 +133,15 @@ public class MatrixDeriver extends Deriver {
 
         commit(d, concept, tasklinks);
 
+        Random rng = d.random;
+
+        Supplier<Term> beliefSrc;
+        if (concept.term().op().atomic) {
+            beliefSrc = ()->((TaskLink.GeneralTaskLink)concept.tasklinks().sample(rng)).term();
+        } else {
+            beliefSrc = ()->concept.linker().sample(rng);
+        }
+
         if (!tasklinks.isEmpty()) {
 
             final ArrayHashSet<TaskLink> tasklinksFired = d.firedTaskLinks;
@@ -133,7 +151,6 @@ public class MatrixDeriver extends Deriver {
 
             int nTaskLinks = tasklinks.size();
 
-            Random rng = d.random;
             FasterList<Premise> premises = d.premiseBuffer;
 
             tasklinks.sample(rng, Math.min(_tasklinks, nTaskLinks), tasklink -> {
@@ -141,40 +158,16 @@ public class MatrixDeriver extends Deriver {
                 Task task = tasklink.get(nar);
                 if (task != null) {
 
-//                taskPriSum[0] += task.priElseZero();
-
                     tasklinksFired.add(tasklink);
-//
-//                    if (nTermLinks > 0) {
-//                        termlinks.sample(rng, Math.min(nTermLinks, _termlinksPerTasklink), termlink -> {
-//
-//                            Term beliefTerm = termlink.get();
-//                            if (premises.add( new Premise(task, beliefTerm ))) {
-//                                if ((--premisesPerConcept[0] <= 0) || (premises.size() >= premisesMax))
-//                                    return false;
-//                            }
-//
-//                            return true;
-//                        });
-//                    }
 
-                    Supplier<Term> beliefSrc;
-                    if (concept.term().op().atomic) {
-                        beliefSrc = ()->((TaskLink.GeneralTaskLink)concept.tasklinks().sample(rng)).term();
-                    } else {
-                        //TODO sample
-                        beliefSrc = ()->concept.linker().sample(rng);
-                    }
-
-
-                    //beliefSrc.limit(_termlinksPerTasklink).takeWhile((x) -> {
                     do {
                         Term b = beliefSrc.get();
-                        if (b!=null)
-                            premises.add(new Premise(task, b));
-                    } while (
-                        !((premisesPerConcept[0]-- <= 0) || (premises.size() >= premisesMax))
-                    );// .forEach(beliefTerm -> {
+                        if (b!=null) {
+                            if (premises.add(new Premise(task, b)))
+                                if (premises.size() >= premisesMax)
+                                    return false;
+                        }
+                    } while (premisesPerConcept[0]-- > 0);
                 }
 
                 return (premisesPerConcept[0]-- > 0);

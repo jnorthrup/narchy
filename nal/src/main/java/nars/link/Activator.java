@@ -1,8 +1,6 @@
 package nars.link;
 
-import jcog.data.NumberX;
 import jcog.pri.UnitPri;
-import jcog.sort.SortedList;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.task.AbstractTask;
@@ -11,7 +9,6 @@ import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** accumulates/buffers/collates a stream of concept activations and termlinkages
@@ -30,26 +27,26 @@ public class Activator extends AbstractTask {
     /** pending concept activation collation */
     final ConcurrentHashMap<Term, Activate> concepts = new ConcurrentHashMap(1024);
 
-    /** pending termlinking collation */
-    final ConcurrentHashMap<TermLinkage, TermLinkage> termlink = new ConcurrentHashMap(1024);
+//    /** pending termlinking collation */
+//    final ConcurrentHashMap<TermLinkage, TermLinkage> termlink = new ConcurrentHashMap(1024);
     private final boolean deferredOrInline;
 
     public Activator(boolean deferredOrInline) {
         this.deferredOrInline = deferredOrInline;
     }
 
-    /** implements a plus merge (with collected refund)
-     * TODO detect priority clipping (@1.0) statistic
-     * */
-    public void linkPlus(Concept source, Term target, float pri, @Nullable NumberX refund) {
-        float overflow = termlink.computeIfAbsent(new TermLinkage(source, target), (cc)-> cc)
-                .priAddOverflow(pri);
-        if (overflow > Float.MIN_NORMAL && refund!=null)
-            refund.add(overflow);
-    }
+//    /** implements a plus merge (with collected refund)
+//     * TODO detect priority clipping (@1.0) statistic
+//     * */
+//    public void linkPlus(Concept source, Term target, float pri, @Nullable NumberX refund) {
+//        float overflow = termlink.computeIfAbsent(new TermLinkage(source, target), (cc)-> cc)
+//                .priAddOverflow(pri);
+//        if (overflow > Float.MIN_NORMAL && refund!=null)
+//            refund.add(overflow);
+//    }
 
     public boolean isEmpty() {
-        return concepts.isEmpty() && termlink.isEmpty();
+        return concepts.isEmpty(); /* && termlink.isEmpty();*/
     }
 
     public Concept activate(Term tgtTerm, float pri, NAR nar) {
@@ -154,39 +151,39 @@ public class Activator extends AbstractTask {
             return true;
         });
 
-        int n = termlink.size();
-        if (n > 0) {
-            //drain at most n items from the concurrent map to a temporary list, sort it,
-            //then insert PLinks into the concept termlinks bag as they will be sorted into sequences
-            //of the same concept.
-            SortedList<TermLinkage> l = drainageBuffer(n);
-
-
-            Iterator<TermLinkage> ii = termlink.keySet().iterator();
-            while (ii.hasNext() && n-- > 0) {
-                TermLinkage x = ii.next();
-                ii.remove();
-
-                l.add(x);
-
-            }
-
-
-            //l.clearReallocate(1024, 8);
-            l.clear();
-        }
+//        int n = termlink.size();
+//        if (n > 0) {
+//            //drain at most n items from the concurrent map to a temporary list, sort it,
+//            //then insert PLinks into the concept termlinks bag as they will be sorted into sequences
+//            //of the same concept.
+//            SortedList<TermLinkage> l = drainageBuffer(n);
+//
+//
+//            Iterator<TermLinkage> ii = termlink.keySet().iterator();
+//            while (ii.hasNext() && n-- > 0) {
+//                TermLinkage x = ii.next();
+//                ii.remove();
+//
+//                l.add(x);
+//
+//            }
+//
+//
+//            //l.clearReallocate(1024, 8);
+//            l.clear();
+//        }
 
         return null;
     }
 
-    final static ThreadLocal<SortedList<TermLinkage>> drainageBuffers = ThreadLocal.withInitial(()->new SortedList<>(16));
-
-    /** provide a list to be used as a pre-insertion drainage buffer */
-    protected static SortedList<TermLinkage> drainageBuffer(int n) {
-        SortedList<TermLinkage> b = drainageBuffers.get();
-        b.ensureCapacity(n);
-        return b;
-    }
+//    final static ThreadLocal<SortedList<TermLinkage>> drainageBuffers = ThreadLocal.withInitial(()->new SortedList<>(16));
+//
+//    /** provide a list to be used as a pre-insertion drainage buffer */
+//    protected static SortedList<TermLinkage> drainageBuffer(int n) {
+//        SortedList<TermLinkage> b = drainageBuffers.get();
+//        b.ensureCapacity(n);
+//        return b;
+//    }
 
 
 }
