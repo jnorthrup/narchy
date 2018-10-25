@@ -70,4 +70,7 @@ public abstract class Event implements LongObjectPair<Term> {
 
     abstract public long dur(); //        return end() - start();
 
+    public long mid() {
+        return (start() + end())/2L;
+    }
 }

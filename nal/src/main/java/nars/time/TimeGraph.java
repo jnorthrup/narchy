@@ -22,6 +22,7 @@ import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
+import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
@@ -235,6 +236,40 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
             switch (eventTerm.op()) {
 
+                case DIFFe:
+                case DIFFi:
+                case SECTi:
+                case SECTe:
+                case SIM:
+                case INH:
+                case SETe:
+                case SETi: {
+                    if (!(event instanceof Absolute)) {
+                        //naive estimate method 1:
+                        //if all components of the compound are known, assign the average of their occurrence for the compound
+                        Subterms ess = eventTerm.subterms();
+                        int essn = ess.subs();
+                        LongArrayList subOcc = new LongArrayList(essn);
+
+                        nextTerm:
+                        for (Term s : eventTerm.subterms()) {
+                            for (Event es : events().get(s)) {
+                                if (es instanceof Absolute) {
+                                    //TODO select more carefully
+                                    subOcc.add(es.mid());
+                                    continue nextTerm;
+                                }
+                            }
+                            //occurrence not found
+                            subOcc = null;
+                            break;
+                        }
+                        if (subOcc != null) {
+                            know(eventTerm, Math.round(subOcc.average())); //TODO estimate start/end range
+                        }
+                    }
+                }
+                break;
 
                 case IMPL:
 
@@ -279,6 +314,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
 
                     break;
+
+
                 case CONJ:
 
 
@@ -465,9 +502,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 if (relCount > 1)
                     rels.shuffleThis(random());
 
-                if (!bfsPush(rels, new CrossTimeSolver() {
+                return bfsPush(rels, new CrossTimeSolver() {
                     @Override
-                    protected boolean next(BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> move, Node<Event, TimeSpan> next) {
+                    protected boolean next(BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>> move, Node<Event, TimeSpan> next) {
 
 
                         long[] startDT = pathDT(next, a, b, path);
@@ -483,8 +520,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                                         durMerge(pathStart(path).id(), pathEnd(path).id()) : 0
                                 , path, each);
                     }
-                }))
-                    return false;
+                });
 
             }
 

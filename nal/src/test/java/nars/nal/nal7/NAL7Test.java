@@ -1126,6 +1126,12 @@ public class NAL7Test extends NALTest {
                 .believe("(x ==>+5 z)")
                 .believe("(y ==>+5 z)")
                 .mustBelieve(cycles, "( (x &| y) ==>+5 z)", 1f, 0.81f)
+                .mustBelieve(cycles, "( x =|> y)", 1f, 0.81f)
+                .mustBelieve(cycles, "( y =|> x)", 1f, 0.81f)
+                .mustQuestion(cycles, "( (x-y) ==>+5 z)")
+                .mustQuestion(cycles, "( (y-x) ==>+5 z)")
+                .mustNotOutput(cycles, "( (x && y) ==> z)", BELIEF, 0, 1f, 0, 0.81f, t->true)
+                .mustNotOutput(cycles, "( (x &| y) ==> z)", BELIEF, 0, 1f, 0, 0.81f, t->true)
                 //.mustBelieve(cycles, "( --(--x &| --y) ==>+5 z)", 1f, 0.81f)
         ;
     }

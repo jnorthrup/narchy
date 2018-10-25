@@ -4,9 +4,7 @@ import jcog.data.MutableFloat;
 import jcog.data.NumberX;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
-import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
-import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -157,8 +155,8 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
                         //Op.Variable
                         Op.VAR_INDEP.bit
                 )
-                        ||
-                        (x.isAny(Op.Sect | Op.Set | Op.Diff))
+                        //||
+                        //(x.isAny(Op.Sect | Op.Set | Op.Diff))
                 )
                     return +1;
                 break;
