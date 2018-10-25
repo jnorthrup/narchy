@@ -107,7 +107,8 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
     boolean absorbNonSignal(Task t, long seriesStart, long seriesEnd) {
 
         long tStart = t.start(), tEnd = t.end();
-        if (tEnd <= seriesEnd /* allow prediction 'suffix' */) {
+        //if (tEnd <= seriesEnd /* allow prediction 'suffix' */)
+        {
             if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
 
                     //TODO actually absorb (transfer) the non-series task priority in proportion to the amount predicted, gradually until complete absorption

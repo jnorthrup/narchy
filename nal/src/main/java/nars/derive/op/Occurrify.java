@@ -1292,8 +1292,12 @@ public class Occurrify extends TimeGraph {
                 }
 
             }
-            if (offsets == null || offsets.length == 0)
-                throw new WTF();
+            if (offsets == null || offsets.length == 0) {
+                if (Param.DEBUG)
+                    throw new WTF(); //seems to be something involving normalized/unnormalized variables not getting matched
+                else
+                    return null;
+            }
 
             int offset = offsets[(offsets.length > 1) ? d.nar.random().nextInt(offsets.length) : 0];
             assert (offset != DTERNAL && offset != XTERNAL);

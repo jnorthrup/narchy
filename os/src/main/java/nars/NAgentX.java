@@ -11,14 +11,18 @@ import jcog.tree.rtree.rect.RectFloat;
 import jcog.util.Int2Function;
 import nars.agent.FrameTrigger;
 import nars.agent.NAgent;
+import nars.agent.Reward;
 import nars.agent.SimpleReward;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
 import nars.control.DurService;
 import nars.control.MetaGoal;
+import nars.derive.BeliefSource;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
+import nars.derive.impl.ZipperDeriver;
+import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.exe.Attention;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
@@ -49,7 +53,10 @@ import java.awt.image.BufferedImage;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.stream.StreamSupport.stream;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
@@ -177,19 +184,19 @@ abstract public class NAgentX extends NAgent {
 
             n.runLater(() -> {
 
-//                PremiseDeriverRuleSet rules = Derivers.rules(n, //6, 8
-//                        "induction.nal",
-//                        "induction.goal.nal"
-//                        //"curiosity.nal"
-//                        , "motivation.nal"
-//                );
-//                ZipperDeriver sd = BeliefSource.forConcepts(n, rules,
-//                        (java.util.List<Concept>)(a.rewards.stream().flatMap((Reward x) -> stream(x.spliterator(), false)).collect(Collectors.toList())),
-//                        (java.util.List<Term>)Stream.concat(
-//                            a.actions.stream(),
-//                            a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false))
-//                        ).map(x -> x.term()).collect(Collectors.toList())
-//                );
+                PremiseDeriverRuleSet rules = Derivers.rules(n, //6, 8
+                        "induction.nal",
+                        "induction.goal.nal",
+                        //"curiosity.nal",
+                         "motivation.nal"
+                );
+                ZipperDeriver sd = BeliefSource.forConcepts(n, rules,
+                        (a.rewards.stream().flatMap((Reward x) -> stream(x.spliterator(), false)).collect(Collectors.toList())),
+                        Stream.concat(
+                            a.actions.stream(),
+                            a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false))
+                        ).map(x -> x.term()).collect(Collectors.toList())
+                );
 
                 //sd.timing = new ActionTiming(n);
 ////                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
@@ -591,7 +598,7 @@ abstract public class NAgentX extends NAgent {
             cc.on(new Auvent<Clock>() {
 
                 public final Envelope kickEnv, snareEnv;
-                AudioContext ac = cc.getContext();
+                final AudioContext ac = cc.getContext();
 
                 {
                     kickEnv = new Envelope(ac, 0.0f);
