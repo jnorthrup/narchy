@@ -58,11 +58,17 @@ public class DefaultConceptBuilder extends ConceptBuilder {
     public Bag[] newLinkBags(Term t) {
         int v = t.volume();
 
-        Map shared = newBagMap(v);
+        //if shared, seems to require ConcurrentHashMap if exec is concurrent
+//        Map shared = newBagMap(v);
+//
+//        return new Bag[]{
+//                new PLinkArrayBag<Term>(0, Param.termlinkMerge, shared),
+//                new PLinkArrayBag<TaskLink>(0, Param.tasklinkMerge, shared)
+//        };
 
         return new Bag[]{
-                new PLinkArrayBag<Term>(0, Param.termlinkMerge, shared),
-                new PLinkArrayBag<TaskLink>(0, Param.tasklinkMerge, shared)
+                new PLinkArrayBag<Term>(0, Param.termlinkMerge, newBagMap(v)),
+                new PLinkArrayBag<TaskLink>(0, Param.tasklinkMerge, newBagMap(v))
         };
     }
 
