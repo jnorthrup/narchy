@@ -3,6 +3,7 @@ package nars.test;
 import jcog.data.list.FasterList;
 import jcog.event.ByteTopic;
 import nars.*;
+import nars.control.MetaGoal;
 import nars.task.ITask;
 import nars.task.Tasked;
 import nars.test.condition.NARCondition;
@@ -125,7 +126,9 @@ public class TestNAR {
                 if (!quiet) {
                     logger.error("mustNot: {}", t);
                     t.log(logger);
-                    ((TaskCondition) t).matched.forEach(shouldntHave -> logger.error("Must not:\n{}", shouldntHave.proof()));
+                    ((TaskCondition) t).matched.forEach(shouldntHave ->
+                            logger.error("Must not:\n{}\n{}", shouldntHave.proof(), MetaGoal.proof(shouldntHave,nar))
+                    );
                 }
 
 

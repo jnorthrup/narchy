@@ -818,7 +818,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
     default String proof() {
         StringBuilder sb = new StringBuilder(512);
-        return proof(sb).toString();
+        return proof(sb).toString().trim();
     }
 
     default StringBuilder proof(/*@NotNull*/StringBuilder temporary) {

@@ -3,6 +3,8 @@ package nars.control;
 import com.google.common.collect.TreeBasedTable;
 import jcog.Paper;
 import jcog.data.list.FasterList;
+import nars.NAR;
+import nars.Task;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectDoubleHashMap;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
@@ -51,6 +53,8 @@ public enum MetaGoal {
      * pos: actuated a goal concept
      */
     Action;
+
+
 
     /**
      * learn that the given effects have a given value
@@ -222,4 +226,13 @@ public enum MetaGoal {
         }
     }
 
+    public static String proof(Task t, NAR nar) {
+        short[] tc = t.cause();
+        StringBuilder sb = new StringBuilder();
+        for (short s : tc) {
+            Cause c = nar.causes.get(s);
+            sb.append(c.toString()).append('\n');
+        }
+        return sb.toString().trim();
+    }
 }

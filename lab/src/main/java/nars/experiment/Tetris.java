@@ -115,6 +115,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
 
         NAgentX.runRT(n -> {
+            n.timeResolution.set(50);
+            n.freqResolution.set(0.04f);
             new Arithmeticize.ArithmeticIntroduction(32, n);
             return new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
         }, FPS);
