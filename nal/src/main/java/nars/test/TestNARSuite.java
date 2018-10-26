@@ -58,20 +58,11 @@ public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
     }
 
 
-    public long sum(ToIntFunction<NAR> n) {
-        return intStream(n).sum();
-    }
-    public double avg(ToIntFunction<NAR> n) {
-        return intStream(n).average().getAsDouble();
-    }
     public double sum(Function<NAR,Number> n) {
         return doubleStream(n).sum();
     }
     public double sum(DoubleFunction<NAR> n) {
         return doubleStream(n).sum();
-    }
-    public double avg(DoubleFunction<NAR> n) {
-        return doubleStream(n).average().getAsDouble();
     }
 
     public DoubleStream doubleStream(DoubleFunction<NAR> n) {
@@ -84,9 +75,6 @@ public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
 
     public DoubleStream doubleStream(Function<NAR,Number> n) {
         return narStream().map(n).mapToDouble(Number::doubleValue);
-    }
-    public IntStream intStream(ToIntFunction<NAR> n) {
-        return narStream().mapToInt(n);
     }
 
     static class MyTestNAR extends TestNAR {

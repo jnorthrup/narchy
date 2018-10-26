@@ -63,7 +63,6 @@ public class TestNAR {
     private ByteTopic<Tasked>[] taskEvents;
     private boolean finished;
     private boolean exitOnAllSuccess = true;
-    private boolean exitOnFirstMustNot = true;
     private boolean reportStats = false;
 
     public TestNAR(NAR nar) {
@@ -83,7 +82,7 @@ public class TestNAR {
     public TestNAR run(long finalCycle  /* for use with JUnit */) {
 
 
-        score = -finalCycle; //default score
+        score = Float.NEGATIVE_INFINITY;
 
         if (requireConditions)
             assertTrue(!succeedsIfAll.isEmpty() || !failsIfAny.isEmpty(), "no conditions tested");
@@ -99,6 +98,8 @@ public class TestNAR {
             long oce = oc.getFinalCycle();
             if (oce > finalCycle) finalCycle = oce + 1;
         }
+
+        score = -finalCycle; //default score
 
         StringWriter trace;
         if (collectTrace)
@@ -146,6 +147,9 @@ public class TestNAR {
 
         if (success)
             score = -runtime;
+        else
+            assert(score < 0);
+
 //        this.score = success ?
 //
 ////                1 + (+1f / (1f + ((1f + runtime) / (1f + Math.max(0,finalCycle - startTime)))))

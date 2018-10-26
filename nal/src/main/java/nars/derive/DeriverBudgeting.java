@@ -29,7 +29,7 @@ public interface DeriverBudgeting {
     }
 
     /** result punctuation factor; allows weighting probabilty according to the determined derived task punctuations of each choice */
-    default float puncFactor(byte conclusion) {
+    default float puncPreFactor(byte conclusion) {
         return 1; //flat
     }
 

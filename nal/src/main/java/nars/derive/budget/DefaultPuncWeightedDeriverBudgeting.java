@@ -5,7 +5,7 @@ import nars.derive.Deriver;
 
 import static nars.Op.*;
 
-public class DefaultPriWeightedDeriverBudgeting extends DefaultDeriverBudgeting {
+public class DefaultPuncWeightedDeriverBudgeting extends DefaultDeriverBudgeting {
 
     /** cache of punctuation priorities */
     transient private float beliefPri, goalPri, questionPri, questPri;
@@ -21,7 +21,7 @@ public class DefaultPriWeightedDeriverBudgeting extends DefaultDeriverBudgeting 
     }
 
     @Override
-    public float puncFactor(byte conclusion) {
+    public float puncPreFactor(byte conclusion) {
         switch (conclusion) {
             case BELIEF: return beliefPri;
             case GOAL: return goalPri;

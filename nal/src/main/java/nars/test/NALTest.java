@@ -35,18 +35,8 @@ public abstract class NALTest {
             t = (NALTest) ((Class) m.getDeclaringClass())
                     .getConstructor().newInstance();
             t.test = (tt);
+            t.test.score = Float.NEGATIVE_INFINITY;
 
-        } catch (Throwable e) {
-            e.printStackTrace();
-            return t;
-        }
-
-        t.test.quiet = true;
-//        t.test.nar.random().setSeed(
-//                System.nanoTime()
-//        );
-
-        try {
             m.invoke(t);
         } catch (Throwable e) {
             e.printStackTrace();
@@ -56,6 +46,11 @@ public abstract class NALTest {
         try {
 
 
+
+            t.test.quiet = true;
+//        t.test.nar.random().setSeed(
+//                System.nanoTime()
+//        );
 
 
             t.test.test();

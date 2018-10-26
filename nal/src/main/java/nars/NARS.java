@@ -123,7 +123,7 @@ public class NARS {
 
 
                 n.activation.set(0.3f);
-                n.memoryDuration.set(5.5f);
+                n.memoryDuration.set(8f);
 
 
 
@@ -170,7 +170,7 @@ public class NARS {
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
 
-        attention(()->new Attention(52));
+        attention(()->new Attention(96));
 
         conceptBuilder = ()->new DefaultConceptBuilder(
                 new ConceptAllocator(

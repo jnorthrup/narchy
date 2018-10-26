@@ -8,7 +8,7 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.control.Cause;
 import nars.control.DurService;
-import nars.derive.budget.DefaultPriWeightedDeriverBudgeting;
+import nars.derive.budget.DefaultPuncWeightedDeriverBudgeting;
 import nars.derive.premise.DeriverRules;
 import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
@@ -42,7 +42,7 @@ abstract public class Deriver extends Causable {
 
     public final DeriverBudgeting budgeting =
             //new DefaultDeriverBudgeting();
-            new DefaultPriWeightedDeriverBudgeting();
+            new DefaultPuncWeightedDeriverBudgeting();
 
     /** determines the time for beliefs to be matched during premise formation
      *    input: premise Task, premise belief term
@@ -53,7 +53,7 @@ abstract public class Deriver extends Causable {
 
     public final DerivedTasks derived =
             //new DerivedTasks.DerivedTasksMap(4096);
-            new DerivedTasks.DerivedTasksBag(1024, 0.1f,false);
+            new DerivedTasks.DerivedTasksBag(1024, 0.5f,false);
 
     public final Activator linked = new Activator(true);
 
@@ -120,9 +120,7 @@ abstract public class Deriver extends Causable {
     private void update() {
         budgeting.update(this, nar);
 
-        linked.commit(nar);
 
-        derived.commit(nar);
     }
 
     @Override
@@ -130,6 +128,9 @@ abstract public class Deriver extends Causable {
 
         derive(derivation.get().next(n, this), kontinue);
 
+        linked.commit(nar);
+
+        derived.commit(nar);
     }
 
 
@@ -172,7 +173,7 @@ abstract public class Deriver extends Causable {
 
     /** punctuation equalizer: value factor for the conclusion punctuation type [0..1.0] */
     public final float puncFactor(byte conclusion) {
-        return budgeting.puncFactor(conclusion);
+        return budgeting.puncPreFactor(conclusion);
     }
 
 

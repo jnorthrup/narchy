@@ -11,8 +11,6 @@ import nars.derive.impl.BatchDeriver;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
-import nars.nal.nal5.NAL5Test;
-import nars.nal.nal6.NAL6Test;
 import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
@@ -36,8 +34,8 @@ class NARTestOptimize {
 //                    NAL4Test.class,
                     NAL1MultistepTest.class,
                     //NAL4MultistepTest.class,
-                    NAL5Test.class,
-                    NAL6Test.class,
+//                    NAL5Test.class,
+//                    NAL6Test.class,
 //                    NAL7Test.class, NAL8Test.class,
             };
 

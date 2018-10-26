@@ -22,8 +22,8 @@ public class NAgentTest {
     static NAR nar() {
 
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(9);
-        n.freqResolution.set(0.1f);
+        n.termVolumeMax.set(4);
+        n.freqResolution.set(0.25f);
         n.confResolution.set(0.01f);
         n.time.dur(1);
 
@@ -38,20 +38,30 @@ public class NAgentTest {
 
 
         System.out.println((posOrNeg ? "positive" : " negative"));
-        MiniTest a = new ToggleSame(nar(), $.the("t"),
-
-                $.$$("(t,y)"),
-                posOrNeg);
+        MiniTest a = new ToggleSame(nar(), $.the("t"), $.the("x"), posOrNeg);
 
 
         a.nar().run(1000);
 
-        assertTrue(a.avgReward() > 0.01f);
+        assertTrue(a.avgReward() > 0.5f, ()->a.avgReward() + " avgReward");
+        assertTrue(a.dex.getMean() > 0f);
+    }
+
+
+    @ValueSource(ints = {10, 20, 5, 2})
+    @ParameterizedTest public void testOscillate1(int period) {
+
+        MiniTest a = new ToggleOscillate(nar(), $.the("t"), $.the("y"), period);
+
+        a.nar().run(1000);
+
+        System.out.println("period: " + period + " avgReward=" + a.avgReward() + " avgDex=" + a.dex.getMean());
+        assertTrue(a.avgReward() > 0.5f);
         assertTrue(a.dex.getMean() > 0f);
     }
 
     @Test
-    public void testOscillate() {
+    public void testInvert() {
 
         NAR n = nar();
 
@@ -67,16 +77,16 @@ public class NAgentTest {
 //            System.out.println();
 //        });
 
-        assertOscillatesAction(n, (a) -> {
+        assertInverts(n, (a) -> {
 
         });
     }
 
 
-    static void assertOscillatesAction(NAR n, Consumer<NAgent> init) {
+    static void assertInverts(NAR n, Consumer<NAgent> init) {
 
 
-        MiniTest a = new ToggleOscillate(n, $.the("t"),
+        MiniTest a = new ToggleNegate(n, $.the("t"),
                 $.$$("y"),
 
                 true);
@@ -152,16 +162,42 @@ public class NAgentTest {
         }
 
     }
+    static class ToggleOscillate extends MiniTest {
+
+        private float reward;
+
+        public ToggleOscillate(NAR n, Term env, Term action, int period) {
+            super(env, n);
+            reward = 0;
+
+            BooleanProcedure pushed = (v) -> {
+
+                boolean posOrNeg = Math.sin(Math.round(n.time() * 2 * Math.PI / period)) < 0;
+                this.reward = (v == posOrNeg) ? 1 : 0;
+            };
+
+
+            actionPushButton(action, pushed);
+        }
+
+        @Override
+        public float reward() {
+            float r = reward;
+            reward = 0;
+            return r;
+        }
+
+    }
 
     /**
      * reward for rapid inversion/oscillation of input action
      */
-    static class ToggleOscillate extends MiniTest {
+    static class ToggleNegate extends MiniTest {
 
         private int y;
         private int prev = 0;
 
-        public ToggleOscillate(NAR n, Term env, Term action, boolean toggleOrPush) {
+        public ToggleNegate(NAR n, Term env, Term action, boolean toggleOrPush) {
             super(env, n);
             y = 0;
 

@@ -64,39 +64,12 @@ public interface Variable extends Atomic {
         if (x.equals(y))
             return true;
 
-//        if (x!=this || _y != y) {
-//            if (x!=this && x.op()==NEG && y.op()==NEG) {
-//                x = x.unneg();
-//                y = y.unneg(); //could be variable wrapped in negation. prevents infinite loop
-//            }
-//
-//
-//            if (x instanceof Compound || y instanceof Compound) {
-//                int xv = x.volume(), yv = y.volume();
-//                if (xv != yv) {
-//                    Term bigger, smaller;
-//                    if (xv > yv) {
-//                        bigger = x;
-//                        smaller = y;
-//                    } else {
-//                        bigger = y;
-//                        smaller = x;
-//                    }
-//                    if (bigger.containsRecursively(smaller))
-//                        return false; //prevent infinite recursion
-//                }
-//
-////                if (x.containsRecursively(y) || y.containsRecursively(x))
-////                    return false; //prevent infinite recursion
-//            }
-//        }
-
         if (x != this) {
-            try {
+//            try {
                 return x.unify(y, u);
-            } catch (StackOverflowError e) {
-                throw new RuntimeException("unification stack overflow: " + x + ' ' + y + " in " + u.xy);
-            }
+//            } catch (StackOverflowError e) {
+//                throw new RuntimeException("unification stack overflow: " + x + ' ' + y + " in " + u.xy);
+//            }
         } else {
             if (y instanceof Variable) {
                 return unifyVar((Variable) y, u);
