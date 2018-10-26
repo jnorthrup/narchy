@@ -157,7 +157,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
                         curiosity(curi /*goal*/, curiStart, curiEnd, n)
                 );
 
-                actionTruth = curi; //overrides
+                actionTruth = curiosity.injection.get().inject(actionTruth, curi);
+
             } /*else {
                 logger.info("curiosity too weak for NAR: {} confMin > {} ( from: {} )",
                         n.confMin.floatValue(), curiDithered, curi);

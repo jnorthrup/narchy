@@ -83,7 +83,7 @@ public class TriSequenceTest {
     }
 
     private Node simplify(Node first, Node second, Node third) {
-        return TRISEQUENCE.simplify(new Arguments(new Node[]{first, second, third}));
+        return TRISEQUENCE.simplify(new Arguments(first, second, third));
     }
 
     private void assertAllSame(Object first, Object... rest) {

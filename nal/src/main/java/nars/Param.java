@@ -32,8 +32,7 @@ public abstract class Param {
 
     public static final boolean ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME = true;
 
-    /** TODO make an abstract TermLinkStrategy class responsible for this */
-    @Deprecated public static final int TermLinkFanoutMax =
+    @Deprecated public static final int LinkFanoutMax =
             //16;
             //10;
             8;
@@ -98,7 +97,7 @@ public abstract class Param {
 //    public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
 
 
-    public final static boolean STRONG_COMPOSITION = false;
+    public static boolean STRONG_COMPOSITION = false;
 
     /**
      * number of clock durations composing a unit of short term memory decay (used by bag forgetting)
@@ -123,11 +122,6 @@ public abstract class Param {
     public static final PriMerge conceptMerge =
             PriMerge.plus;
 
-
-//    public static final PriMerge termlinkMerge =
-//            PriMerge.plus;
-//            //PriMerge.max;
-//            //PriMerge.or;
 
     public static final PriMerge tasklinkMerge =
             PriMerge.plus;
@@ -290,12 +284,6 @@ public abstract class Param {
             (Param.TTL_UNIFY * 2) +
                     (Param.TTL_BRANCH * 1) + Param.TTL_DERIVE_TASK_SUCCESS;
 
-
-    /** controls structural integration/disintegration tendency by adjusting the proportional
-     *  amount in which termlinks are created.  values closer to zero set priority more toward
-     *  subterms while values closer to one set priority more toward superterms.
-     * 0.5 is balanced. */
-    public final FloatRange termlinkBalance = new FloatRange(0.5f, 0, 1f);
 
 
     /** primary activation amplifier.  affects both conceptualization priority (Attention)

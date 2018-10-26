@@ -36,6 +36,7 @@ public class SymbolicRegressionExample {
     private static final int TARGET_FITNESS = 0;
     private static final int INITIAL_POPULATION_SIZE = 30;
     private static final int INITIAL_POPULATION_MAX_DEPTH = 4;
+    private static final int MAX_GENERATIONS = 100;
 
     public static void main(String[] args) {
 
@@ -54,6 +55,7 @@ public class SymbolicRegressionExample {
                 .populationSize(INITIAL_POPULATION_SIZE)
                 .populationDepth(INITIAL_POPULATION_MAX_DEPTH)
                 .stopFitness(TARGET_FITNESS)
+                .stopGenerations(MAX_GENERATIONS)
                 .get();
 
         //System.out.println(o);

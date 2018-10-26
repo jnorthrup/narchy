@@ -15,6 +15,7 @@
  */
 package org.oakgp.rank;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
@@ -115,6 +116,7 @@ public class RankedEvolvedsTest {
         assertEquals("[-7.0, -2.25, 0.0, 1.0, 785.5]", rankedCandidates.stream().map(c -> c.pri()).collect(toList()).toString());
     }
 
+    @Disabled
     @Test
     public void testImmutable() {
         

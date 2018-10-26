@@ -23,6 +23,7 @@ import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.derive.impl.ZipperDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.derive.timing.ActionTiming;
 import nars.exe.Attention;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
@@ -31,6 +32,7 @@ import nars.index.concept.HijackConceptIndex;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.time.Tense;
 import nars.time.clock.RealTime;
 import nars.video.*;
@@ -60,7 +62,6 @@ import static java.util.stream.StreamSupport.stream;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -113,7 +114,7 @@ abstract public class NAgentX extends NAgent {
         */
 
 
-        //Param.STRONG_COMPOSITION = false;
+        Param.STRONG_COMPOSITION = true;
         Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
@@ -191,13 +192,21 @@ abstract public class NAgentX extends NAgent {
                         //"curiosity.nal",
                          "motivation.nal"
                 );
-                ZipperDeriver sd = BeliefSource.forConcepts(n, rules,
+                ZipperDeriver sensorAction = BeliefSource.forConcepts(n, rules,
                         (a.rewards.stream().flatMap((Reward x) -> stream(x.spliterator(), false)).collect(Collectors.toList())),
                         Stream.concat(
                             a.actions.stream(),
                             a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false))
-                        ).map(x -> x.term()).collect(Collectors.toList())
+                        ).map(Termed::term).collect(Collectors.toList())
                 );
+                sensorAction.timing = new ActionTiming(n);
+
+
+                ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.rules(n, "nal6.nal"),
+                        a.actions.stream().collect(Collectors.toList())
+                );
+                motorInference.timing = new ActionTiming(n);
+
 
                 //sd.timing = new ActionTiming(n);
 ////                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
@@ -374,7 +383,7 @@ abstract public class NAgentX extends NAgent {
         n.termVolumeMax.set(20);
 
 
-        n.activation.set(0.7f);
+
         n.memoryDuration.set(4f);
 
 

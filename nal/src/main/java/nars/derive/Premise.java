@@ -236,7 +236,7 @@ public class Premise implements Comparable<Premise> {
             int limit = qStart == ETERNAL ? Answer.TASK_LIMIT_ETERNAL_QUESTION : Answer.TASK_LIMIT_DEFAULT;
             Task match =
                     Answer.relevance(true, limit, qStart, task.end(), beliefTerm, null /*beliefFilter*/, d.nar)
-                            .ditherTruth(true)
+                            //.ditherTruth(true)
                             .match(answerTable).task(true, true, true);
 
             if (match != null) {

@@ -293,6 +293,10 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
             NumberX overflow = new MutableFloat();
 
+            float factor =
+                    1f;
+                    //a.priElseZero();
+
             for (TaskLink f : d.firedTaskLinks) {
 
 
@@ -302,7 +306,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 //                //f.priSub(priDispersed);
 //                float p = Math.max(EPSILON, allocated.priElseZero());
 
-                float p = Math.max(EPSILON, f.priElseZero());
+                float p = Math.max(EPSILON, f.priElseZero()) * factor;
                 Tasklinks.linkTask((TaskLink.GeneralTaskLink) f, p, firedConcepts, overflow);
                 overflow.set(0); //clear after each and re-use
             }
@@ -330,7 +334,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
             NAR nar = d.nar;
 
-            n = Math.min(n, Param.TermLinkFanoutMax);
+            n = Math.min(n, Param.LinkFanoutMax);
 
             float taskLinkPriSum = Math.max(EPSILON, (float) (((FasterList<TaskLink>) (d.firedTaskLinks.list))
                     .sumOfFloat(Prioritized::priElseZero)));

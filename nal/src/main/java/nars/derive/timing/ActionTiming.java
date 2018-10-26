@@ -11,7 +11,7 @@ import java.util.function.BiFunction;
 public class ActionTiming implements BiFunction<Task, Term, long[]> {
 
     private final NAR nar;
-    public final FloatRange horizonDurs = new FloatRange(1, 0, 32);
+    public final FloatRange horizonDurs = new FloatRange(8, 0, 32);
     //public final FloatRange widthDurs = new FloatRange(2, 0, 8);
 
     public ActionTiming(NAR n) {

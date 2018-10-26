@@ -228,11 +228,13 @@ class BagTest {
 
         for (int lows : n > 4 ? new int[] { 0, 1} : new int[] { 0 }  ) {
             for (int highs : n > 4 ? new int[] { n -1, n -2} : new int[] { n -1 }  ) {
-                float maxMinRatio = ff[highs] / ff[lows];
-                assertTrue(
-                        maxMinRatio > MIN_RATIO,
-                        maxMinRatio + " ratio between max and min"
-                );
+                if (lows!=highs) {
+                    float maxMinRatio = ff[highs] / ff[lows];
+                    assertTrue(
+                            maxMinRatio > MIN_RATIO,
+                            maxMinRatio + " ratio between max and min"
+                    );
+                }
             }
         }
 

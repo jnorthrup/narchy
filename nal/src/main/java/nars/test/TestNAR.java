@@ -83,6 +83,8 @@ public class TestNAR {
     public TestNAR run(long finalCycle  /* for use with JUnit */) {
 
 
+        score = -finalCycle; //default score
+
         if (requireConditions)
             assertTrue(!succeedsIfAll.isEmpty() || !failsIfAny.isEmpty(), "no conditions tested");
 
@@ -142,37 +144,33 @@ public class TestNAR {
 
         assert(runtime <= finalCycle);
 
-        this.score = success ?
-
-//                1 + (+1f / (1f + ((1f + runtime) / (1f + Math.max(0,finalCycle - startTime)))))
-//                :
-//                0
-
-                -runtime : -finalCycle
-                ;
-
-        {
-
-
-            if (!quiet && reportStats) {
-                String pattern = "{}\n\t{} {} {}IN \ninputs";
-                Object[] args = {id, time};
-
-                logger.info(pattern, args);
-
-            }
-
-            if (!quiet) {
-                succeedsIfAll.forEach(c ->
-                        c.log(logger)
-                );
+        if (success)
+            score = -runtime;
+//        this.score = success ?
+//
+////                1 + (+1f / (1f + ((1f + runtime) / (1f + Math.max(0,finalCycle - startTime)))))
+////                :
+////                0
+//
+//                ;
 
 
-                if (trace != null)
-                    logger.trace("{}", trace.getBuffer());
-            }
+        if (!quiet && reportStats) {
+            String pattern = "{}\n\t{} {} {}IN \ninputs";
+            Object[] args = {id, time};
+
+            logger.info(pattern, args);
+
+        }
+
+        if (!quiet) {
+            succeedsIfAll.forEach(c ->
+                    c.log(logger)
+            );
 
 
+            if (trace != null)
+                logger.trace("{}", trace.getBuffer());
         }
 
 

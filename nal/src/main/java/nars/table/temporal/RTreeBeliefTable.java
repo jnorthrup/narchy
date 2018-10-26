@@ -1,26 +1,19 @@
 package nars.table.temporal;
 
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.sort.Top;
 import jcog.sort.Top2;
 import jcog.tree.rtree.*;
 import jcog.tree.rtree.split.AxialSplitLeaf;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.control.proto.Remember;
-import nars.task.NALTask;
 import nars.task.Revision;
 import nars.task.TaskProxy;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.signal.SignalTask;
 import nars.task.util.*;
-import nars.truth.Truth;
-import nars.truth.TruthFunctions;
-import nars.truth.polation.TruthIntegration;
-import nars.truth.util.TruthAccumulator;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,14 +22,12 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
     private static final float PRESENT_AND_FUTURE_BOOST_BELIEF = 2f;
-    private static final float PRESENT_AND_FUTURE_BOOST_GOAL = 4f;
+    private static final float PRESENT_AND_FUTURE_BOOST_GOAL = 6f;
 
 
     private static final int MIN_TASKS_PER_LEAF = 2;
@@ -105,20 +96,20 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         return (TaskRegion r) -> {
 
-            long timeDist =
-                    r.maxTimeTo(now) / (1 + perceptDur);
+            double timeDist =
+                    Math.log(1 + r.maxTimeTo(now)); //ensure that the number is small enough for when it gets returned as float
             //r.midTimeTo(when);
             //r.maxTimeTo(when); //pessimistic, prevents wide-spanning taskregions from having an advantage over nearer narrower ones
 
-            float conf = (((float) r.coord(2, false)) + ((float) r.coord(2, true))) / 2;
+            double conf = (((float) r.coord(2, false)) + ((float) r.coord(2, true))) / 2;
 
-            float v = //-Param.evi(c2wSafe(conf),  timeDist, perceptDur);
+            double v = //-Param.evi(c2wSafe(conf),  timeDist, perceptDur);
                     (timeDist) * (1 - conf);
 
             if (r.endsAfter(now))
                 v /= futureFactor;
 
-            return v;
+            return (float) v;
 
 //            long regionTimeDist = r.midTimeTo(when);
 //
@@ -156,7 +147,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 //(TruthIntegration.eviAvg(x, 0))/ (1 + x.maxTimeTo(now)/((float)dur));
                 ///w2cSafe(TruthIntegration.evi(x));
                 //w2cSafe(TruthIntegration.evi(x)) / (1 + x.midTimeTo(now)/((float)dur));
-                x.evi(now, dur);
+                w2cSafe(x.evi(now, dur));
     }
 
 
@@ -516,7 +507,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                                             remember, NAR nar) {
 
 
-        float inputStrength = input != null ? taskStrength.floatValueOf(input) : Float.POSITIVE_INFINITY;
 
 
         FloatFunction<Leaf<TaskRegion>> leafWeakness =
@@ -547,7 +537,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         //assert (tree.size() >= cap);
 
 
-        return mergeOrDelete(tree, input, closest, weakest, mergeableLeaf, taskStrength, inputStrength, remember, nar);
+        return mergeOrDelete(tree, input, closest, weakest, mergeableLeaf, taskStrength, remember, nar);
 
 
     }
@@ -558,7 +548,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                                          Top<Task> weakest,
                                          Top<Leaf<TaskRegion>> mergeableLeaf,
                                          FloatFunction<Task> taskStrength,
-                                         float inputStrength,
                                          Remember r,
                                          NAR nar) {
 
@@ -613,8 +602,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         float[] value = new float[4];
         value[RejectInput] =
                 I != null ? 0 : Float.NEGATIVE_INFINITY;
+
+
+        float inputStrength = I!=null ? taskStrength.floatValueOf(I) : 0;
         value[EvictWeakest] =
-                (I != null ? +inputStrength : 0) - taskStrength.floatValueOf(W);
+                inputStrength - taskStrength.floatValueOf(W);
         value[MergeInputClosest] =
                 IC != null ? (
                         + mergeScoreFactor(I,C) * taskStrength.floatValueOf(IC)
@@ -817,59 +809,59 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     }
 
-    /** TODO */
-    public static class EternalizingRTreeBeliefTable extends RTreeBeliefTable {
-
-        final TruthAccumulator ete = new TruthAccumulator();
-        private final boolean beliefOrGoal;
-
-        public EternalizingRTreeBeliefTable(boolean beliefOrGoal) {
-            this.beliefOrGoal = beliefOrGoal;
-
-        }
-
-        @Override
-        public void match(Answer m) {
-            super.match(m);
-            if (m.template!=null) {
-                Truth t = ete.peekAverage();
-                if (t != null) {
-
-
-                    Task tt = new NALTask(m.template, beliefOrGoal ? BELIEF : GOAL, t,
-                            m.nar.time(), m.time.start, m.time.end,
-                            m.nar.evidence() //TODO hold rolling evidence buffer
-                    ).pri(m.nar);
-
-//                System.out.println(tt);
-                    m.tryAccept(tt);
-                }
-            } else {
-                if (Param.DEBUG)
-                    throw new WTF("null template"); //HACK
-            }
-        }
-
-        @Override
-        protected void remember(Remember r, Task input) {
-            super.remember(r, input);
-
-            {
-
-                @Nullable TaskRegion bounds = bounds();
-                if (bounds==null)
-                    return;
-
-                int cap = capacity();
-                float e = TruthIntegration.evi(input) * (((float) input.range()) / bounds.range() );
-                float ee = TruthFunctions.eternalize(e);
-                float ce = w2cSafe(ee);
-                if (ce > Param.TRUTH_EPSILON) {
-                    ete.add(input.freq(), ce);
-                }
-            }
-        }
-    }
+//    /** TODO */
+//    public static class EternalizingRTreeBeliefTable extends RTreeBeliefTable {
+//
+//        final TruthAccumulator ete = new TruthAccumulator();
+//        private final boolean beliefOrGoal;
+//
+//        public EternalizingRTreeBeliefTable(boolean beliefOrGoal) {
+//            this.beliefOrGoal = beliefOrGoal;
+//
+//        }
+//
+//        @Override
+//        public void match(Answer m) {
+//            super.match(m);
+//            if (m.template!=null) {
+//                Truth t = ete.peekAverage();
+//                if (t != null) {
+//
+//
+//                    Task tt = new NALTask(m.template, beliefOrGoal ? BELIEF : GOAL, t,
+//                            m.nar.time(), m.time.start, m.time.end,
+//                            m.nar.evidence() //TODO hold rolling evidence buffer
+//                    ).pri(m.nar);
+//
+////                System.out.println(tt);
+//                    m.tryAccept(tt);
+//                }
+//            } else {
+//                if (Param.DEBUG)
+//                    throw new WTF("null template"); //HACK
+//            }
+//        }
+//
+//        @Override
+//        protected void remember(Remember r, Task input) {
+//            super.remember(r, input);
+//
+//            {
+//
+//                @Nullable TaskRegion bounds = bounds();
+//                if (bounds==null)
+//                    return;
+//
+//                int cap = capacity();
+//                float e = TruthIntegration.evi(input) * (((float) input.range()) / bounds.range() );
+//                float ee = TruthFunctions.eternalize(e);
+//                float ce = w2cSafe(ee);
+//                if (ce > Param.TRUTH_EPSILON) {
+//                    ete.add(input.freq(), ce);
+//                }
+//            }
+//        }
+//    }
 
 
 //    private final static class ExpandingScan extends CachedTopN<TaskRegion> implements Predicate<TaskRegion> {

@@ -587,14 +587,14 @@ public final class Evolution {
 
         private GenerationEvolver createDefaultGenerationEvolver() {
             float elitism = 0.5f;
-            ArrayBag<PLink<GeneticOperator>, PLink<GeneticOperator>> operators = createDefaultGeneticOperators();
+            ArrayBag<GeneticOperator, PLink<GeneticOperator>> operators = createDefaultGeneticOperators();
             return new GenerationEvolverImpl(elitism,
                     new RankSelector(rng),
                     operators, rng);
         }
 
-        private ArrayBag<PLink<GeneticOperator>, PLink<GeneticOperator>> createDefaultGeneticOperators() {
-            ArrayBag<PLink<GeneticOperator>, PLink<GeneticOperator>> operators = new PLinkArrayBag<>(10, PriMerge.plus, new HashMap());
+        private ArrayBag<GeneticOperator, PLink<GeneticOperator>> createDefaultGeneticOperators() {
+            ArrayBag<GeneticOperator, PLink<GeneticOperator>> operators = new PLinkArrayBag<>(10, PriMerge.plus, new HashMap());
 
 
             TreeGenerator treeGenerator = TreeGeneratorImpl.grow(_primitiveSet, rng);

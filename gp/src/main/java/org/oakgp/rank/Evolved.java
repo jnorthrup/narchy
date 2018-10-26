@@ -31,28 +31,28 @@ public final class Evolved extends NLink<Node> {
         super(node, (float)pri);
     }
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//
-//        if (o instanceof Evolved) {
-//            Evolved r = (Evolved) o;
-//            return this.id.equals(r.id) && this.pri == r.pri;
-//        } else {
-//            return false;
-//        }
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
 
-//    @Override
-//    public int hashCode() {
-//        return id.hashCode();
-//    }
+        if (o instanceof Evolved) {
+            Evolved r = (Evolved) o;
+            return this.id.equals(r.id) && this.pri() == r.pri();
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 
 //    @Override
 //    public int compareTo(Evolved o) {
 //        if (this == o) return 0;
 //
-//        int result = Double.compare(pri, o.pri);
+//        int result = Double.compare(pri(), o.pri());
 //        if (result == 0) {
 //
 //            return Integer.compare(o.id.size(), id.size());
@@ -60,9 +60,9 @@ public final class Evolved extends NLink<Node> {
 //            return result;
 //        }
 //    }
-//
-//    @Override
-//    public String toString() {
-//        return "[" + id + ' ' + pri + ']';
-//    }
+
+    @Override
+    public String toString() {
+        return "[" + id + ' ' + pri() + ']';
+    }
 }

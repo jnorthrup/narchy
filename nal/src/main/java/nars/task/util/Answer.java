@@ -324,7 +324,6 @@ public class Answer implements AutoCloseable {
      * TODO merge DynTruth and TruthPolation
      */
     @Nullable
-    @Deprecated
     protected DynTruth dynTruth() {
         int s = tasks.size();
         if (s == 0)
@@ -343,8 +342,7 @@ public class Answer implements AutoCloseable {
 
     @Nullable public TruthPolation truthpolation(int dur) {
         DynTruth d = dynTruth();
-        if (d == null) return null;
-        return truthpolation(d, dur);
+        return d == null ? null : truthpolation(d, dur);
     }
 
     /**

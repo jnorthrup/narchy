@@ -43,7 +43,7 @@ public final class RoundRobinTournamentRanker implements GenerationRanker {
         //Evolved[] output = new Evolved[size];
         for (int i = 0; i < size; i++) {
             /*output[i] =*/
-            r.add(new Evolved(input[i], -fitness[i] /* reverse porder */));
+            r.add(new Evolved(input[i], fitness[i] /* reverse porder */));
         }
         //return new Ranking(Stream.of(output), Collections.reverseOrder());
 

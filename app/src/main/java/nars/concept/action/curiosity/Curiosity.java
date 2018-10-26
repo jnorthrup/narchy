@@ -3,9 +3,11 @@ package nars.concept.action.curiosity;
 import jcog.data.list.FasterList;
 import jcog.decide.MutableRoulette;
 import jcog.math.FloatRange;
+import jcog.math.MutableEnum;
 import nars.Param;
 import nars.agent.NAgent;
 import nars.concept.action.AbstractGoalActionConcept;
+import nars.task.Revision;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -24,6 +26,38 @@ public class Curiosity {
 
     private final IntToFloatFunction weigher = i -> curiosity.get(i).weight.floatValue();
     public final NAgent agent;
+
+
+    public enum CuriosityInjection {
+        Passive {
+            @java.lang.Override
+            public Truth inject(Truth actionTruth, Truth curi) {
+                return actionTruth;
+            }
+        },
+        Revise {
+            @java.lang.Override
+            public Truth inject(Truth actionTruth, Truth curi) {
+                return actionTruth == null ? curi : Revision.revise(curi, actionTruth);
+            }
+        },
+        Override {
+            @java.lang.Override
+            public Truth inject(Truth actionTruth, Truth curi) {
+                return curi;
+            }
+        };
+
+
+        abstract public Truth inject(Truth actionTruth, Truth curi);
+    }
+
+
+    /** injection mode */
+    public final MutableEnum<CuriosityInjection> injection = new MutableEnum<CuriosityInjection>(CuriosityInjection.class)
+            .set(CuriosityInjection.Override);
+
+
 
     private MutableRoulette select = null;
 

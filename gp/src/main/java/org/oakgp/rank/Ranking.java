@@ -25,7 +25,7 @@ import jcog.sort.TopN;
 public final class Ranking extends TopN<Evolved> {
 
     public Ranking(int capacity) {
-        this(capacity, true);
+        this(capacity, false);
     }
 
     public Ranking(int capacity, boolean reverse) {

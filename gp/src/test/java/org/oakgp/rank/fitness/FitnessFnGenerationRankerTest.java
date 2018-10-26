@@ -46,7 +46,7 @@ public class FitnessFnGenerationRankerTest {
 
         
         GenerationRanker generationRanker = new FitnessRanker.SingleThread(mockFitnessFunction, 4);
-        Ranking output = new Ranking(3);
+        Ranking output = new Ranking(3, true);
         generationRanker.accept(Stream.of(a,b,c), output);
 
         
