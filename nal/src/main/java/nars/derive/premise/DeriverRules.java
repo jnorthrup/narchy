@@ -108,10 +108,10 @@ public class DeriverRules {
         if (fanOut > 0) {
 
 
-            int branchTTL = d.ttl;
+            //int branchTTL = d.ttl;
                                 //* fanOut;
 
-            d.setTTL(branchTTL);
+            //d.setTTL(branchTTL);
 
             switch (fanOut) {
                 case 1: {

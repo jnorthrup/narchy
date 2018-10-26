@@ -203,17 +203,33 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     }
 
 
-    public final static ThreadLocal<MetalPool<TopN<?>>> pool =
-            MetalPool.threadLocal(()->new TopN<>(new Object[32], new CachedFloatFunction<>(64, x->Float.NaN)));
+    public static <X> ThreadLocal<MetalPool<TopN<X>>> newPool(IntFunction<X[]> arrayBuilder) {
+        return MetalPool.threadLocal(() -> {
+            int initialCapacity = 32;
+            return new TopN<>(arrayBuilder.apply(initialCapacity), new CachedFloatFunction<>(initialCapacity*2, x->Float.NaN));
+        });
+    }
 
-    public static <X> TopN<X> pooled(int capacity, FloatFunction<X> rank) {
+    /** default pool */
+    public final static ThreadLocal<MetalPool<TopN<Object>>> pool = TopN.newPool(Object[]::new);
+
+    public static TopN pooled(int capacity, FloatFunction rank) {
+        return pooled(pool, capacity, rank, Object[]::new);
+    }
+
+    public static <X> TopN<X> pooled(ThreadLocal<MetalPool<TopN<X>>> pool, int capacity, FloatFunction<X> rank,IntFunction<Object[]> arrayBuilder) {
         TopN t = pool.get().get();
         ((CachedFloatFunction)t.rank).value(rank);
-        if (t.items.length!=capacity)
-            t.items = new Object[capacity];
+        if (t.items.length<capacity)
+            t.items = arrayBuilder.apply(capacity);
         return t;
     }
-    public static void unpool(TopN t) {
+
+    public static void unpool(TopN<Object> t) {
+        unpool(pool, t);
+    }
+
+    public static <X> void unpool(ThreadLocal<MetalPool<TopN<X>>> pool,TopN<X> t) {
         t.clear();
         ((CachedFloatFunction)t.rank).value(r -> Float.NaN);
         pool.get().put(t);

@@ -589,7 +589,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                     return false;
             } else {
                 if (deferredPairs == null)
-                    deferredPairs = new Term[(s - i) * 2];
+                    deferredPairs = new Term[((s-1) - i) * 2];
 
                 //backwards order
                 deferredPairs[dynPairs++] = yi;

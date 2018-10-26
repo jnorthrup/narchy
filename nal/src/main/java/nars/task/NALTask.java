@@ -43,6 +43,7 @@ public class NALTask extends UnitPri implements Task {
         super();
 
 
+
         if (!term.op().taskable)
             throw new TaskException(term, "invalid term: " + term);
 

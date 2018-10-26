@@ -15,6 +15,7 @@ import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
 import org.jetbrains.annotations.Nullable;
@@ -50,11 +51,15 @@ public class AbstractGoalActionConcept extends ActionConcept {
     protected final CauseChannel<ITask> in;
 
     public AbstractGoalActionConcept(Term term,  NAR n) {
-        this(term, n.conceptBuilder.newTable(term, false), n);
+        this(term,
+                new ActionRTreeBeliefTable(),
+                n);
     }
 
     protected AbstractGoalActionConcept(Term term, BeliefTable goals, NAR n) {
-        super(term, new SensorBeliefTables(term, true, n.conceptBuilder), goals, n);
+        super(term, new SensorBeliefTables(term, true, n.conceptBuilder),
+                new BeliefTables(goals),
+                n);
 
         ((BeliefTables)goals()).tables.add(curiosityTable = new CuriosityGoalTable(term, 64));
 
@@ -104,8 +109,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
         int actionDur = this.actionSustain;
         if (actionDur < 0)
             actionDur =
-                    n.dur();
-                    //Tense.occToDT(agentDur);
+                    //n.dur();
+                    Tense.occToDT(agentDur);
 
         int limit = Answer.TASK_LIMIT_DEFAULT * 2;
 

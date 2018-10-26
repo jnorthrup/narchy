@@ -57,14 +57,12 @@ public interface Variable extends Atomic {
         if (equals(_y))
             return true;
 
-        Term x = u.resolve(this);
+        final Term x = u.resolve(this);
 
-        Term y;
-        if (_y instanceof Variable) {
-            y = u.resolve(_y);
-        } else
-            y = _y;
+        final Term y = (_y instanceof Variable) ? u.resolve(_y) : _y;
 
+        if (x.equals(y))
+            return true;
 
 //        if (x!=this || _y != y) {
 //            if (x!=this && x.op()==NEG && y.op()==NEG) {
@@ -93,22 +91,16 @@ public interface Variable extends Atomic {
 //            }
 //        }
 
-        if (y instanceof Variable) {
-            if (x.equals(y))
-                return true;
-
-            return unifyVar((Variable) y, u);
-        }
-
         if (x != this) {
             try {
                 return x.unify(y, u);
             } catch (StackOverflowError e) {
-                System.out.println(x + " " + y);
-                return false;
+                throw new RuntimeException("unification stack overflow: " + x + ' ' + y + " in " + u.xy);
             }
         } else {
-            {
+            if (y instanceof Variable) {
+                return unifyVar((Variable) y, u);
+            } else {
                 return u.matchType(this.op()) && u.putXY(this, y);
             }
         }
@@ -128,9 +120,12 @@ public interface Variable extends Atomic {
 
         if (x instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsis)
             return false;
+        if (x instanceof CommonVariable)
+            return false;
         if (y instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsis)
             return false;
-
+        if (y instanceof CommonVariable)
+            return false;
 
         Op xOp = x.op();
         Op yOp = y.op();

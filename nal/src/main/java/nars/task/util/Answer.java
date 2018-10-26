@@ -1,5 +1,6 @@
 package nars.task.util;
 
+import jcog.data.pool.MetalPool;
 import jcog.data.set.MetalLongSet;
 import jcog.math.CachedFloatFunction;
 import jcog.sort.FloatRank;
@@ -47,6 +48,8 @@ public class Answer implements AutoCloseable {
     public TimeRangeFilter time;
     public Term template = null;
 
+    public final static ThreadLocal<MetalPool<TopN<Task>>> topTasks = TopN.newPool(Task[]::new);
+
     public TopN<Task> tasks;
     public final Predicate<Task> filter;
 
@@ -57,7 +60,7 @@ public class Answer implements AutoCloseable {
     /** TODO filter needs to be more clear if it refers to the finished task (if dynamic) or a component in creating one */
     public Answer(int capacity, int maxTries, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
         this.nar = nar;
-        this.tasks = TopN.pooled(capacity, rank.filter(filter));
+        this.tasks = TopN.pooled(topTasks, capacity, rank.filter(filter), Task[]::new);
         this.filter = filter;
         this.triesRemain = maxTries;
     }
@@ -88,21 +91,22 @@ public class Answer implements AutoCloseable {
     @Deprecated
     public static Answer relevance(boolean beliefOrQuestion, int limit, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
 
-        FloatRank<Task> r = relevance(beliefOrQuestion, start, end, template, nar);
+        FloatRank<Task> r = relevance(beliefOrQuestion, start, end, template);
 
         return new Answer(limit, r, filter, nar)
                 .time(new TimeRangeFilter(start, end, true))
                 .template(template);
     }
 
-    public static FloatRank<Task> relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template, NAR nar) {
-        int dur =
-                nar.dur();
-                //1;
+    public static FloatRank<Task> relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template) {
+
+
+
+
 
         FloatRank<Task> strength =
                 beliefOrQuestion ?
-                        FloatRank.the(beliefStrength(start, end, dur)) : questionStrength(start, end, dur);
+                        FloatRank.the(beliefStrength(start, end)) : questionStrength(start, end);
 
         FloatRank<Task> r;
         if (template == null || !template.hasAny(Temporal)) {
@@ -159,15 +163,15 @@ public class Answer implements AutoCloseable {
         };
     }
 
-    public static FloatFunction<Task> beliefStrength(long start, long end, int dur) {
+    public static FloatFunction<Task> beliefStrength(long start, long end) {
         if (start == ETERNAL) {
             return eternalTaskStrength();
         } else {
-            return temporalTaskStrength(start, end, dur);
+            return temporalTaskStrength(start, end);
         }
     }
 
-    public static FloatRank<Task> questionStrength(long start, long end, int dur) {
+    public static FloatRank<Task> questionStrength(long start, long end) {
 
         return
                 (start == ETERNAL) ?
@@ -176,7 +180,7 @@ public class Answer implements AutoCloseable {
                         (t, m) -> {
                             float pri = t.pri(); // * t.originality();
                             if (pri == pri && pri > m)
-                                return pri / (1 + ((float) (t.minTimeTo(start, end) / ((double) dur))));
+                                return pri / (1f + t.minTimeTo(start, end) );
                             return Float.NaN;
                         };
 
@@ -187,8 +191,8 @@ public class Answer implements AutoCloseable {
         return x -> /*w2cSafe*/(x.isEternal() ? x.evi() : x.eviEternalized() * x.range());
     }
 
-    public static FloatFunction<Task> temporalTaskStrength(long start, long end, int dur) {
-        return x -> /*w2cSafe*/(TruthIntegration.evi(x, start, end, dur));
+    public static FloatFunction<Task> temporalTaskStrength(long start, long end) {
+        return x -> /*w2cSafe*/(TruthIntegration.evi(x, start, end, 1));
     }
 
     boolean ditherTruth = false;
@@ -328,10 +332,7 @@ public class Answer implements AutoCloseable {
         int s = tasks.size();
         if (s == 0)
             return null;
-        DynTruth d = new DynTruth(s);
-        //noinspection UseBulkOperation
-        tasks.forEach(d::add);
-        return d;
+        return new DynTruth(s, tasks.items);
     }
 
 
@@ -383,7 +384,7 @@ public class Answer implements AutoCloseable {
 
     public void close() {
         if (tasks!=null) {
-            TopN.unpool(tasks);
+            TopN.unpool(topTasks, tasks);
             tasks = null;
         }
     }
@@ -394,12 +395,12 @@ public class Answer implements AutoCloseable {
     }
 
 
-    public boolean isEmpty() {
+    public final boolean isEmpty() {
         return tasks.isEmpty();
     }
 
     @Nullable public Task any() {
-        return tasks.isEmpty() ? null : tasks.top();
+        return isEmpty() ? null : tasks.top();
     }
 
     /** consume a limited 'tries' iteration. also applies the filter.

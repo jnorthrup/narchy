@@ -89,6 +89,7 @@ public class PremiseRuleSource extends ProxyTerm  {
 
     private static final PatternIndex INDEX = new PatternIndex();
     protected final Termify termify;
+    protected final MutableSet<UnifyConstraint> constraintSet;
 
     private PremiseRuleSource(String ruleSrc) throws Narsese.NarseseException {
         super(
@@ -118,11 +119,13 @@ public class PremiseRuleSource extends ProxyTerm  {
         Term originalConcPattern = PatternIndex.patternify(postcon[0]);
         Term filteredConcPattern = originalConcPattern;
 
-        //TODO there is a problem with this an ellipsis-containing patterns
+//        //TODO there is a problem with this an ellipsis-containing patterns
 //        {
-//            if (!filteredConcPattern.equals(taskPattern))
+//            //if (!filteredConcPattern.equals(taskPattern))
+//            if (!taskPattern.op().temporal && !taskPattern.op().commutative)
 //                filteredConcPattern = filteredConcPattern.replace(taskPattern, Derivation.TaskTerm); //fast substitute
-//            if (!filteredConcPattern.equals(beliefPattern))
+//            //if (!filteredConcPattern.equals(beliefPattern))
+//            if (!beliefPattern.op().temporal && !beliefPattern.op().commutative)
 //                filteredConcPattern = filteredConcPattern.replace(beliefPattern, Derivation.BeliefTerm); //fast substitute
 //        }
 
@@ -565,6 +568,7 @@ public class PremiseRuleSource extends ProxyTerm  {
 //        }
         this.termify = new Termify(this.concPattern = filteredConcPattern, truthify, time);
 
+        this.constraintSet = CONSTRAINTS.toSet();
 
     }
 
@@ -607,6 +611,7 @@ public class PremiseRuleSource extends ProxyTerm  {
         this.taskPattern = raw.taskPattern;
         this.beliefPattern = raw.beliefPattern;
         this.concPattern = raw.concPattern;
+        this.constraintSet = raw.constraintSet;
 
     }
 
@@ -846,7 +851,7 @@ public class PremiseRuleSource extends ProxyTerm  {
             if (x == null)
                 return false; //ex: seeking a negation but wasnt negated
             Term y = ypInT != null ? d.taskTerm.subPath(ypInT) : d.beliefTerm.subPath(ypInB);
-            assert (y != Bool.Null);
+            assert (y != Bool.Null): (ypInT != null ? d.taskTerm: d.beliefTerm) + " does not resolve " +  (ypInT!=null ? ypInT : ypInB);
             if (y == null)
                 return false; //ex: seeking a negation but wasnt negated
 

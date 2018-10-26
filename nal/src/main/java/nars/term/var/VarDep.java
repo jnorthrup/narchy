@@ -2,7 +2,6 @@ package nars.term.var;
 
 import nars.Op;
 import nars.term.Term;
-import org.jetbrains.annotations.NotNull;
 
 import static nars.Op.VAR_DEP;
 
@@ -18,7 +17,7 @@ public final class VarDep extends NormalizedVariable {
     private final static int RANK = Term.opX(VAR_DEP, (short)0);
     @Override public int opX() { return RANK;    }
 
-    @NotNull
+
     @Override
     public Op op() {
         return VAR_DEP;

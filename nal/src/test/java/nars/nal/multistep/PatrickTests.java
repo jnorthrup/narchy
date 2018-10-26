@@ -78,7 +78,7 @@ public class PatrickTests extends NALTest {
 
         tt.confTolerance(0.5f);
 
-        tt.nar.freqResolution.set(0.1f);
+        tt.nar.freqResolution.set(0.05f);
         tt.nar.confResolution.set(0.05f);
 
 
@@ -86,7 +86,7 @@ public class PatrickTests extends NALTest {
         tt.nar.time.dur(dur);
         tt.nar.termVolumeMax.set(12);
 
-        tt.nar.timeResolution.set(10);
+        tt.nar.timeResolution.set(100);
 
         tt.input(
                 "made_of(toothbrush,plastic).",

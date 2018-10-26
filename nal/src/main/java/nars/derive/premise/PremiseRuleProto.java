@@ -3,15 +3,14 @@ package nars.derive.premise;
 import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAR;
+import nars.Op;
 import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.derive.op.Taskify;
 import nars.derive.op.UnifyTerm;
 import nars.term.control.AND;
 import nars.term.control.PREDICATE;
-import nars.unify.constraint.UnifyConstraint;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
-import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
 
 import java.util.List;
@@ -52,26 +51,26 @@ public class PremiseRuleProto extends PremiseRuleSource {
 
         post.add(UnifyTerm.preUnify);
 
-        if (taskPattern.equals(beliefPattern) || (
+        Op bo = beliefPattern.op();
+        if (!bo.temporal && !bo.commutative && (taskPattern.equals(beliefPattern) || (
                 !taskPattern.OR(x->x instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsis)
-                    && taskPattern.containsRecursively(beliefPattern))) {
+                    && taskPattern.containsRecursively(beliefPattern)))) {
             post.add(new UnifyTerm.NextUnifyTransform(0, taskPattern, conc));
         } else {
             post.add(new UnifyTerm.NextUnify(0, taskPattern));
             post.add(new UnifyTerm.NextUnifyTransform(1, beliefPattern, conc));
         }
 
-        MutableSet<UnifyConstraint> constraints = raw.CONSTRAINTS.toSet();
 
         PREDICATE<Derivation>[] postpost = new PREDICATE[
-                1 + constraints.size() + post.size()
+                1 + constraintSet.size() + post.size()
         ];
 
         int k = 0;
 
         postpost[k++] = this.truthify;
 
-        for (PREDICATE p : constraints)
+        for (PREDICATE p : constraintSet)
             postpost[k++] = p;
 
         for (PREDICATE p : post)

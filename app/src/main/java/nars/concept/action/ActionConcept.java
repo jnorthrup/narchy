@@ -12,6 +12,7 @@ import nars.control.MetaGoal;
 import nars.link.TermLinker;
 import nars.table.BeliefTable;
 import nars.table.dynamic.SensorBeliefTables;
+import nars.table.temporal.RTreeBeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
@@ -29,7 +30,11 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
     protected ActionConcept(Term term, TermLinker linker, NAR n) {
         this(term,
                 new SensorBeliefTables(term, true, n.conceptBuilder),
-                n.conceptBuilder.newTable(term, false), linker,
+
+                //n.conceptBuilder.newTable(term, false),
+                new ActionRTreeBeliefTable(),
+
+                linker,
                 n);
     }
 
@@ -110,6 +115,14 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
 
     }
 
+    protected static class ActionRTreeBeliefTable extends RTreeBeliefTable {
+        @Override
+        protected void onReject(Task input, NAR n) {
+            if (input.minTimeTo(n.time()) < n.dur() * 2) {
+                System.err.println("reject: " + input);
+            }
+        }
+    }
 }
 
 

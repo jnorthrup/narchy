@@ -14,7 +14,6 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
 
     public GoalActionConcept(Term term, NAR n, MotorFunction motor) {
         super(term,
-                n.conceptBuilder.newTable(term, false),
                 n);
 
 

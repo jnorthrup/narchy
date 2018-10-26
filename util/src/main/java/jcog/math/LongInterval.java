@@ -202,6 +202,10 @@ public interface LongInterval {
         }
     }
 
+    default long minTimeTo(LongInterval b) {
+        return minTimeTo(b.start(), b.end());
+    }
+
     /** if the task intersects (ex: occurrs during) the specified interval,
      *  returned time distance is zero, regardless of how far it may extend before or after it */
     default long minTimeTo(long a, long b) {

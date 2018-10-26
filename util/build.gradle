@@ -52,9 +52,9 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2
     compile group: 'org.apache.commons', name: 'commons-vfs2', version: '2.2'
-
-    // https://mvnrepository.com/artifact/tech.tablesaw/tablesaw-core
+    
     compile group: 'tech.tablesaw', name: 'tablesaw-core', version: '0.25.2'
+    testCompile group: 'tech.tablesaw', name: 'tablesaw-jsplot', version: '0.25.2'
 
     // https://mvnrepository.com/artifact/net.openhft/zero-allocation-hashing
     compile (group: 'net.openhft', name: 'zero-allocation-hashing', version: '0.8') {

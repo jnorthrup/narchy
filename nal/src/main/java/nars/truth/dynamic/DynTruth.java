@@ -36,13 +36,17 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
         super(initialCap);
     }
 
+    public DynTruth(int size, Task[] t) {
+        super(size, t);
+    }
+
     private static float pri(TaskRegion x) {
         return ((Prioritized) x).priElseZero();
     }
 
     @Override
     protected Object[] newArray(int newCapacity) {
-        return new TaskRegion[newCapacity];
+        return new Task[newCapacity];
     }
 
     protected float pri(long start, long end) {

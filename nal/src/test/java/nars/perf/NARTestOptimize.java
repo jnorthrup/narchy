@@ -12,6 +12,7 @@ import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
 import nars.nal.nal5.NAL5Test;
+import nars.nal.nal6.NAL6Test;
 import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
@@ -36,7 +37,7 @@ class NARTestOptimize {
                     NAL1MultistepTest.class,
                     //NAL4MultistepTest.class,
                     NAL5Test.class,
-//                    NAL6Test.class,
+                    NAL6Test.class,
 //                    NAL7Test.class, NAL8Test.class,
             };
 
@@ -45,14 +46,12 @@ class NARTestOptimize {
                 n.random().setSeed(System.nanoTime());
                 return n;
             })
-//                .var("attnCapacity", 4, 128, 8,
-//                        (NAR n, int i) -> n.attn.active.setCapacity(i))
+                .var("attnCapacity", 4, 128, 8,
+                        (NAR n, int i) -> n.attn.active.setCapacity(i))
 
-//                .var("ttlMax", 6, 20, 3,
-//                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
-//                .var("termlinkBalance", 0, 1f, 0.1f,
-//                        (NAR n, float f) -> n.termlinkBalance.set(f))
-//                .var("termlinkFanOut", 2, 16, 1,
+                .var("ttlMax", 6, 20, 3,
+                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
+//                .var("linkFanOut", 2, 16, 1,
 //                        (NAR n, int f) -> Param.TermLinkFanoutMax = f)
                 .var("activation", 0, 1f, 0.1f,
                             (NAR n, float f) -> n.activation.set(f))
@@ -80,7 +79,7 @@ class NARTestOptimize {
 
 
             int suiteIterations = 1;
-            int samples = 64;
+            int samples = 128;
             Optimization<NAR, TestNARSuite> o = l.optimize((Supplier<NAR> s) -> {
                 TestNARSuite t = new TestNARSuite(s, testClasses);
                 t.run(parallel, suiteIterations);

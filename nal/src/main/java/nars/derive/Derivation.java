@@ -288,7 +288,6 @@ public class Derivation extends PreDerivation {
      */
     public void reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
 
-
         Term nextTaskTerm = nextTask.term();
 
         if (this._task != null && this._task.term().equals(nextTaskTerm)) {
@@ -372,19 +371,7 @@ public class Derivation extends PreDerivation {
 
     }
 
-    public static boolean fatal(RuntimeException w) {
-        return fatal(null, w);
-    }
-    public static boolean fatal(@Nullable Task problemTask, RuntimeException w) {
-        if (problemTask!=null)
-            problemTask.delete();
-        if (Param.DEBUG)
-            throw w;
-        else {
-            logger.warn("{}", w.getMessage());
-            return false;
-        }
-    }
+
 
     /**
      * called after protoderivation has returned some possible Try's
@@ -468,7 +455,6 @@ public class Derivation extends PreDerivation {
             clear();
             throw e;
         }
-
 
     }
 

@@ -82,9 +82,8 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
                 return putAnon(x);
             }
 
-            if (x instanceof UnnormalizedVariable) {
+            if (x instanceof UnnormalizedVariable)
                 return x; //HACK
-            }
 
             return Anom.the[map.intern(x)];
 

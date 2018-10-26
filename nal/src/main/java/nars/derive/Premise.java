@@ -13,8 +13,6 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
-import nars.task.DerivedTask;
-import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.time.Tense;
@@ -245,10 +243,10 @@ public class Premise implements Comparable<Premise> {
                 @Nullable Task answered = task.onAnswered(match, d.nar);
                 if (answered != null) {
 
-                    if (!(answered instanceof SignalTask) && !(answered instanceof DerivedTask))
+                    if (answered.isGoal()) // || (!(answered instanceof SignalTask) && !(answered instanceof DerivedTask)))
                         d.add(answered); //TODO inputting here is really only useful if revised or dynamic
 
-                    if (answered.isBelief())
+                    else //if (answered.isBelief())
                         return answered;
 
                 }

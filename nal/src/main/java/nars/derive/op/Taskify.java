@@ -1,6 +1,7 @@
 package nars.derive.op;
 
 import jcog.Util;
+import jcog.WTF;
 import nars.*;
 import nars.control.Cause;
 import nars.derive.Derivation;
@@ -8,6 +9,7 @@ import nars.derive.premise.PremiseRuleProto;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.term.Term;
+import nars.term.anon.Anom;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.util.transform.Retemporalize;
@@ -34,7 +36,7 @@ public class Taskify extends AbstractPred<Derivation> {
     private static final Atomic TASKIFY = Atomic.the("taskify");
 
     public Taskify(PremiseRuleProto.RuleCause channel) {
-        super(  $.funcFast(TASKIFY, $.the(channel.id)) );
+        super($.funcFast(TASKIFY, $.the(channel.id)));
         this.channel = channel;
     }
 
@@ -64,28 +66,22 @@ public class Taskify extends AbstractPred<Derivation> {
 
         if ((punc == BELIEF || punc == GOAL) && x0.hasXternal()) {
             //HACK this is for deficiencies in the temporal solver that can be fixed
-            d.concTerm = x0 = x0.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
+            x0 = x0.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
             if (!Taskify.valid(x0, d.concPunc)) {
                 d.nar.emotion.deriveFailTemporal.increment();
                 return spam(d, Param.TTL_DERIVE_TASK_FAIL);
             }
         }
 
-        Term x1;
-//        try {
-            x1 = d.anon.get(x0);
-            if (x1 == null) {
-                if (Param.DEBUG)
-                    return spam(d, Param.TTL_DERIVE_TASK_FAIL);
-                else {
-                    return Derivation.fatal(new NullPointerException());
-                }
+        Term x1 = d.anon.get(x0);
+        if (x1 == null)
+            throw new NullPointerException("could not un-anonymize " + x0 + " with " + d.anon);
 
-            }
-//        } catch (RuntimeException r) {
-//            d.concTerm = null; //HACK
-//            return Derivation.fatal(r);
-//        }
+        //TEMPORARY
+        if (Param.DEBUG) {
+            if (x1.ORrecurse(t -> t instanceof Anom))
+                throw new WTF("Anom leak into Taskify content: " + x0 + " with " + d.anon);
+        }
 
         Term x = Task.forceNormalizeForBelief(x1);
         if (!x.op().conceptualizable)
@@ -109,7 +105,7 @@ public class Taskify extends AbstractPred<Derivation> {
         }
 
 
-        long[] occ = d.concOcc!=null ? d.concOcc : new long[] { ETERNAL, ETERNAL };
+        long[] occ = d.concOcc != null ? d.concOcc : new long[]{ETERNAL, ETERNAL};
 
         if (same(x, punc, tru, occ, d._task, d.nar) ||
                 (d._belief != null && same(x, punc, tru, occ, d._belief, d.nar))) {
@@ -145,8 +141,8 @@ public class Taskify extends AbstractPred<Derivation> {
 
         float priority =
                 t.isBeliefOrGoal() ?
-                    d.deriver.budgeting.pri(t, tru.freq(), TruthIntegration.evi(t), d) :
-                    d.deriver.budgeting.pri(t, Float.NaN, Float.NaN, d);
+                        d.deriver.budgeting.pri(t, tru.freq(), TruthIntegration.evi(t), d) :
+                        d.deriver.budgeting.pri(t, Float.NaN, Float.NaN, d);
 
         if (priority != priority) {
             d.nar.emotion.deriveFailPrioritize.increment();
@@ -154,7 +150,7 @@ public class Taskify extends AbstractPred<Derivation> {
         }
 
         //these must be applied before possible merge on input to derivedTask bag
-        t.cause( Cause.merge(Param.causeCapacity.intValue(), d.parentCause, new short[] { channel.id }) );
+        t.cause(Cause.merge(Param.causeCapacity.intValue(), d.parentCause, new short[]{channel.id}));
 
         if ((d.concSingle) || (Param.OVERLAP_DOUBLE_SET_CYCLIC && d.overlapDouble))
             t.setCyclic(true);
@@ -193,7 +189,7 @@ public class Taskify extends AbstractPred<Derivation> {
                         if ((punc == QUESTION || punc == QUEST) || (
                                 Util.equals(parent.freq(), truth.freq(), n.freqResolution.floatValue()) &&
                                         parent.conf() <= truth.conf() - n.confResolution.floatValue()
-                                                // / 2 /* + epsilon to avid creeping confidence increase */
+                                // / 2 /* + epsilon to avid creeping confidence increase */
                         )) {
 
                             if (Param.DEBUG_SIMILAR_DERIVATIONS)
@@ -213,7 +209,7 @@ public class Taskify extends AbstractPred<Derivation> {
 //        if (parent.isEternal()) {
 //            return true;
 //        } else {
-            return parent.contains(occ[0], occ[1]);
+        return parent.contains(occ[0], occ[1]);
 //            Tense.dither(parent.start(), n) == Tense.dither(occ[0], n) &&
 //                    Tense.dither(parent.end(), n) == Tense.dither(occ[1], n);
 //        }

@@ -124,12 +124,12 @@ public class NAgent extends NARService implements NSense, NAct {
 
     protected <A extends ActionConcept> void actionAdded(A a) {
 
-        //alwaysQuest(a, true);
+        alwaysQuest(a, true);
 
-        alwaysQuestionEternally(a,
-                false,
-                false
-        );
+//        alwaysQuestionEternally(a,
+//                false,
+//                false
+//        );
 
         alwaysQuestionEternally(Op.IMPL.the($.varQuery(1), a.term), true, false);
 

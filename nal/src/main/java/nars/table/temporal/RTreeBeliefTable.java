@@ -245,14 +245,14 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     //abstract protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur);
 
     @Override
-    public void match(Answer m) {
+    public void match(Answer a) {
 
         int s = size();
         if (s == 0)
             return;
 
 
-        TimeRangeFilter time = m.time;
+        TimeRangeFilter time = a.time;
 
         @Nullable TaskRegion bounds = this.bounds();
 
@@ -261,11 +261,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (!mustContain || time.intersects(bounds)) { //else nothing would match
 
             Predicate<TaskRegion> each = !mustContain ?
-                            TaskRegion.asTask(m::tryAccept)
+                            TaskRegion.asTask(a::tryAccept)
                             :
                             (n) -> {
                                 if (time.contains(n)) {
-                                    return m.tryAccept((Task) n);
+                                    return a.tryAccept((Task) n);
                                 }
 
                                 return true;
@@ -286,12 +286,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                     if (tree.root().size()==0)
                         return; //became null while waiting for lock
 
-                    HyperIterator<TaskRegion> ii = new HyperIterator(tree, timeDist);
+                    try (HyperIterator<TaskRegion> ii = new HyperIterator(tree, timeDist)) {
 
-                    while (ii.hasNext() && each.test(ii.next())) {
+                        while (ii.hasNext() && each.test(ii.next())) {
+                        }
                     }
-
-                    ii.close();
                 });
 //            } else {
 //
@@ -459,18 +458,27 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             //assert(existing==input || r.forgotten.containsInstance(input));
         } else {
             if (!r.forgotten(input)) {
-                remember(r, input);
+                r.remember(input);
+                onRemember(input, n);
+            } else {
+                r.forget(input);
+                onReject(input, n);
             }
         }
 
 
     }
 
-    @Deprecated protected void remember(Remember r, Task input) {
-        r.remember(input);
+    protected void onReject(Task input, NAR n) {
+        /* optional: implement in subclasses */
     }
 
-    private boolean ensureCapacity(Space<TaskRegion> treeRW, @Nullable Task input, Remember remember, NAR nar) {
+    protected void onRemember(Task input, NAR n) {
+        /* optional: implement in subclasses */
+
+    }
+
+    private boolean ensureCapacity(Space<TaskRegion> treeRW, /*@Nullable*/ Task input, Remember remember, NAR nar) {
 
         FloatFunction<Task> taskStrength = null;
         FloatFunction<TaskRegion> leafRegionWeakness = null;
@@ -623,7 +631,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 value[MergeLeaf] = Float.NEGATIVE_INFINITY;
             } else {
                 value[MergeLeaf] =
-                        (I != null ? +inputStrength : 0)
+                        +inputStrength
                                 + mergeScoreFactor(A,B) * taskStrength.floatValueOf(AB)
                                 - taskStrength.floatValueOf(A)
                                 - taskStrength.floatValueOf(B)

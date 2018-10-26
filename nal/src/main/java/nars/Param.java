@@ -97,7 +97,7 @@ public abstract class Param {
 //    public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
 
 
-    public static boolean STRONG_COMPOSITION = false;
+    public static final boolean STRONG_COMPOSITION = false;
 
     /**
      * number of clock durations composing a unit of short term memory decay (used by bag forgetting)
@@ -427,13 +427,13 @@ public abstract class Param {
         assert(dur > 0);
 
         int falloffDurs =
-                1;
-                //2;
+                //1;
+                2;
                 //4;
                 //dur;
                 //8;
         return evi / (1.0f + (((float)dt) / (falloffDurs * dur)));
-
+        //return evi / (1.0f +    Util.sqr(((float)dt) / (falloffDurs * dur)));
 
         //return evi * Math.max(0, (1.0f - ((float)dt) / (falloffDurs * dur))); //constant time linear decay
 

@@ -68,7 +68,7 @@ public final class AxialSplitLeaf<X> implements Split<X> {
         X[] ld = leaf.data;
         for (int i = 0; i < size; i++) {
             X li = i < size-1 ? ld[i] : x;
-            double c = model.bounds(li).center(splitDimension);
+            double c = model.bounds(li).center(splitDimension); //TODO secondary sort by range
             sorted[i] = pair(li, -c /* negative since the ArrayUtils.sort below is descending */);
         }
 

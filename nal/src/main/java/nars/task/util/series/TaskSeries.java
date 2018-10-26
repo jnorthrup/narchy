@@ -28,10 +28,10 @@ public interface TaskSeries<T extends Task> {
 
         DynStampTruth d = new DynStampTruth(Math.min(size, limit));
 
-        TopN<Task> inner = TopN.pooled(Math.min(size, limit), filter != null ?
+        TopN<Task> inner = TopN.pooled(Answer.topTasks, Math.min(size, limit), filter != null ?
                 (t) -> filter.test(t) ? -t.minTimeTo(start, end) : Float.NaN
                 :
-                (t) -> -t.minTimeTo(start, end));
+                (t) -> -t.minTimeTo(start, end), Task[]::new);
 
         try {
 
@@ -59,7 +59,7 @@ public interface TaskSeries<T extends Task> {
 
             return null;
         } finally {
-            TopN.unpool(inner);
+            TopN.unpool(Answer.topTasks, inner);
         }
 
     }

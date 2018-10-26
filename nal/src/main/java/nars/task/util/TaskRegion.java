@@ -19,19 +19,19 @@ import java.util.function.Predicate;
 public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
     /**
-     * cost of splitting a node by time
+     * proportional value of splitting a node by time
      */
     float TIME_COST = 1f;
 
     /**
-     * cost of splitting a node by freq
+     * proportional value of splitting a node by freq
      */
     float FREQ_COST = 0.5f;
 
     /**
-     * cost of splitting a node by conf
+     * proportional value of splitting a node by conf
      */
-    float CONF_COST = 0.25f;
+    float CONF_COST = 0.01f;
 
     static Consumer<TaskRegion> asTask(Consumer<? super Task> each) {
         return r -> {

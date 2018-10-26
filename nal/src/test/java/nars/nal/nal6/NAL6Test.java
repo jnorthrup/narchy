@@ -876,7 +876,6 @@ public class NAL6Test extends NALTest {
     @Test
     void testDecomposeImplSubj1b() {
         test.confTolerance(0.03f)
-                .log()
                 .believe("( (&&, y, z, w) ==> x )")
                 .mustBelieve(cycles, "( y ==> x )", 1f, 0.73f)
                 .mustBelieve(cycles, "( z ==> x )", 1f, 0.73f)

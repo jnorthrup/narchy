@@ -231,7 +231,7 @@ public enum MetaGoal {
         StringBuilder sb = new StringBuilder();
         for (short s : tc) {
             Cause c = nar.causes.get(s);
-            sb.append(c.toString()).append('\n');
+            sb.append(c).append('\n');
         }
         return sb.toString().trim();
     }

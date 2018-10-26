@@ -114,7 +114,7 @@ abstract public class NAgentX extends NAgent {
         */
 
 
-        Param.STRONG_COMPOSITION = true;
+        //Param.STRONG_COMPOSITION = false;
         Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
