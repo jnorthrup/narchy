@@ -31,7 +31,7 @@ public class TrackXY  {
     public final FloatRange visionContrast = new FloatRange(0.95f, 0, 1f);
 
     public final MutableEnum<TrackXYMode> mode =
-            new MutableEnum<TrackXYMode>(TrackXYMode.class).set(TrackXYMode.CircleTarget);
+            new MutableEnum<TrackXYMode>(TrackXYMode.CircleTarget);
 
 
     public TrackXY(int W, int H) {

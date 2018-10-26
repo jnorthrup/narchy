@@ -1,26 +1,22 @@
 package jcog.math;
 
-public class MutableEnum<C extends Enum<C>> {
+public class MutableEnum<C extends Enum<C>> extends IntRange {
 
-    public final Class<Enum<C>> klass;
+    public final Class<? extends Enum> klass;
+    private final Enum[] konstants;
 
-    private volatile C value;
-
-    public MutableEnum(Class klass) {
-        this.klass = klass;
+    public MutableEnum(C initialValue) {
+        super(initialValue.ordinal(), 0, initialValue.getDeclaringClass().getEnumConstants().length);
+        this.klass = initialValue.getDeclaringClass();
+        this.konstants = klass.getEnumConstants();
     }
 
-    public MutableEnum(Class klass, C value) {
-        this(klass);
-        set(value);
-    }
-
-    public MutableEnum<C> set(C next) {
-        this.value = next;
+    public MutableEnum<C> set(C c) {
+        set(c.ordinal());
         return this;
     }
 
     public C get() {
-        return value;
+        return (C) konstants[getAsInt()];
     }
 }

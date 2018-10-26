@@ -245,7 +245,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         public final FloatRange separation = new FloatRange(1f, 0f, 6f);
         public final FloatRange lineAlphaMin = new FloatRange(0.1f, 0f, 1f);
         public final FloatRange lineAlphaMax = new FloatRange(0.8f, 0f, 1f);
-        public final MutableEnum<ColorNode> colorNode = new MutableEnum(ColorNode.class, Hash);
+        public final MutableEnum<ColorNode> colorNode = new MutableEnum(Hash);
         public final FloatRange edgeBrightness = new FloatRange(1 / 16f, 0f, 2f);
 
         public ConceptVis2(int maxEdges) {
