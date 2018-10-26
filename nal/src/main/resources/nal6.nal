@@ -3,6 +3,12 @@
     (Y ==> X), Z, --is(Z,"==>")     |- --subIfUnifiesAny(X,Y,Z), (Belief:DeductionNP)
     (--Y ==> X), Z, --is(Z,"==>")   |- subIfUnifiesAny(X,Y,Z), (Belief:DeductionPN)
     (--Y ==> X), Z, --is(Z,"==>")   |- --subIfUnifiesAny(X,Y,Z), (Belief:DeductionNN)
+      (Y ==> X), Z, --is(Z,"==>")     |- subIfUnifiesAny(Y,X,Z), (Belief:Abduction)
+      (Y ==> X), Z, --is(Z,"==>")     |- subIfUnifiesAny(Y,X,Z), (Belief:AbductionNN)
+        (Y ==> X), Z, --is(Z,"==>"), task("?") |- subIfUnifiesAny(Y,X,Z), (Punctuation:Question)
+        (Y ==> X), Z, --is(Z,"==>"), task("?") |- subIfUnifiesAny(X,Y,Z), (Punctuation:Question)
+        (--Y ==> X), Z, --is(Z,"==>"), task("?") |- subIfUnifiesAny(Y,X,Z), (Punctuation:Question)
+
 
 //    (X ==> Y), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z), (Belief:AbductionPB)
 
