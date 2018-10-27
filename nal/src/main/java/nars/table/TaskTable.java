@@ -72,6 +72,13 @@ public interface TaskTable {
     }
 
     void match(Answer m);
+
+    /** default behavior is similar to match but sample implies an attempt at fair, random sort order of visited components.
+     *  see mplementations such as BeliefTables */
+    default void sample(Answer m) {
+        match(m);
+    }
+
 //        if (isEmpty())
 //            return;
 //
@@ -79,7 +86,8 @@ public interface TaskTable {
 //        throw new TODO();
 //    }
 
-    @Nullable default Task match(long when, Term template, NAR nar) {
+    @Nullable
+    default Task match(long when, Term template, NAR nar) {
         return match(when, when, template, nar);
     }
     @Nullable default Task match(long start, long end, Term template, NAR nar) { return match(start, end, template, null, nar); }
@@ -116,7 +124,7 @@ public interface TaskTable {
         return Answer.relevance(isBeliefOrGoal,
                 isBeliefOrGoal ? Answer.BELIEF_SAMPLE_LIMIT : Answer.QUESTION_SAMPLE_LIMIT,
                 start, end, template, filter, nar)
-            .match(this)
+            .sample(this)
             .task(false, false, false);
 
 //        return matching(start, end, template, filter, nar).task(false, false, false);

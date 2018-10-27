@@ -116,12 +116,12 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
     }
 
     protected static class ActionRTreeBeliefTable extends RTreeBeliefTable {
-        @Override
-        protected void onReject(Task input, NAR n) {
-            if (input.minTimeTo(n.time()) < n.dur() * 2) {
-                System.err.println("reject: " + input);
-            }
-        }
+//        @Override
+//        protected void onReject(Task input, NAR n) {
+//            if (input.minTimeTo(n.time()) < n.dur() * 2) {
+//                System.err.println("reject: " + input);
+//            }
+//        }
     }
 }
 

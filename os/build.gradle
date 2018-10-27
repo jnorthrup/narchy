@@ -12,14 +12,14 @@ dependencies {
     compile(group: 'org.boofcv', name: 'boofcv-geo', version: '0.31')
     compile(group: 'org.boofcv', name: 'boofcv-sfm', version: '0.31')
 
-
-    compile (group: 'org.teavm', name: 'teavm-tooling', version: '0.6.0-dev-567') {
+    teaVMVersion = '0.6.0-dev-600'
+    compile (group: 'org.teavm', name: 'teavm-tooling', version: teaVMVersion) {
         exclude(group:'org.ow2.asm')
     }
-    compile (group: 'org.teavm', name: 'teavm-jso', version: '0.6.0-dev-567') {
+    compile (group: 'org.teavm', name: 'teavm-jso', version: teaVMVersion) {
         exclude(group:'org.ow2.asm')
     }
-    compile (group: 'org.teavm', name: 'teavm-classlib', version: '0.6.0-dev-567') {
+    compile (group: 'org.teavm', name: 'teavm-classlib', version: teaVMVersion) {
         exclude(group:'org.ow2.asm')
     }
 

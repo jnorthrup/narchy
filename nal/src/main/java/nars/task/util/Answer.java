@@ -20,6 +20,7 @@ import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Random;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
@@ -360,7 +361,10 @@ public class Answer implements AutoCloseable {
         t.match(this);
         return this;
     }
-
+    public final Answer sample(TaskTable t) {
+        t.sample(this);
+        return this;
+    }
 //    final static ThreadLocal<DequePool<CachedFloatRank<Task>>> pool =
 //            //HEAP
 //            //() -> new CachedFloatRank<>(64);
@@ -429,6 +433,10 @@ public class Answer implements AutoCloseable {
 
     public boolean active() {
         return triesRemain > 0;
+    }
+
+    public final Random random() {
+        return nar.random();
     }
 
 //

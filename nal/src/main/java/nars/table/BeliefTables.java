@@ -6,6 +6,7 @@ import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
 import nars.task.util.Answer;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -61,6 +62,31 @@ public class BeliefTables implements BeliefTable {
             }
             return false;
         }, r);
+    }
+
+    @Override
+    public void sample(Answer a) {
+        int n = tables.size();
+        if (n == 1) {
+            tables.get(0).match(a);
+        } else if (n == 2) {
+            int i = a.random().nextInt(2);
+            tables.get(i).match(a);
+            if (a.active()) {
+                tables.get(1-i).match(a);
+            }
+        } else {
+            int[] order = new int[n];
+            for (int i = 0; i < n; i++)
+                order[i] = i;
+            ArrayUtils.shuffle(order, a.random());
+            for (int i = 0; i < n; i++) {
+                tables.get(order[i]).match(a);
+                if (!a.active())
+                    break;
+            }
+        }
+
     }
 
     @Override
