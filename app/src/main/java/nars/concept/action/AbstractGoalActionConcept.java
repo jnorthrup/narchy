@@ -11,6 +11,7 @@ import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.table.dynamic.SeriesBeliefTable;
+import nars.table.temporal.RTreeBeliefTable;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
@@ -52,7 +53,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
     public AbstractGoalActionConcept(Term term,  NAR n) {
         this(term,
-                new ActionRTreeBeliefTable(),
+                new RTreeBeliefTable(),
                 n);
     }
 

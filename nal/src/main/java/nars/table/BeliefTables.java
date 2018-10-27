@@ -67,24 +67,76 @@ public class BeliefTables implements BeliefTable {
     @Override
     public void sample(Answer a) {
         int n = tables.size();
-        if (n == 1) {
-            tables.get(0).match(a);
-        } else if (n == 2) {
-            int i = a.random().nextInt(2);
-            tables.get(i).match(a);
-            if (a.active()) {
-                tables.get(1-i).match(a);
+        switch (n) {
+            case 0:
+                break;
+            case 1:
+                tables.get(0).match(a);
+                break;
+            case 2: {
+                int i = a.random().nextInt(2);
+                tables.get(i).match(a);
+                if (a.active())
+                    tables.get(1 - i).match(a);
+                break;
             }
-        } else {
-            int[] order = new int[n];
-            for (int i = 0; i < n; i++)
-                order[i] = i;
-            ArrayUtils.shuffle(order, a.random());
-            for (int i = 0; i < n; i++) {
-                tables.get(order[i]).match(a);
-                if (!a.active())
-                    break;
+            case 3: {
+                int i = a.random().nextInt(6);
+                int x, y, z;
+                switch (i) {
+                    case 0:
+                        x = 0;
+                        y = 1;
+                        z = 2;
+                        break;
+                    case 1:
+                        x = 0;
+                        y = 2;
+                        z = 1;
+                        break;
+                    case 2:
+                        x = 1;
+                        y = 0;
+                        z = 2;
+                        break;
+                    case 3:
+                        x = 1;
+                        y = 2;
+                        z = 0;
+                        break;
+                    case 4:
+                        x = 2;
+                        y = 0;
+                        z = 1;
+                        break;
+                    case 5:
+                        x = 2;
+                        y = 1;
+                        z = 0;
+                        break;
+                    default:
+                        throw new UnsupportedOperationException();
+                }
+                tables.get(x).match(a);
+                if (a.active()) {
+                    tables.get(y).match(a);
+                    if (a.active()) {
+                        tables.get(z).match(a);
+                    }
+                }
+                break;
             }
+            default:
+                int[] order = new int[n];
+                for (int i = 0; i < n; i++)
+                    order[i] = i;
+                ArrayUtils.shuffle(order, a.random());
+                for (int i = 0; i < n; i++) {
+                    tables.get(order[i]).match(a);
+                    if (!a.active())
+                        break;
+                }
+                break;
         }
 
     }

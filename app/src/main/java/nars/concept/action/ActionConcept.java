@@ -32,7 +32,7 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
                 new SensorBeliefTables(term, true, n.conceptBuilder),
 
                 //n.conceptBuilder.newTable(term, false),
-                new ActionRTreeBeliefTable(),
+                new RTreeBeliefTable(),
 
                 linker,
                 n);
@@ -109,20 +109,10 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
     @FunctionalInterface
     public interface MotorFunction extends BiFunction<Truth, Truth, Truth> {
 
-
         @Nullable Truth apply(@Nullable Truth believed, @Nullable Truth desired);
 
-
     }
 
-    protected static class ActionRTreeBeliefTable extends RTreeBeliefTable {
-//        @Override
-//        protected void onReject(Task input, NAR n) {
-//            if (input.minTimeTo(n.time()) < n.dur() * 2) {
-//                System.err.println("reject: " + input);
-//            }
-//        }
-    }
 }
 
 

@@ -52,8 +52,6 @@ public class SensorBeliefTables extends BeliefTables {
     public void add(Remember r, NAR n) {
 
         if (r.input instanceof SeriesBeliefTable.SeriesTask) {
-//            if (Param.DEBUG)
-//                throw new WTF();
             r.input = null;
             return;
         }
@@ -104,8 +102,7 @@ public class SensorBeliefTables extends BeliefTables {
         SeriesBeliefTable.SeriesTask last = series.series.last();
         boolean stretchPrev = false;
         if (last != null) {
-            long lastStart = last.start();
-            long lastEnd = last.end();
+            long lastStart = last.start(), lastEnd = last.end();
             if (lastEnd > nextStart)
                 return null;
 
@@ -187,6 +184,11 @@ public class SensorBeliefTables extends BeliefTables {
         } else {
             super.match(r);
         }
+    }
+
+    @Override
+    public void sample(Answer a) {
+        match(a); //same preference as match
     }
 
     public FloatRange pri() {
