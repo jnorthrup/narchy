@@ -84,15 +84,22 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
+    long[] eviShared = null;
 
     protected SeriesBeliefTable.SeriesTask newTask(Term term, byte punc, long nextStart, long nextEnd, Truth next, NAR nar) {
-//        nextEnd = Math.max(nextStart, nextEnd); //HACK
+
+        if (eviShared == null)
+            eviShared = nar.evidence();
+        long[] evi = eviShared;
+
+        //long[] evi = nar.evidence();
+
         return new SeriesBeliefTable.SeriesTask(
                 term,
                 punc,
                 next,
                 nextStart, nextEnd,
-                nar.evidence());
+                evi);
     }
 
 
@@ -186,10 +193,10 @@ public class SensorBeliefTables extends BeliefTables {
         }
     }
 
-    @Override
-    public void sample(Answer a) {
-        match(a); //same preference as match
-    }
+//    @Override
+//    public void sample(Answer a) {
+//        match(a); //same preference as match
+//    }
 
     public FloatRange pri() {
         return pri;

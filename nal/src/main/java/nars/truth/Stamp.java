@@ -405,6 +405,16 @@ public interface Stamp {
         return false;
     }
 
+    static boolean overlaps(Task x, Task y) {
+
+        if (Stamp.overlapsAny(x, y)) {
+
+            return !Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME || x.intersects(y.start(), y.end());
+        }
+
+        return false;
+    }
+
     static int overlaps(/*@NotNull*/ LongSet aa,  /*@NotNull*/ long[] b) {
         int common = 0;
         for (long x : b) {

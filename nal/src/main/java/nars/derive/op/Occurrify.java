@@ -31,7 +31,6 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -223,18 +222,18 @@ public class Occurrify extends TimeGraph {
 //        }
 
 
-        boolean reUse =
-                        this.decomposeEvents == decomposeEvents &&
-                        occurrenceQuad[0] == taskStart &&
-                        occurrenceQuad[1] == taskEnd &&
-                        occurrenceQuad[2] == beliefStart &&
-                        occurrenceQuad[3] == beliefEnd &&
-                        Objects.equals(taskTerm, curTaskTerm) &&
-                        Objects.equals(beliefTerm, curBeliefTerm) &&
-                        Objects.equals(autoNeg, autoNegNext);
+//        boolean reUse =
+//                        this.decomposeEvents == decomposeEvents &&
+//                        occurrenceQuad[0] == taskStart &&
+//                        occurrenceQuad[1] == taskEnd &&
+//                        occurrenceQuad[2] == beliefStart &&
+//                        occurrenceQuad[3] == beliefEnd &&
+//                        Objects.equals(taskTerm, curTaskTerm) &&
+//                        Objects.equals(beliefTerm, curBeliefTerm) &&
+//                        Objects.equals(autoNeg, autoNegNext);
 
 
-        if (!reUse) {
+        /*if (!reUse) */{
 
             clear();
 

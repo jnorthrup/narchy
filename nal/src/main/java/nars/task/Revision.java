@@ -2,7 +2,6 @@ package nars.task;
 
 import jcog.Util;
 import jcog.data.set.MetalLongSet;
-import jcog.math.Longerval;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -239,16 +238,9 @@ public class Revision {
 
     /** 2-ary merge with quick overlap filter */
     public static Task merge(TaskRegion x, TaskRegion y, NAR nar) {
-        long xs = x.start();
 
+        return Stamp.overlaps((Task) x, (Task) y) ? null : merge(nar, new TaskRegion[]{x, y});
 
-        //allow overlap if the time ranges are disjoint
-        if (Stamp.overlapsAny((Task)x, (Task)y)) {
-            if (!Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME || Longerval.intersectLength(xs, x.end(), y.start(), y.end()) > 0)
-                return null;
-        }
-
-        return merge(nar, new TaskRegion[] { x, y });
     }
 
     @Nullable

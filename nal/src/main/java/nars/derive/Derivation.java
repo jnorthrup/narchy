@@ -381,7 +381,7 @@ public class Derivation extends PreDerivation {
         this.taskBeliefTimeIntersects =
                 this._belief == null
                         ||
-                Longerval.intersects(taskStart, taskEnd, beliefStart, beliefEnd);
+                    (taskStart==ETERNAL || beliefStart == ETERNAL || Longerval.intersects(taskStart, taskEnd, beliefStart, beliefEnd));
 
         this.forEachMatch = null;
         this.concTruth = null;
@@ -410,7 +410,7 @@ public class Derivation extends PreDerivation {
                 taskStamp.addAll(_task.stamp());
             }
 
-            this.overlapDouble = Stamp.overlapsAny(this.taskStamp, _belief.stamp());
+            this.overlapDouble = Stamp.overlaps(this._task, _belief);
 
 
         } else {

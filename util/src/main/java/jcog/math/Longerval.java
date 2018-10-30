@@ -159,14 +159,14 @@ public class Longerval implements LongInterval {
 
 	/** returns -1 if no intersection; 0 = adjacent, > 0 = non-zero interval in common */
 	public static long intersectLength(long x1, long y1, long x2, long y2) {
+		assert(x1!=ETERNAL && x1!=TIMELESS && x2!=ETERNAL && x2!=TIMELESS);
 		long a = max(x1, x2);
 		long b = min(y1, y2);
 		return a <= b ? b - a : -1;
 	}
 	public static boolean intersects(long x1, long y1, long x2, long y2) {
-		long a = max(x1, x2);
-		long b = min(y1, y2);
-		return a <= b;
+		assert(x1!=ETERNAL && x1!=TIMELESS && x2!=ETERNAL && x2!=TIMELESS);
+		return max(x1, x2) <= min(y1, y2);
 	}
 
 

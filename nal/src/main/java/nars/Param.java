@@ -229,7 +229,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 2;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 1;
 
 
     /**
@@ -428,8 +428,8 @@ public abstract class Param {
 
         int falloffDurs =
                 //1;
-                //2;
-                4;
+                2;
+                //4;
                 //dur;
                 //8;
         return evi / (1.0f + (((float)dt) / (falloffDurs * dur)));
