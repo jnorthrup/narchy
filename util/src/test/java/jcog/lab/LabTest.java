@@ -4,9 +4,9 @@ import jcog.lab.util.ExperimentRun;
 import jcog.lab.util.Opti;
 import jcog.math.FloatRange;
 import jcog.math.Range;
-import org.eclipse.collections.api.list.ImmutableList;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 import org.junit.jupiter.api.Test;
+import tech.tablesaw.api.Row;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,7 +20,7 @@ public class LabTest {
 
         Opti<Model> r = a.optimize(Model::score, 16).run();
 
-        ImmutableList best = r.best();
+        Row best = r.best();
 
         r.print();
 
@@ -33,7 +33,7 @@ public class LabTest {
         t.print();
         t.printExplanations();
 
-        assertTrue(((Number) best.get(0)).doubleValue() >= 4.9f);
+        assertTrue(((Number) best.getObject(0)).doubleValue() >= 4.9f);
         assertTrue(a.vars.size() >= 4);
         assertEquals(5, r.data().columnCount());
 

@@ -35,11 +35,12 @@
 
 package jcog.io.arff;
 
+import com.google.common.base.Joiner;
 import com.google.common.primitives.Primitives;
 import jcog.TODO;
 import jcog.Texts;
 import jcog.data.list.FasterList;
-import jcog.data.set.ArrayHashSet;
+import jcog.io.Schema;
 import jcog.util.Reflect;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.impl.factory.Lists;
@@ -48,12 +49,16 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.ColumnType;
+import tech.tablesaw.api.Row;
+import tech.tablesaw.api.Table;
 import tech.tablesaw.columns.numbers.DoubleColumnType;
 import tech.tablesaw.columns.strings.StringColumnType;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -104,54 +109,36 @@ public class ARFF extends jcog.io.Schema  {
     private String relation;
     private String comment;
 
-    public final Collection<ImmutableList> data;
+//    public final Collection<ImmutableList> data;
 
-    protected ARFF(ARFF copyMetadataFrom, Collection<ImmutableList> data) {
+    protected ARFF(ARFF copyMetadataFrom) {
         super(copyMetadataFrom);
-        this.data = data;
         this.relation = copyMetadataFrom.relation;
         this.comment = copyMetadataFrom.comment;
     }
 
-    /**
-     * Parse an ArffFile from a string.
-     */
     public ARFF(String l) throws IOException, ARFFParseError {
-        this(l, newDefaultDataCollection());
+        this(new BufferedReader(new StringReader(l)));
     }
 
-    public ARFF(String l, Collection<ImmutableList> data) throws IOException, ARFFParseError {
-        this(new BufferedReader(new StringReader(l)), data);
-    }
 
-    /**
-     * default data model: concurrent hash set, eliminates duplicate
-     * data points but limited in performance/data access methods.
-     */
+
+
     public ARFF() {
-        this(newDefaultDataCollection());
-    }
-
-
-    /**
-     * Construct an empty ArffFile.
-     */
-    public ARFF(Collection<ImmutableList> data) {
         super();
         relation = "data";
         comment = null;
-        this.data = data;
     }
 
-    public ARFF(File f) throws IOException, ARFFParseError {
-        this(new BufferedReader(new FileReader(f)), new ArrayHashSet<>());
+    public ARFF(File f) throws Exception {
+        this(new BufferedReader(new FileReader(f)));
     }
 
     /**
      * Parse an ArffFile from a BufferedReader.
      */
-    public ARFF(BufferedReader r, Collection<ImmutableList> data) throws IOException, ARFFParseError {
-        this(data);
+    public ARFF(BufferedReader r) throws IOException, ARFFParseError {
+        this();
         int[] state = new int[]{COMMENT};
 
         StringBuilder collectedComment = new StringBuilder();
@@ -164,47 +151,56 @@ public class ARFF extends jcog.io.Schema  {
         this.comment = collectedComment.toString();
     }
 
-    static Collection<ImmutableList> newDefaultDataCollection() {
-        //return Sets.newConcurrentHashSet();
-        return new ArrayHashSet();
+//    /**
+//     * Formats an array of Objects in the passed StringBuilder using toString()
+//     * and using del as the delimiter.
+//     * <p>
+//     * For example, on <tt>objects = { 1, 2, 3 }</tt>, and <tt>del = " + "</tt>, you get
+//     * <tt>"1 + 2 + 3"</tt>.
+//     */
+//    private static void joinWith(Object[] objects, Appendable s, CharSequence del) throws IOException {
+//        boolean first = true;
+//        for (Object o : objects) {
+//            if (!first) {
+//                s.append(del);
+//            }
+//            s.append(o.toString());
+//            first = false;
+//        }
+//    }
+
+//    private static void joinWith(ImmutableList objects, Appendable s, CharSequence del) throws IOException {
+//        boolean first = true;
+//        for (Object o : objects) {
+//            if (!first)
+//                s.append(del);
+//
+//            String oo = o!=null ? o.toString() : "null";
+//
+//            s.append(o instanceof Number ? oo : quoteIfNecessary(oo));
+//
+//            first = false;
+//        }
+//    }
+private static void joinWith(Row r, Appendable s, CharSequence del) throws IOException {
+    boolean first = true;
+    for (int i = 0; i < r.columnCount(); i++) {
+
+        Object o = r.getObject(i);
+        if (!first)
+            s.append(del);
+
+        String oo = o!=null ? o.toString() : "null";
+
+        s.append(o instanceof Number ? oo : quoteIfNecessary(oo));
+
+        first = false;
     }
-
-    /**
-     * Formats an array of Objects in the passed StringBuilder using toString()
-     * and using del as the delimiter.
-     * <p>
-     * For example, on <tt>objects = { 1, 2, 3 }</tt>, and <tt>del = " + "</tt>, you get
-     * <tt>"1 + 2 + 3"</tt>.
-     */
-    private static void joinWith(Object[] objects, Appendable s, CharSequence del) throws IOException {
-        boolean first = true;
-        for (Object o : objects) {
-            if (!first) {
-                s.append(del);
-            }
-            s.append(o.toString());
-            first = false;
-        }
-    }
-
-    private static void joinWith(ImmutableList objects, Appendable s, CharSequence del) throws IOException {
-        boolean first = true;
-        for (Object o : objects) {
-            if (!first)
-                s.append(del);
-
-            String oo = o!=null ? o.toString() : "null";
-
-            s.append(o instanceof Number ? oo : quoteIfNecessary(oo));
-
-            first = false;
-        }
-    }
-
+}
     static boolean isQuoteNecessary(CharSequence t) {
         int len = t.length();
 
-        if (len > 1 && (t.charAt(0) == '\"') && (t.charAt(len - 1) == '\"'))
+        if (len > 1 && t.charAt(0) == '\"' && t.charAt(len - 1) == '\"')
             return false; 
 
         for (int i = 0; i < len; i++) {
@@ -227,8 +223,8 @@ public class ARFF extends jcog.io.Schema  {
         return false;
     }
 
-    public ARFF clone(Collection<ImmutableList> with) {
-        return new ARFF(this, with);
+    public Table clone() {
+        throw new TODO();
     }
 
     private void readLine(int lineNum, int[] state, String line, StringBuilder collectedComment) throws ARFFParseError {
@@ -359,38 +355,38 @@ public class ARFF extends jcog.io.Schema  {
         return found;
     }
 
-    /**
-     * Generate a string which describes the data set.
-     */
-    public StringBuilder describe() {
-        StringBuilder s = new StringBuilder();
-
-        try {
-            s.append("Relation " + relation).append(NEW_LINE).append("with attributes").append(NEW_LINE);
-            for (String n : columnNames()) {
-                ColumnType at = attrType(n);
-                s.append("   " + n + " of type " + at);
-                if (at instanceof NominalColumnType) {
-                    s.append(" with values ");
-                    joinWith(nominalCats.get(n), s, ", ");
-                }
-                s.append(NEW_LINE);
-            }
-
-            s.append(NEW_LINE).append("Data (first 10 lines of " + data.size() + "):").append(NEW_LINE);
-
-            int i = 0;
-            for (ImmutableList row : data) {
-                
-                joinWith(row, s, ", ");
-                s.append(NEW_LINE);
-                if (i++ > 10) break;
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return s;
-    }
+//    /**
+//     * Generate a string which describes the data set.
+//     */
+//    public StringBuilder describe() {
+//        StringBuilder s = new StringBuilder();
+//
+//        try {
+//            s.append("Relation " + relation).append(NEW_LINE).append("with attributes").append(NEW_LINE);
+//            for (String n : columnNames()) {
+//                ColumnType at = attrType(n);
+//                s.append("   " + n + " of type " + at);
+//                if (at instanceof NominalColumnType) {
+//                    s.append(" with values ");
+//                    joinWith(nominalCats.get(n), s, ", ");
+//                }
+//                s.append(NEW_LINE);
+//            }
+//
+//            s.append(NEW_LINE).append("Data (first 10 lines of " + data.size() + "):").append(NEW_LINE);
+//
+//            int i = 0;
+//            for (ImmutableList row : data) {
+//
+//                joinWith(row, s, ", ");
+//                s.append(NEW_LINE);
+//                if (i++ > 10) break;
+//            }
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return s;
+//    }
 
     /**
      * Write the ArffFile to a string.
@@ -425,10 +421,13 @@ public class ARFF extends jcog.io.Schema  {
 
         s.append("@data").append(NEW_LINE);
 
-        for (ImmutableList datum : data) {
-            joinWith(datum, s, ",");
+        Iterator<Row> ii = iterator();
+        while (ii.hasNext()) {
+            Row r = ii.next();
+            joinWith(r, s, ",");
             s.append(NEW_LINE);
         }
+
 
 
     }
@@ -500,7 +499,10 @@ public class ARFF extends jcog.io.Schema  {
     public boolean add(ImmutableList point) {
         if (point.size() != columnCount())
             throw new UnsupportedOperationException("row structure mismatch: provided " + point.size() + " != expected " + columnCount());
-        return this.data.add(point);
+
+        read().csv(Joiner.on(",").join(point), name()); //HACK slow bad
+        //return this.data.add(point);
+        return true;
     }
 
 //    public Iterator<ImmutableList> iterator() {
@@ -520,7 +522,7 @@ public class ARFF extends jcog.io.Schema  {
         //return data.stream().map(x -> new Instance(this, x));
     }
 
-    public boolean addAll(ARFF incoming) {
+    public boolean addAll(Schema incoming) {
         if (this == incoming)
             return false;
         if (!equalSchema(incoming)) {
@@ -536,7 +538,7 @@ public class ARFF extends jcog.io.Schema  {
     }
 
     public boolean isEmpty() {
-        return data.isEmpty();
+        return rowCount()==0;
     }
 
     @Deprecated public FloatTable<String> toFloatTable() {
@@ -545,16 +547,21 @@ public class ARFF extends jcog.io.Schema  {
 
         int cols = data.cols.length;
 
-        for (ImmutableList exp : this.data) {
+        doWithRows(exp -> {
             float[] r = new float[cols];
             for (int i = 0; i < cols; i++) {
-                Number v = (Number) exp.get(i);
-                r[i] = v!=null ? v.floatValue() : Float.NaN;
+                double v = exp.getDouble(i);
+                //r[i] = v!=null ? ((float)v) : Float.NaN;
+                r[i] = (float)v;
             }
             data.add(r);
-        }
+        });
 
         return data;
+    }
+
+    public int size() {
+        return rowCount();
     }
 
 //    public FloatTable<String> toFloatTable(int... columns) {
@@ -619,7 +626,7 @@ public class ARFF extends jcog.io.Schema  {
                 Class<?> t = Primitives.wrap(field.getType());
                 if (Byte.class.isAssignableFrom(t) || Short.class.isAssignableFrom(t) || Integer.class.isAssignableFrom(t) || Long.class.isAssignableFrom(t)) {
                     defineNumeric(n);
-                    extractor.add((x) -> {
+                    extractor.add(x -> {
                         try {
                             return ((Number) field.get(x)).longValue();
                         } catch (IllegalAccessException e1) {
@@ -630,7 +637,7 @@ public class ARFF extends jcog.io.Schema  {
 
                 } else if (Boolean.class.isAssignableFrom(t)) {
                     defineNominal(n, "true", "false");
-                    extractor.add((x) -> {
+                    extractor.add(x -> {
                         try {
                             return Boolean.toString( ((Boolean) field.get(x)).booleanValue() );
                         } catch (IllegalAccessException e1) {
@@ -641,7 +648,7 @@ public class ARFF extends jcog.io.Schema  {
                 } else if (Number.class.isAssignableFrom(t)) {
 
                     defineNumeric(n);
-                    extractor.add((x) -> {
+                    extractor.add(x -> {
                         try {
                             return ((Number) field.get(x)).doubleValue();
                         } catch (IllegalAccessException e1) {
@@ -652,7 +659,7 @@ public class ARFF extends jcog.io.Schema  {
                 } else {
                     
                     defineText(n);
-                    extractor.add((x) -> {
+                    extractor.add(x -> {
                         try {
                             return field.get(x).toString();
                         } catch (IllegalAccessException e1) {
@@ -664,7 +671,7 @@ public class ARFF extends jcog.io.Schema  {
 
             }
 
-            if (extractor.size() == 0)
+            if (extractor.isEmpty())
                 throw new RuntimeException("no fields accessed");
 
             this.extractor = extractor.toArrayRecycled(Function[]::new);
@@ -685,7 +692,7 @@ public class ARFF extends jcog.io.Schema  {
         Runtime.getRuntime().addShutdownHook(new Thread(()->{
             try {
                 writeToFile(file);
-                System.out.println("saved " + data.size() + " experiment results to: " + file);
+                System.out.println("saved " + rowCount() + " experiment results to: " + file);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -693,17 +700,17 @@ public class ARFF extends jcog.io.Schema  {
     }
 
     @Nullable
-    public ImmutableList maxBy(int column) {
-        double bestScore = Double.NEGATIVE_INFINITY;
-        ImmutableList best = null;
-        for (ImmutableList e: data) {
-            double s = ((Number) e.get(column)).doubleValue();
-            if (s > bestScore) {
-                best = e;
-                bestScore = s;
+    public Row maxBy(int column) {
+        final double[] bestScore = {Double.NEGATIVE_INFINITY};
+        final Row[] best = {null};
+        doWithRows( e->{
+            double s = e.getDouble(column);
+            if (s > bestScore[0]) {
+                best[0] = e;
+                bestScore[0] = s;
             }
-        }
-        return best;
+        });
+        return best[0];
     }
 
 }

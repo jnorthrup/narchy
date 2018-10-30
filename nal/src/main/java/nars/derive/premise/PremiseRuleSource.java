@@ -119,15 +119,18 @@ public class PremiseRuleSource extends ProxyTerm  {
         Term originalConcPattern = PatternIndex.patternify(postcon[0]);
         Term filteredConcPattern = originalConcPattern;
 
-//        //TODO there is a problem with this an ellipsis-containing patterns
-//        {
-//            //if (!filteredConcPattern.equals(taskPattern))
+        {
+            //direct substitution macros in conclusions
+
+            //if (!filteredConcPattern.equals(taskPattern))
 //            if (!taskPattern.op().temporal && !taskPattern.op().commutative)
-//                filteredConcPattern = filteredConcPattern.replace(taskPattern, Derivation.TaskTerm); //fast substitute
-//            //if (!filteredConcPattern.equals(beliefPattern))
+            if (!taskPattern.op().var)
+                filteredConcPattern = filteredConcPattern.replace(taskPattern, Derivation.TaskTerm);
+            //if (!filteredConcPattern.equals(beliefPattern))
 //            if (!beliefPattern.op().temporal && !beliefPattern.op().commutative)
-//                filteredConcPattern = filteredConcPattern.replace(beliefPattern, Derivation.BeliefTerm); //fast substitute
-//        }
+            if (!beliefPattern.op().var)
+                filteredConcPattern = filteredConcPattern.replace(beliefPattern, Derivation.BeliefTerm);
+        }
 
         byte taskPunc = 0;
         for (int i = 2; i < precon.length; i++) {

@@ -3,8 +3,6 @@ package nars;
 import jcog.Texts;
 import jcog.User;
 import jcog.data.list.FasterList;
-import jcog.pri.PriReference;
-import nars.concept.Concept;
 import nars.op.*;
 import nars.op.data.flat;
 import nars.op.data.reflect;

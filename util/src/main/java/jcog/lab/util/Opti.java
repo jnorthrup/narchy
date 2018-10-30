@@ -1,8 +1,8 @@
 package jcog.lab.util;
 
-import jcog.io.arff.ARFF;
-import org.eclipse.collections.api.list.ImmutableList;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
+import tech.tablesaw.api.Row;
+import tech.tablesaw.api.Table;
 
 /** simple Optimization<X> wrapper */
 public class Opti<X> {
@@ -19,7 +19,7 @@ public class Opti<X> {
         return this;
     }
 
-    public ImmutableList best() {
+    public Row best() {
         return o.best();
     }
 
@@ -27,7 +27,7 @@ public class Opti<X> {
         return o.tree(discretization, maxDepth);
     }
 
-    public ARFF data() {
+    public Table data() {
         return o.data;
     }
 

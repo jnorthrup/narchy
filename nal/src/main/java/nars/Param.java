@@ -32,7 +32,7 @@ public abstract class Param {
 
     public static final boolean ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME = true;
 
-    @Deprecated public static final int LinkFanoutMax =
+    @Deprecated public static int LinkFanoutMax =
             //16;
             //10;
             8;

@@ -3,7 +3,6 @@ package jcog.lab.util;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
-import jcog.data.set.ArrayHashSet;
 import jcog.io.arff.ARFF;
 import jcog.lab.Goal;
 import jcog.lab.Lab;
@@ -22,8 +21,8 @@ import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.util.MathArrays;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.eclipse.collections.api.list.ImmutableList;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
+import tech.tablesaw.api.Row;
 
 import java.util.Arrays;
 import java.util.List;
@@ -165,7 +164,7 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
 
     protected void finish() {
         //sort data
-        ((FasterList<ImmutableList>)((ArrayHashSet<ImmutableList>)data.data).list).sortThisByDouble(r -> -((Double)r.get(goalColumn)));
+        //((FasterList<ImmutableList>)((ArrayHashSet<ImmutableList>)data.data).list).sortThisByDouble(r -> -((Double)r.get(goalColumn)));
     }
 
     protected double run(double[] point) {
@@ -230,7 +229,7 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
         return x;
     }
 
-    public ImmutableList best() {
+    public Row best() {
         return data.maxBy(goalColumn);
     }
 

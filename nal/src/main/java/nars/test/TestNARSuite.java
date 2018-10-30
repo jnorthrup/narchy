@@ -8,10 +8,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
@@ -32,7 +30,7 @@ public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
         run(parallel, 1);
     }
 
-    public void run(boolean parallel, int iterations) {
+    public TestNARSuite run(boolean parallel, int iterations) {
 
 
 
@@ -55,6 +53,7 @@ public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
                 }
             });
         }
+        return this;
     }
 
 

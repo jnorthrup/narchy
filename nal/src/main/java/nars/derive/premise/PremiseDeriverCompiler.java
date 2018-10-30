@@ -69,12 +69,6 @@ public enum PremiseDeriverCompiler {
 
             DeriveAction POST = pair.getTwo();
 
-
-//            Cause[] causes = Util.map(c -> c.channel, Cause[]::new, Util.map(b -> (Taskify) AndCondition.last(((UnifyTerm.UnifySubtermThenConclude)
-//                    AndCondition.last(b)
-//            ).eachMatch), Taskify[]::new, branches));
-
-
             PREDICATE<Derivation>[] pre = pair.getOne();
 
             RoaringBitmap idR = new RoaringBitmap();
@@ -83,7 +77,7 @@ public enum PremiseDeriverCompiler {
             assert (pre[pre.length - 1] == null); //null placeholder left for this
             pre[pre.length - 1] = new Branchify(/* branch ID */  idR);
 
-            DeriveAction added = path.put(new FasterList(pre), POST);
+            DeriveAction added = path.put(List.of(pre), POST);
             assert (added == null);
 
             rootBranches[i] = POST;

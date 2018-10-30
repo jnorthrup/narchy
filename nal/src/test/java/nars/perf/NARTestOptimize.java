@@ -5,12 +5,15 @@ import jcog.lab.util.Opti;
 import jcog.lab.util.Optimization;
 import nars.NAR;
 import nars.NARS;
+import nars.Param;
 import nars.derive.Deriver;
 import nars.derive.budget.DefaultDeriverBudgeting;
 import nars.derive.impl.BatchDeriver;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
+import nars.nal.nal5.NAL5Test;
+import nars.nal.nal6.NAL6Test;
 import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
@@ -34,8 +37,8 @@ class NARTestOptimize {
 //                    NAL4Test.class,
                     NAL1MultistepTest.class,
                     //NAL4MultistepTest.class,
-//                    NAL5Test.class,
-//                    NAL6Test.class,
+                    NAL5Test.class,
+                    NAL6Test.class,
 //                    NAL7Test.class, NAL8Test.class,
             };
 
@@ -47,10 +50,10 @@ class NARTestOptimize {
                 .var("attnCapacity", 4, 128, 8,
                         (NAR n, int i) -> n.attn.active.setCapacity(i))
 
-                .var("ttlMax", 6, 20, 3,
-                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
-//                .var("linkFanOut", 2, 16, 1,
-//                        (NAR n, int f) -> Param.TermLinkFanoutMax = f)
+//                .var("ttlMax", 6, 20, 3,
+//                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
+                .var("linkFanOut", 1, 16, 1,
+                        (NAR n, int f) -> Param.LinkFanoutMax = f)
                 .var("activation", 0, 1f, 0.1f,
                             (NAR n, float f) -> n.activation.set(f))
                 .var("memoryDuration", 0, 8f, 0.5f,
@@ -69,20 +72,17 @@ class NARTestOptimize {
                         (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
                                 ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
                                         relGrowthExponent.set(f)))
-//                .var("derivationScale", 0.5f, 2f, 0.1f,
-//                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
-//                                ((DefaultDeriverBudgeting)(((MatrixDeriver)x).budgeting)).
-//                                        scale.set(f)))
+                .var("derivationScale", 0.5f, 2f, 0.1f,
+                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
+                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
+                                        scale.set(f)))
             ;
 
 
             int suiteIterations = 1;
-            int samples = 128;
-            Optimization<NAR, TestNARSuite> o = l.optimize((Supplier<NAR> s) -> {
-                TestNARSuite t = new TestNARSuite(s, testClasses);
-                t.run(parallel, suiteIterations);
-                return t;
-            },
+            int samples = 4;
+            Optimization<NAR, TestNARSuite> o = l.optimize((Supplier<NAR> s) ->
+                            new TestNARSuite(s, testClasses).run(parallel, suiteIterations),
                 (TestNARSuite t) -> (float) t.score()
             , samples);
 

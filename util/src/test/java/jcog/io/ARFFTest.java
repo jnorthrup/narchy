@@ -28,11 +28,11 @@ class ARFFTest {
 
 
         ARFF arff = new ARFF(file);
-        System.out.println(arff.describe());
+        //System.out.println(arff.describe());
         arff.write(System.out);
 
         assertEquals(3, arff.columnCount());
-        assertEquals(2, arff.data.size());
+        assertEquals(2, arff.size());
 
 
 
@@ -75,7 +75,7 @@ class ARFFTest {
 //        assertSame(ARFF.AttributeType.Numeric, a.attrType("score"));
 //        assertSame(ARFF.AttributeType.Nominal, a.attrType("ok"));
         a.write(System.out);
-        assertEquals(2, a.data.size());
+        assertEquals(2, a.size());
     }
 
 }

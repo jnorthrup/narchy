@@ -1,6 +1,5 @@
 package nars.task.util;
 
-import jcog.tree.rtree.HyperRegion;
 import nars.Task;
 import org.jetbrains.annotations.Nullable;
 

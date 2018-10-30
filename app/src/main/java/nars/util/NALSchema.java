@@ -3,6 +3,7 @@ package nars.util;
 import com.google.common.collect.ImmutableList;
 import jcog.Texts;
 import jcog.data.list.FasterList;
+import jcog.io.Schema;
 import jcog.io.arff.ARFF;
 import nars.$;
 import nars.NAR;
@@ -166,7 +167,7 @@ public class NALSchema {
 
 
     /** any (query) variables are qualified by wrapping in conjunction specifying their type in the data model */
-    public static Function<Term[], Term> typed(Function<Term[], Term> pointGenerator, ARFF dataset) {
+    public static Function<Term[], Term> typed(Function<Term[], Term> pointGenerator, Schema dataset) {
         return (x) -> {
             Term y = pointGenerator.apply(x);
             if (y.hasAny(Op.VAR_QUERY)) {
