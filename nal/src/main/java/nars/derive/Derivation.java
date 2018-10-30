@@ -544,7 +544,7 @@ public class Derivation extends PreDerivation {
                 tb = te + be;
                 tb = tb < ScalarValue.EPSILON ? 0.5f : te / tb;
             }
-            return evidenceDouble = Stamp.zip(_task.stamp(), _belief.stamp(), tb);
+            return evidenceDouble = Stamp.merge(_task.stamp(), _belief.stamp(), tb, random);
         } else {
             return evidenceDouble;
         }

@@ -63,6 +63,11 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
     public final MutableSet<Term> autoNeg = new UnifiedSet();
 
+    private transient Set<Event> seen;
+    private transient boolean filterTimeless;
+    private transient Predicate<Event> target;
+    private transient Term x;
+
 
     /**
      * since CONJ will be constructed with conjMerge, if x is conj the dt between events must be calculated from start-start. otherwise it is implication and this is measured internally
@@ -745,24 +750,23 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      */
     public boolean solve(Term x, boolean filterTimeless, Set<Event> seen, Predicate<Event> target) {
 
-        Predicate<Event> each = y -> {
-            if (seen.add(y)) {
+        this.seen = seen;
+        this.filterTimeless = filterTimeless;
+        this.target = target;
+        this.x = x;
+        return solveAll(x, this::solution);
+    }
 
+    private boolean solution(Event y) {
+        if (seen.add(y)) {
 
-                if (y.start() == TIMELESS && (filterTimeless || x.equals(y.id)))
-                    return true;
-
-                return target.test(y);
-            } else {
+            if (y.start() == TIMELESS && (filterTimeless || x.equals(y.id)))
                 return true;
-            }
-        };
 
-
-        return
-                solveAll(x, each);
-
-
+            return target.test(y);
+        } else {
+            return true;
+        }
     }
 
     private boolean solveExact(Term x, Predicate<Event> each) {

@@ -1,5 +1,6 @@
 package nars.gui.graph.run;
 
+import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.concept.Concept;
@@ -67,6 +68,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
                 .render(
                         Graph2D.InvalidateEdges,
   //                      new TermlinkVis(n),
+                        new SubtermVis(n),
                         new TasklinkVis(n),
                         new StatementVis(n)
                 );
@@ -221,6 +223,45 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         }
     }
 
+    private class SubtermVis implements Graph2D.Graph2DRenderer<Concept> {
+        public final AtomicBoolean subterms = new AtomicBoolean(true);
+
+        public final FloatRange strength = new FloatRange(0.1f, 0, 1f);
+
+        final NAR n;
+
+        private SubtermVis(NAR n) {
+            this.n = n;
+        }
+
+        @Override
+        public void node(NodeVis<Concept> node, GraphEditing<Concept> graph) {
+            if (!subterms.get())
+                return;
+            Concept n = node.id;
+            if (n==null)
+                return;
+
+            float p = strength.floatValue();
+
+            n.linker().targets().forEach(s -> {
+                if (s.op().conceptualizable) {
+                    Concept t = nar.concept(s);
+                    if (t!=null) {
+                        @Nullable EdgeVis<Concept> e = graph.edge(n, t);
+                        if (e!=null) {
+                            e.weightLerp(p, WEIGHT_UPDATE_RATE)
+                                    .colorLerp(p, p, p, COLOR_UPDATE_RATE)
+                                    .colorLerp(0,0,0,COLOR_FADE_RATE);
+                        }
+                    }
+                }
+            });
+
+
+
+        }
+    }
 
 
     private static class StatementVis implements Graph2DRenderer<Concept> {

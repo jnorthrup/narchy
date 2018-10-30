@@ -295,7 +295,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                             revisionTruth,
                             nar.time() /* creation time */,
                             ETERNAL, ETERNAL,
-                            Stamp.zip(input.stamp(), prevBelief.stamp(), aProp)
+                            Stamp.merge(input.stamp(), prevBelief.stamp(), aProp, nar.random())
                     )
             );
             if (revised != null) {

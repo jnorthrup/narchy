@@ -28,7 +28,7 @@ import jcog.io.BinTxt;
 import nars.Op;
 import nars.Param;
 import nars.Task;
-import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.list.primitive.MutableLongList;
 import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.factory.primitive.LongSets;
@@ -45,13 +45,38 @@ public interface Stamp {
 
 
     long[] UNSTAMPED = new long[0];
-    long[] UNSTAMPED_OVERLAPPING = new long[]{Long.MAX_VALUE};
+//    long[] UNSTAMPED_OVERLAPPING = new long[]{Long.MAX_VALUE};
 
     /*@NotNull*/
-    static long[] zip(/*@NotNull*/ long[] a, /*@NotNull*/ long[] b, float aToB) {
-        return zip(a, b, aToB,
-                Param.STAMP_CAPACITY,
-                true);
+    static long[] merge(/*@NotNull*/ long[] a, /*@NotNull*/ long[] b, float aToB, Random rng) {
+//        return zip(a, b, aToB,
+//                Param.STAMP_CAPACITY,
+//                true);
+
+        final int capacity = Param.STAMP_CAPACITY;
+        return merge(a, b, rng, capacity);
+    }
+
+    /** applies a fair, random-removal merge of input stamps */
+    static long[] merge(long[] a, long[] b, Random rng, int capacity) {
+        if (Arrays.equals(a, b))
+            return a;
+        if (a.length == 0) return b;
+        if (b.length == 0) return a;
+
+        //TODO other simple cases
+
+        MetalLongSet ab = new MetalLongSet(a.length + b.length);
+        if (a.length >= b.length) {
+            ab.addAll(a);
+            if (!ab.addAll(b))
+                return a; //b is contained within a
+        } else {
+            ab.addAll(b);
+            if (!ab.addAll(a))
+                return b; //a is contained within b
+        }
+        return sample(capacity, ab, rng);
     }
 
 
@@ -61,7 +86,7 @@ public interface Stamp {
      * the later-created task should be in 'b'
      */
     /*@NotNull*/
-    static long[] zip(long[] a, long[] b, float aToB, int maxLen, boolean newToOld) {
+    @Deprecated static long[] zip(long[] a, long[] b, float aToB, int maxLen, boolean newToOld) {
 
 //        if (a.length == 0 || a == Stamp.UNSTAMPED_OVERLAPPING) {
 //            if (b.length == 0 || b == Stamp.UNSTAMPED_OVERLAPPING)
@@ -513,22 +538,36 @@ public interface Stamp {
         return pair(e, Util.unitize(overlap));
     }
 
-    static long[] sample(int stampCapacity, MetalLongSet evi, Random rng) {
-        return evi.sortedSample(stampCapacity, rng);
-    }
+    static long[] sample(int capacity, MetalLongSet evi, Random rng) {
 
-    static long[] sample(int max, long[] e, Random rng) {
 
-        if (e.length > max) {
-            ArrayUtils.shuffle(e, rng);
-            e = ArrayUtils.subarray(e, 0, max);
+        int nab = evi.size();
+        if (nab <= capacity)
+            return evi.toSortedArray();
+        else {
+            MutableLongList x = evi.toList();
+            int toRemove = nab - capacity;
+            for (int i = 0; i < toRemove; i++)
+                x.removeAtIndex(rng.nextInt(nab--));
+            x.sortThis();
+            return x.toArray();
         }
 
-        if (e.length > 1)
-            Arrays.sort(e);
 
-        return e;
     }
+
+//    static long[] sample(int max, long[] e, Random rng) {
+//
+//        if (e.length > max) {
+//            ArrayUtils.shuffle(e, rng);
+//            e = ArrayUtils.subarray(e, 0, max);
+//        }
+//
+//        if (e.length > 1)
+//            Arrays.sort(e);
+//
+//        return e;
+//    }
 
 
 }

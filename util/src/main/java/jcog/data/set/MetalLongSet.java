@@ -3,9 +3,11 @@ package jcog.data.set;
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.list.primitive.MutableLongList;
+import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 
 import java.util.Arrays;
-import java.util.Random;
+import java.util.function.LongConsumer;
 
 public class MetalLongSet extends LongOpenHashSet  {
 
@@ -30,33 +32,42 @@ public class MetalLongSet extends LongOpenHashSet  {
         return l;
     }
 
-    public void addAll(long[] x) {
+    public boolean addAll(long[] x) {
+        boolean any = false;
         for (long xx : x)
-            add(xx);
+            any |= add(xx);
+        return any;
+    }
+
+    public MutableLongList toList() {
+        int s = size();
+        LongArrayList l = new LongArrayList(s);
+        forEach((LongConsumer) l::add);
+        return l;
     }
 
 
-    /** note: this will have trouble with 0 since it is the 'null key' used by the superclass.  stamp 0 shouldnt be expected anyway */
-    public long[] sortedSample(int stampCapacity, Random rng) {
-        //sample(stampCapacity, evi.toLongArray(), rng);
-        if (size() <= stampCapacity) {
-            return toSortedArray();
-        }
-
-        long[] x = key;
-        long[] y = new long[stampCapacity];
-        int n = x.length;
-        int ix = rng.nextInt(n); //random start position
-        int iy = 0;
-        for (int i = ix; ; i++) {
-            long xi = x[i];
-            if (xi !=0) y[iy++] = xi;
-            if (iy >= stampCapacity) break;
-            if (i >= n-1) i = 0;
-        }
-        Arrays.sort(y);
-        return y;
-    }
+//    /** note: this will have trouble with 0 since it is the 'null key' used by the superclass.  stamp 0 shouldnt be expected anyway */
+//    public long[] sortedSample(int stampCapacity, Random rng) {
+//        //sample(stampCapacity, evi.toLongArray(), rng);
+//        if (size() <= stampCapacity) {
+//            return toSortedArray();
+//        }
+//
+//        long[] x = key;
+//        long[] y = new long[stampCapacity];
+//        int n = x.length;
+//        int ix = rng.nextInt(n); //random start position
+//        int iy = 0;
+//        for (int i = ix; ; i++) {
+//            long xi = x[i];
+//            if (xi !=0) y[iy++] = xi;
+//            if (iy >= stampCapacity) break;
+//            if (i >= n-1) i = 0;
+//        }
+//        Arrays.sort(y);
+//        return y;
+//    }
 
 
 //    /**

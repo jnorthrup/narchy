@@ -428,8 +428,8 @@ public abstract class Param {
 
         int falloffDurs =
                 //1;
-                2;
-                //4;
+                //2;
+                4;
                 //dur;
                 //8;
         return evi / (1.0f + (((float)dt) / (falloffDurs * dur)));
