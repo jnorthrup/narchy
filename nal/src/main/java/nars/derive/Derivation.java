@@ -41,6 +41,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -544,7 +545,10 @@ public class Derivation extends PreDerivation {
                 tb = te + be;
                 tb = tb < ScalarValue.EPSILON ? 0.5f : te / tb;
             }
-            return evidenceDouble = Stamp.merge(_task.stamp(), _belief.stamp(), tb, random);
+            long[] e = Stamp.merge(_task.stamp(), _belief.stamp(), tb, random);
+            if (evidenceDouble==null || !Arrays.equals(e, evidenceDouble))
+                this.evidenceDouble = e;
+            return e;
         } else {
             return evidenceDouble;
         }

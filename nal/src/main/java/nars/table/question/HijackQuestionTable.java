@@ -1,7 +1,6 @@
 package nars.table.question;
 
 import jcog.data.NumberX;
-import jcog.pri.ScalarValue;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
 import nars.NAR;
 import nars.Task;
@@ -25,7 +24,7 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
 
     @Override
     public void clear() {
-        forEachTask(ScalarValue::delete);
+        //forEachTask(ScalarValue::delete);
         super.clear();
     }
 

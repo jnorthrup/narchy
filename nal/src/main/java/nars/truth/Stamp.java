@@ -398,21 +398,17 @@ public interface Stamp {
         return false;
     }
 
-    static boolean overlapsAny(/*@NotNull*/ LongSet aa,  /*@NotNull*/ long[] b) {
-        for (long x : b)
-            if (aa.contains(x))
-                return true;
-        return false;
-    }
+//    static boolean overlapsAny(/*@NotNull*/ LongSet aa,  /*@NotNull*/ long[] b) {
+//        for (long x : b)
+//            if (aa.contains(x))
+//                return true;
+//        return false;
+//    }
 
     static boolean overlaps(Task x, Task y) {
-
-        if (Stamp.overlapsAny(x, y)) {
-
-            return !Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME || x.intersects(y.start(), y.end());
-        }
-
-        return false;
+        return (!Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME || x.intersects(y.start(), y.end()))
+                   &&
+               Stamp.overlapsAny(x, y);
     }
 
     static int overlaps(/*@NotNull*/ LongSet aa,  /*@NotNull*/ long[] b) {

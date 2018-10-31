@@ -8,7 +8,7 @@ import nars.truth.Truth;
 import static nars.Op.GOAL;
 
 public class CuriosityTask extends SignalTask {
-    public CuriosityTask(Term term, Truth goal, NAR n, long pStart, long pEnd) {
-        super(term, GOAL, goal, n.time(), pStart, pEnd, n.evidence());
+    public CuriosityTask(Term term, Truth goal, NAR n, long pStart, long pEnd, long[] evi) {
+        super(term, GOAL, goal, n.time(), pStart, pEnd, evi);
     }
 }

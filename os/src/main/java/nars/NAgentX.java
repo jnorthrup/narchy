@@ -159,8 +159,9 @@ abstract public class NAgentX extends NAgent {
 
                         //new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
                         new HijackConceptIndex(
-                                64 * 1024,
+                                128 * 1024,
                                 //64 * 1024,
+                                //32 * 1024,
                                 //8 * 1024,
                                 4)
 
@@ -188,8 +189,7 @@ abstract public class NAgentX extends NAgent {
 
                 PremiseDeriverRuleSet rules = Derivers.rules(n, //6, 8
                         "induction.nal",
-                        "induction.goal.nal",
-                        //"curiosity.nal",
+                        //"induction.goal.nal",
                          "motivation.nal"
                 );
                 ZipperDeriver sensorAction = BeliefSource.forConcepts(n, rules,
@@ -202,7 +202,7 @@ abstract public class NAgentX extends NAgent {
                 sensorAction.timing = new ActionTiming(n);
 
 
-                ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.rules(n, "nal6.nal"),
+                ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.rules(n, "nal6.nal", "motivation.nal"),
                         a.actions.stream().collect(Collectors.toList())
                 );
                 motorInference.timing = new ActionTiming(n);

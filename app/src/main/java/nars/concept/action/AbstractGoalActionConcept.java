@@ -188,8 +188,11 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
     }
 
+    long[] sharedEvi = null;
     @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
-        SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd);
+        if (sharedEvi==null)
+            sharedEvi = n.evidence();
+        SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd, sharedEvi);
         curiosity.pri(this.curiosity.agent.pri.floatValue() * n.priDefault(GOAL));
         return curiosity;
     }

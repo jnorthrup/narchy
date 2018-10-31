@@ -32,8 +32,7 @@ import static nars.time.Tense.ETERNAL;
 @Skill({"Interpolation", "Extrapolation"})
 abstract public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
-    final long start;
-    final long end;
+    final long start, end;
     int dur;
 
     /**
@@ -58,12 +57,9 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     public abstract Truth truth(NAR nar);
 
     public boolean add(Task t) {
-        if (t!=null) {
-            return /* t.intersects(start, end) &&*/  //<- hard filter
-                    super.add(new TaskComponent(t));
-        }
-        return false;
+        return add(new TaskComponent(t));
     }
+
 
     /**
      * remove components contributing no evidence
@@ -89,13 +85,8 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
             }
         }
 
-        //Float.MIN_NORMAL is used here to allow sub-MIN_EVI contributions
         return tc.evi >= Param.TRUTH_MIN_EVI ? tc : null;
     }
-
-//    public final MetalLongSet filterCyclic() {
-//        return filterCyclic(true);
-//    }
 
     public final TruthPolation filtered() {
         return filtered(null);
@@ -106,14 +97,16 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         return this;
     }
 
-//    @Nullable public final MetalLongSet filterCyclic(boolean provideStampIfOneTask) {
+    //    @Nullable public final MetalLongSet filterCyclic(boolean provideStampIfOneTask) {
 //        return filterCyclic(null, provideStampIfOneTask);
 //    }
-    @Nullable public final MetalLongSet filterCyclic(boolean provideStampIfOneTask, int minResults) {
+    @Nullable
+    public final MetalLongSet filterCyclic(boolean provideStampIfOneTask, int minResults) {
         return filterCyclic(null, provideStampIfOneTask, minResults);
     }
 
-    @Nullable public final MetalLongSet filterCyclic(@Nullable Task selected, boolean provideStamp) {
+    @Nullable
+    public final MetalLongSet filterCyclic(@Nullable Task selected, boolean provideStamp) {
         return filterCyclic(selected, provideStamp, 1);
     }
 
@@ -121,7 +114,8 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
      * removes the weakest components sharing overlapping evidence with stronger ones.
      * should be called after all entries are added
      */
-    @Nullable public final MetalLongSet filterCyclic(@Nullable Task selected, boolean provideStamp, int minResults) {
+    @Nullable
+    public final MetalLongSet filterCyclic(@Nullable Task selected, boolean provideStamp, int minResults) {
 
         int s = size();
         if (s == 0) {
@@ -145,43 +139,71 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         else if (s == 2) {
             Task a = get(0).task;
             Task b = get(1).task;
-            long[] as = a.stamp();
-            long[] bs = b.stamp();
-            if (Stamp.overlapsAny(as, bs)) {
-                if (a == selected) remove(1); else remove(0);
+            if (Stamp.overlaps(a, b)) {
+                if (a == selected) remove(1);
+                else remove(0);
                 return (provideStamp ? Stamp.toSet(selected) : null);
             } else {
-                return provideStamp ? Stamp.toSet(as.length + bs.length, a, b) : null;
+                return provideStamp ? Stamp.toSet(a.stamp().length + b.stamp().length, a, b) : null;
             }
         } else {
 
-            MetalLongSet e = Stamp.toSet(s * Param.STAMP_CAPACITY/2, selected);
+            MetalLongSet e = provideStamp ? Stamp.toSet(s * Param.STAMP_CAPACITY / 2, selected) : null;
 
-            Task theSelected = selected;
-            removeIf(tc -> {
-                Task tt = tc.task;
-                if (tt == theSelected)
-                    return false; //skip and keep
-
-                long[] stamp = tt.stamp();
-                for (int i = 0, stampLength = stamp.length; i < stampLength; i++) {
-                    long ss = stamp[i];
-                    if (!e.add(ss)) {
-                        //remove any contributed unique stamp components added for this task that overlaps
-                        if (i > 0) {
-                            for (int j = 0; j < i; j++) {
-                                boolean removed = e.remove(stamp[j]);
-                                assert(removed);
-                            }
-                        }
-                        return true;
+            int ss = size();
+            for (int i = 1 /* skip first */; i < ss; ) {
+                Task ii = get(i).task;
+                boolean keep = true;
+                for (int j = 0; j < i; j++) {
+                    Task jj = get(j).task;
+                    if (Stamp.overlaps(ii, jj)) {
+                        keep = false;
+                        break;
                     }
                 }
+                if (!keep) {
+                    remove(i);
+                    ss--;
+                } else {
+                    if (e!=null)
+                        e.addAll(ii.stamp());
+                    i++;
+                }
+            }
 
-                return false;
-            });
+//            removeIf(tc -> {
+//                Task tt = tc.task;
+//                if (tt == theSelected)
+//                    return false; //skip and keep
+//
+//                return false;
+////
+////                long[] stamp = tt.stamp();
+////                boolean mustTest = false;
+////                for (int i = 0, stampLength = stamp.length; i < stampLength; i++) {
+////                    long ss = stamp[i];
+////                    if (!e.add(ss)) {
+////                        //collision: test previous results pair-wise
+////                        mustTest = true;
+////                    }
+////                    //continue adding all
+////                }
+////
+//////                        //remove any contributed unique stamp components added for this task that overlaps
+//////                        if (i > 0) {
+//////                            for (int j = 0; j < i; j++) {
+//////                                boolean removed = e.remove(stamp[j]);
+//////                                assert (removed);
+//////                            }
+//////                        }
+////                        return true;
+////                    }
+////                }
+////
+////                return false;
+//            });
 
-            return provideStamp ? e : null;
+            return e; //provideStamp ? e : null;
         }
     }
 
@@ -261,24 +283,24 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
             long firstStart = first.start();
             long secondStart = second.start();
             final float[] e1Evi = {0};
-            final float[] e2Evi = { 0 };
+            final float[] e2Evi = {0};
             Task finalFirst = first;
             Task finalSecond = second;
             removeIf(x -> {
-               if (x.task == finalFirst || x.task.term().equals(a)) {
-                   e1Evi[0] += x.evi;
-                   return false;
-               } else if (x.task == finalSecond || x.task.term().equals(b)) {
-                   e2Evi[0] += x.evi;
-                   return false;
-               } else {
-                   return true;
-               }
+                if (x.task == finalFirst || x.task.term().equals(a)) {
+                    e1Evi[0] += x.evi;
+                    return false;
+                } else if (x.task == finalSecond || x.task.term().equals(b)) {
+                    e2Evi[0] += x.evi;
+                    return false;
+                } else {
+                    return true;
+                }
             });
 
             Term term = Revision.intermpolate(a,
-                    firstStart!=ETERNAL && secondStart!=ETERNAL ? secondStart - firstStart : 0,
-                    b, e1Evi[0] /(e1Evi[0] + e2Evi[0]), nar);
+                    firstStart != ETERNAL && secondStart != ETERNAL ? secondStart - firstStart : 0,
+                    b, e1Evi[0] / (e1Evi[0] + e2Evi[0]), nar);
 
             if (Task.taskConceptTerm(term)) {
                 float diff = dtDiff(a, b);
@@ -294,12 +316,10 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
                 return differenceFactor;
             } else {
                 removeIf(x -> !x.task.term().equals(a));
-                assert(size() > 0);
+                assert (size() > 0);
                 this.term = a;
                 return 1;
             }
-
-
 
 
 //            Term theFirst = first;

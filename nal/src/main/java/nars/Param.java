@@ -5,7 +5,6 @@ import jcog.math.FloatRange;
 import jcog.math.FloatRangeRounded;
 import jcog.math.IntRange;
 import jcog.math.Range;
-import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.term.atom.Atom;
@@ -382,8 +381,8 @@ public abstract class Param {
     public static final float TRUTH_MAX_CONF = 1f - TRUTH_EPSILON;
     public static final float TRUTH_MIN_EVI =
                         //c2wSafe(TRUTH_EPSILON);
-                        ScalarValue.EPSILON;
-                        //Float.MIN_NORMAL;
+                        //ScalarValue.EPSILON;
+                        Float.MIN_NORMAL;
 
 
     /**
@@ -427,8 +426,8 @@ public abstract class Param {
         assert(dur > 0);
 
         int falloffDurs =
-                //1;
-                2;
+                1;
+                //2;
                 //4;
                 //dur;
                 //8;

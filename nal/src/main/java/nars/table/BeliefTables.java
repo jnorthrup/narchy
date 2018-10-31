@@ -185,7 +185,7 @@ public class BeliefTables implements BeliefTable {
 
     public final void delete() {
         clear();
-        tables.clear();
+        //tables.clear(); //<- not necessary and can interrupt iterations in progress
     }
 
     /** gets first matching table of the provided type */
