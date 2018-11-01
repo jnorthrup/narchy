@@ -11,7 +11,6 @@ import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
-import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.action.AbstractGoalActionConcept;
@@ -124,14 +123,14 @@ public class NAgent extends NARService implements NSense, NAct {
 
     protected <A extends ActionConcept> void actionAdded(A a) {
 
-        alwaysQuest(a, true);
+        //alwaysQuest(a, true);
+        //alwaysQuestionEternally(Op.IMPL.the($.varQuery(1), a.term), true, false);
 
 //        alwaysQuestionEternally(a,
 //                false,
 //                false
 //        );
 
-        alwaysQuestionEternally(Op.IMPL.the($.varQuery(1), a.term), true, false);
 
 //        alwaysQuestion(IMPL.the(c.term, 0, $$("reward:#x")), true);
 //        alwaysQuestion(IMPL.the(c.term.neg(), 0, $$("reward:#x")), true);
@@ -506,7 +505,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
         in.input(always.stream().map(x -> x.get(prev, now, next)).filter(Objects::nonNull).peek(x -> {
             x.pri(
-                    pri.floatValue() * nar.priDefault(x.punc())
+                pri.floatValue() * nar.priDefault(x.punc())
             );
         }));
     }
