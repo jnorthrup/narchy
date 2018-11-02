@@ -199,7 +199,7 @@ abstract public class NAgentX extends NAgent {
                         a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false))
                     ).map(Termed::term).collect(Collectors.toList())
                 );
-                sensorAction.timing = new ActionTiming(n);
+                //sensorAction.timing = new ActionTiming(n);
 
 
                 ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.rules(n, "nal6.nal", "motivation.nal"),
@@ -412,8 +412,8 @@ abstract public class NAgentX extends NAgent {
 
 
         new BatchDeriver(Derivers.nal(n, 1, 8,
-            "motivation.nal",
-                "induction.goal.nal"
+            "motivation.nal"
+                //"induction.goal.nal"
         ));
 
         //new STMLinkage(n, 1);

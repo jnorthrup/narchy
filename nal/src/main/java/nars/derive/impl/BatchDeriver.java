@@ -77,8 +77,14 @@ public class BatchDeriver extends Deriver {
 
         do {
 
-            for (Premise p : hypothesize(d))
-                p.derive(d, matchTTL, deriveTTL);
+//            if (!d.nar.exe.concurrent()) {
+//                hypothesize(d).asParallel(ForkJoinPool.commonPool(), 2).forEach(p -> {
+//                    p.derive(/* HACK */ Deriver.derivation.get().next(nar, this), matchTTL, deriveTTL);
+//                });
+//            } else {
+                for (Premise p : hypothesize(d))
+                    p.derive(d, matchTTL, deriveTTL);
+//            }
 
         } while (kontinue.getAsBoolean());
 

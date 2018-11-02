@@ -61,7 +61,7 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
     private final List<Sensor<S, ?>> varSensors;
 
     /** enable to print exceptions */
-    private boolean debug = false;
+    private boolean debug = false, trace = true;
 
     public Optimization(Supplier<S> subj,
                         Function<Supplier<S>, E> procedure, Goal<E> goal,
@@ -157,6 +157,10 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
         varSensors.forEach(s -> s.addToSchema(data));
         sensors.forEach(s -> s.addToSchema(data));
 
+        if (trace) {
+            System.out.println(data.columnNames());
+        }
+
         strategy.run(this);
 
         finish();
@@ -189,7 +193,11 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
 
             Object[] row = row(copy[0], y, score);
 
-            System.out.println(Arrays.toString(row));
+            if (trace) {
+                String rs = Arrays.toString(row);
+                System.out.println(rs.substring(1, rs.length()-1));
+            }
+
             data.add(row);
             return score;
 

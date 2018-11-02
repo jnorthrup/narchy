@@ -69,11 +69,6 @@ public class Int implements Intlike, The {
     }
 
     @Override
-    public final void appendTo(ByteArrayDataOutput out) {
-        out.write(bytesCached);
-    }
-
-    @Override
     public Range range() {
         return Range.singleton(id).canonical(DiscreteDomain.integers());
     }

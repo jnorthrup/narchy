@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 1250;
+    private final int cycles = 250;
 
     @Override
     protected NAR nar() {
@@ -644,8 +644,9 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_induction0SimpleDepVar3() {
         TestNAR tester = test;
-        tester.believe("((&&,x1,#1) ==> (a && #1))");
-        tester.believe("((&&,#1,#2) ==> (a && #2))");
+        test.nar.termVolumeMax.set(3);
+        tester.believe("((x1 && #1) ==> (a && #1))");
+        tester.believe("((#1 && #2) ==> (a && #2))");
         tester.mustBelieve(cycles, "(x1 ==> #1)", 1.00f, 0.45f);
         tester.mustBelieve(cycles, "(#1 ==> x1)", 1.00f, 0.45f);
     }
@@ -653,10 +654,10 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_induction0SimpleIndepVar() {
         TestNAR tester = test;
-        test.nar.termVolumeMax.set(12);
+        test.nar.termVolumeMax.set(3);
 
-        tester.believe("((&&,x1,$1) ==> (a,$1))");
-        tester.believe("((&&,y1,$1) ==> (a,$1))");
+        tester.believe("((x1 && $1) ==> (a,$1))");
+        tester.believe("((y1 && $1) ==> (a,$1))");
         tester.mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f);
         tester.mustBelieve(cycles, "(y1 ==> x1)", 1.00f, 0.45f);
     }

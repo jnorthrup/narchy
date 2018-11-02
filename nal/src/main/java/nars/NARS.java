@@ -122,13 +122,13 @@ public class NARS {
                 n.termVolumeMax.set(26);
 
 
-                n.activation.set(0.3f);
-                n.memoryDuration.set(8f);
+                n.activation.set(1f);
+                n.memoryDuration.set(4f);
 
 
 
-                n.beliefPriDefault.set(0.9f);
-                n.goalPriDefault.set(0.9f);
+                n.beliefPriDefault.set(0.5f);
+                n.goalPriDefault.set(0.5f);
                 n.questionPriDefault.set(0.5f);
                 n.questPriDefault.set(0.5f);
 
@@ -149,7 +149,7 @@ public class NARS {
                 
                 new MapConceptIndex(
 
-                        new MRUMap<>(8*1024) {
+                        new MRUMap<>(4*1024) {
                             @Override
                             protected void onEvict(Map.Entry<Term, Termed> entry) {
                                 Termed c = entry.getValue();

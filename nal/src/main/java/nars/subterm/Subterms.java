@@ -821,12 +821,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     default void appendTo(ByteArrayDataOutput out) {
         out.writeByte(subs());
-        forEach(t -> t.appendTo(out));
+        forEachWith(Term::appendTo, out);
     }
 
     default Subterms replaceSub(Term from, Term to, Op superOp) {
         if (containsRecursively(from)) {
-            //if (!impossibleSubTerm(from)) {
             return transformSubs(MapSubst.replace(from, to), superOp);
         } else {
             return this;

@@ -209,8 +209,6 @@ public interface Atomic extends Term {
         out.write(bytes());
     }
 
-
-
     @Override
     default void recurseTerms(BiConsumer<Term, Compound> each) {
         each.accept(this, null);

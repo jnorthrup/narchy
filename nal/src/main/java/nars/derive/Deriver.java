@@ -60,7 +60,7 @@ abstract public class Deriver extends Causable {
 
     @Deprecated private static final AtomicInteger serial = new AtomicInteger();
 
-    private static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
+    public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
 
     protected final DeriverRules rules;
 
@@ -126,7 +126,7 @@ abstract public class Deriver extends Causable {
     @Override
     protected final void next(NAR n, final BooleanSupplier kontinue) {
 
-        derive(derivation.get().next(n, this), kontinue);
+        derive(Deriver.derivation.get().next(n, this), kontinue);
 
         derived.commit(nar);
     }

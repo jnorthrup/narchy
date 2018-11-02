@@ -46,10 +46,6 @@ public abstract class AbstractAtomic implements Atomic {
         return sbytes;
     }
 
-    @Override
-    public void appendTo(ByteArrayDataOutput out) {
-        out.write(bytesCached);
-    }
 
     @Override
     public final byte[] bytes() {
