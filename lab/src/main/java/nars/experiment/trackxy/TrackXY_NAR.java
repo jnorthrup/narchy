@@ -77,7 +77,7 @@ public class TrackXY_NAR extends NAgentX {
 
         if (targetCam) {
             this.cam = addCamera(new Bitmap2DSensor<>(id /* (Term) null*/, track.grid, nar));
-            cam.resolution(0.25f);
+            cam.resolution(0.1f);
         } else {
             this.cam = null;
         }

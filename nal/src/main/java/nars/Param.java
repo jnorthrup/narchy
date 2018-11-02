@@ -29,7 +29,8 @@ public abstract class Param {
 
 
 
-    public static final boolean ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME = true;
+    public static final boolean ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME = false;
+    public static final boolean INPUT_PREMISE_ANSWER_BELIEF = false;
 
     @Deprecated public static int LinkFanoutMax =
             //16;

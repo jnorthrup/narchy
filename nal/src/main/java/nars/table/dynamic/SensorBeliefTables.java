@@ -87,12 +87,15 @@ public class SensorBeliefTables extends BeliefTables {
     long[] eviShared = null;
 
     protected SeriesBeliefTable.SeriesTask newTask(Term term, byte punc, long nextStart, long nextEnd, Truth next, NAR nar) {
+        long[] evi;
 
-        if (eviShared == null)
-            eviShared = nar.evidence();
-        long[] evi = eviShared;
-
-        //long[] evi = nar.evidence();
+        if (Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME) {
+            if (eviShared == null)
+                eviShared = nar.evidence();
+            evi = eviShared;
+        } else {
+            evi = nar.evidence(); //unique
+        }
 
         return new SeriesBeliefTable.SeriesTask(
                 term,

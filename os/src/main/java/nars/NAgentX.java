@@ -189,21 +189,21 @@ abstract public class NAgentX extends NAgent {
 
                 PremiseDeriverRuleSet rules = Derivers.rules(n, //6, 8
                         "induction.nal",
-                        //"induction.goal.nal",
+                        "induction.goal.nal",
                          "motivation.nal"
                 );
                 ZipperDeriver sensorAction = BeliefSource.forConcepts(n, rules,
-                        (a.rewards.stream().flatMap((Reward x) -> stream(x.spliterator(), false)).collect(Collectors.toList())),
-                        Stream.concat(
-                            a.actions.stream(),
-                            a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false))
-                        ).map(Termed::term).collect(Collectors.toList())
+                    (a.rewards.stream().flatMap((Reward x) -> stream(x.spliterator(), false)).collect(Collectors.toList())),
+                    Stream.concat(
+                        a.actions.stream(),
+                        a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false))
+                    ).map(Termed::term).collect(Collectors.toList())
                 );
                 sensorAction.timing = new ActionTiming(n);
 
 
                 ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.rules(n, "nal6.nal", "motivation.nal"),
-                        a.actions.stream().collect(Collectors.toList())
+                    a.actions.stream().collect(Collectors.toList())
                 );
                 motorInference.timing = new ActionTiming(n);
 
