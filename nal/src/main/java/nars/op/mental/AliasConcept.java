@@ -1,6 +1,5 @@
 package nars.op.mental;
 
-import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -32,7 +31,7 @@ public final class AliasConcept extends TaskConcept {
                 id,
                 null, null, null, null,
                 abbr.linker(), //shared
-                new Bag[]{abbr.tasklinks()});
+                abbr.tasklinks());
 
         this.abbr = abbr;
 

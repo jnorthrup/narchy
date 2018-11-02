@@ -1,16 +1,11 @@
 package nars.truth.dynamic;
 
 import jcog.data.set.MetalLongSet;
-import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.term.Term;
 import nars.truth.Stamp;
-import nars.truth.Truth;
-import nars.truth.Truthed;
 
 import java.util.Random;
-import java.util.function.BiFunction;
 
 /** dynTruth which can track evidential overlap while being constructed, and provide the summation of evidence after*/
 public class DynStampTruth extends DynTruth {
@@ -76,27 +71,27 @@ public class DynStampTruth extends DynTruth {
 //
 //    }
 
-    public final Truth truth(Term term, BiFunction<DynTruth, NAR, Truth> o, boolean beliefOrGoal, NAR n) {
-        return (Truth) eval(term, o, false, beliefOrGoal, n);
-    }
+//    public final Truth truth(Term term, BiFunction<DynTruth, NAR, Truth> o, boolean beliefOrGoal, NAR n) {
+//        return (Truth) eval(term, o, false, beliefOrGoal, n);
+//    }
 
-    /**
-     * TODO make Task truth dithering optional
-     */
-    @Deprecated  public Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, NAR nar) {
-
-        Truth t = truthModel.apply(this, nar);
-        if (t == null)
-            return null;
-
-        //return eval(()->superterm, t, taskOrJustTruth, beliefOrGoal, freqRes, confRes, eviMin, nar);
-        if (taskOrJustTruth) {
-            return task(superterm, t, this::stamp, beliefOrGoal, nar);
-        } else {
-            return t;
-        }
-
-    }
+//    /**
+//     * TODO make Task truth dithering optional
+//     */
+//    @Deprecated  public Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, NAR nar) {
+//
+//        Truth t = truthModel.apply(this, nar);
+//        if (t == null)
+//            return null;
+//
+//        //return eval(()->superterm, t, taskOrJustTruth, beliefOrGoal, freqRes, confRes, eviMin, nar);
+//        if (taskOrJustTruth) {
+//            return task(superterm, t, this::stamp, beliefOrGoal, nar);
+//        } else {
+//            return t;
+//        }
+//
+//    }
 
 
 

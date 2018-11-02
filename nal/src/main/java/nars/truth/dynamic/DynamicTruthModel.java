@@ -24,7 +24,6 @@ import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
@@ -33,7 +32,9 @@ import static nars.time.Tense.*;
 /**
  * Created by me on 12/4/16.
  */
-abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Truth> {
+abstract public class DynamicTruthModel {
+
+    abstract public Truth apply(DynTruth var1, NAR nar);
 
     public final DynStampTruth eval(final Term superterm, boolean beliefOrGoal, long start, long end, Predicate<Task> superFilter, boolean forceProjection, NAR n) {
 
@@ -47,6 +48,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         //TODO expand the callback interface allowing models more specific control over matching/answering/sampling subtasks
         
         return components(superterm, start, end, (Term subTerm, long subStart, long subEnd) -> {
+
             boolean negated = subTerm.op() == Op.NEG;
             if (negated)
                 subTerm = subTerm.unneg();

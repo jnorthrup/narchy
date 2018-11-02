@@ -44,7 +44,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
     public abstract TemporalBeliefTable newTemporalTable(Term c, boolean beliefOrGoal);
 
-    @Deprecated public abstract Bag[] newLinkBags(Term term);
+    public abstract Bag newLinkBag(Term term);
 
     private Concept taskConcept(final Term t) {
 
@@ -90,7 +90,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
         return new TaskConcept(t, B, G,
                         this.questionTable(t, true), this.questionTable(t, false),
                         this.termlinker(t),
-                        this.newLinkBags(t));
+                        this.newLinkBag(t));
     }
 
     private BeliefTables newDynamicBeliefTable(Term t, DynamicTruthModel dmt, boolean beliefOrGoal) {
@@ -323,10 +323,6 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
             throw new UnsupportedOperationException();
         }
 
-//        @Override
-//        public TaskConcept taskConcept(Term t) {
-//            throw new UnsupportedOperationException();
-//        }
 
         @Override
         public TermLinker termlinker(Term term) {
@@ -354,8 +350,8 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
         }
 
         @Override
-        public Bag[] newLinkBags(Term term) {
-            return new Bag[]{Bag.EMPTY, Bag.EMPTY};
+        public Bag newLinkBag(Term term) {
+            return Bag.EMPTY;
         }
     };
 

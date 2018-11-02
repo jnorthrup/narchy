@@ -40,17 +40,17 @@ public class NodeConcept implements Concept {
     }
 
     public NodeConcept(Term term, ConceptBuilder b) {
-        this(term, b.termlinker(term), b.newLinkBags(term));
+        this(term, b.termlinker(term), b.newLinkBag(term));
     }
 
     public NodeConcept(Term term, TermLinker linker, ConceptBuilder b) {
-        this(term, linker, b.newLinkBags(term));
+        this(term, linker, b.newLinkBag(term));
     }
 
-    NodeConcept(Term term, TermLinker linker, Bag[] bags) {
+    NodeConcept(Term term, TermLinker linker, Bag b) {
         assert (term.op().conceptualizable): term + " not conceptualizable";
         this.term = term;
-        this.taskLinks = bags[0];
+        this.taskLinks = b;
         this.hash = term.hashCode();
 
         this.linker = linker;

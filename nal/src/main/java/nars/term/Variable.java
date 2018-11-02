@@ -1,7 +1,6 @@
 package nars.term;
 
 import nars.Op;
-import nars.derive.premise.PatternIndex;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
 import nars.unify.Unify;
@@ -91,11 +90,7 @@ public interface Variable extends Atomic {
 
     static boolean unifyVar(Variable x, Variable y, Unify u) {
 
-        if (x instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsis)
-            return false;
         if (x instanceof CommonVariable)
-            return false;
-        if (y instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsis)
             return false;
         if (y instanceof CommonVariable)
             return false;

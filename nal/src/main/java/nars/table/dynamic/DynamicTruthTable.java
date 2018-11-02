@@ -6,10 +6,16 @@ import nars.Param;
 import nars.Task;
 import nars.task.util.Answer;
 import nars.term.Term;
+import nars.truth.PreciseTruth;
+import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.dynamic.DynStampTruth;
 import nars.truth.dynamic.DynamicTruthModel;
 import org.jetbrains.annotations.Nullable;
+
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
+import static nars.truth.dynamic.DynamicTruthModel.DynamicConjTruth.ConjIntersection;
 
 
 /**
@@ -52,9 +58,51 @@ public final class DynamicTruthTable extends DynamicTaskTable {
         if (yy == null)
             return null;
 
+        long s, e;
+
+
+
+            int eternals = yy.count(x -> x.isEternal());
+            if (eternals == 0) {
+                s = yy.minValue(Stamp::start);
+                e = yy.maxValue(Stamp::end);
+            } else if (eternals == yy.size()) {
+                s = ETERNAL;
+                e = ETERNAL;
+            } else {
+                s = yy.minValue(t -> t.start() != ETERNAL ? t.start() : TIMELESS);
+                e = yy.maxValue(Stamp::end);
+            }
+
+        float eviFactor;
+        if (model == ConjIntersection) {
+            if (s!=ETERNAL)
+                e = s + (yy.minValue(t -> t.isEternal() ? 1 : t.range())-1);
+            eviFactor = 1;
+        } else {
+
+//        //HACK discount by estimated evidence loss due to time gaps
+//        float maxEvi = yy.maxValue((Task t) -> t.evi());
+//        TruthPolation p = Param.truth(s, e, nar.dur());
+//        yy.forEach(p::add);
+//        float eviMax = p.truth().evi();
+//        eviFactor = Math.min(1, eviMax / maxEvi);
+
+            //HACK estimate by time range only
+            if (s != ETERNAL) {
+                long range = (e - s) + 1;
+                eviFactor = (float) (yy.sumOfLong((Task x) -> x.isEternal() ? range : x.range()) / (((double) range * yy.size())));
+                assert (eviFactor <= 1f);
+            } else {
+                eviFactor = 1;
+            }
+        }
+
         Truth t = model.apply(yy, nar);
+        t = (t!=null && eviFactor!=1) ? PreciseTruth.byEvi(t.freq(), t.evi() * eviFactor) : t;
         if (t == null)
             return null;
+
 
         Term reconstruct = model.reconstruct(template, yy, nar);
         if (reconstruct == null) {
@@ -63,7 +111,7 @@ public final class DynamicTruthTable extends DynamicTaskTable {
             return null;
         }
 
-        return yy.task(reconstruct, t, yy::stamp, beliefOrGoal, nar);
+        return yy.task(reconstruct, t, yy::stamp, beliefOrGoal, s, e, nar);
     }
 
 

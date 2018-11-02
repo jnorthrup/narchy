@@ -315,7 +315,7 @@ public class Answer implements AutoCloseable {
             } else {
                 return stampSet.toSortedArray();
             }
-        }, root.isBelief(), nar);
+        }, root.isBelief(), time.start, time.end, nar);
 
         if (dyn == null)
             return root;

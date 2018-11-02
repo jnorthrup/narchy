@@ -1,6 +1,7 @@
 package nars.concept.action;
 
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.CuriosityGoalTable;
@@ -188,11 +189,18 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
     }
 
-    long[] sharedEvi = null;
+    long[] eviShared = null;
     @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
-        if (sharedEvi==null)
-            sharedEvi = n.evidence();
-        SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd, sharedEvi);
+        long[] evi;
+        if (Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME) {
+            if (eviShared == null)
+                eviShared = n.evidence();
+            evi = eviShared;
+        } else {
+            evi = n.evidence();
+        }
+
+        SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd, evi);
         curiosity.pri(this.curiosity.agent.pri.floatValue() * n.priDefault(GOAL));
         return curiosity;
     }

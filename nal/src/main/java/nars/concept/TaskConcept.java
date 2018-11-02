@@ -27,11 +27,8 @@ import static nars.truth.TruthFunctions.w2cSafe;
 
 public class TaskConcept extends NodeConcept implements Concept {
 
-    private final BeliefTable beliefs;
-    private final BeliefTable goals;
-    private final QuestionTable quests;
-    private final QuestionTable questions;
-
+    private final BeliefTable beliefs, goals;
+    private final QuestionTable quests, questions;
 
     public TaskConcept(Term term, @Nullable BeliefTable beliefs, @Nullable BeliefTable goals, ConceptBuilder b) {
         this(term, beliefs, goals, b.termlinker(term), b);
@@ -44,7 +41,7 @@ public class TaskConcept extends NodeConcept implements Concept {
                 b.questionTable(term, true),
                 b.questionTable(term, false),
                 linker,
-                b.newLinkBags(term));
+                b.newLinkBag(term));
     }
 
 
@@ -59,7 +56,7 @@ public class TaskConcept extends NodeConcept implements Concept {
                        BeliefTable beliefs, BeliefTable goals,
                        QuestionTable questions, QuestionTable quests,
                        TermLinker linker,
-                       Bag[] bags) {
+                       Bag bags) {
         super(term, linker, bags);
         this.beliefs = beliefs;
         this.goals = goals;

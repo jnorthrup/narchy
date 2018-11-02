@@ -14,7 +14,6 @@ import nars.task.NALTask;
 import nars.task.util.TaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.truth.Truth;
 import nars.util.TimeAware;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -111,7 +110,7 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
     }
 
 
-    public Task task(Term content, Truth t, Function<Random,long[]> stamp, boolean beliefOrGoal, NAR nar) {
+    public Task task(Term content, Truth t, Function<Random,long[]> stamp, boolean beliefOrGoal, long start, long end, NAR nar) {
 
         if (content == null) {
             throw new NullPointerException("template is null; missing information how to build");
@@ -125,52 +124,52 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
             t = t.neg();
         }
 
-        long start, end;
-        if (size() > 1) {
-            if (op == CONJ) {
-                long earliest = TIMELESS;
-                long minRange = TIMELESS;
-                boolean eternals = false;
-                for (int i = 0, thisSize = size(); i < thisSize; i++) {
-                    LongInterval ii = get(i);
-                    long iis = ii.start();
-                    if (iis != ETERNAL) {
-                        earliest = Math.min(earliest, iis);
-                        long tRange = ii.end() - iis;
-                        minRange = (minRange != TIMELESS) ? Math.min(minRange, tRange) : tRange;
-                    } else {
-                        eternals = true;
-                    }
-                }
-
-
-                if (eternals && earliest == TIMELESS) {
-                    start = end = ETERNAL;
-                } else {
-                    assert (earliest != TIMELESS);
-
-                    if (minRange == TIMELESS)
-                        minRange = 0;
-
-                    start = earliest;
-                    end = (earliest + minRange);
-                }
-
-
-            } else {
-                long[] u = Tense.union(this.array());
-                start = u[0];
-                end = u[1];
-            }
-
-            start = Tense.dither(start, nar);
-            end = Tense.dither(end, nar);
-        } else {
-
-            LongInterval only = get(0);
-            start = only.start();
-            end = only.end();
-        }
+//        long start, end;
+//        if (size() > 1) {
+//            if (op == CONJ) {
+//                long earliest = TIMELESS;
+//                long minRange = TIMELESS;
+//                boolean eternals = false;
+//                for (int i = 0, thisSize = size(); i < thisSize; i++) {
+//                    LongInterval ii = get(i);
+//                    long iis = ii.start();
+//                    if (iis != ETERNAL) {
+//                        earliest = Math.min(earliest, iis);
+//                        long tRange = ii.end() - iis;
+//                        minRange = (minRange != TIMELESS) ? Math.min(minRange, tRange) : tRange;
+//                    } else {
+//                        eternals = true;
+//                    }
+//                }
+//
+//
+//                if (eternals && earliest == TIMELESS) {
+//                    start = end = ETERNAL;
+//                } else {
+//                    assert (earliest != TIMELESS);
+//
+//                    if (minRange == TIMELESS)
+//                        minRange = 0;
+//
+//                    start = earliest;
+//                    end = (earliest + minRange);
+//                }
+//
+//
+//            } else {
+//                long[] u = Tense.union(this.array());
+//                start = u[0];
+//                end = u[1];
+//            }
+//
+//            start = Tense.dither(start, nar);
+//            end = Tense.dither(end, nar);
+//        } else {
+//
+//            LongInterval only = get(0);
+//            start = only.start();
+//            end = only.end();
+//        }
 
 
         @Nullable ObjectBooleanPair<Term> r = Task.tryContent(
@@ -200,6 +199,10 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
 
         DynamicTruthTask(Term c, boolean beliefOrGoal, Truth tr, TimeAware n, long start, long end, long[] stamp) throws TaskException {
             super(c, beliefOrGoal ? Op.BELIEF : Op.GOAL, tr, n.time(), start, end, stamp);
+
+//            if (end-start > Integer.MAX_VALUE)
+//                throw new WTF("bad DT"); //TEMPORARY
+
             if (c.op() == NEG)
                 throw new UnsupportedOperationException(c + " has invalid task content op (NEG)");
         }

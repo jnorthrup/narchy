@@ -16,8 +16,8 @@ import nars.table.question.QuestionTable;
 import nars.table.temporal.RTreeBeliefTable;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Term;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -48,14 +48,14 @@ public class DefaultConceptBuilder extends ConceptBuilder {
     private static Map newBagMap(int volume) {
 
 
-        //return new UnifiedMap(0, 0.99f);
+        return new UnifiedMap(0, 0.99f);
         //return new UnifiedMap(0);
-        return new HashMap(0);
+        //return new HashMap(0);
 
     }
 
     @Override
-    @Deprecated public Bag[] newLinkBags(Term t) {
+    @Deprecated public Bag newLinkBag(Term t) {
         int v = t.volume();
 
         //if shared, seems to require ConcurrentHashMap if exec is concurrent
@@ -66,10 +66,10 @@ public class DefaultConceptBuilder extends ConceptBuilder {
 //                new PLinkArrayBag<TaskLink>(0, Param.tasklinkMerge, shared)
 //        };
 
-        return new Bag[]{
+        return
                 //new PLinkArrayBag<Term>(0, Param.termlinkMerge, newBagMap(v)),
-                new PLinkArrayBag<TaskLink>(0, Param.tasklinkMerge, newBagMap(v))
-        };
+                new PLinkArrayBag(0, Param.tasklinkMerge, newBagMap(v))
+        ;
     }
 
 
