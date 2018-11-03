@@ -3,10 +3,7 @@ package nars.op;
 import com.fasterxml.jackson.databind.JsonNode;
 import jcog.Util;
 import jcog.data.list.FasterList;
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Task;
+import nars.*;
 import nars.control.NARService;
 import nars.gui.graph.TasksView;
 import nars.op.stm.STMLinkage;
@@ -167,17 +164,22 @@ public class Weather extends NARService {
     public static void main(String[] args) {
         NAR n = NARS.realtime(1f).withNAL(1,8).get();
 
+//        Param.DEBUG = true;
+
         new STMLinkage(n, 1);
         //new Arithmeticize.ArithmeticIntroduction(n, 32);
 
         Weather w = new Weather(n, -75, 38);
         w.events.forEach(System.out::println);
 
-        n.log();
-        n.run(10);
+        n.run(4);
 
         List<Task> tasks = w.events;
         Iterable<Task> allTasks = ()->n.tasks().iterator();
+
+        allTasks.forEach(t -> {
+            System.out.println(t.proof());
+        });
 
         Timeline2D t = TasksView.timeline(allTasks).view(n.time()-3600*1000,n.time()+3600*1000);
 

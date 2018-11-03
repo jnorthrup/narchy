@@ -545,10 +545,11 @@ public class NAL8Test extends NALTest {
     @ParameterizedTest
     @ValueSource(strings = {"&|", "&&"})
     void testGoalImplComponentEternal(String conj) {
+        test.nar.termVolumeMax.set(3);
         test
                 .input("happy!")
                 .input("(in =|> (happy " + conj + " --out)).")
-                .mustBelieve(cycles, "(in=|>happy)", 1f, 0.81f)
+                .mustBelieve(cycles, "(in =|> happy)", 1f, 0.81f)
                 .mustGoal(cycles, "in", 1f, 0.73f);
     }
 

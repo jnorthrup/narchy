@@ -2,7 +2,6 @@ package nars.agent;
 
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import nars.*;
-import nars.concept.Concept;
 import nars.control.DurService;
 import nars.term.Term;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
@@ -70,7 +69,7 @@ public class NAgentTest {
 //        RewardPlot p = new RewardPlot(a);
 
 
-        Param.DEBUG = true;
+//        Param.DEBUG = true;
 //        n.log();
         n.run(100);
 

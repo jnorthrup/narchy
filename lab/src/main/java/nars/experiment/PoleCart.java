@@ -51,7 +51,6 @@ public class PoleCart extends NAgentX {
                 NAgent a = new PoleCart(n);
 
 
-
                 return a;
             } catch (Exception e) {
 

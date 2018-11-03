@@ -58,8 +58,11 @@ public class TasksView implements Timeline2D.TimelineModel<Task> {
     }
 
     @Override
-    public long[] range(Task event) {
-        return new long[] { event.start(), event.end()+1 };
+    public long[] range(Task t) {
+        if (t.op()!=CONJ)
+            return new long[] { t.start(), t.end()+1 };
+        else
+            return new long[] { t.start(), t.term().eventRange() + t.end()+1 };
     }
 
 
@@ -74,16 +77,21 @@ public class TasksView implements Timeline2D.TimelineModel<Task> {
 
 
             switch (x.punc()) {
-                case BELIEF:
-                    r = 0.8f * x.freq();
-                    b = g = 0;
-                    a = 0.2f + 0.8f * x.conf();
+                case BELIEF: {
+                    float f = x.freq();
+                    r = 0.8f * (1f - f);
+                    g = 0.8f * f;
+                    b = 0.2f + 0.8f * x.conf();
+                    a = 1;
                     break;
-                case GOAL:
-                    g = 0.8f * x.freq();
+                }
+                case GOAL: {
+                    float f = x.freq();
+                    g = 0.8f * f;
                     b = r = 0;
                     a = 0.2f + 0.8f * x.conf();
                     break;
+                }
                 case QUESTION:
                     r = 0;
                     g = 0.25f;

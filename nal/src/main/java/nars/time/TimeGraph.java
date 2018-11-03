@@ -304,15 +304,19 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                         link(se, (edt + st), pe);
 
-                        subj.eventsWhile((w, y) -> {
-                            link(know(y), edt + st - w, pe);
-                            return true;
-                        }, 0, true, true, false, 0);
-
-                        pred.eventsWhile((w, y) -> {
-                            link(se, edt + st + w, know(y));
-                            return true;
-                        }, 0, true, true, false, 0);
+//                        if (subj.hasAny(Op.CONJ)) {
+//                            subj.eventsWhile((w, y) -> {
+//                                link(know(y), edt + st - w, pe);
+//                                return true;
+//                            }, 0, true, true, false, 0);
+//                        }
+//
+//                        if (pred.hasAny(CONJ)) {
+//                            pred.eventsWhile((w, y) -> {
+//                                link(se, edt + st + w, know(y));
+//                                return true;
+//                            }, 0, true, true, false, 0);
+//                        }
 
                     }
 
@@ -327,52 +331,22 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     long eventEnd = event.end();
 
                     switch (edt) {
+
                         case XTERNAL:
-                            for (Term sub : eventTerm.subterms()) {
+                        case DTERNAL:
+                            for (Term sub : eventTerm.subterms())
                                 know(sub);
-                                //link(event, TimeSpan.TS_ETERNAL, know(sub));
-                            }
                             break;
 
                         case 0:
-                        case DTERNAL:
 
                             Subterms es = eventTerm.subterms();
                             int esn = es.subs();
-                            //Event prevEvent = null;
-
-                            for (int i = 0; i < esn; i++) {
-                                Term next = es.sub(i);
-                                Event nextEvent = knowComponent(next, eventStart, eventEnd);
-                                //                            if (i == 0) {
-                                //                                prevEvent = nextEvent;
-                                //                                continue;
-                                //                            }
-
-                                //link(prevEvent, ETERNAL, nextEvent);
-                                //prevEvent = nextEvent;
-                                link(event, ETERNAL, nextEvent);
-                            }
+                            for (int i = 0; i < esn; i++)
+                                link(event, 0, know(es.sub(i), eventStart, eventEnd));
 
                             break;
-                        //                    case 0:
-                        //
-                        //
-                        //                        boolean timed = eventStart != ETERNAL;
-                        //                        for (Term s : eventTerm.subterms()) {
-                        //                            Event t = edt == 0 ?
-                        //                                    knowComponent(s, 0, eventStart, eventEnd) :
-                        //                                    (timed ? know(s, eventStart, eventEnd) :
-                        //                                            know(s));
-                        //                            if (t != null) {
-                        //                                link(event, (edt == 0 || timed) ? 0 : ETERNAL,
-                        //                                        t
-                        //                                );
-                        //                            } else {
-                        //
-                        //                            }
-                        //                        }
-                        //                        break;
+
                         default:
 
                             if (eventStart != ETERNAL && eventStart != TIMELESS) {
@@ -382,7 +356,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                                     link(event, w - eventStart, know(y, w, w + range));
                                     return true;
-                                }, eventStart, true, false, false, 0);
+                                }, eventStart, false, false, false, 0);
                             } else {
                                 //chain the events together relatively
                                 final Event[] prev = {null};
@@ -422,20 +396,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         }
     }
 
-    @Deprecated
-    private Event knowComponent(Term y, long start, long end) {
-        assert (start != DTERNAL && end != DTERNAL && start != XTERNAL && end != XTERNAL); //mismatch type
 
-        if (start == TIMELESS) {
-            assert (end == TIMELESS);
-            return know(y);
-        } else if (end == ETERNAL) {
-            assert (end == ETERNAL);
-            return know(y, ETERNAL);
-        } else {
-            return know(y, start, end);
-        }
-    }
 
     boolean solveDT(Term x, Predicate<Event> each) {
         assert (x.dt() == XTERNAL);
@@ -795,6 +756,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     solveDT(y, (z) -> {
                         //TODO there could be multiple solutions for dt
                         assert(z.id.dt()!=XTERNAL);
+                        //know(z.id);
                         subSolved.put(y, z.id);
                         return false;
                     });
@@ -806,6 +768,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 Term y = x.replace(subSolved);
                 if (y != null && !(y instanceof Bool)) {
                     x = y;
+                    know(y);
                 }
             }
 

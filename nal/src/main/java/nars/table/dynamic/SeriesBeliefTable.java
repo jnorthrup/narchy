@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 
 import static jcog.math.LongInterval.TIMELESS;
 import static nars.Op.CONJ;
+import static nars.time.Tense.ETERNAL;
 
 /**
  * adds a TaskSeries additional Task buffer which can be evaluated from, or not depending
@@ -107,6 +108,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
     boolean absorbNonSignal(Task t, long seriesStart, long seriesEnd) {
 
         long tStart = t.start(), tEnd = t.end();
+        if (tStart!=ETERNAL)
         //if (tEnd <= seriesEnd /* allow prediction 'suffix' */)
         {
             if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {

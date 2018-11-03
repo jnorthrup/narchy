@@ -100,11 +100,11 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
 
         int dur = n.dur();
-        //long s = prev, e = now;
+        long s = prev, e = now;
         //long s = now, e = next;
         //long s = prev, e = next;
         long agentDur = (now - prev);
-        long s = now - agentDur/2, e = now + agentDur/2;
+        //long s = now - agentDur/2, e = now + agentDur/2;
         //long s = now - dur/2, e = now + dur/2;
 
         int actionDur = this.actionSustain;
@@ -159,7 +159,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
                 //pre-load curiosity for the future
                 long lastCuriosity = curiosityTable.series.end();
-                long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : now;
+                long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : s;
                 long curiEnd = Math.max(curiStart, e);
                 in.input(
                         curiosity(curi /*goal*/, curiStart, curiEnd, n)

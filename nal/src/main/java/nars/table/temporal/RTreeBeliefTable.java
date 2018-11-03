@@ -22,12 +22,10 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static nars.truth.TruthFunctions.w2cSafe;
-
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
-    private static final float PRESENT_AND_FUTURE_BOOST_BELIEF = 1f;
-    private static final float PRESENT_AND_FUTURE_BOOST_GOAL = 2f;
+    private static final float PRESENT_AND_FUTURE_BOOST_BELIEF = 2f;
+    private static final float PRESENT_AND_FUTURE_BOOST_GOAL = 10f;
 
 
     private static final int MIN_TASKS_PER_LEAF = 2;
@@ -148,7 +146,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 ///w2cSafe(TruthIntegration.evi(x));
                 //w2cSafe(TruthIntegration.evi(x)) / (1 + x.midTimeTo(now)/((float)dur));
                 //w2cSafe(x.evi(now, dur));
-                w2cSafe(x.evi(now, dur)) * x.range();
+                (x.evi(now, dur)) * x.range();
+                //w2cSafe(x.evi(now, dur)) * x.range();
                 //w2cSafe(x.evi(now, dur)) * (float)Math.log(x.range());
     }
 
