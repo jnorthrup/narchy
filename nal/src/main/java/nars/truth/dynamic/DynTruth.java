@@ -4,6 +4,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
+import jcog.math.Longerval;
 import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Op;
@@ -59,16 +60,13 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
         } else {
 
 
-            long range = (end - start) + 1;
+            double range = (end - start) + 1;
 
             return reapply(sub -> {
                 float subPri = DynTruth.pri(sub);
-                long subRange;
-                if (sub.isEternal() || ((subRange = sub.range()) >= range)) {
-                    return subPri;
-                } else {
-                    return (float)(subPri * ((double)subRange) / range);
-                }
+                long ss = sub.start();
+                double pct = ss!=ETERNAL ? (1.0 + Longerval.intersectLength(ss, sub.end(), start, end))/range : 1;
+                return (float) (subPri * pct);
             }, Param.DerivationPri);
 
         }

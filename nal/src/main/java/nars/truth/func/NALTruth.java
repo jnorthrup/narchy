@@ -92,12 +92,6 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-//    /** experiment */ @AllowOverlap @SinglePremise MaybeDuction() {
-//        @Override
-//        public @Nullable Truth apply(@Nullable Truth task, @Nullable Truth belief, nars.NAR m, float minConf) {
-//            return TruthFunctions2.maybeDuction(task, confDefault(m), minConf);
-//        }
-//    },
 
     /**
      * similar to structural deduction but keeps the same input frequency, only reducing confidence
@@ -111,13 +105,13 @@ public enum NALTruth implements TruthFunc {
     },
     @SinglePremise @AllowOverlap StructuralDeduction() {
         @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+        public Truth apply(final Truth T, final Truth Bignored, NAR m, float minConf) {
             return T != null ? Deduction.apply(T, $.t(1f, confDefault(m)), m, minConf) : null;
         }
     },
     @SinglePremise @AllowOverlap StructuralDeductionWeak() {
         @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+        public Truth apply(final Truth T, final Truth Bignored, NAR m, float minConf) {
             return T != null ? weak(Deduction.apply(T, $.t(1f, confDefault(m)), m, minConf)) : null;
         }
     },

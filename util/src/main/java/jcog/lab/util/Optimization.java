@@ -242,7 +242,7 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
     }
 
     public Optimization<S, E> print() {
-        data.print();
+        System.out.println(data.print());
         return this;
     }
 

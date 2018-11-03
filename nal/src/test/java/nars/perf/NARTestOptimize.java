@@ -5,11 +5,8 @@ import jcog.lab.util.Opti;
 import jcog.lab.util.Optimization;
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
-import nars.derive.Deriver;
-import nars.derive.budget.DefaultDeriverBudgeting;
-import nars.derive.impl.BatchDeriver;
 import nars.nal.nal2.NAL2Test;
+import nars.nal.nal5.NAL5Test;
 import nars.nal.nal6.NAL6Test;
 import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
@@ -34,7 +31,7 @@ class NARTestOptimize {
 //                    NAL4Test.class,
 //                    NAL1MultistepTest.class,
                     //NAL4MultistepTest.class,
-                    //NAL5Test.class,
+                    NAL5Test.class,
                     NAL6Test.class,
 //                    NAL7Test.class, NAL8Test.class,
             };
@@ -44,35 +41,35 @@ class NARTestOptimize {
                 n.random().setSeed(System.nanoTime());
                 return n;
             })
-                .var("attnCapacity", 4, 128, 8,
-                        (NAR n, int i) -> n.attn.active.setCapacity(i))
+//                .var("attnCapacity", 4, 128, 8,
+//                        (NAR n, int i) -> n.attn.active.setCapacity(i))
 
 //                .var("ttlMax", 6, 20, 3,
 //                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
-                .var("linkFanOut", 1, 16, 1,
-                        (NAR n, int f) -> Param.LinkFanoutMax = f)
+//                .var("linkFanOut", 1, 16, 1,
+//                        (NAR n, int f) -> Param.LinkFanoutMax = f)
                 .var("activation", 0, 1f, 0.1f,
                             (NAR n, float f) -> n.activation.set(f))
                 .var("memoryDuration", 0, 8f, 0.5f,
                         (NAR n, float f) -> n.memoryDuration.set(f))
-                .var("beliefPriDefault", 0, 1f, 0.1f,
-                        (NAR n, float f) -> n.beliefPriDefault.set(f))
-                .var("questionPriDefault", 0, 1f, 0.1f,
-                        (NAR n, float f) -> {
-                            n.questionPriDefault.set(f);
-                            n.questPriDefault.set(f);
-                        })
+//                .var("beliefPriDefault", 0, 1f, 0.1f,
+//                        (NAR n, float f) -> n.beliefPriDefault.set(f))
+//                .var("questionPriDefault", 0, 1f, 0.1f,
+//                        (NAR n, float f) -> {
+//                            n.questionPriDefault.set(f);
+//                            n.questPriDefault.set(f);
+//                        })
 //                .var("goalPriDefault", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.goalPriDefault.set(f))
 
-                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
-                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
-                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
-                                        relGrowthExponent.set(f)))
-                .var("derivationScale", 0.5f, 2f, 0.1f,
-                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
-                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
-                                        scale.set(f)))
+//                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
+//                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
+//                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
+//                                        relGrowthExponent.set(f)))
+//                .var("derivationScale", 0.5f, 2f, 0.1f,
+//                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
+//                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
+//                                        scale.set(f)))
             ;
 
 
@@ -97,8 +94,10 @@ class NARTestOptimize {
             o.runSync().print();
 
             RealDecisionTree t = o.tree(4, 8);
-            t.print();
-            t.printExplanations();
+            if (t!=null) {
+                t.print();
+                t.printExplanations();
+            }
 
 
         }

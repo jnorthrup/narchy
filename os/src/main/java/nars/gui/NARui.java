@@ -235,12 +235,13 @@ public class NARui {
         List<Task> taskList = new FasterList();
 
         ScrollXY tasks = ScrollXY.listCached(t ->
-                        new Splitting(new FloatGuage(0, 1, t::priElseZero),
+                        new Splitting<>(new FloatGuage(0, 1, t::priElseZero),
                                 new PushButton(new VectorLabel(t.toStringWithoutBudget())).click(() -> {
                                     conceptWindow(t, n);
                                 }),
                                 false, 0.1f),
                 taskList, 64);
+        tasks.view(1, cap);
 
         TextEdit0 input = new TextEdit0(16, 1);
         input.onKey((k) -> {

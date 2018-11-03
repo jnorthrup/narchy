@@ -129,6 +129,14 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         //TODO update if changed
     }
 
+    public ScrollXY<S> view(v2 view) {
+        return view(view.x, view.y);
+    }
+
+    public ScrollXY<S> view(float w, float h) {
+        return view(RectFloat.WH(w, h));
+    }
+
     public ScrollXY<S> view(RectFloat view) {
         if (this.view == null) {
             this.view = view; //initial
@@ -290,15 +298,17 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     }
 
     public static <X> ScrollXY<DynGrid<X>> list(GridRenderer<X> builder, List<X> list) {
-        return new ScrollXY<>(ListModel.of(list), builder);
+        return list((Function<X,Surface>)builder, list);
     }
 
     public static <X> ScrollXY<DynGrid<X>> list(Function<X, Surface> builder, List<X> list) {
-        return new ScrollXY<>(ListModel.of(list), GridRenderer.value(builder));
+        ScrollXY<DynGrid<X>> s = new ScrollXY<>(ListModel.of(list), GridRenderer.value(builder));
+        return s;
     }
 
     public static <X> ScrollXY<DynGrid<X>> listCached(Function<X, Surface> builder, List<X> list, int cacheCapacity) {
-        return new ScrollXY<>(ListModel.of(list), GridRenderer.valueCached(builder, cacheCapacity));
+        ScrollXY<DynGrid<X>> s = new ScrollXY<>(ListModel.of(list), GridRenderer.valueCached(builder, cacheCapacity));
+        return s;
     }
 
     private class FloatProportionalSlider extends FloatSlider {

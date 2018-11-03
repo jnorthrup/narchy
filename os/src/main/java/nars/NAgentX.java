@@ -189,7 +189,7 @@ abstract public class NAgentX extends NAgent {
 
                 PremiseDeriverRuleSet rules = Derivers.rules(n, //6, 8
                         "induction.nal",
-                        "induction.goal.nal",
+                        //"induction.goal.nal",
                          "motivation.nal"
                 );
                 ZipperDeriver sensorAction = BeliefSource.forConcepts(n, rules,
@@ -384,6 +384,7 @@ abstract public class NAgentX extends NAgent {
 
 
 
+        n.activation.set(0.5f);
         n.memoryDuration.set(4f);
 
 

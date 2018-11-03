@@ -82,8 +82,10 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         builder.on(FloatRange.class, (x,relation)-> new MySlider((FloatRange) x, relationLabel(relation)));
         builder.on(Runnable.class, (x,relation)-> new PushButton(relationLabel(relation), (Runnable) x));
         builder.on(AtomicBoolean.class, (x,relation) -> new MyAtomicBooleanCheckBox(relationLabel(relation), (AtomicBoolean) x));
-        builder.on(IntRange.class,  (x, relation) -> new MyIntSlider((IntRange) x, relationLabel(relation)));
+
         builder.on(MutableEnum.class, (x, relation) -> newSwitch((MutableEnum) x, relationLabel(relation)));
+        builder.on(IntRange.class,  (x, relation) -> !(x instanceof MutableEnum) ? new MyIntSlider((IntRange) x, relationLabel(relation)) : null);
+
         builder.on(Collection.class, (x, relation) -> {
             Collection cx = (Collection) x;
             if (cx.isEmpty())
