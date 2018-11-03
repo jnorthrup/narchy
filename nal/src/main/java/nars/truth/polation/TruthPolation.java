@@ -32,7 +32,8 @@ import static nars.time.Tense.ETERNAL;
 @Skill({"Interpolation", "Extrapolation"})
 abstract public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
-    final long start, end;
+    public long start;
+    public long end;
     int dur;
 
     /**
@@ -258,7 +259,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
                 if (!ttt.hasAny(Op.Temporal))
                     break;
             } else {
-                if (!first.equals(ttt)) {
+                if (!first.term().equals(ttt)) {
                     if (second != null) {
 
                         removeAbove(i);
@@ -287,10 +288,11 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
             Task finalFirst = first;
             Task finalSecond = second;
             removeIf(x -> {
-                if (x.task == finalFirst || x.task.term().equals(a)) {
+                Task xx = x.task; Term xxx;
+                if (xx == finalFirst || (xxx = xx.term()).equals(a)) {
                     e1Evi[0] += x.evi;
                     return false;
-                } else if (x.task == finalSecond || x.task.term().equals(b)) {
+                } else if (xx == finalSecond || xxx.equals(b)) {
                     e2Evi[0] += x.evi;
                     return false;
                 } else {
@@ -298,28 +300,36 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
                 }
             });
 
-            Term term = Revision.intermpolate(a,
-                    firstStart != ETERNAL && secondStart != ETERNAL ? secondStart - firstStart : 0,
-                    b, e1Evi[0] / (e1Evi[0] + e2Evi[0]), nar);
+            if (size == 2 || e2Evi[0] >= e1Evi[0]){
+                //if there isnt more evidence for the primarily sought term, then just use those components
 
-            if (Task.taskConceptTerm(term)) {
-                float diff = dtDiff(a, b);
-                if (!Float.isFinite(diff))
-                    return 0;
+                Term term = Revision.intermpolate(a,
+                        firstStart != ETERNAL && secondStart != ETERNAL ? secondStart - firstStart : 0,
+                        b, e1Evi[0] / (e1Evi[0] + e2Evi[0]), nar);
 
-                //assert(diff >= 0 && diff <= 1.0);
-                //float differenceFactor = 1 - diff;
+                if (Task.taskConceptTerm(term)) {
+                    float diff = dtDiff(a, b);
+                    if (Float.isFinite(diff)) {
 
-                float differenceFactor = 1f / (1f + diff);
+                        //assert(diff >= 0 && diff <= 1.0);
+                        //float differenceFactor = 1 - diff;
 
-                this.term = term;
-                return differenceFactor;
-            } else {
-                removeIf(x -> !x.task.term().equals(a));
-                assert (size() > 0);
-                this.term = a;
-                return 1;
+                        float differenceFactor =
+                                1 - diff;
+                        //1f / (1f + diff);
+
+                        this.term = term;
+                        return differenceFactor;
+                    }
+                }
+
+
             }
+
+            removeIf(x -> !x.task.term().equals(a));
+            assert (size() > 0);
+            this.term = a;
+            return 1;
 
 
 //            Term theFirst = first;
@@ -420,7 +430,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     }
 
 
-    protected static class TaskComponent {
+    protected static class TaskComponent implements Tasked {
         final Task task;
 
         /**
@@ -441,6 +451,11 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         boolean isComputed() {
             float f = freq;
             return f == f;
+        }
+
+        @Override
+        public @Nullable Task task() {
+            return task;
         }
     }
 

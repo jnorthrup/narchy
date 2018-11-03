@@ -258,8 +258,11 @@ public final class TruthFunctions {
 
 
     public static float c2w(float c) {
-        if (c > Param.TRUTH_MAX_CONF)
-            throw new Truth.TruthException("confidence overflow", c);
+        if (c > Param.TRUTH_MAX_CONF) {
+            //throw new Truth.TruthException("confidence overflow", c);
+            c = Param.TRUTH_MAX_CONF;
+        }
+
         if (c < Param.TRUTH_EPSILON)
             throw new Truth.TruthException("confidence underflow", c);
 

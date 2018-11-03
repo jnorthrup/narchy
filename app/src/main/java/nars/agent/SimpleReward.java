@@ -5,10 +5,11 @@ import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
+import nars.control.channel.CauseChannel;
+import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 
@@ -20,10 +21,14 @@ public class SimpleReward extends Reward {
 
     private final FloatFloatToObjectFunction<Truth> truther;
 
+    protected final CauseChannel<ITask> in;
+
     public SimpleReward(Term id, FloatSupplier r, NAgent a) {
         super(a, r);
         NAR nar = nar();
         concept = new Signal(id, () -> reward, nar);
+
+        in = a.nar().newChannel(this);
 
         truther = truther();
         agent.//alwaysWant
@@ -38,9 +43,8 @@ public class SimpleReward extends Reward {
 //        }, true);
     }
 
-    @NotNull
     @Override
-    public Iterator<Concept> iterator() {
+    public final Iterator<Concept> iterator() {
         return Iterators.singletonIterator(concept);
     }
 
@@ -52,6 +56,6 @@ public class SimpleReward extends Reward {
     @Override
     public void update(long prev, long now, long next) {
         super.update(prev, now, next);
-        concept.update(prev, now, truther, nar());
+        in.input( concept.update(prev, now, truther, nar()) );
     }
 }

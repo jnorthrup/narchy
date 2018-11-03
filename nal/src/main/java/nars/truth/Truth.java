@@ -25,6 +25,8 @@ import jcog.Util;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
+import nars.Task;
+import nars.truth.polation.TruthIntegration;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.DataInput;
@@ -134,14 +136,23 @@ public interface Truth extends Truthed {
         else
             return a.evi() >= b.evi() ? a : b;
     }
-
-    static <T extends Truthed> T weaker(@Nullable T a, @Nullable T b) {
-        if (b == null)
-            return b;
+    @Nullable
+    static Task stronger(@Nullable Task a, @Nullable Task b) {
         if (a == null)
+            return b;
+        else if (b == null || a.equals(b))
             return a;
-        return a.evi() <= b.evi() ? a : b;
+        else
+            return TruthIntegration.evi(a) >= TruthIntegration.evi(b) ? a : b;
     }
+
+//    static <T extends Truthed> T weaker(@Nullable T a, @Nullable T b) {
+//        if (b == null)
+//            return b;
+//        if (a == null)
+//            return a;
+//        return a.evi() <= b.evi() ? a : b;
+//    }
 
     static float freq(float f, float epsilon) {
         return Util.unitize(Util.round(f, epsilon));

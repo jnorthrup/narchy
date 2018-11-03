@@ -25,6 +25,7 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
@@ -156,11 +157,14 @@ public class Answer implements AutoCloseable {
 
     public static FloatRank<Task> complexTaskStrength(FloatRank<Task> strength, @Nullable Term template) {
         return (x, min) -> {
-            float base = (1 + strength.rank(x, min));
-            if (base < min || base != base)
+            float base = strength.rank(x, min);
+            if (base != base)
+                return Float.NaN;
+            float b = w2cSafe(base);
+            if (b < min)
                 return Float.NaN;
 
-            return base * (1 / (1+Revision.dtDiff(template, x.term())));
+            return b * (1 / (1+Revision.dtDiff(template, x.term())));
         };
     }
 
@@ -193,7 +197,7 @@ public class Answer implements AutoCloseable {
     }
 
     public static FloatFunction<Task> temporalTaskStrength(long start, long end) {
-        return x -> /*w2cSafe*/(TruthIntegration.evi(x, start, end, 1));
+        return x -> /*w2cSafe*/(TruthIntegration.evi(x, start, end, 0));
     }
 
     boolean ditherTruth = false;
@@ -293,7 +297,7 @@ public class Answer implements AutoCloseable {
             return root;
 
         TruthPolation tp = truthpolation(d, nar.dur());
-        @Nullable MetalLongSet stampSet = tp.filterCyclic(root, true);
+        tp.filterCyclic(root, false);
         if (tp.size() == 1)
             return root;
 
@@ -308,14 +312,17 @@ public class Answer implements AutoCloseable {
                 return root;
         }
 
+
         Task dyn = d.task(tp.term, tt, (rng) -> {
-            assert (stampSet != null);
+
+            @Nullable MetalLongSet stampSet = Stamp.toSet(Param.STAMP_CAPACITY, tp.size(), tp); //calculate stamp after filtering and after intermpolation filtering
             if (stampSet.size() > Param.STAMP_CAPACITY) {
                 return Stamp.sample(Param.STAMP_CAPACITY, stampSet, rng);
             } else {
                 return stampSet.toSortedArray();
             }
-        }, root.isBelief(), time.start, time.end, nar);
+
+        }, root.isBelief(), tp.start, tp.end, nar);
 
         if (dyn == null)
             return root;

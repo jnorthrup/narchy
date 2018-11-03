@@ -22,7 +22,7 @@ public abstract class RealTime extends Time {
 
     protected long startNS;
     protected long startMS;
-    private final boolean relativeToStart;
+    public final boolean relativeToStart;
     protected long start;
 
     final static AtomicLongFieldUpdater<RealTime> T = AtomicLongFieldUpdater.newUpdater(RealTime.class, "t");

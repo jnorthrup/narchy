@@ -1500,6 +1500,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return new Facts(this, expMin, beliefsOrGoals);
     }
 
+    public final Task is(Term content, long start, long end) {
+        return answer(content, BELIEF, start, end);
+    }
+
+    public final Task wants(Term content, long start, long end) {
+        return answer(content, GOAL, start, end);
+    }
+
     private class TaskChannel extends CauseChannel<ITask> {
 
         private final short ci;

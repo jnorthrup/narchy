@@ -160,7 +160,7 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
             this.strict = strict;
             this.varBits = op;
             this.result = this.transformed = null;
-            reset();
+            //reset();
             clear();
             return this;
         }

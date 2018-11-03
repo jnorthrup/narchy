@@ -17,11 +17,10 @@ import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.function.Predicate;
 
@@ -34,7 +33,7 @@ import static nars.time.Tense.TIMELESS;
  */
 public class AbstractGoalActionConcept extends ActionConcept {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractGoalActionConcept.class);
+//    private static final Logger logger = LoggerFactory.getLogger(AbstractGoalActionConcept.class);
 
     @Nullable private Curiosity curiosity = null;
 
@@ -104,15 +103,15 @@ public class AbstractGoalActionConcept extends ActionConcept {
         //long s = prev, e = now;
         //long s = now, e = next;
         //long s = prev, e = next;
-        //long agentDur = (now - prev);
-        //long s = now - agentDur/2, e = now + agentDur/2;
-        long s = now - dur/2, e = now + dur/2;
+        long agentDur = (now - prev);
+        long s = now - agentDur/2, e = now + agentDur/2;
+        //long s = now - dur/2, e = now + dur/2;
 
         int actionDur = this.actionSustain;
         if (actionDur < 0) {
             actionDur =
-                    dur;
-                    //Tense.occToDT(agentDur);
+                    //dur;
+                    Tense.occToDT(agentDur);
         }
 
 

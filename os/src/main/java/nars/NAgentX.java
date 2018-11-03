@@ -3,6 +3,7 @@ package nars;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.exe.Loop;
+import jcog.learn.ql.HaiQae;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
@@ -13,6 +14,7 @@ import nars.agent.FrameTrigger;
 import nars.agent.NAgent;
 import nars.agent.Reward;
 import nars.agent.SimpleReward;
+import nars.agent.util.RLBooster;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
@@ -104,14 +106,67 @@ abstract public class NAgentX extends NAgent {
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, float narFPS, float clockFPS) {
-        /*
-        try {
-            Exe.UDPeerProfiler prof = new Exe.UDPeerProfiler();
+        NAR n = baseNAR(clockFPS);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
+
+        n.runLater(() -> {
+
+            NAgent a = init.apply(n);
+
+            n.on(a);
+
+            n.runLater(() -> {
+
+                initPlugins(n);
+                initPlugins2(n, a);
+
+                //System.gc();
+            });
+        });
+
+        Loop loop = n.startFPS(narFPS);
+
+        return n;
+    }
+
+    public static NAR runRL(Function<NAR, NAgent> init, float narFPS, float clockFPS) {
+        NAR n = baseNAR(clockFPS);
+
+
+        n.runLater(() -> {
+
+            NAgent a = init.apply(n);
+
+            a.curiosity.enable.set(false);
+
+            n.on(a);
+
+
+            window(new Gridding(NARui.agent(a), NARui.top(n)), 1200, 900);
+
+
+            new RLBooster(a,
+                    //DQN2::new,
+                    HaiQae::new,
+                    //HaiQ::new,
+                    true
+            );
+        });
+
+        Loop loop = n.startFPS(narFPS);
+
+        return n;
+    }
+
+    static NAR baseNAR(float clockFPS) {
+    /*
+    try {
+        Exe.UDPeerProfiler prof = new Exe.UDPeerProfiler();
+
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    */
 
 
         //Param.STRONG_COMPOSITION = false;
@@ -123,7 +178,6 @@ abstract public class NAgentX extends NAgent {
 
 
         clock.durFPS(clockFPS);
-
 
 
         NAR n = new NARS()
@@ -171,44 +225,33 @@ abstract public class NAgentX extends NAgent {
 
 
         config(n);
+        return n;
+    }
 
+    static void initPlugins2(NAR n, NAgent a) {
 
-        initPlugins(n);
-
-
-        n.runLater(() -> {
-
-            NAgent a = init.apply(n);
-            //a.durs(2f); //nyquist?
-
-            a.pri.set(1f);
-
-            n.on(a);
-
-            n.runLater(() -> {
-
-                PremiseDeriverRuleSet rules = Derivers.rules(n, //6, 8
-                        "induction.nal",
-                        //"induction.goal.nal",
-                         "motivation.nal"
-                );
-                ZipperDeriver sensorAction = BeliefSource.forConcepts(n, rules,
-                    (a.rewards.stream().flatMap((Reward x) -> stream(x.spliterator(), false)).collect(Collectors.toList())),
-                    Stream.concat(
+        PremiseDeriverRuleSet rules = Derivers.rules(n, //6, 8
+                "induction.nal",
+                //"induction.goal.nal",
+                "motivation.nal"
+        );
+        ZipperDeriver sensorAction = BeliefSource.forConcepts(n, rules,
+                (a.rewards.stream().flatMap((Reward x) -> stream(x.spliterator(), false)).collect(Collectors.toList())),
+                Stream.concat(
                         a.actions.stream(),
                         a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false))
-                    ).map(Termed::term).collect(Collectors.toList())
-                );
-                //sensorAction.timing = new ActionTiming(n);
+                ).map(Termed::term).collect(Collectors.toList())
+        );
+        sensorAction.timing = new ActionTiming(n);
 
 
-                ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.rules(n, "nal6.nal", "motivation.nal"),
-                    a.actions.stream().collect(Collectors.toList())
-                );
-                motorInference.timing = new ActionTiming(n);
+        ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.rules(n, "nal6.nal", "motivation.nal"),
+                a.actions.stream().collect(Collectors.toList())
+        );
+        motorInference.timing = new ActionTiming(n);
 
 
-                //sd.timing = new ActionTiming(n);
+        //sd.timing = new ActionTiming(n);
 ////                MatrixDeriver motivation = new MatrixDeriver(a.sampleActions(),
 ////                        rules) {
 //////                    @Override
@@ -219,29 +262,13 @@ abstract public class NAgentX extends NAgent {
 
 
 
-                window(new Gridding(NARui.agent(a), NARui.top(n)), 1200, 900);
+        window(new Gridding(NARui.agent(a), NARui.top(n)), 1200, 900);
 
 //                if (a instanceof NAgentX) {
 //                    NAgent m = metavisor(a);
 //                    m.pri.set(0.1f);
 //                    window(NARui.agent(m), 400, 400);
 //                }
-
-
-                initPlugins2(n, a);
-
-                //System.gc();
-            });
-        });
-
-        Loop loop = n.startFPS(narFPS);
-
-        return n;
-    }
-
-    static void initPlugins2(NAR n, NAgent a) {
-
-
         //new AgentControlFeedback(a);
 
         //new Spider(n, Iterables.concat(Iterables.concat(java.util.List.of(a.id, n.self()), a.actions), a.sensors));

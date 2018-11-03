@@ -97,9 +97,9 @@ public interface TaskTable {
     }
 
     default Answer matching(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
-        return !isEmpty() ? Answer.relevance(!(this instanceof QuestionTable),
+        return Answer.relevance(!(this instanceof QuestionTable),
                 start, end, template, filter, nar)
-                .match(this) : null;
+                .match(this);
     }
 
 

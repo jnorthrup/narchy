@@ -66,7 +66,10 @@ public class TruthIntegration {
                 (qStart >= tStart && qEnd <= tEnd)  //contained
             ) {
             //task contains question
-            return t.eviIntegTrapezoidal(dur, qStart, qEnd);
+            if (qStart <= qEnd)
+                return t.eviIntegTrapezoidal(dur, qStart, qEnd);
+            else
+                return t.eviIntegTrapezoidal(dur, qEnd, qStart); //??
         }
 
         if (qStart <= tStart && qEnd >= tEnd) {

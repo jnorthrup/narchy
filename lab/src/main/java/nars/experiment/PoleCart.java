@@ -61,6 +61,26 @@ public class PoleCart extends NAgentX {
         }, fps);
     }
 
+    public static class RL {
+        public static void main(String[] args) {
+            runRL(n -> {
+
+                try {
+                    PoleCart p = new PoleCart(n);
+
+                    p.tau.set(0.004f);
+
+                    return p;
+                } catch (Exception e) {
+
+                    e.printStackTrace();
+                    return null;
+                }
+            }, fps, fps);
+
+        }
+    }
+
     private final JPanel panel;
 
 
@@ -184,7 +204,7 @@ public class PoleCart extends NAgentX {
 
 
         this.panel = new JPanel(new BorderLayout()) {
-            public Stroke stroke = new BasicStroke(4);
+            public final Stroke stroke = new BasicStroke(4);
 
             @Override
             public void paint(Graphics g) {
@@ -212,9 +232,10 @@ public class PoleCart extends NAgentX {
                 offGraphics.fillRect(0, 0, d.width, d.height);
 
 
-                double xs[] = {-2.5, 2.5, 2.5, 2.3, 2.3, -2.3, -2.3, -2.5};
-                double ys[] = {-0.4, -0.4, 0., 0., -0.2, -0.2, 0, 0};
-                int pixxs[] = new int[8], pixys[] = new int[8];
+                double[] xs = {-2.5, 2.5, 2.5, 2.3, 2.3, -2.3, -2.3, -2.5};
+                double[] ys = {-0.4, -0.4, 0., 0., -0.2, -0.2, 0, 0};
+                int[] pixxs = new int[8];
+                int[] pixys = new int[8];
                 for (int i = 0; i < 8; i++) {
                     pixxs[i] = pixX(d, xs[i]);
                     pixys[i] = pixY(d, ys[i]);

@@ -250,11 +250,11 @@ public class Remember extends AbstractTask {
 
     private static boolean add(Task x, FasterList f) {
         if (x != null) {
-            if (!f.isEmpty()) {
+            //if (!f.isEmpty()) {
                 if (f.containsInstance(x)) {
                     return false;
                 }
-            }
+            //}
 
             f.add(x);
             return true;

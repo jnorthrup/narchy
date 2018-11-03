@@ -92,7 +92,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     /**
      * TODO use the same heuristics as task strength
      */
-    private static FloatFunction<TaskRegion> regionWeakness(long now, long perceptDur, float futureFactor) {
+    private static FloatFunction<TaskRegion> regionWeakness(long now, float futureFactor) {
 
         return (TaskRegion r) -> {
 
@@ -149,6 +149,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 //w2cSafe(TruthIntegration.evi(x)) / (1 + x.midTimeTo(now)/((float)dur));
                 //w2cSafe(x.evi(now, dur));
                 w2cSafe(x.evi(now, dur)) * x.range();
+                //w2cSafe(x.evi(now, dur)) * (float)Math.log(x.range());
     }
 
 
@@ -495,7 +496,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                         now,
                         dur
                 );
-                leafRegionWeakness = regionWeakness(now, dur, input.isBeliefOrGoal() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL);
+                leafRegionWeakness = regionWeakness(now, input.isBeliefOrGoal() ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL);
             }
             if (!compress(treeRW, e == 0 ? input : null /** only limit by inputRegion on first iter */,
                     taskStrength, leafRegionWeakness,

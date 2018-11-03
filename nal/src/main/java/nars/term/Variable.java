@@ -58,66 +58,80 @@ public interface Variable extends Atomic {
 
         final Term x = u.resolve(this);
 
+        if (x!=this && x.equals(_y))
+            return true;
+
         final Term y = (_y instanceof Variable) ? u.resolve(_y) : _y;
 
         if (x.equals(y))
             return true;
 
-        if (x != this) {
-//            try {
-                return x.unify(y, u);
-//            } catch (StackOverflowError e) {
-//                throw new RuntimeException("unification stack overflow: " + x + ' ' + y + " in " + u.xy);
-//            }
-        } else {
-            if (y instanceof Variable) {
-                return unifyVar((Variable) y, u);
+//        if (x != this) {
+////            try {
+//                return x.unify(y, u);
+////            } catch (StackOverflowError e) {
+////                throw new RuntimeException("unification stack overflow: " + x + ' ' + y + " in " + u.xy);
+////            }
+//        } else {
+        if (x instanceof Variable) {
+            if (y instanceof Variable){
+                return unifyVar((Variable) x, (Variable) y, u);
             } else {
-                return u.matchType(this.op()) && u.putXY(this, y);
+                return u.matchType(x.op()) && u.putXY((Variable)x, y);
             }
+        } else {
+            return x != this && x.unify(y, u);
         }
+//        }
     }
 
-    /**
-     * the direction parameter is to maintain correct provenance of variables when creating common vars.
-     * since
-     * #1 from x  is a different instance than  #1 from y
-     */
-    default boolean unifyVar(Variable y, Unify u) {
-        final Variable x = this;
-        return unifyVar(x, y, u);
-    }
+
 
     static boolean unifyVar(Variable x, Variable y, Unify u) {
 
-        if (x instanceof CommonVariable)
-            return false;
-        if (y instanceof CommonVariable)
-            return false;
+//        if (x instanceof CommonVariable)
+//            return false;
+//        if (y instanceof CommonVariable)
+//            return false;
 
         Op xOp = x.op();
+
         Op yOp = y.op();
         if (xOp == yOp) {
 
 
-            Term common = x.compareTo(y) < 0 ? CommonVariable.common(x, y) : CommonVariable.common(y, x);
+             if (u.matchType(xOp)) {
 
-            if (u.putXY(x, common) && u.putXY(y, common)) {
+                 Term common = x.compareTo(y) < 0 ? CommonVariable.common(x, y) : CommonVariable.common(y, x);
 
+                 return u.putXY(x, common) && u.putXY(y, common);
+             } else {
 
-                return true;
-            }
+                 return false;
+             }
+
 
         } else {
-
+//            if (u.symmetric && u.matchType(yOp)) {
+//                Term common = CommonVariable.common(y, x);
+//                return u.putXY(x, common) && u.putXY(y, common);
+//            }
 
             if (xOp.id < yOp.id) {
-                if (u.symmetric)
-                    return u.matchType(yOp) && y.unifyVar(x, u );
+                if (u.symmetric && u.matchType(yOp)) {
+                    /* reverse subsume */
+                    return u.putXY(y, x);
+                }
+
+                return false;
+
+            } else {
+
+                /* subsume: x -> y */
+                return u.matchType(xOp) && u.putXY(x, y);
             }
         }
 
-        return u.matchType(xOp) && u.putXY(x, y);
     }
 
     @Override

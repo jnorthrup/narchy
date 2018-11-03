@@ -127,6 +127,8 @@ public class RLBooster implements Consumer<NAR> {
         long now = nar.time();
         long start = now;
         long end = env.next;
+        if (end < start)
+            return;
 //        long start = now - dur/2;
 //        long end = now + dur/2;
 

@@ -26,7 +26,7 @@ public class NAL6Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(18);
+        n.termVolumeMax.set(19);
         //n.freqResolution.set(0.1f);
         n.confMin.set(0.3f);
         return n;
@@ -46,7 +46,7 @@ public class NAL6Test extends NALTest {
 
         test
 
-                .believe("<<$x --> bird> ==> <$x --> animal>>")
+                .believe("<($x --> bird) ==> <$x --> animal>>")
                 .believe("<<$y --> robin> ==> <$y --> bird>>")
                 .mustBelieve(cycles, "<<$1 --> robin> ==> <$1 --> animal>>", 1.00f, 0.81f)
                 .mustBelieve(cycles, "<<$1 --> animal> ==> <$1 --> robin>>", 1.00f, 0.45f);
@@ -60,7 +60,7 @@ public class NAL6Test extends NALTest {
         TestNAR tester = test;
 
 
-        tester.believe("<<$x --> swan> ==> <$x --> bird>>", 1.00f, 0.80f);
+        tester.believe("<<$x --> swan> ==> ($x --> bird)>", 1.00f, 0.80f);
         tester.believe("<<$y --> swan> ==> <$y --> swimmer>>", 0.80f, 0.9f);
         tester.mustBelieve(cycles, "<<$1 --> swan> ==> (&&,($1 --> bird),($1 --> swimmer))>", 0.80f, 0.72f);
         tester.mustBelieve(cycles, "<($1 --> swimmer) ==> ($1 --> bird)>", 1f, 0.37f);
@@ -90,7 +90,7 @@ public class NAL6Test extends NALTest {
 
         TestNAR tester = test;
 
-        tester.believe("<(&&,<$x --> flyer>,<$x --> [chirping]>) ==> <$x --> bird>>");
+        tester.believe("<(&&,<$x --> flyer>,($x --> [chirping])) ==> ($x --> bird)>");
         tester.believe("<<$y --> [withWings]> ==> <$y --> flyer>>");
         tester.mustBelieve(cycles, "<(&&,<$1 --> [chirping]>,($1 --> [withWings])) ==> ($1 --> bird)>", 1.00f, 0.81f);
 
@@ -99,6 +99,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_unification6() {
+
 
         TestNAR tester = test;
         tester.believe("((&&,($x --> flyer),($x --> [chirping]), food($x, worms)) ==> ($x --> bird))");
@@ -148,7 +149,7 @@ public class NAL6Test extends NALTest {
     void variable_unification7() {
 
         TestNAR tester = test;
-        tester.believe("<(&&,<$x --> flyer>,<($x,worms) --> food>) ==> <$x --> bird>>");
+        tester.believe("<(&&,<$x --> flyer>,<($x,worms) --> food>) ==> ($x --> bird)>");
         tester.believe("<<$y --> flyer> ==> <$y --> [withWings]>>");
         tester.mustBelieve(cycles, "<(&&,($1 --> [withWings]),<($1,worms) --> food>) ==> ($1 --> bird)>", 1.00f, 0.45f);
 
@@ -159,7 +160,7 @@ public class NAL6Test extends NALTest {
     void variable_elimination_impl_fwd_pos_pos() {
 
         test
-                .believe("<<$x --> bird> ==> <$x --> animal>>")
+                .believe("<($x --> bird) ==> <$x --> animal>>")
                 .believe("<robin --> bird>")
                 .mustBelieve(cycles, "<robin --> animal>", 1.00f, 0.81f);
 
@@ -192,7 +193,7 @@ public class NAL6Test extends NALTest {
 
         TestNAR tester = test;
 
-        tester.believe("<<$x --> bird> ==> <$x --> animal>>");
+        tester.believe("<($x --> bird) ==> <$x --> animal>>");
         tester.believe("<tiger --> animal>");
         tester.mustBelieve(cycles * 2, "<tiger --> bird>", 1.00f, 0.45f);
 
@@ -205,7 +206,7 @@ public class NAL6Test extends NALTest {
 
         TestNAR tester = test;
 
-        tester.believe("(&&,<#x --> bird>,<#x --> swimmer>)");
+        tester.believe("((#x --> bird) && (#x --> swimmer))");
         tester.believe("(swan --> bird)", 0.90f, 0.9f);
         tester.mustBelieve(cycles, "(swan --> swimmer)", 0.90f,
 
@@ -261,10 +262,11 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination5() {
+        test.nar.termVolumeMax.set(11);
 
         TestNAR tester = test;
-        tester.believe("<{Tweety} --> [withWings]>");
-        tester.believe("<(&&,<$x --> [chirping]>,<$x --> [withWings]>) ==> <$x --> bird>>");
+        tester.believe("({Tweety} --> [withWings])");
+        tester.believe("<(&&,($x --> [chirping]),<$x --> [withWings]>) ==> ($x --> bird)>");
         tester.mustBelieve(cycles, "<<{Tweety} --> [chirping]> ==> <{Tweety} --> bird>>", 1.00f, 0.73f);
 
     }
@@ -273,6 +275,7 @@ public class NAL6Test extends NALTest {
     @Test
     void variable_elimination6_easier() {
 
+        test.nar.termVolumeMax.set(14);
 
         TestNAR tester = test;
 
@@ -287,6 +290,7 @@ public class NAL6Test extends NALTest {
     @Test
     void variable_elimination6simpler() {
 
+        test.nar.termVolumeMax.set(14);
 
         test
                 .believe("((&&, flyer:$x, chirping:$x, food:worms) ==> bird:$x)")
@@ -357,11 +361,11 @@ public class NAL6Test extends NALTest {
     void multiple_variable_elimination3() {
 
         TestNAR tester = test;
-        tester.believe("(&&,(#x --> lock),(<$y --> key> ==> open($y,#x)))");
+        tester.believe("((#x --> lock) && (key:$y ==> open($y,#x)))");
         tester.believe("({lock1} --> lock)");
-        tester.mustBelieve(cycles, "<<$1 --> key> ==> open($1,{lock1})>", 1.00f,
+        tester.mustBelieve(cycles, "(($1 --> key) ==> open($1,{lock1}))", 1.00f,
 
-                0.43f);
+                0.66f);
 
     }
 
@@ -512,11 +516,10 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unificationNoImgAndAsPrecondition() {
+        test.nar.termVolumeMax.set(11);
 
         TestNAR tester = test;
         tester.believe("((<#1 --> lock>&&<$2 --> key>) ==> open(#1,$2))", 1.00f, 0.90f);
-
-
         tester.believe("<{key1} --> key>", 1.00f, 0.90f);
         tester.mustBelieve(cycles , "((#1-->lock)==>open(#1,{key1}))", 1.00f,
                 0.73f
@@ -525,7 +528,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unification() {
-
+        test.nar.termVolumeMax.set(10);
         TestNAR tester = test;
         tester.believe("(((#1 --> lock) && ($2 --> key)) ==> open($2, #1))", 1.00f, 0.90f);
         tester.believe("({key1} --> key)", 1.00f, 0.90f);
@@ -534,6 +537,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unification_neg() {
+        test.nar.termVolumeMax.set(10);
 
         TestNAR tester = test;
         tester.believe("(((#1 --> lock) && --($2 --> key)) ==> open($2, #1))");

@@ -19,7 +19,7 @@ public final class CommonVariable extends UnnormalizedVariable {
 
     public static Variable common(Variable A, Variable B) {
         Op op = A.op();
-        assert(B.op()==op);
+        //assert(B.op()==op);
 
         return new CommonVariable(op, A,B);
     }

@@ -1,5 +1,6 @@
 package nars.unify;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
 import jcog.version.VersionMap;
@@ -222,7 +223,7 @@ public abstract class Unify extends Versioning implements Subst {
 
     @Override
     public boolean isEmpty() {
-        throw new UnsupportedOperationException("slow");
+        throw new TODO();
     }
 
 
@@ -232,7 +233,8 @@ public abstract class Unify extends Versioning implements Subst {
      */
     public final boolean putXY(final Variable x, Term y) {
 
-        return !y.containsRecursively(x) && replaceXY(x, y);
+        return //!y.containsRecursively(x) &&
+               replaceXY(x, y);
 
     }
 

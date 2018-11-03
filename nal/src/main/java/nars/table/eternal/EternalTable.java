@@ -3,7 +3,6 @@ package nars.table.eternal;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
-import jcog.pri.ScalarValue;
 import jcog.sort.SortedArray;
 import nars.$;
 import nars.NAR;
@@ -137,9 +136,9 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     }
 
 
-    @Override
+//    @Override
     public synchronized void clear() {
-        forEach(ScalarValue::delete);
+//        forEach(ScalarValue::delete);
         super.clear();
     }
 

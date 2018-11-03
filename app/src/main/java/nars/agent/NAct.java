@@ -8,12 +8,8 @@ import nars.NAR;
 import nars.Narsese;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.GoalActionConcept;
-import nars.control.proto.Remember;
 import nars.table.BeliefTables;
-import nars.table.eternal.EternalTable;
-import nars.task.NALTask;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.BooleanToBooleanFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
@@ -304,8 +300,8 @@ public interface NAct {
             boolean posOrNeg = f >= thresh.asFloat();
             return on.valueOf(posOrNeg) ?
                     1f :
-                    //0;  //deliberate off
-                    Float.NaN; //default off
+                    0;  //deliberate off
+                    //Float.NaN; //default off
         });
         //x.resolution(1f);
         {
@@ -320,10 +316,11 @@ public interface NAct {
 //            xg.tableFirst(EternalTable.class).add(
 //                    Remember.the(new NALTask(x.term(), GOAL,
 //                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()).pri(n), n), n);
-            xb.tables.add(new EternalTable(1));
-            xb.tableFirst(EternalTable.class).add(
-                    Remember.the(new NALTask(x.term(), BELIEF,
-                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()).pri(n), n), n);
+
+//            xb.tables.add(new EternalTable(1));
+//            xb.tableFirst(EternalTable.class).add(
+//                    Remember.the(new NALTask(x.term(), BELIEF,
+//                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()).pri(n), n), n);
         }
         return x;
     }

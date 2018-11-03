@@ -5,6 +5,8 @@ import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.concept.Concept;
+import nars.control.channel.CauseChannel;
+import nars.task.ITask;
 import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
@@ -20,11 +22,14 @@ public abstract class Reward implements Termed, Iterable<Concept> {
 
     protected transient volatile float reward = Float.NaN;
 
+
     public Reward(NAgent a, FloatSupplier r) {
     //TODO
     //public Reward(NAgent a, FloatSupplier r, float confFactor) {
         this.agent = a;
         this.rewardFunc = r;
+
+
     }
 
     public final NAR nar() { return agent.nar(); }

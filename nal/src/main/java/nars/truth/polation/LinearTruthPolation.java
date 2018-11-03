@@ -3,6 +3,8 @@ package nars.truth.polation;
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Param;
+import nars.Task;
+import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -45,6 +47,7 @@ public class LinearTruthPolation extends TruthPolation {
 
         float wFreqSum = 0;
         eSum = 0;
+        long S = Long.MAX_VALUE, E = Long.MIN_VALUE;
         for (int i = 0; i < s; i++) {
             TaskComponent x = update(i);
             if (x == null)
@@ -55,10 +58,28 @@ public class LinearTruthPolation extends TruthPolation {
             eSum += ee;
 
             wFreqSum += ee * x.freq;
+
+            Task t = x.task();
+            long ts = t.start();
+            if (ts != ETERNAL) {
+                if (ts < S)
+                    S = ts;
+                long te = t.end();
+                if (te > E)
+                    E = te;
+            }
         }
+
         if (eSum < Param.TRUTH_MIN_EVI)
             return null;
 
+        if (S == Long.MAX_VALUE) {
+            S = E = Tense.ETERNAL;
+        }
+        //trim
+        //TODO make optional
+        start = S;
+        end = E;
 
         f = (wFreqSum / eSum);
 

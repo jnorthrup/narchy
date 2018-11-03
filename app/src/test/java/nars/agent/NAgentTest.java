@@ -1,9 +1,8 @@
 package nars.agent;
 
 import it.unimi.dsi.fastutil.longs.LongArrayList;
-import nars.$;
-import nars.NAR;
-import nars.NARS;
+import nars.*;
+import nars.concept.Concept;
 import nars.control.DurService;
 import nars.term.Term;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
@@ -14,6 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.function.Consumer;
 
+import static nars.$.$$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -30,6 +30,32 @@ public class NAgentTest {
         return n;
     }
 
+//    static class RewardPlot {
+//
+//        public final Table t;
+//
+//        public RewardPlot(NAgent a) {
+//            t = Table.create(a + " reward").addColumns(
+//                    DoubleColumn.create("time"),
+//                    DoubleColumn.create("reward")
+//            );
+//
+//            DoubleColumn timeColumn = (DoubleColumn) t.column(0).setName("time");
+//            DoubleColumn rewardColumn = (DoubleColumn) t.column(1).setName("reward");
+//
+//            a.onFrame(x -> {
+//                timeColumn.append(a.now);
+//                rewardColumn.append(a.reward());
+//            });
+//        }
+//        public void plot() {
+//
+//            Plot.show(
+//                    LinePlot.create( t.name(),
+//                            t, "time", "reward").);
+//        }
+//    }
+
     @ParameterizedTest
     @ValueSource(strings = {/*"tt", "tf", */"t", "f"})
     public void testSame(String x) {
@@ -38,13 +64,50 @@ public class NAgentTest {
 
 
         System.out.println((posOrNeg ? "positive" : " negative"));
-        MiniTest a = new ToggleSame(nar(), $.the("t"), $.the("x"), posOrNeg);
+        NAR n = nar();
+        MiniTest a = new ToggleSame(n, $.the("t"), $.the("x"), posOrNeg);
+
+//        RewardPlot p = new RewardPlot(a);
 
 
-        a.nar().run(1000);
+        Param.DEBUG = true;
+//        n.log();
+        n.run(100);
+
+//        List<Task> tasks = n.tasks().sorted(
+//                Comparators.byFloatFunction((FloatFunction<Task>) task -> -task.priElseZero())
+//                        .thenComparing(Termed::term).thenComparing(System::identityHashCode)).collect(toList());
+//        tasks.forEach(t -> {
+//            System.out.println(t);
+//        });
+
+//        p.plot();
+
+        long bs = n.time()/2;
+        long be = n.time()+1;
+
+        Term xIsReward = $$("(x =|> reward)");
+        {
+            Task xIsRewardTask = n.is(xIsReward, bs, be);
+            if(xIsRewardTask!=null)
+                System.out.println(xIsRewardTask.proof());
+            else
+                System.out.println(xIsReward + " null");
+        }
+
+        Term notXnotReward = $$("(--x =|> reward)");
+        {
+
+            Task notXnotRewardTask = n.is(notXnotReward, bs, be);
+            if (notXnotRewardTask!=null)
+                System.out.println(notXnotRewardTask.proof());
+            else
+                System.out.println(notXnotReward + " null");
+        }
 
         assertTrue(a.avgReward() > 0.5f, ()->a.avgReward() + " avgReward");
         assertTrue(a.dex.getMean() > 0f);
+
     }
 
 
@@ -87,7 +150,7 @@ public class NAgentTest {
 
 
         MiniTest a = new ToggleNegate(n, $.the("t"),
-                $.$$("y"),
+                $$("y"),
 
                 true);
 
@@ -139,19 +202,9 @@ public class NAgentTest {
 
         public ToggleSame(NAR n, Term env, Term action, boolean posOrNeg) {
             super(env, n);
-            reward = 0;
 
-            BooleanProcedure pushed = (v) -> {
-
-                if (posOrNeg) {
-                    this.reward = v ? 1 : 0;
-                } else {
-                    this.reward = v ? -1 : 1;
-                }
-            };
-
-
-            actionPushButton(action, pushed);
+            actionPushButton(action, (BooleanProcedure) (v) ->
+                this.reward = posOrNeg ? (v ? 1 : 0) : (v ? 0 : 1));
         }
 
         @Override

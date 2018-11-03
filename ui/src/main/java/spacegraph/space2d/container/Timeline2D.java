@@ -51,7 +51,7 @@ public class Timeline2D<E> extends Graph2D<E> {
                 float v = this.get();
                 float d = (v - 0.5f) * 2;
                 if (Math.abs(d) > 0.05f)
-                    viewShift(d * (tEnd - tStart) * 0.1f);
+                    viewShift(d * (tEnd - tStart) * 0.1);
 
                 set(Util.lerp(0.6f, v, 0.5f));
 

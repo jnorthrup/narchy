@@ -43,10 +43,13 @@ public class TasksView implements Timeline2D.TimelineModel<Task> {
 
         Iterable<Task> tasks = ()->n.tasks().filter(x->!x.isEternal()).iterator();
 
-        SpaceGraph.window(new Timeline2D<>(new TasksView(tasks), TaskRenderer)
-                        .view(0, n.time())
-                        .withControls(),
+        Timeline2D t = timeline(tasks).view(0, n.time());
+        SpaceGraph.window(t.withControls(),
                 1200, 500);
+    }
+
+    public static Timeline2D timeline(Iterable<Task> tasks) {
+        return new Timeline2D<>(new TasksView(tasks), TaskRenderer);
     }
 
     @Override
