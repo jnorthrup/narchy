@@ -1,6 +1,7 @@
 package nars.table.dynamic;
 
 import jcog.WTF;
+import jcog.math.Longerval;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -62,16 +63,27 @@ public final class DynamicTruthTable extends DynamicTaskTable {
 
 
 
-            int eternals = yy.count(x -> x.isEternal());
-            if (eternals == 0) {
-                s = yy.minValue(Stamp::start);
-                e = yy.maxValue(Stamp::end);
-            } else if (eternals == yy.size()) {
+            int eternals = yy.count(Task::isEternal);
+            if (eternals == yy.size()) {
                 s = ETERNAL;
                 e = ETERNAL;
             } else {
-                s = yy.minValue(t -> t.start() != ETERNAL ? t.start() : TIMELESS);
-                e = yy.maxValue(Stamp::end);
+                if (eternals == 0) {
+                    s = yy.minValue(Stamp::start);
+                    e = yy.maxValue(Stamp::end);
+
+                } else {
+                    s = yy.minValue(t -> t.start() != ETERNAL ? t.start() : TIMELESS);
+                    e = yy.maxValue(Stamp::end);
+                }
+
+                //trim
+                if (a.time.start!=ETERNAL && Longerval.intersects(s, e, a.time.start, a.time.end)) {
+                    s = Math.max(a.time.start, s);
+                    if (a.time.end != ETERNAL)
+                        e = Math.min(a.time.end, e);
+                }
+
             }
 
         float eviFactor;
@@ -91,7 +103,7 @@ public final class DynamicTruthTable extends DynamicTaskTable {
             //HACK estimate by time range only
             if (s != ETERNAL) {
                 long range = (e - s) + 1;
-                eviFactor = (float) (yy.sumOfLong((Task x) -> x.isEternal() ? range : x.range()) / (((double) range * yy.size())));
+                eviFactor = (float) (yy.sumOfLong((Task x) -> x.isEternal() ? range : Math.min(range, x.range())) / (((double) range * yy.size())));
                 assert (eviFactor <= 1f);
             } else {
                 eviFactor = 1;
@@ -111,7 +123,11 @@ public final class DynamicTruthTable extends DynamicTaskTable {
             return null;
         }
 
-        return yy.task(reconstruct, t, yy::stamp, beliefOrGoal, s, e, nar);
+        Task y = yy.task(reconstruct, t, yy::stamp, beliefOrGoal, s, e, nar);
+        if (y!=null) {
+            y.priMult(eviFactor);
+        }
+        return y;
     }
 
 

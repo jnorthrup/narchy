@@ -17,7 +17,6 @@ import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
 import org.jetbrains.annotations.Nullable;
@@ -101,18 +100,21 @@ public class AbstractGoalActionConcept extends ActionConcept {
         Predicate<Task> withoutCuriosity = t -> !(t instanceof CuriosityTask) && !t.isEternal();  /* filter curiosity tasks? */
 
 
-
+        int dur = n.dur();
         //long s = prev, e = now;
         //long s = now, e = next;
         //long s = prev, e = next;
-        long agentDur = (now - prev);
-        long s = now - agentDur/2, e = now + agentDur/2;
+        //long agentDur = (now - prev);
+        //long s = now - agentDur/2, e = now + agentDur/2;
+        long s = now - dur/2, e = now + dur/2;
 
         int actionDur = this.actionSustain;
-        if (actionDur < 0)
+        if (actionDur < 0) {
             actionDur =
-                    //n.dur();
-                    Tense.occToDT(agentDur);
+                    dur;
+                    //Tense.occToDT(agentDur);
+        }
+
 
         int limit = Answer.TASK_LIMIT_DEFAULT * 2;
 
