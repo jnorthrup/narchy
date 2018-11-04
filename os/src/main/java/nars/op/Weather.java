@@ -16,7 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import spacegraph.space2d.container.Timeline2D;
+import spacegraph.space2d.container.graph.Timeline2D;
 import spacegraph.util.math.v2;
 
 import java.io.IOException;

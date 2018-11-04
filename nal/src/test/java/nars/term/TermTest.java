@@ -26,7 +26,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.TermException;
 import nars.unify.match.EllipsisMatch;
-import nars.util.TimeAware;
+import nars.util.Timed;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -536,7 +536,7 @@ public class TermTest {
         String s = "(&&, <<$1 --> key> ==> <#2 --> ( open, $1 )>>, <#2 --> lock>)";
         Termed a = $.$(s);
 
-        TimeAware n2 = NARS.shell();
+        Timed n2 = NARS.shell();
         Termed b = $.$(s);
 
 
@@ -623,11 +623,11 @@ public class TermTest {
         testTermComplexityMass(n, "<$a --> (c & #d)>", 3, 5, 1, 1, 0);
     }
 
-    private void testTermComplexityMass(@NotNull TimeAware n, @NotNull String x, int complexity, int mass) throws Narsese.NarseseException {
+    private void testTermComplexityMass(@NotNull Timed n, @NotNull String x, int complexity, int mass) throws Narsese.NarseseException {
         testTermComplexityMass(n, x, complexity, mass, 0, 0, 0);
     }
 
-    private void testTermComplexityMass(@NotNull TimeAware n, @NotNull String x, int complexity, int mass, int varIndep, int varDep, int varQuery) throws Narsese.NarseseException {
+    private void testTermComplexityMass(@NotNull Timed n, @NotNull String x, int complexity, int mass, int varIndep, int varDep, int varQuery) throws Narsese.NarseseException {
         Term t = $.$(x).term();
 
         assertNotNull(t);
@@ -727,7 +727,7 @@ public class TermTest {
 
     private void testUniqueHash(@NotNull String a, @NotNull String b) throws Narsese.NarseseException {
 
-        TimeAware t = NARS.shell();
+        Timed t = NARS.shell();
         int h1 = $.$(a).hashCode();
         int h2 = $.$(b).hashCode();
         assertNotEquals(h1, h2);

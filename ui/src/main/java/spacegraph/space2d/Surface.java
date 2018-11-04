@@ -6,8 +6,8 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
-import spacegraph.space2d.container.AbstractMutableContainer;
-import spacegraph.space2d.container.AspectAlign;
+import spacegraph.space2d.container.collection.AbstractMutableContainer;
+import spacegraph.space2d.container.unit.AspectAlign;
 
 import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicInteger;

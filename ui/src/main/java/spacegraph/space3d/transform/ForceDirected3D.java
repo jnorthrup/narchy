@@ -1,4 +1,4 @@
-package spacegraph.space2d.container.layout;
+package spacegraph.space3d.transform;
 
 import jcog.math.FloatRange;
 import spacegraph.space3d.SimpleSpatial;

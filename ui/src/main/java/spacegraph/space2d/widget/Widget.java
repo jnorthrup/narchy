@@ -10,7 +10,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.container.EmptySurface;
-import spacegraph.space2d.container.MutableUnitContainer;
+import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.video.Draw;
 
 /**

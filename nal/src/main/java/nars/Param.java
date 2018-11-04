@@ -32,7 +32,7 @@ public abstract class Param {
     public static final boolean ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME = false;
     public static final boolean INPUT_PREMISE_ANSWER_BELIEF = true;
 
-    public static final boolean PREMISE_UNIFY_SYMMETRIC = false;
+    public static final boolean PREMISE_UNIFY_SYMMETRIC = true;
 
     @Deprecated public static int LinkFanoutMax =
             //16;
@@ -88,7 +88,8 @@ public abstract class Param {
     public static final int TASK_EVAL_FORK_LIMIT = 8;
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
-    public static float ANSWER_COMPLETENESS = 2f;
+    /** can be > 1 */
+    public static float ANSWER_COMPLETENESS = 1f;
 
 
 //    public static final int EVALUATION_MAX_TERMUTATORS = 8;
@@ -99,7 +100,7 @@ public abstract class Param {
 //    public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
 
 
-    public static final boolean STRONG_COMPOSITION = false;
+    public static boolean STRONG_COMPOSITION = false;
 
     /**
      * number of clock durations composing a unit of short term memory decay (used by bag forgetting)

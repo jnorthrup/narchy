@@ -13,7 +13,7 @@ import nars.op.language.util.Twenglish;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.util.TimeAware;
+import nars.util.Timed;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -108,7 +108,7 @@ public class NARHear extends Loop {
 
     }
 
-    protected void onReset(TimeAware n) {
+    protected void onReset(Timed n) {
         stop();
         onReset.off();
     }

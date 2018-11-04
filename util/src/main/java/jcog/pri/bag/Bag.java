@@ -253,7 +253,6 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
     }
 
 
-
     /**
      * priIfy only non-deleted items
      */
@@ -307,7 +306,7 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
             x[b]++;
         });
         double total = 0;
-        for (float e: x) {
+        for (float e : x) {
             total += e;
         }
         if (total > 0) {
@@ -352,37 +351,43 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
      */
     default @Nullable Consumer<V> forget(float temperature) {
 
-        int size = size();
-        if (size > 0) {
-            int cap = capacity();
-            float pressure = depressurize(temperature);
-            float mass = mass();
+        if (temperature > Float.MIN_NORMAL) {
+            int size = size();
+            if (size > 0) {
+                int cap = capacity();
+                if (cap > 0) {
 
-            if ((size > 0) && (cap > 0) && (mass > Float.MIN_NORMAL) && temperature > Float.MIN_NORMAL) {
-                Consumer eachMustForgetPct =
+                    float pressure = depressurize(temperature);
 
-                        //FAIR
-                        //PriForget.forgetPressure(temperature, cap, pressure, mass);
+                    float mass = mass();
+                    if (mass > Float.MIN_NORMAL) {
+
+                        Consumer eachMustForgetPct =
+
+//                        //FAIR
+//                        PriForget.forgetPressure(temperature, cap, pressure, mass);
 
 
-                        //OVERDRIVE (attenuated by size/capacity ratio)
-                        //PriForget.forgetPressure(temperature * (((float)size)/cap), cap, pressure, mass);
+                                //OVERDRIVE (attenuated by size/capacity ratio)
+                                //PriForget.forgetPressure(temperature * (((float)size)/cap), cap, pressure, mass);
 
-                        //..?
-                        PriForget.forgetIdeal(temperature,
-                                0f,
-                                //0.1f,
-                                //0.5f,
-                                size, cap, pressure, mass);
+                                //..?
+                                PriForget.forgetIdeal(temperature,
+                                        ScalarValue.EPSILON * cap,
+                                        //0.1f,
+                                        //0.5f,
+                                        size, cap, pressure, mass);
 
-                if (eachMustForgetPct != null)
-                    return eachMustForgetPct;
+                        if (eachMustForgetPct != null)
+                            return eachMustForgetPct;
 
+                    }
+                }
             }
-            return null;
-        } else {
-            return null;
         }
+
+        return null;
+
     }
 
     float mass();
@@ -400,11 +405,15 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
     }
 
 
-    /** TODO super-bag acting as a router for N sub-bags */
-    abstract class CompoundBag<K,V> implements Bag<K,V> {
-        abstract public Bag<K,V> bag(int selector);
+    /**
+     * TODO super-bag acting as a router for N sub-bags
+     */
+    abstract class CompoundBag<K, V> implements Bag<K, V> {
+        abstract public Bag<K, V> bag(int selector);
 
-        /** which bag to associate with a keys etc */
+        /**
+         * which bag to associate with a keys etc
+         */
         abstract protected int insertToWhich(K key);
     }
 }

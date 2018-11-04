@@ -3,7 +3,6 @@ package spacegraph.space2d.container.collection;
 import jcog.data.map.CellMap;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.AbstractMutableContainer;
 
 import java.util.Collection;
 import java.util.Objects;

@@ -11,7 +11,6 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.LazyCompound;
 import nars.term.var.UnnormalizedVariable;
-import nars.unify.match.Ellipsislike;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
@@ -59,7 +58,7 @@ public interface TermTransform {
      * should not be called directly except by implementations of TermTransform
      */
     @Nullable
-    default Term transformCompound(Compound x, Op op, int dt) {
+    default Term transformCompound(final Compound x, Op op, int dt) {
 
         boolean sameOpAndDT = op == null;
         Op xop = x.op();
@@ -67,33 +66,30 @@ public interface TermTransform {
 
         Subterms xx = x.subterms();
         Subterms yy = null;
-//        try {
+
+        try {
             yy = xx.transformSubs(this, targetOp);
-//        } catch (StackOverflowError e) {
-//            System.err.println(this + " " + xx + " " + targetOp);
-//        }
+        } catch (StackOverflowError e) {
+            System.err.println("TermTransform stack overflow: " + this + " " + xx + " " + targetOp);
+        }
+
         if (yy == null)
             return Bool.Null;
 
 
-        if (yy == xx && (sameOpAndDT || (x.op() == targetOp && x.dt() == dt)))
+        if (yy == xx && (sameOpAndDT || (xop == targetOp && x.dt() == dt)))
             return x; //no change
 
         if (targetOp == CONJ) {
-            if (yy == Op.FalseSubterm) return Bool.False;
-            switch (yy.subs()) {
-                case 0: return Bool.True;
-                case 1: {
-                    Term yyy = yy.sub(0);
-                    if (!(yyy instanceof Ellipsislike))
-                        return yyy;
-                }
-            }
+            if (yy == Op.FalseSubterm)
+                return Bool.False;
+            if (yy.subs() == 0)
+                return Bool.True;
         }
 
-        if (sameOpAndDT) {
+        if (sameOpAndDT)
             dt = x.dt();
-        }
+
         return transformedCompound(x, targetOp, dt, xx, yy);
     }
 

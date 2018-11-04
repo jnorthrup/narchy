@@ -4,7 +4,7 @@ import java.util.Random;
 
 /** implementations provide a time-bound context which supports
  *  awareness of temporal determinism */
-public interface TimeAware {
+public interface Timed {
 
     int dur();
 

@@ -2,7 +2,7 @@ package spacegraph.space2d.container.layout;
 
 import jcog.data.list.FasterList;
 import jcog.data.pool.MetalPool;
-import spacegraph.space2d.container.Graph2D;
+import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.util.MutableFloatRect;
 
 public abstract class DynamicLayout2D<X, M extends MutableFloatRect> implements Graph2D.Graph2DUpdater<X> {

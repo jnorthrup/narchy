@@ -1,4 +1,4 @@
-package spacegraph.space2d.container;
+package spacegraph.space2d.container.unit;
 
 import jcog.event.Off;
 import jcog.exe.Exe;

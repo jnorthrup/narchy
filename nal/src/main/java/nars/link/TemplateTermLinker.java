@@ -6,6 +6,7 @@ import jcog.data.NumberX;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.pri.Prioritized;
+import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -16,6 +17,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.var.ImDep;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -25,22 +27,37 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static jcog.pri.ScalarValue.EPSILON;
 import static nars.Op.CONJ;
 import static nars.time.Tense.XTERNAL;
 
-/** default general-purpose termlink template impl. for compound terms
- *  contains a fixed set of subterm components that can be term-linked with.
- *  this implementation stores the conceptualizable terms in the lower part of a list
- *  so that they can be accessed quickly as separate from non-conceptualizables.
- *  */
-public final class TemplateTermLinker extends FasterList<Term> implements TermLinker {
+/**
+ * default general-purpose termlink template impl. for compound terms
+ * contains a fixed set of subterm components that can be term-linked with.
+ * this implementation stores the conceptualizable terms in the lower part of a list
+ * so that they can be accessed quickly as separate from non-conceptualizables.
+ *
+ * also caches Concept references until a concept becomes deleted
+ */
+public final class TemplateTermLinker extends FasterList<Termed> implements TermLinker {
+
+
+    /** whether to decompose conjunction sequences to each event, regardless of a conjunction's sub-conjunction structure */
+    private static boolean decomposeConjEvents = false;
+
+//    /**
+//     * how fast activation spreads from source concept to template target concepts
+//     */
+//    static final float activationRate =
+//            1f;
+//            //0.5f;
+
+    static final float tasklinkSpreadRate = 1f;
 
 
     /**
-     * index of the last concept template; any others beyond this index are non-conceptualizable
+     * number of termlinks which are actually conceptualizable; sorted on construction
      */
-    private byte concepts;
+    private final byte concepts;
 
 
     @Override
@@ -68,30 +85,30 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
                     throw new RuntimeException("templates only should be generated for rooted terms:\n\t" + term + "\n\t" + term.concept());
             }
 
-            ArrayHashSet<Term> tc = new ArrayHashSet<>(term.volume() /* estimate */);
+            Set<Term> tc = new UnifiedSet<>(term.volume() /* estimate */ + additional.length);
 
-            add(term, tc, 0, term,  layers);
+            add(term, tc, 0, term, layers);
 
             Collections.addAll(tc, additional);
 
             int tcs = tc.size();
             if (tcs > 0)
-                return new TemplateTermLinker(((FasterList<Term>) tc.list).toArrayRecycled(Term[]::new));
+                return new TemplateTermLinker(tc.toArray(Termed[]::new));
         }
 
         return NullLinker;
     }
 
-    private TemplateTermLinker(Term[] terms) {
+    private TemplateTermLinker(Termed[] terms) {
         super(terms.length, terms);
 
         if (size > 1)
-            sortThisByBoolean(t -> !conceptualizable(t));
+            sortThisByBoolean(t -> !conceptualizable((Term)t));
 
 
         int lastConcept = size - 1;
         for (; lastConcept >= 0; lastConcept--) {
-            if (conceptualizable(get(lastConcept)))
+            if (conceptualizable((Term)get(lastConcept)))
                 break;
         }
         assert (lastConcept < 127);
@@ -99,8 +116,8 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
     }
 
     @Override
-    protected Object[] newArray(int newCapacity) {
-        return new Term[newCapacity];
+    protected Termed[] newArray(int newCapacity) {
+        return new Termed[newCapacity];
     }
 
 
@@ -128,7 +145,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
         int nextDepth = depth;
         int nextMaxDepth = maxDepth;
 
-        if (xo == CONJ && bb.hasAny(CONJ) && x.dt()!=XTERNAL) {
+        if (xo == CONJ && decomposeConjEvents && bb.hasAny(CONJ) && x.dt() != XTERNAL) {
 
 //            int xdt = x.dt();
             x.eventsWhile((when, what) -> {
@@ -142,7 +159,9 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
     }
 
-    /** depth extensions */
+    /**
+     * depth extensions
+     */
     private static int deeper(int depth, Term root, Term x) {
 
 //        if (depth < 1 || depth >= 4)
@@ -281,23 +300,25 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 //    }
 
 
-    /** balance = nar.termlinkBalance */
-    @Override public void link(Activate a, Derivation d) {
+    /**
+     * balance = nar.termlinkBalance
+     */
+    @Override
+    public void link(Activate a, Derivation d) {
 
 
+        if (conceptualizeAndTermLink(a, d) > 0) {
 
-        List<Concept> firedConcepts = conceptualizeAndTermLink(a.id, d);
-        //default all to all exhausive matrix insertion
-        //TODO configurable "termlink target concept x tasklink matrix" linking pattern: density, etc
-        if (!firedConcepts.isEmpty()) {
+            List<Concept> firedConcepts = d.firedConcepts.list;
 
-            NumberX overflow = new MutableFloat();
+            //default all to all exhausive matrix insertion
+            //TODO configurable "termlink target concept x tasklink matrix" linking pattern: density, etc
+            if (!firedConcepts.isEmpty()) {
 
-            float factor =
-                    1f;
-                    //a.priElseZero();
+                NumberX overflow = new MutableFloat();
 
-            for (TaskLink f : d.firedTaskLinks) {
+
+                for (TaskLink f : d.firedTaskLinks) {
 
 
 //                UnitPri allocated = new UnitPri();
@@ -306,11 +327,12 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 //                //f.priSub(priDispersed);
 //                float p = Math.max(EPSILON, allocated.priElseZero());
 
-                float p = Math.max(EPSILON, f.priElseZero()) * factor;
-                Tasklinks.linkTask((TaskLink.GeneralTaskLink) f, p, firedConcepts, overflow);
-                overflow.set(0); //clear after each and re-use
-            }
+                    float p = f.priElseZero() * tasklinkSpreadRate;
+                    Tasklinks.linkTask((TaskLink.GeneralTaskLink) f, p, firedConcepts, overflow);
+                    overflow.set(0); //clear after each and re-use
+                }
 
+            }
         }
 
 
@@ -318,31 +340,28 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
     @Override
     public void sample(Random rng, Function<? super Term, SampleReaction> each) {
-        each.apply(items[rng.nextInt(this.items.length)]);
+        each.apply(get(rng).term());
     }
 
 
-    private List<Concept> conceptualizeAndTermLink(Concept src, Derivation d) {
+    private int conceptualizeAndTermLink(Activate conceptSrc, Derivation d) {
 
 
-
-        ArrayHashSet<Concept> firedConcepts = d.firedConcepts;
-        firedConcepts.clear();
-
-        int n = size();
+        int n = concepts;
         if (n > 0) {
 
-            NAR nar = d.nar;
+            ArrayHashSet<Concept> firedConcepts = d.firedConcepts;
+            firedConcepts.clear();
+
 
             n = Math.min(n, Param.LinkFanoutMax);
 
-            float taskLinkPriSum = Math.max(EPSILON, (float) (((FasterList<TaskLink>) (d.firedTaskLinks.list))
+            float taskLinkPriSum = Math.max(ScalarValue.EPSILON, (float) (((FasterList<TaskLink>) (d.firedTaskLinks.list))
                     .sumOfFloat(Prioritized::priElseZero)));
 
-            float conceptForward =
-                    //Math.max(EPSILON, a.priElseZero() / n);
+            float conceptActivationEach =
+                    //(activationRate * conceptSrc.priElseZero()) / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
                     taskLinkPriSum / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
-
 
 
 //            float balance = nar.termlinkBalance.floatValue();
@@ -361,44 +380,49 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
             Activator linking = d.deriver.linked;
 //            Term srcTerm = src.term();
 
-            int j = d.random.nextInt(n); //random starting position
-            boolean inc = d.random.nextBoolean();
+            NAR nar = d.nar;
+
+            int j = n > 1 ? d.random.nextInt(n) : 0; //random starting position
+            boolean inc = n <= 1 || d.random.nextBoolean();
             for (int i = 0; i < n; i++) {
                 if (inc) {
                     if (++j == n) j = 0;
                 } else {
-                    if (--j == -1) j = n-1;
+                    if (--j == -1) j = n - 1;
                 }
 
-                Term tgtTerm = get(j);
+                Termed tgtTerm = get(j);
 
-                boolean conceptualizable = j < concepts;
-                if (conceptualizable) {
+                if (tgtTerm instanceof Concept && ((Concept)tgtTerm).isDeleted())
+                    setFast(j, tgtTerm = tgtTerm.term()); //concept was deleted, so revert back to term
 
-                    @Nullable Concept tgt =
-                            linking.activate(tgtTerm, conceptForward, nar);
-                            //nar.concept(tgtTerm, true);
+                @Nullable Concept tgt =
+                        linking.activate(tgtTerm, conceptActivationEach, nar);
 
 
-                    if (tgt != null) {
+                if (tgt != null) {
 
-                        firedConcepts.add(tgt);
+                    if (!(tgtTerm instanceof Concept) || tgtTerm!=tgt)
+                        setFast(j, tgt); //cache concept for the entry
+
+                    firedConcepts.add(tgt);
 
 //                        linking.linkPlus(tgt, srcTerm, termlinkForward, refund);
 
 //                        tgtTerm = tgt.term();
 
-                    }
-
-                } else {
-//                    refund.add(termlinkForward);
                 }
+
+//                } else {
+//                    refund.add(termlinkForward);
+//                }
 
 //                linking.linkPlus(src, tgtTerm, termlinkReverse, refund);
             }
 
         }
-        return firedConcepts.list;
+
+        return n;
     }
 
 }

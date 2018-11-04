@@ -37,6 +37,10 @@ public class HijackConceptIndex extends ConceptIndex {
 //    private int dur;
     private DurService onDur;
 
+    /** eliding is faster.
+     *  but if eliding, cache statistics will not reflect the full amount of access otherwise would be necessary */
+    private static final boolean ElideGets = true;
+
 
     public HijackConceptIndex(int capacity, int reprobes) {
         super();
@@ -99,7 +103,7 @@ public class HijackConceptIndex extends ConceptIndex {
      */
     @Override
     protected final boolean elideConceptGets() {
-        return false;
+        return ElideGets;
     }
 
     private void commit() {

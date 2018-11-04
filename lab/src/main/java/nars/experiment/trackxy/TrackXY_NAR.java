@@ -50,10 +50,14 @@ public class TrackXY_NAR extends NAgentX {
             targetNumerics = false,
             targetCam = true,
             gui = true;
+    static int W = 3;
+    static int H = 3;
+    static int dur = 4;
 
     final Bitmap2DSensor cam;
     private final TrackXY track;
     private float rewardSum = 0;
+
 
     protected TrackXY_NAR(NAR nar, int W, int H) {
         super("trackXY",
@@ -106,10 +110,7 @@ public class TrackXY_NAR extends NAgentX {
 //        boolean rl = false;
 
 
-        int W = 4;
-        int H = 1;
-        int dur =
-                8;
+
         //8;
         //2 * (W * H) /* to allow pixels to be read at the rate of 1 pixel per cycle */;
 

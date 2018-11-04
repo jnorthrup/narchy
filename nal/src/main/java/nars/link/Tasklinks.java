@@ -1,6 +1,7 @@
 package nars.link;
 
 import jcog.data.NumberX;
+import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import nars.concept.Concept;
 import nars.task.Tasklike;
@@ -31,16 +32,15 @@ public class Tasklinks {
      * create a batch of tasklinks, sharing common seed data
      */
     public static void linkTask(TaskLink.GeneralTaskLink tasklink, float pri, List<Concept> targets, NumberX overflow) {
-        int nTargets = targets.size();
-        assert(nTargets > 0);
+        assert(!targets.isEmpty());
 
 //        float pEach = Math.max(ScalarValue.EPSILON,
 //                priTransferred / nTargets
 //        );
         float pEach =
                 //TODO abstract priority transfer function here
-                pri; //no division
-                //pri/nTargets; //no division
+                //pri; //no division
+                pri/targets.size(); //division
 
         Tasklike tlSeed = tasklink.id;
 
@@ -48,23 +48,17 @@ public class Tasklinks {
 
         for (Concept c : targets) {
 
+            float p = pEach;
 
-            float result;
-            float available = overflow.floatValue();
-            if (available > headRoom) {
-                //take some
-                overflow.add(-headRoom);
-                result = headRoom;
-            } else {
-                //take all
-                overflow.set(0f);
-                result = available;
+            float take = Math.min(overflow.floatValue(), headRoom);
+            if (take > ScalarValue.EPSILON) {
+                overflow.add(-take);
+                p += take;
             }
-            float change = result;
 
             linkTask(
-                new TaskLink.GeneralTaskLink(tlSeed, pEach + change),
-                    c.tasklinks(), overflow);
+                new TaskLink.GeneralTaskLink(tlSeed, p),
+                c.tasklinks(), overflow);
 
         }
     }

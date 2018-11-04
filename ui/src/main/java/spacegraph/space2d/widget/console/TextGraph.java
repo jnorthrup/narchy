@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.console;
 
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.Graph2D;
+import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.widget.meta.ClassReloadingSurface;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.text.VectorLabel;

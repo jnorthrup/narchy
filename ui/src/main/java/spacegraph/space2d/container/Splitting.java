@@ -30,17 +30,17 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
         split(split);
     }
 
-    public static Splitting<?,?> column(Surface x, Surface y, float v) {
+    public static Splitting<?,?> column(Surface x, float v, Surface y) {
         return new Splitting(x, y, v, true);
     }
     public static Splitting<?,?> column(Surface x, Surface y) {
-        return column(x, y, 0.5f);
+        return column(x, 0.5f, y);
     }
-    public static Splitting<?,?> row(Surface x, Surface y, float v) {
+    public static Splitting<?,?> row(Surface x, float v, Surface y) {
         return new Splitting(x, y, v, false);
     }
     public static Splitting<?,?> row(Surface x, Surface y) {
-        return row(x, y, 0.5f);
+        return row(x, 0.5f, y);
     }
 
     Splitting vertical() {
@@ -79,13 +79,13 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 
         Surface a = T(), b = B();
 
-        if (a!=null && b!=null) {
+        if (a!=null && b!=null && a.visible() && b.visible()) {
 
             float X = x(), Y = y(), h = h(), w = w();
 
             if (vertical) {
 
-                float Ysplit = Y + split * h;
+                float Ysplit = Y + (1-split) * h;
 
                 if (a != null)
                     a.pos(X, Ysplit, X + w, Y + h);
@@ -102,9 +102,9 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
                     b.pos(Xsplit, Y, X + w, Y + h);
 
             }
-        } else if (a!=null) {
+        } else if (a!=null && a.visible()) {
             a.pos(bounds);
-        } else if (b!=null) {
+        } else if (b!=null && b.visible()) {
             b.pos(bounds);
         }
 

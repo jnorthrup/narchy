@@ -11,7 +11,7 @@ import com.jogamp.opengl.util.texture.TextureIO;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.AspectAlign;
+import spacegraph.space2d.container.unit.AspectAlign;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;

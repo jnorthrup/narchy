@@ -1,7 +1,6 @@
 package spacegraph.space2d.container.collection;
 
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.AbstractMutableContainer;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.Consumer;

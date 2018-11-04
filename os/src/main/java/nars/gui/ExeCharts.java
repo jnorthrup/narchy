@@ -12,10 +12,10 @@ import nars.exe.NARLoop;
 import nars.exe.UniExec;
 import nars.time.clock.RealTime;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Graph2D;
-import spacegraph.space2d.container.Scale;
+import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.container.TreeMap2D;
+import spacegraph.space2d.container.layout.TreeMap2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
@@ -49,7 +49,7 @@ public class ExeCharts {
                 ),
                 s, Draw::colorBipolar);
 
-        return Splitting.column(DurSurface.get(bmp, nar), new FloatSlider("Display Gain", gain), 0.05f);
+        return Splitting.column(DurSurface.get(bmp, nar), 0.05f, new FloatSlider("Display Gain", gain));
     }
 
     public static Surface metaGoalControls(NAR n) {

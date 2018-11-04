@@ -6,6 +6,7 @@ import nars.concept.Concept;
 import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.term.Term;
+import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
@@ -49,9 +50,9 @@ public class Activator extends AbstractTask {
         return concepts.isEmpty(); /* && termlink.isEmpty();*/
     }
 
-    public Concept activate(Term tgtTerm, float pri, NAR nar) {
+    public Concept activate(Termed tgtTerm, float pri, NAR nar) {
 
-        Activate a = concepts.computeIfAbsent(tgtTerm, t -> {
+        Activate a = concepts.computeIfAbsent(tgtTerm.term(), t -> {
             @Nullable Concept tgt = nar.concept(tgtTerm, true);
 //                    pri
 //                    //EPSILON

@@ -6,7 +6,6 @@ import org.eclipse.collections.api.set.primitive.IntSet;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.AbstractMutableContainer;
 import spacegraph.space2d.container.Container;
 
 import java.util.List;

@@ -151,9 +151,11 @@ abstract public class Deriver extends Causable {
 
                 double deltaDurs = ((double) (curTime - prevCommit)) / dur;
 
-                float forgetDurs = d.nar.memoryDuration.floatValue();
-                float forgetRate = (float) (1 - Math.exp(-deltaDurs / forgetDurs));
+                deltaDurs = Math.min(deltaDurs, 1);
 
+                float forgetRate = (float) (1 - Math.exp(-deltaDurs / d.nar.memoryDuration.floatValue()));
+
+                //System.out.println(deltaDurs + " " + forgetRate);
                 tasklinkUpdate = tasklinks.forget(forgetRate);
 
             } else {

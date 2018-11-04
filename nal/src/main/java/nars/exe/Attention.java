@@ -125,7 +125,8 @@ public class Attention extends DurService implements Sampler<Concept> {
 
     @Override
     protected void run(NAR n, long dt) {
-        active.commit(active.forget(1f-(float) Math.exp(-(((double)dt)/n.dur())/n.memoryDuration.floatValue())));
+        float temperature = 1f - (float) Math.exp(-(((double) dt) / n.dur()) / n.memoryDuration.floatValue());
+        active.commit(active.forget(temperature));
     }
 
     public Stream<Activate> active() {

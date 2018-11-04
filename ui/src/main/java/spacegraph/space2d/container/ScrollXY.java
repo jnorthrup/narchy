@@ -6,7 +6,11 @@ import jcog.math.FloatSupplier;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.grid.*;
+import spacegraph.space2d.container.grid.DynGrid;
+import spacegraph.space2d.container.grid.GridModel;
+import spacegraph.space2d.container.grid.GridRenderer;
+import spacegraph.space2d.container.grid.ListModel;
+import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.util.math.v2;
 
@@ -65,12 +69,9 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
         set(C, new Clipped((Surface) (model = scrollable)));
 
-        set(S, this.scrollX = new FloatProportionalSlider("X", ()->0, ()->view.w/viewMax.x, ()->viewMax.x - view.w, true));
-        set(E, this.scrollY = new FloatProportionalSlider("Y", ()->0, ()->view.h/viewMax.y, ()->viewMax.y - view.h, false));
-
-        set(N, new Gridding(
-                new EmptySurface(),
-                this.scaleW = new FloatSlider("W",
+        this.scrollX = new FloatProportionalSlider("X", ()->0, ()->view.w/viewMax.x, ()->viewMax.x - view.w, true);
+        this.scrollY = new FloatProportionalSlider("Y", ()->0, ()->view.h/viewMax.y, ()->viewMax.y - view.h, false);
+        this.scaleW = new FloatSlider("W",
                         new FloatSlider.FloatSliderModel() {
 
                             {
@@ -87,35 +88,34 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
                                 return viewMax.x;
                             }
                         }
-                ).type(KnobHoriz),
-                new EmptySurface()
-        ));
-        set(W, new Gridding(
-                new EmptySurface(),
-                this.scaleH = new FloatSlider("H",
-                        new FloatSlider.FloatSliderModel() {
+                ).type(KnobHoriz);
+        this.scaleH = new FloatSlider("H",
+                new FloatSlider.FloatSliderModel() {
 
-                            {
-                                setValue(view.h);
-                            }
+                    {
+                        setValue(view.h);
+                    }
 
-                            @Override
-                            public float min() {
-                                return viewMin.y;
-                            }
+                    @Override
+                    public float min() {
+                        return viewMin.y;
+                    }
 
-                            @Override
-                            public float max() {
-                                return viewMax.y;
-                            }
-                        }
-                ).type(KnobVert),
-                new EmptySurface()
-        ));
+                    @Override
+                    public float max() {
+                        return viewMax.y;
+                    }
+                }
+        ).type(KnobVert);
+
         scrollX.on((sx, x) -> scroll(x, view.y, view.w, view.h));
         scrollY.on((sy, y) -> scroll(view.x, y, view.w, view.h));
         scaleW.on((sx, w) -> scroll(view.x, view.y, w, view.h));
         scaleH.on((sy, h) -> scroll(view.x, view.y, view.w, h));
+
+        set(S, Splitting.row(scrollX, 0.75f, scaleW));
+        set(E, Splitting.column(scrollY, 0.75f, scaleH));
+
 
     }
 

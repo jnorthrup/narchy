@@ -6,17 +6,20 @@ import nars.NAR;
 import nars.concept.Concept;
 import nars.control.DurService;
 import nars.gui.NARui;
+import nars.task.Tasklike;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.Graph2D;
-import spacegraph.space2d.container.Scale;
+import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.container.layout.ForceDirected2D;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static nars.Op.*;
 
 /** TODO edge capacity limiting */
 public class ConceptGraph2D extends Graph2D<Concept> {
@@ -190,6 +193,8 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         public final AtomicBoolean tasklinks = new AtomicBoolean(true);
         final NAR n;
 
+
+
         private TasklinkVis(NAR n) {
             this.n = n;
         }
@@ -205,17 +210,36 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 //            Term sourceTerm = n.term();
             n.tasklinks().forEach(l -> {
 
-                Term targetTerm = l.get().term;
+                Tasklike tl = l.get();
+                Term targetTerm = tl.term;
 //                if (targetTerm.equals(sourceTerm.term()))
 //                    return; //ignore
 
                 Graph2D.EdgeVis<Concept> e = graph.edge(node, wrap(targetTerm));
                 if (e != null) {
                     float p = l.priElseZero();
-                    e.weightLerp(p, WEIGHT_UPDATE_RATE)
-                            .colorLerp(Float.NaN, (0.9f * p) + 0.1f, Float.NaN, COLOR_UPDATE_RATE)
-                            .colorLerp(0,Float.NaN,0,COLOR_FADE_RATE)
-                    ;
+                    e.weightLerp(p, WEIGHT_UPDATE_RATE);
+                    int r, g, b;
+                    /*
+                    https://www.colourlovers.com/palette/848743/(_%E2%80%9D_)
+                    BELIEF   Red     189,21,80
+                    QUESTION Orange  233,127,2
+                    GOAL     Green   138,155,15
+                    QUEST    Yellow  248,202,0
+                    */
+                    switch (tl.punc) {
+                        case BELIEF: r = 189; g = 21; b = 80; break;
+                        case QUESTION: r = 233; g = 127; b = 2; break;
+                        case GOAL: r = 138; g = 155; b = 15; break;
+                        case QUEST: r = 248; g = 202; b = 0; break;
+                        default:
+                            throw new UnsupportedOperationException();
+                    }
+                    e//.colorLerp(0,0,0,COLOR_FADE_RATE).colorAdd
+                     .colorLerp
+                             (r/256f, g/256f, b/256f, COLOR_UPDATE_RATE);
+
+
                 }
 
             });
@@ -244,6 +268,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 
             float p = strength.floatValue();
 
+            int v = n.volume();
             n.linker().targets().forEach(s -> {
                 if (s.op().conceptualizable) {
                     Concept t = nar.concept(s);
@@ -251,8 +276,8 @@ public class ConceptGraph2D extends Graph2D<Concept> {
                         @Nullable EdgeVis<Concept> e = graph.edge(n, t);
                         if (e!=null) {
                             e.weightLerp(p, WEIGHT_UPDATE_RATE)
-                                    .colorLerp(p, p, p, COLOR_UPDATE_RATE)
-                                    .colorLerp(0,0,0,COLOR_FADE_RATE);
+                                    .colorAdd(p, p, p, COLOR_UPDATE_RATE/v)
+                                    .colorLerp(0,0,0,COLOR_FADE_RATE/v);
                         }
                     }
                 }

@@ -2,7 +2,7 @@ package nars.term;
 
 import nars.*;
 import nars.term.atom.Atomic;
-import nars.util.TimeAware;
+import nars.util.Timed;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
@@ -181,7 +181,7 @@ public class VariableTest {
     void testDestructiveNormalization() throws Narsese.NarseseException {
         String t = "<$x --> y>";
         String n = "($1-->y)";
-        TimeAware timeAware = NARS.shell();
+        Timed timed = NARS.shell();
         Termed x = $.$(t);
         assertEquals(n, x.toString());
         

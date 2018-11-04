@@ -3,7 +3,7 @@ package nars.gui;
 import nars.NAR;
 import nars.control.DurService;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.UnitContainer;
+import spacegraph.space2d.container.unit.UnitContainer;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import java.util.function.Consumer;

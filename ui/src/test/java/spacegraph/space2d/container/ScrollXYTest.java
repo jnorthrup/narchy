@@ -8,6 +8,7 @@ import spacegraph.space2d.container.grid.DynGrid;
 import spacegraph.space2d.container.grid.GridModel;
 import spacegraph.space2d.container.grid.GridRenderer;
 import spacegraph.space2d.container.grid.KeyValueGrid;
+import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
@@ -97,6 +98,6 @@ class ScrollXYTest {
 
         ScrollXY<ScrollXY.ScrolledXY> s = new ScrollXY<>(x);
         Surface debug = new TextEdit("x");
-        return Splitting.row(new Clipped(s), debug, 0.75f);
+        return Splitting.row(new Clipped(s), 0.75f, debug);
     }
 }

@@ -6,7 +6,7 @@ import nars.Param;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.time.Tense;
-import nars.util.TimeAware;
+import nars.util.Timed;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,7 +54,7 @@ public class TruthWave {
         truth = new float[ENTRY_SIZE * cap];
     }
 
-    public TruthWave(@NotNull BeliefTable b, @NotNull TimeAware n) {
+    public TruthWave(@NotNull BeliefTable b, @NotNull Timed n) {
         this(b.size());
         set(b, Long.MIN_VALUE, Long.MAX_VALUE);
         //TODO update range

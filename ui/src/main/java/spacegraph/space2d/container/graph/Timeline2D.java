@@ -1,4 +1,4 @@
-package spacegraph.space2d.container;
+package spacegraph.space2d.container.graph;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
@@ -7,6 +7,9 @@ import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.unit.Clipped;
+import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;

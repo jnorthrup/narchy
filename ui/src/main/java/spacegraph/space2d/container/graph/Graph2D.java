@@ -1,4 +1,4 @@
-package spacegraph.space2d.container;
+package spacegraph.space2d.container.graph;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
@@ -12,6 +12,9 @@ import jcog.data.pool.Pool;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.container.unit.Clipped;
+import spacegraph.space2d.container.unit.Scale;
+import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.collection.MutableMapContainer;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
@@ -621,6 +624,12 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             if (r==r) this.r = Util.lerp(rate, this.r, r);
             if (g==g) this.g = Util.lerp(rate, this.g, g);
             if (b==b) this.b = Util.lerp(rate, this.b, b);
+            return this;
+        }
+        public EdgeVis<X> colorAdd(float r, float g, float b /* TODO type */, float rate) {
+            if (r==r) this.r = Util.lerp(rate, this.r, r + this.r);
+            if (g==g) this.g = Util.lerp(rate, this.g, g + this.g);
+            if (b==b) this.b = Util.lerp(rate, this.b, b + this.b);
             return this;
         }
 

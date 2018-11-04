@@ -8,8 +8,8 @@ import nars.Narsese;
 import nars.Op;
 import nars.concept.Operator;
 import nars.derive.Derivation;
+import nars.derive.filter.CommutativeConstantPreFilter;
 import nars.derive.filter.DoublePremiseRequired;
-import nars.derive.filter.EllipsisCommutativeConstantPreFilter;
 import nars.derive.filter.UnifyPreFilter;
 import nars.derive.op.*;
 import nars.op.SubIfUnify;
@@ -422,8 +422,8 @@ public class PremiseRuleSource extends ProxyTerm  {
 
 
         {
-            EllipsisCommutativeConstantPreFilter.tryFilter(true, taskPattern, beliefPattern, pre);
-            EllipsisCommutativeConstantPreFilter.tryFilter(false, taskPattern, beliefPattern, pre);
+            CommutativeConstantPreFilter.tryFilter(true, taskPattern, beliefPattern, pre);
+            CommutativeConstantPreFilter.tryFilter(false, taskPattern, beliefPattern, pre);
         }
 
         {

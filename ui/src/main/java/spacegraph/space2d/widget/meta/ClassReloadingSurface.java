@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.meta;
 import jcog.Util;
 import jcog.util.ClassReloader;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.MutableUnitContainer;
+import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.VectorLabel;

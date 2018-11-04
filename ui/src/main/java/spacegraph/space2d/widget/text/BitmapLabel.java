@@ -4,7 +4,7 @@ package spacegraph.space2d.widget.text;
 import jcog.Texts;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.AspectAlign;
+import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.phys.common.Color3f;
 import spacegraph.space2d.widget.console.BitmapTextGrid;
 

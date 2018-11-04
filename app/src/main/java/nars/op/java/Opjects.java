@@ -21,7 +21,7 @@ import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.truth.PreciseTruth;
 import nars.util.AtomicExec;
-import nars.util.TimeAware;
+import nars.util.Timed;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
@@ -444,7 +444,7 @@ public class Opjects extends DefaultTermizer {
         }
     }
 
-    private class MethodExec extends AtomicExec implements BiConsumer<Term, TimeAware> {
+    private class MethodExec extends AtomicExec implements BiConsumer<Term, Timed> {
         private final Term methodName;
         public Operator operator;
 
@@ -553,7 +553,7 @@ public class Opjects extends DefaultTermizer {
 
 
         @Override
-        public void accept(Term term, TimeAware timeAware) {
+        public void accept(Term term, Timed timed) {
 
             runCache.apply(term).run();
 

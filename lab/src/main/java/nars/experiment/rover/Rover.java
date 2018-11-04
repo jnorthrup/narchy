@@ -1,6 +1,6 @@
 package nars.experiment.rover;
 
-import nars.util.TimeAware;
+import nars.util.Timed;
 import spacegraph.space3d.widget.CompoundSpatial;
 
 /**
@@ -8,12 +8,12 @@ import spacegraph.space3d.widget.CompoundSpatial;
  */
 public class Rover extends CompoundSpatial {
 
-    private final TimeAware timeAware;
+    private final Timed timed;
 
 
-    public Rover(TimeAware timeAware) {
-        super(timeAware);
-        this.timeAware = timeAware;
+    public Rover(Timed timed) {
+        super(timed);
+        this.timed = timed;
 
 
     }

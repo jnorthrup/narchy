@@ -22,7 +22,7 @@ public class NTMMemory {
     public final int memoryHeight;
     public final int memoryWidth;
 
-    public static final double EPSILON = 0.0001;
+    static final double EPSILON = 0.0001;
 
     public NTMMemory(int memoryHeight, int memoryWidth, int heads) {
         this(null, memoryHeight, memoryWidth, new Head[heads],

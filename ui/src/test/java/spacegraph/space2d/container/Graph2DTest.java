@@ -5,6 +5,7 @@ import jcog.data.graph.Node;
 import org.ujmp.core.Matrix;
 import org.ujmp.core.util.matrices.SystemEnvironmentMatrix;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.layout.ForceDirected2D;
 
 public class Graph2DTest {

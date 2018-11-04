@@ -15,7 +15,7 @@ import nars.task.util.TaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.util.TimeAware;
+import nars.util.Timed;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
@@ -174,7 +174,7 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
 
     public static class DynamicTruthTask extends NALTask {
 
-        DynamicTruthTask(Term c, boolean beliefOrGoal, Truth tr, TimeAware n, long start, long end, long[] stamp) throws TaskException {
+        DynamicTruthTask(Term c, boolean beliefOrGoal, Truth tr, Timed n, long start, long end, long[] stamp) throws TaskException {
             super(c, beliefOrGoal ? Op.BELIEF : Op.GOAL, tr, n.time(), start, end, stamp);
 
 //            if (end-start > Integer.MAX_VALUE)

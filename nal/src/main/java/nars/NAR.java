@@ -51,6 +51,7 @@ import nars.time.Tense;
 import nars.time.Time;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
+import nars.util.Timed;
 import org.HdrHistogram.Histogram;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
 import org.eclipse.collections.api.tuple.Pair;
@@ -89,7 +90,7 @@ import static org.fusesource.jansi.Ansi.ansi;
  * * step mode - controlled by an outside system, such as during debugging or testing
  * * thread mode - runs in a pausable closed-loop at a specific maximum framerate.
  */
-public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled, nars.util.TimeAware {
+public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled, Timed {
 
     static final String VERSION = "NARchy v?.?";
     private static final Set<String> loggedEvents = java.util.Set.of("eventTask");

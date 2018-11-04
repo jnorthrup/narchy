@@ -13,7 +13,7 @@ import jcog.signal.wave2d.RGBToGrayBitmap2DTensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.AspectAlign;
+import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;

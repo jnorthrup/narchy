@@ -9,7 +9,7 @@ import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.util.TimeAware;
+import nars.util.Timed;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
@@ -128,7 +128,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
 
 
-    public void accept(TimeAware nn) {
+    public void accept(Timed nn) {
         long now = nn.time();
         dur = nn.dur();
         this.start = now - dur;

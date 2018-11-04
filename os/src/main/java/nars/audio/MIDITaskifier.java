@@ -11,7 +11,7 @@ import nars.task.DerivedTask;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.time.Tense;
-import nars.util.TimeAware;
+import nars.util.Timed;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
 import spacegraph.audio.synth.SineWave;
@@ -151,7 +151,7 @@ public class MIDITaskifier {
         new MIDITaskifier();
     }
 
-    public MidiInReceiver MIDI(TimeAware timeAware) {
+    public MidiInReceiver MIDI(Timed timed) {
         
         MidiDevice device;
         MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
@@ -169,7 +169,7 @@ public class MIDITaskifier {
                 System.out.println("\trx: " + device.getReceivers());
 
                 if (receive(device)) {
-                    return new MidiInReceiver(device, timeAware);
+                    return new MidiInReceiver(device, timed);
                 }
 
                 /*if (device instanceof Synthesizer) {
@@ -194,11 +194,11 @@ public class MIDITaskifier {
         
 
         private final MidiDevice device;
-        private final TimeAware timeAware;
+        private final Timed timed;
 
-        public MidiInReceiver(MidiDevice device, TimeAware timeAware) throws MidiUnavailableException {
+        public MidiInReceiver(MidiDevice device, Timed timed) throws MidiUnavailableException {
             this.device = device;
-            this.timeAware = timeAware;
+            this.timed = timed;
 
             if (!device.isOpen()) {
                 device.open();

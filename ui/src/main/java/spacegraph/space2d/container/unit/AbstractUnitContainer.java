@@ -1,7 +1,8 @@
-package spacegraph.space2d.container;
+package spacegraph.space2d.container.unit;
 
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.Container;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;

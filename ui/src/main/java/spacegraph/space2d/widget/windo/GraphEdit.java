@@ -8,7 +8,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Container;
-import spacegraph.space2d.container.Scale;
+import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ProtoWidget;

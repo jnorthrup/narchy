@@ -19,7 +19,7 @@ import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.AspectAlign;
+import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
