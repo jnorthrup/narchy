@@ -5,7 +5,7 @@ import nars.nal.nal8.GoalDecompositionTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 
-class DiffGoalTest {
+class NAL3GoalTest {
 
 
 
@@ -38,25 +38,25 @@ class DiffGoalTest {
 
     }
 
-    private void testGoalDiffRaw() {
+    @Test void testGoalDiffRaw() {
         new TestNAR(NARS.tmp(3))
-                .input("X")
-                .input("(X ~ Y)")
+                .input("X!")
+                .input("(X ~ Y).")
                 .mustGoal(GoalDecompositionTest.cycles, "Y", 0, 0.81f)
                 .run(16);
         new TestNAR(NARS.tmp(3))
-                .input("X")
-                .input("--(X ~ Y)")
+                .input("X!")
+                .input("--(X ~ Y).")
                 .mustGoal(GoalDecompositionTest.cycles, "Y", 1, 0.81f)
                 .run(16);
         new TestNAR(NARS.tmp(3))
-                .input("Y")
-                .input("--(X ~ Y)")
+                .input("Y!")
+                .input("--(X ~ Y).")
                 .mustGoal(GoalDecompositionTest.cycles, "X", 1, 0.81f)
                 .run(16);
         new TestNAR(NARS.tmp(3))
-                .input("--Y")
-                .input("(X ~ Y)")
+                .input("--Y!")
+                .input("(X ~ Y).")
                 .mustGoal(GoalDecompositionTest.cycles, "X", 1, 0.81f)
                 .run(16);
     }
@@ -102,5 +102,13 @@ class DiffGoalTest {
                 .input(beliefTask)
                 .mustGoal(GoalDecompositionTest.cycles, YY, f, c)
                 .run(16);
+    }
+    @Test void intersectionGoalInduction() {
+        new TestNAR(NARS.tmp(3))
+                .input("(X --> Z)!")
+                .input("((X|Y) --> Z).")
+                .mustGoal(GoalDecompositionTest.cycles, "((X|Y) --> Z)", 1, 0.81f)
+                .run(16);
+        //TODO other cases
     }
 }

@@ -68,20 +68,20 @@ public class Gradius extends NAgentX {
         float height = g.getHeight();
         int gpsDigits = 8;
         float gpsRes = 0.1f;
-        senseNumber(level -> $.p($.the("y"), $.the(level)),
+        senseNumber(level -> $.inh($.the(level), $.p(id, $.the("y"))),
                 () -> g.player[OBJ_Y] / height,
                 gpsDigits, DigitizedScalar.FuzzyNeedle
         ).resolution(gpsRes);
-        senseNumber(level -> $.p($.the("x"), $.the(level)),
+        senseNumber(level -> $.inh($.the(level), $.p(id, $.the("x"))),
                 () -> g.player[OBJ_X] / width,
                 gpsDigits, DigitizedScalar.FuzzyNeedle
         ).resolution(gpsRes);
 
 
-        actionToggle($.func("fire", id), b -> g.keys[VK_SHOOT] = b);
+        actionToggle($.inh("fire", id), b -> g.keys[VK_SHOOT] = b);
 
         if (canPause) {
-            actionToggle($.func("pause", id),
+            actionToggle($.inh("pause", id),
                     b -> g.paused = b);
         }
 
@@ -117,10 +117,10 @@ public class Gradius extends NAgentX {
 
 
     void initToggle() {
-        actionPushButtonMutex($.func("left", id), $.func("right", id),
+        actionPushButtonMutex($.inh("left", id), $.inh("right", id),
                 b -> g.keys[VK_LEFT] = b,
                 b -> g.keys[VK_RIGHT] = b);
-        actionPushButtonMutex($.func("up", id), $.func("down", id),
+        actionPushButtonMutex($.inh("up", id), $.inh("down", id),
                 b -> g.keys[VK_UP] = b,
                 b -> g.keys[VK_DOWN] = b);
     }
@@ -128,7 +128,7 @@ public class Gradius extends NAgentX {
     void initBipolar() {
 
         float thresh = 0.1f;
-        actionBipolar($.func("y", id), dy -> {
+        actionBipolar($.inh("y", id), dy -> {
             if (dy < -thresh) {
                 g.keys[VK_UP] = false;
                 g.keys[VK_DOWN] = true;
@@ -144,7 +144,7 @@ public class Gradius extends NAgentX {
             }
 
         });
-        actionBipolar($.func("x", id), dx -> {
+        actionBipolar($.inh("x", id), dx -> {
             if (dx < -thresh) {
                 g.keys[VK_LEFT] = false;
                 g.keys[VK_RIGHT] = true;

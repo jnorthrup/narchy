@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.NARS;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
 import org.opentest4j.AssertionFailedError;
 import org.slf4j.LoggerFactory;
 
@@ -12,8 +13,9 @@ import java.lang.reflect.Method;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 
-
+@Execution(CONCURRENT)
 public abstract class NALTest {
 
     protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(NALTest.class);

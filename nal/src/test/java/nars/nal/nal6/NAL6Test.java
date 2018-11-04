@@ -312,7 +312,9 @@ public class NAL6Test extends NALTest {
                 .believe("flyer:Tweety")
                 .mustBelieve(cycles, "(bird:Tweety ==> (chirping:Tweety && food:worms))",
                         1.0f,
-                        0.42f);
+                        //0.42f
+                        0.81f
+                );
 
 
     }

@@ -77,11 +77,11 @@ public class Taskify extends AbstractPred<Derivation> {
         if (x1 == null)
             throw new NullPointerException("could not un-anonymize " + x0 + " with " + d.anon);
 
-        //TEMPORARY
-        if (Param.DEBUG) {
-            if (x1.ORrecurse(t -> t instanceof Anom))
-                throw new WTF("Anom leak into Taskify content: " + x0 + " with " + d.anon);
-        }
+//        //TEMPORARY
+//        if (Param.DEBUG) {
+//            if (x1.ORrecurse(t -> t instanceof Anom))
+//                throw new WTF("Anom leak into Taskify content: " + x0 + " with " + d.anon);
+//        }
 
         Term x = Task.forceNormalizeForBelief(x1);
         if (!x.op().conceptualizable)

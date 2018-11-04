@@ -3,13 +3,12 @@ package nars.task;
 import jcog.Util;
 import jcog.pri.Prioritizable;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.term.Term;
 import nars.time.Tense;
 
-import static nars.Op.*;
+import static nars.Op.NEG;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -35,7 +34,7 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
         assert (term.op().conceptualizable && term.op() != NEG);
 
 
-        this.hash = Util.hashCombine(term.hashCode(), punc, Long.hashCode(when));
+        this.hash = Util.hashCombine(Util.hashCombine(term.hashCode(), punc), Long.hashCode(when));
     }
 
     @Override
@@ -79,7 +78,7 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
         if (c != null) {
 
             task = c.table(punc).sample(se[0], se[1], t, n);
-            if (task!=null) {
+//            if (task!=null) {
 //                    byte punc = task.punc();
 //                    //dynamic question answering
 //                    Term taskTerm = task.term();
@@ -103,36 +102,40 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
 //                            }
 //                        }
 //                    }
-
-            }
+//            }
 
         } else {
-            //TODO if term supports dynamic truth, then possibly conceptualize and then match as above?
-
-            //form a question/quest task for the missing concept
-            byte punc;
-            switch (this.punc) {
-                case BELIEF:
-                    punc = QUESTION;
-                    break;
-                case GOAL:
-                    punc = QUEST;
-                    break;
-                case QUESTION:
-                case QUEST:
-                    punc = this.punc;
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-            }
-
-            task = new UnevaluatedTask(term, punc, null, n.time(), se[0], se[1], n.evidence());
-            if (Param.DEBUG)
-                task.log("Tasklinked");
-            task.pri(link.priElseZero());
+//            //TODO if term supports dynamic truth, then possibly conceptualize and then match as above?
+//
+//            //form a question/quest task for the missing concept
+//            byte punc;
+//            switch (this.punc) {
+//                case BELIEF:
+//                    punc = QUESTION;
+//                    break;
+//                case GOAL:
+//                    punc = QUEST;
+//                    break;
+//                case QUESTION:
+//                case QUEST:
+//                    punc = this.punc;
+//                    break;
+//                default:
+//                    throw new UnsupportedOperationException();
+//            }
+//
+//            task = new UnevaluatedTask(term, punc, null, n.time(), se[0], se[1], n.evidence());
+//            if (Param.DEBUG)
+//                task.log("Tasklinked");
+//            task.pri(link.priElseZero());
+            task = null;
         }
 
 
+        //TEMPORARY
+//        if (task!=null && task.isInput() && !(task instanceof SignalTask)) {
+//            link.priMax(task.priElseZero()); //boost
+//        }
 
         return task;
 

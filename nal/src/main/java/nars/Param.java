@@ -32,6 +32,8 @@ public abstract class Param {
     public static final boolean ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME = false;
     public static final boolean INPUT_PREMISE_ANSWER_BELIEF = true;
 
+    public static final boolean PREMISE_UNIFY_SYMMETRIC = false;
+
     @Deprecated public static int LinkFanoutMax =
             //16;
             //10;
@@ -53,7 +55,7 @@ public abstract class Param {
      *
      *  seems to enable more temporal precision at the cost of more links.
      */
-    public static final boolean TASKLINK_CONCEPT_TERM = true;
+    public static final boolean TASKLINK_CONCEPT_TERM = false;
 
 
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
@@ -217,7 +219,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, 0, 128 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(32 * TTL_MIN, 0, 128 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 8, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 

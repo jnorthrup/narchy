@@ -8,10 +8,10 @@ import nars.Narsese;
 import nars.Op;
 import nars.concept.Operator;
 import nars.derive.Derivation;
-import nars.derive.op.IntroVars;
-import nars.derive.op.Occurrify;
-import nars.derive.op.Termify;
-import nars.derive.op.Truthify;
+import nars.derive.filter.DoublePremiseRequired;
+import nars.derive.filter.EllipsisCommutativeConstantPreFilter;
+import nars.derive.filter.UnifyPreFilter;
+import nars.derive.op.*;
 import nars.op.SubIfUnify;
 import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
@@ -19,9 +19,7 @@ import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
-import nars.term.util.Image;
 import nars.term.util.transform.DirectTermTransform;
 import nars.term.var.VarPattern;
 import nars.truth.func.NALTruth;
@@ -35,11 +33,8 @@ import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
-import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -49,7 +44,6 @@ import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.Op.*;
 import static nars.subterm.util.SubtermCondition.*;
 import static nars.term.control.PREDICATE.sortByCostIncreasing;
-import static nars.time.Tense.DTERNAL;
 import static nars.unify.op.TaskPunctuation.Belief;
 import static nars.unify.op.TaskPunctuation.Goal;
 
@@ -117,7 +111,7 @@ public class PremiseRuleSource extends ProxyTerm  {
         }
 
         Term originalConcPattern = PatternIndex.patternify(postcon[0]);
-        Term filteredConcPattern = originalConcPattern;
+        Term concPattern = originalConcPattern;
 
         {
             //direct substitution macros in conclusions
@@ -125,11 +119,11 @@ public class PremiseRuleSource extends ProxyTerm  {
             //if (!filteredConcPattern.equals(taskPattern))
 //            if (!taskPattern.op().temporal && !taskPattern.op().commutative)
             if (!taskPattern.op().var)
-                filteredConcPattern = filteredConcPattern.replace(taskPattern, Derivation.TaskTerm);
+                concPattern = concPattern.replace(taskPattern, Derivation.TaskTerm);
             //if (!filteredConcPattern.equals(beliefPattern))
 //            if (!beliefPattern.op().temporal && !beliefPattern.op().commutative)
             if (!beliefPattern.op().var)
-                filteredConcPattern = filteredConcPattern.replace(beliefPattern, Derivation.BeliefTerm);
+                concPattern = concPattern.replace(beliefPattern, Derivation.BeliefTerm);
         }
 
         byte taskPunc = 0;
@@ -427,7 +421,10 @@ public class PremiseRuleSource extends ProxyTerm  {
 
 
 
-
+        {
+            EllipsisCommutativeConstantPreFilter.tryFilter(true, taskPattern, beliefPattern, pre);
+            EllipsisCommutativeConstantPreFilter.tryFilter(false, taskPattern, beliefPattern, pre);
+        }
 
         {
             //subIfUnify prefilter
@@ -569,7 +566,7 @@ public class PremiseRuleSource extends ProxyTerm  {
 //        for (int i = 0, preLength = PRE.length; i < preLength; i++) {
 //            PRE[i] = INDEX.intern(PRE[i]);
 //        }
-        this.termify = new Termify(this.concPattern = filteredConcPattern, truthify, time);
+        this.termify = new Termify(this.concPattern = concPattern, truthify, time);
 
         this.constraintSet = CONSTRAINTS.toSet();
 
@@ -760,23 +757,6 @@ public class PremiseRuleSource extends ProxyTerm  {
 //    }
 
 
-//    private void termHasNot(Term taskPattern, Term beliefPattern, Collection<PrediTerm> pre, Set<MatchConstraint> constraints, Term t, int structure) {
-//
-////        //TODO: filter(x, )
-////
-////        boolean inTask = taskPattern.equals(t) || taskPattern.containsRecursively(t);
-////        boolean inBelief = beliefPattern.equals(t) || beliefPattern.containsRecursively(t);
-////        if (inTask || inBelief) {
-////            if (inTask)
-////                pre.addAll(TaskBeliefHas.get(true, structure, false));
-////            if (inBelief)
-////                pre.addAll(TaskBeliefHas.get(false, structure, false));
-////        } else {
-////
-////            throw new TODO();
-////        }
-//
-//    }
 
     private static void neq(Set<UnifyConstraint> constraints, Term x, Term y) {
         constraints.add(new NotEqualConstraint(x, y));
@@ -808,153 +788,7 @@ public class PremiseRuleSource extends ProxyTerm  {
 //        }
 //    }
 
-    static class UnifyPreFilter extends AbstractPred<Derivation> {
-
-        private final byte[] xpInT, xpInB, ypInT, ypInB;
-        private final boolean isStrict;
-
-        private static final Atomic UnifyPreFilter = Atomic.the("unifyPreFilter");
-        private final int varBits;
-
-        UnifyPreFilter(byte[] xpInT, byte[] xpInB, byte[] ypInT, byte[] ypInB, int varBits, boolean isStrict) {
-            super($.func(UnifyPreFilter, pp(xpInT), pp(xpInB), pp(ypInT), pp(ypInB)));
-            this.xpInT = xpInT;
-            this.xpInB = xpInB;
-            this.ypInT = ypInT;
-            this.ypInB = ypInB;
-            this.varBits = varBits;
-            this.isStrict = isStrict;
-        }
-
-        static void tryAdd(Term x, Term y, Term taskPattern, Term beliefPattern, Subterms a, MutableSet<PREDICATE> pre) {
-            //some structure exists that can be used to prefilter
-            byte[] xpInT = Terms.constantPath(taskPattern, x);
-            byte[] xpInB = Terms.constantPath(beliefPattern, x); //try the belief
-            if (xpInT != null || xpInB != null) {
-                byte[] ypInT = Terms.constantPath(taskPattern, y);
-                byte[] ypInB = Terms.constantPath(beliefPattern, y); //try the belief
-                if (ypInT != null || ypInB != null) {
-
-                    //the unifying terms are deterministicaly extractable from the task or belief:
-
-                    int varBits = (a.contains(SubIfUnify.DEP_VAR)) ? Op.VAR_DEP.bit : (Op.VAR_INDEP.bit | Op.VAR_DEP.bit);
-
-                    boolean strict = a.contains(SubIfUnify.STRICT);
-
-                    pre.add(new UnifyPreFilter(xpInT, xpInB, ypInT, ypInB, varBits, strict));
-                }
-            }
-        }
-
-
-        @Override
-        public boolean test(Derivation d) {
-            Term x = xpInT != null ? d.taskTerm.subPath(xpInT) : d.beliefTerm.subPath(xpInB);
-            assert (x != Bool.Null);
-            if (x == null)
-                return false; //ex: seeking a negation but wasnt negated
-            Term y = ypInT != null ? d.taskTerm.subPath(ypInT) : d.beliefTerm.subPath(ypInB);
-            assert (y != Bool.Null): (ypInT != null ? d.taskTerm: d.beliefTerm) + " does not resolve " +  (ypInT!=null ? ypInT : ypInB);
-            if (y == null)
-                return false; //ex: seeking a negation but wasnt negated
-
-            return possibleUnification(x, y, varBits, 0);
-        }
-
-        public boolean possibleUnification(Term x, Term y, int varExcluded, int level) {
-            boolean xEqY = x.equals(y);
-            if (xEqY) {
-                return level > 0 || !isStrict;
-            }
-
-            Op xo = x.op();
-            if ((xo.bit & ~varExcluded) == 0)
-                return true; //unifies, allow
-
-            Op yo = y.op();
-            if ((yo.bit & ~varExcluded) == 0)
-                return true; //unifies, allow
-
-            if (xo != yo)
-                return false;
-
-
-            x = Image.imageNormalize(x);
-            y = Image.imageNormalize(y);
-
-            Subterms xx = x.subterms(), yy = y.subterms();
-            int xxs = xx.subs();
-            if (xxs != yy.subs())
-                return false;
-
-            if (!Subterms.possiblyUnifiable(xx, yy, varExcluded))
-                return false;
-
-            if (xo.commutative)
-                return true;
-
-            //if (mustUnify(xx) || mustUnify(yy)) {
-            //if (!xo.commutative) {
-
-            int nextLevel = level + 1;
-            for (int i = 0; i < xxs; i++) {
-                Term x0 = xx.sub(i), y0 = yy.sub(i);
-                if (!possibleUnification(x0, y0, varExcluded, nextLevel))
-                    return false;
-            }
-            return true;
-        }
-
-
-        @Override
-        public float cost() {
-            return 0.3f;
-        }
-    }
-
-    static class DoublePremiseRequired extends AbstractPred<Derivation> {
-
-        final static Atomic key = (Atomic) $.the("DoublePremise");
-        final boolean ifBelief, ifGoal, ifQuestionOrQuest;
-
-        DoublePremiseRequired(boolean ifBelief, boolean ifGoal, boolean ifQuestionOrQuest) {
-            super($.func(key,
-                    ifBelief ? Op.Belief : Op.EmptyProduct,
-                    ifGoal ? Op.Goal : Op.EmptyProduct,
-                    ifQuestionOrQuest ? Op.Que : Op.EmptyProduct));
-            this.ifBelief = ifBelief;
-            this.ifGoal = ifGoal;
-            this.ifQuestionOrQuest = ifQuestionOrQuest;
-        }
-
-        @Override
-        public boolean test(Derivation preDerivation) {
-            byte x = preDerivation.taskPunc;
-            boolean requireDouble;
-            switch (x) {
-                case BELIEF:
-                    requireDouble = ifBelief;
-                    break;
-                case GOAL:
-                    requireDouble = ifGoal;
-                    break;
-                case QUESTION:
-                case QUEST:
-                    requireDouble = ifQuestionOrQuest;
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-            }
-            return !requireDouble || preDerivation.hasBeliefTruth();
-        }
-
-        @Override
-        public float cost() {
-            return 0.09f;
-        }
-    }
-
-//    static final class SubOf extends AbstractPred<Derivation> {
+    //    static final class SubOf extends AbstractPred<Derivation> {
 //        private final Term y;
 //
 //        boolean task;
@@ -1064,38 +898,6 @@ public class PremiseRuleSource extends ProxyTerm  {
 
     }
 
-    private static final class ConjSimultaneous extends TermMatch {
-
-        public static final ConjSimultaneous the = new ConjSimultaneous();
-
-        private ConjSimultaneous() {
-            super();
-        }
-
-        @Override
-        public boolean test(Term t) {
-            Term u = t.unneg();
-            if (u.op()==CONJ) {
-                switch (u.dt()) {
-                    case 0:
-                    case DTERNAL:
-                        return true;
-                }
-            }
-            return false;
-        }
-
-        @Nullable
-        @Override
-        public Term param() {
-            return null;
-        }
-
-        @Override
-        public float cost() {
-            return 0.1f;
-        }
-    }
 }
 
 
