@@ -2,7 +2,6 @@ package nars.term.atom;
 
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
-import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import nars.IO;
 import nars.Op;

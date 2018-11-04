@@ -6,7 +6,6 @@ import nars.Op;
 import nars.Param;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
-import nars.link.TaskLink;
 import nars.link.TemplateTermLinker;
 import nars.link.TermLinker;
 import nars.table.BeliefTables;

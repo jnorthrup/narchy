@@ -1,4 +1,4 @@
-package nars.web.util;
+package spacegraph.web.util;
 
 import org.jetbrains.annotations.Nullable;
 import org.teavm.jso.JSBody;

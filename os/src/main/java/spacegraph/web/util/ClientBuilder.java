@@ -1,7 +1,6 @@
-package nars.web.util;
+package spacegraph.web.util;
 
 import jcog.Texts;
-import nars.web.WebClientJS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.teavm.tooling.*;
@@ -19,7 +18,6 @@ public class ClientBuilder {
 
             long start = System.nanoTime();
 
-            TeaVMTool tea = new TeaVMTool();
 
             if (clean) {
                 try {
@@ -36,9 +34,12 @@ public class ClientBuilder {
                 e.printStackTrace();
             }
 
+            TeaVMTool tea = new TeaVMTool();
+
             tea.setMainClass(entryClass.getName());
             tea.setCacheDirectory(new File("/tmp/teacache"));
-            //tea.setIncremental(true);
+            tea.setIncremental(true);
+            tea.setTargetType(TeaVMTargetType.WEBASSEMBLY);
 
 
             //tea.setDebugInformationGenerated(true);
@@ -51,6 +52,7 @@ public class ClientBuilder {
 
             tea.setTargetType(TeaVMTargetType.JAVASCRIPT);
             tea.setMinifying(false);
+
 
             tea.generate();
 
@@ -111,7 +113,7 @@ public class ClientBuilder {
         }
     };
 
-    public static void rebuildAsync(Class<WebClientJS> webClientJSClass, boolean clean) {
+    public static void rebuildAsync(Class webClientJSClass, boolean clean) {
         ForkJoinPool.commonPool().execute(()->{
             rebuild(webClientJSClass, clean);
         });

@@ -82,7 +82,7 @@ public class TestNAR {
     public TestNAR run(long finalCycle  /* for use with JUnit */) {
 
 
-        score = Float.NEGATIVE_INFINITY;
+        score = 0; //Float.NEGATIVE_INFINITY;
 
         if (requireConditions)
             assertTrue(!succeedsIfAll.isEmpty() || !failsIfAny.isEmpty(), "no conditions tested");
@@ -99,7 +99,10 @@ public class TestNAR {
             if (oce > finalCycle) finalCycle = oce + 1;
         }
 
+
+
         score = -finalCycle; //default score
+        score = Math.min(-1, finalCycle);
 
         StringWriter trace;
         if (collectTrace)
@@ -147,8 +150,6 @@ public class TestNAR {
 
         if (success)
             score = -runtime;
-        else
-            assert(score < 0);
 
 //        this.score = success ?
 //

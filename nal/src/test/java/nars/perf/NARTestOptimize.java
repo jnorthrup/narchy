@@ -5,9 +5,14 @@ import jcog.lab.util.Opti;
 import jcog.lab.util.Optimization;
 import nars.NAR;
 import nars.NARS;
+import nars.derive.Deriver;
+import nars.derive.budget.DefaultDeriverBudgeting;
+import nars.derive.impl.BatchDeriver;
+import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
 import nars.nal.nal5.NAL5Test;
 import nars.nal.nal6.NAL6Test;
+import nars.nal.nal7.NAL7Test;
 import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
@@ -25,7 +30,7 @@ class NARTestOptimize {
 
             boolean parallel = true;
             Class[] testClasses = new Class[] {
-                    //NAL1Test.class,
+                    NAL1Test.class,
                     NAL2Test.class,
                     //NAL3Test.class,
 //                    NAL4Test.class,
@@ -33,7 +38,8 @@ class NARTestOptimize {
                     //NAL4MultistepTest.class,
                     NAL5Test.class,
                     NAL6Test.class,
-//                    NAL7Test.class, NAL8Test.class,
+                    NAL7Test.class,
+//                    NAL8Test.class,
             };
 
             Lab<NAR> l = new Lab<>(() -> {
@@ -62,10 +68,10 @@ class NARTestOptimize {
 //                .var("goalPriDefault", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.goalPriDefault.set(f))
 
-//                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
-//                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
-//                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
-//                                        relGrowthExponent.set(f)))
+                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
+                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
+                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
+                                        relGrowthExponent.set(f)))
 //                .var("derivationScale", 0.5f, 2f, 0.1f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
 //                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).

@@ -1,38 +1,29 @@
 package nars.web;
 
-import nars.web.util.JS;
-import nars.web.util.MsgPack;
-import nars.web.util.WebSocket;
 import org.teavm.jso.JSObject;
 import org.teavm.jso.core.JSString;
 import org.teavm.jso.dom.events.KeyboardEvent;
-import org.teavm.jso.dom.html.HTMLBodyElement;
-import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.jso.dom.html.HTMLInputElement;
+import spacegraph.WebClient;
+import spacegraph.web.util.JS;
+import spacegraph.web.util.MsgPack;
 
 import java.util.ArrayDeque;
 
 /**
  * see: https://github.com/automenta/spimedb/commit/93cc982f6d31cacb9c5d23e29f93d54ac5b9c1a8
  */
-public class WebClientJS {
+public class NARWebClient extends WebClient {
 
 
-    private final HTMLDocument doc;
-    private final HTMLBodyElement body;
-
-    private final WebSocket socket;
 
     final static int bufferCapacity = 32;
     private final ArrayDeque<HTMLElement> buffer = new ArrayDeque<>(bufferCapacity);
 
-    WebClientJS() {
+    NARWebClient() {
 
-        doc = HTMLDocument.current();
-        body = doc.getBody();
-
-        socket = WebSocket.connect("/");
+        super();
 
         HTMLInputElement input = (HTMLInputElement) doc.createElement("input");
         input.setAttribute("type", "text");
@@ -98,7 +89,7 @@ public class WebClientJS {
     }
 
     public static void main(String[] args) {
-        new WebClientJS();
+        new NARWebClient();
     }
 
 }

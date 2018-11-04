@@ -35,7 +35,6 @@ public abstract class NALTest {
             t = (NALTest) ((Class) m.getDeclaringClass())
                     .getConstructor().newInstance();
             t.test = (tt);
-            t.test.score = Float.NEGATIVE_INFINITY;
 
             m.invoke(t);
         } catch (Throwable e) {

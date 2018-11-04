@@ -1,4 +1,4 @@
-package nars;
+package nars.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -8,26 +8,23 @@ import jcog.data.map.CustomConcurrentHashMap;
 import jcog.event.Off;
 import jcog.event.Offs;
 import jcog.exe.Exe;
-import jcog.net.http.HttpConnection;
-import jcog.net.http.HttpModel;
 import jcog.net.http.HttpServer;
 import jcog.net.http.WebSocketConnection;
 import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
+import nars.*;
 import nars.exe.Exec;
 import nars.exe.UniExec;
 import nars.index.concept.MaplikeConceptIndex;
 import nars.index.concept.ProxyConceptIndex;
 import nars.time.clock.RealTime;
-import nars.web.WebClientJS;
-import nars.web.util.ClientBuilder;
-import nars.web.util.MsgPack;
+import spacegraph.web.util.ClientBuilder;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.WebServer;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -36,50 +33,11 @@ import java.util.function.Function;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.web.TaskJsonCodec.Native.taskify;
+import static spacegraph.web.util.ClientBuilder.rebuild;
 
-abstract public class Web implements HttpModel {
+abstract public class NARWeb extends WebServer {
 
     static final int DEFAULT_PORT = 60606;
-
-    @Override
-    public void response(HttpConnection h) {
-
-        URI url = h.url();
-
-        String path = url.getPath();
-        switch (path) {
-            case "/teavm/runtime.js":
-                h.respond(new File("/tmp/tea/runtime.js"));
-                break;
-            case "/teavm/classes.js":
-                h.respond(new File("/tmp/tea/classes.js"));
-                break;
-            case "/websocket.js":
-                h.respond(nars.web.util.WebSocket.websocket_js);
-                break;
-            case "/msgpack.js":
-                h.respond(MsgPack.msgpack_js);
-                break;
-            default:
-                h.respond(
-                        "<html>\n" +
-                                "  <head>\n" +
-                                "    <title></title>\n" +
-                                "    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">\n" +
-                                "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"websocket.js\"></script>\n" +
-                                "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"msgpack.js\"></script>\n" +
-                                "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"teavm/runtime.js\"></script>\n" +
-                                "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"teavm/classes.js\"></script>\n" +
-                                "  </head>\n" +
-                                "  <body onload=\"main()\">\n" +
-                                "  </body>\n" +
-                                "</html>");
-                break;
-
-        }
-
-
-    }
 
 
     @Override
@@ -107,20 +65,10 @@ abstract public class Web implements HttpModel {
     protected abstract NAR nar(WebSocketConnection conn, String url);
 
 
-    static class NARConnection extends Offs {
-        public final NAR nar;
-
-        public NARConnection(NAR n, Off... ons) {
-            this.nar = n;
-            for (Off o : ons)
-                add(o);
-        }
-    }
-
     @Override
     public void wssMessage(WebSocket ws, String message) {
         try {
-            NAR n = ((NARConnection) ws.getAttachment()).nar;
+            NAR n = ((NARWeb.NARConnection) ws.getAttachment()).nar;
             n.input(message);
 //            System.out.println(n.loop + " " + n.loop.isRunning());
 //            System.out.println(Iterables.toString(n.attn.active));
@@ -132,12 +80,13 @@ abstract public class Web implements HttpModel {
         }
     }
 
-    @Override
-    public void wssClose(WebSocket ws, int code, String reason, boolean remote) {
-        Offs o = ws.getAttachment();
-        if (o != null) {
-            ws.setAttachment(null);
-            o.off();
+    static class NARConnection extends Offs {
+        public final NAR nar;
+
+        public NARConnection(NAR n, Off... ons) {
+            this.nar = n;
+            for (Off o : ons)
+                add(o);
         }
     }
 
@@ -153,7 +102,7 @@ abstract public class Web implements HttpModel {
     /**
      * Web Interface for 1 NAR
      */
-    public static class Single extends Web {
+    public static class Single extends NARWeb {
 
         private final NAR nar;
 
@@ -163,7 +112,7 @@ abstract public class Web implements HttpModel {
 
         public static void main(String[] args) throws IOException {
 
-            ClientBuilder.rebuildAsync(WebClientJS.class, false);
+            ClientBuilder.rebuildAsync(NARWebClient.class, false);
 
             int port;
             if (args.length > 0) {
@@ -173,7 +122,7 @@ abstract public class Web implements HttpModel {
             }
 
             NAR nar;
-            jcog.net.http.HttpServer h = new HttpServer(port, new Web.Single(nar = NARchy.core(1)));
+            jcog.net.http.HttpServer h = new HttpServer(port, new NARWeb.Single(nar = NARchy.core(1)));
             h.setFPS(10f);
 
             nar.startFPS(5f);
@@ -190,7 +139,7 @@ abstract public class Web implements HttpModel {
      * Shared Multi-NAR Server
      * TODO
      */
-    public static class Multi extends Web {
+    public static class Multi extends NARWeb {
         private final NAR nar;
         /**
          * adapter
@@ -321,12 +270,10 @@ abstract public class Web implements HttpModel {
 
     static class WebSocketLogger implements Consumer<Task> {
 
-        private final NAR n;
         volatile WebSocket w;
         final PriArrayBag<Task> out = new PriArrayBag<Task>(PriMerge.max, 64);
         final AtomicBoolean busy = new AtomicBoolean();
         public WebSocketLogger(WebSocket ws, NAR n) {
-            this.n = n;
             this.w = ws;
 
         }
@@ -381,4 +328,11 @@ abstract public class Web implements HttpModel {
 
     }
 
+    public static class WebClientJSBuilder {
+
+        public static void main(String[] args) {
+            rebuild(NARWebClient.class, false);
+        }
+
+    }
 }

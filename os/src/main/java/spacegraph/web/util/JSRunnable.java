@@ -1,4 +1,4 @@
-package nars.web.util;
+package spacegraph.web.util;
 
 import org.teavm.jso.JSFunctor;
 import org.teavm.jso.JSObject;

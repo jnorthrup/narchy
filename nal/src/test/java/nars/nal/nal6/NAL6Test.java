@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 1000;
+    private static final int cycles = 700;
 
     @BeforeEach
     void setup() {
@@ -306,7 +306,7 @@ public class NAL6Test extends NALTest {
     void variable_elimination6simplerReverse() {
 
 
-        test.nar.termVolumeMax.set(11);
+        test.nar.termVolumeMax.set(12);
         test
                 .believe("(bird:$x ==> (&&, flyer:$x, chirping:$x, food:worms))")
                 .believe("flyer:Tweety")
@@ -516,7 +516,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unificationNoImgAndAsPrecondition() {
-        test.nar.termVolumeMax.set(11);
+        test.nar.termVolumeMax.set(9);
 
         TestNAR tester = test;
         tester.believe("((<#1 --> lock>&&<$2 --> key>) ==> open(#1,$2))", 1.00f, 0.90f);
@@ -548,6 +548,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unification2() {
+        test.nar.termVolumeMax.set(9);
 
         TestNAR tester = test;
         tester.believe("<<$1 --> lock> ==> (&&,<#2 --> key>,open(#2,$1))>", 1.00f, 0.90f);
@@ -676,6 +677,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination_deduction_neg() {
+        test.nar.termVolumeMax.set(9);
 
         test
                 .believe("((&&, --(#1 --> lock), open($2,#1)) ==> ($2 --> key))")

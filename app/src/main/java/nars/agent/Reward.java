@@ -5,8 +5,6 @@ import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.concept.Concept;
-import nars.control.channel.CauseChannel;
-import nars.task.ITask;
 import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;

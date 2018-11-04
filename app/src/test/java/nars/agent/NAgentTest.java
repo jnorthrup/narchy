@@ -3,7 +3,6 @@ package nars.agent;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
 import nars.Task;
 import nars.control.DurService;
 import nars.task.DerivedTask;
