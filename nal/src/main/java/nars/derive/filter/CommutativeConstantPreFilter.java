@@ -43,7 +43,7 @@ public class CommutativeConstantPreFilter extends AbstractPred<Derivation> {
 
                 if (x!=commutiveContainer && x.op().commutative) {
                 //if (x instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsisCommutive) {
-                    byte[] commPath = Terms.constantPath(commutiveContainer, x);
+                    byte[] commPath = Terms.pathConstant(commutiveContainer, x);
                     if (commPath != null) {
 
                         x.subterms().forEach(s -> {
@@ -51,7 +51,7 @@ public class CommutativeConstantPreFilter extends AbstractPred<Derivation> {
 
                             //s is constant:
                             Term contentHolder = commInTaskOrBelief ? beliefPattern : taskPattern;
-                            byte[] contentPath = Terms.constantPath(contentHolder, s); //try the belief
+                            byte[] contentPath = Terms.pathConstant(contentHolder, s); //try the belief
                             if (contentPath != null)
                                 pre.add(new CommutativeConstantPreFilter(
                                         commPath, contentPath, commInTaskOrBelief)
@@ -69,12 +69,12 @@ public class CommutativeConstantPreFilter extends AbstractPred<Derivation> {
     public boolean test(Derivation d) {
 
         Term contentHolder = ellipsisInTaskOrBelief ? d.beliefTerm : d.taskTerm;
-        Term content = contentHolder.subPath(this.contentPath);
+        Term content = contentHolder.sub(this.contentPath);
         if (content == null)
             return false;
 
         Term containerHolder = ellipsisInTaskOrBelief ?  d.taskTerm : d.beliefTerm;
-        Term ellipsisContainer = containerHolder.subPath(this.ellipsisPath);
+        Term ellipsisContainer = containerHolder.sub(this.ellipsisPath);
 
         boolean ok = ellipsisContainer.contains(content);
         return ok;

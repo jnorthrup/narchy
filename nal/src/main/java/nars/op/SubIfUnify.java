@@ -171,11 +171,7 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
 
             if (!strict || (!result.equals(transformed) && !result.normalize().equals(transformed.normalize()))) { //dont actually normalize it ; could destroy common variables since they arent Anon and in the derivation's Anon map
 
-
-                //this.xy.forEach(parent.retransform::putIfAbsent);
-                //parent.retransform.put(transformed, result);
-                parent.retransform.putIfAbsent(result, transformed);
-
+                this.xy.forEach(parent.retransform::put);
 
                 return true;
             }

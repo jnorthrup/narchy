@@ -2460,69 +2460,7 @@ public enum Util {
         return new FasterList<>(typesOfArray(orgs, from, to));
     }
 
-    public static float[] remove(float[] f, FloatPredicate removeIf) {
-        int n = f.length;
-        if (n == 0) return ArrayUtils.EMPTY_FLOAT_ARRAY;
 
-        final MetalBitSet toRemove = MetalBitSet.bits(n);
-
-        for (int i = 0; i < n; i++) {
-            if (removeIf.accept(f[i]))
-                toRemove.set(i);
-        }
-        int r = toRemove.cardinality();
-        if (r == 0)
-            return f; //no change
-        if (r == n)
-            return ArrayUtils.EMPTY_FLOAT_ARRAY;
-        float[] x = new float[n - r];
-        int j = 0;
-        for (int i = 0; i < n; i++) {
-            if (!toRemove.get(i))
-                x[j++] = f[i];
-        }
-        return x;
-    }
-
-    /**
-     * removes elements from both f and g depending if the filter applied to 'f' element.
-     * g's size remains the same but is overwritten with the compacted version
-     * that has entries maintaining correlation to their original indices in f.
-     * -1 is assigned to unused indices in 'g' as a placeholder of the missing value
-     */
-    public static float[] remove(float[] f, short[] g, FloatPredicate removeIf) {
-        int n = f.length;
-        if (n == 0) return ArrayUtils.EMPTY_FLOAT_ARRAY;
-
-        final MetalBitSet toRemove = MetalBitSet.bits(n);
-
-        for (int i = 0; i < n; i++) {
-            if (removeIf.accept(f[i]))
-                toRemove.set(i);
-        }
-        int r = toRemove.cardinality();
-        if (r == 0)
-            return f; //no change
-
-        if (r == n) {
-            Arrays.fill(g, (short) -1);
-            return ArrayUtils.EMPTY_FLOAT_ARRAY;
-        }
-
-        float[] x = new float[n - r];
-        short[] h = new short[n - r];
-        int xx = 0;
-        int i;
-        for (i = 0; i < n; i++) {
-            if (!toRemove.get(i)) {
-                x[xx] = f[i];
-                h[xx++] = g[i];
-            }
-        }
-        System.arraycopy(h, 0, g, 0, h.length);
-        Arrays.fill(g, h.length, g.length, (short) -1);
-        return x;
-    }
 
     /**
      * fits a polynomial curve to the specified points and compiles an evaluator for it

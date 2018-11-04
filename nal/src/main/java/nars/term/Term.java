@@ -257,12 +257,12 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
             }
 
         }
-        return i == 0 ? this : subPath(i, subpaths.get(0));
+        return i == 0 ? this : sub(i, subpaths.get(0));
 
     }
 
     @Nullable
-    default Term subPath(ByteList path) {
+    default Term sub(ByteList path) {
         Term ptr = this;
         int s = path.size();
         for (int i = 0; i < s; i++)
@@ -276,13 +276,13 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * returns null if specified subterm does not exist
      */
     @Nullable
-    default Term subPath(byte... path) {
+    default Term sub(byte... path) {
         int p = path.length;
-        return p > 0 ? subPath(p, path) : this;
+        return p > 0 ? sub(p, path) : this;
     }
 
     @Nullable
-    default Term subPath(int subPathLen, byte... path) {
+    default Term sub(int subPathLen, byte... path) {
         Term ptr = this;
         for (int i = 0; i < subPathLen; i++) {
             if ((ptr = ptr.subSafe(path[i])) == Bool.Null)
@@ -292,7 +292,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
     @Nullable
-    default Term subPath(int subPathLen, ByteList path) {
+    default Term sub(int subPathLen, ByteList path) {
         Term ptr = this;
         for (int i = 0; i < subPathLen; i++) {
             if ((ptr = ptr.subSafe(path.get(i))) == Bool.Null)

@@ -166,7 +166,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
                     remove(i);
                     ss--;
                 } else {
-                    if (e!=null)
+                    if (e != null)
                         e.addAll(ii.stamp());
                     i++;
                 }
@@ -281,41 +281,43 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
             Term a = first.term();
             Term b = second.term();
-            long firstStart = first.start();
-            long secondStart = second.start();
-            final float[] e1Evi = {0};
-            final float[] e2Evi = {0};
-            Task finalFirst = first;
-            Task finalSecond = second;
-            removeIf(x -> {
-                Task xx = x.task; Term xxx;
-                if (xx == finalFirst || (xxx = xx.term()).equals(a)) {
-                    e1Evi[0] += x.evi;
-                    return false;
-                } else if (xx == finalSecond || xxx.equals(b)) {
-                    e2Evi[0] += x.evi;
-                    return false;
-                } else {
-                    return true;
-                }
-            });
+            float dtDiff = 0;
+            if ((dtDiff = dtDiff(a, b)) </*=*/ Param.TRUTHPOLATION_INTERMPOLATION_THRESH /*size >= 2 &&  || e2Evi[0] >= e1Evi[0]*/) {
 
-            if (size == 2 || e2Evi[0] >= e1Evi[0]){
+                long firstStart = first.start();
+                long secondStart = second.start();
+                final float[] e1Evi = {0};
+                final float[] e2Evi = {0};
+                Task finalFirst = first;
+                Task finalSecond = second;
+                removeIf(x -> {
+                    Task xx = x.task;
+                    Term xxx;
+                    if (xx == finalFirst || (xxx = xx.term()).equals(a)) {
+                        e1Evi[0] += x.evi;
+                        return false;
+                    } else if (xx == finalSecond || xxx.equals(b)) {
+                        e2Evi[0] += x.evi;
+                        return false;
+                    } else {
+                        return true;
+                    }
+                });
+
                 //if there isnt more evidence for the primarily sought term, then just use those components
-
                 Term term = Revision.intermpolate(a,
                         firstStart != ETERNAL && secondStart != ETERNAL ? secondStart - firstStart : 0,
                         b, e1Evi[0] / (e1Evi[0] + e2Evi[0]), nar);
 
-                if (Task.taskConceptTerm(term)) {
-                    float diff = dtDiff(a, b);
-                    if (Float.isFinite(diff)) {
+                if (term.volume() <= nar.termVolumeMax.intValue() && Task.taskConceptTerm(term)) {
+
+                    {
 
                         //assert(diff >= 0 && diff <= 1.0);
                         //float differenceFactor = 1 - diff;
 
                         float differenceFactor =
-                                1 - diff;
+                                1 - dtDiff;
                         //1f / (1f + diff);
 
                         this.term = term;

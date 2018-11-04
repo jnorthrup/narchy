@@ -3,26 +3,17 @@ package nars.derive.filter;
 import nars.$;
 import nars.Op;
 import nars.derive.Derivation;
-import nars.derive.premise.PatternIndex;
 import nars.derive.premise.PremiseRuleSource;
 import nars.op.SubIfUnify;
 import nars.subterm.Subterms;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
-import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.term.util.Image;
-import nars.unify.match.Ellipsislike;
 import org.eclipse.collections.api.set.MutableSet;
-
-import java.util.Collection;
-
-import static nars.derive.Derivation.Belief;
-import static nars.derive.Derivation.Task;
 
 public class UnifyPreFilter extends AbstractPred<Derivation> {
 
@@ -44,11 +35,11 @@ public class UnifyPreFilter extends AbstractPred<Derivation> {
 
     public static void tryAdd(Term x, Term y, Term taskPattern, Term beliefPattern, Subterms a, MutableSet<PREDICATE> pre) {
         //some structure exists that can be used to prefilter
-        byte[] xpInT = Terms.constantPath(taskPattern, x);
-        byte[] xpInB = Terms.constantPath(beliefPattern, x); //try the belief
+        byte[] xpInT = Terms.pathConstant(taskPattern, x);
+        byte[] xpInB = Terms.pathConstant(beliefPattern, x); //try the belief
         if (xpInT != null || xpInB != null) {
-            byte[] ypInT = Terms.constantPath(taskPattern, y);
-            byte[] ypInB = Terms.constantPath(beliefPattern, y); //try the belief
+            byte[] ypInT = Terms.pathConstant(taskPattern, y);
+            byte[] ypInB = Terms.pathConstant(beliefPattern, y); //try the belief
             if (ypInT != null || ypInB != null) {
 
                 //the unifying terms are deterministicaly extractable from the task or belief:
@@ -65,11 +56,11 @@ public class UnifyPreFilter extends AbstractPred<Derivation> {
 
     @Override
     public boolean test(Derivation d) {
-        Term x = xpInT != null ? d.taskTerm.subPath(xpInT) : d.beliefTerm.subPath(xpInB);
+        Term x = xpInT != null ? d.taskTerm.sub(xpInT) : d.beliefTerm.sub(xpInB);
         assert (x != Bool.Null);
         if (x == null)
             return false; //ex: seeking a negation but wasnt negated
-        Term y = ypInT != null ? d.taskTerm.subPath(ypInT) : d.beliefTerm.subPath(ypInB);
+        Term y = ypInT != null ? d.taskTerm.sub(ypInT) : d.beliefTerm.sub(ypInB);
         assert (y != Bool.Null) : (ypInT != null ? d.taskTerm : d.beliefTerm) + " does not resolve " + (ypInT != null ? ypInT : ypInB);
         if (y == null)
             return false; //ex: seeking a negation but wasnt negated

@@ -119,6 +119,7 @@ public class Derivation extends PreDerivation {
             Term input = xx.sub(0);
             Term replaced = xx.sub(1);
             Term replacement = xx.sub(2);
+
 //            if (replaced instanceof Atom) {
 //
 //                replaced = anon.put(replaced);
@@ -131,7 +132,8 @@ public class Derivation extends PreDerivation {
             if (y != null && !(y instanceof Bool)) {
 
 
-                retransform.put(y, input);
+                retransform.put(replaced, replacement);
+                //retransform.put(y, input);
                 //retransform.putIfAbsent(input, y);
 
             }

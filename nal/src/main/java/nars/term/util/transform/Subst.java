@@ -13,8 +13,13 @@ public interface Subst extends TermTransform {
     default Term resolve(final Term x) {
         Term y, z = x;
         while ((y = xy(z))!=null) {
-            assert(y!=z && y!=x);
+
+            //assert(y!=z && y!=x);
+//            if (y == z || y == x) //TEMPORARY
+//                throw new WTF("loop in xy map: " + this);
+
             z = y;
+
         }
         return z;
     }

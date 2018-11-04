@@ -16,7 +16,8 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
         this(new EmptySurface(), new EmptySurface(), 0.5f, true);
     }
 
-    @Deprecated public Splitting(X top, Y bottom, float split) {
+    @Deprecated
+    public Splitting(X top, Y bottom, float split) {
         this(top, bottom, split, true);
     }
 
@@ -25,21 +26,24 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
     }
 
     private Splitting(Surface top, Surface bottom, float split, boolean vertical) {
-        super(top,bottom);
+        super(top, bottom);
         this.vertical = vertical;
         split(split);
     }
 
-    public static Splitting<?,?> column(Surface x, float v, Surface y) {
+    public static Splitting<?, ?> column(Surface x, float v, Surface y) {
         return new Splitting(x, y, v, true);
     }
-    public static Splitting<?,?> column(Surface x, Surface y) {
+
+    public static Splitting<?, ?> column(Surface x, Surface y) {
         return column(x, 0.5f, y);
     }
-    public static Splitting<?,?> row(Surface x, float v, Surface y) {
+
+    public static Splitting<?, ?> row(Surface x, float v, Surface y) {
         return new Splitting(x, y, v, false);
     }
-    public static Splitting<?,?> row(Surface x, Surface y) {
+
+    public static Splitting<?, ?> row(Surface x, Surface y) {
         return row(x, 0.5f, y);
     }
 
@@ -79,64 +83,66 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 
         Surface a = T(), b = B();
 
-        if (a!=null && b!=null && a.visible() && b.visible()) {
+        if (a != null && b != null /*&& a.visible() && b.visible()*/) {
 
             float X = x(), Y = y(), h = h(), w = w();
 
             if (vertical) {
 
-                float Ysplit = Y + (1-split) * h;
+                float Ysplit = Y + split * h;
 
-                if (a != null)
-                    a.pos(X, Ysplit, X + w, Y + h);
+                a.pos(X, Ysplit, X + w, Y + h);
 
-                if (b != null)
-                    b.pos(X, Y, X + w, Ysplit);
+                b.pos(X, Y, X + w, Ysplit);
             } else {
                 float Xsplit = X + split * w;
 
-                if (a != null)
-                    a.pos(X, Y, Xsplit, Y + h);
+                a.pos(X, Y, Xsplit, Y + h);
 
-                if (b != null)
-                    b.pos(Xsplit, Y, X + w, Y + h);
+                b.pos(Xsplit, Y, X + w, Y + h);
 
             }
-        } else if (a!=null && a.visible()) {
+        } else if (a != null /*&& a.visible()*/) {
             a.pos(bounds);
-        } else if (b!=null && b.visible()) {
+        } else if (b != null /*&& b.visible()*/) {
             b.pos(bounds);
         }
 
-        if (a != null) a.layout();
-        if (b != null) b.layout();
+
     }
 
     public final Splitting<X, Y> T(X s) {
         put(0, s);
         return this;
     }
+
     public final Splitting<X, Y> B(Y s) {
         put(1, s);
         return this;
     }
+
     public final Splitting<X, Y> L(X s) {
         put(0, s);
         return this;
     }
+
     public final Splitting<X, Y> R(Y s) {
         put(1, s);
         return this;
     }
+
     private X T() {
         return (X) get(0);
     }
+
     private Y B() {
         return (Y) get(1);
     }
+
     public final X L() {
         return (X) get(0);
     }
+
     public final Y R() {
         return (Y) get(1);
     }

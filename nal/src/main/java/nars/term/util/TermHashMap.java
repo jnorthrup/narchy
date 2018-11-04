@@ -20,13 +20,17 @@ import java.util.function.Function;
  */
 public class TermHashMap<X> extends AbstractMap<Term, X> {
 
-    protected ShortObjectHashMap<X> id = null;
-    protected Map<Term, X> other = null;
+    protected final ShortObjectHashMap<X> id;
+    protected final Map<Term, X> other;
 
     public TermHashMap() {
+        this(new ShortObjectHashMap<>(8), new UnifiedMap<>(8));
+    }
+
+    public TermHashMap(ShortObjectHashMap<X> idMap, Map<Term, X> otherMap) {
         super();
-        id = newIDMap();
-        other = newOtherMap();
+        id = idMap;
+        other = otherMap;
     }
 
     @Override
@@ -46,9 +50,6 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
         //other = null;
     }
 
-//    private int compactThreshold() {
-//        return initialHashCapacity() * 2;
-//    }
 
     @Override
     public Set<Entry<Term, X>> entrySet() {
@@ -67,7 +68,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
         short aid = AnonID.id(key);
         if (aid != 0) {
 
-            return id.updateValue(aid, () -> f.apply(key, null), p -> f.apply(key, p));
+            return id.updateValueWith(aid, () -> f.apply(key, null), (p,k) -> f.apply(k, p), key);
 
         } else {
 
@@ -82,18 +83,9 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
 
         short aid = AnonID.id(key);
-        if (aid != 0) {
-
-
-            return id.getIfAbsentPut(aid, () ->
-                    mappingFunction.apply(key));
-
-        } else {
-
-
-            return other.computeIfAbsent(key, mappingFunction);
-
-        }
+        return aid != 0 ?
+                id.getIfAbsentPutWith(aid, mappingFunction::apply, key) :
+                other.computeIfAbsent(key, mappingFunction);
 
     }
 
@@ -118,35 +110,17 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
         return aid != 0 ? id.remove(aid) : other.remove(key);
     }
 
-    private int initialHashCapacity() {
-        return 8;
-    }
-
-    private ShortObjectHashMap<X> newIDMap() {
-        return new ShortObjectHashMap<>(initialHashCapacity());
-    }
-
-    private Map<Term, X> newOtherMap() {
-        return new UnifiedMap<>(initialHashCapacity(), 0.99f);
-
-    }
 
     @Override
     public void forEach(BiConsumer<? super Term, ? super X> action) {
         id.forEachKeyValue((x, y) -> action.accept(AnonID.idToTerm(x), y));
-        other.forEach(action);
-    }
-
-    /**
-     * more intense than a clear but equally effective
-     */
-    public void delete() {
-        id = null;
-        other = null;
+        if (!other.isEmpty())
+            other.forEach(action);
     }
 
 
-    static class AnonMapEntrySet<X> extends AbstractSet<Map.Entry<Term, X>> {
+
+    static final class AnonMapEntrySet<X> extends AbstractSet<Map.Entry<Term, X>> {
         private final ShortObjectHashMap<X> id;
 
         AnonMapEntrySet(ShortObjectHashMap<X> id) {
@@ -165,7 +139,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     }
 
-    static class AnonEntry<X> implements Map.Entry<Term, X> {
+    static final class AnonEntry<X> implements Map.Entry<Term, X> {
 
         private final ShortObjectPair<X> x;
 

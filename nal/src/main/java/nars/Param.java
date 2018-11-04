@@ -25,7 +25,7 @@ public abstract class Param {
 
 
 
-    public static final boolean SHUFFLE_TERMUTES = true;
+    public static final boolean SHUFFLE_TERMUTES = false; //this may be dangerous
 
 
 
@@ -34,10 +34,13 @@ public abstract class Param {
 
     public static final boolean PREMISE_UNIFY_SYMMETRIC = true;
 
+    /** in Revision.dtDiff measurement */
+    public static final float TRUTHPOLATION_INTERMPOLATION_THRESH = 0.5f;
+
     @Deprecated public static int LinkFanoutMax =
             //16;
-            //10;
-            8;
+            10;
+            //8;
             //6;
             //2;
             //4;
@@ -431,8 +434,8 @@ public abstract class Param {
 
         int falloffDurs =
                 //1;
-                //2;
-                4;
+                2;
+                //4;
                 //dur;
                 //8;
         return evi / (1.0f + (((float)dt) / (falloffDurs * dur)));

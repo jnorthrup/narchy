@@ -1,6 +1,7 @@
 package nars.derive.premise;
 
 import jcog.Util;
+import jcog.data.bit.MetalBitSet;
 import jcog.decide.MutableRoulette;
 import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteHijackMemoize;
@@ -9,9 +10,8 @@ import nars.derive.Derivation;
 import nars.term.control.PREDICATE;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.stream.Stream;
-
-import static jcog.pri.ScalarValue.EPSILON;
 
 /**
  * compiled derivation rules
@@ -72,7 +72,8 @@ public class DeriverRules {
      * choice id to branch id mapping
      */
     private boolean test(Derivation d, int branch) {
-        return could[branch].test(d);
+        could[branch].test(d);
+        return d.revertLive(0, 1);
     }
 
 
@@ -82,59 +83,70 @@ public class DeriverRules {
         /**
          * weight vector generation
          */
-        short[] _can = d.will;
+        short[] could = d.will;
 
-        int fanOut;
         float[] maybe;
         short[] can;
-        if (_can.length > 1) {
-            can = _can.clone(); //dont modify the short[] stored in the premise key cache
-            maybe = Util.remove(
-                    Util.map(choice -> this.could[can[choice]].value(d), new float[can.length]),
-                    can,
-                    w -> w <= 0
-            );
-            fanOut = maybe.length;
-        } else {
-            can = _can;
-            if (can.length == 1 && this.could[can[0]].value(d) > EPSILON) {
-                fanOut = 1;
+
+        if (could.length > 1) {
+
+            float[] f = Util.map(choice -> this.could[could[choice]].value(d), new float[could.length]);
+            int n = f.length;
+
+            MetalBitSet toRemove = null;
+            for (int i = 0; i < n; i++) {
+                if (f[i] <= 0) {
+                    if (toRemove == null) toRemove = MetalBitSet.bits(n);
+                    toRemove.set(i);
+                }
+            }
+
+            if (toRemove == null) {
+                can = could; //no change
+                maybe = can.length > 1 ? f : null /* not necessary */;
+
             } else {
-                fanOut = 0;
+                int r = toRemove.cardinality();
+                if (r == n) {
+                    return; //all removed; nothing remains
+                } /*else if (r == n-1) {
+                    //TODO all but one
+                } */ else {
+                    int fanOut = n - r;
+
+                    maybe = new float[fanOut];
+                    can = new short[fanOut];
+                    int xx = 0;
+                    int i;
+                    for (i = 0; i < n; i++) {
+                        if (!toRemove.get(i)) {
+                            maybe[xx] = f[i];
+                            can[xx++] = could[i];
+                        }
+                    }
+                }
+            }
+
+        } else {
+
+            if (could.length == 1 && this.could[could[0]].value(d) > 0) {
+                can = could;
+            } else {
+                return;
             }
             maybe = null;
         }
 
-        if (fanOut > 0) {
 
+        int fanOut = can.length; assert(fanOut > 0);
 
-            //int branchTTL = d.ttl;
-                                //* fanOut;
-
-            //d.setTTL(branchTTL);
-
-            switch (fanOut) {
-                case 1: {
-                    test(d, can[0]);
-
-                    d.revert(0);
-
-                    break;
-                }
-                default: {
-
-
-
-                    MutableRoulette.run(maybe, d.random, wi -> 0, b -> {
-
-                        test(d, can[b]);
-
-                        return d.revertLive(0, 1);
-                    });
-                    break;
-                }
-            }
+        if (fanOut == 1) {
+            test(d, can[0]);
+        } else {
+            assert((can.length == maybe.length)):  Arrays.toString(could) + " " + Arrays.toString(can) + " " + Arrays.toString(maybe);
+            MutableRoulette.run(maybe, d.random, wi -> 0, b -> test(d, can[b]));
         }
+
 
     }
 

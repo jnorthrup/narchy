@@ -38,9 +38,7 @@ class TermHashMapTest {
         assertEquals(0, m.size());
         assertTrue(m.isEmpty());
 
-        m.delete();
-        assertNull(m.id);
-        assertNull(m.other);
+
 
     }
 

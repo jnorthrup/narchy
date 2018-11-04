@@ -3,6 +3,7 @@ package nars.unify;
 import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
+import jcog.data.set.ArrayHashSet;
 import jcog.version.VersionMap;
 import jcog.version.Versioned;
 import jcog.version.Versioning;
@@ -13,13 +14,11 @@ import nars.term.Termlike;
 import nars.term.Variable;
 import nars.term.util.TermHashMap;
 import nars.term.util.transform.Subst;
-import nars.term.var.ImDep;
 import nars.unify.constraint.UnifyConstraint;
 import nars.unify.mutate.Termutator;
 import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -42,13 +41,10 @@ So it can be useful for a more easy to understand rewrite of this class TODO
 */
 public abstract class Unify extends Versioning implements Subst {
 
-
-
-
     /**
      * accumulates the next segment of the termutation stack
      */
-    public final Set<Termutator> termutes = new LinkedHashSet(4, 0.99f);
+    public final Set<Termutator> termutes = new ArrayHashSet<>(4);
 
     public final VersionMap<Variable, Term> xy;
     public Random random;
@@ -77,14 +73,7 @@ public abstract class Unify extends Versioning implements Subst {
     }
 
     protected Unify(int varBits, Random random, int stackMax) {
-        this(varBits, random, stackMax, new TermHashMap() {
-            @Override
-            public Object put(Term key, Object value) {
-                if (key instanceof ImDep)
-                    throw new WTF();
-                return super.put(key, value);
-            }
-        });
+        this(varBits, random, stackMax, new TermHashMap<>());
     }
 
     protected Unify(int varBits, Random random, int stackMax, Map/*<Variable,Versioned<Term>>*/ termMap) {

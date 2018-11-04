@@ -133,14 +133,14 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
             this.constraint = m;
 
             if (xInTask!=null && (xInBelief == null || xInTask.length < xInBelief.length))
-                extractX = xInTask.length == 0 ? (t,b)->t : (t,b)->t.subPath(xInTask);
+                extractX = xInTask.length == 0 ? (t,b)->t : (t,b)->t.sub(xInTask);
             else
-                extractX = xInBelief.length == 0 ? (t,b)->b : (t,b)->b.subPath(xInBelief);
+                extractX = xInBelief.length == 0 ? (t,b)->b : (t,b)->b.sub(xInBelief);
 
             if (yInTask!=null && (yInBelief == null || yInTask.length < yInBelief.length))
-                extractY = yInTask.length == 0 ? (t,b)->t : (t,b)->t.subPath(yInTask);
+                extractY = yInTask.length == 0 ? (t,b)->t : (t,b)->t.sub(yInTask);
             else
-                extractY = yInBelief.length == 0 ? (t,b)->b : (t,b)->b.subPath(yInBelief);
+                extractY = yInBelief.length == 0 ? (t,b)->b : (t,b)->b.sub(yInBelief);
         }
 
         @Override

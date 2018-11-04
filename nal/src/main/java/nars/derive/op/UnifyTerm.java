@@ -96,7 +96,6 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
         public boolean test(Derivation d) {
             d.revert(0);
             d.termutes.clear();
-            d.retransform.clear();
             return true;
         }
     };

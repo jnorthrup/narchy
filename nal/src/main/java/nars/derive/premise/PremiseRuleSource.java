@@ -678,9 +678,9 @@ public class PremiseRuleSource extends ProxyTerm  {
         //boolean isTask = taskPattern.equals(x);
         //boolean isBelief = beliefPattern.equals(x);
         byte[] pt = //(isTask || !taskPattern.ORrecurse(s -> s instanceof Ellipsislike)) ?
-                Terms.constantPath(taskPattern, x);
+                Terms.pathConstant(taskPattern, x);
         byte[] pb = //(isBelief || !beliefPattern.ORrecurse(s -> s instanceof Ellipsislike)) ?
-                Terms.constantPath(beliefPattern, x);// : null;
+                Terms.pathConstant(beliefPattern, x);// : null;
         if (pt != null || pb != null) {
 
 

@@ -44,6 +44,7 @@ public final class Termify extends AbstractPred<Derivation> {
 
         d.concTerm = null;
         d.concOcc = null;
+        d.retransform.clear();
 
         NAR nar = d.nar;
 

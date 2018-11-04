@@ -94,7 +94,7 @@ public final class TermMatchPred<X> extends AbstractPred<X> {
             if (!superOK)
                 return false;
 
-            Term subTarget = superTerm.subPath(subPath);
+            Term subTarget = superTerm.sub(subPath);
             return subTarget!=null && (match.test(subTarget)) == trueOrFalse;
 
         }
