@@ -60,17 +60,17 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
         synchronized(this) {
             if (this.space == null) {
 
-                this.space = SpaceGraph.window(spacer.get(), width, height, true);
+                this.space = SpaceGraph.window(spacer.get(), width, height);
 
 //                space.pre(s -> {
                 Exe.invokeLater(()->{
-                    GLWindow w = space.window;
+                    GLWindow w = space.io.window;
                     
                         w.addWindowListener(this);
                         if (f!=null) {
                             int nx = Math.round(f.posPixel.x - width / 2f);
                             int ny = Math.round(f.posPixel.y - height / 2f);
-                            space.setPosition(nx, ny);
+                            space.io.setPosition(nx, ny);
                         }
                     
                         busy.set(false); 
@@ -86,7 +86,7 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
 
                 set(false);
 
-                this.space.off();
+                this.space.io.off();
                 this.space = null;
 
             }

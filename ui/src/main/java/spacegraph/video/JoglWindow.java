@@ -20,6 +20,9 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
+import static com.jogamp.opengl.GL.GL_COLOR_BUFFER_BIT;
+import static com.jogamp.opengl.GL.GL_DEPTH_BUFFER_BIT;
+
 
 public abstract class JoglWindow implements GLEventListener, WindowListener {
 
@@ -453,6 +456,23 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         return window.getScreen().getHeight();
     }
 
+    protected void clearComplete() {
+        gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+
+    private void clearMotionBlur(float rate /* TODO */) {
+
+
+        gl.glAccum(GL2.GL_LOAD, 0.5f);
+
+        gl.glAccum(GL2.GL_ACCUM, 0.5f);
+
+
+        gl.glAccum(GL2.GL_RETURN, rate);
+        gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
+
+
+    }
 
 /* from: Jake2's */
 class GameAnimatorControl extends AnimatorBase {

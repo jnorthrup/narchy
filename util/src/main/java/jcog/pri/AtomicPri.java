@@ -58,15 +58,16 @@ public abstract class AtomicPri implements ScalarValue {
     }
 
     private int _pri() {
-
-
-        //return (int) INT.getOpaque(this);
-        return (int) INT.get(this);
+        return (int) INT.getOpaque(this);
+        //return (int) INT.get(this);
     }
 
     @Override
     public final float pri() {
         return intBitsToFloat( _pri() );
+    }
+    public final int priComparable() {
+        return _pri();
     }
 
     public boolean isDeleted() {

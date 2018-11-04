@@ -23,7 +23,6 @@
 
 package spacegraph.space3d;
 
-import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLLightingFunc;
@@ -41,7 +40,6 @@ import spacegraph.space3d.phys.collision.broad.Broadphase;
 import spacegraph.space3d.phys.collision.broad.DbvtBroadphase;
 import spacegraph.space3d.phys.collision.broad.Intersecter;
 import spacegraph.space3d.phys.constraint.BroadConstraint;
-import spacegraph.space3d.phys.math.DebugDrawModes;
 import spacegraph.space3d.widget.DynamicListSpace;
 import spacegraph.video.Draw;
 import spacegraph.video.JoglSpace;
@@ -49,6 +47,7 @@ import spacegraph.video.Tex;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -60,7 +59,7 @@ import static com.jogamp.opengl.GL2.*;
  * @author jezek2
  */
 
-public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
+public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X>> {
 
     private final boolean simulating = true;
 
@@ -74,23 +73,20 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
     public final Dynamics3D<X> dyn;
 
 
-
     public SpaceGraphPhys3D<X> camPos(float x, float y, float z) {
         camPos.set(x, y, z);
         return this;
     }
 
 
-    @Override
-    public void windowDestroyed(WindowEvent windowEvent) {
-        super.windowDestroyed(windowEvent);
-        inputs.clear();
-    }
+//    @Override
+//    public void windowDestroyed(WindowEvent windowEvent) {
+//        super.windowDestroyed(windowEvent);
+//        inputs.clear();
+//    }
 
     private SpaceGraphPhys3D() {
         super();
-
-        debug |= DebugDrawModes.NO_HELP_TEXT;
 
 
         Intersecter dispatcher = new DefaultIntersecter(new DefaultCollisionConfiguration());
@@ -100,10 +96,10 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
 
                 new DbvtBroadphase();
 
-        dyn = new Dynamics3D<>(dispatcher, broadphase, this);
+        dyn = new Dynamics3D<X>(dispatcher, broadphase, this);
 
-        onUpdate((dt) -> {
-            update(Math.round(dtS*1000.0));
+        io.onUpdate((dt) -> {
+            update(Math.round(io.dtS * 1000.0));
             return true;
         });
     }
@@ -125,8 +121,8 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
     protected void initInput() {
 
 
-        addMouseListenerPost(new FPSLook(this));
-        addMouseListenerPost(new OrbMouse(this));
+        io.addMouseListenerPost(new FPSLook(this));
+        io.addMouseListenerPost(new OrbMouse(this));
 
         super.initInput();
     }
@@ -157,8 +153,8 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
 
     }
 
-    @Deprecated private final Queue<Spatial> toRemove =
-            new ConcurrentLinkedQueue<>();
+    @Deprecated
+    private final Queue<Spatial> toRemove = new ConcurrentLinkedQueue<>();
 
     private final List<AbstractSpace<X>> inputs = new FasterList<>(1);
 
@@ -178,7 +174,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
 
             dyn.update(
 
-                    Math.max(dtMS / 1000f, 1000000f / renderFPS)
+                    Math.max(dtMS / 1000f, 1000000f / io.renderFPS)
                             / 1000000.f, maxSubsteps
 
             );
@@ -190,30 +186,31 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
     protected void renderVolume(int dtMS) {
 
 
-        forEach(s -> s.renderAbsolute(gl, dtMS));
+        forEach(s -> s.renderAbsolute(io.gl, dtMS));
 
         forEach(s -> s.forEachBody(body -> {
 
-            gl.glPushMatrix();
+            io.gl.glPushMatrix();
 
-            Draw.transform(gl, body.transform);
+            Draw.transform(io.gl, body.transform);
 
-            s.renderRelative(gl, body, dtMS);
+            s.renderRelative(io.gl, body, dtMS);
 
-            gl.glPopMatrix();
+            io.gl.glPopMatrix();
 
         }));
 
-        renderSky();
+        //renderSky();
 
     }
 
     private Texture tHv;
     private GLUquadric quad;
+
     private void renderSky() {
 
 
-        if(quad==null) {
+        if (quad == null) {
             quad = Draw.glu.gluNewQuadric();
             Draw.glu.gluQuadricDrawStyle(quad, GLU.GLU_FILL);
             Draw.glu.gluQuadricNormals(quad,
@@ -221,12 +218,12 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
                     //GLU.GLU_FLAT
                     GLU.GLU_NONE
             );
-            Draw.glu.gluQuadricTexture(quad , true);
+            Draw.glu.gluQuadricTexture(quad, true);
         }
-        gl.glColor3f(1f,1f,1f);
-        gl.glMaterialfv(GL.GL_FRONT_AND_BACK , GLLightingFunc.GL_AMBIENT_AND_DIFFUSE ,
+        io.gl.glColor3f(1f, 1f, 1f);
+        io.gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_AMBIENT_AND_DIFFUSE,
                 //new float[] { 10.0f , 10.0f , 10.0f , 1.0f },
-                new float[] { 1.0f , 1.0f , 1.0f , 1.0f },
+                new float[]{1.0f, 1.0f, 1.0f, 1.0f},
                 0);
         if (tHv == null) {
             Tex t = new Tex();
@@ -238,30 +235,29 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
             int off = Bitmap2D.encodeRGB8b(0f, 0f, 0f);
             for (int x = 0; x < w; x++) {
                 for (int y = 0; y < h; y++) {
-                    bi.setRGB(x, y, (x^y) % 2 == 0 ? on : off);
+                    bi.setRGB(x, y, (x ^ y) % 2 == 0 ? on : off);
                 }
             }
             g.dispose();
 
-            t.commit(gl);  //HACK
+            t.commit(io.gl);  //HACK
             t.update(bi);  //HACK
-            t.commit(gl);  //HACK
+            t.commit(io.gl);  //HACK
 
             tHv = t.texture;
         }
-        tHv.enable(gl);
-        tHv.bind(gl);
+        tHv.enable(io.gl);
+        tHv.bind(io.gl);
 
-        gl.glPushMatrix();
+        io.gl.glPushMatrix();
 //        gl.glLoadIdentity();
 //        gl.glTranslatef(camPos.x, camPos.y, camPos.z);
 
 
+        Draw.glu.gluSphere(quad, 1000.0f, 9, 9);
+        io.gl.glPopMatrix();
 
-        Draw.glu.gluSphere(quad , 1000.0f , 9 , 9);
-        gl.glPopMatrix();
-
-        tHv.disable(gl);    ////TTTTTTTTTTTTTTT
+        tHv.disable(io.gl);    ////TTTTTTTTTTTTTTT
     }
 
     private DynamicListSpace<X> add(Spatial<X>... s) {
@@ -314,10 +310,8 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
 
     @Override
     final public void forEach(Consumer<? super Spatial<X>> each) {
-
-        for (AbstractSpace<X> input : inputs) {
+        for (AbstractSpace<X> input : inputs)
             input.forEach(each);
-        }
     }
 
 
@@ -329,7 +323,6 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
     public static class ExtraGlobals {
 
 
-
         public static final float FLT_EPSILON = 1.19209290e-07f;
         public static final float SIMD_EPSILON = FLT_EPSILON;
 
@@ -338,11 +331,12 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
         public static final float SIMD_HALF_PI = SIMD_2_PI * 0.25f;
 
 
-
-
     }
 
-
+    @Override
+    public final Iterator<Spatial<X>> iterator() {
+        throw new UnsupportedOperationException("use forEach");
+    }
 }
 
 

@@ -5,7 +5,6 @@ import nars.NAR;
 import nars.NARS;
 import nars.Task;
 import nars.control.DurService;
-import nars.task.DerivedTask;
 import nars.term.Term;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanBooleanPredicate;
@@ -16,7 +15,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static jcog.Texts.n4;
 import static nars.$.$$;
 import static nars.$.the;
-import static nars.Op.GOAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -48,10 +46,10 @@ public class NAgentTest {
         n.goalPriDefault.set(0.5f);
         n.beliefPriDefault.set(0.4f);
 
-        n.onTask((t)->{
-            if (t instanceof DerivedTask)
-                System.out.println(t.proof());
-        }, GOAL);
+//        n.onTask((t)->{
+//            if (t instanceof DerivedTask)
+//                System.out.println(t.proof());
+//        }, GOAL);
 
         BooleanBooleanPredicate onlyTrue = (next, prev) -> next;
         BooleanBooleanPredicate onlyFalse = (next, prev) -> !next;

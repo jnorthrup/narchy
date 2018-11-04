@@ -48,7 +48,7 @@ public class Abbreviation/*<S extends Term>*/ {
     private final String termPrefix;
 
 
-    public Abbreviation(NAR nar, String termPrefix, int volMin, int volMax, float selectionRate, int capacity) {
+    public Abbreviation(NAR nar, String termPrefix, int volMin, int volMax, int capacity) {
         super();
         bag = new TaskLeak(capacity, nar) {
 

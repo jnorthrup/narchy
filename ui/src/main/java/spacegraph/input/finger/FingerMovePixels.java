@@ -24,8 +24,8 @@ abstract public class FingerMovePixels extends FingerMove {
     @Override
     protected boolean startDrag(Finger f) {
         JoglSpace w = window();
-        windowStartX = w.getX();
-        windowStartY = w.getY();
+        windowStartX = w.io.getX();
+        windowStartY = w.io.getY();
         return super.startDrag(f);
     }
 

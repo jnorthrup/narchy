@@ -41,8 +41,8 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
     public OrbMouse(SpaceGraphPhys3D g) {
 
         super(g);
-        g.addKeyListener(this);
 
+        g.io.addKeyListener(this);
     }
 
     @Override
@@ -387,7 +387,7 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
 
         if (prevPick != pickedSpatial) {
             if (prevPick != null) {
-                prevPick.onUntouch(space);
+                prevPick.onUntouch(space.io);
             }
             this.pickedSpatial = pickedSpatial;
         }
@@ -421,8 +421,8 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
         vertical.normalize();
 
         float tanfov = (float) Math.tan(0.5f * fov);
-        float ww = space.getWidth();
-        float hh = space.getHeight();
+        float ww = space.io.getWidth();
+        float hh = space.io.getHeight();
 
         float aspect = hh / ww;
 

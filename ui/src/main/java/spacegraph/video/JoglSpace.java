@@ -1,24 +1,21 @@
 package spacegraph.video;
 
-import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.math.FloatUtil;
 import jcog.data.list.FastCoWList;
-import jcog.exe.Exe;
+import jcog.event.Off;
 import spacegraph.input.key.KeyXYZ;
 import spacegraph.input.key.WindowKeyControls;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.hud.Ortho;
-import spacegraph.space3d.Spatial;
 import spacegraph.util.animate.AnimVector3f;
 import spacegraph.util.animate.Animated;
 import spacegraph.util.math.v3;
 
-import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
@@ -33,115 +30,60 @@ import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 import static spacegraph.util.math.v3.v;
 
-abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatial<X>> {
+abstract public class JoglSpace {
 
+    /** the hardware input/output implementation */
+    public final JoglWindow io;
 
-    public final v3 camPos;
-    public final v3 camFwd;
-    public final v3 camUp;
+    public final v3 camPos, camFwd, camUp;
+    private final float cameraSpeed = 100f, cameraRotateSpeed = cameraSpeed;
+
     private final float[] mat4f = new float[16];
 
     private final FastCoWList<Surface> layers = new FastCoWList(Surface[]::new);
     private final Queue<Runnable> pending = new ConcurrentLinkedQueue();
-    private final float cameraSpeed = 100f;
-    private final float cameraRotateSpeed = cameraSpeed;
-    public float top;
-    public float bottom;
-    public float zNear = 0.5f;
-    public float zFar = 1200;
+
+    public float top, bottom, left, right, aspect, tanFovV;
+
+    public float zNear = 0.5f, zFar = 1200;
 
     protected int debug;
-    private float aspect;
-    private float tanFovV;
-    private float left;
-    private float right;
 
 
-    protected JoglSpace() {
-        super();
+    public JoglSpace() {
+        io = new MyJoglWindow();
 
-        onUpdate((Animated) (camPos = new AnimVector3f(0, 0, 5, cameraSpeed)));
-        onUpdate((Animated) (camFwd = new AnimVector3f(0, 0, -1, cameraRotateSpeed)));
-        onUpdate((Animated) (camUp = new AnimVector3f(0, 1, 0, cameraRotateSpeed)));
-
-    }
-
-    @Override
-    public void windowDestroyed(WindowEvent windowEvent) {
-        super.windowDestroyed(windowEvent);
-        layers.clear();
-        onUpdate.clear();
+        io.onUpdate((Animated) (camPos = new AnimVector3f(0, 0, 5, cameraSpeed)));
+        io.onUpdate((Animated) (camFwd = new AnimVector3f(0, 0, -1, cameraRotateSpeed)));
+        io.onUpdate((Animated) (camUp = new AnimVector3f(0, 1, 0, cameraRotateSpeed)));
     }
 
     public JoglSpace add(Surface layer) {
         if (layer instanceof Ortho) {
             pending.add(() -> {
-                Exe.invoke(()->{
-                    this.layers.add(layer);
-                    ((Ortho) layer).start(this);
-                });
+                //Exe.invoke(()->{
+                    JoglSpace.this.layers.add(layer);
+                    ((Ortho) layer).start(JoglSpace.this);
+                //});
             });
         } else {
             pending.add(() -> {
-                Exe.invoke(()-> {
-                    this.layers.add(layer);
+                //Exe.invoke(()-> {
+                    JoglSpace.this.layers.add(layer);
                     layer.start(null);
-                });
+                //});
 
             });
         }
-        return this;
+        return JoglSpace.this;
     }
 
     public boolean remove(Surface layer) {
-        if (this.layers.remove(layer)) {
+        if (JoglSpace.this.layers.remove(layer)) {
             layer.stop();
             return true;
         }
         return false;
-    }
-
-    @Override
-    protected void init(GL2 gl) {
-
-        gl.glEnable(GL_STENCIL);
-
-
-        gl.glEnable(GL_LINE_SMOOTH);
-
-        gl.glEnable(GL2.GL_MULTISAMPLE);
-
-
-        gl.glHint(GL_POLYGON_SMOOTH_HINT,
-                GL_NICEST);
-
-        gl.glHint(GL_LINE_SMOOTH_HINT,
-                GL_NICEST);
-
-        gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT,
-                GL_NICEST);
-
-
-        gl.glColorMaterial(GL_FRONT_AND_BACK,
-                GL_AMBIENT_AND_DIFFUSE
-
-        );
-        gl.glEnable(GL_COLOR_MATERIAL);
-        gl.glEnable(GL_NORMALIZE);
-
-
-        initDepth(gl);
-
-
-        initBlend(gl);
-
-
-        initLighting(gl);
-
-        initInput();
-
-        flush();
-        onUpdate((Consumer) (w -> flush()));
     }
 
     private void flush() {
@@ -175,9 +117,9 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
     protected void initInput() {
 
-        addKeyListener(new WindowKeyControls(this));
+        io.addKeyListener(new WindowKeyControls(JoglSpace.this));
 
-        addKeyListener(new KeyXYZ(this));
+        io.addKeyListener(new KeyXYZ(JoglSpace.this));
 
     }
 
@@ -193,18 +135,6 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
     }
 
-    @Override
-    protected final void render(int dtMS) {
-
-        clear();
-
-        updateCamera(dtMS);
-
-        renderVolume(dtMS);
-
-        renderOrthos(dtMS);
-    }
-
     protected void renderVolume(int dtMS) {
 
     }
@@ -214,11 +144,11 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         int facialsSize = layers.size();
         if (facialsSize > 0) {
 
-            GL2 gl = this.gl;
+            GL2 gl = io.gl;
 
 
-            int w = window.getWidth();
-            int h = window.getHeight();
+            int w = io.window.getWidth();
+            int h = io.window.getHeight();
             gl.glViewport(0, 0, w, h);
             gl.glMatrixMode(GL_PROJECTION);
             gl.glLoadIdentity();
@@ -251,28 +181,11 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
 
     private void clear() {
-        //clearMotionBlur(0.5f);
-        clearComplete();
+        //view.clearMotionBlur(0.5f);
+        io.clearComplete();
 
     }
 
-    protected void clearComplete() {
-        gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    }
-
-    private void clearMotionBlur(float rate /* TODO */) {
-
-
-        gl.glAccum(GL2.GL_LOAD, 0.5f);
-
-        gl.glAccum(GL2.GL_ACCUM, 0.5f);
-
-
-        gl.glAccum(GL2.GL_RETURN, rate);
-        gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
-
-
-    }
 
     private void updateCamera(int dtMS) {
         perspective();
@@ -281,16 +194,16 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     private void perspective() {
 
 
-        if (gl == null)
+        if (io.gl == null)
             return;
 
-        gl.glMatrixMode(GL_PROJECTION);
-        gl.glLoadIdentity();
+        io.gl.glMatrixMode(GL_PROJECTION);
+        io.gl.glLoadIdentity();
 
 
-        float aspect = ((float) window.getWidth()) / window.getHeight();
+        float aspect = ((float) io.window.getWidth()) / io.window.getHeight();
 
-        this.aspect = aspect;
+        JoglSpace.this.aspect = aspect;
 
         tanFovV = (float) Math.tan(45 * FloatUtil.PI / 180.0f / 2f);
 
@@ -300,7 +213,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         left = -right;
 
 
-        gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
+        io.gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
 
 
         Draw.glu.gluLookAt(camPos.x - camFwd.x, camPos.y - camFwd.y, camPos.z - camFwd.z,
@@ -308,26 +221,100 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
                 camUp.x, camUp.y, camUp.z);
 
 
-        gl.glMatrixMode(GL_MODELVIEW);
-        gl.glLoadIdentity();
+        io.gl.glMatrixMode(GL_MODELVIEW);
+        io.gl.glLoadIdentity();
 
 
     }
 
-
-    @Override
-    public final void reshape(GLAutoDrawable drawable,
-                              int xstart,
-                              int ystart,
-                              int width,
-                              int height) {
-
+    public final Off onUpdate(Consumer<JoglWindow> c) {
+        return io.onUpdate(c);
     }
-
-    @Override
-    public final Iterator<Spatial<X>> iterator() {
-        throw new UnsupportedOperationException("use forEach");
+    public final Off onUpdate(Animated c) {
+        return io.onUpdate(c);
+    }
+    public final Off onUpdate(Runnable c) {
+        return io.onUpdate(c);
     }
 
 
+    private class MyJoglWindow extends JoglWindow {
+        public MyJoglWindow() {
+            super();
+        }
+
+//        @Override
+//        public void windowDestroyed(WindowEvent windowEvent) {
+//            super.windowDestroyed(windowEvent);
+//            layers.clear();
+//            onUpdate.clear();
+//        }
+
+        @Override
+        protected void init(GL2 gl) {
+
+            gl.glEnable(GL_STENCIL);
+
+
+            gl.glEnable(GL_LINE_SMOOTH);
+
+            gl.glEnable(GL2.GL_MULTISAMPLE);
+
+
+            gl.glHint(GL_POLYGON_SMOOTH_HINT,
+                    GL_NICEST);
+
+            gl.glHint(GL_LINE_SMOOTH_HINT,
+                    GL_NICEST);
+
+            gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT,
+                    GL_NICEST);
+
+
+            gl.glColorMaterial(GL_FRONT_AND_BACK,
+                    GL_AMBIENT_AND_DIFFUSE
+
+            );
+            gl.glEnable(GL_COLOR_MATERIAL);
+            gl.glEnable(GL_NORMALIZE);
+
+
+            initDepth(gl);
+
+
+            initBlend(gl);
+
+
+            initLighting(gl);
+
+            initInput();
+
+            flush();
+            onUpdate((Consumer) (w -> flush()));
+        }
+
+        @Override
+        protected final void render(int dtMS) {
+
+            clear();
+
+            updateCamera(dtMS);
+
+            renderVolume(dtMS);
+
+            renderOrthos(dtMS);
+        }
+
+        @Override
+        public final void reshape(GLAutoDrawable drawable,
+                                  int xstart,
+                                  int ystart,
+                                  int width,
+                                  int height) {
+
+        }
+
+
+
+    }
 }

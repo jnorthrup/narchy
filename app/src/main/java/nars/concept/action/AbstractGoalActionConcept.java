@@ -17,7 +17,6 @@ import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
 import org.jetbrains.annotations.Nullable;
@@ -110,8 +109,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
         int actionDur = this.actionSustain;
         if (actionDur < 0) {
             actionDur =
-                    //dur;
-                    Tense.occToDT(agentDur);
+                    dur;
+                    //Tense.occToDT(agentDur);
         }
 
 

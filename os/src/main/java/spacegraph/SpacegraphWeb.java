@@ -22,7 +22,7 @@ public class SpacegraphWeb {
             port = DEFAULT_PORT;
         }
 
-        jcog.net.http.HttpServer h = new HttpServer(port, new HttpModel() {
+        jcog.net.http.HttpServer h = new HttpServer(port, new WebServer() {
 
         });
         h.setFPS(10f);

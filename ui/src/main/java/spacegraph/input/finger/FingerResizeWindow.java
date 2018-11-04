@@ -11,11 +11,11 @@ public class FingerResizeWindow extends FingerResize {
     private final static int MIN_WIDTH = 32;
     private final static int MIN_HEIGHT = MIN_WIDTH;
 
-    private final JoglSpace window;
+    private final JoglSpace space;
 
-    public FingerResizeWindow(JoglSpace window, int button, Windo.DragEdit mode) {
+    public FingerResizeWindow(JoglSpace space, int button, Windo.DragEdit mode) {
         super(button, mode, false);
-        this.window = window;
+        this.space = space;
     }
 
 
@@ -28,9 +28,7 @@ public class FingerResizeWindow extends FingerResize {
     @Override
     protected RectFloat size() {
 
-        JoglSpace w = this.window;
-
-        GLWindow ww = w.window;
+        GLWindow ww = this.space.io.window;
         return RectFloat.XYXY(ww.getX(), ww.getY(), ww.getX()+ww.getWidth(),ww.getY()+ww.getHeight());
     }
 
@@ -48,7 +46,7 @@ public class FingerResizeWindow extends FingerResize {
 
 
 
-        window.setPositionAndSize(Math.round(x1), Math.round(y1), w, h);
+        space.io.setPositionAndSize(Math.round(x1), Math.round(y1), w, h);
     }
 
 }

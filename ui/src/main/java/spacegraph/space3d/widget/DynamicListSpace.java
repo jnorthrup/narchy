@@ -87,7 +87,7 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
         fd.condense.set(fd.condense.get() * 8);
 
 
-        s.camPos(0, 0, 90).show(w, h);
+        s.camPos(0, 0, 90).io.show(w, h);
 
         return s;
 

@@ -1,5 +1,6 @@
 package jcog.pri;
 
+import jcog.TODO;
 import jcog.math.FloatSupplier;
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
@@ -29,6 +30,9 @@ public interface ScalarValue {
     /** getter.  returns NaN to indicate deletion */
     float pri();
 
+    default int priComparable() {
+        throw new TODO();
+    }
 
     default float pri(FloatSupplier update) {
         return pri(update.asFloat());

@@ -164,7 +164,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     }
 
     protected void sort(int from /* inclusive */, int to /* inclusive */) {
-        items.sort(ArrayBag::pCmp, from, to);
+        items.sort(ScalarValue::priComparable, from, to);
     }
 
     @Override

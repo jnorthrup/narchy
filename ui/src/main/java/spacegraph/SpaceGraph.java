@@ -18,24 +18,20 @@ public enum SpaceGraph { ;
                 new ZoomOrtho(s)
         );
         if (w > 0 && h > 0) {
-            win.show(w, h);
+            win.io.show(w, h);
         }
         return win;
     }
 
-    public static JoglSpace window(Object o, int w, int h) {
-        return window(o, w, h, true);
-    }
-
     /** generic window creation entry point */
-    public static JoglSpace window(Object o, int w, int h, boolean async) {
+    public static JoglSpace window(Object o, int w, int h) {
         if (o instanceof JoglSpace) {
             JoglSpace s = (JoglSpace) o;
-            s.show(w, h);
+            s.io.show(w, h);
             return s;
         } else if (o instanceof Spatial) {
             SpaceGraphPhys3D win = new SpaceGraphPhys3D(((Spatial) o));
-            win.show(w, h);
+            win.io.show(w, h);
             return win;
         } else if (o instanceof Surface) {
             return window(((Surface) o), w, h);

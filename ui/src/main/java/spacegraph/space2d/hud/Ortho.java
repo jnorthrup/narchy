@@ -53,7 +53,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     private final Runnable fingerUpdate;
     private final Set<Surface> overlays = new CopyOnWriteArraySet<>();
     Surface surface;
-    protected JoglSpace window;
+    protected JoglSpace space;
     private final float camZmin = 5;
     private volatile float camZmax = 640000;
     private volatile float camXmin = -1, camXmax = +1;
@@ -119,8 +119,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     @Override
     protected boolean prePaint(SurfaceRender r) {
         if (super.prePaint(r)) {
-            int W = window.window.getWidth();
-            int H = window.window.getHeight();
+            int W = space.io.window.getWidth();
+            int H = space.io.window.getHeight();
             if (posChanged(RectFloat.XYXY(0, 0, W, H))) {
                 layout();
             }
@@ -155,10 +155,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         return false;
     }
 
-    public GL2 gl() {
-        return window.gl;
-    }
-
     @Override
     public Object the(String key) {
         synchronized (singletons) {
@@ -169,15 +165,15 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     @Override
     public Off onUpdate(Consumer<JoglWindow> c) {
-        return window.onUpdate(c);
+        return space.onUpdate(c);
     }
 
     public Off animate(Animated c) {
-        return window.onUpdate(c);
+        return space.onUpdate(c);
     }
 
     private Off animate(Runnable c) {
-        return window.onUpdate(c);
+        return space.onUpdate(c);
     }
 
     @Override
@@ -205,17 +201,17 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     public void start(JoglSpace s) {
         synchronized (this) {
 
-            this.window = s;
+            this.space = s;
 
-            window.window.setPointerVisible(false);
+            space.io.window.setPointerVisible(false);
 
-            s.addWindowListener(this);
-            if (window.window.hasFocus())
+            s.io.addWindowListener(this);
+            if (space.io.window.hasFocus())
                 mouseEntered(null);
 
-            s.addMouseListenerPre(this);
+            s.io.addMouseListenerPre(this);
 
-            s.addKeyListener(keyboard);
+            s.io.addKeyListener(keyboard);
 
             animate(cam);
             animate(fingerUpdate);
@@ -464,14 +460,14 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         if (moved) {
 
-            JoglSpace w = this.window;
+            JoglSpace w = this.space;
             int pmx = e.getX();
-            int pmy = w.getHeight() - e.getY();
+            int pmy = w.io.getHeight() - e.getY();
             float wmx = +cam.x + (-0.5f * w() + pmx) / scale.x;
             float wmy = +cam.y + (-0.5f * h() + pmy) / scale.y;
 
             finger.posPixel.set(pmx, pmy);
-            finger.posScreen.set(w.getX() + pmx, w.getScreenY() - (e.getY() + w.getY()));
+            finger.posScreen.set(w.io.getX() + pmx, w.io.getScreenY() - (e.getY() + w.io.getY()));
             finger.pos.set(wmx, wmy);
         }
 

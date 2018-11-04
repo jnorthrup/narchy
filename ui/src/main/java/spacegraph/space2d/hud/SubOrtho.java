@@ -36,8 +36,8 @@ public class SubOrtho extends Ortho {
 
     @Override
     protected void doLayout(int dtMS) {
-        int ww = window.getWidthNext();
-        int wh = window.getHeightNext();
+        int ww = space.io.getWidthNext();
+        int wh = space.io.getHeightNext();
 
         super.doLayout(dtMS);
 

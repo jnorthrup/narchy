@@ -27,7 +27,7 @@ public class ZoomOrtho extends Ortho {
 
         @Override
         protected JoglSpace window() {
-            return window;
+            return space;
         }
 
         @Override
@@ -50,14 +50,14 @@ public class ZoomOrtho extends Ortho {
 
         @Override
         protected JoglSpace window() {
-            return window;
+            return space;
         }
 
         @Override
         protected boolean startDrag(Finger f) {
 
 
-            windowStart.set(window.getX(), window.getY());
+            windowStart.set(space.io.getX(), space.io.getY());
             //System.out.println("window start=" + windowStart);
             return super.startDrag(f);
         }
@@ -72,7 +72,7 @@ public class ZoomOrtho extends Ortho {
         public void move(float dx, float dy) {
 
 
-            window.setPosition(
+            space.io.setPosition(
                     Math.round(windowStartX + dx),
                     Math.round(windowStartY - dy));
         }
@@ -143,7 +143,7 @@ public class ZoomOrtho extends Ortho {
 
         @Override
         protected FingerResize fingeringResize(Windo.DragEdit mode) {
-            return new FingerResizeWindow(window, 0, mode);
+            return new FingerResizeWindow(space, 0, mode);
         }
 
         @Override
@@ -184,12 +184,12 @@ public class ZoomOrtho extends Ortho {
 
         @Override
         public float w() {
-            return window.getWidthNext();
+            return space.io.getWidthNext();
         }
 
         @Override
         public float h() {
-            return window.getHeightNext();
+            return space.io.getHeightNext();
         }
     }
 

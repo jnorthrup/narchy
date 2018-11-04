@@ -49,7 +49,7 @@ public class PriForget<P extends Prioritizable> implements Consumer<P> {
         float eachMustForgetPct =
                 rate * Util.unitize(excess / mass);
 
-            if (eachMustForgetPct > cap * ScalarValue.EPSILON) {
+            if (eachMustForgetPct * mass / size > ScalarValue.EPSILONsqrt) {
                 return new PriForget<>(eachMustForgetPct);
             }
 

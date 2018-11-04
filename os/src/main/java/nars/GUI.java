@@ -22,9 +22,7 @@ public class GUI {
         logger.info("start SpaceGraph UI");
 
 
-        window(NARui.top(nar), 1024, 800).eventClosed.on(() -> {
-            nar.reset();
-        });
+        window(NARui.top(nar), 1024, 800).io.eventClosed.on(nar::reset);
 
         nar.startFPS(10f);
 

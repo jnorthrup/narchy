@@ -89,7 +89,7 @@ public class FZero extends NAgentX {
 
         ActionConcept F = initUnipolarLinear(5f);
 
-        initPushButtonTank();
+        //initPushButtonTank();
         //initToggleLeftRight();
 //        initToggleFwdStop();
 //        window(new Gridding(
@@ -97,12 +97,13 @@ public class FZero extends NAgentX {
 //                NARui.beliefCharts(actions, nar)), 400, 400);
 
 
-        //initTankContinuous();
-//        BiPolarAction A =
-//                //initBipolarRotateRelative(true, 1f);
-//                //initBipolarRotateAbsolute(true);
-//                //initBipolarRotateDirect(false, 0.9f);
-//                initBipolarRotateDirect(false, 0.2f);
+        initTankContinuous();
+
+        //BiPolarAction A =
+                //initBipolarRotateRelative(true, 1f);
+                //initBipolarRotateAbsolute(true);
+                //initBipolarRotateDirect(false, 0.9f);
+                //initBipolarRotateDirect(false, 0.2f);
 
 //        window(new Gridding(
 //                //new CameraSensorView(c, this).withControls(),
@@ -326,7 +327,7 @@ public class FZero extends NAgentX {
     public BiPolarAction initBipolarRotateDirect(boolean fair, float rotFactor) {
 
         //final MiniPID rotFilter = new MiniPID(0.3f, 0.3, 0.4f);
-        final FloatAveraged lp = new FloatAveraged(0.6f);
+        final FloatAveraged lp = new FloatAveraged(0.5f);
 
         float inputThresh = 0f;
         float curve = //curve exponent
@@ -336,11 +337,11 @@ public class FZero extends NAgentX {
 
         FloatToFloatFunction d = (dHeading) -> {
 
-            if (Math.abs(dHeading) < nar.freqResolution.floatValue()*2)
+            if (Math.abs(dHeading) < nar.freqResolution.floatValue()*1)
                 return Float.NaN;
             //float ddHeading = Math.abs(dHeading) >= inputThresh ? lp.valueOf(dHeading) : 0;
 
-            fz.playerAngle += Math.pow((dHeading), curve) * rotFactor; //bipolar
+            fz.playerAngle = lp.valueOf((float) (fz.playerAngle + Math.pow((dHeading), curve) * rotFactor)); //bipolar
 
             return dHeading;
         };
@@ -348,11 +349,11 @@ public class FZero extends NAgentX {
                 //$.func("rotate", id),
                 //pn -> CONJ.the(XTERNAL, $.the("rotate"), $.func("rotate", id).negIf(!pn) ),
                 //pn -> CONJ.the(XTERNAL, $.func("rotate", id),
-                pn -> $.func(pn ? "left" : "right", id)
+                pn -> $.inh(pn ? "left" : "right", id)
                 //)
                 , fair, d);
 
-        A.resolution(0.1f);
+        A.resolution(0.04f);
 
         return A;
 

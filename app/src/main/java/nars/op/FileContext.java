@@ -190,7 +190,7 @@ public class FileContext extends NARService {
         n.log();
 
         new ConjClustering(n, BELIEF, 4, 16);
-        new Abbreviation(n, "z", 5, 10, 1f, 32);
+        new Abbreviation(n, "z", 5, 10, 32);
 
         n.termVolumeMax.set(40);
         //FileSys a = new FileSys(Paths.get("/var/log"), n);

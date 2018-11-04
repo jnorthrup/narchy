@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -84,12 +85,96 @@ public class SortedArray<X> extends AbstractList<X> {
     }
 
 
-    public void sort(FloatFunction<X> x, int from, int to) {
+//    public void sort(FloatFunction<X> x, int from, int to) {
+//        int[] stack = new int[sortSize(to - from) /* estimate */];
+//        qsort(stack, items, from /*dirtyStart - 1*/, to, x);
+//    }
+//
+//    public static <X> void qsort(int[] stack, X[] c, int left, int right, FloatFunction<X> pCmp) {
+//        int stack_pointer = -1;
+//        int cLenMin1 = c.length - 1;
+//        final int SCAN_THRESH = 7;
+//        while (true) {
+//            int i, j;
+//            if (right - left <= SCAN_THRESH) {
+//                for (j = left + 1; j <= right; j++) {
+//                    X swap = c[j];
+//                    i = j - 1;
+//                    float swapV = pCmp.floatValueOf(swap);
+//                    while (i >= left && pCmp.floatValueOf(c[i]) < swapV) {
+//                        swap(c, i + 1, i--);
+//                    }
+//                    c[i + 1] = swap;
+//                }
+//                if (stack_pointer != -1) {
+//                    right = stack[stack_pointer--];
+//                    left = stack[stack_pointer--];
+//                } else {
+//                    break;
+//                }
+//            } else {
+//
+//                int median = (left + right) / 2;
+//                i = left + 1;
+//                j = right;
+//
+//                swap(c, i, median);
+//
+//                float cl = pCmp.floatValueOf(c[left]);
+//                float cr = pCmp.floatValueOf(c[right]);
+//                if (cl < cr) {
+//                    swap(c, right, left);
+//                    float x = cr;
+//                    cr = cl;
+//                    cl = x;
+//                }
+//                float ci = pCmp.floatValueOf(c[i]);
+//                if (ci < cr) {
+//                    swap(c, right, i);
+//                    ci = cr;
+//                }
+//                if (cl < ci) {
+//                    swap(c, i, left);
+//                }
+//
+//                X temp = c[i];
+//                float tempV = pCmp.floatValueOf(temp);
+//
+//                while (true) {
+//                    while (i < cLenMin1 && pCmp.floatValueOf(c[++i]) > tempV) ;
+//                    while (j > 0 && /* <- that added */ pCmp.floatValueOf(c[--j]) < tempV) ;
+//                    if (j < i) {
+//                        break;
+//                    }
+//                    swap(c, j, i);
+//                }
+//
+//                c[left + 1] = c[j];
+//                c[j] = temp;
+//
+//                int a, b;
+//                if (right - i + 1 >= j - left) {
+//                    a = i;
+//                    b = right;
+//                    right = j - 1;
+//                } else {
+//                    a = left;
+//                    b = j - 1;
+//                    left = i;
+//                }
+//
+//                stack[++stack_pointer] = a;
+//                stack[++stack_pointer] = b;
+//            }
+//        }
+//    }
+
+    public void sort(ToIntFunction<X> x, int from, int to) {
         int[] stack = new int[sortSize(to - from) /* estimate */];
         qsort(stack, items, from /*dirtyStart - 1*/, to, x);
     }
 
-    public static <X> void qsort(int[] stack, X[] c, int left, int right, FloatFunction<X> pCmp) {
+    public static <X> void qsort(int[] stack, X[] c, int left, int right, ToIntFunction<X> pCmp) {
         int stack_pointer = -1;
         int cLenMin1 = c.length - 1;
         final int SCAN_THRESH = 7;
@@ -99,8 +184,8 @@ public class SortedArray<X> extends AbstractList<X> {
                 for (j = left + 1; j <= right; j++) {
                     X swap = c[j];
                     i = j - 1;
-                    float swapV = pCmp.floatValueOf(swap);
-                    while (i >= left && pCmp.floatValueOf(c[i]) < swapV) {
+                    int swapV = pCmp.applyAsInt(swap);
+                    while (i >= left && pCmp.applyAsInt(c[i]) < swapV) {
                         swap(c, i + 1, i--);
                     }
                     c[i + 1] = swap;
@@ -119,15 +204,15 @@ public class SortedArray<X> extends AbstractList<X> {
 
                 swap(c, i, median);
 
-                float cl = pCmp.floatValueOf(c[left]);
-                float cr = pCmp.floatValueOf(c[right]);
+                int cl = pCmp.applyAsInt(c[left]);
+                int cr = pCmp.applyAsInt(c[right]);
                 if (cl < cr) {
                     swap(c, right, left);
-                    float x = cr;
+                    int x = cr;
                     cr = cl;
                     cl = x;
                 }
-                float ci = pCmp.floatValueOf(c[i]);
+                int ci = pCmp.applyAsInt(c[i]);
                 if (ci < cr) {
                     swap(c, right, i);
                     ci = cr;
@@ -137,11 +222,11 @@ public class SortedArray<X> extends AbstractList<X> {
                 }
 
                 X temp = c[i];
-                float tempV = pCmp.floatValueOf(temp);
+                int tempV = pCmp.applyAsInt(temp);
 
                 while (true) {
-                    while (i < cLenMin1 && pCmp.floatValueOf(c[++i]) > tempV) ;
-                    while (j > 0 && /* <- that added */ pCmp.floatValueOf(c[--j]) < tempV) ;
+                    while (i < cLenMin1 && pCmp.applyAsInt(c[++i]) > tempV) ;
+                    while (j > 0 && /* <- that added */ pCmp.applyAsInt(c[--j]) < tempV) ;
                     if (j < i) {
                         break;
                     }
@@ -167,6 +252,7 @@ public class SortedArray<X> extends AbstractList<X> {
             }
         }
     }
+
 //    /** untested, not finished */
 //    public static void qsortAtomic(int[] stack, Object[] c, int left, int right, FloatFunction pCmp) {
 //        int stack_pointer = -1;
