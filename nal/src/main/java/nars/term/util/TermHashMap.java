@@ -25,35 +25,35 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     public TermHashMap() {
         super();
+        id = newIDMap();
+        other = newOtherMap();
     }
 
     @Override
     public int size() {
-        return (id != null ?
-                id.size() : 0) + (other != null ? other.size() : 0);
+        return id.size() + other.size();
     }
 
     public void clear() {
-        if (id != null) {
-            int sizeBeforeClear = id.size();
-            id.clear();
-            if (sizeBeforeClear > compactThreshold())
-                id.compact();
-        }
+
+        //int sizeBeforeClear = id.size();
+        id.clear();
+//        if (sizeBeforeClear > compactThreshold())
+//            id.compact();
 
 
-        if (other != null) other.clear();
+        other.clear();
         //other = null;
     }
 
-    private int compactThreshold() {
-        return initialHashCapacity() * 2;
-    }
+//    private int compactThreshold() {
+//        return initialHashCapacity() * 2;
+//    }
 
     @Override
     public Set<Entry<Term, X>> entrySet() {
-        boolean hasID = id != null && !id.isEmpty();
-        boolean hasOther = other != null && !other.isEmpty();
+        boolean hasID = !id.isEmpty();
+        boolean hasOther = !other.isEmpty();
         if (!hasID) {
             return !hasOther ? Collections.emptySet() : other.entrySet();
         } else {
@@ -65,28 +65,15 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
     @Override
     public X compute(Term key, BiFunction<? super Term, ? super X, ? extends X> f) {
         short aid = AnonID.id(key);
-        if (aid!=0) {
-            if (id == null) {
-                X next = f.apply(key, null);
-                if (next != null) {
-                    ensureIDMap().put(aid, next);
-                }
-                return next;
-            } else {
-                return id.updateValue(aid, () -> f.apply(key, null), (p) ->
-                        f.apply(key, p));
-            }
+        if (aid != 0) {
+
+            return id.updateValue(aid, () -> f.apply(key, null), p -> f.apply(key, p));
+
         } else {
 
-            if (other == null) {
-                X next = f.apply(key, null);
-                if (next != null) {
-                    ensureOtherMap().put(key, next);
-                }
-                return next;
-            } else {
-                return other.compute(key, f);
-            }
+
+            return other.compute(key, f);
+
         }
     }
 
@@ -95,77 +82,40 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
 
         short aid = AnonID.id(key);
-        if (aid!=0) {
+        if (aid != 0) {
 
-            if (id == null) {
-                X next = mappingFunction.apply(key);
-                if (next != null) {
-                    (id = newIDMap()).put(aid, next);
-                }
-                return next;
-            } else {
-                return id.getIfAbsentPut(aid, () ->
-                        mappingFunction.apply(key));
-            }
+
+            return id.getIfAbsentPut(aid, () ->
+                    mappingFunction.apply(key));
+
         } else {
 
-            if (other == null) {
-                X next = mappingFunction.apply(key);
-                if (next != null) {
-                    (other = newOtherMap()).put(key, next);
-                }
-                return next;
-            } else {
-                return other.computeIfAbsent(key, mappingFunction);
-            }
+
+            return other.computeIfAbsent(key, mappingFunction);
+
         }
 
     }
 
-    private ShortObjectHashMap<X> ensureIDMap() {
-        ShortObjectHashMap<X> o = this.id;
-        return o == null ? (this.id = newIDMap()) : o;
-    }
-
-    private Map<Term, X> ensureOtherMap() {
-        Map<Term, X> o = this.other;
-        return o == null ? (this.other = newOtherMap()) : o;
-    }
 
     @Override
     public X get(Object key) {
-        short aid = AnonID.id((Term)key);
-        if (aid!=0) {
-            if (id != null)
-                return id.get(aid);
-        } else {
-            if (other != null)
-                return other.get(key);
-        }
-        return null;
+        short aid = AnonID.id((Term) key);
+        return aid != 0 ? id.get(aid) : other.get(key);
     }
 
     @Override
     public X put(Term key, X value) {
         short aid = AnonID.id(key);
-        return aid!=0 ?
-                ensureIDMap().put(aid, value) :
-                ensureOtherMap().put(key, value);
+        return aid != 0 ?
+                id.put(aid, value) :
+                other.put(key, value);
     }
 
     @Override
     public X remove(Object key) {
-        short aid = AnonID.id((Term)key);
-        if (aid!=0) {
-            if (id != null) {
-                return id.remove(aid);
-            }
-        } else {
-            if (other != null) {
-                return other.remove(key);
-            }
-        }
-        return null;
+        short aid = AnonID.id((Term) key);
+        return aid != 0 ? id.remove(aid) : other.remove(key);
     }
 
     private int initialHashCapacity() {
@@ -183,10 +133,8 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     @Override
     public void forEach(BiConsumer<? super Term, ? super X> action) {
-        if (id != null)
-            id.forEachKeyValue((x, y) -> action.accept(AnonID.idToTerm(x), y));
-        if (other != null)
-            other.forEach(action);
+        id.forEachKeyValue((x, y) -> action.accept(AnonID.idToTerm(x), y));
+        other.forEach(action);
     }
 
     /**

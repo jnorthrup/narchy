@@ -414,7 +414,7 @@ public class Evaluation {
     private Evaluation clear() {
         if (v != null) {
             termutator.clear();
-            v.reset();
+            v.clear();
             subst.clear();
         }
         return this;

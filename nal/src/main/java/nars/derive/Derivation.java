@@ -568,7 +568,7 @@ public class Derivation extends PreDerivation {
         anon.clear();
         time = ETERNAL;
         premiseBuffer.clear();
-        retransform.clear();
+
         occ.clear();
         firedTaskLinks.clear();
         firedConcepts.clear();

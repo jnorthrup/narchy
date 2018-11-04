@@ -68,8 +68,8 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
     @Override
     public final int size() {
         int count = 0;
-        for (Entry<X, Versioned<Y>> e : map.entrySet()) {
-            if (e.getValue().get()!=null)
+        for (Versioned<Y> e : map.values()) {
+            if (e.get()!=null)
                 count++;
         }
         return count;

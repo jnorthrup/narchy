@@ -59,8 +59,9 @@ public abstract class AtomicPri implements ScalarValue {
 
     private int _pri() {
 
-        return (int) INT.getOpaque(this);
-        //return (int) INT.get(this);
+
+        //return (int) INT.getOpaque(this);
+        return (int) INT.get(this);
     }
 
     @Override

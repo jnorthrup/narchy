@@ -956,19 +956,22 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         //double e = 0;
         float e = 0;
         float eviPrev = evi(times[0], dur);
+        long a = times[0];
         for (int i = 1; i < n; i++) {
-            long a = times[i - 1], b = times[i];
-
-            long dt = b - a;
-            if (dt == 0) continue;
-            assert(dt > 0);
+            long b = times[i];
 
             //assert(ti != ETERNAL && ti != XTERNAL && ti > times[i - 1] && ti < times[i + 1]);
             float eviNext = evi(b, dur);
 
+            long dt = b - a;
+
+            if (dt == 0) continue;
+            assert(dt > 0);
+
             e += (eviNext+eviPrev)/2 * (dt+1);
 
             eviPrev = eviNext;
+            a = b;
         }
 
         return (float) e;

@@ -114,7 +114,7 @@ public class RTree<T> implements Space<T> {
 
             this.root = nextRoot!=null ? nextRoot : model.newLeaf();
 
-            SIZE.incrementAndGet(this);
+            SIZE.getAndIncrement(this);
             return true;
         }
 
@@ -141,7 +141,7 @@ public class RTree<T> implements Space<T> {
 
             root = nextRoot!=null ? nextRoot : model.newLeaf();
 
-            SIZE.decrementAndGet(this);
+            SIZE.getAndDecrement(this);
             return true;
         }
         return false;

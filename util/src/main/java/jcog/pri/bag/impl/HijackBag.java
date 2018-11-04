@@ -675,7 +675,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             //if the map is still active
             if (this.map == map) {
                 if (updateSize)
-                    SIZE.decrementAndGet(this);
+                    SIZE.getAndDecrement(this);
                 _onRemoved(v);
             }
         }

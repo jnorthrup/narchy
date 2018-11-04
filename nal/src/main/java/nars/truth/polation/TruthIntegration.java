@@ -34,11 +34,12 @@ public class TruthIntegration {
      * if qStart==qEnd then it is a point sample
      */
     public static float evi(Task t, long qStart, long qEnd, long dur) {
-        if (qStart == ETERNAL) {
-            return t.isEternal() ? t.evi() : t.eviEternalized();
-        }
         if (qStart == qEnd) {
-            return t.evi(qStart, dur);
+            if (qStart == ETERNAL) {
+                return t.isEternal() ? t.evi() : t.eviEternalized();
+            } else {
+                return t.evi(qStart, dur);
+            }
         }
 
         long tStart = t.start();

@@ -52,7 +52,7 @@ class TermHashMapTest {
         assertEquals(2, m.size());
         assertEquals("p", m.get(Anom.the(1)));
         assertEquals("n", m.get(Anom.the(1).neg()));
-        assertEquals(null, m.other); //no need to instantiate other for neg
+        assertTrue(m.other.isEmpty()); //no need to instantiate other for neg
     }
 
 }
