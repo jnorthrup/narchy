@@ -3,6 +3,7 @@ package jcog.pri.bag.impl;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.Util;
+import jcog.data.MutableFloat;
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
@@ -385,13 +386,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             }
         }
 
-//        if (mode == PUT && toAdd == null) {
-//
-//            if (attemptRegrowForSize(size() + 1)) {
-//                return update(k, incoming, PUT, overflowing);
-//            }
-//
-//        }
 
         return toReturn;
     }
@@ -508,10 +502,25 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         if (k == null)
             return null;
 
-        V x = update(k, v, PUT, overflowing);
-        if (x == null) {
-            onReject(v);
+        //HACK this should depressurize even if overflowing is null..
+        float oBefore;
+        if (overflowing == null) {
+            overflowing = new MutableFloat(0);
+            oBefore = 0;
+        } else {
+            oBefore = overflowing.floatValue();
         }
+
+        V x = update(k, v, PUT, overflowing);
+        if (x == null)
+            onReject(v);
+
+
+        float oAfter = overflowing.floatValue();
+        float delta = oAfter - oBefore;
+        if (delta > ScalarValue.EPSILON)
+            depressurize(delta);
+
 
         return x;
     }

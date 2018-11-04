@@ -30,7 +30,7 @@ public abstract class Param {
 
 
     public static final boolean ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME = false;
-    public static final boolean INPUT_PREMISE_ANSWER_BELIEF = false;
+    public static final boolean INPUT_PREMISE_ANSWER_BELIEF = true;
 
     @Deprecated public static int LinkFanoutMax =
             //16;
@@ -217,7 +217,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(12 * TTL_MIN, 0, 128 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, 0, 128 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 8, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
@@ -225,7 +225,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 3f;
+    public static final float TEST_TIME_MULTIPLIER = 4f;
 
 
     @Range(min = 1, max = 32)
@@ -427,9 +427,9 @@ public abstract class Param {
         assert(dur > 0);
 
         int falloffDurs =
-                1;
+                //1;
                 //2;
-                //4;
+                4;
                 //dur;
                 //8;
         return evi / (1.0f + (((float)dt) / (falloffDurs * dur)));

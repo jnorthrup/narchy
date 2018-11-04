@@ -470,15 +470,15 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         pressurize(p); //release
 
 
-        //HACK special case for saving a lot of unnecessary work when merge=Max
-        //TODO may also work with average and replace merges
-        //TODO this can only work if the bag is sorted
-        if (this.mergeFunction == PriMerge.max && fastMergeMaxReject() && isFull()) {
-            if (p < priMin()) {
-                return null; //fast drop the novel task due to insufficient priority
-                //TODO feedback the min priority necessary when capacity is reached, and reset to no minimum when capacity returns
-            }
-        }
+//        //HACK special case for saving a lot of unnecessary work when merge=Max
+//        //TODO may also work with average and replace merges
+//        //TODO this can only work if the bag is sorted
+//        if (this.mergeFunction == PriMerge.max && fastMergeMaxReject() && isFull()) {
+//            if (p < priMin()) {
+//                return null; //fast drop the novel task due to insufficient priority
+//                //TODO feedback the min priority necessary when capacity is reached, and reset to no minimum when capacity returns
+//            }
+//        }
 
         X key = key(incoming);
 
@@ -553,9 +553,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
     }
 
-    protected boolean fastMergeMaxReject() {
-        return false;
-    }
+//    protected boolean fastMergeMaxReject() {
+//        return false;
+//    }
 
     /**
      * will not need to be sorted after calling this; the index is automatically updated
@@ -594,8 +594,12 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         float delta = priAfter - priBefore;
 
-        if (overflow != null)
-            overflow.add(oo);
+        if (oo >= ScalarValue.EPSILON) {
+            if (overflow != null)
+                overflow.add(oo);
+
+            depressurize(oo);
+        }
 
         if (Math.abs(delta) >= ScalarValue.EPSILON) {
 

@@ -177,6 +177,14 @@ public class Occurrify extends TimeGraph {
         return decomposeEvents;
     }
 
+    @Override
+    public void clear() {
+        super.clear();
+        solutionSeen.clear();
+        autoNeg.clear();
+    }
+
+
     public Occurrify reset(Term pattern) {
         return reset(pattern, true);
     }
@@ -192,7 +200,6 @@ public class Occurrify extends TimeGraph {
 
     public Occurrify reset(boolean taskOccurrence, boolean beliefOccurrence, Term pattern, boolean decomposeEvents) {
 
-        solutionSeen.clear();
 
 
         Term taskTerm = d.reResolve(d.taskTerm);
@@ -235,7 +242,7 @@ public class Occurrify extends TimeGraph {
 
         /*if (!reUse) */{
 
-            clear();
+            //clear();
 
             this.curTaskTerm = taskTerm; //update to current instance, even if equal
             this.curBeliefTerm = beliefTerm; //update to current instance, even if equal
@@ -246,10 +253,7 @@ public class Occurrify extends TimeGraph {
             occurrenceQuad[2] = beliefStart;
             occurrenceQuad[3] = beliefEnd;
 
-            autoNeg.clear();
             autoNegNext.forEach(x -> autoNeg.add(x.unneg()));
-
-
             autoNegNext.clear();
 
             if (taskStart != TIMELESS)
@@ -723,10 +727,11 @@ public class Occurrify extends TimeGraph {
                 if (d.taskStart == ETERNAL && d.beliefStart == ETERNAL)
                     return pair(x, new long[]{ETERNAL, ETERNAL});
 
-                if (d.beliefStart == ETERNAL)
-                    return pair(x, new long[]{d.taskStart, d.taskEnd});
+//                if (d.beliefStart == ETERNAL)
+//                    return pair(x, new long[]{d.taskStart, d.taskEnd});
 
-                return solveSubSequence(x, d.beliefTerm, d.beliefStart, d.beliefEnd);
+                //return solveSubSequence(x, d.beliefTerm, d.beliefStart, d.beliefEnd);
+                return solveSubSequence(x, d.beliefTerm, d.taskStart, d.taskEnd);
             }
 
             @Override

@@ -6,11 +6,18 @@ import java.util.Random;
 
 /** base class for Random implementations that apply a busy spin wait to ensure updates to state are atomic */
 abstract public class AtomicRandom extends Random {
-    private static final MetalAtomicIntegerFieldUpdater<AtomicRandom> business =
+    private static final MetalAtomicIntegerFieldUpdater<AtomicRandom> BUSY =
             new MetalAtomicIntegerFieldUpdater(AtomicRandom.class, "busy");
 
     private volatile int busy = 0;
 
+    public AtomicRandom() {
+        super();
+    }
+
+    public AtomicRandom(long seed) {
+        super(seed);
+    }
 
     @Override
     public final long nextLong() {
@@ -33,11 +40,11 @@ abstract public class AtomicRandom extends Random {
     }
 
     private void exit() {
-        business.set(this, 0);
+        BUSY.set(this, 0);
     }
 
     private void enter() {
-        while (!business.compareAndSet(this, 0, 1))
+        while (!BUSY.compareAndSet(this, 0, 1))
             Thread.onSpinWait();
     }
 

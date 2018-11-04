@@ -168,6 +168,8 @@ public class NAL7Test extends NALTest {
                   $.50 c. 5 %1.0;.90% {5: 3}
          */
 
+//        Param.DEBUG = true;
+//        test.log();
         test
                 .inputAt(1, "a. :|:")
                 .mustNotOutput(cycles, "a", BELIEF, (t) -> t != 1)
@@ -175,6 +177,8 @@ public class NAL7Test extends NALTest {
                 .mustNotOutput(cycles, "b", BELIEF, (t) -> t != 5)
                 .inputAt(10, "c. :|:")
                 .mustNotOutput(cycles, "c", BELIEF, (t) -> t != 10)
+                .mustBelieve(cycles * 2, "(a &&+9 c)", 1.00f, 0.81f, (t) -> t == 1)
+                .mustNotOutput(cycles * 2, "(a &&+9 c)", BELIEF, 0, 1.00f, 0, 1, (t) -> t != 1)
                 .mustBelieve(cycles, "((a &&+4 b) &&+5 c)", 1.00f, 0.81f, (t) -> t == 1)
                 .mustNotOutput(cycles, "((a &&+4 b) &&+5 c)", BELIEF, (t) -> t != 1)
                 .mustBelieve(cycles, "(b &&+5 c)", 1.00f, 0.81f, (t) -> t == 5)
@@ -649,7 +653,7 @@ public class NAL7Test extends NALTest {
                 t + dt);
 
         test.mustBelieve(cycles, component,
-                1.00f, 0.73f,
+                1.00f, 0.34f,
                 t);
 
     }

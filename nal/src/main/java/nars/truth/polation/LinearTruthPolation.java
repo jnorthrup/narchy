@@ -3,8 +3,6 @@ package nars.truth.polation;
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Param;
-import nars.Task;
-import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -29,6 +27,28 @@ public class LinearTruthPolation extends TruthPolation {
     @Nullable
     public Truth truth(NAR nar) {
 
+        //trim TODO test. may need to invalidate some computed values if the range changes
+//        int s0 = size();
+//        long S = Long.MAX_VALUE, E = Long.MIN_VALUE;
+//        for (int i = 0; i < s0; i++) {
+//            TaskComponent x = get(i);
+//
+//            Task t = x.task();
+//            long ts = t.start();
+//            if (ts != ETERNAL) {
+//                if (ts < S)
+//                    S = ts;
+//                long te = t.end();
+//                if (te > E)
+//                    E = te;
+//            }
+//        }
+//        if (S != Long.MAX_VALUE) {
+//            //trim
+//            //TODO make optional
+//            start = Util.clamp(S, start, end);
+//            end = Util.clamp(E, start, end);
+//        }
 
         float eviFactor = 1f;
         if (nar != null) {
@@ -47,7 +67,6 @@ public class LinearTruthPolation extends TruthPolation {
 
         float wFreqSum = 0;
         eSum = 0;
-        long S = Long.MAX_VALUE, E = Long.MIN_VALUE;
         for (int i = 0; i < s; i++) {
             TaskComponent x = update(i);
             if (x == null)
@@ -59,27 +78,11 @@ public class LinearTruthPolation extends TruthPolation {
 
             wFreqSum += ee * x.freq;
 
-            Task t = x.task();
-            long ts = t.start();
-            if (ts != ETERNAL) {
-                if (ts < S)
-                    S = ts;
-                long te = t.end();
-                if (te > E)
-                    E = te;
-            }
         }
 
         if (eSum < Param.TRUTH_MIN_EVI)
             return null;
 
-        if (S == Long.MAX_VALUE) {
-            S = E = Tense.ETERNAL;
-        }
-        //trim
-        //TODO make optional
-        start = S;
-        end = E;
 
         f = (wFreqSum / eSum);
 

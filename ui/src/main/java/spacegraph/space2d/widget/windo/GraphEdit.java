@@ -51,9 +51,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     public final MapNodeGraph<Surface, Wire> links = new MapNodeGraph<>() {
         @Override
         protected void onRemoved(Node<Surface, Wire> r) {
-            r.edges(true, true).forEach(e -> {
-                e.id().remove();
-            });
+            r.edges(true, true).forEach(e -> e.id().remove());
         }
     };
 

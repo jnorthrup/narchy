@@ -911,5 +911,22 @@ public class NAL8Test extends NALTest {
 
     }
 
+    @Test void testProllyADuplicate() {
+        /*
+        WRONG TIMING
+        $.03 x! 86⋈88 %.75;.03% {103: F;I;P} ((%1,%2,eventOf(%2,%1)),((--,conjWithout(%2,%1)),((DesireWeakN-->Goal),(BeliefSubSequence-->Time))))
+            $.50 x! 101⋈102 %.25;.23% {102: P}
+            $.21 (x &&+4 (--,x)). 86⋈88 %1.0;.81% {92: F;I} ((%1,%2,(--,is(%2,"==>")),(--,is(%1,"==>"))),((polarize(%1,task) &&+- polarize(%2,belief)),((IntersectionDepolarized-->Belief),(Relative-->Time),(VarIntro-->Also))))
+         */
+
+        test.dur(2);
+        test
+                .inputAt(5, "x! |")
+                .inputAt(0, "(x &&+3 --x).")
+                .mustOutput(cycles, "x", GOAL, 0, 0, 0, 0.85f, t->t==7)
+                .mustOutput(cycles, "x", GOAL, 0, 1f, 0, 0.85f, t->(t-5)%3==0)
+                .mustNotOutput(cycles, "x", GOAL, 0, 1f, 0, 0.85f, t->(t-5)%3!=0);
+
+    }
 
 }

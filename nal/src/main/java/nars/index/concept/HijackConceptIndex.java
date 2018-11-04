@@ -4,7 +4,9 @@ import jcog.pri.PLink;
 import jcog.pri.PLinkHashCached;
 import jcog.pri.bag.impl.hijack.PriLinkHijackBag;
 import nars.NAR;
+import nars.concept.Concept;
 import nars.concept.PermanentConcept;
+import nars.concept.TaskConcept;
 import nars.control.DurService;
 import nars.term.Term;
 import nars.term.Termed;
@@ -28,7 +30,7 @@ public class HijackConceptIndex extends ConceptIndex {
     /**
      * how many items to visit during update
      */
-    private final float initial;
+    private final float initialTask, initialNode;
     private final float getBoost;
 
     //    private long now;
@@ -39,7 +41,9 @@ public class HijackConceptIndex extends ConceptIndex {
     public HijackConceptIndex(int capacity, int reprobes) {
         super();
 
-        initial = 1f/(reprobes+1);
+        initialTask = 1f/(reprobes+1);
+        initialNode = initialTask / 2; //(non-task) node concepts less valuable
+
         getBoost = (float) (1f/Math.sqrt(capacity));
 
         this.table = new PriLinkHijackBag<>(capacity, reprobes) {
@@ -116,7 +120,7 @@ public class HijackConceptIndex extends ConceptIndex {
         if (createIfMissing) {
             Termed kc = nar.conceptBuilder.apply(key, null);
             if (kc != null) {
-                PLink<Termed> inserted = table.put(new PLinkHashCached<>(kc, initial));
+                PLink<Termed> inserted = table.put(new PLinkHashCached<>(kc, priPut(key, (Concept)kc)));
                 if (inserted != null) {
                     return inserted.get();
                 } else {
@@ -126,6 +130,10 @@ public class HijackConceptIndex extends ConceptIndex {
         }
 
         return null;
+    }
+
+    private float priPut(Term key, Concept kc) {
+        return kc instanceof TaskConcept ? initialTask : initialNode;
     }
 
     private void boost(PLink<Termed> x, float boost) {

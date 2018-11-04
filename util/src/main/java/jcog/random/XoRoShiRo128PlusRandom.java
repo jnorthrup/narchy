@@ -24,6 +24,7 @@ package jcog.random;
 import org.apache.commons.math3.random.RandomGenerator;
 
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 /**
  *
@@ -51,11 +52,15 @@ import java.util.Random;
 
 @SuppressWarnings("javadoc")
 public class XoRoShiRo128PlusRandom extends AtomicRandom {
+    private static final AtomicLongFieldUpdater<XoRoShiRo128PlusRandom> A =
+            AtomicLongFieldUpdater.newUpdater(XoRoShiRo128PlusRandom.class, "a");
+    private static final AtomicLongFieldUpdater<XoRoShiRo128PlusRandom> B =
+            AtomicLongFieldUpdater.newUpdater(XoRoShiRo128PlusRandom.class, "b");
 
     /**
      * The internal state of the algorithm.
      */
-    private volatile long s0, s1;
+    private volatile long a, b;
 
 
 
@@ -68,6 +73,7 @@ public class XoRoShiRo128PlusRandom extends AtomicRandom {
      * @param seed a seed for the generator.
      */
     public XoRoShiRo128PlusRandom(final long seed) {
+        super(0);
         setSeed(seed);
     }
 
@@ -78,12 +84,12 @@ public class XoRoShiRo128PlusRandom extends AtomicRandom {
 
 
     @Override protected long _nextLong() {
-        final long s0 = this.s0;
-        long s1 = this.s1;
+        final long s0 = A.get(this);
+        long s1 = B.get(this);
         final long result = s0 + s1;
         s1 ^= s0;
-        this.s0 = Long.rotateLeft(s0, 55) ^ s1 ^ s1 << 14;
-        this.s1 = Long.rotateLeft(s1, 36);
+        A.set(this, Long.rotateLeft(s0, 55) ^ s1 ^ s1 << 14);
+        B.set(this, Long.rotateLeft(s1, 36));
         return result;
     }
 
@@ -226,8 +232,8 @@ public class XoRoShiRo128PlusRandom extends AtomicRandom {
     @Override
     public void _setSeed(final long seed) {
         final XorShift1024StarRandom.SplitMix64RandomGenerator r = new XorShift1024StarRandom.SplitMix64RandomGenerator(seed);
-        s0 = r.nextLong();
-        s1 = r.nextLong();
+        A.set(this, r.nextLong());
+        B.set(this, r.nextLong());
     }
 
 
