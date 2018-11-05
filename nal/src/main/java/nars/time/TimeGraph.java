@@ -4,7 +4,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
-import jcog.Util;
 import jcog.data.graph.FromTo;
 import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.MapNodeGraph;
@@ -30,6 +29,7 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
+import static jcog.Util.hashCombine;
 import static jcog.data.graph.search.Search.pathStart;
 import static nars.Op.CONJ;
 import static nars.Op.IMPL;
@@ -187,37 +187,33 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         return existing != null ? existing.id() : e;
     }
 
-    public boolean link(Event before, TimeSpan e, Event after) {
+    private boolean link(Event before, TimeSpan e, Event after) {
         return addEdge(addNode(before), e, addNode(after));
     }
 
     public void link(Event x, long dt, Event y) {
 
-        if ((x == y || ((x.id.equals(y.id)) && (x.start() == y.start()))))
+        if (y == null)
             return;
 
-        boolean swap = false;
-
-
-        int vc = Integer.compare(x.id.volume(), y.id.volume());
-        if (vc == 0) {
-
-            if (x.hashCode() > y.hashCode()) {
-                swap = true;
+        boolean parallel = dt == ETERNAL || dt == TIMELESS || dt == 0;
+        if (x.equals(y)) {
+            if (parallel)
+                return; //no point
+            else if (dt < 0)
+                dt = -dt; //use only positive dt values for self loops
+        } else {
+            int vc = x.compareTo(y);
+            if (vc > 0) {
+                if (!parallel) {
+                    dt = -dt;
+                }
+                Event z = x;
+                x = y;
+                y = z;
             }
-        } else if (vc > 0) {
-            swap = true;
         }
-
-        if (swap) {
-            if (dt != ETERNAL && dt != TIMELESS && dt != 0) {
-                dt = -dt;
-            }
-            Event z = x;
-            x = y;
-            y = z;
-        }
-
+        
         link(x, TimeSpan.the(dt), y);
     }
 
@@ -281,11 +277,13 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     Term pred = eventTerm.sub(1);
 
                     Event se = know(subj);
-                    Event pe = know(pred);
+                    if (!subj.equals(pred)) {
 
-                    if (edt == DTERNAL) {
+                        Event pe = know(pred);
 
-                        link(se, ETERNAL, pe);
+                        if (edt == DTERNAL) {
+
+                            //link(se, ETERNAL, pe);
 
 //                        subj.eventsWhile((w, y) -> {
 //                            link(know(y), ETERNAL, pe);
@@ -297,12 +295,11 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 //                            return true;
 //                        }, 0, true, false, false, 0);
 
-                    } else if (edt != XTERNAL) {
+                        } else if (edt != XTERNAL) {
 
-                        int st = subj.eventRange();
+                            int st = subj.eventRange();
+                            link(se, (edt + st), pe);
 
-
-                        link(se, (edt + st), pe);
 
 //                        if (subj.hasAny(Op.CONJ)) {
 //                            subj.eventsWhile((w, y) -> {
@@ -318,8 +315,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 //                            }, 0, true, true, false, 0);
 //                        }
 
+                        }
                     }
-
 
                     break;
 
@@ -327,8 +324,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 case CONJ:
 
 
-                    long eventStart = event.start();
-                    long eventEnd = event.end();
+                    long eventStart = event.start(), eventEnd = event.end();
 
                     switch (edt) {
 
@@ -359,17 +355,14 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                                 }, eventStart, false, false, false, 0);
                             } else {
                                 //chain the events together relatively
-                                final Event[] prev = {null};
+                                final Event[] prev = {event};
                                 final long[] prevDT = {0};
                                 eventTerm.eventsWhile((w, y) -> {
                                     Event next = know(y);
-                                    if (prev[0] == null) {
-                                        link(event, 0, next); //chain the starting event to the beginning of the compound superterm
-                                        assert (w == 0);
-                                    } else {
-                                        link(prev[0], w - prevDT[0], next);
-                                        prevDT[0] += w;
-                                    }
+
+                                    long dt = w - prevDT[0];
+                                    link(prev[0], dt, next);
+                                    prevDT[0] += dt;
                                     prev[0] = next;
                                     return true;
                                 }, 0, false, false, false, 0);
@@ -907,7 +900,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         }
 
         protected Absolute(Term t, long start) {
-            this(t, start, Util.hashCombine(t.hashCode(), Long.hashCode(start)));
+            this(t, start, hashCombine(t.hashCode(), start));
         }
 
         @Override
@@ -963,7 +956,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         protected final long end;
 
         protected AbsoluteRange(Term t, long start, long end) {
-            super(t, start, Util.hashCombine(t.hashCode(), Long.hashCode(start), Long.hashCode(end)));
+            super(t, start, hashCombine(hashCombine(t.hashCode(), start), end));
             if (end <= start || start == ETERNAL || start == XTERNAL || end == XTERNAL)
                 throw new RuntimeException("invalid AbsoluteRange start/end times: " + start + ".." + end);
             this.end = end;
@@ -985,7 +978,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     public static class Relative extends Event {
 
         Relative(Term id) {
-            super(id, Util.hashCombine(id.hashCode(), Long.hashCode(TIMELESS)));
+            super(id, hashCombine(id.hashCode(), TIMELESS));
         }
 
         @Override

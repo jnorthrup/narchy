@@ -47,7 +47,7 @@ public class ImmutableDirectedEdge<N, E> implements FromTo<Node<N,E>, E> {
     }
 
     public boolean isSelfLoop() {
-        return from == to;
+        return from.equals(to);
     }
 
     @Override

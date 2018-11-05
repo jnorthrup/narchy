@@ -9,7 +9,6 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.util.Image;
 
 import static nars.Op.VAR_DEP;
 import static nars.term.atom.Bool.Null;
@@ -107,10 +106,10 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
         Term c = a.sub(0);
 
 
-        Term x = Image.imageNormalize(a.sub(1));
+        Term x = /*Image.imageNormalize*/(a.sub(1));
 
 
-        Term y = Image.imageNormalize(a.sub(2));
+        Term y = /*Image.imageNormalize*/(a.sub(2));
 
 
         if (x.equals(y)) {
@@ -121,6 +120,7 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
         if (c.equals(x)) {
 
             output = y;
+
         } else {
 
             boolean tryUnify = x.hasAny(op);
@@ -134,16 +134,9 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
                 parent.use(ttl - u.ttl);
             }
 
-            if (output == null) {
-
-                return Null;
-
-
-            }
-
         }
 
-        return (strict && c.equals(output)) ? Null : output;
+        return (output==null || (strict && c.equals(output))) ? Null : output;
     }
 
     private final class MySubUnify extends SubUnify {

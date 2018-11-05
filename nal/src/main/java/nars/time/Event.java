@@ -1,8 +1,9 @@
 package nars.time;
 
-import jcog.TODO;
 import nars.term.Term;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
+
+import java.util.Comparator;
 
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
@@ -63,9 +64,11 @@ public abstract class Event implements LongObjectPair<Term> {
         return id;
     }
 
+    private final static Comparator<Event> cmp = Comparator.comparing((Event e) -> e.id).thenComparing(Event::start).thenComparing(Event::end);
+
     @Override
-    public int compareTo(LongObjectPair<Term> o) {
-        throw new TODO();
+    public int compareTo(LongObjectPair<Term> e) {
+        return cmp.compare(this, (Event)e);
     }
 
     abstract public long dur(); //        return end() - start();

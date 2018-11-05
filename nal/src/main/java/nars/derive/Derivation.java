@@ -595,7 +595,7 @@ public class Derivation extends PreDerivation {
 
     /** resolve a term (ex: task term or belief term) with the result of 2nd-layer substitutions */
     public Term reResolve(Term t) {
-        return /*Image.imageNormalize*/(t.replace(retransform));
+        return Image.imageNormalize(t.replace(retransform));
     }
 
     public final Task add(Task t) {

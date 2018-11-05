@@ -197,8 +197,8 @@ public class Occurrify extends TimeGraph {
 
 
 
-        Term taskTerm = d.reResolve(d.taskTerm);
-        Term beliefTerm = d.reResolve(d.beliefTerm);
+        final Term taskTerm = d.taskTerm, beliefTerm = d.beliefTerm;
+
 
         long taskStart = taskOccurrence ? d.taskStart : TIMELESS,
                 taskEnd = taskOccurrence ? d.taskEnd : TIMELESS,
@@ -235,7 +235,7 @@ public class Occurrify extends TimeGraph {
 //                        Objects.equals(autoNeg, autoNegNext);
 
 
-        /*if (!reUse) */{
+
 
             this.decomposeEvents = decomposeEvents;
 
@@ -243,22 +243,31 @@ public class Occurrify extends TimeGraph {
             autoNegNext.forEach(x -> autoNeg.add(x.unneg()));
             autoNegNext.clear();
 
-            if (taskStart != TIMELESS)
-                know(taskTerm, taskStart, taskEnd);
-            else
-                know(taskTerm);
+        Event taskEvent = (taskStart != TIMELESS) ?
+            know(taskTerm, taskStart, taskEnd) :
+            know(taskTerm);
+
+        Event beliefEvent = (beliefStart != TIMELESS) ?
+            know(beliefTerm, beliefStart, beliefEnd) :
+            (!beliefTerm.equals(taskTerm)) ? know(beliefTerm) : taskEvent /* same term, reuse the same event */;
 
 
-//            if (!(this.single)) {
-            if (beliefStart != TIMELESS)
-                know(beliefTerm, beliefStart, beliefEnd);
-            else
-                know(beliefTerm);
-//            }
+        reResolve(taskEvent);
 
-        }
+        if (!taskEvent.equals(beliefEvent))
+            reResolve(beliefEvent);
+
+        reResolve(know(pattern));
+
 
         return this;
+    }
+
+    private void reResolve(Event e) {
+        Term t = e.id;
+        Term u = d.reResolve(t);
+        if (!t.equals(u))
+            link(e, 0, know(u));
     }
 
     private void setAutoNeg(Term pattern, Term taskTerm, Term beliefTerm) {

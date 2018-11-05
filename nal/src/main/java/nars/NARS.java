@@ -1,10 +1,8 @@
 package nars;
 
 import jcog.data.list.FasterList;
-import jcog.data.map.MRUMap;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.concept.Concept;
-import nars.concept.PermanentConcept;
 import nars.concept.util.ConceptAllocator;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.DefaultConceptBuilder;
@@ -13,12 +11,9 @@ import nars.derive.impl.BatchDeriver;
 import nars.exe.Attention;
 import nars.exe.Exec;
 import nars.exe.UniExec;
-import nars.index.concept.CaffeineIndex;
 import nars.index.concept.ConceptIndex;
-import nars.index.concept.MapConceptIndex;
+import nars.index.concept.SimpleConceptIndex;
 import nars.op.stm.STMLinkage;
-import nars.term.Term;
-import nars.term.Termed;
 import nars.time.Time;
 import nars.time.clock.CycleTime;
 import nars.time.clock.RealTime;
@@ -28,7 +23,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -108,7 +102,9 @@ public class NARS {
         public DefaultNAR(int nal, boolean threadSafe) {
 
             if (threadSafe)
-                index = () -> new CaffeineIndex(64 * 1024);
+                index =
+                        //() -> new CaffeineIndex(64 * 1024);
+                        () -> new SimpleConceptIndex(64 * 1024, true);
 
             if (nal > 0)
                 withNAL(1, nal);
@@ -143,25 +139,7 @@ public class NARS {
      */
     public NARS() {
 
-        index = () ->
-
-//                new CaffeineIndex(16*1024);
-                
-                new MapConceptIndex(
-
-                        new MRUMap<>(4*1024) {
-                            @Override
-                            protected void onEvict(Map.Entry<Term, Termed> entry) {
-                                Termed c = entry.getValue();
-                                if (c instanceof PermanentConcept) {
-                                    //throw new TODO("Should not evict " + c);
-                                    put(entry.getKey(), c);
-                                } else {
-                                    ((Concept)c).delete(null /* HACK */);
-                                }
-                            }
-                        }
-                );
+        index = () -> new SimpleConceptIndex(1024);
 
         time = new CycleTime();
 
