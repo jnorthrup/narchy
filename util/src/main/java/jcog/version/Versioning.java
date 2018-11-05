@@ -103,7 +103,7 @@ public class Versioning<X> {
 
     /** returns remaining TTL */
     public final void stop() {
-        setTTL(0);
+        ttl = 0;
     }
 
 
@@ -129,6 +129,7 @@ public class Versioning<X> {
     }
 
     public final void setTTL(int ttl) {
+        assert(ttl > 0);
         this.ttl = ttl;
     }
 

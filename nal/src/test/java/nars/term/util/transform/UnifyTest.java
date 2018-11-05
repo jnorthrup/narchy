@@ -10,7 +10,7 @@ import nars.term.Terms;
 import nars.term.anon.Anon;
 import nars.test.TestNAR;
 import nars.unify.Unify;
-import nars.unify.UnifySubst;
+import nars.unify.UnifyAny;
 import nars.util.RuleTest;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ public class UnifyTest {
     private static final int INITIAL_TTL = 512;
 
     @Test void testCommonStructureAllVariables() {
-        Unify u = new UnifySubst(null, new XoRoShiRo128PlusRandom(), (x) -> { return true; });
+        Unify u = new UnifyAny(new XoRoShiRo128PlusRandom() );
         assertTrue(
             Terms.commonStructureTest( $$("(#1,$2,?3)").subterms(), $$("(#3,$2,?1)").subterms(), u)
         );
@@ -40,8 +40,7 @@ public class UnifyTest {
 
 
     public static /**/ Term pattern(/**/ String s) throws Narsese.NarseseException {
-        Term ss = Narsese.the().term(s, false);
-        return pattern(ss);
+        return pattern(Narsese.the().term(s, false));
     }
 
     private static Term pattern(Term ss) {

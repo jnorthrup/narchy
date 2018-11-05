@@ -1,6 +1,7 @@
 package nars.derive.premise;
 
 import nars.Op;
+import nars.derive.UnifyPremise;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.unify.Unify;
@@ -27,6 +28,8 @@ public abstract class PreDerivation extends Unify {
      */
     public final RoaringBitmap can = new RoaringBitmap();
     public short[] will = ArrayUtils.EMPTY_SHORT_ARRAY;
+
+    public UnifyPremise unifyPremise = new UnifyPremise();
 
     public PreDerivation(@Nullable Op type, Random random, int stackMax) {
         super(type, random, stackMax);

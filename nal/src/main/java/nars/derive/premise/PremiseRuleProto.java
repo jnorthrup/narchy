@@ -7,6 +7,7 @@ import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.derive.op.Taskify;
 import nars.derive.op.UnifyTerm;
+import nars.term.Term;
 import nars.term.control.AND;
 import nars.term.control.PREDICATE;
 import nars.unify.match.Ellipsislike;
@@ -74,7 +75,8 @@ public class PremiseRuleProto extends PremiseRuleSource {
 //        } else {
 
         //smaller one first
-        if (taskPattern.volume() <= beliefPattern.volume() || taskPattern.ORrecurse(t -> t instanceof Ellipsislike)) {
+        if (taskPattern.volume() <= beliefPattern.volume() &&
+                !(hasEllipsis(beliefPattern) && !hasEllipsis(taskPattern))) {
             post.add(new UnifyTerm.NextUnify(0, taskPattern));
             post.add(new UnifyTerm.NextUnifyTransform(1, beliefPattern, conc));
         } else {
@@ -103,6 +105,9 @@ public class PremiseRuleProto extends PremiseRuleSource {
                 DeriveAction.action(cause, (AND) AND.the(postpost)));
     }
 
+    private static boolean hasEllipsis(Term x) {
+        return x.ORrecurse(t -> t instanceof Ellipsislike);
+    }
 
 
     /**

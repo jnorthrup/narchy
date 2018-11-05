@@ -19,6 +19,7 @@ import nars.op.SetFunc;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
 import nars.subterm.Subterms;
+import nars.term.Variable;
 import nars.term.*;
 import nars.term.anon.Anon;
 import nars.term.atom.Atom;
@@ -175,6 +176,7 @@ public class Derivation extends PreDerivation {
     /** temporary storage buffer for recently activated concepts */
     public final ArrayHashSet<Concept> firedConcepts = new ArrayHashSet<>(32);
 
+
     private ImmutableMap<Term, Termed> derivationFunctors;
 
     /**
@@ -232,6 +234,8 @@ public class Derivation extends PreDerivation {
         this.nar = nar;
 
         this.random = nar.random();
+        unifyPremise.random(this.random);
+
         //this.random.setSeed(nar.random().nextLong());
 
         {
@@ -358,7 +362,7 @@ public class Derivation extends PreDerivation {
 
             beliefTerm = anon.putShift(this._beliefTerm = nextBelief.term(), taskTerm);
             //this.belief = new SpecialTermTask(beliefTerm, nextBelief);
-            this.beliefEvi = Float.NaN;
+            this.beliefEvi = Float.NaN; //invalidate
         } else {
 
             boolean shiftBeliefTerm = !(nextBeliefTerm instanceof Variable);
@@ -369,6 +373,7 @@ public class Derivation extends PreDerivation {
 
             //this.belief = null;
             this.beliefTruthRaw = this.beliefTruthProjectedToTask = null;
+            this.beliefEvi = 0;
         }
 
 
@@ -518,6 +523,7 @@ public class Derivation extends PreDerivation {
             this.ditherTime = nar.dtDither();
             this.confMin = nar.confMin.floatValue();
             this.termVolMax = nar.termVolumeMax.intValue();
+            this.beliefEvi = this.taskEvi = Float.NaN;
         }
 
 
@@ -599,7 +605,10 @@ public class Derivation extends PreDerivation {
 
     /** resolve a term (ex: task term or belief term) with the result of 2nd-layer substitutions */
     public Term retransform(Term t) {
-        return Image.imageNormalize(transform(t).replace(retransform));
+        return
+                /*Image.imageNormalize*/
+                    (transform(t).replace(retransform));
+                    //t.replace(retransform);
     }
 
     public final Task add(Task t) {
@@ -621,10 +630,7 @@ public class Derivation extends PreDerivation {
     }
 
     public float parentEvi() {
-        //            long[] t = belief!=null && taskStart!=ETERNAL && beliefStart != ETERNAL ?
-//                    Longerval.unionArray(taskStart, taskEnd, beliefStart, beliefEnd ) :
-//                    ( belief != null && taskStart==ETERNAL ? new long[] { beliefStart, beliefEnd } :
-//                            new long[] { taskStart, taskEnd });
+
         if (taskEvi!=taskEvi) {
             this.taskEvi = taskTruth != null ? TruthIntegration.evi(_task) : 0;
         }

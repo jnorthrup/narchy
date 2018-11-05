@@ -168,9 +168,11 @@ public interface Variable extends Atomic {
         //                    default:
         //                        throw new UnsupportedOperationException();
         //                }
-//            int mask = VAR_PATTERN.bit;
-//            if (b.hasAny(mask))
-//                return false;
+            if (b instanceof Compound) {
+                int mask = VAR_PATTERN.bit;
+                if (b.hasAny(mask))
+                    return false;
+            }
                   //}
 
             return u.putXY(a, b);

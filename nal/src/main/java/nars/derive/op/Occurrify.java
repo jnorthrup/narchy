@@ -266,7 +266,7 @@ public class Occurrify extends TimeGraph {
     private void retransform(Event e) {
         Term t = e.id;
         Term u = d.retransform(t);
-        if (!t.equals(u))
+        if (!t.equals(u) && u.op().conceptualizable)
             link(e, 0, know(u));
     }
 

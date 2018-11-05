@@ -93,6 +93,11 @@ public abstract class Unify extends Versioning implements Subst {
         return ((ttl -= cost) > 0);
     }
 
+    public <U extends Unify> U random(Random random) {
+        this.random = random;
+        return (U) this;
+    }
+
 
     /**
      * called each time all variables are satisfied in a unique way
@@ -131,7 +136,7 @@ public abstract class Unify extends Versioning implements Subst {
     public final Term resolve(final Variable x) {
         Term /*Variable*/ z = x, y;
 
-        while (!constant(z) && (y = xy.get(z)) != null) {
+        while (z instanceof Variable && (y = xy.get(z)) != null) {
             //assert(y!=z && y!=x);
             z = y;
         }
@@ -141,8 +146,8 @@ public abstract class Unify extends Versioning implements Subst {
     /**
      * default usage: invokes the match callback if successful
      */
-    public final void unify(Term x, Term y) {
-        unify(x, y, true);
+    public final boolean unify(Term x, Term y) {
+        return unify(x, y, true);
     }
 
     /**

@@ -13,12 +13,10 @@ import nars.table.BeliefTable;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.time.Tense;
-import nars.unify.UnifySubst;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-import static nars.Op.VAR_QUERY;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -63,10 +61,6 @@ public class Premise implements Comparable<Premise> {
                         ((beliefTerm.hashCode() & 0b00000000000011111111111111111111));
     }
 
-    public Term beliefTerm() {
-        return beliefTerm;
-    }
-
     /**
      * variable types unifiable in premise formation
      */
@@ -100,7 +94,7 @@ public class Premise implements Comparable<Premise> {
         boolean beliefConceptCanAnswerTaskConcept = false;
         boolean beliefTransformed = false;
 
-        Term beliefTerm = beliefTerm();
+        Term beliefTerm = this.beliefTerm;
         Op bo = beliefTerm.op();
         NAR n = d.nar;
         if (taskTerm.concept().equals(beliefTerm.concept())) {
@@ -111,31 +105,20 @@ public class Premise implements Comparable<Premise> {
 
             if ((bo.conceptualizable) && (beliefTerm.hasAny(var) || taskTerm.hasAny(var))) {
 
-                Term _beliefTerm = beliefTerm;
-                final Term[] unifiedBeliefTerm = new Term[]{null};
-                UnifySubst u = new UnifySubst(var == VAR_QUERY.bit ? VAR_QUERY : null /* all */, n.random(), (y) -> {
-                    if (y.op().conceptualizable) {
-                        y = //y.normalize().unneg();
-                                y.unneg();
 
+                UnifyPremise u = d.unifyPremise;
 
-                        if (!y.equals(_beliefTerm)) {
-                            unifiedBeliefTerm[0] = y;
-                            return false;  //done
-                        }
+                Term unifiedBeliefTerm = u.unified(taskTerm, beliefTerm, matchTTL);
+
+                if (unifiedBeliefTerm!=null) {
+                    if (!unifiedBeliefTerm.equals(beliefTerm)) {
+                        beliefTransformed = true;
+                        beliefTerm = unifiedBeliefTerm;
                     }
-                    return true;
-                });
-
-
-
-                beliefConceptCanAnswerTaskConcept = u.transform(beliefTerm, beliefTerm, taskTerm, matchTTL) > 0;
-
-                if (unifiedBeliefTerm[0] != null) {
-                    beliefTerm = unifiedBeliefTerm[0];
-                    beliefTransformed = true;
+                    beliefConceptCanAnswerTaskConcept = true;
+                } else {
+                    beliefConceptCanAnswerTaskConcept = false;
                 }
-
 
             }
 //            }
@@ -299,7 +282,7 @@ public class Premise implements Comparable<Premise> {
     @Override
     public boolean equals(Object obj) {
         return this == obj ||
-                (hashCode() == obj.hashCode() && ((Premise) obj).task.equals(task) && ((Premise) obj).beliefTerm().equals(beliefTerm()));
+                (hashCode() == obj.hashCode() && ((Premise) obj).task.equals(task) && ((Premise) obj).beliefTerm.equals(beliefTerm));
     }
 
     @Override
@@ -311,7 +294,7 @@ public class Premise implements Comparable<Premise> {
     public String toString() {
         return "Premise(" +
                 task +
-                " * " + beliefTerm() +
+                " * " + beliefTerm +
                 ')';
     }
 
@@ -365,4 +348,5 @@ public class Premise implements Comparable<Premise> {
 
         return Integer.compare(System.identityHashCode(this), System.identityHashCode(premise));
     }
+
 }

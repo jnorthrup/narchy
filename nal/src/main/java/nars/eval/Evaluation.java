@@ -37,6 +37,7 @@ public class Evaluation {
 
     private VersionMap<Term, Term> subst;
 
+
     @Nullable
     public static Evaluation eval(Term x, NAR nar, Predicate<Term> each) {
         return eval(x, nar::functor, each);

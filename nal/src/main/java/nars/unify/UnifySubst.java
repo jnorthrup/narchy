@@ -5,40 +5,41 @@ import nars.Param;
 import nars.term.Term;
 
 import java.util.Random;
-import java.util.function.Predicate;
 
 /**
  * Unifications with callback
  *
  * not thread safe, use 1 per thread (do not interrupt matchAll)
  */
-public class UnifySubst extends Unify {
+abstract public class UnifySubst extends Unify {
 
-
-    /** continuator */
-    private final Predicate<Term> each;
 
     private Term input;
-    private int matches = 0;
 
-    public UnifySubst(Op varType, Random rng, Predicate<Term> each) {
+    public UnifySubst(Op varType, Random rng) {
         super(varType, rng, Param.UnificationStackMax);
-        this.each = each;
     }
+
+    @Override
+    public UnifySubst clear() {
+        input = null;
+        super.clear();
+        return this;
+    }
+
+    abstract protected boolean each(Term t);
 
     /**
      *  x and y are two terms being unified to form the set of substitutions.
      *  the 'input'  term is what transformation will be attempted upon.
      *  ot may be the same as X or Y, or something completely different.
      */
-    public int transform(Term input, Term x, Term y, int ttl) {
-        setTTL(ttl); assert(ttl > 0);
+    public boolean transform(Term input, Term x, Term y, int ttl) {
+        setTTL(ttl);
 
         this.input = input;
 
-        unify(x, y);
-
-        return matches;
+        return unify(x, y);
     }
 
 
@@ -47,16 +48,12 @@ public class UnifySubst extends Unify {
         Term aa = transform(input);
         if (aa != null) {
             if (aa.op().conceptualizable) {
-                matches++;
-                if (!each.test(aa)) {
+                if (!each(aa)) {
                     stop();
                 }
             }
         }
     }
 
-    public int matches() {
-        return matches;
-    }
 
 }

@@ -5,8 +5,7 @@ import nars.Op;
 import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.term.Term;
-import nars.unify.Unify;
-import nars.unify.UnifySubst;
+import nars.unify.UnifyAny;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -38,9 +37,7 @@ public class Facts implements Function<Term, Stream<Term>> {
             3. exhaustive concept index scan
         */
         Op xo = x.op();
-        Unify u = new UnifySubst(null, nar.random(), m -> {
-            return false; /* HACK just one is enough */
-        });
+        UnifyAny u = new UnifyAny(nar.random());
 
         return
                 Stream.concat(

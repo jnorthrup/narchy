@@ -8,6 +8,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Bool;
+import nars.unify.UnifyAny;
 import nars.unify.UnifySubst;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
@@ -196,9 +197,7 @@ public class FactualEvaluator extends Evaluator {
                     //TODO neg, temporal
                     if (y.op() == IMPL) {
 
-                        UnifySubst u = new UnifySubst(null, new XoRoShiRo128PlusRandom(1) /* HACK */, (t) -> {
-                            return false; /* first is ok */
-                        });
+                        UnifySubst u = new UnifyAny(new XoRoShiRo128PlusRandom(1) /* HACK */);
 
                         Term head = y.sub(1); //predicate, headicate
                         if (head.unify(x, u.clear())) {
