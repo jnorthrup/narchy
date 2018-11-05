@@ -102,7 +102,7 @@
     Y, ((&&,--X,A..+) ==> B) |- subIfUnifiesAny((--X ==> B),X,Y), (Belief:DeductionN)
 
         ((&&,M,X,A..*) ==> C), (Y ==> C) |- subIfUnifiesAny((M ==> C),X,Y), (Belief:AbductionPB)
-        ((&&,M,A..+) ==> X), ((&&,A..+) ==> Y), task(".") |- subIfUnifiesAny((M ==> C),X,Y,"$"), (Belief:AbductionPB)
+        //((&&,M,A..+) ==> X), ((&&,A..+) ==> Y), task(".") |- subIfUnifiesAny((M ==> X),X,Y,"$"), (Belief:AbductionPB)
 
 
 //// implication-based syllogism ////////////////////////////////////////////////////////////////////////////////////

@@ -29,6 +29,7 @@ import nars.term.anon.AnonID;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.VAR_DEP;
+import static nars.Op.VAR_INDEP;
 
 /**
  * Normalized variable
@@ -44,7 +45,7 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
 
     static {
 
-        for (Op o: new Op[]{Op.VAR_PATTERN, Op.VAR_QUERY, VAR_DEP, Op.VAR_INDEP}) {
+        for (Op o: new Op[]{Op.VAR_PATTERN, Op.VAR_QUERY, VAR_DEP, VAR_INDEP}) {
             int t = opToVarIndex(o);
             for (byte i = 1; i < Param.MAX_INTERNED_VARS; i++) {
                 varCache[t][i] = vNew(o, i);
@@ -73,7 +74,7 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
             case '#':
                 return VAR_DEP;
             case '$':
-                return Op.VAR_INDEP;
+                return VAR_INDEP;
             case '?':
                 return Op.VAR_QUERY;
         }
@@ -85,7 +86,7 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
     }
 
     private static int opToVarIndex(/*@NotNull*/ byte oid) {
-        return oid - VAR_DEP.id;
+        return oid - VAR_INDEP.id /* lowest, most specific */;
 //        //TODO verify this is consistent with the variable's natural ordering
 //        switch (o) {
 //            case VAR_DEP:

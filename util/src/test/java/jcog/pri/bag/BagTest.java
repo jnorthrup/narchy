@@ -2,10 +2,7 @@ package jcog.pri.bag;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.pri.PLink;
-import jcog.pri.PriReference;
-import jcog.pri.Prioritized;
-import jcog.pri.ScalarValue;
+import jcog.pri.*;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.HijackBag;
 import jcog.pri.bag.impl.hijack.DefaultHijackBag;
@@ -119,7 +116,7 @@ class BagTest {
         for (int i = 0; i < batches; i++) {
             b.sample(rng, batchSize, x -> {
                 f.data[Util.bin((b.pri(x)-min)*range, bins)]++;
-                String s = x.id;
+                String s = x.get();
                 hits.addValue(s);
                 hit.add(s);
             });
@@ -132,7 +129,7 @@ class BagTest {
 
             System.out.println(hits.getUniqueCount() + " != " + b.size());
 
-            Set<String> items = b.stream().map(stringPLink -> stringPLink.id).collect(Collectors.toSet());
+            Set<String> items = b.stream().map(NLink::get).collect(Collectors.toSet());
             items.removeAll(hit);
             System.out.println("not hit: " + items);
 

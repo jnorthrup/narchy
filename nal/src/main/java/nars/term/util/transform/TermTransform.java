@@ -125,23 +125,25 @@ public interface TermTransform {
                 if (v != null)
                     return v;
             }
-            y = the(op, dt, a); //transformed subterms
-        } else if (op != x.op()) {
+            return the(op, dt, a); //transformed subterms
+        } else  {
+            //same subterms
             if (op == INH && evalInline() && xx.sub(1) instanceof Functor.InlineFunctor && xx.sub(0).op()==PROD) {
                 Term pred = xx.sub(1), args = xx.sub(0);
                 Term v = ((Functor.InlineFunctor) pred).applyInline(args);
                 if (v != null)
                     return v;
             }
-            y = the(op, dt, xx); //same subterms
-        } else {
-            y = x.dt(dt);
+            if (op != x.op())
+                return the(op, dt, xx);
+            else
+                return x.dt(dt);
         }
 
-        return y;
     }
 
-    /** enable for inline functor evaluation */
+    /** enable for inline functor evaluation
+     * @param args*/
     default boolean evalInline() {
         return false;
     }

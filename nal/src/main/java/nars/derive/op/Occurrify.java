@@ -252,20 +252,20 @@ public class Occurrify extends TimeGraph {
             (!beliefTerm.equals(taskTerm)) ? know(beliefTerm) : taskEvent /* same term, reuse the same event */;
 
 
-        reResolve(taskEvent);
+        retransform(taskEvent);
 
         if (!taskEvent.equals(beliefEvent))
-            reResolve(beliefEvent);
+            retransform(beliefEvent);
 
-        reResolve(know(pattern));
+        retransform(know(pattern));
 
 
         return this;
     }
 
-    private void reResolve(Event e) {
+    private void retransform(Event e) {
         Term t = e.id;
-        Term u = d.reResolve(t);
+        Term u = d.retransform(t);
         if (!t.equals(u))
             link(e, 0, know(u));
     }
@@ -273,8 +273,8 @@ public class Occurrify extends TimeGraph {
     private void setAutoNeg(Term pattern, Term taskTerm, Term beliefTerm) {
         assert (nextPos.isEmpty() && nextNeg.isEmpty());
 
-        UnifiedSet<Term> pp = nextPos;
-        UnifiedSet<Term> nn = nextNeg;
+        UnifiedSet<Term> pp = nextPos, nn = nextNeg;
+
 
         BiConsumer<Term, Compound> require = (sub, sup) -> {
             Op so = sub.op();

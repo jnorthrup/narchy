@@ -178,7 +178,7 @@ public class TestUtils {
     }
 
     public static void assertRankedCandidate(Evolved actual, Node expectedNode, double expectedFitness) {
-        assertSame(expectedNode, actual.id);
+        assertSame(expectedNode, actual.get());
         assertEquals(expectedFitness, actual.pri(), 0.001f);
     }
 

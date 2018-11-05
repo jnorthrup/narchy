@@ -52,7 +52,7 @@ public class GridWarExample {
         Ranking output = new Evolution().returns(integerType()).constants(constants).variables(variables).functions(functions)
                 .setTwoPlayerGame(game).populationSize(INITIAL_POPULATION_SIZE).populationDepth(INITIAL_POPULATION_MAX_DEPTH)
                 .stopGenerations(NUM_GENERATIONS).get();
-        Node best = output.top().id;
+        Node best = output.top().get();
         System.out.println(best);
     }
 }

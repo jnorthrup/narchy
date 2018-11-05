@@ -195,10 +195,12 @@ public enum Op {
     },
 
 
-    VAR_DEP('#', Op.ANY_LEVEL),
-    VAR_INDEP('$', 5 /*NAL5..6 for Indep Vars */),
+    /** $ most specific, least globbing */
+    VAR_INDEP('$', 5),
+    VAR_DEP('#', 5),
     VAR_QUERY('?', Op.ANY_LEVEL),
     VAR_PATTERN('%', Op.ANY_LEVEL),
+    /** % least specific, most globbing */
 
     INT("+", Op.ANY_LEVEL),
 

@@ -9,6 +9,7 @@ import nars.derive.op.Taskify;
 import nars.derive.op.UnifyTerm;
 import nars.term.control.AND;
 import nars.term.control.PREDICATE;
+import nars.unify.match.Ellipsislike;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.tuple.Pair;
 
@@ -71,7 +72,9 @@ public class PremiseRuleProto extends PremiseRuleSource {
 //            post.add(new UnifyTerm.NextUnify(0, taskPattern));   //<--- if possible, replace with subterm equality test
 //            post.add(new UnifyTerm.NextUnifyTransform(1, beliefPattern, conc));
 //        } else {
-        if (taskPattern.volume() <= beliefPattern.volume()) {
+
+        //smaller one first
+        if (taskPattern.volume() <= beliefPattern.volume() || taskPattern.ORrecurse(t -> t instanceof Ellipsislike)) {
             post.add(new UnifyTerm.NextUnify(0, taskPattern));
             post.add(new UnifyTerm.NextUnifyTransform(1, beliefPattern, conc));
         } else {

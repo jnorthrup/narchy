@@ -59,11 +59,9 @@ public class SymbolicRegressionExample {
                 .get();
 
         //System.out.println(o);
-        o.forEach(x -> {
-            System.out.println(x);
-        });
+        o.forEach(System.out::println);
 
-        Node best = o.top().id;
+        Node best = o.top().get();
         System.out.println(best);
     }
 

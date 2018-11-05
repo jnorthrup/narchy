@@ -2,6 +2,7 @@ package nars.unify.match;
 
 import nars.Op;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.compound.LightCompound;
 import nars.term.util.transform.Retemporalize;
@@ -73,6 +74,18 @@ public final class EllipsisMatch extends LightCompound {
                 return new EllipsisMatch(matched);
         }
 
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj || (obj instanceof EllipsisMatch && subterms().equals(((Compound)obj).subterms()));
+    }
+
+    /** behave like a constant that only matches other EllipsisMatch */ @Override
+    public boolean unify(Term y, Unify u) {
+        return y instanceof EllipsisMatch && (
+            equals(y) || (subs() == y.subs() && unifyLinear(y.subterms(), u))
+        );
     }
 
     public static Term matched(SortedSet<Term> term) {

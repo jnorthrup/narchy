@@ -94,7 +94,7 @@ public class ArtificialAntExample {
 
         System.out.println();
 
-        Node best = output.top().id;
+        Node best = output.top().get();
         System.out.println(best);
 
 

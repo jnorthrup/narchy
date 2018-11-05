@@ -130,8 +130,8 @@ public abstract class Param {
 
 
     public static final PriMerge tasklinkMerge =
-            //PriMerge.plus;
-            PriMerge.max;
+            PriMerge.plus;
+            //PriMerge.max;
             //PriMerge.or;
             //PriMerge.avgGeoFast;
 
@@ -223,8 +223,8 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, 0, 128 * TTL_MIN );
-    public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, 0, 128 * TTL_MIN );
+    public final IntRange subUnifyTTLMax = new IntRange( 8, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
     /**

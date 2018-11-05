@@ -19,10 +19,7 @@ import nars.op.SetFunc;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
 import nars.subterm.Subterms;
-import nars.term.Functor;
-import nars.term.Term;
-import nars.term.Termed;
-import nars.term.Variable;
+import nars.term.*;
 import nars.term.anon.Anon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -47,6 +44,7 @@ import java.util.Map;
 
 import static nars.Op.*;
 import static nars.Param.TTL_UNIFY;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 import static nars.truth.TruthFunctions.w2cSafe;
@@ -94,7 +92,7 @@ public class Derivation extends PreDerivation {
                 compared = beliefTruthRaw;
             }
             if (compared == null)
-                return Bool.Null;
+                return Null;
             return compared.isPositive() ? subterm : subterm.neg();
         }
     };
@@ -131,10 +129,8 @@ public class Derivation extends PreDerivation {
 
             if (y != null && !(y instanceof Bool)) {
 
-
+                //retransform.put(input, y);
                 retransform.put(replaced, replacement);
-                //retransform.put(y, input);
-                //retransform.putIfAbsent(input, y);
 
             }
             return y;
@@ -219,6 +215,14 @@ public class Derivation extends PreDerivation {
     @Override
     public final boolean evalInline() {
         return true;
+    }
+
+    //TEMPORARY
+    @Override public @Nullable Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
+
+        assert(!yy.hasAny(VAR_PATTERN));
+
+        return super.transformedCompound(x, op, dt, xx, yy );
     }
 
     private void init(NAR nar) {
@@ -594,8 +598,8 @@ public class Derivation extends PreDerivation {
 
 
     /** resolve a term (ex: task term or belief term) with the result of 2nd-layer substitutions */
-    public Term reResolve(Term t) {
-        return Image.imageNormalize(t.replace(retransform));
+    public Term retransform(Term t) {
+        return Image.imageNormalize(transform(t).replace(retransform));
     }
 
     public final Task add(Task t) {

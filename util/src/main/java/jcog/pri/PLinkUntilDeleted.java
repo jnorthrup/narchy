@@ -31,11 +31,9 @@ public class PLinkUntilDeleted<X extends Deleteable> extends PLink<X> {
     @Override
     public X get() {
         if (!isDeleted()) {
-            if (!id.isDeleted())
-                return id;
-
-            delete();
+            if (id.isDeleted())
+                delete();
         }
-        return null;
+        return id;
     }
 }

@@ -28,7 +28,7 @@ public class EvolvedTest {
         Node n = integerConstant(0);
         double f = 7.5;
         Evolved a = new Evolved(n, f);
-        assertSame(n, a.id);
+        assertSame(n, a.get());
         assertEquals(f, a.pri(), 0.001f);
     }
 

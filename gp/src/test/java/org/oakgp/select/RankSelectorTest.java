@@ -37,15 +37,15 @@ public class RankSelectorTest {
         NodeSelector s = createRankSelection(r);
 
         s.reset(candidates);
-        assertEquals(c1.id, s.get());
-        assertEquals(c1.id, s.get());
-        assertEquals(c2.id, s.get());
-        assertEquals(c2.id, s.get());
-        assertEquals(c3.id, s.get());
-        assertEquals(c3.id, s.get());
-        assertEquals(c1.id, s.get());
-        assertEquals(c2.id, s.get());
-        assertEquals(c3.id, s.get());
+        assertEquals(c1.get(), s.get());
+        assertEquals(c1.get(), s.get());
+        assertEquals(c2.get(), s.get());
+        assertEquals(c2.get(), s.get());
+        assertEquals(c3.get(), s.get());
+        assertEquals(c3.get(), s.get());
+        assertEquals(c1.get(), s.get());
+        assertEquals(c2.get(), s.get());
+        assertEquals(c3.get(), s.get());
 
         r.assertEmpty();
     }

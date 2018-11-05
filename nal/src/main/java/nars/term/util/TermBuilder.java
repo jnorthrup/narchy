@@ -1,5 +1,6 @@
 package nars.term.util;
 
+import jcog.WTF;
 import nars.Op;
 import nars.Param;
 import nars.subterm.ArrayTermVector;
@@ -386,7 +387,7 @@ public abstract class TermBuilder {
             default: {
                 if (u.length != 2) {
                     //if (Param.DEBUG_EXTRA)
-                        throw new RuntimeException("temporal conjunction with n!=2 subterms");
+                        throw new WTF("temporal conjunction with n!=2 subterms");
                     //return Null;
                 }
 

@@ -26,7 +26,7 @@ class HijackBagTest {
         for (int reprobes : new int[] { 2, 4, 8 }) {
             for (int capacity : new int[] { 2, 4, 8, 16, 32, 64, 128 }) {
                 testPutMinMaxAndUniqueness(
-                        new DefaultHijackBag<>(max, capacity, reprobes));
+                        new DefaultHijackBag(max, capacity, reprobes));
             }
         }
     }
@@ -84,7 +84,7 @@ class HijackBagTest {
 
         int n = 256;
 
-        Bag<String,PriReference<String>> a = new DefaultHijackBag<>(max, n, 4);
+        Bag<String,PriReference<String>> a = new DefaultHijackBag(max, n, 4);
         for (int i = 0; i < n*8; i++) {
             a.put(new PLink("x" + Integer.toString(Float.floatToIntBits(1f/i),5), ((float)(i))/(n)));
         }

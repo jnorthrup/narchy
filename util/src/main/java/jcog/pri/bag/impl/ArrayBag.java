@@ -610,8 +610,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
     private Y removeFromMap(Y y) {
         Y removed = map.remove(key(y));
-        if (removed == null)
+        if (removed == null) {
             throw new WTF();
+        }
         return removed;
     }
 

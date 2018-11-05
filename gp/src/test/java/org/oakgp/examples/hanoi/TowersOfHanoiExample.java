@@ -60,7 +60,7 @@ public class TowersOfHanoiExample {
 
         output.forEach(System.out::println);
 
-        Node best = output.top().id;
+        Node best = output.top().get();
         System.out.println(best);
         new TowersOfHanoiFitFn(true).doubleValueOf(best);
     }

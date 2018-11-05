@@ -6,7 +6,6 @@ import nars.NARS;
 import nars.Narsese;
 import nars.term.Term;
 import nars.time.Tense;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -25,53 +24,55 @@ class QueryVariableTest {
     @Test
     void testQueryVariableAnswerUnified() throws Narsese.NarseseException {
 
-        testQuestionAnswer("<a --> b>", "<?x --> b>");
+        testQuestionAnswer("<?x --> b>", "<a --> b>");
     }
 
     @Test
     void testQueryVariableAnswerUnified2() throws Narsese.NarseseException {
-        testQuestionAnswer("<c --> (a&b)>", "<?x --> (a&b)>");
+        testQuestionAnswer("<?x --> (a&b)>", "<c --> (a&b)>");
     }
+
 
     @Test
     void testQueryVariableMatchesDepVar() throws Narsese.NarseseException {
-        testQuestionAnswer("<#c --> (a&b)>", "<?x --> (a&b)>");
+        testQuestionAnswer("<?x --> (a&b)>", "<#c --> (a&b)>");
     }
+
 
     @Test
     void testQueryVariableMatchesIndepVar() throws Narsese.NarseseException {
-        testQuestionAnswer("($x ==> y($x))", "(?x ==> y(?x))");
+        testQuestionAnswer("(?x ==> y(?x))", "($x ==> y($x))");
     }
 
     @Test
     void testQueryVariableMatchesTemporally() throws Narsese.NarseseException {
-        testQuestionAnswer("(x &&+1 y)", "(?x && y)");
+        testQuestionAnswer("(?x && y)", "(x &&+1 y)");
     }
 
     @Test
     void testQueryVariableMatchesTemporally2() throws Narsese.NarseseException {
-        testQuestionAnswer("(e ==> (x &&+1 y))", "(e ==> (?x && y))");
+        testQuestionAnswer("(e ==> (?x && y))", "(e ==> (x &&+1 y))");
     }
 
     @Test
     void testQuery2() throws Narsese.NarseseException {
-        testQueryAnswered(32, 512);
+        testQueryAnswered(4, 16);
     }
 
     @Test
     void testQuery1() throws Narsese.NarseseException {
-        testQueryAnswered(1, 512);
+        testQueryAnswered(1, 4);
     }
 
-    private void testQuestionAnswer(@NotNull String beliefString, @NotNull String question) throws Narsese.NarseseException {
+    private void testQuestionAnswer(String question, String belief) throws Narsese.NarseseException {
 
-        int time = 512;
+        int time = 4;
 
         AtomicBoolean valid = new AtomicBoolean();
 
-        NAR nar = NARS.tmp();
+        NAR nar = NARS.shell();
 
-        Term beliefTerm = $.$(beliefString);
+        Term beliefTerm = $.$(belief);
         assertNotNull(beliefTerm);
 
 
@@ -99,17 +100,17 @@ class QueryVariableTest {
         AtomicBoolean b = new AtomicBoolean(false);
 
         String question = cyclesBeforeQuestion == 0 ?
-                "<a --> b>" /* unknown solution to be derived */ :
-                "<b --> a>" /* existing solution, to test finding existing solutions */;
+                "(a --> b)" /* unknown solution to be derived */ :
+                "(b --> a)" /* existing solution, to test finding existing solutions */;
 
 
         
-        NAR n = NARS.tmpEternal();
+        NAR n = NARS.tmp(5);
 
 
 
-        n.input("<a <-> b>. %1.0;0.5%",
-                "<b --> a>. %1.0;0.5%");
+        n.input("(a <-> b). %1.0;0.5%",
+                "(b --> a). %1.0;0.5%");
         n.run(cyclesBeforeQuestion);
 
 

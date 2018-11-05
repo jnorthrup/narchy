@@ -283,17 +283,17 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                         if (edt == DTERNAL) {
 
-                            //link(se, ETERNAL, pe);
+                            link(se, ETERNAL, pe);
 
-//                        subj.eventsWhile((w, y) -> {
-//                            link(know(y), ETERNAL, pe);
-//                            return true;
-//                        }, 0, true, false, false, 0);
-//
-//                        pred.eventsWhile((w, y) -> {
-//                            link(se, ETERNAL, know(y));
-//                            return true;
-//                        }, 0, true, false, false, 0);
+                            subj.eventsWhile((w, y) -> {
+                                link(know(y), ETERNAL, pe);
+                                return true;
+                            }, 0, false, true, true, 0);
+
+                            pred.eventsWhile((w, y) -> {
+                                link(se, ETERNAL, know(y));
+                                return true;
+                            }, 0, false, true, true, 0);
 
                         } else if (edt != XTERNAL) {
 
@@ -301,19 +301,19 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                             link(se, (edt + st), pe);
 
 
-//                        if (subj.hasAny(Op.CONJ)) {
-//                            subj.eventsWhile((w, y) -> {
-//                                link(know(y), edt + st - w, pe);
-//                                return true;
-//                            }, 0, true, true, false, 0);
-//                        }
-//
-//                        if (pred.hasAny(CONJ)) {
-//                            pred.eventsWhile((w, y) -> {
-//                                link(se, edt + st + w, know(y));
-//                                return true;
-//                            }, 0, true, true, false, 0);
-//                        }
+                            if (subj.hasAny(Op.CONJ)) {
+                                subj.eventsWhile((w, y) -> {
+                                    link(know(y), edt + st - w, pe);
+                                    return true;
+                                }, 0, false, true, false, 0);
+                            }
+
+                            if (pred.hasAny(CONJ)) {
+                                pred.eventsWhile((w, y) -> {
+                                    link(se, edt + st + w, know(y));
+                                    return true;
+                                }, 0, false, true, false, 0);
+                            }
 
                         }
                     }
@@ -329,17 +329,18 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     switch (edt) {
 
                         case XTERNAL:
-                        case DTERNAL:
                             for (Term sub : eventTerm.subterms())
                                 know(sub);
                             break;
 
+                        case DTERNAL:
                         case 0:
 
                             Subterms es = eventTerm.subterms();
                             int esn = es.subs();
+                            long d = edt == 0 ? 0 : ETERNAL;
                             for (int i = 0; i < esn; i++)
-                                link(event, 0, know(es.sub(i), eventStart, eventEnd));
+                                link(event, d, know(es.sub(i), eventStart, eventEnd));
 
                             break;
 
@@ -360,9 +361,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                                 eventTerm.eventsWhile((w, y) -> {
                                     Event next = know(y);
 
-                                    long dt = w - prevDT[0];
-                                    link(prev[0], dt, next);
-                                    prevDT[0] += dt;
+                                    link(prev[0], w - prevDT[0], next);
+                                    prevDT[0] = w;
                                     prev[0] = next;
                                     return true;
                                 }, 0, false, false, false, 0);
@@ -388,7 +388,6 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             }
         }
     }
-
 
 
     boolean solveDT(Term x, Predicate<Event> each) {
@@ -508,10 +507,10 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         long ddt = dt(dt);
 
-        if (ddt!=DTERNAL && ddt!=0) {
-            assert(ddt!=XTERNAL);
+        if (ddt != DTERNAL && ddt != 0) {
+            assert (ddt != XTERNAL);
             //swap to correct sequence order
-            if (a.start() > b.start()){
+            if (a.start() > b.start()) {
                 Event z = a;
                 a = b;
                 b = z;
@@ -519,9 +518,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             }
         }
 
-        Term c = Conj.the(a.id, 0, b.id, (ddt == DTERNAL ? ETERNAL /* HACK */ : ddt) );
-        if (c.op() != CONJ && ((ddt == 0) && (dt!=0))) { //undo parallel-ization if the collapse caused an invalid term
-            c = Conj.the(a.id, 0, b.id, (dt == DTERNAL ? ETERNAL /* HACK */ : dt) );
+        Term c = Conj.the(a.id, 0, b.id, (ddt == DTERNAL ? ETERNAL /* HACK */ : ddt));
+        if (c.op() != CONJ && ((ddt == 0) && (dt != 0))) { //undo parallel-ization if the collapse caused an invalid term
+            c = Conj.the(a.id, 0, b.id, (dt == DTERNAL ? ETERNAL /* HACK */ : dt));
         }
         if (c.op().conceptualizable) {
             return solveOccurrence(c, a.start(), durMerge(a, b), each);
@@ -644,7 +643,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             } else {
 
                 if (x.dt() == XTERNAL) {
-                    if (path!=null) {
+                    if (path != null) {
                         //use the provided 'path', if non-null, to correctly order the sequence, which may be length>2 subterms
                         Term x1 = x.sub(1);
 
@@ -748,7 +747,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 if (y.dt() == XTERNAL && !subSolved.containsKey(y)) {
                     solveDT(y, (z) -> {
                         //TODO there could be multiple solutions for dt
-                        assert(z.id.dt()!=XTERNAL);
+                        assert (z.id.dt() != XTERNAL);
                         //know(z.id);
                         subSolved.put(y, z.id);
                         return false;
@@ -770,7 +769,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         /* occurrence, with or without any xternal remaining */
         return (x.dt() != XTERNAL || solveDT(x, y -> solveOccurrence(y, each)))
                 &&
-               solveOccurrence(x, each);
+                solveOccurrence(x, each);
     }
 
 
