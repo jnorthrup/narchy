@@ -1,6 +1,7 @@
 package nars.table.question;
 
 import jcog.TODO;
+import jcog.data.iterator.ArrayIterator;
 import jcog.data.map.MRUMap;
 import nars.NAR;
 import nars.Task;
@@ -48,8 +49,7 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
 
     @Override
     public Stream<? extends Task> streamTasks() {
-        Task[] t = toArray();
-        return t.length > 0 ? Stream.of(t) : Stream.empty();
+        return ArrayIterator.stream(toArray());
     }
 
     public Task[] toArray() {
@@ -72,7 +72,7 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
             if (y == null)
                 continue;
             if (y.isDeleted()) {
-                removeTask(y);
+                removeTask(y, false);
             } else {
                 x.accept(y);
             }
@@ -80,8 +80,14 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
     }
 
     @Override
-    public synchronized boolean removeTask(Task x) {
-        return remove(x) != null;
+    public synchronized boolean removeTask(Task x, boolean delete) {
+        Task r = remove(x);
+        if (r != null) {
+            if (delete)
+                r.delete();
+            return true;
+        }
+        return false;
     }
 
     @Override

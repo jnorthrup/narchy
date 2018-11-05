@@ -33,7 +33,7 @@ public abstract class WeightSelector implements NodeSelector, IntToFloatFunction
 
     @Override
     public Node get() {
-        return living.get(roulette.next()).id;
+        return living.get(roulette.next()).get();
 
 //        int size = r.size();
 //        long s = 0;

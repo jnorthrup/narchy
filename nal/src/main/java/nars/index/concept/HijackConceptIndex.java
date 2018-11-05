@@ -59,7 +59,7 @@ public class HijackConceptIndex extends ConceptIndex {
 
             @Override
             public Termed key(PLink<Termed> value) {
-                return value.id.term();
+                return value.get().term();
             }
 
             @Override
@@ -67,15 +67,11 @@ public class HijackConceptIndex extends ConceptIndex {
                 return false;
             }
 
-            @Override
-            protected boolean keyEquals(Object k, PLink<Termed> p) {
-                return k.hashCode() == p.hashCode() && p.id.equals(k);
-            }
 
             @Override
             protected boolean replace(float incomingPri, PLink<Termed> existing) {
 
-                boolean existingPermanent = existing.id instanceof PermanentConcept;
+                boolean existingPermanent = existing.get() instanceof PermanentConcept;
                 if (existingPermanent) {
                     return false;
                 }
@@ -117,7 +113,7 @@ public class HijackConceptIndex extends ConceptIndex {
 
 
             boost(x, getBoost);
-            return x.id;
+            return x.get();
 
         }
 
@@ -149,7 +145,7 @@ public class HijackConceptIndex extends ConceptIndex {
     @Override
     public void set(Term key, Termed value) {
         PLink<Termed> existing = table.get(key);
-        if (existing==null || existing.id!=value) {
+        if (existing==null || existing.get()!=value) {
             remove(key);
             PLink<Termed> inserted = table.put(new PLinkHashCached<>(value, 1f));
             if (inserted == null && value instanceof PermanentConcept) {
@@ -183,7 +179,7 @@ public class HijackConceptIndex extends ConceptIndex {
     @Override
     public Termed remove(Term entry) {
         PLink<Termed> e = table.remove(entry);
-        return e != null ? e.id : null;
+        return e != null ? e.get() : null;
     }
 
     @Override

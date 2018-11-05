@@ -49,7 +49,7 @@ public class Longerval implements LongInterval {
 
 	@Override
 	public int hashCode() {
-		return Long.hashCode(((23 + a)*31)+b); //TODO is this good?
+		return Long.hashCode((31 + a) * 31 + b); //TODO is this good?
 	}
 
 	/** Does this start completely before other? Disjoint */

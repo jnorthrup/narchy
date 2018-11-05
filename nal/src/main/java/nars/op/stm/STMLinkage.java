@@ -7,7 +7,6 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.control.NARService;
 import nars.link.TaskLink;
-import nars.link.Tasklinks;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +27,7 @@ public class STMLinkage extends NARService {
 
 //    private final Cause cause;
 
-    private final MetalConcurrentQueue<Pair<Task,Concept>> stm;
+    private final MetalConcurrentQueue<Pair<Task, Concept>> stm;
 
     public STMLinkage(NAR nar, int capacity) {
         super();
@@ -48,32 +47,32 @@ public class STMLinkage extends NARService {
         );
     }
 
-    public static void link(Task at, Concept ac, Pair<Task,Concept> b/*, short cid*/, float factor, NAR nar) {
+    public static void link(Task at, Concept ac, Pair<Task, Concept> b/*, short cid*/, float factor, NAR nar) {
 
         //if (a==b) ta.term().equals(tb.term()))
-            //return;
+        //return;
 
         /** current task's... */
         //Concept a = nar.concept(ta);
         //if (a != null) {
-            //Concept b = nar.concept(tb);
-            //if (b != null) {
-                Concept bc = b.getTwo();
-                if (ac!=bc) {
+        //Concept b = nar.concept(tb);
+        //if (b != null) {
+        Concept bc = b.getTwo();
+        if (ac != bc) {
 
 
-                    Task bt = b.getOne();
-                    Tasklinks.linkTask(new TaskLink.GeneralTaskLink(bt, nar, bt.priElseZero() * factor), ac.tasklinks(), null);
-                    Tasklinks.linkTask(new TaskLink.GeneralTaskLink(at, nar, at.priElseZero() * factor), b.getTwo().tasklinks(), null);
+            Task bt = b.getOne();
+            TaskLink.link(TaskLink.tasklink(bt, bt.priElseZero() * factor, nar), ac.tasklinks(), null);
+            TaskLink.link(TaskLink.tasklink(at, at.priElseZero() * factor, nar), b.getTwo().tasklinks(), null);
 
-                }
+        }
 
 //                } else {
 //                    a.termlinks().putAsync(/*new CauseLink.PriCauseLink*/new PLink<>(a.term(), pri/*, cid*/));
 //                    //ca.termlinks().putAsync(new CauseLink.PriCauseLink(ca.term(), pri, cid));
 //                }
-          //  }
-       // }
+        //  }
+        // }
 
     }
 

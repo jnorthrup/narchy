@@ -133,7 +133,7 @@ public class BatchDeriver extends Deriver {
         nar.emotion.conceptFire.increment();
 
 
-        Concept concept = conceptActivation.id;
+        Concept concept = conceptActivation.get();
 
         Bag<?, TaskLink> tasklinks = concept.tasklinks();
         if (tasklinks.isEmpty())
@@ -145,7 +145,7 @@ public class BatchDeriver extends Deriver {
 
         Supplier<Term> beliefSrc;
         if (concept.term().op().atomic) {
-            beliefSrc = ()->((TaskLink.GeneralTaskLink)concept.tasklinks().sample(rng)).term();
+            beliefSrc = ()-> concept.tasklinks().sample(rng).term();
         } else {
             beliefSrc = ()->concept.linker().sample(rng);
         }
@@ -162,7 +162,7 @@ public class BatchDeriver extends Deriver {
 
         tasklinks.sample(rng, Math.min(_tasklinks, nTaskLinks), tasklink -> {
 
-            Task task = tasklink.get(nar);
+            Task task = tasklink.apply(nar);
             if (task != null) {
 
                 int[] premisesPerTaskLink = { _termlinksPerTasklink };

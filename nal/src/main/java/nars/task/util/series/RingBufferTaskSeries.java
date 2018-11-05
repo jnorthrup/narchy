@@ -15,11 +15,12 @@ import java.util.stream.Stream;
 import static jcog.math.LongInterval.TIMELESS;
 import static nars.time.Tense.ETERNAL;
 
-public class ConcurrentRingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> {
+/** fully concurrent. implemented with MetalConcurrentQueue */
+public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> {
 
     final MetalConcurrentQueue<T> q;
 
-    public ConcurrentRingBufferTaskSeries(int capacity) {
+    public RingBufferTaskSeries(int capacity) {
         super(capacity);
         this.q = new MetalConcurrentQueue<>(capacity); // + 1 /* for safety? */
     }
@@ -30,7 +31,7 @@ public class ConcurrentRingBufferTaskSeries<T extends Task> extends AbstractTask
         long last = end();
         if (last!=TIMELESS && last >= t.start()) {
             if (Param.DEBUG)
-                throw new RuntimeException(ConcurrentRingBufferTaskSeries.class + " only supports appending in linear, non-overlapping time sequence");
+                throw new RuntimeException(RingBufferTaskSeries.class + " only supports appending in linear, non-overlapping time sequence");
             else
                 return; //?
         }
@@ -47,9 +48,9 @@ public class ConcurrentRingBufferTaskSeries<T extends Task> extends AbstractTask
     @Override
     protected T pop() {
         T t = q.poll();
-        if (t!=null) {
+        if (t!=null)
             t.delete();
-        }
+
         return t;
     }
 

@@ -55,7 +55,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     }
 
 
-
     @Override
     public final Stream<? extends Task> streamTasks() {
 
@@ -83,7 +82,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
 
     public void setTaskCapacity(int c) {
-        assert( c>= 0);
+        assert (c >= 0);
 
         int wasCapacity = this.capacity();
         if (wasCapacity != c) {
@@ -136,7 +135,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     }
 
 
-//    @Override
+    //    @Override
     public synchronized void clear() {
 //        forEach(ScalarValue::delete);
         super.clear();
@@ -183,26 +182,30 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
 
     @Override
-    public synchronized boolean removeTask(Task x) {
+    public boolean removeTask(Task x, boolean delete) {
 
 
-            if (!x.isEternal())
-                return false;
+        if (!x.isEternal())
+            return false;
 
+        Task removed;
+        synchronized (this) {
             int index = indexOf(x, this);
             if (index != -1) {
-                Task removed = remove(index);
-                assert(removed!=null);
-                //assert(removed.equals(x));
-                x.delete();
-                return true;
+                removed = remove(index);
+                assert (removed != null);
             } else {
-                return false;
+                removed = null;
             }
+        }
 
-//            int findAgainToBeSure = indexOf(x, this);
-//            return (findAgainToBeSure != -1) && remove(findAgainToBeSure) != null;
-
+        if (removed != null) {
+            if (delete)
+                removed.delete();
+            return true;
+        } else {
+            return false;
+        }
 
 
     }
@@ -219,11 +222,14 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     @Override
     public final void add(Remember r, NAR nar) {
-        if (!containsOrNotEternal(r))
+        if (!r.input.isEternal())
+            return;
+
+        if (!contains(r))
             reviseOrTryInsertion(r, nar);
     }
 
-    public void reviseOrTryInsertion(Remember r, NAR nar) {
+    private synchronized void reviseOrTryInsertion(Remember r, NAR nar) {
         Object[] list = this.items;
 
         Task input = r.input;
@@ -231,7 +237,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         Task oldBelief = null;
         Truth conclusion = null;
 
-        for (Object aList: list) {
+        for (Object aList : list) {
             if (aList == null)
                 break;
             Task x = (Task) aList;
@@ -324,7 +330,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         }
     }
 
-    public boolean containsOrNotEternal(Remember r) {
+    public boolean contains(Remember r) {
         //scan list for existing equal task
         Object[] list = this.items;
 
@@ -332,8 +338,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         Task existing = null;
 
 
-        if (!input.isEternal())
-            return true;
 
         //synchronized (this) {
         for (Object aList : list) {
@@ -405,16 +409,16 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     public Task eternalize(Task x, int tableCap, long tableDur, NAR nar) {
 
         assert (!x.isDeleted());
-        float factor = Math.max((1f/tableCap), (float)Util.unitize((((double)x.range())/(1+tableDur))));
+        float factor = Math.max((1f / tableCap), (float) Util.unitize((((double) x.range()) / (1 + tableDur))));
 
         float eviMin;
         //synchronized (this) {
-            if (size() == capacity()) {
-                Task w = last();
-                eviMin = w!=null ? w.evi() : 0;
-            } else {
-                eviMin = 0;
-            }
+        if (size() == capacity()) {
+            Task w = last();
+            eviMin = w != null ? w.evi() : 0;
+        } else {
+            eviMin = 0;
+        }
         //}
         Task eternalized = Task.eternalized(x, factor, eviMin, nar);
 

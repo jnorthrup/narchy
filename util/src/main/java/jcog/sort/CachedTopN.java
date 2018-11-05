@@ -64,10 +64,6 @@ public class CachedTopN<X> extends ArrayHashSet<NLink<X>>  {
 
 
 
-    public void forEachItem(Consumer<? super X> target) {
-        forEach(x -> target.accept(x.id));
-    }
-
     public float pri(int y) {
         return get(y).pri();
     }
@@ -76,20 +72,6 @@ public class CachedTopN<X> extends ArrayHashSet<NLink<X>>  {
         return size() == 0;
     }
 
-    public X[] array(IntFunction<X[]> arrayBuilder) {
-        int s = size();
-        X[] x = arrayBuilder.apply(s);
-//        if (list instanceof FasterList) {
-//            NLink<X>[] l = (NLink<X>[]) ((FasterList) list).array();
-//            for (int i = 0; i < s; i++) {
-//                x[i] = l[i].id;
-//            }
-//        } else {
-            for (int i = 0; i < s; i++)
-                x[i] = get(i).id;
-//        }
-        return x;
-    }
 
     /** what % to remain; ex: rate of 25% removes the lower 75% */
     public void removePercentage(float below, boolean ofExistingOrCapacity) {

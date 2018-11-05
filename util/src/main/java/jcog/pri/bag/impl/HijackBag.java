@@ -775,7 +775,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             if (f == null)
                 continue;
 
-            float p = priUpdate(f);
+            float p = pri(f);
 
             if (update != null && p == p) {
                 update.accept(f);

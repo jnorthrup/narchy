@@ -4,7 +4,7 @@ import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
 import nars.table.dynamic.SeriesBeliefTable;
-import nars.task.util.series.ConcurrentRingBufferTaskSeries;
+import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
 
 /** disables revision merge so that revisions, not being CuriosityTask and thus intercepted, cant directly
@@ -14,7 +14,7 @@ import nars.term.Term;
 public final class CuriosityGoalTable extends SeriesBeliefTable {
 
     public CuriosityGoalTable(Term c, int capacity) {
-        super(c, false, new ConcurrentRingBufferTaskSeries<>(capacity));
+        super(c, false, new RingBufferTaskSeries<>(capacity));
     }
 
     @Override

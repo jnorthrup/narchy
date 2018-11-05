@@ -79,7 +79,7 @@ public class TaskLinkTest {
 
         Frequency f = new Frequency();
         for (int i = 0; i < samples; i++)
-            f.addValue(l.get(n).toString());
+            f.addValue(l.apply(n).toString());
         return f;
     }
 }

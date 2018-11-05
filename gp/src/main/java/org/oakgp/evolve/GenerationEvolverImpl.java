@@ -50,7 +50,7 @@ public final class GenerationEvolverImpl implements GenerationEvolver {
     public GenerationEvolverImpl(float eliteRate, NodeSelector selector, ArrayBag<GeneticOperator, PLink<GeneticOperator>> operators, Random random) {
         this(eliteRate, selector,
                 //TODO: if operators.size()==1 ?
-                () -> operators.sample(random).id
+                () -> operators.sample(random).get()
         );
         assert(!operators.isEmpty());
     }

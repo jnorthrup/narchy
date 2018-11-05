@@ -10,7 +10,7 @@ import nars.table.BeliefTables;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
-import nars.task.util.series.ConcurrentRingBufferTaskSeries;
+import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +40,7 @@ public class SensorBeliefTables extends BeliefTables {
                 //TODO impl time series with concurrent ring buffer from gluegen
                 t,
                 //new ConcurrentSkiplistTaskSeries<>( /*@Deprecated*/ Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE)
-                new ConcurrentRingBufferTaskSeries<>( /*@Deprecated*/ Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE));
+                new RingBufferTaskSeries<>( /*@Deprecated*/ Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE));
     }
 
     SensorBeliefTables(Term term, boolean beliefOrGoal, TemporalBeliefTable t, AbstractTaskSeries<SeriesBeliefTable.SeriesTask> s) {

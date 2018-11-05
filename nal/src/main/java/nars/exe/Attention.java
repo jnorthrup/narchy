@@ -52,8 +52,8 @@ public class Attention extends DurService implements Sampler<Concept> {
     /**
      * TODO abstract
      */
-    public void activate(Activate a) {
-        active.putAsync(new Activate(a.id, a.hashCode(), a.priElseZero()));
+    protected void activate(Activate a) {
+        active.putAsync(a);
     }
 
     /**

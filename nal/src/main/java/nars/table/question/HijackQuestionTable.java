@@ -22,11 +22,6 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
         return existing;
     }
 
-    @Override
-    public void clear() {
-        //forEachTask(ScalarValue::delete);
-        super.clear();
-    }
 
     @Override
     public void match(Answer m) {
@@ -87,8 +82,14 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
     }
 
     @Override
-    public boolean removeTask(Task x) {
-        return remove(x) != null;
+    public boolean removeTask(Task x, boolean delete) {
+        Task r = remove(x);
+        if (r != null) {
+            if (delete)
+                r.delete();
+            return true;
+        }
+        return false;
     }
 
     @Override

@@ -213,7 +213,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 y = z;
             }
         }
-        
+
         link(x, TimeSpan.the(dt), y);
     }
 

@@ -69,7 +69,7 @@ public class BagClustering<X> {
 
             @Override
             public X key(VLink<X> xvLink) {
-                return xvLink.id;
+                return xvLink.get();
             }
         };
 
@@ -135,7 +135,7 @@ public class BagClustering<X> {
 
 
         bag.commit(t -> {
-            X tt = t.id;
+            X tt = t.get();
             if ((tt instanceof Prioritized) && ((Prioritized) tt).isDeleted())
                 t.delete();
         });
@@ -186,8 +186,9 @@ public class BagClustering<X> {
 
     private void learn(VLink<X> x) {
         double x0 = x.coord[0];
-        if (x0 != x0)
-            model.coord(x.id, x.coord);
+        if (x0 != x0) {
+            model.coord(x.get(), x.coord);
+        }
 
         x.centroid = net.put(x.coord).id;
     }

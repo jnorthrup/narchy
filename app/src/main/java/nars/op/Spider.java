@@ -277,7 +277,7 @@ public class Spider extends Causable {
             sampleAndVisitUnique(4, c);
         }
         protected Term term(Object x) {
-            return ((TaskLink) x).get().term;
+            return ((TaskLink) x).term();
         }
 
         protected Sampler bag(Concept c) {

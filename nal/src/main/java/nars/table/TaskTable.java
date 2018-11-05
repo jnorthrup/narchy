@@ -58,9 +58,12 @@ public interface TaskTable {
     void setTaskCapacity(int newCapacity);
 
     /**
-     * returns true if the task was removed
+     * returns true if the task was removed.
+     * implementations should delete the task only when delete is true
      */
-    boolean removeTask(Task x);
+    boolean removeTask(Task x, boolean delete);
+
+
 
     void clear();
 

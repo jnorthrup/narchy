@@ -580,7 +580,7 @@ public final class Evolution {
 
             Ranking rankedCandidates = process(population, _generationRanker, _generationEvolver, terminator, _initialPopulation.stream());
             Evolved best = rankedCandidates.top();
-            Node simplifiedBestNode = (best.id);
+            Node simplifiedBestNode = (best.get());
             Logger.getGlobal().info("Best candidate: Fitness: " + best.pri() + " Structure: " + simplifiedBestNode);
             return rankedCandidates;
         }

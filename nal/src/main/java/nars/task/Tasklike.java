@@ -19,7 +19,6 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
 
     public final byte punc;
     public final long when;
-    private final int hash;
 
     public Tasklike(Term term, byte punc, long when) {
         this.punc = punc;
@@ -34,7 +33,7 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
         assert (term.op().conceptualizable && term.op() != NEG);
 
 
-        this.hash = Util.hashCombine(Util.hashCombine(term.hashCode(), punc), Long.hashCode(when));
+
     }
 
     @Override
@@ -49,12 +48,12 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
         if (this == o) return true;
         if (!(o instanceof Tasklike)) return false;
         Tasklike oo = (Tasklike) o;
-        return (hash == oo.hash) && (punc == oo.punc) && (when == oo.when) && (term.equals(oo.term));
+        return /*(hash == oo.hash) && */(punc == oo.punc) && (when == oo.when) && (term.equals(oo.term));
     }
 
     @Override
     public final int hashCode() {
-        return hash;
+        return Util.hashCombine(Util.hashCombine(term.hashCode(), punc), when);
     }
 
     public Task get(NAR n, Prioritizable link) {

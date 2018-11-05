@@ -767,12 +767,16 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     @Override
-    public boolean removeTask(Task x) {
+    public boolean removeTask(Task x, boolean delete) {
         if (x.isEternal())
             return false;
 
-        x.delete();
-        return remove(x);
+        if (remove(x)) {
+            if (delete)
+                x.delete();
+            return true;
+        }
+        return false;
     }
 
     public void print(PrintStream out) {

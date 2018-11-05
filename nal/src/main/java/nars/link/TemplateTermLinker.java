@@ -1,12 +1,12 @@
 package nars.link;
 
 import jcog.Util;
-import jcog.data.MutableFloat;
-import jcog.data.NumberX;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
+import jcog.pri.OverflowDistributor;
 import jcog.pri.Prioritized;
 import jcog.pri.ScalarValue;
+import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -313,23 +313,27 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
 
             //default all to all exhausive matrix insertion
             //TODO configurable "termlink target concept x tasklink matrix" linking pattern: density, etc
+
             if (!firedConcepts.isEmpty()) {
 
-                NumberX overflow = new MutableFloat();
+                List<TaskLink> links = d.firedTaskLinks.list;
+                int n = links.size();
+                if (n > 0) {
 
+                    OverflowDistributor<Bag> overflow = n > 1 ? new OverflowDistributor<>() : null;
 
-                for (TaskLink f : d.firedTaskLinks) {
+                    for (int i = 0; i < n; i++) {
 
+                        TaskLink link = links.get(i);
 
-//                UnitPri allocated = new UnitPri();
-//                allocated.take(f, linkDecayRate,false,false);
-//                //float priDispersed = linkDecayRate * f.priElseZero();
-//                //f.priSub(priDispersed);
-//                float p = Math.max(EPSILON, allocated.priElseZero());
+                        TaskLink.link(link, link.priElseZero() * tasklinkSpreadRate, firedConcepts, overflow);
 
-                    float p = f.priElseZero() * tasklinkSpreadRate;
-                    Tasklinks.linkTask((TaskLink.GeneralTaskLink) f, p, firedConcepts, overflow);
-                    overflow.set(0); //clear after each and re-use
+                        if (overflow != null) {
+                            overflow.shuffle(d.random).redistribute((b, p) -> b.putAsync(link.clone(p)));
+                            overflow.clear();
+                        }
+
+                    }
                 }
 
             }
@@ -348,20 +352,21 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
 
 
         int n = concepts;
-        if (n > 0) {
+        if (n == 0)
+            return 0;
 
-            ArrayHashSet<Concept> firedConcepts = d.firedConcepts;
-            firedConcepts.clear();
+        ArrayHashSet<Concept> firedConcepts = d.firedConcepts;
+        firedConcepts.clear();
 
 
-            n = Math.min(n, Param.LinkFanoutMax);
+        n = Math.min(n, Param.LinkFanoutMax);
 
-            float taskLinkPriSum = Math.max(ScalarValue.EPSILON, (float) (((FasterList<TaskLink>) (d.firedTaskLinks.list))
-                    .sumOfFloat(Prioritized::priElseZero)));
+        float taskLinkPriSum = Math.max(ScalarValue.EPSILON, (float) (((FasterList<TaskLink>) (d.firedTaskLinks.list))
+                .sumOfFloat(Prioritized::priElseZero)));
 
-            float conceptActivationEach =
-                    //(activationRate * conceptSrc.priElseZero()) / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
-                    taskLinkPriSum / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
+        float conceptActivationEach =
+                //(activationRate * conceptSrc.priElseZero()) / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
+                taskLinkPriSum / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
 
 
 //            float balance = nar.termlinkBalance.floatValue();
@@ -377,50 +382,54 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
 
 //            NumberX refund = new MutableFloat(0);
 
-            Activator linking = d.deriver.linked;
+        Activator linking = d.deriver.linked;
 //            Term srcTerm = src.term();
 
-            NAR nar = d.nar;
+        NAR nar = d.nar;
 
-            int j = n > 1 ? d.random.nextInt(n) : 0; //random starting position
-            boolean inc = n <= 1 || d.random.nextBoolean();
-            for (int i = 0; i < n; i++) {
-                if (inc) {
-                    if (++j == n) j = 0;
-                } else {
-                    if (--j == -1) j = n - 1;
-                }
+        int j = n > 1 ? d.random.nextInt(n) : 0; //random starting position
+        boolean inc = n <= 1 || d.random.nextBoolean();
 
-                Termed tgtTerm = get(j);
+        OverflowDistributor<Concept> overflow = n > 1 ? new OverflowDistributor<>() : null;
 
-                if (tgtTerm instanceof Concept && ((Concept)tgtTerm).isDeleted())
-                    setFast(j, tgtTerm = tgtTerm.term()); //concept was deleted, so revert back to term
+        for (int i = 0; i < n; i++) {
+            if (inc) {
+                if (++j == n) j = 0;
+            } else {
+                if (--j == -1) j = n - 1;
+            }
 
-                @Nullable Concept tgt =
-                        linking.activate(tgtTerm, conceptActivationEach, nar);
+            Termed tgtTerm = get(j);
+
+            if (tgtTerm instanceof Concept && ((Concept)tgtTerm).isDeleted())
+                setFast(j, tgtTerm = tgtTerm.term()); //concept was deleted, so revert back to term
+
+            @Nullable Concept tgt =
+                    linking.activate(tgtTerm, conceptActivationEach, nar, overflow);
 
 
-                if (tgt != null) {
+            if (tgt != null) {
 
-                    if (!(tgtTerm instanceof Concept) || tgtTerm!=tgt)
-                        setFast(j, tgt); //cache concept for the entry
+                if (!(tgtTerm instanceof Concept) || tgtTerm!=tgt)
+                    setFast(j, tgt); //cache concept for the entry
 
-                    firedConcepts.add(tgt);
+                firedConcepts.add(tgt);
 
 //                        linking.linkPlus(tgt, srcTerm, termlinkForward, refund);
 
 //                        tgtTerm = tgt.term();
 
-                }
+            }
 
 //                } else {
 //                    refund.add(termlinkForward);
 //                }
 
 //                linking.linkPlus(src, tgtTerm, termlinkReverse, refund);
-            }
-
         }
+
+        if(overflow!=null)
+            overflow.shuffle(d.random).redistribute(linking::activate);
 
         return n;
     }

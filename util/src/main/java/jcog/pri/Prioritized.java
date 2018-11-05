@@ -30,12 +30,6 @@ public interface Prioritized extends Deleteable {
     float pri();
 
 
-    /** used during periodic async updates to allow implementations to
-     *  modify the local value depending on the referent or other condition
-     */
-    default float priCommit() {
-        return pri();
-    }
 
     /**
      * common instance for a 'Deleted budget'.

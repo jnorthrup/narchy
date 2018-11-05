@@ -130,8 +130,8 @@ public abstract class Param {
 
 
     public static final PriMerge tasklinkMerge =
-            PriMerge.plus;
-            //PriMerge.max;
+            //PriMerge.plus;
+            PriMerge.max;
             //PriMerge.or;
             //PriMerge.avgGeoFast;
 

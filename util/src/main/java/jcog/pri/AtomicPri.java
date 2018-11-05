@@ -63,7 +63,7 @@ public abstract class AtomicPri implements ScalarValue {
     }
 
     @Override
-    public final float pri() {
+    public float pri() {
         return intBitsToFloat( _pri() );
     }
     public final int priComparable() {

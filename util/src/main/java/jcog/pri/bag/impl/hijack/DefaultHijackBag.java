@@ -1,11 +1,10 @@
 package jcog.pri.bag.impl.hijack;
 
-import jcog.data.NumberX;
-import jcog.pri.PriReference;
+import jcog.pri.PLink;
 import jcog.pri.op.PriMerge;
 
 
-public class DefaultHijackBag<K> extends PriHijackBag<K, PriReference<K>> {
+public class DefaultHijackBag<K> extends PriHijackBag<K, PLink<K>> {
 
     private final PriMerge merge;
 
@@ -15,22 +14,14 @@ public class DefaultHijackBag<K> extends PriHijackBag<K, PriReference<K>> {
     }
 
     @Override
-    protected PriReference<K> merge(PriReference<K> existing, PriReference<K> incoming, NumberX overflowing) {
-        float overflow = merge.merge(existing, incoming); 
-        if (overflow > 0) {
-            
-            if (overflowing!=null) overflowing.add(overflow);
-        }
-        return existing;
+    protected PriMerge merge() {
+        return merge;
     }
-
-
 
     @Override
-    public K key(PriReference<K> value) {
+    public K key(PLink<K> value) {
         return value.get();
     }
-
 
 }
 

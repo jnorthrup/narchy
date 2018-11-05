@@ -54,7 +54,7 @@ public class ZipperDeriver extends Deriver {
         source.accept(a -> {
             assert (a != null);
 
-            Concept concept = a.id;
+            Concept concept = a.get();
 
 
             BeliefSource.LinkModel model = linking.apply(concept, d);
@@ -70,7 +70,7 @@ public class ZipperDeriver extends Deriver {
             fired.forEach(tasklink -> {
 
 
-                Task task = tasklink.get(nar);
+                Task task = tasklink.apply(nar);
                 if (task != null) {
 
                     for (int z = 0; z < termlinks; z++) {

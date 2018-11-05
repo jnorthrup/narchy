@@ -52,7 +52,7 @@ public class BeliefSource {
 //                return t != null ? t.get() : null;
 //            };
             if (c.term().op().atomic) {
-                return ()->((TaskLink.GeneralTaskLink)c.tasklinks().sample(rng)).term();
+                return ()-> c.tasklinks().sample(rng).term();
             } else {
                 return ()->c.linker().sample(rng);
             }

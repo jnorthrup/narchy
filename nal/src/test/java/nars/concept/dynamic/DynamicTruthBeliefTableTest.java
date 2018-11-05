@@ -30,7 +30,7 @@ class DynamicTruthBeliefTableTest {
         TaskLink.GeneralTaskLink tl = new TaskLink.GeneralTaskLink($$("(x && y)"), BELIEF, ETERNAL, 1f);
         Set<Task> tasks = new HashSet();
         for (int i = 0; i < 10; i++)
-            tasks.add(tl.get(n));
+            tasks.add(tl.apply(n));
         assertTrue(tasks.toString().contains("(x&&y). %0.0;.25%]"));
         tasks.forEach(System.out::println);
     }
@@ -44,7 +44,7 @@ class DynamicTruthBeliefTableTest {
         TaskLink.GeneralTaskLink tl = new TaskLink.GeneralTaskLink($$("(x && y)"), BELIEF, 1, 1f);
         Set<Task> tasks = new HashSet();
         for (int i = 0; i < 100; i++)
-            tasks.add(tl.get(n));
+            tasks.add(tl.apply(n));
         assertTrue( tasks.toString().contains("(x &&+1 y). 1 %1.0;.81%]"), ()->tasks.toString());
         //assertEquals("[$.50 (x&|y). 1 %1.0;.74%]", tasks.toString());
 

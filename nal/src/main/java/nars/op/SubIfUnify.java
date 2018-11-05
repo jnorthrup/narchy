@@ -128,10 +128,10 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
             if (!tryUnify) {
                 output = null;
             } else {
-                int ttl = parent.nar.subUnifyTTLMax.intValue();
+                int ttl = Math.max(1, parent.nar.subUnifyTTLMax.intValue() - 1);
                 //MySubUnify u = new MySubUnify();
                 output = u.reset(op, strict).tryMatch(c, x, y, ttl);
-                parent.use(ttl - u.ttl);
+                parent.use(1 + ttl - u.ttl);
             }
 
         }

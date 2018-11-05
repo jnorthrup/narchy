@@ -96,7 +96,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
                     });
                 }
                 if (!deleteAfter.isEmpty()) {
-                    deleteAfter.forEach(b::removeTask);
+                    deleteAfter.forEach(t -> b.removeTask(t, true));
                 }
             }
 

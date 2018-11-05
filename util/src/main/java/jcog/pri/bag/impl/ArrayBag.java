@@ -122,9 +122,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
      * trash must be removed from the map, outside of critical section
      * may include the item being added
      */
-    private boolean tryInsertFull(Y toAdd, float toAddPri, @Nullable Consumer<Y> update, boolean commit, final FasterList<Y> trash) {
+    private boolean tryInsertFull(Y toAdd, float toAddPri, @Nullable Consumer<Y> update, final FasterList<Y> trash) {
 
-        int s = cleanIfFull() ? clean(trash, update, commit /*|| (s == capacity) && get(0) instanceof PLinkUntilDeleted*/) : size();
+        int s = cleanIfFull() ? clean(trash, update  /*|| (s == capacity) && get(0) instanceof PLinkUntilDeleted*/) : size();
 
         int c = capacity();
 
@@ -165,12 +165,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         items.sort(ScalarValue::priComparable, from, to);
     }
 
-    @Override
-    public final float priUpdate(Y key) {
-        return key.priCommit();
-    }
 
-    private int clean(Collection<Y> trash, @Nullable Consumer<Y> update, boolean commit) {
+    private int clean(Collection<Y> trash, @Nullable Consumer<Y> update) {
 
 //        float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY, mass = 0;
 
@@ -185,7 +181,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         for (int i = 0; i < s; ) {
             Y y = (Y) l[i];
             assert y != null;
-            float p = commit ? priUpdate(y) : pri(y);
+            float p = pri(y);
             if (update != null && p == p) {
                 update.accept(y);
                 p = pri(y);
@@ -247,7 +243,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
                 if (x != null) {
                     Y y = (Y) x;
-                    float yp = priUpdate(y);
+                    float yp = pri(y);
                     if (yp != yp) {
                         remove(y, i); //deleted, remove
                     } else {
@@ -502,7 +498,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
                     trash = new FasterList<>(4);
 
-                    inserted = tryInsertFull(incoming, p, null, false, trash);
+                    inserted = tryInsertFull(incoming, p, null, trash);
 
                     if (trash != null && !trash.isEmpty())
                         trash.forEach(this::removeFromMap);
@@ -575,7 +571,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         Y result;
 
-        float priBefore = existing.priCommit();
+        float priBefore = existing.pri();
         float oo = merge(existing, incoming);
         float priAfter = existing.pri();
         if (priAfter != priAfter) {
@@ -632,7 +628,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         synchronized (items) {
 
-            clean(trash, update, true);
+            clean(trash, update);
 
             trash.forEach(this::removeFromMap);
         }

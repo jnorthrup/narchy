@@ -210,8 +210,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 //            Term sourceTerm = n.term();
             n.tasklinks().forEach(l -> {
 
-                Tasklike tl = l.get();
-                Term targetTerm = tl.term;
+                Term targetTerm = l.term();
 //                if (targetTerm.equals(sourceTerm.term()))
 //                    return; //ignore
 
@@ -227,7 +226,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
                     GOAL     Green   138,155,15
                     QUEST    Yellow  248,202,0
                     */
-                    switch (tl.punc) {
+                    switch (l.punc()) {
                         case BELIEF: r = 189; g = 21; b = 80; break;
                         case QUESTION: r = 233; g = 127; b = 2; break;
                         case GOAL: r = 138; g = 155; b = 15; break;

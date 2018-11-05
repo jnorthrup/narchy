@@ -14,6 +14,7 @@ abstract public class AbstractTaskSeries<T extends Task> implements TaskSeries<T
 
     public abstract void push(T t);
 
+    /** remove the oldest task, and delete it */
     @Nullable protected abstract T pop();
 
     public AbstractTaskSeries(int cap) {

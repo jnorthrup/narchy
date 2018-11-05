@@ -212,7 +212,7 @@ public class ConjClustering extends Causable {
                     if (!gg.hasNext())
                         break;
 
-                    Task t = gg.next().id;
+                    Task t = gg.next().get();
 
                     Term xt = t.term();
 

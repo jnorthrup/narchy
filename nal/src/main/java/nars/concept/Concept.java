@@ -21,7 +21,7 @@
 package nars.concept;
 
 import jcog.data.map.MetaMap;
-import jcog.pri.Prioritizable;
+import jcog.pri.Prioritized;
 import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Task;
@@ -127,7 +127,7 @@ public interface Concept extends Termed, MetaMap {
         try {
             out.append("concept: ").append(toString()).append('\t').append(getClass().toString()).append('\n');
 
-            Consumer<Prioritizable> printBagItem = b -> {
+            Consumer<Prioritized> printBagItem = b -> {
                 try {
                     out.append(printIndent);
                     out.append(b.toString());
@@ -220,7 +220,7 @@ public interface Concept extends Termed, MetaMap {
 //    }
 
     default boolean remove(Task t) {
-        return table(t.punc()).removeTask(t);
+        return table(t.punc()).removeTask(t, true);
     }
 
 

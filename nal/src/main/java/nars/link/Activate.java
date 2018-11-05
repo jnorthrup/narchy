@@ -4,7 +4,6 @@ import jcog.pri.PLinkHashCached;
 import nars.concept.Concept;
 import nars.term.Term;
 import nars.term.Termed;
-import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -12,12 +11,16 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class Activate extends PLinkHashCached<Concept> implements Termed {
 
-    public Activate(@Nullable Concept c, int hash, float pri) {
+    private Activate(Concept c, int hash, float pri) {
         super(c, hash, pri);
     }
 
-    public Activate(@Nullable Concept c, float pri) {
-        this(c, c!=null ? c.hashCode() : 0, pri);
+    public Activate(Concept c, float pri) {
+        this(c, c.hashCode(), pri);
+    }
+
+    public Activate(Concept c) {
+        this(c, 0);
     }
 
     @Override
@@ -25,4 +28,7 @@ public final class Activate extends PLinkHashCached<Concept> implements Termed {
         return id.term();
     }
 
+    public Activate clone() {
+        return new Activate(id, hash, pri());
+    }
 }

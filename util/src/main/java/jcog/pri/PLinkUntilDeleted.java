@@ -7,27 +7,35 @@ package jcog.pri;
  */
 public class PLinkUntilDeleted<X extends Deleteable> extends PLink<X> {
 
-    public float priBeforeDeletion = Float.NaN;
+//    public float priBeforeDeletion = Float.NaN;
 
     public PLinkUntilDeleted(X id, float p) {
         super(id, p);
     }
 
     @Override
-    public final float priCommit() {
-        float p = this.pri();
+    public final float pri() {
+        float p = super.pri();
         if (p == p) {
-            if (id.isDeleted()) {
-                this.priBeforeDeletion = p;
-                delete();
-                return Float.NaN;
-            } else {
+            if (!id.isDeleted()) {
                 return p;
             }
-        } else {
-            return Float.NaN;
+
+//          this.priBeforeDeletion = p;
+            delete();
+
         }
+        return Float.NaN;
     }
 
+    @Override
+    public X get() {
+        if (!isDeleted()) {
+            if (!id.isDeleted())
+                return id;
 
+            delete();
+        }
+        return null;
+    }
 }

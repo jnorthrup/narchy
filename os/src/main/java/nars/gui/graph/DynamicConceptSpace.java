@@ -375,7 +375,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             float pri = link.priElseNeg1();
             if (pri < 0)
                 return;
-            accept(src, link.get().term, pri, TASKLINK);
+            accept(src, link.term(), pri, TASKLINK);
         }
 
         public void accept(ConceptWidget src, Term term, float pri, int type) {

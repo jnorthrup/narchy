@@ -54,7 +54,7 @@ public interface QuestionTable extends TaskTable {
         }
 
         @Override
-        public boolean removeTask(Task x) {
+        public boolean removeTask(Task x, boolean delete) {
             return false;
         }
 

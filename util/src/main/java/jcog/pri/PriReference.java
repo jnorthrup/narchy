@@ -12,7 +12,6 @@ import java.util.function.Supplier;
  */
 public interface PriReference<X> extends Prioritizable, Supplier<X>, FloatSupplier {
 
-    @NotNull
     static float[] histogram(Iterable<? extends Prioritized> pp, float[] x) {
         int bins = x.length;
         final double[] total = {0};

@@ -246,6 +246,7 @@ public class Memory {
         public Stream<Term> contents(Term x, Memory m) {
             Stream<URI> uri = termToURIs(x);
             if (uri != null) {
+                //noinspection RedundantCast
                 return uri.map((URI u)->Paths.get((URI)u)).filter(p -> Files.isDirectory(p)).flatMap(p -> {
                     try {
                         return Files.list(p).map(pp -> uriToTerm(pp.toUri()));

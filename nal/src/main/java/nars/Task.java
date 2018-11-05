@@ -4,7 +4,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.Longerval;
-import jcog.pri.Prioritizable;
+import jcog.pri.UnitPrioritizable;
 import nars.control.Perceive;
 import nars.control.proto.Remember;
 import nars.eval.Evaluation;
@@ -48,7 +48,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * NAL Task to be processed, consists of a Sentence, stamp, time, and budget.
  */
 @SuppressWarnings("ALL")
-public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Prioritizable {
+public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPrioritizable {
 
 
     Task[] EmptyArray = new Task[0];

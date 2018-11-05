@@ -1,6 +1,6 @@
 package nars.link;
 
-import jcog.pri.UnitPri;
+import jcog.pri.OverflowDistributor;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.task.AbstractTask;
@@ -9,7 +9,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Comparator;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** accumulates/buffers/collates a stream of concept activations and termlinkages
@@ -50,26 +49,24 @@ public class Activator extends AbstractTask {
         return concepts.isEmpty(); /* && termlink.isEmpty();*/
     }
 
-    public Concept activate(Termed tgtTerm, float pri, NAR nar) {
+    public Concept activate(Termed tgtTerm, float pri, NAR nar, @Nullable OverflowDistributor<Concept> overflow) {
 
-        Activate a = concepts.computeIfAbsent(tgtTerm.term(), t -> {
-            @Nullable Concept tgt = nar.concept(tgtTerm, true);
-//                    pri
-//                    //EPSILON
-//
-//                    ,
-//
-//                    //tgtTerm instanceof Atomic
-//                    true
-//            );
-            //if the concept cant be conceptualized, store as null in activation to prevent repeat tries.
-            //but see why this happens if it does.
-            return new Activate(tgt, 0);
-        });
-        Concept x = a.id;
-        if (x!=null) {
-            a.priAdd(pri );
-        }
+        @Nullable Concept x = nar.concept(tgtTerm, true);
+        if (x == null)
+            return null;
+        return activate(x, pri, overflow);
+    }
+
+    public final Concept activate(Concept x, float pri) {
+        return activate(x, pri, null);
+    }
+
+    public Concept activate(Concept x, float pri, @Nullable OverflowDistributor<Concept> overflow) {
+        Activate a = concepts.computeIfAbsent(x.term(), t -> new Activate(x));
+
+        if (overflow!=null)
+            overflow.overflow(x, a, pri);
+
         return x;
     }
 
@@ -85,60 +82,60 @@ public class Activator extends AbstractTask {
 
     }
 
-    private static final class TermLinkage extends UnitPri implements Comparable<TermLinkage> {
-
-        public final static Comparator<TermLinkage> preciseComparator = Comparator
-            .comparing((TermLinkage x)->x.concept.term())
-            .thenComparingDouble((TermLinkage x)->-x.pri()) //descending
-            .thenComparingInt((TermLinkage x)->x.hashTarget) //at this point the order doesnt matter so first decide by hash
-            .thenComparing((TermLinkage x)->x.target);
-
-        /** fast and approximately same semantics of the sort as the preciseComparator:
-         *     soruce concept -> pri -> target
-         */
-        public final static Comparator<TermLinkage> sloppyComparator = Comparator
-                .comparingInt((TermLinkage x)->x.hashSource)
-                .thenComparingDouble((TermLinkage x)->-x.pri()) //descending
-                .thenComparingInt((TermLinkage x)->x.hashTarget) //at this point the order doesnt matter so first decide by hash
-                .thenComparing(System::identityHashCode);
-
-        public final Concept concept;
-        public final Term target;
-        public final int hashSource, hashTarget;
-
-        TermLinkage(Concept source, Term target) {
-            this.concept = source;
-            this.target = target;
-            this.hashSource = source.hashCode();
-            this.hashTarget = target.hashCode();
-        }
-
-        @Override
-        public int hashCode() {
-            return hashSource ^ hashTarget;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            TermLinkage x = (TermLinkage) obj;
-            return x.hashSource == hashSource && x.hashTarget == hashTarget && x.target.equals(target) && x.concept.equals(concept);
-
-        }
-
-        @Override
-        public String toString() {
-            return "termlink(" + concept + ',' + target + ',' + pri() + ')';
-        }
-
-
-
-        @Override
-        public int compareTo(Activator.TermLinkage x) {
-            //return comparator.compare(this, x);
-            return sloppyComparator.compare(this, x);
-        }
-    }
+//    private static final class TermLinkage extends UnitPri implements Comparable<TermLinkage> {
+//
+//        public final static Comparator<TermLinkage> preciseComparator = Comparator
+//            .comparing((TermLinkage x)->x.concept.term())
+//            .thenComparingDouble((TermLinkage x)->-x.pri()) //descending
+//            .thenComparingInt((TermLinkage x)->x.hashTarget) //at this point the order doesnt matter so first decide by hash
+//            .thenComparing((TermLinkage x)->x.target);
+//
+//        /** fast and approximately same semantics of the sort as the preciseComparator:
+//         *     soruce concept -> pri -> target
+//         */
+//        public final static Comparator<TermLinkage> sloppyComparator = Comparator
+//                .comparingInt((TermLinkage x)->x.hashSource)
+//                .thenComparingDouble((TermLinkage x)->-x.pri()) //descending
+//                .thenComparingInt((TermLinkage x)->x.hashTarget) //at this point the order doesnt matter so first decide by hash
+//                .thenComparing(System::identityHashCode);
+//
+//        public final Concept concept;
+//        public final Term target;
+//        public final int hashSource, hashTarget;
+//
+//        TermLinkage(Concept source, Term target) {
+//            this.concept = source;
+//            this.target = target;
+//            this.hashSource = source.hashCode();
+//            this.hashTarget = target.hashCode();
+//        }
+//
+//        @Override
+//        public int hashCode() {
+//            return hashSource ^ hashTarget;
+//        }
+//
+//        @Override
+//        public boolean equals(Object obj) {
+//            if (this == obj) return true;
+//            TermLinkage x = (TermLinkage) obj;
+//            return x.hashSource == hashSource && x.hashTarget == hashTarget && x.target.equals(target) && x.concept.equals(concept);
+//
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return "termlink(" + concept + ',' + target + ',' + pri() + ')';
+//        }
+//
+//
+//
+//        @Override
+//        public int compareTo(Activator.TermLinkage x) {
+//            //return comparator.compare(this, x);
+//            return sloppyComparator.compare(this, x);
+//        }
+//    }
 
 
     @Override
@@ -146,9 +143,7 @@ public class Activator extends AbstractTask {
 
 
         concepts.values().removeIf(a -> {
-            if (a.id!=null) {
-                nar.eventActivate.emit(a);
-            }
+            nar.eventActivate.emit(a.clone());
             return true;
         });
 

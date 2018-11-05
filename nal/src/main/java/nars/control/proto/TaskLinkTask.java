@@ -5,7 +5,6 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.link.TaskLink;
-import nars.link.Tasklinks;
 import nars.task.AbstractTask;
 import nars.task.ITask;
 import org.jetbrains.annotations.Nullable;
@@ -40,8 +39,8 @@ public class TaskLinkTask extends AbstractTask {
             return null;
 
         //2. tasklink
-        Tasklinks.linkTask(
-                new TaskLink.GeneralTaskLink(task, n, pri * n.taskLinkActivation.floatValue()),
+        TaskLink.link(
+                TaskLink.tasklink(task, pri, n),
                 c.tasklinks(), null);
 
 
@@ -53,6 +52,7 @@ public class TaskLinkTask extends AbstractTask {
         //finished
         return null;
     }
+
 
     @Override
     public String toString() {

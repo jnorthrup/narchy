@@ -174,8 +174,8 @@ public class BeliefTables implements BeliefTable {
 
 
     @Override
-    public boolean removeTask(Task x) {
-        return tables.count(t -> t.removeTask(x)) > 0;
+    public boolean removeTask(Task x, boolean delete) {
+        return tables.count(t -> t.removeTask(x, delete)) > 0;
     }
 
     @Override
