@@ -15,7 +15,7 @@ import java.util.*;
  * <p>
  * TODO integrate this with HijackMemoize
  */
-class Memoizer0 implements InvocationHandler {
+final class Memoizer0 implements InvocationHandler {
     /**
      * Default: 1024 elements
      */
@@ -64,7 +64,7 @@ class Memoizer0 implements InvocationHandler {
         this.cache = allocCache(size);
     }
 
-    private static final Map<CacheKey, CacheValue> allocCache(final int maxSize) {
+    private static Map<CacheKey, CacheValue> allocCache(final int maxSize) {
         return Collections.synchronizedMap(new LinkedHashMap<>() {
             private static final long serialVersionUID = 42L;
 
@@ -177,8 +177,8 @@ class Memoizer0 implements InvocationHandler {
             }
         }
 
-        private static final String getHeader(final Class<?> b1, 
-                                              final Class<?> b2) {
+        private static String getHeader(final Class<?> b1,
+                                        final Class<?> b2) {
             final String s1 = b1.getSimpleName();
             final String s2 = b2.getSimpleName();
             if (s1.equals(s2))
@@ -190,7 +190,7 @@ class Memoizer0 implements InvocationHandler {
          * Simple Test / Benchmark
          */
         public static void main(final String[] args) throws NoSuchAlgorithmException {
-            final int TOTAL = (int) 1e6;
+            final int TOTAL = (int) 1.0e6;
             final String TEST_TEXT = "hello world";
             final int cacheElements = 1024;
             final long cacheMillis = 1000; 

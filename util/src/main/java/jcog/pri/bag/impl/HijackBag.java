@@ -55,7 +55,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     /**
      * internal random NumberX generator, used for deciding hijacks but not sampling.
      */
-    final SplitMix64Random rng;
+    private final SplitMix64Random rng;
 
     /**
      * id unique to this bag instance, for use in treadmill
@@ -74,15 +74,15 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     /**
      * when size() reaches this proportion of space(), and space() < capacity(), grows
      */
-    static final float loadFactor = 0.5f;
+    private static final float loadFactor = 0.5f;
 
     /**
      * how quickly the current space grows towards the full capacity, using LERP
      */
-    static final float growthLerpRate = 0.5f;
+    private static final float growthLerpRate = 0.5f;
 
 
-    static final AtomicReferenceArray EMPTY_ARRAY = new AtomicReferenceArray(0);
+    private static final AtomicReferenceArray EMPTY_ARRAY = new AtomicReferenceArray(0);
 
     public final int reprobes;
 
@@ -109,7 +109,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         return weakestPri <= newPri;
     }
 
-    static <X, Y> void forEachActive(HijackBag<X, Y> bag, AtomicReferenceArray<Y> map, Consumer<? super Y> e) {
+    private static <X, Y> void forEachActive(HijackBag<X, Y> bag, AtomicReferenceArray<Y> map, Consumer<? super Y> e) {
         forEach(map, bag::active, e);
     }
 
@@ -118,7 +118,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         PRESSURE.add(this, f);
     }
 
-    public static <Y> void forEach(AtomicReferenceArray<Y> map, Predicate<Y> accept, Consumer<? super Y> e) {
+    private static <Y> void forEach(AtomicReferenceArray<Y> map, Predicate<Y> accept, Consumer<? super Y> e) {
         for (int c = map.length(), j = 0; j < c; j++) {
             Y v = map
                     .getOpaque(j);
@@ -395,7 +395,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }
 
 
-    protected int hash(Object x) {
+    private int hash(Object x) {
 
 
         return x.hashCode();
@@ -449,7 +449,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     abstract public void priAdd(V entry, float amount);
 
-    protected boolean replace(float incoming, float existing) {
+    private boolean replace(float incoming, float existing) {
         return hijackFair(incoming, existing);
     }
 
@@ -462,7 +462,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     /**
      * roulette fair
      */
-    protected boolean hijackFair(float newPri, float oldPri) {
+    private boolean hijackFair(float newPri, float oldPri) {
             return rng.nextFloat() < newPri / (newPri + oldPri);
 
 //        float priEpsilon = ScalarValue.EPSILON;

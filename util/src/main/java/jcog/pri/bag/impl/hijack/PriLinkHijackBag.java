@@ -15,7 +15,7 @@ public class PriLinkHijackBag<X,Y extends PriReference<? extends X>> extends Hij
         this(PriMerge.plus, initialCapacity, reprobes);
     }
 
-    public PriLinkHijackBag(PriMerge merge, int initialCapacity, int reprobes) {
+    private PriLinkHijackBag(PriMerge merge, int initialCapacity, int reprobes) {
         super(initialCapacity, reprobes);
         this.merge = merge;
     }

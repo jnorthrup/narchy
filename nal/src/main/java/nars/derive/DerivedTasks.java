@@ -43,6 +43,18 @@ public interface DerivedTasks extends PriMerge<Task, Task> {
 
     }
 
+    /** TODO
+     *  when the concept index churn rate is low, use the DerivedTasksMap to conceptualize quickly
+     *  when the concept index churn rate is high, use the DerivedTasksBag with controlled throughput rate
+     *    acting as the original NoveltyBag did in OpenNARS
+     *  using this the system can shift energy towards exploration (more conceptualization) OR
+     *    towards more refined truth (more selectivity in task generation with regard to relatively
+     *    stable set of concepts they would add to)
+     */
+    abstract class AdaptiveDerivedTasks {
+
+    }
+
     /**
      * buffers derivations in a Map<> for de-duplication prior to a commit that flushes them as input to NAR
      * TODO find old implementation and re-implement this

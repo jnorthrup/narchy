@@ -249,65 +249,6 @@
 
 
 
-//// implication-based decomposition ////////////////////////////////////////////////////////////////////////////////////
-//Same as for inheritance again
-
-
-    (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
-    (--S ==> M), (C ==> M), eventOfNeg(C,S) |- (conjWithout(C,--S) ==> M), (Belief:DecomposeNegativePositivePositive)
-        //(S ==> M), ((&&,(--,%S),A..+) ==> M) |- ((&&,A..+) ==> M), (Belief:DecomposeNegativePositivePositiveN)
-        //(S ==> M), ((||,S,A..+) ==> M) |- ((||,A..+) ==> M), (Belief:DecomposePositiveNegativeNegative)
-
-    (M ==> S), (M ==> C), eventOf(C,S) |- (M ==> conjWithout(C,S)), (Belief:DecomposePositiveNegativeNegative)
-    (M ==> S), (M ==> C), eventOfNeg(C,S) |- (M ==> conjWithout(C,--S)), (Belief:DecomposePositiveNegativeNegativeN)
-        //(M ==> S), (M ==> (&&,(--,%S),A..+)) |- (M ==> (&&,A..+)), (Belief:DecomposePositiveNegativeNegativeN)
-        //(M ==> S), (M ==> (||,S,A..+)) |- (M ==> (||,A..+)), (Belief:DecomposeNegativePositivePositive)
-
-
-    //TODO disjunction decompose
-    (M ==> C), M, is(C,"&&") |- (M ==> dropAnyEvent(C)), (Belief:StructuralReduction)
-     //(M ==> C), X, eventOf(C,X) |- (M ==> conjWithout(C,X)), (Belief:StructuralReduction)
-      //(M ==> C), X, eventOf(C,X) |- (M ==> X), (Belief:StructuralReduction)
-     //(M ==> C), X, eventOfNeg(C,X) |- (M ==> conjWithout(C,--X)), (Belief:StructuralReduction)
-      //(M ==> C), X, eventOfNeg(C,X) |- (M ==> --X), (Belief:StructuralReduction)
-         //(M ==> C), X, eventOfPosOrNeg(C,X) |- (M ==> conjWithoutPosOrNeg(C,X)), (Belief:StructuralReduction)
-
-    (C ==> M), X, is(C,"&&") |- (dropAnyEvent(C) ==> M), (Belief:StructuralReduction)
-     //(C ==> M), X, eventOf(C,X) |- (conjWithout(C,X) ==> M), (Belief:StructuralReduction)
-      //(C ==> M), X, eventOf(C,X) |- (X ==> M), (Belief:StructuralReduction)
-     //(C ==> M), X, eventOfNeg(C,X) |- (conjWithout(C,--X) ==> M), (Belief:StructuralReduction)
-      //(C ==> M), X, eventOfNeg(C,X) |- (--X ==> M), (Belief:StructuralReduction)
-         //(C ==> M), X, eventOfPosOrNeg(C,X) |- (conjWithoutPosOrNeg(C,X) ==> M), (Belief:StructuralReduction)
-
-    (--C ==> M), X, is(C,"&&") |- (--dropAnyEvent(C) ==> M), (Belief:StructuralReduction)
-     //(--C ==> M), X, eventOf(C,X) |- (--conjWithout(C,X) ==> M), (Belief:StructuralReduction)
-      //(--C ==> M), X, eventOf(C,X) |- (--X ==> M), (Belief:StructuralReduction)
-     //(--C ==> M), X, eventOfNeg(C,X) |- (--conjWithout(C,--X) ==> M), (Belief:StructuralReduction)
-      //(--C ==> M), X, eventOfNeg(C,X) |- (X ==> M), (Belief:StructuralReduction)
-         //(--C ==> M), X, eventOfPosOrNeg(C,X) |- (--conjWithoutPosOrNeg(C,X) ==> M), (Belief:StructuralReduction)
-
-            //(M ==> C), X, task("?"), eventOfPosOrNeg(C,X) |- (M ==> conjWithoutPosOrNeg(C,X)), (Punctuation:Question)
-        //(M ==> C), X, eventOfNeg(C,X) |- (M ==> conjWithout(C,--X)), (Belief:StructuralReduction)
-            //(M ==> C), X, task("?"), eventOfNeg(C,X) |- (M ==> conjWithout(C,--X)), (Punctuation:Question)
-    //(M ==> C), C, is(C,"&&") |- (--,(M ==> dropAnyEvent(C))), (Belief:StructuralReductionN)
-          //(M ==> C), D, belief("&&") |- (M ==> subIfUnifiesAny(dropAnyEvent(C), same, D)), (Belief:StructuralDeduction)
-        //(--M ==> C), C, belief("&&") |- (--M ==> dropAnyEvent(C)), (Belief:StructuralDeduction)
-          //(--M ==> C), D, belief("&&") |- (--M ==> subIfUnifiesAny(dropAnyEvent(C), same, D, strict)), (Belief:StructuralDeduction)
-        //(M ==> (&&,(--,%S),A..+)), M |- (M ==> (&&,A..+)), (Belief:StructuralDeduction)
-            //(C ==> M), X, task("?"), eventOfPosOrNeg(C,X) |- (conjWithoutPosOrNeg(C,X) ==> M), (Punctuation:Question)
-        //(C ==> M), X, eventOfNeg(C,X) |- (conjWithout(C,--X) ==> M), (Belief:StructuralReduction)
-            //(C ==> M), X, task("?"), eventOfNeg(C,X) |- (conjWithout(C,--X) ==> M), (Punctuation:Question)
-            //(--C ==> M), X, task("?"), eventOfPosOrNeg(C,X) |- (--conjWithoutPosOrNeg(C,X) ==> M), (Punctuation:Question)
-        //(--C ==> M), X, eventOfNeg(C,X) |- ((--,conjWithout(C,--X)) ==> M), (Belief:StructuralReduction)
-            //(--C ==> M), X, task("?"), eventOfNeg(C,X) |- ((--,conjWithout(C,--X)) ==> M), (Punctuation:Question)
-
-
-          //(C ==> M), D, belief("&&") |- (subIfUnifiesAny(dropAnyEvent(C), same, D) ==> M), (Belief:StructuralDeduction)
-        //(C ==> --M), C, belief("&&") |- (dropAnyEvent(C) ==> --M), (Belief:StructuralDeduction)
-          //(C ==> --M), D, belief("&&") |- (subIfUnifiesAny(dropAnyEvent(C), same, D, strict) ==> --M), (Belief:StructuralDeduction)
-                //((&&,(--,%S),A..+) ==> M), M |- ((&&,A..+) ==> M), (Belief:StructuralDeduction)
-
-
 
 
 

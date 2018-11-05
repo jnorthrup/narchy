@@ -1,13 +1,45 @@
+    //how goal
     G, Y, task("!") |-         (?1 ==> G) , (Punctuation:Question)
-    G, Y, task("!") |-          (G ==> ?1), (Punctuation:Question)
-    G, Y, task("!") |-        (--G ==> ?1), (Punctuation:Question)
-    G, Y, task("!") |-           (?1 && G), (Punctuation:Quest)
-    G, Y, task("!") |-         (?1 && --G), (Punctuation:Quest)
 
+    //changing goal context
+    G, Y, task("!") |-         ((G && ?1) ==> (G && ?2)), (Punctuation:Question)
+      G, Y, task("!") |-         ((G || ?1) && (G || ?2)), (Punctuation:Quest)
+    //changing non-goal context
+    G, Y, task("!") |-         ((--G && ?1) ==> (--G && ?2)), (Punctuation:Question)
+      G, Y, task("!") |-         ((--G || ?1) && (--G || ?2)), (Punctuation:Quest)
+
+
+    //sustain goal
+    G, Y, task("!") |-         ((G && ?1) ==> G) , (Punctuation:Question)
+    //correct goal
+    G, Y, task("!") |-         ((--G && ?1) ==> G) , (Punctuation:Question)
+
+    //result of goal
+    G, Y, task("!") |-          (G ==> ?1), (Punctuation:Question)
+    //result of non-goal
+    G, Y, task("!") |-        (--G ==> ?1), (Punctuation:Question)
+    //result of achieving goal and current belief
+    G, B, task("!") |-        ((G && polarize(B,belief)) ==> ?1), (Punctuation:Question)
+    //result of non-achieving goal and current  belief
+    G, B, task("!") |-        ((--G && polarize(B,belief)) ==> ?1), (Punctuation:Question)
+
+    //is what with goal
     G, Y, task("!") |-           (?1 && G), (Punctuation:Question)
+    //is what with non-goal
     G, Y, task("!") |-         (?1 && --G), (Punctuation:Question)
 
+    //should what with goal
+    G, Y, task("!") |-               (?1 && G), (Punctuation:Quest)
+    G, Y, task("!"), --is(Y,"?") |-  (Y && G), (Punctuation:Quest)
 
+    //should what with non-goal
+    G, Y, task("!") |-               (?1 && --G), (Punctuation:Quest)
+    G, Y, task("!"), --is(Y,"?") |-  (Y && --G), (Punctuation:Quest)
+
+    //conj quest to impl question
+    (G && B), B, task("@") |-  (polarize(B,belief) ==> G), (Punctuation:Question)
+     (G && B), B, task("@") |-  (G ==> B), (Punctuation:Question)
+     (G && B), B, task("@") |-  (--G ==> B), (Punctuation:Question)
 
 //--
 

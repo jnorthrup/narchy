@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
+import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.data.list.table.SortedListTable;
 import jcog.pri.Prioritizable;
@@ -13,17 +14,14 @@ import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.op.PriMerge;
 import jcog.sort.SortedArray;
-import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static jcog.Util.lerp;
-import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 
 /**
@@ -37,7 +35,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             new AtomicFloatFieldUpdater(ArrayBag.class, "pressure");
 
 
-    final PriMerge mergeFunction;
+    private final PriMerge mergeFunction;
 
     private volatile int mass, pressure;
 
@@ -49,7 +47,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         setCapacity(capacity);
     }
 
-    protected ArrayBag(PriMerge mergeFunction, Map<X, Y> map) {
+    ArrayBag(PriMerge mergeFunction, Map<X, Y> map) {
         this(0, mergeFunction, map);
     }
 
@@ -63,8 +61,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
      * gets the scalar float value used in a comparison of BLink's
      * essentially the same as b.priIfFiniteElseNeg1 except it also includes a null test. otherwise they are interchangeable
      */
-    static float pCmp(@Nullable Object b) {
-        return b == null ? -2f : ((Prioritized) b).priElseNeg1();
+    private static float pCmp(@Nullable Object b) {
+        return b == null ? -2.0f : ((Prioritized) b).priElseNeg1();
     }
 
 
@@ -84,7 +82,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         if (s == 0) return Stream.empty();
         else {
             Object[] x = items.array();
-            return IntStream.range(0, Math.min(s, x.length)).mapToObj(i -> (Y) x[i]).filter(y -> y != null && !y.isDeleted());
+            return ArrayIterator.stream(x).map(o -> (Y) o).filter(y -> y != null && !y.isDeleted());
         }
     }
 
@@ -108,7 +106,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
      */
     @Override
     public float depressurize() {
-        return Math.max((float) 0, PRESSURE.getAndZero(this));
+        return Math.max(0, PRESSURE.getAndZero(this));
     }
 
     @Override
@@ -172,7 +170,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         return key.priCommit();
     }
 
-    private int clean(List<Y> trash, @Nullable Consumer<Y> update, boolean commit) {
+    private int clean(Collection<Y> trash, @Nullable Consumer<Y> update, boolean commit) {
 
 //        float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY, mass = 0;
 
@@ -236,11 +234,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     @Override
     public void sample(Random rng, Function<? super Y, SampleReaction> each) {
 
-        newItemsArray:
+
         while (true) {
             Object[] ii;
             int s;
-            int i = -1;
+            int i;
             while ((s = Math.min((ii = items.array()).length, size())) > 0) {
 
                 i = sampleNext(rng, s);
@@ -274,7 +272,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     /**
      * size > 0
      */
-    protected int sampleNext(@Nullable Random rng, int size) {
+    private int sampleNext(@Nullable Random rng, int size) {
         assert (size > 0);
         if (size == 1 || rng == null)
             return 0;
@@ -286,7 +284,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
 
     /** raw selection by index, with x^2 bias towards higher pri indexed items */
-    private int sampleNextLinear(Random rng, int size) {
+    private static int sampleNextLinear(Random rng, int size) {
         float targetIndex = rng.nextFloat();
 
         return Util.bin(targetIndex*targetIndex, size);
@@ -441,12 +439,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     private void remove(Y y, int suspectedPosition) {
         boolean removed;
         synchronized (items) {
-            if (items.get(suspectedPosition) == y) {
+            if (removed = (items.get(suspectedPosition) == y)) {
                 items.remove(suspectedPosition);
                 removeFromMap(y);
-                removed = true;
-            } else {
-                removed = false;
             }
         }
         if (removed) {
@@ -613,12 +608,12 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         return result;
     }
 
-    protected float merge(Y existing, Y incoming) {
+    private float merge(Y existing, Y incoming) {
         return mergeFunction.merge(existing, incoming);
     }
 
-    private Y removeFromMap(Y x) {
-        Y removed = map.remove(key(x));
+    private Y removeFromMap(Y y) {
+        Y removed = map.remove(key(y));
         if (removed == null)
             throw new WTF();
         return removed;
@@ -670,7 +665,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
      *
      * @param n # to remove, if -1 then all are removed
      */
-    public final void clear(int n, Consumer<? super Y> each) {
+    private void clear(int n, Consumer<? super Y> each) {
 
         assert (n != 0);
 
@@ -679,7 +674,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         popBatch(n, popped);
 
         if (popped != null)
-            popped.forEach(each::accept);
+            popped.forEach(each);
 
     }
 
@@ -732,9 +727,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             return;
 
         //synchronized (items) {
-        s = size();
+
         Object[] yy = items.array();
-        List<ObjectIntPair<Y>> removals = null;
+        s = Math.min(yy.length, s);
+//        float r = Float.POSITIVE_INFINITY;
+//        boolean commit = false;
         for (int i = 0; i < s; i++) {
 
             Y y =
@@ -747,19 +744,19 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             float p = pri(y);
             if (p == p) {
                 action.accept(y);
-            } else {
-                if (removals == null)
-                    removals = new LinkedList();
-                removals.add(pair(y, i));
-            }
-        }
-        if (removals != null) {
-            for (ObjectIntPair<Y> r : removals) {
-                remove(r.getOne(), r.getTwo());
-            }
+//                if (!commit) {
+//                    if (r <= p - ScalarValue.EPSILON)
+//                        commit = true; //out of order detected
+//                    r = p;
+//                }
+            } /*else {
+                commit = true;
+            }*/
         }
 
-
+//        if (commit) {
+//            commit(null);
+//        }
     }
 
 
@@ -777,7 +774,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     /**
      * priority of the middle index item, if exists; else returns average of priMin and priMax
      */
-    public float priMedian() {
+    private float priMedian() {
 
         Object[] ii = items.items;
         int s = Math.min(ii.length, size());

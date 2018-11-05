@@ -6,6 +6,7 @@ import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.util.ProxyBag;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -33,7 +34,7 @@ public class FastPutProxyBag<K, X extends Prioritizable> extends ProxyBag<K, X> 
 
 
     /** folds simultaneous commits into one */
-    @Override public Bag<K, X> commit(Consumer<X> update) {
+    @Override public Bag<K, X> commit(@Nullable Consumer<X> update) {
         if (commitBusy.compareAndSet(false, true)) {
             try {
                 return super.commit(update);
