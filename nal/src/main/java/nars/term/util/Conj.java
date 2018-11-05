@@ -283,7 +283,7 @@ public class Conj extends ByteAnonMap {
         if (concurrent(include.dt())) {
             //HACK this is messy
             Subterms s = include.subterms();
-            Term[] ss = null;
+            Term[] ss;
             if (excludePosNeg) {
                 ss = s.subsExcept(exclude.neg());
                 if (ss!=null) {

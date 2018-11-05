@@ -56,8 +56,7 @@ public class TaskSummarizer extends NARService implements Consumer<Task> {
 
         TaskSummary() {
             for (AtomicInteger[][] a : val) {
-                for (int i = 0, aLength = a.length; i < aLength; i++) {
-                    AtomicInteger[] b = a[i];
+                for (AtomicInteger[] b : a) {
                     for (int k = 0; k < 3; k++)
                         b[k] = new AtomicInteger(0);
                 }

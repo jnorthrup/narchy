@@ -183,11 +183,11 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
 
     @Override
-    public boolean removeTask(Task x) {
-        if (!x.isEternal())
-            return false;
+    public synchronized boolean removeTask(Task x) {
 
-        synchronized (this) {
+
+            if (!x.isEternal())
+                return false;
 
             int index = indexOf(x, this);
             if (index != -1) {
@@ -202,7 +202,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
 //            int findAgainToBeSure = indexOf(x, this);
 //            return (findAgainToBeSure != -1) && remove(findAgainToBeSure) != null;
-        }
+
 
 
     }

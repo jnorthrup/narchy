@@ -140,7 +140,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     Absolute af = (Absolute) f;
                     if (af.start() == ETERNAL)
                         continue;
-                    Longerval merged = null;
+                    Longerval merged;
                     if (af.containedInButNotEqual(start, end)) {
                         removeNode(f);
                         ff.remove();
@@ -898,9 +898,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
 
             assert (start != TIMELESS);
-            if (!((start == ETERNAL || start > 0 || start > ETERNAL + SAFETY_PAD)))
+            if (!(start == ETERNAL || start > ETERNAL + SAFETY_PAD))
                 throw new MathArithmeticException();
-            if (!((start < 0 || start < TIMELESS - SAFETY_PAD)))
+            if (!(start < TIMELESS - SAFETY_PAD))
                 throw new MathArithmeticException();
 
             this.start = start;

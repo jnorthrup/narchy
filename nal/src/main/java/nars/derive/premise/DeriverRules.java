@@ -52,7 +52,7 @@ public class DeriverRules {
 //            public float value(PremiseKey premiseKey, short[] shorts) {
 //                return premiseKey.pri;
 //            }
-        Memoizers.the.add(toString() + "_what", whats);
+        Memoizers.the.add(this + "_what", whats);
     }
 
     private short[] can(PremiseKey k) {

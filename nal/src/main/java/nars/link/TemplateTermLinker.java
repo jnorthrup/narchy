@@ -42,7 +42,7 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
 
 
     /** whether to decompose conjunction sequences to each event, regardless of a conjunction's sub-conjunction structure */
-    private static boolean decomposeConjEvents = false;
+    private static final boolean decomposeConjEvents = false;
 
 //    /**
 //     * how fast activation spreads from source concept to template target concepts

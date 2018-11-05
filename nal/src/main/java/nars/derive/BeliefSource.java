@@ -144,9 +144,7 @@ public class BeliefSource {
 
             @Override
             public Supplier<Term> beliefTerms() {
-                return () -> {
-                    return terms.get(rng.nextInt(terms.size()));
-                };
+                return () -> terms.get(rng.nextInt(terms.size()));
             }
         };
     }

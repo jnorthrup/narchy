@@ -14,6 +14,7 @@ import nars.derive.Derivers;
 import nars.op.SubUnify;
 import nars.term.Term;
 import nars.term.util.Image;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,7 +24,7 @@ import static nars.Op.GOAL;
 
 public class DialogTask extends NARService {
 
-    final ConcurrentFastIteratingHashSet<Task> tasks = new ConcurrentFastIteratingHashSet<>(new Task[0]);
+    final ConcurrentFastIteratingHashSet<Task> tasks = new ConcurrentFastIteratingHashSet<>(Task.EmptyArray);
     private final Deriver deriver;
     private Offs ons;
     private final Off monitor;
@@ -65,7 +66,7 @@ public class DialogTask extends NARService {
         else if (!questions && quests)
             listenPuncs = new byte[] { GOAL };
         else
-            listenPuncs = new byte[] { };
+            listenPuncs = ArrayUtils.EMPTY_BYTE_ARRAY;
 
         monitor = n.onTask(this::onTask, listenPuncs);
 

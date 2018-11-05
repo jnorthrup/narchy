@@ -220,8 +220,8 @@ public interface Compound extends Term, IPair, Subterms {
             return true;
 
 
-        int xs, ys;
-        if ((xs = xx.subs()) != (ys = yy.subs()))
+        int xs;
+        if ((xs = xx.subs()) != yy.subs())
             return false;
 
         if (!Terms.commonStructureTest(xx, yy, u))
@@ -322,18 +322,10 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     default boolean isCommutative() {
         Op op = op();
-        if (op.commutative) {
-            if (op == CONJ) {
-                int dt = dt();
-                return dtSpecial(dt);
-            }
-
-            if (subs() > 1) {
-                return true;
-            }
-
-        }
-        return false;
+        if (op == CONJ)
+            return dtSpecial(dt());
+        else
+            return op.commutative && subs() > 1;
     }
 
 

@@ -56,14 +56,14 @@ public class TestNAR {
      * TODO separate way to generate a test report containing
      * both successful and unsuccessful tests
      */
-    private boolean collectTrace = false;
-    private int temporalTolerance = 0;
-    private float freqTolerance = Param.TESTS_TRUTH_ERROR_TOLERANCE;
+    private final boolean collectTrace = false;
+    private final int temporalTolerance = 0;
+    private final float freqTolerance = Param.TESTS_TRUTH_ERROR_TOLERANCE;
     private float confTolerance = Param.TESTS_TRUTH_ERROR_TOLERANCE;
-    private ByteTopic<Tasked>[] taskEvents;
+    private final ByteTopic<Tasked>[] taskEvents;
     private boolean finished;
     private boolean exitOnAllSuccess = true;
-    private boolean reportStats = false;
+    private final boolean reportStats = false;
 
     public TestNAR(NAR nar) {
         this.nar = nar;

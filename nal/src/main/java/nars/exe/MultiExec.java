@@ -310,23 +310,20 @@ abstract public class MultiExec extends UniExec {
 
             int procs = Runtime.getRuntime().availableProcessors();
 
-            synchronized (this) {
+            super.start(n);
 
-                super.start(n);
+            workers = exe.execute(Worker::new, threads, affinity);
 
-                workers = exe.execute(Worker::new, threads, affinity);
-
-                if (concurrency() > procs / 2) {
-                    /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
-                    Exe.setExecutor(this);
-                }
+            if (concurrency() > procs / 2) {
+                /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
+                Exe.setExecutor(this);
             }
 
         }
 
 
         @Override
-        public synchronized void stop() {
+        public void stop() {
             Exe.setExecutor(ForkJoinPool.commonPool()); //TODO use the actual executor replaced by the start() call instead of assuming FJP
 
             workers.forEach(Worker::off);

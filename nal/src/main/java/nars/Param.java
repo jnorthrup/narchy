@@ -163,7 +163,7 @@ public abstract class Param {
     /**
      * maximum time (in durations) that a signal task can latch its last value before it becomes unknown
      */
-    public final static float SIGNAL_LATCH_DUR = 4;
+    public final static float SIGNAL_LATCH_DUR = 32;
     public final static float SIGNAL_STRETCH_DUR = 1f;
 
 
@@ -223,7 +223,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(32 * TTL_MIN, 0, 128 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, 0, 128 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 8, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 

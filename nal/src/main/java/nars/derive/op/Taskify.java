@@ -1,7 +1,6 @@
 package nars.derive.op;
 
 import jcog.Util;
-import jcog.WTF;
 import nars.*;
 import nars.control.Cause;
 import nars.derive.Derivation;
@@ -9,7 +8,6 @@ import nars.derive.premise.PremiseRuleProto;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.term.Term;
-import nars.term.anon.Anom;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.util.transform.Retemporalize;
@@ -47,7 +45,7 @@ public class Taskify extends AbstractPred<Derivation> {
                 ((punc != BELIEF && punc != GOAL) || (!x.hasXternal() && !x.hasVarQuery()));
     }
 
-    private boolean spam(Derivation d, int cost) {
+    private static boolean spam(Derivation d, int cost) {
         d.use(cost);
         d.concTerm = null; //erase immediately
         return true;

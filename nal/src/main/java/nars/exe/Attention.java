@@ -112,8 +112,6 @@ public class Attention extends DurService implements Sampler<Concept> {
                         arrayBag;
 
 
-        ;
-
         on(
                 nar.eventClear.on(this::clear),
                 nar.eventActivate.on(this::activate)

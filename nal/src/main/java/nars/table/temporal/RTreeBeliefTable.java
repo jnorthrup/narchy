@@ -485,7 +485,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         FloatFunction<Task> taskStrength = null;
         FloatFunction<TaskRegion> leafRegionWeakness = null;
-        int dur = 0, e = 0, cap;
+        int dur, e = 0, cap;
         while (treeRW.size() > (cap = capacity)) {
             if (taskStrength == null) {
                 long now = nar.time();
@@ -514,8 +514,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * returns true if at least one net task has been removed from the table.
      */
     /*@NotNull*/
-    private boolean compress(Space<TaskRegion> tree, @Nullable Task input, FloatFunction<Task> taskStrength, FloatFunction<TaskRegion> leafRegionWeakness, Remember
-                                            remember, NAR nar) {
+    private static boolean compress(Space<TaskRegion> tree, @Nullable Task input, FloatFunction<Task> taskStrength, FloatFunction<TaskRegion> leafRegionWeakness, Remember
+            remember, NAR nar) {
 
 
 
@@ -553,7 +553,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     }
 
-    private boolean mergeOrDelete(Space<TaskRegion> treeRW,
+    private static boolean mergeOrDelete(Space<TaskRegion> treeRW,
                                          @Nullable Task I /* input */,
                                          @Nullable Top<TaskRegion> closest,
                                          Top<Task> weakest,
@@ -694,7 +694,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     }
 
-    @Nullable protected Task revise(@Nullable Task x, Task y, NAR nar) {
+    @Nullable protected static Task revise(@Nullable Task x, Task y, NAR nar) {
         return Revision.merge(x, y, nar);
     }
 

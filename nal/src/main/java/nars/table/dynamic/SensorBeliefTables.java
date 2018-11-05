@@ -164,7 +164,7 @@ public class SensorBeliefTables extends BeliefTables {
             if (nextT == null)
                 return null;
 
-            synchronized (this) {
+            synchronized (series) {
 
                 series.series.compress();
 

@@ -92,12 +92,7 @@ public class Occurrify extends TimeGraph {
     private final Derivation d;
 
 
-    private transient Term curTaskTerm;
-    private transient Term curBeliefTerm;
-
-    private transient boolean single;
     private boolean decomposeEvents;
-    private long[] occurrenceQuad = new long[4];
 
 
     public Occurrify(Derivation d) {
@@ -242,16 +237,8 @@ public class Occurrify extends TimeGraph {
 
         /*if (!reUse) */{
 
-            //clear();
-
-            this.curTaskTerm = taskTerm; //update to current instance, even if equal
-            this.curBeliefTerm = beliefTerm; //update to current instance, even if equal
-
             this.decomposeEvents = decomposeEvents;
-            occurrenceQuad[0] = taskStart;
-            occurrenceQuad[1] = taskEnd;
-            occurrenceQuad[2] = beliefStart;
-            occurrenceQuad[3] = beliefEnd;
+
 
             autoNegNext.forEach(x -> autoNeg.add(x.unneg()));
             autoNegNext.clear();

@@ -94,13 +94,11 @@ public class STMLinkage extends NARService {
     public final void accept(Task y) {
 
 
-        float yp;
         if (filter(y)) {
             @Nullable Concept yc;
             yc = nar.concept(y);
             if (yc == null)
                 return;
-            yp = y.priElseZero();
 
 //            if (y.isEternal()) {
 //                if (eternalize) {

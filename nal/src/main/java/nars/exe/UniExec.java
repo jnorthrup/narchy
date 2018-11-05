@@ -124,7 +124,7 @@ public class UniExec extends AbstractExec {
     }
 
     @Override
-    public synchronized void start(NAR n) {
+    public void start(NAR n) {
         super.start(n);
 
         Consumer<ObjectBooleanPair<Service<NAR>>> serviceChange = (xb) -> {
@@ -286,7 +286,7 @@ public class UniExec extends AbstractExec {
 
 
     @Override
-    public synchronized void stop() {
+    public void stop() {
         if (ons != null) {
             ons.off();
             ons = null;

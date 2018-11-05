@@ -239,7 +239,7 @@ public class Revision {
     /** 2-ary merge with quick overlap filter */
     public static Task merge(TaskRegion x, TaskRegion y, NAR nar) {
 
-        return Stamp.overlaps((Task) x, (Task) y) ? null : merge(nar, new TaskRegion[]{x, y});
+        return Stamp.overlaps((Task) x, (Task) y) ? null : merge(nar, x, y);
 
     }
 

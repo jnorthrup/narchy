@@ -10,7 +10,7 @@ public abstract class ClassVisitor {
   protected ClassVisitor cv;
 
   public ClassVisitor(int api) {
-    this(api, (ClassVisitor)null);
+    this(api, null);
   }
 
   public ClassVisitor(int api, ClassVisitor classVisitor) {

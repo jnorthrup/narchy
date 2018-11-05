@@ -935,7 +935,7 @@ public class UDPeer extends UDP {
 
         public void onPing(long time) {
             pingTime.recordValue(Math.max(1,time));
-            latency.updateAndGet((l)->Math.round(pingTime.getMean()));
+            latency.set(Math.round(pingTime.getMean()));
         }
 
         /**

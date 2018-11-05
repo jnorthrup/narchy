@@ -1,5 +1,6 @@
 package nars.test.analyze;
 
+import jcog.pri.Prioritized;
 import jcog.pri.bag.Bag;
 import nars.$;
 import nars.NAR;
@@ -112,7 +113,7 @@ public class BeliefAnalysis implements Termed {
 
 	/** sum of priorities of the belief table */
 	public float priSum() {
-		return (float) beliefs().streamTasks().mapToDouble(x-> x.priElseZero()).sum();
+		return (float) beliefs().streamTasks().mapToDouble(Prioritized::priElseZero).sum();
 	}
 
 	@NotNull

@@ -30,7 +30,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
     public final FloatRange polarityImportance = new FloatRange(0f, 0f, 1f);
 
     /** increase this discriminate more heavily against more complex derivations */
-    public final FloatRange relGrowthExponent = new FloatRange(1f, 0f, 8f);
+    public final FloatRange relGrowthExponent = new FloatRange(2f, 0f, 8f);
 
     @Override
     public float pri(Task t, float f, float e, Derivation d) {

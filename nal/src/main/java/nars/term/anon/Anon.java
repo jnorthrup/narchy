@@ -28,6 +28,10 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
     private final ByteAnonMap map;
 
 
+    @Override
+    public String toString() {
+        return map.toString();
+    }
 
     @Override
     public Term the(Op op, int dt, Subterms t) {

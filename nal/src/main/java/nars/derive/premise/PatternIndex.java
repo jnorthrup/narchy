@@ -115,7 +115,7 @@ public class PatternIndex extends MapConceptIndex {
 
 
     public final Term intern(Term x) {
-        return (Term) get(x, true); //.term();
+        return get(x, true); //.term();
     }
 
     public static final class PremiseRuleNormalization extends VariableNormalization {
@@ -223,7 +223,7 @@ public class PatternIndex extends MapConceptIndex {
         }
 
 
-        public static class PremisePatternCompoundWithEllipsisLinear extends PremisePatternCompoundWithEllipsis {
+        public static final class PremisePatternCompoundWithEllipsisLinear extends PremisePatternCompoundWithEllipsis {
 
             public static PremisePatternCompoundWithEllipsisLinear the( Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
                 if (op.statement) {

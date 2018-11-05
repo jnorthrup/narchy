@@ -128,7 +128,7 @@ public abstract class Unify extends Versioning implements Subst {
     /**
      * completely dereferences a term (usually a variable)
      */
-    public final Term resolve(final Term x) {
+    public final Term resolve(final Variable x) {
         Term /*Variable*/ z = x, y;
 
         while (!constant(z) && (y = xy.get(z)) != null) {

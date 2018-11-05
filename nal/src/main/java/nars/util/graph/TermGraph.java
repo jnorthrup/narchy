@@ -1,7 +1,6 @@
 package nars.util.graph;
 
 public enum TermGraph {
-    ;
 
 //    public static AdjGraph<Term, Float> termlink(NAR nar) {
 //        AdjGraph<Term, Float> g = new AdjGraph<>(true);

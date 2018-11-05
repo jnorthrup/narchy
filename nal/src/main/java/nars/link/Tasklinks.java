@@ -39,8 +39,8 @@ public class Tasklinks {
 //        );
         float pEach =
                 //TODO abstract priority transfer function here
-                pri; //no division
-                //pri/targets.size(); //division
+                //pri; //no division
+                pri/targets.size(); //division
 
         Tasklike tlSeed = tasklink.id;
 

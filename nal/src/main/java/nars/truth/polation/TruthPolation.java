@@ -32,8 +32,8 @@ import static nars.time.Tense.ETERNAL;
 @Skill({"Interpolation", "Extrapolation"})
 abstract public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
-    public long start;
-    public long end;
+    public final long start;
+    public final long end;
     int dur;
 
     /**
@@ -281,7 +281,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
             Term a = first.term();
             Term b = second.term();
-            float dtDiff = 0;
+            float dtDiff;
             if ((dtDiff = dtDiff(a, b)) </*=*/ Param.TRUTHPOLATION_INTERMPOLATION_THRESH /*size >= 2 &&  || e2Evi[0] >= e1Evi[0]*/) {
 
                 long firstStart = first.start();

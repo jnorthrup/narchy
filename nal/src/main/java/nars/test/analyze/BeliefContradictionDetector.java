@@ -41,9 +41,7 @@ public class BeliefContradictionDetector extends NARService implements Consumer<
         int n = table.size();
         if (n > 1) {
             FloatArrayList h = new FloatArrayList(n);
-            table.forEachTask(t -> {
-                h.add(t.freq());
-            });
+            table.forEachTask(t -> h.add(t.freq()));
             if (h.count(x -> x < 0.5f) > 0 && h.count(x -> x > 0.5f) > 0) {
                 print(table);
             }
@@ -51,9 +49,7 @@ public class BeliefContradictionDetector extends NARService implements Consumer<
     }
 
     private void print(TaskTable table) {
-        table.forEachTask(t -> {
-            System.out.println(t.proof());
-        });
+        table.forEachTask(t -> System.out.println(t.proof()));
     }
 
 }

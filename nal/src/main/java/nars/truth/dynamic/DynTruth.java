@@ -91,10 +91,8 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
 //            //return null;
 //        }
 
-        Op op = content.op();
-        if (op == NEG) {
+        if (content.op() == NEG) {
             content = content.unneg();
-            op = content.op();
             t = t.neg();
         }
 

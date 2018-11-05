@@ -1,7 +1,6 @@
 package nars.derive.premise;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Streams;
 import jcog.data.set.ArrayUnenforcedSet;
 import jcog.memoize.Memoizers;
 import nars.NAR;
@@ -13,6 +12,7 @@ import java.util.Collection;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 
 /**
@@ -60,7 +60,7 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseRuleProto> 
     }
 
     private static Stream<String> load(byte[] data) {
-        return preprocess(Streams.stream(Splitter.on('\n').split(new String(data))));
+        return preprocess(StreamSupport.stream(Splitter.on('\n').split(new String(data)).spliterator(), false));
     }
 
     private static Stream<String> preprocess(Stream<String> lines) {

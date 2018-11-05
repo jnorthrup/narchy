@@ -8,6 +8,7 @@ import nars.task.AbstractTask.SchedTask;
 import javax.measure.Quantity;
 import java.io.Serializable;
 import java.util.PriorityQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
@@ -25,6 +26,11 @@ public abstract class Time implements Clock, Serializable {
 
 
     final PriorityQueue<SchedTask> scheduled = new PriorityQueue<>(MAX_INCOMING /* estimate capacity */);
+
+    /**
+     * busy mutex
+     */
+    private AtomicBoolean scheduling = new AtomicBoolean(false);
 
 
     public void clear(NAR n) {
@@ -71,13 +77,15 @@ public abstract class Time implements Clock, Serializable {
     }
 
 
-
     private void runAt(SchedTask event) {
         if (!incoming.offer(event)) {
             throw new RuntimeException(this + " overflow");
         }
 
-        scheduledNext.updateAndGet(z -> Math.min(z, event.when));
+        scheduledNext.accumulateAndGet(
+                event.when,
+                Math::min
+        );
     }
 
 
@@ -86,34 +94,39 @@ public abstract class Time implements Clock, Serializable {
      */
     public void schedule(Consumer<SchedTask> each) {
 
-        long now = now();
-        int s = incoming.size();
-        if (s > 0) {
-            //SchedTask p;
-            //while ((p = preSched.poll()) != null && s-- > 0) {
-            for (int i = 0; i < s; i++) {
-                SchedTask p = incoming.poll();
-                if (p.when <= now)
-                    each.accept(p);
-                else
-                    scheduled.offer(p);
+
+        if (scheduling.compareAndSet(false, true)) {
+
+            try {
+                long now = now();
+                SchedTask p;
+                for (; (p = incoming.poll()) != null; ) {
+                    if (p.when <= now)
+                        each.accept(p);
+                    else
+                        scheduled.offer(p);
+                }
+
+                //..
+
+                now = now(); //udpate the time
+                if (now >= scheduledNext.getOpaque()) {
+                    SchedTask next;
+
+                    while (((next = scheduled.peek()) != null) && (next.when <= now)) {
+                        each.accept(scheduled.poll()); //assert (next == actualNext);
+                    }
+
+                    scheduledNext.accumulateAndGet(
+                            next != null ? next.when : Long.MAX_VALUE,
+                            Math::min
+                    );
+
+                }
+            } finally {
+                scheduling.set(false);
             }
         }
-
-        long nextScheduled = scheduledNext.getOpaque();
-        if ((now >= nextScheduled) && scheduledNext.compareAndSet(nextScheduled, Long.MAX_VALUE)) {
-            SchedTask next;
-            while (((next = scheduled.peek()) != null) && (next.when <= now)) {
-                SchedTask actualNext = scheduled.poll();
-                each.accept(actualNext);
-                //assert (next == actualNext);
-            }
-            long nextNextWhen = next != null ? next.when : Long.MAX_VALUE;
-            scheduledNext.updateAndGet(z -> Math.min(z, nextNextWhen));
-        }
-
-
-
 
 
     }
@@ -124,7 +137,7 @@ public abstract class Time implements Clock, Serializable {
     /**
      * flushes the pending work queued for the current time
      */
-    public synchronized void synch(NAR n) {
+    public final void synch(NAR n) {
         schedule(n.exe::execute);
     }
 
@@ -137,7 +150,9 @@ public abstract class Time implements Clock, Serializable {
 //        return durationString(now - target);
 //    }
 
-    /** produces a string representative of the amount of time (cycles, not durs) */
+    /**
+     * produces a string representative of the amount of time (cycles, not durs)
+     */
     public abstract String timeString(long time);
 
     public long toCycles(Quantity q) {
