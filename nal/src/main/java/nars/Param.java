@@ -32,7 +32,7 @@ public abstract class Param {
     public static final boolean ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME = false;
     public static final boolean INPUT_PREMISE_ANSWER_BELIEF = true;
 
-    public static final boolean PREMISE_UNIFY_SYMMETRIC = true;
+
 
     /** in Revision.dtDiff measurement */
     public static final float TRUTHPOLATION_INTERMPOLATION_THRESH = 0.5f;
@@ -292,10 +292,12 @@ public abstract class Param {
 
 
 
-    /** primary activation amplifier.  affects both conceptualization priority (Attention)
+    /** concept activation amplifier.  affects both conceptualization priority (Attention)
      *  and the relative priority of created tasklinks from input tasks.
      */
-    public final FloatRange activation = new FloatRange(1f, 0, 2f);
+    public final FloatRange conceptActivation = new FloatRange(1f, 0, 2f);
+
+    public final FloatRange taskLinkActivation = new FloatRange(1f, 0, 2f);
 
 
     /**

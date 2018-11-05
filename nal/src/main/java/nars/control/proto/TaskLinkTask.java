@@ -39,11 +39,10 @@ public class TaskLinkTask extends AbstractTask {
         if (c == null)
             return null;
 
-        //scale by concept activation rate to keep things at same scale
-        pri *= n.activation.floatValue();
-
         //2. tasklink
-        Tasklinks.linkTask(new TaskLink.GeneralTaskLink(task, n, pri), c.tasklinks(), null);
+        Tasklinks.linkTask(
+                new TaskLink.GeneralTaskLink(task, n, pri * n.taskLinkActivation.floatValue()),
+                c.tasklinks(), null);
 
 
         //3. feel

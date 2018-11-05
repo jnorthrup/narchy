@@ -105,7 +105,6 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
 
         public MySubUnify(Random r, int ttl) {
             super(null, r, Param.UnificationStackMax, ttl);
-            symmetric = false;
         }
 
         @Override

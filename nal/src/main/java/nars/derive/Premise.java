@@ -127,7 +127,7 @@ public class Premise implements Comparable<Premise> {
                     return true;
                 });
 
-                u.symmetric = Param.PREMISE_UNIFY_SYMMETRIC;
+
 
                 beliefConceptCanAnswerTaskConcept = u.transform(beliefTerm, beliefTerm, taskTerm, matchTTL) > 0;
 

@@ -5,6 +5,7 @@ import jcog.lab.util.Opti;
 import jcog.lab.util.Optimization;
 import nars.NAR;
 import nars.NARS;
+import nars.Param;
 import nars.derive.Deriver;
 import nars.derive.budget.DefaultDeriverBudgeting;
 import nars.derive.impl.BatchDeriver;
@@ -52,10 +53,10 @@ class NARTestOptimize {
 
 //                .var("ttlMax", 6, 20, 3,
 //                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
-//                .var("linkFanOut", 1, 16, 1,
-//                        (NAR n, int f) -> Param.LinkFanoutMax = f)
+                .var("linkFanOut", 1, 16, 1,
+                        (NAR n, int f) -> Param.LinkFanoutMax = f)
                 .var("activation", 0, 1f, 0.1f,
-                            (NAR n, float f) -> n.activation.set(f))
+                            (NAR n, float f) -> n.conceptActivation.set(f))
                 .var("memoryDuration", 0, 8f, 0.5f,
                         (NAR n, float f) -> n.memoryDuration.set(f))
 //                .var("beliefPriDefault", 0, 1f, 0.1f,
@@ -80,7 +81,7 @@ class NARTestOptimize {
 
 
             int suiteIterations = 1;
-            int samples = 64;
+            int samples = 128;
             Optimization<NAR, TestNARSuite> o = l.optimize((Supplier<NAR> s) ->
                             new TestNARSuite(s, testClasses).run(parallel, suiteIterations),
                 (TestNARSuite t) -> (float) t.score()

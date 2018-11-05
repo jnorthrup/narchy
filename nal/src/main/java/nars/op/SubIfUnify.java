@@ -152,7 +152,6 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
 
         MySubUnify() {
             super(null, Op.Variable);
-            this.symmetric = true;
         }
 
         private MySubUnify reset(int op, boolean strict) {

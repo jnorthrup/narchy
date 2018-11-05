@@ -199,7 +199,6 @@ public class FactualEvaluator extends Evaluator {
                         UnifySubst u = new UnifySubst(null, new XoRoShiRo128PlusRandom(1) /* HACK */, (t) -> {
                             return false; /* first is ok */
                         });
-                        u.symmetric = true;
 
                         Term head = y.sub(1); //predicate, headicate
                         if (head.unify(x, u.clear())) {

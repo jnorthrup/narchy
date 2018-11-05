@@ -693,6 +693,8 @@ public class NAL5Test extends NALTest {
                 both.toString());
 
         TestNAR tester = test;
+        test.nar.termVolumeMax.set(7);
+
         tester.believe("--((&&,x1,x2,a) ==> c)");
         tester.believe("--((&&,y1,y2,a) ==> c)");
         tester.mustBelieve(cycles, "((x1&&x2) ==> (y1&&y2))", 1.00f, 0.45f);

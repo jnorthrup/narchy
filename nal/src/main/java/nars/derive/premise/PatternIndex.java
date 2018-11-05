@@ -185,10 +185,6 @@ public class PatternIndex extends MapConceptIndex {
 
         }
 
-        @Override
-        public boolean unifyReverse(Term x, Unify u) {
-            return false; //disable
-        }
 
         @Override
         public final boolean the() {

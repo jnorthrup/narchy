@@ -26,26 +26,32 @@ public class Versioning<X> {
         return size + ":" + super.toString();
     }
 
-    public final boolean revertLive(int to) {
+
+    public final boolean revertLive(int before, int cost) {
+        ttl -= cost;
+        return revertLive(before);
+    }
+
+    public final boolean revertLive(int before) {
         if (live()) {
-            revert(to);
+            revert(before);
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
     /** hard clear; use with caution  */
-    public void reset() {
+    private void reset() {
 
         int s = this.size;
-        if (s > 0) {
-            for (int i = 0; i < s; i++) {
-                items[i].clear();
-                items[i] = null;
-            }
+        this.size = 0;
 
-            this.size = 0;
+        for (int i = 0; i < s; i++) {
+            items[i].clear();
+            items[i] = null;
         }
+
     }
 
     /**
@@ -60,22 +66,23 @@ public class Versioning<X> {
 
         if (when == 0) {
             reset();
-            return true;
-        }
+        } else {
 
-        int c = s - when;
-        final Versioned<X>[] i = this.items;
+            int c = s - when;
+            final Versioned[] i = this.items;
 
-        while (c-- > 0) {
-            Versioned<X> x = i[--s];
-            if (x!=null) {
-                x.pop();
-                i[s] = null;
+            while (c-- > 0) {
+                Versioned x = i[--s];
+                if (x != null) {
+                    x.pop();
+                    i[s] = null;
+                }
             }
-        }
 
-        this.size = s;
-        assert(s == when);
+            this.size = s;
+            assert (s == when);
+
+        }
         return true;
     }
 
@@ -126,9 +133,9 @@ public class Versioning<X> {
     }
 
     /**
-     * stack counter, not time
+     * stack height counter
      */
-    public final int now() {
+    public final int size() {
         return size;
     }
 

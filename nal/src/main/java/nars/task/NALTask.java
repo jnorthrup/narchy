@@ -67,16 +67,25 @@ public class NALTask extends UnitPri implements Task {
         if (Param.DEBUG_EXTRA)
             Task.taskConceptTerm(term, punc, false);
 
-        this.hash = Task.hash(
-                this.term = term,
-                (this.truth = truth != null ? /*Truth.the*/(truth.truth()) : null),
-                this.punc = punc,
-                this.start = start,
-                this.end = end,
-                this.stamp = stamp);
+        this.term = term;
+        this.truth = truth != null ? /*Truth.the*/(truth.truth()) : null;
+        this.punc = punc;
+        this.start = start;
+        this.end = end;
+        this.stamp = stamp;
+
+        this.hash = hashCalculate();
 
         this.creation = creation;
 
+    }
+
+    protected int hashCalculate() {
+        return Task.hash(
+                term,
+                truth,
+                punc,
+                start, end, stamp);
     }
 
 
@@ -86,7 +95,7 @@ public class NALTask extends UnitPri implements Task {
     }
 
     @Override
-    public final boolean equals(Object that) {
+    public boolean equals(Object that) {
         return Task.equal(this, that);
     }
 

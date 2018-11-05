@@ -213,7 +213,6 @@ public class Derivation extends PreDerivation {
                 , null, Param.UnificationStackMax
         );
 
-        this.symmetric = true;
         this.anon = new Anon.AnonWithVarShift(ANON_INITIAL_CAPACITY);
     }
 
@@ -603,10 +602,6 @@ public class Derivation extends PreDerivation {
         return deriver.derived.add(t, this);
     }
 
-    public final boolean revertLive(int before, int cost) {
-        ttl -= cost;
-        return revertLive(before);
-    }
 
 
     public boolean concTruthEviMul(float ratio, boolean eternalize) {

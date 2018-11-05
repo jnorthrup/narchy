@@ -102,7 +102,7 @@ public class Evaluation {
     private boolean termute(Evaluator e, Term y) {
 
 
-        int before = v.now();
+        int before = v.size();
 
         if (termutator.size() == 1) {
             Iterable<Predicate<VersionMap<Term, Term>>> t = termutator.get(0);
@@ -323,7 +323,7 @@ public class Evaluation {
     }
 
     private int now() {
-        return v!=null ? v.now() : -1;
+        return v!=null ? v.size() : -1;
     }
 
 //    private Term rewrite(List<Term[]> rewrites, Term x) {

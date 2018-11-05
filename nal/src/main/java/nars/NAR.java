@@ -1421,7 +1421,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         Concept c = forceConceptualize ? conceptualize(t) : concept(t);
 
         if (activationApplied >= 0 && c != null /*&& !eventActivate.isEmpty()*/) {
-            eventActivate.emit(new Activate(c, activationApplied));
+            eventActivate.emit(new Activate(c, activationApplied * conceptActivation.floatValue()));
         }
 
         return c;

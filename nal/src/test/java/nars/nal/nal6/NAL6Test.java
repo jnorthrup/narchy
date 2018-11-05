@@ -380,8 +380,8 @@ public class NAL6Test extends NALTest {
         tester.believe("({lock1} --> lock)");
         tester.mustBelieve(cycles, "((#1-->key) && open(#1,{lock1}))",
                 1.00f,
-                0.66f
-                //0.43f
+                //0.66f
+                0.43f
         );
     }
 

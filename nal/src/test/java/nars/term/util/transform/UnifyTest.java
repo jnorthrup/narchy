@@ -123,7 +123,6 @@ public class UnifyTest {
                 }
             };
 
-            sub.symmetric = true;
 
             sub.setTTL(INITIAL_TTL);
             sub.unify(t1, t2);
@@ -817,11 +816,11 @@ public class UnifyTest {
             }
         };
 
-        f.symmetric = true;
         f.unify(b, a);
 
         assertEquals(matched.get(), matches);
 
         return f;
     }
+
 }

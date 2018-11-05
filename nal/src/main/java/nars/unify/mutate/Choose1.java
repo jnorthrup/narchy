@@ -60,7 +60,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
         int l = yy.length-1;
         int shuffle = u.random.nextInt(yy.length); 
 
-        int start = u.now();
+        int start = u.size();
 
         for (Term x = this.x; l >=0; l--) {
 

@@ -323,17 +323,9 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * @return whether unification succeeded
      */
     default boolean unify(Term y, Unify u) {
-        return equals(y)
-                ||
-               (u.symmetric && y.unifyReverse(this, u));
+        return y instanceof Variable ? y.unify(this, u) : equals(y);
     }
 
-    /**
-     * by default this has no effect by returning false
-     */
-    default boolean unifyReverse(Term x, Unify u) {
-        return false;
-    }
 
     /**
      * true if the operator bit is included in the enabld bits of the provided vector

@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 
 public class VersionMap<X, Y> extends AbstractMap<X, Y> {
@@ -125,17 +126,21 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
     }
 
     public boolean tryPut(X key, Y value) {
-        return getOrCreateIfAbsent(key).set(value) != null;
+        return getOrCreateIfAbsent(key).setOnly(value) != null;
     }
+    public boolean tryPut(X key1, X key2, Supplier<Y> value) {
+        @Nullable Versioned<Y> a = getOrCreateIfAbsent(key1).setOnly(value);
+        if (a == null)
+            return false;
+        return tryPut(key2, a.get());
+    }
+
+//    public boolean tryPut(X key, Supplier<Y> value) {
+//        return getOrCreateIfAbsent(key).setOnly(value) != null;
+//    }
 
     public final Versioned<Y> getOrCreateIfAbsent(X key) {
         return map.computeIfAbsent(key, this::newEntry);
-
-
-
-
-
-
     }
 
     protected Versioned<Y> newEntry(X x) {

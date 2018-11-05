@@ -589,7 +589,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                     return false;
             } else {
                 if (deferredPairs == null)
-                    deferredPairs = new Term[((s-1) - i) * 2];
+                    deferredPairs = new Term[(s - i - 1) * 2];
 
                 //backwards order
                 deferredPairs[dynPairs++] = yi;
@@ -627,9 +627,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
                         return xx.get(0).unify(yy.get(0), u);
                     default: {
                         int xs = xx.structure();
-                        if (!u.constant(xs) || (u.symmetric && !u.constant(yy))) {
+                        //if (!u.constant(xs) || (u.symmetric && !u.constant(yy))) {
+                        if (!u.constant(xs) || !u.constant(yy)) {
                             if (Terms.commonStructureTest(xs, yy, u)) {
-
 
                                 u.termutes.add(new CommutivePermutations(xx, yy));
                                 return true;

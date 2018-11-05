@@ -122,7 +122,7 @@ public class NARS {
                 n.termVolumeMax.set(26);
 
 
-                n.activation.set(0.5f);
+                n.conceptActivation.set(0.5f);
                 n.memoryDuration.set(3.5f);
 
 

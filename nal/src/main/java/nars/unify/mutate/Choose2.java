@@ -74,7 +74,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
 
         boolean phase = true;
 
-        int start = f.now();
+        int start = f.size();
         ShuffledSubterms yy = this.yy;
 
 

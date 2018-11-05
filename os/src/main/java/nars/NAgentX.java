@@ -337,7 +337,7 @@ abstract public class NAgentX extends NAgent {
             nar.memoryDuration.set(Util.lerp(f, 0.5f, 0.99f));
         });
         m.actionUnipolar($.func("awake", a.id), (f)->{
-            nar.activation.set(Util.lerp(f, 0.1f, 0.99f));
+            nar.conceptActivation.set(Util.lerp(f, 0.1f, 0.99f));
         });
         m.senseNumber($.func("busy", a.id), new FloatNormalized(()->
                 (float) Math.log(1+m.nar().emotion.busyVol.getMean()), 0, 1).relax(0.05f));
@@ -411,7 +411,7 @@ abstract public class NAgentX extends NAgent {
 
 
 
-        n.activation.set(1f);
+        n.conceptActivation.set(1f);
         n.memoryDuration.set(4f);
 
 

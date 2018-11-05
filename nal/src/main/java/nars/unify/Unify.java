@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Supplier;
 
 
 /* recurses a pair of compound term tree's subterms
@@ -52,7 +53,7 @@ public abstract class Unify extends Versioning implements Subst {
     /**
      * whether the variable unification allows to happen in reverse (a variable in Y can unify a constant in X)
      */
-    public boolean symmetric = false;
+
 
     public int dtTolerance = 0;
 
@@ -222,14 +223,8 @@ public abstract class Unify extends Versioning implements Subst {
      */
     public final boolean putXY(final Variable x, Term y) {
 
-        return //!y.containsRecursively(x) &&
-               replaceXY(x, y);
-
-    }
-
-
-    public final boolean replaceXY(final Variable x, final Term y) {
         return xy.tryPut(x, y);
+
     }
 
 
@@ -305,6 +300,17 @@ public abstract class Unify extends Versioning implements Subst {
             return valid(next) ? super.set(next) : null;
         }
 
+        @Nullable
+        @Override
+        public Versioned<Term> setOnly(Term next) {
+            return size == 0 ? set(next) : null;
+        }
+
+        @Nullable @Override
+        public Versioned<Term> setOnly(Supplier<Term> nextValue) {
+            return size == 0 ? set(nextValue.get()) : null;
+        }
+
         private boolean valid(Term x) {
             Versioned<UnifyConstraint> c = this.constraints;
             //return MatchConstraint.valid(x, c);
@@ -319,7 +325,7 @@ public abstract class Unify extends Versioning implements Subst {
 
             for (UnifyConstraint m : mm) {
                 Versioned<UnifyConstraint> wasSet = c.set(m);
-                assert (wasSet != null);
+                //assert (wasSet != null);
             }
 
         }

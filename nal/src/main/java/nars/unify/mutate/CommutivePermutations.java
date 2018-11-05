@@ -40,7 +40,7 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
 
     @Override
     public void mutate(Unify u, Termutator[] chain, int current) {
-        int start = u.now();
+        int start = u.size();
 
         ShuffledSubterms p = new ShuffledSubterms(x, u.random);
 

@@ -198,11 +198,8 @@ public interface Compound extends Term, IPair, Subterms {
      */
     @Override
     default boolean unify(/*@NotNull*/ Term y, /*@NotNull*/ Unify u) {
-        return equals(y)
-                ||
-                (unifySubterms(y, u))
-                ||
-                (u.symmetric && y.unifyReverse(this, u));
+        return y instanceof Variable ? y.unify(this, u) :
+                (equals(y) || (unifySubterms(y, u)));
     }
 
 
@@ -236,7 +233,8 @@ public interface Compound extends Term, IPair, Subterms {
         } else {
 
             //test only after equality
-            if ((u.constant(x) && (!u.symmetric || u.constant(y)))) {
+            //if ((u.constant(x) && (!u.symmetric || u.constant(y)))) {
+            if (u.constant(x) && u.constant(y)) {
                 //constant case, some things can be assumed
                 if (!x.hasAny(Op.Temporal))
                     return false; //temporal terms need to be compared for matching 'dt'
