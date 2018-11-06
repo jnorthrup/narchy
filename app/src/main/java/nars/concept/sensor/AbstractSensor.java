@@ -39,9 +39,9 @@ abstract public class AbstractSensor extends NARService implements Sensor {
 //        this.pri = p;
 //    }
 
-    public AbstractSensor resolution(float v) {
+    public <S extends AbstractSensor> S resolution(float v) {
         this.res.set(v);
-        return this;
+        return (S) this;
     }
 
 //    public void setResolution(FloatRange r) {

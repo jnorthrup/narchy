@@ -1,9 +1,12 @@
-package nars.gui;
+package nars.gui.concept;
 
 import jcog.data.list.table.Table;
 import nars.$;
 import nars.NAR;
 import nars.concept.Concept;
+import nars.gui.BagView;
+import nars.gui.DurSurface;
+import nars.gui.NARui;
 import nars.link.Activate;
 import nars.task.NALTask;
 import nars.term.Term;

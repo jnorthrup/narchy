@@ -7,6 +7,7 @@ import java.lang.reflect.Array;
 public class ArrayBitmap2D implements Bitmap2D {
 
     private final float[][] b;
+    transient private final int[] shapeCached;
 
     public ArrayBitmap2D(int w, int h) {
         this((float[][]) Array.newInstance(float.class, h, w));
@@ -14,6 +15,12 @@ public class ArrayBitmap2D implements Bitmap2D {
 
     public ArrayBitmap2D(float[][] x) {
         this.b = x;
+        this.shapeCached = Bitmap2D.super.shape();
+    }
+
+    @Override
+    public int[] shape() {
+        return shapeCached;
     }
 
     @Override

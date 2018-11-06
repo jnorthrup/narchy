@@ -63,6 +63,11 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends AbstractSensor {
         this.in = nar.newChannel(this);
     }
 
+    public Bitmap2DSensor<P> mode(FloatFloatToObjectFunction<Truth> mode) {
+        this.mode = mode;
+        return this;
+    }
+
     @Override
     public Iterable<Termed> components() {
         return Iterables.transform(concepts, NodeConcept::term);

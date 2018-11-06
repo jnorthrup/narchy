@@ -66,7 +66,7 @@ abstract public class AbstractOff<V> implements Off {
 
         Weak(Topic<V> t, Consumer<V> o) {
             super(t);
-            reaction = new WeakReference<Consumer<V>>(o);
+            reaction = new WeakReference<>(o);
             t.enable(this);
         }
 

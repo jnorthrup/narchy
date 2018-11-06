@@ -10,9 +10,7 @@ import java.util.function.Supplier;
 /**
  * Pan/Zoom filter for a BuferredImage source
  */
-public class Scale extends BufferedImageBitmap2D /*implements ImageObserver*/ {
-
-    private final Supplier<BufferedImage> src;
+public class Scale extends BufferedImageBitmap2D /* TODO extends ArrayBitmap2D directly, bypassing Swing */ /*implements ImageObserver*/ {
 
     float sx1 = 0;
     float sy1 = 0;
@@ -25,15 +23,16 @@ public class Scale extends BufferedImageBitmap2D /*implements ImageObserver*/ {
     public int pw, ph;
     private Graphics2D outgfx;
 
+
     public Scale(Supplier<BufferedImage> source, int pw, int ph) {
         super();
-
-        this.src = source;
         this.pw = pw;
         this.ph = ph;
+        this.source = source;
+        update();
     }
 
-    public Scale window(float sx1, float sy1, float sx2, float sy2) {
+    public Scale crop(float sx1, float sy1, float sx2, float sy2) {
         this.sx1 = sx1; this.sy1 = sy1; this.sx2 = sx2; this.sy2 = sy2;
         return this;
     }
@@ -50,20 +49,23 @@ public class Scale extends BufferedImageBitmap2D /*implements ImageObserver*/ {
 
     @Override
     public void update() {
-        if (src instanceof Bitmap2D)
-            ((Bitmap2D) src).update();
+        if (source instanceof Bitmap2D)
+            ((Bitmap2D) source).update();
 
-        Image in = src.get();
+        if (source == null)
+            return;
+
+        Image in = source.get();
         if (in == null)
             return;
 
-        if (out == null || outgfx == null || out.getWidth() != pw || out.getHeight() != ph) {
+        if (sourceImage == null || outgfx == null || sourceImage.getWidth() != pw || sourceImage.getHeight() != ph) {
 
             if (outgfx!=null)
                 outgfx.dispose();
 
-            out = new BufferedImage(pw, ph, BufferedImage.TYPE_INT_RGB);
-            outgfx = out.createGraphics(); 
+            sourceImage = new BufferedImage(pw, ph, BufferedImage.TYPE_INT_RGB);
+            outgfx = sourceImage.createGraphics();
 
 
 

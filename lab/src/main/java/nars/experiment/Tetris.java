@@ -1,6 +1,7 @@
 package nars.experiment;
 
 import jcog.math.FloatRange;
+import jcog.signal.wave2d.AbstractBitmap2D;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
@@ -11,7 +12,7 @@ import nars.op.Arithmeticize;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
-import nars.video.CameraSensorView;
+import nars.video.Bitmap2DConceptsView;
 import org.eclipse.collections.api.block.function.primitive.BooleanToBooleanFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 
@@ -19,19 +20,21 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.Vector;
 
+import static nars.Op.BELIEF;
 import static nars.experiment.Tetris.TetrisState.*;
 import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 7/28/16.
  */
-public class Tetris extends NAgentX implements Bitmap2D {
+public class Tetris extends NAgentX {
 
     final static float FPS = 24f;
 
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
     static boolean easy = false;
+    private final Bitmap2D grid;
     private boolean canFall = false;
 
     public final FloatRange timePerFall = new FloatRange(1f, 1f, 32f);
@@ -90,15 +93,25 @@ public class Tetris extends NAgentX implements Bitmap2D {
             return r > 0 ? ((float)filled)/(r * state.width) : 0;
         });
 
+        grid = new AbstractBitmap2D(state.width, state.height) {
+            @Override public float brightness(int x, int y) {
+                return state.seen[y * w + x] > 0 ? 1f : 0f;
+            }
+        };
+
         addCamera(
                 pixels = new Bitmap2DSensor<>(
                         (x, y) -> $.inh($.p(x, y), id),
-                        this, n)
+                        grid, n)
+                .mode((p,v)->{
+                    float c = n.confDefault(BELIEF);
+                    return $.t(v, p!=v || v > 0.5f ? c : c/2);
+                })
 
         );
-        pixels.resolution(0.2f);
+        pixels.resolution(0.1f);
 
-        window(new CameraSensorView(pixels, this), 400, 900);
+        window(new Bitmap2DConceptsView(pixels, this).withControls(), 400, 900);
 
 
         //actionsReflect();
@@ -218,22 +231,6 @@ public class Tetris extends NAgentX implements Bitmap2D {
         actionPushButton($.func("R", id), () -> state.act(CW));
 
 
-    }
-
-    @Override
-    public int width() {
-        return state.width;
-    }
-
-    @Override
-    public int height() {
-        return state.height;
-    }
-
-    @Override
-    public float brightness(int xx, int yy) {
-        int index = yy * state.width + xx;
-        return state.seen[index] > 0 ? 1f : 0f;
     }
 
 

@@ -18,15 +18,15 @@ import java.util.stream.Stream;
 /**
  * notifies subscribers when a value is emitted (publisher)
  */
-public interface Topic<V> {
+public interface Topic<X> {
 
-    void enable(Consumer<V> o);
+    void enable(Consumer<X> o);
 
-    void disable(Consumer<V> o);
+    void disable(Consumer<X> o);
 
     void clear();
 
-    default void emitAsync(V x) {
+    default void emitAsync(X x) {
         emitAsync(x, Exe.executor());
     }
 
@@ -87,38 +87,38 @@ public interface Topic<V> {
 
 
     /** TODO rename to 'out' to match Streams api */
-    void emit(V arg);
+    void emit(X arg);
 
-    default Off on(long minUpdatePeriodMS, Consumer<V> o) {
+    default Off on(long minUpdatePeriodMS, Consumer<X> o) {
         if (minUpdatePeriodMS == 0)
             return on(o);
         return on(System::currentTimeMillis, ()->minUpdatePeriodMS, o);
     }
 
-    default Off on(LongSupplier time, LongSupplier minUpdatePeriod, Consumer<V> o) {
+    default Off on(LongSupplier time, LongSupplier minUpdatePeriod, Consumer<X> o) {
         AtomicLong lastUpdate = new AtomicLong(time.getAsLong() - minUpdatePeriod.getAsLong() );
-        return on((v) -> {
+        return on((x) -> {
             long now = time.getAsLong();
             if (now - lastUpdate.get() >= minUpdatePeriod.getAsLong()) {
                 lastUpdate.set(now);
-                o.accept(v);
+                o.accept(x);
             }
         });
     }
 
-    default Off on(Consumer<V> o) {
+    default Off on(Consumer<X> o) {
         return new AbstractOff.Strong<>(this, o);
     }
 
     default Off on(Runnable o) {
-        return new AbstractOff.Strong<>(this, (ignored)->o.run());
+        return on((ignored)->o.run());
     }
 
-    default Off onWeak(Consumer<V> o) {
+    default Off onWeak(Consumer<X> o) {
         return new AbstractOff.Weak<>(this, o);
     }
     default Off onWeak(Runnable o) {
-        return new AbstractOff.Weak<>(this, (x) -> o.run());
+        return onWeak((ignored)->o.run());
     }
 
 
@@ -135,11 +135,11 @@ public interface Topic<V> {
 
     boolean isEmpty();
 
-    void emitAsync(V inputted, Executor e);
+    void emitAsync(X inputted, Executor e);
 
-    void emitAsyncAndWait(V inputted, Executor e) throws InterruptedException;
+    void emitAsyncAndWait(X inputted, Executor e) throws InterruptedException;
 
-    void emitAsync(V inputted, Executor e, Runnable onFinish);
+    void emitAsync(X inputted, Executor e, Runnable onFinish);
 
 
 

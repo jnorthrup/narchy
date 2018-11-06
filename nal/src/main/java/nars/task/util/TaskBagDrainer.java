@@ -38,6 +38,7 @@ public class TaskBagDrainer extends AbstractTask {
             return null; //an operation is in-progress
 
         try {
+            bag.commit(null /* no forget */);
 
             int n = rateControl.apply(bag.size(), bag.capacity());
             if (n > 0) {

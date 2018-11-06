@@ -1,30 +1,24 @@
-package nars.gui;
+package nars.gui.concept;
 
 import com.googlecode.lanterna.TextColor;
+import com.jogamp.opengl.GL2;
 import nars.NAR;
 import nars.concept.Concept;
-import nars.control.DurService;
 import nars.term.Termed;
-import org.jetbrains.annotations.Nullable;
-import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
+import spacegraph.space2d.widget.text.BitmapLabel;
+import spacegraph.video.Draw;
 
 import java.io.IOException;
 
-public class ConceptView extends Gridding {
+public class ConceptTerminalView extends ConceptView {
 
-    private final Termed term;
     private final ConsoleTerminal io;
-    private final NAR nar;
     private final StringBuilder sa;
-    private DurService on;
 
-    public ConceptView(Termed t, NAR n) {
-        super();
-
-        this.term = t;
-        this.nar = n;
+    public ConceptTerminalView(Termed t, NAR n) {
+        super(t, n);
         this.sa = new StringBuilder();
         this.io = new ConsoleTerminal(120,60);
         io.text.fontSize(12);
@@ -32,11 +26,11 @@ public class ConceptView extends Gridding {
         io.term.setForegroundColor(TextColor.ANSI.WHITE);
 
         set(io);
-
     }
 
+    @Override
     protected void update() {
-        Concept c = nar.concept(term);
+        Concept c = concept();
         if (c!=null) {
 
             sa.setLength(0);
@@ -54,26 +48,5 @@ public class ConceptView extends Gridding {
                 e.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public boolean start(@Nullable SurfaceBase parent) {
-        if (super.start(parent)) {
-            on = DurService.on(nar, this::update);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean stop() {
-        if (super.stop()) {
-            if (on != null) {
-                on.off();
-                on = null;
-            }
-            return true;
-        }
-        return false;
     }
 }

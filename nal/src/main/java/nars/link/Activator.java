@@ -143,7 +143,7 @@ public class Activator extends AbstractTask {
 
 
         concepts.values().removeIf(a -> {
-            nar.eventActivate.emit(a.clone());
+            nar.eventActivate.emit(a/*.clone()*/);
             return true;
         });
 

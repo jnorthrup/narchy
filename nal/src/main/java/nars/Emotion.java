@@ -36,6 +36,10 @@ public class Emotion implements Meter {
     public final Counter busyPri = new StepCounter(meter("busyPri"));
 
 
+//    public final Counter conceptCreate = new FastCounter("concept create");
+//    public final Counter conceptCreateFail = new FastCounter("concept create fail");
+//    public final Counter conceptDelete = new FastCounter("concept delete");
+
     public final Counter conceptFire = new FastCounter("concept fire");
     public final Counter taskFire = new FastCounter("task fire");
     //public final Counter taskActivation_x100 = new FastCounter("task activation pri sum x100");

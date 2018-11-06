@@ -2,7 +2,6 @@ package nars.exe;
 
 import jcog.exe.Exe;
 import nars.NAR;
-import nars.Param;
 import nars.task.ITask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +55,7 @@ abstract public class Exec implements Executor {
                         ((Consumer) t).accept(nar);
                     }
                 } catch (Throwable e) {
-                    logger.error("{} {}", t, Param.DEBUG ? e : e.getMessage());
+                    logger.error("{} {}", t, /*Param.DEBUG ?*/ e /*: e.getMessage()*/);
                 }
             });
         }

@@ -1,23 +1,21 @@
 package nars.link;
 
 import jcog.data.MutableFloat;
-import jcog.pri.*;
+import jcog.pri.OverflowDistributor;
+import jcog.pri.PLinkHashCached;
+import jcog.pri.PLinkUntilDeleted;
+import jcog.pri.UnitPrioritizable;
 import jcog.pri.bag.Bag;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
-import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.Tasklike;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
-import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Function;
-
-import static nars.time.Tense.ETERNAL;
 
 /**
  * the function of a tasklink is to be a prioritizable strategy for resolving a Task in a NAR.
@@ -79,8 +77,8 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 //        );
         float pEach =
                 //TODO abstract priority transfer function here
-                //pri; //no division
-                pri/targets.size(); //division
+                pri; //no division
+                //pri/targets.size(); //division
 
 
         for (Concept c : targets) {
@@ -140,38 +138,16 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
         }
 
         public GeneralTaskLink(Task t, boolean polarizeBeliefsAndGoals, NAR n, float pri) {
-            this(seed(t, polarizeBeliefsAndGoals, n), pri);
+            this(Tasklike.seed(t, polarizeBeliefsAndGoals, n), pri);
         }
 
         public GeneralTaskLink(Term t, byte punc, long when, float pri) {
-            this(seed(t, punc, when), pri);
+            this(Tasklike.seed(t, punc, when), pri);
         }
 
         @Override
         public TaskLink clone(float pri) {
             return new GeneralTaskLink(id, pri);
-        }
-
-        /**
-         * use this to create a tasklink seed shared by several different tasklinks
-         * each with its own distinct priority
-         */
-        public static Tasklike seed(Term t, byte punc, long when) {
-            return new Tasklike(t, punc, when);
-        }
-
-        public static Tasklike seed(Task t, boolean polarizeBeliefsAndGoals, NAR n) {
-            long when = t.isEternal() ? ETERNAL : Tense.dither(
-
-                    !(t instanceof SeriesBeliefTable.SeriesTask) ? t.mid() : t.start() //use early alignment for stretchable SeriesTask otherwise it will spam the TaskLink bag whenever it stretches
-
-                    , n);
-            return seed(
-                    (Param.TASKLINK_CONCEPT_TERM ? t.term().concept() : t.term())
-                            .negIf(
-                                    polarizeBeliefsAndGoals && t.isBeliefOrGoal() && t.isNegative()
-                            ),
-                    t.punc(), when);
         }
 
 

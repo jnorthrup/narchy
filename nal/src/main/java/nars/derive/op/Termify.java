@@ -1,6 +1,5 @@
 package nars.derive.op;
 
-import jcog.math.Longerval;
 import nars.$;
 import nars.NAR;
 import nars.derive.Derivation;
@@ -8,7 +7,7 @@ import nars.term.Term;
 import nars.term.control.AbstractPred;
 import org.eclipse.collections.api.tuple.Pair;
 
-import static nars.Op.*;
+import static nars.Op.NEG;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 
@@ -100,30 +99,30 @@ public final class Termify extends AbstractPred<Derivation> {
                 throw new RuntimeException("bad occurrence result");
 
 
-            if (d.concTruth!=null) {
-                long start = occ[0], end = occ[1];
-                if (start != ETERNAL) {
-                    if (d.taskStart!=ETERNAL && d.beliefStart!=ETERNAL) {
-
-                        long taskEvidenceRange = ((d.taskStart==ETERNAL || (d.taskPunc==QUESTION || d.taskPunc==QUEST)) ? 0 : d._task.range());
-                        long beliefEviRange = ((!d.concSingle && d._belief != null && d.beliefStart!=ETERNAL) ? d._belief.range() : 0);
-                        long commonRange = d._belief != null ? Longerval.intersectLength(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd) : 0;
-
-                        long inputRange = taskEvidenceRange + beliefEviRange - (commonRange/2);
-                        //assert(inputRange > 0);
-
-                        long outputRange = (1 + (end - start));
-                        long expanded = outputRange - inputRange;
-                        if (expanded > nar.dtDither()) {
-                            //dilute the conclusion truth in proportion to the extra space
-                            double expansionFactor = ((double) expanded) / (expanded + inputRange);
-                            if (Double.isFinite(expansionFactor))
-                                d.concTruthEviMul((float) expansionFactor, false);
-                            ////assert (expansionFactor < 1);
-                        }
-                    }
-                }
-            }
+//            if (d.concTruth!=null) {
+//                long start = occ[0], end = occ[1];
+//                if (start != ETERNAL) {
+//                    if (d.taskStart!=ETERNAL && d.beliefStart!=ETERNAL) {
+//
+//                        long taskEvidenceRange = ((d.taskStart==ETERNAL || (d.taskPunc==QUESTION || d.taskPunc==QUEST)) ? 0 : d._task.range());
+//                        long beliefEviRange = ((!d.concSingle && d._belief != null && d.beliefStart!=ETERNAL) ? d._belief.range() : 0);
+//                        long commonRange = d._belief != null ? Longerval.intersectLength(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd) : 0;
+//
+//                        long inputRange = taskEvidenceRange + beliefEviRange - (commonRange/2);
+//                        //assert(inputRange > 0);
+//
+//                        long outputRange = (1 + (end - start));
+//                        long expanded = outputRange - inputRange;
+//                        if (expanded > nar.dtDither()) {
+//                            //dilute the conclusion truth in proportion to the extra space
+//                            double expansionFactor = ((double) expanded) / (expanded + inputRange);
+//                            if (Double.isFinite(expansionFactor))
+//                                d.concTruthEviMul((float) expansionFactor, false);
+//                            ////assert (expansionFactor < 1);
+//                        }
+//                    }
+//                }
+//            }
             
             if (!Taskify.valid(c2, d.concPunc)) {
                 Term c1e = c1;

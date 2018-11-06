@@ -1,5 +1,7 @@
 package nars.concept.sensor;
 
+import jcog.Util;
+import jcog.data.list.FasterList;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
@@ -11,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static nars.Op.BELIEF;
 import static nars.Op.SETe;
 
 /**
@@ -22,7 +25,7 @@ import static nars.Op.SETe;
  * <p>
  * expects values which have been normalized to 0..1.0 range (ex: use NormalizedFloat)
  */
-public class DigitizedScalar extends DemultiplexedScalar {
+public class DigitizedScalar extends VectorSensor {
 
 
     /**
@@ -152,13 +155,17 @@ public class DigitizedScalar extends DemultiplexedScalar {
         super(input, $.func(DigitizedScalar.class.getSimpleName(),
                 SETe.the(states)
                 /*,$.quote(Util.toString(input))*/, $.the(freqer.getClass().getSimpleName())
-        ), nar);
+        ),
+          /** special truther that emphasizes the on concepts more than the off, since more will be off than on usually */
+        (prev, next) -> next==next ? $.t(Util.unitize(next), nar.confDefault(BELIEF) * ((1-1f/states.length) * next) + (1f/states.length)) : null,
+
+        nar);
 
 
 
 
         assert (states.length > 1);
-        this.sensors = $.newArrayList(states.length);
+        this.sensors = new FasterList(states.length);
         int i = 0;
         for (Term s : states) {
             final int ii = i++;

@@ -13,7 +13,7 @@ import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
-import nars.video.CameraSensorView;
+import nars.video.Bitmap2DConceptsView;
 import nars.video.Scale;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.SpaceGraph;
@@ -126,7 +126,7 @@ public class Recog2D extends NAgentX {
 //                ),
 
 
-                new AspectAlign(new CameraSensorView(sp, this), AspectAlign.Align.Center, sp.width, sp.height),
+                new AspectAlign(new Bitmap2DConceptsView(sp, this), AspectAlign.Align.Center, sp.width, sp.height),
 
                 new Gridding(beliefTableCharts(nar, List.of(tv.concepts), 16)),
 

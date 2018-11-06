@@ -20,10 +20,19 @@ public class ActionTiming implements BiFunction<Task, Term, long[]> {
 
     @Override
     public long[] apply(Task task, Term term) {
-        long start = nar.time();// + Math.round( ( nar.random().nextDouble() * horizonDurs.floatValue() ) * nar.dur() );
-        long end = start +
-                //Math.round(widthDurs.doubleValue()*nar.dur());
-                Math.round( ( nar.random().nextFloat() * horizonDurs.floatValue() ) * nar.dur() );
+
+
+        long start, end;
+        long now = nar.time();
+        if (task.endsBefore(now)) {
+            start = now;// + Math.round( ( nar.random().nextDouble() * horizonDurs.floatValue() ) * nar.dur() );
+            end = now +
+                    //Math.round(widthDurs.doubleValue()*nar.dur());
+                    Math.round((nar.random().nextFloat() * horizonDurs.floatValue()) * nar.dur());
+        } else {
+            start = task.start();
+            end = task.end();
+        }
         return new long[] { start, end };
     }
 }

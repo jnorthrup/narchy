@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.term.atom.Bool.Null;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ImageTest {
 
@@ -25,7 +25,11 @@ class ImageTest {
                 Image.imageNormalize($$("(acid --> (reaction,/))")).toString()
         );
 
+
+
     }
+
+
 
     @Test
     void testNormlizeInt() {
@@ -127,5 +131,30 @@ class ImageTest {
         assertEquals(Null, ii);
     }
 
+    @Test void testNormalizeVsImageNormalize() {
+        Term x = $$("(acid-->(reaction,/))");
+        assertTrue(x.isNormalized());
+        assertEquals(
+                "(acid-->(reaction,/))",
+                x.normalize().toString()
+        );
+        assertNotEquals(x.normalize(), Image.imageNormalize(x));
+    }
+
+    @Test void testNormalizeVsImageNormalize2() throws Narsese.NarseseException {
+        Term x = Narsese.term("((--,(4-->(ang,fz,/))) ==>-7600 ((race-->fz)~((8,5)-->(cam,fz))))", false);
+        assertFalse(x.isNormalized());
+
+        String y = "((--,ang(fz,4)) ==>-7600 ((race-->fz)~((8,5)-->(cam,fz))))";
+        assertTrue(Narsese.term(y, false).isNormalized());
+
+        Term xx = x.normalize();
+
+        assertEquals(y,
+                xx.toString()
+        );
+
+        assertEquals($$(y), xx);
+    }
 
 }

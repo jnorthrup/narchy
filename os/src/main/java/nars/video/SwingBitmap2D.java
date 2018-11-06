@@ -14,30 +14,23 @@ public class SwingBitmap2D extends BufferedImageBitmap2D {
 
     private final Component component;
 
-    public Rectangle selection;
+    /** dimensoins of the cropped sub-region of input image */
+    public Rectangle in;
 
 
     public SwingBitmap2D(Component component) {
+        super();
         this.component = component;
         input(0, 0, component.getWidth(), component.getHeight());
+        source = ()->{
+            return AWTCamera.get(component, sourceImage, in);
+        };
         update();
     }
 
 
-
-    @Override public void update() {
-
-            
-
-                out = AWTCamera.get(component, out, selection);
-            
-
-    }
-
-
-
     public void input(int x, int y, int w, int h) {
-        this.selection = new Rectangle(x, y, w, h);
+        this.in = new Rectangle(x, y, w, h);
     }
 
 
@@ -60,23 +53,23 @@ public class SwingBitmap2D extends BufferedImageBitmap2D {
     }
 
     public boolean inputTranslate(int dx, int dy) {
-        int nx = (int) (selection.getX() + dx);
-        double sw = selection.getWidth();
+        int nx = (int) (in.getX() + dx);
+        double sw = in.getWidth();
         if ((nx < 0) || (nx >= component.getWidth() - sw))
             return false;
-        int ny = (int) (selection.getY() + dy);
-        double sh = selection.getHeight();
+        int ny = (int) (in.getY() + dy);
+        double sh = in.getHeight();
         if ((ny < 0) || (ny >= component.getHeight() - sh))
             return false;
-        this.selection = new Rectangle(nx, ny, (int) sw, (int) sh);
+        this.in = new Rectangle(nx, ny, (int) sw, (int) sh);
         return true;
     }
 
 
     public boolean inputZoom(double scale, int minPixelsX, int minPixelsY) {
-        int rw = (int) selection.getWidth();
+        int rw = (int) in.getWidth();
         double sw = max(minPixelsX, min(component.getWidth()-1, rw * scale));
-        int rh = (int) selection.getHeight();
+        int rh = (int) in.getHeight();
         double sh = max(minPixelsY, min(component.getHeight()-1, rh * scale));
 
         int isw = (int)sw;
@@ -86,8 +79,8 @@ public class SwingBitmap2D extends BufferedImageBitmap2D {
 
         double dx = (sw - rw)/2.0;
         double dy = (sh - rh)/2.0;
-        this.selection = new Rectangle(
-                (int)(selection.getX()+dx), (int)(selection.getY()+dy),
+        this.in = new Rectangle(
+                (int)(in.getX()+dx), (int)(in.getY()+dy),
                 (int) sw, (int) sh);
         return true;
     }

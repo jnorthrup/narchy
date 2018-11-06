@@ -25,7 +25,7 @@ import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static nars.truth.TruthFunctions.w2cSafe;
 
-public class TaskConcept extends NodeConcept implements Concept {
+public class TaskConcept extends NodeConcept  {
 
     private final BeliefTable beliefs, goals;
     private final QuestionTable quests, questions;

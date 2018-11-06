@@ -3,6 +3,7 @@ package nars.task;
 import jcog.Util;
 import jcog.pri.Prioritizable;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.term.Term;
@@ -20,7 +21,7 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
     public final byte punc;
     public final long when;
 
-    public Tasklike(Term term, byte punc, long when) {
+    private Tasklike(Term term, byte punc, long when) {
         this.punc = punc;
 
 //            if (when == XTERNAL || when != ETERNAL &&
@@ -30,10 +31,38 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
         this.when = when;
 
         this.term = term;
-        assert (term.op().conceptualizable && term.op() != NEG);
+    }
+
+    /**
+     * use this to create a tasklink seed shared by several different tasklinks
+     * each with its own distinct priority
+     */
+    public static Tasklike seed(Term t, byte punc, long when) {
+        //            //normalize images
+//            //TEMPORARY
+//            Term v = t.normalize();
+//            if (!t.equals(v))
+//                throw new WTF("what kind of task is " + t);
+
+        assert (t.op().conceptualizable && t.op() != NEG);
+
+        return new Tasklike(t, punc, when);
+    }
+
+    public static Tasklike seed(Task t, boolean polarizeBeliefsAndGoals, NAR n) {
+
+        long when = t.isEternal() ? ETERNAL : Tense.dither(t.mid(), n);
+
+        Term u = Param.TASKLINK_CONCEPT_TERM ? t.term().concept() : t.term();
 
 
 
+        return seed(
+                u
+                        .negIf(
+                                polarizeBeliefsAndGoals && t.isBeliefOrGoal() && t.isNegative()
+                        ),
+                t.punc(), when);
     }
 
     @Override

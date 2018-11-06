@@ -51,9 +51,6 @@ abstract public class Deriver extends Causable {
     public BiFunction<Task,Term,long[]> timing;
 
 
-    public final DerivedTasks derived =
-            new DerivedTasks.DerivedTasksMap(4096);
-            //new DerivedTasks.DerivedTasksBag(1024, 0.5f,false);
 
     public final Activator linked = new Activator(true);
 
@@ -68,6 +65,8 @@ abstract public class Deriver extends Causable {
      * source of concepts supplied to this for this deriver
      */
     protected final Consumer<Predicate<Activate>> source;
+
+
 
 //    private Deriver(NAR nar, String... rules) {
 //        this(new PremiseDeriverRuleSet(nar, rules));
@@ -118,9 +117,11 @@ abstract public class Deriver extends Causable {
     }
 
     private void update() {
+
         budgeting.update(this, nar);
 
         linked.commit(nar);
+
     }
 
     @Override
@@ -128,7 +129,8 @@ abstract public class Deriver extends Causable {
 
         derive(Deriver.derivation.get().next(n, this), kontinue);
 
-        derived.commit(nar);
+
+        nar.derived.commit(nar);
     }
 
 

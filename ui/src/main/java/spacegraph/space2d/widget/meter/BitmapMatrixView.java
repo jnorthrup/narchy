@@ -39,7 +39,8 @@ public class BitmapMatrixView extends Surface {
     private BufferedImage buf;
     private int[] pix;
 
-    public BitmapMatrixView(int w, int h) {
+    /** the implementation must implement BitmapPainter */
+    protected BitmapMatrixView(int w, int h) {
         this(w, h, null);
     }
 

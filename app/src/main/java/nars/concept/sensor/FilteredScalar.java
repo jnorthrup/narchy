@@ -17,7 +17,7 @@ import static nars.Op.CONJ;
 /**
  * calculates a set of derived scalars from an input scalar
  */
-public class FilteredScalar extends DemultiplexedScalar {
+public class FilteredScalar extends VectorSensor {
 
     public final List<Signal> components;
 
@@ -25,7 +25,7 @@ public class FilteredScalar extends DemultiplexedScalar {
         super(input,
 
                 CONJ.the
-                        (Util.map(Pair::getOne, Term[]::new, filters)), nar, truther);
+                        (Util.map(Pair::getOne, Term[]::new, filters)), truther, nar);
 
         Filter[] filter = new Filter[filters.length];
 

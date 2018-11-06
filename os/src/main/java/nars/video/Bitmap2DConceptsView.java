@@ -31,7 +31,7 @@ import java.util.function.Consumer;
  * displays a CameraSensor pixel data as perceived through its concepts (belief/goal state)
  * monochrome
  */
-public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixView.ViewFunction2D {
+public class Bitmap2DConceptsView extends BitmapMatrixView implements BitmapMatrixView.ViewFunction2D {
 
     private static final int OPEN_CONCEPT_BUTTON = 1; 
 
@@ -47,11 +47,11 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
     private Consumer<TaskConcept> touchMode = (x) -> { };
 
-    public CameraSensorView(Bitmap2DSensor cam, NAgent a) {
+    public Bitmap2DConceptsView(Bitmap2DSensor cam, NAgent a) {
         this(cam, a.nar());
     }
 
-    public CameraSensorView(Bitmap2DSensor cam, NAR n) {
+    public Bitmap2DConceptsView(Bitmap2DSensor cam, NAR n) {
         super(cam.width, cam.height);
         this.cam = cam;
         this.nar = n;
@@ -178,7 +178,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
     public static class CameraSensorViewControls extends Gridding {
 
-        private final CameraSensorView view;
+        private final Bitmap2DConceptsView view;
         private DurService on;
 
         /** the procedure to run in the next duration. limits activity to one
@@ -213,7 +213,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
             }
         }
 
-        public CameraSensorViewControls(CameraSensorView view) {
+        public CameraSensorViewControls(Bitmap2DConceptsView view) {
             super();
 
             this.view = view;
@@ -234,7 +234,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
         }
 
         @NotNull
-        public CheckBox goalCheckBox(CameraSensorView view, String s, float v) {
+        public CheckBox goalCheckBox(Bitmap2DConceptsView view, String s, float v) {
             return new CheckBox(s, () -> {
                 view.onConceptTouch((c) -> {
                     next.set(() ->

@@ -24,7 +24,7 @@ import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.time.clock.CycleTime;
-import nars.video.CameraSensorView;
+import nars.video.Bitmap2DConceptsView;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
@@ -52,7 +52,7 @@ public class TrackXY_NAR extends NAgentX {
             gui = true;
     static int W = 3;
     static int H = 3;
-    static int dur = 4;
+    static int dur = 1;
 
     final Bitmap2DSensor cam;
     private final TrackXY track;
@@ -245,7 +245,7 @@ public class TrackXY_NAR extends NAgentX {
 
 //            NARui.agentWindow(t);
                 if (a.cam != null) {
-                    window(new CameraSensorView(a.cam, n) {
+                    window(new Bitmap2DConceptsView(a.cam, n) {
                         @Override
                         protected void paint(GL2 gl, SurfaceRender surfaceRender) {
                             super.paint(gl, surfaceRender);

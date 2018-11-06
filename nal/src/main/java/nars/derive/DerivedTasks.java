@@ -169,7 +169,6 @@ public interface DerivedTasks extends PriMerge<Task, Task> {
 
             if (s > 0) {
 
-                tasks.commit(null /* no forget */);
 
                 if (inlineOrDeferredInput) {
                     ITask.run(derivedTasksDrainer, nar); //inline

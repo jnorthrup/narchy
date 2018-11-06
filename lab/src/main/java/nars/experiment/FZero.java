@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.learn.pid.MiniPID;
 import jcog.math.FloatAveraged;
 import jcog.math.FloatSupplier;
+import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -11,16 +12,17 @@ import nars.agent.Reward;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.SwitchAction;
-import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Signal;
+import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
 import nars.time.Tense;
-import nars.video.AutoclassifiedBitmap;
+import nars.video.Bitmap2DConceptsView;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
-import spacegraph.SpaceGraph;
+import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.widget.meter.Bitmap2DView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,6 +32,8 @@ import java.awt.image.BufferedImage;
 import static nars.$.$$;
 import static nars.Op.INH;
 import static nars.agent.FrameTrigger.fps;
+import static spacegraph.SpaceGraph.window;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * Created by me on 3/21/17.
@@ -38,7 +42,7 @@ public class FZero extends NAgentX {
 
     public static final double DRAG = 0.98;
     private final FZeroGame fz;
-    public Bitmap2DSensor<Scale> c;
+    public Bitmap2DSensor c;
 
     float fwdSpeed = 7;
     float rotSpeed = 0.15f;
@@ -69,23 +73,37 @@ public class FZero extends NAgentX {
 //        Param.DEBUG_ENSURE_DITHERED_TRUTH = true;
 //        Param.DEBUG_EXTRA = true;
 
-        Scale vision = new Scale(() -> fz.image,
+        Scale visionBuffer = new Scale(() -> fz.image,
                 24, 20
-                //8, 8
-        );
-        onFrame(vision::update);
-        vision.update();
-        //c = senseCamera($.func("cam", id), vision/*.blur()*/);//.diff()
-        //.resolution(0.05f);
+        ).crop(0, 0.15f, 1f, 1f);
+        Bitmap2D vision = visionBuffer.brightnessCurve(a -> {
+            return Util.tanhFast(a * 1.5f);
+        });
+
+        //onFrame(visionBuffer::update);
+
+        c = senseCamera($.p($.the("cam"), id), vision/*.blur()*/)
+            //.diff()
+            .resolution(0.1f)
         ;
 
-        int nx = 4;
-        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p($.the("cae"), id), vision, nx, nx, (subX, subY) -> {
-            return new float[]{/*cc.X, cc.Y*/};
-        }, 8, this);
-        camAE.alpha(0.04f);
-        camAE.noise.set(0.05f);
-        SpaceGraph.window(camAE.newChart(), 500, 500);
+        Bitmap2DView visionView = new Bitmap2DView(vision);
+        onFrame(visionView::update);
+        window(grid(visionView, new Bitmap2DConceptsView(c, this).withControls()), 500, 500);
+
+
+        ;
+
+//        {
+//            int nx = 4;
+//            AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p($.the("cae"), id), vision, nx, nx, (subX, subY) -> {
+//                return new float[]{/*cc.X, cc.Y*/};
+//            }, 8, this);
+//            camAE.alpha(0.04f);
+//            camAE.noise.set(0.05f);
+//
+//            SpaceGraph.window(column(visionView, camAE.newChart()), 500, 500);
+//        }
 
         ActionConcept F = initUnipolarLinear(5f);
 
@@ -113,21 +131,25 @@ public class FZero extends NAgentX {
         float r = 0.05f;
         Signal dVelX = senseNumberDifference($.funcImageLast("vel", id, $$("x")), () -> (float) fz.vehicleMetrics[0][7]).resolution(r);
         Signal dVelY = senseNumberDifference($.funcImageLast("vel", id, $$("y")), () -> (float) fz.vehicleMetrics[0][8]).resolution(r);
-        Signal dAccel = senseNumberDifference($.funcImageLast("accel", id), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
+
+        Signal dAccel = senseNumberDifference($.inh($.the("delta"), $.the("vel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
 
         FloatSupplier playerAngle = Util.compose(() -> (float) fz.playerAngle,
                 new FloatAveraged(0.5f, true));
-        Signal dAngVel = senseNumberDifference($.funcImageLast("ang", id, $$("dTheta")), playerAngle).resolution(r);
+        Signal dAngVel = senseNumberDifference($.inh($.the("delta"), $.the("ang")), playerAngle).resolution(r);
 
-        int angles = 15;
-        AbstractSensor ang = senseNumber(angle ->
+        int angles = 7;
+        DigitizedScalar ang = senseNumber(angle ->
                         //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
-                        $.funcImageLast("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
+                        $.funcImageLast("ang", /*id,*/ $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 angles,
-                DigitizedScalar.Needle
-                //DigitizedScalar.FuzzyNeedle
+                //DigitizedScalar.Needle
+                DigitizedScalar.FuzzyNeedle
         ).resolution(0.25f);
+        window(new Gridding(
+                //new CameraSensorView(c, this).withControls(),
+                NARui.beliefIcons(ang.sensors, nar)), 400, 400);
 
 //        nar.goal($.sim($.func("ang", id, $.varDep(1)),$.func("ang", id, $.varDep(2)).neg()), Tense.ETERNAL);
 //        nar.onTask(t -> {

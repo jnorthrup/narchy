@@ -1,5 +1,6 @@
 package nars.concept.util;
 
+import jcog.WTF;
 import jcog.pri.bag.Bag;
 import nars.Op;
 import nars.Task;
@@ -81,7 +82,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
                 //4. default task concept
                 B = this.newTable(t, true);
-                G = this.newTable(t, false);
+                G = goalable(t) ? this.newTable(t, false) : BeliefTable.Empty;
 
             }
         }
@@ -294,7 +295,8 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
         Concept c = Task.taskConceptTerm(x) ? taskConcept(x) : nodeConcept(x);
         if (c == null)
-            throw new NullPointerException("null Concept for term: " + x);
+            throw new WTF( x + " unconceptualizable");
+
 
         start(c);
 

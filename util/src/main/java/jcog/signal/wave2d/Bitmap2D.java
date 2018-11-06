@@ -1,13 +1,35 @@
 package jcog.signal.wave2d;
 
 
-public interface Bitmap2D {
+import jcog.signal.Tensor;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
+
+public interface Bitmap2D extends Tensor {
 
     static int encodeRGB8b(float r, float g, float b) {
         return (Math.round(r * 255) << 16) |
                 (Math.round(g * 255) << 8) |
                 (Math.round(b * 255));
     }
+
+    @Override
+    default int[] shape() {
+        return new int[] { width(), height() };
+    }
+
+    @Override
+    default float getAt(int i) {
+        int w = width();
+        int y = i / w;
+        int x = i % w;
+        return brightness(x, y);
+    }
+
+    @Override
+    default float get(int... cell) {
+        return brightness(cell[0], cell[1]);
+    }
+
 
     /**
      * explicit refresh update the image
@@ -32,6 +54,54 @@ public interface Bitmap2D {
     default float brightness(int xx, int yy, float rFactor, float gFactor, float bFactor) {
         return brightness(xx, yy);
     }
+
+    /**
+     * returns a new proxy bitmap that applies per-pixel brightness function
+     * TODO variation of this that takes a per-frame brightness histogram as parameter */
+    default ProxyBitmap2D brightnessCurve(FloatToFloatFunction b) {
+        return new ProxyBitmap2D(this) {
+            @Override
+            public int width() {
+                return Bitmap2D.this.width();
+            }
+
+            @Override
+            public int height() {
+                return Bitmap2D.this.height();
+            }
+
+            @Override
+            public float brightness(int x, int y) {
+                return b.valueOf(Bitmap2D.this.get(x, y));
+            }
+        };
+    }
+
+
+    /** TODO make separate class with controls */
+    @Deprecated default ProxyBitmap2D blurred() {
+        return new ProxyBitmap2D(this){
+            @Override
+            public int width() {
+                return Bitmap2D.this.width();
+            }
+            @Override
+            public int height() {
+                return Bitmap2D.this.height();
+            }
+
+            @Override
+            public float brightness(int x, int y) {
+                float c = Bitmap2D.this.brightness(x, y);
+                float up = y > 0 ? Bitmap2D.this.brightness(x, y-1) : c;
+                float left = x > 0 ? Bitmap2D.this.brightness(x-1, y) : c;
+                float down = y < height()-1 ? Bitmap2D.this.brightness(x, y+1) : c;
+                float right = x < width()-1 ? Bitmap2D.this.brightness(x+1, y) : c;
+                return (c*8 + up + left + down + right)/12;
+            }
+        };
+    }
+
 
 //    static float rgbToMono(int r, int g, int b) {
 //        return (r + g + b) / 256f / 3f;

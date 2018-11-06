@@ -16,9 +16,13 @@ import nars.Task;
 import nars.TextUI;
 import nars.agent.NAgent;
 import nars.concept.Concept;
+import nars.gui.concept.ConceptColorIcon;
+import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;
 import nars.term.Termed;
+import nars.truth.Truth;
 import nars.util.MemorySnapshot;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.ScrollXY;
@@ -44,6 +48,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.StreamSupport;
 
@@ -51,6 +56,7 @@ import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static nars.truth.TruthFunctions.w2cSafe;
 import static spacegraph.SpaceGraph.window;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * SpaceGraph-based visualization utilities for NARchy
@@ -325,6 +331,26 @@ public class NARui {
 
         //.on(Loop.class, LoopPanel::new),
 
+    }
+
+    public static Gridding beliefIcons(List<? extends Termed> c, NAR nar) {
+
+        BiConsumer<Concept, spacegraph.space2d.phys.common.Color3f> colorize = (concept, color) -> {
+            if (concept != null) {
+
+                @Nullable Truth b = nar.beliefTruth(concept, nar.time());
+                if (b != null) {
+                    float f = b.freq();
+                    float conf = b.conf();
+                    float a = 0.25f + conf*0.75f;
+                    color.set((1-f)*a, f*a, 0);
+                    return;
+                }
+            }
+            color.set(0.5f, 0.5f, 0.5f);
+        };
+        List<ConceptColorIcon> d = c.stream().map(x -> new ConceptColorIcon(x.term(), nar, colorize)).collect(toList());
+        return grid(d);
     }
 
 //    @Deprecated public static void agentOld(NAgent a) {

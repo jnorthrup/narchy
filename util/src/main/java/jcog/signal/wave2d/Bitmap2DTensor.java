@@ -50,7 +50,7 @@ public abstract class Bitmap2DTensor implements Tensor, Bitmap2D {
     }
 
     @Override
-    public float getAt(int linearCell) {
+    public float getAt(int i) {
 //            int w = shape[0];
 //            int planes = shape[2];
 //

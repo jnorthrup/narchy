@@ -474,7 +474,8 @@ public class NAgent extends NARService implements NSense, NAct {
                     //nar.confMin.floatValue();
                     //nar.confMin.floatValue() * 2;
                     //nar.confMin.floatValue() * 4;
-                    nar.confDefault(GOAL)/4;
+                    nar.confDefault(GOAL)/8;
+                    //nar.confDefault(GOAL)/4;
                     //nar.confDefault(GOAL)/3;
                     //nar.confDefault(GOAL)/2;
                     //nar.confDefault(GOAL)/3;
@@ -563,6 +564,10 @@ public class NAgent extends NARService implements NSense, NAct {
     public Off onFrame(Runnable each) {
         //return DurService.on(nar, ()->{ if (enabled.get()) each.run(); });
         return eventFrame.on((x) -> each.run());
+    }
+
+    public Off onFrameWeak(Runnable each) {
+        return eventFrame.onWeak((x) -> each.run());
     }
 
 

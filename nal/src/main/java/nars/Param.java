@@ -7,6 +7,7 @@ import jcog.math.IntRange;
 import jcog.math.Range;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
+import nars.derive.DerivedTasks;
 import nars.term.atom.Atom;
 import nars.truth.polation.LinearTruthPolation;
 import nars.truth.polation.TruthPolation;
@@ -38,8 +39,8 @@ public abstract class Param {
     public static final float TRUTHPOLATION_INTERMPOLATION_THRESH = 0.5f;
 
     @Deprecated public static int LinkFanoutMax =
-            //16;
-            10;
+            16;
+            //10;
             //8;
             //6;
             //2;
@@ -92,7 +93,7 @@ public abstract class Param {
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
     /** can be > 1 */
-    public static float ANSWER_COMPLETENESS = 1f;
+    public static float ANSWER_COMPLETENESS = 2f;
 
 
 //    public static final int EVALUATION_MAX_TERMUTATORS = 8;
@@ -130,8 +131,8 @@ public abstract class Param {
 
 
     public static final PriMerge tasklinkMerge =
-            PriMerge.plus;
-            //PriMerge.max;
+            //PriMerge.plus;
+            PriMerge.max;
             //PriMerge.or;
             //PriMerge.avgGeoFast;
 
@@ -183,6 +184,11 @@ public abstract class Param {
     public final FloatRange intermpolationRangeLimit = new FloatRange(0.5f, 0, 1);
 
 
+    public final DerivedTasks derived =
+            //new DerivedTasks.DerivedTasksMap(4096);
+            new DerivedTasks.DerivedTasksBag(1024, 0.1f,true);
+    ;
+
 
     /**
      * creates instance of the default truthpolation implementation
@@ -223,7 +229,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, 0, 128 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, 0, 128 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(4, 1, 32);
 
@@ -231,7 +237,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 4f;
+    public static final float TEST_TIME_MULTIPLIER = 3f;
 
 
     @Range(min = 1, max = 32)
@@ -435,13 +441,14 @@ public abstract class Param {
         assert(dur > 0);
 
         int falloffDurs =
-                //1;
-                2;
+                1;
+                //2;
                 //4;
                 //dur;
                 //8;
         return evi / (1.0f + (((float)dt) / (falloffDurs * dur)));
         //return evi / (1.0f +    Util.sqr(((float)dt) / (falloffDurs * dur)));
+        //return evi / (1.0f +    Util.sqr(((float)dt) / dur)/falloffDurs);
 
         //return evi * Math.max(0, (1.0f - ((float)dt) / (falloffDurs * dur))); //constant time linear decay
 

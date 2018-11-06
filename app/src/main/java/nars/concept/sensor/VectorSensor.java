@@ -20,8 +20,10 @@ import java.util.stream.StreamSupport;
 
 import static nars.Op.BELIEF;
 
-/** base class for a multi-concept representation of a real scalar value input */
-abstract public class DemultiplexedScalar extends AbstractSensor implements Iterable<Signal>, FloatSupplier {
+/** base class for a multi-concept representation of a real scalar value input
+ *  TODO make this a special case of BitmapConcepts or some abstraction of it so they share common Tensor-related code
+ * */
+abstract public class VectorSensor extends AbstractSensor implements Iterable<Signal>, FloatSupplier {
 
     public final NumberX value = new AtomicFloat();
 
@@ -33,8 +35,6 @@ abstract public class DemultiplexedScalar extends AbstractSensor implements Iter
 
     public final Term term;
 
-//    private long last;
-
     @Override
     public float asFloat() {
         return value.floatValue();
@@ -45,11 +45,11 @@ abstract public class DemultiplexedScalar extends AbstractSensor implements Iter
         return Iterables.transform(this, NodeConcept::term);
     }
 
-    protected DemultiplexedScalar(@Nullable FloatSupplier input, @Nullable Term id, NAR nar) {
-        this(input, id, nar, (prev,next) -> next==next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null);
+    protected VectorSensor(@Nullable FloatSupplier input, @Nullable Term id, NAR nar) {
+        this(input, id, (prev, next) -> next==next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null, nar);
     }
 
-    protected DemultiplexedScalar(@Nullable FloatSupplier input, @Nullable Term id, NAR nar, FloatFloatToObjectFunction<Truth> truther) {
+    protected VectorSensor(@Nullable FloatSupplier input, @Nullable Term id, FloatFloatToObjectFunction<Truth> truther, NAR nar) {
         super(id, nar);
 
         this.term = id;

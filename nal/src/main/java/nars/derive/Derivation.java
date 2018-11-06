@@ -612,7 +612,7 @@ public class Derivation extends PreDerivation {
     }
 
     public final Task add(Task t) {
-        return deriver.derived.add(t, this);
+        return nar.derived.add(t, this);
     }
 
 
