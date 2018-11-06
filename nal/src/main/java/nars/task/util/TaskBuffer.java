@@ -15,7 +15,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-abstract public class TaskBuffer implements PriMerge<Task, Task> {
+abstract public class TaskBuffer  {
+
+
 
     public abstract Task add(Task x);
 
@@ -35,7 +37,6 @@ abstract public class TaskBuffer implements PriMerge<Task, Task> {
     //final AtomicLong in = new AtomicLong(), out = new AtomicLong(), drop = new AtomicLong(), merge = new AtomicLong();
 
 
-    @Override
     public final float merge(Task pp, Task tt) {
         if (pp == tt)
             return 0;
@@ -126,7 +127,12 @@ abstract public class TaskBuffer implements PriMerge<Task, Task> {
          * temporary buffer before input so they can be merged in case of duplicates
          */
         public final PriArrayBag<Task> tasks =
-                new PriArrayBag<Task>(this, new HashMap());
+                new PriArrayBag<Task>(PriMerge.max, new HashMap()) {
+                    @Override
+                    protected float merge(Task existing, Task incoming) {
+                        return BagTasksBuffer.this.merge(existing, incoming);
+                    }
+                };
                 //new HijackBag...
 
         @Override
@@ -173,14 +179,19 @@ abstract public class TaskBuffer implements PriMerge<Task, Task> {
         );
 
 
+        public BagTasksBuffer(int capacity, float rate) {
+            this(capacity, rate, true);
+        }
+
+
         /**
          * @capacity size of buffer for tasks that have been input (and are being de-duplicated) but not yet input.
          * input may happen concurrently (draining the bag) while inputs are inserted from another thread.
          */
-        public BagTasksBuffer(int capacity, float drainLimitInitial, boolean inlineOrDeferredInput) {
+        public BagTasksBuffer(int capacity, float rate, boolean inlineOrDeferredInput) {
             this.capacity.set(capacity);
             this.inlineOrDeferredInput = inlineOrDeferredInput;
-            this.drainRate.set(drainLimitInitial);
+            this.drainRate.set(rate);
             this.tasks.setCapacity(capacity);
         }
 

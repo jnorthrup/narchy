@@ -47,32 +47,26 @@ public class Versioned<X> extends FasterList<X> {
      */
     @Nullable
     public Versioned<X> set(X nextValue) {
-        if (context.add(this)) {
-            add(nextValue);
-            return this;
-        } else {
-            return null;
+        if (addWithoutResize(nextValue)) {
+            if (context.add(this))
+                return this;
+            else
+                pop();
         }
-    }
-    @Nullable
-    public Versioned<X> setOnly(X nextValue) {
-        return (size == 0) ? set(nextValue) : null;
+        return null;
     }
 
     @Nullable
     public Versioned<X> set(Supplier<X> nextValue) {
-        if (context.add(this)) {
-            add(nextValue.get());
-            return this;
-        } else {
-            return null;
+        if (addWithoutResize(nextValue)) {
+            if (context.add(this))
+                return this;
+            else
+                pop();
         }
+        return null;
     }
 
-    @Nullable
-    public Versioned<X> setOnly(Supplier<X> nextValue) {
-        return size == 0 ? set(nextValue) : null;
-    }
 
 
     @Override

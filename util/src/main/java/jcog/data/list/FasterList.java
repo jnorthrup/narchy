@@ -599,6 +599,22 @@ public class FasterList<X> extends FastList<X> {
     public void addWithoutResizeCheck(X x) {
         this.items[this.size++] = x;
     }
+    public boolean addWithoutResize(X x) {
+        X[] i = this.items;
+        if (this.size < i.length) {
+            i[this.size++] = x;
+            return true;
+        }
+        return false;
+    }
+    public boolean addWithoutResize(Supplier<X> x) {
+        X[] i = this.items;
+        if (this.size < i.length) {
+            i[this.size++] = x.get();
+            return true;
+        }
+        return false;
+    }
 
     public X[] toArrayRecycled(IntFunction<X[]> ii) {
         X[] a = items;

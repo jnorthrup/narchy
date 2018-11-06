@@ -17,35 +17,23 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
 
     private final Versioning context;
     public final Map<X, Versioned<Y>> map;
-    private final int elementStackSizeDefault;
+    private final int itemVersions;
 
 
-    public VersionMap(Versioning context) {
-        this(context, 0);
-    }
-
-    private VersionMap(Versioning context, int mapCap) {
-        this(context, mapCap, 1);
-    }
 
     /**
      * @param context
+     * @param itemVersions  max # of versions per item
      * @param mapCap  initial capacity of map (but can grow
-     * @param eleCap  initial capacity of map elements (but can grow
      */
-    private VersionMap(Versioning context, int mapCap, int eleCap) {
-        this(context,
-                
-                
-                new UnifiedMap(mapCap)
-                , eleCap
-        );
+    public VersionMap(Versioning<Y> context, int itemVersions) {
+        this(context, new UnifiedMap(), itemVersions);
     }
 
-    public VersionMap(Versioning<Y> context, Map<X, Versioned<Y>/*<Y>*/> map, int elementStackSizeDefault) {
+    public VersionMap(Versioning<Y> context, Map<X, Versioned<Y>/*<Y>*/> map, int itemVersions) {
         this.context = context;
         this.map = map;
-        this.elementStackSizeDefault = elementStackSizeDefault;
+        this.itemVersions = itemVersions;
     }
 
 
@@ -122,17 +110,18 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
      */
     @Override
     public final Y put(X key, Y value) {
-        throw new UnsupportedOperationException("use tryPut(k,v)");
+        throw new UnsupportedOperationException("use set(k,v)");
     }
 
-    public boolean tryPut(X key, Y value) {
-        return getOrCreateIfAbsent(key).setOnly(value) != null;
+    public boolean set(X key, Y value) {
+        return getOrCreateIfAbsent(key).set(value) != null;
     }
-    public boolean tryPut(X key1, X key2, Supplier<Y> value) {
-        @Nullable Versioned<Y> a = getOrCreateIfAbsent(key1).setOnly(value);
-        if (a == null)
-            return false;
-        return tryPut(key2, a.get());
+    public boolean set(X key, Supplier<Y> value) {
+        return getOrCreateIfAbsent(key).set(value) != null;
+    }
+    public boolean set(X key1, X key2, Supplier<Y> value) {
+        @Nullable Versioned<Y> a = getOrCreateIfAbsent(key1).set(value);
+        return a != null && set(key2, a.get());
     }
 
 //    public boolean tryPut(X key, Supplier<Y> value) {
@@ -144,7 +133,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
     }
 
     protected Versioned<Y> newEntry(X x) {
-        return new Versioned<>(context, elementStackSizeDefault);
+        return new Versioned<>(context, itemVersions);
         
         
     }
@@ -227,10 +216,10 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         
     }
 
-    public static final VersionMap Empty = new VersionMap(new Versioning<>(1), 0, 0) {
+    public static final VersionMap Empty = new VersionMap(new Versioning<>(1), 0) {
 
         @Override
-        public boolean tryPut(Object key, Object value) {
+        public boolean set(Object key, Object value) {
             return false;
         }
 

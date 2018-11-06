@@ -17,10 +17,12 @@
 
 package jcog.io.tar;
 
+import com.google.common.io.Resources;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.zip.GZIPInputStream;
 
@@ -31,6 +33,17 @@ class JTarTest {
 	private static final int BUFFER = 2048;
 
 	private File dir;
+	static final File tartest, tartestGZ;
+
+	static {
+		try {
+			tartest = new File(Resources.getResource("tartest.tar").toURI());
+			tartestGZ = new File(Resources.getResource("tartest.tar.gz").toURI());
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 
 	@BeforeEach
     void setup() throws IOException {
@@ -75,9 +88,7 @@ class JTarTest {
 		File destFolder = new File(dir, "untartest");
 		destFolder.mkdirs();
 
-		File zf = new File("src/test/resources/tartest.tar");
-
-		TarInputStream tis = new TarInputStream(new BufferedInputStream(new FileInputStream(zf)));
+		TarInputStream tis = new TarInputStream(new BufferedInputStream(new FileInputStream(tartest)));
 		untar(tis, destFolder.getAbsolutePath());
 
 		tis.close();
@@ -95,9 +106,7 @@ class JTarTest {
 		File destFolder = new File(dir, "untartest/skip");
 		destFolder.mkdirs();
 
-		File zf = new File("src/test/resources/tartest.tar");
-
-		TarInputStream tis = new TarInputStream(new BufferedInputStream(new FileInputStream(zf)));
+		TarInputStream tis = new TarInputStream(new BufferedInputStream(new FileInputStream(tartest)));
 		tis.setDefaultSkip(true);
 		untar(tis, destFolder.getAbsolutePath());
 
@@ -113,11 +122,10 @@ class JTarTest {
 	 * @throws IOException
 	 */
 	@Test
-    void untarTGzFile() throws IOException {
+    void untarTGzFile() throws IOException, URISyntaxException {
 		File destFolder = new File(dir, "untargztest");
-		File zf = new File("src/test/resources/tartest.tar.gz");
 
-		TarInputStream tis = new TarInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(zf))));
+		TarInputStream tis = new TarInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(tartestGZ))));
 
 		untar(tis, destFolder.getAbsolutePath());
 
@@ -132,9 +140,7 @@ class JTarTest {
 		File destFolder = new File(dir, "untartest");
 		destFolder.mkdirs();
 
-		File zf = new File("src/test/resources/tartest.tar");
-
-		TarInputStream tis = new TarInputStream(new BufferedInputStream(new FileInputStream(zf)));
+		TarInputStream tis = new TarInputStream(new BufferedInputStream(new FileInputStream(tartest)));
 		tis.getNextEntry();
 		assertEquals(TarConstants.HEADER_BLOCK, tis.getCurrentOffset());
 		tis.getNextEntry();
@@ -143,7 +149,7 @@ class JTarTest {
 		assertEquals(TarConstants.HEADER_BLOCK * 3 + TarConstants.DATA_BLOCK * 2, tis.getCurrentOffset());
 		tis.close();
 		
-		RandomAccessFile rif = new RandomAccessFile(zf, "r");
+		RandomAccessFile rif = new RandomAccessFile(tartest, "r");
 		rif.seek(TarConstants.HEADER_BLOCK * 3 + TarConstants.DATA_BLOCK * 2);
 		byte[] data = new byte[(int)entry.getSize()];
 		rif.read(data);

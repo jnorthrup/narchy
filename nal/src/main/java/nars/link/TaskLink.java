@@ -10,7 +10,6 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.task.Tasklike;
-import nars.task.signal.SignalTask;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,11 +32,14 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 
     /** main tasklink constructor */
     static TaskLink tasklink(Task task, float pri, NAR n) {
-        if (task instanceof SignalTask) {
-            return new DirectTaskLink(task, pri);
-        } else {
-            return new GeneralTaskLink(task, n, pri * n.taskLinkActivation.floatValue());
-        }
+
+        pri = pri * n.taskLinkActivation.floatValue();
+
+//        if (task instanceof SignalTask) {
+//            return new DirectTaskLink(task, pri);
+//        } else {
+            return new GeneralTaskLink(Tasklike.seed(task, n), pri);
+        //}
     }
 
 
@@ -132,13 +134,8 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
      */
     class GeneralTaskLink extends PLinkHashCached<Tasklike> implements TaskLink {
 
-
-        protected GeneralTaskLink(Task t, NAR n, float pri) {
-            this(t, false, n, pri);
-        }
-
-        public GeneralTaskLink(Task t, boolean polarizeBeliefsAndGoals, NAR n, float pri) {
-            this(Tasklike.seed(t, polarizeBeliefsAndGoals, n), pri);
+        public GeneralTaskLink(Tasklike seed, float pri) {
+            super(seed, pri);
         }
 
         public GeneralTaskLink(Term t, byte punc, long when, float pri) {
@@ -149,12 +146,6 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
         public TaskLink clone(float pri) {
             return new GeneralTaskLink(id, pri);
         }
-
-
-        public GeneralTaskLink(Tasklike seed, float pri) {
-            super(seed, pri);
-        }
-
 
         @Override
         public String toString() {

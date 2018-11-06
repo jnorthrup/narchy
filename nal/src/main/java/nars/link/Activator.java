@@ -2,6 +2,7 @@ package nars.link;
 
 import jcog.pri.OverflowDistributor;
 import nars.NAR;
+import nars.Param;
 import nars.concept.Concept;
 import nars.task.AbstractTask;
 import nars.task.ITask;
@@ -65,7 +66,7 @@ public class Activator extends AbstractTask {
         Activate a = concepts.computeIfAbsent(x.term(), t -> new Activate(x));
 
         if (overflow!=null)
-            overflow.overflow(x, a, pri);
+            overflow.merge(x, a, pri, Param.tasklinkMerge);
 
         return x;
     }

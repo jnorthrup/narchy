@@ -22,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.Supplier;
 
 
 /* recurses a pair of compound term tree's subterms
@@ -228,7 +227,7 @@ public abstract class Unify extends Versioning implements Subst {
      */
     public final boolean putXY(final Variable x, Term y) {
 
-        return xy.tryPut(x, y);
+        return xy.set(x, y);
 
     }
 
@@ -303,17 +302,6 @@ public abstract class Unify extends Versioning implements Subst {
         @Override
         public Versioned<Term> set(Term next) {
             return valid(next) ? super.set(next) : null;
-        }
-
-        @Nullable
-        @Override
-        public Versioned<Term> setOnly(Term next) {
-            return size == 0 ? set(next) : null;
-        }
-
-        @Nullable @Override
-        public Versioned<Term> setOnly(Supplier<Term> nextValue) {
-            return size == 0 ? set(nextValue.get()) : null;
         }
 
         private boolean valid(Term x) {

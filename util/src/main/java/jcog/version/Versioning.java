@@ -98,7 +98,7 @@ public class Versioning<X> {
             ii[this.size++] = newItem; 
             return true;
         }
-        return false;
+        return false; //capacity exceeded
     }
 
     /** returns remaining TTL */
@@ -140,5 +140,9 @@ public class Versioning<X> {
         return size;
     }
 
+
+    public final void pop() {
+        revert(size-1);
+    }
 
 }

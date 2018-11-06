@@ -2,6 +2,7 @@ package jcog.pri;
 
 import jcog.data.MutableFloat;
 import jcog.data.list.FasterList;
+import jcog.pri.op.PriMerge;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 
@@ -20,8 +21,12 @@ public class OverflowDistributor<X> extends MutableFloat {
 
     ;
 
-    public final void overflow(X x, UnitPrioritizable a, float priToAdd) {
+    public final void add(X x, UnitPrioritizable a, float priToAdd) {
         overflow(x, a.priAddOverflow(priToAdd), 1f - a.priElseZero());
+    }
+
+    public final void merge(X x, UnitPrioritizable existing, float incoming, PriMerge merge) {
+        overflow(x, merge.merge(existing, incoming), 1f - existing.priElseZero());
     }
 
     /** headroom = remaining demand that can be supplied */

@@ -93,7 +93,7 @@ public interface Variable extends Atomic {
                     Supplier<Term> common = () -> X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
 
                     //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
-                    return u.xy.tryPut(X, Y, common);
+                    return u.xy.set(X, Y, common);
                 }
 
                 yMatches = ((xMatches && xOp == yOp) || u.matchType(yOp));
@@ -117,31 +117,26 @@ public interface Variable extends Atomic {
                 yMatches = false;
             }
 
-            if (y.op()==NEG && u.matchType(y.unneg().op()) && y.unneg().op().id > xOp.id) {
-                //negate
-                y = y.unneg();
-                x = x.neg();
-                xMatches = false;
-                yMatches = true;
-            }
 
-            if (!xMatches && !yMatches) {
-                //check if negation is the only thing wrapping either's possible matching variable.  and apply negation to both
-                if (!yMatches) {
+            //negation mobius strip
+            //  check if negation is the only thing wrapping either's possible matching variable.  and apply negation to both
+            if (!yMatches) {
+                if ((!xMatches) || (xMatches && xOp != VAR_PATTERN)) {
                     if (y.op() == NEG) {
-                        if (u.matchType(y.unneg().op())) {
-                            y = y.unneg();
+                        Term yy = y.unneg();
+                        Op yyo = yy.op();
+                        if (u.matchType(yyo) && yyo.id > xOp.id) {
+                            y = yy;
                             x = x.neg();
                             xMatches = false;
                             yMatches = true;
+                        } else if (!xMatches) {
+                            return false;
                         }
                     }
                 }
-
-                if (!xMatches && !yMatches) {
-                    return false;
-                }
             }
+
 
             Variable a;
             Term b;
@@ -150,11 +145,13 @@ public interface Variable extends Atomic {
 //                    return false; //cycle
                 a = (nars.term.Variable) x;
                 b = y;
-            } else /*if (yMatches)*/ {
+            } else if (yMatches) {
 //                if (y.containsRecursively(x))
 //                    return false; //cycle
                 a = (Variable) y;
                 b = x;
+            } else {
+                return false;
             }
 
         //            Op ao = a.op();

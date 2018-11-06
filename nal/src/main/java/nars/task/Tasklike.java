@@ -6,6 +6,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
+import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.time.Tense;
 
@@ -49,19 +50,21 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
         return new Tasklike(t, punc, when);
     }
 
-    public static Tasklike seed(Task t, boolean polarizeBeliefsAndGoals, NAR n) {
+    public static Tasklike seed(Task t, NAR n) {
 
-        long when = t.isEternal() ? ETERNAL : Tense.dither(t.mid(), n);
+        long when = t.isEternal() ? ETERNAL : Tense.dither(
+                t instanceof SignalTask ? t.start() /* in case its end stretches */ : t.mid()
+                , n);
 
         Term u = Param.TASKLINK_CONCEPT_TERM ? t.term().concept() : t.term();
 
 
 
         return seed(
-                u
-                        .negIf(
-                                polarizeBeliefsAndGoals && t.isBeliefOrGoal() && t.isNegative()
-                        ),
+                u,
+//                        .negIf(
+//                                polarizeBeliefsAndGoals && t.isBeliefOrGoal() && t.isNegative()
+//                        ),
                 t.punc(), when);
     }
 

@@ -57,19 +57,19 @@ public interface Compound extends Term, IPair, Subterms {
     static boolean equals(/*@NotNull*/ Compound a, Object b) {
         if (a == b) return true;
 
-//        if (b instanceof Termed && !(b instanceof Term)) {
-//            throw new TODO(); //ex: term == concept?  technically no but if it happens it might be expected here
-//        }
+        if (((b instanceof Compound) && (a.hashCode() == b.hashCode()))) {
+            Compound B = (Compound) b;
+            Op ao = a.op();
+            if (ao == B.op()) {
+                return
+                        (!ao.temporal || (a.dt() == B.dt()))
+                            &&
+                        a.subterms().equals(B.subterms())
+                        ;
+            }
+        }
 
-        return (b instanceof Compound) &&
-                (a.hashCode() == b.hashCode())
-                &&
-                (a.op() == ((Compound) b).op())
-                &&
-                (a.dt() == ((Compound) b).dt())
-                &&
-                (a.subterms().equals(((Compound) b).subterms()))
-                ;
+        return false;
     }
 
     static String toString(Compound c) {

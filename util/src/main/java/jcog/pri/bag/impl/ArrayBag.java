@@ -38,7 +38,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             new AtomicFloatFieldUpdater(ArrayBag.class, "pressure");
 
 
-    private final PriMerge mergeFunction;
+    @Deprecated private final PriMerge mergeFunction;
 
     private volatile int mass, pressure;
 
@@ -607,7 +607,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         return result;
     }
 
-    private float merge(Y existing, Y incoming) {
+    protected float merge(Y existing, Y incoming) {
         return mergeFunction.merge(existing, incoming);
     }
 

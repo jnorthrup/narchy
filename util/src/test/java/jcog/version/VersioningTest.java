@@ -23,13 +23,13 @@ class VersioningTest {
     Versioned b = new Versioned(v, 8);
 
     @Test
-    void test1() {
-        Versioning w = new Versioning(10, 10);
-        VersionMap<Object,Object> m = new VersionMap(w);
-        m.tryPut("x", "a");
+    void testRevision() {
+        Versioning<Object> w = new Versioning(10, 10);
+        VersionMap<Object,Object> m = new VersionMap(w, 4);
+        m.set("x", "a");
         assertEquals("{x=a}", m.toString());
         assertEquals(1, w.size);
-        m.tryPut("x", "b");
+        m.set("x", "b");
 
         assertEquals("{x=b}", m.toString());
 
@@ -60,6 +60,20 @@ class VersioningTest {
 
         assertNull(m.get("x")); 
 
+
+    }
+
+    @Test void testLimitedChanges() {
+        Versioning<Object> w = new Versioning(10, 10);
+        VersionMap<Object,Object> m = new VersionMap(w, 1);
+        boolean a = m.set("x", "a");
+        assertTrue(a);
+        boolean b = m.set("x", "b");
+        assertFalse(b);
+        assertEquals("{x=a}", m.toString());
+        w.pop();
+        boolean b2 = m.set("x", "b");
+        assertTrue(b2);
 
     }
 

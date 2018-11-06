@@ -406,7 +406,7 @@ public class Evaluation {
     private void ensureReady() {
         if (v == null) {
             v = new Versioning<>(Param.UnificationStackMax, Param.EVALUATION_TTL);
-            subst = new VersionMap<>(v);
+            subst = new VersionMap<>(v, 1);
             termutator = new FasterList(1);
         }
     }
@@ -429,7 +429,7 @@ public class Evaluation {
      */
     public boolean is(Term x, Term y) {
         ensureReady();
-        return subst.tryPut(x, y);
+        return subst.set(x, y);
     }
 
     /**
@@ -438,17 +438,17 @@ public class Evaluation {
      */
     public boolean is(Term x, Term xx, Term y, Term yy) {
         ensureReady();
-        return subst.tryPut(x, xx) && subst.tryPut(y, yy);
+        return subst.set(x, xx) && subst.set(y, yy);
     }
 
     /**
      * 2-ary AND
      */
     public static Predicate<VersionMap<Term, Term>> assign(Term x, Term xx, Term y, Term yy) {
-        return m -> m.tryPut(x, xx) && m.tryPut(y, yy);
+        return m -> m.set(x, xx) && m.set(y, yy);
     }
     public static Predicate<VersionMap<Term, Term>> assign(Term x, Term y) {
-        return (subst) -> subst.tryPut(x, y);
+        return (subst) -> subst.set(x, y);
     }
 
 
