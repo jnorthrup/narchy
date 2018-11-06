@@ -1,8 +1,8 @@
 package nars.derive.op;
 
 import jcog.Util;
+import jcog.util.ArrayUtils;
 import nars.*;
-import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.derive.premise.PremiseRuleProto;
 import nars.task.DebugDerivedTask;
@@ -148,7 +148,7 @@ public class Taskify extends AbstractPred<Derivation> {
         }
 
         //these must be applied before possible merge on input to derivedTask bag
-        t.cause(Cause.merge(Param.causeCapacity.intValue(), d.parentCause, new short[]{channel.id}));
+        t.cause(ArrayUtils.add(d.parentCause, channel.id) );
 
         if ((d.concSingle) || (Param.OVERLAP_DOUBLE_SET_CYCLIC && d.overlapDouble))
             t.setCyclic(true);

@@ -1,6 +1,7 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
@@ -9,7 +10,7 @@ import jcog.pri.ScalarValue;
 import jcog.sort.SortedList;
 import nars.*;
 import nars.concept.Concept;
-import nars.control.Cause;
+import nars.control.CauseMerge;
 import nars.derive.op.Occurrify;
 import nars.derive.premise.PreDerivation;
 import nars.eval.Evaluation;
@@ -442,9 +443,14 @@ public class Derivation extends PreDerivation {
             }
         }
 
-        this.parentCause = _belief != null ?
-                Cause.merge(Param.causeCapacity.intValue(), _task, _belief) :
-                _task.cause();
+        int causeCap = Param.causeCapacity.intValue();
+        this.parentCause =
+            CauseMerge.limit(
+                _belief != null ?
+                    CauseMerge.Append.merge(causeCap -1 /* for channel to be appended */, _task, _belief) :
+                    _task.cause(), causeCap-1);
+        if (parentCause.length >= causeCap)
+            throw new WTF();
 
         float taskPri = _task.priElseZero();
         this.priSingle = taskPri;
@@ -612,7 +618,7 @@ public class Derivation extends PreDerivation {
     }
 
     public final Task add(Task t) {
-        return nar.derived.add(t, this);
+        return nar.input.add(t);
     }
 
 

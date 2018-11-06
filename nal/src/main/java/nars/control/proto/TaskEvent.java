@@ -6,11 +6,11 @@ import nars.task.AbstractTask;
 import nars.task.ITask;
 
 /** emits the supplied task or tasks on the eventTask topic */
-public final class Reaction extends AbstractTask {
+public final class TaskEvent extends AbstractTask {
 
     public final Task task;
 
-    public Reaction(Task t) {
+    public TaskEvent(Task t) {
         this.task = t;
     }
 

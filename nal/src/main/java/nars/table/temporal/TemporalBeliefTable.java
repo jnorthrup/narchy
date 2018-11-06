@@ -3,7 +3,7 @@ package nars.table.temporal;
 import jcog.Skill;
 import nars.Param;
 import nars.Task;
-import nars.control.Cause;
+import nars.control.CauseMerge;
 import nars.control.proto.Remember;
 import nars.table.BeliefTable;
 import nars.task.NALTask;
@@ -44,7 +44,7 @@ public interface TemporalBeliefTable extends BeliefTable {
     static void fundMerge(Task xy, Remember r, Task x, Task y) {
 
 
-        ((NALTask)xy).cause(Cause.merge(Param.causeCapacity.intValue(), x, y));
+        ((NALTask)xy).cause(CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(), x, y));
 
         //factor in the evidence loss (and originality?) loss to reduce priority
         float exy = TruthIntegration.evi(xy);

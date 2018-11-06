@@ -5333,7 +5333,12 @@ public enum ArrayUtils {;
         newArray[newArray.length - 1] = element;
         return newArray;
     }
-
+    public static short[] prepend(final short[] array, final short element) {
+        final short[] newArray = new short[array.length+1];
+        newArray[0] = element;
+        System.arraycopy(array, 0, newArray, 1, array.length);
+        return newArray;
+    }
     /**
      * Returns a copy of the given array of size 1 greater than the argument.
      * The last value of the array is left to the default value.

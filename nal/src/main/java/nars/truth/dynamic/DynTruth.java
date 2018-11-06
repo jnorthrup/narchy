@@ -9,7 +9,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
-import nars.control.Cause;
+import nars.control.CauseMerge;
 import nars.task.NALTask;
 import nars.task.util.TaskException;
 import nars.task.util.TaskRegion;
@@ -66,7 +66,7 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
     @Override
     @Nullable
     public short[] cause() {
-        return Cause.merge(Param.causeCapacity.intValue(),
+        return CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(),
                 Util.map(0, size(), x -> get(x).cause(), short[][]::new));
     }
 

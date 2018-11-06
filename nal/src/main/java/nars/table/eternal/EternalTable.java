@@ -8,7 +8,7 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.control.Cause;
+import nars.control.CauseMerge;
 import nars.control.proto.Remember;
 import nars.table.BeliefTable;
 import nars.task.NALTask;
@@ -306,7 +306,9 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             if (revised != null) {
                 //TODO maybe based on relative evidence
                 revised.pri(Prioritizable.fund(Math.max(prevBelief.priElseZero(), input.priElseZero()), false, prevBelief, input));
-                revised.cause(Cause.merge(Param.causeCapacity.intValue(), input, prevBelief));
+                revised.cause(CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(), input, prevBelief));
+
+
 
                 if (Param.DEBUG)
                     revised.log("Insertion Revision");

@@ -94,6 +94,9 @@ public class ObjectSurface<X> extends MutableUnitContainer {
             List<Surface> yy = new FasterList(cx.size());
 
             for (Object cxx : cx) {
+                if (cxx == null)
+                    continue;
+
                 Surface yyy = builder.build(cxx);
                 if (yyy!=null)
                     yy.add(yyy); //TODO depth, parent, ..

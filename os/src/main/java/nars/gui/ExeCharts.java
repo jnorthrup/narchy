@@ -21,6 +21,7 @@ import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.LoopPanel;
+import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.FloatSlider;
@@ -104,6 +105,15 @@ public class ExeCharts {
                 metaGoalPlot(n),
                 metaGoalControls(n)
         );
+    }
+
+    public static Surface inputPanel(NAR n) {
+        Plot2D plot = new Plot2D(256, Plot2D.Line).add("vol", () -> n.input.volume());
+        return new DurSurface(new Gridding(new ObjectSurface(n.input), plot), n) {
+            @Override protected void update() {
+                plot.update();
+            }
+        };
     }
 
     static class CausableWidget extends Widget {

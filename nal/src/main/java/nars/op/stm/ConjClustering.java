@@ -9,7 +9,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.bag.BagClustering;
-import nars.control.Cause;
+import nars.control.CauseMerge;
 import nars.control.channel.BufferedCauseChannel;
 import nars.exe.Causable;
 import nars.task.NALTask;
@@ -292,7 +292,7 @@ public class ConjClustering extends Causable {
 
 
                                 NALTask m = new STMClusterTask(cp, t, start, start, Stamp.sample(Param.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
-                                m.cause(Cause.merge(Param.causeCapacity.intValue(), uu));
+                                m.cause(CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(), uu));
 
 
                                 int v = cp.getOne().volume();

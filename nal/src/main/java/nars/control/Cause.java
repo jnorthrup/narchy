@@ -2,14 +2,9 @@ package nars.control;
 
 import jcog.Util;
 import jcog.math.RecycledSummaryStatistics;
-import jcog.util.ArrayUtils;
-import nars.task.util.TaskRegion;
-import org.eclipse.collections.impl.list.mutable.primitive.ShortArrayList;
 import org.jetbrains.annotations.Nullable;
-import org.roaringbitmap.RoaringBitmap;
 
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
@@ -111,147 +106,6 @@ public class Cause implements Comparable<Cause> {
         return Short.compare(id, o.id);
     }
 
-    public static short[] merge(int causeCapacity, TaskRegion... e) {
-        short[] a = e[0].cause();
-        switch (e.length) {
-            case 0:
-                throw new NullPointerException();
-            case 1:
-                return a;
-
-            case 2:
-                short[] b = e[1].cause();
-
-                if (a.length == 0)
-                    return b;
-
-                if (b.length == 0)
-                    return a;
-
-                
-
-
-
-                return merge(causeCapacity, a, b);
-            default:
-                return merge(causeCapacity,
-                        Util.map(TaskRegion::cause, short[][]::new,
-                            ArrayUtils.removeNulls(e, TaskRegion[]::new))); 
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public static short[] merge(int maxLen, short[]... s) {
-
-        int ss = s.length;
-        assert(ss>0);
-        if (ss == 1)
-            return s[0];
-
-
-        //quick test for equality
-        boolean allEqual = true;
-        for (int i = 1; i < ss; i++) {
-            if (!(allEqual &= Arrays.equals(s[i-1], s[i])))
-                break;
-        }
-        if (allEqual)
-            return s[0];
-
-
-        //return mergeFlat(maxLen, s);
-        return mergeSampled(maxLen, s, false);
-    }
-
-    /** this isnt good because the maps can grow beyond the capacity
-    public static short[] mergeFlat(int maxLen, short[][] s) {
-        int ss = s.length;
-        ShortHashSet x = new ShortHashSet(ss * maxLen);
-        for (short[] a : s) {
-            x.addAll(a);
-        }
-        return x.toSortedArray();
-    }*/
-
-    public static short[] mergeSampled(int maxLen, short[][] s, boolean deduplicate) {
-        int ss = s.length;
-        int totalItems = 0;
-        short[] lastNonEmpty = null;
-        int nonEmpties = 0;
-        for (short[] t : s) {
-            int tl = t.length;
-            totalItems += tl;
-            if (tl > 0) {
-                lastNonEmpty = t;
-                nonEmpties++;
-            }
-        }
-        if (nonEmpties == 1)
-            return lastNonEmpty;
-        if (totalItems == 0)
-            return ArrayUtils.EMPTY_SHORT_ARRAY;
-
-
-        AwesomeShortArrayList ll = new AwesomeShortArrayList(Math.min(maxLen, totalItems));
-        RoaringBitmap r = deduplicate ? new RoaringBitmap() : null;
-        int ls = 0;
-        int n = 0;
-        int done;
-        main:
-        do {
-            done = 0;
-            for (short[] c : s) {
-                int cl = c.length;
-                if (n < cl) {
-                    short next = c[cl - 1 - n];
-                    if (deduplicate)
-                        if (!r.checkedAdd(next))
-                            continue;
-
-                    if (ll.add/*adder.accept*/(next)) {
-                        if (++ls >= maxLen)
-                            break main;
-                    }
-                } else {
-                    done++;
-                }
-            }
-            n++;
-        } while (done < ss);
-
-        //assert (ls > 0);
-        short[] lll = ll.toArray();
-        //assert (lll.length == ls);
-        return lll;
-    }
-
-
     public void commit(RecycledSummaryStatistics[] valueSummary) {
         for (int i = 0, purposeLength = credit.length; i < purposeLength; i++) {
             Traffic p = credit[i];
@@ -280,21 +134,6 @@ public class Cause implements Comparable<Cause> {
     }
 
 
-    static final class AwesomeShortArrayList extends ShortArrayList {
-
-        AwesomeShortArrayList(int cap) {
-            super(cap);
-        }
-
-        @Override
-        public short[] toArray() {
-            if (this.size() == items.length)
-                return items;
-            else
-                return super.toArray();
-        }
-
-    }
 
 }
 

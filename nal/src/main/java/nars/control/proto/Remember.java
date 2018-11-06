@@ -7,6 +7,7 @@ import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.control.CauseMerge;
 import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.NALTask;
@@ -104,8 +105,13 @@ public class Remember extends AbstractTask {
                      ll.remove();
 
                      Task rr = (Task)r;
-                     ll.add(new TaskLinkTask(rr, conceptTerm !=null && conceptTerm.equals(rr.term().concept()) ? concept : null));
-                     ll.add(new Reaction(rr));
+
+                     if (tasklink())
+                        ll.add(new TaskLinkTask(rr, conceptTerm !=null && conceptTerm.equals(rr.term().concept()) ? concept : null));
+
+                     if (taskevent())
+                        ll.add(new TaskEvent(rr));
+
                  }
              }
 
@@ -117,6 +123,14 @@ public class Remember extends AbstractTask {
 
          }
 
+    }
+
+    protected boolean tasklink() {
+        return true;
+    }
+
+    protected boolean taskevent() {
+        return true;
     }
 
     /**
@@ -224,7 +238,7 @@ public class Remember extends AbstractTask {
             //TODO consider forgetting rate
 
             if (existing instanceof NALTask)
-                ((NALTask) existing).priCauseMerge(input);
+                ((NALTask) existing).priCauseMerge(input, CauseMerge.AppendUnique);
 
             forget(input);
         }

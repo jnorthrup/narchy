@@ -140,6 +140,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         named(Param.randomSelf());
 
+        onCycle(input::commit);
 
         this.exe = exe;
 

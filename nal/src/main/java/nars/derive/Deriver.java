@@ -120,8 +120,6 @@ abstract public class Deriver extends Causable {
 
         budgeting.update(this, nar);
 
-        linked.commit(nar);
-
     }
 
     @Override
@@ -129,8 +127,7 @@ abstract public class Deriver extends Causable {
 
         derive(Deriver.derivation.get().next(n, this), kontinue);
 
-
-        nar.derived.commit(nar);
+        linked.commit(nar);
     }
 
 

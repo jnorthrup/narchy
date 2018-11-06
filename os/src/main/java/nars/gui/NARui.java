@@ -111,7 +111,8 @@ public class NARui {
 
     public static Surface top(NAR n) {
         Map<String, Supplier<Surface>> m = Map.of(
-                "shl", () -> new ConsoleTerminal(new TextUI(n).session(10f)),
+                "inp", () -> ExeCharts.inputPanel(n),
+                //"shl", () -> new ConsoleTerminal(new TextUI(n).session(10f)),
                 "nar", () -> new ObjectSurface<>(n),
                 "exe", () -> ExeCharts.exePanel(n),
                 "val", () -> ExeCharts.valuePanel(n),

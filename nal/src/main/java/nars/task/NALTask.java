@@ -1,6 +1,5 @@
 package nars.task;
 
-import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.data.map.CompactArrayMap;
 import jcog.pri.UnitPri;
@@ -8,7 +7,7 @@ import jcog.pri.op.PriMerge;
 import jcog.util.ArrayUtils;
 import nars.Param;
 import nars.Task;
-import nars.control.Cause;
+import nars.control.CauseMerge;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.truth.Stamp;
@@ -113,20 +112,21 @@ public class NALTask extends UnitPri implements Task {
     /**
      * combine cause: should be called in all Task bags and belief tables on merge
      */
-    public Task priCauseMerge(Task incoming) {
+    public Task priCauseMerge(Task incoming, CauseMerge merge) {
         if (incoming == this) return this;
 
         /*(incoming.isInput() ? PriMerge.replace : Param.taskEquivalentMerge).*/
         PriMerge.max.merge(this, incoming);
 
-        return causeMerge(incoming.cause());
+        return causeMerge(incoming.cause(), merge);
     }
 
-    public Task causeMerge(short[] c) {
-        if (!Arrays.equals(cause(), c)) {
-            int causeCap = Math.min(Param.causeCapacity.intValue(), c.length + cause().length);
-            cause(Cause.merge(causeCap, cause, c));
-        }
+    public final Task priCauseMerge(Task incoming) {
+        return priCauseMerge(incoming, CauseMerge.Append);
+    }
+
+    public Task causeMerge(short[] c, CauseMerge merge) {
+        this.cause = merge.merge(cause(), c, Param.causeCapacity.intValue());
         return this;
     }
 
@@ -180,12 +180,7 @@ public class NALTask extends UnitPri implements Task {
      * set the cause[]
      */
     public NALTask cause(short[] cause) {
-        if (cause.length > Param.CAUSE_MAX) //HACK
-            throw new WTF("cause overflow");
-
-        if (!Arrays.equals(this.cause, cause))
-            this.cause = cause;
-
+        this.cause = cause;
         return this;
     }
 

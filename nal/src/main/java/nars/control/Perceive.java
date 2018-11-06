@@ -6,7 +6,7 @@ import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.Operator;
-import nars.control.proto.Reaction;
+import nars.control.proto.TaskEvent;
 import nars.task.ITask;
 import nars.term.Functor;
 import nars.term.Term;
@@ -168,7 +168,7 @@ public enum Perceive { ;
                     return false;
                 }
                 if (cmd) {
-                    queue.add(new Reaction(t));
+                    queue.add(new TaskEvent(t));
                 }
 
             }

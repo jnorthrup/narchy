@@ -7,7 +7,7 @@ import jcog.math.IntRange;
 import jcog.math.Range;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
-import nars.derive.DerivedTasks;
+import nars.task.util.TaskBuffer;
 import nars.term.atom.Atom;
 import nars.truth.polation.LinearTruthPolation;
 import nars.truth.polation.TruthPolation;
@@ -184,10 +184,9 @@ public abstract class Param {
     public final FloatRange intermpolationRangeLimit = new FloatRange(0.5f, 0, 1);
 
 
-    public final DerivedTasks derived =
+    public final TaskBuffer input =
             //new DerivedTasks.DerivedTasksMap(4096);
-            new DerivedTasks.DerivedTasksBag(1024, 0.1f,true);
-    ;
+            new TaskBuffer.BagTasksBuffer(1024, 0.1f,true);
 
 
     /**
