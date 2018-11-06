@@ -2,6 +2,7 @@ package nars.experiment;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -14,13 +15,12 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
 import nars.video.Bitmap2DConceptsView;
-import nars.video.Scale;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
@@ -80,7 +80,7 @@ public class Recog2D extends NAgentX {
 
 
                 ,
-                /*new Blink*/(new Scale(() -> canvas, w, h)/*, 0.8f*/));
+                /*new Blink*/(new ScaledBitmap2D(() -> canvas, w, h)/*, 0.8f*/));
 
 
         outs = new BeliefVector(ii ->

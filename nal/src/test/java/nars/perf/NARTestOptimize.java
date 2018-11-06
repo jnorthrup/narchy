@@ -3,6 +3,7 @@ package nars.perf;
 import jcog.lab.Lab;
 import jcog.lab.util.Opti;
 import jcog.lab.util.Optimization;
+import jcog.learn.decision.RealDecisionTree;
 import nars.NAR;
 import nars.NARS;
 import nars.Param;
@@ -16,7 +17,6 @@ import nars.nal.nal6.NAL6Test;
 import nars.nal.nal7.NAL7Test;
 import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
-import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 
 import java.util.function.Supplier;
 

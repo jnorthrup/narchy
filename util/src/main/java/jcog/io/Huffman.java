@@ -3,7 +3,7 @@ package jcog.io;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Weigher;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;

@@ -1,7 +1,7 @@
 package jcog.data.byt;
 
 import jcog.Util;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 
 import java.io.Serializable;
 import java.util.Arrays;

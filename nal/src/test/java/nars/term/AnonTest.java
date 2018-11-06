@@ -1,6 +1,7 @@
 package nars.term;
 
 import jcog.random.XoRoShiRo128PlusRandom;
+import jcog.util.ArrayUtils;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
@@ -12,7 +13,6 @@ import nars.term.util.TermBuilder;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.InterningTermBuilder;
 import nars.term.util.transform.UnifyTest;
-import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

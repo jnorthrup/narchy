@@ -1,11 +1,11 @@
 package nars.derive.premise;
 
+import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.derive.UnifyPremise;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.unify.Unify;
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 

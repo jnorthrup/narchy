@@ -1,13 +1,16 @@
 package nars.experiment;
 
 import jcog.Util;
+import jcog.signal.wave2d.MonoBufImgBitmap2D;
+import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.experiment.pacman.PacmanGame;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.atom.Atomic;
-import nars.video.*;
+import nars.video.Bitmap2DConceptsView;
+import nars.video.SwingBitmap2D;
 import spacegraph.space2d.container.grid.Gridding;
 
 import static spacegraph.SpaceGraph.window;
@@ -25,11 +28,11 @@ public class Pacman extends NAgentX {
 
 
         Gridding gg = new Gridding();
-        Scale camScale = new Scale(new SwingBitmap2D(g.view), 28, 28);
-        for (BufferedImageBitmap2D.ColorMode cm : new BufferedImageBitmap2D.ColorMode[]{
-                BufferedImageBitmap2D.ColorMode.R,
-                BufferedImageBitmap2D.ColorMode.G,
-                BufferedImageBitmap2D.ColorMode.B
+        ScaledBitmap2D camScale = new ScaledBitmap2D(new SwingBitmap2D(g.view), 28, 28);
+        for (MonoBufImgBitmap2D.ColorMode cm : new MonoBufImgBitmap2D.ColorMode[]{
+                MonoBufImgBitmap2D.ColorMode.R,
+                MonoBufImgBitmap2D.ColorMode.G,
+                MonoBufImgBitmap2D.ColorMode.B
         }) {
             Bitmap2DSensor c = senseCamera("(G,c" + cm.name() + ")",
                     camScale.filter(cm)

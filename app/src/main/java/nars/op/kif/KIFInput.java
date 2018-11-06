@@ -18,6 +18,7 @@ package nars.op.kif;
 
 import jcog.Util;
 import jcog.WTF;
+import jcog.util.ArrayUtils;
 import nars.*;
 import nars.task.CommandTask;
 import nars.term.Compound;
@@ -25,7 +26,6 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.Function;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;

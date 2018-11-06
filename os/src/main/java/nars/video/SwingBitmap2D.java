@@ -1,5 +1,6 @@
 package nars.video;
 
+import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import spacegraph.util.AWTCamera;
 
 import java.awt.*;
@@ -10,7 +11,7 @@ import static java.lang.Math.min;
 /**
  * Captures a awt/swing component to a bitmap and scales it down, returning an image pixel by pixel
  */
-public class SwingBitmap2D extends BufferedImageBitmap2D {
+public class SwingBitmap2D extends MonoBufImgBitmap2D {
 
     private final Component component;
 

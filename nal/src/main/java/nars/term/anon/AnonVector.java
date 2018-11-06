@@ -1,12 +1,12 @@
 package nars.term.anon;
 
 import com.google.common.io.ByteArrayDataOutput;
+import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.subterm.TermVector;
 import nars.term.Term;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.Iterator;

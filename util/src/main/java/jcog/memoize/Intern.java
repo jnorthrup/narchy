@@ -1,7 +1,7 @@
 package jcog.memoize;
 
 import jcog.data.map.CustomConcurrentHashMap;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;

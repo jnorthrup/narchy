@@ -21,7 +21,7 @@ package jcog.data.map;
 import com.google.common.collect.Lists;
 import jcog.TODO;
 import jcog.data.list.FasterList;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 
 import java.util.AbstractMap;
 import java.util.Arrays;

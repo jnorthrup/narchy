@@ -23,7 +23,7 @@ package jcog.tree.rtree.rect;
 
 import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.point.DoubleND;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 
 import java.io.Serializable;
 import java.util.function.Function;

@@ -1,6 +1,6 @@
 package jcog.math;
 
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 
 import java.util.Random;
 

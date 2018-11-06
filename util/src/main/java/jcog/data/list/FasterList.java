@@ -1,8 +1,8 @@
 package jcog.data.list;
 
 import jcog.Util;
+import jcog.util.ArrayUtils;
 import jcog.util.FloatFloatToFloatFunction;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.Function;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.predicate.Predicate2;

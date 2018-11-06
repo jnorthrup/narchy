@@ -1,5 +1,6 @@
 package nars.concept;
 
+import jcog.util.ArrayUtils;
 import nars.*;
 import nars.concept.util.ConceptBuilder;
 import nars.link.TermLinker;
@@ -9,7 +10,6 @@ import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;

@@ -2,6 +2,7 @@ package nars.op;
 
 import com.google.common.collect.Iterables;
 import jcog.learn.Autoencoder;
+import jcog.util.ArrayUtils;
 import nars.$;
 import nars.NAR;
 import nars.concept.Concept;
@@ -14,7 +15,6 @@ import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.List;

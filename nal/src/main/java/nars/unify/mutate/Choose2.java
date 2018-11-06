@@ -1,6 +1,7 @@
 package nars.unify.mutate;
 
 import jcog.math.Combinations;
+import jcog.util.ArrayUtils;
 import nars.$;
 import nars.Op;
 import nars.subterm.ShuffledSubterms;
@@ -11,7 +12,6 @@ import nars.term.atom.Atom;
 import nars.unify.Unify;
 import nars.unify.match.Ellipsis;
 import nars.unify.match.EllipsisMatch;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.set.MutableSet;
 
 import java.util.SortedSet;

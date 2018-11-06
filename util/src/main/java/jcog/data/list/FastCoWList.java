@@ -2,7 +2,7 @@ package jcog.data.list;
 
 import jcog.TODO;
 import jcog.data.iterator.ArrayIterator;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.procedure.Procedure;
 import org.eclipse.collections.api.block.procedure.Procedure2;

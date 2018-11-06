@@ -1,6 +1,6 @@
 package jcog.lab.util;
 
-import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
+import jcog.learn.decision.RealDecisionTree;
 import tech.tablesaw.api.Row;
 import tech.tablesaw.api.Table;
 

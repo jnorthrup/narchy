@@ -24,7 +24,7 @@ import com.metamx.collections.bitmap.ImmutableBitmap;
 import com.metamx.collections.spatial.search.Bound;
 import com.metamx.collections.spatial.search.GutmanSearchStrategy;
 import com.metamx.collections.spatial.search.SearchStrategy;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 
 import java.nio.ByteBuffer;
 

@@ -3,6 +3,7 @@ package nars.term.util;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -19,7 +20,6 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.var.ImDep;
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;

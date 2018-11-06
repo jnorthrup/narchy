@@ -16,7 +16,7 @@
 
 package jcog.data.graph;
 
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 
 /**
  * This class represents a lower (or upper) triangle matrix that stores ints.

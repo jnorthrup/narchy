@@ -1,7 +1,7 @@
 package com.jujutsu.tsne.matrix;
 
 import jcog.Texts;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 import org.ejml.data.DMatrix;
 import org.ejml.data.DMatrixRBlock;
 

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.net.UrlEscapers;
 import jcog.Util;
 import jcog.net.UDP;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

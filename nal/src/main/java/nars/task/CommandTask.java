@@ -1,9 +1,9 @@
 package nars.task;
 
+import jcog.util.ArrayUtils;
 import nars.Task;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.COMMAND;

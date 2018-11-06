@@ -8,7 +8,7 @@ import jcog.pri.VLink;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.op.PriMerge;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.jetbrains.annotations.Nullable;
 

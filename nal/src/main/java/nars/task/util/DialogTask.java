@@ -4,6 +4,7 @@ import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.data.set.ArrayHashSet;
 import jcog.event.Off;
 import jcog.event.Offs;
+import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -14,7 +15,6 @@ import nars.derive.Derivers;
 import nars.op.SubUnify;
 import nars.term.Term;
 import nars.term.util.Image;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Set;
 import java.util.stream.Collectors;

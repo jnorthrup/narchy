@@ -16,7 +16,10 @@ import jcog.pri.op.PriMerge;
 import jcog.sort.SortedArray;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;

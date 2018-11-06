@@ -24,6 +24,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
+import jcog.util.ArrayUtils;
 import nars.IO;
 import nars.Op;
 import nars.The;
@@ -33,7 +34,6 @@ import nars.term.anon.Anon;
 import nars.term.atom.Bool;
 import nars.term.util.transform.Retemporalize;
 import nars.unify.Unify;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 

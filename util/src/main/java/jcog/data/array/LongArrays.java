@@ -58,7 +58,7 @@
 package jcog.data.array;
 
 
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 
 /**
  * A class providing static methods and objects that do useful things with type-specific arrays.

@@ -4,7 +4,6 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.loading.ByteArrayClassLoader;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.implementation.StubMethod;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

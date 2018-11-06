@@ -11,7 +11,7 @@ import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
 import jcog.event.ListTopic;
 import jcog.event.Off;
 import jcog.event.Topic;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 

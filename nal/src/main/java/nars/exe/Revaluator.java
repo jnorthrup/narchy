@@ -5,10 +5,10 @@ import jcog.data.list.FasterList;
 import jcog.learn.Autoencoder;
 import jcog.learn.deep.RBM;
 import jcog.math.FloatRange;
+import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.control.Cause;
 import nars.control.Traffic;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.Random;

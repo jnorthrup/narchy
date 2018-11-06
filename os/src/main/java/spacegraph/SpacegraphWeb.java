@@ -1,7 +1,6 @@
 package spacegraph;
 
 import jcog.Texts;
-import jcog.net.http.HttpModel;
 import jcog.net.http.HttpServer;
 import spacegraph.web.util.ClientBuilder;
 

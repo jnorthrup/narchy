@@ -2,9 +2,9 @@ package jcog.lab;
 
 import jcog.lab.util.ExperimentRun;
 import jcog.lab.util.Opti;
+import jcog.learn.decision.RealDecisionTree;
 import jcog.math.FloatRange;
 import jcog.math.Range;
-import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 import org.junit.jupiter.api.Test;
 import tech.tablesaw.api.Row;
 

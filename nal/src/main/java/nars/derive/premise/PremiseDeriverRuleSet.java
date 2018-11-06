@@ -3,8 +3,8 @@ package nars.derive.premise;
 import com.google.common.base.Splitter;
 import jcog.data.set.ArrayUnenforcedSet;
 import jcog.memoize.Memoizers;
+import jcog.util.ArrayUtils;
 import nars.NAR;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.IOException;
 import java.io.InputStream;

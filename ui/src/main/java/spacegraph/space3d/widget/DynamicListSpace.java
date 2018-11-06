@@ -1,10 +1,10 @@
 package spacegraph.space3d.widget;
 
-import spacegraph.space3d.transform.Flatten;
-import spacegraph.space3d.transform.EdgeDirected3D;
 import spacegraph.space3d.AbstractSpace;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.Spatial;
+import spacegraph.space3d.transform.EdgeDirected3D;
+import spacegraph.space3d.transform.Flatten;
 import spacegraph.util.Active;
 
 import java.util.List;

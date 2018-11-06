@@ -5,6 +5,7 @@ import jcog.learn.pid.MiniPID;
 import jcog.math.FloatAveraged;
 import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.Bitmap2D;
+import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -18,7 +19,6 @@ import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
 import nars.time.Tense;
 import nars.video.Bitmap2DConceptsView;
-import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import spacegraph.space2d.container.grid.Gridding;
@@ -73,7 +73,7 @@ public class FZero extends NAgentX {
 //        Param.DEBUG_ENSURE_DITHERED_TRUTH = true;
 //        Param.DEBUG_EXTRA = true;
 
-        Scale visionBuffer = new Scale(() -> fz.image,
+        ScaledBitmap2D visionBuffer = new ScaledBitmap2D(() -> fz.image,
                 24, 20
         ).crop(0, 0.15f, 1f, 1f);
         Bitmap2D vision = visionBuffer.brightnessCurve(a -> {

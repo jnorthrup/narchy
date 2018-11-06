@@ -16,7 +16,7 @@
 
 package jcog.tree.perfect;
 
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 
 import java.util.Arrays;
 

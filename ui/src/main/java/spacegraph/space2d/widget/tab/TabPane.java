@@ -5,11 +5,11 @@ import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProced
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.unit.Clipped;
-import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.unit.Clipped;
+import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;

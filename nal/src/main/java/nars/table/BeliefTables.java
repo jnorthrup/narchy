@@ -2,11 +2,11 @@ package nars.table;
 
 import jcog.data.list.FasterList;
 import jcog.data.list.LimitedFasterList;
+import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.Task;
 import nars.control.proto.Remember;
 import nars.task.util.Answer;
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;

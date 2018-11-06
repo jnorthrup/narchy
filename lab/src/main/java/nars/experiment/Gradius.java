@@ -1,11 +1,11 @@
 package nars.experiment;
 
 import java4k.gradius4k.Gradius4K;
+import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.concept.sensor.DigitizedScalar;
-import nars.video.Scale;
 
 import static java4k.gradius4k.Gradius4K.*;
 import static nars.agent.FrameTrigger.fps;
@@ -56,7 +56,7 @@ public class Gradius extends NAgentX {
 //                                        $.p(x, y),
 //                                        subSection
 //                                ),
-                        new Scale(() -> g.image, px, py)
+                        new ScaledBitmap2D(() -> g.image, px, py)
                                 .crop(
                                         (float) i / dx, (float) j / dy,
                                         (float) (i + 1) / dx, (float) (j + 1) / dy))

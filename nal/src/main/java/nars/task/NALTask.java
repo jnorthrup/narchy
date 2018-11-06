@@ -5,6 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.data.map.CompactArrayMap;
 import jcog.pri.UnitPri;
 import jcog.pri.op.PriMerge;
+import jcog.util.ArrayUtils;
 import nars.Param;
 import nars.Task;
 import nars.control.Cause;
@@ -13,7 +14,6 @@ import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;

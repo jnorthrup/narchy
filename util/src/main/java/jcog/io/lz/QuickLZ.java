@@ -14,7 +14,7 @@ package jcog.io.lz;
 
 
 
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 
 public final class QuickLZ {
     

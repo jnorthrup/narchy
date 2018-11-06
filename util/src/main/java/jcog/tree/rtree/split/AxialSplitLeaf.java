@@ -21,7 +21,7 @@ package jcog.tree.rtree.split;
  */
 
 import jcog.tree.rtree.*;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.ObjectDoublePair;
 
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;

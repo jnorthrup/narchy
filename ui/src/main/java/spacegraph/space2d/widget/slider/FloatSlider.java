@@ -11,8 +11,8 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.container.Stacking;
+import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.text.VectorLabel;
 

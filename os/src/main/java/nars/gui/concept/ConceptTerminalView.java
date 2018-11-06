@@ -1,14 +1,10 @@
 package nars.gui.concept;
 
 import com.googlecode.lanterna.TextColor;
-import com.jogamp.opengl.GL2;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.term.Termed;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
-import spacegraph.space2d.widget.text.BitmapLabel;
-import spacegraph.video.Draw;
 
 import java.io.IOException;
 

@@ -1,6 +1,5 @@
 package nars.gui.concept;
 
-import com.googlecode.lanterna.TextColor;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.control.DurService;
@@ -8,9 +7,6 @@ import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
-import spacegraph.space2d.widget.console.ConsoleTerminal;
-
-import java.io.IOException;
 
 abstract public class ConceptView extends MutableUnitContainer {
 

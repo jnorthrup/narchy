@@ -3,7 +3,7 @@ package jcog.signal.tensor;
 import jcog.Texts;
 import jcog.signal.Tensor;
 import jcog.signal.buffer.CircularFloatBuffer;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 import org.jetbrains.annotations.NotNull;
 
@@ -122,7 +122,7 @@ public class ArrayTensor implements
     }
 
 
-    public void set(@NotNull float[] raw) {
+    public void set(float[] raw) {
         int d = data.length;
         assert (d == raw.length);
         arraycopy(raw, 0, data, 0, d);

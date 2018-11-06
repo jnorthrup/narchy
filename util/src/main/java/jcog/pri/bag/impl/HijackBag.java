@@ -13,7 +13,7 @@ import jcog.mutex.TreadmillPair64;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.random.SplitMix64Random;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 

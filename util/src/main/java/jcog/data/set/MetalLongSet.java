@@ -2,7 +2,7 @@ package jcog.data.set;
 
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.list.primitive.MutableLongList;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 

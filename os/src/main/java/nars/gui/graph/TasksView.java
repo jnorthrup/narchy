@@ -8,8 +8,8 @@ import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.graph.Graph2D;
-import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.container.graph.Timeline2D;
+import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.video.Draw;
 

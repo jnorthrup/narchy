@@ -4,11 +4,11 @@
 package net.beadsproject.beads.core;
 
 import jcog.data.list.FasterList;
+import jcog.util.ArrayUtils;
 import net.beadsproject.beads.events.KillTrigger;
 import net.beadsproject.beads.ugens.Clock;
 import net.beadsproject.beads.ugens.Envelope;
 import net.beadsproject.beads.ugens.Gain;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Method;
 import java.util.*;

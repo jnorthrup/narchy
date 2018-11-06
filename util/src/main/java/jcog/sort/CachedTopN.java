@@ -7,8 +7,6 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.function.Consumer;
-import java.util.function.IntFunction;
 
 /**
  * with set of entries to merge (filter) duplicates

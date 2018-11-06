@@ -2,10 +2,10 @@ package nars.task.util;
 
 import jcog.math.LongInterval;
 import jcog.tree.rtree.HyperRegion;
+import jcog.util.ArrayUtils;
 import nars.Task;
 import nars.task.Tasked;
 import nars.truth.TruthFunctions;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;

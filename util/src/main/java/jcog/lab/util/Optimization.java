@@ -9,6 +9,7 @@ import jcog.lab.Lab;
 import jcog.lab.Sensor;
 import jcog.lab.Var;
 import jcog.lab.var.FloatVar;
+import jcog.learn.decision.RealDecisionTree;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;
@@ -21,7 +22,6 @@ import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.util.MathArrays;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 import tech.tablesaw.api.Row;
 
 import java.util.Arrays;

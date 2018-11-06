@@ -6,14 +6,13 @@ import nars.NAR;
 import nars.concept.Concept;
 import nars.control.DurService;
 import nars.gui.NARui;
-import nars.task.Tasklike;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.graph.Graph2D;
-import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.container.layout.ForceDirected2D;
+import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.VectorLabel;
 

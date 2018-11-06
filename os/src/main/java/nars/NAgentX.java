@@ -8,6 +8,8 @@ import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.signal.wave2d.Bitmap2D;
+import jcog.signal.wave2d.MonoBufImgBitmap2D;
+import jcog.signal.wave2d.ScaledBitmap2D;
 import jcog.tree.rtree.rect.RectFloat;
 import jcog.util.Int2Function;
 import nars.agent.FrameTrigger;
@@ -37,7 +39,10 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
 import nars.time.clock.RealTime;
-import nars.video.*;
+import nars.video.AutoencodedBitmap;
+import nars.video.PixelBag;
+import nars.video.SwingBitmap2D;
+import nars.video.WaveletBag;
 import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.Auvent;
 import net.beadsproject.beads.core.UGen;
@@ -504,8 +509,8 @@ abstract public class NAgentX extends NAgent {
     }
 
 
-    protected Bitmap2DSensor<Scale> senseCamera(String id, Supplier<BufferedImage> w, int pw, int ph) {
-        return senseCamera(id, new Scale(w, pw, ph));
+    protected Bitmap2DSensor<ScaledBitmap2D> senseCamera(String id, Supplier<BufferedImage> w, int pw, int ph) {
+        return senseCamera(id, new ScaledBitmap2D(w, pw, ph));
     }
 
     protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Component w, int pw, int ph) {
@@ -543,7 +548,7 @@ abstract public class NAgentX extends NAgent {
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> addCameraCoded(@Nullable Term
                                                                                 id, Supplier<BufferedImage> bc, int sx, int sy, int ox, int oy) {
-        return addCamera(new Bitmap2DSensor(id, new AutoencodedBitmap(new BufferedImageBitmap2D(bc), sx, sy, ox, oy), nar()));
+        return addCamera(new Bitmap2DSensor(id, new AutoencodedBitmap(new MonoBufImgBitmap2D(bc), sx, sy, ox, oy), nar()));
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> addCameraCoded(@Nullable Term id, C bc, int sx, int sy,

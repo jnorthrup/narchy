@@ -13,8 +13,8 @@ import com.googlecode.lanterna.terminal.swing.*;
 import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
 import com.jogamp.newt.event.KeyEvent;
 import jcog.Texts;
+import jcog.util.ArrayUtils;
 import nars.web.NARWeb;
-import org.apache.commons.lang3.ArrayUtils;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
 

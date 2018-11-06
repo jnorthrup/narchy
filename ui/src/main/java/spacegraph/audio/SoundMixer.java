@@ -2,7 +2,7 @@ package spacegraph.audio;
 
 
 import jcog.data.list.FastCoWList;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 
 import java.util.Arrays;
 

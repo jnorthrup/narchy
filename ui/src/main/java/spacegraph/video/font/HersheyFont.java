@@ -3,7 +3,7 @@ package spacegraph.video.font;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.data.list.FasterList;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import spacegraph.video.Draw;
 

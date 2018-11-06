@@ -6,7 +6,7 @@
 package jcog.signal.meter.event;
 
 import jcog.signal.meter.FunctionMeter;
-import org.apache.commons.lang3.mutable.MutableLong;
+import jcog.util.MutableLong;
 
 /**
  *

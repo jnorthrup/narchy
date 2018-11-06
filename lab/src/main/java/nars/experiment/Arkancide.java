@@ -3,12 +3,12 @@ package nars.experiment;
 
 import jcog.Util;
 import jcog.math.FloatRange;
+import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.atom.Atomic;
-import nars.video.Scale;
 import nars.video.SwingBitmap2D;
 
 import javax.swing.*;
@@ -79,7 +79,7 @@ public class Arkancide extends NAgentX {
 
         if (cam) {
 
-            Bitmap2DSensor<Scale> cc = senseCamera(id /*$.the("cam")*/, new Scale(
+            Bitmap2DSensor<ScaledBitmap2D> cc = senseCamera(id /*$.the("cam")*/, new ScaledBitmap2D(
                     new SwingBitmap2D(noid)
 
                     , visW, visH

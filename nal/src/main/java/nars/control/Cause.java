@@ -2,8 +2,8 @@ package nars.control;
 
 import jcog.Util;
 import jcog.math.RecycledSummaryStatistics;
+import jcog.util.ArrayUtils;
 import nars.task.util.TaskRegion;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.impl.list.mutable.primitive.ShortArrayList;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;

@@ -8,14 +8,14 @@ import jcog.event.*;
 import jcog.signal.Tensor;
 import jcog.signal.named.RGB;
 import jcog.signal.tensor.AsyncTensor;
-import jcog.signal.wave2d.RGBBitmap2DTensor;
-import jcog.signal.wave2d.RGBToGrayBitmap2DTensor;
+import jcog.signal.wave2d.RGBBufImgBitmap2D;
+import jcog.signal.wave2d.RGBToMonoBitmap2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
@@ -45,7 +45,7 @@ public class WebCam {
 
     public final Topic<WebcamEvent> eventChange = new ListTopic();
 
-    public final AsyncTensor<RGBBitmap2DTensor> tensor = new AsyncTensor();
+    public final AsyncTensor<RGBBufImgBitmap2D> tensor = new AsyncTensor();
 
     private final static Logger logger = LoggerFactory.getLogger(WebCam.class);
 
@@ -103,7 +103,7 @@ public class WebCam {
                         eventChange.emit(we);
 
                         if (!tensor.isEmpty()) {
-                            tensor.emit(new RGBBitmap2DTensor(nextImage));
+                            tensor.emit(new RGBBufImgBitmap2D(nextImage));
                         }
                     }
                 } else {
@@ -223,7 +223,7 @@ public class WebCam {
         private volatile Tensor current = null;
 
         public final RGB mix = new RGB(-1, +1);
-        final RGBToGrayBitmap2DTensor mixed = new RGBToGrayBitmap2DTensor(mix);
+        final RGBToMonoBitmap2D mixed = new RGBToMonoBitmap2D(mix);
 
         ChannelView(WebCam cam) {
             this.cam = cam;
@@ -231,7 +231,7 @@ public class WebCam {
             BitmapMatrixView bmp = new BitmapMatrixView(cam.width, cam.height, (x, y)->{
                 Tensor c = current;
                 if (c!=null) {
-                    mixed.update((RGBBitmap2DTensor) current);
+                    mixed.update((RGBBufImgBitmap2D) current);
                     float intensity = //c.get(x, y, channel);
                             mixed.get(x, y);
                     return Draw.rgbInt(intensity, intensity, intensity);

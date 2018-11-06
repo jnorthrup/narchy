@@ -18,12 +18,12 @@ import nars.exe.UniExec;
 import nars.index.concept.MaplikeConceptIndex;
 import nars.index.concept.ProxyConceptIndex;
 import nars.time.clock.RealTime;
-import spacegraph.web.util.ClientBuilder;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.WebServer;
+import spacegraph.web.util.ClientBuilder;
 
 import java.io.IOException;
 import java.net.URI;

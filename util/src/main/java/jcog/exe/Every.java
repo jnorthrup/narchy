@@ -1,6 +1,6 @@
 package jcog.exe;
 
-import org.apache.commons.lang3.mutable.MutableInt;
+import jcog.util.MutableInt;
 
 import java.util.function.LongConsumer;
 

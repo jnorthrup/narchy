@@ -3,7 +3,7 @@ package jcog.data.byt;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
 import jcog.Util;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 import org.apache.lucene.util.ArrayUtil;
 import org.iq80.snappy.Snappy;
 

@@ -3,7 +3,7 @@ package jcog.sort;
 import jcog.Util;
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 import jcog.data.iterator.ArrayIterator;
-import org.apache.commons.lang3.ArrayUtils;
+import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
