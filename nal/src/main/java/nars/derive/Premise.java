@@ -65,9 +65,9 @@ public class Premise implements Comparable<Premise> {
      * variable types unifiable in premise formation
      */
     final static int var =
-            Op.VAR_QUERY.bit;
-            //Op.Variable; //all
-
+            Op.VAR_QUERY.bit
+            //Op.Variable //all
+    ;
 
     /**
      * resolve the most relevant belief of a given term/concept
@@ -92,46 +92,44 @@ public class Premise implements Comparable<Premise> {
         Term taskTerm = task.term();
 
         boolean beliefConceptCanAnswerTaskConcept = false;
-        boolean beliefTransformed = false;
 
         Term beliefTerm = this.beliefTerm;
-        Op bo = beliefTerm.op();
-        NAR n = d.nar;
-        if (taskTerm.concept().equals(beliefTerm.concept())) {
-            beliefConceptCanAnswerTaskConcept = true;
-        } else {
-//            if (taskTerm.op() == bo) {
-//            } else {
+        if (taskTerm.op()==beliefTerm.op()) {
+            if (taskTerm.concept().equals(beliefTerm.concept())) {
+                beliefConceptCanAnswerTaskConcept = true;
+            } else {
+                //            if (taskTerm.op() == bo) {
+                //            } else {
 
-            if ((bo.conceptualizable) && (beliefTerm.hasAny(var) || taskTerm.hasAny(var))) {
+                if (beliefTerm.hasAny(var) || taskTerm.hasAny(var)) {
 
 
-                UnifyPremise u = d.unifyPremise;
+                    UnifyPremise u = d.unifyPremise;
 
-                Term unifiedBeliefTerm = u.unified(taskTerm, beliefTerm, matchTTL);
+                    Term unifiedBeliefTerm = u.unified(taskTerm, beliefTerm, matchTTL);
 
-                if (unifiedBeliefTerm!=null) {
-                    if (!unifiedBeliefTerm.equals(beliefTerm)) {
-                        beliefTransformed = true;
-                        beliefTerm = unifiedBeliefTerm;
+                    if (unifiedBeliefTerm != null) {
+                        if (!unifiedBeliefTerm.equals(beliefTerm)) {
+                            beliefTerm = unifiedBeliefTerm;
+                        }
+                        beliefConceptCanAnswerTaskConcept = true;
+                    } else {
+                        beliefConceptCanAnswerTaskConcept = false;
                     }
-                    beliefConceptCanAnswerTaskConcept = true;
-                } else {
-                    beliefConceptCanAnswerTaskConcept = false;
-                }
 
+                }
+                //            }
             }
-//            }
         }
 
-        Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept, beliefTransformed);
+        Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept);
 
         d.reset(task, belief, belief != null ? belief.term() : beliefTerm.unneg());
 
         return belief;
     }
 
-    @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptCanAnswerTaskConcept, boolean unifiedBelief) {
+    @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptCanAnswerTaskConcept) {
 
         NAR n = d.nar;
 
@@ -142,9 +140,6 @@ public class Premise implements Comparable<Premise> {
                 :
                 null;
 
-        if (beliefConcept == null)
-            return null;
-
         if (beliefConcept instanceof AliasConcept)
             beliefTerm = (beliefConcept = ((AliasConcept) beliefConcept).abbr).term(); //dereference alias
 
@@ -154,20 +149,31 @@ public class Premise implements Comparable<Premise> {
         Task belief = null;
 
         final BeliefTable beliefTable = beliefConcept.beliefs();
-        final BeliefTable answerTable =
-                (task.isQuest()) ?
-                        beliefConcept.goals() :
-                        beliefTable;
 
-        if (answerTable == beliefTable) {
-            if (beliefTable.isEmpty())
-                return null; //no beliefs
+        if (beliefConceptCanAnswerTaskConcept && task.isQuestionOrQuest()) {
+
+            boolean answerGoal = task.isQuest();
+
+            final BeliefTable answerTable =
+                    answerGoal ?
+                            beliefConcept.goals() :
+                            beliefTable;
+
+            if (answerTable.isEmpty()) {
+                if (!answerGoal)
+                    return null; //no belief
+            } else {
+                Task answer = tryAnswer(beliefTerm, answerTable, d);
+                if (answerGoal) {
+                    //goal, already added in tryAnswer
+                } else {
+                    //belief
+                    return answer;
+                }
+            }
         }
 
-        if (beliefConceptCanAnswerTaskConcept && task.isQuestionOrQuest() && (task.isQuestion() || !answerTable.isEmpty()))
-            belief = tryAnswer(beliefTerm, answerTable, d);
-
-        if (belief == null)
+        if (belief == null && !beliefTable.isEmpty())
             belief = tryMatch(beliefTerm, beliefTable, d);
 
 //        if (unifiedBelief && belief != null && Param.LINK_VARIABLE_UNIFIED_PREMISE) {
@@ -178,11 +184,11 @@ public class Premise implements Comparable<Premise> {
     }
 
     private Predicate<Task> beliefFilter() {
-        if (task.stamp().length == 0) {
-            return t -> !t.equals(task) && t.stamp().length > 0; //dont allow derivation of 2 unstamped tasks - infinite feedback - dont cross the streams
-        } else {
+//        if (task.stamp().length == 0) {
+//            return t -> !t.equals(task) && t.stamp().length > 0; //dont allow derivation of 2 unstamped tasks - infinite feedback - dont cross the streams
+//        } else {
             return t -> !t.equals(task);//null; //stampFilter(d);
-        }
+//        }
 
     }
 
@@ -192,9 +198,10 @@ public class Premise implements Comparable<Premise> {
         NAR nar = d.nar;
         Tense.dither(focus, nar);
 
-        Predicate<Task> beliefFilter = beliefTerm.concept().equals(task.term().concept()) ?
-                beliefFilter() :
-                null;
+        Predicate<Task> beliefFilter =
+                beliefTerm.equalsRoot(task.term()) ?
+                    beliefFilter() :
+                    null;
 
         //dont dither because this task isnt directly input to the system.  derivations will be dithered at the end
         //TODO factor in the Task's stamp so it can try to avoid those tasks, thus causing overlap in double premise cases

@@ -93,7 +93,7 @@ public abstract class Param {
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
     /** can be > 1 */
-    public static float ANSWER_COMPLETENESS = 2f;
+    public static float ANSWER_COMPLETENESS = 1f;
 
 
 //    public static final int EVALUATION_MAX_TERMUTATORS = 8;
@@ -229,8 +229,8 @@ public abstract class Param {
      * TTL = 'time to live'
      */
     public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, 0, 128 * TTL_MIN );
-    public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
-    public final IntRange matchTTL = new IntRange(4, 1, 32);
+    public final IntRange subUnifyTTLMax = new IntRange( 6, 1, 32);
+    public final IntRange matchTTL = new IntRange(6, 1, 32);
 
     /**
      * for NALTest's: extends the time all unit tests are allowed to run for.
