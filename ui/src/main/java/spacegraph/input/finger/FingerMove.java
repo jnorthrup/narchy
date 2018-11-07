@@ -6,7 +6,7 @@ public abstract class FingerMove extends FingerDragging {
 
     private final float xSpeed;
     private final float ySpeed;
-    private v2 startPos;
+    private v2 startPos, current = new v2();
 
     public FingerMove(int button) {
         this(button, true, true);
@@ -28,9 +28,9 @@ public abstract class FingerMove extends FingerDragging {
     protected abstract void move(float tx, float ty);
 
     @Override
-    protected boolean drag(Finger finger) {
+    protected boolean drag(Finger f) {
 
-        v2 current = pos(finger);
+        current.set(pos(f));
         if (current!=null) {
             v2 start = startPos;
             float tx = (xSpeed != 0 ? (current.x - start.x) * xSpeed : 0);
@@ -44,12 +44,12 @@ public abstract class FingerMove extends FingerDragging {
 
     @Override
     protected boolean startDrag(Finger f) {
-        this.startPos = pos(f);
+        this.startPos = pos(f).clone();
         return super.startDrag(f);
     }
 
     v2 pos(Finger finger) {
-        return finger.pos.clone();
+        return finger.pos;
     }
 
 

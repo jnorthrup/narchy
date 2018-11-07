@@ -11,6 +11,7 @@ import spacegraph.input.key.KeyXYZ;
 import spacegraph.input.key.WindowKeyControls;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.util.animate.AnimVector3f;
 import spacegraph.util.animate.Animated;
@@ -32,7 +33,9 @@ import static spacegraph.util.math.v3.v;
 
 abstract public class JoglSpace {
 
-    /** the hardware input/output implementation */
+    /**
+     * the hardware input/output implementation
+     */
     public final JoglWindow io;
 
     public final v3 camPos, camFwd, camUp;
@@ -58,23 +61,20 @@ abstract public class JoglSpace {
         io.onUpdate((Animated) (camUp = new AnimVector3f(0, 1, 0, cameraRotateSpeed)));
     }
 
-    public JoglSpace add(Surface layer) {
-        if (layer instanceof Ortho) {
-            pending.add(() -> {
-                //Exe.invoke(()->{
-                    JoglSpace.this.layers.add(layer);
-                    ((Ortho) layer).start(JoglSpace.this);
-                //});
-            });
-        } else {
-            pending.add(() -> {
-                //Exe.invoke(()-> {
-                    JoglSpace.this.layers.add(layer);
-                    layer.start(null);
-                //});
+    /**
+     * dummy root node for layers to have a non-null parent
+     */
+    final Surface root = new EmptySurface();
 
-            });
-        }
+    public JoglSpace add(Surface layer) {
+
+        pending.add(() -> {
+            JoglSpace.this.layers.add(layer);
+            if (layer instanceof Ortho)
+                ((Ortho) layer).start(JoglSpace.this);
+            else
+                layer.start(root);
+        });
         return JoglSpace.this;
     }
 
@@ -233,9 +233,11 @@ abstract public class JoglSpace {
     public final Off onUpdate(Consumer<JoglWindow> c) {
         return io.onUpdate(c);
     }
+
     public final Off onUpdate(Animated c) {
         return io.onUpdate(c);
     }
+
     public final Off onUpdate(Runnable c) {
         return io.onUpdate(c);
     }
@@ -316,7 +318,6 @@ abstract public class JoglSpace {
                                   int height) {
 
         }
-
 
 
     }

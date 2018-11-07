@@ -63,7 +63,7 @@ public class AspectAlign extends UnitContainer {
     private AspectAlign scale(float sx, float sy) {
         this.scaleX = sx;
         this.scaleY = sy;
-        layout(); 
+        layout();  //TODO only layout if sx,sy actually change
         return this;
     }
 

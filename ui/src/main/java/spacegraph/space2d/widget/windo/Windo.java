@@ -207,20 +207,20 @@ public class Windo extends MutableUnitContainer {
 
 
             float pmx, pmy;
-            if (this instanceof ZoomOrtho.HUD) {
-                W = w();
-                H = h();
-                v2 mousePos = root.finger.posPixel;
-                pmx = mousePos.x;
-                pmy = mousePos.y;
-            } else {
+//            if (this instanceof ZoomOrtho.HUD) {
+//                W = w();
+//                H = h();
+//                v2 mousePos = root.finger.posPixel;
+//                pmx = mousePos.x;
+//                pmy = mousePos.y;
+//            } else {
                 W = H = 0.5f;
                 v2 mousePos = root.finger.pos;
                 pmx = mousePos.x;
                 pmy = mousePos.y;
 
 
-            }
+//            }
 
 
             float resizeBorder = Math.max(W, H) * Windo.resizeBorder;

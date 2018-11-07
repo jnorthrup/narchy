@@ -19,7 +19,9 @@ import spacegraph.video.Draw;
 public class Widget extends MutableUnitContainer<Surface> implements KeyPressed {
 
 
-        private static final float border = 0.05f;
+    private static final float border = 0.05f;
+
+    static final float backgroundAlpha = 0.8f;
 
     /**
      * z-raise/depth: a state indicating push/pull (ex: buttons)
@@ -106,7 +108,8 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
             g += -t / 4f;
         }
 
-        Draw.rectRGBA(bounds, r, g, b, 0.5f, gl);
+
+        Draw.rectRGBA(bounds, r, g, b, backgroundAlpha, gl);
 
     }
 

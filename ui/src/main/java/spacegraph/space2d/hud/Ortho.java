@@ -14,7 +14,6 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.container.Container;
-import spacegraph.space2d.container.EmptySurface;
 import spacegraph.util.animate.AnimVector3f;
 import spacegraph.util.animate.Animated;
 import spacegraph.util.math.v2;
@@ -22,10 +21,11 @@ import spacegraph.util.math.v3;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.JoglWindow;
 
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -51,7 +51,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     private final Map<String, Pair<Object, Runnable>> singletons = new HashMap();
     private final Deque<v3> zoomStack = new ArrayDeque();
     private final Runnable fingerUpdate;
-    private final Set<Surface> overlays = new CopyOnWriteArraySet<>();
     Surface surface;
     protected JoglSpace space;
     private final float camZmin = 5;
@@ -61,26 +60,22 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     private final float zoomMargin = 0.1f;
 
 
-    Ortho() {
-        this(new EmptySurface());
-    }
 
-    Ortho(Surface content) {
+
+    Ortho(Surface content, Finger finger, NewtKeyboard keyboard) {
         super();
 
         this.cam = new Camera();
 
-        this.keyboard = new NewtKeyboard();
+        this.keyboard = keyboard;
 
-        this.finger = new Finger();
+        this.finger = finger;
         this.fingerUpdate = () -> {
             if (focused())
                 finger();
         };
 
-        addOverlay(this.finger.cursorSurface());
-        addOverlay(this.finger.zoomBoundsSurface(cam));
-        //addOverlay(this.keyboard.keyFocusSurface(cam));
+
 
         setSurface(content);
     }
@@ -106,10 +101,20 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     @Override
     public void windowResized(WindowEvent e) {
+        int W = space.io.window.getWidth();
+        int H = space.io.window.getHeight();
+        if (posChanged(RectFloat.WH( W, H))) {
 
-        layout();
+            float camZ = targetDepth(Math.max(W, H));
+            camZmax = camZ;
 
-        //doLayout(0);
+            if (autosize()) {
+                surface.pos(bounds);
+                cam.set(bounds.w / 2f, bounds.h / 2f, camZ);
+            }
+
+            layout();
+        }
     }
 
     final boolean focused() {
@@ -119,16 +124,9 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     @Override
     protected boolean prePaint(SurfaceRender r) {
         if (super.prePaint(r)) {
-            int W = space.io.window.getWidth();
-            int H = space.io.window.getHeight();
-            if (posChanged(RectFloat.XYXY(0, 0, W, H))) {
-                layout();
-            }
-
-            float scale = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
-            float s = Math.max(W, H) * scale;
+            float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
+            float s = zoom * Math.max(w(), h());
             this.scale.set(s, s);
-            //this.scale.set(W * scale, H * scale);
             return true;
         }
         return false;
@@ -138,20 +136,13 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     @Override
     protected void doLayout(int dtMS) {
 
-        float camZ = targetDepth(Math.max(bounds.w, bounds.h));
 
-        if (autoresize()) {
-            surface.pos(bounds);
 
-            camZmax = camZ;
 
-        }
-
-        cam.set(bounds.w / 2f, bounds.h / 2f, camZ);
 
     }
 
-    boolean autoresize() {
+    boolean autosize() {
         return false;
     }
 
@@ -220,10 +211,10 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
             if (surface.parent == null)
                 surface.start(this);
-            //Exe.invokeLater(() -> surface.start(this));
         }
 
     }
+
 
     @Override
     public SurfaceRoot root() {
@@ -273,19 +264,14 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
                 {
                     v3 x = cam.snapshot();
 
-                    { //if (zoomStack.isEmpty() || !zoomStack.peekLast().equals(x, epsilon)) {
+                    if (zoomStack.size() >= ZOOM_STACK_MAX)
+                        zoomStack.removeFirst();
 
-                        if (zoomStack.size() >= ZOOM_STACK_MAX)
-                            zoomStack.removeFirst();
-
-                        zoomStack.addLast(x);
-                    }
+                    zoomStack.addLast(x);
                 }
 
-                //System.out.println("zoom " + su + " " + cam.snapshot());
             }
 
-            //System.out.println("after: " + zoomStack);
         }
 
     }
@@ -294,8 +280,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         zoomStack.removeLast();
         v3 prev = zoomStack.peekLast();
         zoom(prev);
-
-        System.out.println("unzoom " + prev + " " + su);
     }
 
     public void zoom(RectFloat b) {
@@ -487,18 +471,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
      * the picked surface even in-between pick updates which are invoked
      * during the update loop.
      */
-    Surface finger() {
-
-        /*if (e == null) {
-            off();
-        } else {*/
-
-        //assert (focused());
-
-        Surface r = finger.on(surface);
-
-        return r;
-
+    protected Surface finger() {
+        return finger.on(surface);
     }
 
 
@@ -509,27 +483,18 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         gl.glLoadIdentity();
 
 
+        gl.glPushMatrix();
+
         gl.glTranslatef(w() / 2f, h() / 2f, 0);
         gl.glScalef(scale.x, scale.y, 1);
         gl.glTranslatef(-cam.x, -cam.y, 0);
 
-        gl.glPushMatrix();
     }
 
     @Override
     protected void paintAbove(GL2 gl, SurfaceRender r) {
 
         gl.glPopMatrix();
-
-
-        gl.glLoadIdentity();
-
-        overlays.forEach(s -> {
-            gl.glPushMatrix();
-            gl.glLoadIdentity();
-            s.render(gl, r);
-            gl.glPopMatrix();
-        });
 
     }
 
@@ -553,38 +518,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         finger.rotationAdd(e.getRotation());
     }
 
-    public void addOverlay(Surface s) {
-        synchronized (overlays) {
-            if (s.start(this)) {
-                overlays.add(s);
-            }
-        }
-    }
-
-    public void removeOverlay(Surface s) {
-        synchronized (overlays) {
-            boolean ss = overlays.remove(s);
-            if (ss) {
-                s.stop();
-            }
-        }
-    }
-
-//    public void set(Surface content) {
-//        synchronized (this) {
-//            if (this.surface == content) return;
-//
-//            if (this.surface != null) {
-//                this.surface.stop();
-//            }
-//
-//            this.surface = content;
-//
-//            this.surface.start(this);
-//        }
-//
-//        layout();
-//    }
 
 
     public class Camera extends AnimVector3f {
@@ -651,7 +584,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         @Override
         public void setDirect(float x, float y, float z) {
             super.setDirect(camX(x), camY(y), camZ(z));
-
         }
 
         public float camZ(float z) {
@@ -680,68 +612,4 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         }
     }
 
-    /** interface for NEWT keyboard */
-    private class NewtKeyboard implements KeyListener {
-        @Override
-        public void keyPressed(KeyEvent e) {
-            setKey(e, true);
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-            setKey(e, false);
-        }
-
-        private void setKey(KeyEvent e, boolean pressOrRelease) {
-            if (e.isConsumed())
-                return;
-
-//        Surface t = finger.touching();
-//        if (t != null) {
-//            if (!t.key(e, pressOrRelease))
-//                e.setConsumed(true);
-//        }
-            Surface s = keyFocus.getOpaque();
-            if (s != null) {
-                Surface ss = s;
-                if (!ss.showing()) {
-                    keyFocus.compareAndSet(s, null); //free the focus
-                    return;
-                }
-
-                ((KeyPressed)s).key(e, pressOrRelease);
-                e.setConsumed(true);
-            }
-
-        }
-
-        final AtomicReference<Surface> keyFocus = new AtomicReference<>(null);
-
-
-        boolean focus(Surface s) {
-            if (!(s instanceof KeyPressed))
-                throw new UnsupportedOperationException(s + " does not implement " + KeyPressed.class);
-
-            KeyPressed ss = (KeyPressed) s;
-            Surface r = keyFocus.getAndSet(s);
-            if (r!=s) {
-                if (r!=null)
-                    ((KeyPressed)r).keyEnd();
-                ss.keyStart();
-            }
-
-            return true;
-        }
-
-        public Surface keyFocusSurface(Camera cam) {
-            return new SurfaceHiliteOverlay(cam) {
-
-                @Override
-                protected Surface target() {
-                    return keyFocus.getOpaque();
-                }
-
-            };
-        }
-    }
 }

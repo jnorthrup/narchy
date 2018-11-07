@@ -17,11 +17,11 @@ public class FingerSurfaceMove extends FingerMove {
     }
 
     @Override
-    public boolean drag(Finger finger) {
+    public boolean drag(Finger f) {
         if (before == null)
             this.before = moving.bounds;
 
-        return super.drag(finger);
+        return super.drag(f);
     }
 
     @Override

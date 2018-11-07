@@ -2,10 +2,10 @@ package spacegraph.space2d.hud;
 
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.WindowEvent;
-import com.jogamp.opengl.GL2;
-import spacegraph.input.finger.*;
+import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.FingerMovePixels;
+import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.math.v2;
 import spacegraph.util.math.v3;
 import spacegraph.video.JoglSpace;
@@ -18,7 +18,7 @@ public class ZoomOrtho extends Ortho {
     public final static short PAN_BUTTON = 0;
     private final static short MOVE_WINDOW_BUTTON = 1;
 
-    private final HUD hud = new HUD();
+    //private final HUD hud = new HUD();
 
     private final Fingering fingerContentPan = new FingerMovePixels(PAN_BUTTON) {
 
@@ -79,25 +79,25 @@ public class ZoomOrtho extends Ortho {
 
     };
 
-    public ZoomOrtho(Surface content) {
-        super();
-        hud.set(content);
+    public ZoomOrtho(Surface content, Finger finger, NewtKeyboard keyboard) {
+        super(content, finger, keyboard);
+        //hud.set(content);
     }
 
     @Override
     public void start(JoglSpace s) {
         super.start(s);
-        setSurface(hud);
+        //setSurface(hud);
     }
 
     @Override
-    public boolean autoresize() {
+    public boolean autosize() {
         return true;
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        hud.dragMode = null;
+//        hud.dragMode = null;
         super.mouseReleased(e);
     }
 
@@ -124,74 +124,74 @@ public class ZoomOrtho extends Ortho {
 
     @Override
     public void windowLostFocus(WindowEvent e) {
-        hud.potentialDragMode = null;
+//        hud.potentialDragMode = null;
         super.windowLostFocus(e);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        hud.potentialDragMode = null;
+//        hud.potentialDragMode = null;
         super.mouseExited(e);
     }
 
 
-    public class HUD extends Windo {
-
-        {
-            clipBounds = false;
-        }
-
-        @Override
-        protected FingerResize fingeringResize(Windo.DragEdit mode) {
-            return new FingerResizeWindow(space, 0, mode);
-        }
-
-        @Override
-        protected Fingering fingeringMove() {
-            return null;
-        }
-
-
-        @Override
-        protected boolean opaque() {
-            return false;
-        }
-
-        @Override
-        protected void postpaint(GL2 gl) {
-
-
-            if (ZoomOrtho.this.focused()) {
-                gl.glPushMatrix();
-                gl.glLoadIdentity();
-
-                super.postpaint(gl);
-
-                gl.glPopMatrix();
-            }
-
-        }
-
-        @Override
-        public boolean fingeringBounds(Finger finger) {
-            return true;
-        }
-
-        public v2 windowHitPointRel(Finger finger) {
-            v2 pp = finger.posPixel;
-            return new v2(pp.x/w(), pp.y/h() );
-        }
-
-        @Override
-        public float w() {
-            return space.io.getWidthNext();
-        }
-
-        @Override
-        public float h() {
-            return space.io.getHeightNext();
-        }
-    }
+//    @Deprecated public class HUD extends Windo {
+//
+//        {
+//            clipBounds = false;
+//        }
+//
+//        @Override
+//        protected FingerResize fingeringResize(Windo.DragEdit mode) {
+//            return new FingerResizeWindow(space, 0, mode);
+//        }
+//
+//        @Override
+//        protected Fingering fingeringMove() {
+//            return null;
+//        }
+//
+//
+//        @Override
+//        protected boolean opaque() {
+//            return false;
+//        }
+//
+//        @Override
+//        protected void postpaint(GL2 gl) {
+//
+//
+//            if (ZoomOrtho.this.focused()) {
+//                gl.glPushMatrix();
+//                gl.glLoadIdentity();
+//
+//                super.postpaint(gl);
+//
+//                gl.glPopMatrix();
+//            }
+//
+//        }
+//
+//        @Override
+//        public boolean fingeringBounds(Finger finger) {
+//            return true;
+//        }
+//
+//        public v2 windowHitPointRel(Finger finger) {
+//            v2 pp = finger.posPixel;
+//            return new v2(pp.x/w(), pp.y/h() );
+//        }
+//
+//        @Override
+//        public float w() {
+//            return space.io.getWidthNext();
+//        }
+//
+//        @Override
+//        public float h() {
+//            return space.io.getHeightNext();
+//        }
+//    }
 
 
 }

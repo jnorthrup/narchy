@@ -2,7 +2,6 @@ package spacegraph;
 
 import spacegraph.space2d.SpaceGraphFlat;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.Spatial;
@@ -14,9 +13,7 @@ public enum SpaceGraph { ;
 
     /** creates window with 2d with single surface layer, maximized to the size of the window */
     public static JoglSpace window(Surface s, int w, int h) {
-        JoglSpace win = new SpaceGraphFlat(
-                new ZoomOrtho(s)
-        );
+        JoglSpace win = new SpaceGraphFlat(s);
         if (w > 0 && h > 0) {
             win.io.show(w, h);
         }

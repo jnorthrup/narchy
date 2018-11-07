@@ -31,7 +31,7 @@ abstract public class FingerMovePixels extends FingerMove {
 
     @Override
     protected v2 pos(Finger finger) {
-        return finger.posPixel.clone();
+        return finger.posPixel;
     }
 
 }

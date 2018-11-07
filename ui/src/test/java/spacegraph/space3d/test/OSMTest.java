@@ -1,8 +1,6 @@
 package spacegraph.space3d.test;
 
 import jcog.User;
-import spacegraph.space2d.WidgetTest;
-import spacegraph.space2d.hud.SubOrtho;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.widget.OsmSpace;
 import spacegraph.util.geo.IRL;
@@ -27,7 +25,7 @@ public class OSMTest {
 
 
 
-        sg.add(new SubOrtho(WidgetTest.widgetDemo()).posWindow(0, 0, 0.3f, 1f));
+//        sg.add(new SubOrtho(WidgetTest.widgetDemo()).posWindow(0, 0, 0.3f, 1f));
 
     }
 }

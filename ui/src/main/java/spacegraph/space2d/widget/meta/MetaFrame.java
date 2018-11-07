@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.meta;
 
 import com.jogamp.opengl.GL2;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
@@ -56,13 +57,29 @@ public class MetaFrame extends Bordering {
     boolean expanded = false;
     SurfaceRender renderExpanded = null;
 
+
+
     @Override
     protected boolean prePaint(SurfaceRender r) {
         if (expanded) {
-            pos(r.visible().scale(0.8f));
-            //doLayout(0);
+            RectFloat v = r.pixelVisible().scale(0.8f);
+            pos(v);
+            //pos(0, 0, r.pw, r.ph);
+
             showing = true;
-            renderExpanded.set(r);
+            //renderExpanded.set(r);
+            renderExpanded.start(r.pw, r.ph, r.dtMS);
+//            renderExpanded.dtMS = r.dtMS;
+//            renderExpanded.scaleX = 1;
+//            renderExpanded.scaleY = 1;
+//            renderExpanded.x1 = 0;
+//            renderExpanded.y1 = 0;
+//            renderExpanded.x2 = r.pw;
+//            renderExpanded.y2 = r.ph;
+//            renderExpanded.pw = r.pw;
+//            renderExpanded.ph = r.ph;
+            //renderExpanded = r;
+
             r.overlay(this::paintLater);
             return false;
         } else
@@ -93,20 +110,20 @@ public class MetaFrame extends Bordering {
 
                     if (renderExpanded==null)
                         renderExpanded = new SurfaceRender();
-                    
-                    //clipBounds = false;
+
+                    clipBounds = false;
 
                 } else {
 
-                    //clipBounds = true;
+                    clipBounds = true;
 
                     SurfaceBase p = parent;
                     if (p!=null) {
                         ((Container) p).layout();
                     }
 
+
                 }
-                layout();
 
                 expanded = !expanded;
 

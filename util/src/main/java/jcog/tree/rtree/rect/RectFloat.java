@@ -7,6 +7,7 @@ import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.point.Float2D;
 
 import static jcog.Util.lerp;
+import static jcog.tree.rtree.Spatialization.EPSILON;
 
 
 public class RectFloat implements HyperRegion<Float2D>, Comparable<RectFloat> {
@@ -166,6 +167,7 @@ public class RectFloat implements HyperRegion<Float2D>, Comparable<RectFloat> {
         }
     }
 
+
     @Override
     public boolean contains(final HyperRegion r) {
         if (this == r) return true;
@@ -196,7 +198,7 @@ public class RectFloat implements HyperRegion<Float2D>, Comparable<RectFloat> {
 
     @Override
     public boolean equals(Object o) {
-        return equals(o, (float) Spatialization.EPSILON);
+        return equals(o, (float) EPSILON);
     }
 
     public boolean equals(Object o, float epsilon) {
@@ -239,13 +241,9 @@ public class RectFloat implements HyperRegion<Float2D>, Comparable<RectFloat> {
     @Override
     public int compareTo(RectFloat o) {
         throw new TODO();
-
-
-
-
     }
 
-    public float mag() {
+    public final float mag() {
         return Math.max(w, h);
     }
 
@@ -283,7 +281,7 @@ public class RectFloat implements HyperRegion<Float2D>, Comparable<RectFloat> {
     }
 
     public RectFloat scale(float s) {
-        if (s == 1)
+        if (Util.equals(s, 0, EPSILON))
             return this;
         else
             return RectFloat.XYWH(cx(), cy(), w * s, h * s);

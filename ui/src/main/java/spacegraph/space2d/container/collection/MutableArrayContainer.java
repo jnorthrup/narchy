@@ -49,8 +49,9 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
                         }
                     }
                 }
+
+                layout();
             }
-            layout();
 
             return s;
         });

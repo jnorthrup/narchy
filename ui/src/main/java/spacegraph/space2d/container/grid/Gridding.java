@@ -65,7 +65,7 @@ public class Gridding extends MutableListContainer {
 
     public Gridding aspect(float gridAspect) {
         this.gridAspect = gridAspect;
-        layout();
+        layout(); //TODO only if gridAspect change
         return this;
     }
     
@@ -181,7 +181,6 @@ public class Gridding extends MutableListContainer {
 
                 float x1 = px * W;
                 c.pos(X+x1, Y+y1, X+x1+dxc*W, Y+y1+dyc*H);
-                c.layout();
 
                 px += dx;
 

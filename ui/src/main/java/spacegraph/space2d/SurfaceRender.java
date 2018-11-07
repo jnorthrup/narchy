@@ -17,8 +17,8 @@ public class SurfaceRender {
     /** ms since last update */
     public int dtMS;
     public long renderStartNS;
-    private float scaleX, scaleY;
-    private float x1, x2, y1, y2;
+    public float scaleX, scaleY;
+    public float x1, x2, y1, y2;
 
     public void set(SurfaceRender c) {
         this.pw = c.pw;
@@ -83,8 +83,8 @@ public class SurfaceRender {
     public SurfaceRender set(float scalex, float scaley, float cx, float cy) {
         this.scaleX = scalex;
         this.scaleY = scaley;
-        float sxh = 0.5f * pw / scaleX;
-        float syh = 0.5f * ph / scaleY;
+        float sxh = 0.5f * pw / scalex;
+        float syh = 0.5f * ph / scaley;
         this.x1 = cx - sxh;
         this.x2 = cx + sxh;
         this.y1 = cy - syh;
@@ -95,23 +95,21 @@ public class SurfaceRender {
     public RectFloat visible() {
         return RectFloat.XYXY(x1, y1, x2, y2);
     }
+    public RectFloat pixelVisible() {
+        return RectFloat.XYXY(0, 0, pw, ph);
+    }
 
     public final boolean visible(RectFloat r) {
 //        if (r.w < pixelScaleX)
 //            return false;
 //        if (r.h < pixelScaleY)
 //            return false;
-        if (r.right() < x1 || r.left() > x2)
-            return false;
-        if (r.bottom() < y1 || r.top() > y2)
-            return false;
-        return true;
+        return !(r.right() < x1) && !(r.left() > x2) && !(r.bottom() < y1) && !(r.top() > y2);
     }
 
+    /** percentage of screen visible */
     public v2 visP(RectFloat bounds) {
-        float pctX = bounds.w * scaleX;
-        float pctY = bounds.h * scaleY;
-        return new v2(pctX, pctY);
+        return new v2(bounds.w * scaleX, bounds.h * scaleY);
     }
 
     public float visPMin(RectFloat bounds) {
@@ -121,18 +119,14 @@ public class SurfaceRender {
 
     public final boolean visP(RectFloat bounds, int minPixelsToBeVisible) {
 
-        if (bounds.w * scaleX < minPixelsToBeVisible)
-            return false;
-        if (bounds.h * scaleY < minPixelsToBeVisible)
-            return false;
-
-        return true;
+        return !(bounds.w * scaleX < minPixelsToBeVisible) && !(bounds.h * scaleY < minPixelsToBeVisible);
     }
 
     public void layer(Surface l, GL2 gl) {
         l.render(gl, this);
         overlay.clearWith(Consumer::accept, gl);
     }
+
 
 
 
