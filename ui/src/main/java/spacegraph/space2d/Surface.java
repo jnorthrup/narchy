@@ -219,7 +219,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         }
     }
 
-    public void compile(SurfaceRender r) {
+    protected void compile(SurfaceRender r) {
         r.on(this::render);
     }
 

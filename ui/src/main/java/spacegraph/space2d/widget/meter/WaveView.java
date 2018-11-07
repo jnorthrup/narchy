@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.meter;
 
 import com.jogamp.opengl.GL2;
+import jcog.TODO;
 import jcog.Util;
 import jcog.pri.ScalarValue;
 import jcog.signal.buffer.CircularFloatBuffer;
@@ -68,14 +69,17 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
 
         @Override
         protected boolean startDrag(Finger f) {
-            selectStart = sample(f.pos.x);
-            return true;
+//            selectStart = sample(f.pos.x);
+//            return true;
+            throw new TODO();
         }
 
         @Override
         protected boolean drag(Finger f) {
-            selectEnd = sample(f.pos.x);
-            return true;
+            //selectEnd = sample(f.pos.x);
+            //return true;
+            throw new TODO();
+
         }
     };
 

@@ -1,7 +1,5 @@
 package spacegraph.space2d.hud;
 
-import com.jogamp.newt.event.MouseEvent;
-import com.jogamp.newt.event.WindowEvent;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMovePixels;
 import spacegraph.input.finger.Fingering;
@@ -18,7 +16,25 @@ public class ZoomOrtho extends Ortho {
     public final static short PAN_BUTTON = 0;
     private final static short MOVE_WINDOW_BUTTON = 1;
 
-    //private final HUD hud = new HUD();
+    @Override
+    protected void starting() {
+        super.starting();
+
+        //mouse wheel zoom
+        onUpdate((w)->{
+
+            //absorb remaining rotationY
+            float zoomRate = 0.5f;
+
+            if (!(finger.touching() instanceof Finger.WheelAbsorb)) {
+                float dy = finger.rotationY(false);
+                if (dy != 0) {
+                    v2 xy = cam.screenToWorld(finger.posPixel);
+                    cam.set(xy.x, xy.y, cam.z * (1f + (dy * zoomRate)));
+                }
+            }
+        });
+    }
 
     private final Fingering fingerContentPan = new FingerMovePixels(PAN_BUTTON) {
 
@@ -81,30 +97,18 @@ public class ZoomOrtho extends Ortho {
 
     public ZoomOrtho(Surface content, Finger finger, NewtKeyboard keyboard) {
         super(content, finger, keyboard);
-        //hud.set(content);
     }
 
-    @Override
-    public void start(JoglSpace s) {
-        super.start(s);
-        //setSurface(hud);
-    }
 
     @Override
     public boolean autosize() {
         return true;
     }
 
-    @Override
-    public void mouseReleased(MouseEvent e) {
-//        hud.dragMode = null;
-        super.mouseReleased(e);
-    }
+
 
     @Override
     protected Surface finger() {
-
-
 
         Surface touchPrev = finger.touching();
         Surface touchNext = super.finger();
@@ -118,80 +122,10 @@ public class ZoomOrtho extends Ortho {
             }
         }
 
+
+
         return touchNext;
     }
-
-
-    @Override
-    public void windowLostFocus(WindowEvent e) {
-//        hud.potentialDragMode = null;
-        super.windowLostFocus(e);
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-//        hud.potentialDragMode = null;
-        super.mouseExited(e);
-    }
-
-
-//    @Deprecated public class HUD extends Windo {
-//
-//        {
-//            clipBounds = false;
-//        }
-//
-//        @Override
-//        protected FingerResize fingeringResize(Windo.DragEdit mode) {
-//            return new FingerResizeWindow(space, 0, mode);
-//        }
-//
-//        @Override
-//        protected Fingering fingeringMove() {
-//            return null;
-//        }
-//
-//
-//        @Override
-//        protected boolean opaque() {
-//            return false;
-//        }
-//
-//        @Override
-//        protected void postpaint(GL2 gl) {
-//
-//
-//            if (ZoomOrtho.this.focused()) {
-//                gl.glPushMatrix();
-//                gl.glLoadIdentity();
-//
-//                super.postpaint(gl);
-//
-//                gl.glPopMatrix();
-//            }
-//
-//        }
-//
-//        @Override
-//        public boolean fingeringBounds(Finger finger) {
-//            return true;
-//        }
-//
-//        public v2 windowHitPointRel(Finger finger) {
-//            v2 pp = finger.posPixel;
-//            return new v2(pp.x/w(), pp.y/h() );
-//        }
-//
-//        @Override
-//        public float w() {
-//            return space.io.getWidthNext();
-//        }
-//
-//        @Override
-//        public float h() {
-//            return space.io.getHeightNext();
-//        }
-//    }
 
 
 }

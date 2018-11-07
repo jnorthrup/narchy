@@ -1,13 +1,14 @@
 package spacegraph.space2d.hud;
 
-import com.jogamp.newt.event.*;
+import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.event.WindowListener;
+import com.jogamp.newt.event.WindowUpdateEvent;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.event.Off;
 import jcog.exe.Exe;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.tuple.Pair;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.Surface;
@@ -25,7 +26,6 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -35,7 +35,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 /**
  * orthographic widget adapter. something which goes on the "face" of a HUD ("head"s-up-display)
  */
-public class Ortho extends Container implements SurfaceRoot, WindowListener, MouseListener, KeyPressed {
+public class Ortho<S extends Surface> extends Container implements SurfaceRoot, WindowListener, KeyPressed {
 
 
     private final static float focusAngle = (float) Math.toRadians(45);
@@ -47,11 +47,10 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
      * current view area, in absolute world coords
      */
     public final v2 scale = new v2(1, 1);
-    private final AtomicBoolean focused = new AtomicBoolean(false);
+
     private final Map<String, Pair<Object, Runnable>> singletons = new HashMap();
     private final Deque<v3> zoomStack = new ArrayDeque();
-    private final Runnable fingerUpdate;
-    Surface surface;
+    S surface;
     protected JoglSpace space;
     private final float camZmin = 5;
     private volatile float camZmax = 640000;
@@ -59,10 +58,13 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     private volatile float camYmin = -1, camYmax = +1;
     private final float zoomMargin = 0.1f;
 
-    private transient SurfaceRender render = new SurfaceRender();
 
 
-    Ortho(Surface content, Finger finger, NewtKeyboard keyboard) {
+    /** finger position local to this layer/camera */
+    public final v2 fingerPos = new v2();
+
+
+    public Ortho(S content, Finger finger, NewtKeyboard keyboard) {
         super();
 
         this.cam = new Camera();
@@ -70,19 +72,18 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         this.keyboard = keyboard;
 
         this.finger = finger;
-        this.fingerUpdate = () -> {
-            if (focused())
-                finger();
-        };
-
-
 
         setSurface(content);
     }
 
-    public void setSurface(Surface content) {
+    private void fingerUpdate() {
+        if (focused())
+            finger();
+    }
+
+    public void setSurface(S content) {
         synchronized (this) {
-            Surface oldSurface = this.surface;
+            S oldSurface = this.surface;
             if (oldSurface != null) {
                 if (oldSurface == content) {
                     return;//no change
@@ -118,13 +119,11 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     final boolean focused() {
-        return focused.getOpaque();
+        return finger.focused();
     }
 
+    @Override public final void compile(SurfaceRender render) {
 
-
-    protected final void render() {
-        this.render = space.rendering;
         float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
         float s = zoom * Math.max(w(), h());
 
@@ -133,8 +132,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     @Override
     protected void paintIt(GL2 gl, SurfaceRender r) {
-        gl.glLoadIdentity();
 
+        gl.glLoadIdentity();
 
         gl.glPushMatrix();
 
@@ -143,6 +142,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         gl.glTranslatef(-cam.x, -cam.y, 0);
 
         r.render(gl);
+
+        gl.glPopMatrix();
     }
 
 
@@ -151,7 +152,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     }
 
-    boolean autosize() {
+    protected boolean autosize() {
         return false;
     }
 
@@ -203,26 +204,24 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
             this.space = s;
 
-
             s.io.addWindowListener(this);
-            if (space.io.window.hasFocus())
-                mouseEntered(null);
-
-            s.io.addMouseListenerPre(this);
 
             s.io.addKeyListener(keyboard);
 
             windowResized(null);
 
             animate(cam);
-            animate(fingerUpdate);
-            animate((Runnable)this::render);
+            animate(this::fingerUpdate);
+
 
             if (surface.parent == null)
                 surface.start(this);
+
+            starting();
         }
 
     }
+
 
 
     @Override
@@ -328,8 +327,19 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     @Override
+    public void windowGainedFocus(WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowLostFocus(WindowEvent e) {
+
+    }
+
+    @Override
     public boolean stop() {
         synchronized (this) {
+            stopping();
             assert (surface.parent == this);
             return surface.stop();
         }
@@ -351,21 +361,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
 
-    @Override
-    public void windowGainedFocus(WindowEvent e) {
-        if (focused.compareAndSet(false, true)) {
-            finger.enter();
-            update(false, null);
-        }
-    }
-
-    @Override
-    public void windowLostFocus(WindowEvent e) {
-        if (focused.compareAndSet(true, false)) {
-            update(false, null);
-            finger.exit();
-        }
-    }
 
     @Override
     public void windowRepaint(WindowUpdateEvent e) {
@@ -378,99 +373,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(@Nullable MouseEvent e) {
-        if (focused.compareAndSet(false, true)) {
-            finger.enter();
-            if (e != null)
-                update(false, e);
-        }
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-        if (focused.compareAndSet(true, false)) {
-            update(false, null);
-            finger.exit();
-        }
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
 
 
-        if (update(false, e, e.getButtonsDown())) {
-            if (finger.touching() != null)
-                e.setConsumed(true);
-        }
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-
-        short[] bd = e.getButtonsDown();
-
-
-        for (int i = 0, bdLength = bd.length; i < bdLength; i++)
-            bd[i] = (short) -bd[i];
-
-        update(false, e, bd);
-
-        if (finger.touching() != null)
-            e.setConsumed(true);
-
-    }
-
-
-    @Override
-    public void mouseDragged(MouseEvent e) {
-
-
-        if (update(true, e))
-            if (finger.touching() != null)
-                e.setConsumed(true);
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent e) {
-
-        update(true, e);
-
-
-    }
-
-    private boolean update(boolean moved, MouseEvent e) {
-        return update(moved, e, null);
-    }
-
-    private boolean update(boolean moved, MouseEvent e, short[] buttonsDown) {
-
-        if (moved) {
-
-            JoglSpace w = this.space;
-            int pmx = e.getX();
-            int pmy = w.io.getHeight() - e.getY();
-            float wmx = +cam.x + (-0.5f * w() + pmx) / scale.x;
-            float wmy = +cam.y + (-0.5f * h() + pmy) / scale.y;
-
-            finger.posPixel.set(pmx, pmy);
-            finger.posScreen.set(w.io.getX() + pmx, w.io.getScreenY() - (e.getY() + w.io.getY()));
-            finger.pos.set(wmx, wmy);
-        }
-
-        if (buttonsDown != null) {
-
-            finger.update(buttonsDown);
-        }
-
-        return e != null;
-    }
 
     /**
      * called each frame regardless of mouse activity
@@ -481,17 +385,15 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
      * during the update loop.
      */
     protected Surface finger() {
+        /** layer specific, separate from Finger */
+        float pmx = finger.posPixel.x, pmy = finger.posPixel.y;
+        float wmx = +cam.x + (-0.5f * w() + pmx) / scale.x;
+        float wmy = +cam.y + (-0.5f * h() + pmy) / scale.y;
+        fingerPos.set(wmx, wmy);
+
         return finger.on(surface);
     }
 
-
-
-    @Override
-    protected void paintAbove(GL2 gl, SurfaceRender r) {
-
-        gl.glPopMatrix();
-
-    }
 
     @Override
     public boolean visible() {
@@ -504,15 +406,11 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
 
-    @Override
-    public void mouseWheelMoved(MouseEvent e) {
-        if (e.isConsumed())
-            return;
 
 
-        finger.rotationAdd(e.getRotation());
+    public final S content() {
+        return surface;
     }
-
 
 
     public class Camera extends AnimVector3f {
@@ -556,17 +454,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
             camXmax = bounds.w - visW;
             camYmax = bounds.h - visH;
 
-            //absorb remaining rotationY
-            float zoomRate = 0.5f;
-
-            if (!(finger.touching() instanceof Finger.WheelAbsorb)) {
-                float dy = finger.rotationY(false);
-                if (dy != 0) {
-                    float zx = finger.pos.x;
-                    float zy = finger.pos.y;
-                    cam.set(zx, zy, cam.z * (1f + (dy * zoomRate)));
-                }
-            }
 
         }
 
@@ -599,10 +486,24 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
             return t.lengthSquared();
         }
 
-        public v2 worldToScreen(float sw, float sh, float wx, float wy) {
+        public v2 worldToScreen(float wx, float wy) {
             return new v2(
-                    ((wx - cam.x) * scale.x) + sw / 2,
-                    ((wy - cam.y) * scale.y) + sh / 2
+                    ((wx - cam.x) * scale.x) + w() / 2,
+                    ((wy - cam.y) * scale.y) + h() / 2
+            );
+        }
+
+        public final v2 worldToScreen(v2 xy) {
+            return worldToScreen(xy.x, xy.y);
+        }
+        public final v2 screenToWorld(v2 xy) {
+            return screenToWorld(xy.x, xy.y);
+        }
+
+        public v2 screenToWorld(float x, float y) {
+            return new v2(
+                    (x /scale.x + cam.x) - w() /2,
+                    (y /scale.y + cam.y) - h() /2
             );
         }
     }

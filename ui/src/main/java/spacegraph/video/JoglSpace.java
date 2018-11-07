@@ -78,6 +78,8 @@ abstract public class JoglSpace {
         return JoglSpace.this;
     }
 
+    public void onReady(Runnable r) { pending.add(r); }
+
     public boolean remove(Surface layer) {
         if (JoglSpace.this.layers.remove(layer)) {
             layer.stop();
@@ -168,13 +170,13 @@ abstract public class JoglSpace {
 
 
             rendering.restart(w, h, dtMS);
-            for (Surface l : layers) {
-//                if (l.render==null) {
-                    l.render(gl, rendering);
-//                } else {
-//                    l.render.accept(gl, rendering);
-//                }
+            for (Surface/*Root*/ l : layers) {
+                if (l instanceof Ortho) {
 
+                    ((Ortho)l).compile(rendering);
+                }
+
+                l.render(gl, rendering);
             }
 
             gl.glEnable(GL2.GL_DEPTH_TEST);
@@ -293,6 +295,8 @@ abstract public class JoglSpace {
 
             initInput();
 
+            JoglSpace.this.init();
+
             flush();
             onUpdate((Consumer) (w -> flush()));
         }
@@ -317,6 +321,12 @@ abstract public class JoglSpace {
                                   int height) {
 
         }
+
+
+    }
+
+    /** for misc init tasks */
+    protected void init() {
 
 
     }

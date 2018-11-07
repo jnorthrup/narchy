@@ -93,7 +93,7 @@ class VerletSurfaceTest {
         @Override
         public Surface finger(Finger finger) {
             if (finger != null) {
-                float mouseX = finger.pos.x, mouseY = finger.pos.y;
+                float mouseX = finger.posOrtho.x, mouseY = finger.posOrtho.y;
                 mousePos.set(mouseX, mouseY);
 
 
@@ -159,7 +159,7 @@ class VerletSurfaceTest {
                 @Override
                 public Surface finger(Finger finger) {
                     if (finger != null) {
-                        float mouseX = finger.pos.x, mouseY = finger.pos.y;
+                        float mouseX = finger.posOrtho.x, mouseY = finger.posOrtho.y;
                         mousePos.set(mouseX, mouseY);
 
 

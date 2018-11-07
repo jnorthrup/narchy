@@ -38,24 +38,26 @@ public class AtomicMetalBitSet extends MetalBitSet {
     @Override
     public void set(int i) {
         int mask = 1<<i;
+        //TODO getAndAccumulate
         X.getAndUpdate(this, v-> v|(mask) );
     }
 
     public boolean getAndSet(int i) {
         int mask = 1<<i;
+        //TODO getAndAccumulate
         return (X.getAndUpdate(this, v-> v|(mask) ) & mask) > 0;
     }
 
     @Override
     public void clear(int i) {
         int antimask = ~(1<<i);
-        X.getAndUpdate(this, v-> v&(antimask) );
+        X.accumulateAndGet(this, antimask, (v,am)-> v&(am) );
     }
 
     public boolean getAndClear(int i) {
         int mask = (1<<i);
         int antimask = ~mask;
-        return (X.getAndUpdate(this, v-> v&(antimask) ) & mask) > 0;
+        return (X.accumulateAndGet(this, antimask, (v,am)-> v&(am) ) & mask) > 0;
     }
 
     @Override

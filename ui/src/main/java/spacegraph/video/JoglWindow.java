@@ -49,7 +49,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     public float dtS = 0;
     public final Topic<JoglWindow> eventClosed = new ListTopic<>();
 
-    private float updateFPS = 32f;
+//    private float updateFPS = 32f;
     public float renderFPS = 32f;
 
 //    /** reduction throttle for update loop when unfoused */
@@ -278,20 +278,20 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
 
-    public void show(int w, int h) {
-        show("", w, h);
+    public GLWindow show(int w, int h) {
+        return show("", w, h);
     }
 
 
-    private void show(String title, int w, int h, int x, int y) {
+    private GLWindow show(String title, int w, int h, int x, int y) {
 
-        Threading.invokeOnOpenGLThread(false, () -> {
+        //Threading.invokeOnOpenGLThread(false, () -> {
             //GLWorkerThread.invokeLater(()->{
             //Exe.invokeLater(() -> {
 
             if (window != null) {
 
-                return;
+                return window;
             }
 
             GLWindow W = window();
@@ -319,10 +319,11 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             }
             W.setVisible(true);
 
+            return W;
             //});
 
 
-        });
+        //});
 
     }
 
@@ -399,7 +400,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
         logger.info("fps render={} update={}", render, update);
         renderFPS = render;
-        updateFPS = update;
+//        updateFPS = update;
 //        if (updater.isRunning()) {
 //            renderer.loop.setFPS(renderFPS);
 //            updater.setFPS(updateFPS);
@@ -407,9 +408,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     }
 
-    private void show(String title, int w, int h) {
+    private GLWindow show(String title, int w, int h) {
         //Threading.invokeOnOpenGLThread(false, ()->{
-        show(title, w, h, Integer.MIN_VALUE, Integer.MIN_VALUE);
+        return show(title, w, h, Integer.MIN_VALUE, Integer.MIN_VALUE);
         //});
     }
 

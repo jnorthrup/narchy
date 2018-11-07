@@ -1,7 +1,7 @@
 package spacegraph.space2d;
 
-import com.jogamp.opengl.GL2;
 import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.NewtMouse;
 import spacegraph.space2d.hud.NewtKeyboard;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.video.JoglSpace;
@@ -9,6 +9,7 @@ import spacegraph.video.JoglSpace;
 public class SpaceGraphFlat extends JoglSpace {
 
     private final ZoomOrtho zoom;
+//    private final Ortho<MutableListContainer> hud;
 
     private final Finger finger;
     private final NewtKeyboard keyboard;
@@ -16,30 +17,41 @@ public class SpaceGraphFlat extends JoglSpace {
     public SpaceGraphFlat(Surface content) {
         super();
 
-        finger = new Finger();
 
-        keyboard = new NewtKeyboard();
+        keyboard = new NewtKeyboard(/*TODO this */);
 
-        add(zoom = new ZoomOrtho(content, finger, keyboard) {
+        finger = new NewtMouse(this);
+
+
+        zoom = new ZoomOrtho(content, finger, keyboard) {
             @Override
             protected void starting() {
                 super.starting();
-                io.window.setPointerVisible(false);
+                io.window.setPointerVisible(false); //HACK
             }
-        });
-
-        add(zoom.finger.cursorSurface());
-
-
-        add(zoom.finger.zoomBoundsSurface(zoom.cam));
+        };
+        add(zoom);
+        add(finger.zoomBoundsSurface(zoom.cam));
+        add(finger.cursorSurface());
         //addOverlay(this.keyboard.keyFocusSurface(cam));
+
+//        Ortho<MutableListContainer> hud = new Ortho<>(new MutableListContainer(), finger, keyboard) {
+//            @Override
+//            protected boolean autosize() {
+//                return true;
+//            }
+//        };
+//        add(hud);
+//        hud.content().add(new PushButton("x").pos(0, 0, 100f, 100f));
+
+
+
+
 
     }
 
 
     @Override
-    protected void initDepth(GL2 gl) {
-        
+    protected void init() {
     }
-
 }

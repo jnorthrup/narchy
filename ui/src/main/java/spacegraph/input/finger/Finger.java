@@ -7,6 +7,7 @@ import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.SurfaceHiliteOverlay;
 import spacegraph.util.math.v2;
@@ -22,25 +23,28 @@ import java.util.function.Predicate;
  * <p>
  * tracks state changes and signals widgets of these
  */
-public class Finger {
+abstract public class Finger {
 
 
     private final static int MAX_BUTTONS = 5;
 
     private final static float DRAG_THRESHOLD_PIXELS = 5f;
 
-    public final v2 pos = new v2(), posPixel = new v2(), posScreen = new v2();
+    public final v2 posPixel = new v2(), posScreen = new v2();
 
 
     /**
      * last local and global positions on press (downstroke).
      * TODO is it helpful to also track upstroke position?
      */
-    public final v2[] pressPos = new v2[MAX_BUTTONS], pressPosPixel = new v2[MAX_BUTTONS];
+    public final v2[] pressPosPixel = new v2[MAX_BUTTONS];
+
+
+    @Deprecated /* HACK */ /* TEMPORARY */ public final v2 posOrtho = new v2(0,0);
+    @Nullable private transient Ortho ortho;
 
     {
         for (int i = 0; i < MAX_BUTTONS; i++) {
-            pressPos[i] = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
             pressPosPixel[i] = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
         }
     }
@@ -57,8 +61,7 @@ public class Finger {
      * widget above which this finger currently hovers
      */
     public final AtomicReference<Surface> touching = new AtomicReference<>();
-    private boolean focused = false;
-
+    protected final AtomicBoolean focused = new AtomicBoolean(false);
 
     public Finger() {
 
@@ -126,14 +129,14 @@ public class Finger {
      * call when finger exits the window / screen, the window becomes unfingerable, etc..
      */
     public void exit() {
-        focused = false;
+        focused.set(false);
     }
 
     /**
      * call when finger enters the window
      */
     public void enter() {
-        focused = true;
+        focused.set(true);
     }
 
     /** commit all buttons */
@@ -171,7 +174,6 @@ public class Finger {
             buttonDown.set(b, pressed);
 
             if (pressed && !wasPressed(b)) {
-                pressPos[b].set(pos);
                 pressPosPixel[b].set(posPixel);
             }
         }
@@ -179,7 +181,24 @@ public class Finger {
         //System.out.println(buttonSummary());
     }
 
+    /** call once per frame */
+    public void update() {
+        for (AtomicFloat r : rotation)
+            r.getAndZero();
+
+    }
+
+    /** called for each layer */
     public Surface on(Surface root) {
+
+        SurfaceRoot rootRoot = root.root();
+        if (rootRoot instanceof Ortho) {
+            this.ortho = (Ortho) rootRoot;
+            this.posOrtho.set(ortho.cam.screenToWorld(posPixel));
+        } else {
+            this.ortho = null;
+            this.posOrtho.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+        }
 
         Fingering ff = this.fingering.get();
 //        Fingering f0 = ff;
@@ -193,11 +212,10 @@ public class Finger {
         }
 
 
-        for (AtomicFloat r : rotation)
-            r.getAndZero();
 
-
-        @Nullable Surface touchPrev = touch(touchedNext);
+        //if (touchedNext!=null) {
+            @Nullable Surface touchPrev = touch(touchedNext);
+        //}
 
         if (ff != Fingering.Null) {
 
@@ -230,6 +248,18 @@ public class Finger {
 
 
 
+    final static v2 OOB = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+
+    public v2 relativePos(v2 screen, Surface x) {
+
+        Ortho root = ortho; //(Ortho) x.root();
+        if (root!=null)
+            return relative(root.cam.screenToWorld(screen), x);
+        else
+            return OOB;
+
+
+    }
     /**
      * allows a fingered object to push the finger off it
      */
@@ -268,8 +298,10 @@ public class Finger {
 
 
     public boolean releasedNow(int button, Surface c) {
-        return releasedNow(button) && Finger.relative(pressPos[button], c).inUnit();
+        return releasedNow(button) && relativePos(pressPosPixel[button], c).inUnit();
     }
+
+
 
     /**
      * additionally tests for no dragging while pressed
@@ -283,8 +315,7 @@ public class Finger {
 //        System.out.println(pressing(i) + "<-" + wasPressed(i));
 
         if (clickedNow(button)) {
-            v2 where = pressPos[button];
-            if (Finger.relative(where, c).inUnit()) {
+            if (relative(posOrtho, c).inUnit()) {
                 commitButton(button); //absorb the event
                 return true;
             }
@@ -335,7 +366,7 @@ public class Finger {
 //    }
 
     public v2 relativePos(Surface c) {
-        return relative(pos, c);
+        return relative(posOrtho, c);
     }
 
 
@@ -389,6 +420,10 @@ public class Finger {
         return new FingerZoomBoundsSurface(cam);
     }
 
+    public boolean focused() {
+        return focused.getOpaque();
+    }
+
 
     /**
      * HACK marker interface for surfaces which absorb wheel motion, to prevent other system handling from it (ex: camera zoom)
@@ -403,7 +438,7 @@ public class Finger {
 
         @Override
         protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-            if (focused)
+            if (focused())
                 renderer.paint(posPixel, Finger.this, surfaceRender.dtMS, gl);
         }
     }
@@ -415,7 +450,7 @@ public class Finger {
 
 
         @Override protected boolean enabled() {
-            return focused;
+            return focused();
         }
 
         @Override protected Surface target() {

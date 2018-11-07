@@ -152,7 +152,7 @@ public class Windo extends MutableUnitContainer {
     }
 
     protected boolean fingeringBounds(Finger finger) {
-        v2 f = finger.pos;
+        v2 f = finger.posOrtho;
         return bounds.contains(f.x, f.y);
     }
 
@@ -216,7 +216,7 @@ public class Windo extends MutableUnitContainer {
 //                pmy = mousePos.y;
 //            } else {
                 W = H = 0.5f;
-                v2 mousePos = root.finger.pos;
+                v2 mousePos = root.fingerPos;
                 pmx = mousePos.x;
                 pmy = mousePos.y;
 

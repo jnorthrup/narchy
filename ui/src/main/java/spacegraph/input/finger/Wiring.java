@@ -97,7 +97,7 @@ public class Wiring extends FingerDragging {
             updateEnd(f);
         }
 
-        pathVis.add(f.pos, 64);
+        pathVis.add(f.posOrtho, 64);
 
         return true;
     }

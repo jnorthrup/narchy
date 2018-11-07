@@ -49,7 +49,7 @@ public abstract class FingerMove extends FingerDragging {
     }
 
     v2 pos(Finger finger) {
-        return finger.pos;
+        return finger.posOrtho;
     }
 
 

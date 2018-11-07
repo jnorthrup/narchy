@@ -8,6 +8,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
+import spacegraph.util.math.v2;
 
 import java.io.PrintStream;
 import java.util.function.Consumer;
@@ -71,7 +72,7 @@ abstract public class Container extends Surface {
 
 
     @Override
-    public void compile(SurfaceRender r) {
+    protected void compile(SurfaceRender r) {
         if (!prePaint(r)) {
             showing = false;
             return;
@@ -96,7 +97,7 @@ abstract public class Container extends Surface {
     }
 
 
-    protected void doPaint(GL2 gl, SurfaceRender r) {
+    private final void doPaint(GL2 gl, SurfaceRender r) {
 
         paintIt(gl, r);
 
@@ -121,6 +122,9 @@ abstract public class Container extends Surface {
 
             Surface[] found = new Surface[1];
 
+            v2 fp = finger.posOrtho;
+            float fx = fp.x, fy = fp.y;
+
             whileEachReverse(c -> {
 
 
@@ -128,17 +132,16 @@ abstract public class Container extends Surface {
                     return true;
 
                 if ((c instanceof Container && !((Container) c).clipBounds) || (
-                        c.bounds.contains(finger.pos.x, finger.pos.y))) {
+                        c.bounds.contains(fx, fy))) {
 
-                    if (found[0] == null) { //TODO area?
                         Surface s = c.finger(finger);
                         if (s != null) {
 
                             found[0] = s;
 
-                            //return false;
+                            return false;
                         }
-                    }
+
                 }
 
                 return true;

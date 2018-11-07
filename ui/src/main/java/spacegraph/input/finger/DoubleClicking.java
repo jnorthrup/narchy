@@ -71,7 +71,7 @@ public class DoubleClicking {
 
 
             reset();
-            onDoubleClick.accept(finger.pos);
+            onDoubleClick.accept(finger.posOrtho);
             return true;
 
         } else if (count == 1) {
