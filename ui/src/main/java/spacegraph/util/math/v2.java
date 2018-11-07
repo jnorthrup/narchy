@@ -833,4 +833,8 @@ public class v2 implements java.io.Serializable, Cloneable {
     public void ensureFinite() {
         Util.assertFinite(x); Util.assertFinite(y);
     }
+
+    public float distance(v2 x) {
+        return (float) Math.sqrt(distanceSq(x));
+    }
 }

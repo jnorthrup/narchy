@@ -135,7 +135,7 @@ public class OsmSpace implements GLUtessellatorCallback {
         @Override
         public Surface finger(Finger finger) {
             float wheel;
-            if ((wheel = finger.rotationY())!=0) {
+            if ((wheel = finger.rotationY(true))!=0) {
                 
                 scale.multiply( (1f - wheel*0.1f) );
             }

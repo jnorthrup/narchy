@@ -195,6 +195,7 @@ abstract public class Finger {
         if (rootRoot instanceof Ortho) {
             this.ortho = (Ortho) rootRoot;
             this.posOrtho.set(ortho.cam.screenToWorld(posPixel));
+            //System.out.println(posPixel + " pixel -> " + posOrtho + " world");
         } else {
             this.ortho = null;
             this.posOrtho.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
@@ -202,20 +203,20 @@ abstract public class Finger {
 
         Fingering ff = this.fingering.get();
 //        Fingering f0 = ff;
-        Surface touchedNext;
+        Surface touchNext;
 
 
         if (ff == Fingering.Null || ff.escapes()) {
-            touchedNext = root.finger(this);
+            touchNext = root.finger(this);
         } else {
-            touchedNext = touching.get();
+            touchNext = touching.get();
         }
 
 
 
-        //if (touchedNext!=null) {
-            @Nullable Surface touchPrev = touch(touchedNext);
-        //}
+
+        @Nullable Surface touchPrev = touch(touchNext);
+
 
         if (ff != Fingering.Null) {
 
@@ -226,7 +227,7 @@ abstract public class Finger {
 
         }
 
-        return touchedNext;
+        return touchNext;
     }
 
     private Surface touch(Surface next) {
@@ -390,10 +391,6 @@ abstract public class Finger {
         return rotation[0].floatValue();
     }
 
-    public float rotationY() {
-        return rotationY(true);
-    }
-
     public float rotationY(boolean absorb) {
         AtomicFloat r = rotation[1];
         return absorb ? r.getAndSet(0) : r.get();
@@ -438,8 +435,16 @@ abstract public class Finger {
 
         @Override
         protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-            if (focused())
+            if (focused()) {
                 renderer.paint(posPixel, Finger.this, surfaceRender.dtMS, gl);
+
+                //for debugging:
+//                if (ortho!=null) {
+//                    renderer.paint(
+//                        ortho.cam.worldToScreen(ortho.cam.screenToWorld(posPixel)),
+//                            Finger.this, surfaceRender.dtMS, gl);
+//                }
+            }
         }
     }
     private final class FingerZoomBoundsSurface extends SurfaceHiliteOverlay {

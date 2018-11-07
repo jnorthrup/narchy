@@ -116,6 +116,7 @@ abstract public class Deriver extends Causable {
         on(DurService.on(nar, this::update));
     }
 
+    /** updated each dur */
     private void update() {
 
         budgeting.update(this, nar);
@@ -171,8 +172,8 @@ abstract public class Deriver extends Causable {
     }
 
     /** punctuation equalizer: value factor for the conclusion punctuation type [0..1.0] */
-    public final float puncFactor(byte conclusion) {
-        return budgeting.puncPreFactor(conclusion);
+    public final float preAmp(byte concPunc) {
+        return budgeting.preAmp(concPunc);
     }
 
 

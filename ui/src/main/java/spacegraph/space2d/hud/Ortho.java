@@ -64,8 +64,10 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
     public final v2 fingerPos = new v2();
 
 
-    public Ortho(S content, Finger finger, NewtKeyboard keyboard) {
+    public Ortho(JoglSpace space, S content, Finger finger, NewtKeyboard keyboard) {
         super();
+
+        this.space = space;
 
         this.cam = new Camera();
 
@@ -74,6 +76,8 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
         this.finger = finger;
 
         setSurface(content);
+
+        start(space);
     }
 
     private void fingerUpdate() {
@@ -201,8 +205,6 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
 
     public void start(JoglSpace s) {
         synchronized (this) {
-
-            this.space = s;
 
             s.io.addWindowListener(this);
 
@@ -502,8 +504,8 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
 
         public v2 screenToWorld(float x, float y) {
             return new v2(
-                    (x /scale.x + cam.x) - w() /2,
-                    (y /scale.y + cam.y) - h() /2
+                    ((x- w() /2) /scale.x + cam.x) ,
+                    ((y- h() /2) /scale.y + cam.y)
             );
         }
     }

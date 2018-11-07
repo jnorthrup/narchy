@@ -8,7 +8,7 @@ import spacegraph.video.JoglSpace;
 
 public class SpaceGraphFlat extends JoglSpace {
 
-    private final ZoomOrtho zoom;
+    private ZoomOrtho zoom;
 //    private final Ortho<MutableListContainer> hud;
 
     private final Finger finger;
@@ -23,17 +23,19 @@ public class SpaceGraphFlat extends JoglSpace {
         finger = new NewtMouse(this);
 
 
-        zoom = new ZoomOrtho(content, finger, keyboard) {
-            @Override
-            protected void starting() {
-                super.starting();
-                io.window.setPointerVisible(false); //HACK
-            }
-        };
-        add(zoom);
-        add(finger.zoomBoundsSurface(zoom.cam));
-        add(finger.cursorSurface());
-        //addOverlay(this.keyboard.keyFocusSurface(cam));
+        onReady(() -> {
+
+            zoom = new ZoomOrtho(this, content, finger, keyboard) {
+                @Override
+                protected void starting() {
+                    super.starting();
+                    io.window.setPointerVisible(false); //HACK
+                }
+            };
+            add(zoom);
+            add(finger.zoomBoundsSurface(zoom.cam));
+            add(finger.cursorSurface());
+            //addOverlay(this.keyboard.keyFocusSurface(cam));
 
 //        Ortho<MutableListContainer> hud = new Ortho<>(new MutableListContainer(), finger, keyboard) {
 //            @Override
@@ -45,8 +47,7 @@ public class SpaceGraphFlat extends JoglSpace {
 //        hud.content().add(new PushButton("x").pos(0, 0, 100f, 100f));
 
 
-
-
+        });
 
     }
 

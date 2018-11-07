@@ -70,9 +70,9 @@ abstract public class JoglSpace {
 
         pending.add(() -> {
             JoglSpace.this.layers.add(layer);
-            if (layer instanceof Ortho)
-                ((Ortho) layer).start(JoglSpace.this);
-            else
+//            if (layer instanceof Ortho)
+//                ((Ortho) layer).start(JoglSpace.this);
+//            else
                 layer.start(root);
         });
         return JoglSpace.this;

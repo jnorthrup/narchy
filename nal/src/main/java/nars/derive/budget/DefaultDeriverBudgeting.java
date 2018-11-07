@@ -16,9 +16,9 @@ import static nars.truth.TruthFunctions.w2cSafe;
 public class DefaultDeriverBudgeting implements DeriverBudgeting {
 
     /**
-     * global multiplier
+     * master derivation gain factor
      */
-    public final FloatRange scale = new FloatRange(1f, 0f, 2f);
+    public final FloatRange gain = new FloatRange(1f, 0f, 2f);
 
     /**
      * how important is it to retain conf (evidence).
@@ -34,7 +34,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
 
     @Override
     public float pri(Task t, float f, float e, Derivation d) {
-        float factor = this.scale.floatValue();
+        float factor = this.gain.floatValue();
 
         factor *=
                 //factorComplexityAbsolute(t, d);
@@ -48,7 +48,13 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
             factor *= factor; //re-apply for single-premise case
         }
 
-        return Util.clamp( d.parentPri() * factor, ScalarValue.EPSILON, 1f);
+        float max = d.parentPri();
+        return Util.clamp( postAmp(t, max * factor), ScalarValue.EPSILON, 1f);
+    }
+
+    /** default impl: pass-thru */
+    protected float postAmp(Task t, float pri) {
+        return pri;
     }
 
     float factorComplexityAbsolute(Task t, Derivation d) {

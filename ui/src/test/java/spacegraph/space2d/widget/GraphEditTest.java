@@ -51,7 +51,7 @@ public class GraphEditTest {
             Wall w = newWallWindow();
 
 
-            w.add(new PushButton("X")).pos(RectFloat.XYXY(10, 10, 200, 200));
+            w.add(new PushButton("X")).pos(RectFloat.XYXY(10, 10, 20, 20));
             w.add(new PushButton("Y")).pos(RectFloat.XYXY(50, 10, 200, 200));
             w.add(new PushButton("Z")).pos(RectFloat.XYXY(100, 10, 200, 200));
 

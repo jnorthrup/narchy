@@ -194,7 +194,7 @@ abstract public class NAgentX extends NAgent {
                         new Revaluator.DefaultRevaluator(0.5f),
                         //new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
 
-                        Util.concurrencyExcept(2), false))
+                        Util.concurrencyExcept(2), true /* affinity */))
 
 //                .exe(MixMultiExec.get(
 //                            1024,

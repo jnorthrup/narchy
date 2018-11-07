@@ -27,7 +27,7 @@ public class ZoomOrtho extends Ortho {
             float zoomRate = 0.5f;
 
             if (!(finger.touching() instanceof Finger.WheelAbsorb)) {
-                float dy = finger.rotationY(false);
+                float dy = finger.rotationY(true);
                 if (dy != 0) {
                     v2 xy = cam.screenToWorld(finger.posPixel);
                     cam.set(xy.x, xy.y, cam.z * (1f + (dy * zoomRate)));
@@ -95,8 +95,8 @@ public class ZoomOrtho extends Ortho {
 
     };
 
-    public ZoomOrtho(Surface content, Finger finger, NewtKeyboard keyboard) {
-        super(content, finger, keyboard);
+    public ZoomOrtho(JoglSpace space, Surface content, Finger finger, NewtKeyboard keyboard) {
+        super(space, content, finger, keyboard);
     }
 
 

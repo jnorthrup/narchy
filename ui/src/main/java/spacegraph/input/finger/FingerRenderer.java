@@ -12,43 +12,62 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
 @FunctionalInterface public interface FingerRenderer {
     void paint(v2 posPixel, Finger finger, int dtMS, GL2 gl);
 
-    FingerRenderer rendererCrossHairs1 = (posPixel, finger, dtMS, gl) -> {
+    FingerRenderer rendererCrossHairs1 = new FingerRenderer() {
 
-        float smx = posPixel.x, smy = posPixel.y;
+        final v2 lastPixel = new v2(0,0);
+        final FloatAveraged speedFilter = new FloatAveraged(0.5f);
 
-        float cw = 100f, ch = cw;
-
-        gl.glPushMatrix();
-
-        {
-
-            gl.glEnable(GL_COLOR_LOGIC_OP);
-            gl.glLogicOp(
-                    //GL_XOR
-                    //GL_INVERT
-                    //GL_OR_INVERTED
-                    GL_EQUIV
-            );
-
-            gl.glTranslatef(smx, smy, 0);
+        @Override
+        public void paint(v2 posPixel, Finger finger, int dtMS, GL2 gl) {
 
 
-            gl.glColor4f(0.75f, 0.75f, 0.75f, 0.9f);
+            float smx = posPixel.x, smy = posPixel.y;
 
-            gl.glLineWidth(6f);
-            //Draw.rectStroke(gl, smx - cw / 2f, smy - ch / 2f, cw, ch);
-            float theta = (posPixel.x + posPixel.y)/100f;
-            Draw.poly(6 /* 6 */, cw/2, theta, false, gl);
+            float speed = lastPixel.distance(posPixel);
 
-            gl.glColor4f(0.5f, 0.5f, 0.5f, 0.75f);
-            gl.glLineWidth(3f);
-            gl.glColor4f(0.5f, 0.5f, 0.5f, 0.75f);
-            Draw.line(0,  - ch, 0,  ch, gl);
-            Draw.line(- cw, 0,  cw, 0, gl);
+            float cw = 32f + speedFilter.valueOf(speed)/1f, ch = cw;
 
-            gl.glDisable(GL_COLOR_LOGIC_OP);
+            gl.glPushMatrix();
+
+            {
+
+                gl.glEnable(GL_COLOR_LOGIC_OP);
+                gl.glLogicOp(
+                        //GL_XOR
+                        //GL_INVERT
+                        //GL_OR_INVERTED
+                        GL_EQUIV
+                );
+
+                gl.glTranslatef(smx, smy, 0);
+
+
+                gl.glColor4f(0.75f, 0.75f, 0.75f, 0.9f);
+
+                gl.glLineWidth(2f);
+                //Draw.rectStroke(gl, smx - cw / 2f, smy - ch / 2f, cw, ch);
+                float theta = (posPixel.x + posPixel.y) / 100f;
+                Draw.poly(6 /* 6 */, cw / 2, theta, false, gl);
+
+                gl.glColor4f(0.5f, 0.5f, 0.5f, 0.75f);
+                gl.glLineWidth(3f);
+                gl.glColor4f(0.5f, 0.5f, 0.5f, 0.75f);
+                Draw.line(0, -ch, 0, -ch / 2, gl);
+                Draw.line(0, ch / 2, 0, ch, gl);
+                Draw.line(-cw, 0, -cw / 2, 0, gl);
+                Draw.line(cw / 2, 0, cw, 0, gl);
+
+                gl.glLineWidth(1f);
+                gl.glColor4f(0.1f, 0.1f, 0.1f, 0.5f);
+                Draw.rect( -cw/16, -ch/16, cw/16, ch/16, gl);
+                //Draw.poly(3, cw / 10, -theta, false, gl);
+
+                gl.glDisable(GL_COLOR_LOGIC_OP);
+            }
+            gl.glPopMatrix();
+
+            lastPixel.set(posPixel);
         }
-        gl.glPopMatrix();
     };
 
     /** virtua cop */

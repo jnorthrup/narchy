@@ -161,7 +161,7 @@ class KIFInputTest {
 
         Deriver.derivers(n).forEach( (d)->
                 ((DefaultDeriverBudgeting)(((BatchDeriver)d).budgeting))
-                        .scale.set(0.2f) );
+                        .gain.set(0.2f) );
 
         n.input("$1.0 possesses(I,#everything)!");
         n.input("$1.0 uses(#anything, I).");

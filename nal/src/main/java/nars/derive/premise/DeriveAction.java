@@ -43,15 +43,15 @@ final class DeriveAction extends AND<Derivation> /*implements ThrottledAction<De
 
 
 
-    /** compute throttle value, in consideration of the premise's task and the punctuation outcome
+    /** compute probabilistic throttle value, in consideration of the premise's task and the punctuation outcome
      * with respect to the deriver's punctuation equalization */
-    public float value(Derivation d) {
+    public final float value(Derivation d) {
 
         byte punc = truth.preFilter(d);
         if (punc == 0)
             return 0f; //disabled or not applicable to the premise
 
-        float puncFactor = d.deriver.puncFactor(punc);
+        float puncFactor = d.deriver.preAmp(punc);
         if (puncFactor <= ScalarValue.EPSILON)
             return 0f; //entirely disabled by deriver
 

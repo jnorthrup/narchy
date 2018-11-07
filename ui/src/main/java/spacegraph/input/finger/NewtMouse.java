@@ -17,7 +17,7 @@ public class NewtMouse extends Finger implements MouseListener, WindowListener {
 
             win.addMouseListenerPre(this);
             win.addWindowListener(this);
-            this.win.onUpdate((Runnable) this::update);
+            //this.win.onUpdate((Runnable) this::update);
         });
     }
 
