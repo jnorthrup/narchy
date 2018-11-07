@@ -7,7 +7,6 @@ import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
 import spacegraph.space2d.phys.fracture.materials.Diffusion;
 import spacegraph.space2d.phys.particle.ParticleGroupDef;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -33,7 +32,7 @@ public class Fluid implements ICase {
             fd.material.m_rigidity = 30.0f;
 
             PolygonFixture polygon = new PolygonFixture(
-                    new Tuple2f[]{
+                    new v2[]{
                             new v2(0.0f, 10.0f),
                             new v2(1.0f, 10.0f),
                             new v2(1.0f, 5.0f),
@@ -66,7 +65,7 @@ public class Fluid implements ICase {
             BodyDef bodyDefBullet = new BodyDef();
             bodyDefBullet.type = BodyType.DYNAMIC;
             bodyDefBullet.position.set(30.0f, 7.0f); 
-            bodyDefBullet.linearVelocity = new v2(-30.0f, 0.0f); 
+            bodyDefBullet.linearVelocity = new v2(-30.0f, 0.0f);
             bodyDefBullet.angularVelocity = 0.0f; 
             bodyDefBullet.bullet = true;
             Body2D bodyBullet = w.addBody(bodyDefBullet);

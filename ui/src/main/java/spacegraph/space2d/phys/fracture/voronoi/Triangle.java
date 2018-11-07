@@ -1,6 +1,6 @@
 package spacegraph.space2d.phys.fracture.voronoi;
 
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * Trojuholnik delaunay triangulacie
@@ -39,15 +39,15 @@ public class Triangle {
      * @param p Pole vrcholov
      * @param t protilahly trojuholnik
      */
-    final void init(final int i, final int j, final int k, final Tuple2f[] p, final Triangle t) {
+    final void init(final int i, final int j, final int k, final v2[] p, final Triangle t) {
         this.i = i;
         this.j = j;
         this.k = k;
 
         
-        Tuple2f a = p[i];
-        Tuple2f b = p[j];
-        Tuple2f c = p[k];
+        v2 a = p[i];
+        v2 b = p[j];
+        v2 c = p[k];
 
         double Bx = (double) b.x - a.x;
         double By = (double) b.y - a.y;
@@ -86,11 +86,11 @@ public class Triangle {
      * @param v
      * @return Vrati true, ak sa bod v nachadza vo vnutri opisanej kruznice
      */
-    final boolean inside(final Tuple2f v) {
+    final boolean inside(final v2 v) {
         return dis(v) < r;
     }
 
-    private double dis(final Tuple2f v) {
+    private double dis(final v2 v) {
         double x = dX - v.x;
         double y = dY - v.y;
         return x * x + y * y;

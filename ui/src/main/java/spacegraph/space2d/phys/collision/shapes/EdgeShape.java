@@ -30,7 +30,6 @@ import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
 import spacegraph.space2d.phys.common.Vec2;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -44,20 +43,20 @@ public class EdgeShape extends Shape {
     /**
      * edge vertex 1
      */
-    public final Tuple2f m_vertex1 = new Vec2();
+    public final v2 m_vertex1 = new Vec2();
     /**
      * edge vertex 2
      */
-    public final Tuple2f m_vertex2 = new Vec2();
+    public final v2 m_vertex2 = new Vec2();
 
     /**
      * optional adjacent vertex 1. Used for smooth collision
      */
-    public final Tuple2f m_vertex0 = new Vec2();
+    public final v2 m_vertex0 = new Vec2();
     /**
      * optional adjacent vertex 2. Used for smooth collision
      */
-    public final Tuple2f m_vertex3 = new Vec2();
+    public final v2 m_vertex3 = new Vec2();
     public boolean m_hasVertex0 = false, m_hasVertex3 = false;
 
 
@@ -71,22 +70,22 @@ public class EdgeShape extends Shape {
         return 1;
     }
 
-    public void set(Tuple2f v1, Tuple2f v2) {
+    public void set(v2 v1, v2 v2) {
         m_vertex1.set(v1);
         m_vertex2.set(v2);
         m_hasVertex0 = m_hasVertex3 = false;
     }
 
     @Override
-    public boolean testPoint(Transform xf, Tuple2f p) {
+    public boolean testPoint(Transform xf, v2 p) {
         return false;
     }
 
     
-    private final v2 normal = new Vec2();
+    private final v2 normal = new v2();
 
     @Override
-    public float computeDistanceToOut(Transform xf, Tuple2f p, int childIndex, v2 normalOut) {
+    public float computeDistanceToOut(Transform xf, v2 p, int childIndex, v2 normalOut) {
         float xfqc = xf.c;
         float xfqs = xf.s;
         float xfpx = xf.pos.x;
@@ -131,10 +130,10 @@ public class EdgeShape extends Shape {
     public boolean raycast(RayCastOutput output, RayCastInput input, Transform xf, int childIndex) {
 
         float tempx, tempy;
-        final Tuple2f v1 = m_vertex1;
-        final Tuple2f v2 = m_vertex2;
+        final v2 v1 = m_vertex1;
+        final v2 v2 = m_vertex2;
         final Rot xfq = xf;
-        final Tuple2f xfp = xf.pos;
+        final spacegraph.util.math.v2 xfp = xf.pos;
 
         
         
@@ -213,8 +212,8 @@ public class EdgeShape extends Shape {
 
     @Override
     public void computeAABB(AABB aabb, Transform xf, int childIndex) {
-        final Tuple2f lowerBound = aabb.lowerBound;
-        final Tuple2f upperBound = aabb.upperBound;
+        final v2 lowerBound = aabb.lowerBound;
+        final v2 upperBound = aabb.upperBound;
         final Rot xfq = xf;
 
         final float v1x = (xfq.c * m_vertex1.x - xfq.s * m_vertex1.y) + xf.pos.x;

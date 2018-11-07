@@ -23,7 +23,6 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.common;
 
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -34,16 +33,17 @@ public class Vec2 extends v2 {
 
 
     public Vec2() {
-        this(0, 0);
+        super();
     }
 
     private Vec2(float x, float y) {
+        super();
         this.x = x;
         this.y = y;
     }
 
-    public Vec2(Tuple2f toCopy) {
-        this(toCopy.x, toCopy.y);
+    public Vec2(v2 toCopy) {
+        super(toCopy.x, toCopy.y);
     }
 
     /**
@@ -73,7 +73,7 @@ public class Vec2 extends v2 {
     /**
      * Return the sum of this vector and another; does not alter either one.
      */
-    public final v2 add(Tuple2f v) {
+    public final v2 add(v2 v) {
         return new v2(x + v.x, y + v.y);
     }
 
@@ -81,7 +81,7 @@ public class Vec2 extends v2 {
     /**
      * Return the difference of this vector and another; does not alter either one.
      */
-    public final v2 sub(Tuple2f v) {
+    public final v2 sub(v2 v) {
         return new v2(x - v.x, y - v.y);
     }
 
@@ -96,7 +96,7 @@ public class Vec2 extends v2 {
     /**
      * Flip the vector and return it - alters this vector.
      */
-    public final Tuple2f negateLocal() {
+    public final v2 negateLocal() {
         x = -x;
         y = -y;
         return this;
@@ -105,7 +105,7 @@ public class Vec2 extends v2 {
     /**
      * Add another vector to this one and returns result - alters this vector.
      */
-    public final Vec2 addLocal(Tuple2f v) {
+    public final Vec2 addLocal(v2 v) {
         x += v.x;
         y += v.y;
         return this;
@@ -114,7 +114,7 @@ public class Vec2 extends v2 {
     /**
      * Adds values to this vector and returns result - alters this vector.
      */
-    public final Tuple2f addLocal(float x, float y) {
+    public final v2 addLocal(float x, float y) {
         this.x += x;
         this.y += y;
         return this;
@@ -123,7 +123,7 @@ public class Vec2 extends v2 {
     /**
      * Subtract another vector from this one and return result - alters this vector.
      */
-    public final Tuple2f subLocal(Tuple2f v) {
+    public final v2 subLocal(v2 v) {
         x -= v.x;
         y -= v.y;
         return this;
@@ -132,7 +132,7 @@ public class Vec2 extends v2 {
     /**
      * Multiply this vector by a number and return result - alters this vector.
      */
-    public final Tuple2f scaled(float a) {
+    public final v2 scaled(float a) {
         x *= a;
         y *= a;
         return this;
@@ -141,7 +141,7 @@ public class Vec2 extends v2 {
     /**
      * Get the skew vector such that dot(skew_vec, other) == cross(vec, other)
      */
-    public final Tuple2f skew() {
+    public final v2 skew() {
         float x1 = -y;
         return new v2(x1, x);
     }
@@ -149,7 +149,7 @@ public class Vec2 extends v2 {
     /**
      * Get the skew vector such that dot(skew_vec, other) == cross(vec, other)
      */
-    public final void skew(Tuple2f out) {
+    public final void skew(v2 out) {
         out.x = -y;
         out.y = x;
     }
@@ -187,7 +187,7 @@ public class Vec2 extends v2 {
     /**
      * Return a new vector that has positive components.
      */
-    public final Tuple2f abs() {
+    public final v2 abs() {
         return new v2(Math.abs(x), Math.abs(y));
     }
 
@@ -225,9 +225,20 @@ public class Vec2 extends v2 {
     public boolean equals(Object obj) { 
         if (this == obj) return true;
         if (obj == null) return false;
-        if (!(obj instanceof Tuple2f)) return false;
-        Tuple2f other = (Tuple2f) obj;
+        if (!(obj instanceof v2)) return false;
+        v2 other = (v2) obj;
         if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x)) return false;
         return Float.floatToIntBits(y) == Float.floatToIntBits(other.y);
     }
+
+
+    /**
+     * Computes the dot product of the this vector and vector v1.
+     *
+     * @param v1 the other vector
+     */
+    private float dot(v2 v1) {
+        return (this.x * v1.x + this.y * v1.y);
+    }
+
 }

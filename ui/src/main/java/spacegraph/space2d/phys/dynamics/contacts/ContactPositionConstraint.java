@@ -26,17 +26,17 @@ package spacegraph.space2d.phys.dynamics.contacts;
 import spacegraph.space2d.phys.collision.Manifold.ManifoldType;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Vec2;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 class ContactPositionConstraint {
-    final Tuple2f[] localPoints = new Tuple2f[Settings.maxManifoldPoints];
-    final Tuple2f localNormal = new Vec2();
-    final Tuple2f localPoint = new Vec2();
+    final v2[] localPoints = new v2[Settings.maxManifoldPoints];
+    final v2 localNormal = new Vec2();
+    final v2 localPoint = new Vec2();
     int indexA;
     int indexB;
     float invMassA, invMassB;
-    final Tuple2f localCenterA = new Vec2();
-    final Tuple2f localCenterB = new Vec2();
+    final v2 localCenterA = new Vec2();
+    final v2 localCenterB = new Vec2();
     float invIA, invIB;
     ManifoldType type;
     float radiusA, radiusB;

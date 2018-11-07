@@ -99,7 +99,7 @@ public class TextEdit extends Widget implements ScrollXY.ScrolledXY {
     @Override
     public void update(ScrollXY s) {
         this.scroll = s;
-        s.viewMin(new v2(1,1));
+        s.viewMin(new v2(1, 1));
         updateScroll();
         s.view(0, 0, Math.min(model.buffer.width(),80), Math.min(model.buffer.height(), 20));
     }

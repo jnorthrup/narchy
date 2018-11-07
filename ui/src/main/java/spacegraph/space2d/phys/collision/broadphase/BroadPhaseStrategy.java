@@ -5,7 +5,7 @@ import spacegraph.space2d.phys.callbacks.TreeCallback;
 import spacegraph.space2d.phys.callbacks.TreeRayCastCallback;
 import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.RayCastInput;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 public interface BroadPhaseStrategy {
 
@@ -31,7 +31,7 @@ public interface BroadPhaseStrategy {
      *
      * @return true if the proxy was re-inserted.
      */
-    boolean moveProxy(int proxyId, AABB aabb, Tuple2f displacement);
+    boolean moveProxy(int proxyId, AABB aabb, v2 displacement);
 
     Object getUserData(int proxyId);
 

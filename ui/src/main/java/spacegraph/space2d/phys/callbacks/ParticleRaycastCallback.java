@@ -1,12 +1,12 @@
 package spacegraph.space2d.phys.callbacks;
 
 import spacegraph.space2d.phys.dynamics.Fixture;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 public interface ParticleRaycastCallback {
     /**
      * Called for each particle found in the query. See
-     * {@link RayCastCallback#reportFixture(Fixture, Tuple2f, Tuple2f, float)} for
+     * {@link RayCastCallback#reportFixture(Fixture, v2, v2, float)} for
      * argument info.
      *
      * @param index
@@ -15,6 +15,6 @@ public interface ParticleRaycastCallback {
      * @param fraction
      * @return
      */
-    float reportParticle(int index, Tuple2f point, Tuple2f normal, float fraction);
+    float reportParticle(int index, v2 point, v2 normal, float fraction);
 
 }

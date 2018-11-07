@@ -91,15 +91,15 @@ public class Vector2d extends Tuple2d {
        super(t1);
     }
 
-
-    /**
-     * Constructs and initializes a Vector2d from the specified Tuple2f.
-     * @param t1 the Tuple2f containing the initialization x y data
-     */  
-    public Vector2d(Tuple2f t1)
-    {
-       super(t1);
-    }
+//
+//    /**
+//     * Constructs and initializes a Vector2d from the specified Tuple2f.
+//     * @param t1 the Tuple2f containing the initialization x y data
+//     */
+//    public Vector2d(v2 t1)
+//    {
+//       super(t1);
+//    }
 
 
     /**

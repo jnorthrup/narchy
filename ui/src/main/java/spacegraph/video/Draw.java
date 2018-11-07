@@ -47,7 +47,6 @@ import spacegraph.space3d.phys.shape.*;
 import spacegraph.space3d.phys.util.BulletStack;
 import spacegraph.space3d.widget.EDraw;
 import spacegraph.util.math.Quat4f;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 import spacegraph.util.math.v3;
 
@@ -443,7 +442,7 @@ public enum Draw {
 
     }
 
-    public static void particles(GL2 gl, Tuple2f[] centers, float radius, int NUM_CIRCLE_POINTS, ParticleColor[] colors, int count) {
+    public static void particles(GL2 gl, v2[] centers, float radius, int NUM_CIRCLE_POINTS, ParticleColor[] colors, int count) {
 
 
         float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
@@ -454,7 +453,7 @@ public enum Draw {
         float y = 0;
 
         for (int i = 0; i < count; i++) {
-            Tuple2f center = centers[i];
+            v2 center = centers[i];
             float cx = center.x;
             float cy = center.y;
             gl.glBegin(GL2.GL_TRIANGLE_FAN);
@@ -839,7 +838,7 @@ public enum Draw {
 
         gl.glBegin(GL_TRIANGLE_FAN);
         int n = poly.vertices;
-        Tuple2f[] pv = poly.vertex;
+        v2[] pv = poly.vertex;
 
         for (int i = 0; i < n; ++i)
             body.getWorldPointToGL(pv[i], preScale, gl);

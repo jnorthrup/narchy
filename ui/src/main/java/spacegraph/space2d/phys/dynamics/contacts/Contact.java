@@ -34,7 +34,6 @@ import spacegraph.space2d.phys.common.Transform;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.Fixture;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -87,10 +86,10 @@ public abstract class Contact {
     public float m_tangentSpeed;
 
     public float m_angularVelocity_bodyA;
-    public final Tuple2f m_linearVelocity_bodyA = new v2();
+    public final v2 m_linearVelocity_bodyA = new v2();
 
     public float m_angularVelocity_bodyB;
-    public final Tuple2f m_linearVelocity_bodyB = new v2();
+    public final v2 m_linearVelocity_bodyB = new v2();
 
     final IWorldPool pool;
 

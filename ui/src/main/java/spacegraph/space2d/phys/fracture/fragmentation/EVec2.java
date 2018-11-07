@@ -1,6 +1,6 @@
 package spacegraph.space2d.phys.fracture.fragmentation;
 
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * Objekt sluziaci na rychle hladanie prienikovych bodov voronoi diagramu a
@@ -17,7 +17,7 @@ class EVec2 implements Comparable<EVec2> {
     /**
      * Bod hrany
      */
-    public final Tuple2f p;
+    public final v2 p;
 
     /**
      * True, pokial je dany bod zaciatocny, false ak je koncovy.
@@ -29,14 +29,14 @@ class EVec2 implements Comparable<EVec2> {
      *
      * @param p
      */
-    public EVec2(Tuple2f p) {
+    public EVec2(v2 p) {
         this.p = p;
     }
 
     @Override
     public int compareTo(EVec2 o) {
         if (this == o) return 0;
-        Tuple2f l = o.p;
+        v2 l = o.p;
         return p.y > l.y ? 1 : p.y == l.y ? (o.start == start ? 0 : (!start ? 1 : -1)) : -1;
     }
 }

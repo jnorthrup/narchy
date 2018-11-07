@@ -6,7 +6,7 @@ import spacegraph.space2d.phys.callbacks.TreeCallback;
 import spacegraph.space2d.phys.callbacks.TreeRayCastCallback;
 import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.RayCastInput;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 
 public interface BroadPhase {
@@ -33,7 +33,7 @@ public interface BroadPhase {
      * Call MoveProxy as many times as you like, then when you are done call UpdatePairs to finalized
      * the proxy pairs (for your time step).
      */
-    void moveProxy(int proxyId, AABB aabb, Tuple2f displacement);
+    void moveProxy(int proxyId, AABB aabb, v2 displacement);
 
     void touchProxy(int proxyId);
 

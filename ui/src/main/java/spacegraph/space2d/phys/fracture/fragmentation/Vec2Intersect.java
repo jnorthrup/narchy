@@ -2,7 +2,7 @@ package spacegraph.space2d.phys.fracture.fragmentation;
 
 import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.fracture.Fragment;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * Bod prieniku 2 polygonov (primarneho a konvexneho z voronoi diagramu)
@@ -38,7 +38,7 @@ public class Vec2Intersect extends Vec2 {
     /**
      * Suradnice prienikoveho bodu
      */
-    public final Tuple2f vec2;
+    public final v2 vec2;
 
     /**
      * Inicializuje bod prieniku
@@ -46,7 +46,7 @@ public class Vec2Intersect extends Vec2 {
      * @param a Bod prieniku
      * @param k Pozicia na hrane primaneho polygonu (podla k prebehne triedenie)
      */
-    public Vec2Intersect(Tuple2f a, double k) {
+    public Vec2Intersect(v2 a, double k) {
         this.x = a.x;
         this.y = a.y;
         this.k = k;

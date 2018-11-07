@@ -1,6 +1,5 @@
 package spacegraph.space2d.phys.fracture.fragmentation;
 
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import static spacegraph.space2d.phys.common.Vec2.cross;
@@ -15,7 +14,7 @@ abstract class AEdge {
     /**
      * Vrchol hrany.
      */
-    Tuple2f p1, p2;
+    v2 p1, p2;
 
     /**
      * Inicializuje vrcholy hrany
@@ -23,7 +22,7 @@ abstract class AEdge {
      * @param p1
      * @param p2
      */
-    AEdge(Tuple2f p1, Tuple2f p2) {
+    AEdge(v2 p1, v2 p2) {
         this.p1 = p1;
         this.p2 = p2;
     }
@@ -33,7 +32,7 @@ abstract class AEdge {
      * @param b
      * @return Vektorovy sucin
      */
-    private static double dCross(Tuple2f a, Tuple2f b) {
+    private static double dCross(v2 a, v2 b) {
         double ax = a.x;
         double ay = a.y;
         double bx = b.x;
@@ -47,10 +46,10 @@ abstract class AEdge {
      * @return Vrati prienik 2 hran. Pokial neexistuje, vrati null.
      */
     public static Vec2Intersect intersect(AEdge a, AEdge b) {
-        Tuple2f U = a.p2.sub(a.p1);
-        Tuple2f V = b.p2.sub(b.p1);
-        Tuple2f A = new v2(a.p1);
-        Tuple2f C = new v2(b.p1);
+        v2 U = a.p2.sub(a.p1);
+        v2 V = b.p2.sub(b.p1);
+        v2 A = new v2(a.p1);
+        v2 C = new v2(b.p1);
         double uv = dCross(U, V); 
         if (uv == 0) {
             return null; 
@@ -72,11 +71,11 @@ abstract class AEdge {
      * @param b2
      * @return Vrati true, ak sa hrany pretinaju.
      */
-    public boolean intersectAre(Tuple2f b1, Tuple2f b2) {
-        Tuple2f U = p2.sub(p1);
-        Tuple2f V = b2.sub(b1);
-        Tuple2f A = new v2(p1);
-        Tuple2f C = new v2(b1);
+    public boolean intersectAre(v2 b1, v2 b2) {
+        v2 U = p2.sub(p1);
+        v2 V = b2.sub(b1);
+        v2 A = new v2(p1);
+        v2 C = new v2(b1);
         float uv = cross(U, V);
         if (uv == 0)
             return false; 
@@ -90,9 +89,9 @@ abstract class AEdge {
      * @param point
      * @return Vrati najvlizsi bod na priamke voci bodu z parametra.
      */
-    public Tuple2f kolmicovyBod(Tuple2f point) {
-        Tuple2f U = p2.sub(p1);
-        Tuple2f V = new v2(p1.y - p2.y, p2.x - p1.x);
+    public v2 kolmicovyBod(v2 point) {
+        v2 U = p2.sub(p1);
+        v2 V = new v2(p1.y - p2.y, p2.x - p1.x);
         float uv = cross(U, V);
         if (uv == 0) {
             return null; 

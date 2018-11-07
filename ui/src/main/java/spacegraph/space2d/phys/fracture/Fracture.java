@@ -9,7 +9,6 @@ import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.dynamics.contacts.Contact;
 import spacegraph.space2d.phys.fracture.fragmentation.Smasher;
 import spacegraph.space2d.phys.fracture.util.MyList;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import java.util.List;
@@ -34,13 +33,13 @@ public final class Fracture {
     private final Body2D b1; 
     private final Body2D b2; 
     private final Material m; 
-    private final Tuple2f point; 
+    private final v2 point;
     private final Contact contact; 
 
     /**
      * Vytvori Frakturu. Ta este nieje aplikovana na svet.
      */
-    public Fracture(Fixture f1, Fixture f2, Material m, Contact contact, float normalImpulse, Tuple2f point) {
+    public Fracture(Fixture f1, Fixture f2, Material m, Contact contact, float normalImpulse, v2 point) {
         this.f1 = f1;
         this.f2 = f2;
         this.b1 = f1.body;
@@ -76,7 +75,7 @@ public final class Fracture {
             switch (s.m_type) {
                 case POLYGON:
                     PolygonShape ps = (PolygonShape) s;
-                    Tuple2f[] vertices = ps.vertex;
+                    v2[] vertices = ps.vertex;
                     int n = ps.vertices;
                     p = new Polygon(n);
                     for (int i = 0; i < n; ++i) {
@@ -91,12 +90,12 @@ public final class Fracture {
                     double u = Math.PI * 2 / CIRCLEVERTICES;
                     radius = (float) Math.sqrt(u / Math.sin(u)) * radius; 
 
-                    Tuple2f center = cs.center;
+                    v2 center = cs.center;
                     for (int i = 0; i < CIRCLEVERTICES; ++i) {
                         double j = u * i; 
                         float sin = (float) Math.sin(j);
                         float cos = (float) Math.cos(j);
-                        Tuple2f v = new v2(sin, cos).scaled(radius).added(center);
+                        v2 v = new v2(sin, cos).scaled(radius).added(center);
                         p.add(v);
                     }
                     break;
@@ -109,7 +108,7 @@ public final class Fracture {
 
         boolean fixA = f1 == contact.aFixture; 
         float oldAngularVelocity = fixA ? contact.m_angularVelocity_bodyA : contact.m_angularVelocity_bodyB;
-        Tuple2f oldLinearVelocity = fixA ? contact.m_linearVelocity_bodyA : contact.m_linearVelocity_bodyB;
+        v2 oldLinearVelocity = fixA ? contact.m_linearVelocity_bodyA : contact.m_linearVelocity_bodyB;
 
         //if (b1.type==DYNAMIC) {
             b1.setAngularVelocity((b1.velAngular - oldAngularVelocity) * mConst + oldAngularVelocity);
@@ -128,10 +127,10 @@ public final class Fracture {
             b2.m_fractureTransformUpdate = true;
         }
 
-        Tuple2f localPoint = Transform.mulTrans(b1, point);
-        Tuple2f b1Vec = b1.getLinearVelocityFromWorldPoint(point);
-        Tuple2f b2Vec = b2.getLinearVelocityFromWorldPoint(point);
-        Tuple2f localVelocity = b2Vec.subbed(b1Vec);
+        v2 localPoint = Transform.mulTrans(b1, point);
+        v2 b1Vec = b1.getLinearVelocityFromWorldPoint(point);
+        v2 b2Vec = b2.getLinearVelocityFromWorldPoint(point);
+        v2 localVelocity = b2Vec.subbed(b1Vec);
 
         localVelocity.scaled(dt);
 

@@ -34,7 +34,6 @@ import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -144,18 +143,18 @@ public class Collision {
      * @return
      */
     private static int clipSegmentToLine(final ClipVertex[] vOut, final ClipVertex[] vIn,
-                                         final Tuple2f normal, float offset, int vertexIndexA) {
+                                         final v2 normal, float offset, int vertexIndexA) {
 
         
         int numOut = 0;
         final ClipVertex vIn0 = vIn[0];
         final ClipVertex vIn1 = vIn[1];
-        final Tuple2f vIn0v = vIn0.v;
-        final Tuple2f vIn1v = vIn1.v;
+        final v2 vIn0v = vIn0.v;
+        final v2 vIn1v = vIn1.v;
 
         
-        float distance0 = Tuple2f.dot(normal, vIn0v) - offset;
-        float distance1 = Tuple2f.dot(normal, vIn1v) - offset;
+        float distance0 = v2.dot(normal, vIn0v) - offset;
+        float distance1 = v2.dot(normal, vIn1v) - offset;
 
         
         if (distance0 <= 0.0f) {
@@ -189,7 +188,7 @@ public class Collision {
     
 
     
-    private static final Tuple2f d = new v2();
+    private static final v2 d = new v2();
 
     /**
      * Compute the collision manifold between two circles.
@@ -210,8 +209,8 @@ public class Collision {
         
 
         
-        Tuple2f circle1p = circle1.center;
-        Tuple2f circle2p = circle2.center;
+        v2 circle1p = circle1.center;
+        v2 circle2p = circle2.center;
         float pAx = (xfA.c * circle1p.x - xfA.s * circle1p.y) + xfA.pos.x;
         float pAy = (xfA.s * circle1p.x + xfA.c * circle1p.y) + xfA.pos.y;
         float pBx = (xfB.c * circle2p.x - xfB.s * circle2p.y) + xfB.pos.x;
@@ -258,7 +257,7 @@ public class Collision {
         
         
         
-        final Tuple2f circlep = circle.center;
+        final v2 circlep = circle.center;
         final Rot xfBq = xfB;
         final Rot xfAq = xfA;
         final float cx = (xfBq.c * circlep.x - xfBq.s * circlep.y) + xfB.pos.x;
@@ -275,15 +274,15 @@ public class Collision {
         final float radius = polygon.radius + circle.radius;
         final int vertexCount = polygon.vertices;
         float s;
-        final Tuple2f[] vertices = polygon.vertex;
-        final Tuple2f[] normals = polygon.normals;
+        final v2[] vertices = polygon.vertex;
+        final v2[] normals = polygon.normals;
 
         for (int i = 0; i < vertexCount; i++) {
             
             
             
             
-            final Tuple2f vertex = vertices[i];
+            final v2 vertex = vertices[i];
             final float tempx = cLocalx - vertex.x;
             final float tempy = cLocaly - vertex.y;
             s = normals[i].x * tempx + normals[i].y * tempy;
@@ -303,8 +302,8 @@ public class Collision {
         
         final int vertIndex1 = normalIndex;
         final int vertIndex2 = vertIndex1 + 1 < vertexCount ? vertIndex1 + 1 : 0;
-        final Tuple2f v1 = vertices[vertIndex1];
-        final Tuple2f v2 = vertices[vertIndex2];
+        final v2 v1 = vertices[vertIndex1];
+        final v2 v2 = vertices[vertIndex2];
 
         
         if (separation < Settings.EPSILON) {
@@ -316,7 +315,7 @@ public class Collision {
             
             
             
-            final Tuple2f normal = normals[normalIndex];
+            final spacegraph.util.math.v2 normal = normals[normalIndex];
             manifold.localNormal.x = normal.x;
             manifold.localNormal.y = normal.y;
             manifold.localPoint.x = (v1.x + v2.x) * .5f;
@@ -375,7 +374,7 @@ public class Collision {
 
             final float tx = cLocalx - fcx;
             final float ty = cLocaly - fcy;
-            final Tuple2f normal = normals[vertIndex1];
+            final spacegraph.util.math.v2 normal = normals[vertIndex1];
             separation = tx * normal.x + ty * normal.y;
             if (separation > radius) {
                 return;
@@ -392,7 +391,7 @@ public class Collision {
         }
     }
 
-    public static void updateManifold(Manifold manifold, Tuple2f circlep, float cLocalx, float cLocaly, float radius, Tuple2f v1) {
+    public static void updateManifold(Manifold manifold, v2 circlep, float cLocalx, float cLocaly, float radius, v2 v1) {
         final float dx = cLocalx - v1.x;
         final float dy = cLocaly - v1.y;
         if (dx * dx + dy * dy > radius * radius) {
@@ -413,10 +412,10 @@ public class Collision {
     }
 
 
-    private final Tuple2f temp = new v2();
+    private final v2 temp = new v2();
     private final Transform xf = new Transform();
     private final v2 n = new v2();
-    private final Tuple2f v1 = new v2();
+    private final v2 v1 = new v2();
 
     /**
      * Find the max separation between poly1 and poly2 using edge normals from poly1.
@@ -432,9 +431,9 @@ public class Collision {
                                    final Transform xf1, final PolygonShape poly2, final Transform xf2) {
         int count1 = poly1.vertices;
         int count2 = poly2.vertices;
-        Tuple2f[] n1s = poly1.normals;
-        Tuple2f[] v1s = poly1.vertex;
-        Tuple2f[] v2s = poly2.vertex;
+        v2[] n1s = poly1.normals;
+        v2[] v1s = poly1.vertex;
+        v2[] v2s = poly2.vertex;
 
         Transform.mulTransToOutUnsafe(xf2, xf1, xf);
         final Rot xfq = xf;
@@ -449,7 +448,7 @@ public class Collision {
             
             float si = Float.MAX_VALUE;
             for (int j = 0; j < count2; ++j) {
-                Tuple2f v2sj = v2s[j];
+                v2 v2sj = v2s[j];
                 float sij = n.x * (v2sj.x - v1.x) + n.y * (v2sj.y - v1.y);
                 if (sij < si) {
                     si = sij;
@@ -469,11 +468,11 @@ public class Collision {
     private static void findIncidentEdge(final ClipVertex[] c, final PolygonShape poly1,
                                          final Transform xf1, int edge1, final PolygonShape poly2, final Transform xf2) {
         int count1 = poly1.vertices;
-        final Tuple2f[] normals1 = poly1.normals;
+        final v2[] normals1 = poly1.normals;
 
         int count2 = poly2.vertices;
-        final Tuple2f[] vertices2 = poly2.vertex;
-        final Tuple2f[] normals2 = poly2.normals;
+        final v2[] vertices2 = poly2.vertex;
+        final v2[] normals2 = poly2.normals;
 
         assert (0 <= edge1 && edge1 < count1);
 
@@ -488,7 +487,7 @@ public class Collision {
         
         
         
-        final Tuple2f v = normals1[edge1];
+        final v2 v = normals1[edge1];
         final float tempx = xf1q.c * v.x - xf1q.s * v.y;
         final float tempy = xf1q.s * v.x + xf1q.c * v.y;
         final float normal1x = xf2q.c * tempx + xf2q.s * tempy;
@@ -500,7 +499,7 @@ public class Collision {
         int index = 0;
         float minDot = Float.MAX_VALUE;
         for (int i = 0; i < count2; ++i) {
-            Tuple2f b = normals2[i];
+            v2 b = normals2[i];
             float dot = normal1x * b.x + normal1y * b.y;
             if (dot < minDot) {
                 minDot = dot;
@@ -513,8 +512,8 @@ public class Collision {
         int i2 = i1 + 1 < count2 ? i1 + 1 : 0;
 
         
-        Tuple2f v1 = vertices2[i1];
-        Tuple2f out = c0.v;
+        v2 v1 = vertices2[i1];
+        v2 out = c0.v;
         out.x = (xf2q.c * v1.x - xf2q.s * v1.y) + xf2.pos.x;
         out.y = (xf2q.s * v1.x + xf2q.c * v1.y) + xf2.pos.y;
         c0.id.indexA = (byte) edge1;
@@ -523,8 +522,8 @@ public class Collision {
         c0.id.typeB = (byte) ContactID.Type.VERTEX.ordinal();
 
         
-        Tuple2f v2 = vertices2[i2];
-        Tuple2f out1 = c1.v;
+        v2 v2 = vertices2[i2];
+        spacegraph.util.math.v2 out1 = c1.v;
         out1.x = (xf2q.c * v2.x - xf2q.s * v2.y) + xf2.pos.x;
         out1.y = (xf2q.s * v2.x + xf2q.c * v2.y) + xf2.pos.y;
         c1.id.indexA = (byte) edge1;
@@ -537,11 +536,11 @@ public class Collision {
     private final EdgeResults results2 = new EdgeResults();
     private final ClipVertex[] incidentEdge = new ClipVertex[2];
     private final v2 localTangent = new v2();
-    private final Tuple2f localNormal = new v2();
-    private final Tuple2f planePoint = new v2();
+    private final v2 localNormal = new v2();
+    private final v2 planePoint = new v2();
     private final v2 tangent = new v2();
-    private final Tuple2f v11 = new v2();
-    private final Tuple2f v12 = new v2();
+    private final v2 v11 = new v2();
+    private final v2 v12 = new v2();
     private final ClipVertex[] clipPoints1 = new ClipVertex[2];
     private final ClipVertex[] clipPoints2 = new ClipVertex[2];
 
@@ -606,7 +605,7 @@ public class Collision {
         findIncidentEdge(incidentEdge, poly1, xf1, edge1, poly2, xf2);
 
         int count1 = poly1.vertices;
-        final Tuple2f[] vertices1 = poly1.vertex;
+        final v2[] vertices1 = poly1.vertex;
 
         final int iv1 = edge1;
         final int iv2 = edge1 + 1 < count1 ? edge1 + 1 : 0;
@@ -682,7 +681,7 @@ public class Collision {
             if (separation <= totalRadius) {
                 ManifoldPoint cp = manifold.points[pointCount];
                 
-                Tuple2f out = cp.localPoint;
+                v2 out = cp.localPoint;
                 final float px = clipPoints2[i].v.x - xf2.pos.x;
                 final float py = clipPoints2[i].v.y - xf2.pos.y;
                 out.x = (xf2.c * px + xf2.s * py);
@@ -699,11 +698,11 @@ public class Collision {
         manifold.pointCount = pointCount;
     }
 
-    private final Tuple2f Q = new v2();
-    private final Tuple2f e = new v2();
+    private final v2 Q = new v2();
+    private final v2 e = new v2();
     private final ContactID cf = new ContactID();
-    private final Tuple2f e1 = new v2();
-    private final Tuple2f P = new v2();
+    private final v2 e1 = new v2();
+    private final v2 P = new v2();
 
     
     
@@ -717,13 +716,13 @@ public class Collision {
         Transform.mulToOutUnsafe(xfB, circleB.center, temp);
         Transform.mulTransToOutUnsafe(xfA, temp, Q);
 
-        final Tuple2f A = edgeA.m_vertex1;
-        final Tuple2f B = edgeA.m_vertex2;
+        final v2 A = edgeA.m_vertex1;
+        final v2 B = edgeA.m_vertex2;
         e.set(B).subbed(A);
 
         
-        float u = Tuple2f.dot(e, temp.set(B).subbed(Q));
-        float v = Tuple2f.dot(e, temp.set(Q).subbed(A));
+        float u = v2.dot(e, temp.set(B).subbed(Q));
+        float v = v2.dot(e, temp.set(Q).subbed(A));
 
         float radius = edgeA.radius + circleB.radius;
 
@@ -733,19 +732,19 @@ public class Collision {
 
         
         if (v <= 0.0f) {
-            final Tuple2f P = A;
+            final v2 P = A;
             d.set(Q).subbed(P);
-            float dd = Tuple2f.dot(d, d);
+            float dd = v2.dot(d, d);
             if (dd > radius * radius) {
                 return;
             }
 
             
             if (edgeA.m_hasVertex0) {
-                final Tuple2f A1 = edgeA.m_vertex0;
-                final Tuple2f B1 = A;
+                final v2 A1 = edgeA.m_vertex0;
+                final v2 B1 = A;
                 e1.set(B1).subbed(A1);
-                float u1 = Tuple2f.dot(e1, temp.set(B1).subbed(Q));
+                float u1 = v2.dot(e1, temp.set(B1).subbed(Q));
 
                 
                 if (u1 > 0.0f) {
@@ -767,20 +766,20 @@ public class Collision {
 
         
         if (u <= 0.0f) {
-            Tuple2f P = B;
+            v2 P = B;
             d.set(Q).subbed(P);
-            float dd = Tuple2f.dot(d, d);
+            float dd = v2.dot(d, d);
             if (dd > radius * radius) {
                 return;
             }
 
             
             if (edgeA.m_hasVertex3) {
-                final Tuple2f B2 = edgeA.m_vertex3;
-                final Tuple2f A2 = B;
-                final Tuple2f e2 = e1;
+                final v2 B2 = edgeA.m_vertex3;
+                final v2 A2 = B;
+                final v2 e2 = e1;
                 e2.set(B2).subbed(A2);
-                float v2 = Tuple2f.dot(e2, temp.set(Q).subbed(A2));
+                float v2 = spacegraph.util.math.v2.dot(e2, temp.set(Q).subbed(A2));
 
                 
                 if (v2 > 0.0f) {
@@ -801,21 +800,21 @@ public class Collision {
         }
 
         
-        float den = Tuple2f.dot(e, e);
+        float den = v2.dot(e, e);
         assert (den > 0.0f);
 
         
         P.set(A).scaled(u).added(temp.set(B).scaled(v));
         P.scaled(1.0f / den);
         d.set(Q).subbed(P);
-        float dd = Tuple2f.dot(d, d);
+        float dd = v2.dot(d, d);
         if (dd > radius * radius) {
             return;
         }
 
         n.x = -e.y;
         n.y = e.x;
-        if (Tuple2f.dot(n, temp.set(Q).subbed(A)) < 0.0f) {
+        if (v2.dot(n, temp.set(Q).subbed(A)) < 0.0f) {
             n.set(-n.x, -n.y);
         }
         n.normalize();
@@ -851,7 +850,7 @@ public class Collision {
      * Used for computing contact manifolds.
      */
     static class ClipVertex {
-        final Tuple2f v;
+        final v2 v;
         final ContactID id;
 
         ClipVertex() {
@@ -860,7 +859,7 @@ public class Collision {
         }
 
         void set(final ClipVertex cv) {
-            Tuple2f v1 = cv.v;
+            v2 v1 = cv.v;
             v.x = v1.x;
             v.y = v1.y;
             ContactID c = cv.id;
@@ -912,8 +911,8 @@ public class Collision {
      * This holds polygon B expressed in frame A.
      */
     static class TempPolygon {
-        final Tuple2f[] vertices = new Tuple2f[Settings.maxPolygonVertices];
-        final Tuple2f[] normals = new Tuple2f[Settings.maxPolygonVertices];
+        final v2[] vertices = new v2[Settings.maxPolygonVertices];
+        final v2[] normals = new v2[Settings.maxPolygonVertices];
         int count;
 
         TempPolygon() {
@@ -929,14 +928,14 @@ public class Collision {
      */
     static class ReferenceFace {
         int i1, i2;
-        final Tuple2f v1 = new v2();
-        final Tuple2f v2 = new v2();
-        final Tuple2f normal = new v2();
+        final spacegraph.util.math.v2 v1 = new v2();
+        final spacegraph.util.math.v2 v2 = new v2();
+        final spacegraph.util.math.v2 normal = new v2();
 
-        final Tuple2f sideNormal1 = new v2();
+        final spacegraph.util.math.v2 sideNormal1 = new v2();
         float sideOffset1;
 
-        final Tuple2f sideNormal2 = new v2();
+        final spacegraph.util.math.v2 sideNormal2 = new v2();
         float sideOffset2;
     }
 
@@ -951,20 +950,20 @@ public class Collision {
         final TempPolygon m_polygonB = new TempPolygon();
 
         final Transform m_xf = new Transform();
-        final Tuple2f m_centroidB = new v2();
-        Tuple2f m_v0 = new v2();
-        Tuple2f m_v1 = new v2();
-        Tuple2f m_v2 = new v2();
-        Tuple2f m_v3 = new v2();
-        final Tuple2f m_normal0 = new v2();
-        final Tuple2f m_normal1 = new v2();
-        final Tuple2f m_normal2 = new v2();
-        final Tuple2f m_normal = new v2();
+        final v2 m_centroidB = new v2();
+        v2 m_v0 = new v2();
+        v2 m_v1 = new v2();
+        v2 m_v2 = new v2();
+        v2 m_v3 = new v2();
+        final v2 m_normal0 = new v2();
+        final v2 m_normal1 = new v2();
+        final v2 m_normal2 = new v2();
+        final v2 m_normal = new v2();
 
         VertexType m_type1, m_type2;
 
-        final Tuple2f m_lowerLimit = new v2();
-        final Tuple2f m_upperLimit = new v2();
+        final v2 m_lowerLimit = new v2();
+        final v2 m_upperLimit = new v2();
         float m_radius;
         boolean m_front;
 
@@ -977,7 +976,7 @@ public class Collision {
         }
 
         private final v2 edge1 = new v2();
-        private final Tuple2f temp = new v2();
+        private final v2 temp = new v2();
         private final v2 edge0 = new v2();
         private final v2 edge2 = new v2();
         private final ClipVertex[] ie = new ClipVertex[2];
@@ -1004,7 +1003,7 @@ public class Collision {
             edge1.set(m_v2).subbed(m_v1);
             edge1.normalize();
             m_normal1.set(edge1.y, -edge1.x);
-            float offset1 = Tuple2f.dot(m_normal1, temp.set(m_centroidB).subbed(m_v1));
+            float offset1 = v2.dot(m_normal1, temp.set(m_centroidB).subbed(m_v1));
             float offset0 = 0.0f, offset2 = 0.0f;
             boolean convex1 = false, convex2 = false;
 
@@ -1013,8 +1012,8 @@ public class Collision {
                 edge0.set(m_v1).subbed(m_v0);
                 edge0.normalize();
                 m_normal0.set(edge0.y, -edge0.x);
-                convex1 = Tuple2f.cross(edge0, edge1) >= 0.0f;
-                offset0 = Tuple2f.dot(m_normal0, temp.set(m_centroidB).subbed(m_v0));
+                convex1 = v2.cross(edge0, edge1) >= 0.0f;
+                offset0 = v2.dot(m_normal0, temp.set(m_centroidB).subbed(m_v0));
             }
 
             
@@ -1022,8 +1021,8 @@ public class Collision {
                 edge2.set(m_v3).subbed(m_v2);
                 edge2.normalize();
                 m_normal2.set(edge2.y, -edge2.x);
-                convex2 = Tuple2f.cross(edge1, edge2) > 0.0f;
-                offset2 = Tuple2f.dot(m_normal2, temp.set(m_centroidB).subbed(m_v2));
+                convex2 = v2.cross(edge1, edge2) > 0.0f;
+                offset2 = v2.dot(m_normal2, temp.set(m_centroidB).subbed(m_v2));
             }
 
             
@@ -1124,9 +1123,9 @@ public class Collision {
 
                 
                 int bestIndex = 0;
-                float bestValue = Tuple2f.dot(m_normal, m_polygonB.normals[0]);
+                float bestValue = v2.dot(m_normal, m_polygonB.normals[0]);
                 for (int i = 1; i < m_polygonB.count; ++i) {
-                    float value = Tuple2f.dot(m_normal, m_polygonB.normals[i]);
+                    float value = v2.dot(m_normal, m_polygonB.normals[i]);
                     if (value < bestValue) {
                         bestValue = value;
                         bestIndex = i;
@@ -1185,8 +1184,8 @@ public class Collision {
 
             rf.sideNormal1.set(rf.normal.y, -rf.normal.x);
             rf.sideNormal2.set(rf.sideNormal1).negated();
-            rf.sideOffset1 = Tuple2f.dot(rf.sideNormal1, rf.v1);
-            rf.sideOffset2 = Tuple2f.dot(rf.sideNormal2, rf.v2);
+            rf.sideOffset1 = v2.dot(rf.sideNormal1, rf.v1);
+            rf.sideOffset2 = v2.dot(rf.sideNormal2, rf.v2);
 
             
             int np;
@@ -1218,7 +1217,7 @@ public class Collision {
             for (int i = 0; i < Settings.maxManifoldPoints; ++i) {
                 float separation;
 
-                separation = Tuple2f.dot(rf.normal, temp.set(clipPoints2[i].v).subbed(rf.v1));
+                separation = v2.dot(rf.normal, temp.set(clipPoints2[i].v).subbed(rf.v1));
 
                 if (separation <= m_radius) {
                     ManifoldPoint cp = manifold.points[pointCount];
@@ -1242,7 +1241,7 @@ public class Collision {
             manifold.pointCount = pointCount;
         }
 
-        public void limit(Tuple2f m_normal2, Tuple2f m_normal1) {
+        public void limit(v2 m_normal2, v2 m_normal1) {
             if (m_front) {
                 m_normal.x = m_normal1.x;
                 m_normal.y = m_normal1.y;
@@ -1260,7 +1259,7 @@ public class Collision {
             }
         }
 
-        public void limit(Tuple2f m_normal0, float v, float v2, float x, float y, Tuple2f m_normal1) {
+        public void limit(v2 m_normal0, float v, float v2, float x, float y, v2 m_normal1) {
             if (m_front) {
                 m_normal.x = m_normal1.x;
                 m_normal.y = m_normal1.y;
@@ -1278,7 +1277,7 @@ public class Collision {
             }
         }
 
-        public void limit(Tuple2f m_normal0, Tuple2f m_normal2, Tuple2f m_normal1, Tuple2f m_normal12) {
+        public void limit(v2 m_normal0, v2 m_normal2, v2 m_normal1, v2 m_normal12) {
             if (m_front) {
                 m_normal.x = m_normal1.x;
                 m_normal.y = m_normal1.y;
@@ -1305,7 +1304,7 @@ public class Collision {
             float ny = m_normal.y;
 
             for (int i = 0; i < m_polygonB.count; ++i) {
-                Tuple2f v = m_polygonB.vertices[i];
+                v2 v = m_polygonB.vertices[i];
                 float tempx = v.x - m_v1.x;
                 float tempy = v.y - m_v1.y;
                 float s = nx * tempx + ny * tempy;
@@ -1315,8 +1314,8 @@ public class Collision {
             }
         }
 
-        private final Tuple2f perp = new v2();
-        private final Tuple2f n = new v2();
+        private final v2 perp = new v2();
+        private final v2 n = new v2();
 
         void computePolygonSeparation(EPAxis axis) {
             axis.type = EPAxis.Type.UNKNOWN;
@@ -1327,8 +1326,8 @@ public class Collision {
             perp.y = m_normal.x;
 
             for (int i = 0; i < m_polygonB.count; ++i) {
-                Tuple2f normalB = m_polygonB.normals[i];
-                Tuple2f vB = m_polygonB.vertices[i];
+                v2 normalB = m_polygonB.normals[i];
+                v2 vB = m_polygonB.vertices[i];
                 n.x = -normalB.x;
                 n.y = -normalB.y;
 
@@ -1352,11 +1351,11 @@ public class Collision {
 
                 
                 if (n.x * perp.x + n.y * perp.y >= 0.0f) {
-                    if (Tuple2f.dot(temp.set(n).subbed(m_upperLimit), m_normal) < -Settings.angularSlop) {
+                    if (v2.dot(temp.set(n).subbed(m_upperLimit), m_normal) < -Settings.angularSlop) {
                         continue;
                     }
                 } else {
-                    if (Tuple2f.dot(temp.set(n).subbed(m_lowerLimit), m_normal) < -Settings.angularSlop) {
+                    if (v2.dot(temp.set(n).subbed(m_lowerLimit), m_normal) < -Settings.angularSlop) {
                         continue;
                     }
                 }

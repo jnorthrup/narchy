@@ -258,13 +258,16 @@ public final class TruthFunctions {
 
 
     public static float c2w(float c) {
+        if (!Float.isFinite(c))
+            throw new Truth.TruthException("non-finite confidence", c);
+
+        if (c < Param.TRUTH_EPSILON)
+            throw new Truth.TruthException("confidence underflow", c);
+
         if (c > Param.TRUTH_MAX_CONF) {
             //throw new Truth.TruthException("confidence overflow", c);
             c = Param.TRUTH_MAX_CONF;
         }
-
-        if (c < Param.TRUTH_EPSILON)
-            throw new Truth.TruthException("confidence underflow", c);
 
         return c2wSafe(c);
     }
@@ -276,20 +279,17 @@ public final class TruthFunctions {
 
     /**
      * A function to convert confidence to weight
+     * http://www.wolframalpha.com/input/?i=x%2F(1-x)
      *
      * @param c confidence, in [0, 1)
      * @return The corresponding weight of evidence, a non-negative real number
      */
     public static float c2wSafe(float c, float horizon) {
-        if (!Float.isFinite(c))
-            throw new Truth.TruthException("non-finite confidence", c);
-
         return horizon * c / (1 - c);
     }
-    public static float w2cSafe(float w, float horizon) {
-        if (!Float.isFinite(w))
-            throw new Truth.TruthException("non-finite evidence", w);
 
+    /** http://www.wolframalpha.com/input/?i=x%2F(x%2B1) */
+    public static float w2cSafe(float w, float horizon) {
         return w / (w + horizon);
     }
 
@@ -302,6 +302,9 @@ public final class TruthFunctions {
     public static float w2c(float w) {
         if (w < Param.TRUTH_MIN_EVI)
             throw new Truth.TruthException("insufficient evidence", w);
+        if (!Float.isFinite(w))
+            throw new Truth.TruthException("non-finite evidence", w);
+
 
         return w2cSafe(w);
     }

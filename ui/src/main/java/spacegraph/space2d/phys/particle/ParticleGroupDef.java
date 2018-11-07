@@ -2,7 +2,7 @@ package spacegraph.space2d.phys.particle;
 
 import spacegraph.space2d.phys.collision.shapes.Shape;
 import spacegraph.space2d.phys.common.Vec2;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * A particle group definition holds all the data needed to construct a particle group. You can
@@ -24,7 +24,7 @@ public class ParticleGroupDef {
      * The world position of the group. Moves the group's shape a distance equal to the value of
      * position.
      */
-    public final Tuple2f position = new Vec2();
+    public final v2 position = new Vec2();
 
     /**
      * The world angle of the group in radians. Rotates the shape by an angle equal to the value of
@@ -35,7 +35,7 @@ public class ParticleGroupDef {
     /**
      * The linear velocity of the group's origin in world co-ordinates.
      */
-    public final Tuple2f linearVelocity = new Vec2();
+    public final v2 linearVelocity = new Vec2();
 
     /**
      * The angular velocity of the group.

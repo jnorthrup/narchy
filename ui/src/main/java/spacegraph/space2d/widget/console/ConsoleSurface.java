@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.console;
 import com.googlecode.lanterna.TextCharacter;
 import com.jogamp.opengl.GL2;
 import jcog.TODO;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.video.Draw;
 import spacegraph.video.font.HersheyFont;
 
@@ -44,7 +45,7 @@ public abstract class ConsoleSurface extends AbstractConsoleSurface {
     }
 
     @Override
-    protected void paintIt(GL2 gl) {
+    protected void paintIt(GL2 gl, SurfaceRender r) {
         Draw.bounds(bounds, gl, this::doPaint);
     }
 

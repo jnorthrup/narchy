@@ -23,9 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.collision;
 
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.util.math.v2;
-
 
 
 /**
@@ -37,7 +35,7 @@ public class RayCastOutput {
     public float fraction;
 
     public RayCastOutput() {
-        normal = new Vec2();
+        normal = new v2();
         fraction = 0;
     }
 

@@ -89,7 +89,7 @@ public abstract class Tuple2d implements java.io.Serializable, Cloneable {
      * Constructs and initializes a Tuple2d from the specified Tuple2f.
      * @param t1 the Tuple2f containing the initialization x y data
      */
-    Tuple2d(Tuple2f t1)
+    Tuple2d(v2 t1)
     {
 	this.x = t1.x;
 	this.y = t1.y;
@@ -144,7 +144,7 @@ public abstract class Tuple2d implements java.io.Serializable, Cloneable {
      * Sets the value of this tuple to the value of Tuple2f t1.
      * @param t1 the tuple to be copied
      */
-    public final void set(Tuple2f t1)
+    public final void set(v2 t1)
     {
 	this.x = t1.x;
 	this.y = t1.y;

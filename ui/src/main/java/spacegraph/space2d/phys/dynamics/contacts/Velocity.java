@@ -27,4 +27,22 @@ import spacegraph.util.math.v2;
 
 public class Velocity extends v2 {
     public float w;
+
+    /**
+     * Constructs and initializes a Vector2f to (0,0).
+     */
+    public Velocity() {
+        super();
+    }
+
+
+    /**
+     * Computes the dot product of the this vector and vector v1.
+     *
+     * @param v1 the other vector
+     */
+    private float dot(v2 v1) {
+        return (this.x * v1.x + this.y * v1.y);
+    }
+
 }

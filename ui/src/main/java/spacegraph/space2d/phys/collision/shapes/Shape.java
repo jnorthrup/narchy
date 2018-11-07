@@ -27,7 +27,6 @@ import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.RayCastInput;
 import spacegraph.space2d.phys.collision.RayCastOutput;
 import spacegraph.space2d.phys.common.Transform;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -86,7 +85,7 @@ public abstract class Shape {
      * @param xf the shape world transform.
      * @param p  a point in world coordinates.
      */
-    public abstract boolean testPoint(final Transform xf, final Tuple2f p);
+    public abstract boolean testPoint(final Transform xf, final v2 p);
 
     /**
      * Cast a ray against a child shape.
@@ -127,7 +126,7 @@ public abstract class Shape {
      * @param normalOut returns the direction in which the distance increases.
      * @return distance returns the distance from the current shape.
      */
-    public abstract float computeDistanceToOut(Transform xf, Tuple2f p, int childIndex, v2 normalOut);
+    public abstract float computeDistanceToOut(Transform xf, v2 p, int childIndex, v2 normalOut);
 
     public abstract Shape clone();
 }

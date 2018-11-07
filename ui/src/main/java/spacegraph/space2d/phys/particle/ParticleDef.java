@@ -1,7 +1,7 @@
 package spacegraph.space2d.phys.particle;
 
 import spacegraph.space2d.phys.common.Vec2;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 public class ParticleDef {
     /**
@@ -14,7 +14,7 @@ public class ParticleDef {
     /**
      * The world position of the particle.
      */
-    public final Tuple2f position = new Vec2();
+    public final v2 position = new Vec2();
 
     /**
      * The linear velocity of the particle in world co-ordinates.

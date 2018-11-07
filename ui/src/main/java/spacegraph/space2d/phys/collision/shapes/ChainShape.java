@@ -28,7 +28,6 @@ import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.RayCastInput;
 import spacegraph.space2d.phys.collision.RayCastOutput;
 import spacegraph.space2d.phys.common.*;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -41,10 +40,10 @@ import spacegraph.util.math.v2;
  */
 public class ChainShape extends Shape {
 
-    public Tuple2f[] m_vertices;
+    public v2[] m_vertices;
     public int m_count;
-    private final Tuple2f m_prevVertex = new Vec2();
-    private final Tuple2f m_nextVertex = new Vec2();
+    private final v2 m_prevVertex = new Vec2();
+    private final v2 m_nextVertex = new Vec2();
     private boolean m_hasPrevVertex = false;
     private boolean m_hasNextVertex = false;
 
@@ -74,15 +73,15 @@ public class ChainShape extends Shape {
         assert (0 <= index && index < m_count - 1);
         edge.radius = radius;
 
-        final Tuple2f v0 = m_vertices[index + 0];
-        final Tuple2f v1 = m_vertices[index + 1];
+        final v2 v0 = m_vertices[index + 0];
+        final v2 v1 = m_vertices[index + 1];
         edge.m_vertex1.x = v0.x;
         edge.m_vertex1.y = v0.y;
         edge.m_vertex2.x = v1.x;
         edge.m_vertex2.y = v1.y;
 
         if (index > 0) {
-            Tuple2f v = m_vertices[index - 1];
+            v2 v = m_vertices[index - 1];
             edge.m_vertex0.x = v.x;
             edge.m_vertex0.y = v.y;
             edge.m_hasVertex0 = true;
@@ -93,7 +92,7 @@ public class ChainShape extends Shape {
         }
 
         if (index < m_count - 2) {
-            Tuple2f v = m_vertices[index + 2];
+            v2 v = m_vertices[index + 2];
             edge.m_vertex3.x = v.x;
             edge.m_vertex3.y = v.y;
             edge.m_hasVertex3 = true;
@@ -105,14 +104,14 @@ public class ChainShape extends Shape {
     }
 
     @Override
-    public float computeDistanceToOut(Transform xf, Tuple2f p, int childIndex, v2 normalOut) {
+    public float computeDistanceToOut(Transform xf, v2 p, int childIndex, v2 normalOut) {
         final EdgeShape edge = pool0;
         getChildEdge(edge, childIndex);
         return edge.computeDistanceToOut(xf, p, 0, normalOut);
     }
 
     @Override
-    public boolean testPoint(Transform xf, Tuple2f p) {
+    public boolean testPoint(Transform xf, v2 p) {
         return false;
     }
 
@@ -127,10 +126,10 @@ public class ChainShape extends Shape {
         if (i2 == m_count) {
             i2 = 0;
         }
-        Tuple2f v = m_vertices[i1];
+        v2 v = m_vertices[i1];
         edgeShape.m_vertex1.x = v.x;
         edgeShape.m_vertex1.y = v.y;
-        Tuple2f v1 = m_vertices[i2];
+        v2 v1 = m_vertices[i2];
         edgeShape.m_vertex2.x = v1.x;
         edgeShape.m_vertex2.y = v1.y;
 
@@ -140,8 +139,8 @@ public class ChainShape extends Shape {
     @Override
     public void computeAABB(AABB aabb, Transform xf, int childIndex) {
         assert (childIndex < m_count);
-        final Tuple2f lower = aabb.lowerBound;
-        final Tuple2f upper = aabb.upperBound;
+        final v2 lower = aabb.lowerBound;
+        final v2 upper = aabb.upperBound;
 
         int i1 = childIndex;
         int i2 = childIndex + 1;
@@ -149,10 +148,10 @@ public class ChainShape extends Shape {
             i2 = 0;
         }
 
-        final Tuple2f vi1 = m_vertices[i1];
-        final Tuple2f vi2 = m_vertices[i2];
+        final v2 vi1 = m_vertices[i1];
+        final v2 vi2 = m_vertices[i2];
         final Rot xfq = xf;
-        final Tuple2f xfp = xf.pos;
+        final v2 xfp = xf.pos;
         float v1x = (xfq.c * vi1.x - xfq.s * vi1.y) + xfp.x;
         float v1y = (xfq.s * vi1.x + xfq.c * vi1.y) + xfp.y;
         float v2x = (xfq.c * vi2.x - xfq.s * vi2.y) + xfp.x;
@@ -188,14 +187,14 @@ public class ChainShape extends Shape {
      * @param vertices an array of vertices, these are copied
      * @param count    the vertex count
      */
-    public void createLoop(final Tuple2f[] vertices, int count) {
+    public void createLoop(final v2[] vertices, int count) {
         assert (m_vertices == null && m_count == 0);
         assert (count >= 3);
         m_count = count + 1;
-        m_vertices = new Tuple2f[m_count];
+        m_vertices = new v2[m_count];
         for (int i = 1; i < count; i++) {
-            Tuple2f v1 = vertices[i - 1];
-            Tuple2f v2 = vertices[i];
+            v2 v1 = vertices[i - 1];
+            v2 v2 = vertices[i];
             
             if (MathUtils.distanceSquared(v1, v2) < Settings.linearSlop * Settings.linearSlop) {
                 throw new RuntimeException("Vertices of chain shape are too close together");
@@ -217,14 +216,14 @@ public class ChainShape extends Shape {
      * @param vertices an array of vertices, these are copied
      * @param count    the vertex count
      */
-    private void createChain(final Tuple2f vertices[], int count) {
+    private void createChain(final v2 vertices[], int count) {
         assert (m_vertices == null && m_count == 0);
         assert (count >= 2);
         m_count = count;
-        m_vertices = new Tuple2f[m_count];
+        m_vertices = new v2[m_count];
         for (int i = 1; i < m_count; i++) {
-            Tuple2f v1 = vertices[i - 1];
-            Tuple2f v2 = vertices[i];
+            v2 v1 = vertices[i - 1];
+            v2 v2 = vertices[i];
             
             if (MathUtils.distanceSquared(v1, v2) < Settings.linearSlop * Settings.linearSlop) {
                 throw new RuntimeException("Vertices of chain shape are too close together");
@@ -245,7 +244,7 @@ public class ChainShape extends Shape {
      *
      * @param prevVertex
      */
-    public void setPrevVertex(final Tuple2f prevVertex) {
+    public void setPrevVertex(final v2 prevVertex) {
         m_prevVertex.set(prevVertex);
         m_hasPrevVertex = true;
     }
@@ -255,7 +254,7 @@ public class ChainShape extends Shape {
      *
      * @param nextVertex
      */
-    public void setNextVertex(final Tuple2f nextVertex) {
+    public void setNextVertex(final v2 nextVertex) {
         m_nextVertex.set(nextVertex);
         m_hasNextVertex = true;
     }

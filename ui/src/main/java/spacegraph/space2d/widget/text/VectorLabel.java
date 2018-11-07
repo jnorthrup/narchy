@@ -68,7 +68,7 @@ public class VectorLabel extends EmptyContainer {
     }
 
     @Override
-    protected void paintIt(GL2 gl) {
+    protected void paintIt(GL2 gl, SurfaceRender r) {
         renderer.accept(this, gl);
     }
 

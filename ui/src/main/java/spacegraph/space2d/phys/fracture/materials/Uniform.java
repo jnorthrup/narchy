@@ -2,7 +2,6 @@ package spacegraph.space2d.phys.fracture.materials;
 
 import jcog.random.XoRoShiRo128PlusRandom;
 import spacegraph.space2d.phys.fracture.Material;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import java.util.Random;
@@ -16,9 +15,9 @@ public class Uniform extends Material {
     private static final Random r = new XoRoShiRo128PlusRandom(1);
 
     @Override
-    public Tuple2f[] focee(Tuple2f point, Tuple2f velocity) {
+    public v2[] focee(v2 point, v2 velocity) {
         int num = 32;
-        Tuple2f[] focee = new Tuple2f[num];
+        v2[] focee = new v2[num];
 
         float scale = 2 * m_shattering;
 

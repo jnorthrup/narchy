@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL2;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.*;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.ZoomOrtho;
@@ -270,7 +271,7 @@ public class Windo extends MutableUnitContainer {
     }
 
     @Override
-    protected void paintIt(GL2 gl) {
+    protected void paintIt(GL2 gl, SurfaceRender r) {
         paintBack(gl);
 
 

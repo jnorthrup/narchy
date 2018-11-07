@@ -24,7 +24,7 @@
 package spacegraph.space2d.phys.pooling;
 
 import spacegraph.space2d.phys.common.Vec2;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 import java.util.HashMap;
 
@@ -35,9 +35,9 @@ import java.util.HashMap;
  */
 public class Vec2Array {
 
-    private final HashMap<Integer, Tuple2f[]> map = new HashMap<>();
+    private final HashMap<Integer, v2[]> map = new HashMap<>();
 
-    public Tuple2f[] get(int argLength) {
+    public v2[] get(int argLength) {
         assert (argLength > 0);
 
         if (!map.containsKey(argLength)) {
@@ -48,8 +48,8 @@ public class Vec2Array {
         return map.get(argLength);
     }
 
-    private static Tuple2f[] getInitializedArray(int argLength) {
-        final Tuple2f[] ray = new Tuple2f[argLength];
+    private static v2[] getInitializedArray(int argLength) {
+        final v2[] ray = new v2[argLength];
         for (int i = 0; i < ray.length; i++) {
             ray[i] = new Vec2();
         }

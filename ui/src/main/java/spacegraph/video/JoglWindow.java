@@ -10,7 +10,6 @@ import jcog.event.Off;
 import jcog.event.Topic;
 import jcog.exe.Exe;
 import jcog.exe.InstrumentedLoop;
-import jcog.exe.Loop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.util.animate.Animated;
@@ -38,10 +37,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     private final Logger logger;
 
 
-    /**
-     * update loop
-     */
-    private final InstrumentedLoop updater;
+//    /**
+//     * update loop
+//     */
+//    private final InstrumentedLoop updater;
     public volatile GLWindow window;
     public GL2 gl;
     /**
@@ -97,15 +96,14 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     JoglWindow() {
         logger = LoggerFactory.getLogger(toString());
 
-        updater = new InstrumentedLoop() {
-            @Override
-            public boolean next() {
-                return JoglWindow.this.next();
-            }
-        };
+//        updater = new InstrumentedLoop() {
+//            @Override
+//            public boolean next() {
+//                return JoglWindow.this.next();
+//            }
+//        };
 
         renderer = new GameAnimatorControl();
-
 
 
     }
@@ -129,7 +127,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
 
         GLCapabilities config = new GLCapabilities(
-
 
 
                 //GLProfile.getGL2GL3()
@@ -213,7 +210,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     @Override
     public void windowDestroyNotify(WindowEvent windowEvent) {
         renderer.stop();
-        updater.stop();
+//        updater.stop();
         eventClosed.emit(this);
     }
 
@@ -236,8 +233,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     @Override
     public void windowRepaint(WindowUpdateEvent windowUpdateEvent) {
         //if (!updater.isRunning()) {
-            updater.setFPS(updateFPS /* window.hasFocus() ? updateFPS : updateFPS * updateFPSUnfocusedMultiplier */ );
-            renderer.loop.setFPS(renderFPS);
+//        updater.setFPS(updateFPS /* window.hasFocus() ? updateFPS : updateFPS * updateFPSUnfocusedMultiplier */);
+        renderer.loop.setFPS(renderFPS);
         //}
     }
 
@@ -251,8 +248,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     private boolean next() {
         //System.out.println(window + " " +window.isVisible());
         if (window.isVisible()) {
-            long cycleTimeNS = updater.cycleTimeNS;
-            this.dtS = (float)(cycleTimeNS / 1.0E9);
+            long cycleTimeNS =
+                    //updater.cycleTimeNS;
+                    renderer.loop.cycleTimeNS;
+            this.dtS = (float) (cycleTimeNS / 1.0E9);
             onUpdate.emit(this);
             return true;
         } else {
@@ -270,9 +269,11 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
         if (renderDtNS > Integer.MAX_VALUE) renderDtNS = Integer.MAX_VALUE;
 
-//        System.out.println(window.getStateMaskString());
 
-        render((int) (renderDtNS/1_000_000) /* ns -> ms */);
+        next();
+
+        /* ns -> ms */
+        render((int) Math.min(Integer.MAX_VALUE, Math.round(renderDtNS / 1_000_000.0)));
 
     }
 
@@ -284,17 +285,17 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     private void show(String title, int w, int h, int x, int y) {
 
-        Threading.invokeOnOpenGLThread(false, ()->{
-        //GLWorkerThread.invokeLater(()->{
-        //Exe.invokeLater(() -> {
+        Threading.invokeOnOpenGLThread(false, () -> {
+            //GLWorkerThread.invokeLater(()->{
+            //Exe.invokeLater(() -> {
 
-        if (window != null) {
+            if (window != null) {
 
-            return;
-        }
+                return;
+            }
 
-        GLWindow W = window();
-        this.window = W;
+            GLWindow W = window();
+            this.window = W;
 
 //        EDTUtil edt = window.getScreen().getDisplay().getEDTUtil();
 //        if (!edt.isRunning()) {
@@ -302,23 +303,23 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //            edt.setPollPeriod(EDT_POLL_PERIOD_MS);
 //        }
 
-        window.addGLEventListener(this);
-        window.addWindowListener(this);
+            window.addGLEventListener(this);
+            window.addWindowListener(this);
 
-        windows.add(this);
+            windows.add(this);
 
-        W.setTitle(title);
-        if (x != Integer.MIN_VALUE) {
-            setPositionAndSize(x, y, w, h);
-            W.setPosition(x, y);
-            W.setSize(w,h);
-        } else {
-            setSize(w, h);
-            W.setSize(w, h);
-        }
-        W.setVisible(true);
+            W.setTitle(title);
+            if (x != Integer.MIN_VALUE) {
+                setPositionAndSize(x, y, w, h);
+                W.setPosition(x, y);
+                W.setSize(w, h);
+            } else {
+                setSize(w, h);
+                W.setSize(w, h);
+            }
+            W.setVisible(true);
 
-        //});
+            //});
 
 
         });
@@ -408,7 +409,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     private void show(String title, int w, int h) {
         //Threading.invokeOnOpenGLThread(false, ()->{
-            show(title, w, h, Integer.MIN_VALUE, Integer.MIN_VALUE);
+        show(title, w, h, Integer.MIN_VALUE, Integer.MIN_VALUE);
         //});
     }
 
@@ -474,130 +475,129 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     }
 
-/* from: Jake2's */
-class GameAnimatorControl extends AnimatorBase {
+    /* from: Jake2's */
+    class GameAnimatorControl extends AnimatorBase {
 
-    final Loop loop;
-    private volatile boolean paused = true;
-
-
-    GameAnimatorControl() {
-        super();
-
-        setIgnoreExceptions(false);
-        setPrintExceptions(true);
+        final InstrumentedLoop loop;
+        private volatile boolean paused = true;
 
 
-        this.loop = new Loop() {
+        GameAnimatorControl() {
+            super();
+
+            setIgnoreExceptions(false);
+            setPrintExceptions(true);
 
 
-            @Override
-            public String toString() {
-                return JoglWindow.this + ".render";
-            }
-
-            @Override
-            protected void starting() {
-                paused = false;
-            }
+            this.loop = new InstrumentedLoop() {
 
 
-            /** waiting to be rendered */
-            final AtomicBoolean waiting = new AtomicBoolean();
-
-            private void render() {
-                try {
-                    updateWindow();
-
-                    if (!drawables.isEmpty()) {
-                        GLAutoDrawable d = drawables.get(0);
-                        if (d != null)
-                            d.display();
-                    }
-                } finally {
-                    waiting.set(false);
+                @Override
+                public String toString() {
+                    return JoglWindow.this + ".render";
                 }
-            }
 
-            @Override
-            public boolean next() {
+                @Override
+                protected void starting() {
+                    paused = false;
+                }
 
-                if (window != null) {
 
-                    if (!paused) {
+                /** waiting to be rendered */
+                final AtomicBoolean waiting = new AtomicBoolean();
 
-                        if (waiting.compareAndSet(false, true)) {
-                            //window.runOnEDTIfAvail(false, this::render);
-                            //renderThread.execute(this::render);
-                            Threading.invokeOnOpenGLThread(false, this::render);
+                private void render() {
+                    try {
+                        updateWindow();
+
+                        if (!drawables.isEmpty()) {
+                            GLAutoDrawable d = drawables.get(0);
+                            if (d != null)
+                                d.display();
                         }
+                    } finally {
+                        waiting.set(false);
                     }
-                    return true;
-                } else {
-                    return false;
                 }
 
+                @Override
+                public boolean next() {
+
+                    if (window != null) {
+
+                        if (!paused) {
+
+                            if (waiting.compareAndSet(false, true)) {
+                                //window.runOnEDTIfAvail(false, this::render);
+                                //renderThread.execute(this::render);
+                                Threading.invokeOnOpenGLThread(false, this::render);
+                            }
+                        }
+                        return true;
+                    } else {
+                        return false;
+                    }
 
 
-            }
-        };
+                }
+            };
 
 
-        loop.setFPS(1);  //HACK initially trigger slowly
+            loop.setFPS(1);  //HACK initially trigger slowly
+
+        }
+
+        @Override
+        protected String getBaseName(String prefix) {
+            return prefix;
+        }
+
+        @Override
+        public final boolean start() {
+            return false;
+        }
+
+
+        @Override
+        public final boolean stop() {
+
+            pause();
+            loop.stop();
+            return true;
+        }
+
+
+        @Override
+        public final boolean pause() {
+
+
+            paused = true;
+            return true;
+        }
+
+        @Override
+        public final boolean resume() {
+            paused = false;
+            return true;
+        }
+
+        @Override
+        public final boolean isStarted() {
+            return loop.isRunning();
+        }
+
+        @Override
+        public final boolean isAnimating() {
+            return !paused;
+        }
+
+        @Override
+        public final boolean isPaused() {
+            return paused;
+        }
+
 
     }
-
-    @Override
-    protected String getBaseName(String prefix) {
-        return prefix;
-    }
-
-    @Override
-    public final boolean start() {
-        return false;
-    }
-
-
-    @Override
-    public final boolean stop() {
-
-        pause();
-        loop.stop();
-        return true;
-    }
-
-
-    @Override
-    public final boolean pause() {
-
-
-        paused = true;
-        return true;
-    }
-
-    @Override
-    public final boolean resume() {
-        paused = false;
-        return true;
-    }
-
-    @Override
-    public final boolean isStarted() {
-        return loop.isRunning();
-    }
-
-    @Override
-    public final boolean isAnimating() {
-        return !paused;
-    }
-
-    @Override
-    public final boolean isPaused() {
-        return paused;
-    }
-
-
-}
 
 
 }

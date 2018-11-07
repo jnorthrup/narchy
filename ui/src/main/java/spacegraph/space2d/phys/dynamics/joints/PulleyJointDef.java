@@ -30,7 +30,6 @@ package spacegraph.space2d.phys.dynamics.joints;
 
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.dynamics.Body2D;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -44,22 +43,22 @@ class PulleyJointDef extends JointDef {
     /**
      * The first ground anchor in world coordinates. This point never moves.
      */
-    public Tuple2f groundAnchorA;
+    public v2 groundAnchorA;
 
     /**
      * The second ground anchor in world coordinates. This point never moves.
      */
-    public Tuple2f groundAnchorB;
+    public v2 groundAnchorB;
 
     /**
      * The local anchor point relative to bodyA's origin.
      */
-    public Tuple2f localAnchorA;
+    public v2 localAnchorA;
 
     /**
      * The local anchor point relative to bodyB's origin.
      */
-    public Tuple2f localAnchorB;
+    public v2 localAnchorB;
 
     /**
      * The a reference length for the segment attached to bodyA.
@@ -91,16 +90,16 @@ class PulleyJointDef extends JointDef {
     /**
      * Initialize the bodies, anchors, lengths, max lengths, and ratio using the world anchors.
      */
-    public void initialize(Body2D b1, Body2D b2, Tuple2f ga1, Tuple2f ga2, Tuple2f anchor1, Tuple2f anchor2, float r) {
+    public void initialize(Body2D b1, Body2D b2, v2 ga1, v2 ga2, v2 anchor1, v2 anchor2, float r) {
         bodyA = b1;
         bodyB = b2;
         groundAnchorA = ga1;
         groundAnchorB = ga2;
         localAnchorA = bodyA.getLocalPoint(anchor1);
         localAnchorB = bodyB.getLocalPoint(anchor2);
-        Tuple2f d1 = anchor1.sub(ga1);
+        v2 d1 = anchor1.sub(ga1);
         lengthA = d1.length();
-        Tuple2f d2 = anchor2.sub(ga2);
+        v2 d2 = anchor2.sub(ga2);
         lengthB = d2.length();
         ratio = r;
         assert (ratio > Settings.EPSILON);

@@ -3,10 +3,10 @@ package spacegraph.space2d;
 import com.jogamp.opengl.GL2;
 import jcog.data.list.FasterList;
 import jcog.tree.rtree.rect.RectFloat;
+import spacegraph.space2d.hud.Ortho;
 import spacegraph.util.math.v2;
 import spacegraph.util.math.v3;
 
-import java.util.List;
 import java.util.function.BiConsumer;
 
 /** surface rendering context */
@@ -39,11 +39,20 @@ public class SurfaceRender {
 
     }
 
-    public final List<BiConsumer<GL2, SurfaceRender>> toRender = new FasterList(); //TEMPORARY
-    public final List<BiConsumer<GL2, SurfaceRender>> rendering = new FasterList(); //TEMPORARY
 
+
+
+//    public final Flip<MetalConcurrentQueue<BiConsumer<GL2, SurfaceRender>>> rendering = new Flip<>(()->
+//            new MetalConcurrentQueue<>(8*1024));
+//    public volatile MetalConcurrentQueue<BiConsumer<GL2, SurfaceRender>> toRender = rendering.write();
+
+    public final FasterList<BiConsumer<GL2, SurfaceRender>> rendering = new FasterList<>();
+
+    public void clear() {
+        rendering.clear();
+    }
     public void add(BiConsumer<GL2, SurfaceRender> renderable) {
-        toRender.add(renderable);
+        rendering.add(renderable);
     }
 
     public SurfaceRender restart(float pw, float ph, int dtMS) {
@@ -125,7 +134,16 @@ public class SurfaceRender {
     }
 
     public void render(GL2 gl) {
+
+        //System.out.println(Thread.currentThread() + " > read " + System.identityHashCode(rendering.read()));
         rendering.forEach(rr -> rr.accept(gl, this));
+        //System.out.println(Thread.currentThread() + " < read " + System.identityHashCode(rendering.read()));
+    }
+
+    public void render(Ortho.Camera cam, v2 scale, Surface root) {
+        clear();
+        set(cam, scale);
+        root.recompile(this);
     }
 
 

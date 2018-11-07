@@ -126,7 +126,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     }
 
     @Override
-    protected final void paintIt(GL2 gl) {
+    protected final void paintIt(GL2 gl, SurfaceRender r) {
         paintWidget(bounds, gl);
     }
 

@@ -2,7 +2,7 @@ package spacegraph.space2d.phys.dynamics.joints;
 
 import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.Body2D;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * Motor joint definition.
@@ -13,7 +13,7 @@ class MotorJointDef extends JointDef {
     /**
      * Position of bodyB minus the position of bodyA, in bodyA's frame, in meters.
      */
-    public final Tuple2f linearOffset = new Vec2();
+    public final v2 linearOffset = new Vec2();
 
     /**
      * The bodyB angle minus bodyA angle in radians.
@@ -46,7 +46,7 @@ class MotorJointDef extends JointDef {
     public void initialize(Body2D bA, Body2D bB) {
         bodyA = bA;
         bodyB = bB;
-        Tuple2f xB = bodyB.getPosition();
+        v2 xB = bodyB.getPosition();
         bodyA.getLocalPointToOut(xB, linearOffset);
 
         float angleA = bodyA.getAngle();

@@ -26,7 +26,6 @@ package spacegraph.space2d.phys.dynamics.joints;
 import spacegraph.space2d.phys.common.*;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -39,8 +38,8 @@ import spacegraph.util.math.v2;
  */
 public class MouseJoint extends Joint {
 
-    private final Tuple2f m_localAnchorB = new v2();
-    private final Tuple2f m_targetA = new v2();
+    private final v2 m_localAnchorB = new v2();
+    private final v2 m_targetA = new v2();
     private float m_frequencyHz;
     private float m_dampingRatio;
     private float m_beta;
@@ -52,12 +51,12 @@ public class MouseJoint extends Joint {
 
     
     private int m_indexB;
-    private final Tuple2f m_rB = new v2();
-    private final Tuple2f m_localCenterB = new v2();
+    private final v2 m_rB = new v2();
+    private final v2 m_localCenterB = new v2();
     private float m_invMassB;
     private float m_invIB;
     private final Mat22 m_mass = new Mat22();
-    private final Tuple2f m_C = new Vec2();
+    private final v2 m_C = new Vec2();
 
     public MouseJoint(IWorldPool argWorld, MouseJointDef def) {
         super(argWorld, def);
@@ -80,17 +79,17 @@ public class MouseJoint extends Joint {
     }
 
     @Override
-    public void getAnchorA(Tuple2f argOut) {
+    public void getAnchorA(v2 argOut) {
         argOut.set(m_targetA);
     }
 
     @Override
-    public void getAnchorB(Tuple2f argOut) {
+    public void getAnchorB(v2 argOut) {
         B.getWorldPointToOut(m_localAnchorB, argOut);
     }
 
     @Override
-    public void getReactionForce(float invDt, Tuple2f argOut) {
+    public void getReactionForce(float invDt, v2 argOut) {
         argOut.set(m_impulse).scaled(invDt);
     }
 
@@ -100,14 +99,14 @@ public class MouseJoint extends Joint {
     }
 
 
-    public void setTarget(Tuple2f target) {
+    public void setTarget(v2 target) {
         if (!B.isAwake()) {
             B.setAwake(true);
         }
         m_targetA.set(target);
     }
 
-    public Tuple2f getTarget() {
+    public v2 getTarget() {
         return m_targetA;
     }
 
@@ -145,9 +144,9 @@ public class MouseJoint extends Joint {
         m_invMassB = B.m_invMass;
         m_invIB = B.m_invI;
 
-        Tuple2f cB = data.positions[m_indexB];
+        v2 cB = data.positions[m_indexB];
         float aB = data.positions[m_indexB].a;
-        Tuple2f vB = data.velocities[m_indexB];
+        v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         final Rot qB = pool.popRot();
@@ -176,7 +175,7 @@ public class MouseJoint extends Joint {
         }
         m_beta = h * k * m_gamma;
 
-        Tuple2f temp = pool.popVec2();
+        v2 temp = pool.popVec2();
 
         
         Rot.mulToOutUnsafe(qB, temp.set(m_localAnchorB).subbed(m_localCenterB), m_rB);
@@ -202,7 +201,7 @@ public class MouseJoint extends Joint {
             m_impulse.scaled(data.step.dtRatio);
             vB.x += m_invMassB * m_impulse.x;
             vB.y += m_invMassB * m_impulse.y;
-            wB += m_invIB * Tuple2f.cross(m_rB, m_impulse);
+            wB += m_invIB * v2.cross(m_rB, m_impulse);
         } else {
             m_impulse.setZero();
         }
@@ -223,21 +222,21 @@ public class MouseJoint extends Joint {
     @Override
     public void solveVelocityConstraints(final SolverData data) {
 
-        Tuple2f vB = data.velocities[m_indexB];
+        v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         
-        final Tuple2f Cdot = pool.popVec2();
-        Tuple2f.crossToOutUnsafe(wB, m_rB, Cdot);
+        final v2 Cdot = pool.popVec2();
+        v2.crossToOutUnsafe(wB, m_rB, Cdot);
         Cdot.added(vB);
 
-        final Tuple2f impulse = pool.popVec2();
-        final Tuple2f temp = pool.popVec2();
+        final v2 impulse = pool.popVec2();
+        final v2 temp = pool.popVec2();
 
         temp.set(m_impulse).scaled(m_gamma).added(m_C).added(Cdot).negated();
         Mat22.mulToOutUnsafe(m_mass, temp, impulse);
 
-        Tuple2f oldImpulse = temp;
+        v2 oldImpulse = temp;
         oldImpulse.set(m_impulse);
         m_impulse.added(impulse);
         float maxImpulse = data.step.dt * m_maxForce;
@@ -249,7 +248,7 @@ public class MouseJoint extends Joint {
 
         vB.x += m_invMassB * impulse.x;
         vB.y += m_invMassB * impulse.y;
-        wB += m_invIB * Tuple2f.cross(m_rB, impulse);
+        wB += m_invIB * v2.cross(m_rB, impulse);
 
 
         data.velocities[m_indexB].w = wB;

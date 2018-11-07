@@ -2,7 +2,7 @@ package spacegraph.space2d.phys.fracture.voronoi;
 
 import jcog.random.XoRoShiRo128PlusRandom;
 import spacegraph.space2d.phys.common.Vec2;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -30,7 +30,7 @@ public class SingletonVD {
      * Body voronoi diagramu. Rozmedzie platnych bodov: (0, pCount - 1).
      * Nenastavovat hodnotam null value.
      */
-    public final Tuple2f[] points = new Tuple2f[0x404]; 
+    public final v2[] points = new v2[0x404];
 
     /**
      * Pocet bodov voronoi diagramu.
@@ -60,7 +60,7 @@ public class SingletonVD {
     /**
      * Vstupne pole ohnisk.
      */
-    private Tuple2f[] ar;
+    private v2[] ar;
 
     /**
      * Pocet trojuholnikov triangulacie.
@@ -111,7 +111,7 @@ public class SingletonVD {
      * @param a
      * @param b
      */
-    public void calculateVoronoi(Tuple2f[] focee, final Tuple2f a, final Tuple2f b) {
+    public void calculateVoronoi(v2[] focee, final v2 a, final v2 b) {
         pCount = 0;
 
         maxX = Math.max(a.x, b.x);
@@ -170,8 +170,8 @@ public class SingletonVD {
             for (int i = 0; i != boundariesCount; ++i) {
                 int li = boundaries[(i == 0 ? boundariesCount : i) - 1];
                 int ri = boundaries[i];
-                Tuple2f l = ar[li];
-                Tuple2f r = ar[ri];
+                v2 l = ar[li];
+                v2 r = ar[ri];
 
                 float sy = l.x > r.x ? minY : maxY;
                 float y = sy; 
@@ -183,7 +183,7 @@ public class SingletonVD {
 
                     if (y == sy) { 
                         for (int j = 0; j != 4; ++j) {
-                            Tuple2f c = points[j];
+                            v2 c = points[j];
                             if (c.x == x && c.y == y) {
                                 validCorners[j] = false;
                                 break;
@@ -200,7 +200,7 @@ public class SingletonVD {
 
             for (int i = 0; i != 4; ++i) {
                 if (validCorners[i]) {
-                    Tuple2f corner = points[i]; 
+                    v2 corner = points[i];
 
                     double x = corner.x;
                     double y = corner.y;
@@ -235,7 +235,7 @@ public class SingletonVD {
         int size = vCount[indexPolygon];
         if (size != 0) {
             polygon = voronoi[indexPolygon];
-            Tuple2f focus = ar[indexPolygon];
+            v2 focus = ar[indexPolygon];
             for (int i = 0; i != size; ++i) {
                 comparer[i] = angle(points[polygon[i]], focus);
             }
@@ -291,7 +291,7 @@ public class SingletonVD {
                 double temp = comparer[i];
                 comparer[i] = comparer[j];
                 comparer[j] = temp;
-                Tuple2f v = ar[i];
+                v2 v = ar[i];
                 ar[i] = ar[j];
                 ar[j] = v;
 
@@ -312,7 +312,7 @@ public class SingletonVD {
      *
      * @param ar Pole ohnisk
      */
-    private void calculateDelaunay(Tuple2f[] ar) {
+    private void calculateDelaunay(v2[] ar) {
         this.ar = ar;
         triangC = 0;
         hull = null;
@@ -326,7 +326,7 @@ public class SingletonVD {
         double SIN = Math.sin(RND());
         double COS = Math.cos(RND());
         for (int i = 0; i != size; ++i) {
-            Tuple2f v = this.ar[i];
+            v2 v = this.ar[i];
             comparer[i] = SIN * v.x + COS * v.y;
         }
         quicksort(0, size - 1); 
@@ -387,8 +387,8 @@ public class SingletonVD {
      */
     private void addBoundary(int a, int b, Triangle t) {
         Triangle opposite = edges[Edge.index(a, b)].get(t);
-        Tuple2f va = ar[a];
-        Tuple2f vb = ar[b];
+        v2 va = ar[a];
+        v2 vb = ar[b];
         boolean bx = va.x > vb.x; 
         boolean by = va.y > vb.y; 
         if (opposite != null) {
@@ -462,7 +462,7 @@ public class SingletonVD {
      * @param v Bod, u ktoreho sa rozhoduje, na ktorej strane priamky sa nachadza
      * @return -1 ak je v nalavo od priamky a -> b, 1 ak napravo, 0 ak na nej
      */
-    private static int site(final Tuple2f a, final Tuple2f b, final Tuple2f v) {
+    private static int site(final v2 a, final v2 b, final v2 v) {
         if (a == b) return 0;
         double ax = a.x;
         double ay = a.y;
@@ -482,7 +482,7 @@ public class SingletonVD {
      * @param b
      * @return Vrati kvadraticku hodnotu uhlu zvierajucom usecka (a, b) v intervale od 0-4
      */
-    private static double angle(Tuple2f a, Tuple2f b) {
+    private static double angle(v2 a, v2 b) {
         double vx = b.x - a.x;
         double vy = b.y - a.y;
         double x = vx * vx;
@@ -496,7 +496,7 @@ public class SingletonVD {
      * @param y
      * @return Vrati x suradnicu bodu, ktory je rovnako vzdialeny od a, b s y-sradnicou.
      */
-    private static double x(Tuple2f a, Tuple2f b, double y) {
+    private static double x(v2 a, v2 b, double y) {
         double cx = a.x - b.x;
         double cy = a.y - b.y;
         return ((a.x + b.x) * cx + (a.y + b.y) * cy - 2 * y * cy) / (2 * cx);
@@ -508,7 +508,7 @@ public class SingletonVD {
      * @param x
      * @return Vrati y suradnicu bodu, ktory je rovnako vzdialeny od a, b s x-sradnicou.
      */
-    private static double y(Tuple2f a, Tuple2f b, double x) {
+    private static double y(v2 a, v2 b, double x) {
         double cx = a.x - b.x;
         double cy = a.y - b.y;
         return ((a.x + b.x) * cx + (a.y + b.y) * cy - 2 * x * cx) / (2 * cy);
@@ -519,7 +519,7 @@ public class SingletonVD {
      * @param b
      * @return Vrati vzdialenost ^ 2 bodov
      */
-    private static double distSq(double x, double y, final Tuple2f b) {
+    private static double distSq(double x, double y, final v2 b) {
         x -= b.x;
         y -= b.y;
         return x * x + y * y;

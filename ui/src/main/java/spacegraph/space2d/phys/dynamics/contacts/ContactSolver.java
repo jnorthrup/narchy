@@ -32,7 +32,6 @@ import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.Fixture;
 import spacegraph.space2d.phys.dynamics.TimeStep;
 import spacegraph.space2d.phys.dynamics.contacts.ContactVelocityConstraint.VelocityConstraintPoint;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -183,12 +182,12 @@ public class ContactSolver {
             float iB = vc.invIB;
             int pointCount = vc.pointCount;
 
-            Tuple2f vA = m_velocities[indexA];
+            v2 vA = m_velocities[indexA];
             float wA = m_velocities[indexA].w;
-            Tuple2f vB = m_velocities[indexB];
+            v2 vB = m_velocities[indexB];
             float wB = m_velocities[indexB].w;
 
-            Tuple2f normal = vc.normal;
+            v2 normal = vc.normal;
             float tangentx = 1.0f * normal.y;
             float tangenty = -1.0f * normal.x;
 
@@ -232,17 +231,17 @@ public class ContactSolver {
             float mB = vc.invMassB;
             float iA = vc.invIA;
             float iB = vc.invIB;
-            Tuple2f localCenterA = pc.localCenterA;
-            Tuple2f localCenterB = pc.localCenterB;
+            v2 localCenterA = pc.localCenterA;
+            v2 localCenterB = pc.localCenterB;
 
-            Tuple2f cA = m_positions[indexA];
+            v2 cA = m_positions[indexA];
             float aA = m_positions[indexA].a;
-            Tuple2f vA = m_velocities[indexA];
+            v2 vA = m_velocities[indexA];
             float wA = m_velocities[indexA].w;
 
-            Tuple2f cB = m_positions[indexB];
+            v2 cB = m_positions[indexB];
             float aB = m_positions[indexB].a;
-            Tuple2f vB = m_velocities[indexB];
+            v2 vB = m_velocities[indexB];
             float wB = m_velocities[indexB].w;
 
             assert (manifold.pointCount > 0);
@@ -258,16 +257,16 @@ public class ContactSolver {
 
             worldManifold.initialize(manifold, xfA, radiusA, xfB, radiusB);
 
-            final Tuple2f vcnormal = vc.normal;
+            final v2 vcnormal = vc.normal;
             vcnormal.x = worldManifold.normal.x;
             vcnormal.y = worldManifold.normal.y;
 
             int pointCount = vc.pointCount;
             for (int j = 0; j < pointCount; ++j) {
                 VelocityConstraintPoint vcp = vc.points[j];
-                Tuple2f wmPj = worldManifold.points[j];
-                final Tuple2f vcprA = vcp.rA;
-                final Tuple2f vcprB = vcp.rB;
+                v2 wmPj = worldManifold.points[j];
+                final v2 vcprA = vcp.rA;
+                final v2 vcprB = vcp.rB;
                 vcprA.x = wmPj.x - cA.x;
                 vcprA.y = wmPj.y - cA.y;
                 vcprB.x = wmPj.x - cB.x;
@@ -342,12 +341,12 @@ public class ContactSolver {
             float iB = vc.invIB;
             int pointCount = vc.pointCount;
 
-            Tuple2f vA = m_velocities[indexA];
+            v2 vA = m_velocities[indexA];
             float wA = m_velocities[indexA].w;
-            Tuple2f vB = m_velocities[indexB];
+            v2 vB = m_velocities[indexB];
             float wB = m_velocities[indexB].w;
 
-            Tuple2f normal = vc.normal;
+            v2 normal = vc.normal;
             final float normalx = normal.x;
             final float normaly = normal.y;
             float tangentx = 1.0f * vc.normal.y;
@@ -359,7 +358,7 @@ public class ContactSolver {
             
             for (int j = 0; j < pointCount; ++j) {
                 final VelocityConstraintPoint vcp = vc.points[j];
-                final Tuple2f a = vcp.rA;
+                final v2 a = vcp.rA;
                 float dvx = -wB * vcp.rB.y + vB.x - vA.x + wA * a.y;
                 float dvy = wB * vcp.rB.x + vB.y - vA.y - wA * a.x;
 
@@ -466,10 +465,10 @@ public class ContactSolver {
 
                 final VelocityConstraintPoint cp1 = vc.points[0];
                 final VelocityConstraintPoint cp2 = vc.points[1];
-                final Tuple2f cp1rA = cp1.rA;
-                final Tuple2f cp1rB = cp1.rB;
-                final Tuple2f cp2rA = cp2.rA;
-                final Tuple2f cp2rB = cp2.rB;
+                final v2 cp1rA = cp1.rA;
+                final v2 cp1rB = cp1.rB;
+                final v2 cp2rA = cp2.rA;
+                final v2 cp2rB = cp2.rB;
                 float ax = cp1.normalImpulse;
                 float ay = cp2.normalImpulse;
 
@@ -557,11 +556,11 @@ public class ContactSolver {
                          */
                         if (DEBUG_SOLVER) {
                             
-                            Tuple2f dv1 = vB.add(Tuple2f.cross(wB, cp1rB).subbed(vA).subbed(Tuple2f.cross(wA, cp1rA)));
-                            Tuple2f dv2 = vB.add(Tuple2f.cross(wB, cp2rB).subbed(vA).subbed(Tuple2f.cross(wA, cp2rA)));
+                            v2 dv1 = vB.add(v2.cross(wB, cp1rB).subbed(vA).subbed(v2.cross(wA, cp1rA)));
+                            v2 dv2 = vB.add(v2.cross(wB, cp2rB).subbed(vA).subbed(v2.cross(wA, cp2rA)));
                             
-                            vn1 = Tuple2f.dot(dv1, normal);
-                            vn2 = Tuple2f.dot(dv2, normal);
+                            vn1 = v2.dot(dv1, normal);
+                            vn2 = v2.dot(dv2, normal);
 
                             assert (Math.abs(vn1 - cp1.velocityBias) < k_errorTol);
                             assert (Math.abs(vn2 - cp2.velocityBias) < k_errorTol);
@@ -622,9 +621,9 @@ public class ContactSolver {
                          */
                         if (DEBUG_SOLVER) {
                             
-                            Tuple2f dv1 = vB.add(Tuple2f.cross(wB, cp1rB).subbed(vA).subbed(Tuple2f.cross(wA, cp1rA)));
+                            v2 dv1 = vB.add(v2.cross(wB, cp1rB).subbed(vA).subbed(v2.cross(wA, cp1rA)));
                             
-                            vn1 = Tuple2f.dot(dv1, normal);
+                            vn1 = v2.dot(dv1, normal);
 
                             assert (Math.abs(vn1 - cp1.velocityBias) < k_errorTol);
                         }
@@ -682,9 +681,9 @@ public class ContactSolver {
                          */
                         if (DEBUG_SOLVER) {
                             
-                            Tuple2f dv2 = vB.add(Tuple2f.cross(wB, cp2rB).subbed(vA).subbed(Tuple2f.cross(wA, cp2rA)));
+                            v2 dv2 = vB.add(v2.cross(wB, cp2rB).subbed(vA).subbed(v2.cross(wA, cp2rA)));
                             
-                            vn2 = Tuple2f.dot(dv2, normal);
+                            vn2 = v2.dot(dv2, normal);
 
                             assert (Math.abs(vn2 - cp2.velocityBias) < k_errorTol);
                         }
@@ -814,19 +813,19 @@ public class ContactSolver {
 
             float mA = pc.invMassA;
             float iA = pc.invIA;
-            Tuple2f localCenterA = pc.localCenterA;
+            v2 localCenterA = pc.localCenterA;
             final float localCenterAx = localCenterA.x;
             final float localCenterAy = localCenterA.y;
             float mB = pc.invMassB;
             float iB = pc.invIB;
-            Tuple2f localCenterB = pc.localCenterB;
+            v2 localCenterB = pc.localCenterB;
             final float localCenterBx = localCenterB.x;
             final float localCenterBy = localCenterB.y;
             int pointCount = pc.pointCount;
 
-            Tuple2f cA = m_positions[indexA];
+            v2 cA = m_positions[indexA];
             float aA = m_positions[indexA].a;
-            Tuple2f cB = m_positions[indexB];
+            v2 cB = m_positions[indexB];
             float aB = m_positions[indexB].a;
 
             
@@ -842,8 +841,8 @@ public class ContactSolver {
 
                 final PositionSolverManifold psm = psolver;
                 psm.initialize(pc, xfA, xfB, j);
-                final Tuple2f normal = psm.normal;
-                final Tuple2f point = psm.point;
+                final v2 normal = psm.normal;
+                final v2 point = psm.point;
                 final float separation = psm.separation;
 
                 float rAx = point.x - cA.x;
@@ -900,8 +899,8 @@ public class ContactSolver {
 
             int indexA = pc.indexA;
             int indexB = pc.indexB;
-            Tuple2f localCenterA = pc.localCenterA;
-            Tuple2f localCenterB = pc.localCenterB;
+            v2 localCenterA = pc.localCenterA;
+            v2 localCenterB = pc.localCenterB;
             final float localCenterAx = localCenterA.x;
             final float localCenterAy = localCenterA.y;
             final float localCenterBx = localCenterB.x;
@@ -922,10 +921,10 @@ public class ContactSolver {
                 iB = pc.invIB;
             }
 
-            Tuple2f cA = m_positions[indexA];
+            v2 cA = m_positions[indexA];
             float aA = m_positions[indexA].a;
 
-            Tuple2f cB = m_positions[indexB];
+            v2 cB = m_positions[indexB];
             float aB = m_positions[indexB].a;
 
             
@@ -941,9 +940,9 @@ public class ContactSolver {
 
                 final PositionSolverManifold psm = psolver;
                 psm.initialize(pc, xfA, xfB, j);
-                Tuple2f normal = psm.normal;
+                v2 normal = psm.normal;
 
-                Tuple2f point = psm.point;
+                v2 point = psm.point;
                 float separation = psm.separation;
 
                 float rAx = point.x - cA.x;
@@ -1012,7 +1011,7 @@ class PositionSolverManifold {
 
         final Rot xfAq = xfA;
         final Rot xfBq = xfB;
-        final Tuple2f pcLocalPointsI = pc.localPoints[index];
+        final v2 pcLocalPointsI = pc.localPoints[index];
         switch (pc.type) {
             case CIRCLES: {
                 
@@ -1023,8 +1022,8 @@ class PositionSolverManifold {
                 
                 
                 
-                final Tuple2f plocalPoint = pc.localPoint;
-                final Tuple2f pLocalPoints0 = pc.localPoints[0];
+                final v2 plocalPoint = pc.localPoint;
+                final v2 pLocalPoints0 = pc.localPoints[0];
                 final float pointAx = (xfAq.c * plocalPoint.x - xfAq.s * plocalPoint.y) + xfA.pos.x;
                 final float pointAy = (xfAq.s * plocalPoint.x + xfAq.c * plocalPoint.y) + xfA.pos.y;
                 final float pointBx = (xfBq.c * pLocalPoints0.x - xfBq.s * pLocalPoints0.y) + xfB.pos.x;
@@ -1049,8 +1048,8 @@ class PositionSolverManifold {
                 
                 
                 
-                final Tuple2f pcLocalNormal = pc.localNormal;
-                final Tuple2f pcLocalPoint = pc.localPoint;
+                final v2 pcLocalNormal = pc.localNormal;
+                final v2 pcLocalPoint = pc.localPoint;
                 normal.x = xfAq.c * pcLocalNormal.x - xfAq.s * pcLocalNormal.y;
                 normal.y = xfAq.s * pcLocalNormal.x + xfAq.c * pcLocalNormal.y;
                 final float planePointx = (xfAq.c * pcLocalPoint.x - xfAq.s * pcLocalPoint.y) + xfA.pos.x;
@@ -1077,8 +1076,8 @@ class PositionSolverManifold {
                 
                 
                 
-                final Tuple2f pcLocalNormal = pc.localNormal;
-                final Tuple2f pcLocalPoint = pc.localPoint;
+                final v2 pcLocalNormal = pc.localNormal;
+                final v2 pcLocalPoint = pc.localPoint;
                 normal.x = xfBq.c * pcLocalNormal.x - xfBq.s * pcLocalNormal.y;
                 normal.y = xfBq.s * pcLocalNormal.x + xfBq.c * pcLocalNormal.y;
                 final float planePointx = (xfBq.c * pcLocalPoint.x - xfBq.s * pcLocalPoint.y) + xfB.pos.x;

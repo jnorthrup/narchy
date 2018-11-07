@@ -35,25 +35,7 @@ import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.Tuple2f;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import spacegraph.util.math.v2;
 
 
 /**
@@ -81,13 +63,13 @@ public class GearJoint extends Joint {
     private final Body2D m_bodyD;
 
     
-    private final Tuple2f m_localAnchorA = new Vec2();
-    private final Tuple2f m_localAnchorB = new Vec2();
-    private final Tuple2f m_localAnchorC = new Vec2();
-    private final Tuple2f m_localAnchorD = new Vec2();
+    private final v2 m_localAnchorA = new Vec2();
+    private final v2 m_localAnchorB = new Vec2();
+    private final v2 m_localAnchorC = new Vec2();
+    private final v2 m_localAnchorD = new Vec2();
 
-    private final Tuple2f m_localAxisC = new Vec2();
-    private final Tuple2f m_localAxisD = new Vec2();
+    private final v2 m_localAxisC = new Vec2();
+    private final v2 m_localAxisD = new Vec2();
 
     private final float m_referenceAngleA;
     private final float m_referenceAngleB;
@@ -99,11 +81,11 @@ public class GearJoint extends Joint {
 
     
     private int m_indexA, m_indexB, m_indexC, m_indexD;
-    private final Tuple2f m_lcA = new Vec2(), m_lcB = new Vec2(), m_lcC = new Vec2(),
+    private final v2 m_lcA = new Vec2(), m_lcB = new Vec2(), m_lcC = new Vec2(),
             m_lcD = new Vec2();
     private float m_mA, m_mB, m_mC, m_mD;
     private float m_iA, m_iB, m_iC, m_iD;
-    private final Tuple2f m_JvAC = new Vec2(), m_JvBD = new Vec2();
+    private final v2 m_JvAC = new Vec2(), m_JvBD = new Vec2();
     private float m_JwA, m_JwB, m_JwC, m_JwD;
     private float m_mass;
 
@@ -141,19 +123,19 @@ public class GearJoint extends Joint {
 
             coordinateA = aA - aC - m_referenceAngleA;
         } else {
-            Tuple2f pA = pool.popVec2();
-            Tuple2f temp = pool.popVec2();
+            v2 pA = pool.popVec2();
+            v2 temp = pool.popVec2();
             PrismaticJoint prismatic = (PrismaticJoint) def.joint1;
             m_localAnchorC.set(prismatic.m_localAnchorA);
             m_localAnchorA.set(prismatic.m_localAnchorB);
             m_referenceAngleA = prismatic.m_referenceAngle;
             m_localAxisC.set(prismatic.m_localXAxisA);
 
-            Tuple2f pC = m_localAnchorC;
+            v2 pC = m_localAnchorC;
             Rot.mulToOutUnsafe(xfA, m_localAnchorA, temp);
             temp.added(xfA.pos).subbed(xfC.pos);
             Rot.mulTransUnsafe(xfC, temp, pA);
-            coordinateA = Tuple2f.dot(pA.subbed(pC), m_localAxisC);
+            coordinateA = v2.dot(pA.subbed(pC), m_localAxisC);
             pool.pushVec2(2);
         }
 
@@ -175,19 +157,19 @@ public class GearJoint extends Joint {
 
             coordinateB = aB - aD - m_referenceAngleB;
         } else {
-            Tuple2f pB = pool.popVec2();
-            Tuple2f temp = pool.popVec2();
+            v2 pB = pool.popVec2();
+            v2 temp = pool.popVec2();
             PrismaticJoint prismatic = (PrismaticJoint) def.joint2;
             m_localAnchorD.set(prismatic.m_localAnchorA);
             m_localAnchorB.set(prismatic.m_localAnchorB);
             m_referenceAngleB = prismatic.m_referenceAngle;
             m_localAxisD.set(prismatic.m_localXAxisA);
 
-            Tuple2f pD = m_localAnchorD;
+            v2 pD = m_localAnchorD;
             Rot.mulToOutUnsafe(xfB, m_localAnchorB, temp);
             temp.added(xfB.pos).subbed(xfD.pos);
             Rot.mulTransUnsafe(xfD, temp, pB);
-            coordinateB = Tuple2f.dot(pB.subbed(pD), m_localAxisD);
+            coordinateB = v2.dot(pB.subbed(pD), m_localAxisD);
             pool.pushVec2(2);
         }
 
@@ -199,17 +181,17 @@ public class GearJoint extends Joint {
     }
 
     @Override
-    public void getAnchorA(Tuple2f argOut) {
+    public void getAnchorA(v2 argOut) {
         A.getWorldPointToOut(m_localAnchorA, argOut);
     }
 
     @Override
-    public void getAnchorB(Tuple2f argOut) {
+    public void getAnchorB(v2 argOut) {
         B.getWorldPointToOut(m_localAnchorB, argOut);
     }
 
     @Override
-    public void getReactionForce(float inv_dt, Tuple2f argOut) {
+    public void getReactionForce(float inv_dt, v2 argOut) {
         argOut.set(m_JvAC).scaled(m_impulse);
         argOut.scaled(inv_dt);
     }
@@ -249,22 +231,22 @@ public class GearJoint extends Joint {
 
         
         float aA = data.positions[m_indexA].a;
-        Tuple2f vA = data.velocities[m_indexA];
+        v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
 
         
         float aB = data.positions[m_indexB].a;
-        Tuple2f vB = data.velocities[m_indexB];
+        v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         
         float aC = data.positions[m_indexC].a;
-        Tuple2f vC = data.velocities[m_indexC];
+        v2 vC = data.velocities[m_indexC];
         float wC = data.velocities[m_indexC].w;
 
         
         float aD = data.positions[m_indexD].a;
-        Tuple2f vD = data.velocities[m_indexD];
+        v2 vD = data.velocities[m_indexD];
         float wD = data.velocities[m_indexD].w;
 
         Rot qA = pool.popRot(), qB = pool.popRot(), qC = pool.popRot(), qD = pool.popRot();
@@ -275,7 +257,7 @@ public class GearJoint extends Joint {
 
         m_mass = 0.0f;
 
-        Tuple2f temp = pool.popVec2();
+        v2 temp = pool.popVec2();
 
         if (m_typeA == JointType.REVOLUTE) {
             m_JvAC.setZero();
@@ -283,13 +265,13 @@ public class GearJoint extends Joint {
             m_JwC = 1.0f;
             m_mass += m_iA + m_iC;
         } else {
-            Tuple2f rC = pool.popVec2();
-            Tuple2f rA = pool.popVec2();
+            v2 rC = pool.popVec2();
+            v2 rA = pool.popVec2();
             Rot.mulToOutUnsafe(qC, m_localAxisC, m_JvAC);
             Rot.mulToOutUnsafe(qC, temp.set(m_localAnchorC).subbed(m_lcC), rC);
             Rot.mulToOutUnsafe(qA, temp.set(m_localAnchorA).subbed(m_lcA), rA);
-            m_JwC = Tuple2f.cross(rC, m_JvAC);
-            m_JwA = Tuple2f.cross(rA, m_JvAC);
+            m_JwC = v2.cross(rC, m_JvAC);
+            m_JwA = v2.cross(rA, m_JvAC);
             m_mass += m_mC + m_mA + m_iC * m_JwC * m_JwC + m_iA * m_JwA * m_JwA;
             pool.pushVec2(2);
         }
@@ -300,15 +282,15 @@ public class GearJoint extends Joint {
             m_JwD = m_ratio;
             m_mass += m_ratio * m_ratio * (m_iB + m_iD);
         } else {
-            Tuple2f u = pool.popVec2();
-            Tuple2f rD = pool.popVec2();
-            Tuple2f rB = pool.popVec2();
+            v2 u = pool.popVec2();
+            v2 rD = pool.popVec2();
+            v2 rB = pool.popVec2();
             Rot.mulToOutUnsafe(qD, m_localAxisD, u);
             Rot.mulToOutUnsafe(qD, temp.set(m_localAnchorD).subbed(m_lcD), rD);
             Rot.mulToOutUnsafe(qB, temp.set(m_localAnchorB).subbed(m_lcB), rB);
             m_JvBD.set(u).scaled(m_ratio);
-            m_JwD = m_ratio * Tuple2f.cross(rD, u);
-            m_JwB = m_ratio * Tuple2f.cross(rB, u);
+            m_JwD = m_ratio * v2.cross(rD, u);
+            m_JwB = m_ratio * v2.cross(rB, u);
             m_mass += m_ratio * m_ratio * (m_mD + m_mB) + m_iD * m_JwD * m_JwD + m_iB * m_JwB * m_JwB;
             pool.pushVec2(3);
         }
@@ -350,19 +332,19 @@ public class GearJoint extends Joint {
 
     @Override
     public void solveVelocityConstraints(SolverData data) {
-        Tuple2f vA = data.velocities[m_indexA];
+        v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
-        Tuple2f vB = data.velocities[m_indexB];
+        v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
-        Tuple2f vC = data.velocities[m_indexC];
+        v2 vC = data.velocities[m_indexC];
         float wC = data.velocities[m_indexC].w;
-        Tuple2f vD = data.velocities[m_indexD];
+        v2 vD = data.velocities[m_indexD];
         float wD = data.velocities[m_indexD].w;
 
-        Tuple2f temp1 = pool.popVec2();
-        Tuple2f temp2 = pool.popVec2();
+        v2 temp1 = pool.popVec2();
+        v2 temp2 = pool.popVec2();
         float Cdot =
-                Tuple2f.dot(m_JvAC, temp1.set(vA).subbed(vC)) + Tuple2f.dot(m_JvBD, temp2.set(vB).subbed(vD));
+                v2.dot(m_JvAC, temp1.set(vA).subbed(vC)) + v2.dot(m_JvBD, temp2.set(vB).subbed(vD));
         Cdot += (m_JwA * wA - m_JwC * wC) + (m_JwB * wB - m_JwD * wD);
         pool.pushVec2(2);
 
@@ -406,13 +388,13 @@ public class GearJoint extends Joint {
 
     @Override
     public boolean solvePositionConstraints(SolverData data) {
-        Tuple2f cA = data.positions[m_indexA];
+        v2 cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;
-        Tuple2f cB = data.positions[m_indexB];
+        v2 cB = data.positions[m_indexB];
         float aB = data.positions[m_indexB].a;
-        Tuple2f cC = data.positions[m_indexC];
+        v2 cC = data.positions[m_indexC];
         float aC = data.positions[m_indexC].a;
-        Tuple2f cD = data.positions[m_indexD];
+        v2 cD = data.positions[m_indexD];
         float aD = data.positions[m_indexD].a;
 
         Rot qA = pool.popRot(), qB = pool.popRot(), qC = pool.popRot(), qD = pool.popRot();
@@ -425,9 +407,9 @@ public class GearJoint extends Joint {
 
         float coordinateA, coordinateB;
 
-        Tuple2f temp = pool.popVec2();
-        Tuple2f JvAC = pool.popVec2();
-        Tuple2f JvBD = pool.popVec2();
+        v2 temp = pool.popVec2();
+        v2 JvAC = pool.popVec2();
+        v2 JvBD = pool.popVec2();
         float JwA, JwB, JwC, JwD;
         float mass = 0.0f;
 
@@ -439,20 +421,20 @@ public class GearJoint extends Joint {
 
             coordinateA = aA - aC - m_referenceAngleA;
         } else {
-            Tuple2f rC = pool.popVec2();
-            Tuple2f rA = pool.popVec2();
-            Tuple2f pC = pool.popVec2();
-            Tuple2f pA = pool.popVec2();
+            v2 rC = pool.popVec2();
+            v2 rA = pool.popVec2();
+            v2 pC = pool.popVec2();
+            v2 pA = pool.popVec2();
             Rot.mulToOutUnsafe(qC, m_localAxisC, JvAC);
             Rot.mulToOutUnsafe(qC, temp.set(m_localAnchorC).subbed(m_lcC), rC);
             Rot.mulToOutUnsafe(qA, temp.set(m_localAnchorA).subbed(m_lcA), rA);
-            JwC = Tuple2f.cross(rC, JvAC);
-            JwA = Tuple2f.cross(rA, JvAC);
+            JwC = v2.cross(rC, JvAC);
+            JwA = v2.cross(rA, JvAC);
             mass += m_mC + m_mA + m_iC * JwC * JwC + m_iA * JwA * JwA;
 
             pC.set(m_localAnchorC).subbed(m_lcC);
             Rot.mulTransUnsafe(qC, temp.set(rA).added(cA).subbed(cC), pA);
-            coordinateA = Tuple2f.dot(pA.subbed(pC), m_localAxisC);
+            coordinateA = v2.dot(pA.subbed(pC), m_localAxisC);
             pool.pushVec2(4);
         }
 
@@ -464,22 +446,22 @@ public class GearJoint extends Joint {
 
             coordinateB = aB - aD - m_referenceAngleB;
         } else {
-            Tuple2f u = pool.popVec2();
-            Tuple2f rD = pool.popVec2();
-            Tuple2f rB = pool.popVec2();
-            Tuple2f pD = pool.popVec2();
-            Tuple2f pB = pool.popVec2();
+            v2 u = pool.popVec2();
+            v2 rD = pool.popVec2();
+            v2 rB = pool.popVec2();
+            v2 pD = pool.popVec2();
+            v2 pB = pool.popVec2();
             Rot.mulToOutUnsafe(qD, m_localAxisD, u);
             Rot.mulToOutUnsafe(qD, temp.set(m_localAnchorD).subbed(m_lcD), rD);
             Rot.mulToOutUnsafe(qB, temp.set(m_localAnchorB).subbed(m_lcB), rB);
             JvBD.set(u).scaled(m_ratio);
-            JwD = Tuple2f.cross(rD, u);
-            JwB = Tuple2f.cross(rB, u);
+            JwD = v2.cross(rD, u);
+            JwB = v2.cross(rB, u);
             mass += m_ratio * m_ratio * (m_mD + m_mB) + m_iD * JwD * JwD + m_iB * JwB * JwB;
 
             pD.set(m_localAnchorD).subbed(m_lcD);
             Rot.mulTransUnsafe(qD, temp.set(rB).added(cB).subbed(cD), pB);
-            coordinateB = Tuple2f.dot(pB.subbed(pD), m_localAxisD);
+            coordinateB = v2.dot(pB.subbed(pD), m_localAxisD);
             pool.pushVec2(5);
         }
 

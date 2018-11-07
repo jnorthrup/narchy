@@ -1,7 +1,7 @@
 package spacegraph.space2d.phys.fracture.fragmentation;
 
 import spacegraph.space2d.phys.fracture.util.MyList;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  * @author Marek Benovic
  */
 class EdgePolygon extends AEdge {
-    public EdgePolygon(Tuple2f v1, Tuple2f v2) {
+    public EdgePolygon(v2 v1, v2 v2) {
         super(v1, v2);
     }
 

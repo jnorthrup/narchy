@@ -29,7 +29,6 @@ import spacegraph.space2d.phys.callbacks.TreeRayCastCallback;
 import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.RayCastInput;
 import spacegraph.space2d.phys.common.*;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
@@ -50,7 +49,7 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
 
     private int m_freeList;
 
-    private final Tuple2f[] drawVecs = new Tuple2f[4];
+    private final v2[] drawVecs = new v2[4];
 
     public DynamicTreeFlatNodes() {
         m_root = NULL_NODE;
@@ -108,7 +107,7 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
     }
 
     @Override
-    public final boolean moveProxy(int proxyId, final AABB aabb, Tuple2f displacement) {
+    public final boolean moveProxy(int proxyId, final AABB aabb, v2 displacement) {
         assert (0 <= proxyId && proxyId < m_nodeCapacity);
         final int node = proxyId;
         assert (m_child1[node] == NULL_NODE);
@@ -123,8 +122,8 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
         removeLeaf(node);
 
         
-        final Tuple2f lowerBound = nodeAABB.lowerBound;
-        final Tuple2f upperBound = nodeAABB.upperBound;
+        final v2 lowerBound = nodeAABB.lowerBound;
+        final v2 upperBound = nodeAABB.upperBound;
         lowerBound.x = aabb.lowerBound.x - Settings.aabbExtension;
         lowerBound.y = aabb.lowerBound.y - Settings.aabbExtension;
         upperBound.x = aabb.upperBound.x + Settings.aabbExtension;
@@ -200,8 +199,8 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
 
     @Override
     public void raycast(TreeRayCastCallback callback, RayCastInput input) {
-        final Tuple2f p1 = input.p1;
-        final Tuple2f p2 = input.p2;
+        final v2 p1 = input.p1;
+        final v2 p2 = input.p2;
         float p1x = p1.x, p2x = p2.x, p1y = p1.y, p2y = p2.y;
         float vx, vy;
         float rx, ry;
@@ -845,7 +844,7 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
     }
 
     private final Color3f color = new Color3f();
-    private final Tuple2f textVec = new Vec2();
+    private final v2 textVec = new Vec2();
 
     private void drawTree(DebugDraw argDraw, int node, int spot, int height) {
         AABB a = m_aabb[node];

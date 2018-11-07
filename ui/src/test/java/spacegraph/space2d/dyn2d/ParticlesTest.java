@@ -7,6 +7,7 @@ import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.BodyDef;
 import spacegraph.space2d.phys.dynamics.BodyType;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
+import spacegraph.space2d.phys.dynamics.contacts.Position;
 import spacegraph.space2d.phys.particle.ParticleGroupDef;
 import spacegraph.space2d.phys.particle.ParticleType;
 import spacegraph.util.math.v2;
@@ -20,7 +21,7 @@ public class ParticlesTest implements ICase {
         {
             PolygonShape shape = new PolygonShape();
             v2[] vertices =
-                    new v2[]{new v2(-40, -10), new v2(40, -10), new v2(40, 0), new v2(-40, 0)};
+                    new v2[]{new Position(-40, -10), new Position(40, -10), new Position(40, 0), new Position(-40, 0)};
             shape.set(vertices, 4);
             ground.addFixture(shape, 0.0f);
         }
@@ -28,7 +29,7 @@ public class ParticlesTest implements ICase {
         {
             PolygonShape shape = new PolygonShape();
             v2[] vertices =
-                    {new v2(-40, -1), new v2(-20, -1), new v2(-20, 20), new v2(-40, 30)};
+                    {new Position(-40, -1), new Position(-20, -1), new Position(-20, 20), new Position(-40, 30)};
             shape.set(vertices, 4);
             ground.addFixture(shape, 0.0f);
         }

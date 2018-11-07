@@ -2,7 +2,7 @@ package spacegraph.space2d.phys.particle;
 
 import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.Body2D;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 public class ParticleBodyContact {
     /**
@@ -20,7 +20,7 @@ public class ParticleBodyContact {
     /**
      * The normalized direction from the particle to the body.
      */
-    public final Tuple2f normal = new Vec2();
+    public final v2 normal = new Vec2();
     /**
      * The effective mass used in calculating force.
      */

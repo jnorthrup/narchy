@@ -6,7 +6,6 @@ import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.dynamics.contacts.Velocity;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -20,8 +19,8 @@ import spacegraph.util.math.v2;
  */
 public class RopeJoint extends Joint {
     
-    private final Tuple2f localAnchorA = new v2();
-    private final Tuple2f localAnchorB = new v2();
+    private final v2 localAnchorA = new v2();
+    private final v2 localAnchorB = new v2();
     private float targetLength;
     private float length;
     private float m_impulse;
@@ -29,11 +28,11 @@ public class RopeJoint extends Joint {
     
     private int indexA;
     private int indexB;
-    private final Tuple2f m_u = new v2();
-    private final Tuple2f m_rA = new v2();
-    private final Tuple2f m_rB = new v2();
-    private final Tuple2f m_localCenterA = new v2();
-    private final Tuple2f m_localCenterB = new v2();
+    private final v2 m_u = new v2();
+    private final v2 m_rA = new v2();
+    private final v2 m_rB = new v2();
+    private final v2 m_localCenterA = new v2();
+    private final v2 m_localCenterB = new v2();
     private float m_invMassA;
     private float m_invMassB;
     private float m_invIA;
@@ -70,19 +69,19 @@ public class RopeJoint extends Joint {
         m_invIA = A.m_invI;
         m_invIB = B.m_invI;
 
-        Tuple2f cA = data.positions[indexA];
+        v2 cA = data.positions[indexA];
         float aA = data.positions[indexA].a;
-        Tuple2f vA = data.velocities[indexA];
+        v2 vA = data.velocities[indexA];
         float wA = data.velocities[indexA].w;
 
-        Tuple2f cB = data.positions[indexB];
+        v2 cB = data.positions[indexB];
         float aB = data.positions[indexB].a;
-        Tuple2f vB = data.velocities[indexB];
+        v2 vB = data.velocities[indexB];
         float wB = data.velocities[indexB].w;
 
         final Rot qA = new Rot();
         final Rot qB = new Rot();
-        final Tuple2f temp = new v2();
+        final v2 temp = new v2();
 
         qA.set(aA);
         qB.set(aB);
@@ -124,8 +123,8 @@ public class RopeJoint extends Joint {
         }
 
         
-        float crA = Tuple2f.cross(m_rA, m_u);
-        float crB = Tuple2f.cross(m_rB, m_u);
+        float crA = v2.cross(m_rA, m_u);
+        float crB = v2.cross(m_rB, m_u);
         float invMass = m_invMassA + m_invIA * crA * crA + m_invMassB + m_invIB * crB * crB;
 
         m_mass = invMass != 0.0f ? 1.0f / invMass : 0.0f;
@@ -163,24 +162,24 @@ public class RopeJoint extends Joint {
         float targetLength = targetLength();
 
         Velocity VA = data.velocities[indexA];
-        Tuple2f vA = VA;
+        v2 vA = VA;
         float wA = VA.w;
         Velocity VB = data.velocities[indexB];
-        Tuple2f vB = VB;
+        v2 vB = VB;
         float wB = VB.w;
 
         
-        Tuple2f vpA = pool.popVec2();
-        Tuple2f vpB = pool.popVec2();
-        Tuple2f temp = pool.popVec2();
+        v2 vpA = pool.popVec2();
+        v2 vpB = pool.popVec2();
+        v2 temp = pool.popVec2();
 
-        Tuple2f.crossToOutUnsafe(wA, m_rA, vpA);
+        v2.crossToOutUnsafe(wA, m_rA, vpA);
         vpA.added(vA);
-        Tuple2f.crossToOutUnsafe(wB, m_rB, vpB);
+        v2.crossToOutUnsafe(wB, m_rB, vpB);
         vpB.added(vB);
 
         float dLen = length - targetLength;
-        float Cdot = Tuple2f.dot(m_u, temp.set(vpB).subbed(vpA))
+        float Cdot = v2.dot(m_u, temp.set(vpB).subbed(vpA))
                 
         ;
 
@@ -216,17 +215,17 @@ public class RopeJoint extends Joint {
 
         final float targetLength = targetLength();
 
-        Tuple2f cA = data.positions[indexA];
+        v2 cA = data.positions[indexA];
         float aA = data.positions[indexA].a;
-        Tuple2f cB = data.positions[indexB];
+        v2 cB = data.positions[indexB];
         float aB = data.positions[indexB].a;
 
         final Rot qA = pool.popRot();
         final Rot qB = pool.popRot();
-        final Tuple2f u = pool.popVec2();
-        final Tuple2f rA = pool.popVec2();
-        final Tuple2f rB = pool.popVec2();
-        final Tuple2f temp = pool.popVec2();
+        final v2 u = pool.popVec2();
+        final v2 rA = pool.popVec2();
+        final v2 rB = pool.popVec2();
+        final v2 temp = pool.popVec2();
 
         qA.set(aA);
         qB.set(aB);
@@ -264,17 +263,17 @@ public class RopeJoint extends Joint {
     }
 
     @Override
-    public void getAnchorA(Tuple2f argOut) {
+    public void getAnchorA(v2 argOut) {
         A.getWorldPointToOut(localAnchorA, argOut);
     }
 
     @Override
-    public void getAnchorB(Tuple2f argOut) {
+    public void getAnchorB(v2 argOut) {
         B.getWorldPointToOut(localAnchorB, argOut);
     }
 
     @Override
-    public void getReactionForce(float inv_dt, Tuple2f argOut) {
+    public void getReactionForce(float inv_dt, v2 argOut) {
         argOut.set(m_u).scaled(inv_dt).scaled(m_impulse * positionFactor);
     }
 
@@ -283,11 +282,11 @@ public class RopeJoint extends Joint {
         return 0f;
     }
 
-    public Tuple2f getLocalAnchorA() {
+    public v2 getLocalAnchorA() {
         return localAnchorA;
     }
 
-    public Tuple2f getLocalAnchorB() {
+    public v2 getLocalAnchorB() {
         return localAnchorB;
     }
 

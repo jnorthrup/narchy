@@ -14,7 +14,6 @@ import spacegraph.space2d.phys.fracture.Polygon;
 import spacegraph.space2d.phys.fracture.util.HashTabulka;
 import spacegraph.space2d.phys.fracture.util.MyList;
 import spacegraph.space2d.phys.fracture.voronoi.SingletonVD;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ public class Smasher {
 
     private final HashTabulka<Fracture> fractures = new HashTabulka<>();
 
-    private Tuple2f[] focee;
+    private v2[] focee;
     private Polygon p;
 
     private float[] constant;
@@ -59,7 +58,7 @@ public class Smasher {
      * @param ic           Funkcionalny interface, ktory definuje, ci fragment patri,
      *                     alebo nepatri do mnoziny ulomkov
      */
-    public void calculate(Polygon p, Tuple2f[] focee, Tuple2f contactPoint, IContains ic) {
+    public void calculate(Polygon p, v2[] focee, v2 contactPoint, IContains ic) {
         this.focee = focee;
         this.p = p;
 
@@ -72,8 +71,8 @@ public class Smasher {
 
         int count = p.size();
         for (int i = 1; i <= count; i++) {
-            Tuple2f p1 = p.get(i - 1);
-            Tuple2f p2 = p.get(i == count ? 0 : i);
+            v2 p1 = p.get(i - 1);
+            v2 p2 = p.get(i == count ? 0 : i);
             EdgePolygon e = new EdgePolygon(p1, p2);
             polygonEdges.add(e);
             polygonEdgesList.add(e);
@@ -83,8 +82,8 @@ public class Smasher {
         for (Fragment pp : list) {
             count = pp.size();
             for (int i = 1; i <= count; i++) {
-                Tuple2f p1 = pp.get(i - 1);
-                Tuple2f p2 = pp.get(i == count ? 0 : i);
+                v2 p1 = pp.get(i - 1);
+                v2 p2 = pp.get(i == count ? 0 : i);
 
                 EdgeDiagram e = new EdgeDiagram(p1, p2);
                 EdgeDiagram alternative = diagramEdges.get(e);
@@ -158,7 +157,7 @@ public class Smasher {
             pol.resort();
             int pn = pol.size();
             for (int i = 0; i < pn; i++) {
-                Tuple2f v = pol.get(i);
+                v2 v = pol.get(i);
                 if (v instanceof Vec2Intersect) {
                     Vec2Intersect vi = (Vec2Intersect) v;
                     if (vi.p1 == pol) {
@@ -180,7 +179,7 @@ public class Smasher {
         }
 
         for (int i = 0; i < polygonAll.size(); i++) {
-            Tuple2f v = polygonAll.get(i);
+            v2 v = polygonAll.get(i);
             if (v instanceof Vec2Intersect) {
                 ((Vec2Intersect) v).index = i;
             }
@@ -205,8 +204,8 @@ public class Smasher {
 
         for (Fragment f : allIntersections) {
             for (int i = 0; i < f.size(); ++i) {
-                Tuple2f v1 = f.get(i);
-                Tuple2f v2 = f.cycleGet(i + 1);
+                v2 v1 = f.get(i);
+                v2 v2 = f.cycleGet(i + 1);
                 EdgeDiagram e = new EdgeDiagram(v1, v2);
                 EdgeDiagram e2 = table.get(e);
                 if (e2 != null) {
@@ -222,7 +221,7 @@ public class Smasher {
 
         final double[] distance = {Double.MAX_VALUE};
         final Fragment[] startPolygon = {null};
-        final Tuple2f[] kolmicovyBod = {null};
+        final v2[] kolmicovyBod = {null};
         MyList<EdgeDiagram> allEdgesPolygon = new MyList<>();
 
 
@@ -230,7 +229,7 @@ public class Smasher {
             if (ep.d2 == null) {
 
 
-                Tuple2f vv = ep.kolmicovyBod(contactPoint);
+                v2 vv = ep.kolmicovyBod(contactPoint);
                 double newDistance = contactPoint.distanceSq(vv);
                 if (newDistance <= distance[0]) {
                     distance[0] = newDistance;
@@ -252,15 +251,15 @@ public class Smasher {
             vysledneFragmenty.add(px);
 
             for (int i = 0; i < px.size(); ++i) {
-                Tuple2f v1 = px.get(i);
-                Tuple2f v2 = px.cycleGet(i + 1);
+                v2 v1 = px.get(i);
+                v2 v2 = px.cycleGet(i + 1);
                 epx.p1 = v1;
                 epx.p2 = v2;
                 EdgeDiagram ep = table.get(epx);
                 Fragment opposite = ep.d1 == px ? ep.d2 : ep.d1;
 
                 if (opposite != null && !opposite.visited) {
-                    Tuple2f centroid = opposite.centroid();
+                    spacegraph.util.math.v2 centroid = opposite.centroid();
                     opposite.visited = true;
                     if (ic.contains(centroid)) {
                         boolean intersection = false;
@@ -381,12 +380,12 @@ public class Smasher {
         boolean idemPoKonvexnom = false;
         List<Fragment> polygonList = new ArrayList<>();
 
-        for (Tuple2f v : p1) {
+        for (v2 v : p1) {
             if (v instanceof Vec2Intersect) {
                 firstV = (Vec2Intersect) v;
 
-                Tuple2f p2Next = p2.cycleGet(firstV.index + 1);
-                Tuple2f p1Back = p1.cycleGet((firstV.p1 == p1 ? firstV.i1 : firstV.i2) + 1);
+                v2 p2Next = p2.cycleGet(firstV.index + 1);
+                v2 p1Back = p1.cycleGet((firstV.p1 == p1 ? firstV.i1 : firstV.i2) + 1);
 
                 if (PlatformMathUtils.siteDef(p1Back, firstV, p2Next) >= 0) {
                     break;
@@ -403,9 +402,9 @@ public class Smasher {
             return polygonList;
         }
 
-        Tuple2f start = firstV;
+        v2 start = firstV;
 
-        Tuple2f iterator;
+        v2 iterator;
         Polygon iterationPolygon = p2;
         int index = firstV.index;
 
@@ -455,7 +454,7 @@ public class Smasher {
 
             }
         }
-        for (Tuple2f v : p1) {
+        for (v2 v : p1) {
             if (v instanceof Vec2Intersect) {
                 Vec2Intersect vi = (Vec2Intersect) v;
                 vi.visited = false;
@@ -469,19 +468,19 @@ public class Smasher {
      * ohnisk z clenskej premennej focee.
      */
     private List<Fragment> getVoronoi() {
-        Tuple2f min = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
-        Tuple2f max = new v2(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
+        v2 min = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+        v2 max = new v2(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
 
-        for (Tuple2f v : p) {
-            min = Tuple2f.min(min, v);
-            max = Tuple2f.max(max, v);
+        for (v2 v : p) {
+            min = v2.min(min, v);
+            max = v2.max(max, v);
         }
-        for (Tuple2f v : focee) {
-            min = Tuple2f.min(min, v);
-            max = Tuple2f.max(max, v);
+        for (v2 v : focee) {
+            min = v2.min(min, v);
+            max = v2.max(max, v);
         }
 
-        Tuple2f deficit = new v2(1, 1);
+        v2 deficit = new v2(1, 1);
         min.subbed(deficit);
         max.added(deficit);
 
@@ -489,7 +488,7 @@ public class Smasher {
 
         List<Fragment> fragmentList = new FasterList<>(focee.length);
 
-        Tuple2f[] pp = new Tuple2f[factory.pCount];
+        v2[] pp = new v2[factory.pCount];
         for (int i = 0; i < factory.pCount; ++i) {
             pp[i] = new v2(factory.points[i]);
         }
@@ -521,7 +520,7 @@ public class Smasher {
         HashTabulka<GraphVertex> graf = new HashTabulka<>();
         for (Polygon p : polygony) {
             for (int i = 1; i <= p.size(); ++i) {
-                Tuple2f v = p.cycleGet(i);
+                v2 v = p.cycleGet(i);
                 GraphVertex vertex = graf.get(v);
                 if (vertex == null) {
                     vertex = new GraphVertex(v);
@@ -590,8 +589,8 @@ public class Smasher {
         multiple = new float[n];
         constant = new float[n];
         for (i = 0; i < n; i++) {
-            Tuple2f vi = p.get(i);
-            Tuple2f vj = p.get(j);
+            v2 vi = p.get(i);
+            v2 vj = p.get(j);
             multiple[i] = (vj.x - vi.x) / (vj.y - vi.y);
             constant[i] = vi.x - vi.y * multiple[i];
             j = i;
@@ -603,15 +602,15 @@ public class Smasher {
      * @return Vrati true, pokial sa vrchol nachadza v polygone. Treba mat
      * predpocitane hodnoty primarneho polygonu metodou precalc_values().
      */
-    private boolean pointInPolygon(Tuple2f v) {
+    private boolean pointInPolygon(v2 v) {
         float x = v.x;
         float y = v.y;
         int n = p.size();
         int i, j = n - 1;
         boolean b = false;
         for (i = 0; i < n; i++) {
-            Tuple2f vi = p.get(i);
-            Tuple2f vj = p.get(j);
+            v2 vi = p.get(i);
+            v2 vj = p.get(j);
             if ((vi.y < y && vj.y >= y || vj.y < y && vi.y >= y) && y * multiple[i] + constant[i] < x) {
                 b = !b;
             }

@@ -30,11 +30,11 @@ package spacegraph.space2d.phys.callbacks;
 
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.Fixture;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * Callback class for ray casts.
- * See {@link Dynamics2D#raycast(RayCastCallback, Tuple2f, Tuple2f)}
+ * See {@link Dynamics2D#raycast(RayCastCallback, v2, v2)}
  * @author Daniel Murphy
  */
 public interface RayCastCallback {
@@ -53,5 +53,5 @@ public interface RayCastCallback {
      * closest hit, 1 to continue
      * @param fraction
      */
-    float reportFixture(Fixture fixture, Tuple2f point, Tuple2f normal, float fraction);
+    float reportFixture(Fixture fixture, v2 point, v2 normal, float fraction);
 }

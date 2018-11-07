@@ -26,7 +26,7 @@ public class TheoJansen {
 
     public TheoJansen(Dynamics2D w, float scale) {
 
-        this.center = new v2(0, 8*scale);
+        this.center = new v2(0, 8 * scale);
 
         this.world = w;
 
@@ -107,7 +107,7 @@ public class TheoJansen {
 
         v2 wheelAnchor;
 
-        wheelAnchor = pivot.add(new v2(scale*0.0f, scale * -0.8f));
+        wheelAnchor = pivot.add(new v2(scale * 0.0f, scale * -0.8f));
 
         createLeg(-scale, wheelAnchor);
         createLeg(scale, wheelAnchor);

@@ -3,7 +3,6 @@ package spacegraph.space2d.phys.particle;
 import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.pooling.IDynamicStack;
 import spacegraph.space2d.phys.pooling.normal.MutableStack;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 public class VoronoiDiagram {
@@ -11,6 +10,18 @@ public class VoronoiDiagram {
     /** the extended v2 point represents the center */
     static class Generator extends v2 {
         int tag;
+
+
+
+        /**
+         * Computes the dot product of the this vector and vector v1.
+         *
+         * @param v1 the other vector
+         */
+        private float dot(v2 v1) {
+            return (this.x * v1.x + this.y * v1.y);
+        }
+
     }
 
     static class VoronoiDiagramTask {
@@ -77,15 +88,15 @@ public class VoronoiDiagram {
         }
     }
 
-    public void addGenerator(Tuple2f center, int tag) {
+    public void addGenerator(v2 center, int tag) {
         Generator g = m_generatorBuffer[m_generatorCount++];
         g.x = center.x;
         g.y = center.y;
         g.tag = tag;
     }
 
-    private final Tuple2f lower = new v2();
-    private final Tuple2f upper = new v2();
+    private final v2 lower = new v2();
+    private final v2 upper = new v2();
     private final IDynamicStack<VoronoiDiagramTask> taskPool =
             new MutableStack<>(50) {
                 @Override
@@ -108,9 +119,9 @@ public class VoronoiDiagram {
         upper.x = -Float.MAX_VALUE;
         upper.y = -Float.MAX_VALUE;
         for (int k = 0; k < m_generatorCount; k++) {
-            Generator g = m_generatorBuffer[k];
-            Tuple2f.minToOut(lower, g, lower);
-            Tuple2f.maxToOut(upper, g, upper);
+            v2 g = m_generatorBuffer[k];
+            v2.minToOut(lower, g, lower);
+            v2.maxToOut(upper, g, upper);
         }
         m_countX = 1 + (int) (inverseRadius * (upper.x - lower.x));
         m_countY = 1 + (int) (inverseRadius * (upper.y - lower.y));
@@ -178,7 +189,7 @@ public class VoronoiDiagram {
                 int y = front.m_y;
                 int i = front.m_i;
                 Generator k = front.m_generator;
-                Generator a = m_diagram[i];
+                v2 a = m_diagram[i];
                 Generator b = k;
                 if (a != b) {
                     float ax = a.x - x;

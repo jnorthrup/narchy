@@ -1,6 +1,5 @@
 package spacegraph.space2d.phys.particle;
 
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 public class ParticleContact {
@@ -19,5 +18,5 @@ public class ParticleContact {
     /**
      * The normalized direction from A to B.
      */
-    public final Tuple2f normal = new v2();
+    public final v2 normal = new v2();
 }

@@ -238,7 +238,7 @@ public class Dynamics3D<X> extends Collisions<X> {
         });
 
 
-        this.collidable = coll.commitAndGet();
+        this.collidable = coll.commitRead();
 
     }
 

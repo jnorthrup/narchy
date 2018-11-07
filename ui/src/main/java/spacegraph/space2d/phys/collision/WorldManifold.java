@@ -27,7 +27,6 @@ import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -44,7 +43,7 @@ public class WorldManifold {
     /**
      * World contact point (point of intersection)
      */
-    public final Tuple2f[] points;
+    public final v2[] points;
 
     /**
      * A negative value indicates overlap, in meters.
@@ -53,7 +52,7 @@ public class WorldManifold {
 
     public WorldManifold() {
         normal = new v2();
-        points = new Tuple2f[Settings.maxManifoldPoints];
+        points = new v2[Settings.maxManifoldPoints];
         separations = new float[Settings.maxManifoldPoints];
         for (int i = 0; i < Settings.maxManifoldPoints; i++) {
             points[i] = new v2();
@@ -69,17 +68,17 @@ public class WorldManifold {
 
         switch (manifold.type) {
             case CIRCLES: {
-                final Tuple2f pointA = new v2();
-                final Tuple2f pointB = new v2();
+                final v2 pointA = new v2();
+                final v2 pointB = new v2();
 
                 normal.x = 1;
                 normal.y = 0;
-                Tuple2f v = manifold.localPoint;
+                v2 v = manifold.localPoint;
                 
                 
                 pointA.x = (xfA.c * v.x - xfA.s * v.y) + xfA.pos.x;
                 pointA.y = (xfA.s * v.x + xfA.c * v.y) + xfA.pos.y;
-                Tuple2f mp0p = manifold.points[0].localPoint;
+                v2 mp0p = manifold.points[0].localPoint;
                 pointB.x = (xfB.c * mp0p.x - xfB.s * mp0p.y) + xfB.pos.x;
                 pointB.y = (xfB.s * mp0p.x + xfB.c * mp0p.y) + xfB.pos.y;
 
@@ -101,12 +100,12 @@ public class WorldManifold {
             }
             break;
             case FACE_A: {
-                final Tuple2f planePoint = new v2();
+                final v2 planePoint = new v2();
 
                 Rot.mulToOutUnsafe(xfA, manifold.localNormal, normal);
                 Transform.mulToOut(xfA, manifold.localPoint, planePoint);
 
-                final Tuple2f clipPoint = new v2();
+                final v2 clipPoint = new v2();
 
                 for (int i = 0; i < manifold.pointCount; i++) {
                     
@@ -140,7 +139,7 @@ public class WorldManifold {
             }
             break;
             case FACE_B:
-                final Tuple2f planePoint = new v2();
+                final v2 planePoint = new v2();
                 Rot.mulToOutUnsafe(xfB, manifold.localNormal, normal);
                 Transform.mulToOut(xfB, manifold.localPoint, planePoint);
 
@@ -151,7 +150,7 @@ public class WorldManifold {
                 
                 
 
-                final Tuple2f clipPoint = new v2();
+                final v2 clipPoint = new v2();
 
                 for (int i = 0; i < manifold.pointCount; i++) {
                     

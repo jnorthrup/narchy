@@ -18,7 +18,6 @@ import spacegraph.space2d.phys.dynamics.joints.MouseJointDef;
 import spacegraph.space2d.phys.fracture.Material;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
 import spacegraph.space2d.phys.fracture.util.MyList;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import javax.swing.*;
@@ -38,11 +37,11 @@ import java.awt.image.BufferedImage;
  */
 public class Box2DTests extends JComponent implements Runnable {
     private final Dimension screenSize = new Dimension(1024, 540);
-    private final Tuple2f center = new v2();
+    private final v2 center = new v2();
     private float zoom = 1;
     private volatile Dynamics2D w;
 
-    private final Tuple2f startCenter = new v2();
+    private final v2 startCenter = new v2();
     private volatile Point clickedPoint = null;
     private volatile Graphics2D g;
     private volatile boolean running = false;
@@ -88,7 +87,7 @@ public class Box2DTests extends JComponent implements Runnable {
     private volatile MouseJointDef mjdef;
     private volatile MouseJoint mj;
     private volatile boolean destroyMj = false;
-    private volatile Tuple2f mousePosition = new Vec2();
+    private volatile v2 mousePosition = new Vec2();
 
     private void initMouse() {
         addMouseWheelListener((MouseWheelEvent e) -> {
@@ -149,7 +148,7 @@ public class Box2DTests extends JComponent implements Runnable {
                         clickedPoint = p;
                         break;
                     case 1:
-                        Tuple2f v = getPoint(p);
+                        v2 v = getPoint(p);
                         /*synchronized(Tests.this)*/
                     {
                         w.bodies(b->{
@@ -231,13 +230,13 @@ public class Box2DTests extends JComponent implements Runnable {
         wallLeft.setTransform(new v2(41, 30.0f), 0);
     }
 
-    private Point getPoint(Tuple2f point) {
+    private Point getPoint(v2 point) {
         float x = (point.x - center.x) * zoom + (getWidth() >> 1);
         float y = (getHeight() >> 1) - (point.y - center.y) * zoom;
         return new Point((int) x, (int) y);
     }
 
-    private Tuple2f getPoint(Point point) {
+    private v2 getPoint(Point point) {
         float x = (point.x - (getWidth() >> 1)) / zoom + center.x;
         float y = ((getHeight() >> 1) - point.y) / zoom + center.y;
         return new v2(x, y);
@@ -311,8 +310,8 @@ public class Box2DTests extends JComponent implements Runnable {
 
     private void drawJoint(Joint joint) {
         g.setColor(Color.GREEN);
-        Tuple2f v1 = new Vec2();
-        Tuple2f v2 = new Vec2();
+        v2 v1 = new Vec2();
+        v2 v2 = new Vec2();
         switch (joint.getType()) {
             case DISTANCE:
                 DistanceJoint dj = (DistanceJoint) joint;
@@ -331,7 +330,7 @@ public class Box2DTests extends JComponent implements Runnable {
     }
 
     private void drawParticles() {
-        Tuple2f[] vec = w.getParticlePositionBuffer();
+        v2[] vec = w.getParticlePositionBuffer();
         if (vec == null) {
             return;
         }
@@ -339,7 +338,7 @@ public class Box2DTests extends JComponent implements Runnable {
         float radius = w.getParticleRadius();
         int size = w.getParticleCount();
         for (int i = 0; i < size; i++) {
-            Tuple2f vx = vec[i];
+            v2 vx = vec[i];
             Point pp = getPoint(vx);
             float r = radius * zoom;
 
@@ -362,7 +361,7 @@ public class Box2DTests extends JComponent implements Runnable {
         } else {
             g.setColor(Color.GRAY);
         }
-        Tuple2f v = new Vec2();
+        v2 v = new Vec2();
         MyList<PolygonFixture> generalPolygons = new MyList<>();
         for (Fixture f = body.fixtures; f != null; f = f.next) {
             PolygonFixture pg = f.polygon;
@@ -393,8 +392,8 @@ public class Box2DTests extends JComponent implements Runnable {
                         break;
                     case EDGE:
                         EdgeShape edge = (EdgeShape) shape;
-                        Tuple2f v1 = edge.m_vertex1;
-                        Tuple2f v2 = edge.m_vertex2;
+                        v2 v1 = edge.m_vertex1;
+                        v2 v2 = edge.m_vertex2;
                         Point p1 = getPoint(v1);
                         Point p2 = getPoint(v2);
                         g.drawLine(p1.x, p1.y, p2.x, p2.y);

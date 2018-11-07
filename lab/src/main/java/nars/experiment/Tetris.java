@@ -10,6 +10,7 @@ import nars.NAgentX;
 import nars.agent.FrameTrigger;
 import nars.op.Arithmeticize;
 import nars.op.java.Opjects;
+import nars.op.mental.Inperience;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.video.Bitmap2DConceptsView;
@@ -20,7 +21,6 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.Vector;
 
-import static nars.Op.BELIEF;
 import static nars.experiment.Tetris.TetrisState.*;
 import static spacegraph.SpaceGraph.window;
 
@@ -103,13 +103,13 @@ public class Tetris extends NAgentX {
                 pixels = new Bitmap2DSensor<>(
                         (x, y) -> $.inh($.p(x, y), id),
                         grid, n)
-                .mode((p,v)->{
-                    float c = n.confDefault(BELIEF);
-                    return $.t(v, p!=v || v > 0.5f ? c : c/2);
-                })
+//                .mode((p,v)->{
+//                    float c = n.confDefault(BELIEF);
+//                    return $.t(v, p!=v || v > 0.5f ? c : c/2);
+//                })
 
         );
-        pixels.resolution(0.1f);
+        pixels.resolution(0.25f);
 
         window(new Bitmap2DConceptsView(pixels, this).withControls(), 400, 900);
 
@@ -132,6 +132,9 @@ public class Tetris extends NAgentX {
             n.freqResolution.set(0.03f);
 
             new Arithmeticize.ArithmeticIntroduction(32, n);
+
+            new Inperience.Believe(n, 32);
+            new Inperience.Want(n, 32);
 
             //new Abbreviation(n, ("z"), 4, 5,  8);
 

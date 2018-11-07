@@ -24,7 +24,7 @@
 package spacegraph.space2d.phys.dynamics.joints;
 
 import spacegraph.space2d.phys.common.Vec2;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * Mouse joint definition. This requires a world target point, tuning parameters, and the time step.
@@ -35,7 +35,7 @@ public class MouseJointDef extends JointDef {
     /**
      * The initial world target point. This is assumed to coincide with the body anchor initially.
      */
-    public final Tuple2f target = new Vec2();
+    public final v2 target = new Vec2();
 
     /**
      * The maximum constraint force that can be exerted to move the candidate body. Usually you will

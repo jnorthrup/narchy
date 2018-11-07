@@ -23,7 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.common;
 
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * This is the viewport transform used from drawing. Use yFlip if you are drawing from the top-left
@@ -47,13 +47,13 @@ public interface IViewportTransform {
      * This is the half-width and half-height. This should be the actual half-width and half-height,
      * not anything transformed or scaled. Not a copy.
      */
-    Tuple2f getExtents();
+    v2 getExtents();
 
     /**
      * This sets the half-width and half-height. This should be the actual half-width and half-height,
      * not anything transformed or scaled.
      */
-    void setExtents(Tuple2f extents);
+    void setExtents(v2 extents);
 
     /**
      * This sets the half-width and half-height of the viewport. This should be the actual half-width
@@ -64,12 +64,12 @@ public interface IViewportTransform {
     /**
      * center of the viewport. Not a copy.
      */
-    Tuple2f getCenter();
+    v2 getCenter();
 
     /**
      * sets the center of the viewport.
      */
-    void setCenter(Tuple2f pos);
+    void setCenter(v2 pos);
 
     /**
      * sets the center of the viewport.
@@ -84,13 +84,13 @@ public interface IViewportTransform {
     /**
      * Transforms the given directional vector by the viewport transform (not positional)
      */
-    void getWorldVectorToScreen(Tuple2f world, Tuple2f screen);
+    void getWorldVectorToScreen(v2 world, v2 screen);
 
 
     /**
      * Transforms the given directional screen vector back to the world direction.
      */
-    void getScreenVectorToWorld(Tuple2f screen, Tuple2f world);
+    void getScreenVectorToWorld(v2 screen, v2 world);
 
     Mat22 getMat22Representation();
 
@@ -99,14 +99,14 @@ public interface IViewportTransform {
      * takes the world coordinate (world) puts the corresponding screen coordinate in screen. It
      * should be safe to give the same object as both parameters.
      */
-    void getWorldToScreen(Tuple2f world, Tuple2f screen);
+    void getWorldToScreen(v2 world, v2 screen);
 
 
     /**
      * takes the screen coordinates (screen) and puts the corresponding world coordinates in world. It
      * should be safe to give the same object as both parameters.
      */
-    void getScreenToWorld(Tuple2f screen, Tuple2f world);
+    void getScreenToWorld(v2 screen, v2 world);
 
     /**
      * Multiplies the viewport transform by the given Mat22

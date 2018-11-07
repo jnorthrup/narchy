@@ -47,8 +47,7 @@
 package spacegraph.space2d.phys.collision.shapes;
 
 import spacegraph.space2d.phys.common.Vec2;
-import spacegraph.util.math.Tuple2f;
-
+import spacegraph.util.math.v2;
 
 
 /**
@@ -62,7 +61,7 @@ public class MassData {
     /**
      * The position of the shape's centroid relative to the shape's origin.
      */
-    public final Tuple2f center;
+    public final v2 center;
     /**
      * The rotational inertia of the shape about the local origin.
      */

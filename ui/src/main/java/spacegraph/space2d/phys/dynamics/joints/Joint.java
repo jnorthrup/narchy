@@ -27,7 +27,7 @@ import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 
 
@@ -163,14 +163,14 @@ public abstract class Joint {
      *
      * @return
      */
-    public abstract void getAnchorA(Tuple2f out);
+    public abstract void getAnchorA(v2 out);
 
     /**
      * get the anchor point on bodyB in world coordinates.
      *
      * @return
      */
-    public abstract void getAnchorB(Tuple2f out);
+    public abstract void getAnchorB(v2 out);
 
     /**
      * get the reaction force on body2 at the joint anchor in Newtons.
@@ -178,7 +178,7 @@ public abstract class Joint {
      * @param inv_dt
      * @return
      */
-    public abstract void getReactionForce(float inv_dt, Tuple2f out);
+    public abstract void getReactionForce(float inv_dt, v2 out);
 
     /**
      * get the reaction torque on body2 in N*m.

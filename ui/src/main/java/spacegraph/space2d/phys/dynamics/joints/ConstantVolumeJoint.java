@@ -28,16 +28,14 @@ import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.SolverData;
-import spacegraph.space2d.phys.dynamics.contacts.Position;
-import spacegraph.space2d.phys.dynamics.contacts.Velocity;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 public class ConstantVolumeJoint extends Joint {
 
     private final Body2D[] bodies;
     private float targetVolume;
 
-    private final Tuple2f[] normals;
+    private final v2[] normals;
     private float m_impulse = 0.0f;
 
     private final Dynamics2D world;
@@ -94,7 +92,7 @@ public class ConstantVolumeJoint extends Joint {
             distanceJoints = def.joints.toArray(new DistanceJoint[0]);
         }
 
-        normals = new Tuple2f[bodies.length];
+        normals = new v2[bodies.length];
         for (int i = 0; i < normals.length; ++i) {
             normals[i] = new Vec2();
         }
@@ -119,7 +117,7 @@ public class ConstantVolumeJoint extends Joint {
         return area;
     }
 
-    private float getSolverArea(Position[] positions) {
+    private float getSolverArea(v2[] positions) {
         float area = 0.0f;
         for (int i = 0; i < bodies.length; ++i) {
             final int next = (i == bodies.length - 1) ? 0 : i + 1;
@@ -131,7 +129,7 @@ public class ConstantVolumeJoint extends Joint {
         return area;
     }
 
-    private boolean constrainEdges(Position[] positions) {
+    private boolean constrainEdges(v2[] positions) {
         float perimeter = 0.0f;
         for (int i = 0; i < bodies.length; ++i) {
             final int next = (i == bodies.length - 1) ? 0 : i + 1;
@@ -146,7 +144,7 @@ public class ConstantVolumeJoint extends Joint {
             perimeter += dist;
         }
 
-        final Tuple2f delta = pool.popVec2();
+        final v2 delta = pool.popVec2();
 
         float deltaArea = targetVolume - getSolverArea(positions);
         float toExtrude = 0.5f * deltaArea / perimeter; 
@@ -177,9 +175,9 @@ public class ConstantVolumeJoint extends Joint {
 
     @Override
     public void initVelocityConstraints(final SolverData step) {
-        Velocity[] velocities = step.velocities;
-        Position[] positions = step.positions;
-        final Tuple2f[] d = pool.getVec2Array(bodies.length);
+        v2[] velocities = step.velocities;
+        v2[] positions = step.positions;
+        final v2[] d = pool.getVec2Array(bodies.length);
 
         for (int i = 0; i < bodies.length; ++i) {
             final int prev = (i == 0) ? bodies.length - 1 : i - 1;
@@ -214,9 +212,9 @@ public class ConstantVolumeJoint extends Joint {
         float crossMassSum = 0.0f;
         float dotMassSum = 0.0f;
 
-        Velocity[] velocities = step.velocities;
-        Position[] positions = step.positions;
-        final Tuple2f d[] = pool.getVec2Array(bodies.length);
+        v2[] velocities = step.velocities;
+        v2[] positions = step.positions;
+        final v2 d[] = pool.getVec2Array(bodies.length);
 
         for (int i = 0; i < bodies.length; ++i) {
             final int prev = (i == 0) ? bodies.length - 1 : i - 1;
@@ -224,7 +222,7 @@ public class ConstantVolumeJoint extends Joint {
             d[i].set(positions[bodies[next].island]);
             d[i].subbed(positions[bodies[prev].island]);
             dotMassSum += (d[i].lengthSquared()) / bodies[i].getMass();
-            crossMassSum += Tuple2f.cross(velocities[bodies[i].island], d[i]);
+            crossMassSum += v2.cross(velocities[bodies[i].island], d[i]);
         }
         float lambda = -2.0f * crossMassSum / dotMassSum;
         
@@ -242,21 +240,21 @@ public class ConstantVolumeJoint extends Joint {
      * No-op
      */
     @Override
-    public void getAnchorA(Tuple2f argOut) {
+    public void getAnchorA(v2 argOut) {
     }
 
     /**
      * No-op
      */
     @Override
-    public void getAnchorB(Tuple2f argOut) {
+    public void getAnchorB(v2 argOut) {
     }
 
     /**
      * No-op
      */
     @Override
-    public void getReactionForce(float inv_dt, Tuple2f argOut) {
+    public void getReactionForce(float inv_dt, v2 argOut) {
     }
 
     /**

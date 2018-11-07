@@ -1,7 +1,6 @@
 package spacegraph.space2d.phys.particle;
 
 import spacegraph.space2d.phys.common.Transform;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 public class ParticleGroup {
@@ -17,8 +16,8 @@ public class ParticleGroup {
     private int m_timestamp;
     private float m_mass;
     private float m_inertia;
-    final Tuple2f m_center = new v2();
-    final Tuple2f m_linearVelocity = new v2();
+    final v2 m_center = new v2();
+    final v2 m_linearVelocity = new v2();
     float m_angularVelocity;
     final Transform m_transform = new Transform();
 
@@ -76,12 +75,12 @@ public class ParticleGroup {
         return m_inertia;
     }
 
-    public Tuple2f getCenter() {
+    public v2 getCenter() {
         updateStatistics();
         return m_center;
     }
 
-    public Tuple2f getLinearVelocity() {
+    public v2 getLinearVelocity() {
         updateStatistics();
         return m_linearVelocity;
     }
@@ -95,7 +94,7 @@ public class ParticleGroup {
         return m_transform;
     }
 
-    public Tuple2f getPosition() {
+    public v2 getPosition() {
         return m_transform.pos;
     }
 
@@ -120,10 +119,10 @@ public class ParticleGroup {
             m_linearVelocity.setZero();
             for (int i = m_firstIndex; i < m_lastIndex; i++) {
                 m_mass += m;
-                Tuple2f pos = m_system.m_positionBuffer.data[i];
+                v2 pos = m_system.m_positionBuffer.data[i];
                 m_center.x += m * pos.x;
                 m_center.y += m * pos.y;
-                Tuple2f vel = m_system.m_velocityBuffer.data[i];
+                v2 vel = m_system.m_velocityBuffer.data[i];
                 m_linearVelocity.x += m * vel.x;
                 m_linearVelocity.y += m * vel.y;
             }
@@ -136,8 +135,8 @@ public class ParticleGroup {
             m_inertia = 0;
             m_angularVelocity = 0;
             for (int i = m_firstIndex; i < m_lastIndex; i++) {
-                Tuple2f pos = m_system.m_positionBuffer.data[i];
-                Tuple2f vel = m_system.m_velocityBuffer.data[i];
+                v2 pos = m_system.m_positionBuffer.data[i];
+                v2 vel = m_system.m_velocityBuffer.data[i];
                 float px = pos.x - m_center.x;
                 float py = pos.y - m_center.y;
                 float vx = vel.x - m_linearVelocity.x;

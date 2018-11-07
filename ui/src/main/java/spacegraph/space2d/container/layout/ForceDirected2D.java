@@ -7,7 +7,6 @@ import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.util.MutableFloatRect;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import java.util.Random;
@@ -166,7 +165,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect> {
 
     private void repel(MutableFloatRect a, v2 aCenter, float ar, MutableFloatRect b, float repelSpeed) {
 
-        Tuple2f delta = aCenter.clone().subbed(b.cx(), b.cy());
+        v2 delta = aCenter.clone().subbed(b.cx(), b.cy());
 
 
 

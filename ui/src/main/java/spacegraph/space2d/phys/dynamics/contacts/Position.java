@@ -27,4 +27,17 @@ import spacegraph.util.math.v2;
 
 public class Position extends v2 {
     public float a;
+
+
+    public Position() {
+        super();
+    }
+    public Position(v2 v) {
+        super(v.x, v.y);
+    }
+
+    public Position(float x, float y) {
+        super(x,y);
+    }
+
 }

@@ -5,19 +5,7 @@ import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
-
-
-
-
-
-
-
-
-
-
-
 
 
 /**
@@ -29,7 +17,7 @@ import spacegraph.util.math.v2;
 public class MotorJoint extends Joint {
 
     
-    private final Tuple2f m_linearOffset = new v2();
+    private final v2 m_linearOffset = new v2();
     private float m_angularOffset;
     private final v2 m_linearImpulse = new v2();
     private float m_angularImpulse;
@@ -40,11 +28,11 @@ public class MotorJoint extends Joint {
     
     private int m_indexA;
     private int m_indexB;
-    private final Tuple2f m_rA = new v2();
-    private final Tuple2f m_rB = new v2();
-    private final Tuple2f m_localCenterA = new v2();
-    private final Tuple2f m_localCenterB = new v2();
-    private final Tuple2f m_linearError = new v2();
+    private final v2 m_rA = new v2();
+    private final v2 m_rB = new v2();
+    private final v2 m_localCenterA = new v2();
+    private final v2 m_localCenterB = new v2();
+    private final v2 m_linearError = new v2();
     private float m_angularError;
     private float m_invMassA;
     private float m_invMassB;
@@ -66,16 +54,16 @@ public class MotorJoint extends Joint {
     }
 
     @Override
-    public void getAnchorA(Tuple2f out) {
+    public void getAnchorA(v2 out) {
         out.set(A.getPosition());
     }
 
     @Override
-    public void getAnchorB(Tuple2f out) {
+    public void getAnchorB(v2 out) {
         out.set(B.getPosition());
     }
 
-    public void getReactionForce(float inv_dt, Tuple2f out) {
+    public void getReactionForce(float inv_dt, v2 out) {
         out.set(m_linearImpulse).scaled(inv_dt);
     }
 
@@ -94,7 +82,7 @@ public class MotorJoint extends Joint {
     /**
      * Set the target linear offset, in frame A, in meters.
      */
-    public void setLinearOffset(Tuple2f linearOffset) {
+    public void setLinearOffset(v2 linearOffset) {
         if (linearOffset.x != m_linearOffset.x || linearOffset.y != m_linearOffset.y) {
             A.setAwake(true);
             B.setAwake(true);
@@ -105,14 +93,14 @@ public class MotorJoint extends Joint {
     /**
      * Get the target linear offset, in frame A, in meters.
      */
-    public void getLinearOffset(Tuple2f out) {
+    public void getLinearOffset(v2 out) {
         out.set(m_linearOffset);
     }
 
     /**
      * Get the target linear offset, in frame A, in meters. Do not modify.
      */
-    public Tuple2f getLinearOffset() {
+    public v2 getLinearOffset() {
         return m_linearOffset;
     }
 
@@ -176,19 +164,19 @@ public class MotorJoint extends Joint {
         m_invIA = A.m_invI;
         m_invIB = B.m_invI;
 
-        final Tuple2f cA = data.positions[m_indexA];
+        final v2 cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;
-        final Tuple2f vA = data.velocities[m_indexA];
+        final v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
 
-        final Tuple2f cB = data.positions[m_indexB];
+        final v2 cB = data.positions[m_indexB];
         float aB = data.positions[m_indexB].a;
-        final Tuple2f vB = data.velocities[m_indexB];
+        final v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         final Rot qA = pool.popRot();
         final Rot qB = pool.popRot();
-        final Tuple2f temp = new v2();
+        final v2 temp = new v2();
         Mat22 K = pool.popMat22();
 
         qA.set(aA);
@@ -237,7 +225,7 @@ public class MotorJoint extends Joint {
             m_linearImpulse.y *= data.step.dtRatio;
             m_angularImpulse *= data.step.dtRatio;
 
-            final Tuple2f P = m_linearImpulse;
+            final v2 P = m_linearImpulse;
             vA.x -= mA * P.x;
             vA.y -= mA * P.y;
             wA -= iA * (m_rA.x * P.y - m_rA.y * P.x + m_angularImpulse);
@@ -260,9 +248,9 @@ public class MotorJoint extends Joint {
 
     @Override
     public void solveVelocityConstraints(SolverData data) {
-        final Tuple2f vA = data.velocities[m_indexA];
+        final v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
-        final Tuple2f vB = data.velocities[m_indexB];
+        final v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         float mA = m_invMassA, mB = m_invMassB;
@@ -271,7 +259,7 @@ public class MotorJoint extends Joint {
         float h = data.step.dt;
         float inv_h = data.step.inv_dt;
 
-        final Tuple2f temp = new v2();
+        final v2 temp = new v2();
 
         
         {
@@ -287,7 +275,7 @@ public class MotorJoint extends Joint {
             wB += iB * impulse;
         }
 
-        final Tuple2f Cdot = new v2();
+        final v2 Cdot = new v2();
 
         
         {
@@ -298,10 +286,10 @@ public class MotorJoint extends Joint {
             Cdot.y =
                     vB.y + wB * m_rB.x - vA.y - wA * m_rA.x + inv_h * m_correctionFactor * m_linearError.y;
 
-            final Tuple2f impulse = temp;
+            final v2 impulse = temp;
             Mat22.mulToOutUnsafe(m_linearMass, Cdot, impulse);
             impulse.negated();
-            final Tuple2f oldImpulse = new v2();
+            final v2 oldImpulse = new v2();
             oldImpulse.set(m_linearImpulse);
             m_linearImpulse.added(impulse);
 

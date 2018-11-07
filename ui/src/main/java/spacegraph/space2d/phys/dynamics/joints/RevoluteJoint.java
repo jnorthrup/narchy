@@ -28,20 +28,7 @@ import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /**
@@ -56,8 +43,8 @@ import spacegraph.util.math.v2;
 public class RevoluteJoint extends Joint {
 
     
-    protected final Tuple2f localAnchorA = new v2();
-    protected final Tuple2f localAnchorB = new v2();
+    protected final v2 localAnchorA = new v2();
+    protected final v2 localAnchorB = new v2();
     private final Vec3 m_impulse = new Vec3();
     private float m_motorImpulse;
 
@@ -73,10 +60,10 @@ public class RevoluteJoint extends Joint {
     
     private int m_indexA;
     private int m_indexB;
-    private final Tuple2f m_rA = new v2();
-    private final Tuple2f m_rB = new v2();
-    private final Tuple2f m_localCenterA = new v2();
-    private final Tuple2f m_localCenterB = new v2();
+    private final v2 m_rA = new v2();
+    private final v2 m_rB = new v2();
+    private final v2 m_localCenterA = new v2();
+    private final v2 m_localCenterB = new v2();
     private float m_invMassA;
     private float m_invMassB;
     private float m_invIA;
@@ -126,16 +113,16 @@ public class RevoluteJoint extends Joint {
 
         
         float aA = data.positions[m_indexA].a;
-        Tuple2f vA = data.velocities[m_indexA];
+        v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
 
         
         float aB = data.positions[m_indexB].a;
-        Tuple2f vB = data.velocities[m_indexB];
+        v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
         final Rot qA = pool.popRot();
         final Rot qB = pool.popRot();
-        final Tuple2f temp = new v2();
+        final v2 temp = new v2();
 
         qA.set(aA);
         qB.set(aB);
@@ -200,7 +187,7 @@ public class RevoluteJoint extends Joint {
         }
 
         if (data.step.warmStarting) {
-            final Tuple2f P = new v2();
+            final v2 P = new v2();
             
             m_impulse.x *= data.step.dtRatio;
             m_impulse.y *= data.step.dtRatio;
@@ -211,11 +198,11 @@ public class RevoluteJoint extends Joint {
 
             vA.x -= mA * P.x;
             vA.y -= mA * P.y;
-            wA -= iA * (Tuple2f.cross(m_rA, P) + m_motorImpulse + m_impulse.z);
+            wA -= iA * (v2.cross(m_rA, P) + m_motorImpulse + m_impulse.z);
 
             vB.x += mB * P.x;
             vB.y += mB * P.y;
-            wB += iB * (Tuple2f.cross(m_rB, P) + m_motorImpulse + m_impulse.z);
+            wB += iB * (v2.cross(m_rB, P) + m_motorImpulse + m_impulse.z);
         } else {
             m_impulse.setZero();
             m_motorImpulse = 0.0f;
@@ -231,9 +218,9 @@ public class RevoluteJoint extends Joint {
 
     @Override
     public void solveVelocityConstraints(final SolverData data) {
-        Tuple2f vA = data.velocities[m_indexA];
+        v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
-        Tuple2f vB = data.velocities[m_indexB];
+        v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         float mA = m_invMassA, mB = m_invMassB;
@@ -253,17 +240,17 @@ public class RevoluteJoint extends Joint {
             wA -= iA * impulse;
             wB += iB * impulse;
         }
-        final Tuple2f temp = new v2();
+        final v2 temp = new v2();
 
         
         if (m_enableLimit && m_limitState != LimitState.INACTIVE && !fixedRotation) {
 
-            final Tuple2f Cdot1 = new v2();
+            final v2 Cdot1 = new v2();
             final Vec3 Cdot = new Vec3();
 
             
-            Tuple2f.crossToOutUnsafe(wA, m_rA, temp);
-            Tuple2f.crossToOutUnsafe(wB, m_rB, Cdot1);
+            v2.crossToOutUnsafe(wA, m_rA, temp);
+            v2.crossToOutUnsafe(wB, m_rB, Cdot1);
             Cdot1.added(vB).subbed(vA).subbed(temp).scaled(positionFactor);
             float Cdot2 = wB - wA;
             Cdot.set(Cdot1.x, Cdot1.y, Cdot2);
@@ -279,7 +266,7 @@ public class RevoluteJoint extends Joint {
                 case AT_LOWER: {
                     float newImpulse = m_impulse.z + impulse.z;
                     if (newImpulse < 0.0f) {
-                        final Tuple2f rhs = new v2();
+                        final v2 rhs = new v2();
                         rhs.set(m_mass.ez.x, m_mass.ez.y).scaled(m_impulse.z).subbed(Cdot1);
                         m_mass.solve22ToOut(rhs, temp);
                         impulse.x = temp.x;
@@ -296,7 +283,7 @@ public class RevoluteJoint extends Joint {
                 case AT_UPPER: {
                     float newImpulse = m_impulse.z + impulse.z;
                     if (newImpulse > 0.0f) {
-                        final Tuple2f rhs = new v2();
+                        final v2 rhs = new v2();
                         rhs.set(m_mass.ez.x, m_mass.ez.y).scaled(m_impulse.z).subbed(Cdot1);
                         m_mass.solve22ToOut(rhs, temp);
                         impulse.x = temp.x;
@@ -311,26 +298,26 @@ public class RevoluteJoint extends Joint {
                     break;
                 }
             }
-            final Tuple2f P = new v2();
+            final v2 P = new v2();
 
             P.set(impulse.x, impulse.y);
 
             vA.x -= mA * P.x;
             vA.y -= mA * P.y;
-            wA -= iA * (Tuple2f.cross(m_rA, P) + impulse.z);
+            wA -= iA * (v2.cross(m_rA, P) + impulse.z);
 
             vB.x += mB * P.x;
             vB.y += mB * P.y;
-            wB += iB * (Tuple2f.cross(m_rB, P) + impulse.z);
+            wB += iB * (v2.cross(m_rB, P) + impulse.z);
 
         } else {
 
             
-            Tuple2f Cdot = new v2();
-            Tuple2f impulse = new v2();
+            v2 Cdot = new v2();
+            v2 impulse = new v2();
 
-            Tuple2f.crossToOutUnsafe(wA, m_rA, temp);
-            Tuple2f.crossToOutUnsafe(wB, m_rB, Cdot);
+            v2.crossToOutUnsafe(wA, m_rA, temp);
+            v2.crossToOutUnsafe(wB, m_rB, Cdot);
             Cdot.added(vB).subbed(vA).subbed(temp).scaled(positionFactor);
             m_mass.solve22ToOut(Cdot.negated(), impulse); 
 
@@ -339,11 +326,11 @@ public class RevoluteJoint extends Joint {
 
             vA.x -= mA * impulse.x;
             vA.y -= mA * impulse.y;
-            wA -= iA * Tuple2f.cross(m_rA, impulse);
+            wA -= iA * v2.cross(m_rA, impulse);
 
             vB.x += mB * impulse.x;
             vB.y += mB * impulse.y;
-            wB += iB * Tuple2f.cross(m_rB, impulse);
+            wB += iB * v2.cross(m_rB, impulse);
 
         }
 
@@ -359,9 +346,9 @@ public class RevoluteJoint extends Joint {
     public boolean solvePositionConstraints(final SolverData data) {
         final Rot qA = pool.popRot();
         final Rot qB = pool.popRot();
-        Tuple2f cA = data.positions[m_indexA];
+        v2 cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;
-        Tuple2f cB = data.positions[m_indexB];
+        v2 cB = data.positions[m_indexB];
         float aB = data.positions[m_indexB].a;
 
         qA.set(aA);
@@ -415,10 +402,10 @@ public class RevoluteJoint extends Joint {
             qA.set(aA);
             qB.set(aB);
 
-            final Tuple2f rA = new v2();
-            final Tuple2f rB = new v2();
-            final Tuple2f C = new v2();
-            final Tuple2f impulse = new v2();
+            final v2 rA = new v2();
+            final v2 rB = new v2();
+            final v2 C = new v2();
+            final v2 impulse = new v2();
 
             Rot.mulToOutUnsafe(qA, C.set(localAnchorA).subbed(m_localCenterA), rA);
             Rot.mulToOutUnsafe(qB, C.set(localAnchorB).subbed(m_localCenterB), rB);
@@ -439,11 +426,11 @@ public class RevoluteJoint extends Joint {
 
             cA.x -= mA * impulse.x;
             cA.y -= mA * impulse.y;
-            aA -= iA * Tuple2f.cross(rA, impulse);
+            aA -= iA * v2.cross(rA, impulse);
 
             cB.x += mB * impulse.x;
             cB.y += mB * impulse.y;
-            aB += iB * Tuple2f.cross(rB, impulse);
+            aB += iB * v2.cross(rB, impulse);
 
             pool.pushMat22(1);
         }
@@ -457,11 +444,11 @@ public class RevoluteJoint extends Joint {
         return positionError <= Settings.linearSlop && angularError <= Settings.angularSlop;
     }
 
-    public Tuple2f getLocalAnchorA() {
+    public v2 getLocalAnchorA() {
         return localAnchorA;
     }
 
-    public Tuple2f getLocalAnchorB() {
+    public v2 getLocalAnchorB() {
         return localAnchorB;
     }
 
@@ -470,17 +457,17 @@ public class RevoluteJoint extends Joint {
     }
 
     @Override
-    public void getAnchorA(Tuple2f argOut) {
+    public void getAnchorA(v2 argOut) {
         A.getWorldPointToOut(localAnchorA, argOut);
     }
 
     @Override
-    public void getAnchorB(Tuple2f argOut) {
+    public void getAnchorB(v2 argOut) {
         B.getWorldPointToOut(localAnchorB, argOut);
     }
 
     @Override
-    public void getReactionForce(float inv_dt, Tuple2f argOut) {
+    public void getReactionForce(float inv_dt, v2 argOut) {
         argOut.set(m_impulse.x, m_impulse.y).scaled(inv_dt);
     }
 

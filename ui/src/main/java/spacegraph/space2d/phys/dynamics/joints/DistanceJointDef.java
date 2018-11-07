@@ -47,9 +47,7 @@
 package spacegraph.space2d.phys.dynamics.joints;
 
 import spacegraph.space2d.phys.dynamics.Body2D;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
-
 
 
 /**
@@ -63,12 +61,12 @@ public class DistanceJointDef extends JointDef {
     /**
      * The local anchor point relative to body1's origin.
      */
-    public final Tuple2f localAnchorA;
+    public final v2 localAnchorA;
 
     /**
      * The local anchor point relative to body2's origin.
      */
-    public final Tuple2f localAnchorB;
+    public final v2 localAnchorB;
 
     /**
      * The equilibrium length between the anchor points.
@@ -101,12 +99,12 @@ public class DistanceJointDef extends JointDef {
      * @param anchor1 World anchor on first body
      * @param anchor2 World anchor on second body
      */
-    public DistanceJointDef initialize(final Body2D b1, final Body2D b2, final Tuple2f anchor1, final Tuple2f anchor2) {
+    public DistanceJointDef initialize(final Body2D b1, final Body2D b2, final v2 anchor1, final v2 anchor2) {
         bodyA = b1;
         bodyB = b2;
         localAnchorA.set(bodyA.getLocalPoint(anchor1));
         localAnchorB.set(bodyB.getLocalPoint(anchor2));
-        Tuple2f d = anchor2.sub(anchor1);
+        v2 d = anchor2.sub(anchor1);
         length = d.length();
         return this;
     }

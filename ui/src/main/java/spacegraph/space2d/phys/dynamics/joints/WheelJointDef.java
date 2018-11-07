@@ -30,7 +30,7 @@ package spacegraph.space2d.phys.dynamics.joints;
 
 import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.Body2D;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * Wheel joint definition. This requires defining a line of motion using an axis and an anchor
@@ -46,17 +46,17 @@ class WheelJointDef extends JointDef {
     /**
      * The local anchor point relative to body1's origin.
      */
-    public final Tuple2f localAnchorA = new Vec2();
+    public final v2 localAnchorA = new Vec2();
 
     /**
      * The local anchor point relative to body2's origin.
      */
-    public final Tuple2f localAnchorB = new Vec2();
+    public final v2 localAnchorB = new Vec2();
 
     /**
      * The local translation axis in body1.
      */
-    public final Tuple2f localAxisA = new Vec2();
+    public final v2 localAxisA = new Vec2();
 
     /**
      * Enable/disable the joint motor.
@@ -91,7 +91,7 @@ class WheelJointDef extends JointDef {
         motorSpeed = 0f;
     }
 
-    public void initialize(Body2D b1, Body2D b2, Tuple2f anchor, Tuple2f axis) {
+    public void initialize(Body2D b1, Body2D b2, v2 anchor, v2 axis) {
         bodyA = b1;
         bodyB = b2;
         b1.getLocalPointToOut(anchor, localAnchorA);

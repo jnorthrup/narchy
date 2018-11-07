@@ -23,7 +23,6 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.common;
 
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import java.io.Serializable;
@@ -112,17 +111,17 @@ public class Mat33 implements Serializable {
                 * A.ez.y, v.x * A.ex.z + v.y * A.ey.z + v.z * A.ez.z);
     }
 
-    public static Tuple2f mul22(Mat33 A, Tuple2f v) {
+    public static v2 mul22(Mat33 A, v2 v) {
         return new v2(A.ex.x * v.x + A.ey.x * v.y, A.ex.y * v.x + A.ey.y * v.y);
     }
 
-    public static void mul22ToOut(Mat33 A, Tuple2f v, Tuple2f out) {
+    public static void mul22ToOut(Mat33 A, v2 v, v2 out) {
         final float tempx = A.ex.x * v.x + A.ey.x * v.y;
         out.y = A.ex.y * v.x + A.ey.y * v.y;
         out.x = tempx;
     }
 
-    public static void mul22ToOutUnsafe(Mat33 A, Tuple2f v, Tuple2f out) {
+    public static void mul22ToOutUnsafe(Mat33 A, v2 v, v2 out) {
         assert (v != out);
         out.y = A.ex.y * v.x + A.ey.y * v.y;
         out.x = A.ex.x * v.x + A.ey.x * v.y;
@@ -150,8 +149,8 @@ public class Mat33 implements Serializable {
      * @param b
      * @return
      */
-    public final Tuple2f solve22(Tuple2f b) {
-        Tuple2f x = new Vec2();
+    public final v2 solve22(v2 b) {
+        v2 x = new Vec2();
         solve22ToOut(b, x);
         return x;
     }
@@ -163,7 +162,7 @@ public class Mat33 implements Serializable {
      * @param b
      * @return
      */
-    public final void solve22ToOut(Tuple2f b, Tuple2f out) {
+    public final void solve22ToOut(v2 b, v2 out) {
         final float a11 = ex.x, a12 = ey.x, a21 = ex.y, a22 = ey.y;
         float det = a11 * a22 - a12 * a21;
         if (det != 0.0f) {

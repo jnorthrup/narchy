@@ -41,7 +41,7 @@ public class ChainTest implements ICase {
 
                 Body2D body = w.addBody(
                         new BodyDef(BodyType.DYNAMIC,
-                                    new v2(0.5f + i, y) ),
+                                new v2(0.5f + i, y)),
                         box);
 
                 w.addJoint(jd.initialize(prevBody, body, /* anchor */ new v2(i, y)));

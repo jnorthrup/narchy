@@ -33,7 +33,6 @@ import spacegraph.space2d.phys.common.IViewportTransform;
 import spacegraph.space2d.phys.common.Transform;
 import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.particle.ParticleColor;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -94,13 +93,13 @@ public abstract class DebugDraw {
 
     /**
      * Draw a closed polygon provided in CCW order. This implementation uses
-     * {@link #drawSegment(Tuple2f, Tuple2f, Color3f)} to draw each side of the polygon.
+     * {@link #drawSegment(v2, v2, Color3f)} to draw each side of the polygon.
      *
      * @param vertices
      * @param vertexCount
      * @param color
      */
-    public void drawPolygon(Tuple2f[] vertices, int vertexCount, Color3f color) {
+    public void drawPolygon(v2[] vertices, int vertexCount, Color3f color) {
         if (vertexCount == 1) {
             drawSegment(vertices[0], vertices[0], color);
             return;
@@ -115,7 +114,7 @@ public abstract class DebugDraw {
         }
     }
 
-    public abstract void drawPoint(Tuple2f argPoint, float argRadiusOnScreen, Color3f argColor);
+    public abstract void drawPoint(v2 argPoint, float argRadiusOnScreen, Color3f argColor);
 
     /**
      * Draw a solid closed polygon provided in CCW order.
@@ -124,7 +123,7 @@ public abstract class DebugDraw {
      * @param vertexCount
      * @param color
      */
-    public abstract void drawSolidPolygon(Tuple2f[] vertices, int vertexCount, Color3f color);
+    public abstract void drawSolidPolygon(v2[] vertices, int vertexCount, Color3f color);
 
     /**
      * Draw a circle.
@@ -133,10 +132,10 @@ public abstract class DebugDraw {
      * @param radius
      * @param color
      */
-    public abstract void drawCircle(Tuple2f center, float radius, Color3f color);
+    public abstract void drawCircle(v2 center, float radius, Color3f color);
 
     /** Draws a circle with an axis */
-    public void drawCircle(Tuple2f center, float radius, Tuple2f axis, Color3f color) {
+    public void drawCircle(v2 center, float radius, v2 axis, Color3f color) {
         drawCircle(center, radius, color);
     }
 
@@ -148,7 +147,7 @@ public abstract class DebugDraw {
      * @param axis
      * @param color
      */
-    public abstract void drawSolidCircle(Tuple2f center, float radius, Tuple2f axis, Color3f color);
+    public abstract void drawSolidCircle(v2 center, float radius, v2 axis, Color3f color);
 
     /**
      * Draw a line segment.
@@ -157,7 +156,7 @@ public abstract class DebugDraw {
      * @param p2
      * @param color
      */
-    public abstract void drawSegment(Tuple2f p1, Tuple2f p2, Color3f color);
+    public abstract void drawSegment(v2 p1, v2 p2, Color3f color);
 
     /**
      * Draw a transform. Choose your own length scale
@@ -181,21 +180,21 @@ public abstract class DebugDraw {
      *
      * @param colors can be null
      */
-    public abstract void drawParticles(Tuple2f[] centers, float radius, ParticleColor[] colors, int count);
+    public abstract void drawParticles(v2[] centers, float radius, ParticleColor[] colors, int count);
 
     /**
      * Draw a particle array
      *
      * @param colors can be null
      */
-    public abstract void drawParticlesWireframe(Tuple2f[] centers, float radius, ParticleColor[] colors,
+    public abstract void drawParticlesWireframe(v2[] centers, float radius, ParticleColor[] colors,
                                                 int count);
 
     /** Called at the end of drawing a world */
     public void flush() {
     }
 
-    public void drawString(Tuple2f pos, String s, Color3f color) {
+    public void drawString(v2 pos, String s, Color3f color) {
         drawString(pos.x, pos.y, s, color);
     }
 
@@ -218,7 +217,7 @@ public abstract class DebugDraw {
      * @param argScreen
      * @param argWorld
      */
-    public void getScreenToWorldToOut(Tuple2f argScreen, Tuple2f argWorld) {
+    public void getScreenToWorldToOut(v2 argScreen, v2 argWorld) {
         viewportTransform.getScreenToWorld(argScreen, argWorld);
     }
 
@@ -226,7 +225,7 @@ public abstract class DebugDraw {
      * @param argWorld
      * @param argScreen
      */
-    public void getWorldToScreenToOut(Tuple2f argWorld, Tuple2f argScreen) {
+    public void getWorldToScreenToOut(v2 argWorld, v2 argScreen) {
         viewportTransform.getWorldToScreen(argWorld, argScreen);
     }
 
@@ -237,7 +236,7 @@ public abstract class DebugDraw {
      * @param worldY
      * @param argScreen
      */
-    public void getWorldToScreenToOut(float worldX, float worldY, Tuple2f argScreen) {
+    public void getWorldToScreenToOut(float worldX, float worldY, v2 argScreen) {
         argScreen.set(worldX, worldY);
         viewportTransform.getWorldToScreen(argScreen, argScreen);
     }
@@ -247,8 +246,8 @@ public abstract class DebugDraw {
      *
      * @param argWorld
      */
-    public Tuple2f getWorldToScreen(Tuple2f argWorld) {
-        Tuple2f screen = new Vec2();
+    public v2 getWorldToScreen(v2 argWorld) {
+        v2 screen = new Vec2();
         viewportTransform.getWorldToScreen(argWorld, screen);
         return screen;
     }
@@ -259,8 +258,8 @@ public abstract class DebugDraw {
      * @param worldX
      * @param worldY
      */
-    public Tuple2f getWorldToScreen(float worldX, float worldY) {
-        Tuple2f argScreen = new v2(worldX, worldY);
+    public v2 getWorldToScreen(float worldX, float worldY) {
+        v2 argScreen = new v2(worldX, worldY);
         viewportTransform.getWorldToScreen(argScreen, argScreen);
         return argScreen;
     }
@@ -272,7 +271,7 @@ public abstract class DebugDraw {
      * @param screenY
      * @param argWorld
      */
-    public void getScreenToWorldToOut(float screenX, float screenY, Tuple2f argWorld) {
+    public void getScreenToWorldToOut(float screenX, float screenY, v2 argWorld) {
         argWorld.set(screenX, screenY);
         viewportTransform.getScreenToWorld(argWorld, argWorld);
     }
@@ -282,8 +281,8 @@ public abstract class DebugDraw {
      *
      * @param argScreen
      */
-    public Tuple2f getScreenToWorld(Tuple2f argScreen) {
-        Tuple2f world = new Vec2();
+    public v2 getScreenToWorld(v2 argScreen) {
+        v2 world = new Vec2();
         viewportTransform.getScreenToWorld(argScreen, world);
         return world;
     }
@@ -294,8 +293,8 @@ public abstract class DebugDraw {
      * @param screenX
      * @param screenY
      */
-    public Tuple2f getScreenToWorld(float screenX, float screenY) {
-        Tuple2f screen = new v2(screenX, screenY);
+    public v2 getScreenToWorld(float screenX, float screenY) {
+        v2 screen = new v2(screenX, screenY);
         viewportTransform.getScreenToWorld(screen, screen);
         return screen;
     }

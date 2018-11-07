@@ -5,7 +5,7 @@ import spacegraph.space2d.phys.fracture.fragmentation.Smasher;
 import spacegraph.space2d.phys.fracture.materials.Diffusion;
 import spacegraph.space2d.phys.fracture.materials.Glass;
 import spacegraph.space2d.phys.fracture.materials.Uniform;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 import static spacegraph.space2d.phys.common.Settings.EPSILON;
 
@@ -81,7 +81,7 @@ public abstract class Material {
      * @param contactPoint
      * @return Vrati ohniska v ktorych sa bude teleso triestit.
      */
-    protected abstract Tuple2f[] focee(Tuple2f contactPoint, Tuple2f contactVector);
+    protected abstract v2[] focee(v2 contactPoint, v2 contactVector);
 
     /**
      * Fragmentacia telesa.
@@ -92,8 +92,8 @@ public abstract class Material {
      * @param normalImpulse Intenzita kolizie
      * @return Vrati pole Polygonov, na ktore bude dany polygon rozdeleny
      */
-    Polygon[] split(Smasher geom, Polygon p, Tuple2f localPos, Tuple2f localVel, float normalImpulse) {
-        Tuple2f[] foceeArray = focee(localPos, localVel);
+    Polygon[] split(Smasher geom, Polygon p, v2 localPos, v2 localVel, float normalImpulse) {
+        v2[] foceeArray = focee(localPos, localVel);
 
         
         float ln = localVel.length();

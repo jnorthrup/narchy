@@ -1,7 +1,7 @@
 package spacegraph.space2d.phys.fracture;
 
 import spacegraph.space2d.phys.common.PlatformMathUtils;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * Polygon pre voronoi diagram. Funguje ako ArrayList 2D bodov typu Point2D,
@@ -35,7 +35,7 @@ public class Fragment extends Polygon {
     /**
      * Ohnisko fragmentu
      */
-    public Tuple2f focus;
+    public v2 focus;
 
     /**
      * Pomocna premenna pre vypocet do geometry kniznice.
@@ -88,8 +88,8 @@ public class Fragment extends Polygon {
      * @param j
      */
     private void swap(int i, int j) {
-        Tuple2f[] a = this.array;
-        Tuple2f item = a[i];
+        v2[] a = this.array;
+        v2 item = a[i];
         a[i] = a[j];
         a[j] = item;
     }

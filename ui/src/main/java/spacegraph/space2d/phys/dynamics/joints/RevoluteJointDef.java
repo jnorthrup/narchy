@@ -47,7 +47,6 @@
 package spacegraph.space2d.phys.dynamics.joints;
 
 import spacegraph.space2d.phys.dynamics.Body2D;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -66,12 +65,12 @@ public class RevoluteJointDef extends JointDef {
     /**
      * The local anchor point relative to body1's origin.
      */
-    public final Tuple2f localAnchorA;
+    public final v2 localAnchorA;
 
     /**
      * The local anchor point relative to body2's origin.
      */
-    public final Tuple2f localAnchorB;
+    public final v2 localAnchorB;
 
     /**
      * The body2 angle minus body1 angle in the reference state (radians).
@@ -138,7 +137,7 @@ public class RevoluteJointDef extends JointDef {
      * @param b2
      * @param anchor
      */
-    public RevoluteJointDef initialize(final Body2D b1, final Body2D b2, final Tuple2f anchor) {
+    public RevoluteJointDef initialize(final Body2D b1, final Body2D b2, final v2 anchor) {
         bodyA = b1;
         bodyA.getLocalPointToOut(anchor, localAnchorA);
         bodyB = b2;

@@ -5,7 +5,6 @@ import spacegraph.space2d.phys.common.PlatformMathUtils;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.fracture.hertelmehlhorn.SingletonHM;
 import spacegraph.space2d.phys.fracture.poly2Tri.Triangulation;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import java.util.ArrayList;
@@ -16,14 +15,14 @@ import java.util.Iterator;
  *
  * @author Marek Benovic
  */
-public class Polygon implements Iterable<Tuple2f>, Cloneable {
+public class Polygon implements Iterable<v2>, Cloneable {
     private static final float AABBConst = 1;
     private static final SingletonHM HM = new SingletonHM();
 
     /**
      * Pole vrcholov.
      */
-    Tuple2f[] array;
+    v2[] array;
 
     /**
      * Pocet vrcholov.
@@ -38,7 +37,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
         this(8);
     }
     public Polygon(int capacity) {
-        array = new Tuple2f[capacity];
+        array = new v2[capacity];
         count = 0;
     }
 
@@ -48,7 +47,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      *
      * @param va Vstupne vrcholy.
      */
-    Polygon(Tuple2f[] va) {
+    Polygon(v2[] va) {
         array = va;
         count = va.length;
     }
@@ -60,7 +59,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      * @param va Vstupne vrcholy.
      * @param n  Pocet aktivnych vrcholov
      */
-    private Polygon(Tuple2f[] va, int n) {
+    private Polygon(v2[] va, int n) {
         array = va;
         count = n;
     }
@@ -70,8 +69,8 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      *
      * @param c Kolekcia s vrcholmi.
      */
-    public void add(Iterable<? extends Tuple2f> c) {
-        for (Tuple2f v : c) {
+    public void add(Iterable<? extends v2> c) {
+        for (v2 v : c) {
             add(v);
         }
     }
@@ -81,9 +80,9 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      *
      * @param v Pridavany vrchol
      */
-    public void add(Tuple2f v) {
+    public void add(v2 v) {
         if (array.length == count) {
-            Tuple2f[] newArray = new Tuple2f[count * 2];
+            v2[] newArray = new v2[count * 2];
             System.arraycopy(array, 0, newArray, 0, count);
             array = newArray;
         }
@@ -94,7 +93,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      * @param index
      * @return Vrati prvok na danom mieste
      */
-    public Tuple2f get(int index) {
+    public v2 get(int index) {
         return array[index];
     }
 
@@ -109,7 +108,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      * @param index Index bodu
      * @return Vrati vrchol podla poradia s osetrenim pretecenia.
      */
-    public Tuple2f cycleGet(int index) {
+    public v2 cycleGet(int index) {
         return get(index % count);
     }
 
@@ -118,7 +117,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      * preto pri iterovani treba brat pocet cez funkciu size a nie
      * cez array.length.
      */
-    public Tuple2f[] getArray() {
+    public v2[] getArray() {
         return array;
     }
 
@@ -130,13 +129,13 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      * @param p
      * @return Vrati true.
      */
-    public boolean inside(Tuple2f p) {
+    public boolean inside(v2 p) {
         int i, j;
         boolean c = false;
-        Tuple2f v = new v2();
+        v2 v = new v2();
         for (i = 0, j = count - 1; i < count; j = i++) {
-            Tuple2f a = get(i);
-            Tuple2f b = get(j);
+            v2 a = get(i);
+            v2 b = get(j);
             v.set(b);
             v.subbed(a);
             if (((a.y >= p.y) != (b.y >= p.y)) && (p.x <= v.x * (p.y - a.y) / v.y + a.x)) {
@@ -152,9 +151,9 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
     private double mass() {
         double m = 0;
         for (int i = 0, j = 1; i != count; i = j, j++) {
-            Tuple2f b1 = get(i);
-            Tuple2f b2 = get(j == count ? 0 : j);
-            m += Tuple2f.cross(b1, b2);
+            v2 b1 = get(i);
+            v2 b2 = get(j == count ? 0 : j);
+            m += v2.cross(b1, b2);
         }
         m = Math.abs(m / 2);
         return m;
@@ -163,14 +162,14 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
     /**
      * @return Vrati tazisko polygonu.
      */
-    public Tuple2f centroid() {
-        Tuple2f C = new v2(); 
+    public v2 centroid() {
+        v2 C = new v2();
         double m = 0;
-        Tuple2f g = new v2(); 
+        v2 g = new v2();
         for (int i = 0, j = 1; i != count; i = j, j++) {
-            Tuple2f b1 = get(i);
-            Tuple2f b2 = get(j == count ? 0 : j);
-            float s = Tuple2f.cross(b1, b2);
+            v2 b1 = get(i);
+            v2 b2 = get(j == count ? 0 : j);
+            float s = v2.cross(b1, b2);
             m += s;
             g.set(b1);
             g.added(b2);
@@ -215,7 +214,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
             float maxX = Float.NEGATIVE_INFINITY;
             float maxY = Float.NEGATIVE_INFINITY;
             for (int i = 0; i < count; ++i) {
-                Tuple2f v = get(i);
+                v2 v = get(i);
                 minX = Math.min(v.x, minX);
                 maxX = Math.max(v.x, maxX);
                 minY = Math.min(v.y, minY);
@@ -237,7 +236,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
         }
 
         
-        Tuple2f[] reverseArray = new Tuple2f[count];
+        v2[] reverseArray = new v2[count];
         for (int i = 0; i < count; ++i) {
             reverseArray[i] = get(count - i - 1);
         }
@@ -262,7 +261,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      * Otoci poradie prvkov v poli.
      */
     public void flip() {
-        Tuple2f temp;
+        v2 temp;
         int size = size();
         int n = size() >> 1;
         for (int i = 0; i < n; i++) {
@@ -285,9 +284,9 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      */
     private boolean isConvex() {
         for (int i = 0; i < count; i++) {
-            Tuple2f a = get(i);
-            Tuple2f b = cycleGet(i + 1);
-            Tuple2f c = cycleGet(i + 2);
+            v2 a = get(i);
+            v2 b = cycleGet(i + 1);
+            v2 c = cycleGet(i + 2);
             if (PlatformMathUtils.siteDef(a, b, c) == 1) {
                 return false;
             }
@@ -301,8 +300,8 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
     public boolean isClockwise() {
         double signedArea = 0;
         for (int i = 0; i < size(); ++i) {
-            Tuple2f v1 = get(i);
-            Tuple2f v2 = cycleGet(i + 1);
+            v2 v1 = get(i);
+            v2 v2 = cycleGet(i + 1);
             double v1x = v1.x;
             double v1y = v1.y;
             double v2x = v2.x;
@@ -319,7 +318,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      */
     @Override
     public Polygon clone() {
-        Tuple2f[] newArray = new Tuple2f[count];
+        v2[] newArray = new v2[count];
         int newCount = count;
         System.arraycopy(array, 0, newArray, 0, count);
         return new Polygon(newArray, newCount);
@@ -329,11 +328,11 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      * @return Vrati iterator na vrcholy polygonu
      */
     @Override
-    public Iterator<Tuple2f> iterator() {
+    public Iterator<v2> iterator() {
         return new MyIterator();
     }
 
-    private class MyIterator implements Iterator<Tuple2f> {
+    private class MyIterator implements Iterator<v2> {
         private int index;
 
         MyIterator() {
@@ -350,7 +349,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
         }
 
         @Override
-        public Tuple2f next() {
+        public v2 next() {
             return get(index++);
         }
     }

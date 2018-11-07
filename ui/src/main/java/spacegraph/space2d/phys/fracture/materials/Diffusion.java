@@ -3,7 +3,6 @@ package spacegraph.space2d.phys.fracture.materials;
 import jcog.random.XoRoShiRo128PlusRandom;
 import spacegraph.space2d.phys.common.Transform;
 import spacegraph.space2d.phys.fracture.Material;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import java.util.Random;
@@ -19,7 +18,7 @@ public class Diffusion extends Material {
     private final Random r = new XoRoShiRo128PlusRandom(1);
 
     @Override
-    public Tuple2f[] focee(Tuple2f startPoint, Tuple2f vektor) {
+    public v2[] focee(v2 startPoint, v2 vektor) {
         final int count = 128; 
         double c = 4; 
 
@@ -31,7 +30,7 @@ public class Diffusion extends Material {
         t.c = vektor.y / ln;
         t.s = vektor.x / ln;
 
-        Tuple2f[] va = new Tuple2f[count];
+        v2[] va = new v2[count];
         for (int i = 1; i <= count; i++) {
 
             double a = r.nextFloat() * 2 * Math.PI;
@@ -40,7 +39,7 @@ public class Diffusion extends Material {
             double x = Math.sin(a) * d;
             double y = Math.cos(a) * d * c;
 
-            Tuple2f v = new v2((float) x, (float) y);
+            v2 v = new v2((float) x, (float) y);
 
             va[i - 1] = Transform.mul(t, v);
         }

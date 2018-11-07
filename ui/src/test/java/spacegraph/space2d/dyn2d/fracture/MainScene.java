@@ -35,7 +35,7 @@ public class MainScene implements ICase {
             BodyDef ball = new BodyDef();
             ball.type = BodyType.DYNAMIC;
             ball.position.set(-30.0f, 5.3f); 
-            ball.linearVelocity = new v2(100.0f, 0.0f); 
+            ball.linearVelocity = new v2(100.0f, 0.0f);
             Body2D ballBody = w.addBody(ball);
             CircleShape circleShape = new CircleShape();
             circleShape.radius = 1.0f;

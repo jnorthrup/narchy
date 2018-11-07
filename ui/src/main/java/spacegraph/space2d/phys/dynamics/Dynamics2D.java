@@ -41,6 +41,8 @@ import spacegraph.space2d.phys.collision.shapes.Shape;
 import spacegraph.space2d.phys.common.*;
 import spacegraph.space2d.phys.dynamics.contacts.Contact;
 import spacegraph.space2d.phys.dynamics.contacts.ContactEdge;
+import spacegraph.space2d.phys.dynamics.contacts.Position;
+import spacegraph.space2d.phys.dynamics.contacts.Velocity;
 import spacegraph.space2d.phys.dynamics.joints.Joint;
 import spacegraph.space2d.phys.dynamics.joints.JointDef;
 import spacegraph.space2d.phys.dynamics.joints.JointEdge;
@@ -50,7 +52,6 @@ import spacegraph.space2d.phys.particle.*;
 import spacegraph.space2d.phys.pooling.IWorldPool;
 import spacegraph.space2d.phys.pooling.Vec2Array;
 import spacegraph.space2d.phys.pooling.normal.DefaultWorldPool;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import java.util.Collection;
@@ -86,7 +87,7 @@ public class Dynamics2D {
 
     private int jointCount;
 
-    private final Tuple2f m_gravity = new v2();
+    private final v2 m_gravity = new v2();
     private boolean m_allowSleep;
 
     
@@ -141,7 +142,7 @@ public class Dynamics2D {
      *
      * @param gravity the world gravity vector.
      */
-    public Dynamics2D(Tuple2f gravity) {
+    public Dynamics2D(v2 gravity) {
         this(gravity, new DefaultWorldPool(WORLD_POOL_SIZE, WORLD_POOL_CONTAINER_SIZE));
     }
 
@@ -150,15 +151,15 @@ public class Dynamics2D {
      *
      * @param gravity the world gravity vector.
      */
-    private Dynamics2D(Tuple2f gravity, IWorldPool pool) {
+    private Dynamics2D(v2 gravity, IWorldPool pool) {
         this(gravity, pool, new DynamicTree());
     }
 
-    private Dynamics2D(Tuple2f gravity, IWorldPool pool, BroadPhaseStrategy strategy) {
+    private Dynamics2D(v2 gravity, IWorldPool pool, BroadPhaseStrategy strategy) {
         this(gravity, pool, new DefaultBroadPhaseBuffer(strategy));
     }
 
-    private Dynamics2D(Tuple2f gravity, IWorldPool pool, BroadPhase broadPhase) {
+    private Dynamics2D(v2 gravity, IWorldPool pool, BroadPhase broadPhase) {
 
         this.pool = pool;
 
@@ -663,7 +664,7 @@ public class Dynamics2D {
      * @param point1   the ray starting point
      * @param point2   the ray ending point
      */
-    public void raycast(RayCastCallback callback, Tuple2f point1, Tuple2f point2) {
+    public void raycast(RayCastCallback callback, v2 point1, v2 point2) {
         wrcwrapper.broadPhase = contactManager.broadPhase;
         wrcwrapper.callback = callback;
         input.maxFraction = 1.0f;
@@ -683,7 +684,7 @@ public class Dynamics2D {
      * @param point2           the ray ending point
      */
     public void raycast(RayCastCallback callback, ParticleRaycastCallback particleCallback,
-                        Tuple2f point1, Tuple2f point2) {
+                        v2 point1, v2 point2) {
         wrcwrapper.broadPhase = contactManager.broadPhase;
         wrcwrapper.callback = callback;
         input.maxFraction = 1.0f;
@@ -701,7 +702,7 @@ public class Dynamics2D {
      * @param point1           the ray starting point
      * @param point2           the ray ending point
      */
-    public void raycast(ParticleRaycastCallback particleCallback, Tuple2f point1, Tuple2f point2) {
+    public void raycast(ParticleRaycastCallback particleCallback, v2 point1, v2 point2) {
         particles.raycast(particleCallback, point1, point2);
     }
 
@@ -834,7 +835,7 @@ public class Dynamics2D {
      *
      * @param gravity
      */
-    public void setGravity(Tuple2f gravity) {
+    public void setGravity(v2 gravity) {
         m_gravity.set(gravity);
     }
 
@@ -843,7 +844,7 @@ public class Dynamics2D {
      *
      * @return
      */
-    public Tuple2f getGravity() {
+    public v2 getGravity() {
         return m_gravity;
     }
 
@@ -1351,14 +1352,14 @@ public class Dynamics2D {
     private static final Integer LIQUID_INT = 1234598372;
     private final float liquidLength = .12f;
     private final float averageLinearVel = -1;
-    private final Tuple2f liquidOffset = new v2();
-    private final Tuple2f circCenterMoved = new v2();
+    private final v2 liquidOffset = new v2();
+    private final v2 circCenterMoved = new v2();
     private final Color3f liquidColor = new Color3f(.4f, .4f, 1f);
 
-    private final Tuple2f center = new v2();
-    private final Tuple2f axis = new v2();
-    private final Tuple2f V = new v2();
-    private final Tuple2f W = new v2();
+    private final v2 center = new v2();
+    private final v2 axis = new v2();
+    private final v2 V = new v2();
+    private final v2 W = new v2();
     private final Vec2Array tlvertices = new Vec2Array();
 
 
@@ -1607,11 +1608,11 @@ public class Dynamics2D {
         return particles.getParticleFlagsBuffer();
     }
 
-    public Tuple2f[] getParticlePositionBuffer() {
+    public v2[] getParticlePositionBuffer() {
         return particles.getParticlePositionBuffer();
     }
 
-    public Tuple2f[] getParticleVelocityBuffer() {
+    public v2[] getParticleVelocityBuffer() {
         return particles.getParticleVelocityBuffer();
     }
 
@@ -1637,12 +1638,12 @@ public class Dynamics2D {
         particles.setParticleFlagsBuffer(buffer, capacity);
     }
 
-    public void setParticlePositionBuffer(v2[] buffer, int capacity) {
+    public void setParticlePositionBuffer(Position[] buffer, int capacity) {
         particles.setParticlePositionBuffer(buffer, capacity);
 
     }
 
-    public void setParticleVelocityBuffer(v2[] buffer, int capacity) {
+    public void setParticleVelocityBuffer(Velocity[] buffer, int capacity) {
         particles.setParticleVelocityBuffer(buffer, capacity);
 
     }
@@ -1858,8 +1859,8 @@ class WorldRayCastWrapper implements TreeRayCastCallback {
 
     
     private final RayCastOutput output = new RayCastOutput();
-    private final Tuple2f temp = new v2();
-    private final Tuple2f point = new v2();
+    private final v2 temp = new v2();
+    private final v2 point = new v2();
 
     public float raycastCallback(RayCastInput input, int nodeId) {
         Object userData = broadPhase.get(nodeId);

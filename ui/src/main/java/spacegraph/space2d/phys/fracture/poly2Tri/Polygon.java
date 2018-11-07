@@ -7,7 +7,7 @@ import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import spacegraph.space2d.phys.fracture.poly2Tri.splayTree.BTreeNode;
 import spacegraph.space2d.phys.fracture.poly2Tri.splayTree.SplayTree;
 import spacegraph.space2d.phys.fracture.poly2Tri.splayTree.SplayTreeAction;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -138,7 +138,7 @@ class Polygon {
      * @param numVerticesInContures
      * @param vertices              ---{ CLEAR }---
      */
-    private void initPolygon(int numContours, int[] numVerticesInContours, Tuple2f[] vertices) {
+    private void initPolygon(int numContours, int[] numVerticesInContours, v2[] vertices) {
         int i, j;
         int nextNumber = 1;
 
@@ -191,7 +191,7 @@ class Polygon {
      * @param numVerticesInContures array numVerticesInContures[x] == number of vertices in x. contures, 0-based
      * @param vertices              array of vertices, each item of array contains doubl[2] ~ {x,y}
      */
-    Polygon(int numContures, int[] numVerticesInContures, Tuple2f[] vertices) {
+    Polygon(int numContures, int[] numVerticesInContures, v2[] vertices) {
         Poly2TriUtils.l_id.set(0);
         Poly2TriUtils.p_id.set(0);
         initPolygon(numContures, numVerticesInContures, vertices);

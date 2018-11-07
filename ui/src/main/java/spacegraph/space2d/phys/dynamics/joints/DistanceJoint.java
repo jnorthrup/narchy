@@ -51,14 +51,7 @@ import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
-
-
-
-
-
-
 
 
 /**
@@ -72,8 +65,8 @@ public class DistanceJoint extends Joint {
     private float m_bias;
 
     
-    private final Tuple2f m_localAnchorA;
-    private final Tuple2f m_localAnchorB;
+    private final v2 m_localAnchorA;
+    private final v2 m_localAnchorB;
     private float m_gamma;
     private float m_impulse;
     private float m_length;
@@ -81,11 +74,11 @@ public class DistanceJoint extends Joint {
     
     private int m_indexA;
     private int m_indexB;
-    private final Tuple2f m_u = new v2();
-    private final Tuple2f m_rA = new v2();
-    private final Tuple2f m_rB = new v2();
-    private final Tuple2f m_localCenterA = new v2();
-    private final Tuple2f m_localCenterB = new v2();
+    private final v2 m_u = new v2();
+    private final v2 m_rA = new v2();
+    private final v2 m_rB = new v2();
+    private final v2 m_localCenterA = new v2();
+    private final v2 m_localCenterB = new v2();
     private float m_invMassA;
     private float m_invMassB;
     private float m_invIA;
@@ -129,20 +122,20 @@ public class DistanceJoint extends Joint {
     }
 
     @Override
-    public void getAnchorA(Tuple2f argOut) {
+    public void getAnchorA(v2 argOut) {
         A.getWorldPointToOut(m_localAnchorA, argOut);
     }
 
     @Override
-    public void getAnchorB(Tuple2f argOut) {
+    public void getAnchorB(v2 argOut) {
         B.getWorldPointToOut(m_localAnchorB, argOut);
     }
 
-    public Tuple2f getLocalAnchorA() {
+    public v2 getLocalAnchorA() {
         return m_localAnchorA;
     }
 
-    public Tuple2f getLocalAnchorB() {
+    public v2 getLocalAnchorB() {
         return m_localAnchorB;
     }
 
@@ -150,7 +143,7 @@ public class DistanceJoint extends Joint {
      * Get the reaction force given the inverse time step. Unit is N.
      */
     @Override
-    public void getReactionForce(float inv_dt, Tuple2f argOut) {
+    public void getReactionForce(float inv_dt, v2 argOut) {
         argOut.x = m_impulse * m_u.x * inv_dt;
         argOut.y = m_impulse * m_u.y * inv_dt;
     }
@@ -176,14 +169,14 @@ public class DistanceJoint extends Joint {
         m_invIA = A.m_invI;
         m_invIB = B.m_invI;
 
-        Tuple2f cA = data.positions[m_indexA];
+        v2 cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;
-        Tuple2f vA = data.velocities[m_indexA];
+        v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
 
-        Tuple2f cB = data.positions[m_indexB];
+        v2 cB = data.positions[m_indexB];
         float aB = data.positions[m_indexB].a;
-        Tuple2f vB = data.velocities[m_indexB];
+        v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         final Rot qA = pool.popRot();
@@ -209,8 +202,8 @@ public class DistanceJoint extends Joint {
         }
 
 
-        float crAu = Tuple2f.cross(m_rA, m_u);
-        float crBu = Tuple2f.cross(m_rB, m_u);
+        float crAu = v2.cross(m_rA, m_u);
+        float crBu = v2.cross(m_rB, m_u);
         float invMass = m_invMassA + m_invIA * crAu * crAu + m_invMassB + m_invIB * crBu * crBu;
 
         
@@ -245,16 +238,16 @@ public class DistanceJoint extends Joint {
             
             m_impulse *= data.step.dtRatio;
 
-            Tuple2f P = pool.popVec2();
+            v2 P = pool.popVec2();
             P.set(m_u).scaled(m_impulse);
 
             vA.x -= m_invMassA * P.x;
             vA.y -= m_invMassA * P.y;
-            wA -= m_invIA * Tuple2f.cross(m_rA, P);
+            wA -= m_invIA * v2.cross(m_rA, P);
 
             vB.x += m_invMassB * P.x;
             vB.y += m_invMassB * P.y;
-            wB += m_invIB * Tuple2f.cross(m_rB, P);
+            wB += m_invIB * v2.cross(m_rB, P);
 
             pool.pushVec2(1);
         } else {
@@ -268,20 +261,20 @@ public class DistanceJoint extends Joint {
 
     @Override
     public void solveVelocityConstraints(final SolverData data) {
-        Tuple2f vA = data.velocities[m_indexA];
+        v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
-        Tuple2f vB = data.velocities[m_indexB];
+        v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
-        final Tuple2f vpA = pool.popVec2();
-        final Tuple2f vpB = pool.popVec2();
+        final v2 vpA = pool.popVec2();
+        final v2 vpB = pool.popVec2();
 
         
-        Tuple2f.crossToOutUnsafe(wA, m_rA, vpA);
+        v2.crossToOutUnsafe(wA, m_rA, vpA);
         vpA.added(vA);
-        Tuple2f.crossToOutUnsafe(wB, m_rB, vpB);
+        v2.crossToOutUnsafe(wB, m_rB, vpB);
         vpB.added(vB);
-        float Cdot = Tuple2f.dot(m_u, vpB.subbed(vpA));
+        float Cdot = v2.dot(m_u, vpB.subbed(vpA));
 
         float impulse = -m_mass * (Cdot + m_bias + m_gamma * m_impulse);
         m_impulse += impulse;
@@ -312,13 +305,13 @@ public class DistanceJoint extends Joint {
         }
         final Rot qA = pool.popRot();
         final Rot qB = pool.popRot();
-        final Tuple2f rA = pool.popVec2();
-        final Tuple2f rB = pool.popVec2();
-        final Tuple2f u = pool.popVec2();
+        final v2 rA = pool.popVec2();
+        final v2 rB = pool.popVec2();
+        final v2 u = pool.popVec2();
 
-        Tuple2f cA = data.positions[m_indexA];
+        v2 cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;
-        Tuple2f cB = data.positions[m_indexB];
+        v2 cB = data.positions[m_indexB];
         float aB = data.positions[m_indexB].a;
 
         qA.set(aA);

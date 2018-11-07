@@ -70,7 +70,7 @@ abstract public class Container extends Surface {
     /**
      * paints the component above the background drawn ahead of this
      */
-    protected void paintIt(GL2 gl) {
+    protected void paintIt(GL2 gl, SurfaceRender r) {
 
     }
 
@@ -93,9 +93,8 @@ abstract public class Container extends Surface {
     @Override
     protected final void paint(GL2 gl, SurfaceRender r) {
 
-
-
         doPaint(gl, r);
+
     }
 
 
@@ -103,21 +102,13 @@ abstract public class Container extends Surface {
 
         paintBelow(gl, r);
 
-        paintIt(gl);
-
-        paintChildren(gl, r);
+        paintIt(gl, r);
 
         paintAbove(gl, r);
+
     }
 
-    public void paintChildren(GL2 gl, SurfaceRender r) {
-        forEach(c -> {
-            if (c.parent==Container.this) {
-                c.render(gl, r);
-            }
-            //else throw new NullPointerException(c + " is unparented child of " + Container.this);
-        });
-    }
+
 
     protected boolean prePaint(SurfaceRender r) {
         return true;

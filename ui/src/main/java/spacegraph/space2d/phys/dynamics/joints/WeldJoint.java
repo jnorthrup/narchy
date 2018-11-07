@@ -32,21 +32,7 @@ import spacegraph.space2d.phys.common.*;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /**
@@ -62,8 +48,8 @@ public class WeldJoint extends Joint {
     private float m_bias;
 
     
-    private final Tuple2f m_localAnchorA;
-    private final Tuple2f m_localAnchorB;
+    private final v2 m_localAnchorA;
+    private final v2 m_localAnchorB;
     private final float m_referenceAngle;
     private float m_gamma;
     private final Vec3 m_impulse;
@@ -72,10 +58,10 @@ public class WeldJoint extends Joint {
     
     private int m_indexA;
     private int m_indexB;
-    private final Tuple2f m_rA = new v2();
-    private final Tuple2f m_rB = new v2();
-    private final Tuple2f m_localCenterA = new v2();
-    private final Tuple2f m_localCenterB = new v2();
+    private final v2 m_rA = new v2();
+    private final v2 m_rB = new v2();
+    private final v2 m_localCenterA = new v2();
+    private final v2 m_localCenterB = new v2();
     private float m_invMassA;
     private float m_invMassB;
     private float m_invIA;
@@ -102,11 +88,11 @@ public class WeldJoint extends Joint {
         return m_referenceAngle;
     }
 
-    public Tuple2f getLocalAnchorA() {
+    public v2 getLocalAnchorA() {
         return m_localAnchorA;
     }
 
-    public Tuple2f getLocalAnchorB() {
+    public v2 getLocalAnchorB() {
         return m_localAnchorB;
     }
 
@@ -127,17 +113,17 @@ public class WeldJoint extends Joint {
     }
 
     @Override
-    public void getAnchorA(Tuple2f argOut) {
+    public void getAnchorA(v2 argOut) {
         A.getWorldPointToOut(m_localAnchorA, argOut);
     }
 
     @Override
-    public void getAnchorB(Tuple2f argOut) {
+    public void getAnchorB(v2 argOut) {
         B.getWorldPointToOut(m_localAnchorB, argOut);
     }
 
     @Override
-    public void getReactionForce(float inv_dt, Tuple2f argOut) {
+    public void getReactionForce(float inv_dt, v2 argOut) {
         argOut.set(m_impulse.x, m_impulse.y);
         argOut.scaled(inv_dt);
     }
@@ -160,17 +146,17 @@ public class WeldJoint extends Joint {
 
         
         float aA = data.positions[m_indexA].a;
-        Tuple2f vA = data.velocities[m_indexA];
+        v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
 
         
         float aB = data.positions[m_indexB].a;
-        Tuple2f vB = data.velocities[m_indexB];
+        v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         final Rot qA = pool.popRot();
         final Rot qB = pool.popRot();
-        final Tuple2f temp = pool.popVec2();
+        final v2 temp = pool.popVec2();
 
         qA.set(aA);
         qB.set(aB);
@@ -235,7 +221,7 @@ public class WeldJoint extends Joint {
         }
 
         if (data.step.warmStarting) {
-            final Tuple2f P = pool.popVec2();
+            final v2 P = pool.popVec2();
             
             m_impulse.mulLocal(data.step.dtRatio);
 
@@ -243,11 +229,11 @@ public class WeldJoint extends Joint {
 
             vA.x -= mA * P.x;
             vA.y -= mA * P.y;
-            wA -= iA * (Tuple2f.cross(m_rA, P) + m_impulse.z);
+            wA -= iA * (v2.cross(m_rA, P) + m_impulse.z);
 
             vB.x += mB * P.x;
             vB.y += mB * P.y;
-            wB += iB * (Tuple2f.cross(m_rB, P) + m_impulse.z);
+            wB += iB * (v2.cross(m_rB, P) + m_impulse.z);
             pool.pushVec2(1);
         } else {
             m_impulse.setZero();
@@ -265,17 +251,17 @@ public class WeldJoint extends Joint {
 
     @Override
     public void solveVelocityConstraints(final SolverData data) {
-        Tuple2f vA = data.velocities[m_indexA];
+        v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
-        Tuple2f vB = data.velocities[m_indexB];
+        v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         float mA = m_invMassA, mB = m_invMassB;
         float iA = m_invIA, iB = m_invIB;
 
-        final Tuple2f Cdot1 = pool.popVec2();
-        final Tuple2f P = pool.popVec2();
-        final Tuple2f temp = pool.popVec2();
+        final v2 Cdot1 = pool.popVec2();
+        final v2 P = pool.popVec2();
+        final v2 temp = pool.popVec2();
         if (m_frequencyHz > 0.0f) {
             float Cdot2 = wB - wA;
 
@@ -285,11 +271,11 @@ public class WeldJoint extends Joint {
             wA -= iA * impulse2;
             wB += iB * impulse2;
 
-            Tuple2f.crossToOutUnsafe(wB, m_rB, Cdot1);
-            Tuple2f.crossToOutUnsafe(wA, m_rA, temp);
+            v2.crossToOutUnsafe(wB, m_rB, Cdot1);
+            v2.crossToOutUnsafe(wA, m_rA, temp);
             Cdot1.added(vB).subbed(vA).subbed(temp);
 
-            final Tuple2f impulse1 = P;
+            final v2 impulse1 = P;
             Mat33.mul22ToOutUnsafe(m_mass, Cdot1, impulse1);
             impulse1.negated();
 
@@ -298,14 +284,14 @@ public class WeldJoint extends Joint {
 
             vA.x -= mA * P.x;
             vA.y -= mA * P.y;
-            wA -= iA * Tuple2f.cross(m_rA, P);
+            wA -= iA * v2.cross(m_rA, P);
 
             vB.x += mB * P.x;
             vB.y += mB * P.y;
-            wB += iB * Tuple2f.cross(m_rB, P);
+            wB += iB * v2.cross(m_rB, P);
         } else {
-            Tuple2f.crossToOutUnsafe(wA, m_rA, temp);
-            Tuple2f.crossToOutUnsafe(wB, m_rB, Cdot1);
+            v2.crossToOutUnsafe(wA, m_rA, temp);
+            v2.crossToOutUnsafe(wB, m_rB, Cdot1);
             Cdot1.added(vB).subbed(vA).subbed(temp);
             float Cdot2 = wB - wA;
 
@@ -321,11 +307,11 @@ public class WeldJoint extends Joint {
 
             vA.x -= mA * P.x;
             vA.y -= mA * P.y;
-            wA -= iA * (Tuple2f.cross(m_rA, P) + impulse.z);
+            wA -= iA * (v2.cross(m_rA, P) + impulse.z);
 
             vB.x += mB * P.x;
             vB.y += mB * P.y;
-            wB += iB * (Tuple2f.cross(m_rB, P) + impulse.z);
+            wB += iB * (v2.cross(m_rB, P) + impulse.z);
 
             pool.pushVec3(2);
         }
@@ -340,15 +326,15 @@ public class WeldJoint extends Joint {
 
     @Override
     public boolean solvePositionConstraints(final SolverData data) {
-        Tuple2f cA = data.positions[m_indexA];
+        v2 cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;
-        Tuple2f cB = data.positions[m_indexB];
+        v2 cB = data.positions[m_indexB];
         float aB = data.positions[m_indexB].a;
         final Rot qA = pool.popRot();
         final Rot qB = pool.popRot();
-        final Tuple2f temp = pool.popVec2();
-        final Tuple2f rA = pool.popVec2();
-        final Tuple2f rB = pool.popVec2();
+        final v2 temp = pool.popVec2();
+        final v2 rA = pool.popVec2();
+        final v2 rB = pool.popVec2();
 
         qA.set(aA);
         qB.set(aB);
@@ -361,8 +347,8 @@ public class WeldJoint extends Joint {
         float positionError, angularError;
 
         final Mat33 K = pool.popMat33();
-        final Tuple2f C1 = pool.popVec2();
-        final Tuple2f P = pool.popVec2();
+        final v2 C1 = pool.popVec2();
+        final v2 P = pool.popVec2();
 
         K.ex.x = mA + mB + rA.y * rA.y * iA + rB.y * rB.y * iB;
         K.ey.x = -rA.y * rA.x * iA - rB.y * rB.x * iB;
@@ -384,11 +370,11 @@ public class WeldJoint extends Joint {
 
             cA.x -= mA * P.x;
             cA.y -= mA * P.y;
-            aA -= iA * Tuple2f.cross(rA, P);
+            aA -= iA * v2.cross(rA, P);
 
             cB.x += mB * P.x;
             cB.y += mB * P.y;
-            aB += iB * Tuple2f.cross(rB, P);
+            aB += iB * v2.cross(rB, P);
         } else {
             C1.set(cB).added(rB).subbed(cA).subbed(rA);
             float C2 = aB - aA - m_referenceAngle;
@@ -406,11 +392,11 @@ public class WeldJoint extends Joint {
 
             cA.x -= mA * P.x;
             cA.y -= mA * P.y;
-            aA -= iA * (Tuple2f.cross(rA, P) + impulse.z);
+            aA -= iA * (v2.cross(rA, P) + impulse.z);
 
             cB.x += mB * P.x;
             cB.y += mB * P.y;
-            aB += iB * (Tuple2f.cross(rB, P) + impulse.z);
+            aB += iB * (v2.cross(rB, P) + impulse.z);
             pool.pushVec3(2);
         }
 

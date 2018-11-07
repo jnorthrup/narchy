@@ -30,7 +30,7 @@ package spacegraph.space2d.phys.dynamics.joints;
 
 import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.Body2D;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * Friction joint definition.
@@ -43,12 +43,12 @@ class FrictionJointDef extends JointDef {
     /**
      * The local anchor point relative to bodyA's origin.
      */
-    public final Tuple2f localAnchorA;
+    public final v2 localAnchorA;
 
     /**
      * The local anchor point relative to bodyB's origin.
      */
-    public final Tuple2f localAnchorB;
+    public final v2 localAnchorB;
 
     /**
      * The maximum friction force in N.
@@ -72,7 +72,7 @@ class FrictionJointDef extends JointDef {
      * Initialize the bodies, anchors, axis, and reference angle using the world anchor and world
      * axis.
      */
-    public void initialize(Body2D bA, Body2D bB, Tuple2f anchor) {
+    public void initialize(Body2D bA, Body2D bB, v2 anchor) {
         bodyA = bA;
         bodyB = bB;
         bA.getLocalPointToOut(anchor, localAnchorA);

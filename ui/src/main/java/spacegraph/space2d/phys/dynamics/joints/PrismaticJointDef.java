@@ -25,7 +25,6 @@ package spacegraph.space2d.phys.dynamics.joints;
 
 import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.Body2D;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -44,17 +43,17 @@ class PrismaticJointDef extends JointDef {
     /**
      * The local anchor point relative to body1's origin.
      */
-    public final Tuple2f localAnchorA;
+    public final v2 localAnchorA;
 
     /**
      * The local anchor point relative to body2's origin.
      */
-    public final Tuple2f localAnchorB;
+    public final v2 localAnchorB;
 
     /**
      * The local translation axis in body1.
      */
-    public final Tuple2f localAxisA;
+    public final v2 localAxisA;
 
     /**
      * The constrained angle between the bodies: body2_angle - body1_angle.
@@ -110,7 +109,7 @@ class PrismaticJointDef extends JointDef {
      * Initialize the bodies, anchors, axis, and reference angle using the world anchor and world
      * axis.
      */
-    public void initialize(Body2D b1, Body2D b2, Tuple2f anchor, Tuple2f axis) {
+    public void initialize(Body2D b1, Body2D b2, v2 anchor, v2 axis) {
         bodyA = b1;
         bodyB = b2;
         bodyA.getLocalPointToOut(anchor, localAnchorA);

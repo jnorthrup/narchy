@@ -23,7 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.common;
 
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * Orientated bounding box viewport transform
@@ -34,8 +34,8 @@ public class OBBViewportTransform implements IViewportTransform {
 
     protected static class OBB {
         final Mat22 R = new Mat22();
-        final Tuple2f center = new Vec2();
-        final Tuple2f extents = new Vec2();
+        final v2 center = new Vec2();
+        final v2 extents = new Vec2();
     }
 
     private final OBB box = new OBB();
@@ -58,7 +58,7 @@ public class OBBViewportTransform implements IViewportTransform {
         Mat22.createScaleTransform(scale, box.R);
     }
 
-    public Tuple2f getExtents() {
+    public v2 getExtents() {
         return box.extents;
     }
 
@@ -67,7 +67,7 @@ public class OBBViewportTransform implements IViewportTransform {
         return box.R;
     }
 
-    public void setExtents(Tuple2f argExtents) {
+    public void setExtents(v2 argExtents) {
         box.extents.set(argExtents);
     }
 
@@ -75,11 +75,11 @@ public class OBBViewportTransform implements IViewportTransform {
         box.extents.set(halfWidth, halfHeight);
     }
 
-    public Tuple2f getCenter() {
+    public v2 getCenter() {
         return box.center;
     }
 
-    public void setCenter(Tuple2f argPos) {
+    public void setCenter(v2 argPos) {
         box.center.set(argPos);
     }
 
@@ -119,7 +119,7 @@ public class OBBViewportTransform implements IViewportTransform {
 
     private final Mat22 inv = new Mat22();
 
-    public void getScreenVectorToWorld(Tuple2f screen, Tuple2f world) {
+    public void getScreenVectorToWorld(v2 screen, v2 world) {
         box.R.invertToOut(inv);
         inv.mulToOut(screen, world);
         if (yFlip) {
@@ -127,14 +127,14 @@ public class OBBViewportTransform implements IViewportTransform {
         }
     }
 
-    public void getWorldVectorToScreen(Tuple2f world, Tuple2f screen) {
+    public void getWorldVectorToScreen(v2 world, v2 screen) {
         box.R.mulToOut(world, screen);
         if (yFlip) {
             yFlipMat.mulToOut(screen, screen);
         }
     }
 
-    public void getWorldToScreen(Tuple2f world, Tuple2f screen) {
+    public void getWorldToScreen(v2 world, v2 screen) {
         screen.x = world.x - box.center.x;
         screen.y = world.y - box.center.y;
         box.R.mulToOut(screen, screen);
@@ -147,7 +147,7 @@ public class OBBViewportTransform implements IViewportTransform {
 
     private final Mat22 inv2 = new Mat22();
 
-    public void getScreenToWorld(Tuple2f screen, Tuple2f world) {
+    public void getScreenToWorld(v2 screen, v2 world) {
         world.x = screen.x - box.extents.x;
         world.y = screen.y - box.extents.y;
         if (yFlip) {

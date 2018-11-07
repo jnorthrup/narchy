@@ -23,7 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.common;
 
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * Represents a rotation
@@ -75,11 +75,11 @@ public class Rot  {
         return (float) Math.atan2(s, c);
     }
 
-    public void getXAxis(Tuple2f xAxis) {
+    public void getXAxis(v2 xAxis) {
         xAxis.set(c, s);
     }
 
-    public void getYAxis(Tuple2f yAxis) {
+    public void getYAxis(v2 yAxis) {
         yAxis.set(-s, c);
     }
 
@@ -123,24 +123,24 @@ public class Rot  {
         out.c = q.c * r.c + q.s * r.s;
     }
 
-    public static void mulToOut(Rot q, Tuple2f v, Tuple2f out) {
+    public static void mulToOut(Rot q, v2 v, v2 out) {
         float tempy = q.s * v.x + q.c * v.y;
         out.x = q.c * v.x - q.s * v.y;
         out.y = tempy;
     }
 
-    public static void mulToOutUnsafe(Rot q, Tuple2f v, Tuple2f out) {
+    public static void mulToOutUnsafe(Rot q, v2 v, v2 out) {
         out.x = q.c * v.x - q.s * v.y;
         out.y = q.s * v.x + q.c * v.y;
     }
 
-    public static void mulTrans(Rot q, Tuple2f v, Tuple2f out) {
+    public static void mulTrans(Rot q, v2 v, v2 out) {
         final float tempy = -q.s * v.x + q.c * v.y;
         out.x = q.c * v.x + q.s * v.y;
         out.y = tempy;
     }
 
-    public static void mulTransUnsafe(Rot q, Tuple2f v, Tuple2f out) {
+    public static void mulTransUnsafe(Rot q, v2 v, v2 out) {
         out.x = q.c * v.x + q.s * v.y;
         out.y = -q.s * v.x + q.c * v.y;
     }

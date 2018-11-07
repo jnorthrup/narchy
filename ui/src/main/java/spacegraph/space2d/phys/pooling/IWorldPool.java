@@ -32,7 +32,7 @@ import spacegraph.space2d.phys.common.Mat33;
 import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Vec3;
 import spacegraph.space2d.phys.dynamics.contacts.Contact;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * World pool interface
@@ -55,9 +55,9 @@ public interface IWorldPool {
 
     IDynamicStack<Contact> getChainPolyContactStack();
 
-    Tuple2f popVec2();
+    v2 popVec2();
 
-    Tuple2f[] popVec2(int num);
+    v2[] popVec2(int num);
 
     void pushVec2(int num);
 
@@ -97,5 +97,5 @@ public interface IWorldPool {
 
     int[] getIntArray(int argLength);
 
-    Tuple2f[] getVec2Array(int argLength);
+    v2[] getVec2Array(int argLength);
 }

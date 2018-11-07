@@ -216,7 +216,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
     }
 
     @Override
-    protected void paintIt(GL2 ggl) {
+    protected void paintIt(GL2 ggl, SurfaceRender r) {
 
 
     }

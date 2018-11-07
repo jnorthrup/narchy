@@ -27,7 +27,6 @@ import spacegraph.space2d.phys.collision.Distance.DistanceProxy;
 import spacegraph.space2d.phys.collision.Distance.SimplexCache;
 import spacegraph.space2d.phys.common.*;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -307,22 +306,22 @@ class SeparationFunction {
     private DistanceProxy m_proxyA;
     private DistanceProxy m_proxyB;
     private Type m_type;
-    private final Tuple2f m_localPoint = new v2();
+    private final v2 m_localPoint = new v2();
     private final v2 m_axis = new v2();
     private Sweep m_sweepA;
     private Sweep m_sweepB;
 
     
-    private final Tuple2f localPointA = new v2();
-    private final Tuple2f localPointB = new v2();
+    private final v2 localPointA = new v2();
+    private final v2 localPointB = new v2();
     private final v2 pointA = new v2();
     private final v2 pointB = new v2();
-    private final Tuple2f localPointA1 = new v2();
-    private final Tuple2f localPointA2 = new v2();
+    private final v2 localPointA1 = new v2();
+    private final v2 localPointA2 = new v2();
     private final v2 normal = new v2();
-    private final Tuple2f localPointB1 = new v2();
-    private final Tuple2f localPointB2 = new v2();
-    private final Tuple2f temp = new v2();
+    private final v2 localPointB1 = new v2();
+    private final v2 localPointB2 = new v2();
+    private final v2 temp = new v2();
     private final Transform xfa = new Transform();
     private final Transform xfb = new Transform();
 
@@ -367,7 +366,7 @@ class SeparationFunction {
             localPointB2.set(m_proxyB.vertex(cache.indexB[1]));
 
             temp.set(localPointB2).subbed(localPointB1);
-            Tuple2f.crossToOutUnsafe(temp, 1f, m_axis);
+            v2.crossToOutUnsafe(temp, 1f, m_axis);
             m_axis.normalize();
 
             Rot.mulToOutUnsafe(xfb, m_axis, normal);
@@ -379,7 +378,7 @@ class SeparationFunction {
             Transform.mulToOutUnsafe(xfa, localPointA, pointA);
 
             temp.set(pointA).subbed(pointB);
-            float s = Tuple2f.dot(temp, normal);
+            float s = v2.dot(temp, normal);
             if (s < 0.0f) {
                 m_axis.negated();
                 s = -s;
@@ -393,7 +392,7 @@ class SeparationFunction {
             localPointA2.set(m_proxyA.vertex(cache.indexA[1]));
 
             temp.set(localPointA2).subbed(localPointA1);
-            Tuple2f.crossToOutUnsafe(temp, 1.0f, m_axis);
+            v2.crossToOutUnsafe(temp, 1.0f, m_axis);
             m_axis.normalize();
 
             Rot.mulToOutUnsafe(xfa, m_axis, normal);
@@ -405,7 +404,7 @@ class SeparationFunction {
             Transform.mulToOutUnsafe(xfb, localPointB, pointB);
 
             temp.set(pointB).subbed(pointA);
-            float s = Tuple2f.dot(temp, normal);
+            float s = v2.dot(temp, normal);
             if (s < 0.0f) {
                 m_axis.negated();
                 s = -s;
@@ -414,8 +413,8 @@ class SeparationFunction {
         }
     }
 
-    private final Tuple2f axisA = new v2();
-    private final Tuple2f axisB = new v2();
+    private final v2 axisA = new v2();
+    private final v2 axisB = new v2();
 
     
     public float findMinSeparation(int[] indexes, float t) {
@@ -438,7 +437,7 @@ class SeparationFunction {
                 Transform.mulToOutUnsafe(xfa, localPointA, pointA);
                 Transform.mulToOutUnsafe(xfb, localPointB, pointB);
 
-                float separation = Tuple2f.dot(pointB.subbed(pointA), m_axis);
+                float separation = v2.dot(pointB.subbed(pointA), m_axis);
                 return separation;
             }
             case FACE_A: {
@@ -454,7 +453,7 @@ class SeparationFunction {
                 localPointB.set(m_proxyB.vertex(indexes[1]));
                 Transform.mulToOutUnsafe(xfb, localPointB, pointB);
 
-                float separation = Tuple2f.dot(pointB.subbed(pointA), normal);
+                float separation = v2.dot(pointB.subbed(pointA), normal);
                 return separation;
             }
             case FACE_B: {
@@ -470,7 +469,7 @@ class SeparationFunction {
                 localPointA.set(m_proxyA.vertex(indexes[0]));
                 Transform.mulToOutUnsafe(xfa, localPointA, pointA);
 
-                float separation = Tuple2f.dot(pointA.subbed(pointB), normal);
+                float separation = v2.dot(pointA.subbed(pointB), normal);
                 return separation;
             }
             default:
@@ -497,7 +496,7 @@ class SeparationFunction {
                 Transform.mulToOutUnsafe(xfa, localPointA, pointA);
                 Transform.mulToOutUnsafe(xfb, localPointB, pointB);
 
-                float separation = Tuple2f.dot(pointB.subbed(pointA), m_axis);
+                float separation = v2.dot(pointB.subbed(pointA), m_axis);
                 return separation;
             }
             case FACE_A: {
@@ -509,7 +508,7 @@ class SeparationFunction {
 
                 localPointB.set(m_proxyB.vertex(indexB));
                 Transform.mulToOutUnsafe(xfb, localPointB, pointB);
-                float separation = Tuple2f.dot(pointB.subbed(pointA), normal);
+                float separation = v2.dot(pointB.subbed(pointA), normal);
                 return separation;
             }
             case FACE_B: {
@@ -522,7 +521,7 @@ class SeparationFunction {
                 localPointA.set(m_proxyA.vertex(indexA));
                 Transform.mulToOutUnsafe(xfa, localPointA, pointA);
 
-                float separation = Tuple2f.dot(pointA.subbed(pointB), normal);
+                float separation = v2.dot(pointA.subbed(pointB), normal);
                 return separation;
             }
             default:

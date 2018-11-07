@@ -38,7 +38,6 @@ import spacegraph.space2d.phys.dynamics.contacts.ContactEdge;
 import spacegraph.space2d.phys.dynamics.joints.JointEdge;
 import spacegraph.space2d.phys.fracture.Polygon;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -90,7 +89,7 @@ public class Body2D extends Transform {
      */
     public float velAngular = 0;
 
-    public final Tuple2f force = new v2();
+    public final v2 force = new v2();
     public float torque = 0;
 
     public final Dynamics2D W;
@@ -389,7 +388,7 @@ public class Body2D extends Transform {
 
     }
 
-    public final boolean setTransform(Tuple2f position, float angle) {
+    public final boolean setTransform(v2 position, float angle) {
         return setTransform(position, angle, Settings.EPSILON);
     }
 
@@ -401,7 +400,7 @@ public class Body2D extends Transform {
      * @param position the world position of the body's local origin.
      * @param angle    the world rotation in radians.
      */
-    protected final boolean setTransform(Tuple2f position, float angle, float epsilon) {
+    protected final boolean setTransform(v2 position, float angle, float epsilon) {
 
         if (getPosition().equals(position, epsilon) && Util.equals(angle, getAngle(), epsilon))
             return false;
@@ -426,7 +425,7 @@ public class Body2D extends Transform {
         return true;
     }
 
-    private void setTransformStatic(Tuple2f position, float angle) {
+    private void setTransformStatic(v2 position, float angle) {
 
     }
 
@@ -435,7 +434,7 @@ public class Body2D extends Transform {
      *
      * @return the world position of the body's origin.
      */
-    public final Tuple2f getPosition() {
+    public final v2 getPosition() {
         return pos;
     }
 
@@ -451,14 +450,14 @@ public class Body2D extends Transform {
     /**
      * Get the world position of the center of mass. Do not modify.
      */
-    public final Tuple2f getWorldCenter() {
+    public final v2 getWorldCenter() {
         return sweep.c;
     }
 
     /**
      * Get the local position of the center of mass. Do not modify.
      */
-    public final Tuple2f getLocalCenter() {
+    public final v2 getLocalCenter() {
         return sweep.localCenter;
     }
 
@@ -467,12 +466,12 @@ public class Body2D extends Transform {
      *
      * @param v the new linear velocity of the center of mass.
      */
-    public final void setLinearVelocity(Tuple2f v) {
+    public final void setLinearVelocity(v2 v) {
         if (type == STATIC) {
             return;
         }
 
-        if (Tuple2f.dot(v, v) > 0.0f) {
+        if (v2.dot(v, v) > 0.0f) {
             setAwake(true);
         }
 
@@ -481,7 +480,7 @@ public class Body2D extends Transform {
 
     /**
      * Get the linear velocity of the center of mass. Do not modify, instead use
-     * {@link #setLinearVelocity(Tuple2f)}.
+     * {@link #setLinearVelocity(v2)}.
      *
      * @return the linear velocity of the center of mass.
      */
@@ -540,7 +539,7 @@ public class Body2D extends Transform {
      * @param force the world force vector, usually in Newtons (N).
      * @param point the world position of the point of application.
      */
-    public final void applyForce(Tuple2f force, Tuple2f point) {
+    public final void applyForce(v2 force, v2 point) {
         if (type != DYNAMIC) {
             return;
         }
@@ -561,7 +560,7 @@ public class Body2D extends Transform {
      *
      * @param force the world force vector, usually in Newtons (N).
      */
-    public final void applyForceToCenter(Tuple2f force) {
+    public final void applyForceToCenter(v2 force) {
         if (type != DYNAMIC) {
             return;
         }
@@ -602,7 +601,7 @@ public class Body2D extends Transform {
      * @param point   the world position of the point of application.
      * @param wake    also wake up the body
      */
-    public final void applyLinearImpulse(Tuple2f impulse, Tuple2f point, boolean wake) {
+    public final void applyLinearImpulse(v2 impulse, v2 point, boolean wake) {
         if (type != DYNAMIC) {
             return;
         }
@@ -703,12 +702,12 @@ public class Body2D extends Transform {
         m_invMass = 1.0f / mass;
 
         if (massData.I > 0.0f && (flags & e_fixedRotationFlag) == 0) {
-            m_I = massData.I - mass * Tuple2f.dot(massData.center, massData.center);
+            m_I = massData.I - mass * v2.dot(massData.center, massData.center);
             assert (m_I > 0.0f);
             m_invI = 1.0f / m_I;
         }
 
-        final Tuple2f oldCenter = W.pool.popVec2();
+        final v2 oldCenter = W.pool.popVec2();
 
         oldCenter.set(sweep.c);
         sweep.localCenter.set(massData.center);
@@ -717,9 +716,9 @@ public class Body2D extends Transform {
         sweep.c.set(sweep.c0);
 
 
-        final Tuple2f temp = W.pool.popVec2();
+        final v2 temp = W.pool.popVec2();
         temp.set(sweep.c).subbed(oldCenter);
-        Tuple2f.crossToOut(velAngular, temp, temp);
+        v2.crossToOut(velAngular, temp, temp);
         vel.added(temp);
 
         W.pool.pushVec2(2);
@@ -761,9 +760,9 @@ public class Body2D extends Transform {
         assert (type == DYNAMIC);
 
 
-        final Tuple2f localCenter = W.pool.popVec2();
+        final v2 localCenter = W.pool.popVec2();
         localCenter.set(0, 0);
-        final Tuple2f temp = W.pool.popVec2();
+        final v2 temp = W.pool.popVec2();
         for (Fixture f = fixtures; f != null; f = f.next) {
             if (f.density == 0.0f) {
                 continue;
@@ -788,7 +787,7 @@ public class Body2D extends Transform {
 
         if (m_I > 0.0f && (flags & e_fixedRotationFlag) == 0) {
 
-            m_I -= mass * Tuple2f.dot(localCenter, localCenter);
+            m_I -= mass * v2.dot(localCenter, localCenter);
             assert (m_I > 0.0f);
             m_invI = 1.0f / m_I;
         } else {
@@ -796,7 +795,7 @@ public class Body2D extends Transform {
             m_invI = 0.0f;
         }
 
-        Tuple2f oldCenter = W.pool.popVec2();
+        v2 oldCenter = W.pool.popVec2();
 
         oldCenter.set(sweep.c);
         sweep.localCenter.set(localCenter);
@@ -807,8 +806,8 @@ public class Body2D extends Transform {
 
         temp.set(sweep.c).subbed(oldCenter);
 
-        final Tuple2f temp2 = oldCenter;
-        Tuple2f.crossToOutUnsafe(velAngular, temp, temp2);
+        final v2 temp2 = oldCenter;
+        v2.crossToOutUnsafe(velAngular, temp, temp2);
         vel.added(temp2);
 
         W.pool.pushVec2(3);
@@ -820,17 +819,17 @@ public class Body2D extends Transform {
      * @param localPoint a point on the body measured relative the the body's origin.
      * @return the same point expressed in world coordinates.
      */
-    public final v2 getWorldPoint(Tuple2f localPoint) {
+    public final v2 getWorldPoint(v2 localPoint) {
         v2 v = new v2();
         getWorldPointToOut(localPoint, v);
         return v;
     }
 
-    public final void getWorldPointToOut(Tuple2f localPoint, Tuple2f out) {
+    public final void getWorldPointToOut(v2 localPoint, v2 out) {
         Transform.mulToOutUnsafe(this, localPoint, out);
     }
 
-    public final void getWorldPointToOut(Tuple2f localPoint, float preScale, Tuple2f out) {
+    public final void getWorldPointToOut(v2 localPoint, float preScale, v2 out) {
         Transform.mulToOutUnsafe(this, localPoint, preScale, out);
     }
 
@@ -840,17 +839,17 @@ public class Body2D extends Transform {
      * @param localVector a vector fixed in the body.
      * @return the same vector expressed in world coordinates.
      */
-    public final v2 getWorldVector(Tuple2f localVector) {
+    public final v2 getWorldVector(v2 localVector) {
         v2 out = new v2();
         getWorldVectorToOut(localVector, out);
         return out;
     }
 
-    public final void getWorldVectorToOut(Tuple2f localVector, Tuple2f out) {
+    public final void getWorldVectorToOut(v2 localVector, v2 out) {
         Rot.mulToOut(this, localVector, out);
     }
 
-    public final void getWorldVectorToOutUnsafe(Tuple2f localVector, Tuple2f out) {
+    public final void getWorldVectorToOutUnsafe(v2 localVector, v2 out) {
         Rot.mulToOutUnsafe(this, localVector, out);
     }
 
@@ -860,13 +859,13 @@ public class Body2D extends Transform {
      * @param a point in world coordinates.
      * @return the corresponding local point relative to the body's origin.
      */
-    public final Tuple2f getLocalPoint(Tuple2f worldPoint) {
-        Tuple2f out = new v2();
+    public final v2 getLocalPoint(v2 worldPoint) {
+        v2 out = new v2();
         getLocalPointToOut(worldPoint, out);
         return out;
     }
 
-    public final void getLocalPointToOut(Tuple2f worldPoint, Tuple2f out) {
+    public final void getLocalPointToOut(v2 worldPoint, v2 out) {
         Transform.mulTransToOut(this, worldPoint, out);
     }
 
@@ -876,17 +875,17 @@ public class Body2D extends Transform {
      * @param a vector in world coordinates.
      * @return the corresponding local vector.
      */
-    public final Tuple2f getLocalVector(Tuple2f worldVector) {
-        Tuple2f out = new v2();
+    public final v2 getLocalVector(v2 worldVector) {
+        v2 out = new v2();
         getLocalVectorToOut(worldVector, out);
         return out;
     }
 
-    public final void getLocalVectorToOut(Tuple2f worldVector, Tuple2f out) {
+    public final void getLocalVectorToOut(v2 worldVector, v2 out) {
         Rot.mulTrans(this, worldVector, out);
     }
 
-    public final void getLocalVectorToOutUnsafe(Tuple2f worldVector, Tuple2f out) {
+    public final void getLocalVectorToOutUnsafe(v2 worldVector, v2 out) {
         Rot.mulTransUnsafe(this, worldVector, out);
     }
 
@@ -896,13 +895,13 @@ public class Body2D extends Transform {
      * @param a point in world coordinates.
      * @return the world velocity of a point.
      */
-    public final Tuple2f getLinearVelocityFromWorldPoint(Tuple2f worldPoint) {
-        Tuple2f out = new v2();
+    public final v2 getLinearVelocityFromWorldPoint(v2 worldPoint) {
+        v2 out = new v2();
         getLinearVelocityFromWorldPointToOut(worldPoint, out);
         return out;
     }
 
-    private void getLinearVelocityFromWorldPointToOut(Tuple2f worldPoint, Tuple2f out) {
+    private void getLinearVelocityFromWorldPointToOut(v2 worldPoint, v2 out) {
         final float tempX = worldPoint.x - sweep.c.x;
         final float tempY = worldPoint.y - sweep.c.y;
         out.x = -velAngular * tempY + vel.x;
@@ -915,13 +914,13 @@ public class Body2D extends Transform {
      * @param a point in local coordinates.
      * @return the world velocity of a point.
      */
-    public final Tuple2f getLinearVelocityFromLocalPoint(Tuple2f localPoint) {
-        Tuple2f out = new v2();
+    public final v2 getLinearVelocityFromLocalPoint(v2 localPoint) {
+        v2 out = new v2();
         getLinearVelocityFromLocalPointToOut(localPoint, out);
         return out;
     }
 
-    private void getLinearVelocityFromLocalPointToOut(Tuple2f localPoint, Tuple2f out) {
+    private void getLinearVelocityFromLocalPointToOut(v2 localPoint, v2 out) {
         getWorldPointToOut(localPoint, out);
         getLinearVelocityFromWorldPointToOut(out, out);
     }
@@ -1230,7 +1229,7 @@ public class Body2D extends Transform {
         Rot q = this;
         q.s = (float) Math.sin(sweep.a);
         q.c = (float) Math.cos(sweep.a);
-        Tuple2f v = sweep.localCenter;
+        v2 v = sweep.localCenter;
         pos.x = sweep.c.x - q.c * v.x + q.s * v.y;
         pos.y = sweep.c.y - q.s * v.x - q.c * v.y;
     }
@@ -1281,7 +1280,7 @@ public class Body2D extends Transform {
     }
 
 
-    public void getWorldPointToGL(Tuple2f localPoint, float preScale, GL2 gl) {
+    public void getWorldPointToGL(v2 localPoint, float preScale, GL2 gl) {
         Transform.mulToOutUnsafe(this, localPoint, preScale, gl);
     }
 

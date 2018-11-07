@@ -3,7 +3,6 @@ package spacegraph.space2d.phys.fracture.materials;
 import jcog.random.XoRoShiRo128PlusRandom;
 import spacegraph.space2d.phys.common.Transform;
 import spacegraph.space2d.phys.fracture.Material;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import java.util.Random;
@@ -36,13 +35,13 @@ public class Glass extends Material {
     }
 
     @Override
-    public Tuple2f[] focee(Tuple2f startPoint, Tuple2f vektor) {
+    public v2[] focee(v2 startPoint, v2 vektor) {
         Transform t = new Transform();
         t.set(startPoint, 0);
 
         int allCount = count * levels;
 
-        Tuple2f[] va = new Tuple2f[allCount];
+        v2[] va = new v2[allCount];
         for (int l = 0; l < levels; l++) {
             for (int c = 0; c < count; c++) {
                 int i = l * count + c;
@@ -54,7 +53,7 @@ public class Glass extends Material {
                 double x = Math.sin(u) * r;
                 double y = Math.cos(u) * r;
 
-                Tuple2f v = new v2((float) x, (float) y);
+                v2 v = new v2((float) x, (float) y);
 
                 va[i] = Transform.mul(t, v);
             }

@@ -34,7 +34,6 @@ import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -42,11 +41,11 @@ import spacegraph.util.math.v2;
  */
 public class FrictionJoint extends Joint {
 
-    private final Tuple2f m_localAnchorA;
-    private final Tuple2f m_localAnchorB;
+    private final v2 m_localAnchorA;
+    private final v2 m_localAnchorB;
 
     
-    private final Tuple2f m_linearImpulse;
+    private final v2 m_linearImpulse;
     private float m_angularImpulse;
     private float m_maxForce;
     private float m_maxTorque;
@@ -54,10 +53,10 @@ public class FrictionJoint extends Joint {
     
     private int m_indexA;
     private int m_indexB;
-    private final Tuple2f m_rA = new v2();
-    private final Tuple2f m_rB = new v2();
-    private final Tuple2f m_localCenterA = new v2();
-    private final Tuple2f m_localCenterB = new v2();
+    private final v2 m_rA = new v2();
+    private final v2 m_rB = new v2();
+    private final v2 m_localCenterA = new v2();
+    private final v2 m_localCenterB = new v2();
     private float m_invMassA;
     private float m_invMassB;
     private float m_invIA;
@@ -77,26 +76,26 @@ public class FrictionJoint extends Joint {
         m_maxTorque = def.maxTorque;
     }
 
-    public Tuple2f getLocalAnchorA() {
+    public v2 getLocalAnchorA() {
         return m_localAnchorA;
     }
 
-    public Tuple2f getLocalAnchorB() {
+    public v2 getLocalAnchorB() {
         return m_localAnchorB;
     }
 
     @Override
-    public void getAnchorA(Tuple2f argOut) {
+    public void getAnchorA(v2 argOut) {
         A.getWorldPointToOut(m_localAnchorA, argOut);
     }
 
     @Override
-    public void getAnchorB(Tuple2f argOut) {
+    public void getAnchorB(v2 argOut) {
         B.getWorldPointToOut(m_localAnchorB, argOut);
     }
 
     @Override
-    public void getReactionForce(float inv_dt, Tuple2f argOut) {
+    public void getReactionForce(float inv_dt, v2 argOut) {
         argOut.set(m_linearImpulse).scaled(inv_dt);
     }
 
@@ -146,7 +145,7 @@ public class FrictionJoint extends Joint {
         float wB = data.velocities[m_indexB].w;
 
 
-        final Tuple2f temp = pool.popVec2();
+        final v2 temp = pool.popVec2();
         final Rot qA = pool.popRot();
         final Rot qB = pool.popRot();
 
@@ -187,16 +186,16 @@ public class FrictionJoint extends Joint {
             m_linearImpulse.scaled(data.step.dtRatio);
             m_angularImpulse *= data.step.dtRatio;
 
-            final Tuple2f P = pool.popVec2();
+            final v2 P = pool.popVec2();
             P.set(m_linearImpulse);
 
             temp.set(P).scaled(mA);
             vA.subbed(temp);
-            wA -= iA * (Tuple2f.cross(m_rA, P) + m_angularImpulse);
+            wA -= iA * (v2.cross(m_rA, P) + m_angularImpulse);
 
             temp.set(P).scaled(mB);
             vB.added(temp);
-            wB += iB * (Tuple2f.cross(m_rB, P) + m_angularImpulse);
+            wB += iB * (v2.cross(m_rB, P) + m_angularImpulse);
 
             pool.pushVec2(1);
         } else {
@@ -242,19 +241,19 @@ public class FrictionJoint extends Joint {
 
         
         {
-            final Tuple2f Cdot = pool.popVec2();
-            final Tuple2f temp = pool.popVec2();
+            final v2 Cdot = pool.popVec2();
+            final v2 temp = pool.popVec2();
 
-            Tuple2f.crossToOutUnsafe(wA, m_rA, temp);
-            Tuple2f.crossToOutUnsafe(wB, m_rB, Cdot);
+            v2.crossToOutUnsafe(wA, m_rA, temp);
+            v2.crossToOutUnsafe(wB, m_rB, Cdot);
             Cdot.added(vB).subbed(vA).subbed(temp);
 
-            final Tuple2f impulse = pool.popVec2();
+            final v2 impulse = pool.popVec2();
             Mat22.mulToOutUnsafe(m_linearMass, Cdot, impulse);
             impulse.negated();
 
 
-            final Tuple2f oldImpulse = pool.popVec2();
+            final v2 oldImpulse = pool.popVec2();
             oldImpulse.set(m_linearImpulse);
             m_linearImpulse.added(impulse);
 
@@ -269,11 +268,11 @@ public class FrictionJoint extends Joint {
 
             temp.set(impulse).scaled(mA);
             vA.subbed(temp);
-            wA -= iA * Tuple2f.cross(m_rA, impulse);
+            wA -= iA * v2.cross(m_rA, impulse);
 
             temp.set(impulse).scaled(mB);
             vB.added(temp);
-            wB += iB * Tuple2f.cross(m_rB, impulse);
+            wB += iB * v2.cross(m_rB, impulse);
 
         }
 

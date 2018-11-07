@@ -25,12 +25,11 @@ package spacegraph.space2d.phys.dynamics.contacts;
 
 import spacegraph.space2d.phys.common.Mat22;
 import spacegraph.space2d.phys.common.Settings;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 public class ContactVelocityConstraint {
     public final VelocityConstraintPoint[] points = new VelocityConstraintPoint[Settings.maxManifoldPoints];
-    public final Tuple2f normal = new v2();
+    public final v2 normal = new v2();
     public final Mat22 normalMass = new Mat22();
     public final Mat22 K = new Mat22();
     public int indexA;
@@ -50,8 +49,8 @@ public class ContactVelocityConstraint {
     }
 
     public static class VelocityConstraintPoint {
-        public final Tuple2f rA = new v2();
-        public final Tuple2f rB = new v2();
+        public final v2 rA = new v2();
+        public final v2 rB = new v2();
         public float normalImpulse;
         public float tangentImpulse;
         public float normalMass;

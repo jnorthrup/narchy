@@ -23,7 +23,6 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.common;
 
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import java.io.Serializable;
@@ -39,11 +38,11 @@ public class Sweep implements Serializable {
     /**
      * Local center of mass position
      */
-    public final Tuple2f localCenter;
+    public final v2 localCenter;
     /**
      * Center world positions
      */
-    public final Tuple2f c0, c;
+    public final v2 c0, c;
     /**
      * World angles
      */

@@ -2,7 +2,7 @@ package spacegraph.space2d.phys.fracture.hertelmehlhorn;
 
 import spacegraph.space2d.phys.common.PlatformMathUtils;
 import spacegraph.space2d.phys.fracture.Polygon;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 import java.util.Arrays;
 
@@ -19,7 +19,7 @@ public class SingletonHM {
      */
     public Polygon[] dekomposition;
 
-    private Tuple2f[] vertices;
+    private v2[] vertices;
     private int maxVerticesCount;
 
     private EdgeTable table;
@@ -39,7 +39,7 @@ public class SingletonHM {
      * @param maxVCount Maximalny pocet vrcholov v konvexnych utvaroch.
      *                  Zjednoti vstupnu triangulaciu do mnoziny konvexnych polygonov.
      */
-    public void calculate(int[][] list, Tuple2f[] vertices, int maxVCount) {
+    public void calculate(int[][] list, v2[] vertices, int maxVCount) {
         tableInit(list, vertices, maxVCount);
         run();
     }
@@ -48,14 +48,14 @@ public class SingletonHM {
      * Nastavi hashovaciu tabulku hran (len hrany, ktore maju oba trojuholniky)
      * Nastavi Nodexy a vsetky hrany
      */
-    private void tableInit(int[][] list, Tuple2f[] vertices, int maxVerticesCount) {
+    private void tableInit(int[][] list, v2[] vertices, int maxVerticesCount) {
         this.maxVerticesCount = maxVerticesCount;
         this.vertices = vertices;
 
         for (int[] ar : list) { 
-            Tuple2f a = vertices[ar[0]];
-            Tuple2f b = vertices[ar[1]];
-            Tuple2f c = vertices[ar[2]];
+            v2 a = vertices[ar[0]];
+            v2 b = vertices[ar[1]];
+            v2 c = vertices[ar[2]];
             if (PlatformMathUtils.site(a, b, c) == 1) {
                 int k = ar[1];
                 ar[1] = ar[2];

@@ -5,7 +5,8 @@ import jcog.math.FloatAveraged;
 import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
 
-import static com.jogamp.opengl.GL.*;
+import static com.jogamp.opengl.GL.GL_COLOR_LOGIC_OP;
+import static com.jogamp.opengl.GL.GL_EQUIV;
 
 /** cursor renderer */
 @FunctionalInterface public interface FingerRenderer {

@@ -23,7 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.common;
 
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * Contains methods from MathUtils that rely on JVM features. These are separated out from
@@ -51,7 +51,7 @@ public class PlatformMathUtils {
      * @param b
      * @return Kvadraticky uhol v rozmedzi (0-4) medzi vektorom (b - a) a vektorom (0, 1).
      */
-    public static double angle(Tuple2f a, Tuple2f b) {
+    public static double angle(v2 a, v2 b) {
         double vx = b.x - a.x;
         double vy = b.y - a.y;
         double x = vx * vx;
@@ -67,7 +67,7 @@ public class PlatformMathUtils {
      * <tt>0</tt>, ak body <tt>a, b, v</tt> lezia na jednej priamke.<br>
      * <tt>1</tt>, ak sa bod <tt>v</tt> nachadza na pravo od usecky |ab|<br>
      */
-    public static int site(Tuple2f a, Tuple2f b, Tuple2f v) {
+    public static int site(v2 a, v2 b, v2 v) {
         double g = (b.x - a.x) * (v.y - b.y);
         double h = (v.x - b.x) * (b.y - a.y);
         return Double.compare(g, h);
@@ -79,7 +79,7 @@ public class PlatformMathUtils {
      * @param v Bod, u ktoreho sa rozhoduje, na ktorej strane sa nachadza.
      * @return Rovnako ako funkcia site, s tym rozdielom, ze zohladnuje deficit.
      */
-    public static int siteDef(Tuple2f a, Tuple2f b, Tuple2f v) {
+    public static int siteDef(v2 a, v2 b, v2 v) {
         double ux = b.x - a.x;
         double uy = b.y - a.y;
         double wx = b.x - v.x;

@@ -5,7 +5,6 @@ import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
 import spacegraph.space2d.phys.fracture.materials.Diffusion;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -20,11 +19,11 @@ public class StaticBody implements ICase {
             BodyDef bodyDef2 = new BodyDef();
             bodyDef2.type = BodyType.STATIC;
             bodyDef2.position.set(10.0f, 0.0f); 
-            bodyDef2.linearVelocity = new v2(0.0f, 0.0f); 
+            bodyDef2.linearVelocity = new v2(0.0f, 0.0f);
             bodyDef2.angularVelocity = 0.0f; 
             Body2D newBody = w.addBody(bodyDef2);
 
-            PolygonFixture pf = new PolygonFixture(new Tuple2f[]{
+            PolygonFixture pf = new PolygonFixture(new v2[]{
                     new v2(0.0f, 3.7f),
                     new v2(6.3f, 3.7f),
                     new v2(6.3f, 16.0f),
@@ -47,7 +46,7 @@ public class StaticBody implements ICase {
             BodyDef bodyDefBullet = new BodyDef();
             bodyDefBullet.type = BodyType.DYNAMIC;
             bodyDefBullet.position.set(-20.0f, 18.0f); 
-            bodyDefBullet.linearVelocity = new v2(100.0f, 0.0f); 
+            bodyDefBullet.linearVelocity = new v2(100.0f, 0.0f);
             bodyDefBullet.angularVelocity = 0.0f; 
             Body2D bodyBullet = w.addBody(bodyDefBullet);
 

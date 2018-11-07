@@ -37,7 +37,6 @@ import spacegraph.space2d.phys.common.*;
 import spacegraph.space2d.phys.dynamics.contacts.*;
 import spacegraph.space2d.phys.pooling.IDynamicStack;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -48,7 +47,7 @@ import spacegraph.util.math.v2;
  */
 public class DefaultWorldPool implements IWorldPool {
 
-    private final OrderedStack<Tuple2f> vecs;
+    private final OrderedStack<v2> vecs;
     private final OrderedStack<Vec3> vec3s;
     private final OrderedStack<Mat22> mats;
     private final OrderedStack<Mat33> mat33s;
@@ -57,7 +56,7 @@ public class DefaultWorldPool implements IWorldPool {
 
     private final IntObjectHashMap<float[]> afloats = new IntObjectHashMap<>();
     private final IntObjectHashMap<int[]> aints = new IntObjectHashMap<>();
-    private final IntObjectHashMap<Tuple2f[]> avecs = new IntObjectHashMap<>();
+    private final IntObjectHashMap<v2[]> avecs = new IntObjectHashMap<>();
 
     private final IWorldPool world = this;
 
@@ -144,7 +143,7 @@ public class DefaultWorldPool implements IWorldPool {
 
     public DefaultWorldPool(int argSize, int argContainerSize) {
         vecs = new OrderedStack<>(argSize, argContainerSize) {
-            protected Tuple2f newInstance() {
+            protected v2 newInstance() {
                 return new v2();
             }
         };
@@ -211,11 +210,11 @@ public class DefaultWorldPool implements IWorldPool {
         return chpstack;
     }
 
-    public final Tuple2f popVec2() {
+    public final v2 popVec2() {
         return vecs.pop();
     }
 
-    public final Tuple2f[] popVec2(int argNum) {
+    public final v2[] popVec2(int argNum) {
         return vecs.pop(argNum);
     }
 
@@ -305,9 +304,9 @@ public class DefaultWorldPool implements IWorldPool {
         return aints.get(argLength);
     }
 
-    public final Tuple2f[] getVec2Array(int argLength) {
+    public final v2[] getVec2Array(int argLength) {
         if (!avecs.containsKey(argLength)) {
-            Tuple2f[] ray = new Tuple2f[argLength];
+            v2[] ray = new v2[argLength];
             for (int i = 0; i < argLength; i++) {
                 ray[i] = new Vec2();
             }

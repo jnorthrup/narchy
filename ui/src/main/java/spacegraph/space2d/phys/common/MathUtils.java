@@ -46,7 +46,7 @@
 
 package spacegraph.space2d.phys.common;
 
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 import java.util.Random;
 
@@ -197,8 +197,8 @@ public class MathUtils extends PlatformMathUtils {
         return max(low, min(a, high));
     }
 
-    public static Tuple2f clamp(final Tuple2f a, final Tuple2f low, final Tuple2f high) {
-        final Tuple2f min = new Vec2();
+    public static v2 clamp(final v2 a, final v2 low, final v2 high) {
+        final v2 min = new Vec2();
         min.x = a.x < high.x ? a.x : high.x;
         min.y = a.y < high.y ? a.y : high.y;
         min.x = low.x > min.x ? low.x : min.x;
@@ -206,7 +206,7 @@ public class MathUtils extends PlatformMathUtils {
         return min;
     }
 
-    public static void clampToOut(final Tuple2f a, final Tuple2f low, final Tuple2f high, final Tuple2f dest) {
+    public static void clampToOut(final v2 a, final v2 low, final v2 high, final v2 dest) {
         dest.x = a.x < high.x ? a.x : high.x;
         dest.y = a.y < high.y ? a.y : high.y;
         dest.x = low.x > dest.x ? low.x : dest.x;
@@ -272,13 +272,13 @@ public class MathUtils extends PlatformMathUtils {
         return r.nextFloat() * (argHigh - argLow) + argLow;
     }
 
-    public static float distanceSquared(Tuple2f v1, Tuple2f v2) {
+    public static float distanceSquared(v2 v1, v2 v2) {
         float dx = (v1.x - v2.x);
         float dy = (v1.y - v2.y);
         return dx * dx + dy * dy;
     }
 
-    public static float distance(Tuple2f v1, Tuple2f v2) {
+    public static float distance(v2 v1, v2 v2) {
         return (float) Math.sqrt(distanceSquared(v1, v2));
     }
 }

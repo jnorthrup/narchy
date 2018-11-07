@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.meter;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.signal.buffer.CircularFloatBuffer;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Stacking;
 
 import java.awt.*;
@@ -61,7 +62,7 @@ public class BitmapWave extends Stacking implements BitmapMatrixView.BitmapPaint
 
     @Override
     //protected void paintWidget(GL2 g, RectFloat2D bounds) {
-    protected void paintIt(GL2 g) {
+    protected void paintIt(GL2 g, SurfaceRender r) {
         if (bmp == null) {
             bmp = new BitmapMatrixView(w, h, this) {
                 @Override

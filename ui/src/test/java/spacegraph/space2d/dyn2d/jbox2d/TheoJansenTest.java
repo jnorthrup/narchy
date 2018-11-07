@@ -6,6 +6,7 @@ import spacegraph.space2d.phys.collision.shapes.EdgeShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.dynamics.*;
+import spacegraph.space2d.phys.dynamics.contacts.Position;
 import spacegraph.space2d.phys.dynamics.joints.DistanceJointDef;
 import spacegraph.space2d.phys.dynamics.joints.RevoluteJoint;
 import spacegraph.space2d.phys.dynamics.joints.RevoluteJointDef;
@@ -16,7 +17,7 @@ public class TheoJansenTest implements ICase {
     private static final long WHEEL_TAG = 2;
     private static final long MOTOR_TAG = 8;
 
-    v2 m_offset = new v2();
+    v2 m_offset = new Position();
     Body2D m_chassis;
     Body2D m_wheel;
     RevoluteJoint m_motorJoint;
@@ -69,7 +70,7 @@ public class TheoJansenTest implements ICase {
         m_offset.set(0.0f, 8.0f);
         m_motorSpeed = 2.0f;
         m_motorOn = true;
-        v2 pivot = new v2(0.0f, 0.8f);
+        v2 pivot = new Position(0.0f, 0.8f);
 
         
         {
@@ -77,13 +78,13 @@ public class TheoJansenTest implements ICase {
             Body2D ground = w.addBody(bd);
 
             EdgeShape shape = new EdgeShape();
-            shape.set(new v2(-50.0f, 0.0f), new v2(50.0f, 0.0f));
+            shape.set(new Position(-50.0f, 0.0f), new Position(50.0f, 0.0f));
             ground.addFixture(shape, 0.0f);
 
-            shape.set(new v2(-50.0f, 0.0f), new v2(-50.0f, 10.0f));
+            shape.set(new Position(-50.0f, 0.0f), new Position(-50.0f, 10.0f));
             ground.addFixture(shape, 0.0f);
 
-            shape.set(new v2(50.0f, 0.0f), new v2(50.0f, 10.0f));
+            shape.set(new Position(50.0f, 0.0f), new Position(50.0f, 10.0f));
             ground.addFixture(shape, 0.0f);
         }
 
@@ -144,7 +145,7 @@ public class TheoJansenTest implements ICase {
 
         v2 wheelAnchor;
 
-        wheelAnchor = pivot.add(new v2(0.0f, -0.8f));
+        wheelAnchor = pivot.add(new Position(0.0f, -0.8f));
 
         createLeg(-1.0f, wheelAnchor);
         createLeg(1.0f, wheelAnchor);
@@ -159,12 +160,12 @@ public class TheoJansenTest implements ICase {
     }
 
     void createLeg(float s, v2 wheelAnchor) {
-        v2 p1 = new v2(5.4f * s, -6.1f);
-        v2 p2 = new v2(7.2f * s, -1.2f);
-        v2 p3 = new v2(4.3f * s, -1.9f);
-        v2 p4 = new v2(3.1f * s, 0.8f);
-        v2 p5 = new v2(6.0f * s, 1.5f);
-        v2 p6 = new v2(2.5f * s, 3.7f);
+        v2 p1 = new Position(5.4f * s, -6.1f);
+        v2 p2 = new Position(7.2f * s, -1.2f);
+        v2 p3 = new Position(4.3f * s, -1.9f);
+        v2 p4 = new Position(3.1f * s, 0.8f);
+        v2 p5 = new Position(6.0f * s, 1.5f);
+        v2 p6 = new Position(2.5f * s, 3.7f);
 
         FixtureDef fd1 = new FixtureDef();
         FixtureDef fd2 = new FixtureDef();
@@ -184,7 +185,7 @@ public class TheoJansenTest implements ICase {
             vertices[2] = p3;
             poly1.set(vertices, 3);
 
-            vertices[0] = new v2();
+            vertices[0] = new Position();
             vertices[1] = p5.sub(p4);
             vertices[2] = p6.sub(p4);
             poly2.set(vertices, 3);

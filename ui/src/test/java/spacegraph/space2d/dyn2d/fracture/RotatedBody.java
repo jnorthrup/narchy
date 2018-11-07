@@ -18,7 +18,7 @@ public class RotatedBody implements ICase {
             BodyDef bodyDef2 = new BodyDef();
             bodyDef2.type = BodyType.DYNAMIC;
             bodyDef2.position.set(10.0f, 20.0f); 
-            bodyDef2.linearVelocity = new v2(0.0f, 0.0f); 
+            bodyDef2.linearVelocity = new v2(0.0f, 0.0f);
             bodyDef2.angularVelocity = 10.0f; 
             Body2D newBody = w.addBody(bodyDef2);
             PolygonShape shape3 = new PolygonShape();

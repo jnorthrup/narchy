@@ -25,9 +25,7 @@ package spacegraph.space2d.phys.collision;
 
 import spacegraph.space2d.phys.collision.shapes.*;
 import spacegraph.space2d.phys.common.*;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
-
 
 
 /**
@@ -47,9 +45,9 @@ public class Distance {
      * GJK using Voronoi regions (Christer Ericson) and Barycentric coordinates.
      */
     private static class SimplexVertex {
-        final Tuple2f wA = new v2();
-        final Tuple2f wB = new v2();
-        final Tuple2f w = new v2();
+        final v2 wA = new v2();
+        final v2 wB = new v2();
+        final v2 w = new v2();
         float a;
         int indexA;
         int indexB;
@@ -121,8 +119,8 @@ public class Distance {
                 SimplexVertex v = vertices[i];
                 v.indexA = cache.indexA[i];
                 v.indexB = cache.indexB[i];
-                Tuple2f wALocal = proxyA.vertex(v.indexA);
-                Tuple2f wBLocal = proxyB.vertex(v.indexB);
+                v2 wALocal = proxyA.vertex(v.indexA);
+                v2 wBLocal = proxyB.vertex(v.indexB);
                 Transform.mulToOutUnsafe(transformA, wALocal, v.wA);
                 Transform.mulToOutUnsafe(transformB, wBLocal, v.wB);
                 v.w.set(v.wB).subbed(v.wA);
@@ -145,8 +143,8 @@ public class Distance {
                 SimplexVertex v = vertices[0];
                 v.indexA = 0;
                 v.indexB = 0;
-                Tuple2f wALocal = proxyA.vertex(0);
-                Tuple2f wBLocal = proxyB.vertex(0);
+                v2 wALocal = proxyA.vertex(0);
+                v2 wBLocal = proxyB.vertex(0);
                 Transform.mulToOutUnsafe(transformA, wALocal, v.wA);
                 Transform.mulToOutUnsafe(transformB, wBLocal, v.wB);
                 v.w.set(v.wB).subbed(v.wA);
@@ -165,9 +163,9 @@ public class Distance {
             }
         }
 
-        private final Tuple2f e12 = new v2();
+        private final v2 e12 = new v2();
 
-        final void getSearchDirection(final Tuple2f out) {
+        final void getSearchDirection(final v2 out) {
             switch (m_count) {
                 case 1:
                     out.set(m_v1.w).negated();
@@ -176,15 +174,15 @@ public class Distance {
                     e12.set(m_v2.w).subbed(m_v1.w);
                     
                     out.set(m_v1.w).negated();
-                    float sgn = Tuple2f.cross(e12, out);
+                    float sgn = v2.cross(e12, out);
 
                     if (sgn > 0f) {
                         
-                        Tuple2f.crossToOutUnsafe(1f, e12, out);
+                        v2.crossToOutUnsafe(1f, e12, out);
                         return;
                     } else {
                         
-                        Tuple2f.crossToOutUnsafe(e12, 1f, out);
+                        v2.crossToOutUnsafe(e12, 1f, out);
                         return;
                     }
                 default:
@@ -194,15 +192,15 @@ public class Distance {
         }
 
         
-        private final Tuple2f case2 = new v2();
-        private final Tuple2f case22 = new v2();
+        private final v2 case2 = new v2();
+        private final v2 case22 = new v2();
 
         /**
          * this returns pooled objects. don't keep or modify them
          *
          * @return
          */
-        void getClosestPoint(final Tuple2f out) {
+        void getClosestPoint(final v2 out) {
             switch (m_count) {
                 case 0:
                     assert (false);
@@ -226,10 +224,10 @@ public class Distance {
         }
 
         
-        private final Tuple2f case3 = new v2();
-        private final Tuple2f case33 = new v2();
+        private final v2 case3 = new v2();
+        private final v2 case33 = new v2();
 
-        void getWitnessPoints(Vec2 pA, Tuple2f pB) {
+        void getWitnessPoints(Vec2 pA, v2 pB) {
             switch (m_count) {
                 case 0:
                     assert (false);
@@ -283,7 +281,7 @@ public class Distance {
                     case3.set(m_v2.w).subbed(m_v1.w);
                     case33.set(m_v3.w).subbed(m_v1.w);
                     
-                    return Tuple2f.cross(case3, case33);
+                    return v2.cross(case3, case33);
 
                 default:
                     assert (false);
@@ -320,12 +318,12 @@ public class Distance {
             
             
             
-            final Tuple2f w1 = m_v1.w;
-            final Tuple2f w2 = m_v2.w;
+            final v2 w1 = m_v1.w;
+            final v2 w2 = m_v2.w;
             e12.set(w2).subbed(w1);
 
             
-            float d12_2 = -Tuple2f.dot(w1, e12);
+            float d12_2 = -v2.dot(w1, e12);
             if (d12_2 <= 0.0f) {
                 
                 m_v1.a = 1.0f;
@@ -334,7 +332,7 @@ public class Distance {
             }
 
             
-            float d12_1 = Tuple2f.dot(w2, e12);
+            float d12_1 = v2.dot(w2, e12);
             if (d12_1 <= 0.0f) {
                 
                 m_v2.a = 1.0f;
@@ -351,11 +349,11 @@ public class Distance {
         }
 
         
-        private final Tuple2f e13 = new v2();
-        private final Tuple2f e23 = new v2();
-        private final Tuple2f w1 = new v2();
-        private final Tuple2f w2 = new v2();
-        private final Tuple2f w3 = new v2();
+        private final v2 e13 = new v2();
+        private final v2 e23 = new v2();
+        private final v2 w1 = new v2();
+        private final v2 w2 = new v2();
+        private final v2 w3 = new v2();
 
         /**
          * Solve a line segment using barycentric coordinates.<br/>
@@ -375,8 +373,8 @@ public class Distance {
             
             
             e12.set(w2).subbed(w1);
-            float w1e12 = Tuple2f.dot(w1, e12);
-            float w2e12 = Tuple2f.dot(w2, e12);
+            float w1e12 = v2.dot(w1, e12);
+            float w2e12 = v2.dot(w2, e12);
             float d12_1 = w2e12;
             float d12_2 = -w1e12;
 
@@ -385,8 +383,8 @@ public class Distance {
             
             
             e13.set(w3).subbed(w1);
-            float w1e13 = Tuple2f.dot(w1, e13);
-            float w3e13 = Tuple2f.dot(w3, e13);
+            float w1e13 = v2.dot(w1, e13);
+            float w3e13 = v2.dot(w3, e13);
             float d13_1 = w3e13;
             float d13_2 = -w1e13;
 
@@ -395,17 +393,17 @@ public class Distance {
             
             
             e23.set(w3).subbed(w2);
-            float w2e23 = Tuple2f.dot(w2, e23);
-            float w3e23 = Tuple2f.dot(w3, e23);
+            float w2e23 = v2.dot(w2, e23);
+            float w3e23 = v2.dot(w3, e23);
             float d23_1 = w3e23;
             float d23_2 = -w2e23;
 
             
-            float n123 = Tuple2f.cross(e12, e13);
+            float n123 = v2.cross(e12, e13);
 
-            float d123_1 = n123 * Tuple2f.cross(w2, w3);
-            float d123_2 = n123 * Tuple2f.cross(w3, w1);
-            float d123_3 = n123 * Tuple2f.cross(w1, w2);
+            float d123_1 = n123 * v2.cross(w2, w3);
+            float d123_2 = n123 * v2.cross(w3, w1);
+            float d123_3 = n123 * v2.cross(w1, w2);
 
             
             if (d12_2 <= 0.0f && d13_2 <= 0.0f) {
@@ -475,17 +473,17 @@ public class Distance {
      * @author daniel
      */
     public static class DistanceProxy {
-        final Tuple2f[] m_vertices;
+        final v2[] m_vertices;
         int m_count;
         public float m_radius;
-        final Tuple2f[] m_buffer;
+        final v2[] m_buffer;
 
         public DistanceProxy() {
-            m_vertices = new Tuple2f[Settings.maxPolygonVertices];
+            m_vertices = new v2[Settings.maxPolygonVertices];
             for (int i = 0; i < m_vertices.length; i++) {
                 m_vertices[i] = new v2();
             }
-            m_buffer = new Tuple2f[2];
+            m_buffer = new v2[2];
             m_count = 0;
             m_radius = 0f;
         }
@@ -545,11 +543,11 @@ public class Distance {
          * @param d
          * @return
          */
-        public final int getSupport(final Tuple2f d) {
+        public final int getSupport(final v2 d) {
             int bestIndex = 0;
-            float bestValue = Tuple2f.dot(m_vertices[0], d);
+            float bestValue = v2.dot(m_vertices[0], d);
             for (int i = 1; i < m_count; i++) {
-                float value = Tuple2f.dot(m_vertices[i], d);
+                float value = v2.dot(m_vertices[i], d);
                 if (value > bestValue) {
                     bestIndex = i;
                     bestValue = value;
@@ -565,11 +563,11 @@ public class Distance {
          * @param d
          * @return
          */
-        public final Tuple2f getSupportVertex(final Tuple2f d) {
+        public final v2 getSupportVertex(final v2 d) {
             int bestIndex = 0;
-            float bestValue = Tuple2f.dot(m_vertices[0], d);
+            float bestValue = v2.dot(m_vertices[0], d);
             for (int i = 1; i < m_count; i++) {
-                float value = Tuple2f.dot(m_vertices[i], d);
+                float value = v2.dot(m_vertices[i], d);
                 if (value > bestValue) {
                     bestIndex = i;
                     bestValue = value;
@@ -594,7 +592,7 @@ public class Distance {
          * @param index
          * @return
          */
-        public final Tuple2f vertex(int index) {
+        public final v2 vertex(int index) {
             assert (0 <= index && index < m_count);
             return m_vertices[index];
         }
@@ -603,9 +601,9 @@ public class Distance {
     private final Simplex simplex = new Simplex();
     private final int[] saveA = new int[3];
     private final int[] saveB = new int[3];
-    private final Tuple2f closestPoint = new v2();
+    private final v2 closestPoint = new v2();
     private final v2 d = new v2();
-    private final Tuple2f temp = new v2();
+    private final v2 temp = new v2();
     private final v2 normal = new v2();
 
     public final void distance(final DistanceOutput output, final DistanceInput input) {

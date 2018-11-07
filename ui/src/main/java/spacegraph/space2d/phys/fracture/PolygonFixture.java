@@ -2,7 +2,7 @@ package spacegraph.space2d.phys.fracture;
 
 import spacegraph.space2d.phys.dynamics.Fixture;
 import spacegraph.space2d.phys.fracture.util.MyList;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class PolygonFixture extends Polygon {
      *
      * @param v
      */
-    public PolygonFixture(Tuple2f[] v) {
+    public PolygonFixture(v2[] v) {
         super(v);
     }
 

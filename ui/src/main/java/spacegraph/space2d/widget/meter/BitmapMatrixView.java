@@ -11,7 +11,6 @@ import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.math.Point2i;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
 import spacegraph.video.Tex;
@@ -34,7 +33,7 @@ public class BitmapMatrixView extends Surface {
     private final int h;
     private volatile BitmapPainter view;
     private final Tex bmp;
-    protected Tuple2f touchPos;
+    protected v2 touchPos;
     protected Point2i touchPixel;
     private BufferedImage buf;
     private int[] pix;

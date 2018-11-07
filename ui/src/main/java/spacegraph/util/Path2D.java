@@ -6,7 +6,6 @@ import jcog.pri.ScalarValue;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import static spacegraph.util.math.Simplify2D.collinear;
@@ -40,7 +39,7 @@ public class Path2D extends FloatArrayList {
         addAll(x, y);
     }
 
-    private void add(Tuple2f p) {
+    private void add(v2 p) {
         addAll(p.x, p.y);
     }
 
@@ -50,7 +49,7 @@ public class Path2D extends FloatArrayList {
      * otherwise it simplifies the current set of points and sets the
      * end point to the specified value
      */
-    public boolean add(Tuple2f p, int maxPoints) {
+    public boolean add(v2 p, int maxPoints) {
 
         assert (maxPoints > 3);
 
@@ -124,16 +123,16 @@ public class Path2D extends FloatArrayList {
         }
     }
 
-    public void setEnd(Tuple2f p) {
+    public void setEnd(v2 p) {
         float[] ii = items;
         int s = size;
         ii[s - 2] = p.x;
         ii[s - 1] = p.y;
     }
 
-    public void addAll(Tuple2f... pp) {
+    public void addAll(v2... pp) {
         ensureCapacity(size + pp.length * 2);
-        for (Tuple2f p : pp)
+        for (v2 p : pp)
             addAll(p.x, p.y);
     }
 

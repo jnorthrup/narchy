@@ -25,7 +25,7 @@ package spacegraph.space2d.phys.dynamics.joints;
 
 import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.Body2D;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * Created at 3:38:52 AM Jan 15, 2011
@@ -38,12 +38,12 @@ public class WeldJointDef extends JointDef {
     /**
      * The local anchor point relative to body1's origin.
      */
-    public final Tuple2f localAnchorA;
+    public final v2 localAnchorA;
 
     /**
      * The local anchor point relative to body2's origin.
      */
-    public final Tuple2f localAnchorB;
+    public final v2 localAnchorB;
 
     /**
      * The body2 angle minus body1 angle in the reference state (radians).
@@ -83,7 +83,7 @@ public class WeldJointDef extends JointDef {
      * @param bB
      * @param anchor
      */
-    public void initialize(Body2D bA, Body2D bB, Tuple2f anchor) {
+    public void initialize(Body2D bA, Body2D bB, v2 anchor) {
         bodyA = bA;
         bodyB = bB;
         bodyA.getLocalPointToOut(anchor, localAnchorA);

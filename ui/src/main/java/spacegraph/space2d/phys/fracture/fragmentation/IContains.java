@@ -1,6 +1,6 @@
 package spacegraph.space2d.phys.fracture.fragmentation;
 
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * Interface na definovanie toho, ktore ohniska budu zahrnute vo frakturacnej
@@ -15,5 +15,5 @@ public interface IContains {
      * @param point
      * @return Vracia true, pokial sa bod nachadza v utvare.
      */
-    boolean contains(Tuple2f point);
+    boolean contains(v2 point);
 }

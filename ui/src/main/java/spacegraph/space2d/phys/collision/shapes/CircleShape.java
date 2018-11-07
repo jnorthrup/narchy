@@ -29,7 +29,6 @@ import spacegraph.space2d.phys.collision.RayCastOutput;
 import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -37,7 +36,7 @@ import spacegraph.util.math.v2;
  */
 public class CircleShape extends Shape {
 
-    public final Tuple2f center;
+    public final v2 center;
 
     public CircleShape() {
         super(ShapeType.CIRCLE);
@@ -69,7 +68,7 @@ public class CircleShape extends Shape {
      * @param d
      * @return
      */
-    public static int getSupport(final Tuple2f d) {
+    public static int getSupport(final v2 d) {
         return 0;
     }
 
@@ -79,7 +78,7 @@ public class CircleShape extends Shape {
      * @param d
      * @return
      */
-    public final Tuple2f getSupportVertex(final Tuple2f d) {
+    public final v2 getSupportVertex(final v2 d) {
         return center;
     }
 
@@ -98,20 +97,20 @@ public class CircleShape extends Shape {
      * @param index
      * @return
      */
-    public final Tuple2f getVertex(final int index) {
+    public final v2 getVertex(final int index) {
         assert (index == 0);
         return center;
     }
 
     @Override
-    public final boolean testPoint(final Transform transform, final Tuple2f p) {
+    public final boolean testPoint(final Transform transform, final v2 p) {
         
         
         
         
         
         final Rot q = transform;
-        final Tuple2f tp = transform.pos;
+        final v2 tp = transform.pos;
         float centerx = -(q.c * center.x - q.s * center.y + tp.x - p.x);
         float centery = -(q.s * center.x + q.c * center.y + tp.y - p.y);
 
@@ -119,7 +118,7 @@ public class CircleShape extends Shape {
     }
 
     @Override
-    public float computeDistanceToOut(Transform xf, Tuple2f p, int childIndex, v2 normalOut) {
+    public float computeDistanceToOut(Transform xf, v2 p, int childIndex, v2 normalOut) {
         final Rot xfq = xf;
         float centerx = xfq.c * center.x - xfq.s * center.y + xf.pos.x;
         float centery = xfq.s * center.x + xfq.c * center.y + xf.pos.y;
@@ -139,10 +138,10 @@ public class CircleShape extends Shape {
     public final boolean raycast(RayCastOutput output, RayCastInput input, Transform transform,
                                  int childIndex) {
 
-        final Tuple2f inputp1 = input.p1;
-        final Tuple2f inputp2 = input.p2;
+        final v2 inputp1 = input.p1;
+        final v2 inputp2 = input.p2;
         final Rot tq = transform;
-        final Tuple2f tp = transform.pos;
+        final v2 tp = transform.pos;
 
         
         
@@ -187,7 +186,7 @@ public class CircleShape extends Shape {
     @Override
     public final void computeAABB(final AABB aabb, final Transform transform, int childIndex) {
         final Rot tq = transform;
-        final Tuple2f tp = transform.pos;
+        final v2 tp = transform.pos;
         final float px = tq.c * center.x - tq.s * center.y + tp.x;
         final float py = tq.s * center.x + tq.c * center.y + tp.y;
 

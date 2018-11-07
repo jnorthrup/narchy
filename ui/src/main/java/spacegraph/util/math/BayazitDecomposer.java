@@ -1,11 +1,6 @@
 package spacegraph.util.math;
 
 
-
-
-
-
-
 import jcog.Util;
 import jcog.data.list.FasterList;
 
@@ -104,7 +99,7 @@ class BayazitDecomposer {
 		float d, lowerDist, upperDist;
 		v2 p;
 		v2 lowerInt = new v2();
-		v2 upperInt = new v2(); 
+		v2 upperInt = new v2();
 		int lowerIndex = 0, upperIndex = 0;
 		FasterList<v2> lowerPoly, upperPoly;
 		for (int i = 0; i < vertices.size(); ++i) {
@@ -146,7 +141,7 @@ class BayazitDecomposer {
 				
 				if (lowerIndex == (upperIndex + 1) % vertices.size()) {
 					v2 sp = new v2((lowerInt.x + upperInt.x) / 2,
-							(lowerInt.y + upperInt.y) / 2);
+                            (lowerInt.y + upperInt.y) / 2);
 					lowerPoly = copy(i, upperIndex, vertices);
 					lowerPoly.add(sp);
 					upperPoly = copy(lowerIndex, i, vertices);
@@ -283,7 +278,7 @@ class BayazitDecomposer {
 	
 	
 	private static boolean lineIntersect(v2 point1, v2 point2, v2 point3,
-										 v2 point4, boolean firstIsSegment, boolean secondIsSegment) {
+                                         v2 point4, boolean firstIsSegment, boolean secondIsSegment) {
 		v2 point = new v2();
 		
 		

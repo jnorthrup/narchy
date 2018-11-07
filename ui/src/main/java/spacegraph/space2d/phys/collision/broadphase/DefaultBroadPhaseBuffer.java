@@ -29,7 +29,7 @@ import spacegraph.space2d.phys.callbacks.TreeCallback;
 import spacegraph.space2d.phys.callbacks.TreeRayCastCallback;
 import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.RayCastInput;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 import java.util.Arrays;
 
@@ -90,7 +90,7 @@ public class DefaultBroadPhaseBuffer implements TreeCallback, BroadPhase {
     }
 
     @Override
-    public final void moveProxy(int proxyId, final AABB aabb, final Tuple2f displacement) {
+    public final void moveProxy(int proxyId, final AABB aabb, final v2 displacement) {
         boolean buffer = m_tree.moveProxy(proxyId, aabb, displacement);
         if (buffer) {
             bufferMove(proxyId);

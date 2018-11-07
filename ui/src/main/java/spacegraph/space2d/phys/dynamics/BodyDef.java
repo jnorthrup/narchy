@@ -23,7 +23,6 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics;
 
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -49,7 +48,7 @@ public class BodyDef {
      * The world position of the body. Avoid creating bodies at the origin since this can lead to many
      * overlapping shapes.
      */
-    public Tuple2f position;
+    public v2 position;
 
     /**
      * The world angle of the body in radians.
@@ -59,7 +58,7 @@ public class BodyDef {
     /**
      * The linear velocity of the body in world co-ordinates.
      */
-    public Tuple2f linearVelocity;
+    public v2 linearVelocity;
 
     /**
      * The angular velocity of the body.
@@ -176,7 +175,7 @@ public class BodyDef {
      * The world position of the body. Avoid creating bodies at the origin since this can lead to many
      * overlapping shapes.
      */
-    public Tuple2f getPosition() {
+    public v2 getPosition() {
         return position;
     }
 
@@ -184,7 +183,7 @@ public class BodyDef {
      * The world position of the body. Avoid creating bodies at the origin since this can lead to many
      * overlapping shapes.
      */
-    public void setPosition(Tuple2f position) {
+    public void setPosition(v2 position) {
         this.position = position;
     }
 
@@ -205,14 +204,14 @@ public class BodyDef {
     /**
      * The linear velocity of the body in world co-ordinates.
      */
-    public Tuple2f getLinearVelocity() {
+    public v2 getLinearVelocity() {
         return linearVelocity;
     }
 
     /**
      * The linear velocity of the body in world co-ordinates.
      */
-    public void setLinearVelocity(Tuple2f linearVelocity) {
+    public void setLinearVelocity(v2 linearVelocity) {
         this.linearVelocity = linearVelocity;
     }
 

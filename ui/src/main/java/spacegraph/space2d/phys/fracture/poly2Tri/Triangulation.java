@@ -1,6 +1,6 @@
 package spacegraph.space2d.phys.fracture.poly2Tri;
 
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 import java.util.ArrayList;
 
@@ -24,7 +24,7 @@ public class Triangulation {
      * @param count
      * @return
      */
-    public static ArrayList<int[]> triangulate(Tuple2f[] vertices, int count) {
+    public static ArrayList<int[]> triangulate(v2[] vertices, int count) {
         return triangulate(1, new int[]{count}, vertices);
     }
 
@@ -48,7 +48,7 @@ public class Triangulation {
      * @param vertices              array of vertices, each item of array contains doubl[2] ~ {x,y}
      * @return ArrayList of ArrayLists which are triangles in form of indexes into array vertices
      */
-    private static ArrayList<int[]> triangulate(int numContures, int[] numVerticesInContures, Tuple2f[] vertices) {
+    private static ArrayList<int[]> triangulate(int numContures, int[] numVerticesInContures, v2[] vertices) {
         Polygon p = new Polygon(numContures, numVerticesInContures, vertices);
         if (debug) {
             

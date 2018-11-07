@@ -34,7 +34,7 @@ import spacegraph.space2d.phys.dynamics.contacts.*;
 import spacegraph.space2d.phys.dynamics.contacts.ContactSolver.ContactSolverDef;
 import spacegraph.space2d.phys.dynamics.joints.Joint;
 import spacegraph.space2d.phys.fracture.fragmentation.Smasher;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 import static spacegraph.space2d.phys.dynamics.BodyType.DYNAMIC;
 import static spacegraph.space2d.phys.dynamics.BodyType.STATIC;
@@ -164,8 +164,8 @@ import static spacegraph.space2d.phys.dynamics.BodyType.STATIC;
  */
 class Island {
 
-    public static final Velocity[] VELOCITIES = new Velocity[0];
-    public static final Position[] POSITIONS = new Position[0];
+    public static final v2[] VELOCITIES = new v2[0];
+    public static final v2[] POSITIONS = new v2[0];
     private ContactListener m_listener;
 
     public Body2D[] bodies;
@@ -215,7 +215,7 @@ class Island {
 
 
         if (velocities == null || m_bodyCapacity > velocities.length) {
-            final Velocity[] old = velocities == null ? VELOCITIES : velocities;
+            final v2[] old = velocities == null ? VELOCITIES : velocities;
             velocities = new Velocity[m_bodyCapacity];
             System.arraycopy(old, 0, velocities, 0, old.length);
             for (int i = old.length; i < velocities.length; i++) {
@@ -225,7 +225,7 @@ class Island {
 
 
         if (positions == null || m_bodyCapacity > positions.length) {
-            final Position[] old = positions == null ? POSITIONS : positions;
+            final v2[] old = positions == null ? POSITIONS : positions;
             positions = new Position[m_bodyCapacity];
             System.arraycopy(old, 0, positions, 0, old.length);
             for (int i = old.length; i < positions.length; i++) {
@@ -245,7 +245,7 @@ class Island {
     private final SolverData solverData = new SolverData();
     private final ContactSolverDef solverDef = new ContactSolverDef();
 
-    public void solve(Dynamics2D.Profile profile, TimeStep step, Tuple2f gravity, boolean allowSleep) {
+    public void solve(Dynamics2D.Profile profile, TimeStep step, v2 gravity, boolean allowSleep) {
 
 
         float h = step.dt;
@@ -254,9 +254,9 @@ class Island {
         for (int i = 0; i < m_bodyCount; ++i) {
             final Body2D b = bodies[i];
             final Sweep bm_sweep = b.sweep;
-            final Tuple2f c = bm_sweep.c;
+            final v2 c = bm_sweep.c;
             float a = bm_sweep.a;
-            final Tuple2f v = b.vel;
+            final v2 v = b.vel;
             float w = b.velAngular;
 
 
@@ -336,9 +336,9 @@ class Island {
 
 
         for (int i = 0; i < m_bodyCount; ++i) {
-            final Tuple2f c = positions[i];
+            final v2 c = positions[i];
             float a = positions[i].a;
-            final Tuple2f v = velocities[i];
+            final v2 v = velocities[i];
             float w = velocities[i].w;
 
 
@@ -424,7 +424,7 @@ class Island {
 
                 if ((b.flags & Body2D.e_autoSleepFlag) == 0
                         || b.velAngular * b.velAngular > angTolSqr
-                        || Tuple2f.dot(b.vel, b.vel) > linTolSqr) {
+                        || v2.dot(b.vel, b.vel) > linTolSqr) {
                     b.m_sleepTime = 0.0f;
                     minSleepTime = 0.0f;
                 } else {
@@ -495,9 +495,9 @@ class Island {
 
 
         for (int i = 0; i < m_bodyCount; ++i) {
-            Tuple2f c = positions[i];
+            v2 c = positions[i];
             float a = positions[i].a;
-            Tuple2f v = velocities[i];
+            v2 v = velocities[i];
             float w = velocities[i].w;
 
 

@@ -46,9 +46,7 @@
 
 package spacegraph.space2d.phys.collision;
 
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
-
 
 
 /**
@@ -67,7 +65,7 @@ public class ManifoldPoint {
     /**
      * usage depends on manifold type
      */
-    public final Tuple2f localPoint;
+    public final v2 localPoint;
     /**
      * the non-penetration impulse
      */

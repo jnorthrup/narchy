@@ -28,7 +28,6 @@ import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.pooling.IWorldPool;
 import spacegraph.space2d.phys.pooling.normal.DefaultWorldPool;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -38,11 +37,11 @@ public class AABB {
     /**
      * Bottom left vertex of bounding box.
      */
-    public final Tuple2f lowerBound;
+    public final v2 lowerBound;
     /**
      * Top right vertex of bounding box.
      */
-    public final Tuple2f upperBound;
+    public final v2 upperBound;
 
     /**
      * Creates the default object, with vertices at 0,0 and 0,0.
@@ -67,9 +66,9 @@ public class AABB {
      * @param lowerVertex the bottom left vertex of the bounding box
      * @param maxVertex   the top right vertex of the bounding box
      */
-    public AABB(final Tuple2f lowerVertex, final Tuple2f upperVertex, boolean clone) {
+    public AABB(final v2 lowerVertex, final v2 upperVertex, boolean clone) {
         if (clone) {
-            this.lowerBound = new v2(lowerVertex); 
+            this.lowerBound = new v2(lowerVertex);
             this.upperBound = new v2(upperVertex);
         } else {
             this.lowerBound = lowerVertex;
@@ -83,10 +82,10 @@ public class AABB {
      * @param aabb the object to copy from
      */
     public final void set(final AABB aabb) {
-        Tuple2f v = aabb.lowerBound;
+        v2 v = aabb.lowerBound;
         lowerBound.x = v.x;
         lowerBound.y = v.y;
-        Tuple2f v1 = aabb.upperBound;
+        v2 v1 = aabb.upperBound;
         upperBound.x = v1.x;
         upperBound.y = v1.y;
     }
@@ -111,14 +110,14 @@ public class AABB {
      *
      * @return
      */
-    public final Tuple2f getCenter() {
+    public final v2 getCenter() {
         final Vec2 center = new Vec2(lowerBound);
         center.addLocal(upperBound);
         center.scaled(.5f);
         return center;
     }
 
-    public final void getCenterToOut(final Tuple2f out) {
+    public final void getCenterToOut(final v2 out) {
         out.x = (lowerBound.x + upperBound.x) * .5f;
         out.y = (lowerBound.y + upperBound.y) * .5f;
     }
@@ -128,19 +127,19 @@ public class AABB {
      *
      * @return
      */
-    public final Tuple2f getExtents() {
-        final Tuple2f center = new v2(upperBound);
+    public final v2 getExtents() {
+        final v2 center = new v2(upperBound);
         center.subbed(lowerBound);
         center.scaled(.5f);
         return center;
     }
 
-    public final void getExtentsToOut(final Tuple2f out) {
+    public final void getExtentsToOut(final v2 out) {
         out.x = (upperBound.x - lowerBound.x) * .5f;
         out.y = (upperBound.y - lowerBound.y) * .5f; 
     }
 
-    public final void getVertices(Tuple2f[] argRay) {
+    public final void getVertices(v2[] argRay) {
         argRay[0].set(lowerBound);
         argRay[1].set(lowerBound);
         argRay[1].x += upperBound.x - lowerBound.x;
@@ -222,14 +221,14 @@ public class AABB {
         float tmin = -Float.MAX_VALUE;
         float tmax = Float.MAX_VALUE;
 
-        final Tuple2f p = argPool.popVec2();
-        final Tuple2f d = argPool.popVec2();
-        final Tuple2f absD = argPool.popVec2();
-        final Tuple2f normal = argPool.popVec2();
+        final v2 p = argPool.popVec2();
+        final v2 d = argPool.popVec2();
+        final v2 absD = argPool.popVec2();
+        final v2 normal = argPool.popVec2();
 
         p.set(input.p1);
         d.set(input.p2).subbed(input.p1);
-        Tuple2f.absToOut(d, absD);
+        v2.absToOut(d, absD);
 
         
         if (absD.x < Settings.EPSILON) {

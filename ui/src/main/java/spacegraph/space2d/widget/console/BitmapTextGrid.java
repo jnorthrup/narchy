@@ -4,6 +4,7 @@ import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.phys.common.Color3f;
 import spacegraph.video.Tex;
 
@@ -132,7 +133,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     }
 
     @Override
-    protected final void paintIt(GL2 gl) {
+    protected final void paintIt(GL2 gl, SurfaceRender r) {
         if (needUpdate.compareAndSet(true, false)) {
             if (ensureBufferSize()) {
                 renderText();

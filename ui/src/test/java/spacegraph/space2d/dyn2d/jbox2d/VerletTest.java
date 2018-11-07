@@ -58,7 +58,7 @@ public class VerletTest implements ICase {
             for(int x=0; x<DIM; x++) {
                 Body2D p = w.addBody(new BodyDef(BodyType.DYNAMIC),
                         new FixtureDef(new CircleShape(REST_LENGTH/4f), 0.1f, 0f));
-                p.setTransform(new v2(x*REST_LENGTH,y*REST_LENGTH), 0);
+                p.setTransform(new v2(x * REST_LENGTH, y * REST_LENGTH), 0);
                 particles.add(p);
 
                 if (x>0) {

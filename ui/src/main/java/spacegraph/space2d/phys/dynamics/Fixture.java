@@ -37,7 +37,6 @@ import spacegraph.space2d.phys.dynamics.contacts.Contact;
 import spacegraph.space2d.phys.dynamics.contacts.ContactEdge;
 import spacegraph.space2d.phys.fracture.Material;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -233,7 +232,7 @@ public class Fixture {
      * @param p a point in world coordinates.
      * @return
      */
-    public boolean testPoint(final Tuple2f p) {
+    public boolean testPoint(final v2 p) {
         return shape.testPoint(body, p);
     }
 
@@ -313,7 +312,7 @@ public class Fixture {
      * @param p a point in world coordinates.
      * @return distance
      */
-    public float computeDistance(Tuple2f p, int childIndex, v2 normalOut) {
+    public float computeDistance(v2 p, int childIndex, v2 normalOut) {
         return shape.computeDistanceToOut(body, p, childIndex, normalOut);
     }
 
@@ -419,7 +418,7 @@ public class Fixture {
 
     private final AABB pool1 = new AABB();
     private final AABB pool2 = new AABB();
-    private final Tuple2f displacement = new Vec2();
+    private final v2 displacement = new Vec2();
 
     /**
      * Internal method

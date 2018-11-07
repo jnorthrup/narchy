@@ -1,7 +1,7 @@
 package spacegraph.space2d.phys.fracture.fragmentation;
 
 import spacegraph.space2d.phys.fracture.Polygon;
-import spacegraph.util.math.Tuple2f;
+import spacegraph.util.math.v2;
 
 /**
  * Vrchol rovinneho grafu. Sluzi na zjednocovanie fragmentov polygonu.
@@ -12,7 +12,7 @@ class GraphVertex {
     /**
      * Vrchol v grafe
      */
-    public final Tuple2f value;
+    public final v2 value;
 
     /**
      * Pocet polygonov, ktorych sucastou je dany vrchol
@@ -39,15 +39,15 @@ class GraphVertex {
      *
      * @param value
      */
-    public GraphVertex(Tuple2f value) {
+    public GraphVertex(v2 value) {
         this.value = value;
         this.polygonCount = 1;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Tuple2f) {
-            Tuple2f o2 = (Tuple2f) o;
+        if (o instanceof v2) {
+            v2 o2 = (v2) o;
             return value == o2;
         }
         return false;

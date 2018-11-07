@@ -24,7 +24,6 @@
 package spacegraph.space2d.phys.collision;
 
 import spacegraph.space2d.phys.common.Settings;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -63,12 +62,12 @@ public class Manifold {
     /**
      * not use for Type::e_points
      */
-    public final Tuple2f localNormal;
+    public final v2 localNormal;
 
     /**
      * usage depends on manifold type
      */
-    public final Tuple2f localPoint;
+    public final v2 localPoint;
 
     public ManifoldType type;
 

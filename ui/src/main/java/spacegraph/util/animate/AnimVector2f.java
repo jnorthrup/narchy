@@ -2,7 +2,6 @@ package spacegraph.util.animate;
 
 import jcog.Util;
 import jcog.data.atomic.AtomicFloat;
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 /**
@@ -70,7 +69,7 @@ public class AnimVector2f extends v2 implements Animated {
     }
 
     @Override
-    public Tuple2f set(float x, float y) {
+    public v2 set(float x, float y) {
         float px = this.x;
         if (px != px || x!=x)
             super.set(x, y); 
@@ -84,5 +83,16 @@ public class AnimVector2f extends v2 implements Animated {
         set(target.x + x, target.y + y);
     }
 
+
+
+
+    /**
+     * Computes the dot product of the this vector and vector v1.
+     *
+     * @param v1 the other vector
+     */
+    private float dot(v2 v1) {
+        return (this.x * v1.x + this.y * v1.y);
+    }
 
 }

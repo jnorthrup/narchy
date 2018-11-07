@@ -123,24 +123,19 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
 
 
-    protected final void update() {
+    protected final void render() {
         this.render = space.rendering;
         float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
         float s = zoom * Math.max(w(), h());
-        this.scale.set(s, s);
 
-        render.set(cam, scale);
-
-        render.toRender.clear();
-        surface.recompile(render);
-        render.rendering.clear(); //TODO better atomic double buffering
-        render.rendering.addAll(render.toRender);
+        render.render(cam, scale.set(s, s), surface);
     }
 
     @Override
-    public void paintChildren(GL2 gl, SurfaceRender r) {
+    protected void paintIt(GL2 gl, SurfaceRender r) {
         r.render(gl);
     }
+
 
     @Override
     protected void doLayout(int dtMS) {
@@ -208,11 +203,11 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
             s.io.addKeyListener(keyboard);
 
+            windowResized(null);
+
             animate(cam);
             animate(fingerUpdate);
-            animate((Runnable)this::update);
-
-            windowResized(null);
+            animate((Runnable)this::render);
 
             if (surface.parent == null)
                 surface.start(this);

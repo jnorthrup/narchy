@@ -23,7 +23,6 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.common;
 
-import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import java.io.Serializable;
@@ -34,7 +33,7 @@ import java.io.Serializable;
 public class Mat22 implements Serializable {
     private static final long serialVersionUID = 2L;
 
-    public final Tuple2f ex, ey;
+    public final v2 ex, ey;
 
     /**
      * Convert the matrix to printable format.
@@ -62,7 +61,7 @@ public class Mat22 implements Serializable {
      * @param c1 Column 1 of matrix
      * @param c2 Column 2 of matrix
      */
-    private Mat22(final Tuple2f c1, final Tuple2f c2) {
+    private Mat22(final v2 c1, final v2 c2) {
         ex = c1.clone();
         ey = c2.clone();
     }
@@ -158,7 +157,7 @@ public class Mat22 implements Serializable {
      * @param c1 Column 1
      * @param c2 Column 2
      */
-    public final void set(final Tuple2f c1, final Tuple2f c2) {
+    public final void set(final v2 c1, final v2 c2) {
         ex.x = c1.x;
         ey.x = c2.x;
         ex.y = c1.y;
@@ -246,17 +245,17 @@ public class Mat22 implements Serializable {
      * @param v Vector to multiply by matrix.
      * @return Resulting vector
      */
-    public final Tuple2f mul(final Tuple2f v) {
+    public final v2 mul(final v2 v) {
         return new v2(ex.x * v.x + ey.x * v.y, ex.y * v.x + ey.y * v.y);
     }
 
-    public final void mulToOut(final Tuple2f v, final Tuple2f out) {
+    public final void mulToOut(final v2 v, final v2 out) {
         final float tempy = ex.y * v.x + ey.y * v.y;
         out.x = ex.x * v.x + ey.x * v.y;
         out.y = tempy;
     }
 
-    public final void mulToOutUnsafe(final Tuple2f v, final Tuple2f out) {
+    public final void mulToOutUnsafe(final v2 v, final v2 out) {
         assert (v != out);
         out.x = ex.x * v.x + ey.x * v.y;
         out.y = ex.y * v.x + ey.y * v.y;
@@ -322,11 +321,11 @@ public class Mat22 implements Serializable {
          */
         final Mat22 C = new Mat22();
 
-        C.ex.x = Tuple2f.dot(this.ex, B.ex);
-        C.ex.y = Tuple2f.dot(this.ey, B.ex);
+        C.ex.x = v2.dot(this.ex, B.ex);
+        C.ex.y = v2.dot(this.ey, B.ex);
 
-        C.ey.x = Tuple2f.dot(this.ex, B.ey);
-        C.ey.y = Tuple2f.dot(this.ey, B.ey);
+        C.ey.x = v2.dot(this.ex, B.ey);
+        C.ey.y = v2.dot(this.ey, B.ey);
         return C;
     }
 
@@ -365,13 +364,13 @@ public class Mat22 implements Serializable {
      * @param v
      * @return
      */
-    public final Tuple2f mulTrans(final Tuple2f v) {
+    public final v2 mulTrans(final v2 v) {
         
         return new v2((v.x * ex.x + v.y * ex.y), (v.x * ey.x + v.y * ey.y));
     }
 
     /* djm added */
-    public final void mulTransToOut(final Tuple2f v, final Tuple2f out) {
+    public final void mulTransToOut(final v2 v, final v2 out) {
         /*
          * out.x = Vec2.dot(v, ex); out.y = Vec2.dot(v, col2);
          */
@@ -417,17 +416,17 @@ public class Mat22 implements Serializable {
      *
      * @return The vector x that solves the above equation.
      */
-    public final Tuple2f solve(final Tuple2f b) {
+    public final v2 solve(final v2 b) {
         final float a11 = ex.x, a12 = ey.x, a21 = ex.y, a22 = ey.y;
         float det = a11 * a22 - a12 * a21;
         if (det != 0.0f) {
             det = 1.0f / det;
         }
-        final Tuple2f x = new v2(det * (a22 * b.x - a12 * b.y), det * (a11 * b.y - a21 * b.x));
+        final v2 x = new v2(det * (a22 * b.x - a12 * b.y), det * (a11 * b.y - a21 * b.x));
         return x;
     }
 
-    public final void solveToOut(final Tuple2f b, final Tuple2f out) {
+    public final void solveToOut(final v2 b, final v2 out) {
         final float a11 = ex.x, a12 = ey.x, a21 = ex.y, a22 = ey.y;
         float det = a11 * a22 - a12 * a21;
         if (det != 0.0f) {
@@ -438,18 +437,18 @@ public class Mat22 implements Serializable {
         out.y = tempy;
     }
 
-    public static Tuple2f mul(final Mat22 R, final Tuple2f v) {
+    public static v2 mul(final Mat22 R, final v2 v) {
         
         return new v2(R.ex.x * v.x + R.ey.x * v.y, R.ex.y * v.x + R.ey.y * v.y);
     }
 
-    public static void mulToOut(final Mat22 R, final Tuple2f v, final Tuple2f out) {
+    public static void mulToOut(final Mat22 R, final v2 v, final v2 out) {
         final float tempy = R.ex.y * v.x + R.ey.y * v.y;
         out.x = R.ex.x * v.x + R.ey.x * v.y;
         out.y = tempy;
     }
 
-    public static void mulToOutUnsafe(final Mat22 R, final Tuple2f v, final Tuple2f out) {
+    public static void mulToOutUnsafe(final Mat22 R, final v2 v, final v2 out) {
         assert (v != out);
         out.x = R.ex.x * v.x + R.ey.x * v.y;
         out.y = R.ex.y * v.x + R.ey.y * v.y;
@@ -485,17 +484,17 @@ public class Mat22 implements Serializable {
         out.ey.y = A.ex.y * B.ey.x + A.ey.y * B.ey.y;
     }
 
-    public static Tuple2f mulTrans(final Mat22 R, final Tuple2f v) {
+    public static v2 mulTrans(final Mat22 R, final v2 v) {
         return new v2((v.x * R.ex.x + v.y * R.ex.y), (v.x * R.ey.x + v.y * R.ey.y));
     }
 
-    public static void mulTransToOut(final Mat22 R, final Tuple2f v, final Tuple2f out) {
+    public static void mulTransToOut(final Mat22 R, final v2 v, final v2 out) {
         float outx = v.x * R.ex.x + v.y * R.ex.y;
         out.y = v.x * R.ey.x + v.y * R.ey.y;
         out.x = outx;
     }
 
-    public static void mulTransToOutUnsafe(final Mat22 R, final Tuple2f v, final Tuple2f out) {
+    public static void mulTransToOutUnsafe(final Mat22 R, final v2 v, final v2 out) {
         assert (out != v);
         out.y = v.x * R.ey.x + v.y * R.ey.y;
         out.x = v.x * R.ex.x + v.y * R.ex.y;
