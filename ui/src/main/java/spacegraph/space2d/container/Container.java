@@ -2,6 +2,7 @@ package spacegraph.space2d.container;
 
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
+import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
@@ -17,7 +18,10 @@ import java.util.function.Predicate;
  */
 abstract public class Container extends Surface {
 
-    private volatile boolean mustLayout = true;
+    final static MetalAtomicIntegerFieldUpdater<Container> MUSTLAYOUT =
+        new MetalAtomicIntegerFieldUpdater<>(Container.class, "mustLayout");
+
+    private volatile int mustLayout = 0;
 
 
     @Override
@@ -31,7 +35,7 @@ abstract public class Container extends Surface {
 
     @Override
     public final void layout() {
-        mustLayout = true;
+        MUSTLAYOUT.lazySet(this, 1);
     }
 
     abstract protected void doLayout(int dtMS);
@@ -73,7 +77,6 @@ abstract public class Container extends Surface {
     @Override
     protected final void paint(GL2 gl, SurfaceRender r) {
 
-        int dtMS = r.dtMS;
         if (!prePaint(r)) {
             showing = false;
             return;
@@ -82,9 +85,13 @@ abstract public class Container extends Surface {
         }
 
 
-        if (mustLayout) {
-            mustLayout = false;
-            doLayout(dtMS);
+        doPaint(gl, r);
+    }
+
+
+    protected void doPaint(GL2 gl, SurfaceRender r) {
+        if (MUSTLAYOUT.compareAndSet(this, 1, 0)) {
+            doLayout(r.dtMS);
         }
 
         paintBelow(gl, r);
@@ -138,8 +145,7 @@ abstract public class Container extends Surface {
                         return true;
 
                     if ((c instanceof Container && !((Container) c).clipBounds) || (
-                            fx >= c.left() && fx <= c.right() && fy >= c.top() && fy <= c.bottom())) {
-
+                            c.bounds.contains(fx, fy))) {
 
                         Surface s = c.finger(finger);
                         if (s != null) {

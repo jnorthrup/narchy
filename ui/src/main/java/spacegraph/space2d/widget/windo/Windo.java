@@ -137,7 +137,9 @@ public class Windo extends MutableUnitContainer {
             }
 
             if (potentialDragMode!=null) {
-                finger.tryFingering(potentialDragMode.hover());
+                RenderWhileHovering h = potentialDragMode.hover();
+                if (h!=null)
+                    finger.tryFingering(h);
             } else {
                 finger.tryFingering(RenderWhileHovering.Reset);
             }
@@ -306,7 +308,7 @@ public class Windo extends MutableUnitContainer {
             cursor.put(DragEdit.RESIZE_S, new FingerRenderer.PolygonWithArrow(-90));
             cursor.put(DragEdit.RESIZE_E, new FingerRenderer.PolygonWithArrow(0));
             cursor.put(DragEdit.RESIZE_W, new FingerRenderer.PolygonWithArrow(180));
-            cursor.put(DragEdit.MOVE, new FingerRenderer.PolygonCrosshairs().angle(45)); //TODO something special
+            //cursor.put(DragEdit.MOVE, new FingerRenderer.PolygonCrosshairs().angle(45)); //TODO something special
 
             cursor.forEach((k,v)-> {
                 hover.put(k, new RenderWhileHovering(v) {

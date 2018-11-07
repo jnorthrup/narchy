@@ -5,6 +5,8 @@ import jcog.math.FloatAveraged;
 import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
 
+import static com.jogamp.opengl.GL.*;
+
 /** cursor renderer */
 @FunctionalInterface public interface FingerRenderer {
     void paint(v2 posPixel, Finger finger, int dtMS, GL2 gl);
@@ -13,16 +15,39 @@ import spacegraph.video.Draw;
 
         float smx = posPixel.x, smy = posPixel.y;
 
-        float cw = 175f, ch = 175f;
+        float cw = 100f, ch = cw;
 
-        gl.glLineWidth(4f);
+        gl.glPushMatrix();
 
-        gl.glColor4f(0.5f, 0.5f, 0.5f, 0.25f);
-        Draw.rectStroke(gl, smx - cw / 2f, smy - ch / 2f, cw, ch);
+        {
 
-        gl.glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
-        Draw.line(smx, smy - ch, smx, smy + ch, gl);
-        Draw.line(smx - cw, smy, smx + cw, smy, gl);
+            gl.glEnable(GL_COLOR_LOGIC_OP);
+            gl.glLogicOp(
+                    //GL_XOR
+                    //GL_INVERT
+                    //GL_OR_INVERTED
+                    GL_EQUIV
+            );
+
+            gl.glTranslatef(smx, smy, 0);
+
+
+            gl.glColor4f(0.75f, 0.75f, 0.75f, 0.9f);
+
+            gl.glLineWidth(6f);
+            //Draw.rectStroke(gl, smx - cw / 2f, smy - ch / 2f, cw, ch);
+            float theta = (posPixel.x + posPixel.y)/100f;
+            Draw.poly(6 /* 6 */, cw/2, theta, false, gl);
+
+            gl.glColor4f(0.5f, 0.5f, 0.5f, 0.75f);
+            gl.glLineWidth(3f);
+            gl.glColor4f(0.5f, 0.5f, 0.5f, 0.75f);
+            Draw.line(0,  - ch, 0,  ch, gl);
+            Draw.line(- cw, 0,  cw, 0, gl);
+
+            gl.glDisable(GL_COLOR_LOGIC_OP);
+        }
+        gl.glPopMatrix();
     };
 
     /** virtua cop */

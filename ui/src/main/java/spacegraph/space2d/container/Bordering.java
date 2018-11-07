@@ -103,6 +103,7 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
         borderSouth = autocollapse && !(l > Bordering.S && get(Bordering.S) != null) ? 0 : this.borderSouth;
 
         for (int i = 0, childrenLength = l; i < childrenLength; i++) {
+
             S c = get(i);
 
             if (c == null || !c.visible())
@@ -162,12 +163,11 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
 //            } else {
                 c.pos(X + x1, Y + y1, X + x2, Y + y2);
 //                c.show();
-                c.layout();
+
 //            }
         }
 
     }
-
 
 
     /**

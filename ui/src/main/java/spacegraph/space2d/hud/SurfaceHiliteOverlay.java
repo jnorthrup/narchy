@@ -29,8 +29,10 @@ public abstract class SurfaceHiliteOverlay extends Surface {
 
 
                 float sw = surfaceRender.pw, sh = surfaceRender.ph;
-                v2 p = cam.worldToScreen(sw, sh, t.x(), t.y());
-                v2 q = cam.worldToScreen(sw, sh,t.x()+t.w(), t.y() + t.h());
+                float tx = t.x();
+                float ty = t.y();
+                v2 p = cam.worldToScreen(sw, sh, tx, ty);
+                v2 q = cam.worldToScreen(sw, sh, tx +t.w(), ty + t.h());
 
                 color.apply(gl);
 

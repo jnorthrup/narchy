@@ -848,15 +848,20 @@ public enum Draw {
 
         gl.glEnd();
     }
-    /** TODO https://stackoverflow.com/questions/8779570/opengl-drawing-a-hexigon-with-vertices#8779622 */
+
     public static void poly(int n, float rad, boolean fill, GL2 gl) {
+        poly(n, rad, 0, fill, gl);
+    }
+
+    /** TODO https://stackoverflow.com/questions/8779570/opengl-drawing-a-hexigon-with-vertices#8779622 */
+    public static void poly(int n, float rad, float angle, boolean fill, GL2 gl) {
 
         assert(n>2);
 
         gl.glBegin(fill ? GL_TRIANGLE_FAN : GL_LINE_LOOP);
 
         for (int i = 0; i < n; ++i) {
-            double theta = (i/((float)n)) * (float)(2*Math.PI);
+            double theta = angle + (i/((float)n)) * (float)(2*Math.PI);
             gl.glVertex2f(rad * (float)Math.cos(theta), rad * (float)Math.sin(theta) );
         }
 

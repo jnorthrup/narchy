@@ -639,13 +639,24 @@ public class FasterList<X> extends FastList<X> {
      * forEach(p) ... clear()
      * but faster
      *
-     * @param procedure
+     * @param each
      */
-    public void clear(Consumer<? super X> procedure) {
+    public void clear(Consumer<? super X> each) {
         int s = this.size;
         if (s > 0) {
             for (int i = 0; i < s; i++) {
-                procedure.accept(this.items[i]);
+                each.accept(this.items[i]);
+                this.items[i] = null;
+            }
+            this.size = 0;
+        }
+    }
+
+    public <Y> void clearWith(BiConsumer<X,Y> each, Y y) {
+        int s = this.size;
+        if (s > 0) {
+            for (int i = 0; i < s; i++) {
+                each.accept(this.items[i], y);
                 this.items[i] = null;
             }
             this.size = 0;
@@ -791,6 +802,8 @@ public class FasterList<X> extends FastList<X> {
         }
         return false;
     }
+
+
 
 
     /**

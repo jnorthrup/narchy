@@ -114,8 +114,11 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     protected void paintAbove(GL2 gl, SurfaceRender r) {
 
         if (focused) {
-            gl.glColor4f(1,0.7f, 0.1f, 0.2f);
-            Draw.rectFrame( bounds,  16, gl);
+            float t = this.temperature;
+            RectFloat b = this.bounds;
+            float th = Math.min(b.w, b.h) * (0.1f + 0.1f * t);
+            gl.glColor4f(0.5f + 0.5f * t,0.25f, 0.15f, 0.5f);
+            Draw.rectFrame(b,  th, gl);
         }
     }
 

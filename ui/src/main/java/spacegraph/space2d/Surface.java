@@ -2,7 +2,6 @@ package spacegraph.space2d;
 
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
-import jcog.Util;
 import jcog.WTF;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
@@ -46,25 +45,36 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
 
     }
 
-
-    public float x() {
-        return bounds.x;
+    public final float cx() {
+        return bounds.cx();
     }
 
-    public float y() {
-        return bounds.y;
+    public final float cy() {
+        return bounds.cy();
     }
 
-    public float left() {
+    @Deprecated public final float x() {
+        return left();
+    }
+
+    @Deprecated public final float y() {
+        return top();
+    }
+
+    public final float left() {
         return bounds.left();
     }
 
-    public float top() {
+    public final float top() {
         return bounds.top();
     }
 
-    public float right() {
+    public final float right() {
         return bounds.right();
+    }
+
+    public float bottom() {
+        return bounds.bottom();
     }
 
     @Override
@@ -77,22 +87,10 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         return id;
     }
 
-    public float bottom() {
-        return bounds.bottom();
-    }
-
-    public float cx() {
-        return bounds.x + 0.5f * bounds.w;
-    }
-
-    public float cy() {
-        return bounds.y + 0.5f * bounds.h;
-    }
-
     abstract protected void paint(GL2 gl, SurfaceRender surfaceRender);
 
     public <S extends Surface> S pos(RectFloat next) {
-        BOUNDS.set(this, next);
+        BOUNDS.lazySet(this, next);
 //        if (bounds.area() < ScalarValue.EPSILON)
 //            throw new WTF();
         return (S) this;
@@ -140,14 +138,10 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
 
         SurfaceBase p = this.parent;
 
-        if (p instanceof Surface) {
-            if (test.test(p))
-                return p;
-            else
-                return ((Surface) p).parent(test);
-        }
-
-        return null;
+        if (p instanceof Surface)
+            return test.test(p) ? p : ((Surface) p).parent(test);
+        else
+            return null;
     }
 
     public boolean start(SurfaceBase parent) {
@@ -213,9 +207,6 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         out.println(this);
     }
 
-    @Deprecated public final void render(GL2 gl, float pw, float ph, int dtMS) {
-        render(gl, new SurfaceRender(1, 1, dtMS).set(pw, ph, pw/2, ph/2));
-    }
 
     public final void render(GL2 gl, SurfaceRender r) {
 
@@ -267,19 +258,6 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         pos(RectFloat.X0Y0WH(x,y,w,h));
     }
 
-    /** keeps this rectangle within the given bounds */
-    public void fence(RectFloat bounds) {
-        //if (bounds.contains(this.bounds)) {
-        if (this.bounds == bounds)
-            return;
-        float x = left();
-        float y = top();
-        float L = bounds.left();
-        float T = bounds.top();
-        pos(Util.clamp(x, L, Math.max(L, bounds.right() - w())),
-                    Util.clamp(y, T, Math.max(T, bounds.bottom() - h())));
-        //}
-    }
 
     /** detach from parent, if possible */
     public boolean remove() {

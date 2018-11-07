@@ -58,7 +58,7 @@ public interface Bitmap2D extends Tensor {
     /**
      * returns a new proxy bitmap that applies per-pixel brightness function
      * TODO variation of this that takes a per-frame brightness histogram as parameter */
-    default ProxyBitmap2D brightnessCurve(FloatToFloatFunction b) {
+    default ProxyBitmap2D each(FloatToFloatFunction pixelFunc) {
         return new ProxyBitmap2D(this) {
             @Override
             public int width() {
@@ -72,7 +72,7 @@ public interface Bitmap2D extends Tensor {
 
             @Override
             public float brightness(int x, int y) {
-                return b.valueOf(Bitmap2D.this.get(x, y));
+                return pixelFunc.valueOf(Bitmap2D.this.get(x, y));
             }
         };
     }

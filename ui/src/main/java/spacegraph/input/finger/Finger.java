@@ -314,6 +314,9 @@ public class Finger {
                         @Nullable FingerRenderer r = f.renderer();
                         if (r != null)
                             renderer = r;
+                        else
+                            renderer = rendererDefault;
+
                         return true;
 
                     } else {
@@ -369,7 +372,9 @@ public class Finger {
         return rotation[2].floatValue();
     }
 
-    final FingerRenderer rendererDefault = FingerRenderer.polygon1;
+    final FingerRenderer rendererDefault =
+            FingerRenderer.rendererCrossHairs1;
+            //FingerRenderer.polygon1;
 
     volatile FingerRenderer renderer = rendererDefault;
 

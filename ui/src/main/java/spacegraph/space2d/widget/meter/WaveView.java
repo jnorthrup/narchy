@@ -116,8 +116,9 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
                 float ss = Util.clamp(x(selectStart), left(), right());
                 gl.glColor4f(1f, 0.8f, 0, 0.5f);
                 float ee = Util.clamp(x(selectEnd), left(), right());
-                if (ee - ss > ScalarValue.EPSILON)
+                if (ee - ss > ScalarValue.EPSILON) {
                     Draw.rect(x() + ss, y(), ee - ss, h(), gl);
+                }
                 //System.out.println("select: " + sStart + ".." + sEnd);
             }
         }

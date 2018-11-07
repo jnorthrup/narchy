@@ -84,9 +84,7 @@ public class PushButton extends AbstractButton {
     protected void onClick() {
         Consumer<PushButton> c = this.onClick;
         if (c !=null) {
-            synchronized(c) {
-                c.accept(this);
-            }
+            c.accept(this);
         }
     }
 

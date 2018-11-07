@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space3d.SimpleSpatial;
 import spacegraph.space3d.SpaceGraphPhys3D;
@@ -148,12 +149,14 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
             gl.glDepthMask(false);
 
             float pixelScale = 1;
-            front.render(gl, pixelScale, pixelScale, dtMS);
+            front.render(gl, rendering.start(1, 1, dtMS).set(pixelScale, pixelScale, pixelScale/2, pixelScale/2));
 
             gl.glDepthMask(true);
 
         }
     }
+
+    private final SurfaceRender rendering = new SurfaceRender();
 
     @Override
     public void renderAbsolute(GL2 gl, int dtMS) {

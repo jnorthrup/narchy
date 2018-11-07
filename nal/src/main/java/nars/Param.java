@@ -93,7 +93,7 @@ public abstract class Param {
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
     /** can be > 1 */
-    public static float ANSWER_COMPLETENESS = 1f;
+    public static float ANSWER_COMPLETENESS = 2f;
 
 
 //    public static final int EVALUATION_MAX_TERMUTATORS = 8;
@@ -240,7 +240,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 1;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 2;
 
 
     /**

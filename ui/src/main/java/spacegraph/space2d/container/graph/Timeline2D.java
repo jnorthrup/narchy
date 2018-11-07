@@ -338,7 +338,7 @@ public class Timeline2D<E> extends Graph2D<E> {
 
             int nlanes = lanes.size();
             float laneHeight = g.h() / nlanes;
-            float Y = g.y();
+            float Y = g.top();
             for (int i = 0; i < nlanes; i++) {
                 RoaringBitmap ri = lanes.get(i);
                 PeekableIntIterator ii = ri.getIntIterator();
