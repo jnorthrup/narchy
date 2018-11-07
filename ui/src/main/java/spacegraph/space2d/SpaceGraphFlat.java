@@ -15,10 +15,22 @@ public class SpaceGraphFlat extends JoglSpace {
 
     public SpaceGraphFlat(Surface content) {
         super();
+
         finger = new Finger();
+
         keyboard = new NewtKeyboard();
-        add(zoom = new ZoomOrtho(content, finger, keyboard));
+
+        add(zoom = new ZoomOrtho(content, finger, keyboard) {
+            @Override
+            protected void starting() {
+                super.starting();
+                io.window.setPointerVisible(false);
+            }
+        });
+
         add(zoom.finger.cursorSurface());
+
+
         add(zoom.finger.zoomBoundsSurface(zoom.cam));
         //addOverlay(this.keyboard.keyFocusSurface(cam));
 

@@ -6,7 +6,8 @@ import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.util.math.v2;
 import spacegraph.util.math.v3;
 
-import java.util.function.Consumer;
+import java.util.List;
+import java.util.function.BiConsumer;
 
 /** surface rendering context */
 public class SurfaceRender {
@@ -33,18 +34,19 @@ public class SurfaceRender {
         this.y2 = c.y2;
     }
 
-    /** deferred rendering overlays */
-    final FasterList<Consumer<GL2>> overlay = new FasterList();
 
     public SurfaceRender() {
 
     }
 
-    public void overlay(Consumer<GL2> deferred) {
-        overlay.add(deferred);
+    public final List<BiConsumer<GL2, SurfaceRender>> toRender = new FasterList(); //TEMPORARY
+    public final List<BiConsumer<GL2, SurfaceRender>> rendering = new FasterList(); //TEMPORARY
+
+    public void add(BiConsumer<GL2, SurfaceRender> renderable) {
+        toRender.add(renderable);
     }
 
-    public SurfaceRender start(float pw, float ph, int dtMS) {
+    public SurfaceRender restart(float pw, float ph, int dtMS) {
         this.pw = pw;
         this.ph = ph;
         this.dtMS = dtMS;
@@ -122,12 +124,9 @@ public class SurfaceRender {
         return !(bounds.w * scaleX < minPixelsToBeVisible) && !(bounds.h * scaleY < minPixelsToBeVisible);
     }
 
-    public void layer(Surface l, GL2 gl) {
-        l.render(gl, this);
-        overlay.clearWith(Consumer::accept, gl);
+    public void render(GL2 gl) {
+        rendering.forEach(rr -> rr.accept(gl, this));
     }
-
-
 
 
 //    /** adapts the world coordinates to a new virtual local coordinate system */

@@ -8,16 +8,11 @@ import nars.Narsese;
 import nars.concept.Concept;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
-import nars.gui.NARui;
 import nars.gui.graph.DynamicConceptSpace;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.hud.SubOrtho;
 import spacegraph.space2d.widget.console.ConsoleGUI;
 import spacegraph.space2d.widget.console.TextEdit0;
-import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space3d.SpaceGraphPhys3D;
-
-import static spacegraph.space2d.container.grid.Gridding.grid;
 
 public class Concepts3D extends DynamicConceptSpace {
 
@@ -36,10 +31,10 @@ public class Concepts3D extends DynamicConceptSpace {
         SpaceGraphPhys3D sg = show(1400, 1000, false);
 
 
-        sg.add(new SubOrtho(grid(
-                new ObjectSurface<>(sg.dyn.broadConstraints.get(0) /* FD hack */),
-                new ObjectSurface<>(vis)
-        )).posWindow(0.5f, 0.1f, 1f, 0.2f));
+//        sg.add(new SubOrtho(grid(
+//                new ObjectSurface<>(sg.dyn.broadConstraints.get(0) /* FD hack */),
+//                new ObjectSurface<>(vis)
+//        )).posWindow(0.5f, 0.1f, 1f, 0.2f));
 
 
         Bagregate<Concept> cpts = this.concepts;
@@ -78,10 +73,10 @@ public class Concepts3D extends DynamicConceptSpace {
                     }
 
                 }));
-        sg.add(new SubOrtho(grid(
-                inputPanel,
-                NARui.top(nar)
-        )).posWindow(0.5f, 0.95f, 1f, 0.1f));
+//        sg.add(new SubOrtho(grid(
+//                inputPanel,
+//                NARui.top(nar)
+//        )).posWindow(0.5f, 0.95f, 1f, 0.1f));
 
         ((ConsoleGUI) inputPanel).resize(25, 2);
 

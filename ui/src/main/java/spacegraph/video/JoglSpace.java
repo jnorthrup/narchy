@@ -139,8 +139,9 @@ abstract public class JoglSpace {
 
     }
 
+
     /* render context */
-    final SurfaceRender rendering = new SurfaceRender();
+    public final SurfaceRender rendering = new SurfaceRender();
 
     private void renderOrthos(int dtMS) {
 
@@ -166,16 +167,14 @@ abstract public class JoglSpace {
             gl.glDisable(GL2.GL_DEPTH_TEST);
 
 
-            rendering.start(w, h, dtMS);
+            rendering.restart(w, h, dtMS);
             for (Surface l : layers) {
-                if (l.visible()) {
-                    if (l instanceof Ortho) {
-                        Ortho o = (Ortho) l;
-                        rendering.set(o.cam, o.scale);
-                    }
+//                if (l.render==null) {
+                    l.render(gl, rendering);
+//                } else {
+//                    l.render.accept(gl, rendering);
+//                }
 
-                    rendering.layer(l, gl);
-                }
             }
 
             gl.glEnable(GL2.GL_DEPTH_TEST);

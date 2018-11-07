@@ -68,7 +68,7 @@ public class MetaFrame extends Bordering {
 
             showing = true;
             //renderExpanded.set(r);
-            renderExpanded.start(r.pw, r.ph, r.dtMS);
+            renderExpanded.restart(r.pw, r.ph, r.dtMS);
 //            renderExpanded.dtMS = r.dtMS;
 //            renderExpanded.scaleX = 1;
 //            renderExpanded.scaleY = 1;
@@ -80,7 +80,7 @@ public class MetaFrame extends Bordering {
 //            renderExpanded.ph = r.ph;
             //renderExpanded = r;
 
-            r.overlay(this::paintLater);
+            //r.overlay(this::paintLater);
             return false;
         } else
             return super.prePaint(r);

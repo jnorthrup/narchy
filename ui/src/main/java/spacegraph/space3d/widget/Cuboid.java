@@ -149,7 +149,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
             gl.glDepthMask(false);
 
             float pixelScale = 1;
-            front.render(gl, rendering.start(1, 1, dtMS).set(pixelScale, pixelScale, pixelScale/2, pixelScale/2));
+            front.render(gl, rendering.restart(1, 1, dtMS).set(pixelScale, pixelScale, pixelScale/2, pixelScale/2));
 
             gl.glDepthMask(true);
 

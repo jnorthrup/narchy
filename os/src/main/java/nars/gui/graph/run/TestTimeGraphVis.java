@@ -4,14 +4,11 @@ import jcog.data.graph.MapNodeGraph;
 import nars.$;
 import nars.time.Event;
 import nars.time.TimeGraph;
-import spacegraph.space2d.hud.SubOrtho;
-import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.widget.SimpleGraph3D;
 import spacegraph.space3d.widget.SpaceWidget;
 
 import static nars.time.Tense.ETERNAL;
-import static spacegraph.space2d.container.grid.Gridding.grid;
 
 public class TestTimeGraphVis extends SimpleGraph3D<Event> {
 
@@ -46,10 +43,10 @@ public class TestTimeGraphVis extends SimpleGraph3D<Event> {
         SpaceGraphPhys3D sg = cs.show(1400, 1000, true);
 
 
-        sg.add(new SubOrtho(grid(
-                
-                new ObjectSurface<>(cs.vis)
-        )).posWindow(0, 0, 1f, 0.2f));
+//        sg.add(new SubOrtho(grid(
+//
+//                new ObjectSurface<>(cs.vis)
+//        )).posWindow(0, 0, 1f, 0.2f));
 
         cs.commit(dt(/*..*/));
 

@@ -52,7 +52,7 @@ public class OsmSpace implements GLUtessellatorCallback {
 
     private final GLUtessellator tobj = GLU.gluNewTess();
 
-    private Consumer<GL2> render = null;
+    private Consumer<GL2> mapRender = null;
     private GL2 gl;
 
     public OsmSpace(Osm osm) {
@@ -153,8 +153,8 @@ public class OsmSpace implements GLUtessellatorCallback {
 
         @Override
         protected void paintWidget(RectFloat bounds, GL2 gl) {
-            if (render == null) {
-                render = compile(gl, osm);
+            if (mapRender == null) {
+                mapRender = compileMap(gl, osm);
             }
 
             gl.glPushMatrix();
@@ -164,7 +164,7 @@ public class OsmSpace implements GLUtessellatorCallback {
             float scale = this.scale.floatValue();
             gl.glScalef(baseScale * scale, baseScale * scale, 1);
 
-            render.accept(gl);
+            mapRender.accept(gl);
 
             gl.glPopMatrix();
         }
@@ -188,15 +188,15 @@ public class OsmSpace implements GLUtessellatorCallback {
 
         @Override
         public void renderAbsolute(GL2 gl, int dtMS) {
-            if (render == null) {
-                render = compile(gl, osm);
+            if (mapRender == null) {
+                mapRender = compileMap(gl, osm);
             }
-            render.accept(gl);
+            mapRender.accept(gl);
         }
 
     }
 
-    private Consumer<GL2> compile(GL2 _gl, Osm osm) {
+    private Consumer<GL2> compileMap(GL2 _gl, Osm osm) {
         this.gl = _gl;
         List<Consumer<GL2>> draw = new FasterList();
 

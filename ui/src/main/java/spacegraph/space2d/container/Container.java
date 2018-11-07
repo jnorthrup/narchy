@@ -10,6 +10,7 @@ import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
 
 import java.io.PrintStream;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -73,16 +74,25 @@ abstract public class Container extends Surface {
 
     }
 
+    @Override
+    public BiConsumer<GL2, SurfaceRender> compile(SurfaceRender r) {
+        if (!prePaint(r)) {
+            showing = false;
+            return null;
+        } else {
+            showing = true;
+        }
+
+        if (MUSTLAYOUT.compareAndSet(this, 1, 0)) {
+            doLayout(r.dtMS);
+        }
+
+        return this::doPaint;
+    }
 
     @Override
     protected final void paint(GL2 gl, SurfaceRender r) {
 
-        if (!prePaint(r)) {
-            showing = false;
-            return;
-        } else {
-            showing = true;
-        }
 
 
         doPaint(gl, r);
@@ -90,20 +100,17 @@ abstract public class Container extends Surface {
 
 
     protected void doPaint(GL2 gl, SurfaceRender r) {
-        if (MUSTLAYOUT.compareAndSet(this, 1, 0)) {
-            doLayout(r.dtMS);
-        }
 
         paintBelow(gl, r);
 
         paintIt(gl);
 
-        renderContents(gl, r);
+        paintChildren(gl, r);
 
         paintAbove(gl, r);
     }
 
-    public void renderContents(GL2 gl, SurfaceRender r) {
+    public void paintChildren(GL2 gl, SurfaceRender r) {
         forEach(c -> {
             if (c.parent==Container.this) {
                 c.render(gl, r);

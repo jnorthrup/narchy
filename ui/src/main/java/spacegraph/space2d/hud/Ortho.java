@@ -59,7 +59,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     private volatile float camYmin = -1, camYmax = +1;
     private final float zoomMargin = 0.1f;
 
-
+    private transient SurfaceRender render = new SurfaceRender();
 
 
     Ortho(Surface content, Finger finger, NewtKeyboard keyboard) {
@@ -121,24 +121,29 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         return focused.getOpaque();
     }
 
-    @Override
-    protected boolean prePaint(SurfaceRender r) {
-        if (super.prePaint(r)) {
-            float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
-            float s = zoom * Math.max(w(), h());
-            this.scale.set(s, s);
-            return true;
-        }
-        return false;
+
+
+    protected final void update() {
+        this.render = space.rendering;
+        float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
+        float s = zoom * Math.max(w(), h());
+        this.scale.set(s, s);
+
+        render.set(cam, scale);
+
+        render.toRender.clear();
+        surface.recompile(render);
+        render.rendering.clear(); //TODO better atomic double buffering
+        render.rendering.addAll(render.toRender);
     }
 
+    @Override
+    public void paintChildren(GL2 gl, SurfaceRender r) {
+        r.render(gl);
+    }
 
     @Override
     protected void doLayout(int dtMS) {
-
-
-
-
 
     }
 
@@ -194,7 +199,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
             this.space = s;
 
-            space.io.window.setPointerVisible(false);
 
             s.io.addWindowListener(this);
             if (space.io.window.hasFocus())
@@ -206,6 +210,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
             animate(cam);
             animate(fingerUpdate);
+            animate((Runnable)this::update);
 
             windowResized(null);
 
