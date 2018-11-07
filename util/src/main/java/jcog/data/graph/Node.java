@@ -24,9 +24,13 @@ public interface Node<N, E> {
         return Streams.stream(edges(false, true));
     }
 
+    default Stream<FromTo<Node<N,E>,E>> stream() {
+        return Streams.stream(edges(true, true));
+    }
+
     default void print(PrintStream out) {
         out.println(this);
-        streamOut().forEach(e -> {
+        stream().forEach(e -> {
             out.println("\t" + e);
         });
     }

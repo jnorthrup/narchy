@@ -731,14 +731,24 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }
 
 
-    /**
-     * always >= 0
-     */
+//    /**
+//     * always >= 0
+//     */
+//    @Override
+//    public float depressurize() {
+//        return Math.max(0, PRESSURE.getAndZero(this));
+//    }
+
+
     @Override
-    public float depressurize() {
-        return Math.max(0, PRESSURE.getAndZero(this));
+    public void depressurize(float priAmount) {
+        PRESSURE.update(this, (p, a)->Math.max(0,p-a), priAmount);
     }
 
+    @Override
+    public float depressurizePct(float rate) {
+        return PRESSURE.updateAndGet(this, (p,factor)-> p * factor, 1-rate);
+    }
 
     @Override
     public float mass() {

@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static jcog.Util.assertUnitized;
 import static jcog.Util.lerp;
 
 
@@ -108,8 +109,14 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
      * WARNING this is a duplicate of code in hijackbag, they ought to share this through a common Pressure class extending AtomicDouble or something
      */
     @Override
-    public float depressurize() {
-        return Math.max(0, PRESSURE.getAndZero(this));
+    public void depressurize(float priAmount) {
+        PRESSURE.update(this, (p, a)->Math.max(0,p-a), priAmount);
+    }
+
+    @Override
+    public float depressurizePct(float percentage) {
+        assertUnitized(percentage);
+        return PRESSURE.updateAndGet(this, (p,factor)-> p * factor, 1-percentage);
     }
 
     @Override
@@ -455,13 +462,14 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         final int capacity = this.capacity();
 
+        float p = incoming.priElseZero();
+
         if (capacity == 0) {
-            incoming.delete();
+            depressurize(p, overflow);
             return null;
         }
 
-        float p = incoming.priElseZero();
-        pressurize(p); //release
+        pressurize(p);
 
 
 //        //HACK special case for saving a lot of unnecessary work when merge=Max
@@ -489,8 +497,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
                 if (existing != incoming) {
                     return merge(existing, incoming, overflow);
                 } else {
-                    if (overflow != null)
-                        overflow.add(p);
+                    depressurize(p, overflow);
                     return incoming; //exact same instance
                 }
             } else {
@@ -532,7 +539,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
             onReject(incoming);
             if (overflow != null)
-                overflow.add(p);
+                depressurize(p, overflow);
             incoming.delete();
 
             return null;
@@ -546,6 +553,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         }
 
     }
+
 
 //    protected boolean fastMergeMaxReject() {
 //        return false;
@@ -588,12 +596,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         float delta = priAfter - priBefore;
 
-        if (oo >= ScalarValue.EPSILON) {
-            if (overflow != null)
-                overflow.add(oo);
 
-            depressurize(oo);
-        }
+        depressurize(oo, overflow);
+
 
         if (Math.abs(delta) >= ScalarValue.EPSILON) {
 
@@ -653,7 +658,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     public final void clear() {
         clear(this::removed);
         MASS.zero(this);
-        depressurize();
+        depressurizePct(1);
     }
 
     public final void clear(Consumer<? super Y> each) {

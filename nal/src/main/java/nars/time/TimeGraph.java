@@ -25,16 +25,17 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Set;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 import static jcog.Util.hashCombine;
 import static jcog.data.graph.search.Search.pathStart;
-import static nars.Op.CONJ;
-import static nars.Op.IMPL;
+import static nars.Op.*;
 import static nars.time.Tense.*;
 import static nars.time.TimeSpan.TS_ZERO;
+import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
  * represents a multigraph of events and their relationships
@@ -273,49 +274,46 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                 case IMPL:
 
-                    Term subj = eventTerm.sub(0);
-                    Term pred = eventTerm.sub(1);
+                    Term subj = eventTerm.sub(0), pred = eventTerm.sub(1);
+                    Event se = know(subj), pe = know(pred);
 
-                    Event se = know(subj);
-                    if (!subj.equals(pred)) {
+                    if (edt == DTERNAL) {
 
-                        Event pe = know(pred);
+                        link(se, ETERNAL, pe);
 
-                        if (edt == DTERNAL) {
+//                        //link first two events of each
+//                        if (subj.hasAny(Op.CONJ)) {
+//                        subj.eventsWhile((w, y) -> {
+//                            link(know(y), ETERNAL, pe);
+//                            return true;
+//                        }, 0, false, true, true, 0);
+//                          }
+//
+//                        pred.eventsWhile((w, y) -> {
+//                            link(se, ETERNAL, know(y));
+//                            return true;
+//                        }, 0, false, true, true, 0);
 
-                            link(se, ETERNAL, pe);
+                    } else if (edt != XTERNAL) {
 
+                        int st = subj.eventRange();
+                        link(se, (edt + st), pe);
+
+
+                        if (subj.op()==Op.CONJ && subj.dt()==DTERNAL) { //HACK to decompose ordinarily non-decomposed &&
                             subj.eventsWhile((w, y) -> {
-                                link(know(y), ETERNAL, pe);
+                                link(know(y), edt + st - w, pe);
                                 return true;
-                            }, 0, false, true, true, 0);
-
-                            pred.eventsWhile((w, y) -> {
-                                link(se, ETERNAL, know(y));
-                                return true;
-                            }, 0, false, true, true, 0);
-
-                        } else if (edt != XTERNAL) {
-
-                            int st = subj.eventRange();
-                            link(se, (edt + st), pe);
-
-
-                            if (subj.hasAny(Op.CONJ)) {
-                                subj.eventsWhile((w, y) -> {
-                                    link(know(y), edt + st - w, pe);
-                                    return true;
-                                }, 0, false, true, false, 0);
-                            }
-
-                            if (pred.hasAny(CONJ)) {
-                                pred.eventsWhile((w, y) -> {
-                                    link(se, edt + st + w, know(y));
-                                    return true;
-                                }, 0, false, true, false, 0);
-                            }
-
+                            }, 0, false, true, false, 0);
                         }
+
+                        if (pred.op()==Op.CONJ && pred.dt()==DTERNAL) { //HACK to decompose ordinarily non-decomposed &&
+                            pred.eventsWhile((w, y) -> {
+                                link(se, edt + st + w, know(y));
+                                return true;
+                            }, 0, false, true, false, 0);
+                        }
+
                     }
 
                     break;
@@ -410,10 +408,10 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 });
                 int aes = ae.size();
                 if (aes > 0) {
-                    Event[] aa = ae.toArray(new Event[aes]);
-                    if (aa.length > 1) ArrayUtils.shuffle(aa, random());
 
                     if (aEqB && aes > 1) {
+
+                        Event[] aa = eventArray(ae);
 
                         for (int i = 0; i < aa.length; i++) {
                             for (int j = i + 1; j < aa.length; j++) {
@@ -429,14 +427,11 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                             if (bx instanceof Absolute) be.add(bx);
                             return true;
                         });
-                        int bes = be.size();
-                        if (bes > 0) {
 
-                            Event[] bb = be.toArray(new Event[bes]);
-                            if (bb.length > 1) ArrayUtils.shuffle(bb, random());
 
-                            for (Event ax : aa) {
-                                for (Event bx : bb) {
+                        if (!be.isEmpty()) {
+                            for (Event ax : eventArray(ae)) {
+                                for (Event bx : eventArray(be)) {
                                     if (!solvePairDT(x, ax, bx, each))
                                         return false;
                                 }
@@ -487,6 +482,14 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         return true;
 
+    }
+
+    private static final Event[] EMPTY_EVENT_ARRAY = new Event[0];
+
+    private Event[] eventArray(UnifiedSet<Event> ae) {
+        Event[] aa = ae.toArray(EMPTY_EVENT_ARRAY);
+        if (aa.length > 1) ArrayUtils.shuffle(aa, random());
+        return aa;
     }
 
     private boolean solvePairDT(Term x, Event a, Event b, Predicate<Event> each) {
@@ -741,31 +744,91 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         Subterms xx = x.subterms();
         if (xx.hasXternal()) {
 
-            Map<Term, Term> subSolved = new UnifiedMap(2);
+            Map<Term, Set<Term>> subSolved = new HashMap(1);
 
             xx.recurseTerms(Term::hasXternal, y -> {
-                if (y.dt() == XTERNAL && !subSolved.containsKey(y)) {
-                    solveDT(y, (z) -> {
-                        //TODO there could be multiple solutions for dt
-                        assert (z.id.dt() != XTERNAL);
-                        //know(z.id);
-                        subSolved.put(y, z.id);
-                        return false;
+                if (y.dt() == XTERNAL) {
+                    subSolved.computeIfAbsent(y, (yy)->{
+                        Set<Term> s = new UnifiedSet(1);
+                        solveDT(yy, (z) -> {
+                            //TODO there could be multiple solutions for dt
+                            assert (z.id.dt() != XTERNAL);
+                            s.add(z.id);
+                            return true;
+                        });
+                        return s.isEmpty() ? java.util.Set.of() : s;
                     });
                 }
                 return true;
             }, null);
 
-            if (!subSolved.isEmpty()) {
-                Term y = x.replace(subSolved);
-                if (y != null && !(y instanceof Bool)) {
-                    x = y;
-                    know(y);
-                }
+            subSolved.values().removeIf(java.util.Set::isEmpty);
+
+            int solvedTerms = subSolved.size();
+            switch (solvedTerms) {
+                case 0:
+                    //continue below
+                    break;
+                case 1:
+                    //randomize the entries
+                    Map.Entry<Term, Set<Term>> xy = subSolved.entrySet().iterator().next();;
+                    Set<Term> sy = xy.getValue();
+                    if (!sy.isEmpty()) {
+                        Term xyx = xy.getKey();
+                        Term[] two = sy.toArray(EmptyTermArray);
+                        if (two.length > 1) ArrayUtils.shuffle(two, random());
+                        for (Term xyy : two) {
+                            Term y = x.replace(xyx, xyy);
+                            if (!solveDtAndOccIfConceptualizable(x, y, each))
+                                return false;
+                        }
+                    }
+                    break;
+                default:
+                    //TODO cartesian product of terms. could be expensive
+                    //for now randomize and start with first entry
+                    List<Pair<Term,Term[]>> substs = new FasterList();
+                    final int[] permutations = {1};
+                    subSolved.forEach((h,w)->{
+                        Term[] ww = w.toArray(EmptyTermArray);
+                        assert(ww.length > 0);
+                        permutations[0] *= ww.length;
+                        substs.add(pair(h, ww));
+                    });
+                    int ns = substs.size();
+                    assert(ns > 0);
+                    Random rng = random();
+
+
+                    while (permutations[0]-- > 0) {
+                        Map<Term,Term> m = new UnifiedMap(ns);
+                        for (int i = 0; i < ns; i++) {
+                            Pair<Term, Term[]> si = substs.get(i);
+                            Term[] ssi = si.getTwo();
+                            Term sssi = ssi[ssi.length > 1 ? rng.nextInt(ssi.length) : 0];
+                            m.put(si.getOne(), sssi);
+                        }
+                        Term z = x.replace(m);
+                        if (!solveDtAndOccIfConceptualizable(x, z, each))
+                            return false;
+                    }
+                    //break;
             }
+
 
         }
 
+        return solveDtAndOcc(x, each);
+
+    }
+
+    private boolean solveDtAndOccIfConceptualizable(Term x, Term y, Predicate<Event> each) {
+        if (y != null && y.op().conceptualizable && !y.equals(x)) {
+            return solveDtAndOcc(y, each);
+        }
+        return true;
+    }
+    private boolean solveDtAndOcc(Term x, Predicate<Event> each) {
         /* occurrence, with or without any xternal remaining */
         return (x.dt() != XTERNAL || solveDT(x, y -> solveOccurrence(y, each)))
                 &&
@@ -855,7 +918,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                 if (nexts == null || nexts.add(next)) {
                     if (nexts == null) {
-                        nexts = new UnifiedSet<>(4);
+                        nexts = new UnifiedSet<>(1);
                         nexts.add(next);
                     }
                     return each.test(next);

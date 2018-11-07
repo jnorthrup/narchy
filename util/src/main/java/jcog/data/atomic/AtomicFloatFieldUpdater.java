@@ -43,13 +43,13 @@ public final class AtomicFloatFieldUpdater<X>  {
 
     public void add(X x, float add) {
 
-        //updater.updateAndGet(x, v -> floatToIntBits(intBitsToFloat(v) + add));
+        updater.updateAndGet(x, v -> floatToIntBits(intBitsToFloat(v) + add));
 
         //adapted from AtomicDouble:
-        int i;
-        do {
-            i = updater.get(x);
-        } while (!updater.compareAndSet(x, i, Float.floatToIntBits(intBitsToFloat(i) +add)));
+//        int i;
+//        do {
+//            i = updater.get(x);
+//        } while (!updater.compareAndSet(x, i, Float.floatToIntBits(intBitsToFloat(i) +add)));
     }
 
     private float updateGet(X x, IntUnaryOperator y) {

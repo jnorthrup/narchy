@@ -35,6 +35,11 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
     },
     replace {
         @Override float merge(float e, float i) {  return i; }
+
+        @Override
+        protected boolean ignoreDeletedIncoming() {
+            return false;
+        }
     }
     //    AVG_GEO,
     //    AVG_GEO_SLOW, //adds momentum by includnig the existing priority as a factor twice against the new value once
@@ -46,12 +51,17 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
 
     abstract float merge(float e, float i);
 
+    /**
+     * merge 'incoming' budget (scaled by incomingScale) into 'existing'
+     *
+     * @return any resultng overflow priority which was not absorbed by the target, >=0
+     */
     public final float merge(Prioritizable existing, Prioritized incoming) {
         return merge(existing, incoming.pri());
     }
 
-    @Override
-    public final void accept(Prioritizable existing, Prioritized incoming) {
+
+    @Override public final void accept(Prioritizable existing, Prioritized incoming) {
         merge(existing, incoming.pri());
     }
 
@@ -61,6 +71,12 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
      * @return any resultng overflow priority which was not absorbed by the target, >=0
      */
     public final float merge(Prioritizable existing, float incoming) {
+
+
+        if (incoming!=incoming && ignoreDeletedIncoming()) {
+            return 0;
+        }
+
         final float[] e = new float[1];
         float ePriAfter = existing.pri((x, y) -> {
 
@@ -76,7 +92,25 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
             return merge(x, y);
         }, incoming);
 
-        return incoming - (ePriAfter - e[0]);
+
+        float z;
+        if (ePriAfter != ePriAfter) {
+            //deleted
+            if (incoming!=incoming)
+                z = 0;
+            else
+                z = incoming;
+        } else {
+            z = incoming - (ePriAfter - e[0]);
+        }
+
+        assert(z==z);
+
+        return z;
+    }
+
+    protected boolean ignoreDeletedIncoming() {
+        return true;
     }
 
     /** if the existing value is deleted, whether to undelete (reset to zero) */

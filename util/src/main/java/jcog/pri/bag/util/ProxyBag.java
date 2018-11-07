@@ -61,6 +61,16 @@ public class ProxyBag<X,Y> implements Bag<X,Y> {
 
 
     @Override
+    public float depressurizePct(float rate) {
+        return bag.depressurizePct(rate);
+    }
+
+    @Override
+    public void depressurize(float pri) {
+        bag.depressurize(pri);
+    }
+
+    @Override
     public void clear() {
         bag.clear();
     }

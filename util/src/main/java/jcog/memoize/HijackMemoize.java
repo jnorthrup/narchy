@@ -221,8 +221,8 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
         }
 
         @Override
-        public float depressurize() {
-            return 0f;
+        public void depressurize(float x) {
+
         }
 
         @Override

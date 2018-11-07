@@ -9,8 +9,8 @@ import nars.Task;
 import nars.control.CauseMerge;
 import nars.task.ITask;
 import nars.task.NALTask;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -127,7 +127,10 @@ abstract public class TaskBuffer  {
          * temporary buffer before input so they can be merged in case of duplicates
          */
         public final PriArrayBag<Task> tasks =
-                new PriArrayBag<Task>(PriMerge.max, new HashMap()) {
+                new PriArrayBag<Task>(PriMerge.max,
+                        //new HashMap()
+                        new UnifiedMap()
+                ) {
                     @Override
                     protected float merge(Task existing, Task incoming) {
                         return BagTasksBuffer.this.merge(existing, incoming);

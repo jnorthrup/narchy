@@ -124,6 +124,15 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
             return 0;
         }
 
+        @Override
+        public float depressurizePct(float rate) {
+            return 0;
+        }
+
+        @Override
+        public void depressurize(float pri) {
+
+        }
     };
 
     @Override
@@ -310,28 +319,38 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
         return x;
     }
 
-    default float depressurize() {
-        return depressurize(1);
+
+
+    default void depressurize(float pri, @Nullable NumberX overflow) {
+        assert(pri==pri);
+        if (pri > ScalarValue.EPSILON) {
+            depressurize(pri);
+            if (overflow != null)
+                overflow.add(pri);
+        }
     }
 
-    default float depressurize(float rate) {
 
-        rate = Math.min(1, rate);
+    void depressurize(float pri);
 
-        //HACK TODO atomic instead of release/return
+    float depressurizePct(float rate);
 
-        float maxPressurePerItem = 1;
+//        rate = Math.min(1, rate);
+//
+//        //HACK TODO atomic instead of release/return
+//
+//        float maxPressurePerItem = 1;
+//
+//        float release = depressurize();
+//
+//        float p = Math.min(size() * maxPressurePerItem, release);
+//        float freed = p * rate;
+//        float returned = p * (1 - rate);
+//        if (returned > ScalarValue.EPSILON)
+//            pressurize(returned);
+//
+//        return freed;
 
-        float release = depressurize();
-
-        float p = Math.min(size() * maxPressurePerItem, release);
-        float freed = p * rate;
-        float returned = p * (1 - rate);
-        if (returned > ScalarValue.EPSILON)
-            pressurize(returned);
-
-        return freed;
-    }
 
     default Iterable<V> commit() {
         return commit(forget(PriForget.FORGET_TEMPERATURE_DEFAULT));
@@ -351,7 +370,7 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
                 int cap = capacity();
                 if (cap > 0) {
 
-                    float pressure = depressurize(temperature);
+                    float pressure = depressurizePct(temperature);
 
                     float mass = mass();
                     if (mass > Float.MIN_NORMAL) {

@@ -24,8 +24,8 @@ public class HijackConceptIndex extends ConceptIndex {
     private final PriLinkHijackBag<Termed,PLink<Termed>> table;
 
 
-    private int forgetPeriodDurs = 64;
-    private float forgetTemperature = 1f;
+    private int forgetPeriodDurs = 256;
+    private float forgetTemperature = 0.05f;
 
     /**
      * how many items to visit during update

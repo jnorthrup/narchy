@@ -37,7 +37,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
             MutableNode<N, E> xx = addNode(x);
             Iterable<? extends N> xs = s.successors(x);
-            System.out.println(x + " " + xs);
+            //System.out.println(x + " " + xs);
             xs.forEach(y -> {
                 if (traversed.add(y))
                     queue.add(y);
