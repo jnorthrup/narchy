@@ -133,6 +133,15 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     @Override
     protected void paintIt(GL2 gl, SurfaceRender r) {
+        gl.glLoadIdentity();
+
+
+        gl.glPushMatrix();
+
+        gl.glTranslatef(w() / 2f, h() / 2f, 0);
+        gl.glScalef(scale.x, scale.y, 1);
+        gl.glTranslatef(-cam.x, -cam.y, 0);
+
         r.render(gl);
     }
 
@@ -476,20 +485,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
 
-    @Override
-    protected void paintBelow(GL2 gl, SurfaceRender r) {
-
-
-        gl.glLoadIdentity();
-
-
-        gl.glPushMatrix();
-
-        gl.glTranslatef(w() / 2f, h() / 2f, 0);
-        gl.glScalef(scale.x, scale.y, 1);
-        gl.glTranslatef(-cam.x, -cam.y, 0);
-
-    }
 
     @Override
     protected void paintAbove(GL2 gl, SurfaceRender r) {

@@ -86,7 +86,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 //    }
 
     @Override
-    protected void paintBelow(GL2 gl, SurfaceRender rr) {
+    protected void paintIt(GL2 gl, SurfaceRender rr) {
 
         float dim = 1f - (dz /* + if disabled, dim further */) / 3f;
         float bri = 0.25f * dim;
@@ -111,6 +111,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
         Draw.rectRGBA(bounds, r, g, b, backgroundAlpha, gl);
 
+        paintWidget(bounds, gl);
     }
 
     @Override
@@ -125,10 +126,6 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         }
     }
 
-    @Override
-    protected final void paintIt(GL2 gl, SurfaceRender r) {
-        paintWidget(bounds, gl);
-    }
 
 //    @Override
 //    protected void paintAbove(GL2 gl, SurfaceRender r) {

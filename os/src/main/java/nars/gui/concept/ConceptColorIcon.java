@@ -26,7 +26,7 @@ public class ConceptColorIcon extends ConceptView {
     }
 
     @Override
-    protected void paintBelow(GL2 gl, SurfaceRender rd) {
+    protected void paintIt(GL2 gl, SurfaceRender rd) {
         gl.glColor3f(color.x, color.y, color.z);
         Draw.rect(bounds, gl);
     }

@@ -20,8 +20,8 @@ abstract public class IconBuilder<X> implements Function<X,Surface> {
                 final int classHash = o.getClass().hashCode();
 
                 @Override
-                protected void paintBelow(GL2 gl, SurfaceRender r) {
-                    super.paintBelow(gl, r);
+                protected void paintIt(GL2 gl, SurfaceRender r) {
+                    super.paintIt(gl, r);
                     Draw.colorHash(gl, classHash);
                     Draw.rect(bounds, gl);
                 }

@@ -635,10 +635,6 @@ public class Occurrify extends TimeGraph {
                 return OccConjDecompose(d, true);
             }
 
-            @Override
-            public BeliefProjection beliefProjection() {
-                return BeliefProjection.Task;
-            }
         },
 
         /**
@@ -665,10 +661,6 @@ public class Occurrify extends TimeGraph {
                 return OccConjDecompose(d, false);
             }
 
-            @Override
-            public BeliefProjection beliefProjection() {
-                return BeliefProjection.Task;
-            }
         },
 
         /**
@@ -735,11 +727,6 @@ public class Occurrify extends TimeGraph {
                 throw new UnsupportedOperationException();
             }
 
-            @Override
-            public BeliefProjection beliefProjection() {
-                //return BeliefProjection.Raw;
-                return BeliefProjection.Task;
-            }
         },
 
 

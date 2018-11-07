@@ -5,14 +5,12 @@ import jcog.Texts;
 import jcog.WTF;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
-import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.collection.AbstractMutableContainer;
 import spacegraph.space2d.container.unit.AspectAlign;
 
 import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 /**
@@ -42,6 +40,8 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     public volatile RectFloat bounds = RectFloat.Zero;
     public volatile SurfaceBase parent;
     protected volatile boolean visible = true, showing = false;
+
+//    public volatile int zIndex;
 
     public Surface() {
 
@@ -215,18 +215,12 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     /** prepares the rendering procedures in the rendering context */
     public final void recompile(SurfaceRender r) {
         if (showing = (visible() && (!clipBounds || r.visible(bounds)))) {
-            BiConsumer<GL2, SurfaceRender> render = compile(r);
-            if (render!=null)
-                r.add(render);
-
-            if (this instanceof Container) { //HACK
-                ((Container)this).forEach(c -> c.recompile(r));
-            }
+            compile(r);
         }
     }
 
-    public BiConsumer<GL2, SurfaceRender> compile(SurfaceRender r) {
-        return this::render;
+    public void compile(SurfaceRender r) {
+        r.on(this::render);
     }
 
     @Deprecated public final void render(GL2 gl, SurfaceRender r) {

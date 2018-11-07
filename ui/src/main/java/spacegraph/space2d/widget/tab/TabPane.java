@@ -49,7 +49,7 @@ public class TabPane extends Splitting {
 
         content = new Gridding() {
             @Override
-            protected void paintBelow(GL2 gl, SurfaceRender r) {
+            protected void paintIt(GL2 gl, SurfaceRender r) {
                 gl.glColor3f(0.1f, 0.1f, 0.1f);
                 Draw.rect(bounds, gl);
             }

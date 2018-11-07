@@ -5,34 +5,24 @@ import jcog.data.list.FasterList;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.util.math.v2;
-import spacegraph.util.math.v3;
 
 import java.util.function.BiConsumer;
 
 /** surface rendering context */
 public class SurfaceRender {
 
+
+    private final FasterList<BiConsumer<GL2, SurfaceRender>>
+            main = new FasterList<>();
+
     /** viewable pixel resolution */
     public float pw, ph;
-
     /** ms since last update */
     public int dtMS;
     public long renderStartNS;
+
     public float scaleX, scaleY;
     public float x1, x2, y1, y2;
-
-    public void set(SurfaceRender c) {
-        this.pw = c.pw;
-        this.ph = c.ph;
-        this.dtMS = c.dtMS;
-        this.renderStartNS = c.renderStartNS;
-        this.scaleX = c.scaleX;
-        this.scaleY = c.scaleY;
-        this.x1 = c.x1;
-        this.y1 = c.y1;
-        this.x2 = c.x2;
-        this.y2 = c.y2;
-    }
 
 
     public SurfaceRender() {
@@ -41,19 +31,26 @@ public class SurfaceRender {
 
 
 
+    /** encodes the rendering sequence */
+    public void on(BiConsumer<GL2, SurfaceRender> renderable) {
+        main.add(renderable);
+    }
 
-//    public final Flip<MetalConcurrentQueue<BiConsumer<GL2, SurfaceRender>>> rendering = new Flip<>(()->
-//            new MetalConcurrentQueue<>(8*1024));
-//    public volatile MetalConcurrentQueue<BiConsumer<GL2, SurfaceRender>> toRender = rendering.write();
-
-    public final FasterList<BiConsumer<GL2, SurfaceRender>> rendering = new FasterList<>();
 
     public void clear() {
-        rendering.clear();
+        main.clear();
     }
-    public void add(BiConsumer<GL2, SurfaceRender> renderable) {
-        rendering.add(renderable);
+
+    public void render(GL2 gl) {
+        main.forEach(rr -> rr.accept(gl, this));
     }
+
+    public void render(Ortho.Camera cam, v2 scale, Surface root) {
+        clear();
+        set(cam, scale);
+        root.recompile(this);
+    }
+
 
     public SurfaceRender restart(float pw, float ph, int dtMS) {
         this.pw = pw;
@@ -87,7 +84,7 @@ public class SurfaceRender {
 //                        (x1 + x2)/2 + offset.x, (y1 + y2)/2 + offset.y);
 //    }
 
-    public SurfaceRender set(v3 cam, v2 scale) {
+    public SurfaceRender set(Ortho.Camera cam, v2 scale) {
         return set(scale.x, scale.y, cam.x, cam.y);
     }
 
@@ -133,18 +130,6 @@ public class SurfaceRender {
         return !(bounds.w * scaleX < minPixelsToBeVisible) && !(bounds.h * scaleY < minPixelsToBeVisible);
     }
 
-    public void render(GL2 gl) {
-
-        //System.out.println(Thread.currentThread() + " > read " + System.identityHashCode(rendering.read()));
-        rendering.forEach(rr -> rr.accept(gl, this));
-        //System.out.println(Thread.currentThread() + " < read " + System.identityHashCode(rendering.read()));
-    }
-
-    public void render(Ortho.Camera cam, v2 scale, Surface root) {
-        clear();
-        set(cam, scale);
-        root.recompile(this);
-    }
 
 
 //    /** adapts the world coordinates to a new virtual local coordinate system */

@@ -132,7 +132,7 @@ public class Recog2D extends NAgentX {
 
                 new Gridding(IntStream.range(0, tv.concepts.length).mapToObj(i -> new VectorLabel(String.valueOf(i)) {
                     @Override
-                    protected void paintBelow(GL2 gl, SurfaceRender r) {
+                    protected void paintIt(GL2 gl, SurfaceRender r) {
                         Concept c = tv.concepts[i];
                         BeliefVector.Neuron nn = tv.neurons[i];
 

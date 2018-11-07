@@ -18,7 +18,7 @@ public class TogglePort extends Gridding {
         
         this.port = new Port() {
             @Override
-            protected void paintBelow(GL2 gl, SurfaceRender r) {
+            protected void paintIt(GL2 gl, SurfaceRender r) {
                 if (port.enabled()) {
                     gl.glColor4f(0,1,0,0.75f);
                 } else {

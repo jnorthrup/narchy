@@ -125,7 +125,7 @@ public class TsneTest {
                 }
 
                 @Override
-                protected void paintBelow(GL2 gl, SurfaceRender r) {
+                protected void paintIt(GL2 gl, SurfaceRender r) {
                     paintNode(gl, this, node.id);
                 }
             }.click(()->{

@@ -121,7 +121,7 @@ public class ServicesTable extends Gridding implements GridModel, GridRenderer {
         }
 
         @Override
-        protected void paintBelow(GL2 gl, SurfaceRender r) {
+        protected void paintIt(GL2 gl, SurfaceRender r) {
             if (s.isOff()) {
                 Draw.rectRGBA(bounds, 1, 0, 0, 0.5f, gl);
             } else if (s.isOn()) {

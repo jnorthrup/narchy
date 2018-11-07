@@ -706,14 +706,14 @@ abstract public class NAgentX extends NAgent {
         }
 
         @Override
-        protected void paintBelow(GL2 gl, SurfaceRender r) {
+        protected void paintIt(GL2 gl, SurfaceRender r) {
             conj.data.bag.forEach(l -> {
                 Task t = l.get();
                 RectFloat b = bounds(new double[]{t.mid(), t.priElseZero()}, 35);
                 gl.glColor3f(0.5f, 0.25f, 0f);
                 Draw.rect(b, gl);
             });
-            super.paintBelow(gl, r);
+            super.paintIt(gl, r);
         }
     }
 

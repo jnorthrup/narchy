@@ -229,8 +229,8 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         }
 
         @Override
-        protected void paintBelow(GL2 gl, SurfaceRender r) {
-            super.paintBelow(gl, r);
+        protected void paintIt(GL2 gl, SurfaceRender r) {
+            super.paintIt(gl, r);
             Draw.colorHash(gl, instanceHash, 0.25f);
             Draw.rect(bounds, gl);
         }

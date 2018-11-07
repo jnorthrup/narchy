@@ -10,7 +10,6 @@ import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
 
 import java.io.PrintStream;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -59,26 +58,23 @@ abstract public class Container extends Surface {
         return (S) this;
     }
 
-    protected void paintAbove(GL2 gl, SurfaceRender r) {
-
-    }
-
-    protected void paintBelow(GL2 gl, SurfaceRender r) {
-
-    }
-
-    /**
-     * paints the component above the background drawn ahead of this
-     */
+    /** first sub-layer */
     protected void paintIt(GL2 gl, SurfaceRender r) {
 
     }
 
+    /** last sub-layer */
+    protected void paintAbove(GL2 gl, SurfaceRender r) {
+
+    }
+
+
+
     @Override
-    public BiConsumer<GL2, SurfaceRender> compile(SurfaceRender r) {
+    public void compile(SurfaceRender r) {
         if (!prePaint(r)) {
             showing = false;
-            return null;
+            return;
         } else {
             showing = true;
         }
@@ -87,7 +83,9 @@ abstract public class Container extends Surface {
             doLayout(r.dtMS);
         }
 
-        return this::doPaint;
+        r.on(this::doPaint);
+
+        forEach(c -> c.recompile(r));
     }
 
     @Override
@@ -99,8 +97,6 @@ abstract public class Container extends Surface {
 
 
     protected void doPaint(GL2 gl, SurfaceRender r) {
-
-        paintBelow(gl, r);
 
         paintIt(gl, r);
 
@@ -134,12 +130,14 @@ abstract public class Container extends Surface {
                 if ((c instanceof Container && !((Container) c).clipBounds) || (
                         c.bounds.contains(finger.pos.x, finger.pos.y))) {
 
-                    Surface s = c.finger(finger);
-                    if (s != null) {
+                    if (found[0] == null) { //TODO area?
+                        Surface s = c.finger(finger);
+                        if (s != null) {
 
-                        //if (found[0] == null || found[0].bounds.area() > s.bounds.area())
                             found[0] = s;
-                        return false;
+
+                            //return false;
+                        }
                     }
                 }
 

@@ -132,7 +132,7 @@ public class SpaceLog {
                             final int eHash = e.id.name.hashCode();
 
                             @Override
-                            protected void paintBelow(GL2 gl, SurfaceRender r) {
+                            protected void paintIt(GL2 gl, SurfaceRender r) {
                                 Draw.colorHashRange(gl, eHash, 0.3f, 0.6f, 0.8f);
                                 Draw.rect(bounds, gl);
                             }
@@ -141,7 +141,7 @@ public class SpaceLog {
             boolean autoNow = true;
 
             @Override
-            protected void paintBelow(GL2 gl, SurfaceRender r) {
+            protected void paintIt(GL2 gl, SurfaceRender r) {
                 gl.glColor3f(0, 0, 0.1f);
                 Draw.rect(bounds, gl);
             }

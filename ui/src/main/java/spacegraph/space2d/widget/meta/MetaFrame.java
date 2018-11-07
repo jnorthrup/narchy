@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.meta;
 
-import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
@@ -55,20 +54,19 @@ public class MetaFrame extends Bordering {
 //    }
 
     boolean expanded = false;
-    SurfaceRender renderExpanded = null;
-
 
 
     @Override
     protected boolean prePaint(SurfaceRender r) {
         if (expanded) {
+            clipBounds = false;
+
             RectFloat v = r.pixelVisible().scale(0.8f);
             pos(v);
             //pos(0, 0, r.pw, r.ph);
 
-            showing = true;
             //renderExpanded.set(r);
-            renderExpanded.restart(r.pw, r.ph, r.dtMS);
+            //renderExpanded.restart(r.pw, r.ph, r.dtMS);
 //            renderExpanded.dtMS = r.dtMS;
 //            renderExpanded.scaleX = 1;
 //            renderExpanded.scaleY = 1;
@@ -81,9 +79,11 @@ public class MetaFrame extends Bordering {
             //renderExpanded = r;
 
             //r.overlay(this::paintLater);
-            return false;
-        } else
+            return true;
+        } else {
+            clipBounds = true;
             return super.prePaint(r);
+        }
     }
 
     @Override
@@ -91,9 +91,6 @@ public class MetaFrame extends Bordering {
         return expanded ? true : super.showing(); //HACK
     }
 
-    private void paintLater(GL2 gl) {
-        doPaint(gl, renderExpanded);
-    }
 
     @Override
     protected void starting() {
@@ -108,20 +105,12 @@ public class MetaFrame extends Bordering {
                 if (!e) {
                     //TODO unexpand any other MetaFrame popup that may be expanded.  check the root context's singleton map
 
-                    if (renderExpanded==null)
-                        renderExpanded = new SurfaceRender();
-
-                    clipBounds = false;
-
                 } else {
-
-                    clipBounds = true;
 
                     SurfaceBase p = parent;
                     if (p!=null) {
                         ((Container) p).layout();
                     }
-
 
                 }
 

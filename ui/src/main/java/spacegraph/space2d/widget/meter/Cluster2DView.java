@@ -26,8 +26,8 @@ public class Cluster2DView extends Graph2D<Centroid> {
                         //TODO extract PolygonButton class
                         new PushButton(new VectorLabel(String.valueOf(x.id.id))) {
                             @Override
-                            protected void paintBelow(GL2 gl, SurfaceRender rr) {
-                                super.paintBelow(gl, rr);
+                            protected void paintIt(GL2 gl, SurfaceRender rr) {
+                                super.paintIt(gl, rr);
 
                                 NodeVis p = parent(NodeVis.class);
                                 if (p != null) {

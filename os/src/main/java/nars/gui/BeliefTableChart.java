@@ -38,7 +38,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
     private long start, end;
 
     @Override
-    protected void paintBelow(GL2 gl, SurfaceRender r) {
+    protected void paintIt(GL2 gl, SurfaceRender r) {
         gl.glColor3f(0,0,0);
         Draw.rect(bounds, gl);
     }
@@ -215,11 +215,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
         return getClass().getSimpleName() + "[" + term + "]";
     }
 
-    @Override
-    protected void paintIt(GL2 ggl, SurfaceRender r) {
 
-
-    }
 
     @Override
     public Surface menu() {

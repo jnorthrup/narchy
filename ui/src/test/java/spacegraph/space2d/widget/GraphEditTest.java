@@ -259,7 +259,7 @@ public class GraphEditTest {
 
                         Gridding inverter = new Gridding(new LabeledPane("trigger", in), new LabeledPane("state", out)) {
                             @Override
-                            protected void paintBelow(GL2 gl, SurfaceRender r) {
+                            protected void paintIt(GL2 gl, SurfaceRender r) {
 
                                 if (state.getOpaque()) {
                                     gl.glColor4f(0, 0.5f, 0, 0.5f);

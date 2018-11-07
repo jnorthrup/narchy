@@ -763,7 +763,7 @@ public class CSSBoxHTMLSurface extends MutableListContainer {
         }
 
         @Override
-        protected void paintBelow(GL2 gl, SurfaceRender r) {
+        protected void paintIt(GL2 gl, SurfaceRender r) {
             float[] bg = bgColor;
             if (bg!=null) {
                 gl.glColor4fv(bg, 0);

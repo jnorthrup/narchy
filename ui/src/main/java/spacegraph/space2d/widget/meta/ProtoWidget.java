@@ -158,7 +158,7 @@ public class ProtoWidget extends Bordering {
                 {  textColor.set(1,1,1,1);   }
 
                 @Override
-                protected void paintBelow(GL2 gl, SurfaceRender r) {
+                protected void paintIt(GL2 gl, SurfaceRender r) {
                     gl.glColor3f(0,0, 0);
                     Draw.rect(bounds, gl);
                 }

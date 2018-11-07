@@ -25,7 +25,7 @@ public class Timeline2DTest {
 
         SpaceGraph.window(new Timeline2D<>(dummyModel, e -> e.set(new Scale(new PushButton(e.id.name), 0.8f))) {
             @Override
-            protected void paintBelow(GL2 gl, SurfaceRender r) {
+            protected void paintIt(GL2 gl, SurfaceRender r) {
                 gl.glColor3f(0.1f, 0, 0.1f);
                 Draw.rect(bounds, gl);
             }

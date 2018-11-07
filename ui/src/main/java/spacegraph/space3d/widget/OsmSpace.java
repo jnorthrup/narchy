@@ -147,7 +147,7 @@ public class OsmSpace implements GLUtessellatorCallback {
         }
 
         @Override
-        protected void paintBelow(GL2 gl, SurfaceRender r) {
+        protected void paintIt(GL2 gl, SurfaceRender r) {
 
         }
 

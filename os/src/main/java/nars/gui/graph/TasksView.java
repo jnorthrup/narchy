@@ -108,7 +108,7 @@ public class TasksView implements Timeline2D.TimelineModel<Task> {
         }
 
         @Override
-        protected void paintBelow(GL2 gl, SurfaceRender r) {
+        protected void paintIt(GL2 gl, SurfaceRender r) {
             Draw.rectRGBA(bounds, this.r, g, b, 0.5f, gl);
         }
 
