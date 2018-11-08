@@ -1,4 +1,4 @@
-package jcog.lab.util;
+package jcog.lab;
 
 import jcog.learn.decision.RealDecisionTree;
 import tech.tablesaw.api.Row;
@@ -13,9 +13,8 @@ public class Opti<X> {
         this.o = o;
     }
 
-    public Opti<X> run() {
-        o.run();
-
+    public Opti<X> run(int iterations) {
+        o.runSync(iterations);
         return this;
     }
 

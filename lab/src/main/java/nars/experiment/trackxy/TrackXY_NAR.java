@@ -3,7 +3,7 @@ package nars.experiment.trackxy;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.lab.Lab;
-import jcog.lab.util.Optimization;
+import jcog.lab.Optimization;
 import jcog.learn.LivePredictor;
 import jcog.learn.decision.RealDecisionTree;
 import jcog.learn.ql.DQN2;
@@ -461,7 +461,7 @@ public class TrackXY_NAR extends NAgentX {
                         }
                         return t.rewardSum;
                     }, repeats)
-                    , experiments);
+            );
 ////            o.sense("numConcepts",
 ////                (TestNARSuite t) -> t.sum((NAR n) -> n.concepts.size()))
 //                    .sense("derivedTask",

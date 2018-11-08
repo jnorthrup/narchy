@@ -1,13 +1,11 @@
-package jcog.lab.util;
+package jcog.lab;
 
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
+import jcog.io.Schema;
 import jcog.io.arff.ARFF;
-import jcog.lab.Goal;
-import jcog.lab.Lab;
-import jcog.lab.Sensor;
-import jcog.lab.Var;
+import jcog.lab.util.MyCMAESOptimizer;
 import jcog.lab.var.FloatVar;
 import jcog.learn.decision.RealDecisionTree;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
@@ -37,7 +35,7 @@ import static java.util.stream.Collectors.toList;
  *          <p>
  *          in simple cases, S and E may be the same type
  */
-public class Optimization<S, E> extends Lab<E> implements Runnable {
+public class Optimization<S, E> extends Lab<E>  {
 
     static final int goalColumn = 0;
     //private final static Logger logger = LoggerFactory.getLogger(Optimization.class);
@@ -45,7 +43,7 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
     /**
      * history of experiments. TODO use ranking like TopN etc
      */
-    public final ARFF data;
+    public Schema data;
 
     private final Supplier<S> subj;
     private final List<Var<S, ?>> vars;
@@ -53,7 +51,6 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
     private final Goal<E> goal;
     private final List<Sensor<E, ?>> sensors = new FasterList();
 
-    private final OptimizationStrategy strategy;
     private double[] inc;
     private double[] min;
     private double[] max;
@@ -66,8 +63,7 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
     public Optimization(Supplier<S> subj,
                         Function<Supplier<S>, E> procedure, Goal<E> goal,
                         List<Var<S, ?>> vars,
-                        List<Sensor<E, ?>> sensors,
-                        OptimizationStrategy strategy) {
+                        List<Sensor<E, ?>> sensors) {
         this.subj = subj;
 
         this.goal = goal;
@@ -80,7 +76,6 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
 
         this.procedure = procedure;
 
-        this.strategy = strategy;
 
         this.data = new ARFF();
     }
@@ -105,13 +100,16 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
         return this;
     }
 
-    public Optimization<S,E> runSync() {
-        run();
+    public Optimization<S,E> runSync(int maxIters) {
+        return runSync(newDefaultOptimizer(maxIters));
+    }
+
+    public Optimization<S,E> runSync(OptimizationStrategy strategy) {
+        run(strategy);
         return this;
     }
 
-    @Override
-    public void run() {
+    public void run(OptimizationStrategy strategy) {
 
         //initialize numeric or numeric-able variables
         final int numVars = vars.size();
@@ -158,7 +156,8 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
         sensors.forEach(s -> s.addToSchema(data));
 
         if (trace) {
-            System.out.println(data.columnNames());
+            String s = data.columnNames().toString();
+            System.out.println(s.substring(1, s.length()-1));
         }
 
         strategy.run(this);
@@ -169,6 +168,7 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
     protected void finish() {
         //sort data
         //((FasterList<ImmutableList>)((ArrayHashSet<ImmutableList>)data.data).list).sortThisByDouble(r -> -((Double)r.get(goalColumn)));
+        data = new Schema(data.sortDescendingOn(data.column(0).name()));
     }
 
     protected double run(double[] point) {
@@ -238,7 +238,8 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
     }
 
     public Row best() {
-        return data.maxBy(goalColumn);
+        //assuming it's sorted
+        return data.iterator().next();
     }
 
     public Optimization<S, E> print() {
@@ -250,7 +251,7 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
         return Optimization.tree(data, discretization, maxDepth);
     }
 
-    public static RealDecisionTree tree(ARFF data, int discretization, int maxDepth) {
+    public static RealDecisionTree tree(Schema data, int discretization, int maxDepth) {
         return data.isEmpty() ? null :
                 new RealDecisionTree(data.toFloatTable(),
                         0 /* score */, maxDepth, discretization);

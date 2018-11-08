@@ -2,14 +2,15 @@ package jcog.io;
 
 import com.google.common.collect.ImmutableList;
 import jcog.TODO;
-import tech.tablesaw.api.ColumnType;
-import tech.tablesaw.api.DoubleColumn;
-import tech.tablesaw.api.StringColumn;
-import tech.tablesaw.api.Table;
+import jcog.learn.decision.FloatTable;
+import jcog.util.ArrayUtils;
+import org.jetbrains.annotations.Nullable;
+import tech.tablesaw.api.*;
 import tech.tablesaw.columns.AbstractColumnType;
 import tech.tablesaw.columns.AbstractParser;
 import tech.tablesaw.columns.Column;
 import tech.tablesaw.io.csv.CsvReadOptions;
+import tech.tablesaw.table.Rows;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,15 +18,30 @@ import java.util.Map;
 /**
  * specified semantics of a data record / structure
  * TODO move most of this to 'MutableSchema' implementation of interface Schema
- * 
- * TODO use TableSaw Table
- */
-@Deprecated public class Schema extends Table {
+ **/
+public class Schema extends Table {
 
 
 //    protected final List<String> attribute_names;
 //    protected final Map<String, ARFF.AttributeType> attrTypes;
     protected final Map<String, String[]> nominalCats;
+
+    /** see: Table.copy() */
+    public Schema(Table copy) {
+        super(copy.name());
+
+        int rc = copy.rowCount();
+        for (Column<?> column : copy.columns()) {
+            addColumns(column.emptyCopy(rc));
+        }
+
+        int[] rows = new int[rc];
+        for (int i = 0; i < rc; i++) {
+            rows[i] = i;
+        }
+        Rows.copyRowsToTable(rows, copy, this);
+        nominalCats = new HashMap<>();
+    }
 
     public Schema(Schema copyMetadataFrom) {
         super("");
@@ -103,6 +119,84 @@ import java.util.Map;
 
     public Schema defineNumeric(String attr) {
         return define(attr, ColumnType.DOUBLE);
+    }
+
+    /**
+     * Get additional information on the attribute. This data is used for
+     * nominal attributes to define the possible values.
+     */
+    public String[] categories(String nominalAttributeName) {
+        return nominalCats.get(nominalAttributeName);
+    }
+
+    /**
+     * Add a data point
+     * TODO check data type of each point component
+     */
+    public boolean add(Object... point) {
+//        return add(Lists.immutable.of(point));
+//    }
+//
+//    public boolean add(ImmutableList point) {
+        if (point.length != columnCount())
+            throw new UnsupportedOperationException("row structure mismatch: provided " + point.length + " != expected " + columnCount());
+
+        for (int i = 0; i < point.length; i++) {
+            Object c = point[i];
+            if (c instanceof Number) {
+                c = ((Number)c).doubleValue(); //come on tablesaw
+            }
+            column(i).appendObj(c);
+        }
+
+        return true;
+    }
+
+    public boolean isEmpty() {
+        return rowCount()==0;
+    }
+
+    @Deprecated public FloatTable<String> toFloatTable() {
+
+        FloatTable<String> data = new FloatTable<>(columnNames().toArray(ArrayUtils.EMPTY_STRING_ARRAY) );
+
+        int cols = data.cols.length;
+
+        doWithRows(exp -> {
+            float[] r = new float[cols];
+            for (int i = 0; i < cols; i++) {
+                double v = exp.getDouble(i);
+                //r[i] = v!=null ? ((float)v) : Float.NaN;
+                r[i] = (float)v;
+            }
+            data.add(r);
+        });
+
+        return data;
+    }
+
+    public final int size() {
+        return rowCount();
+    }
+
+    public void printCSV() {
+        throw new TODO();
+//        String s = data.columnNames().toString();
+//        System.out.println(s.substring(/*'['*/ 1, s.length()-1 /*']'*/));
+    }
+
+    @Nullable
+    public Row maxBy(int column) {
+        final double[] bestScore = {Double.NEGATIVE_INFINITY};
+        final Row[] best = {null};
+        doWithRows( e->{
+            double s = e.getDouble(column);
+            if (s > bestScore[0]) {
+                best[0] = e;
+                bestScore[0] = s;
+            }
+        });
+        return best[0];
     }
 
     public static class NominalColumnType extends AbstractColumnType {

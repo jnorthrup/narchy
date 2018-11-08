@@ -35,17 +35,12 @@
 
 package jcog.io.arff;
 
-import com.google.common.base.Joiner;
 import com.google.common.primitives.Primitives;
 import jcog.TODO;
 import jcog.Texts;
 import jcog.data.list.FasterList;
 import jcog.io.Schema;
-import jcog.learn.decision.FloatTable;
 import jcog.util.Reflect;
-import org.eclipse.collections.api.list.ImmutableList;
-import org.eclipse.collections.impl.factory.Lists;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.ColumnType;
@@ -337,6 +332,17 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
         }
     }
 
+    public void saveOnShutdown(String file) {
+        Runtime.getRuntime().addShutdownHook(new Thread(()->{
+            try {
+                writeToFile(file);
+                System.out.println("saved " + rowCount() + " experiment results to: " + file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
+    }
+
     private boolean isNominalValueValid(String name, String token) {
         switch (token) {
             case "?":
@@ -345,7 +351,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
                 return true; 
         }
 
-        String[] values = nominalCats.get(name);
+        String[] values = categories(name);
         boolean found = false;
         for (String value : values) {
             if (value.equals(token)) {
@@ -480,32 +486,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
     }
 
 
-    /**
-     * Get additional information on the attribute. This data is used for
-     * nominal attributes to define the possible values.
-     */
-    public String[] categories(String nominalAttributeName) {
-        return nominalCats.get(nominalAttributeName);
-    }
-
-    /**
-     * Add a data point
-     * TODO check data type of each point component
-     */
-    public boolean add(Object... point) {
-        return add(Lists.immutable.of(point)); 
-    }
-
-    public boolean add(ImmutableList point) {
-        if (point.size() != columnCount())
-            throw new UnsupportedOperationException("row structure mismatch: provided " + point.size() + " != expected " + columnCount());
-
-        read().csv(Joiner.on(",").join(point), name()); //HACK slow bad
-        //return this.data.add(point);
-        return true;
-    }
-
-//    public Iterator<ImmutableList> iterator() {
+    //    public Iterator<ImmutableList> iterator() {
 //        return data.iterator();
 //    }
 
@@ -537,34 +518,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
         return changed[0];
     }
 
-    public boolean isEmpty() {
-        return rowCount()==0;
-    }
-
-    @Deprecated public FloatTable<String> toFloatTable() {
-
-        FloatTable<String> data = new FloatTable<>(columnNames().toArray(new String[0]) );
-
-        int cols = data.cols.length;
-
-        doWithRows(exp -> {
-            float[] r = new float[cols];
-            for (int i = 0; i < cols; i++) {
-                double v = exp.getDouble(i);
-                //r[i] = v!=null ? ((float)v) : Float.NaN;
-                r[i] = (float)v;
-            }
-            data.add(r);
-        });
-
-        return data;
-    }
-
-    public int size() {
-        return rowCount();
-    }
-
-//    public FloatTable<String> toFloatTable(int... columns) {
+    //    public FloatTable<String> toFloatTable(int... columns) {
 //
 //        Arrays.sort(columns);
 //
@@ -687,30 +641,5 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
         }
     }
 
-
-    public void saveOnShutdown(String file) {
-        Runtime.getRuntime().addShutdownHook(new Thread(()->{
-            try {
-                writeToFile(file);
-                System.out.println("saved " + rowCount() + " experiment results to: " + file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }));
-    }
-
-    @Nullable
-    public Row maxBy(int column) {
-        final double[] bestScore = {Double.NEGATIVE_INFINITY};
-        final Row[] best = {null};
-        doWithRows( e->{
-            double s = e.getDouble(column);
-            if (s > bestScore[0]) {
-                best[0] = e;
-                bestScore[0] = s;
-            }
-        });
-        return best[0];
-    }
 
 }

@@ -1,8 +1,8 @@
 package nars.perf;
 
 import jcog.lab.Lab;
-import jcog.lab.util.Opti;
-import jcog.lab.util.Optimization;
+import jcog.lab.Opti;
+import jcog.lab.Optimization;
 import jcog.learn.decision.RealDecisionTree;
 import nars.NAR;
 import nars.NARS;
@@ -84,8 +84,7 @@ class NARTestOptimize {
             int samples = 128;
             Optimization<NAR, TestNARSuite> o = l.optimize((Supplier<NAR> s) ->
                             new TestNARSuite(s, testClasses).run(parallel, suiteIterations),
-                (TestNARSuite t) -> (float) t.score()
-            , samples);
+                (TestNARSuite t) -> (float) t.score());
 
 //            o
 ////            .sense("numConcepts",
@@ -98,7 +97,7 @@ class NARTestOptimize {
 //                            t.sum((NAR n) -> n.emotion.deriveFailDerivationDuplicate.getValue())
 //            );
 
-            o.runSync().print();
+            o.runSync(samples).print();
 
             RealDecisionTree t = o.tree(4, 8);
             if (t!=null) {
@@ -126,8 +125,8 @@ class NARTestOptimize {
 
             Opti<DeductiveMeshTest> o = l.optimize(d -> {
                 d.test.test();
-            }, d -> d.test.score, 16);
-            o.run();
+            }, d -> d.test.score);
+            o.run(64);
             o.print();
             o.tree(4, 6).print();
             System.out.println(o.best());

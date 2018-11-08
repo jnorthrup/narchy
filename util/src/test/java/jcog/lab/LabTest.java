@@ -1,7 +1,6 @@
 package jcog.lab;
 
 import jcog.lab.util.ExperimentRun;
-import jcog.lab.util.Opti;
 import jcog.learn.decision.RealDecisionTree;
 import jcog.math.FloatRange;
 import jcog.math.Range;
@@ -18,7 +17,7 @@ public class LabTest {
 
         Lab<Model> a = new Lab<>(Model::new).varAuto();
 
-        Opti<Model> r = a.optimize(Model::score, 16).run();
+        Opti<Model> r = a.optimize(Model::score).run(64);
 
         Row best = r.best();
 
