@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.*;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -166,6 +167,22 @@ public class Lab<X> {
     public <Y> Optimization<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, List<Sensor<Y, ?>> sensors) {
         return optimize(subject, vars.values().stream().filter(Var::ready).collect(toList()), procedure, goal, sensors
         );
+    }
+
+    public Optilive<X, X> optilive(FloatFunction<X>... goals) {
+        return optilive(Supplier::get, goals);
+    }
+
+    public <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, FloatFunction<Y>... goal) {
+        return optilive(procedure, Stream.of(goal).map(Goal::new).collect(toList()), List.of());
+    }
+
+    public <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, Goal<Y>... goal) {
+        return optilive(procedure, List.of(goal), List.of());
+    }
+
+    public <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, List<Goal<Y>> goal, List<Sensor<Y, ?>> sensors) {
+        return new Optilive<>(subject, procedure, goal, vars.values().stream().filter(Var::ready).collect(toList()), sensors);
     }
 
     public <Y> Optimization<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, Lab<Y> sensors) {

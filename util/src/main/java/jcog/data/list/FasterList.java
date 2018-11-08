@@ -521,7 +521,7 @@ public class FasterList<X> extends FastList<X> {
         return size();
     }
 
-    public FasterList addingAll(X... x) {
+    public FasterList<X> addingAll(X... x) {
         int l = x.length;
         if (l > 0) {
             ensureCapacityForAdditional(l);

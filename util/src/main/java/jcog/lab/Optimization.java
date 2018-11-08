@@ -34,10 +34,12 @@ import static java.util.stream.Collectors.toList;
  * @param E experiment containing the subject
  *          <p>
  *          in simple cases, S and E may be the same type
+ *
+ *   goal (score) is in column 0 and it assumed to be maximized. for minimized, negate model's score function
  */
 public class Optimization<S, E> extends Lab<E>  {
 
-    static final int goalColumn = 0;
+    //static final int goalColumn = 0;
     //private final static Logger logger = LoggerFactory.getLogger(Optimization.class);
 
     /**
@@ -47,7 +49,7 @@ public class Optimization<S, E> extends Lab<E>  {
 
     private final Supplier<S> subj;
     private final List<Var<S, ?>> vars;
-    private final Function<Supplier<S>, E> procedure;
+    private final Function<Supplier<S>, E> experiment;
     private final Goal<E> goal;
     private final List<Sensor<E, ?>> sensors = new FasterList();
 
@@ -61,7 +63,7 @@ public class Optimization<S, E> extends Lab<E>  {
     private boolean debug = false, trace = true;
 
     public Optimization(Supplier<S> subj,
-                        Function<Supplier<S>, E> procedure, Goal<E> goal,
+                        Function<Supplier<S>, E> experiment, Goal<E> goal,
                         List<Var<S, ?>> vars,
                         List<Sensor<E, ?>> sensors) {
         this.subj = subj;
@@ -74,8 +76,7 @@ public class Optimization<S, E> extends Lab<E>  {
         this.sensors.addAll( sensors );
 
 
-        this.procedure = procedure;
-
+        this.experiment = experiment;
 
         this.data = new ARFF();
     }
@@ -183,7 +184,7 @@ public class Optimization<S, E> extends Lab<E>  {
 
         try {
             Object[] copy = new Object[1];
-            E y = procedure.apply(() -> {
+            E y = experiment.apply(() -> {
                 S s = subject(subj.get(), point);
                 copy[0] = s; //for measurement
                 return s;
