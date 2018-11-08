@@ -7,7 +7,7 @@ import java.util.function.Function;
 /** data source.
  *  produces an instantaneous observation instance detected in the experiment
  */
-abstract public class Sensor<E, S> implements Function<E,S> {
+abstract public class Sensor<E, S> implements Function<E,S>, Comparable<Sensor> {
     /** sensor ID */
     final String id;
 
@@ -44,5 +44,18 @@ abstract public class Sensor<E, S> implements Function<E,S> {
 
     abstract public void addToSchema(Schema data);
 
+    @Override
+    public final int compareTo(Sensor s) {
+        return id.compareTo(s.id);
+    }
 
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj;
+    }
 }

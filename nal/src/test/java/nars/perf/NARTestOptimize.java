@@ -1,9 +1,9 @@
 package nars.perf;
 
+import jcog.lab.DefaultScientist;
 import jcog.lab.Lab;
 import jcog.lab.Opti;
-import jcog.lab.Optimization;
-import jcog.learn.decision.RealDecisionTree;
+import jcog.lab.Optilive;
 import nars.NAR;
 import nars.NARS;
 import nars.Param;
@@ -12,12 +12,10 @@ import nars.derive.budget.DefaultDeriverBudgeting;
 import nars.derive.impl.BatchDeriver;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
-import nars.nal.nal5.NAL5Test;
-import nars.nal.nal6.NAL6Test;
-import nars.nal.nal7.NAL7Test;
 import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
 
+import java.io.File;
 import java.util.function.Supplier;
 
 class NARTestOptimize {
@@ -37,9 +35,9 @@ class NARTestOptimize {
 //                    NAL4Test.class,
 //                    NAL1MultistepTest.class,
                     //NAL4MultistepTest.class,
-                    NAL5Test.class,
-                    NAL6Test.class,
-                    NAL7Test.class,
+//                    NAL5Test.class,
+//                    NAL6Test.class,
+//                    NAL7Test.class,
 //                    NAL8Test.class,
             };
 
@@ -81,8 +79,7 @@ class NARTestOptimize {
 
 
             int suiteIterations = 1;
-            int samples = 128;
-            Optimization<NAR, TestNARSuite> o = l.optimize((Supplier<NAR> s) ->
+            Optilive<NAR, TestNARSuite> o = l.optilive((Supplier<NAR> s) ->
                             new TestNARSuite(s, testClasses).run(parallel, suiteIterations),
                 (TestNARSuite t) -> (float) t.score());
 
@@ -97,13 +94,13 @@ class NARTestOptimize {
 //                            t.sum((NAR n) -> n.emotion.deriveFailDerivationDuplicate.getValue())
 //            );
 
-            o.runSync(samples).print();
+            o.start(new DefaultScientist(), new File("/home/me/naropt"));
 
-            RealDecisionTree t = o.tree(4, 8);
-            if (t!=null) {
-                t.print();
-                t.printExplanations();
-            }
+//            RealDecisionTree t = o.tree(4, 8);
+//            if (t!=null) {
+//                t.print();
+//                t.printExplanations();
+//            }
 
 
         }

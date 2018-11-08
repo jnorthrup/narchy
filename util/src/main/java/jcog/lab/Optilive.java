@@ -1,11 +1,16 @@
 package jcog.lab;
 
+import com.google.common.io.Files;
+import jcog.Texts;
 import jcog.Util;
+import jcog.io.arff.ARFF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -30,8 +35,11 @@ import java.util.function.Supplier;
  * remote control interface thru JMX RPC or something
  */
 public class Optilive<S,E>  {
+    static final private Logger logger = LoggerFactory.getLogger(Optilive.class);
 
-    transient Optimization<S,E> running = null;
+    private File outDir;
+
+    transient Optimize<S,E> current = null;
 
     final Supplier<S> subj;
     final Function<Supplier<S>, E> experiment;
@@ -39,61 +47,96 @@ public class Optilive<S,E>  {
     final List<Goal<E>> goals;
     final List<Var<S, ?>> vars;
     final List<Sensor<E, ?>> sensors;
-    static final private Logger logger = LoggerFactory.getLogger(Optilive.class);
     private Thread thread;
 
     private static final long SLEEP_TIME_MS = 500;
+    private long experimentStart;
+    private long experimentEnd;
+
+    Scientist sci = null;
+    private volatile State state = State.Decide, nextState = null;
 
     public Optilive(Supplier<S> subj, Function<Supplier<S>, E> experiment, List<Goal<E>> goals, List<Var<S, ?>> vars, List<Sensor<E, ?>> sensors) {
+
+
         this.subj = subj;
 
         this.experiment = experiment;
         this.goals = goals;
         this.vars = vars;
         this.sensors = sensors;
-    }
 
-    private Random random() {
-        return ThreadLocalRandom.current();
+        if (outDir!=null) {
+            if (!outDir.exists()) {
+                outDir.mkdirs();
+            }
+        }
+
+//        try {
+//            //TODO configurable
+//            outDir = Files.createTempDirectory(Optilive.class.getSimpleName() + '_' + experiment.toString());
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     /** build the next optimization to run */
-    private Optimization<S, E> next() {
+    private Optimize<S, E> next() {
 
-        Goal<E> goal = goals.get(random().nextInt(goals.size())); //TODO choose subset of this list by model
+        Goal<E> goal = sci.goals();
 
-        List<Var<S, ?>> vars = this.vars; //TODO choose subset of this list by model
+        List<Var<S, ?>> vars = sci.vars(); //TODO choose subset of this list by model
 
-        List<Sensor<E, ?>> sensors = this.sensors; //TODO choose subset of this list by model
+        List<Sensor<E, ?>> sensors = sci.sensors(); //TODO choose subset of this list by model
 
-        return new Optimization<>(subj,experiment, goal, vars, sensors);
+        return new Optimize<>(subj,experiment, goal, vars, sensors);
     }
 
-    private int experimentIterations() {
-        return 16; //TODO model decided
+    /** persist to disk or network, cleanup */
+    private void shutdown() {
+
     }
+
+    /** run analyses and store results */
+    private void analyze() {
+
+        sci.analyze(current);
+
+        current = null;
+        nextState = State.Decide;
+    }
+
+    private void save() {
+            try {
+                //save
+                String path = outDir + "/" +
+                        new Date(experimentStart).toString().replace(' ', '_') + ".arff";
+                logger.info("save {}", path);
+                new ARFF(current.data).writeToFile(path);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+    }
+
 
     private enum State {
         Decide {
             @Override
             public <S,E> void run(Optilive<S, E> o) {
-                o.running = o.next();
-                o.logger.info("next experiment {}", o.running);
-                o.nextState = Run;
+                o.decide();
             }
         },
-        Run {
+        Execute {
             @Override
             public <S,E> void run(Optilive<S, E> o) {
-                o.running.runSync(o.experimentIterations());
-                o.nextState = Analyze;
+               o.execute();
             }
         },
         Analyze {
             @Override
             public <S,E> void run(Optilive<S, E> o) {
                 o.analyze();
-                o.nextState = Decide;
             }
         },
         Sleep {
@@ -106,22 +149,43 @@ public class Optilive<S,E>  {
         abstract public <S,E> void run(Optilive<S,E> o);
     }
 
-    /** persist to disk or network, cleanup */
-    private void shutdown() {
+    private void decide() {
+        current = next();
+        logger.info("next experiment {}", current);
+        nextState = State.Execute;
+    }
+
+    private void execute() {
+
+        experimentStart = System.currentTimeMillis();
+        logger.info("experiment start {}", new Date(experimentStart));
+        try {
+            current.runSync(sci.experimentIterations());
+        } catch (Throwable t) {
+            logger.error("{}", t);
+        } finally {
+            experimentEnd = System.currentTimeMillis();
+            logger.info("experiment end {}\t({})", new Date(experimentEnd), Texts.timeStr(1_000_000 * (experimentEnd - experimentStart)));
+
+            if (outDir!=null) {
+                save();
+            }
+            nextState = State.Analyze;
+        }
 
     }
 
-    /** run analyses and store results */
-    private void analyze() {
-        running.print();
-        running.tree(3, 6).print();
-    }
 
-
-    private volatile State state = State.Decide, nextState = null;
 
     private void run() {
+
         logger.info("start");
+        logger.info("goals: {}", goals);
+        logger.info("vars: {}", vars);
+        logger.info("sensors: {}", sensors);
+
+        sci.start(goals, vars, sensors);
+
         do {
             try {
                 state.run(this);
@@ -145,7 +209,7 @@ public class Optilive<S,E>  {
 
     public void resume() {
         synchronized(thread) {
-            nextState = State.Run;
+            nextState = State.Execute;
             thread.interrupt();
         }
 
@@ -164,7 +228,14 @@ public class Optilive<S,E>  {
         }
     }
 
-    public void start() {
+    public final void start() {
+        start(new DefaultScientist(ThreadLocalRandom.current()), Files.createTempDir().getAbsoluteFile());
+    }
+
+    public void start(Scientist sci, File outDir) {
+        this.sci = sci;
+        this.outDir = outDir;
+
         (this.thread = new Thread(this::run)).start();
     }
 

@@ -139,12 +139,12 @@ public class Lab<X> {
      * score is an objective function that the optimization process tries to
      * maximize.
      */
-    public static <X, Y> Optimization<X, Y> optimize(Supplier<X> subject, List<Var<X, ?>> vars, Function<Supplier<X>, Y> experiment, Goal<Y> goal, List<Sensor<Y, ?>> sensors) {
+    public static <X, Y> Optimize<X, Y> optimize(Supplier<X> subject, List<Var<X, ?>> vars, Function<Supplier<X>, Y> experiment, Goal<Y> goal, List<Sensor<Y, ?>> sensors) {
 
         if (vars.isEmpty())
             throw new UnsupportedOperationException("no Var's provided");
 
-        return new Optimization<>(subject, experiment, goal, vars, sensors);
+        return new Optimize<>(subject, experiment, goal, vars, sensors);
     }
 
     /**
@@ -156,7 +156,7 @@ public class Lab<X> {
      * @param procedure
      * @param goal
      */
-    public Optimization<X, X> optimize(Consumer<X> procedure, Goal<X> goal) {
+    public Optimize<X, X> optimize(Consumer<X> procedure, Goal<X> goal) {
         return optimize(subject, vars.values().stream().filter(Var::ready).collect(toList()),(s -> {
                     X ss = s.get();
                     procedure.accept(ss);
@@ -164,7 +164,7 @@ public class Lab<X> {
                 }), goal, new FasterList<>(sensors.values()));
     }
 
-    public <Y> Optimization<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, List<Sensor<Y, ?>> sensors) {
+    public <Y> Optimize<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, List<Sensor<Y, ?>> sensors) {
         return optimize(subject, vars.values().stream().filter(Var::ready).collect(toList()), procedure, goal, sensors
         );
     }
@@ -182,10 +182,11 @@ public class Lab<X> {
     }
 
     public <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, List<Goal<Y>> goal, List<Sensor<Y, ?>> sensors) {
-        return new Optilive<>(subject, procedure, goal, vars.values().stream().filter(Var::ready).collect(toList()), sensors);
+        return new Optilive<>(subject, procedure, goal,
+                    vars.values().stream().filter(Var::ready).collect(toList()), sensors);
     }
 
-    public <Y> Optimization<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, Lab<Y> sensors) {
+    public <Y> Optimize<X, Y> optimize(Function<Supplier<X>, Y> procedure, Goal<Y> goal, Lab<Y> sensors) {
         return optimize(subject, vars.values().stream().filter(Var::ready).collect(toList()),
                 procedure, goal, new FasterList(sensors.sensors.values())
         );
@@ -206,10 +207,10 @@ public class Lab<X> {
      * simple usage method
      * provies procedure and goal; no additional experiment sensors
      */
-    public <E> Optimization<X, E> optimize(Function<Supplier<X>, E> procedure, FloatFunction<E> goal) {
+    public <E> Optimize<X, E> optimize(Function<Supplier<X>, E> procedure, FloatFunction<E> goal) {
         return optimize(procedure, new Goal<>(goal), List.of());
     }
-    public <E> Optimization<X, E> optimize(Function<Supplier<X>, E> procedure, ToDoubleFunction<E> goal) {
+    public <E> Optimize<X, E> optimize(Function<Supplier<X>, E> procedure, ToDoubleFunction<E> goal) {
         return optimize(procedure, new Goal<>(goal), List.of());
     }
 
@@ -227,11 +228,11 @@ public class Lab<X> {
 
 
 
-    protected Optimization.OptimizationStrategy newDefaultOptimizer(int maxIter) {
+    protected Optimize.OptimizationStrategy newDefaultOptimizer(int maxIter) {
         return
                 vars.size() == 1 ?
-                        new Optimization.SimplexOptimizationStrategy(maxIter) :
-                        new Optimization.CMAESOptimizationStrategy(maxIter);
+                        new Optimize.SimplexOptimizationStrategy(maxIter) :
+                        new Optimize.CMAESOptimizationStrategy(maxIter);
     }
 
 

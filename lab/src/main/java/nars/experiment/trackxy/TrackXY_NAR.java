@@ -3,7 +3,6 @@ package nars.experiment.trackxy;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.lab.Lab;
-import jcog.lab.Optimization;
 import jcog.learn.LivePredictor;
 import jcog.learn.decision.RealDecisionTree;
 import jcog.learn.ql.DQN2;
@@ -448,10 +447,10 @@ public class TrackXY_NAR extends NAgentX {
             int experimentCycles = 2048;
             int repeats = 3;
 
-            Optimization<NAR, TrackXY_NAR> o = l.optimize((Supplier<NAR> s) -> {
+            jcog.lab.Optimize<NAR, TrackXY_NAR> o = l.optimize((Supplier<NAR> s) -> {
                         return new TrackXY_NAR(s.get(), 4, 1);
                     },
-                    Optimization.repeat((TrackXY_NAR t) -> {
+                    jcog.lab.Optimize.repeat((TrackXY_NAR t) -> {
                         try {
                             t.nar.run(experimentCycles);
                         } catch (Throwable ee) {

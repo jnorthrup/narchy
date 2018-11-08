@@ -20,8 +20,11 @@ import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.util.MathArrays;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.Row;
 
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -37,7 +40,10 @@ import static java.util.stream.Collectors.toList;
  *
  *   goal (score) is in column 0 and it assumed to be maximized. for minimized, negate model's score function
  */
-public class Optimization<S, E> extends Lab<E>  {
+public class Optimize<S, E> extends Lab<E>  {
+
+    static final private Logger logger = LoggerFactory.getLogger(Optimize.class);
+
 
     //static final int goalColumn = 0;
     //private final static Logger logger = LoggerFactory.getLogger(Optimization.class);
@@ -50,8 +56,8 @@ public class Optimization<S, E> extends Lab<E>  {
     private final Supplier<S> subj;
     private final List<Var<S, ?>> vars;
     private final Function<Supplier<S>, E> experiment;
-    private final Goal<E> goal;
-    private final List<Sensor<E, ?>> sensors = new FasterList();
+    public final Goal<E> goal;
+    private final FasterList<Sensor<E, ?>> sensors = new FasterList();
 
     private double[] inc;
     private double[] min;
@@ -60,20 +66,22 @@ public class Optimization<S, E> extends Lab<E>  {
     private final List<Sensor<S, ?>> varSensors;
 
     /** enable to print exceptions */
-    private boolean debug = false, trace = true;
+    private boolean debug = false;
 
-    public Optimization(Supplier<S> subj,
-                        Function<Supplier<S>, E> experiment, Goal<E> goal,
-                        List<Var<S, ?>> vars,
-                        List<Sensor<E, ?>> sensors) {
+    public Optimize(Supplier<S> subj,
+                    Function<Supplier<S>, E> experiment, Goal<E> goal,
+                    List<Var<S, ?>> _vars /* unsorted */,
+                    List<Sensor<E, ?>> sensors) {
         this.subj = subj;
 
         this.goal = goal;
 
-        this.vars = vars;
-        this.varSensors = vars.stream().map(Var::sense).collect(toList());
+        this.vars = new FasterList(_vars).sortThis();
+
+        this.varSensors = vars/* sorted */.stream().map(Var::sense).collect(toList());
 
         this.sensors.addAll( sensors );
+        this.sensors.sortThis();
 
 
         this.experiment = experiment;
@@ -95,17 +103,17 @@ public class Optimization<S, E> extends Lab<E>  {
     }
 
     @Override
-    public Optimization<S,E> sense(Sensor sensor) {
+    public Optimize<S,E> sense(Sensor sensor) {
         super.sense(sensor);
         sensors.add(sensor); //HACK
         return this;
     }
 
-    public Optimization<S,E> runSync(int maxIters) {
+    public Optimize<S,E> runSync(int maxIters) {
         return runSync(newDefaultOptimizer(maxIters));
     }
 
-    public Optimization<S,E> runSync(OptimizationStrategy strategy) {
+    public Optimize<S,E> runSync(OptimizationStrategy strategy) {
         run(strategy);
         return this;
     }
@@ -156,9 +164,9 @@ public class Optimization<S, E> extends Lab<E>  {
         varSensors.forEach(s -> s.addToSchema(data));
         sensors.forEach(s -> s.addToSchema(data));
 
-        if (trace) {
+        if (logger.isTraceEnabled()) {
             String s = data.columnNames().toString();
-            System.out.println(s.substring(1, s.length()-1));
+            logger.trace("{}", s.substring(1, s.length()-1));
         }
 
         strategy.run(this);
@@ -194,9 +202,9 @@ public class Optimization<S, E> extends Lab<E>  {
 
             Object[] row = row(copy[0], y, score);
 
-            if (trace) {
+            if (logger.isTraceEnabled()) {
                 String rs = Arrays.toString(row);
-                System.out.println(rs.substring(1, rs.length()-1));
+                logger.trace("{}", rs.substring(1, rs.length()-1));
             }
 
             data.add(row);
@@ -243,13 +251,17 @@ public class Optimization<S, E> extends Lab<E>  {
         return data.iterator().next();
     }
 
-    public Optimization<S, E> print() {
-        System.out.println(data.print());
+    public Optimize<S, E> print() {
+        return print(System.out);
+    }
+
+    public Optimize<S, E> print(PrintStream out) {
+        out.println(data.print());
         return this;
     }
 
     public RealDecisionTree tree(int discretization, int maxDepth) {
-        return Optimization.tree(data, discretization, maxDepth);
+        return Optimize.tree(data, discretization, maxDepth);
     }
 
     public static RealDecisionTree tree(Schema data, int discretization, int maxDepth) {
@@ -297,18 +309,18 @@ public class Optimization<S, E> extends Lab<E>  {
 
     abstract public static class OptimizationStrategy {
 
-        abstract public void run(Optimization eOptimization);
+        abstract public void run(Optimize eOptimize);
     }
 
     abstract public static class ApacheCommonsMathOptimizationStrategy extends OptimizationStrategy {
 
 
         @Override
-        public void run(Optimization o) {
+        public void run(Optimize o) {
             run(o, new ObjectiveFunction(o::run));
         }
 
-        abstract protected void run(Optimization o, ObjectiveFunction func);
+        abstract protected void run(Optimize o, ObjectiveFunction func);
     }
 
     public static class SimplexOptimizationStrategy extends ApacheCommonsMathOptimizationStrategy {
@@ -319,7 +331,7 @@ public class Optimization<S, E> extends Lab<E>  {
         }
 
         @Override
-        protected void run(Optimization o, ObjectiveFunction func) {
+        protected void run(Optimize o, ObjectiveFunction func) {
 
             /** cache the points, becaues if integers are involved, it could confuse the simplex solver when it makes duplicate samples */
             //TODO discretization must be applied correctly here for this to work
@@ -377,7 +389,7 @@ public class Optimization<S, E> extends Lab<E>  {
         }
 
         @Override
-        protected void run(Optimization o, ObjectiveFunction func) {
+        protected void run(Optimize o, ObjectiveFunction func) {
 
             int popSize =
                     (int) Math.ceil(4 + 3 * Math.log(o.vars.size()));

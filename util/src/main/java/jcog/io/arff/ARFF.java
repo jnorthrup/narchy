@@ -46,12 +46,14 @@ import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.Row;
 import tech.tablesaw.api.Table;
+import tech.tablesaw.columns.Column;
 import tech.tablesaw.columns.numbers.DoubleColumnType;
 import tech.tablesaw.columns.strings.StringColumnType;
 
 import java.io.*;
 import java.lang.reflect.Field;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Function;
@@ -84,8 +86,9 @@ import java.util.stream.Stream;
  * <p>
  * https:
  * https:
+ * TODO rewrite as output strategy for Schema
  */
-public class ARFF extends jcog.io.Schema  {
+@Deprecated public class ARFF extends jcog.io.Schema  {
 
 
     static final String NEW_LINE = System.getProperty("line.separator");
@@ -106,10 +109,15 @@ public class ARFF extends jcog.io.Schema  {
 
 //    public final Collection<ImmutableList> data;
 
-    protected ARFF(ARFF copyMetadataFrom) {
+    public ARFF(ARFF copyMetadataFrom) {
         super(copyMetadataFrom);
         this.relation = copyMetadataFrom.relation;
         this.comment = copyMetadataFrom.comment;
+    }
+
+    public ARFF(Schema copyMetadataFrom) {
+        super(copyMetadataFrom);
+        this.relation = this.comment = "";
     }
 
     public ARFF(String l) throws IOException, ARFFParseError {
@@ -405,37 +413,41 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
 
         s.append("@relation ").append(relation).append(NEW_LINE);
 
-        for (String name : columnNames()) {
+        List<String> columnNames = columnNames();
+        for (int i = 0, columnNamesSize = columnNames.size(); i < columnNamesSize; i++) {
+            Column<?> cc = column(i);
+
+            String name = cc.name();
             s.append("@attribute ").append(quoteIfNecessary(name)).append(" ");
 
-            throw new TODO();
-//            switch (attrTypes.get(name)) {
-//                case Numeric:
-//                    s.append("numeric");
-//                    break;
-//                case Text:
-//                    s.append("string");
-//                    break;
+            ColumnType type = cc.type();
+            if (type == ColumnType.DOUBLE)
+                s.append("numeric");
+            else if (type == ColumnType.STRING)
+                s.append("string");
+
 //                case Nominal:
 //                    s.append("{");
 //                    joinWith(nominalCats.get(name), s, ",");
 //                    s.append("}");
 //                    break;
 //            }
-//            s.append(NEW_LINE);
-        }
 
-        s.append("@data").append(NEW_LINE);
+            else
+                throw new UnsupportedOperationException();
 
-        Iterator<Row> ii = iterator();
-        while (ii.hasNext()) {
-            Row r = ii.next();
-            joinWith(r, s, ",");
+
             s.append(NEW_LINE);
+
+            s.append("@data").append(NEW_LINE);
+
+            Iterator<Row> ii = iterator();
+            while (ii.hasNext()) {
+                Row r = ii.next();
+                joinWith(r, s, ",");
+                s.append(NEW_LINE);
+            }
         }
-
-
-
     }
 
     public static String quoteIfNecessary(String name) {

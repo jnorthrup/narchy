@@ -9,7 +9,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 
-abstract public class Var<X,Y> {
+abstract public class Var<X,Y> implements Comparable<Var> {
 
     public final BiFunction<X,Y,Y> set;
     public final Function<X,Y> get;
@@ -23,6 +23,11 @@ abstract public class Var<X,Y> {
         this.id = id;
         this.get = get;
         this.set = set;
+    }
+
+    @Override
+    public final int compareTo(Var var) {
+        return id.compareTo(var.id);
     }
 
     @Override

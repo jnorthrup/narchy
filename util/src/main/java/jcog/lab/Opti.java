@@ -7,9 +7,9 @@ import tech.tablesaw.api.Table;
 /** simple Optimization<X> wrapper */
 public class Opti<X> {
 
-    final Optimization<X, X> o;
+    final Optimize<X, X> o;
 
-    public Opti(Optimization<X, X> o) {
+    public Opti(Optimize<X, X> o) {
         this.o = o;
     }
 

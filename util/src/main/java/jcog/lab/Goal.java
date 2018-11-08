@@ -15,7 +15,7 @@ import java.util.function.ToDoubleFunction;
 public class Goal<X> extends ProxySensor<X,Number> {
 
     public Goal(NumberSensor<X> f) {
-        this("goal", f);
+        this(f.toString(), f);
     }
 
     public Goal(String id, NumberSensor<X> goal) {
@@ -23,9 +23,9 @@ public class Goal<X> extends ProxySensor<X,Number> {
     }
 
     public Goal(FloatFunction<X> goal) {
-        super(NumberSensor.of("goal", goal));
+        super(NumberSensor.of(goal.toString(), goal));
     }
     public Goal(ToDoubleFunction<X> goal) {
-        super(NumberSensor.of("goal", goal));
+        super(NumberSensor.of(goal.toString(), goal));
     }
 }
