@@ -19,7 +19,7 @@ public class DefaultScientist<S,E> extends Scientist<S,E> {
     final Map<String, TopN<FloatObjectPair<String>>> best = new HashMap();
 
     //TODO running PCA aggregation to determine the general relative influence of each variable
-    
+
     int maxVars = 2;
 
     final Random random;

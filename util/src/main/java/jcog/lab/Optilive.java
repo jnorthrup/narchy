@@ -195,7 +195,7 @@ public class Optilive<S,E>  {
             } catch (Throwable e) {
                 logger.info("{}", e);
             }
-        } while (true);
+        } while (this.thread!=null);
 
         shutdown();
     }
@@ -219,6 +219,7 @@ public class Optilive<S,E>  {
         synchronized(thread) {
             Thread thread = this.thread;
             this.thread = null;
+            thread.interrupt();
             thread.stop();
             try {
                 thread.join();
@@ -228,8 +229,14 @@ public class Optilive<S,E>  {
         }
     }
 
+    /** default scientist, in-memory (no file saving) */
     public final void start() {
-        start(new DefaultScientist(ThreadLocalRandom.current()), Files.createTempDir().getAbsoluteFile());
+        start(new DefaultScientist(ThreadLocalRandom.current()), null);
+    }
+
+    /** saves to temporary directory */
+    public void start(Scientist sci) {
+        start(sci, Files.createTempDir().getAbsoluteFile());
     }
 
     public void start(Scientist sci, File outDir) {
