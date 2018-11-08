@@ -15,7 +15,6 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
 
 
     Subterm() {
-
         @Override
         public boolean test(Term container, Term x) {
             return container.contains(x);
@@ -38,37 +37,40 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
     },
 
     Event() {
-
-
-        private boolean containsEvent(Term container, Term x) {
-
-            if (!container.impossibleSubTerm(x)) {
-
-                for (Term c : container.subterms()) {
-                    if (c.equals(x)) return true;
-                    if (c.op()==CONJ && containsEvent(c, x))
-                        return true;
-                }
-
-            }
-            return false;
-        }
-
         @Override
         public final boolean test(Term container, Term x) {
-
-            return container.op()==CONJ && containsEvent(container, x);
-
+            return containsEvent(container, x);
         }
 
         public float cost() {
             return 1f;
         }
     },
+    EventFirst() {
+        @Override
+        public final boolean test(Term container, Term x) {
+            return isEvent(container, x, false, true);
+        }
 
-    /** conj containment of another conj (events) or event */
+        public float cost() {
+            return 1.5f;
+        }
+    },
+    EventLast() {
+        @Override
+        public final boolean test(Term container, Term x) {
+            return isEvent(container, x, false, false);
+        }
+
+        public float cost() {
+            return 1.75f;
+        } //more intensive comparison than first
+    },
+
+    /**
+     * conj containment of another conj (events) or event
+     */
     Events() {
-
         @Override
         public boolean test(Term container, Term xx) {
             if (container.op() != CONJ || container.volume() <= xx.volume() || !Term.commonStructure(container, xx))
@@ -85,8 +87,8 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
             } else {
                 Set<Term> xxe = xx.eventSet();
                 container.eventsWhile((when, what) ->
-                        !xxe.remove(what) || !xxe.isEmpty(),
-                0, true, true, true, 0);
+                                !xxe.remove(what) || !xxe.isEmpty(),
+                        0, true, true, true, 0);
                 return xxe.isEmpty();
             }
         }
@@ -94,14 +96,51 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
         public float cost() {
             return 2f;
         }
-    }
-    ;
+    };
 
     abstract public float cost();
 
     public final boolean test(Term container, Term contentP, boolean testNegAlso) {
-        return test( container, contentP) ||
-                (testNegAlso && test( container,  contentP.neg()));
+        return test(container, contentP) ||
+                (testNegAlso && test(container, contentP.neg()));
     }
 
+    static boolean containsEvent(Term container, Term x) {
+        if (container.op() == CONJ && !container.impossibleSubTerm(x)) {
+            return !container.eventsWhile((when, what) -> !what.equals(x),
+                    0, true, true, true, 0);
+
+        }
+        return false;
+    }
+
+    static boolean isEvent(Term container, Term x, boolean neg, boolean firstOrLast) {
+        if (container.op() == CONJ && !container.impossibleSubTerm(x)) {
+
+            Term xx = x.negIf(neg);
+
+            final int[] count = {0}, found = {-1};
+
+            container.eventsWhile((when, what) -> {
+
+                if (what.equals(xx) || (what.op() == CONJ /* a commutive && that wasnt decomposed */ && what.contains(xx))) {
+
+                    if (!firstOrLast || count[0] == 0) {
+                        found[0] = count[0]; //a later event was found
+
+                        if (firstOrLast) {
+                            assert( count[0] == 0 );
+                            return false; //done
+                        }
+                    }
+
+                }
+                count[0]++;
+                return true; //continue looking for last event
+            }, 0, false, false, false, 0);
+
+            return firstOrLast ? found[0] == 0 : found[0] == count[0] - 1;
+        }
+        return false;
+    }
 }

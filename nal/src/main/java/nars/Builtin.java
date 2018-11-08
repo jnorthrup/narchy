@@ -453,7 +453,7 @@ public class Builtin {
         nar.on(new Functor.AbstractInlineFunctor2("conjDropIfLatest") {
             @Override
             protected Term apply(Term conj, Term event) {
-                boolean filterContradiction = true;
+                boolean filterContradiction = false;
                 Term x = Conj.conjDrop(conj, event, false, filterContradiction);
                 if (conj.equals(x))
                     return Bool.Null;

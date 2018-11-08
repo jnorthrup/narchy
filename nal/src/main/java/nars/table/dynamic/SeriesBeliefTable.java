@@ -202,10 +202,10 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
             return null;
         }
 
-        @Override
-        protected boolean taskevent() {
-            return false;
-        }
+//        @Override
+//        protected boolean taskevent() {
+//            return false;
+//        }
 
         @Override
         protected void input(NAR n) {

@@ -108,7 +108,7 @@ public class ExeCharts {
     }
 
     public static Surface inputPanel(NAR n) {
-        Plot2D plot = new Plot2D(256, Plot2D.Line).add("vol", () -> n.input.volume());
+        Plot2D plot = new Plot2D(256, Plot2D.Line).add("vol", () -> n.input.volume(), 0, 1);
         return new DurSurface(new Gridding(new ObjectSurface(n.input), plot), n) {
             @Override protected void update() {
                 plot.update();

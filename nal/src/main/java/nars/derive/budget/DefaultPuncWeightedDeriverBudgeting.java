@@ -50,5 +50,6 @@ public class DefaultPuncWeightedDeriverBudgeting extends DefaultDeriverBudgeting
     @Override
     protected float postAmp(Task t, float pri) {
         return preAmp(t.punc()) * pri;
+        //return pri;
     }
 }

@@ -18,7 +18,7 @@ import nars.concept.sensor.Signal;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
 import nars.time.Tense;
-import nars.video.Bitmap2DConceptsView;
+import nars.video.AutoclassifiedBitmap;
 import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import spacegraph.space2d.container.grid.Gridding;
@@ -82,40 +82,48 @@ public class FZero extends NAgentX {
 
         //onFrame(visionBuffer::update);
 
-        c = senseCamera($.p($.the("cam"), id), vision/*.blur()*/)
-            //.diff()
-            .resolution(0.1f)
-        ;
+//        c = senseCamera($.p($.the("cam"), id), vision/*.blur()*/)
+//            //.diff()
+//            .resolution(0.1f)
+//        ;
 
-        Bitmap2DView visionView = new Bitmap2DView(vision);
-        onFrame(visionView::update);
-        window(grid(visionView, new Bitmap2DConceptsView(c, this).withControls()), 500, 500);
+
 
 
         ;
 
 //        {
-//            int nx = 4;
-//            AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p($.the("cae"), id), vision, nx, nx, (subX, subY) -> {
-//                return new float[]{/*cc.X, cc.Y*/};
-//            }, 8, this);
-//            camAE.alpha(0.04f);
-//            camAE.noise.set(0.05f);
-//
-//            SpaceGraph.window(column(visionView, camAE.newChart()), 500, 500);
+            int nx = 4;
+            AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p($.the("cae"), id), vision, nx, nx, (subX, subY) -> {
+                return new float[]{/*cc.X, cc.Y*/};
+            }, 8, this);
+            camAE.alpha(0.04f);
+            camAE.noise.set(0.05f);
+
+            //SpaceGraph.(column(visionView, camAE.newChart()), 500, 500);
 //        }
+
+        Bitmap2DView visionView = new Bitmap2DView(vision);
+        onFrame(visionBuffer::update);
+        onFrame(visionView::update);
+        window(grid(visionView,
+                camAE.newChart()
+                //new Bitmap2DConceptsView(c, this).withControls()
+        ), 500, 500);
 
         ActionConcept F = initUnipolarLinear(5f);
 
-        //initPushButtonTank();
+        initPushButtonTank();
+
         //initToggleLeftRight();
+
 //        initToggleFwdStop();
 //        window(new Gridding(
 //                //new CameraSensorView(c, this).withControls(),
 //                NARui.beliefCharts(actions, nar)), 400, 400);
 
 
-        initTankContinuous();
+        //initTankContinuous();
 
         //BiPolarAction A =
                 //initBipolarRotateRelative(true, 1f);
@@ -191,7 +199,7 @@ public class FZero extends NAgentX {
             float race =
                     ((float)
                             //-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
-                            deltaDistance / (fps * 0.4f));
+                            deltaDistance / (fps * 0.8f));
 
 //        float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 0.2)) : -1f;
 

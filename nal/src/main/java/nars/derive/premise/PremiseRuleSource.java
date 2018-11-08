@@ -142,7 +142,7 @@ public class PremiseRuleSource extends ProxyTerm  {
             if (name == Bool.Null)
                 throw new RuntimeException("invalid precondition: " + p);
 
-            String predicateNameStr = name.toString();
+            String pred = name.toString();
             Subterms args = Operator.args(p);
             int an = args.subs();
             Term X = an > 0 ? args.sub(0) : null;
@@ -156,7 +156,7 @@ public class PremiseRuleSource extends ProxyTerm  {
             arg1 = arg2 = null;*/
 
 
-            switch (predicateNameStr) {
+            switch (pred) {
 
 
                 case "neq":
@@ -206,25 +206,29 @@ public class PremiseRuleSource extends ProxyTerm  {
                     constraints.add(new SubOfConstraint(X, Y, Recursive));
                     break;
 
-                case "conjSimultaneous":
-                    match(X, ConjSimultaneous.the);
+                case "conjParallel":
+                    match(X, ConjParallel.the);
                     break;
 
                 case "eventOf":
-                    if (!negated) {
-                        neq(constraints, X, Y);
-                        match(X, new TermMatch.Is(CONJ));
-                    }
-                    constraints.add(new SubOfConstraint(X, Y, Event).negIf(negated));
-                    if (negated)  negationApplied = true;
-                    break;
-
                 case "eventOfNeg":
                     if (!negated) {
                         neq(constraints, X, Y);
                         match(X, new TermMatch.Is(CONJ));
                     }
-                    constraints.add(new SubOfConstraint(X, Y,  Event, -1).negIf(negated));
+                    constraints.add(new SubOfConstraint(X, Y, Event, pred.contains("Neg") ? -1 : +1).negIf(negated));
+                    if (negated)  negationApplied = true;
+                    break;
+
+                case "eventFirstOf":
+                case "eventFirstOfNeg":
+                case "eventLastOf":
+                case "eventLastOfNeg":
+                    if (!negated) {
+                        neq(constraints, X, Y);
+                        match(X, new TermMatch.Is(CONJ));
+                    }
+                    constraints.add(new SubOfConstraint(X, Y, pred.contains("First") ? EventFirst : EventLast, pred.contains("Neg") ? -1 : +1).negIf(negated));
                     if (negated)  negationApplied = true;
                     break;
 
@@ -335,7 +339,7 @@ public class PremiseRuleSource extends ProxyTerm  {
 
 
                 default:
-                    throw new RuntimeException("unhandled postcondition: " + predicateNameStr + " in " + this);
+                    throw new RuntimeException("unhandled postcondition: " + pred + " in " + this);
 
             }
 

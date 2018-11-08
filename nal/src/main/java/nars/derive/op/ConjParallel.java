@@ -8,11 +8,11 @@ import javax.annotation.Nullable;
 import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
 
-public final class ConjSimultaneous extends TermMatch {
+public final class ConjParallel extends TermMatch {
 
-    public static final ConjSimultaneous the = new ConjSimultaneous();
+    public static final ConjParallel the = new ConjParallel();
 
-    private ConjSimultaneous() {
+    private ConjParallel() {
         super();
     }
 
@@ -20,11 +20,8 @@ public final class ConjSimultaneous extends TermMatch {
     public boolean test(Term t) {
         Term u = t.unneg();
         if (u.op()==CONJ) {
-            switch (u.dt()) {
-                case 0:
-                case DTERNAL:
-                    return true;
-            }
+            int i = u.dt();
+            return i == 0 || i == DTERNAL;
         }
         return false;
     }

@@ -103,33 +103,33 @@ public class Taskify extends AbstractPred<Derivation> {
         }
 
 
-        long[] occ = d.concOcc != null ? d.concOcc : new long[]{ETERNAL, ETERNAL};
+        long S, E;
+        if (d.concOcc!=null && d.concOcc[0]!=ETERNAL) {
+            long s = d.concOcc[0], e = d.concOcc[1];
+            assert (e >= s) : "task has reversed occurrence: " + s + ".." + e;
 
-        if (same(x, punc, tru, occ, d._task, d.nar) ||
-                (d._belief != null && same(x, punc, tru, occ, d._belief, d.nar))) {
+            //dither time
+            int dither = d.ditherTime;
+            S = Tense.dither(s, dither);
+            E = Tense.dither(e, dither);
+        } else {
+            S = E = ETERNAL;
+        }
+
+
+        if (same(x, punc, tru, S, E, d._task, d.nar) ||
+                (d._belief != null && same(x, punc, tru, S, E, d._belief, d.nar))) {
             d.nar.emotion.deriveFailParentDuplicate.increment();
             return spam(d, Param.TTL_DERIVE_TASK_SAME);
         }
 
-        long start = occ[0], end = occ[1];
-        assert (end >= start) : "task has reversed occurrence: " + start + ".." + end;
 
 
-        DerivedTask t = Task.tryTask(x, punc, tru, (C, tr) -> {
-            //dither time
-            long _start, _end;
-            if (start != ETERNAL) {
-                int dither = d.ditherTime;
-                _start = Tense.dither(start, dither);
-                _end = Tense.dither(end, dither);
-            } else {
-                _start = _end = ETERNAL;
-            }
-
-            return Param.DEBUG ?
-                    new DebugDerivedTask(C, punc, tr, _start, _end, d) :
-                    new DerivedTask(C, punc, tr, _start, _end, d);
-        });
+        DerivedTask t = Task.tryTask(x, punc, tru, (C, tr) ->
+            Param.DEBUG ?
+                new DebugDerivedTask(C, punc, tr, S, E, d) :
+                new DerivedTask(C, punc, tr, S, E, d)
+        );
 
         if (t == null) {
             d.nar.emotion.deriveFailTaskify.increment();
@@ -174,19 +174,19 @@ public class Taskify extends AbstractPred<Derivation> {
         return true;
     }
 
-    protected boolean same(Term derived, byte punc, Truth truth, long[] occ, Task parent, NAR n) {
+    protected boolean same(Term derived, byte punc, Truth truth, long start, long end, Task parent, NAR n) {
         if (parent.isDeleted())
             return false;
 
         if (FILTER_SIMILAR_DERIVATIONS) {
 
             if (parent.punc() == punc) {
-                if (parent.term().equals(derived.term())) {
-                    if (sameTime(occ, parent)) {
+                if (parent.term().equals(derived.term())) { //TODO test for dtDiff
+                    if (parent.contains(start, end)) {
 
                         if ((punc == QUESTION || punc == QUEST) || (
                                 Util.equals(parent.freq(), truth.freq(), n.freqResolution.floatValue()) &&
-                                        parent.conf() <= truth.conf() - n.confResolution.floatValue()
+                                        parent.conf() >= truth.conf() - n.confResolution.floatValue()/2
                                 // / 2 /* + epsilon to avid creeping confidence increase */
                         )) {
 
@@ -203,17 +203,7 @@ public class Taskify extends AbstractPred<Derivation> {
         return false;
     }
 
-    private static boolean sameTime(long[] occ, Task parent) {
-//        if (parent.isEternal()) {
-//            return true;
-//        } else {
-        return parent.contains(occ[0], occ[1]);
-//            Tense.dither(parent.start(), n) == Tense.dither(occ[0], n) &&
-//                    Tense.dither(parent.end(), n) == Tense.dither(occ[1], n);
-//        }
-    }
-
-//    @Deprecated
+    //    @Deprecated
 //    protected boolean same(Task derived, Task parent, float truthResolution) {
 //        if (parent.isDeleted())
 //            return false;

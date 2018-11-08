@@ -233,8 +233,8 @@ public interface NAct {
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
 
         float thresh =
-                0.5f;
-        //0.66f;
+                //0.5f;
+                0.66f;
 
         float[] lr = new float[2];
 
@@ -242,30 +242,34 @@ public interface NAct {
         GoalActionConcept LA = action(l, (b, g) -> {
             float ll = g != null ? g.freq() : 0;
             boolean x = ll > thresh;
+            boolean conflict = false;
             if (x) {
                 if (lr[1] > thresh) {
-                    x = false;
-                    //ll = 0;
+                    conflict = true;
+//                    x = false;
+//                    //ll = 0;
                 }
-            }
+           }
             lr[0] = ll;
             L.value(x);
             //System.out.println("L=" + x  + " <- " + ll );
-            return $.t(x ? 1 : 0, n.confDefault(BELIEF));
+            return $.t(x ? 1 : 0, n.confDefault(BELIEF) * (conflict ? 0.5f : 1f));
         });
         GoalActionConcept RA = action(r, (b, g) -> {
             float rr = g != null ? g.freq() : 0;
             boolean x = rr > thresh;
+            boolean conflict = false;
             if (x) {
                 if (lr[0] > thresh) {
-                    x = false;
+                    conflict = true;
+                    //x = false;
                     //rr = 0;
                 }
             }
             lr[1] = rr;
             R.value(x);
             //System.out.println("R=" + x  + " <- " + rr );
-            return $.t(x ? 1 : 0, n.confDefault(BELIEF));
+            return $.t(x ? 1 : 0, n.confDefault(BELIEF) * (conflict ? 0.5f : 1f));
         });
 
         for (GoalActionConcept x : new GoalActionConcept[]{LA, RA}) {
@@ -280,7 +284,7 @@ public interface NAct {
 //                    Remember.the(new NALTask(x.term(), BELIEF,
 //                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()), n), n);
 
-            x.resolution(1f);
+            x.resolution(0.25f);
         }
 
         return new GoalActionConcept[]{LA, RA};

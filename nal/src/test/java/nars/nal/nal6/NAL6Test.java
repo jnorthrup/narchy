@@ -1030,4 +1030,28 @@ public class NAL6Test extends NALTest {
                 .mustBelieve(cycles, "(&&,f(x),g(x))", 1f, 0.81f)
         ;
     }
+
+
+//    @Test void testDecomposePositiveImplicationCommonConjunctionSubterm() {
+//        //tests:
+//        // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
+//        Param.DEBUG = true;
+//        test.log();
+//        test
+//                .believe("(S ==> M)")
+//                .believe("((X && S) ==> M)")
+//                .mustBelieve(cycles, "(X ==> M)", 1f, 0.81f)
+//        ;
+//    }
+//    @Test void testDecomposeNegativeImplicationCommonConjunctionSubterm() {
+//        //tests:
+//        // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
+//        Param.DEBUG = true;
+//        test.log();
+//        test
+//                .believe("--(S ==> M)")
+//                .believe("--((X && S) ==> M)")
+//                .mustBelieve(cycles, "(X ==> M)", 0f, 0.81f)
+//        ;
+//    }
 }

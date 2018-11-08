@@ -84,9 +84,9 @@ public class PatrickTests extends NALTest {
 
         int dur = cycles / 2;
         tt.nar.time.dur(dur);
-        tt.nar.termVolumeMax.set(12);
+        tt.nar.termVolumeMax.set(10);
 
-        tt.nar.timeResolution.set(100);
+        tt.nar.timeResolution.set(10);
 
         tt.input(
                 "made_of(toothbrush,plastic).",

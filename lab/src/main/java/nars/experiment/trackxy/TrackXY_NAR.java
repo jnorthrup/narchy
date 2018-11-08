@@ -50,9 +50,9 @@ public class TrackXY_NAR extends NAgentX {
             targetNumerics = false,
             targetCam = true,
             gui = true;
-    static int W = 3;
-    static int H = 3;
-    static int dur = 1;
+    static int W = 5;
+    static int H = 5;
+    static int dur = 2;
 
     final Bitmap2DSensor cam;
     private final TrackXY track;

@@ -27,7 +27,7 @@ public class NAL8Test extends NALTest {
     void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.confResolution.set(0.04f); //coarse
-        test.nar.freqResolution.set(0.04f); //coarse
+        test.nar.freqResolution.set(0.01f); //coarse
         test.nar.termVolumeMax.set(14);
     }
 
@@ -794,6 +794,8 @@ public class NAL8Test extends NALTest {
     void testConjPrior() {
         test.input("happy!")
                 .input("((((--,happy) &&+2 happy) &&+20 y) &&+2 ((--,y) &&+1 happy)). :|:")
+                .mustGoal(cycles, "((happy &&+20 y) &&+2 ((--,y) &&+1 happy))", 1f, 0.2f, (t) -> t >= 0)
+                .mustGoal(cycles, "((happy &&+20 y) &&+2 (--,y))", 1f, 0.4f, (t) -> t >= 0)
                 .mustGoal(cycles, "(y &&+2 (--,y))", 1f, 0.5f, (t) -> t >= 0);
     }
 

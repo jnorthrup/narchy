@@ -83,7 +83,8 @@ public class NARio extends NAgentX {
         AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.inh("cae", id), cc.pixels, nx, nx, (subX, subY) -> {
             return new float[]{/*cc.X, cc.Y, */cc.Z};
         }, 12, this);
-        camAE.alpha(0.15f);
+        camAE.alpha(0.03f);
+        camAE.noise.set(0.05f);
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
             final int tileTypes = 3; //0..4
@@ -138,7 +139,9 @@ public class NARio extends NAgentX {
                 reward = //unitize(Math.max(0, (curX - lastX)) / 16f * MoveRight.floatValue());
                          1;
             } else {
-                reward = -1;
+                reward =
+                        //-1;
+                        Float.NaN;
             }
             lastX = curX;
 
@@ -148,8 +151,8 @@ public class NARio extends NAgentX {
             int coins = Mario.coins;
             int deltaCoin = coins - lastCoins;
             if (deltaCoin <= 0)
-                return -1;
-                //return Float.NaN;
+                //return -1;
+                return Float.NaN;
 
             float reward = deltaCoin * EarnCoin.floatValue();
             lastCoins = coins;
@@ -160,7 +163,7 @@ public class NARio extends NAgentX {
 //                return -1;
 //
             if (theMario ==null) {
-                return 0f;
+                return Float.NaN;
             }
 
             int t = theMario.deathTime > 0  ? -1 : +1;
@@ -202,14 +205,14 @@ public class NARio extends NAgentX {
     private void initButton() {
 
         for (GoalActionConcept c : actionPushButtonMutex(
-                $$("left(nario)"),
-                $$("right(nario)"),
+                $$("nario:left"),
+                $$("nario:right"),
                 n -> game.scene.key(Mario.KEY_LEFT, n),
                 n -> game.scene.key(Mario.KEY_RIGHT, n))) {
             //c.actionDur(1);
         }
 
-        GoalActionConcept j = actionPushButton($$("jump(nario)"),
+        GoalActionConcept j = actionPushButton($$("nario:jump"),
                 n -> {
 
 //                    Scene s = game.scene;
@@ -243,10 +246,10 @@ public class NARio extends NAgentX {
         //j.actionDur(1);
 
 
-        actionToggle($$("down(nario)"),
+        actionToggle($$("nario:down"),
                 n -> game.scene.key(Mario.KEY_DOWN, n));
 
-        GoalActionConcept s = actionToggle($$("speed(nario)"),
+        GoalActionConcept s = actionToggle($$("nario:speed"),
                 n -> game.scene.key(Mario.KEY_SPEED, n));
         //s.actionDur(1);
 
