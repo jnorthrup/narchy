@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.CONJ;
 import static nars.time.Tense.*;
@@ -111,8 +112,8 @@ class TimeGraphTest {
     void testConjChain1() throws Narsese.NarseseException {
         /** c is the same event, @6 */
         TimeGraph cc1 = newTimeGraph(1);
-        cc1.know($.$("(a &&+5 b)"), 1);
-        cc1.know($.$("(b &&+5 c)"), 6);
+        cc1.know($("(a &&+5 b)"), 1);
+        cc1.know($("(b &&+5 c)"), 6);
 
         assertSolved("(a &&+- c)", cc1,
                 "(a &&+10 c)@1");
@@ -122,7 +123,7 @@ class TimeGraphTest {
     void testExact() throws Narsese.NarseseException {
 
         TimeGraph cc1 = newTimeGraph(1);
-        cc1.know($.$("(a &&+5 b)"), 1);
+        cc1.know($("(a &&+5 b)"), 1);
 
         assertSolved("(a &&+- b)", cc1,
                 "(a &&+5 b)@1");
@@ -132,8 +133,8 @@ class TimeGraphTest {
     void testLinkedTemporalConj() throws Narsese.NarseseException {
 
         TimeGraph cc1 = newTimeGraph(1);
-        cc1.know($.$("(a &&+5 b)"), 1);
-        cc1.know($.$("(b &&+5 c)"), 6);
+        cc1.know($("(a &&+5 b)"), 1);
+        cc1.know($("(b &&+5 c)"), 6);
 
         assertSolved("((b &&+5 c) &&+- (a &&+5 b))", cc1,
                 "((a &&+5 b) &&+5 c)@1");
@@ -160,7 +161,7 @@ class TimeGraphTest {
             $.06 (((b &&+5 c) &&+5 d) ==>-15 a). 6 %1.0;.42% {94: 1;2;3} ((%1,%2,time(raw),belief(positive),task("."),notImpl(%2),notImpl(%1)),((%2 ==>+- %1),((Induction-->Belief))))
         */
         TimeGraph C = newTimeGraph(1);
-        C.know($.$("(((b &&+5 c) &&+5 d) ==>-15 a)"), 6);
+        C.know($("(((b &&+5 c) &&+5 d) ==>-15 a)"), 6);
         assertSolved("((b &&+10 d) ==>+- a)", C, "((b &&+10 d) ==>-15 a)");
     }
 
@@ -184,8 +185,8 @@ class TimeGraphTest {
 
 
         TimeGraph C = newTimeGraph(1);
-        C.know($.$("(a &&+5 b)"), 1);
-        C.know($.$("(b &&+5 c)"), 3);
+        C.know($("(a &&+5 b)"), 1);
+        C.know($("(b &&+5 c)"), 3);
         assertSolved("((a &&+5 b) ==>+- (b &&+5 c))", C,
                 "((a &&+5 b) ==>-3 (b &&+5 c))", "((a &&+5 b) ==>+5 c)");
     }
@@ -195,8 +196,8 @@ class TimeGraphTest {
 
 
         TimeGraph C = newTimeGraph(1);
-        C.know($.$("b"), 6);
-        C.know($.$("((a &&+1 a2)=|>b)"), 1);
+        C.know($("b"), 6);
+        C.know($("((a &&+1 a2)=|>b)"), 1);
 
         System.out.println();
         assertSolved("(a &&+1 a2)", C,
@@ -222,9 +223,9 @@ class TimeGraphTest {
     @Test
     void testConjSimpleOccurrences() throws Narsese.NarseseException {
         TimeGraph C = newTimeGraph(1);
-        C.know($.$("(x &&+5 y)"), 1);
-        C.know($.$("(y &&+5 z)"), 6);
-        C.know($.$("(w &&+5 x)"), -4);
+        C.know($("(x &&+5 y)"), 1);
+        C.know($("(y &&+5 z)"), 6);
+        C.know($("(w &&+5 x)"), -4);
 
         System.out.println();
         assertSolved("x", C, "x@1");
@@ -237,8 +238,8 @@ class TimeGraphTest {
     @Test
     void testConjTrickyOccurrences() throws Narsese.NarseseException {
         TimeGraph C = newTimeGraph(1);
-        C.know($.$("(x &&+5 y)"), 1);
-        C.know($.$("(y &&+5 z)"), 3);
+        C.know($("(x &&+5 y)"), 1);
+        C.know($("(y &&+5 z)"), 3);
         assertSolved("x", C, "x@1", "x@-2");
         assertSolved("y", C, "y@6", "y@3");
         assertSolved("z", C, "z@11", "z@8");
@@ -248,16 +249,38 @@ class TimeGraphTest {
     void testImplCrossDternalInternalConj() throws Narsese.NarseseException {
         TimeGraph C = newTimeGraph(1);
 
-        C.know($.$("((a&&x) ==>+1 b)"), 1);
+        C.know($("((a&&x) ==>+1 b)"), 1);
 
         assertSolved("(a ==>+- b)", C, "(a ==>+1 b)");
+
+    }
+    @Test
+    void testDepVarEvents() throws Narsese.NarseseException {
+        TimeGraph C = newTimeGraph(1);
+
+        C.know($("#1"), 1);
+        C.know($("x"), 3);
+
+        assertSolved("(#1 ==>+- x)", C, "(#1 ==>+2 x)");
+
+    }
+
+    @Test
+    void testDiffFromEvents() {
+        TimeGraph C = newTimeGraph(1);
+        C.know($$("x"), 1);
+        C.know($$("y"), 3);
+
+        assertSolved("(x~y)", C, "(x~y)@1..3");
+        assertSolved("(y~x)", C, "(y~x)@1..3");
+        assertSolved("(#1 &&+1 (x~y))", C, "(#1 &&+1 (x~y))@0");
 
     }
 
     @Test
     void testImplCrossParallelInternalConj() throws Narsese.NarseseException {
         TimeGraph C = newTimeGraph(1);
-        C.know($.$("((a&|x) ==>+1 b)"), 1);
+        C.know($("((a&|x) ==>+1 b)"), 1);
         assertSolved("(a ==>+- b)", C, "(a ==>+1 b)");
     }
 

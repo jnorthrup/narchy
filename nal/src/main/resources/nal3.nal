@@ -101,21 +101,6 @@
             (B ~ G), G |- --G, (Belief:StructuralDeduction)
 
 
-//goal induction
-  (X --> Z), ((&,X,A..+) --> Z) |- ((&,X,A..+) --> Z), (Goal:DesireWeak)
-  (X --> Z), ((|,X,A..+) --> Z) |- ((|,X,A..+) --> Z), (Goal:Desire)
-    (Z --> X), (Z --> (&,X,A..+)) |- (Z --> (&,X,A..+)), (Goal:Desire)
-    (Z --> X), (Z --> (|,X,A..+)) |- (Z --> (|,X,A..+)), (Goal:DesireWeak)
-
-        //if want X > Y ie. (X ~ Y), then to the extent that X == Y, decrease Y while increasing X
-        //S:(X ~ Y), S:(X ~ Y), task("!") |- (S:X && (--,S:Y)), (Goal:WeakPN)
-        //(X - Y):S, (X - Y):S, task("!") |- (X:S && (--,Y:S)), (Goal:WeakPN)
-        //(X ~ Y), (X ~ Y), task("!") |- (X && --Y), (Goal:WeakPN)
-
-        //if want X == Y ie. --(X ~ Y), then to the extent that X > Y, increase Y while decreasing X
-        //S:(X ~ Y), S:(X ~ Y), task("!") |- (S:Y && (--,S:X)), (Goal:WeakN)
-        //(X - Y):S, (X - Y):S, task("!") |- (Y:S && (--,X:S)), (Goal:WeakN)
-        //(X ~ Y), (X ~ Y), task("!") |- (Y && --X), (Goal:WeakN)
 
 
         //1D:
@@ -129,20 +114,41 @@
 
 
 //Difference Goal Decompose TODO review
-        //DIFFe
-        //(B-->S), ((B ~ G) --> S) |- (G --> S), (Goal:Difference)
-        //(G-->S), ((B ~ G) --> S) |- (--,(B --> S)), (Goal:Difference)
-
-            //Raw DIFFe
-            //B, (B ~ G) |- G, (Goal:Difference)
-            //G, (B ~ G) |- (--,B), (Goal:Difference)
 
         //DIFFi
-        //(S-->B), (S --> (B - G)) |- (S --> G), (Goal:Difference)
-        //(S-->G), (S --> (B - G)) |- (--,(S --> B)), (Goal:Difference)
+        (S-->B), (S --> (B - G)) |- (S --> G), (Goal:DecomposeDiff)
+        (S-->G), (S --> (B - G)) |- (S --> B), (Goal:DecomposeDiffX)
+
+        //DIFFe
+        (B-->S), ((B ~ G) --> S) |- (G --> S), (Goal:DecomposeDiff)
+        (G-->S), ((B ~ G) --> S) |- (B --> S), (Goal:DecomposeDiffX)
+
+            //Raw DIFFe
+            B, (B ~ G) |- G, (Goal:DecomposeDiff)
+            G, (B ~ G) |- B, (Goal:DecomposeDiffX)
+
+            B, (B ~ G), task("@") |- G, (Punctuation:Quest)
+            G, (B ~ G), task("@") |- B, (Punctuation:Quest)
 
 
-//experiment
+//experimental
+
+//goal induction
+//  (X --> Z), ((&,X,A..+) --> Z) |- ((&,X,A..+) --> Z), (Goal:DesireWeak)
+//  (X --> Z), ((|,X,A..+) --> Z) |- ((|,X,A..+) --> Z), (Goal:Desire)
+//    (Z --> X), (Z --> (&,X,A..+)) |- (Z --> (&,X,A..+)), (Goal:Desire)
+//    (Z --> X), (Z --> (|,X,A..+)) |- (Z --> (|,X,A..+)), (Goal:DesireWeak)
+
+        //if want X > Y ie. (X ~ Y), then to the extent that X == Y, decrease Y while increasing X
+        //S:(X ~ Y), S:(X ~ Y), task("!") |- (S:X && (--,S:Y)), (Goal:WeakPN)
+        //(X - Y):S, (X - Y):S, task("!") |- (X:S && (--,Y:S)), (Goal:WeakPN)
+        //(X ~ Y), (X ~ Y), task("!") |- (X && --Y), (Goal:WeakPN)
+
+        //if want X == Y ie. --(X ~ Y), then to the extent that X > Y, increase Y while decreasing X
+        //S:(X ~ Y), S:(X ~ Y), task("!") |- (S:Y && (--,S:X)), (Goal:WeakN)
+        //(X - Y):S, (X - Y):S, task("!") |- (Y:S && (--,X:S)), (Goal:WeakN)
+        //(X ~ Y), (X ~ Y), task("!") |- (Y && --X), (Goal:WeakN)
+
 //     (M --> (S - P)), (M --> S), task("!") |- (M --> P), (Goal:DecomposePositiveNegativeNegative)
 //     (M --> (S - P)), (M --> P), task("!") |- (M --> S), (Goal:DecomposeNegativeNegativeNegative)
 

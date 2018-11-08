@@ -1842,6 +1842,10 @@ public class ConjTest {
 
     }
 
+    //TODO
+//    @Test void testSubTimes() {
+//        $$("(((--,_1) &&+22 _2) &&+2 (--,_2))").subTimes()
+//    }
 
     static final Term x = $.the("x");
     static final Term y = $.the("y");

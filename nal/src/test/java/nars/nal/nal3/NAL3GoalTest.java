@@ -1,6 +1,7 @@
 package nars.nal.nal3;
 
 import nars.NARS;
+import nars.Param;
 import nars.nal.nal8.GoalDecompositionTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
@@ -38,22 +39,49 @@ class NAL3GoalTest {
 
     }
 
-    @Test void testGoalDiffRaw() {
+    @Test void testGoalDiffRaw1() {
         new TestNAR(NARS.tmp(3))
                 .input("X!")
                 .input("(X ~ Y).")
                 .mustGoal(GoalDecompositionTest.cycles, "Y", 0, 0.81f)
                 .run(16);
+    }
+    @Test void testGoalDiffRaw2() {
         new TestNAR(NARS.tmp(3))
                 .input("X!")
                 .input("--(X ~ Y).")
                 .mustGoal(GoalDecompositionTest.cycles, "Y", 1, 0.81f)
                 .run(16);
         new TestNAR(NARS.tmp(3))
+                .input("--X!")
+                .input("--(X ~ Y).")
+                .mustGoal(GoalDecompositionTest.cycles, "Y", 0, 0.81f)
+                .run(16);
+    }
+
+    @Test void testGoalDiffRaw3() {
+
+        //belief version
+        new TestNAR(NARS.tmp(3))
+                .input("Y.")
+                .input("--(X ~ Y).")
+                .mustBelieve(GoalDecompositionTest.cycles, "X", 1, 0.81f)
+                .run(16);
+
+        //goal version
+        new TestNAR(NARS.tmp(3))
                 .input("Y!")
                 .input("--(X ~ Y).")
                 .mustGoal(GoalDecompositionTest.cycles, "X", 1, 0.81f)
                 .run(16);
+        new TestNAR(NARS.tmp(3))
+                .input("--Y!")
+                .input("--(X ~ Y).")
+                .mustGoal(GoalDecompositionTest.cycles, "X", 0, 0.81f)
+                .run(16);
+    }
+
+    @Test void testGoalDiffRaw4() {
         new TestNAR(NARS.tmp(3))
                 .input("--Y!")
                 .input("(X ~ Y).")

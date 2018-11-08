@@ -237,7 +237,27 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
             switch (eventTerm.op()) {
 
-//                case DIFFe:
+                case DIFFe:
+                    Event a = onlyAbsolute(eventTerm.sub(0));
+                    if (a!=null) {
+                        Event b = onlyAbsolute(eventTerm.sub(1));
+                        if (b!=null) {
+                            long as = a.start();
+                            long bs = b.start();
+                            if (as == ETERNAL) {
+                                know(eventTerm, bs, b.end());
+                            } else if (bs == ETERNAL) {
+                                know(eventTerm, as, a.end());
+                            } else {
+//                                Longerval u = Longerval.union(as, a.end(), bs, b.end());
+//                                know(eventTerm, u.a, u.b);
+                                long[] u = Longerval.intersectionArray(as, a.end(), bs, b.end());
+                                if (u!=null)
+                                    know(eventTerm, u[0], u[1]);
+                            }
+                        }
+                    }
+                    break;
 //                case DIFFi:
 //                case SECTi:
 //                case SECTe:
@@ -270,7 +290,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 //                        }
 //                    }
 //                }
-//                break;
+
 
                 case IMPL:
 
@@ -525,19 +545,19 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         if (c.op() != CONJ && ((ddt == 0) && (dt != 0))) { //undo parallel-ization if the collapse caused an invalid term
             c = Conj.the(a.id, 0, b.id, (dt == DTERNAL ? ETERNAL /* HACK */ : dt));
         }
-        if (c.op().conceptualizable) {
+        if (termsEvent(c)) {
             return solveOccurrence(c, a.start(), durMerge(a, b), each);
         }
         return true; //keep trying
     }
 
     private static long durMerge(Event a, Event b) {
-        if (a instanceof Absolute && b instanceof Absolute)
+        if (a instanceof Absolute && b instanceof Absolute) {
             return Math.min(a.dur(), b.dur());
-        else if (a instanceof Absolute && !(b instanceof Absolute)) {
-            return a.dur();
-        } else if (b instanceof Absolute && !(a instanceof Absolute)) {
-            return b.dur();
+//        else if (a instanceof Absolute && !(b instanceof Absolute)) {
+//            return a.dur();
+//        } else if (b instanceof Absolute && !(a instanceof Absolute)) {
+//            return b.dur();
         } else {
             return 0;
         }
@@ -589,7 +609,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         Term y = dt(x, path, dt);
 
-        if (!(y.op().conceptualizable))
+        if (!(termsEvent(y)))
             return true;
 
 
@@ -600,6 +620,12 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         return solveOccurrence(y, start, dur, each);
 
 
+    }
+
+    public boolean termsEvent(Term e) {
+        //return e.op().conceptualizable;
+        Op eo = e.op();
+        return eo.conceptualizable || eo.var;
     }
 
     private boolean solveOccurrence(Term y, long start, long dur, Predicate<Event> each) {
@@ -733,6 +759,19 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         return true;
     }
 
+    @Nullable private Event onlyAbsolute(Term x) {
+        Event first = null;
+        for (Event e : byTerm.get(x)) {
+            if (e instanceof Absolute) {
+                if (first == null)
+                    first = e;
+                else
+                    return null; //more than one, ambiguous
+            }
+        }
+        return first;
+    }
+
     /**
      * each should only receive Event or Unsolved instances, not Relative's
      */
@@ -823,7 +862,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     private boolean solveDtAndOccIfConceptualizable(Term x, Term y, Predicate<Event> each) {
-        if (y != null && y.op().conceptualizable && !y.equals(x)) {
+        if (y != null && termsEvent(y) && !y.equals(x)) {
             return solveDtAndOcc(y, each);
         }
         return true;
@@ -879,10 +918,11 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             @Override
             protected boolean next(BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> move, Node<Event, TimeSpan> n) {
 
-                if (!(n.id() instanceof Absolute))
+                Event nn = n.id();
+                if (!(nn instanceof Absolute))
                     return true;
 
-                long pathEndTime = n.id().start();
+                long pathEndTime = nn.start();
 
 
                 long startTime;
@@ -1190,7 +1230,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     /**
      * computes the length of time spanned from start to the end of the given path
      */
-    static long pathTime(List<BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>>> path, boolean eternalAsZero) {
+    static long pathTime(List<BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>>> path, @Deprecated boolean eternalAsZero) {
 
         long t = 0;
 

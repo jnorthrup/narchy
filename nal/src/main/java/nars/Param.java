@@ -38,8 +38,9 @@ public abstract class Param {
     /** in Revision.dtDiff measurement */
     public static final float TRUTHPOLATION_INTERMPOLATION_THRESH = 0.5f;
 
-    @Deprecated public static int LinkFanoutMax =
-            16;
+    public static int LinkFanoutMax =
+            32;
+            //16;
             //10;
             //8;
             //6;

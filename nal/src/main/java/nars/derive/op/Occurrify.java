@@ -257,7 +257,7 @@ public class Occurrify extends TimeGraph {
         if (!taskEvent.equals(beliefEvent))
             retransform(beliefEvent);
 
-        retransform(know(pattern));
+        knowIfRetransforms(pattern);
 
 
         return this;
@@ -266,8 +266,13 @@ public class Occurrify extends TimeGraph {
     private void retransform(Event e) {
         Term t = e.id;
         Term u = d.retransform(t);
-        if (!t.equals(u) && u.op().conceptualizable)
+        if (!t.equals(u) && termsEvent(u))
             link(e, 0, know(u));
+    }
+    private void knowIfRetransforms(Term t) {
+        Term u = d.retransform(t);
+        if (!t.equals(u) && termsEvent(u))
+            link(know(t), 0, know(u));
     }
 
     private void setAutoNeg(Term pattern, Term taskTerm, Term beliefTerm) {
@@ -1265,7 +1270,7 @@ public class Occurrify extends TimeGraph {
             w = new long[]{ETERNAL, ETERNAL};
         else {
 
-            int[] offsets = d.taskTerm.subTimes(x.negIf(neg));
+            int[] offsets = d.taskTerm.subTimes(x.negIf(neg && x.op()!=NEG /* not already negative, which is possible as a result from Termify */));
             if (offsets == null) {
                 if (!neg && x.hasAny(CONJ)) {
                     //use the first event
