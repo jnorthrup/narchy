@@ -1,5 +1,7 @@
 package nars.term;
 
+import jcog.Paper;
+import jcog.Skill;
 import nars.Op;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
@@ -51,12 +53,14 @@ public interface Variable extends Atomic {
         return true;
     }
 
-    @Override
-    default float voluplexity() {
+    /** average of complexity(=0) and volume(=1) */
+    @Override default float voluplexity() {
         return 0.5f;
     }
 
     @Override
+    @Paper
+    @Skill({"Prolog", "Unification_(computer_science)", "Negation", "Möbius_strip", "Total_order", "Recursion" })
     default boolean unify(Term _y, Unify u) {
 
         if (equals(_y))
@@ -89,7 +93,6 @@ public interface Variable extends Atomic {
                 //same op: common variable
                 if (yOp == xOp) {
 
-
                     Supplier<Term> common = () -> X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
 
                     //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
@@ -119,13 +122,14 @@ public interface Variable extends Atomic {
 
 
             //negation mobius strip
-            //  check if negation is the only thing wrapping either's possible matching variable.  and apply negation to both
+            //  check if negation is the only thing wrapping either's possible matching variable.
+            //  and apply negation to both
             if (!yMatches) {
                 if ((!xMatches) || (xMatches && xOp != VAR_PATTERN)) {
                     if (y.op() == NEG) {
                         Term yy = y.unneg();
                         Op yyo = yy.op();
-                        if (u.matchType(yyo) && yyo.id > xOp.id) {
+                        if (yyo.id > xOp.id && u.matchType(yyo)) {
                             y = yy;
                             x = x.neg();
                             xMatches = false;

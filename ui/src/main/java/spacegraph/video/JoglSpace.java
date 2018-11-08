@@ -43,7 +43,7 @@ abstract public class JoglSpace {
 
     private final float[] mat4f = new float[16];
 
-    private final FastCoWList<Surface> layers = new FastCoWList(Surface[]::new);
+    public final FastCoWList<Surface> layers = new FastCoWList(Surface[]::new);
     private final Queue<Runnable> pending = new ConcurrentLinkedQueue();
 
     public float top, bottom, left, right, aspect, tanFovV;

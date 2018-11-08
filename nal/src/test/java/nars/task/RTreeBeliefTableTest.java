@@ -63,7 +63,7 @@ class RTreeBeliefTableTest {
         while ((time = n.time()) < end) {
             float f = func.valueOf(time);
             System.out.print(time + "=" + f + "\t");
-            n.input($.task(term, BELIEF, f, 0.9f).time(time).setPriThen(0.5f).apply(n));
+            n.input($.task(term, BELIEF, f, 0.9f).time(time).withPri(0.5f).apply(n));
             n.run(period);
             c.beliefs().print();
             System.out.println();

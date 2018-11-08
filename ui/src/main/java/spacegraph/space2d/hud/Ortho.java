@@ -51,7 +51,7 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
     private final Map<String, Pair<Object, Runnable>> singletons = new HashMap();
     private final Deque<v3> zoomStack = new ArrayDeque();
     S surface;
-    protected JoglSpace space;
+    public final JoglSpace space;
     private final float camZmin = 5;
     private volatile float camZmax = 640000;
     private volatile float camXmin = -1, camXmax = +1;

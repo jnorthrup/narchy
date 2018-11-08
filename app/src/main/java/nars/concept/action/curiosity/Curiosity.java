@@ -24,7 +24,7 @@ public class Curiosity {
 
     public final FasterList<CuriosityMode> curiosity = new FasterList<>(8); //new FastCoWList(8, CuriosityMode[]::new);
 
-    private final IntToFloatFunction weigher = i -> curiosity.get(i).weight.floatValue();
+    private final IntToFloatFunction pri = i -> curiosity.get(i).priElseZero();
     public final NAgent agent;
 
 
@@ -79,9 +79,9 @@ public class Curiosity {
             if (cc == 0)
                 select =null;
             else
-                select = new MutableRoulette(cc, weigher, agent.nar().random());
+                select = new MutableRoulette(cc, pri, agent.nar().random());
         } else {
-            select.reweigh(weigher);
+            select.reweigh(pri);
         }
     }
 

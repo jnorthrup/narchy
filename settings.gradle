@@ -9,6 +9,7 @@ include ':nal'
 include ':os'
 include ':lab'
 include ':app'
+include ':test'
 
 //project(':util').projectDir = "$rootDir/util" as File
 //project(':ui').projectDir = "$rootDir/ui" as File
@@ -17,5 +18,5 @@ include ':app'
 //project(':nal').projectDir = "$rootDir/nal" as File
 //project(':app').projectDir = "$rootDir/app" as File
 //project(':lab').projectDir = "$rootDir/lab" as File
-include 'test'
+
 

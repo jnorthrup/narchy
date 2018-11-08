@@ -2,7 +2,9 @@ package spacegraph.space2d;
 
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.NewtMouse;
+import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.hud.NewtKeyboard;
+import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.video.JoglSpace;
 
@@ -37,13 +39,16 @@ public class SpaceGraphFlat extends JoglSpace {
             add(finger.cursorSurface());
             //addOverlay(this.keyboard.keyFocusSurface(cam));
 
-//        Ortho<MutableListContainer> hud = new Ortho<>(new MutableListContainer(), finger, keyboard) {
-//            @Override
-//            protected boolean autosize() {
-//                return true;
-//            }
-//        };
-//        add(hud);
+        Ortho<MutableListContainer> hud = new Ortho<>(this, new MutableListContainer(),
+                //finger,
+                new NewtMouse(this),
+                keyboard) {
+            @Override
+            protected boolean autosize() {
+                return true;
+            }
+        };
+        add(hud);
 //        hud.content().add(new PushButton("x").pos(0, 0, 100f, 100f));
 
 

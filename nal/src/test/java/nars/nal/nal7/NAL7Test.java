@@ -1007,7 +1007,7 @@ public class NAL7Test extends NALTest {
         for (int i = 0; i < cycles; i++) {
 
             if (i == cycles - 1) {
-                $.task($("y"), QUESTION, null).time(0, x, x + 2 * eventDT).setPriThen(1f).apply(t.nar);
+                $.task($("y"), QUESTION, null).time(0, x, x + 2 * eventDT).withPri(1f).apply(t.nar);
             }
 
             t

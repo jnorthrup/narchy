@@ -6,6 +6,7 @@ import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Container;
+import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.VectorLabel;
 
@@ -105,7 +106,14 @@ public class MetaFrame extends Bordering {
                 if (!e) {
                     //TODO unexpand any other MetaFrame popup that may be expanded.  check the root context's singleton map
 
+                    Surface overlay = parent(Ortho.class).space.layers.get(3);
+                    ((Ortho)overlay).setSurface(the());
+                    set(null);
+
                 } else {
+
+                    set(((Ortho)parent(Ortho.class).space.layers.get(3)).content());
+
 
                     SurfaceBase p = parent;
                     if (p!=null) {

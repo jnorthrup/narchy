@@ -1,21 +1,23 @@
 package nars.concept.action.curiosity;
 
-import jcog.math.FloatRange;
+import jcog.pri.UnitPri;
 import nars.concept.action.AbstractGoalActionConcept;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-abstract public class CuriosityMode {
+/** priority corresponds to the relative proportion used in roulette select */
+abstract public class CuriosityMode extends UnitPri {
 
-    /** relative proportion used in roulette select */
-    public final FloatRange weight = new FloatRange(0, 0, 1);
+    public CuriosityMode() {
+        this(0);
+    }
+
+    public CuriosityMode(float pri) {
+        super(pri);
+    }
 
     /** fabricated goal truth overriding motor output, or null if not curious */
     @Nullable
     abstract public Truth get(AbstractGoalActionConcept action, Curiosity curiosity);
 
-    public final CuriosityMode weight(float weight) {
-        this.weight.set(weight);
-        return this;
-    }
 }

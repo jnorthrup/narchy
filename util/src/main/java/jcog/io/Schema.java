@@ -7,8 +7,8 @@ import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.columns.AbstractColumnType;
+import tech.tablesaw.columns.AbstractParser;
 import tech.tablesaw.columns.Column;
-import tech.tablesaw.columns.StringParser;
 import tech.tablesaw.io.csv.CsvReadOptions;
 
 import java.util.HashMap;
@@ -109,8 +109,7 @@ import java.util.Map;
         public final String[] values;
 
         public NominalColumnType(String name, String[] values) {
-            super("",
-                    4,
+            super(4,
                     name,
                     name);
             this.values = values;
@@ -122,14 +121,10 @@ import java.util.Map;
         }
 
         @Override
-        public StringParser<?> defaultParser() {
-            return null;
+        public AbstractParser<?> customParser(CsvReadOptions options) {
+            throw new TODO();
         }
 
-        @Override
-        public StringParser<?> customParser(CsvReadOptions options) {
-            return null;
-        }
 
 //        @Override
 //        public StringColumn create(String name) {

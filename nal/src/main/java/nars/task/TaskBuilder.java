@@ -540,7 +540,7 @@ import static nars.time.Tense.ETERNAL;
     }
 
     @Override
-    @NotNull public TaskBuilder setPriThen(float p) {
+    @NotNull public TaskBuilder withPri(float p) {
         pri(p);
         return this;
     }

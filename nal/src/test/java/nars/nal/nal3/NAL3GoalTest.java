@@ -1,7 +1,6 @@
 package nars.nal.nal3;
 
 import nars.NARS;
-import nars.Param;
 import nars.nal.nal8.GoalDecompositionTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;

@@ -323,7 +323,7 @@ public class J2PProxyFactory extends ProxyFactory {
             if (writeDirectory != null)
                 FactoryHelper.writeFile(cf, writeDirectory);
 
-            thisClass = FactoryHelper.toClass(cf, cl, getDomain());
+            thisClass = FactoryHelper.toClass(cf, null, cl, getDomain());
             setField(DEFAULT_INTERCEPTOR, handler);
             setField(METHOD_FILTER_FIELD, methodFilter);            
         }

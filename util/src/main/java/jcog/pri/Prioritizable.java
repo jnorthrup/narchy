@@ -49,9 +49,9 @@ public interface Prioritizable extends Prioritized, ScalarValue {
     }
 
 
-    @Deprecated default Prioritizable setPriThen(float p) {
+    default <P extends Prioritizable> P withPri(float p) {
         pri(p);
-        return this;
+        return (P) this;
     }
 
 
