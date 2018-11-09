@@ -449,7 +449,7 @@ public class SortedArray<X> extends AbstractList<X> {
 
     private int addBinary(X element, float elementRank, FloatFunction<X> cmp, int size) {
 
-        final int index = this.findInsertionIndex(elementRank, 0, size, new int[1], cmp);
+        final int index = this.findInsertionIndex(elementRank, 0, size, null, cmp);
 
         return insert(element, index, elementRank, cmp, size);
     }
@@ -614,7 +614,7 @@ public class SortedArray<X> extends AbstractList<X> {
         }
 
         if (reinsert) {
-            int next = this.findInsertionIndex(cur, 0, s, new int[1], cmp);
+            int next = this.findInsertionIndex(cur, 0, s, null, cmp);
             if (next == index - 1) {
 
                 swap(l, index, index - 1);
@@ -709,7 +709,7 @@ public class SortedArray<X> extends AbstractList<X> {
         assert (right >= left);
 
         if ((right - left) < BINARY_SEARCH_THRESHOLD) {
-            rightBorder[0] = right;
+            if (rightBorder!=null) rightBorder[0] = right;
             return findFirstIndex(elementRank, left, right, cmp);
         }
 
@@ -723,7 +723,9 @@ public class SortedArray<X> extends AbstractList<X> {
         float ev = cmp.floatValueOf(midleE);
         final int comparedValue = Util.fastCompare(ev, elementRank);
         if (comparedValue == 0) {
-            return rightBorder[0] = midle + 1 /* after existing element */;
+            int target = midle + 1;/* after existing element */
+            if(rightBorder!=null) rightBorder[0] = target;
+            return target;
         }
 
         boolean c = (0 < comparedValue);

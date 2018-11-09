@@ -1,11 +1,15 @@
 //emulation of the <=> equivalence operator
-//  uses raw & (intersection) operator
+//  a way to emulate <=> with "==>" and "&":
+//  here NAL3 '&' is repurposed in a raw (un-inherited) form.
+//  temporality and negations from the parent implications which form it remain present (unlike <=>).
+
+
 
 //// implication to equivalence ////////////////////////////////////////////////////////////////////////////////////
 //If when S happens, P happens, and before P happens, S has happened, then they are truth-related equivalent
 
 //equivalent, and equivalent to negative cases
- (X==>Y), (Y==>X), neq(X,Y)     |-  (polarize((X==>Y),task)&polarize((Y==>X),belief)), (Belief:IntersectionDepolarized, Time:Intersect)
+ (X==>Y), (Y==>X), neq(X,Y)     |-  (polarize((X==>Y),task)&polarize((Y==>X),belief)), (Belief:IntersectionDepolarized, Time:Intersect, Also:VarIntro)
 
 //opposite / inequivalent
  //(--X==>Y), (--Y==>X), neq(X,Y) |-  --(polarize((X==>Y),task)&polarize((Y==>X),belief)), (Belief:IntersectionDepolarized, Time:Intersection)
@@ -22,6 +26,15 @@
 
  //// conditional syllogism ////////////////////////////////////////////////////////////////////////////////////
  //If after M, P usually happens, and M happens, it means P is expected to happen
-  M, ((S==>M)&(M==>S))  |- S, (Belief:Analogy, Goal:Desire)
-  B, ((A==>C)&(C==>A))  |- subIfUnifiesAny(C, A, B, "$"), (Belief:Deduction)
-     //TODO negatives
+  B,     ((C==>A)&(A==>C))   |- subIfUnifiesAny(C,A,B,"$"),   (Belief:Analogy, Goal:Desire)
+  B,     ((C==>A)&(A==>C))   |- --subIfUnifiesAny(C,A,B,"$"), (Belief:AnalogyPN, Goal:Desire)
+  B,   (--(C==>A)&(--A==>C)) |- subIfUnifiesAny(C,A,B,"$"),   (Belief:AnalogyN, Goal:Desire)
+  B,   (--(C==>A)&(--A==>C)) |- --subIfUnifiesAny(C,A,B,"$"), (Belief:AnalogyNN, Goal:Desire)
+
+//  A,     ((C==>A)&(A==>C))   |- C, (Belief:Analogy, Goal:Desire)
+//  A,     ((C==>A)&(A==>C))   |- --C, (Belief:AnalogyPN, Goal:Desire)
+//  A,   (--(C==>A)&(--A==>C)) |- C, (Belief:AnalogyN, Goal:Desire)
+//  A,   (--(C==>A)&(--A==>C)) |- --C, (Belief:AnalogyNN, Goal:Desire)
+
+  //B, ((A==>C)&(C==>A))  |- subIfUnifiesAny(C, A, B, "$"), (Belief:Deduction)
+       //TODO negatives

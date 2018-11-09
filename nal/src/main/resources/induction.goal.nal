@@ -5,6 +5,11 @@ G, B, task("!")  |- (polarize(G,task) && polarize(B,belief)), (Goal:Intersection
 G, B, task("@")  |- (polarize(B,belief) ==> G), (Time:Relative, Punctuation:Question, Time:Task)
     //,--eventOfNeg(S,G) //<- TODO verify this will work if S isnt even a conj
 
+//nal3 goal induction
+  (X --> Z), ((&,X,A..+) --> Z) |- ((&,X,A..+) --> Z), (Goal:DesireWeak)
+  (X --> Z), ((|,X,A..+) --> Z) |- ((|,X,A..+) --> Z), (Goal:Desire)
+    (Z --> X), (Z --> (&,X,A..+)) |- (Z --> (&,X,A..+)), (Goal:Desire)
+    (Z --> X), (Z --> (|,X,A..+)) |- (Z --> (|,X,A..+)), (Goal:DesireWeak)
 
 
 //X, (Y==>X), task("!") |- (Y &&   X), (Goal:Intersection)

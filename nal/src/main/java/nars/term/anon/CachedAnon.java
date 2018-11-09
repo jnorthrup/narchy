@@ -1,78 +1,54 @@
-//package nars.term.anon;
-//
-//import nars.term.Term;
-//import nars.term.atom.Atomic;
-//import nars.util.term.transform.CachedTermTransform;
-//import nars.util.term.transform.DirectTermTransform;
-//import nars.util.term.transform.TermTransform;
-//import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-//import org.jetbrains.annotations.Nullable;
-//
-//import java.util.Map;
-//
-///** TODO implement these as CachedTransform-wrapped sub-implementations of the Anon.GET and PUT transforms, each with their own cache */
-//public class CachedAnon extends Anon {
-//
-//    private Map<Term,Term> externCache;
-//    private DirectTermTransform.CachedDirectTermTransform internCache;
-//
-//    public CachedAnon(int capacity, int internCacheSize) {
-//        super(capacity);
-//        this.internCache.resize(internCacheSize);
-//    }
-//
-//    @Override
-//    public boolean rollback(int uniques) {
-//        if (uniques == 0) {
-//            clear();
-//            return true;
-//        }
-//        if (super.rollback(uniques)) {
-//            if (externCache!=null)
-//                externCache.clear();
-//
-//            return true;
-//        }
-//        return false;
-//    }
-//
-//    @Override
-//    public void clear() {
-//        if (externCache!=null)
-//            externCache.clear();
-//
-//        super.clear();
-//    }
-//
-//
-//    protected TermTransform newPut() {
-//        return internCache = new DirectTermTransform.CachedDirectTermTransform(0) {
-//            @Override
-//            public final @Nullable Term transformAtomic(Atomic atomic) {
-//                return put(atomic);
-//            }
-//
-//            @Override
-//            public boolean eval() {
-//                return false;
-//            }
-//        };
-//    }
-//
-//    protected TermTransform newGet() {
-//        if (cacheGet()) {
-//            if (externCache == null)
-//                externCache = new UnifiedMap<>();
-//
-//            return new CachedTermTransform(super.newGet(), externCache);
-//        } else {
-//            return super.newGet();
-//        }
-//    }
-//
-//
-//    protected boolean cacheGet() {
-//        return true;
-//    }
-//
-//}
+package nars.term.anon;
+
+import nars.term.Compound;
+import nars.term.Term;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
+
+import java.util.Map;
+
+/** TODO implement these as CachedTransform-wrapped sub-implementations of the Anon.GET and PUT transforms, each with their own cache */
+public class CachedAnon extends Anon {
+
+    final Map<Compound,Term> putCache = new UnifiedMap();
+    final Map<Compound,Term> getCache = new UnifiedMap();
+
+    public CachedAnon() {
+        super();
+    }
+
+    public CachedAnon(int cap) {
+        super(cap);
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        invalidate();
+    }
+
+    @Override
+    public boolean rollback(int toUniques) {
+        if (super.rollback(toUniques)) {
+            invalidate();
+            return true;
+        }
+        return false;
+    }
+
+    private void invalidate() {
+        putCache.clear();
+        getCache.clear();
+    }
+
+    @Override
+    protected Term transformNonNegCompound(Compound x) {
+        return putOrGet ? putCache.computeIfAbsent(x, xx -> {
+            Term y = super.transformNonNegCompound(xx);
+            if (y instanceof Compound)
+                getCache.put((Compound) y, xx);
+            return y;
+        })
+            :
+            getCache.computeIfAbsent(x, xx -> super.transformNonNegCompound(xx));
+    }
+}

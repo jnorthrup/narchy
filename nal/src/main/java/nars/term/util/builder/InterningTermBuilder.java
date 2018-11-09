@@ -26,6 +26,7 @@ import static nars.time.Tense.DTERNAL;
 public class InterningTermBuilder extends HeapTermBuilder {
 
     private final static boolean deep = true;
+    private static final int DEFAULT_SIZE = 64 * 1024;
 
     final HijackTermCache[] terms;
 
@@ -35,7 +36,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private final String id;
 
     public InterningTermBuilder() {
-        this(UUID.randomUUID().toString(), 32 * 1024);
+        this(UUID.randomUUID().toString(), DEFAULT_SIZE);
     }
 
     public InterningTermBuilder(String id, int cacheSizePerOp) {
@@ -93,8 +94,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             xo = x.op();
         }
         if (internableRoot(xo, x.dt())) {
-            HijackTermCache c = terms[xo.id];
-            Term y = c.apply(InternedCompound.get(x));
+            Term y = terms[xo.id].apply(InternedCompound.get(x));
             if (y != null)
                 return y.negIf(negate);
         }

@@ -56,10 +56,12 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     /**
      * index by term
      */
-    protected final Multimap<Term, Event> byTerm = MultimapBuilder
-            .linkedHashKeys()
+    public final Multimap<Term, Event> byTerm = MultimapBuilder
+            .hashKeys()
             .linkedHashSetValues()
             .build();
+
+//    public final UnifiedSetMultimap<Term, Event> byTerm = new UnifiedSetMultimap<>();
 
 
     public final MutableSet<Term> autoNeg = new UnifiedSet();
@@ -121,56 +123,58 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         if (t instanceof Bool || t == Op.ImgExt || t == Op.ImgInt)
             return null;
 
-        Event e;
+        Event event;
         if (start != TIMELESS) {
 
             Collection<Event> te = byTerm.get(t);
-            for (Event f : te) {
-                if (f instanceof Absolute && ((Absolute) f).containsOrEqual(start, end))
-                    return f;
-            }
+            if (!te.isEmpty()) {
+                for (Event f : te) {
+                    if (f instanceof Absolute && ((Absolute) f).containsOrEqual(start, end))
+                        return f;
+                }
 
-            if (add) {
+                if (add) {
 
 
-                Iterator<Event> ff = te.iterator();
-                while (ff.hasNext()) {
-                    Event f = ff.next();
-                    if (!(f instanceof Absolute))
-                        continue;
-                    Absolute af = (Absolute) f;
-                    if (af.start() == ETERNAL)
-                        continue;
-                    Longerval merged;
-                    if (af.containedInButNotEqual(start, end)) {
-                        removeNode(f);
-                        ff.remove();
-                    } else if ((merged = af.unionIfIntersectsButNotEqual(start, end)) != null) {
-                        if (merged.a < start)
-                            start = merged.a;
-                        if (merged.b > end)
-                            end = merged.b;
-                        removeNode(f);
-                        ff.remove();
+                    Iterator<Event> ff = te.iterator();
+                    while (ff.hasNext()) {
+                        Event f = ff.next();
+                        if (!(f instanceof Absolute))
+                            continue;
+                        Absolute af = (Absolute) f;
+                        if (af.start() == ETERNAL)
+                            continue;
+                        Longerval merged;
+                        if (af.containedInButNotEqual(start, end)) {
+                            removeNode(f);
+                            ff.remove();
+                        } else if ((merged = af.unionIfIntersectsButNotEqual(start, end)) != null) {
+                            if (merged.a < start)
+                                start = merged.a;
+                            if (merged.b > end)
+                                end = merged.b;
+                            removeNode(f);
+                            ff.remove();
+                        }
+
+
                     }
-
-
                 }
             }
 
             if (end != start)
-                e = new AbsoluteRange(t, start, end);
+                event = new AbsoluteRange(t, start, end);
             else
-                e = new Absolute(t, start);
+                event = new Absolute(t, start);
         } else {
-            e = new Relative(t);
+            event = new Relative(t);
         }
 
 
         if (add) {
-            return addNode(e).id;
+            return addNode(event).id;
         } else {
-            return event(e);
+            return event(event);
         }
     }
 
@@ -228,7 +232,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         if (ee.isEmpty())
             onNewTerm(eventTerm);
 
-        if (!ee.add(event))
+        //if (!ee.add(event))
+        if (!byTerm.put(eventTerm, event))
             return; //already present
 
         if (decomposeAddedEvent(event)) {
@@ -239,9 +244,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                 case DIFFe:
                     Event a = onlyAbsolute(eventTerm.sub(0));
-                    if (a!=null) {
+                    if (a != null) {
                         Event b = onlyAbsolute(eventTerm.sub(1));
-                        if (b!=null) {
+                        if (b != null) {
                             long as = a.start();
                             long bs = b.start();
                             if (as == ETERNAL) {
@@ -252,7 +257,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 //                                Longerval u = Longerval.union(as, a.end(), bs, b.end());
 //                                know(eventTerm, u.a, u.b);
                                 long[] u = Longerval.intersectionArray(as, a.end(), bs, b.end());
-                                if (u!=null)
+                                if (u != null)
                                     know(eventTerm, u[0], u[1]);
                             }
                         }
@@ -320,14 +325,14 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         link(se, (edt + st), pe);
 
 
-                        if (subj.op()==Op.CONJ && subj.dt()==DTERNAL) { //HACK to decompose ordinarily non-decomposed &&
+                        if (subj.op() == Op.CONJ && subj.dt() == DTERNAL) { //HACK to decompose ordinarily non-decomposed &&
                             subj.eventsWhile((w, y) -> {
                                 link(know(y), edt + st - w, pe);
                                 return true;
                             }, 0, false, true, false, 0);
                         }
 
-                        if (pred.op()==Op.CONJ && pred.dt()==DTERNAL) { //HACK to decompose ordinarily non-decomposed &&
+                        if (pred.op() == Op.CONJ && pred.dt() == DTERNAL) { //HACK to decompose ordinarily non-decomposed &&
                             pred.eventsWhile((w, y) -> {
                                 link(se, edt + st + w, know(y));
                                 return true;
@@ -759,7 +764,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         return true;
     }
 
-    @Nullable private Event onlyAbsolute(Term x) {
+    @Nullable
+    private Event onlyAbsolute(Term x) {
         Event first = null;
         for (Event e : byTerm.get(x)) {
             if (e instanceof Absolute) {
@@ -787,7 +793,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
             xx.recurseTerms(Term::hasXternal, y -> {
                 if (y.dt() == XTERNAL) {
-                    subSolved.computeIfAbsent(y, (yy)->{
+                    subSolved.computeIfAbsent(y, (yy) -> {
                         Set<Term> s = new UnifiedSet(1);
                         solveDT(yy, (z) -> {
                             //TODO there could be multiple solutions for dt
@@ -810,7 +816,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     break;
                 case 1:
                     //randomize the entries
-                    Map.Entry<Term, Set<Term>> xy = subSolved.entrySet().iterator().next();;
+                    Map.Entry<Term, Set<Term>> xy = subSolved.entrySet().iterator().next();
+
                     Set<Term> sy = xy.getValue();
                     if (!sy.isEmpty()) {
                         Term xyx = xy.getKey();
@@ -826,21 +833,21 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 default:
                     //TODO cartesian product of terms. could be expensive
                     //for now randomize and start with first entry
-                    List<Pair<Term,Term[]>> substs = new FasterList();
+                    List<Pair<Term, Term[]>> substs = new FasterList();
                     final int[] permutations = {1};
-                    subSolved.forEach((h,w)->{
+                    subSolved.forEach((h, w) -> {
                         Term[] ww = w.toArray(EmptyTermArray);
-                        assert(ww.length > 0);
+                        assert (ww.length > 0);
                         permutations[0] *= ww.length;
                         substs.add(pair(h, ww));
                     });
                     int ns = substs.size();
-                    assert(ns > 0);
+                    assert (ns > 0);
                     Random rng = random();
 
 
                     while (permutations[0]-- > 0) {
-                        Map<Term,Term> m = new UnifiedMap(ns);
+                        Map<Term, Term> m = new UnifiedMap(ns);
                         for (int i = 0; i < ns; i++) {
                             Pair<Term, Term[]> si = substs.get(i);
                             Term[] ssi = si.getTwo();
@@ -867,6 +874,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         }
         return true;
     }
+
     private boolean solveDtAndOcc(Term x, Predicate<Event> each) {
         /* occurrence, with or without any xternal remaining */
         return (x.dt() != XTERNAL || solveDT(x, y -> solveOccurrence(y, each)))
@@ -975,9 +983,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         return ThreadLocalRandom.current();
     }
 
-    public Multimap<Term, Event> events() {
-        return byTerm;
-    }
+
 
 
     /**
@@ -1108,16 +1114,19 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
 
         @Nullable Iterator<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> dynamicLink(Node<Event, TimeSpan> n) {
-            Iterator<Event> x = byTerm.get(n.id().id).iterator();
-            return x.hasNext() ?
+            Collection<Event> ee = byTerm.get(n.id().id);
+            if (ee.isEmpty())
+                return null;
+
+            Iterator<Event> x = ee.iterator();
+            return
                     Iterators.transform(
                             Iterators.filter(Iterators.transform(
                                     x,
-
                                     TimeGraph.this::node),
                                     e -> e != null && e != n && !log.hasVisited(e)),
-                            that -> new ImmutableDirectedEdge<>(n, TS_ZERO, that)
-                    ) : null;
+                            that -> new ImmutableDirectedEdge<>(n, TS_ZERO, that));
+
         }
 
 
@@ -1132,7 +1141,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
             Iterator<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> d = dynamicLink(n);
 
-            return (d != null && d.hasNext()) ? Iterables.concat(e, new FasterList<>(d)) : e;
+            return (d != null) ? Iterables.concat(e, new FasterList<>(d)) : e;
         }
     }
 

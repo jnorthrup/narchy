@@ -506,7 +506,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
                 if (s >= capacity) {
 
-                    trash = new FasterList<>(4);
+                    trash = new FasterList<>(0);
 
                     inserted = tryInsertFull(incoming, p, null, trash);
 
@@ -633,7 +633,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     @Override
     public Bag<X, Y> commit(Consumer<Y> update) {
 
-        FasterList<Y> trash = new FasterList(4);
+        FasterList<Y> trash = new FasterList(0);
 
         synchronized (items) {
 

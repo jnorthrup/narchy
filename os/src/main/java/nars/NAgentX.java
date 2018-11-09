@@ -174,7 +174,7 @@ abstract public class NAgentX extends NAgent {
     */
 
 
-        Param.STRONG_COMPOSITION = true;
+        //Param.STRONG_COMPOSITION = true;
         Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
@@ -238,8 +238,7 @@ abstract public class NAgentX extends NAgent {
         PremiseDeriverRuleSet rules = Derivers.rules(n, //6, 8
                 "induction.nal",
                 //"induction.goal.nal",
-                "motivation.nal",
-                "equivalence.nal"
+                "motivation.nal"
         );
         ZipperDeriver sensorAction = BeliefSource.forConcepts(n, rules,
                 (a.rewards.stream().flatMap((Reward x) -> stream(x.spliterator(), false)).collect(Collectors.toList())),
@@ -251,7 +250,8 @@ abstract public class NAgentX extends NAgent {
         sensorAction.timing = new ActionTiming(n);
 
 
-        ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.rules(n, "nal6.nal", "motivation.nal"),
+        ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.rules(n,
+                "nal6.nal", "motivation.nal"),
                 a.actions.stream().collect(Collectors.toList())
         );
         motorInference.timing = new ActionTiming(n);
@@ -446,8 +446,9 @@ abstract public class NAgentX extends NAgent {
 
 
         new BatchDeriver(Derivers.nal(n, 1, 8,
-            "motivation.nal"
-                //"induction.goal.nal"
+            "motivation.nal",
+                //"equivalence.nal"
+                "induction.goal.nal"
         ));
 
         //new STMLinkage(n, 1);

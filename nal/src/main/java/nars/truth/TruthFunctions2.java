@@ -1,6 +1,5 @@
 package nars.truth;
 
-import jcog.Util;
 import nars.$;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,8 +62,8 @@ public enum TruthFunctions2 {
     @Nullable
     public static Truth analogyNew(/*@NotNull*/ Truth a, float bf, float bc, float minConf) {
         float c = and(bf,
-                //TruthFunctions.confCompose(a.conf(), bc)
-                a.conf() * bc
+                TruthFunctions.confCompose(a.conf(), bc)
+                //a.conf() * bc
         );
         return c >= minConf ? t(a.freq(), c) : null;
     }
@@ -248,15 +247,15 @@ public enum TruthFunctions2 {
         return $.t(f, cc);
     }
 
-    public static Truth maybeDuction(Truth a, float bC, float minConf) {
-
-        float freqDiff = a.freq();
-        float f = Util.lerp(freqDiff, 0.5f, 1f);
-            float c = and(freqDiff,
-                    //and(a.conf(), bC)
-                    confCompose(a.conf(), bC)
-            );
-
-            return c >= minConf ? t(f, c) : null;
-    }
+//    public static Truth maybeDuction(Truth a, float bC, float minConf) {
+//
+//        float freqDiff = a.freq();
+//        float f = Util.lerp(freqDiff, 0.5f, 1f);
+//            float c = and(freqDiff,
+//                    //and(a.conf(), bC)
+//                    confCompose(a.conf(), bC)
+//            );
+//
+//            return c >= minConf ? t(f, c) : null;
+//    }
 }

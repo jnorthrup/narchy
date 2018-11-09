@@ -25,11 +25,11 @@ public class UDP extends Loop {
 
     static {
 
-        System.setProperty("java.net.preferIPv4Stack", "false");
-        System.setProperty("java.net.preferIPv6Addresses",
-                "true"
-                //"false"
-        );
+//        System.setProperty("java.net.preferIPv4Stack", "false");
+//        System.setProperty("java.net.preferIPv6Addresses",
+//                "true"
+//                //"false"
+//        );
     }
 
     static void ipv6(byte[] address, byte[] target, int offset) {

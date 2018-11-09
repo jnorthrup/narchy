@@ -39,9 +39,9 @@ public abstract class Param {
     public static final float TRUTHPOLATION_INTERMPOLATION_THRESH = 0.5f;
 
     public static final int LinkFanoutMax =
-            32;
+            //32;
             //16;
-            //10;
+            10;
             //8;
             //7;
             //6;

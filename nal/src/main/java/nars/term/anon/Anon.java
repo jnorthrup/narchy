@@ -38,7 +38,7 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
         return op.the(dt, t);
     }
 
-    private boolean putOrGet = true;
+    protected boolean putOrGet = true;
 
     public Anon() {
         this(1);
@@ -125,20 +125,16 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
         }
     }
 
-    private Term putCompound(Compound x) {
+    protected Term putCompound(Compound x) {
         putOrGet = true;
-
-        Term y = transformCompound(x);
-
-//        validate(x, y, true);
-        return y;
+        return transformCompound(x);
     }
 
     public void clear() {
         map.clear();
     }
 
-    public static class AnonWithVarShift extends Anon {
+    public static class AnonWithVarShift extends CachedAnon {
         int indepShift = 0, depShift = 0, queryShift = 0;
 
         public AnonWithVarShift(int cap) {

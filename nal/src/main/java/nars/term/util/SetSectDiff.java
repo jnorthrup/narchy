@@ -99,20 +99,24 @@ public class SetSectDiff {
             if (t[0] instanceof Compound && t[1] instanceof Compound && t[0].hasAny(Op.Temporal) && t[1].hasAny(Op.Temporal))
                 if (t[0].equalsRoot(t[1]))
                     return false;
-        } else {
-            //repeat terms of the same root would collapse when conceptualized so this is prevented
-            Set<Term> roots = null;
-            for (int i = t.length-1; i >= 0; i--) {
-                Term x = t[i];
-                if (x instanceof Compound && x.hasAny(Op.Temporal)) {
-                    if (roots == null) {
-                        if (i == 0)
-                            break; //last one, dont need to check
-                        roots = new UnifiedSet(i);
-                    }
-                    if (!roots.add(x.root())) {
-                        //repeat detected
-                        return false;
+        /*} else if (t.length == 3) {
+            //TODO
+
+        } */else {
+                //repeat terms of the same root would collapse when conceptualized so this is prevented
+                Set<Term> roots = null;
+                for (int i = t.length-1; i >= 0; i--) {
+                    Term x = t[i];
+                    if (x instanceof Compound && x.hasAny(Op.Temporal)) {
+                        if (roots == null) {
+                            if (i == 0)
+                                break; //last one, dont need to check
+                            roots = new UnifiedSet(i);
+                        }
+                        if (!roots.add(x.root())) {
+                            //repeat detected
+                            return false;
+                        }
                     }
                 }
             }

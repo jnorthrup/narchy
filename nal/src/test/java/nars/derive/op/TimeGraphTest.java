@@ -356,7 +356,7 @@ class TimeGraphTest {
 
         protected void validate() {
 
-            Term[] events = time.events().keySet().toArray(Op.EmptyTermArray);
+            Term[] events = time.byTerm.keySet().toArray(Op.EmptyTermArray);
 
             IntHashSet[][] dt = new IntHashSet[events.length][events.length];
             for (int xx = 0, eventsLength = events.length; xx < eventsLength; xx++) {

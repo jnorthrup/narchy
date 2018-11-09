@@ -132,28 +132,44 @@ public class TermList extends FasterList<Term> implements Subterms {
         Term[] ii = items;
 
         if (superOp == CONJ) {
-            for (int i = 0; i < ys; i++) {
+            for (int i = 0; i < ys;) {
                 Term j;
                 if ((j = ii[i]) == null)
                     ii[i] = j = src.sub(i);
+
                 if (j == True) {
-                    remove(i--);
+                    removeFast(i);
                     ys--;
-                }
+                } else
+                    i++;
             }
         } else {
             for (int i = 0; i < ys; i++) {
                 if (ii[i] == null)
                     ii[i] = src.sub(i);
                 else
-                    break; //stop at first non-null subterm
+                    break; //finished at first non-null subterm
             }
         }
 
         if (ys == 0)
             return Op.EmptySubterms;
-        else
+        else {
+//            //test for identical
+//            int s = this.size;
+//            if (s == src.subs()) {
+//                boolean identical = true;
+//                for (int i = 0; i < s; i++) {
+//                    if (src.sub(i) != ii[i]) {
+//                        identical = false;
+//                        break;
+//                    }
+//                }
+//                if (identical)
+//                    return src;
+//            }
             return this;
+        }
     }
 
 }
