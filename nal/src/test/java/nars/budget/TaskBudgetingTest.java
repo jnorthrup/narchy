@@ -21,7 +21,7 @@ class TaskBudgetingTest {
         NAR d = NARS.tmp();
 
 
-        d.log();
+
 
         d.believe("(&&, (a),(b),(c),(d),(e) )");
 

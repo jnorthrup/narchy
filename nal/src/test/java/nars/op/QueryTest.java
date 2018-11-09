@@ -101,7 +101,7 @@ public class QueryTest {
         @Test
         public void test3() throws Narsese.NarseseException {
 
-            n.log();
+
 
             //        "[wonder(sibling(sally,erica))]",
             {

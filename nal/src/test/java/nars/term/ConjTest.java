@@ -1151,7 +1151,7 @@ public class ConjTest {
     void testCommutiveTemporalityConcepts() throws Narsese.NarseseException {
 
 
-        n.log();
+
 
         n.input("(goto(#1) &&+5 ((SELF,#1)-->at)).");
 

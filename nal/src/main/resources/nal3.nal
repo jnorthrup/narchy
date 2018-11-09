@@ -134,10 +134,10 @@
 //experimental
 
 //goal induction
-//  (X --> Z), ((&,X,A..+) --> Z) |- ((&,X,A..+) --> Z), (Goal:DesireWeak)
-//  (X --> Z), ((|,X,A..+) --> Z) |- ((|,X,A..+) --> Z), (Goal:Desire)
-//    (Z --> X), (Z --> (&,X,A..+)) |- (Z --> (&,X,A..+)), (Goal:Desire)
-//    (Z --> X), (Z --> (|,X,A..+)) |- (Z --> (|,X,A..+)), (Goal:DesireWeak)
+  (X --> Z), ((&,X,A..+) --> Z) |- ((&,X,A..+) --> Z), (Goal:DesireWeak)
+  (X --> Z), ((|,X,A..+) --> Z) |- ((|,X,A..+) --> Z), (Goal:Desire)
+    (Z --> X), (Z --> (&,X,A..+)) |- (Z --> (&,X,A..+)), (Goal:Desire)
+    (Z --> X), (Z --> (|,X,A..+)) |- (Z --> (|,X,A..+)), (Goal:DesireWeak)
 
         //if want X > Y ie. (X ~ Y), then to the extent that X == Y, decrease Y while increasing X
         //S:(X ~ Y), S:(X ~ Y), task("!") |- (S:X && (--,S:Y)), (Goal:WeakPN)

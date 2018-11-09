@@ -28,7 +28,6 @@ public class NAL8SequenceTest {
         NAR n = NARS.tmp();
         n.termVolumeMax.set(20);
         n.time.dur(4);
-        n.log();
 
         n.onOp1("f", (x,nar)->{
             System.err.println(x);

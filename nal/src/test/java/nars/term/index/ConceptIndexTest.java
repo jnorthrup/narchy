@@ -121,7 +121,7 @@ class ConceptIndexTest {
 
     static void testTaskConceptSharing(NAR n) throws Narsese.NarseseException {
 
-        n.log();
+
 
         String x = "(a --> b).";
         Task t1 = n.inputTask(x);

@@ -69,7 +69,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     private final AtomicBoolean updateWindow = new AtomicBoolean(true);
 
     private void updateWindow() {
-        if (!updateWindow.weakCompareAndSetVolatile(true, false))
+        if (!updateWindow.compareAndSet(true, false))
             return;
 
         GLWindow w = window;
@@ -246,10 +246,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     @Override
     public final void display(GLAutoDrawable drawable) {
 
-        long nowNS = System.nanoTime(), renderDtNS = nowNS - lastRenderNS;
+        long nowNS = System.nanoTime();
+        long renderDtNS = nowNS - lastRenderNS;
         this.lastRenderNS = nowNS;
-
-        this.dtS = (float) (renderDtNS / 1.0E9);
 
         /* ns -> ms */
         render((int) Math.min(Integer.MAX_VALUE, Math.round(renderDtNS / 1_000_000.0)));
@@ -346,7 +345,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         }
 
         if (change) {
-            updateWindow.set(true);
+            updateWindow.lazySet(true);
         }
 
     }
@@ -509,22 +508,21 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
                         if (waiting.compareAndSet(false, true)) {
 
+                            long cycleTimeNS =
+                                    //updater.cycleTimeNS;
+                                    renderer.loop.cycleTimeNS;
+                            dtS = (float) (cycleTimeNS / 1.0E9);
+
                             onUpdate.emit(JoglWindow.this);
 
                             Threading.invokeOnOpenGLThread(false, this::render);
                         }
 
                     } else {
-                        renderer.loop.stop();
-                        renderer.stop();
+                        stop();
                     }
 
-
-
-
                     return true;
-
-
                 }
             };
 
@@ -548,7 +546,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         public final boolean stop() {
 
             pause();
-            loop.stop();
             return true;
         }
 
@@ -556,6 +553,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         @Override
         public final boolean pause() {
 
+            loop.stop();
 
             return true;
         }

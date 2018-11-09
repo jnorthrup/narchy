@@ -67,7 +67,6 @@ class FunctorTest {
         TestNAR t = new TestNAR(NARS.tmp());
         t.nar.freqResolution.set(0.25f);
 
-        t.log();
 
         t.believe("((complexity($1)<->3)==>c3($1))");
         t.ask("c3(x:y)");
@@ -123,7 +122,7 @@ class FunctorTest {
     @Test
     void testAnon2() throws Narsese.NarseseException {
         NAR d = NARS.shell();
-        d.log();
+
         d.input("anon((a,b),#x)?");
         d.run(3);
     }

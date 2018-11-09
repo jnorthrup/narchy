@@ -353,7 +353,7 @@ public class RevisionTest {
         assertEquals(a.root(), b.root());
         assertEquals(a.concept(), b.concept());
 
-        n.log();
+
         StringBuilder out = new StringBuilder();
         n.onTask(t -> {
             out.append(t).append('\n');
@@ -485,7 +485,7 @@ public class RevisionTest {
 
         NAR n = NARS.shell();
 
-        n.log();
+
 
         int offCycles = 2;
 
