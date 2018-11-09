@@ -22,6 +22,7 @@ package nars.term;
 
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
+import jcog.data.byt.util.IntCoding;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
 import jcog.util.ArrayUtils;
@@ -181,10 +182,17 @@ public interface Compound extends Term, IPair, Subterms {
     default void appendTo(ByteArrayDataOutput out) {
 
         Op o = op();
-        out.writeByte(o.id);
+
+        boolean temporal = o.temporal && dt()!=DTERNAL;
+
+        out.writeByte(o.id | (temporal ? IO.TEMPORAL_BIT : 0));
+
         subterms().appendTo(out);
-        if (o.temporal)
-            out.writeInt(dt());
+
+        if (temporal) {
+            IntCoding.writeZigZagInt(dt(), out);
+            //out.writeInt(dt());
+        }
 
     }
 

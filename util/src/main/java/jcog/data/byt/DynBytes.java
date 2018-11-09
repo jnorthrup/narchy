@@ -3,6 +3,7 @@ package jcog.data.byt;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
 import jcog.Util;
+import jcog.data.byt.util.IntCoding;
 import jcog.util.ArrayUtils;
 import org.apache.lucene.util.ArrayUtil;
 import org.iq80.snappy.Snappy;
@@ -12,6 +13,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.BufferUnderflowException;
 import java.util.Arrays;
+
+import static jcog.data.byt.util.IntCoding.decodeZigZagInt;
+import static jcog.data.byt.util.IntCoding.decodeZigZagLong;
 
 /**
  * dynamic byte array with mostly append-oriented functionality
@@ -214,8 +218,12 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         return Arrays.copyOf(b, newLen);
     }
 
-    /** isnt this the same as just compact()? */
-    @Override @Deprecated public final byte[] arrayCompactDirect() {
+    /**
+     * isnt this the same as just compact()?
+     */
+    @Override
+    @Deprecated
+    public final byte[] arrayCompactDirect() {
         compact();
         return arrayDirect();
     }
@@ -425,5 +433,53 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         o.write(bytes, 0, len);
     }
 
+    public void writeUnsignedLong(long x) {
+        this.len += IntCoding.encodeUnsignedVariableLong(x, bytes, ensureSized(8 /* max */));
+    }
 
+    public void writeUnsignedInt(int x) {
+        this.len += IntCoding.encodeUnsignedVariableInt(x, bytes, ensureSized(4 /* max */));
+    }
+
+    public void writeZigZagLong(long x) {
+        this.len += IntCoding.encodeZigZagVariableLong(x, bytes, ensureSized(8 /* max */));
+    }
+
+    public void writeZigZagInt(int x) {
+        this.len += IntCoding.encodeZigZagVariableInt(x, bytes, ensureSized(4 /* max */));
+    }
+
+    private long readVarEncodedUnsignedLong() {
+        long unsigned = 0;
+        int i = 0;
+        long b;
+        while (((b = bytes[len] & 0xff) & 0x80) != 0) {
+            unsigned |= (b & 0x7f) << i;
+            i += 7;
+            len++;
+        }
+        len++;
+        return unsigned | (b << i);
+    }
+
+    public int readVarEncodedUnsignedInt() {
+        int unsigned = 0;
+        int i = 0;
+        int b;
+        while (((b = bytes[len] & 0xff) & 0x80) != 0) {
+            unsigned |= (b & 0x7f) << i;
+            i += 7;
+            len++;
+        }
+        len++;
+        return unsigned | (b << i);
+    }
+
+    public long readZigZagLong() {
+        return decodeZigZagLong(readVarEncodedUnsignedLong());
+    }
+
+    public int readZigZagInt() {
+        return decodeZigZagInt(readVarEncodedUnsignedInt());
+    }
 }

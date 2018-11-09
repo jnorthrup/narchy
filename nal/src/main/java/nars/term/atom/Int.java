@@ -2,7 +2,7 @@ package nars.term.atom;
 
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
-import jcog.Util;
+import jcog.data.byt.util.IntCoding;
 import nars.IO;
 import nars.Op;
 import nars.Param;
@@ -39,15 +39,17 @@ public class Int implements Intlike, The {
     /*@Stable*/
     private final byte[] bytesCached;
 
-    protected Int(int id, byte[] bytes) {
-        this.id = id;
-        this.bytesCached = bytes;
-    }
+//    protected Int(int id, byte[] bytes) {
+//        this.id = id;
+//        this.bytesCached = bytes;
+//    }
     private Int(int i) {
         this.id = i;
-        this.bytesCached = Util.bytePlusIntToBytes(
-                IO.opAndSubType(op(), (byte) (((opX() & 0xffff) & 0b111) >> 5)),
-                id);
+
+        int intLen = IntCoding.variableByteLengthOfZigZagInt(i); //1 to 4 bytes
+        this.bytesCached = new byte[1 + intLen];
+        bytesCached[0] = IO.opAndSubType(op(), (byte) (((opX() & 0xffff) & 0b111) >> 5));
+        IntCoding.encodeZigZagVariableInt(i, bytesCached, 1);
     }
 
     public static Int the(int i) {
@@ -89,12 +91,7 @@ public class Int implements Intlike, The {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (id >= Param.MAX_INTERNED_INTS && obj instanceof Int) {
-            Int o = (Int) obj;
-            return (id == o.id);
-        }
-        return false;
+        return (this == obj) || ((obj instanceof Int) && (id == ((Int) obj).id));
     }
 
     @Override

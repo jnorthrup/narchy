@@ -562,14 +562,14 @@ public enum Util {
         return offset + 4;
     }
 
-    public static byte[] bytePlusIntToBytes(byte prefix, int l) {
-        byte[] target = new byte[/*5*/]{prefix, 0, 0, 0, 0};
-        for (int i = 4; i >= 1; i--) {
-            target[i] = (byte) (l & 0xFF);
-            l >>= 8;
-        }
-        return target;
-    }
+//    public static byte[] bytePlusIntToBytes(byte prefix, int l) {
+//        byte[] target = new byte[/*5*/]{prefix, 0, 0, 0, 0};
+//        for (int i = 4; i >= 1; i--) {
+//            target[i] = (byte) (l & 0xFF);
+//            l >>= 8;
+//        }
+//        return target;
+//    }
 
     /**
      * returns the next index

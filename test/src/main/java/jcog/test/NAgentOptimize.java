@@ -7,16 +7,21 @@ import nars.NAR;
 import nars.NARS;
 import nars.Param;
 import nars.agent.NAgent;
+import nars.derive.Deriver;
+import nars.derive.budget.DefaultDeriverBudgeting;
+import nars.derive.impl.BatchDeriver;
 
 import java.util.function.Function;
 
 public class NAgentOptimize {
     public static void main(String[] args) {
         int period = 2;
-        new NAgentOptimize(n -> new BooleanReactionTest(n, ()->n.time() % period < period/2, (i,o) -> i==o));
+        new NAgentOptimize(n -> new BooleanReactionTest(n, ()->n.time() % period < period/2, (i,o) -> i==o),
+                64, 1);
     }
 
-    public NAgentOptimize(Function<NAR,NAgent> agent) {
+    public NAgentOptimize(Function<NAR,NAgent> agent, int experimentCycles, int repeats) {
+
 
         Lab<NAR> l = new Lab<>(() -> {
             NAR n = NARS.tmp();
@@ -33,24 +38,23 @@ public class NAgentOptimize {
 //                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
 //                .var("linkFanOut", 1, 16, 1,
 //                        (NAR n, int f) -> Param.LinkFanoutMax = f)
-                .var("activation", 0, 1f, 0.1f,
-                (NAR n, float f) -> n.conceptActivation.set(f))
+                .var("activation", 0, 1f, 0.1f, (NAR n, float f) -> n.conceptActivation.set(f))
                 .var("memoryDuration", 0, 8f, 0.5f,
                         (NAR n, float f) -> n.memoryDuration.set(f))
-//                .var("beliefPriDefault", 0, 1f, 0.1f,
-//                        (NAR n, float f) -> n.beliefPriDefault.set(f))
-//                .var("questionPriDefault", 0, 1f, 0.1f,
-//                        (NAR n, float f) -> {
-//                            n.questionPriDefault.set(f);
-//                            n.questPriDefault.set(f);
-//                        })
-//                .var("goalPriDefault", 0, 1f, 0.1f,
-//                        (NAR n, float f) -> n.goalPriDefault.set(f))
+                .var("beliefPriDefault", 0, 1f, 0.1f,
+                        (NAR n, float f) -> n.beliefPriDefault.set(f))
+                .var("questionPriDefault", 0, 1f, 0.1f,
+                        (NAR n, float f) -> {
+                            n.questionPriDefault.set(f);
+                            n.questPriDefault.set(f);
+                        })
+                .var("goalPriDefault", 0, 1f, 0.1f,
+                        (NAR n, float f) -> n.goalPriDefault.set(f))
 
-//                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
-//                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
-//                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
-//                                        relGrowthExponent.set(f)))
+                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
+                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
+                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
+                                        relGrowthExponent.set(f)))
 //                .var("derivationScale", 0.5f, 2f, 0.1f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
 //                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
@@ -71,8 +75,7 @@ public class NAgentOptimize {
 //        })
         ;
 
-        int experimentCycles = 1024;
-        int repeats = 1;
+
 
         Optilive<NAR, NAgent> o = l.optilive(n->agent.apply(n.get()),
                 jcog.lab.Optimize.repeat((NAgent t) -> {

@@ -50,8 +50,8 @@ public class Optilive<S,E>  {
     private Thread thread;
 
     private static final long SLEEP_TIME_MS = 500;
-    private long experimentStart;
-    private long experimentEnd;
+    private long currentStart;
+    private long currentEnd;
 
     Scientist sci = null;
     private volatile State state = State.Decide, nextState = null;
@@ -106,11 +106,12 @@ public class Optilive<S,E>  {
         nextState = State.Decide;
     }
 
+
     private void save() {
             try {
                 //save
                 String path = outDir + "/" +
-                        new Date(experimentStart).toString().replace(' ', '_') + ".arff";
+                        current.varKey() + "." + Long.toString(currentStart) + ".arff";
                 logger.info("save {}", path);
                 new ARFF(current.data).writeToFile(path);
             } catch (IOException e) {
@@ -151,21 +152,21 @@ public class Optilive<S,E>  {
 
     private void decide() {
         current = next();
-        logger.info("next experiment {}", current);
+        logger.info("next experiment {} {}", current, current.varKey());
         nextState = State.Execute;
     }
 
     private void execute() {
 
-        experimentStart = System.currentTimeMillis();
-        logger.info("experiment start {}", new Date(experimentStart));
+        currentStart = System.currentTimeMillis();
+        logger.info("experiment start {}", new Date(currentStart));
         try {
             current.runSync(sci.experimentIterations());
         } catch (Throwable t) {
             logger.error("{}", t);
         } finally {
-            experimentEnd = System.currentTimeMillis();
-            logger.info("experiment end {}\t({})", new Date(experimentEnd), Texts.timeStr(1_000_000 * (experimentEnd - experimentStart)));
+            currentEnd = System.currentTimeMillis();
+            logger.info("experiment end {}\t({})", new Date(currentEnd), Texts.timeStr(1_000_000 * (currentEnd - currentStart)));
 
             if (outDir!=null) {
                 save();

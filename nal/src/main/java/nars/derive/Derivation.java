@@ -193,7 +193,7 @@ public class Derivation extends PreDerivation {
     public transient float priSingle, priDouble;
     public transient short[] parentCause;
     public transient boolean concSingle;
-    public transient float parentComplexitySum;
+    public transient float parentVoluplexitySum;
     public transient float taskEvi, beliefEvi;
     public transient long[] concOcc;
     public transient Truth concTruth;
@@ -403,7 +403,7 @@ public class Derivation extends PreDerivation {
         this.truthFunction = null;
         this.evidenceDouble = evidenceSingle = null;
 
-        this.parentComplexitySum =
+        this.parentVoluplexitySum =
                 Util.sum(
                         taskTerm.voluplexity(), beliefTerm.voluplexity()
                 );

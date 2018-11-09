@@ -12,8 +12,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-
 import static nars.time.Tense.DTERNAL;
 
 /**
@@ -40,19 +38,15 @@ public class SerialCompound extends DynBytes implements Compound, The {
 
         int v = 1;
 
-        try {
 
-            for (Term x: subterms) {
-                x.appendTo((ByteArrayDataOutput) this);
+        for (Term x: subterms) {
+            x.appendTo((ByteArrayDataOutput) this);
 
-                v += x.volume();
-            }
-
-            IO.writeCompoundSuffix(this, dt, op);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            v += x.volume();
         }
+
+        IO.writeCompoundSuffix(this, dt, op);
+
 
         assert(v < Param.COMPOUND_VOLUME_MAX);
         this.volume = (byte) v;

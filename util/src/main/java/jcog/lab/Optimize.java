@@ -56,7 +56,7 @@ public class Optimize<S, E> extends Lab<E>  {
     public Schema data;
 
     private final Supplier<S> subj;
-    private final List<Var<S, ?>> vars;
+    public final List<Var<S, ?>> var;
     private final Function<Supplier<S>, E> experiment;
     public final Goal<E> goal;
     private final FasterList<Sensor<E, ?>> sensors = new FasterList();
@@ -78,9 +78,9 @@ public class Optimize<S, E> extends Lab<E>  {
 
         this.goal = goal;
 
-        this.vars = new FasterList(_vars).sortThis();
+        this.var = new FasterList(_vars).sortThis();
 
-        this.varSensors = vars/* sorted */.stream().map(Var::sense).collect(toList());
+        this.varSensors = var/* sorted */.stream().map(Var::sense).collect(toList());
 
         this.sensors.addAll( sensors );
         this.sensors.sortThis();
@@ -123,7 +123,7 @@ public class Optimize<S, E> extends Lab<E>  {
     public void run(OptimizationStrategy strategy) {
 
         //initialize numeric or numeric-able variables
-        final int numVars = vars.size();
+        final int numVars = var.size();
 
         mid = new double[numVars];
         min = new double[numVars];
@@ -132,7 +132,7 @@ public class Optimize<S, E> extends Lab<E>  {
 
         S example = subj.get();
         int i = 0;
-        for (Var w: vars) {
+        for (Var w: var) {
             FloatVar s = (FloatVar) w;
 
 
@@ -222,7 +222,7 @@ public class Optimize<S, E> extends Lab<E>  {
     }
 
     private Object[] row(Object o, E y, double score) {
-        Object[] row = new Object[1 + vars.size() + sensors.size()];
+        Object[] row = new Object[1 + var.size() + sensors.size()];
         int j = 0;
         row[j++] = score;
         S x = (S) o;
@@ -242,7 +242,7 @@ public class Optimize<S, E> extends Lab<E>  {
 
 
         for (int i = 0, dim = point.length; i < dim; i++) {
-            point[i] = ((Var<S, Float>) vars.get(i)).set(x, (float) point[i]);
+            point[i] = ((Var<S, Float>) var.get(i)).set(x, (float) point[i]);
         }
 
         return x;
@@ -271,6 +271,14 @@ public class Optimize<S, E> extends Lab<E>  {
                 new RealDecisionTree(data.toFloatTable(),
                         0 /* score */, maxDepth, discretization);
     }
+
+
+
+    /** string representing the variables manipulated in this experiment */
+    public String varKey() {
+        return var.toString();
+    }
+
 
 
 //    /**
@@ -394,7 +402,7 @@ public class Optimize<S, E> extends Lab<E>  {
         protected void run(Optimize o, ObjectiveFunction func) {
 
             int popSize =
-                    (int) Math.ceil(4 + 3 * Math.log(o.vars.size()));
+                    (int) Math.ceil(4 + 3 * Math.log(o.var.size()));
 
 
             double[] sigma = MathArrays.scale(1f, o.inc);

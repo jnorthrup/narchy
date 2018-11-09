@@ -5,6 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
 import jcog.data.byt.DynBytes;
 import jcog.data.byt.RecycledDynBytes;
+import jcog.data.byt.util.IntCoding;
 import jcog.io.BytesInput;
 import jcog.pri.Prioritized;
 import nars.subterm.Subterms;
@@ -19,7 +20,6 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.util.TermException;
-import nars.term.var.UnnormalizedVariable;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,13 +58,22 @@ import static nars.time.Tense.XTERNAL;
  */
 public class IO {
 
-    public static final byte SPECIAL_OP = (byte) 0xff;
+
+    /** upper control flags for the op byte */
+    public static final byte SPECIAL_BIT = (byte) (1 << 7);
+    public static final byte TEMPORAL_BIT = (byte) (1 << 6);
+
+    /** lower 5 bits (bits 0..4) */
+    public static final byte OP_MASK = (0b00011111);
+
+    @Deprecated public static final byte SPECIAL_BYTE = (byte) 0xff;
+
 
     public static final int STREAM_BUFFER_SIZE = 64 * 1024;
     static final int GZIP_BUFFER_SIZE =
             //512; //default
             1024;
-            //4 * 1024;
+    //4 * 1024;
 
     public static int readTasks(byte[] t, Consumer<Task> each) throws IOException {
         return readTasks(new ByteArrayInputStream(t), each);
@@ -138,20 +147,21 @@ public class IO {
     /**
      * with Term first
      */
-    public static void bytes(DataOutput out, Task t) throws IOException {
+    private static void bytes(ByteArrayDataOutput out, Task t) throws IOException {
 
 
         byte p = t.punc();
         out.writeByte(p);
 
 
-        t.term().appendTo((ByteArrayDataOutput) out);
+        t.term().appendTo(out);
 
 
         if (p != COMMAND) {
             if (hasTruth(p))
                 Truth.write(t.truth(), out);
 
+            //TODO use delta zig zag encoding (with creation time too)
             out.writeLong(t.start());
             out.writeLong(t.end());
 
@@ -176,7 +186,8 @@ public class IO {
     public static void writeEvidence(DataOutput out, long[] evi) throws IOException {
         int evil = evi.length;
         out.writeByte(evil);
-        for (long anEvi: evi)
+        //TODO use zigzag delta encoding
+        for (long anEvi : evi)
             out.writeLong(anEvi);
     }
 
@@ -192,8 +203,8 @@ public class IO {
     private static Term readTerm(DataInput in) throws IOException {
 
         byte opByte = in.readByte();
-        if (opByte != SPECIAL_OP) {
-            Op o = Op.ops[opByte&31];
+        if (opByte != SPECIAL_BYTE) {
+            Op o = Op.ops[opByte & OP_MASK];
             switch (o) {
                 case VAR_DEP:
                 case VAR_INDEP:
@@ -224,11 +235,11 @@ public class IO {
                             throw new TODO();
                     }
                 case INT:
-                    return Int.the(in.readInt());
+                    return Int.the(IntCoding.readZigZagInt(in));
                 case NEG:
                     return readNegated(in);
                 default:
-                    return readCompound(in, o);
+                    return readCompound(in, o, (opByte & TEMPORAL_BIT) != 0);
 
             }
         } else {
@@ -257,13 +268,11 @@ public class IO {
     }
 
 
-    public static void writeCompoundSuffix(DataOutput out, int dt, Op o) throws IOException {
-        if (o.temporal)
-            out.writeInt(dt);
-    }
-
-    public static boolean isSpecial(Term term) {
-        return term instanceof UnnormalizedVariable;
+    public static void writeCompoundSuffix(ByteArrayDataOutput out, int dt, Op o) {
+        if (o.temporal) {
+            IntCoding.writeZigZagInt(dt, out);
+            //out.writeInt(dt);
+        }
     }
 
 
@@ -290,14 +299,15 @@ public class IO {
      * called by readTerm after determining the op type
      * TODO make a version which reads directlyinto TermIndex
      */
-    private static Term readCompound(DataInput in, /*@NotNull*/ Op o) throws IOException {
+    private static Term readCompound(DataInput in, /*@NotNull*/ Op o, boolean temporal) throws IOException {
 
         Term[] v = readTermContainer(in);
 
         int dt;
 
-        if (o.temporal) {
-            dt = in.readInt();
+        if (temporal) {
+            //dt = in.readInt();
+            dt = IntCoding.readZigZagInt(in);
         } else {
             dt = DTERNAL;
         }
@@ -314,14 +324,16 @@ public class IO {
         if (t instanceof Atomic) {
             return ((Atomic) t).bytes();
         } else {
-            try(RecycledDynBytes d = RecycledDynBytes.get()) { //termBytesEstimate(t) /* estimate */);
+            try (RecycledDynBytes d = RecycledDynBytes.get()) { //termBytesEstimate(t) /* estimate */);
                 t.appendTo((ByteArrayDataOutput) d);
                 return d.arrayCopy();
             }
         }
     }
 
-    /** warning: result may be RecycledDynBytes */
+    /**
+     * warning: result may be RecycledDynBytes
+     */
     public static DynBytes termToDynBytes(Term t) {
         if (t instanceof Atomic) {
             return new DynBytes(((Atomic) t).bytes()); //dont recycle
@@ -336,11 +348,6 @@ public class IO {
         return t.volume() * 8;
     }
 
-    /** default estimate */
-    public static int termBytesEstimate() {
-        return 64;
-    }
-
 
     @Nullable
     public static byte[] taskToBytes(Task x) {
@@ -353,7 +360,8 @@ public class IO {
         return b;
     }
 
-    public @Nullable static byte[] taskToBytes(Task x, DynBytes dos) {
+    public @Nullable
+    static byte[] taskToBytes(Task x, DynBytes dos) {
         return bytes(x, dos).arrayCopy();
     }
 
@@ -441,8 +449,10 @@ public class IO {
                 if (subtermsRemain == 0) {
 
                     Op ol = Op.values()[ll[0]];
-                    if (ol.temporal)
-                        i += 4;
+                    if (ol.temporal) {
+                        throw new TODO("i += IntCoding.variableByteLengthOfZigZagInt()");
+                        // 4;
+                    }
                     level--;
                 } else {
                     ll[1] = (byte) (subtermsRemain - 1);
@@ -582,7 +592,7 @@ public class IO {
                 int dt;
                 if ((((dt = sub.dt()) == DTERNAL) || (dt == XTERNAL))) {
                     Subterms cxx = sub.subterms();
-                    if (Terms.negatedNonConjCount(cxx) >= cxx.subs()/2) {
+                    if (Terms.negatedNonConjCount(cxx) >= cxx.subs() / 2) {
                         String s;
                         switch (dt) {
                             case XTERNAL:
@@ -677,7 +687,7 @@ public class IO {
             w.append(Op.COMPOUND_TERM_OPENER);
 
 
-            argsProduct.forEachWith((t, n)->{
+            argsProduct.forEachWith((t, n) -> {
                 try {
                     if (n != 0)
                         w.append(Op.ARGUMENT_SEPARATOR);
