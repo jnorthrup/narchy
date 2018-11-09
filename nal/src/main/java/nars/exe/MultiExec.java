@@ -8,6 +8,9 @@ import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
 import jcog.exe.Exe;
 import jcog.exe.realtime.FixedRateTimedFuture;
+import jcog.exe.valve.InstrumentedWork;
+import jcog.exe.valve.TimeSlicing;
+import jcog.math.FloatRange;
 import jcog.random.SplitMix64Random;
 import nars.NAR;
 import nars.control.DurService;
@@ -27,6 +30,11 @@ abstract public class MultiExec extends UniExec {
 
     public static final float inputQueueSizeSafetyThreshold = 0.9f;
     private final Revaluator revaluator;
+
+    /**
+     * increasing the rate closer to 1 reduces the dynamic range of the temporal allocation
+     */
+    public final FloatRange explorationRate = FloatRange.unit(0.1f);
 
     protected volatile long idleTimePerCycle;
 
@@ -56,6 +64,7 @@ abstract public class MultiExec extends UniExec {
             executeNow(x);
         }
     }
+
 
     @Override
     public final void execute(Runnable r) {
@@ -121,6 +130,146 @@ abstract public class MultiExec extends UniExec {
     public void start(NAR n) {
         super.start(n);
         ons.add(DurService.on(n, this::onDur));
+
+
+
+
+    }
+
+    @Override public TimeSlicing<Object, String> scheduler() {
+        return new TimeSlicing<>("CPU", 1, nar.exe) {
+
+
+            @Deprecated
+            @Override
+            protected void trySpawn() {
+
+            }
+
+            @Override
+            @Deprecated
+            protected boolean work() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public synchronized TimeSlicing commit() {
+
+                int n = size();
+                if (n == 0)
+                    return this;
+
+                long accumEpsilon =
+                        1;
+                //nar.loop.cycleTimeNS / (n * 2);
+
+                double[] valMin = {Double.POSITIVE_INFINITY}, valMax = {Double.NEGATIVE_INFINITY};
+
+                long now = nar.time();
+
+                this.forEach((InstrumentedWork s) -> {
+                    Causable c = (Causable) s.who;
+
+                    boolean sleeping = c.sleeping(now);
+                    MultiExec.this.sleeping.set(c.scheduledID, sleeping);
+                    if (sleeping) {
+                        s.pri(0);
+                        return;
+                    }
+
+                    double v = c.value();
+                    if (v == v) {
+                        s.valueNext = v;
+                        if (v > valMax[0]) valMax[0] = v;
+                        if (v < valMin[0]) valMin[0] = v;
+                    } else {
+                        s.valueNext = Double.NaN;
+                    }
+                });
+
+                double valRange = valMax[0] - valMin[0];
+
+
+                if (Double.isFinite(valRange) && Math.abs(valRange) > Double.MIN_NORMAL) {
+
+                    final double[] valRateMin = {Double.POSITIVE_INFINITY}, valRateMax = {Double.NEGATIVE_INFINITY};
+                    this.forEach((InstrumentedWork s) -> {
+                        Causable c = (Causable) s.who;
+                        if (sleeping.get(c.scheduledID))
+                            return;
+
+//                            Causable x = (Causable) s.who;
+                        //if (x instanceof Causable) {
+
+
+
+                        double value = s.valueNext;
+                        if (value != value)
+                            value = valMin[0];
+
+
+                        long accumTimeNS = Math.max(accumEpsilon, s.accumulatedTime(true));
+                        double valuePerSecondMS = (value / (accumTimeNS/1_000_000.0));
+                        s.valuePerSecond = valuePerSecondMS;
+                        if (valuePerSecondMS > valRateMax[0]) valRateMax[0] = valuePerSecondMS;
+                        if (valuePerSecondMS < valRateMin[0]) valRateMin[0] = valuePerSecondMS;
+                    });
+                    double valRateRange = valRateMax[0] - valRateMin[0];
+                    if (Double.isFinite(valRateRange) && valRateRange > Double.MIN_NORMAL * n) {
+
+                        float explorationRate = MultiExec.this.explorationRate.floatValue();
+
+                        double[] valueRateSum = {0};
+
+                        forEach((InstrumentedWork s) -> {
+                            Causable c = (Causable) s.who;
+                            if (sleeping.get(c.scheduledID)) {
+                                s.pri(0, 1-timeSliceMomentum);
+                                return;
+                            }
+
+                            double v = s.valuePerSecond, vv;
+                            if (v == v) {
+                                vv = (v - valRateMin[0]) / valRateRange;
+                            } else {
+                                vv = 0;
+                            }
+                            s.valuePerSecondNormalized = vv;
+                            valueRateSum[0] += vv;
+                        });
+
+                        if (valueRateSum[0] > Double.MIN_NORMAL) {
+                            forEach((InstrumentedWork s) -> {
+                                Causable c = (Causable) s.who;
+                                if (sleeping.get(c.scheduledID))
+                                    return;
+
+
+                                float p = (float) (s.valuePerSecondNormalized / valueRateSum[0]);
+                                s.pri(
+                                        Util.lerp(explorationRate, p, 1f/n),
+                                        1-timeSliceMomentum
+                                );
+                            });
+
+                            return this;
+                        }
+                    }
+
+                }
+
+                /** flat */
+                float flatDemand = n > 1 ? (1f / (n-sleeping.cardinality())) : 1f;
+                forEach((InstrumentedWork s) -> {
+                    Causable c = (Causable) s.who;
+                    if (!sleeping.get(c.scheduledID))
+                        s.pri(flatDemand);
+                });
+
+
+                return this;
+            }
+        };
     }
 
     protected void onCycle(NAR nar) {

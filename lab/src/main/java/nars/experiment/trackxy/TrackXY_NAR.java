@@ -2,9 +2,7 @@ package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.lab.Lab;
 import jcog.learn.LivePredictor;
-import jcog.learn.decision.RealDecisionTree;
 import jcog.learn.ql.DQN2;
 import jcog.math.FloatNormalized;
 import jcog.test.control.TrackXY;
@@ -32,9 +30,7 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.video.Draw;
 
-import java.lang.reflect.Field;
 import java.util.List;
-import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
 import static jcog.Texts.n4;
@@ -421,60 +417,6 @@ public class TrackXY_NAR extends NAgentX {
             if (b)
                 track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
         });
-    }
-
-    static class Optimize {
-        public static void main(String[] args) {
-
-            Lab<NAR> l = new Lab<>(() -> {
-                NAR n = NARS.tmp();
-                n.random().setSeed(System.nanoTime());
-                return n;
-            });
-            l.hints.put("autoInc", 3);
-            l.varAuto(new Lab.DiscoveryFilter() {
-                @Override
-                protected boolean includeField(Field f) {
-                    String fieldName = f.getName();
-                    if (fieldName.startsWith("DEBUG") || fieldName.contains("throttle"))
-                        return false;
-
-                    return super.includeField(f);
-                }
-            });
-
-            int experiments = 1024;
-            int experimentCycles = 2048;
-            int repeats = 3;
-
-            jcog.lab.Optimize<NAR, TrackXY_NAR> o = l.optimize((Supplier<NAR> s) -> {
-                        return new TrackXY_NAR(s.get(), 4, 1);
-                    },
-                    jcog.lab.Optimize.repeat((TrackXY_NAR t) -> {
-                        try {
-                            t.nar.run(experimentCycles);
-                        } catch (Throwable ee) {
-                            if (Param.DEBUG)
-                                ee.printStackTrace();
-                            return Float.NEGATIVE_INFINITY;
-                        }
-                        return t.rewardSum;
-                    }, repeats)
-            );
-////            o.sense("numConcepts",
-////                (TestNARSuite t) -> t.sum((NAR n) -> n.concepts.size()))
-//                    .sense("derivedTask",
-//                            (TestNARSuite t) -> t.sum((NAR n)->n.emotion.deriveTask.getValue()))
-
-            o.runSync(16).print();
-
-            RealDecisionTree t = o.tree(4, 8);
-            t.print();
-            t.printExplanations();
-
-
-
-        }
     }
 
 }

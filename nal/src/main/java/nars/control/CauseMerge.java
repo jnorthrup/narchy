@@ -91,10 +91,7 @@ public enum CauseMerge {
 
 
     public static short[] limit(short[] cause, int cap) {
-        if (cause.length <= cap)
-            return cause;
-        else
-            return ArrayUtils.subarray(cause, 0, cap);
+        return cause.length <= cap ? cause : ArrayUtils.subarray(cause, 0, cap);
     }
 
     abstract protected short[] apply(short[] existing, short[] incoming, int capacity);

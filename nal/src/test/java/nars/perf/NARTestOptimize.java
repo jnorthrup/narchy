@@ -6,7 +6,6 @@ import jcog.lab.Opti;
 import jcog.lab.Optilive;
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
@@ -52,8 +51,8 @@ class NARTestOptimize {
 
 //                .var("ttlMax", 6, 20, 3,
 //                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
-                .var("linkFanOut", 1, 16, 1,
-                        (NAR n, int f) -> Param.LinkFanoutMax = f)
+//                .var("linkFanOut", 1, 16, 1,
+//                        (NAR n, int f) -> Param.LinkFanoutMax = f)
                 .var("activation", 0, 1f, 0.1f,
                             (NAR n, float f) -> n.conceptActivation.set(f))
                 .var("memoryDuration", 0, 8f, 0.5f,

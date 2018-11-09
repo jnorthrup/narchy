@@ -25,7 +25,9 @@
 
 //comparators
 (A ==> X), (B ==> X), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- ((A ~ B) ==> X), (Punctuation:Question)
+  (--A ==> X), (--B ==> X), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- (--(A ~ B) ==> X), (Punctuation:Question)
 (A ==> X), (B ==> X), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- ((B ~ A) ==> X), (Punctuation:Question)
+  (--A ==> X), (--B ==> X), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- (--(B ~ A) ==> X), (Punctuation:Question)
 (X ==> A), (X ==> B), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- (X ==> (A ~ B)), (Punctuation:Question)
 (X ==> A), (X ==> B), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- (X ==> (B ~ A)), (Punctuation:Question)
 

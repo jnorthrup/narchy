@@ -1,8 +1,11 @@
 package jcog.lab;
 
+import jcog.Paper;
+
 import java.util.List;
 
-/** virtual scientist model: designs experiments */
+/** virtual scientist model: designs experiments and analyzes results */
+@Paper
 public abstract class Scientist<S,E> {
     protected List<Goal<E>> goals;
     protected List<Var<S, ?>> vars;

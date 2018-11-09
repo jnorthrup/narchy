@@ -41,11 +41,10 @@ public class Sharing<What,Who> {
 
     @Nullable protected Share<Who,What> need(Share<Who,What> s) {
         Mix<Who, What, Share<Who,What>> b = alloc.get(s.what);
-        if (b == null) {
+        if (b == null)
             throw new UnsupportedOperationException("unsupported resource type for: " + s);
-            
-        } else
-            return b.put(s);
+
+        return b.put(s);
     }
 
 

@@ -1,12 +1,15 @@
-package nars.agent;
+package jcog.test;
 
 import it.unimi.dsi.fastutil.longs.LongArrayList;
+import jcog.test.control.BooleanChoiceTest;
+import jcog.test.control.MiniTest;
 import nars.NAR;
 import nars.NARS;
 import nars.Task;
+import nars.agent.FrameTrigger;
+import nars.agent.NAgent;
 import nars.control.DurService;
 import nars.term.Term;
-import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanBooleanPredicate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,7 +17,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static jcog.Texts.n4;
 import static nars.$.$$;
-import static nars.$.the;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -51,10 +53,10 @@ public class NAgentTest {
 //                System.out.println(t.proof());
 //        }, GOAL);
 
-        BooleanBooleanPredicate onlyTrue = (next, prev) -> next;
-        BooleanBooleanPredicate onlyFalse = (next, prev) -> !next;
+        BooleanBooleanPredicate onlyTrue = (prev, next) -> next;
+        BooleanBooleanPredicate onlyFalse = (prev, next) -> !next;
 
-        MiniTest a = new BooleanAgent(n, posOrNeg ? onlyTrue : onlyFalse);
+        MiniTest a = new BooleanChoiceTest(n, posOrNeg ? onlyTrue : onlyFalse);
 
         n.run(cycles);
 
@@ -115,7 +117,7 @@ public class NAgentTest {
 //        n.beliefPriDefault.set(0.1f);
 //        n.time.dur(period/2);
 
-        MiniTest a = new BooleanAgent(n, (next, prev)->{
+        MiniTest a = new BooleanChoiceTest(n, (prev, next)->{
             return next == (n.time() % period < period/2); //sawtooth: true half of duty cycle, false the other half
         });
 
@@ -143,7 +145,7 @@ public class NAgentTest {
 
         NAR n = nar();
 
-        MiniTest a = new BooleanAgent(n, (next, prev) -> {
+        MiniTest a = new BooleanChoiceTest(n, (next, prev) -> {
             //System.out.println(prev + " " + next);
             return next != prev;
         });
@@ -156,70 +158,6 @@ public class NAgentTest {
         System.out.println(" avgReward=" + avgReward + " avgDex=" + avgDex);
         assertTrue(avgReward > 0.6f);
         assertTrue(avgDex > 0f);
-    }
-
-
-    @Deprecated abstract static class MiniTest extends NAgent {
-
-        public float rewardSum = 0;
-        final SummaryStatistics dex = new SummaryStatistics();
-
-        public MiniTest(NAR n) {
-            super((Term)null, FrameTrigger.durs(1), n);
-            //statPrint = n.emotion.printer(System.out);
-
-            reward(the("reward"), () -> {
-//                System.out.println(this + " avgReward=" + avgReward() + " dexMean=" + dex.getMean() + " dexMax=" + dex.getMax());
-//                statPrint.run();
-//                nar.stats(System.out);
-
-                float yy = reward();
-
-                rewardSum += yy;
-                dex.addValue(dexterity());
-
-                return yy;
-            });
-
-
-            n.on(this);
-        }
-
-        public abstract float reward();
-
-        public float avgReward() {
-            return rewardSum / (((float) nar.time()) / nar.dur());
-        }
-    }
-
-    static class BooleanAgent extends MiniTest {
-
-        private float reward;
-        boolean prev = false;
-
-        public BooleanAgent(NAR n, BooleanBooleanPredicate goal) {
-            this(n, the("x"), goal);
-        }
-
-        public BooleanAgent(NAR n, Term action, BooleanBooleanPredicate goal) {
-            super(n);
-
-            actionPushButton(action, (next) -> {
-               boolean c = goal.accept(next, prev);
-               prev = next;
-               reward = c ? 1f : 0f;
-               return next;
-            });
-
-        }
-
-        @Override
-        public float reward() {
-            float r = reward;
-            reward = Float.NaN;
-            return r;
-        }
-
     }
 
 

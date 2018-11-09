@@ -17,16 +17,21 @@ public class Derivers {
             switch (level) {
 
                 case 6:
+                    f.add("induction.nal");
+
                     f.add("nal6.nal");
                     f.add("nal6.decompose.nal");
-                    f.add("nal6.guess.nal");
                     f.add("nal6.layer2.nal");
-                    f.add("nal6.to.nal3.nal");
-                    //files.add("nal6.misc.nal"); //<- suspect
-                    //files.add("nal6.pedantic.nal"); //<- spam
+                    f.add("nal6.guess.nal");
 
-                    f.add("induction.nal");
-                    f.add("hol.nal");
+                    f.add("nal6.to.nal3.nal");
+
+                    //f.add("hol.nal");
+
+                        //files.add("nal6.misc.nal"); //<- suspect
+                        //files.add("nal6.pedantic.nal"); //<- spam
+
+
                     break;
                 case 4:
                     f.add("nal4.nal");

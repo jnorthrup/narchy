@@ -1,5 +1,6 @@
 package nars.agent;
 
+import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FastCoWList;
 import jcog.event.ListTopic;
@@ -11,6 +12,7 @@ import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.action.AbstractGoalActionConcept;
@@ -78,7 +80,8 @@ public class NAgent extends NARService implements NSense, NAct {
     protected volatile long now;
     public volatile long next;
 
-    @FunctionalInterface  public interface ReinforcedTask {
+    @FunctionalInterface
+    public interface ReinforcedTask {
         @Nullable Task get(long prev, long now, long next);
     }
 
@@ -90,7 +93,6 @@ public class NAgent extends NARService implements NSense, NAct {
     private final NAgentCycle cycle =
             //Cycles.Biphasic;
             Cycles.Interleaved;
-
 
 
     public NAgent(String id, NAR nar) {
@@ -158,7 +160,7 @@ public class NAgent extends NARService implements NSense, NAct {
                 Stamp.UNSTAMPED
         );
 
-        always.add((prev,now,next) -> t);
+        always.add((prev, now, next) -> t);
         return t;
     }
 
@@ -167,13 +169,13 @@ public class NAgent extends NARService implements NSense, NAct {
 
         always.add((prev, now, next) ->
 
-            new NALTask(x.term(), GOAL, $.t(1f, confFactor * nar.confDefault(GOAL)), now,
-                    now, next,
-                    //evidenceShared
-                    nar.evidence()
-                    //Stamp.UNSTAMPED
+                new NALTask(x.term(), GOAL, $.t(1f, confFactor * nar.confDefault(GOAL)), now,
+                        now, next,
+                        //evidenceShared
+                        nar.evidence()
+                        //Stamp.UNSTAMPED
 
-            )
+                )
         );
 
     }
@@ -292,7 +294,7 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
 
-    public Reward  reward(FloatSupplier rewardfunc) {
+    public Reward reward(FloatSupplier rewardfunc) {
         return reward(rewardTerm("reward"), rewardfunc);
     }
 
@@ -300,16 +302,19 @@ public class NAgent extends NARService implements NSense, NAct {
     public Reward rewardDetailed(FloatSupplier rewardfunc) {
         return rewardDetailed(rewardTerm("reward"), rewardfunc);
     }
+
     @Deprecated
     public Reward rewardDetailed(float min, float max, FloatSupplier rewardfunc) {
         return rewardDetailed(rewardTerm("reward"), min, max, rewardfunc);
     }
 
-    public Reward  reward(String reward, FloatSupplier rewardFunc) {
+    public Reward reward(String reward, FloatSupplier rewardFunc) {
         return reward(rewardTerm(reward), rewardFunc);
     }
 
-    /** default reward term builder from String */
+    /**
+     * default reward term builder from String
+     */
     protected Term rewardTerm(String reward) {
         //return $.func($$(reward), id);
         return $.inh($$(reward), id);
@@ -345,9 +350,11 @@ public class NAgent extends NARService implements NSense, NAct {
     public Reward rewardDetailed(Term reward, FloatSupplier rewardFunc) {
         return reward(new DetailedReward(reward, rewardFunc, this));
     }
+
     public Reward rewardDetailed(String reward, float min, float max, FloatSupplier rewardFunc) {
         return rewardDetailed(rewardTerm(reward), min, max, rewardFunc);
     }
+
     public Reward rewardDetailed(Term reward, float min, float max, FloatSupplier rewardFunc) {
         return reward(new DetailedReward(reward, normalize(rewardFunc, min, max), this));
     }
@@ -356,7 +363,7 @@ public class NAgent extends NARService implements NSense, NAct {
      * default reward module
      */
     final public synchronized Reward reward(Reward r) {
-        if (rewards.OR(e-> e.term().equals(r.term())))
+        if (rewards.OR(e -> e.term().equals(r.term())))
             throw new RuntimeException("reward exists with the ID: " + r.term());
 
         rewards.add(r);
@@ -468,23 +475,23 @@ public class NAgent extends NARService implements NSense, NAct {
 //        ArrayUtils.shuffle(aaa, random());
 
         //curiosity conf initial setting  HACK
-        if (curiosity.conf.floatValue() == 0) {
 
-            float curiConf =
-                    //nar.confMin.floatValue();
-                    //nar.confMin.floatValue() * 2;
-                    //nar.confMin.floatValue() * 4;
-                    nar.confDefault(GOAL)/8;
-                    //nar.confDefault(GOAL)/4;
-                    //nar.confDefault(GOAL)/3;
-                    //nar.confDefault(GOAL)/2;
-                    //nar.confDefault(GOAL)/3;
-                    //w2c(c2w(nar.confDefault(GOAL))/3);
-                    //w2c(c2w(nar.confDefault(GOAL))/2);
-                    //nar.confDefault(GOAL);
 
-            curiosity.conf.set(curiConf);
-        }
+        float curiConf =
+                //nar.confMin.floatValue();
+                //nar.confMin.floatValue() * 2;
+                //nar.confMin.floatValue() * 4;
+                Util.lerp(1/8f, nar.confMin.floatValue(), Param.TRUTH_MAX_CONF);
+                //nar.confDefault(GOAL)/4;
+                //nar.confDefault(GOAL)/3;
+                //nar.confDefault(GOAL)/2;
+                //nar.confDefault(GOAL)/3;
+                //w2c(c2w(nar.confDefault(GOAL))/3);
+                //w2c(c2w(nar.confDefault(GOAL))/2);
+                //nar.confDefault(GOAL);
+
+        curiosity.conf.set(Util.clamp(curiConf, nar.confMin.floatValue(), Param.TRUTH_MAX_CONF));
+
 
         for (ActionConcept a : aaa) {
 
@@ -506,7 +513,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
         in.input(always.stream().map(x -> x.get(prev, now, next)).filter(Objects::nonNull).peek(x -> {
             x.pri(
-                pri.floatValue() * nar.priDefault(x.punc())
+                    pri.floatValue() * nar.priDefault(x.punc())
             );
         }));
     }
@@ -614,6 +621,6 @@ public class NAgent extends NARService implements NSense, NAct {
         for (Reward r : rewards) {
             total += r.summary();
         }
-        return total/rewards.size();
+        return total / rewards.size();
     }
 }

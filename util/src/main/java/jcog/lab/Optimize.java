@@ -39,6 +39,8 @@ import static java.util.stream.Collectors.toList;
  *          in simple cases, S and E may be the same type
  *
  *   goal (score) is in column 0 and it assumed to be maximized. for minimized, negate model's score function
+ *
+ * TODO - max timeout parameter w/ timer that kills if time exceeded
  */
 public class Optimize<S, E> extends Lab<E>  {
 

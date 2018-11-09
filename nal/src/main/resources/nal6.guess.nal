@@ -36,6 +36,11 @@
     (C ==> X), X, task("?"), is(C,"&&")   |- (dropAnyEvent(C) ==> X), (Punctuation:Question)
       (--C ==> X), X, task("?"), is(C,"&&") |- (--dropAnyEvent(C) ==> X), (Punctuation:Question)
 
+//implication of difference question
+    //TODO implement with only an op comparison (X ==> D) and a swap functor subSwap2(D), it would be simpler to match
+    (X ==> (A~B)), X, task("?")  |- (X ==> (B~A)), (Punctuation:Question)
+    ((A~B) ==> X), X, task("?")  |- ((B~A) ==> X), (Punctuation:Question)
+      (--(A~B) ==> X), X, task("?")  |- (--(B~A) ==> X), (Punctuation:Question)
 
 //mutex induction from conjunction events
 //    (&&,X,--Y,A..*), X, task(".") |- (X ==> --Y), (Belief:StructuralDeduction)

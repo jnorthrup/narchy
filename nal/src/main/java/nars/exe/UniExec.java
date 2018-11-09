@@ -1,15 +1,10 @@
 package nars.exe;
 
-import jcog.Util;
 import jcog.data.bit.AtomicMetalBitSet;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.event.Offs;
-import jcog.exe.valve.AbstractWork;
-import jcog.exe.valve.InstrumentedWork;
-import jcog.exe.valve.Sharing;
-import jcog.exe.valve.TimeSlicing;
-import jcog.math.FloatRange;
+import jcog.exe.valve.*;
 import jcog.service.Service;
 import nars.NAR;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -60,10 +55,7 @@ public class UniExec extends AbstractExec {
         return in.capacity();
     }
 
-    /**
-     * increasing the rate closer to 1 reduces the dynamic range of the temporal allocation
-     */
-    public final FloatRange explorationRate = FloatRange.unit(0.1f);
+
 
     public final class InstrumentedCausable extends InstrumentedWork {
 
@@ -140,10 +132,14 @@ public class UniExec extends AbstractExec {
         n.services.change.on(serviceChange);
         refreshServices(); //to be sure
 
+        ons = new Offs();
+        ons.add(n.onCycle(this::onCycle));
 
-        cpu = new TimeSlicing<>("CPU", 1, nar.exe) {
+        sharing.can(cpu = scheduler());
+    }
 
-
+    protected TimeSlicing scheduler() {
+        /* deprecated */ return new TimeSlicing<>("CPU", 1, nar.exe) {
             @Deprecated
             @Override
             protected void trySpawn() {
@@ -157,127 +153,10 @@ public class UniExec extends AbstractExec {
             }
 
             @Override
-            public synchronized TimeSlicing commit() {
-
-                int n = size();
-                if (n == 0)
-                    return this;
-
-                long accumEpsilon =
-                        1;
-                        //nar.loop.cycleTimeNS / (n * 2);
-
-                double[] valMin = {Double.POSITIVE_INFINITY}, valMax = {Double.NEGATIVE_INFINITY};
-
-                long now = nar.time();
-
-                this.forEach((InstrumentedWork s) -> {
-                    Causable c = (Causable) s.who;
-
-                    boolean sleeping = c.sleeping(now);
-                    UniExec.this.sleeping.set(c.scheduledID, sleeping);
-                    if (sleeping) {
-                        s.pri(0);
-                        return;
-                    }
-
-                    double v = c.value();
-                    if (v == v) {
-                        s.valueNext = v;
-                        if (v > valMax[0]) valMax[0] = v;
-                        if (v < valMin[0]) valMin[0] = v;
-                    } else {
-                        s.valueNext = Double.NaN;
-                    }
-                });
-
-                double valRange = valMax[0] - valMin[0];
-
-
-                if (Double.isFinite(valRange) && Math.abs(valRange) > Double.MIN_NORMAL) {
-
-                    final double[] valRateMin = {Double.POSITIVE_INFINITY}, valRateMax = {Double.NEGATIVE_INFINITY};
-                    this.forEach((InstrumentedWork s) -> {
-                        Causable c = (Causable) s.who;
-                        if (sleeping.get(c.scheduledID))
-                            return;
-
-//                            Causable x = (Causable) s.who;
-                        //if (x instanceof Causable) {
-
-
-
-                        double value = s.valueNext;
-                        if (value != value)
-                            value = valMin[0];
-
-
-                        long accumTimeNS = Math.max(accumEpsilon, s.accumulatedTime(true));
-                        double valuePerSecondMS = (value / (accumTimeNS/1_000_000.0));
-                        s.valuePerSecond = valuePerSecondMS;
-                        if (valuePerSecondMS > valRateMax[0]) valRateMax[0] = valuePerSecondMS;
-                        if (valuePerSecondMS < valRateMin[0]) valRateMin[0] = valuePerSecondMS;
-                    });
-                    double valRateRange = valRateMax[0] - valRateMin[0];
-                    if (Double.isFinite(valRateRange) && valRateRange > Double.MIN_NORMAL * n) {
-
-                        float explorationRate = UniExec.this.explorationRate.floatValue();
-
-                        double[] valueRateSum = {0};
-
-                        forEach((InstrumentedWork s) -> {
-                            Causable c = (Causable) s.who;
-                            if (sleeping.get(c.scheduledID)) {
-                                s.pri(0, 1-timeSliceMomentum);
-                                return;
-                            }
-
-                            double v = s.valuePerSecond, vv;
-                            if (v == v) {
-                                vv = (v - valRateMin[0]) / valRateRange;
-                            } else {
-                                vv = 0;
-                            }
-                            s.valuePerSecondNormalized = vv;
-                            valueRateSum[0] += vv;
-                        });
-
-                        if (valueRateSum[0] > Double.MIN_NORMAL) {
-                            forEach((InstrumentedWork s) -> {
-                                Causable c = (Causable) s.who;
-                                if (sleeping.get(c.scheduledID))
-                                    return;
-
-
-                                float p = (float) (s.valuePerSecondNormalized / valueRateSum[0]);
-                                s.pri(
-                                        Util.lerp(explorationRate, p, 1f/n),
-                                        1-timeSliceMomentum
-                                );
-                            });
-
-                            return this;
-                        }
-                    }
-
-                }
-
-                /** flat */
-                float flatDemand = n > 1 ? (1f / (n-sleeping.cardinality())) : 1f;
-                forEach((InstrumentedWork s) -> {
-                    Causable c = (Causable) s.who;
-                    if (!sleeping.get(c.scheduledID))
-                        s.pri(flatDemand);
-                });
-
-
+            public Mix<Object, String, InstrumentedWork<Object, String>> commit() {
                 return this;
             }
         };
-        sharing.can(cpu);
-
-        ons = new Offs();
-        ons.add(n.onCycle(this::onCycle));
     }
 
     private void refreshServices() {

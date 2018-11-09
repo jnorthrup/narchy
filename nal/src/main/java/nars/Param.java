@@ -38,7 +38,7 @@ public abstract class Param {
     /** in Revision.dtDiff measurement */
     public static final float TRUTHPOLATION_INTERMPOLATION_THRESH = 0.5f;
 
-    public static int LinkFanoutMax =
+    public static final int LinkFanoutMax =
             32;
             //16;
             //10;
@@ -95,7 +95,7 @@ public abstract class Param {
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
     /** can be > 1 */
-    public static float ANSWER_COMPLETENESS = 2f;
+    public static final float ANSWER_COMPLETENESS = 2f;
 
 
 //    public static final int EVALUATION_MAX_TERMUTATORS = 8;
@@ -230,7 +230,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, 0, 128 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(32 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 8, 1, 32);
     public final IntRange matchTTL = new IntRange(16, 1, 32);
 
@@ -242,14 +242,14 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 2;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 2;
 
 
     /**
      * cost of attempting a unification
      */
     @Range(min = 0, max = 64)
-    public static int TTL_UNIFY = 1;
+    public static final int TTL_UNIFY = 1;
 
     @Range(min = 0, max = 64)
     public static final int TTL_BRANCH = 1;
@@ -258,35 +258,35 @@ public abstract class Param {
      * cost of executing a termute permutation
      */
     @Range(min = 0, max = 64)
-    public static int TTL_MUTATE = 1;
+    public static final int TTL_MUTATE = 1;
 
     /**
      * cost of a successful task derivation
      */
     @Range(min = 0, max = 64)
-    public static int TTL_DERIVE_TASK_SUCCESS = 5;
+    public static final int TTL_DERIVE_TASK_SUCCESS = 5;
 
     /**
      * cost of a repeat (of another within the premise's batch) task derivation
      */
     @Range(min = 0, max = 64)
-    public static int TTL_DERIVE_TASK_REPEAT = 3;
+    public static final int TTL_DERIVE_TASK_REPEAT = 3;
 
     @Range(min = 0, max = 64)
-    public static int TTL_DERIVE_TASK_UNPRIORITIZABLE = 3;
+    public static final int TTL_DERIVE_TASK_UNPRIORITIZABLE = 3;
 
     /**
      * cost of a task derived, but too similar to one of its parents
      */
     @Range(min = 0, max = 64)
-    public static int TTL_DERIVE_TASK_SAME = 3;
+    public static final int TTL_DERIVE_TASK_SAME = 3;
 
 
     /**
      * cost of a failed/aborted task derivation
      */
     @Range(min = 0, max = 64)
-    public static int TTL_DERIVE_TASK_FAIL = 4;
+    public static final int TTL_DERIVE_TASK_FAIL = 4;
 
 
     /**
@@ -382,7 +382,7 @@ public abstract class Param {
 
     /** TODO make this NAR-specific */
     public static final int CAUSE_MAX = 32;
-    public static final IntRange causeCapacity = new IntRange(32, 0, CAUSE_MAX);
+    public static final IntRange causeCapacity = new IntRange(32, 1, CAUSE_MAX);
 
 
     public final static int UnificationStackMax = 128;

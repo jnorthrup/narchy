@@ -238,7 +238,8 @@ abstract public class NAgentX extends NAgent {
         PremiseDeriverRuleSet rules = Derivers.rules(n, //6, 8
                 "induction.nal",
                 //"induction.goal.nal",
-                "motivation.nal"
+                "motivation.nal",
+                "equivalence.nal"
         );
         ZipperDeriver sensorAction = BeliefSource.forConcepts(n, rules,
                 (a.rewards.stream().flatMap((Reward x) -> stream(x.spliterator(), false)).collect(Collectors.toList())),
