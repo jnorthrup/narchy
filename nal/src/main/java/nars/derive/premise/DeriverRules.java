@@ -10,7 +10,6 @@ import nars.derive.Derivation;
 import nars.term.control.PREDICATE;
 
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
@@ -85,8 +84,8 @@ public class DeriverRules {
          */
         short[] could = d.will;
 
-        float[] maybe;
-        short[] can;
+        float[] maybeHow;
+        short[] maybeWhat;
 
         if (could.length > 1) {
 
@@ -102,8 +101,8 @@ public class DeriverRules {
             }
 
             if (toRemove == null) {
-                can = could; //no change
-                maybe = can.length > 1 ? f : null /* not necessary */;
+                maybeWhat = could; //no change
+                maybeHow = maybeWhat.length > 1 ? f : null /* not necessary */;
 
             } else {
                 int r = toRemove.cardinality();
@@ -114,14 +113,14 @@ public class DeriverRules {
                 } */ else {
                     int fanOut = n - r;
 
-                    maybe = new float[fanOut];
-                    can = new short[fanOut];
+                    maybeHow = new float[fanOut];
+                    maybeWhat = new short[fanOut];
                     int xx = 0;
                     int i;
                     for (i = 0; i < n; i++) {
                         if (!toRemove.get(i)) {
-                            maybe[xx] = f[i];
-                            can[xx++] = could[i];
+                            maybeHow[xx] = f[i];
+                            maybeWhat[xx++] = could[i];
                         }
                     }
                 }
@@ -130,21 +129,21 @@ public class DeriverRules {
         } else {
 
             if (could.length == 1 && this.could[could[0]].value(d) > 0) {
-                can = could;
+                maybeWhat = could;
             } else {
                 return;
             }
-            maybe = null;
+            maybeHow = null;
         }
 
 
-        int fanOut = can.length; assert(fanOut > 0);
+        int fanOut = maybeWhat.length; assert(fanOut > 0);
 
         if (fanOut == 1) {
-            test(d, can[0]);
+            test(d, maybeWhat[0]);
         } else {
-            assert((can.length == maybe.length)):  Arrays.toString(could) + " " + Arrays.toString(can) + " " + Arrays.toString(maybe);
-            MutableRoulette.run(maybe, d.random, wi -> 0, b -> test(d, can[b]));
+            //assert((can.length == maybe.length)):  Arrays.toString(could) + " " + Arrays.toString(can) + " " + Arrays.toString(maybe);
+            MutableRoulette.run(maybeHow, d.random, wi -> 0, b -> test(d, maybeWhat[b]));
         }
 
 

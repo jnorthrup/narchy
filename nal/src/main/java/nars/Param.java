@@ -188,7 +188,7 @@ public abstract class Param {
 
     public final TaskBuffer input =
             //new DerivedTasks.DerivedTasksMap(4096);
-            new TaskBuffer.BagTasksBuffer(512, 0.25f);
+            new TaskBuffer.BagTasksBuffer(512, 0.333f);
 
 
     /**

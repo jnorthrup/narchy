@@ -235,7 +235,7 @@ abstract public class NAgentX extends NAgent {
 
     static void initPlugins2(NAR n, NAgent a) {
 
-        PremiseDeriverRuleSet rules = Derivers.rules(n, //6, 8
+        PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8,
                 "induction.nal",
                 //"induction.goal.nal",
                 "motivation.nal"
@@ -446,9 +446,10 @@ abstract public class NAgentX extends NAgent {
 
 
         new BatchDeriver(Derivers.nal(n, 1, 8,
-            "motivation.nal",
+
+            "motivation.nal"
                 //"equivalence.nal"
-                "induction.goal.nal"
+                //"induction.goal.nal"
         ));
 
         //new STMLinkage(n, 1);

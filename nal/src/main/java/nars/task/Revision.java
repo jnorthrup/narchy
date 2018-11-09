@@ -312,7 +312,7 @@ public class Revision {
             return 0f;
 
         Op ao = a.op(), bo = b.op();
-        if (ao != bo)
+        if ((ao != bo) || (a.volume() != b.volume()) || (a.structure() != b.structure()))
             return Float.POSITIVE_INFINITY;
 
         Subterms aa = a.subterms(), bb = b.subterms();
