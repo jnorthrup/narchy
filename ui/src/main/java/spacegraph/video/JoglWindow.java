@@ -12,6 +12,7 @@ import jcog.exe.Exe;
 import jcog.exe.InstrumentedLoop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spacegraph.UI;
 import spacegraph.util.animate.Animated;
 import spacegraph.video.font.HersheyFont;
 
@@ -34,10 +35,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     private static final Collection<JoglWindow> windows = new ConcurrentFastIteratingHashSet<>(new JoglWindow[0]);
     final Topic<JoglWindow> onUpdate = new ListTopic<>();
-    private final Logger logger;
+    private static final Logger logger = LoggerFactory.getLogger(JoglWindow.class);
 
 
-//    /**
+    //    /**
 //     * update loop
 //     */
 //    private final InstrumentedLoop updater;
@@ -49,8 +50,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     public float dtS = 0;
     public final Topic<JoglWindow> eventClosed = new ListTopic<>();
 
-//    private float updateFPS = 32f;
-    public float renderFPS = 32f;
+    //    private float updateFPS = 32f;
+    public float renderFPS = UI.FPS_default;
+    public float renderFPSUnfocused = renderFPS / 2;
+    public float renderFPSInvisible = 0;
 
 //    /** reduction throttle for update loop when unfoused */
 //    private float updateFPSUnfocusedMultiplier = 0.25f;
@@ -66,7 +69,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     private final AtomicBoolean updateWindow = new AtomicBoolean(true);
 
     private void updateWindow() {
-        if (!updateWindow.compareAndSet(true, false))
+        if (!updateWindow.weakCompareAndSetVolatile(true, false))
             return;
 
         GLWindow w = window;
@@ -94,7 +97,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
     JoglWindow() {
-        logger = LoggerFactory.getLogger(toString());
+
 
 //        updater = new InstrumentedLoop() {
 //            @Override
@@ -167,17 +170,11 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         return window.getSurfaceWidth();
     }
 
-    public final int getWidthNext() {
-        return nw;
-    }
 
     public final int getHeight() {
         return window.getSurfaceHeight();
     }
 
-    public final int getHeightNext() {
-        return nh;
-    }
 
 //    public final int getXNext() {
 //        return nx;
@@ -189,6 +186,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     @Override
     public void dispose(GLAutoDrawable arg0) {
+        renderer.loop.stop();
     }
 
     @Override
@@ -222,19 +220,18 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     @Override
     public void windowGainedFocus(WindowEvent windowEvent) {
-
+        renderer.loop.setFPS(renderFPS);
     }
 
     @Override
     public void windowLostFocus(WindowEvent windowEvent) {
-
+        renderer.loop.setFPS(renderFPSUnfocused);
     }
 
     @Override
     public void windowRepaint(WindowUpdateEvent windowUpdateEvent) {
         //if (!updater.isRunning()) {
 //        updater.setFPS(updateFPS /* window.hasFocus() ? updateFPS : updateFPS * updateFPSUnfocusedMultiplier */);
-        renderer.loop.setFPS(renderFPS);
         //}
     }
 
@@ -245,21 +242,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      */
     abstract protected void render(int dtMS);
 
-    private boolean next() {
-        //System.out.println(window + " " +window.isVisible());
-        if (window.isVisible()) {
-            long cycleTimeNS =
-                    //updater.cycleTimeNS;
-                    renderer.loop.cycleTimeNS;
-            this.dtS = (float) (cycleTimeNS / 1.0E9);
-            onUpdate.emit(this);
-            return true;
-        } else {
-            renderer.stop();
-            return false; //will be re-triggered when visible again
-        }
-    }
-
 
     @Override
     public final void display(GLAutoDrawable drawable) {
@@ -267,10 +249,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         long nowNS = System.nanoTime(), renderDtNS = nowNS - lastRenderNS;
         this.lastRenderNS = nowNS;
 
-        if (renderDtNS > Integer.MAX_VALUE) renderDtNS = Integer.MAX_VALUE;
-
-
-        next();
+        this.dtS = (float) (renderDtNS / 1.0E9);
 
         /* ns -> ms */
         render((int) Math.min(Integer.MAX_VALUE, Math.round(renderDtNS / 1_000_000.0)));
@@ -286,16 +265,16 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     private GLWindow show(String title, int w, int h, int x, int y) {
 
         //Threading.invokeOnOpenGLThread(false, () -> {
-            //GLWorkerThread.invokeLater(()->{
-            //Exe.invokeLater(() -> {
+        //GLWorkerThread.invokeLater(()->{
+        //Exe.invokeLater(() -> {
 
-            if (window != null) {
+        if (window != null) {
 
-                return window;
-            }
+            return window;
+        }
 
-            GLWindow W = window();
-            this.window = W;
+        GLWindow W = window();
+        this.window = W;
 
 //        EDTUtil edt = window.getScreen().getDisplay().getEDTUtil();
 //        if (!edt.isRunning()) {
@@ -303,24 +282,24 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //            edt.setPollPeriod(EDT_POLL_PERIOD_MS);
 //        }
 
-            window.addGLEventListener(this);
-            window.addWindowListener(this);
+        window.addGLEventListener(this);
+        window.addWindowListener(this);
 
-            windows.add(this);
+        windows.add(this);
 
-            W.setTitle(title);
-            if (x != Integer.MIN_VALUE) {
-                setPositionAndSize(x, y, w, h);
-                W.setPosition(x, y);
-                W.setSize(w, h);
-            } else {
-                setSize(w, h);
-                W.setSize(w, h);
-            }
-            W.setVisible(true);
+        W.setTitle(title);
+        if (x != Integer.MIN_VALUE) {
+            setPositionAndSize(x, y, w, h);
+            W.setPosition(x, y);
+            W.setSize(w, h);
+        } else {
+            setSize(w, h);
+            W.setSize(w, h);
+        }
+        W.setVisible(true);
 
-            return W;
-            //});
+        return W;
+        //});
 
 
         //});
@@ -391,14 +370,12 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
         init(gl);
 
-
-        //updater.setFPS(updateFPS);
-
+        renderer.loop.setFPS(renderFPS);
     }
 
-    public void setFPS(float render, float update) {
+    public void setFPS(float render) {
 
-        logger.info("fps render={} update={}", render, update);
+        logger.info("fps render={}", render);
         renderFPS = render;
 //        updateFPS = update;
 //        if (updater.isRunning()) {
@@ -480,7 +457,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     class GameAnimatorControl extends AnimatorBase {
 
         final InstrumentedLoop loop;
-        private volatile boolean paused = true;
+
 
 
         GameAnimatorControl() {
@@ -500,7 +477,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
                 @Override
                 protected void starting() {
-                    paused = false;
+
                 }
 
 
@@ -524,27 +501,35 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 @Override
                 public boolean next() {
 
-                    if (window != null) {
-
-                        if (!paused) {
-
-                            if (waiting.compareAndSet(false, true)) {
-                                //window.runOnEDTIfAvail(false, this::render);
-                                //renderThread.execute(this::render);
-                                Threading.invokeOnOpenGLThread(false, this::render);
-                            }
-                        }
-                        return true;
-                    } else {
+                    if (window == null)
                         return false;
+
+                    //System.out.println(window + " " +window.isVisible());
+                    if (window.isVisible()) {
+
+                        if (waiting.compareAndSet(false, true)) {
+
+                            onUpdate.emit(JoglWindow.this);
+
+                            Threading.invokeOnOpenGLThread(false, this::render);
+                        }
+
+                    } else {
+                        renderer.loop.stop();
+                        renderer.stop();
                     }
+
+
+
+
+                    return true;
 
 
                 }
             };
 
 
-            loop.setFPS(1);  //HACK initially trigger slowly
+            //loop.setFPS(1);  //HACK initially trigger slowly
 
         }
 
@@ -572,13 +557,11 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         public final boolean pause() {
 
 
-            paused = true;
             return true;
         }
 
         @Override
         public final boolean resume() {
-            paused = false;
             return true;
         }
 
@@ -589,12 +572,12 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
         @Override
         public final boolean isAnimating() {
-            return !paused;
+            return loop.isRunning();
         }
 
         @Override
         public final boolean isPaused() {
-            return paused;
+            return !loop.isRunning();
         }
 
 

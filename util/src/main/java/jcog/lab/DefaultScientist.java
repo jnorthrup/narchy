@@ -20,9 +20,12 @@ public class DefaultScientist<S,E> extends Scientist<S,E> {
 
     //TODO running PCA aggregation to determine the general relative influence of each variable
 
-    int maxVars = 2;
+
 
     final Random random;
+
+    int maxVars = 3;
+    @Deprecated int experimentIterations = 64;
 
     public DefaultScientist() {
         this(new Random());
@@ -46,7 +49,7 @@ public class DefaultScientist<S,E> extends Scientist<S,E> {
     }
 
     @Override public int experimentIterations() {
-        return 16;
+        return experimentIterations;
     }
 
     @Override

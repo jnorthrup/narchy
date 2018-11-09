@@ -2555,4 +2555,10 @@ public enum Util {
                 return i;
         }
     }
+
+    public static float intProperty(String name, int defaultValue) {
+        String p = System.getProperty(name);
+        return p != null ? Integer.parseInt(p) : defaultValue;
+    }
+
 }

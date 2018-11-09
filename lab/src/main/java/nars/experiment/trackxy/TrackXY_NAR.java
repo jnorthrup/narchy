@@ -466,7 +466,7 @@ public class TrackXY_NAR extends NAgentX {
 //                    .sense("derivedTask",
 //                            (TestNARSuite t) -> t.sum((NAR n)->n.emotion.deriveTask.getValue()))
 
-            o.runSync().print();
+            o.runSync(16).print();
 
             RealDecisionTree t = o.tree(4, 8);
             t.print();

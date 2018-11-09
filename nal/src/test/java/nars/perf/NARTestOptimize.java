@@ -7,11 +7,12 @@ import jcog.lab.Optilive;
 import nars.NAR;
 import nars.NARS;
 import nars.Param;
-import nars.derive.Deriver;
-import nars.derive.budget.DefaultDeriverBudgeting;
-import nars.derive.impl.BatchDeriver;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
+import nars.nal.nal3.NAL3Test;
+import nars.nal.nal4.NAL4Test;
+import nars.nal.nal5.NAL5Test;
+import nars.nal.nal6.NAL6Test;
 import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
 
@@ -20,9 +21,9 @@ import java.util.function.Supplier;
 
 class NARTestOptimize {
 
-//    static {
-//        System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "3"); //temporary
-//    }
+    static {
+        System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "3"); //temporary
+    }
 
     static class NAL1Optimize {
         public static void main(String[] args) {
@@ -31,12 +32,12 @@ class NARTestOptimize {
             Class[] testClasses = new Class[] {
                     NAL1Test.class,
                     NAL2Test.class,
-                    //NAL3Test.class,
-//                    NAL4Test.class,
+                    NAL3Test.class,
+                    NAL4Test.class,
 //                    NAL1MultistepTest.class,
                     //NAL4MultistepTest.class,
-//                    NAL5Test.class,
-//                    NAL6Test.class,
+                    NAL5Test.class,
+                    NAL6Test.class,
 //                    NAL7Test.class,
 //                    NAL8Test.class,
             };
@@ -67,10 +68,10 @@ class NARTestOptimize {
 //                .var("goalPriDefault", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.goalPriDefault.set(f))
 
-                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
-                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
-                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
-                                        relGrowthExponent.set(f)))
+//                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
+//                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
+//                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
+//                                        relGrowthExponent.set(f)))
 //                .var("derivationScale", 0.5f, 2f, 0.1f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
 //                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
@@ -78,7 +79,7 @@ class NARTestOptimize {
             ;
 
 
-            int suiteIterations = 1;
+            int suiteIterations = 2;
             Optilive<NAR, TestNARSuite> o = l.optilive((Supplier<NAR> s) ->
                             new TestNARSuite(s, testClasses).run(parallel, suiteIterations),
                 (TestNARSuite t) -> (float) t.score());

@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static jcog.Texts.n2;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -93,7 +94,7 @@ abstract public class Loop extends FixedRateTimedFuture {
     }
 
     static int fpsToMS(float fps) {
-        return Math.round(1000f / fps);
+        return Math.round(1000 / fps);
     }
 
 
@@ -101,29 +102,29 @@ abstract public class Loop extends FixedRateTimedFuture {
         int prevPeriodMS;
         if ((prevPeriodMS = periodMS.getAndSet(nextPeriodMS)) != nextPeriodMS) {
             if (prevPeriodMS < 0 && nextPeriodMS >= 0) {
-                logger.debug("start period={}ms", nextPeriodMS);
+                logger.info("start {}fps (each {}ms)", n2(1000f/nextPeriodMS), nextPeriodMS);
 
                 synchronized (periodMS) {
 
                     starting();
 
-                    Exe.timer().scheduleAtFixedRate(this, nextPeriodMS, TimeUnit.MILLISECONDS);
-
                 }
+
+                Exe.timer().scheduleAtFixedRate(this, nextPeriodMS, TimeUnit.MILLISECONDS);
+
             } else if (/*prevPeriodMS >= 0 && */nextPeriodMS < 0) {
 
                 logger.info("stop");
 
-                synchronized (periodMS) {
+                cancel(false);
 
-                    cancel(false);
+                synchronized (periodMS) {
 
                     stopping();
                 }
             } else if (prevPeriodMS >= 0) {
 
-
-                logger.debug("period={}ms", nextPeriodMS);
+                logger.info("continue {}fps (each {}ms)", n2(1000f/nextPeriodMS), nextPeriodMS);
 
                 super.setPeriodMS(nextPeriodMS);
 

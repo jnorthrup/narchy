@@ -106,7 +106,7 @@ public class CrosshairSurface extends Surface implements MouseListener {
         mx = e.getX();
         smx = mx;
         my = e.getY();
-        smy = (space.getHeightNext() - ((float)my)) ;
+        smy = (space.getHeight() - ((float)my)) ;
 
         pressed = e.getButtonsDown();
     }

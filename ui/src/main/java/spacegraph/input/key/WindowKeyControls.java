@@ -36,11 +36,11 @@ public class WindowKeyControls extends HotKeyMap {
 
         add(KeyEvent.VK_F4, "Window FPS Faster", ()-> {
             float nextFPS = Math.min(MAX_FPS, window.io.renderFPS * 1.25f);
-            window.io.setFPS(nextFPS, nextFPS);
+            window.io.setFPS(nextFPS);
         });
         add(KeyEvent.VK_F5, "Window FPS Slower", ()-> {
             float nextFPS = Math.max(MIN_FPS, window.io.renderFPS * 0.8f);
-            window.io.setFPS(nextFPS, nextFPS);
+            window.io.setFPS(nextFPS);
         });
 
     }
