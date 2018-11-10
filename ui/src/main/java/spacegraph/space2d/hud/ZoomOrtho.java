@@ -20,20 +20,23 @@ public class ZoomOrtho extends Ortho {
     protected void starting() {
         super.starting();
 
-        //mouse wheel zoom
-        onUpdate((w)->{
 
-            //absorb remaining rotationY
-            float zoomRate = 0.5f;
+    }
 
-            if (!(finger.touching() instanceof Finger.WheelAbsorb)) {
-                float dy = finger.rotationY(true);
-                if (dy != 0) {
-                    v2 xy = cam.screenToWorld(finger.posPixel);
-                    cam.set(xy.x, xy.y, cam.z * (1f + (dy * zoomRate)));
-                }
+    @Override
+    public Surface finger(Finger finger) {
+        //absorb remaining rotationY
+        float zoomRate = 0.5f;
+
+        if (!(finger.touching() instanceof Finger.WheelAbsorb)) {
+            float dy = finger.rotationY(true);
+            if (dy != 0) {
+                v2 xy = cam.screenToWorld(finger.posPixel);
+                cam.set(xy.x, xy.y, cam.z * (1f + (dy * zoomRate)));
             }
-        });
+        }
+
+        return super.finger(finger);
     }
 
     private final Fingering fingerContentPan = new FingerMovePixels(PAN_BUTTON) {
@@ -110,11 +113,12 @@ public class ZoomOrtho extends Ortho {
     @Override
     protected Surface finger() {
 
-        Surface touchPrev = finger.touching();
+
+        //Surface touchPrev = finger.touching();
         Surface touchNext = super.finger();
-        if (touchNext != null && touchNext != touchPrev) {
-            debug(this, 1f, () -> "touch(" + touchNext + ')');
-        }
+//        if (touchNext != null && touchNext != touchPrev) {
+//            debug(this, 1f, () -> "touch(" + touchNext + ')');
+//        }
 
         if (touchNext == null) {
             if (finger.tryFingering(fingerWindowMove) || finger.tryFingering(fingerContentPan)) {

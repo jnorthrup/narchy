@@ -151,7 +151,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
     }
 
     @Override
-    public boolean removeChild(Surface s) {
+    public boolean detachChild(Surface s) {
         K k = cells.firstByValue(x -> s == x);
         return k!=null && remove(k)!=null;
     }

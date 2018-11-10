@@ -62,7 +62,7 @@ public class OmniBox extends Widget {
             public void clear() {
                 super.clear();
                 synchronized (content) {
-                    content.removeChild(this);
+                    content.detachChild(this);
                 }
             }
 

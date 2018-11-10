@@ -159,7 +159,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
 
 
-    public void reverseForEach(Procedure c) {
+    public void reverseForEach(Procedure<X> c) {
         X[] copy = array();
         if (copy != null) {
             for (int i = copy.length-1; i >= 0; i--) {

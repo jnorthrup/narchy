@@ -2,23 +2,52 @@ package spacegraph.input.finger;
 
 import com.jogamp.newt.event.*;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.SpaceGraphFlat;
+import spacegraph.space2d.Surface;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.JoglWindow;
 
 public class NewtMouse extends Finger implements MouseListener, WindowListener {
 
     private final JoglWindow win;
+    private final JoglSpace space;
 
-    public NewtMouse(JoglSpace w) {
-        this.win = w.io;
-        w.onReady(()->{
+    public NewtMouse(JoglSpace s) {
+        this.space = s;
+        this.win = s.io;
+
+        s.onReady(()->{
             if (win.window.hasFocus())
                 focused.set(true);
 
             win.addMouseListenerPre(this);
             win.addWindowListener(this);
-            //this.win.onUpdate((Runnable) this::update);
+            this.win.onUpdate((Runnable) this::update);
         });
+    }
+
+    @Override
+    public void update() {
+
+
+        touchNext = null;
+
+        Fingering ff = this.fingering.get();
+
+        ((SpaceGraphFlat)this.space).layers.reverseForEach(l -> {
+            on(l);
+        });
+
+        @Nullable Surface touchPrev = touch(touchNext);
+        if (ff != Fingering.Null) {
+            if (!ff.update(this)) {
+                ff.stop(this);
+                fingering.lazySet(Fingering.Null);
+            }
+        }
+
+
+        super.update(); //clear rotation
     }
 
     private boolean update(boolean moved, MouseEvent e) {

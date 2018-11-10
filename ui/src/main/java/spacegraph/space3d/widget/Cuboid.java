@@ -116,9 +116,12 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
                     finger.posOrtho.set(
                             localPoint.x / shape.x() + 0.5f, localPoint.y / shape.y() + 0.5f
                     );
-                    Surface f = this.finger.on(front);
+
+                    this.finger.on(front);
+
                     finger.update(buttons);
-                    return f;
+
+                    return finger.touching();
 
                 }
             } else {

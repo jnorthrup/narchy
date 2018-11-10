@@ -1,6 +1,7 @@
 package spacegraph.space2d.container.collection;
 
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceBase;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.Consumer;
@@ -32,21 +33,32 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
         return put(index, null);
     }
 
+
+    public final S put(int index, S s) {
+        return put(index, s, true);
+    }
+
     /** returns the removed element */
-    public S put(int index, S s) {
+    public S put(int index, S s, boolean startAndStop) {
         return children.getAndUpdate(index, (r) -> {
             if (r != s) {
-                if (r != null) {
-                    r.stop();
-                }
+                if (startAndStop) {
+                    if (r != null) {
+                        r.stop();
+                    }
 
-                if (s!=null) {
-                    assert (s.parent == null);
+                    if (s != null) {
+                        SurfaceBase sParent = s.parent;
+                        assert (sParent == null || sParent == this);
 
-                    synchronized (this) {
-                        if (parent != null) {
-                            s.start(this);
+
+                        synchronized (this) {
+                            if (sParent == null && this.parent != null) {
+                                s.start(this);
+                            }
+                            //otherwise it is started, or this isnt started
                         }
+
                     }
                 }
 

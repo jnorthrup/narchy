@@ -1,11 +1,12 @@
 package spacegraph.space2d.widget.meta;
 
+import jcog.WTF;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -16,15 +17,33 @@ import spacegraph.space2d.widget.text.VectorLabel;
 public class MetaFrame extends Bordering {
 
 
+    private MetaFrame() {
+        super();
+    }
+
     public MetaFrame(Surface surface) {
         super(surface);
     }
 
-    /** referent; by default - the surface */
+    private class SatelliteMetaFrame extends MetaFrame {
+
+        public SatelliteMetaFrame(Surface surface) {
+            super(null);
+            surface.reattach(this);
+        }
+
+        @Override
+        protected void click() {
+            MetaFrame.this.dock();
+        }
+    }
+
+    /**
+     * referent; by default - the surface
+     */
     protected Surface the() {
         return get(0);
     }
-
 
 
     //    protected Surface newMetaMenu() {
@@ -55,7 +74,7 @@ public class MetaFrame extends Bordering {
 //    }
 
     boolean expanded = false;
-
+    SatelliteMetaFrame satellite = null;
 
     @Override
     protected boolean prePaint(SurfaceRender r) {
@@ -92,49 +111,132 @@ public class MetaFrame extends Bordering {
         return expanded ? true : super.showing(); //HACK
     }
 
+    @Override
+    public boolean detachChild(Surface s) {
+        synchronized (this) {
+            if (get(0) == s) {
+                put(0, null, false);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean attachChild(Surface s) {
+        synchronized (this) {
+            if (get(0) == null) {
+                put(0, s, false);
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
     protected void starting() {
         super.starting();
 
         PushButton n = new PushButton(new VectorLabel(name()));
+        set(N, n);
 
-        n.click(()->{
+        Surface surface = get(0);
+        Surface wm = (surface instanceof Menu) ? ((Menu) surface).menu() : null;
+        if(wm!=null)
 
-            synchronized (MetaFrame.this) {
-                boolean e = expanded;
-                if (!e) {
-                    //TODO unexpand any other MetaFrame popup that may be expanded.  check the root context's singleton map
-
-                    Surface overlay = parent(Ortho.class).space.layers.get(3);
-                    ((Ortho)overlay).setSurface(the());
-                    set(null);
-
-                } else {
-
-                    set(((Ortho)parent(Ortho.class).space.layers.get(3)).content());
+            set(S,wm);
+        else
+            borderSouth=0;
 
 
-                    SurfaceBase p = parent;
-                    if (p!=null) {
-                        ((Container) p).layout();
-                    }
 
-                }
+        n.click(() -> {
 
-                expanded = !expanded;
+            click();
 
-                //root().zoom(MetaFrame.this);
+
+            //root().zoom(MetaFrame.this);
 //                if (borderWest == 0) {
 //                    set(W, newMetaMenu(), 0.1f);
 //                } else {
 //                    remove(W);
 //                    borderSize(W, 0);
 //                }
-            }
-        });
-        set(N, n);
 
+        });
+
+
+    }
+
+    /**
+     * titlebar clicked
+     */
+    protected void click() {
+        synchronized (this) {
+
+            boolean e = expanded;
+
+            Ortho hud = (Ortho) parent(Ortho.class).space.layers.get(3);
+            MutableListContainer target = (MutableListContainer) hud.the();
+            if (!e) {
+                //TODO unexpand any other MetaFrame popup that may be expanded.  check the root context's singleton map
+
+                undock(target);
+            } else {
+
+
+                dock();
+
+                //
+//
+//                    SurfaceBase p = parent;
+//                    if (p!=null) {
+//                        ((Container) p).layout();
+//                    }
+
+
+            }
+        }
+    }
+
+    private void dock() {
+        synchronized (this) {
+            if (expanded) {
+                assert (satellite != null);
+
+                if (satellite.the().reattach(this)) {
+                    expanded = false;
+
+                    if (!satellite.remove())
+                        throw new WTF();
+
+                    satellite = null;
+                    
+                    ((Container)parent).layout();
+                } else
+                    throw new WTF();
+            }
+        }
+    }
+
+
+    private void undock(MutableListContainer target) {
+        if (target.isEmpty()) {
+
+            Surface content = the();
+            if (content != null) {
+                SatelliteMetaFrame wrapper = new SatelliteMetaFrame(content);
+                {
+                    target.add(wrapper);
+                    wrapper.pos(target.bounds.scale(0.8f));
+                    expanded = true;
+                    satellite = wrapper;
+                }
+            }
+
+        }
+
+    }
 
 
 //        Surface m = grid(
@@ -145,16 +247,6 @@ public class MetaFrame extends Bordering {
 
 //        PushButton hideButton = PushButton.awesome("times");
 //        set(NE, new Scale(hideButton, 0.8f));
-
-
-        Surface surface = get(0);
-        Surface wm = (surface instanceof Menu) ? ((Menu) surface).menu() : null;
-        if (wm != null)
-            set(S, wm);
-        else
-            borderSouth = 0;
-    }
-
 
 
     protected String name() {

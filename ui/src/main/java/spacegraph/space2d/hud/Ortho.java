@@ -80,10 +80,6 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
         start(space);
     }
 
-    private void fingerUpdate() {
-        if (focused())
-            finger();
-    }
 
     public void setSurface(S content) {
         synchronized (this) {
@@ -122,9 +118,6 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
         }
     }
 
-    final boolean focused() {
-        return finger.focused();
-    }
 
     @Override public final void compile(SurfaceRender render) {
 
@@ -213,7 +206,6 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
             windowResized(null);
 
             animate(cam);
-            animate(this::fingerUpdate);
 
 
             if (surface.parent == null)
@@ -393,7 +385,7 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
         float wmy = +cam.y + (-0.5f * h() + pmy) / scale.y;
         fingerPos.set(wmx, wmy);
 
-        return finger.on(surface);
+        return finger.touching();
     }
 
 
@@ -410,7 +402,7 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
 
 
 
-    public final S content() {
+    public final S the() {
         return surface;
     }
 

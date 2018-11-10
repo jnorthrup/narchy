@@ -284,6 +284,38 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
         return false;
     }
 
+    public boolean reattach(Surface nextParent) {
+        if (this == nextParent)
+            return true;
+
+        SurfaceBase prevParent = this.parent;
+        if (prevParent instanceof AbstractMutableContainer && nextParent instanceof AbstractMutableContainer) {
+            AbstractMutableContainer prevMutableParent = (AbstractMutableContainer) prevParent;
+            AbstractMutableContainer nextMutableParent = (AbstractMutableContainer) nextParent;
+            if (PARENT.compareAndSet(this, prevParent, nextParent)) {
+                if (prevMutableParent.detachChild(this)) {
+
+                    //now it is at risk of being lost
+
+                    if (nextMutableParent.attachChild(this)) {
+                        return true;
+                    } else {
+                        //could not attach to nextParent, reattach to prev
+                        if (!prevMutableParent.attachChild(this)) {
+
+                        }
+                    }
+
+                }
+                System.err.println("lost: " + this + " while reattaching from " + prevParent + " to " + nextParent);
+                //TODO logger.warn(...
+                stop();
+            }
+        }
+
+        return false;
+    }
+
 
 
 }

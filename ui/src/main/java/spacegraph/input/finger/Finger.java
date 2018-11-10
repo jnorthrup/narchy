@@ -42,6 +42,7 @@ abstract public class Finger {
 
     @Deprecated /* HACK */ /* TEMPORARY */ public final v2 posOrtho = new v2(0,0);
     @Nullable private transient Ortho ortho;
+    protected Surface touchNext;
 
     {
         for (int i = 0; i < MAX_BUTTONS; i++) {
@@ -55,7 +56,7 @@ abstract public class Finger {
     /**
      * exclusive state which may be requested by a surface
      */
-    private final AtomicReference<Fingering> fingering = new AtomicReference<>(Fingering.Null);
+    protected final AtomicReference<Fingering> fingering = new AtomicReference<>(Fingering.Null);
 
     /**
      * widget above which this finger currently hovers
@@ -189,9 +190,9 @@ abstract public class Finger {
     }
 
     /** called for each layer */
-    public Surface on(Surface root) {
+    public void on(Surface layer) {
 
-        SurfaceRoot rootRoot = root.root();
+        SurfaceRoot rootRoot = layer.root();
         if (rootRoot instanceof Ortho) {
             this.ortho = (Ortho) rootRoot;
             this.posOrtho.set(ortho.cam.screenToWorld(posPixel));
@@ -206,31 +207,23 @@ abstract public class Finger {
         Surface touchNext;
 
 
-        if (ff == Fingering.Null || ff.escapes()) {
-            touchNext = root.finger(this);
-        } else {
-            touchNext = touching.get();
-        }
-
-
-
-
-        @Nullable Surface touchPrev = touch(touchNext);
-
-
-        if (ff != Fingering.Null) {
-
-            if (!ff.update(this)) {
-                ff.stop(this);
-                fingering.lazySet(Fingering.Null);
+        if (this.touchNext ==null) {
+            if (ff == Fingering.Null || ff.escapes()) {
+                touchNext = layer.finger(this);
+            } else {
+                touchNext = touching.get();
             }
-
+            this.touchNext = touchNext;
         }
 
-        return touchNext;
+
+
+
+
+
     }
 
-    private Surface touch(Surface next) {
+    protected Surface touch(Surface next) {
         Surface prev = touching.getAndSet(next);
         if (prev!=next) {
             if (prev!=null)

@@ -1,5 +1,6 @@
 package spacegraph.space2d;
 
+import com.jogamp.opengl.GL2;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.NewtMouse;
 import spacegraph.space2d.container.collection.MutableListContainer;
@@ -40,12 +41,21 @@ public class SpaceGraphFlat extends JoglSpace {
             //addOverlay(this.keyboard.keyFocusSurface(cam));
 
         Ortho<MutableListContainer> hud = new Ortho<>(this, new MutableListContainer(),
-                //finger,
-                new NewtMouse(this),
+                finger,
                 keyboard) {
             @Override
             protected boolean autosize() {
                 return true;
+            }
+
+            @Override
+            protected void paintIt(GL2 gl, SurfaceRender r) {
+                gl.glPushMatrix();
+
+                    gl.glLoadIdentity();
+                    r.render(gl);
+
+                gl.glPopMatrix();
             }
         };
         add(hud);

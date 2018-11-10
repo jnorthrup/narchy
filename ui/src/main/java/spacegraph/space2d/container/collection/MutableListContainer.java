@@ -113,15 +113,12 @@ public class MutableListContainer extends AbstractMutableContainer {
 
     }
 
-    public boolean removeChild(Surface s) {
-        boolean removed = children.removeFirstInstance(s);
-        if (removed) {
-            if (s.stop()) {
-//                if (!(children instanceof BufferedCoWList))
-                return true;
-            }
-        }
-        return false;
+    @Override public boolean attachChild(Surface s) {
+        return children.add(s);
+    }
+
+    @Override public boolean detachChild(Surface s) {
+        return children.removeFirstInstance(s);
     }
 
     public final Container set(Surface... next) {
