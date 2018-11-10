@@ -246,7 +246,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
                 (ByteList path, Term indepVarOrStatement) -> {
                     if (!path.isEmpty()) {
                         if (indepVarOrStatement.op() == VAR_INDEP) {
-                            indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).serial,
+                            indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).id,
                                     () -> new FasterList<>(2))
                                     .add(path.toImmutable());
                         } else {

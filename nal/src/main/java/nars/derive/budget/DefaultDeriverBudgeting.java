@@ -30,14 +30,15 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
     public final FloatRange polarityImportance = new FloatRange(0f, 0f, 1f);
 
     /** increase this discriminate more heavily against more complex derivations */
-    public final FloatRange relGrowthExponent = new FloatRange(2f, 0f, 8f);
+    public final FloatRange relGrowthExponent = new FloatRange(3f, 0f, 8f);
 
     @Override
     public float pri(Task t, float f, float e, Derivation d) {
         float factor = this.gain.floatValue();
 
         //factor *= factorComplexityAbsolute(t, d);
-        factor *= factorComplexityRelative(t, d);
+        factor *= factorComplexityRelativeOld(t, d);
+        //factor *= factorComplexityRelative(t, d);
 
         if (f==f) {
             //belief or goal:
@@ -57,7 +58,13 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
     }
 
     float factorComplexityAbsolute(Task t, Derivation d) {
-        float f = (1f - (t.voluplexity() / (d.termVolMax+1)));
+        int max = d.termVolMax + 1;
+
+        float weight = Math.min(1, t.voluplexity() / max);
+        float parentWeight = Math.min(1, ((d.parentVoluplexitySum / 2)/*avg*/) / max);
+        float f = (1f - Util.lerp(parentWeight,weight,parentWeight * weight));
+
+        //float f = (1f - weight);
         return (float) Math.pow(f, relGrowthExponent.floatValue());
     }
 

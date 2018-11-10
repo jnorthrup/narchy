@@ -22,7 +22,7 @@ import nars.op.Subst;
 import nars.subterm.Subterms;
 import nars.term.Variable;
 import nars.term.*;
-import nars.term.anon.Anon;
+import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -76,7 +76,7 @@ public class Derivation extends PreDerivation {
 //                }
 //            };
 
-    public final Anon.AnonWithVarShift anon;
+    public final AnonWithVarShift anon;
 
 
     private final SubIfUnify mySubIfUnify = new SubIfUnify(this);
@@ -184,7 +184,9 @@ public class Derivation extends PreDerivation {
      * precise time that the task and belief truth are sampled
      */
     public transient long taskStart, taskEnd, beliefStart, beliefEnd; //TODO taskEnd, beliefEnd
-    public transient boolean taskBeliefTimeIntersects;
+
+    public long[] taskBeliefTimeIntersects = new long[2];
+
     private transient Term _beliefTerm;
     private transient long[] evidenceDouble, evidenceSingle;
     private transient int taskUniques;
@@ -212,7 +214,7 @@ public class Derivation extends PreDerivation {
                 , null, Param.UnificationStackMax
         );
 
-        this.anon = new Anon.AnonWithVarShift(ANON_INITIAL_CAPACITY);
+        this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY, Op.VAR_DEP.bit | Op.VAR_QUERY.bit);
     }
 
     @Override
@@ -223,7 +225,8 @@ public class Derivation extends PreDerivation {
     //TEMPORARY
     @Override public @Nullable Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
 
-        assert(!yy.hasAny(VAR_PATTERN));
+        if (yy.hasAny(VAR_PATTERN))
+            throw new WTF();
 
         return super.transformedCompound(x, op, dt, xx, yy );
     }
@@ -361,14 +364,15 @@ public class Derivation extends PreDerivation {
 
         if (this._belief != null) {
 
-            beliefTerm = anon.putShift(this._beliefTerm = nextBelief.term(), taskTerm);
+            this.beliefTerm = anon.putShift(this._beliefTerm = nextBelief.term(), taskTerm);
+//            if (beliefTerm.op()==NEG)
+//                anon.putShift(this._beliefTerm = nextBelief.term(), taskTerm); //TEMPORARY
             //this.belief = new SpecialTermTask(beliefTerm, nextBelief);
             this.beliefEvi = Float.NaN; //invalidate
         } else {
 
-            boolean shiftBeliefTerm = !(nextBeliefTerm instanceof Variable);
             this.beliefTerm =
-                    shiftBeliefTerm ?
+                    !(nextBeliefTerm instanceof Variable) ?
                         anon.putShift(this._beliefTerm = nextBeliefTerm, taskTerm) :
                         anon.put(this._beliefTerm = nextBeliefTerm); //unshifted, since the term may be structural
 
@@ -390,10 +394,19 @@ public class Derivation extends PreDerivation {
      */
     public void derive(int ttl) {
 
-        this.taskBeliefTimeIntersects =
-                this._belief == null
-                        ||
-                    (taskStart==ETERNAL || beliefStart == ETERNAL || Longerval.intersects(taskStart, taskEnd, beliefStart, beliefEnd));
+        if (taskStart == ETERNAL && (_belief==null || beliefStart == ETERNAL)) {
+            this.taskBeliefTimeIntersects[0] = this.taskBeliefTimeIntersects[1] = ETERNAL;
+        } else  if ((_belief != null) && taskStart == ETERNAL) {
+            this.taskBeliefTimeIntersects[0] = beliefStart;
+            this.taskBeliefTimeIntersects[1] = beliefEnd;
+        } else if ((_belief==null) || beliefStart == ETERNAL) {
+            this.taskBeliefTimeIntersects[0] = taskStart;
+            this.taskBeliefTimeIntersects[1] = taskEnd;
+        } else if (_belief!=null) {
+            if (null == Longerval.intersectionArray(taskStart, taskEnd, beliefStart, beliefEnd, this.taskBeliefTimeIntersects)) {
+                this.taskBeliefTimeIntersects[0] = this.taskBeliefTimeIntersects[1] = TIMELESS; //no intersection
+            }
+        }
 
         this.forEachMatch = null;
         this.concTruth = null;

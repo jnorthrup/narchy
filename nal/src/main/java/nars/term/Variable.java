@@ -63,25 +63,47 @@ public interface Variable extends Atomic {
     @Skill({"Prolog", "Unification_(computer_science)", "Negation", "Möbius_strip", "Total_order", "Recursion" })
     default boolean unify(Term _y, Unify u) {
 
+
         if (equals(_y))
             return true;
 
+
+        Op xOp = op();
+
+        boolean xMatches = u.matchType(xOp);
+
+        if (_y instanceof Variable) {
+            if (!(_y instanceof EllipsisMatch)) {
+                if (xOp == _y.op()) {
+
+
+                    Variable Y = (Variable) _y;
+                    Variable X = this;
+
+                    //same op: common variable
+
+                    Supplier<Term> common = () -> X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
+
+                    //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
+                    return u.xy.set(X, Y, common);
+                }
+            }
+        }
+
+
+
         Term x = u.resolve(this);
-        if (x != this && x.equals(_y))
-            return true;
-
         Term y = (_y instanceof Variable) ? u.resolve(_y) : _y;
-        if (y != _y && x.equals(y))
-            return true;
+        if (x!=this || y != _y) {
+            return x.unify(y, u);
+        }
 
-        if (x instanceof Variable) {
+        //if (x instanceof Variable) {
 
 
-            Op xOp = x.op();
             if (y instanceof EllipsisMatch && xOp!=VAR_PATTERN)
                 return false;
 
-            boolean xMatches = u.matchType(xOp);
             boolean yMatches;
 
 
@@ -90,14 +112,14 @@ public interface Variable extends Atomic {
                 Op yOp = y.op();
                 Variable X = (Variable) x;
 
-                //same op: common variable
-                if (yOp == xOp) {
-
-                    Supplier<Term> common = () -> X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
-
-                    //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
-                    return u.xy.set(X, Y, common);
-                }
+//                //same op: common variable
+//                if (yOp == xOp) {
+//
+//                    Supplier<Term> common = () -> X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
+//
+//                    //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
+//                    return u.xy.set(X, Y, common);
+//                }
 
                 yMatches = ((xMatches && xOp == yOp) || u.matchType(yOp));
 
@@ -177,9 +199,14 @@ public interface Variable extends Atomic {
                   //}
 
             return u.putXY(a, b);
-        } else {
-            return x.unify(y, u);
-        }
+//        } else {
+//            try {
+//                return x.unify(y, u);
+//            } catch (StackOverflowError e) {
+//                System.err.println("unify stack overflow: " + x + " -> " + y);
+//                return false;
+//            }
+//        }
 
     }
 

@@ -83,8 +83,8 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
     @Override
     public Term apply(Evaluation e, /*@NotNull*/ Subterms a) {
 
-        if (a.hasAny(Op.VAR_PATTERN))
-            return Null; //result not fully unified; though there may be a chance it could be eliminated here without even having an assigned value
+//        if (a.hasAny(Op.VAR_PATTERN))
+//            return Null; //result not fully unified; though there may be a chance it could be eliminated here without even having an assigned value
 
         boolean strict = false;
         int op = Op.VAR_DEP.bit | Op.VAR_INDEP.bit;

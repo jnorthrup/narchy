@@ -22,7 +22,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
 
         assert (target.op() == VAR_PATTERN);
         this.minArity = minArity;
-        this.num = target.serial;
+        this.num = target.id;
 
     }
 

@@ -56,13 +56,13 @@
 
 
 //        //TODO question variations
-        Y, ((&&,X,A..+) ==> Z), neq(X,Y),neq(Y,Z) |- subIfUnifiesAny(((&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction)
+        Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny(((&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction)
          //Y, ((&&,X,A..+) ==> Z) |- subIfUnifiesAny(((&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
-        Y, ((&&,--X,A..+) ==> Z), neq(X,Y),neq(Y,Z) |- subIfUnifiesAny(((&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
+        Y, ((&&,--X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny(((&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
          //Y, ((&&,--X,A..+) ==> Z) |- subIfUnifiesAny(((&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
-                Y, (--(&&,X,A..+) ==> Z), neq(X,Y),neq(Y,Z) |- subIfUnifiesAny((--(&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction)
+                Y, (--(&&,X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny((--(&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction)
                  //Y, (--(&&,X,A..+) ==> Z) |- subIfUnifiesAny((--(&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
-                Y, (--(&&,--X,A..+) ==> Z), neq(X,Y),neq(Y,Z) |- subIfUnifiesAny((--(&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
+                Y, (--(&&,--X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny((--(&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
                  //Y, (--(&&,--X,A..+) ==> Z) |- subIfUnifiesAny((--(&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
 
 
@@ -102,7 +102,8 @@
     Y, ((&&,--X,A..+) ==> B) |- subIfUnifiesAny((--X ==> B),X,Y), (Belief:DeductionN)
 
         ((&&,M,X,A..*) ==> C), (Y ==> C) |- subIfUnifiesAny((M ==> C),X,Y), (Belief:AbductionPB)
-        //((&&,M,A..+) ==> X), ((&&,A..+) ==> Y), task(".") |- subIfUnifiesAny((M ==> X),X,Y,"$"), (Belief:AbductionPB)
+        ((&&,M,A..+) ==> X), ((&&,A..+) ==> Y) |- subIfUnifiesAny((M ==> X),X,Y,"$"), (Belief:AbductionPB)
+        ((&&,M,A..+) ==> X), ((&&,A..+) ==> Y) |- subIfUnifiesAny((M ==> Y),Y,X,"$"), (Belief:AbductionPB)
 
 
 //// implication-based syllogism ////////////////////////////////////////////////////////////////////////////////////
@@ -140,20 +141,19 @@
     //TODO reversals for Abduction, Induction, Exemplification
 
     (M ==> S), (M ==> P) |- (S ==> P), (Belief:Abduction)
-        //(M ==> S), (M ==> P) |- (--S ==> --P), (Belief:AbductionNN)
+        (M ==> S), (M ==> P) |- (--S ==> --P), (Belief:AbductionNN)
     (M ==> P), (M ==> S) |- (S ==> P), (Belief:Induction)
-        //(M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN)
+        (M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN)
 
-            (M ==> S), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
-                //(M ==> S), (M ==> P), neqRCom(S,P), task("?") |- (S ==> P), (Punctuation:Question)
-                //(M ==> S), (M ==> P), neqRCom(S,P), task("?") |- (P ==> S), (Punctuation:Question)
+
+                (M ==> S), (M ==> P), neqRCom(S,P), task("?") |- (S ==> P), (Punctuation:Question)
+                (M ==> S), (M ==> P), neqRCom(S,P), task("?") |- (P ==> S), (Punctuation:Question)
 
     (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionPB)
     (P ==> M), (S ==> M) |- (S ==> P), (Belief:AbductionPB)
 
-            (S ==> M), (P ==> M), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
-                //(S ==> M), (P ==> M), neqRCom(S,P), task("?") |- (S ==> P), (Punctuation:Question)
-                //(S ==> M), (P ==> M), neqRCom(S,P), task("?") |- (P ==> S), (Punctuation:Question)
+                (S ==> M), (P ==> M), neqRCom(S,P), task("?") |- (S ==> P), (Punctuation:Question)
+                (S ==> M), (P ==> M), neqRCom(S,P), task("?") |- (P ==> S), (Punctuation:Question)
 
     (P ==> M), (M ==> S) |- (S ==> P), (Belief:Exemplification)
         (P ==> M), (--M ==> S) |- (S ==> P), (Belief:ExemplificationN)

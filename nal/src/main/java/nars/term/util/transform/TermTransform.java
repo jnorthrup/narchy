@@ -62,20 +62,20 @@ public interface TermTransform {
 
         boolean sameOpAndDT = op == null;
         Op xop = x.op();
+
+
         Op targetOp = sameOpAndDT ? xop : op;
+        Subterms xx = x.subterms(), yy;
 
-        Subterms xx = x.subterms();
-        Subterms yy = null;
-
-        try {
+        //try {
             yy = xx.transformSubs(this, targetOp);
-        } catch (StackOverflowError e) {
-            System.err.println("TermTransform stack overflow: " + this + " " + xx + " " + targetOp);
-        }
+
+//        } catch (StackOverflowError e) {
+//            System.err.println("TermTransform stack overflow: " + this + " " + xx + " " + targetOp);
+//        }
 
         if (yy == null)
             return Bool.Null;
-
 
         if (yy == xx && (sameOpAndDT || (xop == targetOp && x.dt() == dt)))
             return x; //no change
@@ -120,8 +120,7 @@ public interface TermTransform {
         if (yy != xx) {
             Term[] a = yy instanceof TermList ? ((TermList) yy).arrayKeep() : yy.arrayShared();
             if (op == INH && evalInline() && a[1] instanceof Functor.InlineFunctor && a[0].op()==PROD) {
-                Term pred = a[1], args = a[0];
-                Term v = ((Functor.InlineFunctor) pred).applyInline(args);
+                Term v = ((Functor.InlineFunctor) a[1] /* pred */).applyInline(a[0] /* args */);
                 if (v != null)
                     return v;
             }
@@ -129,8 +128,7 @@ public interface TermTransform {
         } else  {
             //same subterms
             if (op == INH && evalInline() && xx.sub(1) instanceof Functor.InlineFunctor && xx.sub(0).op()==PROD) {
-                Term pred = xx.sub(1), args = xx.sub(0);
-                Term v = ((Functor.InlineFunctor) pred).applyInline(args);
+                Term v = ((Functor.InlineFunctor) xx.sub(1) /* pred */).applyInline(xx.sub(0) /* args */);
                 if (v != null)
                     return v;
             }

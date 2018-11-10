@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 1000;
+    private static final int cycles = 1200;
 
     @BeforeEach
     void setup() {
@@ -26,7 +26,7 @@ public class NAL6Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(19);
+        n.termVolumeMax.set(18);
         //n.freqResolution.set(0.1f);
         n.confMin.set(0.3f);
         return n;
@@ -341,8 +341,8 @@ public class NAL6Test extends NALTest {
         tester.believe("((($x --> key) && ($y --> lock)) ==> open($x, $y))");
         tester.believe("({lock1} --> lock)");
         tester.mustBelieve(cycles , "(($1 --> key) ==> open($1, {lock1}))", 1.00f,
-                0.36f);
-                //0.73f);
+                0.73f);
+
 
     }
 
@@ -671,6 +671,8 @@ public class NAL6Test extends NALTest {
     @Test
     void variable_elimination_deduction() {
 
+        //$.42 ((open($1,lock1)&&(lock1-->lock))==>($1-->key)). %1.0;.81% {13: 1;2}
+        // ((%1,((%2 &&+- %3..+) ==>+- %4),neq(%2,%1),neq(%1,%4)),(subIfUnifiesAny(((%2 &&+- %3..+) ==>+- %4),%2,%1,strict),((Deduction-->Belief))))
         test
                 .believe("((&&,(#1 --> lock),open($2,#1)) ==> ($2 --> key))", 1.00f, 0.90f)
                 .believe("(lock1 --> lock)", 1.00f, 0.90f)
@@ -679,8 +681,6 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination_deduction_neg() {
-        test.nar.termVolumeMax.set(9);
-
         test
                 .believe("((&&, --(#1 --> lock), open($2,#1)) ==> ($2 --> key))")
                 .believe("--(lock1 --> lock)")

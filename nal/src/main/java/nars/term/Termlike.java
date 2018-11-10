@@ -183,18 +183,18 @@ public interface Termlike {
     }
 
     default boolean hasVarIndep() {
-        return hasAny(Op.VAR_INDEP);
+        return hasAny(Op.VAR_INDEP.bit);
     }
 
     default boolean hasVarDep() {
-        return hasAny(Op.VAR_DEP);
+        return hasAny(Op.VAR_DEP.bit);
     }
 
     default boolean hasVarQuery() {
-        return hasAny(Op.VAR_QUERY);
+        return hasAny(Op.VAR_QUERY.bit);
     }
     default boolean hasVarPattern() {
-        return hasAny(Op.VAR_PATTERN);
+        return hasAny(Op.VAR_PATTERN.bit);
     }
 
 

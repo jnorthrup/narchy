@@ -1,18 +1,21 @@
 //conjunction/disjunction structural decomposition
 
   //Conjunction structural decompose: C = (&&,a,b,..)
-    C, X, eventOf(C,X)                                     |-   conjWithout(C,X), (Belief:StructuralDeduction, Time:TaskSubSequence)
-    C, X, eventOf(C,X)                                     |-   X, (Belief:StructuralDeduction, Time:TaskSubEventPos)
+    C, X, eventOf(C,X), --is(X,"#")                        |-   conjWithout(C,X), (Belief:StructuralDeduction, Time:TaskSubSequence)
+    C, X, eventOf(C,X), --is(X,"#")                        |-   X, (Belief:StructuralDeduction, Time:TaskSubEventPos)
     C, X, eventOf(C,X),    conjParallel(C), --is(X,"#")    |-   X, (  Goal:StructuralDeduction, Time:TaskSubEventPos)
-    C, X, eventOfNeg(C,X)                                  |-   conjWithout(C,--X), (Belief:StructuralDeduction, Time:TaskSubSequence)
-    C, X, eventOfNeg(C,X)                                  |- --X, (Belief:StructuralDeduction, Time:TaskSubEventNeg)
+    C, X, eventOfNeg(C,X), --is(X,"#")                     |-   conjWithout(C,--X), (Belief:StructuralDeduction, Time:TaskSubSequence)
+    C, X, eventOfNeg(C,X), --is(X,"#")                     |- --X, (Belief:StructuralDeduction, Time:TaskSubEventNeg)
     C, X, eventOfNeg(C,X), conjParallel(C), --is(X,"#")    |- --X, (  Goal:StructuralDeduction, Time:TaskSubEventNeg)
 
 
-    //antigoal in sequence
-    X, C, eventOfNeg(C,X) |- --C, (Goal:DesireWeak, Time:Task)
+    //goal/antigoal in sequence
+    X, C, eventOf(C,X), --eventOfNeg(C,X)   |- C, (Goal:Desire, Time:Task)
+    X, C, eventOfNeg(C,X), --eventOf(C,X)   |- --C, (Goal:DesireWeak, Time:Task)
+    X, C, eventOfNeg(C,X), --eventOf(C,X)   |- C, (Goal:DesireWeakN, Time:Task)
+    X, C, eventOf(C,X), --eventOfNeg(C,X)   |- --C, (Goal:DesireWeakN, Time:Task)
+
     //X, C, eventOfNeg(C,X) |- --conjWithout(C,--X), (Goal:DesireWeak, Time:BeliefSubSequence)
-    X, C, eventOf(C,X)    |- --C, (Goal:DesireWeakN, Time:Task)
     //X, C, eventOf(C,X)    |- --conjWithout(C,X), (Goal:DesireWeakN, Time:BeliefSubSequence)
 
     //D, X, --is(X,"#"),                     eventOf(D,X)     |- --X,  (Belief:StructuralDeductionWeakN, Time:TaskSubEventPos)

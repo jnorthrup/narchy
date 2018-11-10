@@ -7,6 +7,8 @@ import nars.term.Term;
 import nars.term.control.AbstractPred;
 import org.eclipse.collections.api.tuple.Pair;
 
+import java.util.Arrays;
+
 import static nars.Op.NEG;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
@@ -96,7 +98,7 @@ public final class Termify extends AbstractPred<Derivation> {
             if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&
                     (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
                     (occ[1] >= occ[0])))
-                throw new RuntimeException("bad occurrence result");
+                throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
 
 
 //            if (d.concTruth!=null) {

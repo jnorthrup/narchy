@@ -144,7 +144,7 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
 
     @Override
     public @Nullable NormalizedVariable normalize(byte vid) {
-        if (serial == vid)
+        if (id == vid)
             return this;
         else
             return $.v(op(), vid);
@@ -156,7 +156,7 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
 
     @Override
     public String toString() {
-        return op().ch + Integer.toString(serial);
+        return op().ch + Integer.toString(id);
     }
 
 

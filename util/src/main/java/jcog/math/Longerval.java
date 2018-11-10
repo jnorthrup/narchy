@@ -8,7 +8,7 @@ import static java.lang.Math.min;
 /** An immutable inclusive longerval a..b implementation of LongInterval */
 public class Longerval implements LongInterval {
 
-	
+
 
 	public final long a;
 	public final long b;
@@ -119,12 +119,23 @@ public class Longerval implements LongInterval {
 		return new Longerval(myA, myB).intersection(otherA, otherB);
 	}
 	@Nullable public static long[] intersectionArray(long myA, long myB, long otherA, long otherB) {
+		return intersectionArray(myA, myB, otherA, otherB, null);
+	}
+
+	@Nullable public static long[] intersectionArray(long myA, long myB, long otherA, long otherB, @Nullable long[] target) {
 		@Nullable Longerval x = intersection(myA, myB, otherA, otherB);
-		return x== null ? null : x.intervalArray();
+		return x== null ? null : x.intervalArray(target);
 	}
 
 	private long[] intervalArray() {
-		return new long[] { a,b };
+		return intervalArray(null);
+	}
+	private long[] intervalArray(@Nullable long[] target) {
+		if (target==null)
+			target = new long[2];
+		target[0] = a;
+		target[1] = b;
+		return target;
 	}
 
 	public static long[] unionArray(long myA, long myB, long otherA, long otherB) {

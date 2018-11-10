@@ -134,65 +134,6 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
         map.clear();
     }
 
-    public static class AnonWithVarShift extends CachedAnon {
-        int indepShift = 0, depShift = 0, queryShift = 0;
-
-        public AnonWithVarShift(int cap) {
-            super(cap);
-        }
-
-        @Override
-        public void clear() {
-            indepShift = depShift = queryShift = 0;
-            super.clear();
-        }
-
-        @Override
-        protected Term putAnon(Term x) {
-            if (x instanceof NormalizedVariable && !(x instanceof ImDep)) {
-                NormalizedVariable v = ((NormalizedVariable) x);
-                int shift;
-                Op vv = v.op();
-                switch (vv) {
-                    case VAR_DEP: shift = depShift; break;
-                    case VAR_INDEP: shift = indepShift; break;
-                    case VAR_QUERY: shift = queryShift; break;
-                    default:
-                        throw new UnsupportedOperationException();
-                }
-                if (shift!=0) {
-                    int newID = v.serial + shift;
-                    assert(newID < Byte.MAX_VALUE-3); //to be safe
-                    x = v.normalize((byte) newID);
-                }
-            }
-            return super.putAnon(x);
-        }
-
-        public AnonWithVarShift unshift() {
-            indepShift = depShift = queryShift = 0;
-            return this;
-        }
-
-        AnonWithVarShift shift(Term base) {
-            if (!base.hasVars())
-                return this;
-            else
-                return shift(0 /*base.varIndep()*/, base.varDep(), base.varQuery());
-        }
-
-        AnonWithVarShift shift(int indep, int dep, int query) {
-            indepShift = indep;
-            depShift = dep;
-            queryShift = query;
-            return this;
-        }
-
-        public Term putShift(Term x, Term base) {
-            //TODO only shift if the variable bits overlap, but if disjoint not necessary
-            return ((x.hasVars() && base.hasVars()) ? shift(base) : this).put(x);
-        }
-    }
 }
 //    private static final AtomicBoolean validateLock = new AtomicBoolean();
 //

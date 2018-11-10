@@ -69,7 +69,7 @@ public class PatternIndex extends MapConceptIndex {
     @Override
     public Term get(/*@NotNull*/ Term x, boolean createIfMissing) {
         //return x.term();
-        if (x.op()==NEG)
+        if (x.op() == NEG)
             return get(x.unneg(), createIfMissing).neg();
 
         if (!x.op().conceptualizable)
@@ -83,7 +83,7 @@ public class PatternIndex extends MapConceptIndex {
                 Termed xx = nar.concepts.get(x, false);
                 if (xx != null) {
                     concepts.put(xx.term(), xx);
-                    return (Term)xx;
+                    return (Term) xx;
                 }
             }
 
@@ -91,7 +91,7 @@ public class PatternIndex extends MapConceptIndex {
             concepts.put(yy, yy);
             return yy;
         } else {
-            return (Term)y;
+            return (Term) y;
         }
     }
 
@@ -119,7 +119,6 @@ public class PatternIndex extends MapConceptIndex {
     }
 
     public static final class PremiseRuleNormalization extends VariableNormalization {
-
 
 
         @Override
@@ -210,13 +209,16 @@ public class PatternIndex extends MapConceptIndex {
             @Override
             public final boolean unifySubterms(Term y, Unify u) {
 
-                if (op()!=y.op()) // && !(op()==CONJ && subs()==1))
+                if (op() != y.op()) // && !(op()==CONJ && subs()==1))
                     return false;
+
+                Ellipsis ellipsis = this.ellipsis;
+                Term eResolved = u.resolve(ellipsis);
+                if (eResolved != ellipsis)
+                    return eResolved.unify(y, u);
 
                 if (!Subterms.possiblyUnifiable(subterms(), y.subterms(), u))
                     return false;
-//                if (!Terms.commonStructureTest(subtermStructure, y.subterms(), u))
-//                    return false;
 
                 return matchEllipsis(y, u);
             }
@@ -225,7 +227,7 @@ public class PatternIndex extends MapConceptIndex {
 
         public static final class PremisePatternCompoundWithEllipsisLinear extends PremisePatternCompoundWithEllipsis {
 
-            public static PremisePatternCompoundWithEllipsisLinear the( Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
+            public static PremisePatternCompoundWithEllipsisLinear the(Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
                 if (op.statement) {
                     //HACK
                     Term x = subterms.sub(0);
@@ -354,16 +356,13 @@ public class PatternIndex extends MapConceptIndex {
                 if (Y.op().temporal && (dt != XTERNAL) && !Y.isCommutative())
                     throw new TODO();
 
+
                 Subterms y = Y.subterms();
 
 
-                MutableSet<Term> xFixed = new UnifiedSet(0);
-
-
-                Ellipsis ellipsis = this.ellipsis;
-
 //                @Nullable Versioned<MatchConstraint> uc = u.constraints(ellipsis);
 
+                MutableSet<Term> xFixed = null;
                 SortedSet<Term> yFree =
                         //uc==null ? y.toSetSorted() : y.toSetSorted(yy -> MatchConstraint.valid(yy, uc, u));
                         y.toSetSorted();
@@ -371,6 +370,7 @@ public class PatternIndex extends MapConceptIndex {
                 Subterms ss = subterms();
                 int s = ss.subs();
 
+                Ellipsis ellipsis = this.ellipsis;
                 for (int k = 0; k < s; k++) {
 
 
@@ -432,6 +432,8 @@ public class PatternIndex extends MapConceptIndex {
                     boolean xConst = u.constant(x);
                     if (!xConst) {
 
+                        if (xFixed==null)
+                            xFixed = new UnifiedSet<>(1);
 
                         xFixed.add(x);
 
@@ -450,7 +452,7 @@ public class PatternIndex extends MapConceptIndex {
                 if (ellipsis == null)
                     return yFree.isEmpty();
 
-                final int xs = xFixed.size();
+                final int xs = xFixed!=null ? xFixed.size() : 0;
                 int ys = yFree.size();
                 int numRemainingForEllipsis = ys - xs;
 
@@ -465,20 +467,20 @@ public class PatternIndex extends MapConceptIndex {
                         Term match = ys > 0 ? EllipsisMatch.matched(yFree) : EllipsisMatch.empty;
 
 
-                        return this.ellipsis.unify(match, u);
+                        return ellipsis.unify(match, u);
 
 
                     case 1:
                         Term x0 = xFixed.getOnly();
                         if (yFree.size() == 1) {
-                            assert(ellipsis.minArity == 0);
-                            return x0.unify(yFree.first(), u) && this.ellipsis.unify(EllipsisMatch.empty, u);
+                            assert (ellipsis.minArity == 0);
+                            return x0.unify(yFree.first(), u) && ellipsis.unify(EllipsisMatch.empty, u);
                         } else {
-                            return u.termutes.add(new Choose1(this.ellipsis, x0, yFree));
+                            return u.termutes.add(new Choose1(ellipsis, x0, yFree));
                         }
 
                     case 2:
-                        return u.termutes.add(new Choose2(this.ellipsis, u, xFixed, yFree));
+                        return u.termutes.add(new Choose2(ellipsis, u, xFixed, yFree));
 
                     default:
 
@@ -511,7 +513,8 @@ public class PatternIndex extends MapConceptIndex {
 
             Term xx;
             boolean neg = x.op() == NEG;
-            if (neg) xx = x.unneg(); else xx = x;
+            if (neg) xx = x.unneg();
+            else xx = x;
 
             @Nullable Ellipsislike e = firstEllipsis(xx.subterms());
             return (e != null ? ellipsis((Compound) xx, xx.subterms(), (Ellipsis) e) : xx).negIf(neg);

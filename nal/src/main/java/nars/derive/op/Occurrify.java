@@ -439,7 +439,7 @@ public class Occurrify extends TimeGraph {
     private static final PREDICATE<Derivation> intersectFilter = new AbstractPred<>(Atomic.the("TimeIntersects")) {
         @Override
         public boolean test(Derivation d) {
-            return d.concSingle || d.taskBeliefTimeIntersects;
+            return d.concSingle || d.taskBeliefTimeIntersects[0]!=TIMELESS;
         }
     };
 
@@ -885,7 +885,11 @@ public class Occurrify extends TimeGraph {
         Intersect() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveOccDT(d, x, d.occ.reset(x));
+                if (!x.hasXternal()) {
+                    return pair(x, d.taskBeliefTimeIntersects);
+                } else {
+                    return solveOccDT(d, x, d.occ.reset(x)); //TODO maybe just solveDT
+                }
             }
 
             @Override

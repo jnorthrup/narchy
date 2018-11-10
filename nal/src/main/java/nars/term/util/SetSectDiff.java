@@ -101,8 +101,8 @@ public class SetSectDiff {
                     return false;
         /*} else if (t.length == 3) {
             //TODO
-
-        } */else {
+*/
+        } else {
                 //repeat terms of the same root would collapse when conceptualized so this is prevented
                 Set<Term> roots = null;
                 for (int i = t.length-1; i >= 0; i--) {
@@ -111,7 +111,7 @@ public class SetSectDiff {
                         if (roots == null) {
                             if (i == 0)
                                 break; //last one, dont need to check
-                            roots = new UnifiedSet(i);
+                            roots = new UnifiedSet<>(t.length-1 - i);
                         }
                         if (!roots.add(x.root())) {
                             //repeat detected
@@ -120,7 +120,7 @@ public class SetSectDiff {
                     }
                 }
             }
-        }
+
 
         return true;
     }
