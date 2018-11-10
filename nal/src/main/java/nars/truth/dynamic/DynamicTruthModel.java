@@ -186,15 +186,15 @@ abstract public class DynamicTruthModel {
         }
 
         public static final DynamicTruthModel UnionSubj = new SectIntersection(true, true);
-        public static final DynamicTruthModel IsectSubj = new SectIntersection(false, true);
+        public static final DynamicTruthModel SectSubj = new SectIntersection(false, true);
         public static final DynamicTruthModel UnionPred = new SectIntersection(true, false);
-        public static final DynamicTruthModel IsectPred = new SectIntersection(false, false);
+        public static final DynamicTruthModel SectPred = new SectIntersection(false, false);
 
-        public static final DynamicTruthModel IsectRoot = new Intersection(false) {
+        public static final DynamicTruthModel SectRoot = new Intersection(false) {
 
             @Override
             protected boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-                assert(superterm.op()==SECTi);
+                assert(superterm.op()==SECTe);
                 return superterm.subterms().AND(s ->
                    each.accept(s, start, end)
                 );

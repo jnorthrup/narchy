@@ -24,7 +24,7 @@
 
 //// inheritance decomposition ////////////////////////////////////////////////////////////////////////////////////
 //if (S --> M) is the case, and ((|,S,A..+) --> M) is not the case, then ((|,A..+) --> M) is not the case, hence Belief:DecomposePositiveNegativeNegative
-//TODO maybe X-S should work like set difference, not 'without(' current semantics
+//TODO negations
      (X --> M), (S --> M), is(S,"|"), subOf(S,X) |- --(without(S,X) --> M), (Belief:DecomposePN)
          //(X-->M), (S --> N), is(S,"|"), subOf(S,X), neq(M,N) |- subIfUnifiesAny((without(S,X) --> N), N, M), (Belief:DecomposePositiveNegativeNegative)
      (X --> M), (S --> M), is(S,"&"), subOf(S,X) |- (without(S,X) --> M), (Belief:DecomposeNP)
@@ -35,39 +35,39 @@
      (M --> X), (M --> S), is(S,"|"), subOf(S,X) |- (M --> without(S,X)), (Belief:DecomposeNP)
         //(M --> X), (N --> S), is(S,"|"), subOf(S,X), neq(M,N) |- subIfUnifiesAny((N --> without(S,X)), N, M), (Belief:DecomposeNegativePositivePositive)
 
-     //DIFFi
-     (M --> S), (M --> (S - P)) |- (M --> P), (Belief:DecomposeDiffX)
-     (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeDiffX)
-//        (M --> S), (M --> (S - P)) |- --(M --> P), (Belief:DecomposePP)
-//        (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeNP)
-
-     //DIFFe
-     (S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DecomposeDiffX)
-     (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeDiffX)
-//        (S --> M), ((S ~ P) --> M) |- --(P --> M), (Belief:DecomposePP)
-//        (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeNP)
-
-    //Raw DIFFe
-    S, (S ~ P) |- P, (Belief:DecomposeDiffX)
-    P, (S ~ P) |- S, (Belief:DecomposeDiffX)
+//     //DIFFi
+//     (M --> S), (M --> (S - P)) |- (M --> P), (Belief:DecomposeDiffX)
+//     (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeDiffX)
+////        (M --> S), (M --> (S - P)) |- --(M --> P), (Belief:DecomposePP)
+////        (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeNP)
+//
+//     //DIFFe
+//     (S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DecomposeDiffX)
+//     (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeDiffX)
+////        (S --> M), ((S ~ P) --> M) |- --(P --> M), (Belief:DecomposePP)
+////        (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeNP)
+//
+//    //Raw DIFFe
+//    S, (S ~ P) |- P, (Belief:DecomposeDiffX)
+//    P, (S ~ P) |- S, (Belief:DecomposeDiffX)
 //        S, (S ~ P) |- --P, (Belief:DecomposePP)
 //        P, (S ~ P) |- S, (Belief:DecomposeNP)
 
-     //similarity (S==P)! (symmetric: DecomposeNegative....)
-     ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeDiff)
-     (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeDiff)
-     (S ~ P),         S         |- P,         (Goal:DecomposeDiff)
-        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposeDiff)
-        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposeDiff)
-        (S ~ P),         P         |- S,         (Goal:DecomposeDiff)
-
-     //difference --(S==P)! (asymmetric: DecomposePositive... )
-     ((S ~ P) --> M), (S --> M) |- --(P --> M), (Goal:DecomposePP)
-     (M --> (S - P)), (M --> S) |- --(M --> P), (Goal:DecomposePP)
-     (S ~ P),         S         |- --P,         (Goal:DecomposePP)
-        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposePN)
-        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposePN)
-        (S ~ P),         P         |- S,         (Goal:DecomposePN)
+//     //similarity (S==P)! (symmetric: DecomposeNegative....)
+//     ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeDiff)
+//     (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeDiff)
+//     (S ~ P),         S         |- P,         (Goal:DecomposeDiff)
+//        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposeDiff)
+//        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposeDiff)
+//        (S ~ P),         P         |- S,         (Goal:DecomposeDiff)
+//
+//     //difference --(S==P)! (asymmetric: DecomposePositive... )
+//     ((S ~ P) --> M), (S --> M) |- --(P --> M), (Goal:DecomposePP)
+//     (M --> (S - P)), (M --> S) |- --(M --> P), (Goal:DecomposePP)
+//     (S ~ P),         S         |- --P,         (Goal:DecomposePP)
+//        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposePN)
+//        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposePN)
+//        (S ~ P),         P         |- S,         (Goal:DecomposePN)
 
 
 
@@ -79,28 +79,30 @@
 
 
 //intesection question formation
+    //TODO quests
     (W --> S), (W --> B), task("?"), is(S,"|"), neqRCom(S,B) |- (W --> (S | B)), (Punctuation:Question)
     (W --> S), (W --> B), task("?"), is(S,"&"), neqRCom(S,B) |- (W --> (S & B)), (Punctuation:Question)
     (S --> W), (B --> W), task("?"), is(S,"&"), neqRCom(S,B) |- ((S & B) --> W), (Punctuation:Question)
     (S --> W), (B --> W), task("?"), is(S,"|"), neqRCom(S,B) |- ((S | B) --> W), (Punctuation:Question)
 
 //NAL3 single premise decompose
-    (M --> S), X, is(S,"&"), subOf(S,X) |- (M --> without(S,X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (M --> S), X, is(S,"&"), subPosOrNeg(S,X) |- (M --> without(S,X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
         //(M --> S), X, is(S,"&"), subOfNeg(S,X) |- (M --> without(S,--X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
-    (S --> M), X, is(S,"|"), subOf(S,X) |- (without(S,X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (S --> M), X, is(S,"|"), subPosOrNeg(S,X) |- (without(S,X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
         //(S --> M), X, is(S,"|"), subOfNeg(S,X) |- (without(S,--X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
-    (S --> (B - G)), B |- (S --> B), (Belief:StructuralDeduction)
-        (S --> (B - G)), G |- --(S --> G), (Belief:StructuralDeduction)
+//    (S --> (B - G)), B |- (S --> B), (Belief:StructuralDeduction)
+//        (S --> (B - G)), G |- --(S --> G), (Belief:StructuralDeduction)
+//
+//    ((B ~ G) --> S), B |- (B --> S), (Belief:StructuralDeduction)
+//        ((B ~ G) --> S), G |- --(G --> S), (Belief:StructuralDeduction)
 
-    ((B ~ G) --> S), B |- (B --> S), (Belief:StructuralDeduction)
-        ((B ~ G) --> S), G |- --(G --> S), (Belief:StructuralDeduction)
+    //raw
+    S, X, is(S,"|"), subPosOrNeg(S,X) |- without(S,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
-        (B ~ G), B |- B, (Belief:StructuralDeduction)
-            (B ~ G), G |- --G, (Belief:StructuralDeduction)
-
-
+            B, (B ~ G), task("@") |- G, (Punctuation:Quest)
+            G, (B ~ G), task("@") |- B, (Punctuation:Quest)
 
 
         //1D:
@@ -115,20 +117,17 @@
 
 //Difference Goal Decompose TODO review
 
-        //DIFFi
-        (S-->B), (S --> (B - G)) |- (S --> G), (Goal:DecomposeDiff)
-        (S-->G), (S --> (B - G)) |- (S --> B), (Goal:DecomposeDiffX)
+//        //DIFFi
+//        (S-->B), (S --> (B - G)) |- (S --> G), (Goal:DecomposeDiff)
+//        (S-->G), (S --> (B - G)) |- (S --> B), (Goal:DecomposeDiffX)
+//
+//        //DIFFe
+//        (B-->S), ((B ~ G) --> S) |- (G --> S), (Goal:DecomposeDiff)
+//        (G-->S), ((B ~ G) --> S) |- (B --> S), (Goal:DecomposeDiffX)
 
-        //DIFFe
-        (B-->S), ((B ~ G) --> S) |- (G --> S), (Goal:DecomposeDiff)
-        (G-->S), ((B ~ G) --> S) |- (B --> S), (Goal:DecomposeDiffX)
-
-            //Raw DIFFe
-            B, (B ~ G) |- G, (Goal:DecomposeDiff)
-            G, (B ~ G) |- B, (Goal:DecomposeDiffX)
-
-            B, (B ~ G), task("@") |- G, (Punctuation:Quest)
-            G, (B ~ G), task("@") |- B, (Punctuation:Quest)
+//            //Raw DIFFe
+//            B, (B ~ G) |- G, (Goal:DecomposeDiff)
+//            G, (B ~ G) |- B, (Goal:DecomposeDiffX)
 
 
 //experimental

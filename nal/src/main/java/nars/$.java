@@ -25,6 +25,7 @@ import nars.term.compound.LightCompound;
 import nars.term.control.LambdaPred;
 import nars.term.control.PREDICATE;
 import nars.term.obj.JsonTerm;
+import nars.term.util.SetSectDiff;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarPattern;
@@ -806,7 +807,15 @@ public enum $ {
 
     public static Term diff(Term a, Term b) {
         //throw new TODO("use set/sect methods");
-        return Bool.Null;
+        Op aop = a.op();
+        if (aop ==b.op()) {
+            if (aop == SETi) {
+                return SetSectDiff.differenceSet(SETi, a, b);
+            } else if (aop == SETe) {
+                return SetSectDiff.differenceSet(SETe, a, b);
+            }
+        }
+        throw new UnsupportedOperationException();
     }
 
 

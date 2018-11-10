@@ -301,10 +301,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                     case "==>":
                         return theTwoArity(Op.IMPL, s);
 
-                    case "~":
-                        return theTwoArity(Op.DIFFi, s);
-                    case "-":
-                        return theTwoArity(Op.DIFFe, s);
+
 
 
                     case "[":

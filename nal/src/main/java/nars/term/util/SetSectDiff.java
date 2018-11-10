@@ -10,9 +10,12 @@ import nars.term.atom.Bool;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
 import static java.util.Arrays.copyOfRange;
 import static nars.term.atom.Bool.Null;
@@ -93,7 +96,7 @@ public class SetSectDiff {
 
     }
 
-    public static boolean uniqueRoots(Term... t) {
+    private static boolean uniqueRoots(Term... t) {
         if (t.length == 2) {
             if (t[0] instanceof Compound && t[1] instanceof Compound && t[0].hasAny(Op.Temporal) && t[1].hasAny(Op.Temporal))
                 if (t[0].equalsRoot(t[1]))
@@ -279,6 +282,7 @@ public class SetSectDiff {
     /*@NotNull*/
     public static Term differenceSet(/*@NotNull*/ Op o, Term a, Term b) {
 
+        assert(o.isSet() && a.op()==o && b.op()==o);
 
         if (a.equals(b))
             return Null;
@@ -304,5 +308,16 @@ public class SetSectDiff {
             return o.the(aa.subsExcept(removals));
         }
 
+    }
+
+    public static @Nullable SortedSet<Term> intersectSorted(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
+        if ((a.structure() & b.structure()) != 0) {
+
+            Predicate<Term> contains = a.subs() > 2 ? (a.toSet()::contains) : a::contains;
+            SortedSet<Term> ab = b.toSetSorted(contains);
+            if (ab != null)
+                return ab;
+        }
+        return null;
     }
 }

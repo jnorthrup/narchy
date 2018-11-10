@@ -209,9 +209,6 @@ public class PatternIndex extends MapConceptIndex {
             @Override
             public final boolean unifySubterms(Term y, Unify u) {
 
-                if (op() != y.op()) // && !(op()==CONJ && subs()==1))
-                    return false;
-
                 Ellipsis ellipsis = this.ellipsis;
                 Term eResolved = u.resolve(ellipsis);
                 if (eResolved != ellipsis)

@@ -10,10 +10,9 @@
 
 
 
-    //TODO difference questions
 
 ////composition on one side of a statement:
-
+//TODO quest->goals
     (W --> S), (W --> B), task("?"), is(S,"|"), subOf(S,B) |- (W --> S), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
     (S --> W), (B --> W), task("?"), is(S,"&"), subOf(S,B) |- (S --> W), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
 

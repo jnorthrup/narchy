@@ -74,17 +74,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return null;
     }
 
-    static @Nullable SortedSet<Term> intersectSorted(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
-        if ((a.structure() & b.structure()) != 0) {
-
-            Predicate<Term> contains = a.subs() > 2 ? (a.toSet()::contains) : a::contains;
-            SortedSet<Term> ab = b.toSetSorted(contains);
-            if (ab != null)
-                return ab;
-        }
-        return null;
-    }
-
     default void forEachWith(ObjectIntProcedure<Term> t) {
         int s = subs();
         for (int i = 0; i < s; i++)

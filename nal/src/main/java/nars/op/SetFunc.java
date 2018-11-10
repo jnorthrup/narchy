@@ -75,7 +75,7 @@ public class SetFunc {
         if (a instanceof Term && a.equals(b))
             return (Term) a;
 
-        SortedSet<Term> cc = Subterms.intersectSorted(a, b);
+        SortedSet<Term> cc = SetSectDiff.intersectSorted(a, b);
         if (cc == null)
             return Null;
 

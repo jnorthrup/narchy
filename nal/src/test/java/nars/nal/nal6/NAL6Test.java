@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 1200;
+    private static final int cycles = 100;
 
     @BeforeEach
     void setup() {
@@ -262,7 +262,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination5() {
-        test.nar.termVolumeMax.set(11);
+        test.nar.termVolumeMax.set(16);
 
         TestNAR tester = test;
         tester.believe("({Tweety} --> [withWings])");
@@ -518,7 +518,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unificationNoImgAndAsPrecondition() {
-        test.nar.termVolumeMax.set(9);
+        test.nar.termVolumeMax.set(16);
 
         TestNAR tester = test;
         tester.believe("((<#1 --> lock>&&<$2 --> key>) ==> open(#1,$2))", 1.00f, 0.90f);
@@ -550,13 +550,15 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unification2() {
-        test.nar.termVolumeMax.set(10);
+        test.nar.termVolumeMax.set(15);
 
         TestNAR tester = test;
         tester.believe("<<$1 --> lock> ==> (&&,<#2 --> key>,open(#2,$1))>", 1.00f, 0.90f);
         tester.believe("<{key1} --> key>", 1.00f, 0.90f);
         tester.mustBelieve(cycles, "<<$1 --> lock> ==> open({key1},$1)>", 1.00f,
-                0.81f);
+                //0.81f
+                0.4f
+        );
                 //0.73f
                 //0.43f);
 
@@ -757,7 +759,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void strong_elimination() {
-        test.nar.termVolumeMax.set(12);
+        test.nar.termVolumeMax.set(14);
         TestNAR tester = test;
         tester.believe("((test($a,is,cat) && sentence($a,is,$b)) ==> ($a --> $b))");
         tester.believe("test(tim,is,cat)");
@@ -999,16 +1001,16 @@ public class NAL6Test extends NALTest {
         test
                 .believe("(x,0)", 1f, 0.9f)
                 .believe("(x,1)", 0.6f, 0.9f)
-                .mustBelieve(cycles, "((x,1)~(x,0))", 0.0f, 0.81f, ETERNAL)
-                .mustBelieve(cycles, "((x,0)~(x,1))", 0.4f, 0.81f, ETERNAL);
+                .mustBelieve(cycles, "((x,1)~(x,0))", 0.0f, 0.85f)
+                .mustBelieve(cycles, "((x,0)~(x,1))", 0.4f, 0.85f);
     }
     @Test
     void inductRawProductDifference2() {
         test
                 .believe("(x,0)", 1f, 0.9f)
                 .believe("(x,1)", 0.5f, 0.9f)
-                .mustBelieve(cycles, "((x,1)~(x,0))", 0.0f, 0.81f, ETERNAL)
-                .mustBelieve(cycles, "((x,0)~(x,1))", 0.5f, 0.81f, ETERNAL);
+                .mustBelieve(cycles, "((x,1)~(x,0))", 0.0f, 0.85f)
+                .mustBelieve(cycles, "((x,0)~(x,1))", 0.5f, 0.85f);
     }
 
     @Test void testHypothesizeSubconditionIdentityPre() {

@@ -16,9 +16,9 @@
           //G, B, neq(G,B), task("!") |- (--polarize(G, task) && polarize(B, belief)), (Goal:IntersectionDepolarized, Time:Relative)
 
 
-
-    B, A, --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>"), neqOrInhCommon(A,B) |- (polarize(B,task) ~ polarize(A,belief)), (Belief:DifferenceDepolarized, Time:Intersect)
-    B, A, --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>"), neqOrInhCommon(A,B) |- (polarize(A,belief) ~ polarize(B,task)), (Belief:DifferenceReverseDepolarized, Time:Intersect)
+    B, A, neqOrInhCommon(A,B) |- (polarize(B,task) & polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Intersect)
+    //B, A, --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>"), neqOrInhCommon(A,B) |- (polarize(B,task) ~ polarize(A,belief)), (Belief:DifferenceDepolarized, Time:Intersect)
+    //B, A, --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>"), neqOrInhCommon(A,B) |- (polarize(A,belief) ~ polarize(B,task)), (Belief:DifferenceReverseDepolarized, Time:Intersect)
 
 
 

@@ -16,12 +16,6 @@ public class ZoomOrtho extends Ortho {
     public final static short PAN_BUTTON = 0;
     private final static short MOVE_WINDOW_BUTTON = 1;
 
-    @Override
-    protected void starting() {
-        super.starting();
-
-
-    }
 
     @Override
     public Surface finger(Finger finger) {
@@ -33,6 +27,12 @@ public class ZoomOrtho extends Ortho {
             if (dy != 0) {
                 v2 xy = cam.screenToWorld(finger.posPixel);
                 cam.set(xy.x, xy.y, cam.z * (1f + (dy * zoomRate)));
+            }
+        }
+
+        if (finger.touching() == null) {
+            if (finger.tryFingering(fingerWindowMove) || finger.tryFingering(fingerContentPan)) {
+                return this;
             }
         }
 
@@ -110,26 +110,7 @@ public class ZoomOrtho extends Ortho {
 
 
 
-    @Override
-    protected Surface finger() {
 
-
-        //Surface touchPrev = finger.touching();
-        Surface touchNext = super.finger();
-//        if (touchNext != null && touchNext != touchPrev) {
-//            debug(this, 1f, () -> "touch(" + touchNext + ')');
-//        }
-
-        if (touchNext == null) {
-            if (finger.tryFingering(fingerWindowMove) || finger.tryFingering(fingerContentPan)) {
-                return this;
-            }
-        }
-
-
-
-        return touchNext;
-    }
 
 
 }

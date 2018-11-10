@@ -190,10 +190,10 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
                     if (suo==NEG) {
                         return DynamicTruthModel.DynamicSectTruth.UnionSubj;
                     } else {
-                        return DynamicTruthModel.DynamicSectTruth.IsectSubj;
+                        return DynamicTruthModel.DynamicSectTruth.SectSubj;
                     }
                 } else if (predDyn) {
-                    return DynamicTruthModel.DynamicSectTruth.IsectPred;
+                    return DynamicTruthModel.DynamicSectTruth.SectPred;
                 }
 
                 break;
@@ -204,9 +204,9 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
                     return DynamicTruthModel.DynamicConjTruth.ConjIntersection;
                 break;
 
-            case SECTi:
+            case SECTe:
                 if (validDynamicSubterms(t.subterms()))
-                    return DynamicTruthModel.DynamicSectTruth.IsectRoot;
+                    return DynamicTruthModel.DynamicSectTruth.SectRoot;
                 break;
 
             case NEG:
@@ -243,7 +243,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
                 switch (so) {
                     case SECTi:
-                        return DynamicTruthModel.DynamicSectTruth.IsectSubj;
+                        return DynamicTruthModel.DynamicSectTruth.SectSubj;
                     case SECTe:
                         return DynamicTruthModel.DynamicSectTruth.UnionSubj;
                 }
@@ -266,7 +266,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
                     case SECTi:
                         return DynamicTruthModel.DynamicSectTruth.UnionPred;
                     case SECTe:
-                        return DynamicTruthModel.DynamicSectTruth.IsectPred;
+                        return DynamicTruthModel.DynamicSectTruth.SectPred;
                 }
             }
         }

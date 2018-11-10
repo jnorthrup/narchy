@@ -543,21 +543,21 @@ public class TermReductionsTest extends NarseseTest {
             NAR n = NARS.shell();
             n.believe("X", 1.0f, 0.9f);
             n.believe("Y", 0.5f, 0.9f);
-            tryDiff(n, "(X~Y)", "%.50;.81%");
-            tryDiff(n, "((--,Y)~(--,X))", "%.50;.81%");
-            tryDiff(n, "(Y~X)", "%0.0;.81%");
-            tryDiff(n, "((--,X)~(--,Y))", "%0.0;.81%");
+            tryDiff(n, "(X~Y)", "%.50;.85%");
+            tryDiff(n, "((--,Y)~(--,X))", "%.50;.85%");
+            tryDiff(n, "(Y~X)", "%0.0;.95%");
+            tryDiff(n, "((--,X)~(--,Y))", "%0.0;.95%");
         }
         {
             NAR n = NARS.shell();
             n.believe("X", 1.0f, 0.9f);
             n.believe("Y", 0.75f, 0.9f);
-            tryDiff(n, "(X~Y)", "%.25;.81%");
+            tryDiff(n, "(X~Y)", "%.25;.85%");
 
-            tryDiff(n, "((--,Y)~(--,X))", "%.25;.81%");
+            tryDiff(n, "((--,Y)~(--,X))", "%.25;.85%");
 
-            tryDiff(n, "(Y~X)", "%0.0;.81%");
-            tryDiff(n, "((--,X)~(--,Y))", "%0.0;.81%");
+            tryDiff(n, "(Y~X)", "%0.0;.85%");
+            tryDiff(n, "((--,X)~(--,Y))", "%0.0;.85%");
         }
         assertEq("(Y~X)", "((--,X)~(--,Y))");
         assertEq("(X~Y)", "((--,Y)~(--,X))");

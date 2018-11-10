@@ -65,7 +65,8 @@ public class Premise implements Comparable<Premise> {
      * variable types unifiable in premise formation
      */
     final static int var =
-            Op.VAR_QUERY.bit
+            Op.VAR_QUERY.bit | Op.VAR_DEP.bit
+            //Op.VAR_QUERY.bit
             //Op.Variable //all
     ;
 

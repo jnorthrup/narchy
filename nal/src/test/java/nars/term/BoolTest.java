@@ -7,7 +7,6 @@ import nars.term.atom.Bool;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
 import org.jetbrains.annotations.Nullable;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.or;
@@ -169,34 +168,6 @@ public class BoolTest {
         }
     }
 
-    @Test
-    void testDiffOfIntersectionsWithCommonSubterms() {
-
-
-        assertEq("(c-->((a-b)&x))", $$("(c --> ((a & x)-(b & x)))"));
-        assertEq("(((a~b)|x)-->c)", $$("(((a | x)~(b | x)) --> c)"));
-
-
-        assertEq(Bool.Null, $$("((&,x,a)-(&,x,a,b))"));
-        assertEq(Bool.Null, $$("((&,x,a,b)-(&,x,a))"));
-        assertEq(Bool.Null, $$("((&,x,a)-(&,x,a,b))"));
-    }
-
-    @Test
-    void testDiffOfUnionsWithCommonSubterms() {
-
-
-        assertEq("(c-->((a-b)|(--,x)))", $$("(c --> ((a | x)-(b | x)))"));
-        assertEq("(((a~b)&(--,x))-->c)", $$("(((a & x)~(b & x)) --> c)"));
-    }
-
-
-    @Disabled
-    @Test
-    void testIntersectionOfDiffsWithCommonSubterms() {
-
-
-    }
 
     @Test
     void testIntersectionTautologies() {

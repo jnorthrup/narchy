@@ -189,11 +189,6 @@ public class TermTest {
         assertEquivalentTerm("[a,c,b]", "[b,a,c]");
     }
 
-    @Test
-    void testSectCommutivity() throws Exception {
-        assertEquivalentTerm("(&,a,b)", "(&,b,a)");
-        assertEquivalentTerm("(|,a,b)", "(|,b,a)");
-    }
 
     @Test
     void testSimCommutivity() throws Exception {
@@ -775,26 +770,4 @@ public class TermTest {
 
     }
 
-    @Test void testSectConceptualization() {
-
-        assertEq("((a==>b)&x)", "((a==>b) & x)");
-        assertEq("((a ==>+1 b)&x)", "((a==>+1 b) & x)");
-        assertEq("((a ==>+- b)&x)", $$("((a==>+1 b) & x)").concept());
-
-
-        assertEq(Bool.Null, "((a==>+1 b) & (a ==>+2 b))");
-        assertEq(Bool.Null, "(&, (a==>b),(a ==>+2 b),(c==>d))");
-        assertEq("(((a ==>+2 b)-->d)&(a ==>+1 b))", "((a==>+1 b) & ((a ==>+2 b)-->d))");
-        assertEq(Bool.Null, "(((a ==> b)-->d) & ((a ==>+2 b)-->d))");
-        assertEq(Bool.Null, "(&, (a==>b),(a ==>+2 b),((c==>d)-->e))");
-
-
-    }
-
-    @Test void testDiffConceptualization() {
-        assertEq(Bool.Null, "((a==>+1 b)~(a ==>+2 b))");
-        assertEq("((a ==>+1 b)~(c ==>+2 d))", "((a ==>+1 b)~(c ==>+2 d))");
-
-        assertEq(Bool.Null, "((X &&+837 Y)~(--,(Y &&+1424 X)))");
-    }
 }

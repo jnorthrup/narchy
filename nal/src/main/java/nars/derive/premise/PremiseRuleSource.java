@@ -165,7 +165,7 @@ public class PremiseRuleSource extends ProxyTerm  {
                     neqRoot(constraints, X, Y);
                     break;
                 case "neqOrInhCommon":
-                    neq(constraints, X, Y);
+                    neqRoot(constraints, X, Y);
                     constraints.add(new NotEqualConstraint.NoCommonInh(X, Y));
                     break;
                 case "eqNeg":
@@ -199,6 +199,7 @@ public class PremiseRuleSource extends ProxyTerm  {
                 }
 
                 case "subPosOrNeg":
+                    //TODO handle negation
                     neq(constraints, X, Y);
                     constraints.add(new SubOfConstraint(X, Y, Subterm, 0));
                     break;

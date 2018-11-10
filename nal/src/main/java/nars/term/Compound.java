@@ -206,51 +206,38 @@ public interface Compound extends Term, IPair, Subterms {
      */
     @Override
     default boolean unify(/*@NotNull*/ Term y, /*@NotNull*/ Unify u) {
-        return y instanceof Variable ? y.unify(this, u) :
-                (equals(y) || (unifySubterms(y, u)));
+        if (this == y) return true;
+
+        if (y instanceof Compound) {
+            if (equals(y)) return true;
+
+            return op() == y.op() && unifySubterms(y, u);
+        }
+
+        if (y instanceof Variable) return y.unify(this, u);
+
+        return false;
     }
 
 
     default boolean unifySubterms(Term y, Unify u) {
         Term x = this;
-        Op op;
-        if ((op = x.op()) != y.op())
-            return false;
-
-
-
-
-
 
         Subterms xx = subterms();
         Subterms yy = y.subterms();
-        if (xx.equals(yy))
-            return true;
-
 
         int xs;
         if ((xs = xx.subs()) != yy.subs())
             return false;
 
-        if (!Terms.commonStructureTest(xx, yy, u))
-            return false;
-
-
         if (xs == 1) {
             return xx.sub(0).unify(yy.sub(0), u);
         } else {
 
-            //test only after equality
-            //if ((u.constant(x) && (!u.symmetric || u.constant(y)))) {
-            if (u.constant(x) && u.constant(y)) {
-                //constant case, some things can be assumed
-                if (!x.hasAny(Op.Temporal))
-                    return false; //temporal terms need to be compared for matching 'dt'
-                if (xx.volume()!=yy.volume())
-                    return false;
-            }
+            if (!Terms.commonStructureTest(xx, yy, u))
+                return false;
 
-            if (op.temporal) {
+            if (op().temporal) {
                 int xdt = x.dt();
                 if (xdt != XTERNAL && xdt != DTERNAL) {
                     int ydt = y.dt();
@@ -258,7 +245,23 @@ public interface Compound extends Term, IPair, Subterms {
                         return false;
                     }
                 }
+
+                //compound equality would have been true if non-temporal
+                if (xx.equals(yy))
+                    return true;
             }
+
+
+            //test only after equality
+            //if ((u.constant(x) && (!u.symmetric || u.constant(y)))) {
+//            if (u.constant(x) && u.constant(y)) {
+//                //constant case, some things can be assumed
+//                if (!x.hasAny(Op.Temporal))
+//                    return false; //temporal terms need to be compared for matching 'dt'
+//                if (xx.volume()!=yy.volume())
+//                    return false;
+//            }
+
 
             if (isCommutative()) {
                 return xx.unifyCommute(yy, u);
