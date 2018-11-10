@@ -25,7 +25,7 @@ public class DefaultScientist<S,E> extends Scientist<S,E> {
     final Random random;
 
     int maxVars = 2;
-    @Deprecated int experimentIterations = 64;
+    @Deprecated int experimentIterations = 32;
 
     public DefaultScientist() {
         this(new Random());

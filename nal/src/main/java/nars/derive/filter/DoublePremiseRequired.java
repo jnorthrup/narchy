@@ -2,13 +2,13 @@ package nars.derive.filter;
 
 import nars.$;
 import nars.Op;
-import nars.derive.Derivation;
+import nars.derive.premise.PreDerivation;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 
 import static nars.Op.*;
 
-public class DoublePremiseRequired extends AbstractPred<Derivation> {
+public class DoublePremiseRequired extends AbstractPred<PreDerivation> {
 
     final static Atomic key = $.the("DoublePremise");
     final boolean ifBelief, ifGoal, ifQuestionOrQuest;
@@ -24,7 +24,7 @@ public class DoublePremiseRequired extends AbstractPred<Derivation> {
     }
 
     @Override
-    public boolean test(Derivation preDerivation) {
+    public boolean test(PreDerivation preDerivation) {
         byte x = preDerivation.taskPunc;
         boolean requireDouble;
         switch (x) {

@@ -28,7 +28,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
     Recursive() {
         @Override
         public boolean test(Term container, Term x) {
-            return container.containsRecursively(x, false, t -> true);
+            return container.containsRecursively(x);
         }
 
         public float cost() {

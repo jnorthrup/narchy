@@ -68,12 +68,11 @@ public class PremiseRuleSource extends ProxyTerm  {
 
     private final MutableSet<UnifyConstraint> constraints;
     protected final ImmutableSet<UnifyConstraint> CONSTRAINTS;
-    private final MutableSet<PREDICATE> pre;
+    private final MutableSet<PREDICATE<PreDerivation>> pre;
     protected final PREDICATE[] PRE;
     protected final Occurrify.TaskTimeMerge time;
     protected final boolean varIntro;
     protected final byte taskPunc;
-    protected final Term postcons;
     protected final byte puncOverride;
     protected final Term beliefTruth;
     protected final Term goalTruth;
@@ -163,8 +162,11 @@ public class PremiseRuleSource extends ProxyTerm  {
                     neq(constraints, X, Y);
                     break;
                 case "neqRoot":
-                    neq(constraints, X, Y);
                     neqRoot(constraints, X, Y);
+                    break;
+                case "neqOrInhCommon":
+                    neq(constraints, X, Y);
+                    constraints.add(new NotEqualConstraint.NoCommonInh(X, Y));
                     break;
                 case "eqNeg":
                     neq(constraints, X, Y);
@@ -497,10 +499,13 @@ public class PremiseRuleSource extends ProxyTerm  {
 //        });
         List<RelationConstraint> mirrors = new FasterList(4);
         constraints.removeIf(cc -> {
-            PREDICATE<Derivation> p = cc.preFilter(taskPattern, beliefPattern);
+//            PREDICATE<Derivation> post = cc.postFilter();
+//            if (post!=null) {
+//            }
+
+            PREDICATE<PreDerivation> p = cc.preFilter(taskPattern, beliefPattern);
             if (p != null) {
                 pre.add(p);
-                //TODO also remove the opposite direction if relation?
                 return true;
             }
             if (cc instanceof RelationConstraint) {
@@ -550,7 +555,6 @@ public class PremiseRuleSource extends ProxyTerm  {
         this.varIntro = varIntro;
         this.taskPunc = taskPunc;
 
-        this.postcons = postcon[0];
         this.puncOverride = puncOverride;
         this.beliefTruth = beliefTruth;
         this.goalTruth = goalTruth;
@@ -610,7 +614,6 @@ public class PremiseRuleSource extends ProxyTerm  {
         this.time = raw.time;
         this.varIntro = raw.varIntro;
         this.taskPunc = raw.taskPunc;
-        this.postcons = raw.postcons;
         this.puncOverride = raw.puncOverride;
         this.beliefTruth = raw.beliefTruth;
         this.goalTruth = raw.goalTruth;

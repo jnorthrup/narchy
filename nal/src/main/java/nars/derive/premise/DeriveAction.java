@@ -55,7 +55,9 @@ final class DeriveAction extends AND<Derivation> /*implements ThrottledAction<De
         if (puncFactor <= ScalarValue.EPSILON)
             return 0f; //entirely disabled by deriver
 
-        float causeValue = cause.amp();
+        float causeValue =
+                cause.amp();
+                //tanhFast(cause.value());
 
         return causeValue * puncFactor;
     }

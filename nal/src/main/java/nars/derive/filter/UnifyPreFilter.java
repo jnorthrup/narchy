@@ -2,7 +2,7 @@ package nars.derive.filter;
 
 import nars.$;
 import nars.Op;
-import nars.derive.Derivation;
+import nars.derive.premise.PreDerivation;
 import nars.derive.premise.PremiseRuleSource;
 import nars.op.SubIfUnify;
 import nars.subterm.Subterms;
@@ -15,7 +15,7 @@ import nars.term.control.PREDICATE;
 import nars.term.util.Image;
 import org.eclipse.collections.api.set.MutableSet;
 
-public class UnifyPreFilter extends AbstractPred<Derivation> {
+public class UnifyPreFilter extends AbstractPred<PreDerivation> {
 
     private final byte[] xpInT, xpInB, ypInT, ypInB;
     private final boolean isStrict;
@@ -33,7 +33,7 @@ public class UnifyPreFilter extends AbstractPred<Derivation> {
         this.isStrict = isStrict;
     }
 
-    public static void tryAdd(Term x, Term y, Term taskPattern, Term beliefPattern, Subterms a, MutableSet<PREDICATE> pre) {
+    public static void tryAdd(Term x, Term y, Term taskPattern, Term beliefPattern, Subterms a, MutableSet<PREDICATE<PreDerivation>> pre) {
         //some structure exists that can be used to prefilter
         byte[] xpInT = Terms.pathConstant(taskPattern, x);
         byte[] xpInB = Terms.pathConstant(beliefPattern, x); //try the belief
@@ -55,7 +55,7 @@ public class UnifyPreFilter extends AbstractPred<Derivation> {
 
 
     @Override
-    public boolean test(Derivation d) {
+    public boolean test(PreDerivation d) {
         Term x = xpInT != null ? d.taskTerm.sub(xpInT) : d.beliefTerm.sub(xpInB);
         assert (x != Bool.Null);
         if (x == null)

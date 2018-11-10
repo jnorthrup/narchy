@@ -2,6 +2,7 @@ package nars.unify.constraint;
 
 import nars.$;
 import nars.derive.Derivation;
+import nars.derive.premise.PreDerivation;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.control.PREDICATE;
@@ -46,7 +47,7 @@ abstract public class RelationConstraint extends UnifyConstraint {
     }
 
     @Override
-    public @Nullable PREDICATE<Derivation> preFilter(Term taskPattern, Term beliefPattern) {
+    public @Nullable PREDICATE<PreDerivation> preFilter(Term taskPattern, Term beliefPattern) {
 
         //only test one of the directions
         // because the opposite y->x will also be created so we only need one predicate filter for both
@@ -113,8 +114,8 @@ abstract public class RelationConstraint extends UnifyConstraint {
         }
 
         @Override
-        public @Nullable PREDICATE<Derivation> preFilter(Term taskPattern, Term beliefPattern) {
-            PREDICATE<Derivation> p = super.preFilter(taskPattern, beliefPattern);
+        public @Nullable PREDICATE<PreDerivation> preFilter(Term taskPattern, Term beliefPattern) {
+            PREDICATE<PreDerivation> p = super.preFilter(taskPattern, beliefPattern);
             return p != null ? p.neg() : null;
         }
     }

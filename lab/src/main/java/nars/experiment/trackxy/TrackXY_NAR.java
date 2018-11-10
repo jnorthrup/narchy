@@ -18,7 +18,6 @@ import nars.exe.UniExec;
 import nars.gui.LSTMView;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
-import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.time.clock.CycleTime;
@@ -34,20 +33,22 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static jcog.Texts.n4;
-import static nars.Op.BELIEF;
 import static nars.Op.IMPL;
 import static spacegraph.SpaceGraph.window;
 
 public class TrackXY_NAR extends NAgentX {
 
+    public static final int derivationStrength = 8;
     static boolean
             nars = true, rl = !nars,
-            targetNumerics = false,
+            sourceNumerics = false, targetNumerics = false,
             targetCam = true,
             gui = true;
-    static int W = 5;
-    static int H = 5;
-    static int dur = 2;
+    static int
+            //W = 4, H = 4;
+            W = 5, H = 1;
+    static int dur = 1;
+    static float camResolution = 0.1f;
 
     final Bitmap2DSensor cam;
     private final TrackXY track;
@@ -63,9 +64,13 @@ public class TrackXY_NAR extends NAgentX {
 
         this.track = new TrackXY(W, H);
 
-        senseNumber($.inh("sx", id), new FloatNormalized(() -> track.cx, 0, W));
-        if (H > 1)
-            senseNumber($.inh("sy", id), new FloatNormalized(() -> track.cy, 0, H));
+        assert(sourceNumerics | targetNumerics | targetCam);
+
+        if (sourceNumerics) {
+            senseNumber($.inh("sx", id), new FloatNormalized(() -> track.cx, 0, W));
+            if (H > 1)
+                senseNumber($.inh("sy", id), new FloatNormalized(() -> track.cy, 0, H));
+        }
 
 
         if (targetNumerics) {
@@ -76,13 +81,13 @@ public class TrackXY_NAR extends NAgentX {
 
         if (targetCam) {
             this.cam = addCamera(new Bitmap2DSensor<>(id /* (Term) null*/, track.grid, nar));
-            cam.resolution(0.1f);
+            cam.resolution(camResolution);
         } else {
             this.cam = null;
         }
 
-        actionPushButton();
-        //actionPushButtonMutex();
+        //actionPushButton();
+        actionPushButtonMutex();
         //actionSwitch();
         //actionTriState();
 
@@ -145,8 +150,8 @@ public class TrackXY_NAR extends NAgentX {
 
         TrackXY_NAR a = new TrackXY_NAR(n, W, H);
 
-        n.freqResolution.set(0.04f);
-        n.termVolumeMax.set(10);
+        //n.freqResolution.set(0.04f);
+        n.termVolumeMax.set(8);
         n.timeResolution.set(dur);
 
         if (rl) {
@@ -188,8 +193,8 @@ public class TrackXY_NAR extends NAgentX {
             Deriver d = new BatchDeriver(Derivers.nal(n,
                     //6, 8
                     1, 8
-//                    //,"curiosity.nal"
-                    //          , "motivation.nal"
+                    //2, 8
+                    //, "motivation.nal"
             )) {
 //                    @Override
 //                    public float puncFactor(byte conclusion) {
@@ -198,7 +203,7 @@ public class TrackXY_NAR extends NAgentX {
             };
 
 
-            ((BatchDeriver) d).conceptsPerIteration.set(8);
+            ((BatchDeriver) d).conceptsPerIteration.set(derivationStrength);
 
 
             new STMLinkage(n, 1) {
@@ -208,10 +213,10 @@ public class TrackXY_NAR extends NAgentX {
                 }
             };
 
-            ConjClustering cjB = new ConjClustering(n, BELIEF,
-                    //x -> true,
-                    Task::isInput,
-                    2, 8);
+//            ConjClustering cjB = new ConjClustering(n, BELIEF,
+//                    //x -> true,
+//                    Task::isInput,
+//                    2, 8);
 
 
 //            window(new Gridding(
@@ -378,6 +383,17 @@ public class TrackXY_NAR extends NAgentX {
 
 
     private void actionPushButton() {
+
+
+        actionPushButton($.inh("right", id), (b) -> {
+            if (b)
+                track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
+        });
+        actionPushButton($.inh("left", id), (b) -> {
+            if (b)
+                track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
+        });
+
         if (track.grid.height() > 1) {
             actionPushButton($.inh("up", id), (b) -> {
                 if (b)
@@ -389,14 +405,6 @@ public class TrackXY_NAR extends NAgentX {
             });
         }
 
-        actionPushButton($.inh("right", id), (b) -> {
-            if (b)
-                track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
-        });
-        actionPushButton($.inh("left", id), (b) -> {
-            if (b)
-                track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
-        });
     }
 
     private void actionPushButtonMutex() {

@@ -40,6 +40,11 @@ public class PremiseRuleProto extends PremiseRuleSource {
         RuleCause cause = nar.newCause(s -> new RuleCause(this, s));
         Taskify taskify = new Taskify(cause);
 
+        final List<PREDICATE<Derivation>> post = new FasterList<>(4);
+
+        post.add(UnifyTerm.preUnify);
+
+
         PREDICATE<Derivation> conc = AND.the(
                 this.termify,
                 varIntro ?
@@ -47,10 +52,6 @@ public class PremiseRuleProto extends PremiseRuleSource {
                         :
                         taskify
         );
-
-        final List<PREDICATE<Derivation>> post = new FasterList<>(4);
-
-        post.add(UnifyTerm.preUnify);
 
 //        if (taskPattern.equals(beliefPattern) || taskPattern.containsRecursively(beliefPattern)) {
 //            post.add(new UnifyTerm.NextUnify(0, taskPattern));
@@ -115,7 +116,7 @@ public class PremiseRuleProto extends PremiseRuleSource {
      * derivation inputs are batched for input by another method
      * holds the deriver id also that it can be applied at the end of a derivation.
      */
-    public static class RuleCause extends Cause implements IntToFloatFunction {
+    public static class RuleCause extends Cause {
         public final PremiseRuleSource rule;
         public final String ruleString;
 
@@ -130,10 +131,6 @@ public class PremiseRuleProto extends PremiseRuleSource {
             return $.pFast(rule.ref, $.the(id)).toString();
         }
 
-        /** throttle */
-        @Override public float valueOf(int intParameter) {
-            return amp();
-        }
     }
 
 

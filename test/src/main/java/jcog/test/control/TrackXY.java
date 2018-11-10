@@ -24,11 +24,11 @@ public class TrackXY  {
     /** current coordinates: to be moved by the experiment */
     public volatile float cx, cy;
 
-    public final FloatRange controlSpeed = new FloatRange(0.2f, 0, 4f);
+    public final FloatRange controlSpeed = new FloatRange(0.1f, 0, 4f);
 
-    public final FloatRange targetSpeed = new FloatRange(0.04f, 0, 2f);
+    public final FloatRange targetSpeed = new FloatRange(0.01f, 0, 2f);
 
-    public final FloatRange visionContrast = new FloatRange(0.95f, 0, 1f);
+    public final FloatRange visionContrast = new FloatRange(0.98f, 0, 1f);
 
     public final MutableEnum<TrackXYMode> mode =
             new MutableEnum<TrackXYMode>(TrackXYMode.CircleTarget);

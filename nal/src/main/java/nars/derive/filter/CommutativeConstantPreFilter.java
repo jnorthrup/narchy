@@ -1,7 +1,7 @@
 package nars.derive.filter;
 
 import nars.$;
-import nars.derive.Derivation;
+import nars.derive.premise.PreDerivation;
 import nars.derive.premise.PremiseRuleSource;
 import nars.term.Compound;
 import nars.term.Term;
@@ -16,7 +16,7 @@ import java.util.Collection;
 import static nars.derive.Derivation.Belief;
 import static nars.derive.Derivation.Task;
 
-public class CommutativeConstantPreFilter extends AbstractPred<Derivation> {
+public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
 
     private final byte[] ellipsisPath, contentPath;
     private final boolean ellipsisInTaskOrBelief;
@@ -33,7 +33,7 @@ public class CommutativeConstantPreFilter extends AbstractPred<Derivation> {
         this.contentPath = contentPath;
     }
 
-    public static void tryFilter(boolean commInTaskOrBelief, Term taskPattern, Term beliefPattern, Collection<PREDICATE> pre) {
+    public static void tryFilter(boolean commInTaskOrBelief, Term taskPattern, Term beliefPattern, Collection<PREDICATE<PreDerivation>> pre) {
 
         Term commutiveContainer = (commInTaskOrBelief) ? taskPattern : beliefPattern;
 
@@ -66,7 +66,7 @@ public class CommutativeConstantPreFilter extends AbstractPred<Derivation> {
 
 
     @Override
-    public boolean test(Derivation d) {
+    public boolean test(PreDerivation d) {
 
         Term contentHolder = ellipsisInTaskOrBelief ? d.beliefTerm : d.taskTerm;
         Term content = contentHolder.sub(this.contentPath);

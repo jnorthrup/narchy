@@ -2,6 +2,7 @@ package nars.control;
 
 import jcog.Util;
 import jcog.math.RecycledSummaryStatistics;
+import jcog.pri.ScalarValue;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -47,7 +48,7 @@ public class Cause implements Comparable<Cause> {
      * 0..+1
      */
     public float amp() {
-        return Math.max(Float.MIN_NORMAL, gain() / 2f);
+        return Math.max(ScalarValue.EPSILON, gain() / 2f);
     }
 
     /**

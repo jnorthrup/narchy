@@ -168,12 +168,12 @@ public interface NSense {
 
 
     default Signal senseNumberDifference(Term id, FloatSupplier v) {
-        return senseNumber(id, new FloatPolarNormalized(
+        return senseNumber(id, new FloatNormalized(
                 new FloatFirstOrderDifference(nar()::time, v)));
     }
 
     default DigitizedScalar senseNumberDifferenceBi(Term id, FloatSupplier v) {
-        FloatNormalized x = new FloatPolarNormalized(
+        FloatNormalized x = new FloatNormalized(
                 new FloatFirstOrderDifference(nar()::time, v));
 
         return senseNumber(x, DigitizedScalar.FuzzyNeedle, inh(id, LOW), inh(id, HIH));

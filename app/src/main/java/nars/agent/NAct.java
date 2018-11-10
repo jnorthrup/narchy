@@ -6,6 +6,7 @@ import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;
+import nars.Param;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.GoalActionConcept;
 import nars.table.BeliefTables;
@@ -246,6 +247,8 @@ public interface NAct {
             if (x) {
                 if (lr[1] > thresh) {
                     conflict = true;
+                    x = nar().random().nextFloat() < (ll / (Param.TRUTH_EPSILON +ll + lr[1])); //stochastic
+                    ll = x ? 1 : 0;
 //                    x = false;
 //                    //ll = 0;
                 }
@@ -262,6 +265,9 @@ public interface NAct {
             if (x) {
                 if (lr[0] > thresh) {
                     conflict = true;
+
+                    x = nar().random().nextFloat() < (rr / (Param.TRUTH_EPSILON + rr + lr[0])); //stochastic
+                    rr = x ? 1 : 0;
                     //x = false;
                     //rr = 0;
                 }
@@ -284,7 +290,7 @@ public interface NAct {
 //                    Remember.the(new NALTask(x.term(), BELIEF,
 //                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()), n), n);
 
-            x.resolution(0.25f);
+            //x.resolution(0.25f);
         }
 
         return new GoalActionConcept[]{LA, RA};

@@ -318,7 +318,7 @@ public abstract class Unify extends Versioning implements Subst {
 
             for (UnifyConstraint m : mm) {
                 Versioned<UnifyConstraint> wasSet = c.set(m);
-                //assert (wasSet != null);
+                assert (wasSet != null);
             }
 
         }

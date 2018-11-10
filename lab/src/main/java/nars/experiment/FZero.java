@@ -113,8 +113,9 @@ public class FZero extends NAgentX {
 
         ActionConcept F = initUnipolarLinear(5f);
 
-        initPushButtonTank();
+        //initPushButtonTank();
 
+        initLeftRightPushButtonMutex();
         //initToggleLeftRight();
 
 //        initToggleFwdStop();
@@ -276,7 +277,7 @@ public class FZero extends NAgentX {
     }
 
 
-    private void initPushButtonMutex() {
+    private void initForwardStopPushButtonMutex() {
         this.actionPushButtonMutex(
                 $.inh($$("fwd"), id), $.inh($$("stop"), id),
                 f -> fz.thrust = f,
@@ -286,10 +287,13 @@ public class FZero extends NAgentX {
                     }
                 }
         );
-//        this.actionPushButtonMutex(
-//                $.inh($$("left"), id), $.inh($$("right"), id),
-//                l -> fz.left = l, r -> fz.right = r
-//        );
+    }
+    private void initLeftRightPushButtonMutex() {
+
+        this.actionPushButtonMutex(
+                $.inh($$("left"), id), $.inh($$("right"), id),
+                l -> fz.left = l, r -> fz.right = r
+        );
     }
 
     private void initPushButtonTank() {

@@ -30,7 +30,7 @@ public class BooleanReactionTest extends MiniTest {
     @Override
     public float reward() {
         float r = reward;
-        reward = Float.NaN;
+        reward = 0;
         return r;
     }
 

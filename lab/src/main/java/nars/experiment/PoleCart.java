@@ -2,7 +2,6 @@ package nars.experiment;
 
 import jcog.Util;
 import jcog.math.FloatNormalized;
-import jcog.math.FloatPolarNormalized;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
@@ -11,6 +10,7 @@ import nars.NAgentX;
 import nars.agent.NAgent;
 import nars.agent.Reward;
 import nars.concept.Concept;
+import nars.concept.action.BiPolarAction;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -19,7 +19,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static jcog.Texts.n2;
 import static nars.agent.FrameTrigger.fps;
 
 /**
@@ -102,7 +101,6 @@ public class PoleCart extends NAgentX {
     //0.0025f;
     static final double fricCart = 0.00005;
     static final double fricPole =
-
             0.01f;
     static final double totalMass = cartMass + poleMass;
     static final double halfPole = 0.5 * poleLength;
@@ -165,32 +163,13 @@ public class PoleCart extends NAgentX {
 
         this.angVel = senseNumber($.inh("angVel",id),
 
-                new FloatPolarNormalized(() -> (float) angleDot)
+                new FloatNormalized(() -> (float) angleDot)
         );
 
 
-//        final float SPEED = 3f;
-//        BiPolarAction F = actionBipolarFrequencyDifferential(id, false, (x) -> {
-//            float a =
-//                    x * SPEED;
-//                    //(x * x * x) * SPEED;
-//            this.action = a;
-//            return x;
-//        });
-
-        actionUnipolar($.inh(("L"),id), (a) -> {
-            if (!manualOverride)
-                action = Util.clampBi((float) (action + a));
-            return a;
-        });
-        actionUnipolar($.inh(("R"),id), (a) -> {
-            if (!manualOverride)
-                action = Util.clampBi((float) (action - a));
-            return a;
-        });
-
-
-
+        initBipolar();
+        //initButtonMutex();
+        //initUnipolar();
 
 
 //        SpaceGraph.window(NARui.beliefCharts(512,
@@ -210,7 +189,6 @@ public class PoleCart extends NAgentX {
             public void update(Graphics g) {
                 Dimension d = panel.getSize();
                 Color cartColor = Color.ORANGE;
-                Color arrowColor = Color.WHITE;
                 Color trackColor = Color.GRAY;
 
 
@@ -223,7 +201,8 @@ public class PoleCart extends NAgentX {
                 }
 
 
-                offGraphics.setColor(new Color(0, 0, 0, 0.25f));
+                float clearRate = 0.5f;
+                offGraphics.setColor(new Color(0, 0, 0, clearRate));
                 offGraphics.fillRect(0, 0, d.width, d.height);
 
 
@@ -239,8 +218,8 @@ public class PoleCart extends NAgentX {
                 offGraphics.fillPolygon(pixxs, pixys, 8);
 
 
-                String msg = "Position = " + n2(pos) + " Angle = " + n2(angle) + " angleDot = " + n2(angleDot);
-                offGraphics.drawString(msg, 20, d.height - 20);
+//                String msg = "Position = " + n2(pos) + " Angle = " + n2(angle) + " angleDot = " + n2(angleDot);
+//                offGraphics.drawString(msg, 20, d.height - 20);
 
 
                 offGraphics.setColor(cartColor);
@@ -256,7 +235,11 @@ public class PoleCart extends NAgentX {
 
                 if (action != 0) {
                     int signAction = (action > 0 ? 1 : (action < 0) ? -1 : 0);
-                    int tipx = pixX(d, pos + 0.2 * signAction);
+                    int tipx = pixX(d, pos + 0.2 *
+                            //signAction
+                            action
+                    );
+                    Color arrowColor = new Color(0.25f, 0.5f + Util.tanhFast(Math.abs((float)action))/2f, 0.25f);
                     int tipy = pixY(d, -0.1);
                     offGraphics.setColor(arrowColor);
                     offGraphics.drawLine(pixX(d, pos), pixY(d, -0.1), tipx, tipy);
@@ -275,7 +258,7 @@ public class PoleCart extends NAgentX {
 
         JFrame f = new JFrame();
         f.setContentPane(panel);
-        f.setSize(800, 600);
+        f.setSize(800, 300);
         f.setVisible(true);
 
         f.addKeyListener(new KeyAdapter() {
@@ -317,6 +300,29 @@ public class PoleCart extends NAgentX {
 
     }
 
+    public void initBipolar() {
+        final float SPEED = 3f;
+        BiPolarAction F = actionBipolarFrequencyDifferential(id, false, (x) -> {
+            float a =
+                    x * SPEED;
+                    //(x * x * x) * SPEED;
+            this.action = a;
+            return x;
+        });
+    }
+
+    public void initUnipolar() {
+        actionUnipolar($.inh(("L"),id), (a) -> {
+            if (!manualOverride)
+                action = Util.clampBi((float) (action + a));
+            return a;
+        });
+        actionUnipolar($.inh(("R"),id), (a) -> {
+            if (!manualOverride)
+                action = Util.clampBi((float) (action - a));
+            return a;
+        });
+    }
 
 
     protected float update() {
@@ -378,16 +384,17 @@ public class PoleCart extends NAgentX {
         return (int) Math.round((v + 2.5) / 5.0 * d.width);
     }
 
-    int pixY(Dimension d, double v) {
-        return (int) Math.round(d.height - (v + 2.5) / 5.0 * d.height);
-    }
 
     int pixDX(Dimension d, double v) {
         return (int) Math.round(v / 5.0 * d.width);
     }
 
+    int pixY(Dimension d, double v) {
+        return (int) Math.round(d.height - (v + 0.5f) / 2.0 * d.height);
+    }
+
     public int pixDY(Dimension d, double v) {
-        return (int) Math.round(-v / 5.0 * d.height);
+        return (int) Math.round(-v / 2.0 * d.height);
     }
 
     void resetPole() {

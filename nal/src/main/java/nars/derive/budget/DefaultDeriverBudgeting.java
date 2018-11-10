@@ -36,9 +36,9 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
     public float pri(Task t, float f, float e, Derivation d) {
         float factor = this.gain.floatValue();
 
-        //factor *= factorComplexityAbsolute(t, d);
-        factor *= factorComplexityRelativeOld(t, d);
+        factor *= factorComplexityAbsolute(t, d);
         //factor *= factorComplexityRelative(t, d);
+        //factor *= factorComplexityRelative2(t, d);
 
         if (f==f) {
             //belief or goal:
@@ -63,19 +63,18 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
         float weight = Math.min(1, t.voluplexity() / max);
         float parentWeight = Math.min(1, ((d.parentVoluplexitySum / 2)/*avg*/) / max);
         float f = (1f - Util.lerp(parentWeight,weight,parentWeight * weight));
-
         //float f = (1f - weight);
         return (float) Math.pow(f, relGrowthExponent.floatValue());
     }
 
-    float factorComplexityRelative(Task t, Derivation d) {
+    float factorComplexityRelative2(Task t, Derivation d) {
         float inc = (t.voluplexity() - d.parentVoluplexitySum /2 /* avg */);
         if (inc <= 0) return 1f;
         float f = 1f / (1f + inc);
         return (float) Math.pow(f, relGrowthExponent.floatValue());
     }
 
-    float factorComplexityRelativeOld(Task t, Derivation d) {
+    float factorComplexityRelative(Task t, Derivation d) {
         float pCompl = d.parentVoluplexitySum;
         float dCompl = t.voluplexity();
         float f =

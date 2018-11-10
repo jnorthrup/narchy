@@ -7,6 +7,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
+import static nars.Op.INH;
+
 
 public final class NotEqualConstraint extends RelationConstraint {
 
@@ -49,7 +51,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 
         @Override
         public float cost() {
-            return 0.15f;
+            return 0.35f;
         }
 
         @Override
@@ -64,6 +66,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 //            return true;
 //        }
     }
+
     public static final class EqualNegConstraint extends RelationConstraint {
 
         public EqualNegConstraint(Term target, Term other) {
@@ -166,11 +169,37 @@ public final class NotEqualConstraint extends RelationConstraint {
                 }
 
                 return recurse ?
-                        a.containsRecursively(b, false, limit) :
+                        a.containsRecursively(b, true, limit) :
                         a.contains(b);
             }
         }
 
 
     }
+
+    /** if both are inheritance, prohibit if the subjects or predicates match.  this is to exclude
+     * certain derivations which occurr otherwise in NAL1..NAL3 */
+    public static final class NoCommonInh extends RelationConstraint {
+
+        public NoCommonInh(Term target, Term other) {
+            super(target, other, "noCommonInh");
+        }
+
+        @Override
+        protected @Nullable RelationConstraint newMirror(Term newX, Term newY) {
+            return new NoCommonInh(newX, newY);
+        }
+
+        @Override
+        public float cost() {
+            return 0.1f;
+        }
+
+        @Override
+        public boolean invalid(Term x, Term y) {
+            return (x.op()==INH && y.op()==INH && (x.sub(0).equals(y.sub(0)) || x.sub(1).equals(y.sub(1))));
+        }
+
+    }
+
 }

@@ -6,6 +6,7 @@ import jcog.Util;
 import nars.$;
 import nars.Param;
 import nars.derive.Derivation;
+import nars.derive.premise.PreDerivation;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
@@ -42,7 +43,7 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
 
 
     @Nullable
-    public PREDICATE<Derivation> preFilter(Term taskPattern, Term beliefPattern) {
+    public PREDICATE<PreDerivation> preFilter(Term taskPattern, Term beliefPattern) {
         return null;
     }
 
@@ -121,7 +122,7 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
      */
     abstract public boolean invalid(Term y, Unify f);
 
-    final static class ConstraintAsPredicate extends AbstractPred<Derivation> {
+    final static class ConstraintAsPredicate extends AbstractPred<PreDerivation> {
 
         private final RelationConstraint constraint;
 
@@ -154,7 +155,7 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
         }
 
         @Override
-        public boolean test(Derivation preDerivation) {
+        public boolean test(PreDerivation preDerivation) {
             Term t = preDerivation.taskTerm;
             Term b = preDerivation.beliefTerm;
             Term x = extractX.apply(t, b);
