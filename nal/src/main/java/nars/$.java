@@ -804,6 +804,12 @@ public enum $ {
     }
 
 
+    public static Term diff(Term a, Term b) {
+        //throw new TODO("use set/sect methods");
+        return Bool.Null;
+    }
+
+
 
 
     /*

@@ -9,7 +9,6 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
-import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.Set;
@@ -175,107 +174,107 @@ public class SetSectDiff {
         }
     }
 
-    public static Term differ(/*@NotNull*/ Op op, Term... t) {
+//    public static Term differ(/*@NotNull*/ Op op, Term... t) {
+//
+//
+//        switch (t.length) {
+//            case 1:
+//                Term single = t[0];
+//                if (single instanceof EllipsisMatch) {
+//                    return differ(op, single.arrayShared());
+//                }
+//                return single instanceof Ellipsislike ?
+//                        Op.compound(op, DTERNAL, single) :
+//                        Null;
+//            case 2:
+//                Term et0 = t[0], et1 = t[1];
+//
+//                if (et0 == Null || et1 == Null)
+//                    return Null;
+//
+//
+//                if (et0.equals(et1))
+//                    return Bool.False;
+//
+//                //((--,X)~(--,Y)) reduces to (Y~X)
+//                if (et0.op() == Op.NEG && et1.op() == Op.NEG) {
+//                    //un-neg and swap order
+//                    Term x = et0.unneg();
+//                    et0 = et1.unneg();
+//                    et1 = x;
+//                }
+//
+//                Op o0 = et0.op();
+//                if (et1.equalsNeg(et0)) {
+//                    return o0 == Op.NEG || et0 == Bool.False ? Bool.False : Bool.True;
+//                }
+//
+//
+//                /** non-bool vs. bool - invalid */
+//                if (Op.isTrueOrFalse(et0) || Op.isTrueOrFalse(et1)) {
+//                    return Null;
+//                }
+//
+//                /* deny temporal terms which can collapse degeneratively on conceptualization
+//                *  TODO - for SET/SECT also? */
+//                if (!uniqueRoots(et0.unneg(), et1.unneg()))
+//                    return Null;
+//
+//                Op o1 = et1.op();
+//
+//                if (et0.containsRecursively(et1, true, Op.recursiveCommonalityDelimeterWeak)
+//                        || et1.containsRecursively(et0, true, Op.recursiveCommonalityDelimeterWeak))
+//                    return Null;
+//
+//
+//                Op set = op == Op.DIFFe ? Op.SETe : Op.SETi;
+//                if ((o0 == set && o1 == set)) {
+//                    return differenceSet(set, et0, et1);
+//                } else {
+//                    return differenceSect(op, et0, et1);
+//                }
+//
+//
+//        }
+//
+//        throw new TermException(op, t, "diff requires 2 terms");
+//
+//    }
 
-
-        switch (t.length) {
-            case 1:
-                Term single = t[0];
-                if (single instanceof EllipsisMatch) {
-                    return differ(op, single.arrayShared());
-                }
-                return single instanceof Ellipsislike ?
-                        Op.compound(op, DTERNAL, single) :
-                        Null;
-            case 2:
-                Term et0 = t[0], et1 = t[1];
-
-                if (et0 == Null || et1 == Null)
-                    return Null;
-
-
-                if (et0.equals(et1))
-                    return Bool.False;
-
-                //((--,X)~(--,Y)) reduces to (Y~X)
-                if (et0.op() == Op.NEG && et1.op() == Op.NEG) {
-                    //un-neg and swap order
-                    Term x = et0.unneg();
-                    et0 = et1.unneg();
-                    et1 = x;
-                }
-
-                Op o0 = et0.op();
-                if (et1.equalsNeg(et0)) {
-                    return o0 == Op.NEG || et0 == Bool.False ? Bool.False : Bool.True;
-                }
-
-
-                /** non-bool vs. bool - invalid */
-                if (Op.isTrueOrFalse(et0) || Op.isTrueOrFalse(et1)) {
-                    return Null;
-                }
-
-                /* deny temporal terms which can collapse degeneratively on conceptualization
-                *  TODO - for SET/SECT also? */
-                if (!uniqueRoots(et0.unneg(), et1.unneg()))
-                    return Null;
-
-                Op o1 = et1.op();
-
-                if (et0.containsRecursively(et1, true, Op.recursiveCommonalityDelimeterWeak)
-                        || et1.containsRecursively(et0, true, Op.recursiveCommonalityDelimeterWeak))
-                    return Null;
-
-
-                Op set = op == Op.DIFFe ? Op.SETe : Op.SETi;
-                if ((o0 == set && o1 == set)) {
-                    return differenceSet(set, et0, et1);
-                } else {
-                    return differenceSect(op, et0, et1);
-                }
-
-
-        }
-
-        throw new TermException(op, t, "diff requires 2 terms");
-
-    }
-
-    private static Term differenceSect(Op diffOp, Term a, Term b) {
-
-
-        Op ao = a.op();
-        if (((diffOp == Op.DIFFi && ao == Op.SECTe) || (diffOp == Op.DIFFe && ao == Op.SECTi)) && (b.op() == ao)) {
-            Subterms aa = a.subterms();
-            Subterms bb = b.subterms();
-            MutableSet<Term> common = Subterms.intersect(aa, bb);
-            if (common != null) {
-                int cs = common.size();
-                if (aa.subs() == cs || bb.subs() == cs)
-                    return Null;
-                return ao.the(common.with(
-                        diffOp.the(ao.the(aa.subsExcept(common)), ao.the(bb.subsExcept(common)))
-                ));
-            }
-        }
-
-
-        if (((diffOp == Op.DIFFi && ao == Op.SECTi) || (diffOp == Op.DIFFe && ao == Op.SECTe)) && (b.op() == ao)) {
-            Subterms aa = a.subterms(), bb = b.subterms();
-            MutableSet<Term> common = Subterms.intersect(aa, bb);
-            if (common != null) {
-                int cs = common.size();
-                if (aa.subs() == cs || bb.subs() == cs)
-                    return Null;
-                return ao.the(common.collect(Term::neg).with(
-                        diffOp.the(ao.the(aa.subsExcept(common)), ao.the(bb.subsExcept(common)))
-                ));
-            }
-        }
-
-        return Op.compound(diffOp, DTERNAL, a, b);
-    }
+//    private static Term differenceSect(Op diffOp, Term a, Term b) {
+//
+//
+//        Op ao = a.op();
+//        if (((diffOp == Op.DIFFi && ao == Op.SECTe) || (diffOp == Op.DIFFe && ao == Op.SECTi)) && (b.op() == ao)) {
+//            Subterms aa = a.subterms();
+//            Subterms bb = b.subterms();
+//            MutableSet<Term> common = Subterms.intersect(aa, bb);
+//            if (common != null) {
+//                int cs = common.size();
+//                if (aa.subs() == cs || bb.subs() == cs)
+//                    return Null;
+//                return ao.the(common.with(
+//                        diffOp.the(ao.the(aa.subsExcept(common)), ao.the(bb.subsExcept(common)))
+//                ));
+//            }
+//        }
+//
+//
+//        if (((diffOp == Op.DIFFi && ao == Op.SECTi) || (diffOp == Op.DIFFe && ao == Op.SECTe)) && (b.op() == ao)) {
+//            Subterms aa = a.subterms(), bb = b.subterms();
+//            MutableSet<Term> common = Subterms.intersect(aa, bb);
+//            if (common != null) {
+//                int cs = common.size();
+//                if (aa.subs() == cs || bb.subs() == cs)
+//                    return Null;
+//                return ao.the(common.collect(Term::neg).with(
+//                        diffOp.the(ao.the(aa.subsExcept(common)), ao.the(bb.subsExcept(common)))
+//                ));
+//            }
+//        }
+//
+//        return Op.compound(diffOp, DTERNAL, a, b);
+//    }
 
     /*@NotNull*/
     public static Term differenceSet(/*@NotNull*/ Op o, Term a, Term b) {

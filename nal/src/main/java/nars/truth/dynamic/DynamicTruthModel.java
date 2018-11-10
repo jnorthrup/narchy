@@ -88,19 +88,15 @@ abstract public class DynamicTruthModel {
 
     public static class DynamicSectTruth {
 
-        final static class SectIntersection extends Intersection {
+        final static class SectIntersection extends Intersection  {
 
-            final boolean union, subjOrPred;
+            final boolean subjOrPred;
 
             private SectIntersection(boolean union, boolean subjOrPred) {
-                this.union = union;
+                super(union);
                 this.subjOrPred = subjOrPred;
             }
 
-            @Override
-            protected boolean negateFreq() {
-                return union;
-            }
 
             @Override
             public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
@@ -145,7 +141,7 @@ abstract public class DynamicTruthModel {
                 return false;
             }
 
-            public boolean decomposeImplConj(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term common, Term decomposed, Op op) {
+            private boolean decomposeImplConj(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term common, Term decomposed, Op op) {
                 int outerDT = superterm.dt();
                 int innerDT = decomposed.dt();
                 int decRange;
@@ -193,68 +189,93 @@ abstract public class DynamicTruthModel {
         public static final DynamicTruthModel IsectSubj = new SectIntersection(false, true);
         public static final DynamicTruthModel UnionPred = new SectIntersection(true, false);
         public static final DynamicTruthModel IsectPred = new SectIntersection(false, false);
-    }
 
-    public static class DynamicDiffTruth {
-        abstract static class Difference extends DynamicTruthModel {
-
+        public static final DynamicTruthModel IsectRoot = new Intersection(false) {
 
             @Override
-            public Truth apply(DynTruth d, NAR n) {
-                assert (d.size() == 2);
-                Truth a = d.get(0).truth();
-                if (a == null)
-                    return null;
-                Truth b = d.get(1).truth();
-                if (b == null)
-                    return null;
-
-                return NALTruth.Difference.apply(a, b, n);
+            protected boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+                assert(superterm.op()==SECTi);
+                return superterm.subterms().AND(s ->
+                   each.accept(s, start, end)
+                );
             }
-
-
-            @Override
-            public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-                return each.accept(superterm.sub(0), start, end) && each.accept(superterm.sub(1), start, end);
-            }
-        }
-
-
-        static class DiffInh extends Difference {
-            final boolean subjOrPred;
-
-            DiffInh(boolean subjOrPred) {
-                this.subjOrPred = subjOrPred;
-            }
-
-            @Override
-            public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-                Term common = stmtCommon(subjOrPred, superterm);
-                Term decomposed = stmtCommon(!subjOrPred, superterm);
-                Op supOp = superterm.op();
-                return each.accept(stmtDecompose(supOp, subjOrPred, decomposed.sub(0), common), start, end) &&
-                        each.accept(stmtDecompose(supOp, subjOrPred, decomposed.sub(1), common), start, end);
-            }
-
-            @Override
-            public Term reconstruct(Term superterm, List<Task> c, NAR nar) {
-                return stmtReconstruct(superterm, c, subjOrPred, false);
-            }
-        }
-
-        public static final Difference DiffRoot = new Difference() {
 
             @Override
             public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
-                return Op.DIFFe.the(
-                        components.get(0).task().term(),
-                        components.get(1).task().term());
+
+                //TODO test if the superterm will be equivalent to the component terms before reconstructing
+                Term[] t = new Term[components.size()];
+                for (int i = 0, componentsSize = components.size(); i < componentsSize; i++) {
+                    t[i] = components.get(i).term();
+                }
+
+
+                return Op.SECTi.the(t);
             }
 
         };
-        public static final Difference DiffSubj = new DiffInh(true);
-        public static final Difference DiffPred = new DiffInh(false);
     }
+
+//    public static class DynamicDiffTruth {
+//        abstract static class Difference extends DynamicTruthModel {
+//
+//
+//            @Override
+//            public Truth apply(DynTruth d, NAR n) {
+//                assert (d.size() == 2);
+//                Truth a = d.get(0).truth();
+//                if (a == null)
+//                    return null;
+//                Truth b = d.get(1).truth();
+//                if (b == null)
+//                    return null;
+//
+//                return NALTruth.Difference.apply(a, b, n);
+//            }
+//
+//
+//            @Override
+//            public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+//                return each.accept(superterm.sub(0), start, end) && each.accept(superterm.sub(1), start, end);
+//            }
+//        }
+//
+//
+//        static class DiffInh extends Difference {
+//            final boolean subjOrPred;
+//
+//            DiffInh(boolean subjOrPred) {
+//                this.subjOrPred = subjOrPred;
+//            }
+//
+//            @Override
+//            public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+//                Term common = stmtCommon(subjOrPred, superterm);
+//                Term decomposed = stmtCommon(!subjOrPred, superterm);
+//                Op supOp = superterm.op();
+//                return each.accept(stmtDecompose(supOp, subjOrPred, decomposed.sub(0), common), start, end) &&
+//                        each.accept(stmtDecompose(supOp, subjOrPred, decomposed.sub(1), common), start, end);
+//            }
+//
+//            @Override
+//            public Term reconstruct(Term superterm, List<Task> c, NAR nar) {
+//                return stmtReconstruct(superterm, c, subjOrPred, false);
+//            }
+//        }
+//
+//        public static final Difference DiffRoot = new Difference() {
+//
+//            @Override
+//            public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
+//                return Op.DIFFe.the(
+//                        components.get(0).task().term(),
+//                        components.get(1).task().term());
+//            }
+//
+//        };
+//        public static final Difference DiffSubj = new DiffInh(true);
+//        public static final Difference DiffPred = new DiffInh(false);
+//    }
 
 //    public static final DynamicTruthModel ImageIdentity = new DynamicTruthModel() {
 //
@@ -276,7 +297,7 @@ abstract public class DynamicTruthModel {
 
     public static class DynamicConjTruth {
 
-        public static final DynamicTruthModel ConjIntersection = new Intersection() {
+        public static final DynamicTruthModel ConjIntersection = new Intersection(false) {
 
             @Override
             public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
@@ -555,6 +576,16 @@ abstract public class DynamicTruthModel {
 
     abstract static class Intersection extends DynamicTruthModel {
 
+        /** true = union, false = intersection */
+        final boolean union;
+
+        Intersection(boolean union) {
+            this.union = union;
+        }
+
+        protected final boolean negateFreq() {
+            return union;
+        }
 
         @Override
         public Truth apply(DynTruth l, NAR nar) {
@@ -579,10 +610,6 @@ abstract public class DynamicTruthModel {
 
 
             return y.negIf(negateFreq());
-        }
-
-        boolean negateFreq() {
-            return false;
         }
 
     }

@@ -162,21 +162,7 @@ public final class TruthFunctions {
 
 
 
-    /*In the confidence functions, each case for the conclusion to reach its
-    maximum is separately considered. The plus operator is used in place of an
-    or operator, because the two cases involved are mutually exclusive, rather
-    than independent of each other.
 
-    Fint : Intersection
-    f = and(f1, f2)
-    c = or(and(not(f1), c1), and(not(f2), c2)) + and(f1, c1, f2, c2)
-    Funi : Union
-    f = or(f1, f2)
-    c = or(and(f1, c1), and(f2, c2)) + and(not(f1), c1, not(f2), c2)
-    Fdif : Difference
-    f = and(f1, not(f2))
-    c = or(and(not(f1), c1), and(f2, c2)) + and(f1, c1, not(f2), c2)
-    */
 
     public static float confCompose(Truth a, Truth b) {
         return confCompose(a.conf(), b.conf());
@@ -199,11 +185,29 @@ public final class TruthFunctions {
      * @param v1 Truth value of the first premise
      * @param v2 Truth value of the second premise
      * @return Truth value of the conclusion
+     *
+     * In the confidence functions, each case for the conclusion to reach its
+     *     maximum is separately considered. The plus operator is used in place of an
+     *     or operator, because the two cases involved are mutually exclusive, rather
+     *     than independent of each other.
+     *
+     *     Fint : Intersection
+     *         f = and(f1, f2)
+     *         c = or(and(not(f1), c1), and(not(f2), c2)) + and(f1, c1, f2, c2)
+     *     Funi : Union
+     *         f = or(f1, f2)
+     *         c = or(and(f1, c1), and(f2, c2)) + and(not(f1), c1, not(f2), c2)
+     *     Fdif : Difference
+     *         f = and(f1, not(f2))
+     *         c = or(and(not(f1), c1), and(f2, c2)) + and(f1, c1, not(f2), c2)
+     *
      */
     @Nullable
     public static Truth intersection(Truth v1, Truth v2, float minConf) {
         float f1 = v1.freq(), f2 = v2.freq();
-        float c = confCompose(v1, v2);
+        float c1 = v1.conf(), c2 = v2.conf();
+        float c = or(and((1-f1), c1), and((1-f2), c2)) + and(f1, c1, f2, c2);
+        //float c = confCompose(v1, v2);
         return (c < minConf) ? null : $.t(and(f1, f2), c);
     }
 

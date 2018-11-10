@@ -242,27 +242,29 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
             switch (eventTerm.op()) {
 
-                case DIFFe:
-                    Event a = onlyAbsolute(eventTerm.sub(0));
-                    if (a != null) {
-                        Event b = onlyAbsolute(eventTerm.sub(1));
-                        if (b != null) {
-                            long as = a.start();
-                            long bs = b.start();
-                            if (as == ETERNAL) {
-                                know(eventTerm, bs, b.end());
-                            } else if (bs == ETERNAL) {
-                                know(eventTerm, as, a.end());
-                            } else {
-//                                Longerval u = Longerval.union(as, a.end(), bs, b.end());
-//                                know(eventTerm, u.a, u.b);
-                                long[] u = Longerval.intersectionArray(as, a.end(), bs, b.end());
-                                if (u != null)
-                                    know(eventTerm, u[0], u[1]);
-                            }
-                        }
-                    }
+                case SECTe:
+                    //TODO n-ary
+//                    Event a = onlyAbsolute(eventTerm.sub(0));
+//                    if (a != null) {
+//                        Event b = onlyAbsolute(eventTerm.sub(1));
+//                        if (b != null) {
+//                            long as = a.start();
+//                            long bs = b.start();
+//                            if (as == ETERNAL) {
+//                                know(eventTerm, bs, b.end());
+//                            } else if (bs == ETERNAL) {
+//                                know(eventTerm, as, a.end());
+//                            } else {
+////                                Longerval u = Longerval.union(as, a.end(), bs, b.end());
+////                                know(eventTerm, u.a, u.b);
+//                                long[] u = Longerval.intersectionArray(as, a.end(), bs, b.end());
+//                                if (u != null)
+//                                    know(eventTerm, u[0], u[1]);
+//                            }
+//                        }
+//                    }
                     break;
+
 //                case DIFFi:
 //                case SECTi:
 //                case SECTe:

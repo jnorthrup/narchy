@@ -179,15 +179,9 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    void testDiffIntEqual() {
+    void testDiffEqual() {
 
-        assertEquals(Bool.False, DIFFi.the(p, p));
-    }
-
-    @Test
-    void testDiffExtEqual() {
-
-        assertEquals(Bool.False, DIFFe.the(p, p));
+        assertEquals(Bool.False, $.diff(p, p));
     }
 
 
@@ -232,7 +226,7 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     void testDifferenceImmediate() throws Narsese.NarseseException {
 
-        Term d = DIFFi.the(SETi.the($("a"), $("b"), $("c")), SETi.the($("d"), $("b")));
+        Term d = $.diff(SETi.the($("a"), $("b"), $("c")), SETi.the($("d"), $("b")));
         assertEquals(Op.SETi, d.op());
         assertEquals(2, d.subs());
         assertEquals("[a,c]", d.toString());
@@ -244,7 +238,7 @@ public class TermReductionsTest extends NarseseTest {
 
         Term a = SETe.the($("a"), $("b"), $("c"));
         Term b = SETe.the($("d"), $("b"));
-        Term d = DIFFe.the(a, b);
+        Term d = $.diff(a, b);
         assertEquals(Op.SETe, d.op());
         assertEquals(2, d.subs());
         assertEquals("{a,c}", d.toString());

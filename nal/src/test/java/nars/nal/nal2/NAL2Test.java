@@ -295,7 +295,7 @@ public class NAL2Test extends NALTest {
 
     @Test
     void set_operations2_difference() throws Narsese.NarseseException {
-        assertEquals("{Mars,Venus}", DIFFe.the($.$("{Mars,Pluto,Venus}"), $.$("{Pluto,Saturn}")).toString());
+        assertEquals("{Mars,Venus}", $.diff($.$("{Mars,Pluto,Venus}"), $.$("{Pluto,Saturn}")).toString());
 
         TestNAR tester = test;
         tester.believe("(planetX --> {Mars,Pluto,Venus})", 0.9f, 0.9f);

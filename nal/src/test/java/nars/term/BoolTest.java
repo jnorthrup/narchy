@@ -126,9 +126,9 @@ public class BoolTest {
         assertEquals($.t(1, 0.81f), posDiff);
 
 
-        for (Op o: new Op[]{DIFFe, DIFFi}) {
+        for (String o: new String[]{Op.DIFFe, Op.DIFFi}) {
 
-            String diff = o.str;
+            String diff = o;
 
 
             assertEq(Bool.False, "(x" + diff + "x)");
@@ -150,20 +150,20 @@ public class BoolTest {
             assertEq("(y-->true)", "(y --> --(x" + diff + "x))");
 
 
-            assertEquals(Bool.False, o.the(x, x));
-            assertEquals(Bool.True, o.the(x, x.neg()));
-            assertEquals(Bool.False, o.the(x.neg(), x));
+            assertEquals(Bool.False, $.diff(x, x));
+            assertEquals(Bool.True, $.diff(x, x.neg()));
+            assertEquals(Bool.False, $.diff(x.neg(), x));
 
-            assertEquals(Bool.Null, o.the(x, Bool.False));
-            assertEquals(Bool.Null, o.the(x, Bool.True));
+            assertEquals(Bool.Null, $.diff(x, Bool.False));
+            assertEquals(Bool.Null, $.diff(x, Bool.True));
 
 
-            assertEquals(Bool.False, o.the(Bool.True, Bool.True));
-            assertEquals(Bool.False, o.the(Bool.False, Bool.False));
-            assertEquals(Bool.Null, o.the(Bool.Null, Bool.Null));
+            assertEquals(Bool.False, $.diff(Bool.True, Bool.True));
+            assertEquals(Bool.False, $.diff(Bool.False, Bool.False));
+            assertEquals(Bool.Null, $.diff(Bool.Null, Bool.Null));
 
-            assertEquals(Bool.True, o.the(Bool.True, Bool.False));
-            assertEquals(Bool.False, o.the(Bool.False, Bool.True));
+            assertEquals(Bool.True, $.diff(Bool.True, Bool.False));
+            assertEquals(Bool.False, $.diff(Bool.False, Bool.True));
 
 
         }

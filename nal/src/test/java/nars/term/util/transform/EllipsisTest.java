@@ -521,11 +521,8 @@ public class EllipsisTest {
 
             if (o.statement) continue;
 
-            if (o != DIFFe && o != DIFFi) {
-                assertEquals(a, o.the(DTERNAL, a), o + " with normal term");
-            } else {
-                assertEquals(Bool.Null, o.the(DTERNAL, a));
-            }
+
+            assertEquals(a, o.the(DTERNAL, a), o + " with normal term");
 
             assertEquals(o.statement ? VAR_PATTERN : o,
                     o.the(DTERNAL, b).op(),

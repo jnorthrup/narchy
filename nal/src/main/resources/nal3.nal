@@ -79,10 +79,10 @@
 
 
 //intesection question formation
-    (W --> S), (W --> B), task("?"), is(S,"|"), neqRCom(S,B) |- (W --> (|,S,B)), (Punctuation:Question)
-    (W --> S), (W --> B), task("?"), is(S,"&"), neqRCom(S,B) |- (W --> (&,S,B)), (Punctuation:Question)
-    (S --> W), (B --> W), task("?"), is(S,"&"), neqRCom(S,B) |- ((&,S,B) --> W), (Punctuation:Question)
-    (S --> W), (B --> W), task("?"), is(S,"|"), neqRCom(S,B) |- ((|,S,B) --> W), (Punctuation:Question)
+    (W --> S), (W --> B), task("?"), is(S,"|"), neqRCom(S,B) |- (W --> (S | B)), (Punctuation:Question)
+    (W --> S), (W --> B), task("?"), is(S,"&"), neqRCom(S,B) |- (W --> (S & B)), (Punctuation:Question)
+    (S --> W), (B --> W), task("?"), is(S,"&"), neqRCom(S,B) |- ((S & B) --> W), (Punctuation:Question)
+    (S --> W), (B --> W), task("?"), is(S,"|"), neqRCom(S,B) |- ((S | B) --> W), (Punctuation:Question)
 
 //NAL3 single premise decompose
     (M --> S), X, is(S,"&"), subOf(S,X) |- (M --> without(S,X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
@@ -154,3 +154,8 @@
 //    A, B, task("*"), belief("*"), neq(A,B) |- (A - B), (Belief:Difference)
 //    A, B, task("*"), belief("*"), neq(A,B) |- (B - A), (Belief:DifferenceReverse)
 
+//Theorem 24
+//(S-->P) |- ((S & X) --> (P | X))
+//(S-->P) |- ((S | X) --> (P & X))
+//(S<->P) |- ((S & X) <-> (P | X))
+//(S<->P) |- ((S | X) <-> (P & X))

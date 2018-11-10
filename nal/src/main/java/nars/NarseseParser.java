@@ -565,7 +565,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         return sequence(
                 trie(
                         SECTe.str, SECTi.str,
-                        DIFFe.str, DIFFi.str,
+
                         PROD.str,
 
                         INH.str,
@@ -648,7 +648,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                 firstOf(
                         Op.DISJstr,
-                        "&|", "&&+-", "||+-",
+                        "&|", "&&+-", "||+-", Op.DIFFe, Op.DIFFi,
                         Op.SECTe.str
                 ), push(match()),
 
@@ -692,6 +692,11 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
             case "{-]":
                 return subs.size() != 2 ? Bool.Null : $.instprop(subs.get(0), subs.get(1));
 
+            case Op.DIFFe:
+            case Op.DIFFi:
+                return subs.size() != 2 ? Bool.Null :
+                        (op.equals(DIFFe) ? Op.SECTe : Op.SECTi).the(subs.get(0), subs.get(1).neg());
+
             default: {
                 Op o = Op.stringToOperator.get(op);
                 if (o == null)
@@ -718,8 +723,8 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         Op.INH.str,
                         Op.SIM.str,
                         Op.IMPL.str,
-                        Op.DIFFi.str,
-                        Op.DIFFe.str,
+                        Op.DIFFi,
+                        Op.DIFFe,
                         Op.PROD.str,
                         Op.CONJ.str,
                         "&|",

@@ -122,6 +122,8 @@ public final class DynamicTruthTable extends DynamicTaskTable {
                 throw new WTF("could not reconstruct: " + template + ' ' + yy);
             return null;
         }
+        if (reconstruct!=template && reconstruct.equals(template))
+            reconstruct = template; //use original instance
 
         Task y = yy.task(reconstruct, t, yy::stamp, beliefOrGoal, s, e, nar);
         if (y!=null) {

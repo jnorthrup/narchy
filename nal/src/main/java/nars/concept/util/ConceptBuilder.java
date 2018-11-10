@@ -204,9 +204,9 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
                     return DynamicTruthModel.DynamicConjTruth.ConjIntersection;
                 break;
 
-            case DIFFe:
+            case SECTi:
                 if (validDynamicSubterms(t.subterms()))
-                    return DynamicTruthModel.DynamicDiffTruth.DiffRoot;
+                    return DynamicTruthModel.DynamicSectTruth.IsectRoot;
                 break;
 
             case NEG:
@@ -219,21 +219,19 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
         //quick pre-test
         Subterms tt = t.subterms();
-        if (!tt.hasAny(Op.Sect | Op.Diff | Op.PROD.bit))
+        if (!tt.hasAny(Op.Sect | Op.PROD.bit))
             return null;
 
-        if ((tt.OR(s -> s.isAny(Op.Sect | Op.Diff)))) {
+        if ((tt.OR(s -> s.isAny(Op.Sect )))) {
 
 
             DynamicTruthModel dmt = null;
-            Term subj = tt.sub(0);
-            Term pred = tt.sub(1);
+            Term subj = tt.sub(0), pred = tt.sub(1);
 
-            Op so = subj.op();
-            Op po = pred.op();
+            Op so = subj.op(), po = pred.op();
 
 
-            if ((so == Op.SECTi) || (so == Op.SECTe) || (so == Op.DIFFe)) {
+            if ((so == Op.SECTi) || (so == Op.SECTe) ) {
 
                 //TODO move this to impl-specific test function
                 Subterms subjsubs = subj.subterms();
@@ -248,15 +246,13 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
                         return DynamicTruthModel.DynamicSectTruth.IsectSubj;
                     case SECTe:
                         return DynamicTruthModel.DynamicSectTruth.UnionSubj;
-                    case DIFFe:
-                        return DynamicTruthModel.DynamicDiffTruth.DiffSubj;
                 }
 
 
             }
 
 
-            if (((po == Op.SECTi) || (po == Op.SECTe) || (po == DIFFi))) {
+            if (((po == Op.SECTi) || (po == Op.SECTe) )) {
 
 
                 Compound cpred = (Compound) pred;
@@ -271,8 +267,6 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
                         return DynamicTruthModel.DynamicSectTruth.UnionPred;
                     case SECTe:
                         return DynamicTruthModel.DynamicSectTruth.IsectPred;
-                    case DIFFi:
-                        return DynamicTruthModel.DynamicDiffTruth.DiffPred;
                 }
             }
         }

@@ -44,7 +44,6 @@ public enum Op {
     ATOM(".", Op.ANY_LEVEL),
 
     NEG("--", 1, Args.One) {
-
         public Term the(Term u) {
             switch (u.op()) {
                 case ATOM:
@@ -64,7 +63,7 @@ public enum Op {
 
             if (u.length != 1)
                 throw new RuntimeException("negation requires one subterm");
-            if (dt!=DTERNAL)
+            if (dt != DTERNAL)
                 throw new RuntimeException("negation has no temporality");
 
             return the(u[0]);
@@ -111,25 +110,25 @@ public enum Op {
         }
     },
 
-    /**
-     * extensional difference
-     */
-    DIFFe("~", false, 3, Args.Two) {
-        @Override
-        public Term the(int dt, Term[] u) {
-            return SetSectDiff.differ(this, u);
-        }
-    },
-
-    /**
-     * intensional difference
-     */
-    DIFFi("-", false, 3, Args.Two) {
-        @Override
-        public Term the(int dt, Term[] u) {
-            return SetSectDiff.differ(this, u);
-        }
-    },
+//    /**
+//     * extensional difference
+//     */
+//    DIFFe("~", false, 3, Args.Two) {
+//        @Override
+//        public Term the(int dt, Term[] u) {
+//            return SetSectDiff.differ(this, u);
+//        }
+//    },
+//
+//    /**
+//     * intensional difference
+//     */
+//    DIFFi("-", false, 3, Args.Two) {
+//        @Override
+//        public Term the(int dt, Term[] u) {
+//            return SetSectDiff.differ(this, u);
+//        }
+//    },
 
     /**
      * PRODUCT
@@ -195,12 +194,16 @@ public enum Op {
     },
 
 
-    /** $ most specific, least globbing */
+    /**
+     * $ most specific, least globbing
+     */
     VAR_INDEP('$', 5),
     VAR_DEP('#', 5),
     VAR_QUERY('?', Op.ANY_LEVEL),
     VAR_PATTERN('%', Op.ANY_LEVEL),
-    /** % least specific, most globbing */
+    /**
+     * % least specific, most globbing
+     */
 
     INT("+", Op.ANY_LEVEL),
 
@@ -231,7 +234,7 @@ public enum Op {
     public static final byte GOAL = '!';
     public static final byte QUEST = '@';
     public static final byte COMMAND = ';';
-    public static final byte[] Punctuation = new byte[] {BELIEF, QUESTION, GOAL, QUEST, COMMAND};
+    public static final byte[] Punctuation = new byte[]{BELIEF, QUESTION, GOAL, QUEST, COMMAND};
     public static final String TENSE_PAST = ":\\:";
     public static final String TENSE_PRESENT = ":|:";
     public static final String TENSE_FUTURE = ":/:";
@@ -283,11 +286,12 @@ public enum Op {
 
     public static final ImDep ImgInt = new ImDep((byte) '\\');
     public static final ImDep ImgExt = new ImDep((byte) '/');
-    public static final int Diff = Op.DIFFe.bit | Op.DIFFi.bit;
     public static final int Sect = or(Op.SECTe, Op.SECTi);
     public static final int Set = or(Op.SETe, Op.SETi);
 
-    /** events are defined as the non-conjunction sub-components of conjunctions, or the term itself if it is not a conj */
+    /**
+     * events are defined as the non-conjunction sub-components of conjunctions, or the term itself if it is not a conj
+     */
     public static final int Temporal = or(Op.CONJ, Op.IMPL);
     public static final int Variable = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
 
@@ -325,17 +329,18 @@ public enum Op {
 
     public static TermBuilder terms =
             //HeapTermBuilder.the;
-            new InterningTermBuilder("", 32*1024);
+            new InterningTermBuilder("", 32 * 1024);
 
 
-
-    /** True wrapped in a subterm as the only element */
+    /**
+     * True wrapped in a subterm as the only element
+     */
     public static final Subterms TrueSubterm = Op.terms.subterms(Bool.True);
 
-    /** False wrapped in a subterm as the only element */
+    /**
+     * False wrapped in a subterm as the only element
+     */
     public static final Subterms FalseSubterm = Op.terms.subterms(Bool.False);
-
-
 
 
     static {
@@ -409,19 +414,14 @@ public enum Op {
     public final byte id;
 
 
-
     Op(char c, int minLevel) {
         this(c, minLevel, Args.None);
     }
 
 
-
     Op(char c, int minLevel, IntIntPair size) {
         this(Character.toString(c), minLevel, size);
     }
-
-
-   
 
 
     Op(String string, int minLevel) {
@@ -441,7 +441,6 @@ public enum Op {
 
         this.commutative = commutative;
         this.minLevel = minLevel;
-
 
 
         this.minSubs = size.getOne();
@@ -470,10 +469,10 @@ public enum Op {
 
         conceptualizable =
                 !var &&
-                !isBool &&
-                !isImg &&
-                (Param.INT_CONCEPTUALIZABLE || !isInt)
-                //!isNeg && //<- HACK technically NEG cant be conceptualized but in many cases this is assumed. so NEG must not be included in conceptualizable for it to work currently
+                        !isBool &&
+                        !isImg &&
+                        (Param.INT_CONCEPTUALIZABLE || !isInt)
+        //!isNeg && //<- HACK technically NEG cant be conceptualized but in many cases this is assumed. so NEG must not be included in conceptualizable for it to work currently
         ;
 
         taskable = conceptualizable && !isInt && !isNeg;
@@ -499,7 +498,7 @@ public enum Op {
 
         Term[] xx = x.arrayShared();
 
-        if (op == CONJ)  {
+        if (op == CONJ) {
             if (!Conj.concurrent(nextDT)) {
 
                 boolean repeating = xx.length == 2 && xx[0].equals(xx[1]);
@@ -651,7 +650,7 @@ public enum Op {
                 return op.strAtom;
             }
             default: {
-                return $.quote( Integer.toBinaryString(struct)/*.substring(Op.ops.length)*/ );
+                return $.quote(Integer.toBinaryString(struct)/*.substring(Op.ops.length)*/);
             }
         }
     }
@@ -668,6 +667,7 @@ public enum Op {
     public final Term the(/*@NotNull*/ Term... u) {
         return the(DTERNAL, u);
     }
+
     public Term the(/*@NotNull*/ Term onlySubterm) {
         return the(DTERNAL, onlySubterm);
     }
@@ -761,7 +761,7 @@ public enum Op {
      * - reduction to another term or True/False/Null
      */
     public Term the(int dt, Term... u) {
-        return compound(this, dt, sortedIfNecessary(dt,u));
+        return compound(this, dt, sortedIfNecessary(dt, u));
     }
 
     /**
@@ -808,4 +808,6 @@ public enum Op {
     }
 
 
+    public static final String DIFFe = "~";
+    public static final String DIFFi = "-";
 }

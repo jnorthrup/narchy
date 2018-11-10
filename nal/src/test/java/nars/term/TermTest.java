@@ -416,7 +416,7 @@ public class TermTest {
     void testFromEllipsisMatch() {
         Term xy = EllipsisMatch.matched($.the("x"), $.the("y"));
 
-        for (Op o : new Op[]{Op.SECTi, SECTe, DIFFe, DIFFi, CONJ}) {
+        for (Op o : new Op[]{Op.SECTi, SECTe, CONJ}) {
             Term z = o.the(DTERNAL, xy);
             assertEquals("(x" + o.str + "y)", z.toString());
             assertEquals(3, z.volume());
