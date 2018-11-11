@@ -23,7 +23,7 @@ import java.util.Random;
 import java.util.Set;
 
 import static nars.$.$;
-import static nars.Op.*;
+import static nars.Op.VAR_PATTERN;
 import static nars.time.Tense.DTERNAL;
 import static nars.unify.match.Ellipsis.firstEllipsis;
 import static org.junit.jupiter.api.Assertions.*;

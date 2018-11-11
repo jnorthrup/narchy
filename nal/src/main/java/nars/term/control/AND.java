@@ -30,7 +30,6 @@ public class AND<D> extends AbstractPred<D> {
 
     protected AND(PREDICATE<D>[] p) {
         super(
-                //HeapTermBuilder.the.compound(PROD, p)
                 $.pFast(p)
         );
         assert (p.length >= 2) : "unnecessary use of AndCondition";

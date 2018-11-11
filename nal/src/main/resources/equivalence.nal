@@ -9,32 +9,32 @@
 //If when S happens, P happens, and before P happens, S has happened, then they are truth-related equivalent
 
 //equivalent, and equivalent to negative cases
- (X==>Y), (Y==>X), neq(X,Y)     |-  (polarize((X==>Y),task)&polarize((Y==>X),belief)), (Belief:IntersectionDepolarized, Time:Intersect, Also:VarIntro)
+ (X==>Y), (Y==>X), neq(X,Y)     |-  (polarize((X==>Y),task)&&polarize((Y==>X),belief)), (Belief:IntersectionDepolarized, Time:Intersect, Also:VarIntro)
 
 //opposite / inequivalent
  //(--X==>Y), (--Y==>X), neq(X,Y) |-  --(polarize((X==>Y),task)&polarize((Y==>X),belief)), (Belief:IntersectionDepolarized, Time:Intersection)
 
 
 //// equivalence-based syllogism ////////////////////////////////////////////////////////////////////////////////////
- (P==>M), (S==>M), neq(S,P) |- ((S==>P)&(P==>S)), (Belief:Comparison)
- (M==>P), (M==>S), neq(S,P) |- ((S==>P)&(P==>S)), (Belief:Comparison)
+ (P==>M), (S==>M), neq(S,P) |- ((S==>P)&&(P==>S)), (Belief:Comparison)
+ (M==>P), (M==>S), neq(S,P) |- ((S==>P)&&(P==>S)), (Belief:Comparison)
     //TODO negatives
 
- (M==>P), ((S==>M)&(M==>S)), neq(S,P) |- (S ==> P), (Belief:Analogy)
- (P==>M), ((S==>M)&(M==>S)), neq(S,P) |- (P ==> S), (Belief:Analogy)
+ (M==>P), ((S==>M)&&(M==>S)), neq(S,P) |- (S ==> P), (Belief:Analogy)
+ (P==>M), ((S==>M)&&(M==>S)), neq(S,P) |- (P ==> S), (Belief:Analogy)
     //TODO negatives
 
  //// conditional syllogism ////////////////////////////////////////////////////////////////////////////////////
  //If after M, P usually happens, and M happens, it means P is expected to happen
-  B,     ((C==>A)&(A==>C))   |- subIfUnifiesAny(C,A,B,"$"),   (Belief:Analogy, Goal:Desire)
-  B,     ((C==>A)&(A==>C))   |- --subIfUnifiesAny(C,A,B,"$"), (Belief:AnalogyPN, Goal:Desire)
-  B,   (--(C==>A)&(--A==>C)) |- subIfUnifiesAny(C,A,B,"$"),   (Belief:AnalogyN, Goal:Desire)
-  B,   (--(C==>A)&(--A==>C)) |- --subIfUnifiesAny(C,A,B,"$"), (Belief:AnalogyNN, Goal:Desire)
+  B,     ((C==>A)&&(A==>C))   |- subIfUnifiesAny(C,A,B,"$"),   (Belief:Analogy, Goal:Desire)
+  B,     ((C==>A)&&(A==>C))   |- --subIfUnifiesAny(C,A,B,"$"), (Belief:AnalogyPN, Goal:Desire)
+  B,   (--(C==>A)&&(--A==>C)) |- subIfUnifiesAny(C,A,B,"$"),   (Belief:AnalogyN, Goal:Desire)
+  B,   (--(C==>A)&&(--A==>C)) |- --subIfUnifiesAny(C,A,B,"$"), (Belief:AnalogyNN, Goal:Desire)
 
-//  A,     ((C==>A)&(A==>C))   |- C, (Belief:Analogy, Goal:Desire)
-//  A,     ((C==>A)&(A==>C))   |- --C, (Belief:AnalogyPN, Goal:Desire)
-//  A,   (--(C==>A)&(--A==>C)) |- C, (Belief:AnalogyN, Goal:Desire)
-//  A,   (--(C==>A)&(--A==>C)) |- --C, (Belief:AnalogyNN, Goal:Desire)
+//  A,     ((C==>A)&&(A==>C))   |- C, (Belief:Analogy, Goal:Desire)
+//  A,     ((C==>A)&&(A==>C))   |- --C, (Belief:AnalogyPN, Goal:Desire)
+//  A,   (--(C==>A)&&(--A==>C)) |- C, (Belief:AnalogyN, Goal:Desire)
+//  A,   (--(C==>A)&&(--A==>C)) |- --C, (Belief:AnalogyNN, Goal:Desire)
 
-  //B, ((A==>C)&(C==>A))  |- subIfUnifiesAny(C, A, B, "$"), (Belief:Deduction)
+  //B, ((A==>C)&&(C==>A))  |- subIfUnifiesAny(C, A, B, "$"), (Belief:Deduction)
        //TODO negatives

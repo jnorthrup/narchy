@@ -18,18 +18,17 @@
 //  (&&,Y,--Z,A..+), X, neqRCom(Y,Z), task("!")         |- ((&&,A..+) ==> --(Y<->Z)), (Belief:StructuralDeduction)
 
 //specific difference of two conjunctions
- (&&,X,A..+), (&&,Y,A..+), neqRCom(X,Y), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>")     |- (X~Y), (Punctuation:Ask, Time:TaskRange)
-
- (&&,X,A..+), (&&,Y,A..+), neqRCom(X,Y), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>")     |- (Y~X), (Punctuation:Ask, Time:TaskRange)
+// (&&,X,A..+), (&&,Y,A..+), neqRCom(X,Y), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>")     |- (X~Y), (Punctuation:Ask, Time:TaskRange)
+ //(&&,X,A..+), (&&,Y,A..+), neqRCom(X,Y), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>")     |- (Y~X), (Punctuation:Ask, Time:TaskRange)
 
 
 //comparators
-(A ==> X), (B ==> X), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- ((A ~ B) ==> X), (Punctuation:Question)
-  (--A ==> X), (--B ==> X), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- (--(A ~ B) ==> X), (Punctuation:Question)
-(A ==> X), (B ==> X), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- ((B ~ A) ==> X), (Punctuation:Question)
-  (--A ==> X), (--B ==> X), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- (--(B ~ A) ==> X), (Punctuation:Question)
-(X ==> A), (X ==> B), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- (X ==> (A ~ B)), (Punctuation:Question)
-(X ==> A), (X ==> B), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- (X ==> (B ~ A)), (Punctuation:Question)
+//(A ==> X), (B ==> X), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- ((A ~ B) ==> X), (Punctuation:Question)
+//  (--A ==> X), (--B ==> X), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- (--(A ~ B) ==> X), (Punctuation:Question)
+//(A ==> X), (B ==> X), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- ((B ~ A) ==> X), (Punctuation:Question)
+//  (--A ==> X), (--B ==> X), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- (--(B ~ A) ==> X), (Punctuation:Question)
+//(X ==> A), (X ==> B), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- (X ==> (A ~ B)), (Punctuation:Question)
+//(X ==> A), (X ==> B), neqRCom(A,B), task("."), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>") |- (X ==> (B ~ A)), (Punctuation:Question)
 
 //identity?
 //  ((X-->A) ~ (X-->B)),   X, neqRCom(A,B), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>")  |- (X-->(A-B)), (Belief:StructuralReduction, Goal:StructuralReduction)

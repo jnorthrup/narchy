@@ -1,11 +1,8 @@
 package jcog.test.control;
 
-import nars.$;
 import nars.NAR;
 import nars.term.Term;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanBooleanPredicate;
-
-import java.util.function.BooleanSupplier;
 
 import static nars.$.the;
 

@@ -153,7 +153,7 @@ abstract public class Deriver extends Causable {
 
                 //deltaDurs = Math.min(deltaDurs, 1);
 
-                float forgetRate = (float) (1 - Math.exp(-deltaDurs / d.nar.memoryDuration.floatValue()));
+                float forgetRate = (float) (1 - Math.exp(-deltaDurs / d.nar.memoryDuration.doubleValue()));
 
                 //System.out.println(deltaDurs + " " + forgetRate);
                 tasklinkUpdate = tasklinks.forget(forgetRate);

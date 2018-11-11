@@ -1,7 +1,6 @@
 package nars.unify.constraint;
 
 import nars.$;
-import nars.derive.Derivation;
 import nars.derive.premise.PreDerivation;
 import nars.term.Term;
 import nars.term.Terms;

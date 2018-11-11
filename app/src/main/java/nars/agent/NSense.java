@@ -2,7 +2,10 @@ package nars.agent;
 
 import jcog.Util;
 import jcog.event.Off;
-import jcog.math.*;
+import jcog.math.FloatCached;
+import jcog.math.FloatFirstOrderDifference;
+import jcog.math.FloatNormalized;
+import jcog.math.FloatSupplier;
 import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;

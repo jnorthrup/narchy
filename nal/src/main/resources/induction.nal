@@ -8,7 +8,7 @@
     B, A, --is(B,"==>") |- polarize((polarize(B,task) ==> A),belief), (Belief:AbductionDepolarized, Time:TaskRelative, Also:VarIntro)
         //B, A, --is(B,"==>") |- (--B ==> A), (Belief:AbductionN, Time:TaskRelative, Also:VarIntro)
 
-    B, A, --is(A,"==>"), --is(B,"==>")   |- (polarize(B,task) && polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Relative, Also:VarIntro)
+    B, A   |- (polarize(B,task) && polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Relative, Also:VarIntro)
       //B, A, --is(A,"==>"), --is(B,"==>"), --is(A,"&&"), --is(B,"&&")   |- (polarize(B,task) || polarize(A,belief)), (Belief:UnionDepolarized, Time:Relative, Also:VarIntro)
 
         //experiment
@@ -16,7 +16,7 @@
           //G, B, neq(G,B), task("!") |- (--polarize(G, task) && polarize(B, belief)), (Goal:IntersectionDepolarized, Time:Relative)
 
 
-    B, A, neqOrInhCommon(A,B) |- (polarize(B,task) & polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Intersect)
+    //B, A, neqOrInhCommon(A,B) |- (polarize(B,task) & polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Intersect)
     //B, A, --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>"), neqOrInhCommon(A,B) |- (polarize(B,task) ~ polarize(A,belief)), (Belief:DifferenceDepolarized, Time:Intersect)
     //B, A, --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>"), neqOrInhCommon(A,B) |- (polarize(A,belief) ~ polarize(B,task)), (Belief:DifferenceReverseDepolarized, Time:Intersect)
 

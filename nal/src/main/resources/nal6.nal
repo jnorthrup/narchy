@@ -227,8 +227,12 @@
     (C ==> Y), (E ==> Y), eventsOf(C,E)          |-    conjWithoutAll(C,E), (Belief:AbductionPB)
         (--C ==> Y), (D ==> Y), eventsOf(C,D)    |-  --conjWithoutAll(C,D), (Belief:AbductionPB)
 
-    ((&&,X,A..+) ==> Z), (Y ==> X)  |- ((&&,Y,A..+) ==> Z), (Belief:Abduction)
-        ((&&,--X,A..+) ==> Z), (Y ==> X)  |- ((&&,Y,A..+) ==> Z), (Belief:AbductionPN)
+    //Conj/Impl Chain Deduction (with swap)
+    //TODO use conj ops
+    ((&&,X,A..+) ==> Z), (Y ==> X)  |- ((&&,Y,A..+) ==> Z), (Belief:Deduction)
+     (Y ==> X), ((&&,X,A..+) ==> Z)   |- ((&&,Y,A..+) ==> Z), (Belief:Deduction)
+        ((&&,--X,A..+) ==> Z), (Y ==> X)  |- ((&&,Y,A..+) ==> Z), (Belief:DeductionPN)
+         (Y ==> X), ((&&,--X,A..+) ==> Z)  |- ((&&,Y,A..+) ==> Z), (Belief:DeductionN)
 
 
     (C ==> Z), X, --is(X,"==>") |- ((C && X) ==> Z), (Belief:Induction)

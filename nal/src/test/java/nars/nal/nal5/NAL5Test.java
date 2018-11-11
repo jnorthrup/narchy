@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 150;
+    private final int cycles = 100;
 
     @Override
     protected NAR nar() {
@@ -282,7 +282,7 @@ public class NAL5Test extends NALTest {
         tester.believe("--(bird:robin ==> animal:nonRobin)");
         tester.believe("--((robin-->[flying]) ==> animal:nonRobin)", 0.9f, 0.81f);
         tester.mustBelieve(cycles, " ((bird:robin && (robin-->[flying])) ==> animal:nonRobin)", 0.1f, 0.73f);
-        tester.mustBelieve(cycles, " ((bird:robin || (robin-->[flying])) ==> animal:nonRobin)", 0f, 0.97f);
+        tester.mustBelieve(cycles, " ((bird:robin || (robin-->[flying])) ==> animal:nonRobin)", 0f, 0.73f);
     }
 
 
@@ -489,11 +489,13 @@ public class NAL5Test extends NALTest {
 
     @Test
     void conditional_deduction3() {
+        test.nar.termVolumeMax.set(11);
 
         TestNAR tester = test;
         tester.believe("<(&&,a,(robin --> [living])) ==> b>");
         tester.believe("<(robin --> [flying]) ==> a>");
-        tester.mustBelieve(cycles, " <(&&,(robin --> [flying]),(robin --> [living])) ==> b>", 1.00f, 0.81f);
+        tester.mustBelieve(cycles, " <(&&,(robin --> [flying]),(robin --> [living])) ==> b>",
+                1.00f, 0.81f);
 
     }
 
@@ -613,7 +615,7 @@ public class NAL5Test extends NALTest {
     }
     @Test
     void conditional_induction() {
-        test.nar.termVolumeMax.set(8);
+        test.nar.termVolumeMax.set(5);
         test
         .believe("((x&&y) ==> z)")
         .believe("(y ==> a)", 0.9f, 0.9f)
@@ -625,7 +627,7 @@ public class NAL5Test extends NALTest {
         test
                 .believe("((x&&y) ==> z)")
                 .believe("(a ==> y)", 0.9f, 0.9f)
-                .mustBelieve(cycles, "((a && x) ==> z)", 0.9f, 0.45f);
+                .mustBelieve(cycles, "((a && x) ==> z)", 0.9f, 0.73f);
     }
 
     @Test
@@ -662,7 +664,7 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_induction0SimpleDepVar2() {
         TestNAR tester = test;
-        tester.nar.termVolumeMax.set(9);
+        tester.nar.termVolumeMax.set(4);
         tester.believe("((&&,x1,#1) ==> (a && #1))");
         tester.believe("((&&,y1,#1) ==> (a && #1))");
         tester.mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f);
@@ -774,7 +776,7 @@ public class NAL5Test extends NALTest {
                 .input("--x.")
                 .input("(--x ==> y).")
                 .mustBelieve(cycles, "y", 1.0f, 0.81f)
-                .mustNotOutput(cycles, "((--,#1)==>y)", BELIEF, 0f, 0.5f, 0, 1, ETERNAL)
+               // .mustNotOutput(cycles, "((--,#1)==>y)", BELIEF, 0f, 0.5f, 0, 1, ETERNAL)
         //.mustNotOutput(cycles, "y", BELIEF, 0f, 0.5f, 0, 1, ETERNAL)
         ;
     }

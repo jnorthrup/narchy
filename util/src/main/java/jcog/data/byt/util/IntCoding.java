@@ -115,13 +115,13 @@ public enum IntCoding {;
      * Encode an unsigned long using variable byte encoding.
      * <p>
      * Destination buffer must have at least enough capacity calculated by {@link #variableByteLengthOfUnsignedLong(long)}
-     * method. Otherwise, this method throws ArrayIndexOutOfBoundsException.
+     * method.
      *
      * @param unsigned a 64-bit unsigned integer to be encoded.
      * @param dst      byte array to store the encoded bytes.
      * @param dstOff   offset of the byte array.
      * @return number of written bytes.
-     * @throws ArrayIndexOutOfBoundsException dst.length is less than dstOff + variableByteLengthOfUnsignedLong(unsigned).
+     *
      */
     public static int encodeUnsignedVariableLong(long unsigned, byte[] dst, int dstOff) {
         int count = 0;
@@ -137,13 +137,13 @@ public enum IntCoding {;
      * Encode an unsigned int using variable byte encoding.
      * <p>
      * Destination buffer must have at least enough capacity calculated by {@link #variableByteLengthOfUnsignedInt(int)}
-     * method. Otherwise, this method throws ArrayIndexOutOfBoundsException.
+     * method.
      *
      * @param unsigned a 32-bit unsigned integer to be encoded.
      * @param dst      byte array to store the encoded bytes.
      * @param dstOff   offset of the byte array.
      * @return number of written bytes.
-     * @throws ArrayIndexOutOfBoundsException dst.length is less than dstOff + variableByteLengthOfUnsignedInt(unsigned).
+     *
      */
     public static int encodeUnsignedVariableInt(int unsigned, byte[] dst, int dstOff) {
         int count = 0;
@@ -209,13 +209,13 @@ public enum IntCoding {;
      * Encode a signed long using ZigZag encoding and variable byte encoding.
      * <p>
      * Destination buffer must have at least enough capacity calculated by {@link #variableByteLengthOfZigZagLong(long)}
-     * method. Otherwise, this method throws ArrayIndexOutOfBoundsException.
+     * method.
      *
      * @param signed a 64-bit signed integer to be encoded.
      * @param dst    byte array to store the encoded bytes.
      * @param dstOff offset of the byte array.
      * @return dstOff + number of written bytes.
-     * @throws ArrayIndexOutOfBoundsException dst.length is less than dstOff + variableByteLengthOfZigZagLong(signed).
+     *
      */
     public static int encodeZigZagVariableLong(long signed, byte[] dst, int dstOff) {
         return encodeUnsignedVariableLong(encodeZigZagLong(signed), dst, dstOff);
@@ -225,13 +225,12 @@ public enum IntCoding {;
      * Encode a signed int using ZigZag encoding and variable byte encoding.
      * <p>
      * Destination buffer must have at least enough capacity calculated by {@link #variableByteLengthOfZigZagInt(int)}
-     * method. Otherwise, this method throws ArrayIndexOutOfBoundsException.
+     * method.
      *
      * @param signed a 64-bit signed integer to be encoded.
      * @param dst    byte array to store the encoded bytes.
      * @param dstOff offset of the byte array.
      * @return dstOff + number of written bytes.
-     * @throws ArrayIndexOutOfBoundsException dst.length is less than dstOff + variableByteLengthOfZigZagInt(signed).
      */
     public static int encodeZigZagVariableInt(int signed, byte[] dst, int dstOff) {
         return encodeUnsignedVariableInt(encodeZigZagInt(signed), dst, dstOff);

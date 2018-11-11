@@ -8,8 +8,6 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.util.ByteAnonMap;
 import nars.term.util.transform.TermTransform;
-import nars.term.var.ImDep;
-import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
