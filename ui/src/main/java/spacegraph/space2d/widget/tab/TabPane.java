@@ -1,20 +1,16 @@
 package spacegraph.space2d.widget.tab;
 
-import com.jogamp.opengl.GL2;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.container.unit.Clipped;
-import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.video.Draw;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -29,36 +25,71 @@ public class TabPane extends Splitting {
 
 
     private static final float CONTENT_VISIBLE_SPLIT = 0.9f;
+
     private final Gridding tabs;
-    private MutableListContainer content;
+
+    private final AbstractContent model;
+
     private Function<Surface, Surface> wrapper = x->x;
 
 
 
 
+    public TabPane(Map<String, Supplier<Surface>> builder) {
+        this(builder, CheckBox::new);
+    }
 
     public TabPane(Map<String, Supplier<Surface>> builder, Function<String, ToggleButton> buttonBuilder) {
-        this();
+        this(new GridContent());
         addToggles(builder, buttonBuilder);
     }
 
-    public TabPane() {
+    /** view model */
+    abstract static class AbstractContent {
+        abstract public Surface view();
+
+        abstract public void add(Surface surface);
+        abstract public boolean remove(Surface surface);
+
+        public abstract boolean isEmpty();
+    }
+
+    static class GridContent extends AbstractContent {
+
+        final Gridding view = new Gridding();
+
+        @Override
+        public boolean isEmpty() {
+            return view.isEmpty();
+        }
+
+        @Override
+        public Surface view() {
+            return view;
+        }
+
+        @Override
+        public void add(Surface surface) {
+            view.add(surface);
+        }
+
+        @Override
+        public boolean remove(Surface surface) {
+            return view.remove(surface);
+        }
+    }
+
+    public TabPane(AbstractContent content) {
         super();
 
         unsplit();
 
-        content = new Gridding() {
-            @Override
-            protected void paintIt(GL2 gl, SurfaceRender r) {
-                gl.glColor3f(0.1f, 0.1f, 0.1f);
-                Draw.rect(bounds, gl);
-            }
-        };
+        this.model = content;
 
         tabs = new Gridding();
 
         T(tabs);
-        B(content);
+        B(model.view());
 
 
     }
@@ -93,7 +124,7 @@ public class TabPane extends Splitting {
         ToggleButton bb = buttonBuilder.apply(label).on(toggleInside);
         PushButton cc = PushButton.awesome("external-link").click(toggleOutside);
 
-        return new Bordering(bb).east(new Scale(cc,0.75f));
+        return Splitting.row(bb, 0.75f, new AspectAlign(cc, AspectAlign.Align.RightTop,1, 0.75f));
     }
 
     void toggle(Supplier<Surface> creator, boolean onOrOff, Surface[] created, boolean inside) {
@@ -116,7 +147,7 @@ public class TabPane extends Splitting {
             if (onOrOff) {
 
                 if (inside) {
-                    content.add(created[0] = cx);
+                    model.add(created[0] = cx);
                     split();
                 } else {
                     window(created[0] = cx, 800, 800);
@@ -127,10 +158,10 @@ public class TabPane extends Splitting {
             } else {
 
                 if (created[0] != null) {
-                    content.removeChild(created[0]);
+                    model.remove(created[0]);
                     created[0] = null;
                 }
-                if (content.isEmpty()) {
+                if (model.isEmpty()) {
                     unsplit();
                 }
 
@@ -139,14 +170,7 @@ public class TabPane extends Splitting {
         }
     }
 
-    public TabPane setContent(MutableListContainer next) {
-        synchronized (this) {
-            content = next;
-            B(new Clipped(next));
-            next.addAll(content.children());
-            return this;
-        }
-    }
+
     public TabPane setWrapper(Function<Surface,Surface> wrapper) {
         synchronized (this) {
             this.wrapper = wrapper;

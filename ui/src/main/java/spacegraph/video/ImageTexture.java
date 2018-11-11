@@ -1,7 +1,8 @@
 package spacegraph.video;
 
 import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.GLContext;
+import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
 import jcog.io.bzip2.BZip2InputStream;
 import jcog.io.tar.TarEntry;
@@ -47,7 +48,7 @@ public class ImageTexture extends Tex {
     }
 
     /** pair(gl context, texture name) */
-    private static final Memoize<LongObjectPair<String>, Texture> textureCache = new SoftMemoize<>((cu) -> {
+    private static final Memoize<LongObjectPair<String>, TextureData> textureCache = new SoftMemoize<>((cu) -> {
         try {
             String u = cu.getTwo();
             if (u.startsWith(fa_prefix)) {
@@ -55,12 +56,13 @@ public class ImageTexture extends Tex {
                 byte[] b = fontAwesomeIcons.get("x128/" + icon + "-fs8.png");
                 if (b != null) {
                     InputStream in = new ByteArrayInputStream(b);
-                    return TextureIO.newTexture(in, true, "png");
+                    return TextureIO.newTextureData(GLContext.getCurrentGL().getGLProfile(), in, true, "png");
                 } else{
                     throw new RuntimeException("unrecognized FontAwesome icon: " + u);
                 }
             } else {
-                return TextureIO.newTexture(new URL(u), true, null);
+                //return TextureIO.newTexture(new URL(u), true, null);
+                return TextureIO.newTextureData(GLContext.getCurrentGL().getGLProfile(), new URL(u), true, null);
             }
 
         } catch (IOException e) {
@@ -95,7 +97,7 @@ public class ImageTexture extends Tex {
 
             //TODO async load
 
-            texture = textureCache.apply(pair(gl.getContext().getHandle(), u));
+            texture = TextureIO.newTexture(textureCache.apply(pair(gl.getContext().getHandle(), u)));
             if (texture == null) {
                 
                 throw new NullPointerException();
@@ -104,21 +106,5 @@ public class ImageTexture extends Tex {
         }
         super.paint(gl, bounds, repeatScale, alpha);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

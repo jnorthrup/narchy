@@ -68,6 +68,16 @@ public class Tex {
     /** try to commit */
     public Tex commit(GL2 gl) {
 
+        if (gl!=null && this.gl!=null && gl.getContext()!=this.gl.getContext()) {
+            //if the texture was re-opened in a new GL context (new window) then the texture will be inaccessible
+            profile = null;
+            if(texture!=null) {
+                texture.destroy(this.gl);
+                texture = null;
+            }
+            textureUpdated.set(true);
+        }
+
         if (profile == null) {
             this.gl = gl;
             profile = gl.getGLProfile();

@@ -279,7 +279,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     public boolean remove() {
         SurfaceBase p = this.parent;
         if (p instanceof AbstractMutableContainer) {
-            return ((AbstractMutableContainer) p).removeChild(this);
+            return ((AbstractMutableContainer) p).remove(this);
         }
         return false;
     }

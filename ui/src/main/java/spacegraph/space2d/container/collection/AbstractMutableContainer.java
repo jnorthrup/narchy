@@ -28,7 +28,7 @@ public abstract class AbstractMutableContainer extends Container {
         return false; //by default dont support external removal
     }
 
-    public final boolean removeChild(Surface s) {
+    public final boolean remove(Surface s) {
         boolean removed = detachChild(s);
         if (removed) {
             if (s.stop()) {

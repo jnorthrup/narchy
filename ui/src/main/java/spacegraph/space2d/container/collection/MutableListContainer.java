@@ -156,7 +156,7 @@ public class MutableListContainer extends AbstractMutableContainer {
 
                         for (Surface existing : ee) {
                             if (unchanged == null || !unchanged.contains(existing.id))
-                                removeChild(existing);
+                                remove(existing);
                         }
 
                         for (Surface n : next) {
@@ -222,7 +222,7 @@ public class MutableListContainer extends AbstractMutableContainer {
      * this can be accelerated by storing children as a Map
      */
     public void replace(Surface child, Surface replacement) {
-        if (!removeChild(child))
+        if (!remove(child))
             throw new RuntimeException("could not replace missing " + child + " with " + replacement);
 
         add(replacement);

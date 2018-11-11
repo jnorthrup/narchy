@@ -107,4 +107,5 @@ public class TextEdit extends Widget implements ScrollXY.ScrolledXY {
     private void updateScroll() {
         scroll.viewMax(new v2(model.buffer.width(), model.buffer.height()));
     }
+
 }

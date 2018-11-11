@@ -159,8 +159,8 @@ public class GraphEditTest {
 //        }
 //    }
 
-    static class TinySpeechTest {
-        public static void main(String[] args) {
+    public static class TinySpeechTest extends GraphEdit {
+        {
             //Audio.the().play(TinySpeech.say("eee", 60, 1 ), 1, 1, 0 );
 
             GraphEdit<Surface> g = new GraphEdit<>(1000, 1000);
@@ -208,7 +208,10 @@ public class GraphEditTest {
                 ).pos(300, 0, 850, 550);
             }
 
-            SpaceGraph.window(g, 1000, 1000);
+
+        }
+        public static void main(String[] args) {
+            SpaceGraph.window(new TinySpeechTest(), 1000, 1000);
 
         }
     }

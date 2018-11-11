@@ -54,11 +54,13 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     }
 
 
-    public void requestFocus() {
+    /** request focus */
+    public <W extends Widget> W focus() {
         SurfaceRoot r = root();
         if (r!=null) {
             r.keyFocus(this);
         }
+        return (W) this;
     }
 
 //    @Override
@@ -148,7 +150,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         Surface s = super.finger(finger);
         if (s == null) {
             if (!focused && finger.pressedNow(0) || finger.pressedNow(2))
-                requestFocus();
+                focus();
 
             if (finger.clickedNow(2 /*right button*/, this)) {
 

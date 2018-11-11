@@ -2,13 +2,14 @@ package spacegraph.space2d.container;
 
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
+import org.jetbrains.annotations.NotNull;
 import org.ujmp.core.Matrix;
 import org.ujmp.core.util.matrices.SystemEnvironmentMatrix;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.layout.ForceDirected2D;
 
-public class Graph2DTest {
+public enum Graph2DTest {;
 
 
     static final MapNodeGraph<Object,Object> h = new MapNodeGraph();
@@ -23,18 +24,11 @@ public class Graph2DTest {
         h.addEdge(("y"), ("yz"), ("z"));
         h.addEdge(("w"), ("wy"), ("y"));
     }
-    static class Graph2DTest1 {
+    public static class Graph2DTest1 {
         public static void main(String[] args) {
 
 
-
-            Graph2D<Node<Object, Object>> sg = new Graph2D<Node<Object, Object>>()
-
-                .update(new ForceDirected2D<>())
-
-                .render(new Graph2D.NodeGraphRenderer<>())
-
-                .set(h.nodes());
+            Graph2D<Node<Object, Object>> sg = newSimpleGraph();
 
 
             SpaceGraph.window(sg, 800, 800);
@@ -42,32 +36,47 @@ public class Graph2DTest {
 
     }
 
-    static class Ujmp1 {
+    public static Graph2D<Node<Object, Object>> newSimpleGraph() {
+        return new Graph2D<Node<Object, Object>>()
+
+                    .update(new ForceDirected2D<>())
+
+                    .render(new Graph2D.NodeGraphRenderer<>())
+
+                    .set(h.nodes());
+    }
+
+    public static class Ujmp1 {
         public static void main(String[] args) {
 
 
-            MapNodeGraph<Object,Object> h = new MapNodeGraph();
-
-            SystemEnvironmentMatrix env = Matrix.Factory.systemEnvironment();
-            h.addNode("env");
-            env.forEach((k,v)->{
-                h.addNode(v);
-                h.addEdge("env",k,v);
-            });
-
-
-            Graph2D<Node<Object, Object>> sg = new Graph2D<Node<Object, Object>>()
-
-                    .update(new ForceDirected2D())
-
-                    .render(new Graph2D.NodeGraphRenderer())
-
-                    .set(h.nodes());
+            Graph2D<Node<Object, Object>> sg = newUjmpGraph();
 
 
             SpaceGraph.window(sg, 800, 800);
         }
 
+    }
+
+    @NotNull
+    public static Graph2D<Node<Object, Object>> newUjmpGraph() {
+        MapNodeGraph<Object,Object> h = new MapNodeGraph();
+
+        SystemEnvironmentMatrix env = Matrix.Factory.systemEnvironment();
+        h.addNode("env");
+        env.forEach((k,v)->{
+            h.addNode(v);
+            h.addEdge("env",k,v);
+        });
+
+
+        return (Graph2D<Node<Object, Object>>) new Graph2D<Node<Object, Object>>()
+
+                .update(new ForceDirected2D())
+
+                .render(new Graph2D.NodeGraphRenderer())
+
+                .set(h.nodes());
     }
 
 }

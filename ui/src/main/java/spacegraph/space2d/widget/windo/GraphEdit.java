@@ -347,7 +347,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     }
 
     public void removeRaw(Surface x) {
-        raw.removeChild(x);
+        raw.remove(x);
     }
 
     public Windo sprout(S from, S toAdd, float scale) {
