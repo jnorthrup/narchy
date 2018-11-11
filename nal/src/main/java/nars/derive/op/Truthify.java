@@ -1,5 +1,6 @@
 package nars.derive.op;
 
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.$;
 import nars.Op;
@@ -11,6 +12,7 @@ import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
+import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
 
 import static nars.Op.*;
 
@@ -30,13 +32,19 @@ public class Truthify extends AbstractPred<Derivation> {
 
     private final TruthFunc goal;
     private final BeliefProjection beliefProjection;
-    private final byte puncOverride;
+
+    /**
+     * punctuation transfer function
+     * maps input punctuation to output punctuation. a result of zero cancels
+     */
+    private final ByteToByteFunction punc;
+
     private final PREDICATE<Derivation> timeFilter;
 
 
-    public Truthify(Term id, byte puncOverride, TruthFunc belief, TruthFunc goal, Occurrify.TaskTimeMerge time) {
+    public Truthify(Term id, ByteToByteFunction punc, TruthFunc belief, TruthFunc goal, Occurrify.TaskTimeMerge time) {
         super(id);
-        this.puncOverride = puncOverride;
+        this.punc = punc;
         this.timeFilter = time.filter();
         this.beliefProjection = time.beliefProjection();
         this.belief = belief;
@@ -57,29 +65,27 @@ public class Truthify extends AbstractPred<Derivation> {
 
     private static final Atomic TRUTH = Atomic.the("truth");
 
-    public static Truthify the(byte puncOverride, TruthFunc beliefTruthOp, TruthFunc goalTruthOp, Occurrify.TaskTimeMerge time) {
+    public static Truthify the(ByteToByteFunction punc, TruthFunc beliefTruthOp, TruthFunc goalTruthOp, Occurrify.TaskTimeMerge time) {
         Term truthMode;
 
+        FasterList<Term> args = new FasterList(4);
+
+        args.add($.quote(punc.toString())); //HACK
+
+        String beliefLabel = beliefTruthOp != null ? beliefTruthOp.toString() : null;
+        args.add(beliefLabel != null ? Atomic.the(beliefLabel) : Op.EmptyProduct);
+
+        String goalLabel = goalTruthOp != null ? goalTruthOp.toString() : null;
+        args.add(goalLabel != null ? Atomic.the(goalLabel) : Op.EmptyProduct);
 
 
-            FasterList<Term> args = new FasterList(4);
-            if (puncOverride != 0)
-                args.add($.quote((char) puncOverride));
+        args.add(Atomic.the(time.name()));
 
-            String beliefLabel = beliefTruthOp != null ? beliefTruthOp.toString() : null;
-            args.add(beliefLabel != null ? Atomic.the(beliefLabel) : Op.EmptyProduct);
-
-            String goalLabel = goalTruthOp != null ? goalTruthOp.toString() : null;
-            args.add(goalLabel != null ? Atomic.the(goalLabel) : Op.EmptyProduct);
-
-
-            args.add(Atomic.the(time.name()));
-
-            truthMode = $.func(TRUTH, args.toArrayRecycled(Term[]::new));
+        truthMode = $.func(TRUTH, args.toArrayRecycled(Term[]::new));
 
 
         return new Truthify(truthMode,
-                puncOverride,
+                punc,
                 beliefTruthOp, goalTruthOp, time);
     }
 
@@ -88,24 +94,21 @@ public class Truthify extends AbstractPred<Derivation> {
         return 2.0f;
     }
 
-
     @Override
     public final boolean test(Derivation d) {
 
-        d.truthFunction = null;
-        d.concTruth = null; //reset
-
-        byte punc = punc(d.taskPunc);
         boolean single;
         Truth t;
+
+        byte punc = this.punc.valueOf(d.taskPunc);
         switch (punc) {
             case BELIEF:
             case GOAL:
-                boolean allowsOverlap;
+                byte overlapIf;
                 if (punc == BELIEF) {
                     switch (beliefSingle) {
                         case -1:
-                            return false; //actually this shouldnt reach here if culled in a prior stage
+                            throw new WTF(); //return false; //actually this shouldnt reach here if culled properly in a prior stage
                         case 1:
                             single = true;
                             break;
@@ -113,11 +116,11 @@ public class Truthify extends AbstractPred<Derivation> {
                             single = false;
                             break;
                     }
-                    allowsOverlap = beliefOverlap == 1;
+                    overlapIf = beliefOverlap;
                 } else {
                     switch (goalSingle) {
                         case -1:
-                            return false; //actually this shouldnt reach here if culled in a prior stage
+                            throw new WTF(); //return false; //actually this shouldnt reach here if culled properly in a prior stage
                         case 1:
                             single = true;
                             break;
@@ -125,10 +128,9 @@ public class Truthify extends AbstractPred<Derivation> {
                             single = false;
                             break;
                     }
-                    allowsOverlap = goalOverlap == 1;
+                    overlapIf = goalOverlap;
                 }
-
-                if (!allowsOverlap && (single ? d.overlapSingle : d.overlapDouble))
+                if (!(overlapIf == 1) && (single ? d.overlapSingle : d.overlapDouble))
                     return false;
 
                 TruthFunc f = punc == BELIEF ? belief : goal;
@@ -194,12 +196,11 @@ public class Truthify extends AbstractPred<Derivation> {
     }
 
 
-    public byte punc(byte punc) {
-        return puncOverride == 0 ? punc : puncOverride;
-    }
 
-    /** returns the byte of punctuation of the task that the derivation ultimately will produce if completed.
-     *  or 0 if the derivation is impossible.
+
+    /**
+     * returns the byte of punctuation of the task that the derivation ultimately will produce if completed.
+     * or 0 if the derivation is impossible.
      */
     public final byte preFilter(Derivation d) {
 
@@ -207,7 +208,7 @@ public class Truthify extends AbstractPred<Derivation> {
         byte i = d.taskPunc;
 
         boolean single;
-        byte o = punc(i);
+        byte o = this.punc.valueOf(i);
         switch (o) {
             case BELIEF: {
                 switch (beliefSingle) {
@@ -260,7 +261,7 @@ public class Truthify extends AbstractPred<Derivation> {
                 return 0;
         }
 
-        if (timeFilter!=null) {
+        if (timeFilter != null) {
             d.concSingle = single; //HACK set this temporarily because timeFilter needs it
             if (!timeFilter.test(d)) {
                 return 0;

@@ -11,7 +11,6 @@ import jcog.pri.Prioritized;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.agent.NAgent;
 import nars.concept.Concept;
@@ -175,19 +174,17 @@ public class NARui {
 
                         //float confThresh = i.getValueAtPercentile(50)/ scaleFactor;
                         float confThresh = q.quantile(0.5f);
-                        if (confThresh > Param.TRUTH_EPSILON) {
-                            final int[] removed = {0};
-                            nar.tasks(true, false, false, false, (c, t) -> {
-                                try {
-                                    if (w2cSafe(t.evi(now, dur)) < confThresh)
-                                        if (c.remove(t))
-                                            removed[0]++;
-                                } catch (Throwable e) {
-                                    e.printStackTrace();
-                                }
-                            });
-                            nar.logger.info("Belief prune finish: {} tasks removed", removed[0]);
-                        }
+                        final int[] removed = {0};
+                        nar.tasks(true, false, false, false, (c, t) -> {
+                            try {
+                                if (w2cSafe(t.evi(now, dur)) < confThresh)
+                                    if (c.remove(t))
+                                        removed[0]++;
+                            } catch (Throwable e) {
+                                e.printStackTrace();
+                            }
+                        });
+                        nar.logger.info("Belief prune finish: {} tasks removed", removed[0]);
                     });
                 })
 

@@ -32,7 +32,6 @@ public abstract class AbstractMutableContainer extends Container {
         boolean removed = detachChild(s);
         if (removed) {
             if (s.stop()) {
-                clear();
                 return true;
             }
         }

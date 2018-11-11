@@ -19,6 +19,7 @@ import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.term.util.transform.DirectTermTransform;
 import nars.term.var.VarPattern;
@@ -27,6 +28,8 @@ import nars.truth.func.TruthFunc;
 import nars.unify.constraint.*;
 import nars.unify.op.TaskPunctuation;
 import nars.unify.op.TermMatch;
+import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
+import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.factory.Sets;
@@ -72,8 +75,9 @@ public class PremiseRuleSource extends ProxyTerm  {
     protected final PREDICATE[] PRE;
     protected final Occurrify.TaskTimeMerge time;
     protected final boolean varIntro;
-    protected final byte taskPunc;
-    protected final byte puncOverride;
+
+
+
     protected final Term beliefTruth;
     protected final Term goalTruth;
 
@@ -85,6 +89,7 @@ public class PremiseRuleSource extends ProxyTerm  {
     private static final PatternIndex INDEX = new PatternIndex();
     protected final Termify termify;
     protected final MutableSet<UnifyConstraint> constraintSet;
+    private final BytePredicate taskPunc;
 
     private PremiseRuleSource(String ruleSrc) throws Narsese.NarseseException {
         super(
@@ -127,7 +132,9 @@ public class PremiseRuleSource extends ProxyTerm  {
                 concPattern = concPattern.replace(beliefPattern, Derivation.BeliefTerm);
         }
 
-        byte taskPunc = 0;
+        ByteToByteFunction concPunc = null;
+        BytePredicate taskPunc = null;
+
         for (int i = 2; i < precon.length; i++) {
 
             Term p = precon[i];
@@ -310,21 +317,21 @@ public class PremiseRuleSource extends ProxyTerm  {
 
                         case "\"?\"":
                             pre.add(TaskPunctuation.Question);
-                            taskPunc = '?';
+                            taskPunc = (t)->t==QUESTION;
                             break;
 
 
                         case "\"@\"":
                             pre.add(TaskPunctuation.Quest);
-                            taskPunc = '@';
+                            taskPunc = (t)->t==QUEST;
                             break;
                         case "\".\"":
                             pre.add(Belief);
-                            taskPunc = '.';
+                            taskPunc = (t)->t==BELIEF;
                             break;
                         case "\"!\"":
                             pre.add(Goal);
-                            taskPunc = '!';
+                            taskPunc = (t)->t==GOAL;
                             break;
 
 //                        case "\"*\"":
@@ -351,7 +358,6 @@ public class PremiseRuleSource extends ProxyTerm  {
         }
 
         Term beliefTruth = null, goalTruth = null;
-        byte puncOverride = 0;
         Occurrify.TaskTimeMerge time = Occurrify.mergeDefault;
 
         Term[] modifiers = postcon != null && postcon.length > 1 ? Terms.sorted(postcon[1].arrayShared()) : Op.EmptyTermArray;
@@ -374,17 +380,33 @@ public class PremiseRuleSource extends ProxyTerm  {
                     break;
                 case "Punctuation":
                     switch (which.toString()) {
+                        case "Belief":
+                            concPunc = (p) -> BELIEF;
+                            break;
                         case "Question":
-                            puncOverride = QUESTION;
+                            concPunc = (p) -> QUESTION;
                             break;
                         case "Goal":
-                            puncOverride = Op.GOAL;
-                            break;
-                        case "Belief":
-                            puncOverride = Op.BELIEF;
+                            concPunc = (p) -> GOAL;
                             break;
                         case "Quest":
-                            puncOverride = QUEST;
+                            concPunc = (p) -> QUEST;
+                            break;
+
+
+                        /** belief -> question, goal -> quest */
+                        case "Ask":
+                            taskPunc = p-> p == BELIEF || p == GOAL;
+                            concPunc = p->{
+                                switch (p) {
+                                    case BELIEF:
+                                        return QUESTION;
+                                    case GOAL:
+                                        return QUEST;
+                                    default:
+                                        return (byte)0;
+                                }
+                            };
                             break;
 
                         default:
@@ -472,19 +494,28 @@ public class PremiseRuleSource extends ProxyTerm  {
         }
 
 
-        if (beliefTruthOp != null && !beliefTruthOp.single()) {
-            if ((taskPunc == 0 || taskPunc == BELIEF)) {
-                pre.add(new DoublePremiseRequired(true, false, false));
-            } else if (puncOverride == BELIEF && (taskPunc == QUESTION || taskPunc == QUEST)) {
-                pre.add(new DoublePremiseRequired(false, false, true));
+
+
+        if (concPunc == null && taskPunc == null) {
+            if (beliefTruth!=null && goalTruth!=null) {
+                taskPunc = t -> t == BELIEF || t == GOAL; //accept belief and goal and map to those
+            } else if (beliefTruth!=null) {
+                taskPunc = t -> t == BELIEF; //accept only belief -> belief
+            } else if (goalTruth!=null) {
+                taskPunc = t -> t == GOAL; //accept only goal -> goal
             }
+            concPunc = t -> t;
         }
-        if (goalTruthOp != null && !goalTruthOp.single()) {
-            if ((taskPunc == 0 || taskPunc == GOAL)) {
+
+        if (beliefTruthOp != null) {
+            assert(concPunc.valueOf(BELIEF)==BELIEF || concPunc.valueOf(GOAL)==BELIEF || concPunc.valueOf(QUESTION)==BELIEF || concPunc.valueOf(QUEST)==BELIEF);
+            if (!beliefTruthOp.single())
+                pre.add(new DoublePremiseRequired(true, false, false));
+        }
+        if (goalTruthOp != null) {
+            assert(concPunc.valueOf(BELIEF)==GOAL || concPunc.valueOf(GOAL)==GOAL || concPunc.valueOf(QUESTION)==GOAL || concPunc.valueOf(QUEST)==GOAL);
+            if (!goalTruthOp.single())
                 pre.add(new DoublePremiseRequired(false, true, false));
-            } else if (puncOverride == GOAL && (taskPunc == QUESTION || taskPunc == QUEST)) {
-                pre.add(new DoublePremiseRequired(false, false, true));
-            }
         }
 
         /*System.out.println( Long.toBinaryString(
@@ -519,44 +550,16 @@ public class PremiseRuleSource extends ProxyTerm  {
         constraints.addAll(mirrors);
 
 
-        {
 
+        if (taskPunc==null)
+            throw new UnsupportedOperationException("no taskPunc specified");
 
-            assert (puncOverride > 0) || !taskPattern.equals(originalConcPattern) :
-                    "punctuation not modified yet rule task equals pattern: " + this;
+        pre.add(new TaskPunc(taskPunc));
 
-
-            if (taskPunc == 0) {
-                //no override, determine automaticaly by presence of belief or truth
-
-                boolean b = false, g = false;
-                //for (PostCondition x : POST) {
-                if (puncOverride != 0) {
-                    throw new RuntimeException("puncOverride with no input punc specifier");
-                } else {
-                    b |= beliefTruth != null;
-                    g |= goalTruth != null;
-                }
-                //}
-
-                if (!b && !g) {
-                    throw new RuntimeException(ruleSrc + "\n^\tcan not assume this applies only to questions");
-                } else if (b && g) {
-                    pre.add(TaskPunctuation.BeliefOrGoal);
-                } else if (b) {
-                    pre.add(Belief);
-                } else /* if (g) */ {
-                    pre.add(Goal);
-                }
-            }
-        }
-
-        this.truthify = Truthify.the(puncOverride, beliefTruthOp, goalTruthOp, time);
+        this.truthify = Truthify.the(concPunc, beliefTruthOp, goalTruthOp, time);
         this.time = time;
         this.varIntro = varIntro;
         this.taskPunc = taskPunc;
-
-        this.puncOverride = puncOverride;
         this.beliefTruth = beliefTruth;
         this.goalTruth = goalTruth;
         this.CONSTRAINTS = Sets.immutable.of(theInterned(constraints));
@@ -615,7 +618,6 @@ public class PremiseRuleSource extends ProxyTerm  {
         this.time = raw.time;
         this.varIntro = raw.varIntro;
         this.taskPunc = raw.taskPunc;
-        this.puncOverride = raw.puncOverride;
         this.beliefTruth = raw.beliefTruth;
         this.goalTruth = raw.goalTruth;
         this.taskPattern = raw.taskPattern;
@@ -638,7 +640,7 @@ public class PremiseRuleSource extends ProxyTerm  {
             try {
                 return parse(src);
             } catch (Exception e) {
-                throw new RuntimeException("rule parse: " + e.getCause() + "\n\t" + src);
+                throw new RuntimeException("rule parse:\n\t" + src, e);
             }
         });
 
@@ -908,6 +910,23 @@ public class PremiseRuleSource extends ProxyTerm  {
 
     }
 
+    private static final class TaskPunc extends AbstractPred<PreDerivation> {
+        private final BytePredicate taskPunc;
+
+        public TaskPunc(BytePredicate taskPunc) {
+            super($.funcFast(TaskPunc.class.getSimpleName(), $.quote(taskPunc)));
+            this.taskPunc = taskPunc;
+        }
+
+        @Override
+        public float cost() {
+            return 0.02f;
+        }
+
+        @Override public boolean test(PreDerivation preDerivation) {
+            return taskPunc.accept(preDerivation.taskPunc);
+        }
+    }
 }
 
 

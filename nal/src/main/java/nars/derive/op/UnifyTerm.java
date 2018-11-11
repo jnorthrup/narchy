@@ -50,10 +50,7 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
 
         @Override
         public final boolean test(Derivation d) {
-            if (d.use(Param.TTL_UNIFY)) {
-                return d.unify(pattern, subterm == 0 ? d.taskTerm : d.beliefTerm, false);
-            }
-            return false;
+            return d.unify(pattern, subterm == 0 ? d.taskTerm : d.beliefTerm, false) && d.use(Param.TTL_UNIFY);
         }
 
     }

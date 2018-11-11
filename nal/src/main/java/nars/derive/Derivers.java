@@ -39,7 +39,7 @@ public class Derivers {
                     break;
                 case 3:
                     f.add("nal3.nal");
-                    //f.add("nal3.guess.nal");
+                    f.add("nal3.guess.nal");
                     break;
                 case 2:
                     f.add("nal2.nal");

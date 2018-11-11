@@ -205,5 +205,21 @@ public class NAL3Test extends NALTest {
 
     }
 
+    @Test
+    void testDifferenceQuestion() {
+        test
+                .believe("((x&y)-->a)")
+                .mustQuestion(cycles, "((x~y)-->a)")
+                .mustQuestion(cycles, "((y~x)-->a)")
+        ;
+    }
+    @Test
+    void testDifferenceQuest() {
+        test
+                .goal("((x&y)-->a)")
+                .mustQuest(cycles, "((x~y)-->a)")
+                .mustQuest(cycles, "((y~x)-->a)")
+        ;
+    }
 }
 
