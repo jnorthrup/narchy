@@ -815,7 +815,8 @@ public enum $ {
                 return SetSectDiff.differenceSet(SETe, a, b);
             }
         }
-        throw new UnsupportedOperationException();
+        //throw new UnsupportedOperationException();
+        return SECTe.the(a, b.neg());
     }
 
 

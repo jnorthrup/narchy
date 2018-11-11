@@ -552,7 +552,7 @@ public class TermReductionsTest extends NarseseTest {
             NAR n = NARS.shell();
             n.believe("X", 1.0f, 0.9f);
             n.believe("Y", 0.75f, 0.9f);
-            tryDiff(n, "(X~Y)", "%.25;.85%");
+            tryDiff(n, "(X~Y)", "%.25;.88%");
 
             tryDiff(n, "((--,Y)~(--,X))", "%.25;.85%");
 

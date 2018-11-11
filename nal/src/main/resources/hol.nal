@@ -12,7 +12,7 @@
 //  (X <-> --Y), Y, task(".") |- (X ==> Y), (Punctuation:Question)
 
 //distinction - an attempt to elucidate the difference between similar/dissimilar concepts
-  (X <-> Y),   Y, task(".") |- ((X && ?1) <-> (Y && ?2)), (Punctuation:Question)
-  (X <-> Y),   Y, task("!") |- ((X && ?1) <-> (Y && ?2)), (Punctuation:Quest)
-    (X <-> --Y),   Y, task(".") |- ((X && ?1) <-> (--Y && ?2)), (Punctuation:Question)
-    (X <-> --Y),   Y, task("!") |- ((X && ?1) <-> (--Y && ?2)), (Punctuation:Quest)
+  (X <-> Y),   Y |- ((X && ?1) <-> (Y && ?2)), (Punctuation:Ask)
+
+    (X <-> --Y),   Y |- ((X && ?1) <-> (--Y && ?2)), (Punctuation:Ask)
+

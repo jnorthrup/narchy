@@ -463,7 +463,7 @@ abstract public class NAgentX extends NAgent {
 //
 //        }
 
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 2, 8);
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 2, 32);
 
 //        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof AbstractGoalActionConcept.CuriosityTask) ),
 //                8, 96);

@@ -1,5 +1,12 @@
 
 //NAL3-----------
+
+//intesection question formation
+    (W --> S), (W --> B), task("?@"), is(S,"|"), neqRCom(S,B) |- (W --> (S | B))
+    (W --> S), (W --> B), task("?@"), is(S,"&"), neqRCom(S,B) |- (W --> (S & B))
+    (S --> W), (B --> W), task("?@"), is(S,"&"), neqRCom(S,B) |- ((S & B) --> W)
+    (S --> W), (B --> W), task("?@"), is(S,"|"), neqRCom(S,B) |- ((S | B) --> W)
+
 ////composition on both sides of a statement:
 
     ((&,B,A..+) --> (&,X,A..+)), (B --> X), task("?") |- ((&,B,A..+) --> (&,X,A..+)), (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Intersect)
@@ -14,16 +21,10 @@
     ((A&B) --> W), W |- ((A~B) --> W), (Punctuation:Ask)
       (A&B), A |- (A~B), (Punctuation:Ask)
 
-//intesection question formation
-    //TODO quests
-    (W --> S), (W --> B), task("?"), is(S,"|"), neqRCom(S,B) |- (W --> (S | B)), (Punctuation:Question)
-    (W --> S), (W --> B), task("?"), is(S,"&"), neqRCom(S,B) |- (W --> (S & B)), (Punctuation:Question)
-    (S --> W), (B --> W), task("?"), is(S,"&"), neqRCom(S,B) |- ((S & B) --> W), (Punctuation:Question)
-    (S --> W), (B --> W), task("?"), is(S,"|"), neqRCom(S,B) |- ((S | B) --> W), (Punctuation:Question)
+
 
 
 ////composition on one side of a statement:
-//TODO quest->goals
     (W --> S), (W --> B), task("?"), is(S,"|"), subOf(S,B) |- (W --> S), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
     (S --> W), (B --> W), task("?"), is(S,"&"), subOf(S,B) |- (S --> W), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
 

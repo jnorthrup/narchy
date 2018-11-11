@@ -1,7 +1,6 @@
 package nars.term.index;
 
 import jcog.data.byt.ArrayBytes;
-import jcog.data.byt.ConcatBytes;
 import jcog.tree.radix.MyConcurrentRadixTree;
 import nars.$;
 import nars.Narsese;
@@ -34,13 +33,13 @@ class TreeConceptIndexTest {
         );
         assertEquals($.the(1), y);
 
-        Term yy = t.get(new ConcatBytes(
-                    new ArrayBytes((byte)2, (byte)2, (byte)8, (byte)1),
-                    new ArrayBytes((byte)0, (byte)0, (byte)1, (byte)121,
-                                   (byte)0, (byte)0, (byte)1, (byte)120
-                    )
-                ));
-        assertEquals($.the(1), yy);
+//        Term yy = t.get(new ConcatBytes(
+//                    new ArrayBytes((byte)2, (byte)2, (byte)8, (byte)1),
+//                    new ArrayBytes((byte)0, (byte)0, (byte)1, (byte)121,
+//                                   (byte)0, (byte)0, (byte)1, (byte)120
+//                    )
+//                ));
+//        assertEquals($.the(1), yy);
 
 
         System.out.println(t.prettyPrint());

@@ -24,10 +24,7 @@
 
        //questions
         //B, (A ==> C), task("?"), --is(A,"--"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny((A ==> C),A,B,strict), (Punctuation:Question, Time:TaskPlusBeliefDT)
-          B, (A ==> C), --is(A,"--"),task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Question, Time:TaskPlusBeliefDT)
-          B, (A ==> C), --is(A,"--"),task("@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Quest, Time:TaskPlusBeliefDT)
-
-
+          B, (A ==> C), --is(A,"--"),task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Time:TaskPlusBeliefDT)
 
 
     A, (--A ==> C), --is(A,"#"),--is(C,"#") |- C, (Belief:PreN, Goal:PreWeakN, Time:TaskPlusBeliefDT)
@@ -38,10 +35,7 @@
 
         //questions
         //B, (--A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny((--A ==> C),A,B,strict), (Punctuation:Question, Time:TaskPlusBeliefDT)
-          B, (--A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Question, Time:TaskPlusBeliefDT)
-          B, (--A ==> C), task("@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Quest, Time:TaskPlusBeliefDT)
-
-
+          B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Time:TaskPlusBeliefDT)
 
     B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:Post, Goal:PostStrong, Time:TaskMinusBeliefDT)
 
@@ -50,9 +44,7 @@
 
         //questions
         //B, (C ==> A), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny((C ==> A),A,B,strict), (Punctuation:Question, Time:TaskMinusBeliefDT)
-          B, (C ==> A), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Question, Time:TaskMinusBeliefDT)
-          B, (C ==> A), task("@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Punctuation:Quest, Time:TaskMinusBeliefDT)
-
+          B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Time:TaskMinusBeliefDT)
 
 
 //        //TODO question variations
@@ -324,23 +316,20 @@
 //        if two different precondition conjunctions, with a common element lead to the same conclusion,
 //        it might be that these different preconditions in the specific conjunctions imply each other
 //        because the premises can be swapped for this rule and it is still valid
-    (A ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- ((conjWithoutAll(A,B) ==> conjWithoutAll(B,A)) && (conjWithoutAll(B,A) ==> conjWithoutAll(A,B))), (Belief:InductionPB)
+    (A ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- (conjWithoutAll(A,B) ==> conjWithoutAll(B,A)), (Belief:InductionPB)
+    (A ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- (conjWithoutAll(B,A) ==> conjWithoutAll(A,B)), (Belief:InductionPB)
+
         //((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- ((X ==> Y) && (Y ==> X)), (Bel4ief:InductionPB)
-            //(A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(A,B) ==> conjWithoutAll(B,A)), (Belief:InductionPB)
-            //(A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==> conjWithoutAll(A,B)), (Belief:InductionPB)
 
-    ((--,A) ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- (((--,conjWithoutAll(A,B)) ==> conjWithoutAll(B,A)) && ((--,conjWithoutAll(B,A)) ==> conjWithoutAll(A,B))), (Belief:InductionPB)
-        //((--,A) ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- ((--,conjWithoutAll(A,B)) ==> conjWithoutAll(B,A)), (Belief:InductionPB)
-        //((--,A) ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==> (--,conjWithoutAll(A,B))), (Belief:InductionPB)
+    ((--,A) ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- ((--,conjWithoutAll(A,B)) ==> conjWithoutAll(B,A)), (Belief:InductionPB)
+    ((--,A) ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- ((--,conjWithoutAll(B,A)) ==> conjWithoutAll(A,B)), (Belief:InductionPB)
 
-    (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- ((conjWithoutAll(A,B) ==> conjWithoutAll(B,A)) && (conjWithoutAll(B,A) ==> conjWithoutAll(A,B))), (Belief:AbductionPB)
-        (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- ((--conjWithoutAll(A,B) ==> conjWithoutAll(B,A)) && (conjWithoutAll(B,A) ==> --conjWithoutAll(A,B))), (Belief:AbductionPBN)
-        //(C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- ((X ==> Y) && (Y ==> X)), (Belief:AbductionPB)
-        //(C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- ((--X ==> Y) && (Y ==> --X)), (Belief:AbductionPBN)
 
-        //(X ==> A), (X ==> B), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(A,B) ==> conjWithoutAll(B,A)), (Belief:AbductionPB)
-        //(X ==> A), (X ==> B), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==> conjWithoutAll(A,B)), (Belief:AbductionPB)
+    (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- (conjWithoutAll(A,B) ==> conjWithoutAll(B,A)), (Belief:AbductionPB)
+    (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- (conjWithoutAll(B,A) ==> conjWithoutAll(A,B)), (Belief:AbductionPB)
 
+        (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- (--conjWithoutAll(A,B) ==> conjWithoutAll(B,A)), (Belief:AbductionPBN)
+        (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- (--conjWithoutAll(B,A) ==> conjWithoutAll(A,B)), (Belief:AbductionPBN)
 
 
 // conditional deduction "An inverse inference has been implemented as a form of deduction" https://code.google.com/p/open-nars/issues/detail?id=40&can=1

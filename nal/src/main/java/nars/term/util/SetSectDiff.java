@@ -6,6 +6,7 @@ import nars.op.SetFunc;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Bool;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
@@ -14,11 +15,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.function.Predicate;
 
 import static java.util.Arrays.copyOfRange;
-import static nars.term.atom.Bool.Null;
+import static nars.Op.NEG;
+import static nars.term.atom.Bool.*;
 import static nars.time.Tense.DTERNAL;
 
 /** NAL2/NAL3 intersection and difference functions */
@@ -29,9 +30,9 @@ public class SetSectDiff {
         int trues = 0;
         for (Term x : t) {
             if (x instanceof Bool) {
-                if (x == Bool.True) {
+                if (x == True) {
                     trues++;
-                } else if (x == Null || x == Bool.False) {
+                } else if (x == Null || x == False) {
                     return Null;
                 }
             }
@@ -44,11 +45,11 @@ public class SetSectDiff {
 
         if (trues > 0) {
             if (trues == t.length) {
-                return Bool.True;
+                return True;
             } else if (t.length - trues == 1) {
 
                 for (Term x : t) {
-                    if (x != Bool.True)
+                    if (x != True)
                         return x;
                 }
             } else {
@@ -56,7 +57,7 @@ public class SetSectDiff {
                 Term[] t2 = new Term[t.length - trues];
                 int yy = 0;
                 for (Term x : t) {
-                    if (x != Bool.True)
+                    if (x != True)
                         t2[yy++] = x;
                 }
                 t = t2;
@@ -131,20 +132,25 @@ public class SetSectDiff {
     @Deprecated
     private static Term intersect2(Term term1, Term term2, /*@NotNull*/ Op intersection, /*@NotNull*/ Op setUnion, /*@NotNull*/ Op setIntersection) {
 
-        if (term1.equals(term2))
-            return term1;
 
         Op o1 = term1.op(), o2 = term2.op();
 
-        if ((o1 == setUnion) && (o2 == setUnion)) {
 
-            return SetFunc.union(setUnion, term1.subterms(), term2.subterms());
-        }
+        if (o1 == o2 && o1.isSet()) {
+            if (term1.equals(term2))
+                return term1;
 
-
-        if ((o1 == setIntersection) && (o2 == setIntersection)) {
-
-            return SetFunc.intersect(setIntersection, term1.subterms(), term2.subterms());
+            if (o1 == setUnion) {
+                return SetFunc.union(setUnion, term1.subterms(), term2.subterms());
+            } else if ((o1 == setIntersection) && (o2 == setIntersection)) {
+                return SetFunc.intersect(setIntersection, term1.subterms(), term2.subterms());
+            }
+        } else {
+            //SECT
+            if (term1.equals(term2))
+                return True;
+            if (o1==NEG && term1.unneg().equals(term2)) return False;
+            if (o2==NEG && term2.unneg().equals(term1)) return False;
         }
 
         if (o2 == intersection && o1 != intersection) {
@@ -157,24 +163,28 @@ public class SetSectDiff {
         }
 
 
-        TreeSet<Term> args = new TreeSet<>();
         if (o1 == intersection) {
+            UnifiedSet<Term> args = new UnifiedSet<>();
+
             ((Iterable<Term>) term1).forEach(args::add);
             if (o2 == intersection)
                 ((Iterable<Term>) term2).forEach(args::add);
             else
                 args.add(term2);
+
+            int aaa = args.size();
+            if (aaa == 1)
+                return args.getOnly();
+            else {
+                return Op.compound(intersection, DTERNAL, Terms.sorted(args));
+            }
+
         } else {
-            args.add(term1);
-            args.add(term2);
+            return Op.compound(intersection, DTERNAL, term1.compareTo(term2) < 0 ?
+                new Term[] { term1, term2 } : new Term[] { term2, term1 }
+            );
         }
 
-        int aaa = args.size();
-        if (aaa == 1)
-            return args.first();
-        else {
-            return Op.compound(intersection, DTERNAL, args.toArray(Op.EmptyTermArray));
-        }
     }
 
 //    public static Term differ(/*@NotNull*/ Op op, Term... t) {

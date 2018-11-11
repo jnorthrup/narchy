@@ -26,7 +26,6 @@ import nars.term.var.VarPattern;
 import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
 import nars.unify.constraint.*;
-import nars.unify.op.TaskPunctuation;
 import nars.unify.op.TermMatch;
 import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
@@ -49,8 +48,6 @@ import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.Op.*;
 import static nars.subterm.util.SubtermCondition.*;
 import static nars.term.control.PREDICATE.sortByCostIncreasing;
-import static nars.unify.op.TaskPunctuation.Belief;
-import static nars.unify.op.TaskPunctuation.Goal;
 
 /**
  * A rule which matches a Premise and produces a Task
@@ -316,24 +313,25 @@ public class PremiseRuleSource extends ProxyTerm  {
 
 
                         case "\"?\"":
-                            pre.add(TaskPunctuation.Question);
                             taskPunc = (t)->t==QUESTION;
                             break;
-
-
                         case "\"@\"":
-                            pre.add(TaskPunctuation.Quest);
                             taskPunc = (t)->t==QUEST;
                             break;
+                        case "\"?@\"":
+                            taskPunc = (t)->t==QUESTION || t == QUEST;
+                            concPunc = (c)->c;  //default
+                            break;
                         case "\".\"":
-                            pre.add(Belief);
                             taskPunc = (t)->t==BELIEF;
                             break;
                         case "\"!\"":
-                            pre.add(Goal);
                             taskPunc = (t)->t==GOAL;
                             break;
-
+                        case "\".!\"":
+                            taskPunc = (t)->t==BELIEF || t == GOAL;
+                            concPunc = (c)->c; //default
+                            break;
 //                        case "\"*\"":
 //                            pre.add(new TaskBeliefOp(PROD, true, false));
 //                            break;
@@ -553,6 +551,9 @@ public class PremiseRuleSource extends ProxyTerm  {
 
         if (taskPunc==null)
             throw new UnsupportedOperationException("no taskPunc specified");
+
+        if (concPunc == null)
+            throw new UnsupportedOperationException("no concPunc specified");
 
         pre.add(new TaskPunc(taskPunc));
 

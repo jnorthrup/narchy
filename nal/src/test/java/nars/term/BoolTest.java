@@ -116,10 +116,10 @@ public class BoolTest {
     void testDiffTautologies() {
 
         @Nullable Truth selfDiff = NALTruth.Difference.apply($.t(1, 0.9f), $.t(1f, 0.9f), null, 0);
-        assertEquals($.t(0, 0.81f), selfDiff);
+        assertEquals($.t(0, 0.90f), selfDiff);
 
         @Nullable Truth negDiff = NALTruth.Difference.apply($.t(0, 0.9f), $.t(1f, 0.9f), null, 0);
-        assertEquals($.t(0, 0.81f), negDiff);
+        assertEquals($.t(0, 0.90f), negDiff);
 
         @Nullable Truth posDiff = NALTruth.Difference.apply($.t(1, 0.9f), $.t(0f, 0.9f), null, 0);
         assertEquals($.t(1, 0.81f), posDiff);
@@ -136,8 +136,7 @@ public class BoolTest {
                     Bool.True,
                     "(x" + diff + "(--,x))");
             assertEq(
-
-                    Bool.False,
+                    Bool.True,
                     "((--,x)" + diff + "x)");
 
 
@@ -151,7 +150,7 @@ public class BoolTest {
 
             assertEquals(Bool.False, $.diff(x, x));
             assertEquals(Bool.True, $.diff(x, x.neg()));
-            assertEquals(Bool.False, $.diff(x.neg(), x));
+            assertEquals(Bool.True, $.diff(x.neg(), x));
 
             assertEquals(Bool.Null, $.diff(x, Bool.False));
             assertEquals(Bool.Null, $.diff(x, Bool.True));

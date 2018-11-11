@@ -138,10 +138,10 @@ public class FasterList<X> extends FastList<X> {
         return size;
     }
 
-    public void clearHard() {
-        this.size = 0;
-        this.items = (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
-    }
+//    public void clearHard() {
+//        this.size = 0;
+//        this.items = (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
+//    }
 
     public X removeLast() {
 //        if (size == 0)

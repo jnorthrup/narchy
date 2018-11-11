@@ -151,7 +151,7 @@ abstract public class Deriver extends Causable {
 
                 double deltaDurs = ((double) (curTime - prevCommit)) / dur;
 
-                deltaDurs = Math.min(deltaDurs, 1);
+                //deltaDurs = Math.min(deltaDurs, 1);
 
                 float forgetRate = (float) (1 - Math.exp(-deltaDurs / d.nar.memoryDuration.floatValue()));
 
