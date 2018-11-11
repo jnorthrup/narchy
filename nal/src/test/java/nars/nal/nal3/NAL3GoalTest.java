@@ -9,6 +9,7 @@ class NAL3GoalTest {
 
 
 
+
     private final static String X = ("X");
     private final static String Xe = ("(X-->A)");
     private final static String Xi = ("(A-->X)");

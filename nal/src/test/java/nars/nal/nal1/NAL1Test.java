@@ -237,7 +237,7 @@ public class NAL1Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<swan --> bird>");
         tester.believe("<bird --> swan>", 0.1f, 0.9f);
-        tester.mustBelieve(cycles, "<bird <-> swan>", 0.1f, 0.89f);
+        tester.mustBelieve(cycles, "<bird <-> swan>", 0.1f, 0.81f);
 
     }
 

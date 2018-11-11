@@ -92,7 +92,11 @@ public class NAL6Test extends NALTest {
 
         tester.believe("<(&&,<$x --> flyer>,($x --> [chirping])) ==> ($x --> bird)>");
         tester.believe("<<$y --> [withWings]> ==> <$y --> flyer>>");
-        tester.mustBelieve(cycles, "<(&&,<$1 --> [chirping]>,($1 --> [withWings])) ==> ($1 --> bird)>", 1.00f, 0.81f);
+        tester.mustBelieve(cycles, "<(&&,<$1 --> [chirping]>,($1 --> [withWings])) ==> ($1 --> bird)>",
+                1.00f,
+                //0.81f
+                0.45f
+        );
 
     }
 
@@ -1009,6 +1013,8 @@ public class NAL6Test extends NALTest {
         test
                 .believe("(x,0)", 1f, 0.9f)
                 .believe("(x,1)", 0.5f, 0.9f)
+                .mustQuestion(cycles, "((x,1)~(x,0))")
+                .mustQuestion(cycles, "((x,0)~(x,1))")
                 .mustBelieve(cycles, "((x,1)~(x,0))", 0.0f, 0.85f)
                 .mustBelieve(cycles, "((x,0)~(x,1))", 0.5f, 0.85f);
     }

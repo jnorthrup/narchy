@@ -378,7 +378,7 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
                         Consumer eachMustForgetPct =
 
 //                        //FAIR
-//                        PriForget.forgetPressure(temperature, cap, pressure, mass);
+                        //PriForget.forgetPressure(temperature, cap, pressure, mass);
 
 
                                 //OVERDRIVE (attenuated by size/capacity ratio)
@@ -387,6 +387,8 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
                                 //..?
                                 PriForget.forgetIdeal(temperature,
                                         ScalarValue.EPSILON * cap,
+                                        //1f/size,
+                                        //1f/cap,
                                         //0.1f,
                                         //0.5f,
                                         size, cap, pressure, mass);

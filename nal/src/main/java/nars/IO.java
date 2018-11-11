@@ -546,6 +546,11 @@ public class IO {
 
             switch (op) {
 
+                case SECTi:
+                case SECTe:
+                    sectAppend(c, p);
+                    return;
+
                 case SETi:
                 case SETe:
                     setAppend(c, p);
@@ -573,10 +578,31 @@ public class IO {
                     }
                 }
 
-                statementAppend(c, op, p);
+                statementAppend(c, p, op);
 
             } else {
                 compoundAppend(c, p, op);
+            }
+        }
+
+        static void sectAppend(Compound c, Appendable p) throws IOException {
+            Op o = c.op();
+            Subterms cs = c.subterms();
+            if (cs.subs() == 2) {
+                Term subracted = cs.sub(0), from;
+                //negated subterm will be in the 0th position, if anywhere due to term sorting
+                if (subracted.op() == NEG && (from=cs.sub(1)).op()!=NEG) {
+                    p.append('(');
+                    from.appendTo(p);
+                    p.append(o == SECTe ? DIFFe : DIFFi);
+                    subracted.unneg().appendTo(p);
+                    p.append(')');
+                    return;
+                }
+
+                statementAppend(c, p, o);
+            } else {
+                compoundAppend(c, p, o);
             }
         }
 
@@ -622,7 +648,7 @@ public class IO {
         }
 
 
-        static void statementAppend(Term c, Op op, Appendable p /*@NotNull*/) throws IOException {
+        static void statementAppend(Term c, Appendable p, Op op  /*@NotNull*/) throws IOException {
 
 
             p.append(Op.COMPOUND_TERM_OPENER);

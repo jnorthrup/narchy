@@ -6368,8 +6368,6 @@ public enum ArrayUtils {;
 
     public static <X> X[] remove(final X[] input, IntFunction<X[]> outputter, final int index) {
         final int length = input.length;
-
-
         X[] output = outputter.apply(length - 1);
         System.arraycopy(input, 0, output, 0, index);
         if (index < length - 1) {
@@ -7175,7 +7173,7 @@ public enum ArrayUtils {;
      * @since 3.0.1
      */
 
-    static Object removeAll(final Object array, final int... indices) {
+    @Deprecated static Object removeAll(final Object array, final int... indices) {
         final int length = getLength(array);
         int diff = 0;
         final int[] clonedIndices = clone(indices);
@@ -7464,24 +7462,28 @@ public enum ArrayUtils {;
      *
      * @param element the element to remove
      * @param array   the input array
-     * @return A new array containing the existing elements except the occurrences of the specified element.
+     * @return the original array if element not found, or
+     * A new array containing the existing elements except the occurrences of the specified element.
      * @since 3.5
      */
-    public static byte[] removeAllOccurences(final byte[] array, final byte element) {
-        int index = indexOf(array, element);
-        if (index == INDEX_NOT_FOUND) {
-            return clone(array);
+    public static byte[] removeFirstOccurence(final byte[] array, final byte element) {
+        switch (array.length) {
+            case 0:
+                return ArrayUtils.EMPTY_BYTE_ARRAY;
+            case 1:
+                if (array[0] == element) return ArrayUtils.EMPTY_BYTE_ARRAY;
+                break;
+            case 2:
+                if (array[0] == element) return new byte[] { array[1] };
+                if (array[1] == element) return new byte[] { array[0] };
+                break;
+            default:
+                int index = indexOf(array, element);
+                if (index != -1)
+                    return remove(array, index);
+                break;
         }
-
-        final int[] indices = new int[array.length - index];
-        indices[0] = index;
-        int count = 1;
-
-        while ((index = indexOf(array, element, indices[count - 1] + 1)) != INDEX_NOT_FOUND) {
-            indices[count++] = index;
-        }
-
-        return removeAll(array, Arrays.copyOf(indices, count));
+        return array;
     }
 
     /**
@@ -8828,6 +8830,37 @@ public enum ArrayUtils {;
             }
         }
         return tt;
+    }
+
+    /**
+     * Removes the occurrences of the specified element from the specified byte array.
+     *
+     * <p>
+     * All subsequent elements are shifted to the left (subtracts one from their indices).
+     * If the array doesn't contains such an element, no elements are removed from the array.
+     * <code>null</code> will be returned if the input array is <code>null</code>.
+     * </p>
+     *
+     * @param element the element to remove
+     * @param array   the input array
+     * @return A new array containing the existing elements except the occurrences of the specified element.
+     * @since 3.5
+     */
+    public static byte[] removeAllOccurences(final byte[] array, final byte element) {
+        int index = indexOf(array, element);
+        if (index == INDEX_NOT_FOUND) {
+            return clone(array);
+        }
+
+        final int[] indices = new int[array.length - index];
+        indices[0] = index;
+        int count = 1;
+
+        while ((index = indexOf(array, element, indices[count - 1] + 1)) != INDEX_NOT_FOUND) {
+            indices[count++] = index;
+        }
+
+        return removeAll(array, Arrays.copyOf(indices, count));
     }
 
 }

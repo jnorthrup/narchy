@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
@@ -71,11 +72,22 @@ public class SetFunc {
 
     };
 
+    static @Nullable SortedSet<Term> intersectSorted(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
+        if ((a.structure() & b.structure()) != 0) {
+
+            Predicate<Term> contains = a.subs() > 2 ? (a.toSet()::contains) : a::contains;
+            SortedSet<Term> ab = b.toSetSorted(contains);
+            if (ab != null)
+                return ab;
+        }
+        return null;
+    }
+
     public static Term intersect(/*@NotNull*/ Op o, Subterms a, Subterms b) {
         if (a instanceof Term && a.equals(b))
             return (Term) a;
 
-        SortedSet<Term> cc = SetSectDiff.intersectSorted(a, b);
+        SortedSet<Term> cc = intersectSorted(b, a);
         if (cc == null)
             return Null;
 

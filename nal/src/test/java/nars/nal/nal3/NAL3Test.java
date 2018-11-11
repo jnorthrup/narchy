@@ -47,7 +47,7 @@ public class NAL3Test extends NALTest {
     void compound_decomposition_two_premises() {
 
         TestNAR tester = test;
-        tester.believe("<robin --> (|,bird,swimmer)>", 1.0f, 0.9f);
+        tester.believe("<robin --> (bird | swimmer)>", 1.0f, 0.9f);
         tester.believe("<robin --> swimmer>", 0.0f, 0.9f);
         tester.mustBelieve(cycles, "<robin --> bird>", 1.0f, 0.81f);
 
@@ -59,7 +59,7 @@ public class NAL3Test extends NALTest {
         TestNAR tester = test;
 
         tester.believe("<robin --> swimmer>", 0.0f, 0.9f);
-        tester.believe("<robin --> (-,mammal,swimmer)>", 0.0f, 0.9f);
+        tester.believe("<robin --> (mammal - swimmer)>", 0.0f, 0.9f);
         tester.mustBelieve(cycles, "<robin --> mammal>", 0.0f, 0.81f);
 
     }

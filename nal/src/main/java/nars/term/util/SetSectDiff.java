@@ -1,191 +1,199 @@
 package nars.term.util;
 
 import jcog.data.bit.MetalBitSet;
+import jcog.data.iterator.ArrayIterator;
 import nars.Op;
-import nars.op.SetFunc;
 import nars.subterm.Subterms;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
-import nars.unify.match.EllipsisMatch;
-import nars.unify.match.Ellipsislike;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.function.Predicate;
-
-import static java.util.Arrays.copyOfRange;
-import static nars.Op.NEG;
-import static nars.term.atom.Bool.*;
+import static nars.Op.*;
+import static nars.term.atom.Bool.Null;
+import static nars.term.atom.Bool.True;
 import static nars.time.Tense.DTERNAL;
 
-/** NAL2/NAL3 intersection and difference functions */
+/** NAL2/NAL3 set, intersection and difference functions */
 public class SetSectDiff {
 
-    public static Term intersect(Term[] t, /*@NotNull*/ Op intersection, /*@NotNull*/ Op setUnion, /*@NotNull*/ Op setIntersection) {
-
-        int trues = 0;
-        for (Term x : t) {
-            if (x instanceof Bool) {
-                if (x == True) {
-                    trues++;
-                } else if (x == Null || x == False) {
-                    return Null;
-                }
-            }
-        }
-
-        if (t.length> 1) {
-            if (!uniqueRoots(t))
-                return Null;
-        }
-
-        if (trues > 0) {
-            if (trues == t.length) {
-                return True;
-            } else if (t.length - trues == 1) {
-
-                for (Term x : t) {
-                    if (x != True)
-                        return x;
-                }
-            } else {
-
-                Term[] t2 = new Term[t.length - trues];
-                int yy = 0;
-                for (Term x : t) {
-                    if (x != True)
-                        t2[yy++] = x;
-                }
-                t = t2;
-            }
-        }
-
+    public static Term intersect(Op o, Term... t ) {
 
         switch (t.length) {
-
             case 0:
-                throw new RuntimeException();
-
+                return True;
             case 1:
-
-                Term single = t[0];
-                if (single instanceof EllipsisMatch)
-                    return intersect(
-                            single.arrayShared(),
-                            intersection, setUnion, setIntersection);
-
-                return single instanceof Ellipsislike ?
-                        Op.compound(intersection, DTERNAL, single) :
-                        single;
-
-            case 2:
-                return intersect2(t[0], t[1], intersection, setUnion, setIntersection);
+                return t[0];
+//            case 2:
+//
+//                boolean sect = intersection==SECTe || intersection == SECTi;
+//
+//                if (t[0].equals(t[1])) return t[0];
+//
+//                if (sect) {
+//                    //fast eliminate contradiction
+//                    Op o0 = t[0].op();
+//                    if (o0 == NEG && t[0].unneg().equals(t[1])) return Null;
+//                    Op o1 = t[1].op();
+//                    if (o1 == NEG && t[1].unneg().equals(t[0])) return Null;
+//                }
+//                break;
             default:
 
-                Term a = intersect2(t[0], t[1], intersection, setUnion, setIntersection);
+                /** if the boolean value of a key is false, then the entry is negated */
+                ObjectByteHashMap<Term> y = intersect(o, o==SECTe || o == SECTi, ArrayIterator.iterable(t), new ObjectByteHashMap<>(t.length));
+                if (y == null)
+                    return Null;
+                int s = y.size();
+                if (s == 0)
+                    return True;
+                else if (s == 1)
+                    return y.keysView().getOnly();
+                else {
 
-                Term b = intersect(copyOfRange(t, 2, t.length), intersection, setUnion, setIntersection);
-
-                return intersect2(a, b,
-                        intersection, setUnion, setIntersection
-                );
-        }
-
-    }
-
-    private static boolean uniqueRoots(Term... t) {
-        if (t.length == 2) {
-            if (t[0] instanceof Compound && t[1] instanceof Compound && t[0].hasAny(Op.Temporal) && t[1].hasAny(Op.Temporal))
-                if (t[0].equalsRoot(t[1]))
-                    return false;
-        /*} else if (t.length == 3) {
-            //TODO
-*/
-        } else {
-                //repeat terms of the same root would collapse when conceptualized so this is prevented
-                Set<Term> roots = null;
-                for (int i = t.length-1; i >= 0; i--) {
-                    Term x = t[i];
-                    if (x instanceof Compound && x.hasAny(Op.Temporal)) {
-                        if (roots == null) {
-                            if (i == 0)
-                                break; //last one, dont need to check
-                            roots = new UnifiedSet<>(t.length-1 - i);
-                        }
-                        if (!roots.add(x.root())) {
-                            //repeat detected
-                            return false;
-                        }
-                    }
+                    Term[] yyy = new Term[s];
+                    final int[] k = {0};
+                    y.keyValuesView().forEach(e ->
+                            yyy[k[0]++] = e.getOne().negIf(e.getTwo()==-1)
+                    );
+                    return Op.compound(o, DTERNAL, Terms.sorted(yyy));
                 }
-            }
+
+        }
 
 
-        return true;
     }
 
-    /*@NotNull*/
-    @Deprecated
-    private static Term intersect2(Term term1, Term term2, /*@NotNull*/ Op intersection, /*@NotNull*/ Op setUnion, /*@NotNull*/ Op setIntersection) {
+    /** returns null to short-circuit failure */
+    private static ObjectByteHashMap<Term> intersect(Op o, boolean sect, Iterable<Term> t, ObjectByteHashMap<Term> y) {
+        if (y == null)
+            return null;
 
+        for (Term x : t) {
+            Op xo = x.op();
 
-        Op o1 = term1.op(), o2 = term2.op();
-
-
-        if (o1 == o2 && o1.isSet()) {
-            if (term1.equals(term2))
-                return term1;
-
-            if (o1 == setUnion) {
-                return SetFunc.union(setUnion, term1.subterms(), term2.subterms());
-            } else if ((o1 == setIntersection) && (o2 == setIntersection)) {
-                return SetFunc.intersect(setIntersection, term1.subterms(), term2.subterms());
-            }
-        } else {
-            //SECT
-            if (term1.equals(term2))
-                return True;
-            if (o1==NEG && term1.unneg().equals(term2)) return False;
-            if (o2==NEG && term2.unneg().equals(term1)) return False;
-        }
-
-        if (o2 == intersection && o1 != intersection) {
-
-            Term x = term1;
-            term1 = term2;
-            term2 = x;
-            o2 = o1;
-            o1 = intersection;
-        }
-
-
-        if (o1 == intersection) {
-            UnifiedSet<Term> args = new UnifiedSet<>();
-
-            ((Iterable<Term>) term1).forEach(args::add);
-            if (o2 == intersection)
-                ((Iterable<Term>) term2).forEach(args::add);
-            else
-                args.add(term2);
-
-            int aaa = args.size();
-            if (aaa == 1)
-                return args.getOnly();
-            else {
-                return Op.compound(intersection, DTERNAL, Terms.sorted(args));
+            if (x instanceof Bool) {
+                if (x == True)
+                    continue;
+                else
+                    return null; //fail on null or false
             }
 
-        } else {
-            return Op.compound(intersection, DTERNAL, term1.compareTo(term2) < 0 ?
-                new Term[] { term1, term2 } : new Term[] { term2, term1 }
-            );
+            if (xo != o) {
+                if (sect) {
+                    byte p = (byte) (x.op()!=NEG ? +1 : -1);
+                    if (p == -1) x = x.unneg();
+                    int existing = y.getIfAbsent(x, Byte.MIN_VALUE);
+                    if (existing!=Byte.MIN_VALUE) {
+                        if (existing==p)
+                            continue; //same exact term and polarity present
+                        else
+                            return null; //contradiction
+                    } else {
+                        y.put(x, p);
+                    }
+                } else {
+                    y.put(x, (byte)0); //as-is, doesnt matter
+                }
+            } else {
+                //recurse
+                if (intersect(o, sect, x.subterms(), y) == null)
+                    return null;
+            }
         }
 
+        return y;
     }
+
+//    private static boolean uniqueRoots(Term... t) {
+//        if (t.length == 2) {
+//            if (t[0] instanceof Compound && t[1] instanceof Compound && t[0].hasAny(Op.Temporal) && t[1].hasAny(Op.Temporal))
+//                if (t[0].equalsRoot(t[1]))
+//                    return false;
+//        /*} else if (t.length == 3) {
+//            //TODO
+//*/
+//        } else {
+//                //repeat terms of the same root would collapse when conceptualized so this is prevented
+//                Set<Term> roots = null;
+//                for (int i = t.length-1; i >= 0; i--) {
+//                    Term x = t[i];
+//                    if (x instanceof Compound && x.hasAny(Op.Temporal)) {
+//                        if (roots == null) {
+//                            if (i == 0)
+//                                break; //last one, dont need to check
+//                            roots = new UnifiedSet<>(t.length-1 - i);
+//                        }
+//                        if (!roots.add(x.root())) {
+//                            //repeat detected
+//                            return false;
+//                        }
+//                    }
+//                }
+//            }
+//
+//
+//        return true;
+//    }
+
+//    /*@NotNull*/
+//    @Deprecated
+//    private static Term intersect2(Term term1, Term term2, /*@NotNull*/ Op intersection, /*@NotNull*/ Op setUnion, /*@NotNull*/ Op setIntersection) {
+//
+//
+//        Op o1 = term1.op(), o2 = term2.op();
+//
+//
+//        if (o1 == o2 && o1.isSet()) {
+//            if (term1.equals(term2))
+//                return term1;
+//
+//            if (o1 == setUnion) {
+//                return SetFunc.union(setUnion, term1.subterms(), term2.subterms());
+//            } else if ((o1 == setIntersection) && (o2 == setIntersection)) {
+//                return SetFunc.intersect(setIntersection, term1.subterms(), term2.subterms());
+//            }
+//        } else {
+//            //SECT
+//            if (term1.equals(term2))
+//                return True;
+//            if (o1==NEG && term1.unneg().equals(term2)) return False;
+//            if (o2==NEG && term2.unneg().equals(term1)) return False;
+//        }
+//
+////        if (o2 == intersection && o1 != intersection) {
+////
+////            Term x = term1;
+////            term1 = term2;
+////            term2 = x;
+////            o2 = o1;
+////            o1 = intersection;
+////        }
+////
+////
+////        if (o1 == intersection) {
+////            UnifiedSet<Term> args = new UnifiedSet<>();
+////
+////            ((Iterable<Term>) term1).forEach(args::add);
+////            if (o2 == intersection)
+////                ((Iterable<Term>) term2).forEach(args::add);
+////            else
+////                args.add(term2);
+////
+////            int aaa = args.size();
+////            if (aaa == 1)
+////                return args.getOnly();
+////            else {
+////                return Op.compound(intersection, DTERNAL, Terms.sorted(args));
+////            }
+////
+////        } else {
+////            return Op.compound(intersection, DTERNAL, term1.compareTo(term2) < 0 ?
+////                new Term[] { term1, term2 } : new Term[] { term2, term1 }
+////            );
+////        }
+//
+//    }
 
 //    public static Term differ(/*@NotNull*/ Op op, Term... t) {
 //
@@ -320,14 +328,4 @@ public class SetSectDiff {
 
     }
 
-    public static @Nullable SortedSet<Term> intersectSorted(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
-        if ((a.structure() & b.structure()) != 0) {
-
-            Predicate<Term> contains = a.subs() > 2 ? (a.toSet()::contains) : a::contains;
-            SortedSet<Term> ab = b.toSetSorted(contains);
-            if (ab != null)
-                return ab;
-        }
-        return null;
-    }
 }

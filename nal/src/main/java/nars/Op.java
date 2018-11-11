@@ -90,10 +90,7 @@ public enum Op {
     SECTe("&", true, 3, Args.GTETwo) {
         @Override
         public Term the(int dt, Term[] u) {
-            return SetSectDiff.intersect(/*Int.intersect*/(u),
-                    SECTe,
-                    SETe,
-                    SETi);
+            return SetSectDiff.intersect(SECTe, u);
         }
     },
 
@@ -103,10 +100,7 @@ public enum Op {
     SECTi("|", true, 3, Args.GTETwo) {
         @Override
         public Term the(int dt, Term[] u) {
-            return SetSectDiff.intersect(/*Int.intersect*/(u),
-                    SECTi,
-                    SETi,
-                    SETe);
+            return SetSectDiff.intersect(SECTi, u);
         }
     },
 

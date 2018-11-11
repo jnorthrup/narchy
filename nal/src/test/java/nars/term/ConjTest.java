@@ -46,7 +46,7 @@ public class ConjTest {
     @Test
     void testParallelizeImplAFTERSequence() {
         assertEq("((a&|b)==>x)", "((a &| b) ==> x)");
-        assertEq("((a &&+1 b)=|>x)", "((a &&+1 b) ==> x)");
+        assertEq("((a &&+1 b)==>x)", "((a &&+1 b) ==> x)");
         assertEq("((a&|b) ==>+- x)", "((a &| b) ==>+- x)"); //xternal: unaffected
         //assertEq("(x =|> (a &| b))","(x ==> (a &| b))");
         //assertEq("(x =|> (a &&+1 b))","(x ==> (a &&+1 b))");
@@ -148,7 +148,7 @@ public class ConjTest {
 
         assertEquals("((ball_right) &&+270 (--,(ball_left)))", c1.toString());
         assertEquals(
-                "(((ball_right)&|(ball_left)) &&+270 (--,(ball_left)))",
+                "(((ball_left)&|(ball_right)) &&+270 (--,(ball_left)))",
 
                 parallel($("(ball_left)"), $("(ball_right)"), c1)
                         .toString());
@@ -303,8 +303,15 @@ public class ConjTest {
     @Test
     void testConjParallelOverrideEternal2() {
 
+        String y = "(a&|b)";
+
+        Conj c = new Conj();
+        c.add(ETERNAL, $$("(a&&b)"));
+        c.add(ETERNAL, $$("(a&|b)"));
+        assertEquals(y, c.term().toString());
+
         assertEq(
-                "(a&|b)",
+                y,
                 "( (a&&b) && (a&|b) )");
 
     }

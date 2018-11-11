@@ -200,7 +200,7 @@ public class FZero extends NAgentX {
             float race =
                     ((float)
                             //-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
-                            deltaDistance / (fps * 0.8f));
+                            deltaDistance / (fps * 0.5f));
 
 //        float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 0.2)) : -1f;
 

@@ -28,10 +28,7 @@ import org.roaringbitmap.ImmutableBitmapDataProvider;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.IntPredicate;
 
 import static java.lang.System.arraycopy;
@@ -527,10 +524,13 @@ public class Conj extends ByteAnonMap {
 
         Op o = x.op();
         if (o == CONJ) {
-            int cdt;
-            if (at == ETERNAL && (((cdt = x.dt()) != 0) && (cdt != DTERNAL))) {
+            int cdt = x.dt();
+
+            if (at == ETERNAL && ((cdt != 0) && (cdt != DTERNAL))) {
                 //sequence or xternal embedded in eternity; add as self contained event
             } else {
+
+
                 //potentially decomposable conjunction
                 return added(x.eventsWhile(this::addEvent, at,
                         at != ETERNAL, //unpack parallel except in DTERNAL root, allowing: ((a&|b) && (c&|d))
@@ -573,10 +573,10 @@ public class Conj extends ByteAnonMap {
     }
 
     private boolean addEvent(long at, Term x) {
-        if (Param.DEBUG) {
-            if (at == DTERNAL) //HACK
-                throw new WTF("probably meant at=ETERNAL not DTERNAL");
-        }
+//        if (Param.DEBUG) {
+//            if (at == DTERNAL) //HACK
+//                throw new WTF("probably meant at=ETERNAL not DTERNAL");
+//        }
 
 
         //test this first
@@ -618,6 +618,14 @@ public class Conj extends ByteAnonMap {
         }
 
 
+
+        if (at!=ETERNAL) {
+            //remove any existing eternals of this event for this time being added
+            Object ete = event.get(ETERNAL);
+            if (ete!=null) {
+                removeFromEvent(ETERNAL, ete, true, id);
+            }
+        }
 
         Object events = event.getIfAbsentPut(at, () -> new byte[ROARING_UPGRADE_THRESH]);
         if (events instanceof byte[]) {
