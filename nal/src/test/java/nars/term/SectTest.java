@@ -13,6 +13,13 @@ public class SectTest {
         TermTest.assertEquivalentTerm("(|,a,b)", "(|,b,a)");
     }
 
+    @Test
+    void testSectWrap() {
+        TermTest.assertEquivalentTerm("(|,(b&a),c)", "(|,(b&a),c)");
+        TermTest.assertEquivalentTerm("(&,(b|a),c)", "(&,(b|a),c)");
+        TermTest.assertEquivalentTerm("(|,a,b,c)", "(|,(b|a),c)");
+    }
+
     @Test void testSectDiffEquivAndReductions() {
         TermTest.assertEquivalentTerm("(&,b,--a)", "(b ~ a)");
         TermTest.assertEquivalentTerm("(|,b,--a)", "(b - a)");

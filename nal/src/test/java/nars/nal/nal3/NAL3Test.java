@@ -58,9 +58,13 @@ public class NAL3Test extends NALTest {
 
         TestNAR tester = test;
 
-        tester.believe("<robin --> swimmer>", 0.0f, 0.9f);
-        tester.believe("<robin --> (mammal - swimmer)>", 0.0f, 0.9f);
-        tester.mustBelieve(cycles, "<robin --> mammal>", 0.0f, 0.81f);
+        tester.log();
+        tester
+        .believe("<robin --> swimmer>", 0.0f, 0.9f)
+        .believe("<robin --> (mammal - swimmer)>", 0.0f, 0.9f)
+        .mustBelieve(cycles, "<robin --> mammal>", 0.0f, 0.81f)
+        .mustNotOutput(cycles, "<robin --> --swimmer>", BELIEF, 0, 1, 0, 1, ETERNAL)
+        ;
 
     }
 

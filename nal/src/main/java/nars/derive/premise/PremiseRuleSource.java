@@ -183,6 +183,10 @@ public class PremiseRuleSource extends ProxyTerm  {
                     constraints.add(new NotEqualConstraint.NeqRootAndNotRecursiveSubtermOf(X, Y));
                     break;
 
+                case "notSetsOrDifferentSets":
+                    constraints.add(new NotEqualConstraint.NotSetsOrDifferentSets(X, Y));
+                    break;
+
                 case "subOf": {
 
                     if (!(Y instanceof VarPattern)) {

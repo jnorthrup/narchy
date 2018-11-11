@@ -17,9 +17,11 @@
 
 
 //intersection belief to diff question
-    (W --> (A|B)), W |- (W --> (A-B)), (Punctuation:Ask)
-    ((A&B) --> W), W |- ((A~B) --> W), (Punctuation:Ask)
-      (A&B), A |- (A~B), (Punctuation:Ask)
+    (W --> (A|B)), W, --is(A,"--"), --is(B,"--") |- (W --> (A-B)), (Punctuation:Ask)
+        //(W --> (A|B)), W |- (W --> (A-B)), (Punctuation:Ask)
+    ((A&B) --> W), W, --is(A,"--"), --is(B,"--") |- ((A~B) --> W), (Punctuation:Ask)
+        //((A&B) --> W), W |- ((A~B) --> W), (Punctuation:Ask)
+      //(A&B), A |- (A~B), (Punctuation:Ask)
 
 
 

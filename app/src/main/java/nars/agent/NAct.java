@@ -6,7 +6,6 @@ import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;
-import nars.Param;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.GoalActionConcept;
 import nars.table.BeliefTables;
@@ -247,10 +246,10 @@ public interface NAct {
             if (x) {
                 if (lr[1] > thresh) {
                     conflict = true;
-                    x = nar().random().nextFloat() < (ll / (Param.TRUTH_EPSILON +ll + lr[1])); //stochastic
-                    ll = x ? 1 : 0;
-//                    x = false;
-//                    //ll = 0;
+
+                    //stochastic
+                    //x = nar().random().nextFloat() < (ll / (Param.TRUTH_EPSILON +ll + lr[1]));
+                    //ll = x ? 1 : 0;
                 }
            }
             lr[0] = ll;
@@ -266,10 +265,9 @@ public interface NAct {
                 if (lr[0] > thresh) {
                     conflict = true;
 
-                    x = nar().random().nextFloat() < (rr / (Param.TRUTH_EPSILON + rr + lr[0])); //stochastic
-                    rr = x ? 1 : 0;
-                    //x = false;
-                    //rr = 0;
+                    //stochastic
+                    //x = nar().random().nextFloat() < (rr / (Param.TRUTH_EPSILON + rr + lr[0]));
+                    //rr = x ? 1 : 0;
                 }
             }
             lr[1] = rr;

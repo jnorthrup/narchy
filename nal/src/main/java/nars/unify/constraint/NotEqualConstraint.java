@@ -202,4 +202,25 @@ public final class NotEqualConstraint extends RelationConstraint {
 
     }
 
+    public static class NotSetsOrDifferentSets extends RelationConstraint {
+        public NotSetsOrDifferentSets(Term target, Term other) {
+            super(target, other, "notSetsOrDifferentSets");
+        }
+
+        @Override
+        protected @Nullable RelationConstraint newMirror(Term newX, Term newY) {
+            return new NotSetsOrDifferentSets(newX, newY);
+        }
+
+        @Override
+        public float cost() {
+            return 0.1f;
+        }
+
+        @Override
+        public boolean invalid(Term x, Term y) {
+            Op xo = x.op();
+            return xo.isSet() && (xo == y.op());
+        }
+    }
 }

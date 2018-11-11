@@ -7,7 +7,6 @@ import nars.NARS;
 import nars.Narsese;
 import nars.test.NALTest;
 import nars.test.TestNAR;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -26,9 +25,6 @@ public class NAL2Test extends NALTest {
         n.confMin.set(0.3f);
         n.termVolumeMax.set(10);
         return n;
-    }
-    @BeforeEach void setup() {
-        test.confTolerance(0.04f); //TEMPORARY
     }
 
 

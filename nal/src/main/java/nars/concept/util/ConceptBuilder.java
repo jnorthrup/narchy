@@ -225,7 +225,6 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
         if ((tt.OR(s -> s.isAny(Op.Sect )))) {
 
 
-            DynamicTruthModel dmt = null;
             Term subj = tt.sub(0), pred = tt.sub(1);
 
             Op so = subj.op(), po = pred.op();

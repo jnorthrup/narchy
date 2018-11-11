@@ -5,17 +5,17 @@
 //  corresponds to extensional union, and extensional intersection corresponds
 //  to intensional union.
 
-    (P --> M), (S --> M), notSet(S), notSet(P), neqRCom(S,P) |- ((P | S) --> M), (Belief:Intersection, Time:Intersect)
-    (P --> M), (S --> M), notSet(S), notSet(P), neqRCom(S,P) |- ((P & S) --> M), (Belief:Union, Time:Intersect)
+    (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- ((P | S) --> M), (Belief:Intersection, Time:Intersect)
+    (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- ((P & S) --> M), (Belief:Union, Time:Intersect)
 
-    (M --> P), (M --> S), notSet(S), notSet(P), neqRCom(S,P) |- (M --> (P & S)), (Belief:Intersection, Time:Intersect)
-    (M --> P), (M --> S), notSet(S), notSet(P), neqRCom(S,P) |- (M --> (P | S)), (Belief:Union, Time:Intersect)
+    (M --> P), (M --> S), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- (M --> (P & S)), (Belief:Intersection, Time:Intersect)
+    (M --> P), (M --> S), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- (M --> (P | S)), (Belief:Union, Time:Intersect)
 
-    (P --> M), (S --> M), notSet(S), notSet(P), neqRCom(S,P) |- ((P ~ S) --> M), (Belief:Difference, Time:Intersect)
-    (P --> M), (S --> M), notSet(S), notSet(P), neqRCom(S,P) |- ((S ~ P) --> M), (Belief:DifferenceReverse, Time:Intersect)
+    (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- ((P ~ S) --> M), (Belief:Difference, Time:Intersect)
+    (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- ((S ~ P) --> M), (Belief:DifferenceReverse, Time:Intersect)
 
-    (M --> P), (M --> S), notSet(S), notSet(P), neqRCom(S,P) |- (M --> (P - S)), (Belief:Difference, Time:Intersect)
-    (M --> P), (M --> S), notSet(S), notSet(P), neqRCom(S,P) |- (M --> (S - P)), (Belief:DifferenceReverse, Time:Intersect)
+    (M --> P), (M --> S), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- (M --> (P - S)), (Belief:Difference, Time:Intersect)
+    (M --> P), (M --> S), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- (M --> (S - P)), (Belief:DifferenceReverse, Time:Intersect)
 
         //(P --> M), (S --> M), is(P,"+"), is(S,"+") |- (differ(P,S) --> M), (Belief:Difference)
         //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((intersect(A,X),intersect(B,Y)) --> M), (Belief:Intersection)
