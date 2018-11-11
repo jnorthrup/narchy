@@ -66,10 +66,10 @@ public class TermReductionsTest extends NarseseTest {
         assertEq("{P,Q,R,S}", "(&,{P,Q},{R,S})");
     }
 
-    @Test
-    void testIntersectExtReduction5() {
-        assertEquals(Bool.Null /* emptyset */, SECTe.the(SETi.the(p, q), SETi.the(r, s)));
-    }
+//    @Test
+//    void testIntersectExtReduction5() {
+//        assertEquals(Bool.Null /* emptyset */, SECTe.the(SETi.the(p, q), SETi.the(r, s)));
+//    }
 
     @Test
     void testIntersectIntReduction1() {
@@ -111,10 +111,10 @@ public class TermReductionsTest extends NarseseTest {
         );
     }
 
-    @Test
-    void testIntersectIntReductionToZero() {
-        assertInvalidTerms("(|,{P,Q},{R,S})");
-    }
+//    @Test
+//    void testIntersectIntReductionToZero() {
+//        assertInvalidTerms("(|,{P,Q},{R,S})");
+//    }
 
     @Test
     void testIntersectIntReduction_to_one() {
@@ -181,7 +181,8 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     void testDiffEqual() {
 
-        assertEquals(Bool.False, $.diff(p, p));
+        assertEquals(Bool.Null, $.diff(p, p));
+        assertEquals(Bool.Null, $.diff(p.neg(), p.neg()));
     }
 
 
@@ -543,21 +544,21 @@ public class TermReductionsTest extends NarseseTest {
             NAR n = NARS.shell();
             n.believe("X", 1.0f, 0.9f);
             n.believe("Y", 0.5f, 0.9f);
-            tryDiff(n, "(X~Y)", "%.50;.85%");
-            tryDiff(n, "((--,Y)~(--,X))", "%.50;.85%");
-            tryDiff(n, "(Y~X)", "%0.0;.95%");
-            tryDiff(n, "((--,X)~(--,Y))", "%0.0;.95%");
+            tryDiff(n, "(X~Y)", "%.50;.81%");
+            tryDiff(n, "((--,Y)~(--,X))", "%.50;.81%");
+            tryDiff(n, "(Y~X)", "%0.0;.81%");
+            tryDiff(n, "((--,X)~(--,Y))", "%0.0;.81%");
         }
         {
             NAR n = NARS.shell();
             n.believe("X", 1.0f, 0.9f);
             n.believe("Y", 0.75f, 0.9f);
-            tryDiff(n, "(X~Y)", "%.25;.88%");
+            tryDiff(n, "(X~Y)", "%.25;.81%");
 
-            tryDiff(n, "((--,Y)~(--,X))", "%.25;.85%");
+            tryDiff(n, "((--,Y)~(--,X))", "%.25;.81%");
 
-            tryDiff(n, "(Y~X)", "%0.0;.85%");
-            tryDiff(n, "((--,X)~(--,Y))", "%0.0;.85%");
+            tryDiff(n, "(Y~X)", "%0.0;.81%");
+            tryDiff(n, "((--,X)~(--,Y))", "%0.0;.81%");
         }
         assertEq("(Y~X)", "((--,X)~(--,Y))");
         assertEq("(X~Y)", "((--,Y)~(--,X))");

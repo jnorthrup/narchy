@@ -41,7 +41,7 @@ public class TrackXY_NAR extends NAgentX {
     public static final int derivationStrength = 8;
     static boolean
             nars = true, rl = !nars,
-            sourceNumerics = false, targetNumerics = false,
+            sourceNumerics = true, targetNumerics = false,
             targetCam = true,
             gui = true;
     static int

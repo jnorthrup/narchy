@@ -24,8 +24,13 @@ public class HijackConceptIndex extends ConceptIndex {
     private final PriLinkHijackBag<Termed,PLink<Termed>> table;
 
 
-    private int forgetPeriodDurs = 4;
-    private float forgetTemperature = 0.01f;
+    private int forgetPeriodDurs = 64;
+    private float forgetTemperature = 0.1f;
+
+
+    /** eliding is faster but records less accurate access statistics.
+     *  but if eliding, cache statistics will not reflect the full amount of access otherwise would be necessary */
+    private static final boolean ElideGets = false;
 
     /**
      * how many items to visit during update
@@ -36,10 +41,6 @@ public class HijackConceptIndex extends ConceptIndex {
     //    private long now;
 //    private int dur;
     private DurService onDur;
-
-    /** eliding is faster.
-     *  but if eliding, cache statistics will not reflect the full amount of access otherwise would be necessary */
-    private static final boolean ElideGets = true;
 
 
     public HijackConceptIndex(int capacity, int reprobes) {

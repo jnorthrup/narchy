@@ -40,7 +40,7 @@ abstract public class DynamicTruthModel {
 
         assert (superterm.op() != NEG);
 
-        DynStampTruth d = new DynStampTruth(2);
+        DynStampTruth d = new DynStampTruth(0);
 
 
         Predicate<Task> filter = Answer.filter(superFilter, d::doesntOverlap);
@@ -48,6 +48,9 @@ abstract public class DynamicTruthModel {
         //TODO expand the callback interface allowing models more specific control over matching/answering/sampling subtasks
         
         return components(superterm, start, end, (Term subTerm, long subStart, long subEnd) -> {
+
+            if (subTerm instanceof Bool)
+                return false;
 
             boolean negated = subTerm.op() == Op.NEG;
             if (negated)
@@ -114,7 +117,7 @@ abstract public class DynamicTruthModel {
 
                 if (decomposed.op().isAny(Op.Sect)) {
                     return decomposed.subterms().AND(
-                            y -> each.accept(stmtDecompose(op, subjOrPred, y, common), start, end)
+                            y -> each.accept(stmtDecomposeStructural(op, subjOrPred, y, common), start, end)
                     );
                 }
 
@@ -170,7 +173,7 @@ abstract public class DynamicTruthModel {
 
                             int occ = (outerDT != DTERNAL && decRange != XTERNAL) ? occToDT(decRange - offset + outerDT) : XTERNAL;
                             Term x = stmtDecompose(op, subjOrPred, y, common,
-                                    ixTernal ? DTERNAL : occ, union);
+                                    ixTernal ? DTERNAL : occ, union, false);
 
                             if (x == Bool.Null)
                                 return false;
@@ -384,20 +387,23 @@ abstract public class DynamicTruthModel {
     /**
      * statement component
      */
-    private static Term stmtDecompose(Op superOp, boolean subjOrPred, Term subterm, Term common) {
-        return stmtDecompose(superOp, subjOrPred, subterm, common, DTERNAL);
+    private static Term stmtDecomposeStructural(Op superOp, boolean subjOrPred, Term subterm, Term common) {
+        return stmtDecompose(superOp, subjOrPred, subterm, common, DTERNAL, false, true);
     }
 
-
-    private static Term stmtDecompose(Op superOp, boolean subjOrPred, Term subterm, Term common, int dt) {
-        return stmtDecompose(superOp, subjOrPred, subterm, common, dt, false);
-    }
 
     /**
      * statement component (temporal)
      */
-    private static Term stmtDecompose(Op superOp, boolean subjOrPred, Term subterm, Term common, int dt, boolean negate) {
+    private static Term stmtDecompose(Op superOp, boolean subjOrPred, Term subterm, Term common, int dt, boolean negate, boolean structural) {
         Term s, p;
+
+        boolean outerNegate = false;
+        if (structural && subterm.op()==NEG) {
+            outerNegate = true;
+            subterm = subterm.unneg();
+        }
+
         if (subjOrPred) {
             s = subterm.negIf(negate);
             p = common;
@@ -418,7 +424,7 @@ abstract public class DynamicTruthModel {
         if (!y.op().conceptualizable)
             return Bool.Null; //throw new WTF();
 
-        return y;
+        return y.negIf(outerNegate);
 
     }
 

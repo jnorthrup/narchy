@@ -40,6 +40,22 @@ public class SetSectDiff {
 //                break;
             default:
 
+                Op oSet = t[0].op();
+                if ((o==SECTe && oSet==SETe) || (o == SECTi && oSet == SETi)) {
+                    boolean allSet = true;
+                    for (int i = 1, tLength = t.length; i < tLength; i++) {
+                        Term x = t[i];
+                        if (x.op()!=oSet) {
+                            allSet = false;
+                            break;
+                        }
+
+                    }
+                    if (allSet) {
+                        o = oSet;
+                    }
+                }
+
                 /** if the boolean value of a key is false, then the entry is negated */
                 ObjectByteHashMap<Term> y = intersect(o, o==SECTe || o == SECTi, ArrayIterator.iterable(t), new ObjectByteHashMap<>(t.length));
                 if (y == null)
@@ -69,15 +85,18 @@ public class SetSectDiff {
         if (y == null)
             return null;
 
-        for (Term x : t) {
-            Op xo = x.op();
 
+        for (Term x : t) {
             if (x instanceof Bool) {
                 if (x == True)
                     continue;
                 else
                     return null; //fail on null or false
             }
+
+            Op xo = x.op();
+
+
 
             if (xo != o) {
                 if (sect) {

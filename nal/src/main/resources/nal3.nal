@@ -47,27 +47,27 @@
 //        (S --> M), ((S ~ P) --> M) |- --(P --> M), (Belief:DecomposePP)
 //        (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeNP)
 //
-//    //Raw DIFFe
-//    S, (S ~ P) |- P, (Belief:DecomposeDiffX)
-//    P, (S ~ P) |- S, (Belief:DecomposeDiffX)
+    //Raw DIFFe
+    S, (S ~ P) |- P, (Belief:DecomposeDiffX)
+    P, (S ~ P) |- S, (Belief:DecomposeDiffX)
 //        S, (S ~ P) |- --P, (Belief:DecomposePP)
 //        P, (S ~ P) |- S, (Belief:DecomposeNP)
 
-//     //similarity (S==P)! (symmetric: DecomposeNegative....)
-//     ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeDiff)
-//     (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeDiff)
-//     (S ~ P),         S         |- P,         (Goal:DecomposeDiff)
-//        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposeDiff)
-//        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposeDiff)
-//        (S ~ P),         P         |- S,         (Goal:DecomposeDiff)
-//
-//     //difference --(S==P)! (asymmetric: DecomposePositive... )
-//     ((S ~ P) --> M), (S --> M) |- --(P --> M), (Goal:DecomposePP)
-//     (M --> (S - P)), (M --> S) |- --(M --> P), (Goal:DecomposePP)
-//     (S ~ P),         S         |- --P,         (Goal:DecomposePP)
-//        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposePN)
-//        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposePN)
-//        (S ~ P),         P         |- S,         (Goal:DecomposePN)
+     //similarity (S==P)! (symmetric: DecomposeNegative....)
+     ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeDiff)
+     (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeDiff)
+     (S ~ P),         S         |- P,         (Goal:DecomposeDiff)
+        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposeDiff)
+        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposeDiff)
+        (S ~ P),         P         |- S,         (Goal:DecomposeDiff)
+
+     //difference --(S==P)! (asymmetric: DecomposePositive... )
+     ((S ~ P) --> M), (S --> M) |- --(P --> M), (Goal:DecomposePP)
+     (M --> (S - P)), (M --> S) |- --(M --> P), (Goal:DecomposePP)
+     (S ~ P),         S         |- --P,         (Goal:DecomposePP)
+        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposePN)
+        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposePN)
+        (S ~ P),         P         |- S,         (Goal:DecomposePN)
 
 
 
