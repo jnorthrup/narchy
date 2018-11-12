@@ -484,7 +484,7 @@ public class UDPeer extends UDP {
     }
 
     public String summary() {
-        return c + ", connected to " + them.size() + " peers, (avg latency=" + latencyAvg() + ')';
+        return them.size() + " peers, (avg latency=" + latencyAvg() + ')';
     }
 
     /**
@@ -502,18 +502,23 @@ public class UDPeer extends UDP {
         ping(new InetSocketAddress(host, port));
     }
 
-    public void ping(@Nullable InetSocketAddress to) {
-        if (to.equals(UDPeer.this.addr))
-            return;
-            //throw new UnsupportedOperationException("dont ping self");
-        send(ping(), to);
-    }
     public void ping(@Nullable UDPeer x) {
         assert(this!=x);
         ping(x.addr);
     }
 
-    protected Msg ping() {
+    public void ping(@Nullable InetSocketAddress to) {
+        if (to.equals(UDPeer.this.addr))
+            return;
+            //throw new UnsupportedOperationException("dont ping self");
+
+        if (logger.isDebugEnabled())
+            logger.debug("{} {} send ping to {}", name(), addr, to);
+        send(ping(), to);
+    }
+
+
+    private Msg ping() {
         return new Msg(PING.id, DEFAULT_PING_TTL, me, null, System.currentTimeMillis());
     }
 
@@ -523,7 +528,8 @@ public class UDPeer extends UDP {
         long sent = m.dataLong(0);
         long latencyMS = now - sent;
 
-        logger.info("recv pong {} from {} ({})", m, connected, Texts.timeStr(1E6 * latencyMS));
+        if (logger.isDebugEnabled())
+            logger.debug("{} recv pong {} from {} ({})", name(), m, connected, Texts.timeStr(1E6 * latencyMS));
 
         if (connected != null) {
             connected.onPing(latencyMS);
@@ -544,7 +550,8 @@ public class UDPeer extends UDP {
                                 Ints.toByteArray(ping.id()) 
                         ));
 
-        logger.info("send pong {} {} to {}", addr, m, from);
+        if (logger.isDebugEnabled())
+            logger.debug("send pong {} {} to {}", addr, m, from);
 
         seen(m, 1f);
         send(m, from);
@@ -933,8 +940,8 @@ public class UDPeer extends UDP {
             
         }
 
-        public void onPing(long time) {
-            pingTime.recordValue(Math.max(1,time));
+        public void onPing(long timeMS) {
+            pingTime.recordValue(Math.max(1,timeMS));
             latency.set(Math.round(pingTime.getMean()));
         }
 

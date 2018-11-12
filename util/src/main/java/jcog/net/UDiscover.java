@@ -10,7 +10,6 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * https:
@@ -34,7 +33,7 @@ abstract public class UDiscover<P>  {
     private byte[] myID;
     private byte[] theirID;
 
-    final AtomicBoolean busy = new AtomicBoolean(true);
+//    final AtomicBoolean busy = new AtomicBoolean(true);
 
 
     public UDiscover(P payloadID) {
@@ -75,7 +74,7 @@ abstract public class UDiscover<P>  {
                 p = new DatagramPacket(myID, myID.length, ia, port);
                 q = new DatagramPacket(theirID, theirID.length);
 
-                busy.set(false);
+                //busy.set(false);
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -91,8 +90,8 @@ abstract public class UDiscover<P>  {
 
         try {
 
-            if (!busy.compareAndSet(false, true))
-                return false;
+//            if (!busy.compareAndSet(false, true))
+//                return false;
 
             final MulticastSocket ms = this.ms;
             if (ms == null)
@@ -127,16 +126,16 @@ abstract public class UDiscover<P>  {
 
         } catch (Exception e) {
             logger.error("{} {}", this, e);
-        } finally {
+        }/* finally {
             busy.set(false);
-        }
+        }*/
 
         return true;
     }
 
     public void stop() {
         synchronized (this) {
-            busy.set(true);
+            //busy.set(true);
             if (ms != null) {
                 ms.close();
                 ms = null;

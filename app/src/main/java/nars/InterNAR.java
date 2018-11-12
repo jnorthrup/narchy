@@ -37,7 +37,7 @@ public class InterNAR extends NARService implements TriConsumer<NAR, ActiveQuest
     private final TaskLeak send;
 
 
-    final UDPeer peer;
+    public final UDPeer peer;
 
 
     public final FloatRange incomingPriMult = new FloatRange(1f, 0, 2f);
@@ -125,6 +125,8 @@ public class InterNAR extends NARService implements TriConsumer<NAR, ActiveQuest
         });
 
         nar.on(send);
+
+
     }
 
     @Override

@@ -229,7 +229,7 @@ public class NARui {
         ));
     }
 
-    private static Surface taskView(NAR n) {
+    public static Surface taskView(NAR n) {
 
         int cap = 32;
         float rate = 1f;
