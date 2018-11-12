@@ -34,6 +34,7 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.menu.Menu;
 import spacegraph.space2d.widget.menu.TabMenu;
+import spacegraph.space2d.widget.menu.view.GridMenuView;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meta.ServicesTable;
@@ -140,7 +141,10 @@ public class NARui {
 //        );
         return
                 new Bordering(
-                        new TabMenu(mm)
+                        new TabMenu(mm,
+                                new GridMenuView()
+                                //new WallMenuView()
+                        )
                 )
                         .north(ExeCharts.runPanel(n))
                 //.south(new OmniBox(new NarseseJShellModel(n))) //+50mb heap

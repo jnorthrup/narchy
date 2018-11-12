@@ -110,8 +110,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
 
         long tStart = t.start(), tEnd = t.end();
         if (tStart!=ETERNAL)
-        //if (tEnd <= seriesEnd /* allow prediction 'suffix' */)
-        {
+        if (seriesEnd != TIMELESS /* allow prediction 'suffix' */) {
             if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
 
                     //TODO actually absorb (transfer) the non-series task priority in proportion to the amount predicted, gradually until complete absorption

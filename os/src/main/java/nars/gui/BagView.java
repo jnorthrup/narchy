@@ -7,7 +7,6 @@ import nars.control.DurService;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.menu.TabMenu;
 import spacegraph.space2d.widget.meter.BagChart;
@@ -40,7 +39,7 @@ public class BagView<X extends Prioritized> extends TabMenu {
                                 @Override
                                 public boolean start(SurfaceBase parent) {
                                     if (super.start(parent)) {
-                                        on = DurService.on(nar, () -> update());
+                                        on = DurService.on(nar, (Runnable) this::update);
                                         return true;
                                     }
                                     return false;
@@ -59,6 +58,6 @@ public class BagView<X extends Prioritized> extends TabMenu {
                             };
                             return b;
                         }
-                ), CheckBox::new);
+                ));
     }
 }

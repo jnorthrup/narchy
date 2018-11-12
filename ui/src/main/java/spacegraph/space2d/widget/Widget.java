@@ -40,7 +40,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
      * zero: neutral
      * negative: disabled, hidden, irrelevant
      */
-    private float temperature = 0;
+    private float pri = 0;
 
     protected transient Finger touchedBy = null;
 
@@ -96,8 +96,8 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         r = g = b = bri;
 
 
-        float t = this.temperature;
-        temperature = Util.clamp(temperature * 0.95f, 0, 1f);
+        float t = this.pri;
+        pri = Util.clamp(pri * 0.95f, 0, 1f);
         if (t >= 0) {
 
 
@@ -120,7 +120,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     protected void paintAbove(GL2 gl, SurfaceRender r) {
 
         if (focused) {
-            float t = this.temperature;
+            float t = this.pri;
             RectFloat b = this.bounds;
             float th = Math.min(b.w, b.h) * (0.1f + 0.1f * t);
             gl.glColor4f(0.5f + 0.5f * t,0.25f, 0.15f, 0.5f);
@@ -149,6 +149,9 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     public Surface finger(Finger finger) {
         Surface s = super.finger(finger);
         if (s == null) {
+
+            priAtleast(0.3f);
+
             if (!focused && finger.pressedNow(0) || finger.pressedNow(2))
                 focus();
 
@@ -171,6 +174,10 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         return s;
     }
 
+    private void priAtleast(float p) {
+        pri = Math.max(pri, p);
+    }
+
     @Override
     protected RectFloat innerBounds() {
         RectFloat r = bounds;
@@ -187,7 +194,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     @Override
     public void fingerTouch(Finger finger, boolean touching) {
         if (touching) {
-            activate(0.5f);
+            pri(0.5f);
             touchedBy = finger;
         } else {
             touchedBy = null;
@@ -196,15 +203,16 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
     /** add temperature to this widget, affecting its display and possibly other behavior.  useful for indicating
      *  transient activity */
-    public void activate(float inc) {
-        this.temperature = Util.clamp(temperature + inc, 0, 1f);
+    public void pri(float inc) {
+        this.pri = Util.clamp(pri + inc, 0, 1f);
     }
 
+    public float pri() { return pri; }
 
     @Override
     public void keyStart() {
         focused = true;
-        activate(1f);
+        pri(1f);
     }
 
     @Override

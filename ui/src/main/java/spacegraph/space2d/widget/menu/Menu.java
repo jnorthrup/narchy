@@ -1,7 +1,6 @@
 package spacegraph.space2d.widget.menu;
 
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 
 import java.util.Map;
@@ -13,7 +12,7 @@ import java.util.function.Supplier;
  */
 abstract public class Menu extends MutableUnitContainer {
 
-    protected final ContentView content;
+    protected final MenuView content;
 
     public final Map<String, Supplier<Surface>> options;
 
@@ -22,7 +21,7 @@ abstract public class Menu extends MutableUnitContainer {
 
 
     /** view model */
-    abstract static class ContentView {
+    public abstract static class MenuView {
         abstract public Surface view();
 
         abstract public void active(Surface surface);
@@ -31,43 +30,11 @@ abstract public class Menu extends MutableUnitContainer {
         public abstract boolean isEmpty();
     }
 
-
-    static class GridView extends ContentView {
-
-
-        final Gridding view = new Gridding();
-
-        @Override
-        public boolean isEmpty() {
-            return view.isEmpty();
-        }
-
-        @Override
-        public Surface view() {
-            return view;
-        }
-
-        @Override
-        public void active(Surface surface) {
-            view.add(surface);
-        }
-
-        @Override
-        public boolean inactive(Surface surface) {
-            return view.remove(surface);
-        }
-    }
-
-
-    public Menu(Map<String, Supplier<Surface>> options) {
-        this(new GridView(), options);
-    }
-
-    public Menu(ContentView content, Map<String, Supplier<Surface>> options) {
+    public Menu(Map<String, Supplier<Surface>> menu, MenuView view) {
         super();
 
-        this.options = options;
-        this.content = content;
+        this.options = menu;
+        this.content = view;
     }
 
     public Menu setWrapper(Function<Surface,Surface> wrapper) {
@@ -76,18 +43,6 @@ abstract public class Menu extends MutableUnitContainer {
             return this;
         }
     }
-
-    /** TODO */
-    abstract public static class ContentWall extends ContentView {
-
-        public ContentWall() {
-            super();
-//            setContent(new GraphEdit());
-//            setWrapper(x -> new Windo(new MetaFrame(x)).size(w()/2, h()/2));
-        }
-    }
-
-
 
 
 }

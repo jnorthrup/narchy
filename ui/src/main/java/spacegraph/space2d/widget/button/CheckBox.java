@@ -47,7 +47,7 @@ public class CheckBox extends ToggleButton {
     @Override
     protected boolean prePaint(SurfaceRender r) {
         if (on())
-            activate(0.5f);
+            pri(0.5f);
 
         return super.prePaint(r);
     }

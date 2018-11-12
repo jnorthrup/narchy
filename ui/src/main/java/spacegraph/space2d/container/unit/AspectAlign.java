@@ -53,7 +53,7 @@ public class AspectAlign extends UnitContainer {
         this(the, aspect, a, scale, scale);
     }
 
-    private AspectAlign(Surface the, float aspect, Align a, float scaleX, float scaleY) {
+    public AspectAlign(Surface the, float aspect, Align a, float scaleX, float scaleY) {
         super(the);
         this.aspect = aspect;
         this.align = a;
@@ -129,7 +129,7 @@ public class AspectAlign extends UnitContainer {
                 ty = bounds.top() + (h - th) / 2f;
                 break;
 
-            case RightTop:
+            case TopRight:
                 tx = bounds.right() - tw;
                 ty = bounds.bottom() - th;
                 break;
@@ -196,7 +196,7 @@ public class AspectAlign extends UnitContainer {
         /**
          * 1:1, x=right, y=center
          */
-        RightTop, LeftTop,
+        TopRight, LeftTop,
 
         
 

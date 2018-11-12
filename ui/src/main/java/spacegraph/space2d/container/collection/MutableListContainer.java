@@ -47,6 +47,9 @@ public class MutableListContainer extends AbstractMutableContainer {
     protected Surface get(int index) {
         return children.get(index);
     }
+    protected Surface remove(int index) {
+        return children.remove(index);
+    }
 
 //    @Nullable
 //    public Surface getSafe(int index) {

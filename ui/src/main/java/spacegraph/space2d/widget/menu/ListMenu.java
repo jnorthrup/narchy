@@ -12,15 +12,20 @@ import java.util.function.Supplier;
 /** selectable list, views one item at a time */
 public class ListMenu extends Menu {
 
-    private final Surface index;
+    private final ButtonSet index;
     private final Splitting wrap;
 
-    public ListMenu(Map<String, Supplier<Surface>> options) {
-        super(options);
-        index = new ButtonSet(ButtonSet.Mode.One, options.entrySet().stream().map(e -> {
+    /** TODO
+     *      options for the border/size of the menu
+     *      One/Multi mode
+     *
+     */
+    public ListMenu(Map<String, Supplier<Surface>> menu, MenuView view) {
+        super(menu, view);
+        index = new ButtonSet(ButtonSet.Mode.One, menu.entrySet().stream().map(e -> {
             return new CheckBox(e.getKey()).on(()->view(e.getValue()));
         })::iterator);
-        ((ButtonSet) index).vertical();
+        index.vertical();
         wrap = Splitting.row(index, 0.2f, new EmptySurface());
         set(wrap);
     }

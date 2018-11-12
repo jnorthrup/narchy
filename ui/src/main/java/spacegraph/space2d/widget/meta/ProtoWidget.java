@@ -20,6 +20,7 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.chip.*;
 import spacegraph.space2d.widget.menu.TabMenu;
+import spacegraph.space2d.widget.menu.view.GridMenuView;
 import spacegraph.space2d.widget.port.*;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -165,7 +166,7 @@ public class ProtoWidget extends Bordering {
             }, new Gridding( fields )) ));
         });
 
-        set(new TabMenu(categories, (l)->{
+        set(new TabMenu(categories, new GridMenuView(), (l)->{
             String icon;
             switch (l) {
                 case "Control":

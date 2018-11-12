@@ -19,6 +19,7 @@ public class TopCraft extends NAgentX {
 
     private final TopDownMinicraft craft;
     private final AutoclassifiedBitmap camAE;
+    private float prevHealth;
     float prevScore;
     private Bitmap2DSensor<PixelBag> pixels;
 
@@ -26,13 +27,18 @@ public class TopCraft extends NAgentX {
         super("cra", nar);
 
         this.craft = new TopDownMinicraft();
+        TopDownMinicraft.start(craft);
+        //craft.changeLevel(1);
 
         PixelBag p = PixelBag.of(() -> craft.image, 64, 64).addActions(id, this);
         int nx = 8;
         camAE = new AutoclassifiedBitmap("cae", p.pixels, nx, nx, (subX, subY) -> {
-            return new float[]{p.X, p.Y, p.Z};
+            return new float[1]; //return new float[]{p.X, p.Y, p.Z};
         }, 8, this);
+        camAE.alpha.set(0.04f);
+        camAE.noise.set(0.02f);
         SpaceGraph.window(camAE.newChart(), 500, 500);
+        onFrame(()->{ p.update(); });
 
 
         senseSwitch($.func("dir", id), () -> craft.player.dir, 0, 4);
@@ -60,15 +66,25 @@ public class TopCraft extends NAgentX {
         });
         actionToggle($.func("menu", id), input.menu::pressIfUnpressed);
 
-        reward(() -> {
+        rewardNormalized("score", -1, +1, () -> {
             float nextScore = craft.frameImmediate();
             float ds = nextScore - prevScore;
+            if (ds == 0)
+                return Float.NaN;
             this.prevScore = nextScore;
-            float r = ((ds / 2f)) + 2f * (craft.player.health / ((float) craft.player.maxHealth) - 0.5f);
-            return r;
+            System.out.println("score delta:" + ds);
+            return ds;
         });
-
-        TopDownMinicraft.start(craft);
+        rewardNormalized("health", -1, +1, ()-> {
+            float nextHealth = craft.player.health;
+            float dh = nextHealth - prevHealth;
+            if (dh == 0)
+                return Float.NaN;
+            this.prevHealth = nextHealth;
+            System.out.println("health delta: " + dh);
+            return dh;
+            //return (craft.player.health / ((float) craft.player.maxHealth));
+        });
     }
 
     public static void main(String[] args) {

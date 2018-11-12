@@ -8,6 +8,8 @@ import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
+import spacegraph.space2d.widget.menu.view.GridMenuView;
+import spacegraph.space2d.widget.meta.MetaHover;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.Map;
@@ -25,11 +27,15 @@ public class TabMenu extends Menu {
     private static final float CONTENT_VISIBLE_SPLIT = 0.9f;
 
     public TabMenu(Map<String, Supplier<Surface>> options) {
-        this(options, CheckBox::new);
+        this(options, new GridMenuView());
     }
 
-    public TabMenu(Map<String, Supplier<Surface>> options, Function<String, ToggleButton> buttonBuilder) {
-        super(options);
+    public TabMenu(Map<String, Supplier<Surface>> options, MenuView view) {
+        this(options, view, CheckBox::new);
+    }
+
+    public TabMenu(Map<String, Supplier<Surface>> options, MenuView view, Function<String, ToggleButton> buttonBuilder) {
+        super(options, view);
         this.buttonBuilder = buttonBuilder;
 
 
@@ -109,7 +115,10 @@ public class TabMenu extends Menu {
         ToggleButton bb = buttonBuilder.apply(label).on(toggleInside);
         PushButton cc = PushButton.awesome("external-link").click(toggleOutside);
 
-        return Splitting.row(bb, 0.75f, new AspectAlign(cc, AspectAlign.Align.RightTop,1, 0.75f));
+        //return Splitting.row(bb, 0.75f, new AspectAlign(cc, AspectAlign.Align.RightTop,1, 0.75f));
+
+        AspectAlign ccc = new AspectAlign(cc, 1, AspectAlign.Align.TopRight, 0.15f, 0.15f);
+        return new MetaHover(bb, ()->ccc);
     }
 
     protected void split() {

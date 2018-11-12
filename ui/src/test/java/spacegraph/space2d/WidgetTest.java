@@ -7,6 +7,7 @@ import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.menu.ListMenu;
 import spacegraph.space2d.widget.menu.TabMenu;
+import spacegraph.space2d.widget.menu.view.GridMenuView;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
 import spacegraph.space2d.widget.slider.FloatSlider;
@@ -26,7 +27,7 @@ public class WidgetTest {
 
     public static Container widgetDemo() {
         //return new TabMenu(menu);
-        return new ListMenu(menu);
+        return new ListMenu(menu, new GridMenuView());
     }
 
     static final Map<String, Supplier<Surface>> menu = Map.of(

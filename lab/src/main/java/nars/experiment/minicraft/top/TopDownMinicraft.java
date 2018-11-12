@@ -22,7 +22,6 @@ import java.awt.image.DataBufferInt;
 import java.io.IOException;
 
 public class TopDownMinicraft extends Canvas implements Runnable {
-    private static final long serialVersionUID = 1L;
 
     public static final String NAME = "Minicraft";
     public static final int HEIGHT = 120;
@@ -43,14 +42,14 @@ public class TopDownMinicraft extends Canvas implements Runnable {
         for (int r = 0; r < 6; r++) {
             for (int g = 0; g < 6; g++) {
                 for (int b = 0; b < 6; b++) {
-                    int rr = (r * 255 / 5);
-                    int gg = (g * 255 / 5);
-                    int bb = (b * 255 / 5);
-                    int mid = (rr * 30 + gg * 59 + bb * 11) / 100;
+                    float rr = (r * 255f / 5f);
+                    float gg = (g * 255f / 5f);
+                    float bb = (b * 255f / 5f);
+                    float mid = (rr * 30 + gg * 59 + bb * 11) / 100;
 
-                    int r1 = ((rr + mid * 1) / 2) * 230 / 255 + 10;
-                    int g1 = ((gg + mid * 1) / 2) * 230 / 255 + 10;
-                    int b1 = ((bb + mid * 1) / 2) * 230 / 255 + 10;
+                    int r1 = Math.round(((rr + mid * 1) / 2) * 230f / 255f + 10f);
+                    int g1 = Math.round(((gg + mid * 1) / 2) * 230f / 255f + 10f);
+                    int b1 = Math.round(((bb + mid * 1) / 2) * 230f / 255f + 10f);
                     colors[pp++] = r1 << 16 | g1 << 8 | b1;
 
                 }
@@ -212,7 +211,8 @@ public class TopDownMinicraft extends Canvas implements Runnable {
                     win();
                 }
             }
-            level.tick();
+            if (level!=null)
+                level.tick();
             Tile.tickCount++;
         }
 
