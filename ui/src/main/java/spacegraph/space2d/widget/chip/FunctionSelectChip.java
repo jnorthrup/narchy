@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.chip;
 import jcog.data.list.FasterList;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.ToggleButton;
-import spacegraph.space2d.widget.tab.ButtonSet;
+import spacegraph.space2d.widget.button.ButtonSet;
 
 import java.util.List;
 import java.util.Map;

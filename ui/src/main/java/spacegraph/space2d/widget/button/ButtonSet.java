@@ -1,11 +1,11 @@
-package spacegraph.space2d.widget.tab;
+package spacegraph.space2d.widget.button;
 
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.set.ArrayHashSet;
+import jcog.exe.Exe;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.button.ToggleButton;
 
 /** set of buttons, which may be linked behaviorally in various ways */
 public class ButtonSet<T extends ToggleButton> extends Gridding {
@@ -50,13 +50,17 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
                     } else if (mode == Mode.One) {
                         this.buttons.forEach(cc -> {
                             if (cc != bb)
-                                cc.set(false);
+                                cc.on(false);
                         });
                     }
                 } else {
 
-
-
+                    if (this.buttons.AND(cc -> !cc.on())) {
+                        //no other buttons are toggled, so re-toggle this one
+                        Exe.invoke(()->{ //HACK
+                           bb.on(true);
+                        });
+                    }
 
                 }
 
@@ -70,9 +74,15 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
 
         set(this.buttons.list);
 
+
+    }
+
+    @Override
+    protected void starting() {
+        super.starting();
+
         if (mode == Mode.One) {
-            
-            this.buttons.first().set(true);
+            this.buttons.first().on(true);
         }
     }
 

@@ -15,23 +15,22 @@ import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.menu.TabMenu;
 import spacegraph.space2d.widget.meter.Plot2D;
-import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.Map;
 
 import static nars.Op.*;
 
-public class ConceptSurface extends TabPane {
+public class ConceptSurface extends TabMenu {
 
     public ConceptSurface(Termed id, NAR n) {
         this(id.term(), n);
     }
 
     public ConceptSurface(Term id, NAR n) {
-        super();
-        addToggles(Map.of(
+        super(Map.of(
                         id.toString(), () -> new VectorLabel(id.toString()),
                         "budget", () -> {
 
@@ -57,7 +56,7 @@ public class ConceptSurface extends TabPane {
 
                             , 0.8f), n, (nn) -> {
                                 p.update();
-                                if (boost.get()) {
+                                if (boost.on()) {
                                     n.activate(id, 1f);
                                 }
                             });

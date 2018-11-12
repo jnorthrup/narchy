@@ -11,7 +11,7 @@ import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.widget.button.ColorToggle;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.slider.XYSlider;
-import spacegraph.space2d.widget.tab.ButtonSet;
+import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.util.math.v2;
 import spacegraph.video.Tex;
 

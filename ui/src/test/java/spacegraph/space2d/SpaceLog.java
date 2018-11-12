@@ -149,7 +149,7 @@ public class SpaceLog {
             @Override
             public Bordering controls() {
                 Bordering b = super.controls();
-                b.west(new CheckBox("Auto").set(autoNow).on(x -> autoNow = x));
+                b.west(new CheckBox("Auto").on(autoNow).on(x -> autoNow = x));
                 return b;
             }
 

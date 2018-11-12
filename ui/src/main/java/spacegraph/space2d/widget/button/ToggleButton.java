@@ -42,7 +42,7 @@ public class ToggleButton extends AbstractButton {
         return new IconToggleButton(ImageTexture.awesome(icon));
     }
 
-    public ToggleButton set(boolean on) {
+    public ToggleButton on(boolean on) {
         if (this.on.compareAndSet(!on, on)) {
             if (action != null) {
                 //Exe.invoke(()->{
@@ -53,21 +53,21 @@ public class ToggleButton extends AbstractButton {
         return this;
     }
 
-    public final boolean get() {
+    public final boolean on() {
         return on.getOpaque();
     }
 
-    public ToggleButton on(Runnable a) {
+    public <T extends ToggleButton> T on(Runnable a) {
         return on((x)->{ if (x) a.run(); });
     }
 
-    public ToggleButton on(BooleanProcedure a) {
+    public <T extends ToggleButton> T on(BooleanProcedure a) {
         return on((thizz, x)->a.value(x));
     }
 
-    public ToggleButton on(ObjectBooleanProcedure<ToggleButton> a) {
+    public <T extends ToggleButton> T on(ObjectBooleanProcedure<ToggleButton> a) {
         this.action = a;
-        return this;
+        return (T) this;
     }
 
 
@@ -78,6 +78,6 @@ public class ToggleButton extends AbstractButton {
     }
 
     private void toggle() {
-        set(!get());
+        on(!on());
     }
 }

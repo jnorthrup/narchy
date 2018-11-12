@@ -22,7 +22,7 @@ public class Wall<S extends Surface> extends MutableMapContainer<Surface, Windo>
 
     public Wall() {
         super();
-        clipBounds = false;
+        //clipBounds = false;
     }
 
 //    /** scale applied to inner content */

@@ -8,7 +8,6 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.IntSpinner;
-import spacegraph.space2d.widget.tab.ButtonSet;
 
 /**
  * control and view statistics of a loop
@@ -41,7 +40,7 @@ public class LoopPanel extends Gridding {
                 .add("heap", Util::memoryUsed, 0, 1);
 
         set(
-                        new ButtonSet(ButtonSet.Mode.One,
+                        //new ButtonSet(ButtonSet.Mode.One,
 //                                ToggleButton.awesome("play").on((b) -> {
 //                                    if (b) {
 //                                        if (pause) {
@@ -60,7 +59,7 @@ public class LoopPanel extends Gridding {
 //                            }
 //                        })
 //                        ),
-                                new CheckBox("On").set(true).on((o)->{
+                                new CheckBox("On").on(true).on((o)->{
                                     synchronized(loop) {
                                         if (o) {
                                             pause = false;
@@ -72,7 +71,9 @@ public class LoopPanel extends Gridding {
                                             update();
                                         }
                                     }
-                                })),
+                                }
+                                //)
+                        ),
                         fpsLabel, 
                         cycleTimePlot,
                         heapPlot

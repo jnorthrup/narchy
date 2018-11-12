@@ -16,7 +16,7 @@ public class WebcamChip extends Bordering {
     final CheckBox enable = new CheckBox("enable");
 
     {
-        enable.set(true);
+        enable.on(true);
     }
 
     @Override
@@ -24,7 +24,7 @@ public class WebcamChip extends Bordering {
         set(new WebCam.WebCamSurface(wc));
         set(S, new Gridding(enable, LabeledPane.awesome(out, "play")  /*, device select, ... framerate, */));
         on = wc.tensor.on((x)-> {
-            if (enable.get() && out.active()) {
+            if (enable.on() && out.active()) {
                 //out.out(x);
                 out.out(wc.tensor);
             }

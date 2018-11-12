@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.button;
 
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -17,9 +18,9 @@ public class CheckBox extends ToggleButton {
     public CheckBox(String text) {
         this.text = text;
 
-        set((label = new VectorLabel("")));
+        set(label = new VectorLabel(""));
 
-        set(false);
+        on(false);
     }
 
     public CheckBox(String text, Runnable r) {
@@ -38,21 +39,24 @@ public class CheckBox extends ToggleButton {
 
     public CheckBox(String text, AtomicBoolean b) {
         this(text);
-        set(b.get());
+        on(b.get());
         on((button, value) -> b.set(value));
     }
 
 
+    @Override
+    protected boolean prePaint(SurfaceRender r) {
+        if (on())
+            activate(0.5f);
 
-
-
-
+        return super.prePaint(r);
+    }
 
 
     @Override
-    public ToggleButton set(boolean on) {
+    public ToggleButton on(boolean on) {
         label.text(label(text, on));
-        super.set(on);
+        super.on(on);
         return this;
     }
 
@@ -62,7 +66,10 @@ public class CheckBox extends ToggleButton {
     }
 
     public void setText(String s) {
-        this.text = s;
+        if (!this.text.equals(s)) {
+            this.text = s;
+            label.text(label(s, on()));
+        }
     }
 
 }

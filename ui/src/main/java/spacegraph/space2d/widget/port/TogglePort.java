@@ -29,7 +29,7 @@ public class TogglePort extends Gridding {
         };
         port.on((w, x)-> port.out(x));
 
-        set(new CheckBox("", port::enable).set(true),
+        set(new CheckBox("", port::enable).on(true),
             port
         );
 

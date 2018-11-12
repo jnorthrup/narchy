@@ -28,15 +28,16 @@ import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.KeyValueGrid;
+import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.TextEdit0;
+import spacegraph.space2d.widget.menu.Menu;
+import spacegraph.space2d.widget.menu.TabMenu;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meta.ServicesTable;
 import spacegraph.space2d.widget.slider.FloatGuage;
-import spacegraph.space2d.widget.tab.ButtonSet;
-import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.math.Color3f;
@@ -139,7 +140,7 @@ public class NARui {
 //        );
         return
                 new Bordering(
-                        new TabPane().addToggles(mm)
+                        new TabMenu(mm)
                 )
                         .north(ExeCharts.runPanel(n))
                 //.south(new OmniBox(new NarseseJShellModel(n))) //+50mb heap
@@ -230,7 +231,7 @@ public class NARui {
         float rate = 1f;
 
         CheckBox updating = new CheckBox("Update");
-        updating.set(true);
+        updating.on(true);
 
         /** TODO make multithread better */
         PLinkArrayBag<Task> b = new PLinkArrayBag<>(PriMerge.replace, cap);
@@ -259,14 +260,14 @@ public class NARui {
                 , 0.1f);
 
         Off onTask = n.onTask((t) -> {
-            if (updating.get()) {
+            if (updating.on()) {
                 b.put(new PLinkHashCached<>(t, t.priElseZero() * rate));
             }
         });
         return DurSurface.get(s, n, (nn) -> {
 
         }, (nn) -> {
-            if (updating.get()) {
+            if (updating.on()) {
                 synchronized (tasks) {
                     taskList.clear();
                     b.commit();
@@ -306,7 +307,7 @@ public class NARui {
         Iterable<Concept> rewards = () -> a.rewards.stream().flatMap(r -> StreamSupport.stream(r.spliterator(), false)).iterator();
         Iterable<? extends Concept> actions = a.actions;
 
-        TabPane aa = new TabPane().addToggles(Map.of(
+        Menu aa = new TabMenu(Map.of(
                 a.toString(), () -> new ObjectSurface<>(a, 4),
                 "emotion", () -> new EmotionPlot(512, a),
                 "reward", () -> NARui.beliefCharts(rewards, a.nar()),

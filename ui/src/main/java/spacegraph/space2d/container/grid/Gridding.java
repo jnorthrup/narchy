@@ -24,13 +24,20 @@ public class Gridding extends MutableListContainer {
 
     public static final float HORIZONTAL = 0f;
     public static final float VERTICAL = Float.POSITIVE_INFINITY;
-    private static final float SQUARE = 0.5f;
 
-    protected float margin = 0.05f;
-    private float gridAspect;
+    /** https://en.wikipedia.org/wiki/Golden_ratio */
+    private static final float PHI = 0.618f;
+
+    protected float margin = 0.04f;
+
+    private float aspect;
+
+    public Gridding() {
+        this(PHI);
+    }
 
     public Gridding(Surface... children) {
-        this(SQUARE, children);
+        this(PHI, children);
     }
 
     public Gridding(float margin, float aspect, Surface/*...*/ children) {
@@ -40,7 +47,7 @@ public class Gridding extends MutableListContainer {
     }
 
     public Gridding(List<Surface> children) {
-        this(SQUARE, children);
+        this(PHI, children);
     }
 
     public Gridding(float aspect, Surface... children) {
@@ -55,16 +62,16 @@ public class Gridding extends MutableListContainer {
 
     private Gridding(float aspect) {
         super();
-        this.gridAspect = (aspect);
+        this.aspect = (aspect);
     }
 
     public boolean isGrid() {
-        float a = gridAspect;
+        float a = aspect;
         return a!=0 && a!=Float.POSITIVE_INFINITY;
     }
 
     public Gridding aspect(float gridAspect) {
-        this.gridAspect = gridAspect;
+        this.aspect = gridAspect;
         layout(); //TODO only if gridAspect change
         return this;
     }
@@ -91,7 +98,7 @@ public class Gridding extends MutableListContainer {
         int n = children.length;
         if (n == 0) return;
 
-        float a = gridAspect;
+        float a = aspect;
 
 
 
@@ -238,6 +245,16 @@ public class Gridding extends MutableListContainer {
     public static Gridding grid(int num, IntFunction<Surface> build) {
         Surface[] x = Util.map(0, num, build, Surface[]::new);
         return new Gridding(x);
+    }
+
+    public void vertical() {
+        aspect(VERTICAL);
+    }
+    public void horizontal() {
+        aspect(HORIZONTAL);
+    }
+    public void square() {
+        aspect(PHI);
     }
 
 }

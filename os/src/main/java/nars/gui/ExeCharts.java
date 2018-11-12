@@ -55,7 +55,7 @@ public class ExeCharts {
 
     public static Surface metaGoalControls(NAR n) {
         CheckBox auto = new CheckBox("Auto");
-        auto.set(false);
+        auto.on(false);
 
         float min = -1f;
         float max = +1f;
@@ -70,7 +70,7 @@ public class ExeCharts {
 
                                 @Override
                                 protected void paintWidget(RectFloat bounds, GL2 gl) {
-                                    if (auto.get()) {
+                                    if (auto.on()) {
                                         set(want[w]);
                                     }
 
@@ -79,7 +79,7 @@ public class ExeCharts {
                                     .text(MetaGoal.values()[w].name())
                                     .type(SliderModel.KnobHoriz)
                                     .on((s, v) -> {
-                                        if (!auto.get())
+                                        if (!auto.on())
                                             want[w] = v;
                                     });
                         }

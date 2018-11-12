@@ -1,8 +1,6 @@
 package spacegraph.space2d.widget.text;
 
 import com.jogamp.opengl.GL2;
-import spacegraph.input.finger.Finger;
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.EmptyContainer;
 import spacegraph.util.math.Color4f;
@@ -35,10 +33,6 @@ public class VectorLabel extends EmptyContainer {
         text(s);
     }
 
-    @Override
-    public Surface finger(Finger finger) {
-        return null;
-    }
 
     @Override
     protected void doLayout(int dtMS) {

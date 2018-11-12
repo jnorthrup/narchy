@@ -19,8 +19,8 @@ import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.chip.*;
+import spacegraph.space2d.widget.menu.TabMenu;
 import spacegraph.space2d.widget.port.*;
-import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
@@ -165,7 +165,7 @@ public class ProtoWidget extends Bordering {
             }, new Gridding( fields )) ));
         });
 
-        set(new TabPane(categories, (l)->{
+        set(new TabMenu(categories, (l)->{
             String icon;
             switch (l) {
                 case "Control":

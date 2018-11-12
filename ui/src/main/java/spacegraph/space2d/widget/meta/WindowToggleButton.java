@@ -55,7 +55,7 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
         if (!busy.compareAndSet(false, true))
             return;
 
-        set(space == null);
+        on(space == null);
 
         synchronized(this) {
             if (this.space == null) {
@@ -84,7 +84,7 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
 
                 busy.set(false);
 
-                set(false);
+                on(false);
 
                 this.space.io.off();
                 this.space = null;
@@ -112,7 +112,7 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
     @Override
     public void windowDestroyed(WindowEvent e) {
         this.space = null;
-        set(false);
+        on(false);
     }
 
     @Override

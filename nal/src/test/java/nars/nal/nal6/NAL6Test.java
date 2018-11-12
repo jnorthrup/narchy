@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 100;
+    private static final int cycles = 900;
 
     @BeforeEach
     void setup() {
@@ -89,13 +89,12 @@ public class NAL6Test extends NALTest {
     void variable_unification5() {
 
         TestNAR tester = test;
-
+        tester.nar.termVolumeMax.set(14);
         tester.believe("<(&&,<$x --> flyer>,($x --> [chirping])) ==> ($x --> bird)>");
         tester.believe("<<$y --> [withWings]> ==> <$y --> flyer>>");
-        tester.mustBelieve(cycles, "<(&&,<$1 --> [chirping]>,($1 --> [withWings])) ==> ($1 --> bird)>",
+        tester.mustBelieve(cycles, "((($1 --> [chirping]) && ($1 --> [withWings])) ==> ($1 --> bird))",
                 1.00f,
-                //0.81f
-                0.45f
+                0.81f
         );
 
     }
@@ -1000,24 +999,24 @@ public class NAL6Test extends NALTest {
     }
 
 
-    @Test
-    void inductRawProductDifference() {
-        test
-                .believe("(x,0)", 1f, 0.9f)
-                .believe("(x,1)", 0.6f, 0.9f)
-                .mustBelieve(cycles, "((x,1)~(x,0))", 0.0f, 0.85f)
-                .mustBelieve(cycles, "((x,0)~(x,1))", 0.4f, 0.85f);
-    }
-    @Test
-    void inductRawProductDifference2() {
-        test
-                .believe("(x,0)", 1f, 0.9f)
-                .believe("(x,1)", 0.5f, 0.9f)
-                .mustQuestion(cycles, "((x,1)~(x,0))")
-                .mustQuestion(cycles, "((x,0)~(x,1))")
-                .mustBelieve(cycles, "((x,1)~(x,0))", 0.0f, 0.85f)
-                .mustBelieve(cycles, "((x,0)~(x,1))", 0.5f, 0.85f);
-    }
+//    @Test
+//    void inductRawProductDifference() {
+//        test
+//                .believe("(x,0)", 1f, 0.9f)
+//                .believe("(x,1)", 0.6f, 0.9f)
+//                .mustBelieve(cycles, "((x,1)~(x,0))", 0.0f, 0.85f)
+//                .mustBelieve(cycles, "((x,0)~(x,1))", 0.4f, 0.85f);
+//    }
+//    @Test
+//    void inductRawProductDifference2() {
+//        test
+//                .believe("(x,0)", 1f, 0.9f)
+//                .believe("(x,1)", 0.5f, 0.9f)
+//                .mustQuestion(cycles, "((x,1)~(x,0))")
+//                .mustQuestion(cycles, "((x,0)~(x,1))")
+//                .mustBelieve(cycles, "((x,1)~(x,0))", 0.0f, 0.85f)
+//                .mustBelieve(cycles, "((x,0)~(x,1))", 0.5f, 0.85f);
+//    }
 
     @Test void testHypothesizeSubconditionIdentityPre() {
         test

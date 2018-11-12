@@ -20,7 +20,7 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.IntSlider;
-import spacegraph.space2d.widget.tab.ButtonSet;
+import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.video.Draw;
 
@@ -207,7 +207,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         ButtonSet bs = new ButtonSet(ButtonSet.Mode.One, b);
 
         if (initialButton != -1) {
-            b[initialButton].set(true);
+            b[initialButton].on(true);
         }
 
         return new LabeledPane(label, bs);
@@ -283,7 +283,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
 
         @Override
         public boolean prePaint(SurfaceRender r) {
-            set((a.getOpaque())); //load
+            on((a.getOpaque())); //load
             return super.prePaint(r);
         }
     }

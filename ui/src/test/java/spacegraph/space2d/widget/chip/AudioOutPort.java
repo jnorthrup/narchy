@@ -21,7 +21,7 @@ public class AudioOutPort extends Gridding implements SoundProducer {
         super();
 
         enableButton = CheckBox.awesome("play");
-        enableButton.set(true);
+        enableButton.on(true);
 
         set(new LabeledPane("in", in = new Port()),
             enableButton,
@@ -37,7 +37,7 @@ public class AudioOutPort extends Gridding implements SoundProducer {
 
     @Override
     public void read(float[] buf, int readRate) {
-        if (enableButton.get() && in.active()) {
+        if (enableButton.on() && in.active()) {
 
             ObjectIntPair<float[]> nextBuffer = PrimitiveTuples.pair(buf /* TODO buffer mix command object */, readRate);
 

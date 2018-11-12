@@ -9,7 +9,7 @@ public class EnabledPort extends Splitting {
     final CheckBox enable = new CheckBox("");
 
     public EnabledPort(Port p) {
-        enable.set(true);
+        enable.on(true);
         put(0, enable.on((x)->{
             enable(x);
         }));
