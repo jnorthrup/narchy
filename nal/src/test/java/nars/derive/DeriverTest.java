@@ -104,7 +104,7 @@ class DeriverTest {
 
     @Test
     void testAmbiguousPunctuation() {
-        assertThrows(Exception.class, () -> {
+        assertThrows(Throwable.class, () -> {
             PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                     "Y, Y |- (?1 &| Y), ()"
             ));

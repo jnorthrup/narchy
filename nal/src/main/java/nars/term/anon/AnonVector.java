@@ -263,9 +263,20 @@ public class AnonVector extends TermVector implements FullyInternable {
             }
         } else {
             if (x instanceof AnonID) {
-                return (indexOf((AnonID) x) != -1)
-                        ||
-                        (anyNeg() && indexOf((AnonID) x, true) != -1 && inSubtermsOf.test(x.neg()));
+                short aid = ((AnonID) x).anonID;
+                boolean hasNegX = false;
+                for (short xx : this.subterms) {
+                    if (xx == aid)
+                        return true; //found positive
+                    else if (xx == -aid)
+                        hasNegX = true; //found negative, but keep searching for a positive first
+                }
+                if (hasNegX)
+                    return (inSubtermsOf.test(x.neg()));
+
+//                return (indexOf((AnonID) x) != -1)
+//                        ||
+//                        (anyNeg() && indexOf((AnonID) x, true) != -1 && inSubtermsOf.test(x.neg()));
             }
 
         }

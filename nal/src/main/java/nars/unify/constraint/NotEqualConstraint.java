@@ -142,7 +142,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 
         @Override
         public boolean invalid(Term x, Term y) {
-            return  isSubtermOfTheOther(x, y, true, true);
+            return isSubtermOfTheOther(x, y, true, true);
         }
 
         final static Predicate<Term> limit =
@@ -152,7 +152,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 
         static boolean isSubtermOfTheOther(Term a, Term b, boolean recurse, boolean excludeVariables) {
 
-            if ((excludeVariables) && (a instanceof Variable || b instanceof Variable))
+            if (a.equals(b) || ((excludeVariables) && (a instanceof Variable || b instanceof Variable)))
                 return false;
 
             int av = a.volume(), bv = b.volume();

@@ -1,7 +1,10 @@
 package nars.term.util.transform;
 
 import jcog.random.XorShift128PlusRandom;
-import nars.*;
+import nars.$;
+import nars.NARS;
+import nars.Narsese;
+import nars.Param;
 import nars.derive.premise.PatternIndex;
 import nars.derive.premise.PremiseRuleProto;
 import nars.derive.premise.PremiseRuleSource;
@@ -10,7 +13,6 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.unify.Unify;
-import nars.unify.match.Ellipsis;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.match.EllipsisOneOrMore;
 import nars.unify.match.EllipsisZeroOrMore;
@@ -24,7 +26,6 @@ import java.util.Set;
 
 import static nars.$.$;
 import static nars.Op.VAR_PATTERN;
-import static nars.time.Tense.DTERNAL;
 import static nars.unify.match.Ellipsis.firstEllipsis;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -511,24 +512,24 @@ public class EllipsisTest {
     }
 
 
-    @Test
-    void testEllipsisInMinArity() {
-        Atomic a = Atomic.the("a");
-        Ellipsis b = new EllipsisOneOrMore($.varPattern(1));
-
-        for (Op o : Op.values()) {
-            if (o.minSubs <= 1) continue;
-
-            if (o.statement) continue;
-
-
-            assertEquals(a, o.the(DTERNAL, a), o + " with normal term");
-
-            assertEquals(o.statement ? VAR_PATTERN : o,
-                    o.the(DTERNAL, b).op(),
-                    o + " with ellipsis not reduced");
-        }
-    }
+//    @Test
+//    void testEllipsisInMinArity() {
+//        Atomic a = Atomic.the("a");
+//        Ellipsis b = new EllipsisOneOrMore($.varPattern(1));
+//
+//        for (Op o : Op.values()) {
+//            if (o.minSubs <= 1) continue;
+//
+//            if (o.statement) continue;
+//
+//
+//            assertEquals(a, o.the(DTERNAL, a), o + " with normal term");
+//
+//            assertEquals(o.statement ? VAR_PATTERN : o,
+//                    o.the(DTERNAL, b).op(),
+//                    o + " with ellipsis not reduced");
+//        }
+//    }
 
     
 }

@@ -25,7 +25,6 @@ import nars.task.util.TaskException;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.TermException;
-import nars.unify.match.EllipsisMatch;
 import nars.util.Timed;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -40,7 +39,6 @@ import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.*;
 import static nars.task.RevisionTest.x;
-import static nars.time.Tense.DTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -407,18 +405,18 @@ public class TermTest {
     }
 
 
-    @Test
-    void testFromEllipsisMatch() {
-        Term xy = EllipsisMatch.matched($.the("x"), $.the("y"));
-
-        for (Op o : new Op[]{Op.SECTi, SECTe, CONJ}) {
-            Term z = o.the(DTERNAL, xy);
-            assertEquals("(x" + o.str + "y)", z.toString());
-            assertEquals(3, z.volume());
-            assertEquals(Op.ATOM, z.sub(0).op());
-            assertEquals(Op.ATOM, z.sub(1).op());
-        }
-    }
+//    @Test
+//    void testFromEllipsisMatch() {
+//        Term xy = EllipsisMatch.matched($.the("x"), $.the("y"));
+//
+//        for (Op o : new Op[]{Op.SECTi, SECTe, CONJ}) {
+//            Term z = o.the(DTERNAL, xy);
+//            assertEquals("(x" + o.str + "y)", z.toString());
+//            assertEquals(3, z.volume());
+//            assertEquals(Op.ATOM, z.sub(0).op());
+//            assertEquals(Op.ATOM, z.sub(1).op());
+//        }
+//    }
 
 
     @Test

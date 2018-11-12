@@ -10,7 +10,6 @@ import nars.control.NARService;
 import nars.control.channel.CauseChannel;
 import nars.task.ActiveQuestionTask;
 import nars.task.ITask;
-import nars.task.NALTask;
 import nars.time.clock.RealTime;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -166,16 +165,19 @@ public class InterNAR extends NARService implements TriConsumer<NAR, ActiveQuest
 
         try {
             Task x = IO.bytesToTask(m.data());
-            if (x.isQuestionOrQuest()) {
-
-                x = new ActiveQuestionTask(x, 8, nar, (q, a) -> accept(nar, q, a));
-                ((NALTask.NALTaskX)x).meta("UDPeer", m);
-            }
+//            if (x.isQuestionOrQuest()) {
+//
+//                //expensive use a lighter weight common answer handler
+//                x = new ActiveQuestionTask(x, 8, nar, (q, a) -> accept(nar, q, a));
+//                ((NALTask.NALTaskX)x).meta("UDPeer", m);
+//            }
             x.budget(nar);
 
             x.priMult(incomingPriMult.floatValue());
 
-            logger.debug("recv {} from {}", x, m.from);
+            if (logger.isDebugEnabled())
+                logger.debug("recv {} from {}", x, m.from);
+
             recv.input(x);
         } catch (Exception e) {
             logger.warn("recv {} from {}: {}", m, m.from, e.getMessage());

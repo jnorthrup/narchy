@@ -305,7 +305,7 @@ public enum Op {
     /**
      * ops across which reflexivity of terms is allowed
      */
-    final static int relationDelimeterStrong = Op.or(Op.PROD, Op.NEG);
+    final static int relationDelimeterStrong = Op.or(Op.PROD/*, Op.NEG*/);
     public static final Predicate<Term> recursiveCommonalityDelimeterStrong =
             c -> !c.isAny(relationDelimeterStrong);
     /**

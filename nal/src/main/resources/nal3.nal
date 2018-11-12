@@ -21,38 +21,55 @@
         //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((intersect(A,X),intersect(B,Y)) --> M), (Belief:Intersection)
         //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((union(A,X),union(B,Y)) --> M), (Belief:Union)
 
+//NAL3 single premise decompose
+    (M --> S), X, is(S,"|"), subOf(S,X)   |-     (M --> X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (M --> S), X, is(S,"|"), subOf(S,--X) |-   --(M --> X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+
+    (S --> M), X, is(S,"&"), subOf(S,X)   |-     (X --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (S --> M), X, is(S,"&"), subOf(S,--X) |-   --(X --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+
 
 //// inheritance decomposition ////////////////////////////////////////////////////////////////////////////////////
 //if (S --> M) is the case, and ((|,S,A..+) --> M) is not the case, then ((|,A..+) --> M) is not the case, hence Belief:DecomposePositiveNegativeNegative
-//TODO negations
-     (X --> M), (S --> M), is(S,"|"), subOf(S,X) |- --(without(S,X) --> M), (Belief:DecomposePN)
-         //(X-->M), (S --> N), is(S,"|"), subOf(S,X), neq(M,N) |- subIfUnifiesAny((without(S,X) --> N), N, M), (Belief:DecomposePositiveNegativeNegative)
-     (X --> M), (S --> M), is(S,"&"), subOf(S,X) |- (without(S,X) --> M), (Belief:DecomposeNP)
-         //(X-->M), (S --> N), is(S,"&"), subOf(S,X), neq(M,N) |- subIfUnifiesAny((without(S,X) --> N), N, M), (Belief:DecomposeNegativePositivePositive)
 
-     (M --> X), (M --> S), is(S,"&"), subOf(S,X) |- --(M --> without(S,X)), (Belief:DecomposePN)
-        //(M --> X), (N --> S), is(S,"&"), subOf(S,X), neq(M,N) |- subIfUnifiesAny((N --> without(S,X)), N, M), (Belief:DecomposePositiveNegativeNegative)
-     (M --> X), (M --> S), is(S,"|"), subOf(S,X) |- (M --> without(S,X)), (Belief:DecomposeNP)
-        //(M --> X), (N --> S), is(S,"|"), subOf(S,X), neq(M,N) |- subIfUnifiesAny((N --> without(S,X)), N, M), (Belief:DecomposeNegativePositivePositive)
+     (M --> X), (M --> S), is(S,"|"), subOf(S,X)    |- (M --> without(S,X)), (Belief:DecomposeNP)
+     (M --> X), (M --> S), is(S,"|"), subOf(S,--X)  |-  (M --> without(S,--X)), (Belief:DecomposePN)
+       (M --> X), (M --> S), is(S,"|"), subOf(S,X) |- --(M --> without(S,X)), (Belief:DecomposePP)
+       (M --> X), (M --> S), is(S,"|"), subOf(S,--X)  |-  --(M --> without(S,--X)), (Belief:DecomposeNN)
 
-     //DIFFi
-     (M --> S), (M --> (S - P)) |- (M --> P), (Belief:DecomposeDiffX)
-     (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeDiffX)
-//        (M --> S), (M --> (S - P)) |- --(M --> P), (Belief:DecomposePP)
-//        (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeNP)
+     (X --> M), (S --> M), is(S,"|"), subOf(S,X)   |-   --(without(S,X) --> M), (Belief:DecomposePN)
+     (X --> M), (S --> M), is(S,"|"), subOf(S,--X) |- --(without(S,--X) --> M), (Belief:DecomposeNN)
+        //TODO
+
+     (X --> M), (S --> M), is(S,"&"), subOf(S,X)   |- (without(S,X) --> M), (Belief:DecomposeNP)
+     (X --> M), (S --> M), is(S,"&"), subOf(S,--X) |- (without(S,--X) --> M), (Belief:DecomposePP)
+      (X --> M), (S --> M), is(S,"&"), subOf(S,X)   |- --(without(S,X) --> M), (Belief:DecomposePP)
+      (X --> M), (S --> M), is(S,"&"), subOf(S,--X) |- --(without(S,--X) --> M), (Belief:DecomposeNN)
+
+     (M --> X), (M --> S), is(S,"&"), subOf(S,X)   |- --(M --> without(S,X)), (Belief:DecomposePN)
+     (M --> X), (M --> S), is(S,"&"), subOf(S,--X) |- --(M --> without(S,--X)), (Belief:DecomposeNN)
+        //TODO
+
+
+
+//     //DIFFi
+//     (M --> S), (M --> (S - P)) |- (M --> P), (Belief:DecomposeDiffX)
+//     (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeDiffX)
+////        (M --> S), (M --> (S - P)) |- --(M --> P), (Belief:DecomposePP)
+////        (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeNP)
+////
+//     //DIFFe
+//     (S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DecomposeDiffX)
+//     (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeDiffX)
+////        (S --> M), ((S ~ P) --> M) |- --(P --> M), (Belief:DecomposePP)
+////        (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeNP)
+////
+//    //Raw DIFFe
+//    //S, (S ~ P) |- P, (Belief:DecomposeDiffX)
+//    //P, (S ~ P) |- S, (Belief:DecomposeDiffX)
+////        S, (S ~ P) |- --P, (Belief:DecomposePP)
+////        P, (S ~ P) |- S, (Belief:DecomposeNP)
 //
-     //DIFFe
-     (S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DecomposeDiffX)
-     (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeDiffX)
-//        (S --> M), ((S ~ P) --> M) |- --(P --> M), (Belief:DecomposePP)
-//        (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeNP)
-//
-    //Raw DIFFe
-    //S, (S ~ P) |- P, (Belief:DecomposeDiffX)
-    //P, (S ~ P) |- S, (Belief:DecomposeDiffX)
-//        S, (S ~ P) |- --P, (Belief:DecomposePP)
-//        P, (S ~ P) |- S, (Belief:DecomposeNP)
-
      //similarity (S==P)! (symmetric: DecomposeNegative....)
      ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeDiff)
      (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeDiff)
@@ -79,18 +96,15 @@
 
 
 
-//NAL3 single premise decompose
-    (M --> S), X, is(S,"&"), subPosOrNeg(S,X) |- (M --> without(S,X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-        //(M --> S), X, is(S,"&"), subOfNeg(S,X) |- (M --> without(S,--X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
-    (S --> M), X, is(S,"|"), subPosOrNeg(S,X) |- (without(S,X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    //(S --> M), X, is(S,"&"), subPosOrNeg(S,X) |- (withoutPosOrNeg(S,X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
         //(S --> M), X, is(S,"|"), subOfNeg(S,X) |- (without(S,--X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
-    (S --> (B - G)), B |- (S --> B), (Belief:StructuralDeduction)
-        (S --> (B - G)), G |- --(S --> G), (Belief:StructuralDeduction)
-
-    ((B ~ G) --> S), B |- (B --> S), (Belief:StructuralDeduction)
-        ((B ~ G) --> S), G |- --(G --> S), (Belief:StructuralDeduction)
+//    (S --> (B - G)), B |- (S --> B), (Belief:StructuralDeduction)
+//        (S --> (B - G)), G |- --(S --> G), (Belief:StructuralDeduction)
+//
+//    ((B ~ G) --> S), B |- (B --> S), (Belief:StructuralDeduction)
+//        ((B ~ G) --> S), G |- --(G --> S), (Belief:StructuralDeduction)
 
     //raw
     //S, X, is(S,"|"), subPosOrNeg(S,X) |- without(S,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)

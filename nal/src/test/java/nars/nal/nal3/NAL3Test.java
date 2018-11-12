@@ -3,9 +3,12 @@ package nars.nal.nal3;
 
 import nars.NAR;
 import nars.NARS;
+import nars.Param;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
@@ -53,19 +56,55 @@ public class NAL3Test extends NALTest {
 
     }
 
-    @Test
-    void compound_decomposition_two_premises2() {
+    @ValueSource(floats = {0, 0.25f, 0.5f, 0.75f, 1})
+    @ParameterizedTest
+    void compound_decomposition_two_premises_Negative_DiffIntensional(float freq) {
+        String known = "<robin --> swimmer>";
+        String composed = "<robin --> (mammal - swimmer)>";
+        String unknown = "<robin --> mammal>";
 
-        TestNAR tester = test;
+        TestNAR test = testDecomposeDiff(freq, known, composed, unknown);
 
-        tester.log();
-        tester
-        .believe("<robin --> swimmer>", 0.0f, 0.9f)
-        .believe("<robin --> (mammal - swimmer)>", 0.0f, 0.9f)
-        .mustBelieve(cycles, "<robin --> mammal>", 0.0f, 0.81f)
-        .mustNotOutput(cycles, "<robin --> --swimmer>", BELIEF, 0, 1, 0, 1, ETERNAL)
+        test.mustNotOutput(cycles, "<robin --> --swimmer>", BELIEF, 0, 1, 0, 1, ETERNAL);
+
+        //test neqRCom
+        test.mustNotOutput(cycles, "((mammal-swimmer)-->swimmer)", BELIEF, 0, 1, 0, 1, ETERNAL);
+    }
+
+    @ValueSource(floats = {0, 0.25f, 0.5f, 0.75f, 1})
+    @ParameterizedTest
+    void compound_decomposition_two_premises_Negative_DiffExtensional(float freq) {
+        String known = "<b-->x>";
+        String composed = "<(a ~ b) --> x>";
+        String unknown = "<a --> x>";
+
+        TestNAR test = testDecomposeDiff(freq, known, composed, unknown);
+
+        test.mustNotOutput(cycles, "<--b --> x>", BELIEF, 0, 1, 0, 1, ETERNAL);
+
+        //test neqRCom
+        test.mustNotOutput(cycles, "(b --> (a~b))", BELIEF, 0, 1, 0, 1, ETERNAL);
+    }
+
+    private TestNAR testDecomposeDiff(float freq, String known, String composed, String unknown) {
+        test
+            //.logDebug()
+            .believe(known, freq, 0.9f)
+            .believe(composed, 0.0f, 0.9f)
         ;
 
+        if (freq==0 || freq == 1) {
+            //0.81 conf
+            test.mustBelieve(cycles, unknown, freq, 0.81f);
+        } else {
+            test.mustBelieve(cycles, unknown, freq, freq, 0, 0.81f); //up to 0.81 conf
+        }
+
+        if (freq > 0)
+            test.mustNotOutput(cycles, known, BELIEF, 0, freq - Param.TRUTH_EPSILON, 0, 1, ETERNAL);
+        if (freq < 1)
+            test.mustNotOutput(cycles, known, BELIEF, freq + Param.TRUTH_EPSILON, 1, 0, 1, ETERNAL);
+        return test;
     }
 
 
@@ -89,6 +128,7 @@ public class NAL3Test extends NALTest {
     @Test
     void diff_compound_decomposition_single3() {
         TestNAR tester = test;
+        tester.log();
         tester.believe("<(dinosaur ~ ant) --> [strong]>", 0.9f, 0.9f);
         tester.mustBelieve(cycles, "<dinosaur --> [strong]>", 0.90f, 0.73f);
         tester.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.73f);
@@ -116,8 +156,8 @@ public class NAL3Test extends NALTest {
     void sect_compound_decomposition_single2() {
 
         TestNAR tester = test;
-        tester.believe("<(dinosaur | ant) --> youth>", 0.9f, 0.9f);
-        tester.mustBelieve(cycles * 2, "<dinosaur --> youth>", 0.90f, 0.73f);
+        tester.believe("((dinosaur & ant) --> youth)", 0.9f, 0.9f);
+        tester.mustBelieve(cycles, "(dinosaur --> youth)", 0.9f, 0.73f);
 
     }
 

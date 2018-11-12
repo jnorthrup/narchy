@@ -287,6 +287,14 @@ public class TestNAR {
         return this;
     }
 
+    public TestNAR logDebug() {
+        if (!Param.DEBUG) {
+            logger.warn("WARNING: debug mode enabled statically");
+            Param.DEBUG = true;
+        }
+        return log();
+    }
+
     /**
      * fails if anything non-input is processed
      */

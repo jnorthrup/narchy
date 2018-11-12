@@ -13,6 +13,7 @@ import static nars.$.or;
 import static nars.$.*;
 import static nars.Op.*;
 import static nars.term.TermTest.assertEq;
+import static nars.term.atom.Bool.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -30,8 +31,8 @@ public class BoolTest {
 
         assertEquals(2, Bool.True.bytes().length);
         assertEquals(2, Bool.False.bytes().length);
-        assertEquals(2, Bool.Null.bytes().length);
-        assertEquals(Bool.Null, IO.bytesToTerm(Bool.Null.bytes()));
+        assertEquals(2, Null.bytes().length);
+        assertEquals(Null, IO.bytesToTerm(Null.bytes()));
         assertEquals(Bool.True, IO.bytesToTerm(Bool.True.bytes()));
         assertEquals(Bool.False, IO.bytesToTerm(Bool.False.bytes()));
     }
@@ -48,8 +49,8 @@ public class BoolTest {
         assertEquals(Bool.False, Bool.True.neg());
         assertEquals(Bool.True, Bool.False.unneg());
         assertEquals(Bool.True, Bool.False.neg());
-        assertEquals(Bool.Null, Bool.Null.neg());
-        assertEquals(Bool.Null, Bool.Null.unneg());
+        assertEquals(Null, Null.neg());
+        assertEquals(Null, Null.unneg());
     }
 
 
@@ -67,7 +68,7 @@ public class BoolTest {
         for (Op o: new Op[]{INH, SIM, IMPL}) {
             assertEq(Bool.True, o.the(Bool.True, Bool.True));
             assertEq(Bool.True, o.the(Bool.False, Bool.False));
-            assertEq(Bool.Null, o.the(Bool.Null, Bool.Null));
+            assertEq(Null, o.the(Null, Null));
         }
 
         //allow
@@ -87,7 +88,7 @@ public class BoolTest {
 
         assertEquals(0, Bool.True.compareTo(Bool.True));
         assertEquals(0, Bool.False.compareTo(Bool.False));
-        assertEquals(0, Bool.Null.compareTo(Bool.Null));
+        assertEquals(0, Null.compareTo(Null));
 
         assertEquals(-Bool.False.compareTo(Bool.True), Bool.True.compareTo(Bool.False));
 
@@ -98,12 +99,12 @@ public class BoolTest {
     @Test
     void testImplicationTautologies() {
 
-        assertEq(Bool.Null, IMPL.the(Bool.Null, x));
-        assertEq(Bool.Null, IMPL.the(x, Bool.Null));
+        assertEq(Null, IMPL.the(Null, x));
+        assertEq(Null, IMPL.the(x, Null));
 
 
         assertEq(x, IMPL.the(Bool.True, x));
-        assertEq(Bool.Null, IMPL.the(Bool.False, x));
+        assertEq(Null, IMPL.the(Bool.False, x));
 
         assertEq(x, IMPL.the(x, Bool.True));
         assertEq(x.neg(), IMPL.the(x, Bool.False));
@@ -116,10 +117,10 @@ public class BoolTest {
     void testDiffTautologies() {
 
         @Nullable Truth selfDiff = NALTruth.Difference.apply($.t(1, 0.9f), $.t(1f, 0.9f), null, 0);
-        assertEquals($.t(0, 0.90f), selfDiff);
+        assertEquals($.t(0, 0.81f), selfDiff);
 
         @Nullable Truth negDiff = NALTruth.Difference.apply($.t(0, 0.9f), $.t(1f, 0.9f), null, 0);
-        assertEquals($.t(0, 0.90f), negDiff);
+        assertEquals($.t(0, 0.81f), negDiff);
 
         @Nullable Truth posDiff = NALTruth.Difference.apply($.t(1, 0.9f), $.t(0f, 0.9f), null, 0);
         assertEquals($.t(1, 0.81f), posDiff);
@@ -152,13 +153,13 @@ public class BoolTest {
             assertEquals(Bool.True, $.diff(x, x.neg()));
             assertEquals(Bool.True, $.diff(x.neg(), x));
 
-            assertEquals(Bool.Null, $.diff(x, Bool.False));
-            assertEquals(Bool.Null, $.diff(x, Bool.True));
+            assertEquals(Null, $.diff(x, Bool.False));
+            assertEquals(Null, $.diff(x, Bool.True));
 
 
             assertEquals(Bool.False, $.diff(Bool.True, Bool.True));
             assertEquals(Bool.False, $.diff(Bool.False, Bool.False));
-            assertEquals(Bool.Null, $.diff(Bool.Null, Bool.Null));
+            assertEquals(Null, $.diff(Null, Null));
 
             assertEquals(Bool.True, $.diff(Bool.True, Bool.False));
             assertEquals(Bool.False, $.diff(Bool.False, Bool.True));
@@ -176,11 +177,11 @@ public class BoolTest {
 
 
             assertEquals(x, o.the(x, x));
-            assertEq("((--,x)" + sect + "x)", o.the(x, x.neg()));
+            assertEq(Null, o.the(x, x.neg()));
 
             assertEquals(x, o.the(x, Bool.True));
-            assertEquals(Bool.Null /* False ?  */, o.the(x, Bool.False));
-            assertEquals(Bool.Null, o.the(x, Bool.Null));
+            assertEquals(Null /* False ?  */, o.the(x, Bool.False));
+            assertEquals(Null, o.the(x, Null));
         }
     }
 
@@ -231,8 +232,8 @@ public class BoolTest {
         assertEq(Bool.False, and(Bool.False, Bool.True));
         assertEq(Bool.True, and(Bool.True, Bool.True));
         assertEq(Bool.False, and(Bool.False, Bool.False));
-        assertEq(Bool.Null, and(Bool.Null, x));
-        assertEq(Bool.Null, and(Bool.Null, Bool.Null));
+        assertEq(Null, and(Null, x));
+        assertEq(Null, and(Null, Null));
 
 
     }

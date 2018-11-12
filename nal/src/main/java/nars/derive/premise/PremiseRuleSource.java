@@ -53,7 +53,7 @@ import static nars.term.control.PREDICATE.sortByCostIncreasing;
  * A rule which matches a Premise and produces a Task
  * contains: preconditions, predicates, postconditions, post-evaluations and metainfo
  */
-public class PremiseRuleSource extends ProxyTerm  {
+public class PremiseRuleSource extends ProxyTerm {
 
     private static final Pattern ruleImpl = Pattern.compile("\\|\\-");
     private final String source;
@@ -72,7 +72,6 @@ public class PremiseRuleSource extends ProxyTerm  {
     protected final PREDICATE[] PRE;
     protected final Occurrify.TaskTimeMerge time;
     protected final boolean varIntro;
-
 
 
     protected final Term beliefTruth;
@@ -130,7 +129,10 @@ public class PremiseRuleSource extends ProxyTerm  {
         }
 
         ByteToByteFunction concPunc = null;
-        BytePredicate taskPunc = null;
+        boolean concBelief = false, concQuestion = false, concGoal = false, concQuest = false;
+
+        /** TODO just use one punc->punc transfer function, and its return of 0 to deny */
+        @Deprecated BytePredicate taskPunc = null;
 
         for (int i = 2; i < precon.length; i++) {
 
@@ -189,16 +191,19 @@ public class PremiseRuleSource extends ProxyTerm  {
 
                 case "subOf": {
 
-                    if (!(Y instanceof VarPattern)) {
+                    if (!(Y.unneg() instanceof VarPattern)) {
+                        //constant
+
                         if (negated)
                             throw new TODO();
+
                         match(X, new TermMatch.Contains(Y));
 
                     } else {
                         if (!negated)
                             neq(constraints, X, Y);
 
-                        constraints.add(new SubOfConstraint(X, Y, Subterm).negIf(negated));
+                        constraints.add(new SubOfConstraint(X, Y.unneg(), Subterm, Y.op() == NEG ? -1 : +1).negIf(negated));
 
                         if (negated)
                             negationApplied = true;
@@ -228,7 +233,7 @@ public class PremiseRuleSource extends ProxyTerm  {
                         match(X, new TermMatch.Is(CONJ));
                     }
                     constraints.add(new SubOfConstraint(X, Y, Event, pred.contains("Neg") ? -1 : +1).negIf(negated));
-                    if (negated)  negationApplied = true;
+                    if (negated) negationApplied = true;
                     break;
 
                 case "eventFirstOf":
@@ -240,7 +245,7 @@ public class PremiseRuleSource extends ProxyTerm  {
                         match(X, new TermMatch.Is(CONJ));
                     }
                     constraints.add(new SubOfConstraint(X, Y, pred.contains("First") ? EventFirst : EventLast, pred.contains("Neg") ? -1 : +1).negIf(negated));
-                    if (negated)  negationApplied = true;
+                    if (negated) negationApplied = true;
                     break;
 
                 case "eventOfPosOrNeg":
@@ -249,7 +254,7 @@ public class PremiseRuleSource extends ProxyTerm  {
 
                     match(X, new TermMatch.Is(CONJ));
 
-                    constraints.add(new SubOfConstraint(X, Y,  Event, 0));
+                    constraints.add(new SubOfConstraint(X, Y, Event, 0));
                     break;
 
                 case "eventsOf":
@@ -258,7 +263,7 @@ public class PremiseRuleSource extends ProxyTerm  {
 
                     match(X, new TermMatch.Is(CONJ));
 
-                    constraints.add(new SubOfConstraint(X, Y,  Events, 1));
+                    constraints.add(new SubOfConstraint(X, Y, Events, 1));
                     break;
 
                 case "eventCommon":
@@ -317,24 +322,24 @@ public class PremiseRuleSource extends ProxyTerm  {
 
 
                         case "\"?\"":
-                            taskPunc = (t)->t==QUESTION;
+                            taskPunc = (t) -> t == QUESTION;
                             break;
                         case "\"@\"":
-                            taskPunc = (t)->t==QUEST;
+                            taskPunc = (t) -> t == QUEST;
                             break;
                         case "\"?@\"":
-                            taskPunc = (t)->t==QUESTION || t == QUEST;
-                            concPunc = (c)->c;  //default
+                            taskPunc = (t) -> t == QUESTION || t == QUEST;
+                            concPunc = (c) -> c;  //default
                             break;
                         case "\".\"":
-                            taskPunc = (t)->t==BELIEF;
+                            taskPunc = (t) -> t == BELIEF;
                             break;
                         case "\"!\"":
-                            taskPunc = (t)->t==GOAL;
+                            taskPunc = (t) -> t == GOAL;
                             break;
                         case "\".!\"":
-                            taskPunc = (t)->t==BELIEF || t == GOAL;
-                            concPunc = (c)->c; //default
+                            taskPunc = (t) -> t == BELIEF || t == GOAL;
+                            concPunc = (c) -> c; //default
                             break;
 //                        case "\"*\"":
 //                            pre.add(new TaskBeliefOp(PROD, true, false));
@@ -383,30 +388,30 @@ public class PremiseRuleSource extends ProxyTerm  {
                 case "Punctuation":
                     switch (which.toString()) {
                         case "Belief":
-                            concPunc = (p) -> BELIEF;
+                            concBelief = true;
                             break;
                         case "Question":
-                            concPunc = (p) -> QUESTION;
+                            concQuestion = true;
                             break;
                         case "Goal":
-                            concPunc = (p) -> GOAL;
+                            concGoal = true;
                             break;
                         case "Quest":
-                            concPunc = (p) -> QUEST;
+                            concQuest = true;
                             break;
 
 
                         /** belief -> question, goal -> quest */
                         case "Ask":
-                            taskPunc = p-> p == BELIEF || p == GOAL;
-                            concPunc = p->{
+                            taskPunc = p -> p == BELIEF || p == GOAL;
+                            concPunc = p -> {
                                 switch (p) {
                                     case BELIEF:
                                         return QUESTION;
                                     case GOAL:
                                         return QUEST;
                                     default:
-                                        return (byte)0;
+                                        return (byte) 0;
                                 }
                             };
                             break;
@@ -453,7 +458,6 @@ public class PremiseRuleSource extends ProxyTerm  {
             throw new RuntimeException("unknown GoalFunction: " + goalTruth);
 
 
-
         {
             CommutativeConstantPreFilter.tryFilter(true, taskPattern, beliefPattern, pre);
             CommutativeConstantPreFilter.tryFilter(false, taskPattern, beliefPattern, pre);
@@ -496,26 +500,66 @@ public class PremiseRuleSource extends ProxyTerm  {
         }
 
 
+        if (concPunc == null) {
+            if (beliefTruth != null) concBelief = true;
+            if (goalTruth != null) concGoal = true;
 
+            if (!concQuest && !concQuestion) {
+                if (beliefTruth != null && goalTruth == null) {
+                    concPunc = (p) -> BELIEF;
+                } else if (beliefTruth == null && goalTruth != null) {
+                    concPunc = (p) -> GOAL;
+                } else if (beliefTruth != null && goalTruth != null){
+                    concPunc = (p) -> p == BELIEF ? BELIEF : GOAL;
+                }
+            } else {
+                if (concQuestion && !concQuest) {
+                    concPunc = (p) -> QUESTION;
+                } else if (concQuest && !concQuestion) {
+                    concPunc = (p) -> QUEST;
+                } else if (concQuestion && concQuest) {
+                    concPunc = (p) -> (p==QUESTION || p==BELIEF) ? QUESTION : QUEST;
+                }
+            }
 
-        if (concPunc == null && taskPunc == null) {
-            if (beliefTruth!=null && goalTruth!=null) {
+            //AUTO
+            assert (concBelief || concQuest || concQuestion || concGoal);
+//            boolean finalConcBelief = concBelief, finalConcGoal = concGoal, finalConcQuestion = concQuestion, finalConcQuest = concQuest;
+//            concPunc = (p) -> {
+//                switch (p) {
+//                    case BELIEF:
+//                        return finalConcBelief ? BELIEF : 0;
+//                    case GOAL:
+//                        return finalConcGoal ? GOAL : 0;
+//                    case QUESTION:
+//                        return finalConcQuestion ? QUESTION : 0;
+//                    case QUEST:
+//                        return finalConcQuest ? QUEST : 0;
+//                    default:
+//                        return (byte) 0;
+//                }
+//            };
+        }
+
+        if (taskPunc == null) {
+            //auto
+            if (beliefTruth != null && goalTruth != null) {
                 taskPunc = t -> t == BELIEF || t == GOAL; //accept belief and goal and map to those
-            } else if (beliefTruth!=null) {
+            } else if (beliefTruth != null) {
                 taskPunc = t -> t == BELIEF; //accept only belief -> belief
-            } else if (goalTruth!=null) {
+            } else if (goalTruth != null) {
                 taskPunc = t -> t == GOAL; //accept only goal -> goal
             }
-            concPunc = t -> t;
+            //concPunc = t -> t;
         }
 
         if (beliefTruthOp != null) {
-            assert(concPunc.valueOf(BELIEF)==BELIEF || concPunc.valueOf(GOAL)==BELIEF || concPunc.valueOf(QUESTION)==BELIEF || concPunc.valueOf(QUEST)==BELIEF);
+            assert (concPunc.valueOf(BELIEF) == BELIEF || concPunc.valueOf(GOAL) == BELIEF || concPunc.valueOf(QUESTION) == BELIEF || concPunc.valueOf(QUEST) == BELIEF);
             if (!beliefTruthOp.single())
                 pre.add(new DoublePremiseRequired(true, false, false));
         }
         if (goalTruthOp != null) {
-            assert(concPunc.valueOf(BELIEF)==GOAL || concPunc.valueOf(GOAL)==GOAL || concPunc.valueOf(QUESTION)==GOAL || concPunc.valueOf(QUEST)==GOAL);
+            assert (concPunc.valueOf(BELIEF) == GOAL || concPunc.valueOf(GOAL) == GOAL || concPunc.valueOf(QUESTION) == GOAL || concPunc.valueOf(QUEST) == GOAL);
             if (!goalTruthOp.single())
                 pre.add(new DoublePremiseRequired(false, true, false));
         }
@@ -544,7 +588,7 @@ public class PremiseRuleSource extends ProxyTerm  {
             }
             if (cc instanceof RelationConstraint) {
                 RelationConstraint m = ((RelationConstraint) cc).mirror();
-                if (m!=null)
+                if (m != null)
                     mirrors.add(m);
             }
             return false;
@@ -552,8 +596,7 @@ public class PremiseRuleSource extends ProxyTerm  {
         constraints.addAll(mirrors);
 
 
-
-        if (taskPunc==null)
+        if (taskPunc == null)
             throw new UnsupportedOperationException("no taskPunc specified");
 
         if (concPunc == null)
@@ -701,8 +744,7 @@ public class PremiseRuleSource extends ProxyTerm  {
         if (pt != null || pb != null) {
 
 
-
-            if ((pt != null) && (pb !=null)) {
+            if ((pt != null) && (pb != null)) {
                 //only need to test one. use shortest path
                 if (pb.length < pt.length)
                     pt = null;
@@ -772,7 +814,6 @@ public class PremiseRuleSource extends ProxyTerm  {
 //        //filter(x, (pt, pb)->
 //
 //    }
-
 
 
     private static void neq(Set<UnifyConstraint> constraints, Term x, Term y) {
@@ -928,7 +969,8 @@ public class PremiseRuleSource extends ProxyTerm  {
             return 0.02f;
         }
 
-        @Override public boolean test(PreDerivation preDerivation) {
+        @Override
+        public boolean test(PreDerivation preDerivation) {
             return taskPunc.accept(preDerivation.taskPunc);
         }
     }

@@ -118,12 +118,12 @@
        (--M ==> P), (S ==> M) |- (S ==> P), (Belief:DeductionPNX)
 
         (S ==> M), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
-            //(S ==> M), (M ==> P), neqRCom(S,P), task("?") |- (S ==> P), (Punctuation:Question)
-            //(S ==> M), (M ==> P), neqRCom(S,P), task("?") |- (P ==> S), (Punctuation:Question)
+            //(S ==> M), (M ==> P), task("?") |- (S ==> P), (Punctuation:Question)
+            //(S ==> M), (M ==> P), task("?") |- (P ==> S), (Punctuation:Question)
 
             (S ==> M), (--M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
-                //(S ==> M), (--M ==> P), neqRCom(S,P), task("?") |- (S ==> P), (Punctuation:Question)
-                //(S ==> M), (--M ==> P), neqRCom(S,P), task("?") |- (P ==> S), (Punctuation:Question)
+                //(S ==> M), (--M ==> P), task("?") |- (S ==> P), (Punctuation:Question)
+                //(S ==> M), (--M ==> P), task("?") |- (P ==> S), (Punctuation:Question)
 
         //deduction with unification
         (S ==> M), (N ==> P), neq(M,N) |- subIfUnifiesAny((S ==> P), M, N), (Belief:Deduction)
@@ -138,14 +138,14 @@
         (M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN)
 
 
-                (M ==> S), (M ==> P), neqRCom(S,P), task("?") |- (S ==> P), (Punctuation:Question)
-                (M ==> S), (M ==> P), neqRCom(S,P), task("?") |- (P ==> S), (Punctuation:Question)
+                (M ==> S), (M ==> P), task("?") |- (S ==> P), (Punctuation:Question)
+                (M ==> S), (M ==> P), task("?") |- (P ==> S), (Punctuation:Question)
 
     (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionPB)
     (P ==> M), (S ==> M) |- (S ==> P), (Belief:AbductionPB)
 
-                (S ==> M), (P ==> M), neqRCom(S,P), task("?") |- (S ==> P), (Punctuation:Question)
-                (S ==> M), (P ==> M), neqRCom(S,P), task("?") |- (P ==> S), (Punctuation:Question)
+                (S ==> M), (P ==> M), task("?") |- (S ==> P), (Punctuation:Question)
+                (S ==> M), (P ==> M), task("?") |- (P ==> S), (Punctuation:Question)
 
     (P ==> M), (M ==> S) |- (S ==> P), (Belief:Exemplification)
         (P ==> M), (--M ==> S) |- (S ==> P), (Belief:ExemplificationN)
@@ -180,18 +180,18 @@
     //Same as for inheritance
     //union/intersection assymmetry: union if subj, intersect if pred
 
-     (P ==> M), (S ==> M), neqRCom(P,S) |- ((P && S) ==> M), (Belief:IntersectionSym)
-        (P ==> M), (S ==> M), neqRCom(P,S), task("?") |- ((P && S) ==> M), (Punctuation:Question)
-     (P ==> M), (S ==> M), neqRCom(P,S) |- ((P || S) ==> M), (Belief:UnionSym)
-        (P ==> M), (S ==> M), neqRCom(P,S), task("?") |- ((P || S) ==> M), (Punctuation:Question)
+     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:IntersectionSym)
+        (P ==> M), (S ==> M), task("?") |- ((P && S) ==> M), (Punctuation:Question)
+     (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:UnionSym)
+        (P ==> M), (S ==> M), task("?") |- ((P || S) ==> M), (Punctuation:Question)
 
                 //...Also:VarIntro)
 
 
-     (M ==> P), (M ==> S), neqRCom(P,S) |- (M ==> (polarize(P,task) && polarize(S,belief))), (Belief:IntersectionDepolarized)
-        (M ==> P), (M ==> S), neqRCom(P,S), task("?") |- (M ==> (polarize(P,task) && polarize(S,belief))), (Punctuation:Question)
-     (M ==> P), (M ==> S), neqRCom(P,S) |- (M ==> (polarize(P,task) || polarize(S,belief))), (Belief:UnionDepolarized)
-        (M ==> P), (M ==> S), neqRCom(P,S), task("?") |- (M ==> (polarize(P,task) || polarize(S,belief))), (Punctuation:Question)
+     (M ==> P), (M ==> S) |- (M ==> (polarize(P,task) && polarize(S,belief))), (Belief:IntersectionDepolarized)
+        (M ==> P), (M ==> S), task("?") |- (M ==> (polarize(P,task) && polarize(S,belief))), (Punctuation:Question)
+     (M ==> P), (M ==> S) |- (M ==> (polarize(P,task) || polarize(S,belief))), (Belief:UnionDepolarized)
+        (M ==> P), (M ==> S), task("?") |- (M ==> (polarize(P,task) || polarize(S,belief))), (Punctuation:Question)
 
         //TODO question variations
         //((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P && S),A..+) ==> X), (Belief:IntersectionSym)

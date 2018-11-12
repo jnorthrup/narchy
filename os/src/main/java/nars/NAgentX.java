@@ -107,11 +107,11 @@ abstract public class NAgentX extends NAgent {
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, float clockFPS) {
-        return runRT(init,  clockFPS, clockFPS);
+        return runRT(init,  -1, clockFPS, clockFPS);
     }
 
-    public static NAR runRT(Function<NAR, NAgent> init, float narFPS, float clockFPS) {
-        NAR n = baseNAR(clockFPS);
+    public static NAR runRT(Function<NAR, NAgent> init, int threads, float narFPS, float clockFPS) {
+        NAR n = baseNAR(clockFPS, threads);
 
 
         n.runLater(() -> {
@@ -135,7 +135,7 @@ abstract public class NAgentX extends NAgent {
     }
 
     public static NAR runRL(Function<NAR, NAgent> init, float narFPS, float clockFPS) {
-        NAR n = baseNAR(clockFPS);
+        NAR n = baseNAR(clockFPS, 1);
 
 
         n.runLater(() -> {
@@ -163,7 +163,7 @@ abstract public class NAgentX extends NAgent {
         return n;
     }
 
-    static NAR baseNAR(float clockFPS) {
+    static NAR baseNAR(float clockFPS, int threads) {
     /*
     try {
         Exe.UDPeerProfiler prof = new Exe.UDPeerProfiler();
@@ -174,7 +174,7 @@ abstract public class NAgentX extends NAgent {
     */
 
 
-        Param.STRONG_COMPOSITION = true;
+        Param.STRONG_COMPOSITION = false;
         Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
@@ -194,7 +194,7 @@ abstract public class NAgentX extends NAgent {
                         new Revaluator.DefaultRevaluator(0.9f),
                         //new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
 
-                        Util.concurrencyExcept(2), true /* affinity */))
+                        threads <= 0 ? Util.concurrencyExcept(2) : threads, true /* affinity */))
 
 //                .exe(MixMultiExec.get(
 //                            1024,

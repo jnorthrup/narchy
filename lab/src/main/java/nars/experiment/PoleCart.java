@@ -5,6 +5,7 @@ import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
+import nars.InterNAR;
 import nars.NAR;
 import nars.NAgentX;
 import nars.agent.NAgent;
@@ -19,6 +20,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static nars.$.$$;
 import static nars.agent.FrameTrigger.fps;
 
 /**
@@ -39,11 +41,20 @@ public class PoleCart extends NAgentX {
     static final float fps = 24;
 
     public static void main(String[] arg) {
+        //polecart(-1);
 
-        runRT((n) -> {
+        NAR a = polecart("(cart,a)",2);
+        NAR b = polecart("(cart,a)", 2);
+        new InterNAR(a).runFPS(4);
+        new InterNAR(b).runFPS(4);
+    }
+
+
+    public static NAR polecart(String cartName, int threads) {
+        return runRT((n) -> {
 
             try {
-                NAgent a = new PoleCart(n);
+                NAgent a = new PoleCart(cartName, n);
 
 
                 return a;
@@ -52,7 +63,7 @@ public class PoleCart extends NAgentX {
                 e.printStackTrace();
                 return null;
             }
-        }, fps);
+        }, threads, fps, fps);
     }
 
     public static class RL {
@@ -60,7 +71,7 @@ public class PoleCart extends NAgentX {
             runRL(n -> {
 
                 try {
-                    PoleCart p = new PoleCart(n);
+                    PoleCart p = new PoleCart("rl", n);
 
                     p.tau.set(0.004f);
 
@@ -116,9 +127,9 @@ public class PoleCart extends NAgentX {
 
     double action;
 
-    public PoleCart(NAR nar) {
+    public PoleCart(String cartName, NAR nar) {
 
-        super("cart", fps(fps), nar);
+        super($$(cartName), fps(fps), nar);
 
 
         pos = 0.;
