@@ -79,7 +79,7 @@ public class NAL8Test extends NALTest {
 
 
     @Test
-    void subgoal_2() {
+    void firstGoalConjunctionEvent() {
 
         test
                 .input("(hold(SELF,{t002}) &&+5 (at(SELF,{t001}) && open({t001})))! :|:")

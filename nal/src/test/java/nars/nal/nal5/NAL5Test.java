@@ -623,7 +623,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test void conditional_abduction() {
-        test.nar.termVolumeMax.set(10);
+        test.nar.termVolumeMax.set(6);
         test
                 .believe("((x&&y) ==> z)")
                 .believe("(a ==> y)", 0.9f, 0.9f)

@@ -500,19 +500,19 @@ public class Occurrify extends TimeGraph {
 
 
                 Pair<Term, long[]> p = solveOccDT(d, x, d.occ.reset(x));
-                if (p != null) {
-                    if (d.truthFunction != NALTruth.Identity && immediatizable(d)) {
-                        if (!immediatize(p.getTwo(), d))
-                            return null;
-                    }
-                }
+//                if (p != null) {
+//                    if (immediatizable(d)) {
+//                        if (!immediatize(p.getTwo(), d))
+//                            return null;
+//                    }
+//                }
                 return p;
             }
 
-            @Override
-            public PREDICATE<Derivation> filter() {
-                return intersectFilter;
-            }
+//            @Override
+//            public PREDICATE<Derivation> filter() {
+//                return intersectFilter;
+//            }
 
             @Override
             long[] occurrence(Derivation d) {
@@ -964,20 +964,20 @@ public class Occurrify extends TimeGraph {
                 return null;
 
 
-            int bdt = d.beliefTerm.dt();
-            if (bdt != DTERNAL && bdt != XTERNAL) {
+            long[] o = p.getTwo();
+            long s = o[0];
+            if (s != TIMELESS && s != ETERNAL) {
 
-                long[] o = p.getTwo();
-                long s = o[0];
-                if (s != TIMELESS && s != ETERNAL) {
+                int bdt = d.beliefTerm.dt();
+                if (bdt != XTERNAL) {
+                    if (bdt == DTERNAL)
+                        bdt = 0;
+
                     bdt *= sign;
 
 
-                    if (sign == 1) {
-                        bdt += d.beliefTerm.sub(0).eventRange(); //impl subj dtRange
-                    } else if (sign == -1) {
-                        bdt -= d.beliefTerm.sub(0).eventRange(); //impl subj dtRange
-                    }
+                    int subjDur = d.beliefTerm.sub(0).eventRange(); //impl subj dtRange
+                    bdt += sign * subjDur;
 
                     o[0] += bdt;
                     o[1] += bdt;
@@ -1263,7 +1263,7 @@ public class Occurrify extends TimeGraph {
     }
 
     private static boolean immediatizable(Derivation d) {
-        return (d.taskPunc == GOAL || d.taskPunc == QUEST) && (d.concPunc == GOAL || d.concPunc == QUEST);
+        return (d.taskPunc == GOAL || d.taskPunc == QUEST) && (d.concPunc == GOAL || d.concPunc == QUEST) && d.truthFunction!=NALTruth.Identity;
     }
 
 

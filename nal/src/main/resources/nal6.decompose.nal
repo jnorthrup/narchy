@@ -3,10 +3,12 @@
   //Conjunction structural decompose: C = (&&,a,b,..)
     C, X, eventOf(C,X), --is(X,"#")                        |-   conjWithout(C,X), (Belief:StructuralDeduction, Time:TaskSubSequence)
     C, X, eventOf(C,X), --is(X,"#")                        |-   X, (Belief:StructuralDeduction, Time:TaskSubEventPos)
-    C, X, eventOf(C,X),    conjParallel(C), --is(X,"#")    |-   X, (  Goal:StructuralDeduction, Time:TaskSubEventPos)
     C, X, eventOfNeg(C,X), --is(X,"#")                     |-   conjWithout(C,--X), (Belief:StructuralDeduction, Time:TaskSubSequence)
     C, X, eventOfNeg(C,X), --is(X,"#")                     |- --X, (Belief:StructuralDeduction, Time:TaskSubEventNeg)
-    C, X, eventOfNeg(C,X), conjParallel(C), --is(X,"#")    |- --X, (  Goal:StructuralDeduction, Time:TaskSubEventNeg)
+
+      //C, X, eventOf(C,X),    conjParallel(C), --is(X,"#")    |-   X, (  Goal:StructuralDeduction, Time:TaskSubEventPos)
+      //C, X, eventOfNeg(C,X), conjParallel(C), --is(X,"#")    |- --X, (  Goal:StructuralDeduction, Time:TaskSubEventNeg)
+        //^ use the eventFirstOf() version below
 
 
     //goal/antigoal in sequence
@@ -35,7 +37,10 @@
     X, C, eventLastOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:DeductionN,Time:TaskInBelief)
 
     C, X, eventFirstOf(C,X)    |- conjDropIfEarliest(C,  X), (Belief:Deduction,Goal:Deduction,Time:BeliefInTask)
+      C, X, eventFirstOf(C,X)    |- X, (Goal:StructuralDeduction)
     C, X, eventFirstOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DeductionPN,Time:BeliefInTask)
+      C, X, eventFirstOfNeg(C,X) |- --X, (Goal:StructuralDeduction)
+
 
     //conditional disjunction decompose
     D, X, eventOfNeg(D,X) |- --conjWithout(D,--X), (Goal:DeductionNN,Time:BeliefInTask)
@@ -64,10 +69,10 @@
 //        //(M ==> S), (M ==> (||,S,A..+)) |- (M ==> (||,A..+)), (Belief:DecomposeNegativePositivePositive)
 
 
-    //TODO disjunction decompose
 (M ==> C), X, eventOfPosOrNeg(C,X) |- (M ==> conjWithoutPosOrNeg(C,X)), (Belief:StructuralReduction)
 (C ==> M), X, eventOfPosOrNeg(C,X) |- (conjWithoutPosOrNeg(C,X) ==> M), (Belief:StructuralReduction)
 (--C ==> M), X, eventOfPosOrNeg(C,X) |- (--conjWithoutPosOrNeg(C,X) ==> M), (Belief:StructuralReduction)
+    //TODO disjunction decompose
 
     //(M ==> C), M, is(C,"&&") |- (M ==> dropAnyEvent(C)), (Belief:StructuralReduction)
      //(M ==> C), X, eventOf(C,X) |- (M ==> conjWithout(C,X)), (Belief:StructuralReduction)

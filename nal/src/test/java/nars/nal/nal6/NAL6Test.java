@@ -90,8 +90,8 @@ public class NAL6Test extends NALTest {
 
         TestNAR tester = test;
         tester.nar.termVolumeMax.set(14);
-        tester.believe("<(&&,<$x --> flyer>,($x --> [chirping])) ==> ($x --> bird)>");
-        tester.believe("<<$y --> [withWings]> ==> <$y --> flyer>>");
+        tester.believe("<(&&,($x --> flyer),($x --> [chirping])) ==> ($x --> bird)>");
+        tester.believe("<($y --> [withWings]) ==> ($y --> flyer)>");
         tester.mustBelieve(cycles, "((($1 --> [chirping]) && ($1 --> [withWings])) ==> ($1 --> bird))",
                 1.00f,
                 0.81f
@@ -152,8 +152,17 @@ public class NAL6Test extends NALTest {
     void variable_unification7() {
 
         TestNAR tester = test;
-        tester.believe("<(&&,<$x --> flyer>,<($x,worms) --> food>) ==> ($x --> bird)>");
-        tester.believe("<<$y --> flyer> ==> <$y --> [withWings]>>");
+        tester.believe("((&&,($x --> flyer),(($x,worms) --> food)) ==> ($x --> bird))");
+        tester.believe("(($y --> flyer) ==> ($y --> [withWings]))");
+        tester.mustBelieve(cycles, "<(&&,($1 --> [withWings]),<($1,worms) --> food>) ==> ($1 --> bird)>", 1.00f, 0.45f);
+
+    }
+    @Test
+    void variable_unification7_neg() {
+
+        TestNAR tester = test;
+        tester.believe("((&&,($x --> flyer),(($x,worms) --> food)) ==> ($x --> bird))");
+        tester.believe("(($y --> flyer) ==> ($y --> [withWings]))");
         tester.mustBelieve(cycles, "<(&&,($1 --> [withWings]),<($1,worms) --> food>) ==> ($1 --> bird)>", 1.00f, 0.45f);
 
     }
@@ -533,7 +542,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unification() {
-        test.nar.termVolumeMax.set(10);
+//        test.nar.termVolumeMax.set(10);
         TestNAR tester = test;
         tester.believe("(((#1 --> lock) && ($2 --> key)) ==> open($2, #1))", 1.00f, 0.90f);
         tester.believe("({key1} --> key)", 1.00f, 0.90f);
@@ -542,7 +551,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unification_neg() {
-        test.nar.termVolumeMax.set(10);
+//        test.nar.termVolumeMax.set(10);
 
         TestNAR tester = test;
         tester.believe("(((#1 --> lock) && --($2 --> key)) ==> open($2, #1))");
@@ -1025,7 +1034,6 @@ public class NAL6Test extends NALTest {
     @Test void testDecomposePositiveImplicationCommonConjunctionSubterm() {
         //tests:
         // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
-        test.logDebug();
         test
                 .believe("(S ==> M)", 0.2f, 0.9f)
                 .believe("((X && S) ==> M)", 0.7f, 0.9f)
@@ -1035,7 +1043,6 @@ public class NAL6Test extends NALTest {
     @Test void testDecomposeNegativeImplicationCommonConjunctionSubterm() {
         //tests:
         // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
-        test.logDebug();
         test
                 .believe("--(S ==> M)")
                 .believe("--((X && S) ==> M)")

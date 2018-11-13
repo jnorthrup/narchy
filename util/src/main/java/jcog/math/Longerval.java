@@ -1,5 +1,6 @@
 package jcog.math;
 
+import jcog.WTF;
 import org.jetbrains.annotations.Nullable;
 
 import static java.lang.Math.max;
@@ -170,7 +171,8 @@ public class Longerval implements LongInterval {
 
 	/** returns -1 if no intersection; 0 = adjacent, > 0 = non-zero interval in common */
 	public static long intersectLength(long x1, long y1, long x2, long y2) {
-		assert(x1!=ETERNAL && x1!=TIMELESS && x2!=ETERNAL && x2!=TIMELESS);
+		if (!(x1!=ETERNAL && x1!=TIMELESS && x2!=ETERNAL && x2!=TIMELESS))
+			throw new WTF();
 		long a = max(x1, x2);
 		long b = min(y1, y2);
 		return a <= b ? b - a : -1;
