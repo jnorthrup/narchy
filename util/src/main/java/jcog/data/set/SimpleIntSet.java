@@ -135,7 +135,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
     @Override
     public void clear() {
         size = 0;
-        status.clearAll();
+        status.clear();
     }
 
     @Override

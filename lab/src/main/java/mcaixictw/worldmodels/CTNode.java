@@ -65,8 +65,7 @@ public class CTNode {
 	 * @return
 	 */
 	double logKTMul(boolean sym) {
-		double result = Math.log((double) count(sym) + 0.5)
-				- Math.log((double) (count(false) + count(true) + 1));
+		double result = Math.log(count(sym) + 0.5) - Math.log((count(false) + count(true) + 1));
 		assert (result <= 0);
 		return result;
 	}
@@ -74,8 +73,10 @@ public class CTNode {
 	
 	public int size() {
 		int rval = 1;
-		rval += child(false) != null ? child(false).size() : 0;
-		rval += child(true) != null ? child(true).size() : 0;
+		CTNode f = child(false);
+		CTNode t = child(true);
+		rval += f != null ? f.size() : 0;
+		rval += t != null ? t.size() : 0;
 		return rval;
 	}
 

@@ -9,8 +9,6 @@ import nars.unify.Unify;
 import nars.unify.match.EllipsisMatch;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
-
 import static nars.Op.NEG;
 import static nars.Op.VAR_PATTERN;
 
@@ -75,17 +73,13 @@ public interface Variable extends Atomic {
         if (_y instanceof Variable) {
             if (!(_y instanceof EllipsisMatch)) {
                 if (xOp == _y.op()) {
-
-
                     Variable Y = (Variable) _y;
                     Variable X = this;
 
                     //same op: common variable
-
-                    Supplier<Term> common = () -> X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
-
                     //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
-                    return u.xy.set(X, Y, common);
+                    Variable common = X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
+                    return u.putXY(X, common) && u.putXY(Y, common);
                 }
             }
         }

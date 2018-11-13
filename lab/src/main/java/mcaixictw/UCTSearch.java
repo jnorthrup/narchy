@@ -18,8 +18,7 @@ public class UCTSearch {
 		if (uctRoot == null) {
 			uctRoot = new UCTNode(false);
 		} else {
-			uctRoot = uctRoot.getSubtree(agent.getLastAction(),
-					agent.getLastPercept());
+			uctRoot = uctRoot.getSubtree(agent.getLastAction(), agent.getLastPercept());
 		}
 
 		int horizon = settings.getHorizon();
@@ -30,7 +29,7 @@ public class UCTSearch {
 		
 		
 		int bestAction = uctRoot.bestAction();
-
+		System.out.println("bestAction=" +  bestAction);
 		
 		if (!settings.isRecycleUCT()) {
 			uctRoot = null;

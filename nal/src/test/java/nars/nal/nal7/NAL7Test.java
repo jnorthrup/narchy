@@ -154,7 +154,7 @@ public class NAL7Test extends NALTest {
         test
                 .inputAt(1, "(a &&+1 b)! :|:")
                 .mustGoal(cycles, "a", 1.00f, 0.81f, 1)
-                .mustGoal(cycles, "b", 1.00f, 0.81f, 2)
+                .mustNotOutput(cycles, "b", GOAL, t->true)
         ;
     }
 
@@ -699,7 +699,7 @@ public class NAL7Test extends NALTest {
     void variable_elimination_on_temporal_statements() {
 
         test
-                .inputAt(0, "(on({t002},#1) &| at(SELF,#1)). :|:")
+                .inputAt(0, "(on({t002},#1) &| at(SELF,#1)). |")
                 .inputAt(1, "((on($1,#2) &| at(SELF,#2)) =|> reachable(SELF,$1)).")
                 .mustBelieve(cycles, "reachable(SELF,{t002})",
                         1.0f, 0.81f, 0);
@@ -1149,7 +1149,7 @@ public class NAL7Test extends NALTest {
                 .believe("(z ==>+5 x)")
                 .believe("(z ==>+5 y)")
                 .mustBelieve(cycles, "( z ==>+5 (x &| y))", 1f, 0.81f)
-                .mustBelieve(cycles, "( z ==>+5 --(--x &| --y))", 1f, 0.81f)
+//                .mustBelieve(cycles, "( z ==>+5 --(--x &| --y))", 1f, 0.81f)
                 .mustNotOutput(cycles, "( z ==> x )", BELIEF, t->true) //lost timing
                 .mustNotOutput(cycles, "( z ==> y )", BELIEF, t->true) //lost timing
         ;

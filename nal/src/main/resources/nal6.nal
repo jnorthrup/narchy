@@ -64,8 +64,8 @@
 
 
 
-//            B, ((&&,C,A..+) ==> X), neq(B,C), notImpl(B) |- subIfUnifiesAny(((&&,A..+) ==> X),C,B), (Belief:Deduction)
-//            B, ((&&,--C,A..+) ==> X), neq(B,C), notImpl(B) |- subIfUnifiesAny(((&&,A..+) ==> X),C,B), (Belief:DeductionN)
+//            B, ((&&,C,A..+) ==> X), neq(B,C) |- subIfUnifiesAny(((&&,A..+) ==> X),C,B), (Belief:Deduction)
+//            B, ((&&,--C,A..+) ==> X), neq(B,C) |- subIfUnifiesAny(((&&,A..+) ==> X),C,B), (Belief:DeductionN)
 //                B, (--(&&,C,A..+) ==> X), neq(B,C), notImpl(B) |- (--,subIfUnifiesAny(((&&,A..+) ==> X),C,B)), (Belief:Deduction)
 //                B, (--(&&,--C,A..+) ==> X), neq(B,C), notImpl(B) |- (--,subIfUnifiesAny(((&&,A..+) ==> X),C,B)), (Belief:DeductionN)
 

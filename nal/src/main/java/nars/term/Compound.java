@@ -265,7 +265,7 @@ public interface Compound extends Term, IPair, Subterms {
 
             if (isCommutative()) {
                 return xx.unifyCommute(yy, u);
-            } else {
+            } else { //TODO if temporal, compare in the correct order
                 return xx.unifyLinear(yy, u);
             }
         }

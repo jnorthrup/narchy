@@ -51,15 +51,15 @@ public abstract class Environment {
 	 */
 	public abstract int rewardBits();
 
-	/**
-	 * rewards are interpreted as unsigned integers. this means in the internal
-	 * world of the agent there are actually no negative rewards. but in real
-	 * world there are of course negative rewards. this value can be used to do
-	 * calculate back the real world meaning of the reward.
-	 * 
-	 * @return
-	 */
-	protected abstract double neutralReward();
+//	/**
+//	 * rewards are interpreted as unsigned integers. this means in the internal
+//	 * world of the agent there are actually no negative rewards. but in real
+//	 * world there are of course negative rewards. this value can be used to do
+//	 * calculate back the real world meaning of the reward.
+//	 *
+//	 * @return
+//	 */
+//	protected abstract double neutralReward();
 
 	/**
 	 * return true if the environment wants to decide to end the game.
@@ -79,7 +79,6 @@ public abstract class Environment {
 		String s = "";
 		s += "Environment: " + environmentName() + '\n';
 		s += "numActions: " + numActions() + '\n';
-		s += "neutralReward: " + neutralReward() + '\n';
 		return s;
 	}
 

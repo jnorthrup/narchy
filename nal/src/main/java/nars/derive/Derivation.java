@@ -443,8 +443,8 @@ public class Derivation extends PreDerivation {
         }
 
 
-        boolean eternal = (taskStart == ETERNAL) && (_belief == null || beliefStart==ETERNAL);
-        this.temporal = !eternal || Occurrify.temporal(taskTerm);
+        boolean eternalComplete = (taskStart == ETERNAL) && (_belief == null || beliefStart==ETERNAL);
+        this.temporal = !eternalComplete || Occurrify.temporal(taskTerm);
         if ((_belief == null) && (!temporal)) {
             if (Occurrify.temporal(beliefTerm)) {
                 Term beliefTermEternal = Retemporalize.retemporalizeXTERNALToDTERNAL.transform(beliefTerm); //HACK

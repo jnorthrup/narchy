@@ -1,12 +1,13 @@
 package jcog.data.bit;
 
 import jcog.TODO;
+import jcog.util.ArrayUtils;
 
 import java.util.Arrays;
 
 /**
  * Bare Metal Fixed-Size BitSets
- *
+ * <p>
  * for serious performance. implementations will not check index bounds
  * nor grow in capacity
  */
@@ -15,9 +16,10 @@ abstract public class MetalBitSet {
     public abstract boolean get(int i);
 
     public abstract void set(int i);
+
     public abstract void clear(int i);
 
-    public abstract void clearAll();
+    public abstract void clear();
 
     public abstract void setAll();
 
@@ -32,22 +34,32 @@ abstract public class MetalBitSet {
         else clear(i);
     }
 
-    /** finds the next bit matching 'what' between from (inclusive) and to (exclusive), or -1 if nothing found */
+    public void set(int start, int end, boolean v) {
+        if (v) {
+            for (int i = start; i < end; i++)
+                set(i);
+        } else {
+            for (int i = start; i < end; i++)
+                clear(i);
+        }
+    }
+
+
+    /**
+     * finds the next bit matching 'what' between from (inclusive) and to (exclusive), or -1 if nothing found
+     */
     public int next(boolean what, int from, int to) {
         for (int i = from; i < to; i++) {
-            if (get(i)==what)
+            if (get(i) == what)
                 return i;
         }
         return -1;
     }
 
 
+    /** TODO implement better bulk set(start,end,v) impl */
     public static class LongArrayBitSet extends MetalBitSet {
-        final long[] data;
-
-        protected LongArrayBitSet(long bits) {
-            this(new long[(int) Math.ceil((double) bits / Long.SIZE)]);
-        }
+        long[] data;
 
         /**
          * Deserialize long array as bitset.
@@ -59,7 +71,30 @@ abstract public class MetalBitSet {
             this.data = data;
         }
 
-        public void clearAll() {
+        protected LongArrayBitSet(long bits) {
+            resize(bits);
+        }
+
+        public int capacity() {
+            return data.length * 64;
+        }
+        public void resize(long bits) {
+
+
+            long[] prev = data;
+
+            if (bits == 0)
+                data = ArrayUtils.EMPTY_LONG_ARRAY;
+            else
+                data = new long[Math.max(1, (int) Math.ceil(((double) bits) / Long.SIZE))];
+
+            if (prev!=null) {
+                System.arraycopy(prev, 0, data, 0, Math.min(data.length, prev.length));
+            }
+        }
+
+
+        public void clear() {
             Arrays.fill(data, 0);
         }
 
@@ -77,6 +112,7 @@ abstract public class MetalBitSet {
                 sum += Long.bitCount(l);
             return sum;
         }
+
         @Override
         public boolean isEmpty() {
             for (long l : data)
@@ -90,14 +126,15 @@ abstract public class MetalBitSet {
          *
          * @param i
          */
-        @Override public void set(int i) {
+        @Override
+        public void set(int i) {
             data[i >>> 6] |= (1L << i);
         }
-        @Override public void clear(int i) {
+
+        @Override
+        public void clear(int i) {
             data[i >>> 6] &= ~(1L << i);
         }
-
-
 
 
         public boolean getAndSet(int index, boolean next) {
@@ -109,7 +146,7 @@ abstract public class MetalBitSet {
                 if (next) {
                     d[i] |= j;
                 } else {
-                    
+
                     d[i] &= ~j;
                 }
             }
@@ -122,7 +159,8 @@ abstract public class MetalBitSet {
          * @param i
          * @return
          */
-        @Override public boolean get(int i) {
+        @Override
+        public boolean get(int i) {
             return (data[i >>> 6] & (1L << i)) != 0;
         }
 
@@ -164,17 +202,6 @@ abstract public class MetalBitSet {
                 throw new TODO();
             return Long.numberOfLeadingZeros(~data[0]);
 
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
 
         }
 
@@ -205,13 +232,14 @@ abstract public class MetalBitSet {
         public void set(int i) {
             x |= (1 << i);
         }
+
         @Override
         public void clear(int i) {
             x &= ~(1 << i);
         }
 
         @Override
-        public void clearAll() {
+        public void clear() {
             x = 0;
         }
 

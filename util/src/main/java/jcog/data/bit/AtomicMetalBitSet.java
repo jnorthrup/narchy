@@ -61,7 +61,7 @@ public class AtomicMetalBitSet extends MetalBitSet {
     }
 
     @Override
-    public void clearAll() {
+    public void clear() {
          setDirect(0);
     }
 

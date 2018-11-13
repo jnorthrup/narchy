@@ -10,12 +10,14 @@ import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.graph.search.Search;
 import jcog.data.list.FasterList;
+import jcog.data.set.ArrayHashSet;
 import jcog.math.Longerval;
 import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.atom.Int;
 import nars.term.util.Conj;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.set.MutableSet;
@@ -64,12 +66,17 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 //    public final UnifiedSetMultimap<Term, Event> byTerm = new UnifiedSetMultimap<>();
 
 
-    public final MutableSet<Term> autoNeg = new UnifiedSet();
+    public final MutableSet<Term> autoNeg = new UnifiedSet() {
+        @Override
+        public boolean add(Object key) {
+            return super.add(((Term)key).unneg());
+        }
+    };
 
-    private transient Set<Event> seen;
+    protected final ArrayHashSet<Event> solutions = new ArrayHashSet();
     private transient boolean filterTimeless;
     private transient Predicate<Event> target;
-    private transient Term x;
+    private transient Term solving;
 
 
     /**
@@ -120,14 +127,14 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     public Event event(Term t, long start, long end, boolean add) {
-        if (t instanceof Bool || t == Op.ImgExt || t == Op.ImgInt)
+        if (t instanceof Int || t instanceof Bool || t == Op.ImgExt || t == Op.ImgInt)
             return null;
 
         Event event;
         if (start != TIMELESS) {
 
             Collection<Event> te = byTerm.get(t);
-            if (!te.isEmpty()) {
+            if (!te.isEmpty() && start!=ETERNAL) {
                 for (Event f : te) {
                     if (f instanceof Absolute && ((Absolute) f).containsOrEqual(start, end))
                         return f;
@@ -145,6 +152,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         if (af.start() == ETERNAL)
                             continue;
                         Longerval merged;
+
                         if (af.containedInButNotEqual(start, end)) {
                             removeNode(f);
                             ff.remove();
@@ -616,8 +624,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         Term y = dt(x, path, dt);
 
-        if (!(termsEvent(y)))
-            return true;
+        if (!termsEvent(y))
+            return true;  //invalid term
 
 
         if (start != ETERNAL && start != TIMELESS && dt != DTERNAL && dt < 0) {
@@ -725,31 +733,13 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
 
-    /**
-     * main entry point to the solver
-     */
-    public final void solve(Term x, boolean filterTimeless, Predicate<Event> target) {
-        solve(x, filterTimeless, new HashSet<>(), target);
-    }
 
-    /**
-     * main entry point to the solver
-     *
-     * @seen callee may need to clear the provided seen if it is being re-used
-     */
-    public boolean solve(Term x, boolean filterTimeless, Set<Event> seen, Predicate<Event> target) {
 
-        this.seen = seen;
-        this.filterTimeless = filterTimeless;
-        this.target = target;
-        this.x = x;
-        return solveAll(x, this::solution);
-    }
 
     private boolean solution(Event y) {
-        if (seen.add(y)) {
+        if (solutions.add(y)) {
 
-            if (y.start() == TIMELESS && (filterTimeless || x.equals(y.id)))
+            if (y.start() == TIMELESS && (filterTimeless || solving.equals(y.id)))
                 return true;
 
             return target.test(y);
@@ -781,12 +771,22 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     /**
-     * each should only receive Event or Unsolved instances, not Relative's
+     * main entry point to the solver
+     *
+     * @seen callee may need to clear the provided seen if it is being re-used
      */
-    boolean solveAll(Term x, Predicate<Event> each) {
+    public boolean solve(Term x, boolean filterTimeless, Predicate<Event> target) {
 
-        if (!x.hasAny(Op.Temporal))
+        this.filterTimeless = filterTimeless;
+        this.target = target;
+        solutions.clear();
+
+        Predicate<Event> each = this::solution;
+        this.solving = x;
+
+        if (!x.hasAny(Op.Temporal)) {
             return solveOccurrence(x, each);
+        }
 
         Subterms xx = x.subterms();
         if (xx.hasXternal()) {
@@ -1030,17 +1030,17 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         /**
          * contained within but not true if equal
          */
-        public boolean containedInButNotEqual(long cs, long ce) {
+        public final boolean containedInButNotEqual(long cs, long ce) {
             return containedIn(cs, ce) && (start != cs || end() != ce);
         }
 
-        public boolean containedIn(long cs, long ce) {
+        public final boolean containedIn(long cs, long ce) {
             return (cs <= start && ce >= end());
         }
 
-        public boolean intersectsWith(long cs, long ce) {
-            return Longerval.intersects(start, end(), cs, ce);
-        }
+//        public boolean intersectsWith(long cs, long ce) {
+//            return Longerval.intersects(start, end(), cs, ce);
+//        }
 
 
         /**

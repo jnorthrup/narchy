@@ -350,7 +350,7 @@ class TimeGraphTest {
         }
 
         void solve(Term x) {
-            time.solve(x, false, seen, this);
+            time.solve(x, false, this);
         }
 
 

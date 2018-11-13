@@ -86,13 +86,13 @@ public class UCTSettings extends Settings {
 		this.recycleUCT = recycleUCT;
 	}
 
-	public static UCTSettings KUHN_POKER_TRAINING() {
-		UCTSettings s = new UCTSettings();
-		s.setHorizon(16);
-		s.setMcSimulations(100);
-		s.setRecycleUCT(true);
-		
-		return s;
-	}
+//	public static UCTSettings KUHN_POKER_TRAINING() {
+//		UCTSettings s = new UCTSettings();
+//		s.setHorizon(16);
+//		s.setMcSimulations(100);
+//		s.setRecycleUCT(true);
+//
+//		return s;
+//	}
 
 }

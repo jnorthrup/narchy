@@ -85,7 +85,6 @@ public final class Termify extends AbstractPred<Derivation> {
 //            } else {
 //                unwrapNeg = false;
 //            }
-            d.occ.clear();
             Pair<Term, long[]> timing = time.occurrence(d, c1);
             if (timing == null) {
                 d.nar.emotion.deriveFailTemporal.increment();

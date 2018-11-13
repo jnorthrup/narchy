@@ -10,11 +10,6 @@ import mcaixictw.BooleanArrayList;
  */
 public abstract class Worldmodel {
 
-	
-	
-	
-	
-
 	protected Worldmodel(String name) {
 		this.name = name;
 	}
@@ -25,9 +20,6 @@ public abstract class Worldmodel {
 		this.name = name;
 	}
 
-	public String getName() {
-		return name;
-	}
 
 	public abstract String toString();
 

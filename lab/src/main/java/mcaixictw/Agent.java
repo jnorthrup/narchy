@@ -13,7 +13,7 @@ public class Agent {
 		this.obsBits = obsBits;
 		this.rewBits = rewBits;
 		this.model = model;
-		actionBits = Util.bitsNeeded(actions);
+		actionBits = McAIXIUtil.bitsNeeded(actions);
 		lastUpdatePercept = false;
 	}
 
@@ -54,7 +54,7 @@ public class Agent {
 	 * @return
 	 */
 	public double averageReward() {
-		return age() > 0 ? (double) totalReward / (double) age() : 0.0;
+		return age() > 0 ? ((double) totalReward) / age() : 0.0;
 	}
 
 	/**
@@ -98,7 +98,7 @@ public class Agent {
 	 * @return
 	 */
 	public int genRandomActionAndUpdate() {
-		int a = Util.randRange(actions);
+		int a = McAIXIUtil.randRange(actions);
 		modelUpdate(a);
 		return a;
 	}
@@ -109,7 +109,7 @@ public class Agent {
 	 * @return
 	 */
 	public int genPercept() {
-		return Util.decode(model.genRandomSymbols(obsBits + rewBits));
+		return McAIXIUtil.decode(model.genRandomSymbols(obsBits + rewBits));
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class Agent {
 		assert (isObservationOk(decodeObservation(list)));
 		totalReward += reward;
 		lastUpdatePercept = true;
-		return Util.decode(list);
+		return McAIXIUtil.decode(list);
 	}
 
 	/**
@@ -149,7 +149,7 @@ public class Agent {
 		assert (isRewardOk(reward));
 		totalReward += reward;
 		lastUpdatePercept = true;
-		return Util.decode(list);
+		return McAIXIUtil.decode(list);
 	}
 
 	/**
@@ -272,7 +272,7 @@ public class Agent {
 	 * @return
 	 */
 	public BooleanArrayList encodeAction(int action) {
-		return Util.encode(action, actionBits);
+		return McAIXIUtil.encode(action, actionBits);
 	}
 
 	/**
@@ -283,8 +283,8 @@ public class Agent {
 	 * @return
 	 */
 	public BooleanArrayList encodePercept(int observation, int reward) {
-		BooleanArrayList result = Util.encode(observation, obsBits);
-		Util.encodeAppend(reward, rewBits, result);
+		BooleanArrayList result = McAIXIUtil.encode(observation, obsBits);
+		McAIXIUtil.encodeAppend(reward, rewBits, result);
 		return result;
 	}
 
@@ -296,7 +296,7 @@ public class Agent {
 	 */
 	public int decodeReward(BooleanArrayList perception) {
 		int s = perception.size();
-		int decodedReward = Util.decode(
+		int decodedReward = McAIXIUtil.decode(
 				perception, s-rewBits, s
 				
 		);
@@ -312,7 +312,7 @@ public class Agent {
 	 * @return
 	 */
 	public int decodeObservation(BooleanArrayList symlist) {
-		return Util.decode(
+		return McAIXIUtil.decode(
 				
 				symlist, 0, obsBits
 		);
@@ -333,7 +333,7 @@ public class Agent {
 		for (; i >= end; i--) {
 			list.add(model.nthHistorySymbol(i));
 		}
-		return Util.decode(list);
+		return McAIXIUtil.decode(list);
 	}
 
 	
@@ -351,7 +351,7 @@ public class Agent {
 		for (; i >= end; i--) {
 			list.add(model.nthHistorySymbol(i));
 		}
-		return Util.decode(list);
+		return McAIXIUtil.decode(list);
 	}
 
 	public boolean lastUpdatePercept() {

@@ -3,8 +3,6 @@ package jcog.version;
 import jcog.data.list.FasterList;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
-
 /**
  * Maintains a versioned snapshot history (stack) of a changing value.
  * Managed by a Versioning context
@@ -47,6 +45,8 @@ public class Versioned<X> extends FasterList<X> {
      */
     @Nullable
     public Versioned<X> set(X nextValue) {
+        if (size > 0 && get().equals(nextValue))
+            return this;
         if (addWithoutResize(nextValue)) {
             if (context.add(this))
                 return this;
@@ -55,18 +55,6 @@ public class Versioned<X> extends FasterList<X> {
         }
         return null;
     }
-
-    @Nullable
-    public Versioned<X> set(Supplier<X> nextValue) {
-        if (addWithoutResize(nextValue)) {
-            if (context.add(this))
-                return this;
-            else
-                pop();
-        }
-        return null;
-    }
-
 
 
     @Override

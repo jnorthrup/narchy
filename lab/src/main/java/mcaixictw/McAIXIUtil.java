@@ -1,18 +1,16 @@
 package mcaixictw;
 
-import java.util.List;
-
-public class Util {
+public class McAIXIUtil {
 	
-
-	public static String toString(List<Boolean> symlist) {
-		String s = "";
-		for (boolean b : symlist) {
-			String one = b ? "1" : "0";
-			s += one;
-		}
-		return s;
-	}
+//
+//	public static String toString(List<Boolean> symlist) {
+//		String s = "";
+//		for (boolean b : symlist) {
+//			String one = b ? "1" : "0";
+//			s += one;
+//		}
+//		return s;
+//	}
 
 	/**
 	 * Return a random integer between [0, end)
@@ -21,7 +19,7 @@ public class Util {
 	 * @return
 	 */
 	public static int randRange(int end) {
-		return ((int) Math.round(Math.random() * end)) % end;
+		return ((int)(Math.random() * end));
 	}
 
 	public static boolean randSym() {
@@ -61,7 +59,7 @@ public class Util {
 
 	public static BooleanArrayList encodeAppend(int value, int bits, BooleanArrayList target) {
 		for (int i = bits-1; i >=0; i--) {
-			target.add(((1<<i) & value) > 0);
+			target.add(((1<<i) & value) != 0);
 		}
 		return target;
 	}
@@ -89,13 +87,14 @@ public class Util {
 	 */
 	public static int bitsNeeded(int states) {
 		assert (states > 1);
-		return 31 - Integer.numberOfLeadingZeros(states);
+		//return 31 - Integer.numberOfLeadingZeros(states);
+		return states;
 	}
 
-	public static boolean DebugOutput;
+//	public static boolean DebugOutput;
 
 	public static BooleanArrayList rand(int length) {
-		BooleanArrayList b = new BooleanArrayList();
+		BooleanArrayList b = new BooleanArrayList(length);
 		for (int i = 0; i < length; i++) {
 			b.add(randSym());
 		}

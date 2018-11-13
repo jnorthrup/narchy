@@ -19,7 +19,7 @@ public class UCTNode {
     private final boolean isChanceNode; 
     private double mean; 
     private int visits; 
-    private final double explorationRatio = 1.41; 
+    private static final double explorationRatio = 1.41;
     
 
     /**
@@ -29,8 +29,8 @@ public class UCTNode {
      */
     public int bestAction() {
         final int[] bestAction = {0};
-        final double[] maxReward = {Double.MIN_VALUE};
-
+        final double[] maxReward = {Double.NEGATIVE_INFINITY};
+        //TODO fair
         children.forEachWithIndex((UCTNode curr, int i)->{
             double expectedReward = curr.mean;
             if (expectedReward > maxReward[0]) {
@@ -51,7 +51,7 @@ public class UCTNode {
     private int actionSelect(Agent agent, int dfr) {
         assert (agent.numActions() >= children.size());
 
-        final double[] maxValue = {Double.MIN_VALUE};
+        final double[] maxValue = {Double.NEGATIVE_INFINITY};
         final int[] selectedAction = {0};
 
         
@@ -63,7 +63,7 @@ public class UCTNode {
                     unexplored.add(a);
                 }
             }
-            selectedAction[0] = unexplored.get(Util.randRange(unexplored.size()));
+            selectedAction[0] = unexplored.get(McAIXIUtil.randRange(unexplored.size()));
         } else {
             
             
@@ -111,27 +111,29 @@ public class UCTNode {
      */
     public double sample(Agent agent, int m) {
 
-        ModelUndo undo = new ModelUndo(agent);
+
 
         double futureTotalReward;
 
         if (m == 0) {
             
             return agent.reward();
-        } else if (isChanceNode) {
+        }
+
+        ModelUndo undo = new ModelUndo(agent);
+        if (isChanceNode) {
             int p = agent.genPerceptAndUpdate();
 
-            children.getIfAbsentPut(p, () -> new UCTNode(false));
-            futureTotalReward = children.get(p).sample(agent, m - 1);
+            futureTotalReward = children.getIfAbsentPut(p, () -> new UCTNode(false)).sample(agent, m - 1);
         } else if (visits == 0) {
             futureTotalReward = rollout(agent, m);
         } else {
             int a = actionSelect(agent, m);
 
-            children.getIfAbsentPut(a, () -> new UCTNode(true));
+            UCTNode next = children.getIfAbsentPut(a, () -> new UCTNode(true));
 
             agent.modelUpdate(a);
-            futureTotalReward = children.get(a).sample(agent, m);
+            futureTotalReward = next.sample(agent, m);
         }
 
         
@@ -193,12 +195,11 @@ public class UCTNode {
      */
     public UCTNode getSubtree(int action, int percept) {
         assert (!isChanceNode);
-        assert (children.containsKey(action));
+//        assert (children.containsKey(action));
 
-        UCTNode chanceNode = children.get(action);
-
-        if (chanceNode.children.containsKey(percept)) {
-            return chanceNode.children.get(percept);
+        UCTNode p = children.get(action).children.get(percept);
+        if (p!=null) {
+            return p;
         } else {
             return new UCTNode(false);
         }

@@ -68,10 +68,10 @@ public class ControllerSettings extends Settings {
 		this.exploreDecay = exploreDecay;
 	}
 
-	public static ControllerSettings TEXAS_LIMIT_SETTINGS() {
-		ControllerSettings s = new ControllerSettings();
-		s.setExploration(0.1);
-		s.setExploreDecay(0.999);
-		return s;
-	}
+//	public static ControllerSettings TEXAS_LIMIT_SETTINGS() {
+//		ControllerSettings s = new ControllerSettings();
+//		s.setExploration(0.1);
+//		s.setExploreDecay(0.999);
+//		return s;
+//	}
 }

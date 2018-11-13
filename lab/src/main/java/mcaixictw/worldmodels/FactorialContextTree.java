@@ -74,20 +74,13 @@ public class FactorialContextTree extends ContextTree {
 	@Override
     public void revert() {
 		assert (addedSymbolCount > 0);
-		assert (historySize() > 0);
 
-		
-		
-
-		prevTree().remove(history.pop(), history, history.size());
-
+		boolean sym = history.pop();
+		int m_currentlyActiveTree = (addedSymbolCount - 1) % ctwTrees.size();
+		ctwTrees.get(m_currentlyActiveTree).remove(sym, history);
 		addedSymbolCount--;
 	}
 
-	public ContextTree prevTree() {
-		int m_currentlyActiveTree = (addedSymbolCount - 1) % ctwTrees.size();
-		return ctwTrees.get(m_currentlyActiveTree);
-	}
 
 	@Override
 	public double logBlockProbability() {

@@ -1,7 +1,7 @@
 package mcaixictw.environments;
 
 import mcaixictw.Environment;
-import mcaixictw.Util;
+import mcaixictw.McAIXIUtil;
 
 
 /**
@@ -16,8 +16,8 @@ import mcaixictw.Util;
  * location.
  */
 public class Maze1DEnv extends Environment {
-	private final int REWARD_POSITION = 2;
 	private final int size;
+	private final int rewardPosition;
 	private int reward;
 	private final int observation;
 	private int position;
@@ -27,19 +27,19 @@ public class Maze1DEnv extends Environment {
 		reward = 0;
 		
 		observation = 0;
-		startAtNewPosition();
+		rewardPosition = (int) Math.floor(Math.random()*size);
+		randomizePosition();
 	}
 
-	private void startAtNewPosition() {
+	private void randomizePosition() {
 		
 		do {
-			position = Util.randRange(size);
-		} while (position == REWARD_POSITION);
+			position = McAIXIUtil.randRange(size);
+		} while (position == rewardPosition);
 	}
 
 	@Override
 	public void performAction(int action) {
-		reward = 0;
 		if (action == 0) {
 			
 			if (position > 0) {
@@ -47,16 +47,18 @@ public class Maze1DEnv extends Environment {
 			}
 		} else {
 			
-			if (position < 3) {
+			if (position < size) {
 				position++;
 			}
 		}
 
 		
 		
-		if (position == REWARD_POSITION) {
+		if (position == rewardPosition) {
 			reward = 1;
-			startAtNewPosition();
+			randomizePosition();
+		} else {
+			reward = 0;
 		}
 	}
 
@@ -75,10 +77,10 @@ public class Maze1DEnv extends Environment {
 		return 2;
 	}
 
-	@Override
-	public double neutralReward() {
-		return 0;
-	}
+//	@Override
+//	public double neutralReward() {
+//		return 0;
+//	}
 
 	@Override
 	public boolean isFinished() {

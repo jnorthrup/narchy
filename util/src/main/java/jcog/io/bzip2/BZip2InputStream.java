@@ -428,7 +428,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
             inUse16[i] = bsR(1) == 1;
         }
 
-        inUse.clearAll();
+        inUse.clear();
 
         for (i = 0; i < 16; i++) {
             if (inUse16[i]) {

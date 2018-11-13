@@ -63,6 +63,9 @@ public abstract class Param {
      */
     public static final boolean TASKLINK_CONCEPT_TERM = false;
 
+    /** can produce varieties of terms with dt below the dithered threshold time */
+    public static final boolean ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS = false;
+
 
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
 

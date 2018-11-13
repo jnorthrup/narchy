@@ -44,10 +44,6 @@ public class CoinFlipEnv extends Environment {
 		return 2;
 	}
 
-	@Override
-	public double neutralReward() {
-		return 0;
-	}
 
 	@Override
 	public String environmentName() {

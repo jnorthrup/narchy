@@ -1,9 +1,11 @@
 package mcaixictw;
 
+import mcaixictw.worldmodels.ContextTree;
 import mcaixictw.worldmodels.Worldmodel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.PrintWriter;
-import java.util.logging.Logger;
 
 
 /**
@@ -13,8 +15,7 @@ import java.util.logging.Logger;
  */
 public class AgentController {
 	
-	private static final Logger log = Logger.getLogger(AgentController.class
-			.getName());
+	private static final Logger log = LoggerFactory.getLogger(AgentController.class.getName());
 
 	/**
 	 * use the given instance of WorldModel
@@ -65,10 +66,10 @@ public class AgentController {
 	 * @param random
 	 */
 	public void play(int cycles, boolean random) {
-		System.out.println("play " + cycles + " cycles");
-		System.out.println(this);
 		for (int k = 0; k < cycles; k++) {
 			play(random);
+			System.out.println(this);
+			System.out.println(((ContextTree)getModel()).prettyPrint());
 		}
 	}
 
@@ -81,8 +82,7 @@ public class AgentController {
 		int obs = environment.getObservation();
 		int rew = environment.getReward();
 		agent.modelUpdate(obs, rew);
-		boolean explore = (Math.random() < agentSettings.getExploration())
-				|| random;
+		boolean explore = random || (Math.random() < agentSettings.getExploration());
 		int action;
 		if (explore) {
 			action = agent.genRandomActionAndUpdate();
@@ -91,16 +91,16 @@ public class AgentController {
 			agent.modelUpdate(action);
 		}
 		environment.performAction(action);
+
+
+		//if(log.isTraceEnabled()) {
+			log.info(cycle + "," + obs + ',' + rew + "," + action + ","
+					+ explore + ',' + agentSettings.getExploration() + ","
+					+ agent.reward() + ',' + agent.averageReward());
+		//}
 		
-		log.fine(cycle + "," + obs + ',' + rew + "," + action + ","
-				+ explore + ',' + agentSettings.getExploration() + ","
-				+ agent.reward() + ',' + agent.averageReward());
-		
-		if ((cycle & (cycle - 1)) == 0) {
-			System.out.println(this);
-		}
-		agentSettings.setExploration(agentSettings.getExploration()
-				* agentSettings.getExploreDecay());
+
+		agentSettings.setExploration(agentSettings.getExploration() * agentSettings.getExploreDecay());
 		cycle++;
 	}
 

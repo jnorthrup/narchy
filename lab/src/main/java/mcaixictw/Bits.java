@@ -1,20 +1,14 @@
 package mcaixictw;
 
-import java.util.ArrayList;
-
 /**
  * representation of a bit string
  */
-public class Bits extends ArrayList<Boolean> {
+public class Bits extends BooleanArrayList {
 
 	public Bits() {
 		super();
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8828268179061588441L;
 
 	public Bits one() {
 		add(true);
@@ -26,5 +20,17 @@ public class Bits extends ArrayList<Boolean> {
 		return this;
 	}
 
+
+	public Bits rand() {
+		add(McAIXIUtil.randSym());
+		return this;
+	}
+
+	public Bits rand(int length) {
+		for (int i = 0; i < length; i++) {
+			add(McAIXIUtil.randSym());
+		}
+		return this;
+	}
 
 }

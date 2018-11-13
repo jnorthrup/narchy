@@ -1,5 +1,6 @@
 package mcaixictw;
 
+import jcog.data.bit.MetalBitSet;
 import org.eclipse.collections.api.BooleanIterable;
 import org.eclipse.collections.api.block.function.primitive.BooleanToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.ObjectBooleanIntToObjectFunction;
@@ -17,7 +18,6 @@ import org.eclipse.collections.impl.list.mutable.FastList;
 import org.eclipse.collections.impl.set.mutable.primitive.BooleanHashSet;
 
 import java.io.IOException;
-import java.util.BitSet;
 import java.util.NoSuchElementException;
 
 /**
@@ -25,12 +25,12 @@ import java.util.NoSuchElementException;
  *
  * @since 3.0.
  */
-public final class BooleanArrayList extends BitSet {
-    private static final long serialVersionUID = 1L;
+public class BooleanArrayList extends MetalBitSet.LongArrayBitSet {
+
     private int size;
 
     public BooleanArrayList() {
-        super();
+        this(0);
     }
 
     public BooleanArrayList(int initialCapacity) {
@@ -47,11 +47,6 @@ public final class BooleanArrayList extends BitSet {
         }
     }
 
-
-
-
-
-    @Override
     public int size() {
         return size;
     }
@@ -161,12 +156,18 @@ public final class BooleanArrayList extends BitSet {
 
     public boolean add(boolean newItem) {
 
+        if (size == capacity()) {
+            resize(capacity()+64);
+        }
+
         if (newItem) {
             set(size);
         }
         size++;
         return true;
     }
+
+
 
 
     public boolean addAll(boolean... source) {
@@ -284,20 +285,13 @@ public final class BooleanArrayList extends BitSet {
 
     public boolean retainAll(BooleanIterable source) {
         throw new UnsupportedOperationException();
-
-
-
-
-
-
-
     }
-
 
     public boolean retainAll(boolean... source) {
         return retainAll(BooleanHashSet.newSetWith(source));
     }
 
+    /** TODO optimize */
     private int getTrueCount() {
         int count = 0;
         for (int i = 0; i < size; i++) {
@@ -311,24 +305,28 @@ public final class BooleanArrayList extends BitSet {
 
     public boolean removeAtIndex(int index) {
         boolean previous = get(index);
-        if (size - index > 1) {
-            for (int i = index; i < size; i++) {
+        if (index < size) {
+            for (int i = index; i < size-1; i++) {
                 set(i, get(i + 1));
             }
+            clear(--size);
+        } else {
+            throw new ArrayIndexOutOfBoundsException();
         }
-        --size;
-        clear(size);
+
         return previous;
     }
 
     public void removeAtIndexFast(int index) {
 
         if (size - index > 1) {
-            for (int i = index; i < size; i++) {
+            for (int i = index; i < size-1; i++) {
                 set(i, get(i + 1));
             }
+            --size;
+        } else {
+            throw new ArrayIndexOutOfBoundsException();
         }
-        --size;
 
     }
 
