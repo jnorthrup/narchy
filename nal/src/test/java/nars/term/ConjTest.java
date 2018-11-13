@@ -685,6 +685,29 @@ public class ConjTest {
     }
 
     @Test
+    void testConjWithout() {
+
+        assertEquals("(--,y)", Conj.without($$("(--x && --y)"), $$("x"), true).toString());
+        assertEquals("(--,y)", Conj.without($$("(--x &&+1 --y)"), $$("x"), true).toString());
+        assertEquals("(z &&+1 (--,y))", Conj.without($$("((--x &&+1 z) &&+1 --y)"), $$("x"), true).toString());
+        assertEquals("(z &&+1 (--,y))", Conj.without($$("((x &&+1 z) &&+1 --y)"), $$("x"), true).toString());
+        assertEquals("(z &&+1 (--,y))", Conj.without($$("((--x &&+1 z) &&+1 --y)"), $$("--x"), true).toString());
+        assertEquals("(z &&+1 (--,y))", Conj.without($$("((x &&+1 z) &&+1 --y)"), $$("--x"), true).toString());
+        assertEquals("((--,x)&&(--,y))", Conj.without($$("(--x && --y)"), $$("x"), false).toString()); //unchanged
+        assertEquals("((--,x) &&+1 (--,y))", Conj.without($$("(--x &&+1 --y)"), $$("x"), false).toString()); //unchanged
+        assertEquals("(((--,x) &&+1 z) &&+1 (--,y))", Conj.without($$("((--x &&+1 z) &&+1 --y)"), $$("x"), false).toString());
+
+        assertEquals("y", Conj.without($$("(x && y)"), $$("x"), false).toString());
+
+        assertEquals("(--,x)", Conj.without($$("--x"), $$("x"), false).toString());
+        assertEquals("x", Conj.without($$("x"), $$("--x"), false).toString());
+        assertEquals("true", Conj.without($$("--x"), $$("x"), true).toString());
+        assertEquals("true", Conj.without($$("x"), $$("--x"), true).toString());
+
+
+    }
+
+    @Test
     void testConjWithoutAll() {
         assertEquals("(a&&b)", Conj.withoutAll(
                 $$("(&&,a,b,c)"),

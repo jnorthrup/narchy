@@ -63,7 +63,7 @@ public class NAL3Test extends NALTest {
         String composed = "<robin --> (mammal - swimmer)>";
         String unknown = "<robin --> mammal>";
 
-        TestNAR test = testDecomposeDiff(freq, known, composed, unknown);
+        TestNAR test = testDecomposeNegDiff(freq, known, composed, unknown);
 
         test.mustNotOutput(cycles, "<robin --> --swimmer>", BELIEF, 0, 1, 0, 1, ETERNAL);
 
@@ -71,14 +71,14 @@ public class NAL3Test extends NALTest {
         test.mustNotOutput(cycles, "((mammal-swimmer)-->swimmer)", BELIEF, 0, 1, 0, 1, ETERNAL);
     }
 
-    @ValueSource(floats = {0, 0.25f, 0.5f, 0.75f, 1})
+    @ValueSource(floats = {0, 0.1f, 0.25f, 0.5f, 0.75f, 0.9f, 1})
     @ParameterizedTest
     void compound_decomposition_two_premises_Negative_DiffExtensional(float freq) {
         String known = "<b-->x>";
         String composed = "<(a ~ b) --> x>";
         String unknown = "<a --> x>";
 
-        TestNAR test = testDecomposeDiff(freq, known, composed, unknown);
+        TestNAR test = testDecomposeNegDiff(freq, known, composed, unknown);
 
         test.mustNotOutput(cycles, "<--b --> x>", BELIEF, 0, 1, 0, 1, ETERNAL);
 
@@ -86,7 +86,7 @@ public class NAL3Test extends NALTest {
         test.mustNotOutput(cycles, "(b --> (a~b))", BELIEF, 0, 1, 0, 1, ETERNAL);
     }
 
-    private TestNAR testDecomposeDiff(float freq, String known, String composed, String unknown) {
+    private TestNAR testDecomposeNegDiff(float freq, String known, String composed, String unknown) {
         test
             //.logDebug()
             .believe(known, freq, 0.9f)

@@ -1,7 +1,5 @@
-package jcog.grammar;
+package jcog.grammar.synthesize;
 
-import jcog.grammar.synthesize.GrammarFuzzer;
-import jcog.grammar.synthesize.GrammarSynthesis;
 import jcog.grammar.synthesize.util.GrammarUtils;
 import jcog.grammar.synthesize.util.Log;
 import jcog.random.XoRoShiRo128PlusRandom;

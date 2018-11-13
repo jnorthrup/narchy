@@ -210,8 +210,8 @@
 
 
 
-    (X ==> C), M, eventOf(X,M)    |- (conjWithout(X,M) ==> C), (Belief:Deduction)
-    (X ==> C), M, eventOfNeg(X,M) |- (conjWithout(X,--M) ==> C), (Belief:DeductionPN)
+    //(X ==> C), M, eventOf(X,M)    |- (conjWithout(X,M) ==> C), (Belief:Deduction)
+    //(X ==> C), M, eventOfNeg(X,M) |- (conjWithout(X,--M) ==> C), (Belief:DeductionPN)
 
 
 
@@ -235,8 +235,9 @@
          (Y ==> X), ((&&,--X,A..+) ==> Z)  |- ((&&,Y,A..+) ==> Z), (Belief:DeductionN)
 
 
-    (C ==> Z), X, --is(X,"==>") |- ((C && X) ==> Z), (Belief:Induction)
-    (C ==> Z), X, --is(X,"==>") |- ((C && --X) ==> Z), (Belief:InductionPN)
+    //general implication induction
+    (C ==> Z), X |- ((C && X) ==> Z), (Belief:Induction)
+    (C ==> Z), X |- ((C && --X) ==> Z), (Belief:InductionPN)
 
 
     (C ==> Z), (B ==> M), eventOf(C,B) |- ((conjWithout(C,B) && M) ==> Z), (Belief:Induction)
@@ -296,11 +297,11 @@
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
 
     //CONJ
-    S, C, eventOf(C,S) |- conjWithout(C,S), (Belief:DecomposePositivePositivePositive, Time:TaskInBelief)
-    S, C, eventOfNeg(C,S) |- conjWithout(C,--S), (Belief:DecomposeNegativePositivePositive, Time:TaskInBelief)
+    S, C, eventOf(C,S) |-      conjWithout(C,  S), (Belief:DecomposePP, Time:TaskInBelief)
+    S, C, eventOfNeg(C,S) |-   conjWithout(C,--S), (Belief:DecomposeNP, Time:TaskInBelief)
     //DISJ
-    S, D, eventOfNeg(D,S) |- conjWithout(D,--S), (Belief:DecomposeNegativeNegativeNegative, Time:TaskInBelief)
-    S, D, eventOf(D,S) |- conjWithout(D,S), (Belief:DecomposePositiveNegativeNegative, Time:TaskInBelief)
+    S, D, eventOfNeg(D,S) |- --conjWithout(D,--S), (Belief:DecomposeNN, Time:TaskInBelief)
+    S, D, eventOf(D,S) |-    --conjWithout(D,  S), (Belief:DecomposePN, Time:TaskInBelief)
 
 
 

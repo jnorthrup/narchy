@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package jcog.grammar;
+package jcog.grammar.evolve;
 
 import jcog.grammar.evolve.inputs.DataSet;
 import jcog.grammar.evolve.inputs.DataSet.Example;
@@ -73,7 +73,7 @@ class DataSetTest {
         int provaIndex2 = example.getString().indexOf("PROVA", provaIndex1+3);
         example.getMatch().add(new DataSet.Bounds(provaIndex1,provaIndex1+"PROVA".length()));
         example.getMatch().add(new DataSet.Bounds(provaIndex2,provaIndex2+"PROVA".length()));
-        dataSet.getExamples().add(example);
+        dataSet.add(example);
 
         dataSet.updateStats();
         return dataSet;
@@ -89,7 +89,7 @@ class DataSetTest {
     }
 
     static DataSet getExampleDataSet2(Supplier<String> noise, String... input) {
-        DataSet dataSet = new DataSet("test", "striping test", "");
+        DataSet dataSet = new DataSet("test");
         Example example = new Example();
 
         int i = 0;
@@ -108,12 +108,12 @@ class DataSetTest {
 
         j += noise.get();
 
-        System.out.println(j);
+        //System.out.println(j);
         example.setString(j);
 
         
 
-        dataSet.getExamples().add(example);
+        dataSet.add(example);
 
 
         dataSet.updateStats();

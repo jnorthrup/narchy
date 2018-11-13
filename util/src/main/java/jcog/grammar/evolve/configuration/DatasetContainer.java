@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
+ * Copyright (C) 2015 Machine Learning Lab - University of Trieste,
  * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,6 @@ import java.io.*;
 import java.util.*;
 
 /**
- *
  * @author MaleLabTs
  */
 public final class DatasetContainer {
@@ -37,15 +36,15 @@ public final class DatasetContainer {
     private List<Range> training = new ArrayList<>();
     private List<Range> validation = new ArrayList<>();
     private boolean dataSetStriped = false;
-    private double datasetStripeMarginSize = Integer.MAX_VALUE; 
+    private double datasetStripeMarginSize = Integer.MAX_VALUE;
     private int normalProposedDatasetInterval = 0;
     private transient DataSet trainingDataset;
     private transient DataSet validationDataset;
     private transient DataSet learningDataset;
 
-    public DatasetContainer() {    
+    public DatasetContainer() {
     }
-    
+
     public DatasetContainer(DatasetContainer datasetContainer) {
         this.path = datasetContainer.getPath();
         this.dataset = datasetContainer.getDataset();
@@ -58,97 +57,98 @@ public final class DatasetContainer {
         this.validationDataset = datasetContainer.getValidationDataset();
         this.learningDataset = datasetContainer.getLearningDataset();
     }
-    
+
     /**
      * Initialize the dataset container for the provided dataset.
      * Ranges and sub-dataset are not initialized, you have to set the ranges and
      * call the <code>update</code> instance method in order to generate them.
      * Random generator is initialized to a default value.
+     *
      * @param dataset
      */
-    public DatasetContainer(DataSet dataset){ 
-        this(dataset,false, 0);
+    public DatasetContainer(DataSet dataset) {
+        this(dataset, false, 0);
     }
-    
+
     /**
      * Initialize the dataset container for the provided dataset.
-     * When defaultRanges is true, it initializes automatically training and 
+     * When defaultRanges is true, it initializes automatically training and
      * validation ranges; not less than 50% of matches have to stay in training, 50% in validation.
      * Random generator is initialized to a default value.
+     *
      * @param dataset
      * @param defaultRanges
      */
-    public DatasetContainer(DataSet dataset, boolean defaultRanges){
-        this(dataset,defaultRanges, 0);
+    public DatasetContainer(DataSet dataset, boolean defaultRanges) {
+        this(dataset, defaultRanges, 0);
     }
-    
+
     /**
      * Initialize the dataset container for the provided dataset.
-     * When defaultRanges is true, it initializes automatically training and 
+     * When defaultRanges is true, it initializes automatically training and
      * validation ranges; 50% matches have to stay in training, 50% in validation.
+     *
      * @param dataset
-     * @param defaultRanges when true, default ranges are computed and sub-dataset are generated
+     * @param defaultRanges     when true, default ranges are computed and sub-dataset are generated
      * @param defaultRangesSeed The seed of the random generator
      */
-    public DatasetContainer(DataSet dataset, boolean defaultRanges, int defaultRangesSeed){
+    public DatasetContainer(DataSet dataset, boolean defaultRanges, int defaultRangesSeed) {
         this();
         this.setDataset(dataset);
         this.dataset.populateAnnotatedStrings();
         this.dataset.updateStats();
-        
-        if(defaultRanges){
+
+        if (defaultRanges) {
             this.createDefaultRanges(defaultRangesSeed);
             this.updateSubDataset();
         }
     }
-    
+
     /**
      * Generates the default ranges for the given dataset.
+     *
      * @param randomSeed The random seed for the internal random generator.
      */
-    public void createDefaultRanges(int randomSeed){
+    public void createDefaultRanges(int randomSeed) {
         this.training.clear();
         this.validation.clear();
-        
+
         Random random = new Random(randomSeed);
         int overallNumberMatchesInTraining = (int) Math.ceil(this.dataset.getNumberMatches() / 2.0);
-        overallNumberMatchesInTraining = (overallNumberMatchesInTraining == 0) ? 1 : overallNumberMatchesInTraining; 
+        overallNumberMatchesInTraining = (overallNumberMatchesInTraining == 0) ? 1 : overallNumberMatchesInTraining;
         int matchesInTrainingCountdown = overallNumberMatchesInTraining;
+
         List<Integer> examplePositiveIndexes = new ArrayList<>();
         List<Integer> exampleNegativeIndexes = new ArrayList<>();
-        
-        for (int i = 0; i < this.dataset.getNumberExamples(); i++) {
-            Example example = this.dataset.getExamples().get(i);
-            if(example.getNumberMatches()>0){
-                examplePositiveIndexes.add(i);
-            } else {
-                exampleNegativeIndexes.add(i);
+
+        {
+            int i = 0;
+            for (Example example : dataset.examples) {
+                (example.getNumberMatches() > 0 ? examplePositiveIndexes : exampleNegativeIndexes).add(i++);
             }
         }
-        Collections.shuffle(examplePositiveIndexes,random);
-        Collections.shuffle(exampleNegativeIndexes,random);
-        
-        for(Integer exampleIndex : examplePositiveIndexes){
-            Example example = this.dataset.getExamples().get(exampleIndex);
-            
-            
-            if(examplePositiveIndexes.size() == 1 ||  ((matchesInTrainingCountdown > 0) && !(validation.isEmpty() && example.getNumberMatches()<overallNumberMatchesInTraining))){
-                
-                this.training.add(new Range(exampleIndex, exampleIndex));
-                matchesInTrainingCountdown-=example.getNumberMatches();
+
+        Collections.shuffle(examplePositiveIndexes, random);
+        Collections.shuffle(exampleNegativeIndexes, random);
+
+        for (Integer exampleIndex : examplePositiveIndexes) {
+            Example example = this.dataset.examples.get(exampleIndex);
+
+
+            Range r = new Range(exampleIndex, exampleIndex);
+
+            if (examplePositiveIndexes.size() == 1 || ((matchesInTrainingCountdown > 0) && !(validation.isEmpty() && example.getNumberMatches() < overallNumberMatchesInTraining))) {
+                this.training.add(r);
+                matchesInTrainingCountdown -= example.getNumberMatches();
             } else {
-                
-                this.validation.add(new Range(exampleIndex, exampleIndex));             
+                this.validation.add(r);
             }
         }
-        
-        for(int i = 0; i < exampleNegativeIndexes.size(); i++) {
-            if(i<Math.ceil(exampleNegativeIndexes.size()/2.0)){
-                this.training.add(new Range(exampleNegativeIndexes.get(i), exampleNegativeIndexes.get(i)));
-            } else {
-                this.validation.add(new Range(exampleNegativeIndexes.get(i), exampleNegativeIndexes.get(i)));
-            }
-        }
+
+        int negatives = exampleNegativeIndexes.size();
+        for (int i = 0; i < negatives; i++)
+            (i < Math.ceil(negatives / 2.0) ? training: validation).add(new Range(exampleNegativeIndexes.get(i), exampleNegativeIndexes.get(i)));
+
     }
 
     public String getPath() {
@@ -226,12 +226,13 @@ public final class DatasetContainer {
      * Set the managed dataset.
      * The dataset instance is not cloned.
      * The DatasetContatiner is going to manage the provided instance.
+     *
      * @param dataset
      */
     public final void setDataset(DataSet dataset) {
         this.dataset = dataset;
     }
-    
+
     public DataSet getTrainingDataset() {
         return trainingDataset;
     }
@@ -280,9 +281,9 @@ public final class DatasetContainer {
         String json = sb.toString();
         this.loadDatasetJson(json);
     }
-    
+
     /**
-     * Forces reloading of the dataset from JSON, updates matches strings in 
+     * Forces reloading of the dataset from JSON, updates matches strings in
      * dataset, updates stats in dataset and sub-datasets (learning, training, validation).
      * If no ranges are defined inside the container, the sub-datasets will be empty.
      * <code>path</code> property
@@ -293,7 +294,6 @@ public final class DatasetContainer {
         throw new TODO();
 
 
-
     }
 
     public final void updateSubDataset() {
@@ -301,13 +301,10 @@ public final class DatasetContainer {
         this.validationDataset = this.dataset.subDataset("validation", validation);
         this.trainingDataset.updateStats();
         this.validationDataset.updateStats();
-       
+
         this.learningDataset = new DataSet("learning");
-        
-        
-        
-        
-        
+
+
         this.learningDataset.getExamples().addAll(dataset.getExamples());
         this.learningDataset.updateStats();
 
@@ -316,13 +313,13 @@ public final class DatasetContainer {
             this.trainingDataset.getStripedDataset().updateStats();
         }
     }
-    
+
     /**
      * Updates the dataset and the defined subDataset (learning,training,validation).
      * Populates the matching strings in dataset and statistical info both in dataset and
      * subDataset.
      */
-    public void update(){
+    public void update() {
         this.dataset.populateAnnotatedStrings();
         this.dataset.updateStats();
         this.updateSubDataset();

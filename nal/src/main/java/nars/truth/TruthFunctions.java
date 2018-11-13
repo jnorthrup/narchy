@@ -260,8 +260,10 @@ public final class TruthFunctions {
         if (cxy < minConf) return null;
         float fx = X.freq(), fy = Y.freq();
         float fxy = and(x ? fx : 1 - fx, y ? fy : 1 - fy);
-        float c = fxy * cxy;
-        /*float c = (c12);*/
+        float c =
+                fxy * cxy;
+                //cxy;
+
         return c < minConf ? null : t(z ? fxy : 1 - fxy, c);
     }
 

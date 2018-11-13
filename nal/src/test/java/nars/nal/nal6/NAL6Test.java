@@ -329,7 +329,7 @@ public class NAL6Test extends NALTest {
         test
                 .believe("((&&, flyer:$x, ($x-->[chirping]), food($x, worms)) ==> bird:$x)")
                 .believe("flyer:Tweety")
-                .mustBelieve(cycles , "(((Tweety-->[chirping]) && food(Tweety,worms)) ==> bird:Tweety)",
+                .mustBelieve(cycles, "(((Tweety-->[chirping]) && food(Tweety,worms)) ==> bird:Tweety)",
                         1.0f,
                         0.73f);
 
@@ -343,7 +343,7 @@ public class NAL6Test extends NALTest {
         TestNAR tester = test;
         tester.believe("((($x --> key) && ($y --> lock)) ==> open($x, $y))");
         tester.believe("({lock1} --> lock)");
-        tester.mustBelieve(cycles , "(($1 --> key) ==> open($1, {lock1}))", 1.00f,
+        tester.mustBelieve(cycles, "(($1 --> key) ==> open($1, {lock1}))", 1.00f,
                 0.73f);
 
 
@@ -470,7 +470,7 @@ public class NAL6Test extends NALTest {
                 .mustBelieve(cycles, "(key:{$1} ==> open({$1},{lock1}))", 1.00f, 0.45f)
                 //.mustBelieve(cycles, "(key:$1 ==> open($1,{lock1}))", 1.00f, 0.45f)
                 .mustBelieve(cycles, "(&&,open({#1},{lock1}),key:{#1})", 1.00f, 0.81f);
-                //.mustBelieve(cycles, "(&&,open(#1,{lock1}),key:#1)", 1.00f, 0.81f);
+        //.mustBelieve(cycles, "(&&,open(#1,{lock1}),key:#1)", 1.00f, 0.81f);
 
     }
 
@@ -482,7 +482,7 @@ public class NAL6Test extends NALTest {
                 .believe("((x && --y) ==> z)")
                 .mustBelieve(cycles, "(x ==> z)", 1.00f,
                         0.66f);
-                        //0.45f);
+        //0.45f);
 
     }
 
@@ -494,7 +494,7 @@ public class NAL6Test extends NALTest {
         tester.believe("(key:$x ==> open($x,lock1))");
         tester.believe("lock:lock1");
 
-        tester.mustBelieve(cycles*1, "((key:$1 && lock:$2) ==> open($1,$2))",
+        tester.mustBelieve(cycles * 1, "((key:$1 && lock:$2) ==> open($1,$2))",
                 1.00f, 0.45f /*0.81f*/);
 
 
@@ -526,7 +526,7 @@ public class NAL6Test extends NALTest {
         TestNAR tester = test;
         tester.believe("((<#1 --> lock>&&<$2 --> key>) ==> open(#1,$2))", 1.00f, 0.90f);
         tester.believe("<{key1} --> key>", 1.00f, 0.90f);
-        tester.mustBelieve(cycles , "((#1-->lock)==>open(#1,{key1}))", 1.00f,
+        tester.mustBelieve(cycles, "((#1-->lock)==>open(#1,{key1}))", 1.00f,
                 0.73f
                 /*0.81f*/);
     }
@@ -562,8 +562,8 @@ public class NAL6Test extends NALTest {
                 //0.81f
                 0.4f
         );
-                //0.73f
-                //0.43f);
+        //0.73f
+        //0.43f);
 
     }
 
@@ -624,6 +624,7 @@ public class NAL6Test extends NALTest {
                         0.82f, 0.40f
                 );
     }
+
     @Test
     void abductionBeliefWeakNegativesButNotNegative() {
 
@@ -634,6 +635,7 @@ public class NAL6Test extends NALTest {
                         0.82f, 0.40f
                 );
     }
+
     @Test
     void abductionBeliefPositiveNegativeButNotTotalFail() {
 
@@ -657,6 +659,7 @@ public class NAL6Test extends NALTest {
                         0.46f, 0.29f
                 );
     }
+
     @Test
     void GoalMatchSubjOfImplWithVariable() {
         test
@@ -800,6 +803,46 @@ public class NAL6Test extends NALTest {
     }
 
     @Test
+    void testPropositionalDecompositionConjPos() {
+        ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
+        test
+                .believe("--(&&,x,y,z)")
+                .believe("x")
+                .mustBelieve(cycles, "(y&&z)", 0f, 0.81f)
+        ;
+    }
+
+    @Test
+    void testPropositionalDecompositionConjNeg() {
+        ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
+        test
+                .believe("--(&&,--x,y,z)")
+                .believe("--x")
+                .mustBelieve(cycles, "(y&&z)", 0f, 0.81f)
+        ;
+    }
+
+    @Test
+    void testPropositionalDecompositionDisjPos() {
+        ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
+        test
+                .believe("--(||,x,y,z)")
+                .believe("--x")
+                .mustBelieve(cycles, "(y||z)", 0f, 0.81f)
+        ;
+    }
+
+    @Test
+    void testPropositionalDecompositionDisjNeg() {
+        ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
+        test
+                .believe("--(||,--x,y,z)")
+                .believe("x")
+                .mustBelieve(cycles, "(y||z)", 0f, 0.81f)
+        ;
+    }
+
+    @Test
     void testDecomposeDisj() {
         test
                 .believe("(||, x, z)")
@@ -807,6 +850,7 @@ public class NAL6Test extends NALTest {
                 .mustBelieve(cycles, "z", 1f, 0.81f)
         ;
     }
+
     @Test
     void testDecomposeDisjNeg() {
         test
@@ -815,6 +859,7 @@ public class NAL6Test extends NALTest {
                 .mustBelieve(cycles, "z", 1f, 0.81f)
         ;
     }
+
     @Test
     void testDecomposeDisjNeg2() {
         test
@@ -823,6 +868,7 @@ public class NAL6Test extends NALTest {
                 .mustBelieve(cycles, "z", 0f, 0.81f)
         ;
     }
+
     @Test
     void testDecomposeImplSubjDisjBelief() {
         test
@@ -851,15 +897,6 @@ public class NAL6Test extends NALTest {
     }
 
     @Test
-    void testDecomposeImplPred1() {
-        test
-                .believe("( x ==> (y && z) )")
-                .mustBelieve(cycles, "( x ==> y )", 1f, 0.81f)
-                .mustBelieve(cycles, "( x ==> z )", 1f, 0.81f)
-        ;
-    }
-
-    @Test
     void testDecomposeImplPredDisjBelief() {
         test
                 .believe("( x ==> (||, y, z))")
@@ -883,6 +920,126 @@ public class NAL6Test extends NALTest {
                 .ask("( x ==> (||, y, z) )")
                 .mustOutput(cycles, "( x ==>+- y )", QUESTION)
                 .mustOutput(cycles, "( x ==>+- z )", QUESTION)
+        ;
+    }
+
+
+    @Test
+    void testDecomposeConjNeg2() {
+        test
+                .believe("(&&, --y, --z)")
+                .mustBelieve(cycles, "y", 0f, 0.81f)
+                .mustBelieve(cycles, "z", 0f, 0.81f)
+        ;
+    }
+
+    @Test
+    void testDecomposeConjNeg3() {
+        test
+                .believe("(&&, --y, --z, --w)")
+                .mustBelieve(cycles, "y", 0f, 0.73f)
+                .mustBelieve(cycles, "z", 0f, 0.73f)
+                .mustBelieve(cycles, "w", 0f, 0.73f)
+        ;
+    }
+
+
+    @Test
+    void recursionSmall() {
+
+        test.nar.termVolumeMax.set(10);
+
+        test
+                .believe("num:x", 1.0f, 0.9f)
+                .believe("( num:$1 ==> num($1) )", 1.0f, 0.9f)
+                //.ask("num(((x)))")
+                .mustBelieve(cycles, "num(x)", 1.0f, 1.0f, 0.81f, 1.0f)
+                .mustBelieve(cycles, "num((x))", 0.99f, 1.0f, 0.50f, 1.0f)
+                .mustBelieve(cycles * 2, "num(((x)))", 0.99f, 1.0f, 0.25f, 1.0f)
+
+
+        ;
+    }
+
+    @Test
+    void recursionSmall1() throws nars.Narsese.NarseseException {
+
+
+        test.nar.termVolumeMax.set(16);
+        test.nar.freqResolution.set(0.1f);
+        test
+                .believe("num(x)", 1.0f, 0.9f)
+                .believe("( num($1) ==> num(($1)) )", 1.0f, 0.9f)
+                .ask("num(((x)))")
+                .mustBelieve(cycles * 2, "num((x))", 1.0f, 1.0f, 0.8f, 1.0f)
+                .mustBelieve(cycles * 3, "num(((x)))", 1.0f, 1.0f, 0.1f /*0.66f*/, 1.0f);
+
+
+    }
+
+
+//    @Test
+//    void inductRawProductDifference() {
+//        test
+//                .believe("(x,0)", 1f, 0.9f)
+//                .believe("(x,1)", 0.6f, 0.9f)
+//                .mustBelieve(cycles, "((x,1)~(x,0))", 0.0f, 0.85f)
+//                .mustBelieve(cycles, "((x,0)~(x,1))", 0.4f, 0.85f);
+//    }
+//    @Test
+//    void inductRawProductDifference2() {
+//        test
+//                .believe("(x,0)", 1f, 0.9f)
+//                .believe("(x,1)", 0.5f, 0.9f)
+//                .mustQuestion(cycles, "((x,1)~(x,0))")
+//                .mustQuestion(cycles, "((x,0)~(x,1))")
+//                .mustBelieve(cycles, "((x,1)~(x,0))", 0.0f, 0.85f)
+//                .mustBelieve(cycles, "((x,0)~(x,1))", 0.5f, 0.85f);
+//    }
+
+    @Test
+    void testHypothesizeSubconditionIdentityPre() {
+        test
+                .believe("((f(x) && f($1)) ==> g($1))", 1f, 0.9f)
+                .mustBelieve(cycles, "(f(x) ==> g(x))", 1f, 0.81f)
+        ;
+    }
+
+    @Test
+    void testHypothesizeSubconditionIdentityPost() {
+        test
+                .believe("(g($1) ==> (f(x) && f($1)))", 1f, 0.9f)
+                .mustBelieve(cycles, "(g(x) ==> f(x))", 1f, 0.81f)
+        ;
+    }
+
+    @Test
+    void testHypothesizeSubconditionIdentityConj() {
+        test
+                .believe("(&&,f(x),f(#1),g(#1))", 1f, 0.9f)
+                .mustBelieve(cycles, "(&&,f(x),g(x))", 1f, 0.81f)
+        ;
+    }
+
+
+    @Test void testDecomposePositiveImplicationCommonConjunctionSubterm() {
+        //tests:
+        // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
+        test.logDebug();
+        test
+                .believe("(S ==> M)", 0.2f, 0.9f)
+                .believe("((X && S) ==> M)", 0.7f, 0.9f)
+                .mustBelieve(cycles, "(X ==> M)", .3f, 0.45f)
+        ;
+    }
+    @Test void testDecomposeNegativeImplicationCommonConjunctionSubterm() {
+        //tests:
+        // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
+        test.logDebug();
+        test
+                .believe("--(S ==> M)")
+                .believe("--((X && S) ==> M)")
+                .mustBelieve(cycles, "(X ==> M)", 0f, 0.81f)
         ;
     }
 
@@ -946,119 +1103,13 @@ public class NAL6Test extends NALTest {
     }
 
     @Test
-    void testDecomposeConjNeg2() {
+    void testDecomposeImplPred1() {
         test
-                .believe("(&&, --y, --z)")
-                .mustBelieve(cycles, "y", 0f, 0.81f)
-                .mustBelieve(cycles, "z", 0f, 0.81f)
+                .believe("( x ==> (y && z) )")
+                .mustBelieve(cycles, "( x ==> y )", 1f, 0.81f)
+                .mustBelieve(cycles, "( x ==> z )", 1f, 0.81f)
         ;
     }
 
-    @Test
-    void testDecomposeConjNeg3() {
-        test
-                .believe("(&&, --y, --z, --w)")
-                .mustBelieve(cycles, "y", 0f, 0.73f)
-                .mustBelieve(cycles, "z", 0f, 0.73f)
-                .mustBelieve(cycles, "w", 0f, 0.73f)
-        ;
-    }
-
-
-    @Test
-    void recursionSmall() {
-
-        test.nar.termVolumeMax.set(10);
-
-        test
-                .believe("num:x", 1.0f, 0.9f)
-                .believe("( num:$1 ==> num($1) )", 1.0f, 0.9f)
-                //.ask("num(((x)))")
-                .mustBelieve(cycles, "num(x)", 1.0f, 1.0f, 0.81f, 1.0f)
-                .mustBelieve(cycles, "num((x))", 0.99f, 1.0f, 0.50f, 1.0f)
-                .mustBelieve(cycles*2, "num(((x)))", 0.99f, 1.0f, 0.25f, 1.0f)
-
-
-        ;
-    }
-
-    @Test
-    void recursionSmall1() throws nars.Narsese.NarseseException {
-
-
-        test.nar.termVolumeMax.set(16);
-        test.nar.freqResolution.set(0.1f);
-        test
-                .believe("num(x)", 1.0f, 0.9f)
-                .believe("( num($1) ==> num(($1)) )", 1.0f, 0.9f)
-                .ask("num(((x)))")
-                .mustBelieve(cycles * 2, "num((x))", 1.0f, 1.0f, 0.8f, 1.0f)
-                .mustBelieve(cycles * 3, "num(((x)))", 1.0f, 1.0f, 0.1f /*0.66f*/, 1.0f);
-
-
-    }
-
-
-//    @Test
-//    void inductRawProductDifference() {
-//        test
-//                .believe("(x,0)", 1f, 0.9f)
-//                .believe("(x,1)", 0.6f, 0.9f)
-//                .mustBelieve(cycles, "((x,1)~(x,0))", 0.0f, 0.85f)
-//                .mustBelieve(cycles, "((x,0)~(x,1))", 0.4f, 0.85f);
-//    }
-//    @Test
-//    void inductRawProductDifference2() {
-//        test
-//                .believe("(x,0)", 1f, 0.9f)
-//                .believe("(x,1)", 0.5f, 0.9f)
-//                .mustQuestion(cycles, "((x,1)~(x,0))")
-//                .mustQuestion(cycles, "((x,0)~(x,1))")
-//                .mustBelieve(cycles, "((x,1)~(x,0))", 0.0f, 0.85f)
-//                .mustBelieve(cycles, "((x,0)~(x,1))", 0.5f, 0.85f);
-//    }
-
-    @Test void testHypothesizeSubconditionIdentityPre() {
-        test
-                .believe("((f(x) && f($1)) ==> g($1))", 1f, 0.9f)
-                .mustBelieve(cycles, "(f(x) ==> g(x))", 1f, 0.81f)
-                ;
-    }
-    @Test void testHypothesizeSubconditionIdentityPost() {
-        test
-                .believe("(g($1) ==> (f(x) && f($1)))", 1f, 0.9f)
-                .mustBelieve(cycles, "(g(x) ==> f(x))", 1f, 0.81f)
-        ;
-    }
-
-    @Test void testHypothesizeSubconditionIdentityConj() {
-        test
-                .believe("(&&,f(x),f(#1),g(#1))", 1f, 0.9f)
-                .mustBelieve(cycles, "(&&,f(x),g(x))", 1f, 0.81f)
-        ;
-    }
-
-
-//    @Test void testDecomposePositiveImplicationCommonConjunctionSubterm() {
-//        //tests:
-//        // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
-//        Param.DEBUG = true;
-//        test.log();
-//        test
-//                .believe("(S ==> M)")
-//                .believe("((X && S) ==> M)")
-//                .mustBelieve(cycles, "(X ==> M)", 1f, 0.81f)
-//        ;
-//    }
-//    @Test void testDecomposeNegativeImplicationCommonConjunctionSubterm() {
-//        //tests:
-//        // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
-//        Param.DEBUG = true;
-//        test.log();
-//        test
-//                .believe("--(S ==> M)")
-//                .believe("--((X && S) ==> M)")
-//                .mustBelieve(cycles, "(X ==> M)", 0f, 0.81f)
-//        ;
-//    }
 }
+

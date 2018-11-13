@@ -17,6 +17,8 @@
  */
 package jcog.grammar.evolve.utils;
 
+import static jcog.Texts.n4;
+
 /**
  *
  * @author MaleLabTs
@@ -28,6 +30,13 @@ public final class BasicStats {
     transient public long fn = 0;
     public long tp = 0;
     transient public long tn = 0;
+
+    @Override
+    public String toString() {
+        return "accuracy=" + n4(accuracy()) + ", precision=" + n4(precision()) +
+                ", recall=" + n4(recall()) +
+                ", falsePositiveRate=" + n4(fpr()) + ", falseNegativeRate=" + n4(fnr());
+    }
 
     public double accuracy() {
         return ((double) (tp + tn)) / (tp + tn + fp + fn);

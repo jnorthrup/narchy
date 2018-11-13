@@ -272,39 +272,46 @@ public class Conj extends ByteAnonMap {
         return ce.term();
     }
 
-    public static Term without(Term include, Term exclude, boolean excludePosNeg) {
-        if (include.equals(exclude))
-            return Bool.True;
-        if (excludePosNeg && include.equalsNeg(exclude))
-            return Bool.True;
-        if (include.op() != CONJ || include.impossibleSubTerm(exclude))
+    public static Term without(Term include, Term exclude, boolean excludeNeg) {
+        if (excludeNeg) {
+            if (include.unneg().equals(exclude.unneg()))
+                return Bool.True;
+        } else {
+            if (include.equals(exclude))
+                return Bool.True;
+        }
+
+        if (include.op() != CONJ || include.impossibleSubTerm(excludeNeg ? exclude.unneg() : exclude ))
             return include;
 
-        if (concurrent(include.dt())) {
-            //HACK this is messy
-            Subterms s = include.subterms();
-            Term[] ss;
-            if (excludePosNeg) {
-                ss = s.subsExcept(exclude.neg());
-                if (ss!=null) {
-                    s = Op.terms.subterms(ss);
+        Subterms s = include.subterms();
+        int dt = include.dt();
+        if (concurrent(dt) || !s.hasAny(Op.CONJ)) {
+
+            //try positive first
+            Term[] ss = s.subsExcept(exclude);
+            if (ss!=null) {
+                return CONJ.the(dt, ss);
+            } else {
+                //try negative next
+                if (excludeNeg) {
+                    ss = s.subsExcept(exclude.neg());
+                    if (ss!=null) {
+                        return CONJ.the(dt, ss);
+                    }
                 }
+
+                return include; //not found
             }
 
-            ss = s.subsExcept(exclude);
-            if (ss!=null) {
-                return CONJ.the(include.dt(), ss);
+        } else {
+
+            Conj xx = Conj.from(include);
+            if (xx.removeEventsByTerm(exclude, true, excludeNeg)) {
+                return xx.term();
             } else {
                 return include;
             }
-
-        }
-
-        Conj xx = Conj.from(include);
-        if (xx.removeEventsByTerm(exclude, true, excludePosNeg)) {
-            return xx.term();
-        } else {
-            return include;
         }
     }
 

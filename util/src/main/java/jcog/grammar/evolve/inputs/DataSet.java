@@ -195,6 +195,9 @@ public class DataSet implements Serializable {
     public List<Example> getExamples() {
         return this.examples;
     }
+    public void add(Example e) {
+        examples.add(e);
+    }
     
     /**
      * Create a dataset which is a "view" of the current dataset.A subset of the dataset defined by ranges.
@@ -207,7 +210,7 @@ public class DataSet implements Serializable {
             DataSet subDataset = new DataSet(name);
             for(Range range : ranges){
                 for(int index = range.getStartIndex(); index <= range.getEndIndex(); index++){
-                    subDataset.getExamples().add(this.getExamples().get(index));
+                    subDataset.add(this.getExamples().get(index));
                 }           
             }
             return subDataset;
@@ -221,7 +224,7 @@ public class DataSet implements Serializable {
     public DataSet initStripedDatasetView(double marginSize){
         this.stripedDataset = new DataSet(this.name, this.description, this.regexTarget);
         for(Example example : this.examples){
-            this.stripedDataset.getExamples().addAll(stripeExample(example, marginSize));
+            this.stripedDataset.examples.addAll(stripeExample(example, marginSize));
         }        
         return this.stripedDataset;
     }
@@ -236,7 +239,7 @@ public class DataSet implements Serializable {
      * @param marginSize
      * @return
     */
-        protected static List<Example> stripeExample(Example example, double marginSize){     
+    protected static List<Example> stripeExample(Example example, double marginSize){
         List<Example> slicesExampleList = new ArrayList<>();
         
 

@@ -1,6 +1,9 @@
 package nars.nal.nal3;
 
+import nars.NAR;
 import nars.NARS;
+import nars.derive.Derivers;
+import nars.derive.impl.BatchDeriver;
 import nars.nal.nal8.GoalDecompositionTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
@@ -39,55 +42,55 @@ class NAL3GoalTest {
 
     }
 
-    @Test void testGoalDiffRaw1() {
-        new TestNAR(NARS.tmp(3))
-                .input("X!")
-                .input("(X ~ Y).")
-                .mustGoal(GoalDecompositionTest.cycles, "Y", 0, 0.81f)
-                .run(16);
-    }
-    @Test void testGoalDiffRaw2() {
-        new TestNAR(NARS.tmp(3))
-                .input("X!")
-                .input("--(X ~ Y).")
-                .mustGoal(GoalDecompositionTest.cycles, "Y", 1, 0.81f)
-                .run(16);
-        new TestNAR(NARS.tmp(3))
-                .input("--X!")
-                .input("--(X ~ Y).")
-                .mustGoal(GoalDecompositionTest.cycles, "Y", 0, 0.81f)
-                .run(16);
-    }
-
-    @Test void testGoalDiffRaw3() {
-
-        //belief version
-        new TestNAR(NARS.tmp(3))
-                .input("Y.")
-                .input("--(X ~ Y).")
-                .mustBelieve(GoalDecompositionTest.cycles, "X", 1, 0.81f)
-                .run(16);
-
-        //goal version
-        new TestNAR(NARS.tmp(3))
-                .input("Y!")
-                .input("--(X ~ Y).")
-                .mustGoal(GoalDecompositionTest.cycles, "X", 1, 0.81f)
-                .run(16);
-        new TestNAR(NARS.tmp(3))
-                .input("--Y!")
-                .input("--(X ~ Y).")
-                .mustGoal(GoalDecompositionTest.cycles, "X", 0, 0.81f)
-                .run(16);
-    }
-
-    @Test void testGoalDiffRaw4() {
-        new TestNAR(NARS.tmp(3))
-                .input("--Y!")
-                .input("(X ~ Y).")
-                .mustGoal(GoalDecompositionTest.cycles, "X", 1, 0.81f)
-                .run(16);
-    }
+//    @Test void testGoalDiffRaw1() {
+//        new TestNAR(NARS.tmp(3))
+//                .input("X!")
+//                .input("(X ~ Y).")
+//                .mustGoal(GoalDecompositionTest.cycles, "Y", 0, 0.81f)
+//                .run(16);
+//    }
+//    @Test void testGoalDiffRaw2() {
+//        new TestNAR(NARS.tmp(3))
+//                .input("X!")
+//                .input("--(X ~ Y).")
+//                .mustGoal(GoalDecompositionTest.cycles, "Y", 1, 0.81f)
+//                .run(16);
+//        new TestNAR(NARS.tmp(3))
+//                .input("--X!")
+//                .input("--(X ~ Y).")
+//                .mustGoal(GoalDecompositionTest.cycles, "Y", 0, 0.81f)
+//                .run(16);
+//    }
+//
+//    @Test void testGoalDiffRaw3() {
+//
+//        //belief version
+//        new TestNAR(NARS.tmp(3))
+//                .input("Y.")
+//                .input("--(X ~ Y).")
+//                .mustBelieve(GoalDecompositionTest.cycles, "X", 1, 0.81f)
+//                .run(16);
+//
+//        //goal version
+//        new TestNAR(NARS.tmp(3))
+//                .input("Y!")
+//                .input("--(X ~ Y).")
+//                .mustGoal(GoalDecompositionTest.cycles, "X", 1, 0.81f)
+//                .run(16);
+//        new TestNAR(NARS.tmp(3))
+//                .input("--Y!")
+//                .input("--(X ~ Y).")
+//                .mustGoal(GoalDecompositionTest.cycles, "X", 0, 0.81f)
+//                .run(16);
+//    }
+//
+//    @Test void testGoalDiffRaw4() {
+//        new TestNAR(NARS.tmp(3))
+//                .input("--Y!")
+//                .input("(X ~ Y).")
+//                .mustGoal(GoalDecompositionTest.cycles, "X", 1, 0.81f)
+//                .run(16);
+//    }
 
     private TestNAR testGoalDiff(boolean goalPolarity, boolean beliefPolarity, boolean diffIsGoal, boolean diffIsFwd, boolean diffIsEx, float f, float c) {
         String goalTerm, beliefTerm;
@@ -132,11 +135,32 @@ class NAL3GoalTest {
                 .run(16);
     }
     @Test void intersectionGoalInduction() {
-        new TestNAR(NARS.tmp(3))
+        NAR n = NARS.tmp(3);
+        new BatchDeriver(Derivers.rules(n, "induction.goal.nal"));
+        new TestNAR(n)
                 .input("(X --> Z)!")
                 .input("((X|Y) --> Z).")
                 .mustGoal(GoalDecompositionTest.cycles, "((X|Y) --> Z)", 1, 0.81f)
                 .run(16);
         //TODO other cases
+    }
+    @Test void intersectionGoalDecomposition() {
+
+        new TestNAR(NARS.tmp(3))
+                .input("((X|Y) --> Z)!")
+                .input("(X --> Z).")
+                .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.81f)
+                .run(16);
+        new TestNAR(NARS.tmp(3))
+                .input("((X&Y) --> Z)!")
+                .input("(X --> Z).")
+                .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.81f)
+                .run(16);
+        new TestNAR(NARS.tmp(3))
+                .input("((X&Y) --> Z)!")
+                .input("--(X --> Z).")
+                .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.81f)
+                .run(16);
+
     }
 }

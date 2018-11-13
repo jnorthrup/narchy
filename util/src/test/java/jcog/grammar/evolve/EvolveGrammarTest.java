@@ -1,8 +1,6 @@
-package jcog.grammar;
+package jcog.grammar.evolve;
 
 
-import jcog.grammar.evolve.EvolveGrammar;
-import jcog.grammar.evolve.SimpleConfig;
 import jcog.grammar.evolve.inputs.DataSet;
 import jcog.grammar.evolve.outputs.Results;
 import jcog.random.XoRoShiRo128PlusRandom;
@@ -10,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Random;
 
-import static jcog.grammar.DataSetTest.noise;
+import static jcog.grammar.evolve.DataSetTest.noise;
 
 /**
  * Created by me on 11/29/15.
