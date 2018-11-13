@@ -35,14 +35,14 @@ public class NAL6ToNAL3BridgeTest extends NALTest {
         test.input("((X-->A) ~ (Y-->A))!").mustGoal(cycles, "((X~Y)-->A)", 1.0f, CONF);
     }
 
-    @Test public void test7() {
-        test.input("(x && a).").input("(x && b).")
-                .mustQuestion(cycles, "(a~b)")
-                .mustQuestion(cycles, "(b~a)")
-        ;
-    }
+//    @Test public void testConjDiffernce() {
+//        test.input("(x && a).").input("(x && b).")
+//                .mustQuestion(cycles, "(a~b)")
+//                .mustQuestion(cycles, "(b~a)")
+//        ;
+//    }
 
-    @Test public void testImplDiffernce() {
-        test.input("(a ==> x).").input("(b ==> x).").mustQuestion(cycles,"((a~b) ==>+- x)");
-    }
+//    @Test public void testImplDiffernce() {
+//        test.input("(a ==> x).").input("(b ==> x).").mustQuestion(cycles,"((a~b) ==>+- x)");
+//    }
 }

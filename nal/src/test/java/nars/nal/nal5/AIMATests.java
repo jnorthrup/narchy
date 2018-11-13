@@ -44,9 +44,9 @@ class AIMATests {
     @Test
     void testWeaponsDomain() throws Narsese.NarseseException {
 
-        n.freqResolution.set(0.25f);
-        n.confResolution.set(0.02f);
-        //n.memoryDuration.set(12);
+//        n.freqResolution.set(0.1f);
+//        n.confResolution.set(0.05f);
+        n.memoryDuration.set(12);
         //n.confMin.set(0.1f);
 
         //n.activateConceptRate.set(0.5f);
@@ -54,7 +54,7 @@ class AIMATests {
 //        n.beliefPriDefault.set(0.25f);
 //        n.questionPriDefault.set(0.9f);
 
-        n.termVolumeMax.set(13);
+        n.termVolumeMax.set(15);
         //n.log();
 
 

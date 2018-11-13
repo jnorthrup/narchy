@@ -47,19 +47,6 @@
           B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Time:TaskMinusBeliefDT)
 
 
-//        //TODO question variations
-        Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny(((&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction)
-         //Y, ((&&,X,A..+) ==> Z) |- subIfUnifiesAny(((&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
-        Y, ((&&,--X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny(((&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
-         //Y, ((&&,--X,A..+) ==> Z) |- subIfUnifiesAny(((&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
-                Y, (--(&&,X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny((--(&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction)
-                 //Y, (--(&&,X,A..+) ==> Z) |- subIfUnifiesAny((--(&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
-                Y, (--(&&,--X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny((--(&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
-                 //Y, (--(&&,--X,A..+) ==> Z) |- subIfUnifiesAny((--(&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
-        Y, (Z ==> (&&,X,A..+)), neq(X,Y),neq(Y,Z) |- subIfUnifiesAny((Z ==> (&&,X,A..+)), X,Y,strict), (Belief:Abduction)
-         //Y, (Z ==> (&&,X,A..+)) |- subIfUnifiesAny((Z ==> (&&,X,Y,A..+)), X,Y), (Belief:Abduction)
-        Y, (Z ==> (&&,--X,A..+)), neq(X,Y),neq(Y,Z) |- subIfUnifiesAny((Z ==> (&&,--X,A..+)), X,Y,strict), (Belief:AbductionN)
-         //Y, (Z ==> (&&,--X,A..+)) |- subIfUnifiesAny((Z ==> (&&,--X,--Y,A..+)), X,Y), (Belief:AbductionN)
 
 
         B, ((&&,C,A..+) ==> X)         |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:Pre, Goal:PreWeak)
@@ -86,6 +73,20 @@
               //  (Y --> P), ((&&,--(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,--(X-->P),A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
             //(Y --> P), (Z ==> (&&,(X-->P),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==> (&&,(X-->P),A..+)), X,Y,strict), (Belief:Deduction)
               //  (Y --> P), (Z ==> (&&,--(X-->P),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==> (&&,--(X-->P),A..+)), X,Y,strict), (Belief:DeductionN)
+
+//        //TODO question variations
+        Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny(((&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction)
+         //Y, ((&&,X,A..+) ==> Z) |- subIfUnifiesAny(((&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
+        Y, ((&&,--X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny(((&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
+         //Y, ((&&,--X,A..+) ==> Z) |- subIfUnifiesAny(((&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
+                Y, (--(&&,X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny((--(&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction)
+                 //Y, (--(&&,X,A..+) ==> Z) |- subIfUnifiesAny((--(&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
+                Y, (--(&&,--X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny((--(&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
+                 //Y, (--(&&,--X,A..+) ==> Z) |- subIfUnifiesAny((--(&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
+        Y, (Z ==> (&&,X,A..+)), neq(X,Y),neq(Y,Z) |- subIfUnifiesAny((Z ==> (&&,X,A..+)), X,Y,strict), (Belief:Abduction)
+         //Y, (Z ==> (&&,X,A..+)) |- subIfUnifiesAny((Z ==> (&&,X,Y,A..+)), X,Y), (Belief:Abduction)
+        Y, (Z ==> (&&,--X,A..+)), neq(X,Y),neq(Y,Z) |- subIfUnifiesAny((Z ==> (&&,--X,A..+)), X,Y,strict), (Belief:AbductionN)
+         //Y, (Z ==> (&&,--X,A..+)) |- subIfUnifiesAny((Z ==> (&&,--X,--Y,A..+)), X,Y), (Belief:AbductionN)
 
     Y, (B ==> (&&,X,A..+)) |- subIfUnifiesAny((B ==> (&&,A..+)),X,Y), (Belief:Deduction)
     Y, (B ==> (&&,--X,A..+)) |- subIfUnifiesAny((B ==> (&&,A..+)),X,Y), (Belief:DeductionN)

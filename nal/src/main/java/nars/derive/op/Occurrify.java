@@ -62,7 +62,6 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class Occurrify extends TimeGraph {
 
     public static final TaskTimeMerge mergeDefault =
-            //TaskTimeMerge.Intersect;
             TaskTimeMerge.Default;
 
 
@@ -433,25 +432,8 @@ public class Occurrify extends TimeGraph {
     }
 
 
-    /**
-     * requires single premise, or if double premise that there is temporal intersection of task and belief
-     */
-    private static final PREDICATE<Derivation> intersectFilter = new AbstractPred<>(Atomic.the("TimeIntersects")) {
-        @Override
-        public boolean test(Derivation d) {
-            return d.concSingle || d.taskBeliefTimeIntersects[0]!=TIMELESS;
-        }
-    };
 
 
-//    /** requires single premise, or if double premise separation of task and
-//     * belief time when the task is not a belief (goal or question/quest) */
-//    private static final PREDICATE<Derivation> intersectFilterIfBelief = new AbstractPred<>(Atomic.the("TimeIntersects")) {
-//        @Override
-//        public boolean test(Derivation d) {
-//            return (d.concSingle || d.taskPunc != BELIEF) || d.taskBeliefTimeIntersects;
-//        }
-//    };
 
 
     public enum TaskTimeMerge {
@@ -500,12 +482,12 @@ public class Occurrify extends TimeGraph {
 
 
                 Pair<Term, long[]> p = solveOccDT(d, x, d.occ.reset(x));
-//                if (p != null) {
-//                    if (immediatizable(d)) {
-//                        if (!immediatize(p.getTwo(), d))
-//                            return null;
-//                    }
-//                }
+                if (p != null) {
+                    if (immediatizable(d)) {
+                        if (!immediatize(p.getTwo(), d))
+                            return null;
+                    }
+                }
                 return p;
             }
 
@@ -892,6 +874,17 @@ public class Occurrify extends TimeGraph {
                 }
             }
 
+            /**
+             * requires single premise, or if double premise that there is temporal intersection of task and belief
+             */
+            private final PREDICATE<Derivation> intersectFilter = new AbstractPred<>(Atomic.the("TimeIntersects")) {
+                @Override
+                public boolean test(Derivation d) {
+                    return d.concSingle || d.taskBeliefTimeIntersects[0]!=TIMELESS;
+                }
+            };
+
+
             @Override
             public PREDICATE<Derivation> filter() {
                 return intersectFilter;
@@ -917,10 +910,10 @@ public class Occurrify extends TimeGraph {
                 }
             }
 
-            @Override
-            public BeliefProjection beliefProjection() {
-                return BeliefProjection.Raw;
-            }
+//            @Override
+//            public BeliefProjection beliefProjection() {
+//                return BeliefProjection.Raw;
+//            }
         },
 
         /**
