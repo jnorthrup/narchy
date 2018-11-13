@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.time.Tense.ETERNAL;
+import static nars.truth.TruthFunctions.c2wSafe;
 
 /**
  * holds a set of ranked question/quests tasks
@@ -126,12 +127,23 @@ public interface TaskTable {
         boolean isBeliefOrGoal = !(this instanceof QuestionTable);
         return Answer.relevance(isBeliefOrGoal,
                 isBeliefOrGoal ? Answer.BELIEF_SAMPLE_LIMIT : Answer.QUESTION_SAMPLE_LIMIT,
-                start, end, template, filter, nar)
+                start, end, template, isBeliefOrGoal ? filterConfMin(filter, nar) : filter, nar)
+            .ditherTruth(true)
             .sample(this)
             .task(false, false, false);
 
 //        return matching(start, end, template, filter, nar).task(false, false, false);
 
+    }
+
+    static Predicate<Task> filterConfMin(Predicate<Task> filter, NAR nar) {
+        float eviMin = c2wSafe(nar.confMin.floatValue());
+
+        return (filter == null) ?
+            t -> t.evi() >= eviMin
+            :
+            t -> t.evi() >= eviMin && filter.test(t)
+        ;
     }
 
     /** clear and fully deallocate if possible */

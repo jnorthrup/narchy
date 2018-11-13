@@ -110,8 +110,8 @@ abstract public class NAgentX extends NAgent {
         return runRT(init,  -1, clockFPS, clockFPS);
     }
 
-    public static NAR runRT(Function<NAR, NAgent> init, int threads, float narFPS, float clockFPS) {
-        NAR n = baseNAR(clockFPS, threads);
+    public static NAR runRT(Function<NAR, NAgent> init, int threads, float narFPS, float durFPS) {
+        NAR n = baseNAR(durFPS, threads);
 
 
         n.runLater(() -> {
@@ -132,6 +132,21 @@ abstract public class NAgentX extends NAgent {
         Loop loop = n.startFPS(narFPS);
 
         return n;
+    }
+
+    /** agent builder should name each agent instance uniquely
+     * ex: new PoleCart($.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()), n);
+     */
+    public static NAR runRTNet(Function<NAR,NAgent> a, int threads, float narFPS, float durFPS, float netFPS) {
+        return runRT((n) -> {
+
+            NAgent aa = a.apply(n);
+
+            new InterNAR(n).runFPS(netFPS);
+
+            return aa;
+
+        }, threads, narFPS, durFPS);
     }
 
     public static NAR runRL(Function<NAR, NAgent> init, float narFPS, float clockFPS) {
@@ -163,7 +178,7 @@ abstract public class NAgentX extends NAgent {
         return n;
     }
 
-    static NAR baseNAR(float clockFPS, int threads) {
+    static NAR baseNAR(float durFPS, int threads) {
     /*
     try {
         Exe.UDPeerProfiler prof = new Exe.UDPeerProfiler();
@@ -182,7 +197,7 @@ abstract public class NAgentX extends NAgent {
                 new RealTime.MS();
 
 
-        clock.durFPS(clockFPS);
+        clock.durFPS(durFPS);
 
 
         NAR n = new NARS()

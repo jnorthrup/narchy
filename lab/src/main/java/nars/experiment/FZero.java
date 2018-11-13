@@ -17,6 +17,7 @@ import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Signal;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
+import nars.term.Term;
 import nars.time.Tense;
 import nars.video.AutoclassifiedBitmap;
 import org.apache.commons.math3.util.MathUtils;
@@ -52,12 +53,18 @@ public class FZero extends NAgentX {
     public static void main(String[] args) {
         NAgentX.runRT(n -> {
             n.freqResolution.set(0.03f);
-            return new FZero(n);
+            return new FZero($.the("fz"), n);
         }, fps);
+
+//        int instances = 2;
+//        for (int i = 0; i < instances; i++)
+//            runRTNet((n)->new FZero($.p(Atomic.the("fz"), n.self()), n),
+//                    2, fps, fps, 6);
     }
 
-    public FZero(NAR n) {
-        super("fz",
+
+    public FZero(Term id, NAR n) {
+        super(id,
                 fps(fps),
                 n);
 

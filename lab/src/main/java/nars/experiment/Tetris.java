@@ -10,9 +10,9 @@ import nars.NAgentX;
 import nars.agent.FrameTrigger;
 import nars.op.Arithmeticize;
 import nars.op.java.Opjects;
-import nars.op.mental.Inperience;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.video.Bitmap2DConceptsView;
 import org.eclipse.collections.api.block.function.primitive.BooleanToBooleanFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
@@ -50,13 +50,17 @@ public class Tetris extends NAgentX {
         this(nar, width, height, 1);
     }
 
+    public Tetris(NAR n, int width, int height, int timePerFall) {
+        this(Atomic.the("tetris"), n, width, height, timePerFall);
+    }
+
     /**
      * @param width
      * @param height
      * @param timePerFall larger is slower gravity
      */
-    public Tetris(NAR n, int width, int height, int timePerFall) {
-        super("tetris",
+    public Tetris(Term id, NAR n, int width, int height, int timePerFall) {
+        super(id,
                 //FrameTrigger.fps(30f),
                 FrameTrigger.durs(1),
                 n);
@@ -133,13 +137,23 @@ public class Tetris extends NAgentX {
 
             new Arithmeticize.ArithmeticIntroduction(32, n);
 
-            new Inperience.Believe(n, 32);
-            new Inperience.Want(n, 32);
+//            new Inperience.Believe(n, 32);
+//            new Inperience.Want(n, 32);
 
             //new Abbreviation(n, ("z"), 4, 5,  8);
 
             return new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
         }, FPS);
+
+//        int instances = 2;
+//        for (int i = 0; i < instances; i++)
+//            runRTNet((n)-> {
+//
+//                    new Arithmeticize.ArithmeticIntroduction(32, n);
+//
+//                        return new Tetris($.p(Atomic.the("t"), n.self()), n, tetris_width, tetris_height, 1);
+//                    },
+//                    2, FPS, FPS, 6);
 
     }
 

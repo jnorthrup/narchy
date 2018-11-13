@@ -27,7 +27,7 @@ public class Attention extends DurService implements Sampler<Concept> {
      */
     private final int concepts;
 
-    public Bag<Term, Activate> active;
+    public Bag<Term, Activate> active = Bag.EMPTY;
 
 
     public Attention(int concepts) {
@@ -136,6 +136,7 @@ public class Attention extends DurService implements Sampler<Concept> {
     protected void stopping(NAR nar) {
         //if (active != null) {
         active.clear();
+        active = Bag.EMPTY;
         //active = null;
         //}
 

@@ -195,7 +195,7 @@ public abstract class TaskLeak extends Causable {
             this.rng = n.random();
             this.puncs = t.puncs;
             this.nar = n;
-            if (puncs == null)
+            if (puncs == null || puncs.length == 0)
                 puncs = new byte[] { BELIEF, QUESTION, GOAL, QUEST };
             return null;
         }
@@ -236,7 +236,7 @@ public abstract class TaskLeak extends Causable {
                 Task x = c.table(p[nextPunc]).sample(when[0], when[1], null, t ->{
                     Term tt = t.term();
                     if (hasTemporal && !ct.equals(tt))
-                        if (!termFilter.test(tt))
+                        if (!termFilter.test(tt)) //re-test
                             return false;
 
                     return taskFilter.test(t);

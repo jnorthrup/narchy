@@ -5,13 +5,13 @@ import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
-import nars.InterNAR;
 import nars.NAR;
 import nars.NAgentX;
-import nars.agent.NAgent;
 import nars.agent.Reward;
 import nars.concept.Concept;
 import nars.concept.action.BiPolarAction;
+import nars.term.Term;
+import nars.term.atom.Atomic;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -20,7 +20,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static nars.$.$$;
 import static nars.agent.FrameTrigger.fps;
 
 /**
@@ -43,35 +42,22 @@ public class PoleCart extends NAgentX {
     public static void main(String[] arg) {
         //polecart(-1);
 
-        NAR a = polecart("(cart,a)",2);
-        NAR b = polecart("(cart,a)", 2);
-        new InterNAR(a).runFPS(4);
-        new InterNAR(b).runFPS(4);
+        int instances = 2;
+        for (int i = 0; i < instances; i++)
+            runRTNet((n)->new PoleCart($.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()), n),
+                    1, fps, fps, 4);
     }
 
 
-    public static NAR polecart(String cartName, int threads) {
-        return runRT((n) -> {
-
-            try {
-                NAgent a = new PoleCart(cartName, n);
 
 
-                return a;
-            } catch (Exception e) {
-
-                e.printStackTrace();
-                return null;
-            }
-        }, threads, fps, fps);
-    }
 
     public static class RL {
         public static void main(String[] args) {
             runRL(n -> {
 
                 try {
-                    PoleCart p = new PoleCart("rl", n);
+                    PoleCart p = new PoleCart($.the("rl"), n);
 
                     p.tau.set(0.004f);
 
@@ -127,9 +113,9 @@ public class PoleCart extends NAgentX {
 
     double action;
 
-    public PoleCart(String cartName, NAR nar) {
+    public PoleCart(Term id, NAR nar) {
 
-        super($$(cartName), fps(fps), nar);
+        super(id, fps(fps), nar);
 
 
         pos = 0.;

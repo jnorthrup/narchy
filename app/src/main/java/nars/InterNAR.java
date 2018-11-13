@@ -74,13 +74,16 @@ public class InterNAR extends NARService implements TriConsumer<NAR, ActiveQuest
         this.port = port;
         this.discover = discover;
 
-        this.send = new TaskLeak(256, null) {
+        this.send = new TaskLeak(nar) {
             @Override
             public boolean filter(Task next) {
-                if (next.isCommand() || !peer.connected())
+                if (next.isCommand() || !peer.connected() || next.stamp().length == 0 /* don't share assumptions */)
                     return false;
 
-                return super.filter(next);
+                if (next.isBeliefOrGoal() && next.conf() < nar.confMin.floatValue())
+                    return false;
+
+                return true;
             }
             @Override
             public float value() {

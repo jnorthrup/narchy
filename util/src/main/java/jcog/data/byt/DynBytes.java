@@ -434,19 +434,23 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     }
 
     public void writeUnsignedLong(long x) {
-        this.len += IntCoding.encodeUnsignedVariableLong(x, bytes, ensureSized(8 /* max */));
+        int pos = ensureSized(8 + 2 /* max */);
+        this.len += IntCoding.encodeUnsignedVariableLong(x, bytes, pos);
     }
 
     public void writeUnsignedInt(int x) {
-        this.len += IntCoding.encodeUnsignedVariableInt(x, bytes, ensureSized(4 /* max */));
+        int pos = ensureSized(4 + 1 /* max */);
+        this.len += IntCoding.encodeUnsignedVariableInt(x, bytes, pos);
     }
 
     public void writeZigZagLong(long x) {
-        this.len += IntCoding.encodeZigZagVariableLong(x, bytes, ensureSized(8 /* max */));
+        int pos = ensureSized(8 + 2 /* max */);
+        this.len += IntCoding.encodeZigZagVariableLong(x, bytes, pos);
     }
 
     public void writeZigZagInt(int x) {
-        this.len += IntCoding.encodeZigZagVariableInt(x, bytes, ensureSized(4 /* max */));
+        int pos = ensureSized(4 + 1 /* max */);
+        this.len += IntCoding.encodeZigZagVariableInt(x, bytes, pos);
     }
 
     private long readVarEncodedUnsignedLong() {
