@@ -214,15 +214,27 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     public final static ThreadLocal<MetalPool<TopN<Object>>> pool = TopN.newPool(Object[]::new);
 
     public static TopN pooled(int capacity, FloatFunction rank) {
-        return pooled(pool, capacity, rank, Object[]::new);
+        return pooled(capacity, capacity>1, rank);
+    }
+
+    public static TopN pooled(int capacity, boolean cache, FloatFunction rank) {
+        return pooled(pool, capacity, cache, rank, Object[]::new);
     }
 
     public static <X> TopN<X> pooled(ThreadLocal<MetalPool<TopN<X>>> pool, int capacity, FloatFunction<X> rank,IntFunction<Object[]> arrayBuilder) {
-        TopN t = pool.get().get();
-        ((CachedFloatFunction)t.rank).value(rank);
-        if (t.items.length<capacity)
-            t.items = arrayBuilder.apply(capacity);
-        return t;
+        return pooled(pool, capacity, capacity>1, rank, arrayBuilder);
+    }
+
+    public static <X> TopN<X> pooled(ThreadLocal<MetalPool<TopN<X>>> pool, int capacity, boolean cache, FloatFunction<X> rank,IntFunction<Object[]> arrayBuilder) {
+        if (!cache) {
+            return new TopN(arrayBuilder.apply(1), rank);
+        } else {
+            TopN t = pool.get().get();
+            ((CachedFloatFunction) t.rank).value(rank);
+            if (t.items.length < capacity)
+                t.items = arrayBuilder.apply(capacity);
+            return t;
+        }
     }
 
     public static void unpool(TopN<Object> t) {
@@ -230,6 +242,9 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     }
 
     public static <X> void unpool(ThreadLocal<MetalPool<TopN<X>>> pool,TopN<X> t) {
+        if (!(t.rank instanceof CachedFloatFunction))
+            return; //wasnt from the pool
+
         t.clear();
         ((CachedFloatFunction)t.rank).value(r -> Float.NaN);
         pool.get().put(t);

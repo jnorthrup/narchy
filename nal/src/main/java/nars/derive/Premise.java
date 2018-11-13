@@ -206,7 +206,7 @@ public class Premise implements Comparable<Premise> {
 
         //dont dither because this task isnt directly input to the system.  derivations will be dithered at the end
         //TODO factor in the Task's stamp so it can try to avoid those tasks, thus causing overlap in double premise cases
-        return Answer.relevance(true, Answer.BELIEF_SAMPLE_LIMIT,
+        return Answer.relevance(true, Answer.BELIEF_SAMPLE_CAPACITY,
                 focus[0], focus[1], beliefTerm, beliefFilter, nar)
                 .match(bb)
                 .task(false, false, false);

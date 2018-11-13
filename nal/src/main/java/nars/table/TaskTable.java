@@ -126,7 +126,7 @@ public interface TaskTable {
 
         boolean isBeliefOrGoal = !(this instanceof QuestionTable);
         return Answer.relevance(isBeliefOrGoal,
-                isBeliefOrGoal ? Answer.BELIEF_SAMPLE_LIMIT : Answer.QUESTION_SAMPLE_LIMIT,
+                isBeliefOrGoal ? Answer.BELIEF_SAMPLE_CAPACITY : Answer.QUESTION_SAMPLE_CAPACITY,
                 start, end, template, isBeliefOrGoal ? filterConfMin(filter, nar) : filter, nar)
             .ditherTruth(true)
             .sample(this)

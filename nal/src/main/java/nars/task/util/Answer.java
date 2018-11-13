@@ -1,5 +1,6 @@
 package nars.task.util;
 
+import jcog.WTF;
 import jcog.data.pool.MetalPool;
 import jcog.data.set.MetalLongSet;
 import jcog.math.CachedFloatFunction;
@@ -40,8 +41,8 @@ public class Answer implements AutoCloseable {
      *  prevents table from trying to answer with all the tasks that a non-specific time-range might cause */
     public static final int TASK_LIMIT_ETERNAL_QUESTION = Math.max(1, TASK_LIMIT_DEFAULT / 3);
 
-    public static final int BELIEF_SAMPLE_LIMIT = Math.max(1, TASK_LIMIT_DEFAULT / 2);
-    public static final int QUESTION_SAMPLE_LIMIT = Math.max(1, BELIEF_SAMPLE_LIMIT/2);
+    public static final int BELIEF_SAMPLE_CAPACITY = Math.max(1, TASK_LIMIT_DEFAULT / 2);
+    public static final int QUESTION_SAMPLE_CAPACITY = 1;
 
 
 
@@ -55,12 +56,12 @@ public class Answer implements AutoCloseable {
     public TopN<Task> tasks;
     public final Predicate<Task> filter;
 
-    public Answer(int capacity, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
+    private Answer(int capacity, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
         this(capacity, Math.round(Param.ANSWER_COMPLETENESS * capacity), rank, filter, nar);
     }
 
     /** TODO filter needs to be more clear if it refers to the finished task (if dynamic) or a component in creating one */
-    public Answer(int capacity, int maxTries, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
+    private Answer(int capacity, int maxTries, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
         this.nar = nar;
         this.tasks = TopN.pooled(topTasks, capacity, rank.filter(filter), Task[]::new);
         this.filter = filter;
@@ -91,11 +92,14 @@ public class Answer implements AutoCloseable {
      * for belief or goals (not questions / quests
      */
     @Deprecated
-    public static Answer relevance(boolean beliefOrQuestion, int limit, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
+    public static Answer relevance(boolean beliefOrQuestion, int capacity, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
+
+        if (!beliefOrQuestion && capacity > 1)
+            throw new WTF("questions are not merged so the capacity need not exceed 1");
 
         FloatRank<Task> r = relevance(beliefOrQuestion, start, end, template);
 
-        return new Answer(limit, r, filter, nar)
+        return new Answer(capacity, r, filter, nar)
                 .time(new TimeRangeFilter(start, end, true))
                 .template(template);
     }
@@ -231,12 +235,18 @@ public class Answer implements AutoCloseable {
                     @Nullable Task root = taskFirst(topOrSample);
                     switch (root.punc()) {
                         case BELIEF:
-                        case GOAL:
+                        case GOAL: {
                             if (tryMerge)
                                 t = taskMerge(root);
                             else
                                 t = root;
-                            break;
+
+                            if (ditherTruth && t == root) {
+                                if (root.conf() < nar.confMin.floatValue())
+                                    return null;
+                            }
+                        }
+                        break;
                         case QUESTION:
                         case QUEST:
                             t = root;
@@ -244,6 +254,7 @@ public class Answer implements AutoCloseable {
                         default:
                             throw new UnsupportedOperationException();
                     }
+
                     break;
                 }
             }
@@ -253,7 +264,7 @@ public class Answer implements AutoCloseable {
                 if (ss != ETERNAL) { //dont eternalize here
                     long ee = time.end;
                     if (t.isEternal() || !t.containedBy(ss, ee)) {
-                        t = Task.project(t, ss, ee, nar, true, false);
+                        t = Task.project(t, ss, ee, nar, ditherTruth, false);
                     }
                 }
             }
@@ -432,7 +443,7 @@ public class Answer implements AutoCloseable {
     private void accept(Task task) {
         assert(task!=null);
 
-        if (!(((CachedFloatFunction)(tasks.rank)).containsKey(task))) {
+        if (tasks.capacity() == 1 || !(((CachedFloatFunction)(tasks.rank)).containsKey(task))) {
             //if (time == null || time.accept(task.start(), task.end())) {
             tasks.accept(task);
         }
