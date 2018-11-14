@@ -3,7 +3,10 @@ package spacegraph.web.util;
 import jcog.Texts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.teavm.tooling.*;
+import org.teavm.tooling.TeaVMTargetType;
+import org.teavm.tooling.TeaVMTool;
+import org.teavm.tooling.TeaVMToolException;
+import org.teavm.tooling.TeaVMToolLog;
 
 import java.io.File;
 import java.io.IOException;

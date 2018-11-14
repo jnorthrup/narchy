@@ -1,6 +1,12 @@
 package codi;
 
-import java.awt.*;
+import com.jogamp.opengl.GL2;
+import jcog.exe.Loop;
+import spacegraph.SpaceGraph;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
+import spacegraph.video.Draw;
+
 import java.util.Arrays;
 
 public class CodiCA extends CA {
@@ -8,77 +14,77 @@ public class CodiCA extends CA {
     private int InputSum;
     private boolean SignalingInited;
 
-    
-    static class CodiCell { 
+    /** add blocks every 2 cells TODO verify this is what it actually means */
+    private boolean gridBlock = true;
+
+
+    static class CodiCell {
         int Type;
         int Chromo;
         int Gate;
         int Activ;
-        int IOBuf[] = new int[6];
+        final int[] IOBuf = new int[6];
     }
 
-    protected CodiCell CASpace[][][];
-    
-    private static final int BLANK = 0; 
+    protected final CodiCell[][][] cell;
+
+    private static final int BLANK = 0;
     private static final int NEURONSEED = 1;
-    private static final int NEURON = 1; 
-    private static final int AXON = 2; 
-    private static final int DEND = 4; 
+    private static final int NEURON = 1;
+    private static final int AXON = 2;
+    private static final int DEND = 4;
     private static final int AXON_SIG = 2;
     private static final int DEND_SIG = 4;
-    
-    private static final int SIG_COL = 5;    
-    private static final int ERROR_COL = 13; 
-    private final int[][][] ColorSpace; 
-    private int ActualColor;
+
+    //    private static final int SIG_COL = 5;
+//    private static final int ERROR_COL = 13;
+    private final int[][][] ColorSpace;
+//    private int ActualColor;
 
     public CodiCA() {
-        super();
-        MaxSteps = 500;
-        SpaceSizeX = 100;
-        SpaceSizeY = 100;
-        SpaceSizeZ = 1;
-        CellSizeX = 10;
-        CellSizeY = 10;
-        SpaceSize = SpaceSizeX * SpaceSizeY * SpaceSizeZ;
-        CAFrameSizeX = SpaceSizeX * CellSizeX;
-        CAFrameSizeY = SpaceSizeY * CellSizeY;
-        ColorSpace = new int[SpaceSizeX][SpaceSizeY][SpaceSizeZ];
-        CASpace = new CodiCell[SpaceSizeX][SpaceSizeY][SpaceSizeZ];
-        for (int ix = 0; ix < SpaceSizeX; ix++)
-            for (int iy = 0; iy < SpaceSizeY; iy++)
-                for (int iz = 0; iz < SpaceSizeZ; iz++)
-                    CASpace[ix][iy][iz] = new CodiCell();
-        CLRGraphicsAfterStep = false;
+        super(20, 20, 1);
+
+
+        ColorSpace = new int[sizeX][sizeY][sizeZ];
+        cell = new CodiCell[sizeX][sizeY][sizeZ];
+        for (int ix = 0; ix < sizeX; ix++)
+            for (int iy = 0; iy < sizeY; iy++)
+                for (int iz = 0; iz < sizeZ; iz++)
+                    cell[ix][iy][iz] = new CodiCell();
     }
+
 
     @Override
     protected void InitCA() {
-        CountCAStps = 0;
+        step = 0;
         CAChanged = 1;
         SignalingInited = false;
-        bFirstStart = true;
-        for (int ix = 0; ix < SpaceSizeX; ix++)
-            for (int iy = 0; iy < SpaceSizeY; iy++)
-                for (int iz = 0; iz < SpaceSizeZ; iz++) {
+        uninitialized = true;
+        for (int ix = 0; ix < sizeX; ix++)
+            for (int iy = 0; iy < sizeY; iy++)
+                for (int iz = 0; iz < sizeZ; iz++) {
                     ColorSpace[ix][iy][iz] = 0;
-                    CodiCell cell = CASpace[ix][iy][iz];
+                    CodiCell cell = this.cell[ix][iy][iz];
                     cell.Type = 0;
                     cell.Activ = 0;
-                    for (int i = 0; i < 6; i++) cell.IOBuf[i] = 0;
+                    for (int i = 0; i < 6; i++)
+                        cell.IOBuf[i] = 0;
                     cell.Chromo = (random.nextInt() % 256);
-                    
+
                     if (((ix + 1) % 2) * (iy % 2) == 1)
                         cell.Chromo = (cell.Chromo & ~3) | 12;
                     if ((ix % 2) * ((iy + 1) % 2) == 1)
                         cell.Chromo = (cell.Chromo & ~12) | 3;
-                    
-                    if ((ix % 2) + (iy % 2) != 0) cell.Chromo &= ~192;
-                    
-                    if ((cell.Chromo >>> 6) == NEURONSEED)
-                        if ((random.nextInt() % SpaceSizeX) < ix / 2)
+
+                    if (gridBlock) {
+                        if ((ix % 2) + (iy % 2) != 0)
                             cell.Chromo &= ~192;
-                    
+
+                        if ((cell.Chromo >>> 6) == NEURONSEED)
+                            if ((random.nextInt() % sizeX) < ix / 2)
+                                cell.Chromo &= ~192;
+                    }
+
                     if ((cell.Chromo >>> 6) == NEURONSEED)
                         cell.Chromo =
                                 (cell.Chromo & 192) |
@@ -87,50 +93,41 @@ public class CodiCA extends CA {
     }
 
     protected void Kicking() {
-        
-        
-        
-        
-        
-        
-        
-        
-        
 
-        
-        CodiCell[][][] ca = CASpace;
-        for (int iz = 0; iz < SpaceSizeZ; iz++)
-            for (int iy = 0; iy < SpaceSizeY; iy++)
-                for (int ix = 0; ix < SpaceSizeX; ix++) {
-                    
+
+        CodiCell[][][] ca = cell;
+        for (int iz = 0; iz < sizeZ; iz++)
+            for (int iy = 0; iy < sizeY; iy++)
+                for (int ix = 0; ix < sizeX; ix++) {
+
                     int[] caio = ca[ix][iy][iz].IOBuf;
-                    caio[4] = iz != SpaceSizeZ - 1 ? ca[ix][iy][iz + 1].IOBuf[4] : 0;
-                    
-                    caio[2] = iy != SpaceSizeY - 1 ? ca[ix][iy + 1][iz].IOBuf[2] : 0;
-                    
-                    caio[0] = ix != SpaceSizeX - 1 ? ca[ix + 1][iy][iz].IOBuf[0] : 0;
+                    caio[4] = iz != sizeZ - 1 ? ca[ix][iy][iz + 1].IOBuf[4] : 0;
+
+                    caio[2] = iy != sizeY - 1 ? ca[ix][iy + 1][iz].IOBuf[2] : 0;
+
+                    caio[0] = ix != sizeX - 1 ? ca[ix + 1][iy][iz].IOBuf[0] : 0;
                 }
-        
-        
-        for (int iz = SpaceSizeZ - 1; iz >= 0; iz--)
-            for (int iy = SpaceSizeY - 1; iy >= 0; iy--)
-                for (int ix = SpaceSizeX - 1; ix >= 0; ix--) {
-                    
+
+
+        for (int iz = sizeZ - 1; iz >= 0; iz--)
+            for (int iy = sizeY - 1; iy >= 0; iy--)
+                for (int ix = sizeX - 1; ix >= 0; ix--) {
+
                     int[] caio = ca[ix][iy][iz].IOBuf;
                     caio[5] = iz != 0 ? ca[ix][iy][iz - 1].IOBuf[5] : 0;
-                    
+
                     caio[3] = iy != 0 ? ca[ix][iy - 1][iz].IOBuf[3] : 0;
-                    
+
                     caio[1] = ix != 0 ? ca[ix - 1][iy][iz].IOBuf[1] : 0;
                 }
     }
 
     private void InitSignaling() {
         SignalingInited = true;
-        CodiCell[][][] ca = CASpace;
-        for (int iz = 0; iz < SpaceSizeZ; iz++)
-            for (int iy = 0; iy < SpaceSizeY; iy++)
-                for (int ix = 0; ix < SpaceSizeX; ix++) {
+        CodiCell[][][] ca = cell;
+        for (int iz = 0; iz < sizeZ; iz++)
+            for (int iy = 0; iy < sizeY; iy++)
+                for (int ix = 0; ix < sizeX; ix++) {
                     CodiCell c = ca[ix][iy][iz];
                     c.Activ = 0;
                     Arrays.fill(c.IOBuf, 0, 6, 0);
@@ -140,10 +137,11 @@ public class CodiCA extends CA {
     }
 
     @Override
-    protected void StepCA() {
-        CountCAStps++;
-        if (CountCAStps == MaxSteps)
+    protected void next() {
+
+        if (step == 0)
             InitCA();
+        step++;
         if (CAChanged == 1)
             GrowthStep();
         else {
@@ -155,37 +153,28 @@ public class CodiCA extends CA {
 
     protected int GrowthStep() {
         CAChanged = 0;
-        for (int iz = 0; iz < SpaceSizeZ; iz++)
-            for (int iy = 0; iy < SpaceSizeY; iy++)
-                for (int ix = 0; ix < SpaceSizeX; ix++) {
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    CodiCell ca = CASpace[ix][iy][iz];
+        for (int iz = 0; iz < sizeZ; iz++)
+            for (int iy = 0; iy < sizeY; iy++)
+                for (int ix = 0; ix < sizeX; ix++) {
+
+
+                    CodiCell ca = cell[ix][iy][iz];
                     int[] caio = ca.IOBuf;
                     switch (ca.Type) {
-                        case BLANK:                    
-                            
+                        case BLANK:
+
                             if ((ca.Chromo >>> 6) == NEURONSEED) {
                                 ca.Type = NEURON;
                                 CAChanged = 1;
-                                
-                                ca.Gate =
-                                        (ca.Chromo & 63) % 6;
+
+                                ca.Gate = (ca.Chromo & 63) % 6;
                                 for (int i = 0; i < 6; i++)
                                     caio[i] = DEND_SIG;
-                                caio[ca.Gate]
-                                        = AXON_SIG;
-                                caio
-                                        [(ca.Gate % 2 * -2) + 1 + ca.Gate]
-                                        = AXON_SIG;
+                                caio[ca.Gate] = AXON_SIG;
+                                caio[(ca.Gate % 2 * -2) + 1 + ca.Gate] = AXON_SIG;
                                 break;
                             }
-                            
+
                             InputSum =
                                     caio[0] +
                                             caio[1] +
@@ -194,7 +183,7 @@ public class CodiCA extends CA {
                                             caio[4] +
                                             caio[5];
                             if (InputSum == 0) break;
-                            
+
                             InputSum =
                                     (caio[0] & AXON_SIG) +
                                             (caio[1] & AXON_SIG) +
@@ -217,7 +206,7 @@ public class CodiCA extends CA {
                                     caio[i] = 0;
                                 break;
                             }
-                            
+
                             InputSum =
                                     (caio[0] & DEND_SIG) +
                                             (caio[1] & DEND_SIG) +
@@ -235,11 +224,11 @@ public class CodiCA extends CA {
                                     caio[i] = ((ca.Chromo >>> i) & 1) != 0 ? DEND_SIG : 0;
                                 break;
                             }
-                            
+
                             for (int i = 0; i < 6; i++)
                                 caio[i] = 0;
                             break;
-                        case NEURON:                       
+                        case NEURON:
                             for (int i = 0; i < 6; i++)
                                 caio[i] = DEND_SIG;
                             caio[ca.Gate]
@@ -248,11 +237,11 @@ public class CodiCA extends CA {
                                     Gate % 2) * -2) + 1 + ca.Gate]
                                     = AXON_SIG;
                             break;
-                        case AXON:                         
+                        case AXON:
                             for (int i = 0; i < 6; i++)
                                 caio[i] = ((ca.Chromo >>> i) & 1) != 0 ? AXON_SIG : 0;
                             break;
-                        case DEND:                         
+                        case DEND:
                             for (int i = 0; i < 6; i++)
                                 caio[i] = ((ca.Chromo >>> i) & 1) != 0 ? DEND_SIG : 0;
                             break;
@@ -263,21 +252,21 @@ public class CodiCA extends CA {
     }
 
     protected int SignalStep() {
-        
-        
-        for (int iz = 0; iz < SpaceSizeZ; iz++)
-            for (int iy = 0; iy < SpaceSizeY; iy++)
-                for (int ix = 0; ix < SpaceSizeX; ix++) {
-                    
-                    CodiCell ca = CASpace[ix][iy][iz];
+
+
+        for (int iz = 0; iz < sizeZ; iz++)
+            for (int iy = 0; iy < sizeY; iy++)
+                for (int ix = 0; ix < sizeX; ix++) {
+
+                    CodiCell ca = cell[ix][iy][iz];
                     int[] caio = ca.IOBuf;
                     switch (ca.Type) {
-                        case BLANK:                    
-                            
-                            
+                        case BLANK:
+
+
                             break;
-                        case NEURON:                
-                            InputSum = 1 +            
+                        case NEURON:
+                            InputSum = 1 +
                                     caio[0] +
                                     caio[1] +
                                     caio[2] +
@@ -285,28 +274,24 @@ public class CodiCA extends CA {
                                     caio[4] +
                                     caio[5] -
                                     caio[ca.Gate] -
-                                    caio
-                                            [((ca.
-                                            Gate % 2) * -2) + 1 + ca.Gate];
-                            for (int i = 0; i < 6; i++)
-                                caio[i] = 0;
+                                    caio[((ca.Gate % 2) * -2) + 1 + ca.Gate];
+
                             ca.Activ += InputSum;
-                            if (ca.Activ > 31) { 
+
+                            Arrays.fill(caio, 0);
+
+                            if (ca.Activ > 31) {  //firing threshold
                                 caio[ca.Gate] = 1;
-                                caio
-                                        [((ca.
-                                        Gate % 2) * -2) + 1 + ca.Gate]
-                                        = 1;
+                                caio[((ca.Gate % 2) * -2) + 1 + ca.Gate] = 1;
                                 ca.Activ = 0;
                             }
                             break;
-                        case AXON:                     
+                        case AXON:
                             for (int i = 0; i < 6; i++)
-                                caio[i] =
-                                        (caio[ca.Gate]);
+                                caio[i] = caio[ca.Gate];
                             ca.Activ = (caio[ca.Gate]) != 0 ? 1 : 0;
                             break;
-                        case DEND:                     
+                        case DEND:
                             InputSum =
                                     caio[0] +
                                             caio[1] +
@@ -315,10 +300,9 @@ public class CodiCA extends CA {
                                             caio[4] +
                                             caio[5];
                             if (InputSum > 2) InputSum = 2;
-                            for (int i = 0; i < 6; i++)
-                                caio[i] = 0;
-                            caio
-                                    [ca.Gate] = InputSum;
+                            Arrays.fill(caio, 0);
+
+                            caio[ca.Gate] = InputSum;
                             ca.Activ = InputSum != 0 ? 1 : 0;
                             break;
                     }
@@ -327,62 +311,138 @@ public class CodiCA extends CA {
         return 0;
     }
 
-    @Override
-    protected void DrawCA(Graphics g) {
-        if (bFirstStart) {
-            DrawCAFrame(g);
-            g.setColor(Color.black);
-            g.fillRect(Offset, Offset,
-                    SpaceSizeX * CellSizeX, SpaceSizeY * CellSizeY);
-            bFirstStart = false;
+//    @Override
+//    protected void DrawCA(Graphics g) {
+//        if (bFirstStart) {
+//            g.setColor(Color.black);
+//            g.fillRect(Offset, Offset,
+//                    sizeX * CellWidthPx, sizeY * CellHeightPx);
+//            bFirstStart = false;
+//        }
+//
+//        int PosX = Offset - CellWidthPx;
+//        int iz = 0;
+//        for (int ix = 0; ix < sizeX; ix++) {
+//            PosX += CellWidthPx;
+//            int PosY = Offset - CellHeightPx;
+//            for (int iy = 0; iy < sizeY; iy++) {
+//                PosY += CellHeightPx;
+//                CodiCell ca = cell[ix][iy][iz];
+//                if (ca.Type != 0) {
+//                    if (ca.Activ != 0) {
+//                        ActualColor = ca.Type != NEURON ? 5 : 1;
+//                    } else
+//                        switch (ca.Type) {
+//                            case NEURON:
+//                                ActualColor = 1;
+//                                break;
+//                            case AXON:
+//                                ActualColor = 2;
+//                                break;
+//                            case DEND:
+//                                ActualColor = 4;
+//                                break;
+//                            default:
+//                                ActualColor = 13;
+////                                System.out.println("__" + ca.Type + "__");
+//                                break;
+//                        }
+//                    if (ColorSpace[ix][iy][iz] != ActualColor) {
+//                        ColorSpace[ix][iy][iz] = ActualColor;
+//                        switch (ActualColor) {
+//                            case NEURON:
+//                                g.setColor(Color.white);
+//                                break;
+//                            case AXON:
+//                                g.setColor(Color.red);
+//                                break;
+//                            case DEND:
+//                                g.setColor(Color.green);
+//                                break;
+//                            case SIG_COL:
+//                                g.setColor(Color.yellow);
+//                                break;
+//                            default:
+//                                g.setColor(Color.blue);
+//                        }
+//                        g.fillRect(PosX, PosY, CellWidthPx, CellHeightPx);
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+    public static class CodiSurface extends Surface {
+
+        private final CodiCA c;
+
+
+        public CodiSurface(CodiCA c) {
+            this.c = c;
         }
-        
-        int PosX = Offset - CellSizeX;
-        int iz = 0;
-        for (int ix = 0; ix < SpaceSizeX; ix++) {
-            PosX += CellSizeX;
-            int PosY = Offset - CellSizeY;
-            for (int iy = 0; iy < SpaceSizeY; iy++) {
-                PosY += CellSizeY;
-                CodiCell ca = CASpace[ix][iy][iz];
-                if (ca.Type != 0) {
-                    if (ca.Activ != 0) {
-                        ActualColor = ca.Type != NEURON ? 5 : 1;
-                    } else
-                        switch (ca.Type) {
+
+        @Override
+        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+            float tw = w()/c.sizeX;
+            float th = h()/c.sizeY;
+
+
+            for (int x = 0; x < c.sizeX; x++) {
+                for (int y = 0; y < c.sizeY; y++) {
+                    for (int z = 0; z < c.sizeZ; z++) {
+                        CodiCell ca = c.cell[x][y][z];
+                        int type = ca.Type;
+                        if (type == 0)
+                            continue;
+
+                        float px = x * tw;
+                        float py = y * th;
+                        float pz = z * tw;
+
+
+                        float r, g, b;
+                        switch (type) {
                             case NEURON:
-                                ActualColor = 1;
+                                r = 0.75f;
+                                g = 0.75f;
+                                b = 0.75f;
                                 break;
                             case AXON:
-                                ActualColor = 2;
+                                r = 0.75f;
+                                g = 0f;
+                                b = 0;
                                 break;
                             case DEND:
-                                ActualColor = 4;
+                                r = 0f;
+                                g = 0.75f;
+                                b = 0;
                                 break;
                             default:
-                                ActualColor = 13;
-                                System.out.println("__" + ca.Type + "__");
-                                break;
+                                throw new UnsupportedOperationException();
                         }
-                    if (ColorSpace[ix][iy][iz] != ActualColor) {
-                        ColorSpace[ix][iy][iz] = ActualColor;
-                        switch (ActualColor) {
-                            case NEURON:
-                                g.setColor(Color.white);
-                                break;
-                            case AXON:
-                                g.setColor(Color.red);
-                                break;
-                            case DEND:
-                                g.setColor(Color.green);
-                                break;
-                            case SIG_COL:
-                                g.setColor(Color.yellow);
-                                break;
-                            default:
-                                g.setColor(Color.blue);
+
+//                        if (ca.Gate!=0) {
+//
+//                        }
+
+                        float gate = ca.Gate / 3f;
+                        b += gate * 0.5f;
+
+                        gl.glColor4f(r, g, b, 0.5f);
+                        Draw.rect(px, py, tw, th, gl);
+
+                        int activation = ca.Activ;
+                        if (activation != 0) {
+                            float a = 0.5f + 0.5f * Math.abs(activation) / 32f;
+
+                            if (activation > 0)
+                                gl.glColor4f(1f, 0.25f + 0.5f * a, 0f, a);
+                            else
+                                gl.glColor4f(0f, 0.25f + 0.5f * a, 1f, a);
+                            Draw.rect(px + tw / 4, py + th / 4, tw / 2, th / 2, gl);
                         }
-                        g.fillRect(PosX, PosY, CellSizeX, CellSizeY);
+
+
                     }
                 }
             }
@@ -391,8 +451,16 @@ public class CodiCA extends CA {
 
     public static void main(String[] args) {
         CodiCA c = new CodiCA();
-        c.setSize(1000, 1000);
-        c.setVisible(true);
-        new Thread(c).start();
+
+        new Loop() {
+
+            @Override
+            public boolean next() {
+                c.next();
+                return true;
+            }
+        }.setFPS(40);
+
+        SpaceGraph.window(new CodiSurface(c), 1000, 1000);
     }
 }

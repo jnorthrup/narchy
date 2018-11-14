@@ -20,7 +20,7 @@ public class NAL4Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(4);
-        n.termVolumeMax.set(8);
+        n.termVolumeMax.set(9);
         return n;
     }
 
@@ -127,7 +127,8 @@ public class NAL4Test extends NALTest {
     @Test
     void structural_transformation_one_arg() {
         test.believe("reaction(acid)", 1.0f, 0.9f);
-        test.mustBelieve(CYCLES, "(acid --> (reaction,/))", 1.0f, 0.9f);
+        //test.mustBelieve(CYCLES, "(acid --> (reaction,/))", 1.0f, 0.9f);
+        test.mustNotOutput(CYCLES, "(acid --> (reaction,/))", BELIEF, 0, 1, 0, 1, t->true);
     }
 
     @Test

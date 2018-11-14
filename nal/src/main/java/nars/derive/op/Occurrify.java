@@ -185,10 +185,7 @@ public class Occurrify extends TimeGraph {
 
         clear();
 
-
-
-
-        boolean beliefNoOcc = d.concSingle || !beliefOccurrence;
+        boolean beliefNoOcc = !beliefOccurrence || (d.concSingle); // && (d.taskPunc!=QUESTION && d.taskPunc!=QUEST));
 
         long taskStart = taskOccurrence ? d.taskStart : TIMELESS,
                 taskEnd = taskOccurrence ? d.taskEnd : TIMELESS,

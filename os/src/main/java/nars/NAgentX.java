@@ -33,6 +33,9 @@ import nars.exe.MultiExec;
 import nars.exe.Revaluator;
 import nars.gui.NARui;
 import nars.index.concept.HijackConceptIndex;
+import nars.op.Arithmeticize;
+import nars.op.Factorize;
+import nars.op.Introduction;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -252,7 +255,6 @@ abstract public class NAgentX extends NAgent {
 
         PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8,
                 "induction.nal",
-                //"induction.goal.nal",
                 "motivation.nal"
         );
         ZipperDeriver sensorAction = BeliefSource.forConcepts(n, rules,
@@ -428,7 +430,7 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         //n.freqResolution.set(0.03f);
-        n.termVolumeMax.set(20);
+        n.termVolumeMax.set(30);
 
 
 
@@ -462,9 +464,9 @@ abstract public class NAgentX extends NAgent {
 
         new BatchDeriver(Derivers.nal(n, 1, 8,
 
-            "motivation.nal"
+            "motivation.nal",
                 //"equivalence.nal"
-                //"induction.goal.nal"
+                "induction.goal.nal"
         ));
 
         //new STMLinkage(n, 1);
@@ -483,8 +485,8 @@ abstract public class NAgentX extends NAgent {
 //        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof AbstractGoalActionConcept.CuriosityTask) ),
 //                8, 96);
 
-//        Introduction arith = new Arithmeticize.ArithmeticIntroduction(64, n);
-//        Introduction factorizer = new Factorize.FactorIntroduction(64, n);
+        Introduction arith = new Arithmeticize.ArithmeticIntroduction(64, n);
+        Introduction factorizer = new Factorize.FactorIntroduction(64, n);
 
         {
 //            new Inperience.Believe(n, 32);

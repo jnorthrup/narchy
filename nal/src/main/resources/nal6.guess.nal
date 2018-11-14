@@ -46,6 +46,10 @@
     (&&,X,Y,A..*), X, neq(X,Y)     |- subIfUnifiesAny((&&,Y,A..*),unneg(X),unneg(Y),strict), (Belief:StructuralDeduction)
 
 
+//inverted condition question/quest
+    (&&,   X, A..*), X  |- (&&, --X, A..*), (Punctuation:Ask)
+    (&&, --X, A..*), X  |- (&&,   X, A..*), (Punctuation:Ask)
+
 //mutex induction from conjunction events
 //    (&&,X,--Y,A..*), X, task(".") |- (X ==> --Y), (Belief:StructuralDeduction)
 

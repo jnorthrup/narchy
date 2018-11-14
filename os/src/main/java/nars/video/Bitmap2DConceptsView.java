@@ -18,10 +18,10 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.slider.FloatSlider;
-import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.video.Draw;
 
 import java.util.concurrent.atomic.AtomicReference;

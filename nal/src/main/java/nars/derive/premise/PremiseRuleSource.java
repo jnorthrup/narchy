@@ -327,16 +327,18 @@ public class PremiseRuleSource extends ProxyTerm {
                         case "\"@\"":
                             taskPunc = (t) -> t == QUEST;
                             break;
-                        case "\"?@\"":
-                            taskPunc = (t) -> t == QUESTION || t == QUEST;
-                            concPunc = (c) -> c;  //default
-                            break;
                         case "\".\"":
                             taskPunc = (t) -> t == BELIEF;
                             break;
                         case "\"!\"":
                             taskPunc = (t) -> t == GOAL;
                             break;
+
+                        case "\"?@\"":
+                            taskPunc = (t) -> t == QUESTION || t == QUEST;
+                            concPunc = (c) -> c;  //default
+                            break;
+
                         case "\".!\"":
                             taskPunc = (t) -> t == BELIEF || t == GOAL;
                             concPunc = (c) -> c; //default

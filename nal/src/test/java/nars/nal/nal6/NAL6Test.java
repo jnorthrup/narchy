@@ -56,7 +56,6 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_unification3() {
-
         TestNAR tester = test;
 
 
@@ -78,7 +77,7 @@ public class NAL6Test extends NALTest {
         tester.believe("<<swimmer --> $y> ==> <robin --> $y>>", 0.70f, 0.90f);
         tester.mustBelieve(cycles, "<(&&,<bird --> $1>,<swimmer --> $1>) ==> <robin --> $1>>", 0.7f /*1f? */, 0.81f);
 
-        tester.mustBelieve(cycles, "<<bird --> $1> ==> <swimmer --> $1>>", 1f, 0.36F);
+        tester.mustBelieve(cycles, "<<bird --> $1> ==> <swimmer --> $1>>", 1f, 0.73F);
         tester.mustBelieve(cycles, "<<swimmer --> $1> ==> <bird --> $1>>", 0.7f, 0.45f);
 
 

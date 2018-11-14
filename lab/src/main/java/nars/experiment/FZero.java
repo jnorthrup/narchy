@@ -157,7 +157,8 @@ public class FZero extends NAgentX {
         int angles = 7;
         DigitizedScalar ang = senseNumber(angle ->
                         //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
-                        $.funcImageLast("ang", /*id,*/ $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
+                        $.funcImageLast("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
+                        //$.inh( /*id,*/ $.the(angle),"ang") /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 angles,
                 //DigitizedScalar.Needle
