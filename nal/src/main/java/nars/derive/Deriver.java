@@ -7,8 +7,6 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.control.Cause;
-import nars.control.DurService;
-import nars.derive.budget.DefaultPuncWeightedDeriverBudgeting;
 import nars.derive.premise.DeriverRules;
 import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
@@ -17,7 +15,6 @@ import nars.derive.timing.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.exe.Attention;
 import nars.exe.Causable;
 import nars.link.Activate;
-import nars.link.Activator;
 import nars.link.TaskLink;
 import nars.term.Term;
 
@@ -34,30 +31,22 @@ import java.util.stream.Stream;
  * specified by a set of premise rules.
  * <p>
  * runtime intensity is metered and throttled by causal feedback
- *
+ * <p>
  * this is essentially a Function<Premise, Stream<DerivedTask>> but
  * the current level of code complexity makes this non-obvious
  */
 abstract public class Deriver extends Causable {
 
-    public final DeriverBudgeting budgeting =
-            //new DefaultDeriverBudgeting();
-            new DefaultPuncWeightedDeriverBudgeting();
 
-    /** determines the time for beliefs to be matched during premise formation
-     *    input: premise Task, premise belief term
-     *    output: long[2] time interval
+    /**
+     * determines the time for beliefs to be matched during premise formation
+     * input: premise Task, premise belief term
+     * output: long[2] time interval
      **/
-    public BiFunction<Task,Term,long[]> timing;
+    public BiFunction<Task, Term, long[]> timing;
 
 
 
-    public final Activator linked = new Activator(true);
-
-
-    @Deprecated private static final AtomicInteger serial = new AtomicInteger();
-
-    public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
 
     protected final DeriverRules rules;
 
@@ -67,20 +56,12 @@ abstract public class Deriver extends Causable {
     protected final Consumer<Predicate<Activate>> source;
 
 
-
-//    private Deriver(NAR nar, String... rules) {
-//        this(new PremiseDeriverRuleSet(nar, rules));
-//    }
-
     protected Deriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
         this(source, PremiseDeriverCompiler.the(rules), nar);
         if (rules.isEmpty())
             throw new RuntimeException("rules empty");
     }
 
-    private Deriver(PremiseDeriverRuleSet rules) {
-        this(rules.nar.attn, rules, rules.nar);
-    }
 
     protected Deriver(Attention attn, Set<PremiseRuleProto> rules, NAR nar) {
         this(attn::fire, rules, nar);
@@ -93,7 +74,7 @@ abstract public class Deriver extends Causable {
 
     private Deriver(Consumer<Predicate<Activate>> source, DeriverRules rules, NAR nar) {
         super(
-            $.func("deriver", $.the(serial.getAndIncrement())) 
+                $.func("deriver", $.the(serial.getAndIncrement()))
         );
         this.rules = rules;
         this.source = source;
@@ -110,74 +91,32 @@ abstract public class Deriver extends Causable {
         return n.services().filter(Deriver.class::isInstance).map(Deriver.class::cast);
     }
 
-    @Override
-    protected void starting(NAR nar) {
-        super.starting(nar);
-        on(DurService.on(nar, this::update));
-    }
 
-    /** updated each dur */
-    private void update() {
-
-        budgeting.update(this, nar);
-
-    }
 
     @Override
     protected final void next(NAR n, final BooleanSupplier kontinue) {
 
-        derive(Deriver.derivation.get().next(n, this), kontinue);
+        derive(Derivation.derivation.get().next(n, this), kontinue);
 
-        linked.commit(nar);
     }
-
 
 
     abstract protected void derive(Derivation d, BooleanSupplier kontinue);
 
 
 
-    public static void commit(Derivation d, Concept concept, Bag<?, TaskLink> tasklinks) {
 
-
-        int dur = d.dur;
-
-        Consumer<TaskLink> tasklinkUpdate;
-
-        long curTime = d.time;
-        Long prevCommit = concept.meta("C", curTime);
-        if (prevCommit!=null) {
-            if (curTime - prevCommit > 0) {
-
-                double deltaDurs = ((double) (curTime - prevCommit)) / dur;
-
-                //deltaDurs = Math.min(deltaDurs, 1);
-
-                float forgetRate = (float) (1 - Math.exp(-deltaDurs / d.nar.memoryDuration.doubleValue()));
-
-                //System.out.println(deltaDurs + " " + forgetRate);
-                tasklinkUpdate = tasklinks.forget(forgetRate);
-
-            } else {
-                //dont need to commit, it already happened in this cycle
-                return;
-            }
-        } else {
-            tasklinkUpdate = null;
-
-        }
-
-        tasklinks.commit(tasklinkUpdate);
-
-    }
-
-    /** punctuation equalizer: value factor for the conclusion punctuation type [0..1.0] */
+    /**
+     * punctuation equalizer: value factor for the conclusion punctuation type [0..1.0]
+     */
     public final float preAmp(byte concPunc) {
-        return budgeting.preAmp(concPunc);
+        return nar.budget.deriving.preAmp(concPunc);
     }
 
 
-    /** unifier TTL used for matching in premise formation */
+    /**
+     * unifier TTL used for matching in premise formation
+     */
     protected int matchTTL() {
         return nar.matchTTL.intValue();
     }
@@ -202,6 +141,10 @@ abstract public class Deriver extends Causable {
         //return Math.round((nar.dur() * (1/(1- sustain.floatValue()))));
         return nar.dur();
     }
+
+    @Deprecated
+    private static final AtomicInteger serial = new AtomicInteger();
+
 }
 
 

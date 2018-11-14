@@ -27,7 +27,8 @@ public class ZipperDeriver extends Deriver {
     public final IntRange tasklinksPerConcept = new IntRange(2, 1, 32);
     public final IntRange termlinksPerConcept = new IntRange(2, 1, 32);
 
-    final BiFunction<Concept, Derivation, BeliefSource.LinkModel> linking;
+    /** TODO refactor */
+    @Deprecated final BiFunction<Concept, Derivation, BeliefSource.LinkModel> hypothesizer;
 
     public ZipperDeriver(PremiseDeriverRuleSet rules) {
         this(rules.nar.attn::fire, rules);
@@ -38,9 +39,9 @@ public class ZipperDeriver extends Deriver {
     }
 
     public ZipperDeriver(Consumer<Predicate<Activate>> source, PremiseDeriverRuleSet rules,
-                         BiFunction<Concept, Derivation, BeliefSource.LinkModel> linking) {
+                         BiFunction<Concept, Derivation, BeliefSource.LinkModel> hypothesizer) {
         super(source, rules);
-        this.linking = linking;
+        this.hypothesizer = hypothesizer;
     }
 
 
@@ -56,10 +57,11 @@ public class ZipperDeriver extends Deriver {
 
             Concept concept = a.get();
 
+            nar.budget.forgetting.update(concept, nar);
 
-            BeliefSource.LinkModel model = linking.apply(concept, d);
+            BeliefSource.LinkModel model = hypothesizer.apply(concept, d);
 
-            d.firedTaskLinks.clear();
+            d.firedTasks.clear();
             ArrayHashSet<TaskLink> fired = model.tasklinks(tasklinksPerConcept.intValue(), d.firedTaskLinks);
             Supplier<Term> beliefTerms = model.beliefTerms();
 

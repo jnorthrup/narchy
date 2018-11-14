@@ -41,6 +41,10 @@
      (G && B), B, task("@") |-  (G ==> B), (Punctuation:Question)
      (G && B), B, task("@") |-  (--G ==> B), (Punctuation:Question)
 
+//inverted condition question/quest
+    (&&,   X, A..*), X  |- (&&, --X, A..*), (Punctuation:Ask)
+    (&&, --X, A..*), X  |- (&&,   X, A..*), (Punctuation:Ask)
+
 //--
 
 //    X, Y, task("!") |-          (polarize(Y,belief) ==> X), (Punctuation:Question, Time:Relative)

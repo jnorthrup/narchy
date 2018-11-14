@@ -21,7 +21,7 @@ abstract public class TaskBuffer  {
 
     public abstract Task add(Task x);
 
-    public abstract void commit(NAR n);
+    public abstract void update(NAR n);
 
     /** known or estimated number of tasks present */
     abstract public int size();
@@ -104,7 +104,7 @@ abstract public class TaskBuffer  {
         }
 
         @Override
-        public void commit(NAR n) {
+        public void update(NAR n) {
             Iterator<Task> ii = tasks.values().iterator();
             while (ii.hasNext()) {
                 n.input(ii.next());
@@ -204,7 +204,7 @@ abstract public class TaskBuffer  {
         }
 
         @Override
-        public void commit(NAR nar) {
+        public void update(NAR nar) {
 
             tasks.setCapacity(capacity.intValue());
 

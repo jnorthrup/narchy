@@ -10,6 +10,8 @@ import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
+import nars.Task;
+import nars.budget.Activator;
 import nars.concept.Concept;
 import nars.derive.Derivation;
 import nars.subterm.Subterms;
@@ -307,7 +309,7 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
     public void link(Activate a, Derivation d) {
 
 
-        if (conceptualizeAndTermLink(a, d) > 0) {
+        if (conceptualizeAndTermLink(d) > 0) {
 
             List<Concept> firedConcepts = d.firedConcepts.list;
 
@@ -316,20 +318,22 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
 
             if (!firedConcepts.isEmpty()) {
 
-                List<TaskLink> links = d.firedTaskLinks.list;
-                int n = links.size();
+                List<Task> taskedLinked = d.firedTasks.list;
+                int n = taskedLinked.size();
                 if (n > 0) {
 
                     OverflowDistributor<Bag> overflow = n > 1 ? new OverflowDistributor<>() : null;
 
+                    NAR nar = d.nar;
                     for (int i = 0; i < n; i++) {
 
-                        TaskLink link = links.get(i);
+                        Task t = taskedLinked.get(i);
+                        TaskLink tt = TaskLink.tasklink(t, 0 /* cloned */, nar);
 
-                        TaskLink.link(link, link.priElseZero() * tasklinkSpreadRate, firedConcepts, overflow);
+                        TaskLink.link(tt, t.priElseZero() * tasklinkSpreadRate, firedConcepts, overflow);
 
                         if (overflow != null) {
-                            overflow.shuffle(d.random).redistribute((b, p) -> b.putAsync(link.clone(p)));
+                            overflow.shuffle(d.random).redistribute((b, p) -> b.putAsync(tt.clone(p)));
                             overflow.clear();
                         }
 
@@ -348,7 +352,7 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
     }
 
 
-    private int conceptualizeAndTermLink(Activate conceptSrc, Derivation d) {
+    private int conceptualizeAndTermLink(Derivation d) {
 
 
         int n = concepts;
@@ -361,12 +365,12 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
 
         n = Math.min(n, Param.LinkFanoutMax);
 
-        float taskLinkPriSum = Math.max(ScalarValue.EPSILON, (float) (((FasterList<TaskLink>) (d.firedTaskLinks.list))
+        float taskPriSum = Math.max(ScalarValue.EPSILON, (float) (((FasterList<Task>) (d.firedTasks.list))
                 .sumOfFloat(Prioritized::priElseZero)));
 
         float conceptActivationEach =
                 //(activationRate * conceptSrc.priElseZero()) / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
-                taskLinkPriSum / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
+                taskPriSum / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
 
 
 //            float balance = nar.termlinkBalance.floatValue();
@@ -382,10 +386,10 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
 
 //            NumberX refund = new MutableFloat(0);
 
-        Activator linking = d.deriver.linked;
 //            Term srcTerm = src.term();
 
         NAR nar = d.nar;
+        Activator linking = nar.budget.linking;
 
         int j = n > 1 ? d.random.nextInt(n) : 0; //random starting position
         boolean inc = n <= 1 || d.random.nextBoolean();

@@ -33,7 +33,8 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
     /** main tasklink constructor */
     static TaskLink tasklink(Task task, float pri, NAR n) {
 
-        pri = pri * n.taskLinkActivation.floatValue();
+        if (pri > 0)
+            pri = pri * n.taskLinkActivation.floatValue();
 
 //        if (task instanceof SignalTask) {
 //            return new DirectTaskLink(task, pri);
@@ -85,7 +86,8 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 
         for (Concept c : targets) {
 
-            TaskLink tl = tasklink.clone(pEach);
+            TaskLink tl =
+                    tasklink.clone(pEach);
             if (tl!=null) {
                 link(tl, c.tasklinks(), overflow);
             }

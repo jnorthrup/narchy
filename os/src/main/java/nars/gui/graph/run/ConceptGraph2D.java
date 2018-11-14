@@ -1,5 +1,6 @@
 package nars.gui.graph.run;
 
+import com.google.common.collect.Iterables;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
 import nars.NAR;
@@ -8,6 +9,7 @@ import nars.control.DurService;
 import nars.gui.NARui;
 import nars.term.ProxyTerm;
 import nars.term.Term;
+import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.graph.Graph2D;
@@ -20,13 +22,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.Op.*;
 
-/** TODO edge capacity limiting */
-public class ConceptGraph2D extends Graph2D<Concept> {
+/**
+ * TODO edge capacity limiting
+ */
+public class ConceptGraph2D extends Graph2D<Term> {
 
     private final NAR nar;
     private DurService on;
 
-    Iterable<Concept> source;
+    Iterable<Term> source;
 
 
     public class Controls {
@@ -35,30 +39,27 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 
     public final Controls controls = new Controls();
 
-    public ConceptGraph2D(Iterable<Concept> source, NAR n) {
+    public ConceptGraph2D(Iterable<? extends Termed> source, NAR n) {
         super();
 
         this.nar = n;
-        this.source = source;
+        this.source = Iterables.transform(source, Termed::term);
 
-        build((nn)->{
-           nn.set(
-               new Scale(
-                   new PushButton(new VectorLabel(nn.id.toString()))
-                       .click(()-> {
-                           Concept t = nn.id;
-                           if (t!=null)
-                            NARui.conceptWindow(t, nar);
-                       }),
-                0.8f
-               )
-           );
-        });
+        build(nn -> nn.set(
+                new Scale(
+                        new PushButton(new VectorLabel(nn.id.toString())).click(() -> {
+                                    Term t = nn.id;
+                                    if (t != null)
+                                        NARui.conceptWindow(t, nar);
+                                }),
+                        0.8f
+                )
+        ));
 
         this.update(getLayout())
 //        layout(new TreeMap2D<>() {
 //            @Override
-//            public void layout(Graph2D<Concept> g, int dtMS) {
+//            public void layout(Graph2D<Term> g, int dtMS) {
 //
 //                g.forEachValue(nn -> {
 //                    if (nn.showing())
@@ -69,7 +70,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 //        })
                 .render(
                         Graph2D.InvalidateEdges,
-  //                      new TermlinkVis(n),
+                        //                      new TermlinkVis(n),
                         new SubtermVis(n),
                         new TasklinkVis(n),
                         new StatementVis(n)
@@ -77,20 +78,20 @@ public class ConceptGraph2D extends Graph2D<Concept> {
     }
 
 
-    public Graph2DUpdater<Concept> getLayout() {
+    public Graph2DUpdater<Term> getLayout() {
         return new ForceDirected2D<>() {
 
             @Override
-            public void init(Graph2D<Concept> g, NodeVis<Concept> newNode) {
+            public void init(Graph2D<Term> g, NodeVis<Term> newNode) {
                 updateNode(newNode);
                 super.init(g, newNode);
             }
 
             @Override
-            public void update(Graph2D<Concept> g, int dtMS) {
+            public void update(Graph2D<Term> g, int dtMS) {
 
                 g.forEachValue(nn -> {
-                        updateNode(nn);
+                    updateNode(nn);
                 });
 
                 super.update(g, dtMS);
@@ -99,9 +100,9 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         };
     }
 
-    void updateNode(NodeVis<Concept> nn) {
-        Concept i = nn.id;
-        if (i!=null && nn.visible()) {
+    void updateNode(NodeVis<Term> nn) {
+        Term i = nn.id;
+        if (i != null && nn.visible()) {
 
             float pri = Math.max(nar.attn.pri(i, 0f), ScalarValue.EPSILON);
 
@@ -111,12 +112,13 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         }
     }
 
-    /** updates the source */
-    public ConceptGraph2D source(Iterable<Concept> source) {
+    /**
+     * updates the source
+     */
+    public ConceptGraph2D source(Iterable<Term> source) {
         this.source = source;
         return this;
     }
-
 
 
     @Override
@@ -145,15 +147,11 @@ public class ConceptGraph2D extends Graph2D<Concept> {
     }
 
 
-
-
-
-
-    final static float WEIGHT_UPDATE_RATE = 0.1f;
+    final static float WEIGHT_UPDATE_RATE = 0.5f;
     final static float COLOR_UPDATE_RATE = 0.5f;
     final static float COLOR_FADE_RATE = 0.05f;
 
-//    private static class TermlinkVis implements Graph2DRenderer<Concept> {
+//    private static class TermlinkVis implements Graph2DRenderer<Term> {
 //        public final AtomicBoolean termlinks = new AtomicBoolean(true);
 //        final NAR n;
 //
@@ -162,14 +160,14 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 //        }
 //
 //        @Override
-//        public void node(NodeVis<Concept> node, GraphEditing<Concept> graph) {
+//        public void node(NodeVis<Term> node, GraphEditing<Term> graph) {
 //            if (!termlinks.get())
 //                return;
 //
 //            Concept id = node.id;
 //            if (id!=null) {
 //                id.termlinks().forEach(l -> {
-//                    Graph2D.EdgeVis<Concept> e = graph.edge(node, wrap(l.get()));
+//                    Graph2D.EdgeVis<Term> e = graph.edge(node, wrap(l.get()));
 //                    if (e != null) {
 //                        float p = l.priElseZero();
 //                        e.weightLerp(p, WEIGHT_UPDATE_RATE)
@@ -183,15 +181,17 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 //        }
 //    }
 
-    /** bad HACK to avoid a term/concept equality issue */
-    @Deprecated public static ProxyTerm wrap(Term l) {
+    /**
+     * bad HACK to avoid a term/concept equality issue
+     */
+    @Deprecated
+    public static ProxyTerm wrap(Term l) {
         return new ProxyTerm(l);
     }
 
-    private static class TasklinkVis implements Graph2D.Graph2DRenderer<Concept> {
+    private static class TasklinkVis implements Graph2D.Graph2DRenderer<Term> {
         public final AtomicBoolean tasklinks = new AtomicBoolean(true);
         final NAR n;
-
 
 
         private TasklinkVis(NAR n) {
@@ -199,25 +199,24 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         }
 
         @Override
-        public void node(NodeVis<Concept> node, GraphEditing<Concept> graph) {
+        public void node(NodeVis<Term> node, GraphEditing<Term> graph) {
             if (!tasklinks.get())
                 return;
-            Concept n = node.id;
-            if (n==null)
-                return;
+            Term t = node.id;
+            if (t == null) return;
+            Concept c = n.concept(t);
+            if (c != null) {
+                c.tasklinks().forEach(l -> {
 
-//            Term sourceTerm = n.term();
-            n.tasklinks().forEach(l -> {
-
-                Term targetTerm = l.term();
+                    Term targetTerm = l.term();
 //                if (targetTerm.equals(sourceTerm.term()))
 //                    return; //ignore
 
-                Graph2D.EdgeVis<Concept> e = graph.edge(node, wrap(targetTerm));
-                if (e != null) {
-                    float p = l.priElseZero();
-                    e.weightLerp(p, WEIGHT_UPDATE_RATE);
-                    int r, g, b;
+                    Graph2D.EdgeVis<Term> e = graph.edge(node, wrap(targetTerm));
+                    if (e != null) {
+                        float p = l.priElseZero();
+                        e.weightLerp(p, WEIGHT_UPDATE_RATE);
+                        int r, g, b;
                     /*
                     https://www.colourlovers.com/palette/848743/(_%E2%80%9D_)
                     BELIEF   Red     189,21,80
@@ -225,28 +224,46 @@ public class ConceptGraph2D extends Graph2D<Concept> {
                     GOAL     Green   138,155,15
                     QUEST    Yellow  248,202,0
                     */
-                    switch (l.punc()) {
-                        case BELIEF: r = 189; g = 21; b = 80; break;
-                        case QUESTION: r = 233; g = 127; b = 2; break;
-                        case GOAL: r = 138; g = 155; b = 15; break;
-                        case QUEST: r = 248; g = 202; b = 0; break;
-                        default:
-                            throw new UnsupportedOperationException();
+                        switch (l.punc()) {
+                            case BELIEF:
+                                r = 189;
+                                g = 21;
+                                b = 80;
+                                break;
+                            case QUESTION:
+                                r = 233;
+                                g = 127;
+                                b = 2;
+                                break;
+                            case GOAL:
+                                r = 138;
+                                g = 155;
+                                b = 15;
+                                break;
+                            case QUEST:
+                                r = 248;
+                                g = 202;
+                                b = 0;
+                                break;
+                            default:
+                                throw new UnsupportedOperationException();
+                        }
+                        e//.colorLerp(0,0,0,COLOR_FADE_RATE).colorAdd
+                                .colorLerp
+                                        (r / 256f, g / 256f, b / 256f, COLOR_UPDATE_RATE);
+
+
                     }
-                    e//.colorLerp(0,0,0,COLOR_FADE_RATE).colorAdd
-                     .colorLerp
-                             (r/256f, g/256f, b/256f, COLOR_UPDATE_RATE);
 
-
-                }
-
-            });
+                });
+            }
 
         }
     }
 
-    private class SubtermVis implements Graph2D.Graph2DRenderer<Concept> {
-        public final AtomicBoolean subterms = new AtomicBoolean(true);
+    private class SubtermVis implements Graph2D.Graph2DRenderer<Term> {
+
+        public final AtomicBoolean subterms = new AtomicBoolean(false);
 
         public final FloatRange strength = new FloatRange(0.1f, 0, 1f);
 
@@ -257,37 +274,36 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         }
 
         @Override
-        public void node(NodeVis<Concept> node, GraphEditing<Concept> graph) {
+        public void node(NodeVis<Term> node, GraphEditing<Term> graph) {
             if (!subterms.get())
-                return;
-            Concept n = node.id;
-            if (n==null)
                 return;
 
             float p = strength.floatValue();
 
-            int v = n.volume();
-            n.linker().targets().forEach(s -> {
-                if (s.op().conceptualizable) {
-                    Concept t = nar.concept(s);
-                    if (t!=null) {
-                        @Nullable EdgeVis<Concept> e = graph.edge(n, t);
-                        if (e!=null) {
-                            e.weightLerp(p, WEIGHT_UPDATE_RATE)
-                                    .colorAdd(p, p, p, COLOR_UPDATE_RATE/v)
-                                    .colorLerp(0,0,0,COLOR_FADE_RATE/v);
+            Term t = node.id;
+            if (t == null) return;
+            Concept c = n.concept(t);
+            if (c != null) {
+
+                c.linker().targets().forEach(s -> {
+                    if (s.op().conceptualizable) {
+                        if (t != null) {
+                            int v = t.volume();
+                            @Nullable EdgeVis<Term> e = graph.edge(node, s.term());
+                            if (e != null) {
+                                e.weightLerp(p, WEIGHT_UPDATE_RATE)
+                                        .colorAdd(p, p, p, COLOR_UPDATE_RATE / v);
+                            }
                         }
                     }
-                }
-            });
+                });
 
 
-
+            }
         }
     }
 
-
-    private static class StatementVis implements Graph2DRenderer<Concept> {
+    private static class StatementVis implements Graph2DRenderer<Term> {
         public final AtomicBoolean statements = new AtomicBoolean(true);
         final NAR n;
 
@@ -296,27 +312,28 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         }
 
         @Override
-        public void node(NodeVis<Concept> node, GraphEditing<Concept> graph) {
+        public void node(NodeVis<Term> node, GraphEditing<Term> graph) {
 
             if (!statements.get())
                 return;
 
-            Concept t = node.id;
-
-            if (t!=null && t.op().statement) {
-
-                @Nullable EdgeVis<Concept> e = graph.edge((t.sub(0)), (t.sub(1)));
+            Term t = node.id;
+            if (t.op().statement) {
+                Term subj = t.sub(0);
+                Term pred = t.sub(1);
+                @Nullable EdgeVis<Term> e = graph.edge(subj, pred);
                 if (e != null) {
                     float p = 0.5f;
                     e.weightLerp(p, WEIGHT_UPDATE_RATE)
                             .colorLerp(Float.NaN, Float.NaN, (0.9f * p) + 0.1f, COLOR_UPDATE_RATE)
-                            .colorLerp(0,0,Float.NaN,COLOR_FADE_RATE)
                     ;
                 }
 
+//                }
             }
-
         }
+
     }
+
 
 }

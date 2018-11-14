@@ -24,39 +24,38 @@ public class BeliefSource {
     /**
      * termlinks sampled from the derived concept
      */
-    public static final BiFunction<Concept, Derivation, LinkModel> ConceptTermLinker = (c, d) -> new LinkModel() {
+    public static final BiFunction<Concept, Derivation, LinkModel> ConceptTermLinker = (c, d) -> {
 
-        private final Random rng = d.random;
+        return new LinkModel() {
 
-        {
-            Deriver.commit(d, c, c.tasklinks());
-        }
+            private final Random rng = d.random;
 
-        @Override
-        public ArrayHashSet<TaskLink> tasklinks(int max, ArrayHashSet<TaskLink> buffer) {
+            @Override
+            public ArrayHashSet<TaskLink> tasklinks(int max, ArrayHashSet<TaskLink> buffer) {
 
-            Bag<?, TaskLink> tl = c.tasklinks();
-            tl.sample(rng, Math.min(max, tl.size()), x -> {
-                if (x!=null) buffer.add(x);
-            });
+                Bag<?, TaskLink> tl = c.tasklinks();
+                tl.sample(rng, Math.min(max, tl.size()), x -> {
+                    if (x != null) buffer.add(x);
+                });
 
-            return buffer;
+                return buffer;
 
-        }
-
-        @Override
-        public Supplier<Term> beliefTerms() {
-//            Sampler<PriReference<Term>> ct = c.termlinks();
-//            return () -> {
-//                @Nullable PriReference<Term> t = ct.sample(rng);
-//                return t != null ? t.get() : null;
-//            };
-            if (c.term().op().atomic) {
-                return ()-> c.tasklinks().sample(rng).term();
-            } else {
-                return ()->c.linker().sample(rng);
             }
-        }
+
+            @Override
+            public Supplier<Term> beliefTerms() {
+    //            Sampler<PriReference<Term>> ct = c.termlinks();
+    //            return () -> {
+    //                @Nullable PriReference<Term> t = ct.sample(rng);
+    //                return t != null ? t.get() : null;
+    //            };
+                if (c.term().op().atomic) {
+                    return () -> c.tasklinks().sample(rng).term();
+                } else {
+                    return () -> c.linker().sample(rng);
+                }
+            }
+        };
     };
     /**
      * virtual termlinks sampled from concept index
@@ -65,10 +64,6 @@ public class BeliefSource {
 
         final NAR n = d.nar;
         final Random rng = d.random;
-
-        {
-            Deriver.commit(d, c, c.tasklinks());
-        }
 
         @Override
         public ArrayHashSet<TaskLink> tasklinks(int max, ArrayHashSet<TaskLink> buffer) {
@@ -127,12 +122,7 @@ public class BeliefSource {
     public static BiFunction<Concept, Derivation, LinkModel> ListTermLinker(List<Term> terms) {
         return (c, d) -> new LinkModel() {
 
-            final NAR n = d.nar;
             final Random rng = d.random;
-
-            {
-                Deriver.commit(d, c, c.tasklinks());
-            }
 
             @Override
             public ArrayHashSet<TaskLink> tasklinks(int max, ArrayHashSet<TaskLink> buffer) {

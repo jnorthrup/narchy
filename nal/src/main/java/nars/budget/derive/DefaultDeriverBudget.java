@@ -1,11 +1,11 @@
-package nars.derive.budget;
+package nars.budget.derive;
 
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
 import nars.Task;
 import nars.derive.Derivation;
-import nars.derive.DeriverBudgeting;
+import nars.budget.DeriverBudget;
 import nars.truth.Truth;
 
 import static nars.truth.TruthFunctions.w2cSafe;
@@ -13,7 +13,7 @@ import static nars.truth.TruthFunctions.w2cSafe;
 /**
  * TODO parameterize, modularize, refactor etc
  */
-public class DefaultDeriverBudgeting implements DeriverBudgeting {
+public class DefaultDeriverBudget implements DeriverBudget {
 
     /**
      * master derivation gain factor

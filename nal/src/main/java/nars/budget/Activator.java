@@ -1,9 +1,10 @@
-package nars.link;
+package nars.budget;
 
 import jcog.pri.OverflowDistributor;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
+import nars.link.Activate;
 import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.term.Term;
@@ -71,7 +72,7 @@ public class Activator extends AbstractTask {
         return x;
     }
 
-    public void commit(NAR n) {
+    public void update(NAR n) {
         //if (!isEmpty()) {
             //deferred
         if (deferredOrInline) {

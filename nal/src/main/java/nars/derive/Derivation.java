@@ -57,6 +57,7 @@ import static nars.truth.TruthFunctions.w2cSafe;
  */
 public class Derivation extends PreDerivation {
 
+    public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
     protected final static Logger logger = LoggerFactory.getLogger(Derivation.class);
 
     public static final Atomic Task = Atomic.the("task");
@@ -66,15 +67,8 @@ public class Derivation extends PreDerivation {
     private final static int ANON_INITIAL_CAPACITY = 16;
 
 
-//    //    private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
     public final SortedList<Premise> premiseBuffer =
-        new SortedList<>(1024);
-//            new ArrayHashSet<>(256) {
-//                @Override
-//                public Set<Premise> newSet() {
-//                    return new UnifiedSet<>(256, 0.99f);
-//                }
-//            };
+        new SortedList<>(256);
 
     public final AnonWithVarShift anon;
 
@@ -174,6 +168,7 @@ public class Derivation extends PreDerivation {
 
     /** temporary storage buffer for recently fired tasklinks */
     public final ArrayHashSet<TaskLink> firedTaskLinks = new ArrayHashSet<>(32);
+    public final ArrayHashSet<Task> firedTasks = new ArrayHashSet<>(32);
     /** temporary storage buffer for recently activated concepts */
     public final ArrayHashSet<Concept> firedConcepts = new ArrayHashSet<>(32);
 
@@ -478,7 +473,7 @@ public class Derivation extends PreDerivation {
         setTTL(ttl);
 
 
-        deriver.budgeting.premise(this);
+        nar.budget.deriving.premise(this);
 
         try {
             deriver.rules.run(this);
@@ -601,7 +596,7 @@ public class Derivation extends PreDerivation {
         premiseBuffer.clear();
 
         occ.clear();
-        firedTaskLinks.clear();
+        firedTasks.clear();
         firedConcepts.clear();
         _belief = null;
         _task = null;

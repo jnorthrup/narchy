@@ -1,20 +1,19 @@
-package nars.derive.budget;
+package nars.budget.derive;
 
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Task;
-import nars.derive.Deriver;
 
 import static nars.Op.*;
 
-public class DefaultPuncWeightedDeriverBudgeting extends DefaultDeriverBudgeting {
+public class DefaultPuncWeightedDeriverBudget extends DefaultDeriverBudget {
 
     /** cache of punctuation priorities */
     transient private float beliefPri, goalPri, questionPri, questPri;
 
 
     /** repurposes nar's default punctuation priorities (for input) as the derivation punctuation weighting */
-    @Override public void update(Deriver deriver, NAR nar) {
+    @Override public void update(NAR nar) {
 
         float beliefPri = nar.beliefPriDefault.floatValue();
         float goalPri = nar.goalPriDefault.floatValue();

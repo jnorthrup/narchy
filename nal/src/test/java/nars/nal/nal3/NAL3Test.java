@@ -88,7 +88,7 @@ public class NAL3Test extends NALTest {
 
     private TestNAR testDecomposeNegDiff(float freq, String known, String composed, String unknown) {
         test
-            //.logDebug()
+
             .believe(known, freq, 0.9f)
             .believe(composed, 0.0f, 0.9f)
         ;
@@ -128,7 +128,7 @@ public class NAL3Test extends NALTest {
     @Test
     void diff_compound_decomposition_single3() {
         TestNAR tester = test;
-        tester.log();
+
         tester.believe("<(dinosaur ~ ant) --> [strong]>", 0.9f, 0.9f);
         tester.mustBelieve(cycles, "<dinosaur --> [strong]>", 0.90f, 0.73f);
         tester.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.73f);

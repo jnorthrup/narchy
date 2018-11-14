@@ -1,10 +1,11 @@
-package nars.derive;
+package nars.budget;
 
 import nars.NAR;
 import nars.Task;
+import nars.derive.Derivation;
 
 /** stateless, storing any state information in the Derivation instance */
-public interface DeriverBudgeting {
+public interface DeriverBudget {
 
     /** called on new premise.  useful if an implementation wants to cache values that are common to all derivations of a premise  */
     default void premise(Derivation d) {
@@ -24,7 +25,7 @@ public interface DeriverBudgeting {
 
 
     /** allows deriver parameters to be updated.  called each duration */
-    default void update(Deriver deriver, NAR nar) {
+    default void update(NAR nar) {
 
     }
 

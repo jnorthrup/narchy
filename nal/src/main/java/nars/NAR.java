@@ -19,6 +19,8 @@ import jcog.service.Service;
 import jcog.service.Services;
 import jcog.util.TriConsumer;
 import nars.Narsese.NarseseException;
+import nars.budget.Budget;
+import nars.budget.impl.DefaultBudget;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.concept.PermanentConcept;
@@ -129,6 +131,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public Logger logger;
 
     public final Topic<Activate> eventActivate = new ListTopic();
+    public final Budget budget;
 
     public NAR(ConceptIndex concepts, Exec exe, Attention attn, Time time, Random rng, ConceptBuilder conceptBuilder) {
 
@@ -140,7 +143,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         named(Param.randomSelf());
 
-        onCycle(input::commit);
+
 
         this.exe = exe;
 
@@ -152,9 +155,15 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         Builtin.init(this);
 
         this.emotion = new Emotion(this);
+        this.budget = new DefaultBudget();
 
         this.attn = attn;
         this.on(attn);
+
+        onCycle((n)->{
+            input.update(n);
+            budget.update(n);
+        });
 
         this.loop = new NARLoop(this);
         exe.start(this);

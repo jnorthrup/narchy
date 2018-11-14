@@ -1,4 +1,4 @@
-package nars.derive.budget;
+package nars.budget.derive;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
@@ -6,17 +6,17 @@ import jcog.pri.Prioritized;
 import jcog.pri.ScalarValue;
 import nars.Task;
 import nars.derive.Derivation;
-import nars.derive.DeriverBudgeting;
+import nars.budget.DeriverBudget;
 
 /** wraps another DeriverBudgeting implementation and ensures that
  * the sum of the priorities of all a premise's derivation
  * dont exceed some function of the parent task priorities,
  * by normalizing the results in a batch
  */
-public class NormalizingDeriverBudgeting implements DeriverBudgeting {
+public class NormalizingDeriverBudget implements DeriverBudget {
 
     /** delegates basic budgeting operations to this impl */
-    final DeriverBudgeting base;
+    final DeriverBudget base;
 
 
     protected static class Batch extends FasterList<Task> {
@@ -41,7 +41,7 @@ public class NormalizingDeriverBudgeting implements DeriverBudgeting {
 
     final static ThreadLocal<Batch> batch = ThreadLocal.withInitial(Batch::new);
 
-    public NormalizingDeriverBudgeting(DeriverBudgeting base) {
+    public NormalizingDeriverBudget(DeriverBudget base) {
         this.base = base;
     }
 

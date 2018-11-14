@@ -5,6 +5,7 @@ import jcog.data.set.ArrayHashSet;
 import jcog.math.IntRange;
 import jcog.math.Range;
 import jcog.pri.bag.Bag;
+import jcog.pri.bag.Sampler;
 import jcog.sort.SortedList;
 import nars.NAR;
 import nars.Task;
@@ -16,6 +17,7 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.premise.PremiseRuleProto;
 import nars.link.Activate;
 import nars.link.TaskLink;
+import nars.task.Tasklike;
 import nars.term.Term;
 
 import java.util.Random;
@@ -139,18 +141,21 @@ public class BatchDeriver extends Deriver {
         if (tasklinks.isEmpty())
             return;
 
-        commit(d, concept, tasklinks);
+        nar.budget.forgetting.update(concept, nar);
 
         Random rng = d.random;
 
         Supplier<Term> beliefSrc;
         if (concept.term().op().atomic) {
-            beliefSrc = ()-> concept.tasklinks().sample(rng).term();
+            Bag<Tasklike, TaskLink> src = concept.tasklinks();
+            beliefSrc = ()->src.sample(rng).term();
         } else {
-            beliefSrc = ()->concept.linker().sample(rng);
+            Sampler<Term> src = concept.linker();
+            beliefSrc = ()->src.sample(rng);
         }
 
-        final ArrayHashSet<TaskLink> tasklinksFired = d.firedTaskLinks;
+
+        final ArrayHashSet<Task> tasklinksFired = d.firedTasks;
         tasklinksFired.clear();
 
 
@@ -167,7 +172,7 @@ public class BatchDeriver extends Deriver {
 
                 int[] premisesPerTaskLink = { _termlinksPerTasklink };
 
-                tasklinksFired.add(tasklink);
+                tasklinksFired.add(task);
 
                 do {
                     Term b = beliefSrc.get();
