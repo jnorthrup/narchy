@@ -61,6 +61,34 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
      */
     private final byte concepts;
 
+    /**
+     * create a batch of tasklinks, sharing common seed data
+     */
+    public static void link(TaskLink tasklink, float pri, List<Concept> targets, @Nullable OverflowDistributor<Bag> overflow) {
+        assert(!targets.isEmpty());
+
+//        float pEach = Math.max(ScalarValue.EPSILON,
+//                priTransferred / nTargets
+//        );
+        float pEach =
+                //TODO abstract priority transfer function here
+                //pri; //no division
+                pri/targets.size(); //division
+
+
+        for (Concept c : targets) {
+
+            TaskLink tl =
+                    tasklink.clone(pEach);
+            if (tl!=null) {
+                TaskLink.link(tl, c.tasklinks(), overflow);
+            }
+
+        }
+
+
+    }
+
 
     @Override
     public Stream<? extends Termed> targets() {
@@ -328,9 +356,9 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
                     for (int i = 0; i < n; i++) {
 
                         Task t = taskedLinked.get(i);
-                        TaskLink tt = TaskLink.tasklink(t, 0 /* cloned */, nar);
+                        TaskLink tt = TaskLink.tasklink(t, 0 /* cloned next */, nar);
 
-                        TaskLink.link(tt, t.priElseZero() * tasklinkSpreadRate, firedConcepts, overflow);
+                        link(tt, t.priElseZero() * tasklinkSpreadRate, firedConcepts, overflow);
 
                         if (overflow != null) {
                             overflow.shuffle(d.random).redistribute((b, p) -> b.putAsync(tt.clone(p)));

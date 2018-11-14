@@ -8,12 +8,10 @@ import jcog.pri.UnitPrioritizable;
 import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Task;
-import nars.concept.Concept;
 import nars.task.Tasklike;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -68,36 +66,6 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
             b.putAsync(x);
         }
     }
-
-    /**
-     * create a batch of tasklinks, sharing common seed data
-     */
-    static void link(TaskLink tasklink, float pri, List<Concept> targets, @Nullable OverflowDistributor<Bag> overflow) {
-        assert(!targets.isEmpty());
-
-//        float pEach = Math.max(ScalarValue.EPSILON,
-//                priTransferred / nTargets
-//        );
-        float pEach =
-                //TODO abstract priority transfer function here
-                pri; //no division
-                //pri/targets.size(); //division
-
-
-        for (Concept c : targets) {
-
-            TaskLink tl =
-                    tasklink.clone(pEach);
-            if (tl!=null) {
-                link(tl, c.tasklinks(), overflow);
-            }
-
-        }
-
-
-    }
-
-
 
 
     /** special tasklink for signals which can stretch and so their target time would not correspond well while changing */

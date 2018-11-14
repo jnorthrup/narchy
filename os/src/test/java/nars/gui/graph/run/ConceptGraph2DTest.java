@@ -16,17 +16,16 @@ class ConceptGraph2DTest {
         public static void main(String[] args) {
 
             NAR n = NARS.tmp(4);
-            n.termVolumeMax.set(12);
-            n.memoryDuration.set(2);
+            n.termVolumeMax.set(14);
 
 
             ConceptGraph2D g = BagregateConceptGraph2D.get(n);
 
-            SpaceGraph.window( new Windo(g.widget()), 1200, 800 );
+            SpaceGraph.window(g.widget(), 1200, 800 );
 
             new DeductiveMeshTest(n, 3,3);
 
-            n.startFPS(2f);
+            n.startFPS(1f);
         }
 
     }
