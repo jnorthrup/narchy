@@ -126,7 +126,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     public final Attention attn;
 
-    public volatile Logger logger;
+    public Logger logger;
 
     public final Topic<Activate> eventActivate = new ListTopic();
 

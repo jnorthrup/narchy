@@ -9,8 +9,8 @@ import spacegraph.space2d.container.collection.MutableArrayContainer;
  */
 public class Splitting<X extends Surface, Y extends Surface> extends MutableArrayContainer {
 
-    private volatile float split;
-    private volatile boolean vertical;
+    private float split;
+    private boolean vertical;
 
     public Splitting() {
         this(new EmptySurface(), new EmptySurface(), 0.5f, true);

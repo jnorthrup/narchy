@@ -53,9 +53,9 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
     S surface;
     public final JoglSpace space;
     private final float camZmin = 5;
-    private volatile float camZmax = 640000;
-    private volatile float camXmin = -1, camXmax = +1;
-    private volatile float camYmin = -1, camYmax = +1;
+    private float camZmax = 640000;
+    private float camXmin = -1, camXmax = +1;
+    private float camYmin = -1, camYmax = +1;
     private final float zoomMargin = 0.1f;
 
 

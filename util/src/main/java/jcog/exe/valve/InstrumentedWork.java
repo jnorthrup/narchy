@@ -36,8 +36,8 @@ public class InstrumentedWork<Who, What> extends Share<Who, What> implements Wor
     public final SynchronizedDescriptiveStatistics iterations = new SynchronizedDescriptiveStatistics(WINDOW);
 
 
-    transient public double valueNext;
-    transient public double valuePerSecond, valuePerSecondNormalized;
+    transient public double value;
+    transient public double valueRate, valueRateNormalized;
 
 
     public InstrumentedWork(AbstractWork<Who, What> work) {
@@ -117,7 +117,7 @@ public class InstrumentedWork<Who, What> extends Share<Who, What> implements Wor
 
     public String summary() {
         return super.toString() +
-                "{" + "valuePerSecond=" + Texts.n4(valuePerSecond) +
+                "{" + "valuePerSecond=" + Texts.n4(valueRate) +
                 ", " + "iterTimeMeanNS=" + Texts.timeStr(iterTimeNS.getMean())
                 //+ ", " + "itersMean=" + Texts.n4(iterations.getMean())
                 + "}";

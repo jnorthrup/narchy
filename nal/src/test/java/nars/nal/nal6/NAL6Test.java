@@ -214,7 +214,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination_conj() {
-        test.nar.termVolumeMax.set(3);
+        test.nar.termVolumeMax.set(7);
 
         TestNAR tester = test;
 
@@ -274,12 +274,15 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination5() {
-        test.nar.termVolumeMax.set(16);
+        test.nar.termVolumeMax.set(18d);
 
         TestNAR tester = test;
         tester.believe("({Tweety} --> [withWings])");
-        tester.believe("<(&&,($x --> [chirping]),<$x --> [withWings]>) ==> ($x --> bird)>");
-        tester.mustBelieve(cycles, "<<{Tweety} --> [chirping]> ==> <{Tweety} --> bird>>", 1.00f, 0.73f);
+        tester.believe("((($x --> [chirping]) && <$x --> [withWings]>) ==> ($x --> bird))");
+        tester.mustBelieve(cycles, "<<{Tweety} --> [chirping]> ==> <{Tweety} --> bird>>",
+                1.00f,
+                0.73f
+        );
 
     }
 
@@ -1035,9 +1038,9 @@ public class NAL6Test extends NALTest {
         //tests:
         // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
         test
-                .believe("(S ==> M)", 0.2f, 0.9f)
+                .believe("(S ==> M)", 0.6f, 0.9f)
                 .believe("((X && S) ==> M)", 0.7f, 0.9f)
-                .mustBelieve(cycles, "(X ==> M)", .3f, 0.45f)
+                .mustBelieve(cycles, "(X ==> M)", .3f, 0.45f) //some freq and conf, dunno
         ;
     }
     @Test void testDecomposeNegativeImplicationCommonConjunctionSubterm() {

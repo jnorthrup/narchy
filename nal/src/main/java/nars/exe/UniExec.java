@@ -1,6 +1,5 @@
 package nars.exe;
 
-import jcog.data.bit.AtomicMetalBitSet;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.event.Offs;
@@ -19,31 +18,23 @@ import java.util.function.Consumer;
 public class UniExec extends AbstractExec {
 
 
-    //new Focus.AERevaluator(new SplitMix64Random(1));
-    //new Focus.DefaultRevaluator();
-
-    final AtomicMetalBitSet sleeping = new AtomicMetalBitSet();
 
     public final ConcurrentFastIteratingHashMap<Causable, InstrumentedCausable> can = new ConcurrentFastIteratingHashMap<>(new InstrumentedCausable[0]);
 
-    protected static final int inputQueueCapacityPerThread = 1024;
+    static final int inputQueueCapacityPerThread = 1024;
 
     final MetalConcurrentQueue in;
-
-    static float timeSliceMomentum =
-            0;
-            //0.5f;
 
 
     final Sharing sharing = new Sharing();
     TimeSlicing cpu;
-    protected Offs ons = null;
+    Offs ons = null;
 
     public UniExec() {
         this(1, 1);
     }
 
-    protected UniExec(int concurrency, int concurrencyMax) {
+    UniExec(int concurrency, int concurrencyMax) {
         super(concurrency, concurrencyMax);
         in = new MetalConcurrentQueue(inputQueueCapacityPerThread * concurrencyMax());
     }
@@ -61,7 +52,7 @@ public class UniExec extends AbstractExec {
 
         public final Causable c;
 
-        public InstrumentedCausable(Causable c) {
+        InstrumentedCausable(Causable c) {
             super(new MyWork(c));
             this.c = c;
         }
@@ -79,7 +70,7 @@ public class UniExec extends AbstractExec {
 
         private final Causable c;
 
-        public MyWork(Causable c) {
+        MyWork(Causable c) {
             super(sharing.start(c), "CPU", 0.5f);
             this.c = c;
         }
@@ -138,7 +129,7 @@ public class UniExec extends AbstractExec {
         sharing.can(cpu = scheduler());
     }
 
-    protected TimeSlicing scheduler() {
+    TimeSlicing scheduler() {
         /* deprecated */ return new TimeSlicing<>("CPU", 1, nar.exe) {
             @Deprecated
             @Override
@@ -177,7 +168,7 @@ public class UniExec extends AbstractExec {
     }
 
 
-    protected void onCycle(NAR nar) {
+    void onCycle(NAR nar) {
 
         sync();
         nar.time.schedule(this::executeNow);
@@ -187,17 +178,17 @@ public class UniExec extends AbstractExec {
         );
     }
 
-    protected void sync() {
+    void sync() {
         Object next;
         while ((next = in.poll()) != null) executeNow(next);
     }
 
 
-    public boolean remove(Causable s) {
+    private boolean remove(Causable s) {
         return can.remove(s) != null;
     }
 
-    public void add(Causable s) {
+    private void add(Causable s) {
         InstrumentedCausable r = can.computeIfAbsent(s, InstrumentedCausable::new);
     }
 

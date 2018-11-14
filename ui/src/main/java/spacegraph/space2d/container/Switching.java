@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  */
 public class Switching extends Container {
 
-    private volatile int switched = -1;
+    private int switched = -1;
     private Surface current;
     private Supplier<Surface>[] states;
 

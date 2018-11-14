@@ -237,10 +237,12 @@ public interface Compound extends Term, IPair, Subterms {
             if (!Terms.commonStructureTest(xx, yy, u))
                 return false;
 
-            if (op().temporal) {
-                int xdt = x.dt();
+            Op o = op();
+            int xdt, ydt;
+            if (o.temporal) {
+                xdt = x.dt();
+                ydt = y.dt();
                 if (xdt != XTERNAL && xdt != DTERNAL) {
-                    int ydt = y.dt();
                     if (ydt!=xdt && ydt != XTERNAL && ydt != DTERNAL && !u.unifyDT(xdt,ydt)) {
                         return false;
                     }
@@ -249,6 +251,8 @@ public interface Compound extends Term, IPair, Subterms {
                 //compound equality would have been true if non-temporal
                 if (xx.equals(yy))
                     return true;
+            } else {
+                xdt = ydt = DTERNAL;
             }
 
 
@@ -263,8 +267,13 @@ public interface Compound extends Term, IPair, Subterms {
 //            }
 
 
-            if (isCommutative()) {
-                return xx.unifyCommute(yy, u);
+            if (o.commutative /* subs>1 */) {
+                if (o == CONJ && !dtSpecial(xdt)) {
+                    //assert(xs==2);
+                    return (xdt >= 0) == (ydt >= 0) ? xx.unifyLinear(yy, u) : xx.unifyLinear(yy.reversed(), u);
+                } else {
+                    return xx.unifyCommute(yy, u);
+                }
             } else { //TODO if temporal, compare in the correct order
                 return xx.unifyLinear(yy, u);
             }
@@ -333,10 +342,7 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     default boolean isCommutative() {
         Op op = op();
-        if (op == CONJ)
-            return dtSpecial(dt());
-        else
-            return op.commutative && subs() > 1;
+        return op == CONJ ? dtSpecial(dt()) : op.commutative && subs() > 1;
     }
 
 

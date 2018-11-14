@@ -132,7 +132,6 @@ public class Tetris extends NAgentX {
 
 
         NAgentX.runRT(n -> {
-            n.timeResolution.set(40);
             n.freqResolution.set(0.03f);
 
             new Arithmeticize.ArithmeticIntroduction(32, n);

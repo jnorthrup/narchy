@@ -12,7 +12,7 @@ abstract public class AbstractExec extends Exec {
 
     private final int concurrency, concurrencyMax;
 
-    public AbstractExec(int concurrency, int concurrencyMax) {
+    AbstractExec(int concurrency, int concurrencyMax) {
         super();
         this.concurrency = concurrency;
         this.concurrencyMax = concurrencyMax; //TODO this will be a value like Runtime.getRuntime().availableProcessors() when concurrency can be adjusted dynamically

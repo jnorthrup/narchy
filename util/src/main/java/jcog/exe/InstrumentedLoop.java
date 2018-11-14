@@ -21,7 +21,7 @@ abstract public class InstrumentedLoop extends Loop {
     public double cycleTimeS = 0;
 
     protected volatile long last;
-    protected volatile long beforeIteration;
+    protected long beforeIteration;
 
     @Override
     protected void beforeNext() {

@@ -91,8 +91,8 @@
     Y, (B ==> (&&,X,A..+)) |- subIfUnifiesAny((B ==> (&&,A..+)),X,Y), (Belief:Deduction)
     Y, (B ==> (&&,--X,A..+)) |- subIfUnifiesAny((B ==> (&&,A..+)),X,Y), (Belief:DeductionN)
 
-    Y, ((&&,X,A..+) ==> B) |- subIfUnifiesAny((X ==> B),X,Y), (Belief:Deduction)
-    Y, ((&&,--X,A..+) ==> B) |- subIfUnifiesAny((--X ==> B),X,Y), (Belief:DeductionN)
+//    Y, ((&&,X,A..+) ==> B) |- subIfUnifiesAny((X ==> B),X,Y), (Belief:Deduction)
+//    Y, ((&&,--X,A..+) ==> B) |- subIfUnifiesAny((--X ==> B),X,Y), (Belief:DeductionN)
 
         ((&&,M,X,A..*) ==> C), (Y ==> C) |- subIfUnifiesAny((M ==> C),X,Y), (Belief:AbductionPB)
         ((&&,M,A..+) ==> X), ((&&,A..+) ==> Y) |- subIfUnifiesAny((M ==> X),X,Y,"$"), (Belief:AbductionPB)

@@ -9,7 +9,6 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.agent.Reward;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.SwitchAction;
@@ -43,6 +42,7 @@ public class FZero extends NAgentX {
 
     public static final double DRAG = 0.98;
     private final FZeroGame fz;
+    private float progress;
     public Bitmap2DSensor c;
 
     float fwdSpeed = 7;
@@ -193,9 +193,11 @@ public class FZero extends NAgentX {
 //           System.out.println();
 //        });
 
+        //auto-restore health
+        FloatAveraged progressFilter = new FloatAveraged(0.8f);
 
-        FloatAveraged avgRR = new FloatAveraged(0.6f);
-        Reward rr = rewardNormalized("race", -1, +1, (() -> {
+        onFrame(()-> {
+
             double distance = fz.vehicleMetrics[0][1];
             double deltaDistance = (distance - lastDistance);
 
@@ -204,22 +206,42 @@ public class FZero extends NAgentX {
 
             fz.update();
 
-            float race =
+            progress = progressFilter.valueOf(
                     ((float)
                             //-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
-                            deltaDistance / (fps * 0.5f));
+                            deltaDistance / (fps * 0.5f))
+            );
 
 //        float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 0.2)) : -1f;
 
+
+        });
+
+
+        rewardNormalized("safety", 0, 1, ()->{
+            float damage = (float) (FZeroGame.FULL_POWER - fz.power) / FZeroGame.FULL_POWER;
             fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
+            return Util.equals(damage, 0, 0.01f) ? Float.NaN : 0; //Math.max(0, 1 - damage);
+        });
+        rewardNormalized("race", 0, +1, (() -> {
 
-            float bias =
-                    //0.25f;
-                    //0.01f;
-                    0f;
-            float R = race - bias;
+//            float bias =
+//                    //0.25f;
+//                    //0.01f;
+//                    0f;
+//            float R = progress - bias;
 
-            return avgRR.valueOf(R);
+            return Math.max(0, progress);
+        }));
+        rewardNormalized("efficient", 0, +1, (() -> {
+
+//            float bias =
+//                    //0.25f;
+//                    //0.01f;
+//                    0f;
+//            float R = progress - bias;
+
+            return Math.max(0, 1 + Math.min(progress, 0) - (fz.left ? 0.25f : 0) - (fz.right ? 0.25f : 0));
         }));
 
         //reward("noCollide", ()->fz.power >= FZeroGame.FULL_POWER- ScalarValue.EPSILON ? +1 : -1 ); //dont bump edges

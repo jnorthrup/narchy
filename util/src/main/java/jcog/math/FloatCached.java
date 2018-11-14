@@ -9,8 +9,8 @@ public class FloatCached implements FloatSupplier {
 
     final FloatSupplier in;
     final LongSupplier clock;
-    volatile float current = Float.NaN;
-    volatile long lastTime;
+    /*volatile*/ float current = Float.NaN;
+    /*volatile*/ long lastTime;
 
     public FloatCached(FloatSupplier in, LongSupplier clock) {
         this.in = in;

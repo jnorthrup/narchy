@@ -35,7 +35,7 @@ public enum Exe {;
             //HashedWheelTimer.WaitStrategy.YieldingWait,
             Exe::invoke);
 
-    private static volatile Executor executor = ForkJoinPool.commonPool();
+    private static Executor executor = ForkJoinPool.commonPool();
 
     public static HashedWheelTimer timer() {
         return timer;
@@ -119,7 +119,7 @@ public enum Exe {;
         }
     }
 
-    static volatile Profiler profiler = null;
+    static Profiler profiler = null;
 
     public static void setProfiler(@Nullable Profiler p) {
         profiler = p;

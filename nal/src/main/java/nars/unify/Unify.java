@@ -108,6 +108,9 @@ public abstract class Unify extends Versioning implements Subst {
 
     public final boolean tryMutate(Termutator[] chain, int next) {
 
+        if (!use(Param.TTL_MUTATE))
+            return false;
+
         if (++next < chain.length) {
 
             chain[next].mutate(this, chain, next);
@@ -116,7 +119,7 @@ public abstract class Unify extends Versioning implements Subst {
             tryMatch();
         }
 
-        return use(Param.TTL_MUTATE);
+        return ttl>0;
     }
 
 

@@ -52,7 +52,7 @@ public class Attention extends DurService implements Sampler<Concept> {
     /**
      * TODO abstract
      */
-    protected void activate(Activate a) {
+    private void activate(Activate a) {
         active.putAsync(a);
     }
 
@@ -78,7 +78,7 @@ public class Attention extends DurService implements Sampler<Concept> {
     protected void starting(NAR nar) {
 
 
-        ArrayBag<Term, Activate> arrayBag = new ArrayBag<>(
+        Bag<Term, Activate> arrayBag = new ArrayBag<>(
                 concepts,
                 Param.conceptMerge,
                 new HashMap<>(concepts * 2, 0.99f)

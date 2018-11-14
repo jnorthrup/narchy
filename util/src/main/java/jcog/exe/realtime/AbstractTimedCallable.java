@@ -10,7 +10,7 @@ abstract public class AbstractTimedCallable<T> extends AbstractTimedFuture<T> {
 
     private final Callable<T> callable;
     private volatile Object result = null;
-    protected volatile Status status = Status.PENDING;
+    protected /*volatile*/ Status status = Status.PENDING;
 
     protected AbstractTimedCallable(int rounds, Callable<T> callable) {
         super(rounds);

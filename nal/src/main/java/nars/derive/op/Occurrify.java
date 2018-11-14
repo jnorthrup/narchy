@@ -185,13 +185,15 @@ public class Occurrify extends TimeGraph {
 
         clear();
 
-        final Term taskTerm = d.taskTerm, beliefTerm = d.beliefTerm;
 
+
+
+        boolean beliefNoOcc = d.concSingle || !beliefOccurrence;
 
         long taskStart = taskOccurrence ? d.taskStart : TIMELESS,
                 taskEnd = taskOccurrence ? d.taskEnd : TIMELESS,
-                beliefStart = (!beliefOccurrence) ? TIMELESS : d.beliefStart,
-                beliefEnd = (!beliefOccurrence) ? TIMELESS : d.beliefEnd;
+                beliefStart = beliefNoOcc ? TIMELESS : d.beliefStart,
+                beliefEnd = beliefNoOcc ? TIMELESS : d.beliefEnd;
 
 
 
@@ -222,6 +224,7 @@ public class Occurrify extends TimeGraph {
 
         this.decomposeEvents = decomposeEvents;
 
+        final Term taskTerm = d.taskTerm, beliefTerm = d.beliefTerm;
         if (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG)) {
             setAutoNeg(pattern, taskTerm, beliefTerm);
         }

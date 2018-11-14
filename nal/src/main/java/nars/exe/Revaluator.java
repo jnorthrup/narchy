@@ -32,22 +32,22 @@ public interface Revaluator {
     class RBMRevaluator extends DefaultRevaluator {
 
         private final Random rng;
-        public double[] next;
+        double[] next;
 
         /**
          * learning iterations applied per NAR cycle
          */
-        public int learning_iters = 1;
+        int learning_iters = 1;
 
-        public double learning_rate = 0.05f;
+        double learning_rate = 0.05f;
 
-        public double[] cur;
-        public RBM rbm;
+        double[] cur;
+        RBM rbm;
         float rbmStrength = 0.25f;
         /**
          * hidden to visible neuron ratio
          */
-        private final float hiddenMultipler = 1f;
+        private final static float hiddenMultipler = 1f;
 
         public RBMRevaluator(Random rng) {
             super();
@@ -99,8 +99,8 @@ public interface Revaluator {
         private final Random rng;
 
 
-        public float learning_rate = 0.1f;
-        public Autoencoder ae;
+        float learning_rate = 0.1f;
+        Autoencoder ae;
         float NOISE = 0.01f;
         /**
          * hidden to visible neuron ratio; determines amount of dimensionality reduction
@@ -150,7 +150,7 @@ public interface Revaluator {
 
 
 
-        public final FloatRange momentum = FloatRange.unit(0f);
+        final FloatRange momentum = FloatRange.unit(0f);
 
         volatile long lastUpdate = ETERNAL;
         /**
@@ -221,14 +221,14 @@ public interface Revaluator {
                 ccc[i].setValue(post[i]);
         }
 
-        protected void resize(int causes) {
+        void resize(int causes) {
             val = new float[causes];
         }
 
         /**
          * subclasses can implement their own post-processing filter chain of the value vector
          */
-        protected float[] update(float[] val) {
+        float[] update(float[] val) {
             return val;
         }
 

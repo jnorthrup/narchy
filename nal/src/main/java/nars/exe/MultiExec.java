@@ -3,11 +3,11 @@ package nars.exe;
 import jcog.TODO;
 import jcog.Texts;
 import jcog.Util;
+import jcog.data.bit.AtomicMetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
 import jcog.exe.Exe;
-import jcog.exe.realtime.FixedRateTimedFuture;
 import jcog.exe.valve.InstrumentedWork;
 import jcog.exe.valve.TimeSlicing;
 import jcog.math.FloatRange;
@@ -28,22 +28,26 @@ import java.util.function.Consumer;
 abstract public class MultiExec extends UniExec {
 
 
-    public static final float inputQueueSizeSafetyThreshold = 0.9f;
+    private static final float inputQueueSizeSafetyThreshold = 0.9f;
     private final Revaluator revaluator;
+
+    final AtomicMetalBitSet sleeping = new AtomicMetalBitSet();
+
 
     /**
      * increasing the rate closer to 1 reduces the dynamic range of the temporal allocation
      */
     public final FloatRange explorationRate = FloatRange.unit(0.1f);
 
-    protected volatile long idleTimePerCycle;
+    protected long idleTimePerCycle;
 
     /** global sleep nap period */
     private static final long NapTime = 2 * 1000 * 1000; //on the order of ~1ms
 
-    float queueLatencyMeasurementProbability = 0.05f;
+    private final float queueLatencyMeasurementProbability = 0.05f;
+    private Runnable nextCycle;
 
-    public MultiExec(Revaluator revaluator, int concurrency  /* TODO adjustable dynamically */) {
+    MultiExec(Revaluator revaluator, int concurrency  /* TODO adjustable dynamically */) {
         super(concurrency, concurrency);
         this.revaluator = revaluator;
     }
@@ -56,7 +60,7 @@ abstract public class MultiExec extends UniExec {
             executeLater(x);
     }
 
-    public void executeLater(/*@NotNull */Object x) {
+    private void executeLater(/*@NotNull */Object x) {
 
         if (!in.offer(x)) {
             logger.warn("{} blocked queue on: {}", this, x);
@@ -68,7 +72,7 @@ abstract public class MultiExec extends UniExec {
 
     @Override
     public final void execute(Runnable r) {
-        if (r instanceof FixedRateTimedFuture && ((((FixedRateTimedFuture) r).run instanceof NARLoop))) {
+        if (r==nextCycle) {
             nextCycle(r);
         } else {
             executeLater(r);
@@ -87,7 +91,7 @@ abstract public class MultiExec extends UniExec {
         executeLater(r);
     }
 
-    protected void onDur() {
+    private void onDur() {
         revaluator.update(nar);
 
         if (nar.time instanceof RealTime) {
@@ -128,6 +132,7 @@ abstract public class MultiExec extends UniExec {
 
     @Override
     public void start(NAR n) {
+        this.nextCycle = n.loop.run;
         super.start(n);
         ons.add(DurService.on(n, this::onDur));
 
@@ -153,14 +158,16 @@ abstract public class MultiExec extends UniExec {
             }
 
             @Override
-            public synchronized TimeSlicing commit() {
+            public TimeSlicing commit() {
 
                 int n = size();
                 if (n == 0)
                     return this;
 
-                long accumEpsilon =
-                        1;
+                /** min time granularity */
+                long epsilonNS =
+                        1000 /* 1 uS */;
+
                 //nar.loop.cycleTimeNS / (n * 2);
 
                 double[] valMin = {Double.POSITIVE_INFINITY}, valMax = {Double.NEGATIVE_INFINITY};
@@ -178,41 +185,35 @@ abstract public class MultiExec extends UniExec {
                     }
 
                     double v = c.value();
-                    if (v == v) {
-                        s.valueNext = v;
-                        if (v > valMax[0]) valMax[0] = v;
-                        if (v < valMin[0]) valMin[0] = v;
-                    } else {
-                        s.valueNext = Double.NaN;
-                    }
+                    assert(v==v);
+
+                    s.value = v;
+                    if (v > valMax[0]) valMax[0] = v;
+                    if (v < valMin[0]) valMin[0] = v;
+
                 });
 
                 double valRange = valMax[0] - valMin[0];
 
 
+                int sleeping = MultiExec.this.sleeping.cardinality();
                 if (Double.isFinite(valRange) && Math.abs(valRange) > Double.MIN_NORMAL) {
 
                     final double[] valRateMin = {Double.POSITIVE_INFINITY}, valRateMax = {Double.NEGATIVE_INFINITY};
                     this.forEach((InstrumentedWork s) -> {
                         Causable c = (Causable) s.who;
-                        if (sleeping.get(c.scheduledID))
+                        if (MultiExec.this.sleeping.get(c.scheduledID))
                             return;
 
 //                            Causable x = (Causable) s.who;
                         //if (x instanceof Causable) {
 
-
-
-                        double value = s.valueNext;
-                        if (value != value)
-                            value = valMin[0];
-
-
-                        long accumTimeNS = Math.max(accumEpsilon, s.accumulatedTime(true));
-                        double valuePerSecondMS = (value / (accumTimeNS/1_000_000.0));
-                        s.valuePerSecond = valuePerSecondMS;
-                        if (valuePerSecondMS > valRateMax[0]) valRateMax[0] = valuePerSecondMS;
-                        if (valuePerSecondMS < valRateMin[0]) valRateMin[0] = valuePerSecondMS;
+                        long accumTimeNS = Math.max(epsilonNS, s.accumulatedTime(true));
+                        double accumTimeMS = accumTimeNS / 1_000_000.0;
+                        double valuePerMS = (s.value / accumTimeMS);
+                        s.valueRate = valuePerMS;
+                        if (valuePerMS > valRateMax[0]) valRateMax[0] = valuePerMS;
+                        if (valuePerMS < valRateMin[0]) valRateMin[0] = valuePerMS;
                     });
                     double valRateRange = valRateMax[0] - valRateMin[0];
                     if (Double.isFinite(valRateRange) && valRateRange > Double.MIN_NORMAL * n) {
@@ -223,33 +224,31 @@ abstract public class MultiExec extends UniExec {
 
                         forEach((InstrumentedWork s) -> {
                             Causable c = (Causable) s.who;
-                            if (sleeping.get(c.scheduledID)) {
-                                s.pri(0, 1-timeSliceMomentum);
+                            if (MultiExec.this.sleeping.get(c.scheduledID))
                                 return;
-                            }
 
-                            double v = s.valuePerSecond, vv;
+                            double v = s.valueRate, vv;
                             if (v == v) {
                                 vv = (v - valRateMin[0]) / valRateRange;
                             } else {
                                 vv = 0;
                             }
-                            s.valuePerSecondNormalized = vv;
+                            s.valueRateNormalized = vv;
                             valueRateSum[0] += vv;
                         });
 
                         if (valueRateSum[0] > Double.MIN_NORMAL) {
                             forEach((InstrumentedWork s) -> {
                                 Causable c = (Causable) s.who;
-                                if (sleeping.get(c.scheduledID))
+                                if (MultiExec.this.sleeping.get(c.scheduledID))
                                     return;
 
 
-                                float p = (float) (s.valuePerSecondNormalized / valueRateSum[0]);
+                                float p = (float) (s.valueRateNormalized / valueRateSum[0]);
                                 s.pri(
-                                        Util.lerp(explorationRate, p, 1f/n),
-                                        1-timeSliceMomentum
+                                        Util.lerp(explorationRate, p, 1f/(n- sleeping))
                                 );
+                                //System.out.println(s + " " + c);
                             });
 
                             return this;
@@ -259,10 +258,10 @@ abstract public class MultiExec extends UniExec {
                 }
 
                 /** flat */
-                float flatDemand = n > 1 ? (1f / (n-sleeping.cardinality())) : 1f;
+                float flatDemand = n > 1 ? (1f / (n- sleeping)) : 1f;
                 forEach((InstrumentedWork s) -> {
                     Causable c = (Causable) s.who;
-                    if (!sleeping.get(c.scheduledID))
+                    if (!MultiExec.this.sleeping.get(c.scheduledID))
                         s.pri(flatDemand);
                 });
 
@@ -309,7 +308,7 @@ abstract public class MultiExec extends UniExec {
 //
 //    }
 
-    protected boolean execute(FasterList b, int concurrency) {
+    public boolean execute(FasterList b, int concurrency) {
         //TODO sort, distribute etc
         int bn = b.size();
         if (bn == 0)
@@ -410,7 +409,7 @@ abstract public class MultiExec extends UniExec {
 
     public static class WorkerExec extends MultiExec {
 
-        public final int threads;
+        final int threads;
         final boolean affinity;
 
         final AffinityExecutor exe = new AffinityExecutor();
@@ -432,7 +431,7 @@ abstract public class MultiExec extends UniExec {
         /**
          * a lucky worker gets to execute the next NAR cycle when ready
          */
-        protected final boolean tryCycle() {
+        final boolean tryCycle() {
             Runnable r = narCycle.getAndSet(null);
             if (r != null) {
                 nar.run();
@@ -494,7 +493,7 @@ abstract public class MultiExec extends UniExec {
 
             final SplitMix64Random rng;
 
-            public Worker() {
+            Worker() {
                  rng = new SplitMix64Random((31L * System.identityHashCode(this)) + System.nanoTime());
             }
 
@@ -548,7 +547,7 @@ abstract public class MultiExec extends UniExec {
 
 
 
-                double granularity = Math.max(1, can.size() - sleeping.cardinality());
+                double granularity = Math.max(1, can.size());
 
                 //autojiffy
                 double jiffies = Math.max(1, granularity/(concurrency())) //((double)granularity) * Math.max(1, (granularity - 1)) / concurrency();
@@ -595,7 +594,7 @@ abstract public class MultiExec extends UniExec {
                 //}
             }
 
-            public void sleep() {
+            void sleep() {
                 long i = WorkerExec.this.idleTimePerCycle;
                 if (i > 0) {
 
@@ -604,14 +603,18 @@ abstract public class MultiExec extends UniExec {
             }
 
             @Override
-            public synchronized void off() {
-                alive = false;
+            public void off() {
+                if (alive) {
+                    synchronized (this) {
+                        alive = false;
 
-                //execute remaining tasks in callee's thread
-                schedule.removeIf(x -> {
-                    executeNow(x);
-                    return true;
-                });
+                        //execute remaining tasks in callee's thread
+                        schedule.removeIf(x -> {
+                            executeNow(x);
+                            return true;
+                        });
+                    }
+                }
             }
         }
 
@@ -625,7 +628,7 @@ abstract public class MultiExec extends UniExec {
 
         private final long start;
 
-        public QueueLatencyMeasurement(long start) {
+        QueueLatencyMeasurement(long start) {
             this.start = start;
         }
 

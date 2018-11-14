@@ -415,6 +415,8 @@ public class Builtin {
 //            return CONJ.the(t.dt(), s);
 //        }));
 
+        nar.on(Functor.f1Inline("unneg", Term::unneg));
+
         /** drops a random contained event, whether at first layer or below */
         nar.on(Functor.f1Inline("dropAnyEvent", (Term t) -> {
             Op oo = t.op();

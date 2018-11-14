@@ -1,16 +1,16 @@
 //Set Definition Unwrap
-    ({S} <-> {P}), {S} |- (S <-> P), (Belief:Identity, Time:Intersect)
-    ([S] <-> [P]), [S] |- (S <-> P), (Belief:Identity, Time:Intersect)
+    ({S} <-> {P}), {S} |- (S <-> P), (Belief:Identity)
+    ([S] <-> [P]), [S] |- (S <-> P), (Belief:Identity)
 
 //Nothing is more specific than a instance, so its similar
-    ({P} <-> S),  {P}  |- (S --> {P}), (Belief:Identity, Time:Intersect)
+    ({P} <-> S),  {P}  |- (S --> {P}), (Belief:Identity)
 
 //nothing is more general than a property, so its similar
-    ([S] <-> P),  [S]  |- ([S] --> P), (Belief:Identity, Time:Intersect)
+    ([S] <-> P),  [S]  |- ([S] --> P), (Belief:Identity)
 
 //single element unwrap (decomposition)
-    ({E} --> X),  {E}  |- (E --> X), (Belief:StructuralDeduction, Time:Intersect)
-    (X --> [I]),  [I]  |- (X --> I), (Belief:StructuralDeduction, Time:Intersect)
+    ({E} --> X),  {E}  |- (E --> X), (Belief:StructuralDeduction)
+    (X --> [I]),  [I]  |- (X --> I), (Belief:StructuralDeduction)
 
 //Set Composition
 

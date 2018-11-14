@@ -12,7 +12,7 @@ package nars.exe;
  * <p>
  * https:
  */
-public class Focus { //extends AtomicRoulette<Causable>
+class Focus { //extends AtomicRoulette<Causable>
 
 //    /** note: more granularity increases the potential dynamic range
 //     * (ratio of high to low prioritization). */

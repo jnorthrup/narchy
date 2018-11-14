@@ -90,7 +90,7 @@ public abstract class Param {
     public static final int EVALUATION_TTL = 64;
 
     /** within how many durations a difference in dt is acceptable for term unification */
-    public static final float UNIFY_DT_TOLERANCE_DUR_FACTOR = 0.5f;
+    public static final float UNIFY_DT_TOLERANCE_DUR_FACTOR = 1f;
 
 //    public static final boolean LINK_VARIABLE_UNIFIED_PREMISE = false;
 
@@ -245,7 +245,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 2;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 1;
 
 
     /**

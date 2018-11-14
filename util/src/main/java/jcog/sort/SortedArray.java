@@ -58,7 +58,7 @@ public class SortedArray<X> extends AbstractList<X> {
     public static final int BINARY_SEARCH_THRESHOLD = 3;
     private static final float GROWTH_RATE = 1.25f;
 
-    public volatile X[] items = (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
+    public /*volatile*/ X[] items = (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
 
     private static final AtomicIntegerFieldUpdater<SortedArray> SIZE =
             new MetalAtomicIntegerFieldUpdater(SortedArray.class, "size");
