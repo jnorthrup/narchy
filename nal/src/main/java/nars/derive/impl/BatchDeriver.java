@@ -42,7 +42,7 @@ public class BatchDeriver extends Deriver {
         }
     }
 
-    public final IntRange conceptsPerIteration = new IntRange(2, 1, 32);
+    public final IntRange conceptsPerIteration = new IntRange(3, 1, 32);
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
@@ -61,7 +61,7 @@ public class BatchDeriver extends Deriver {
     }
 
     public BatchDeriver(Set<PremiseRuleProto> rules, NAR nar) {
-        super(nar.attn, rules, nar);
+        super(nar.attn.concepts, rules, nar);
     }
 
     public BatchDeriver(Consumer<Predicate<Activate>> source, PremiseDeriverRuleSet rules) {
@@ -141,7 +141,7 @@ public class BatchDeriver extends Deriver {
         if (tasklinks.isEmpty())
             return;
 
-        nar.budget.forgetting.update(concept, nar);
+        nar.attn.forgetting.update(concept, nar);
 
         Random rng = d.random;
 
@@ -155,8 +155,10 @@ public class BatchDeriver extends Deriver {
         }
 
 
-        final ArrayHashSet<Task> tasklinksFired = d.firedTasks;
-        tasklinksFired.clear();
+        final ArrayHashSet<TaskLink> taskLinksFired = d.firedTaskLinks;
+        final ArrayHashSet<Task> tasksFired = d.firedTasks;
+        taskLinksFired.clear();
+        tasksFired.clear();
 
 
         int nTaskLinks = tasklinks.size();
@@ -172,7 +174,7 @@ public class BatchDeriver extends Deriver {
 
                 int[] premisesPerTaskLink = { _termlinksPerTasklink };
 
-                tasklinksFired.add(task);
+                tasksFired.add(task);
 
                 do {
                     Term b = beliefSrc.get();

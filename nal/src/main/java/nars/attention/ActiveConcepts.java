@@ -1,12 +1,12 @@
-package nars.exe;
+package nars.attention;
 
+import jcog.math.IntRange;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
-import nars.control.DurService;
 import nars.link.Activate;
 import nars.term.Term;
 import nars.term.Termed;
@@ -20,23 +20,30 @@ import java.util.stream.Stream;
 /**
  * default bag-based model
  */
-public class Attention extends DurService implements Sampler<Concept> {
+public class ActiveConcepts implements Sampler<Concept> {
+    public Bag<Term, Activate> active = Bag.EMPTY;
 
     /**
      * TODO make dynamicalyl adjustable thru MutableInteger etc
      */
-    private final int concepts;
+    public final IntRange capacity = new IntRange(0, 0, 2024) {
+        @Override
+        protected void changed() {
+            active.setCapacity(intValue());
+        }
+    };
 
-    public Bag<Term, Activate> active = Bag.EMPTY;
+    private NAR nar;
 
 
-    public Attention(int concepts) {
-        super((NAR) null);
-
-        this.concepts = concepts;
+    public ActiveConcepts() {
+        super();
+    }
+    public ActiveConcepts(int initialCapacity) {
+        this();
+        setCapacity(initialCapacity);
     }
 
-    @Override
     public void clear() {
         active.clear();
     }
@@ -45,14 +52,14 @@ public class Attention extends DurService implements Sampler<Concept> {
         return active.capacity();
     }
 
-    public void setCapacity(int newCapacity) {
-        active.setCapacity(newCapacity);
+    public final void setCapacity(int newCapacity) {
+        capacity.set(newCapacity);
     }
 
     /**
      * TODO abstract
      */
-    private void activate(Activate a) {
+    public void activate(Activate a) {
         active.putAsync(a);
     }
 
@@ -74,14 +81,14 @@ public class Attention extends DurService implements Sampler<Concept> {
         active.sample(nar.random(), each);
     }
 
-    @Override
     protected void starting(NAR nar) {
 
+        this.nar = nar;
 
         Bag<Term, Activate> arrayBag = new ArrayBag<>(
-                concepts,
+                capacity.intValue(),
                 Param.conceptMerge,
-                new HashMap<>(concepts * 2, 0.99f)
+                new HashMap<>(capacity.intValue() * 2, 0.99f)
         ) {
 
             @Override
@@ -112,19 +119,9 @@ public class Attention extends DurService implements Sampler<Concept> {
                         arrayBag;
 
 
-        on(
-                nar.eventClear.on(this::clear),
-                nar.eventActivate.on(this::activate)
-        );
-
-        super.starting(nar);
-
     }
 
-    @Override
     protected void run(NAR n, long dt) {
-        float temperature = 1f - (float) Math.exp(-(((double) dt) / n.dur()) / n.memoryDuration.floatValue());
-        active.commit(active.forget(temperature));
     }
 
     public Stream<Activate> active() {
@@ -132,15 +129,15 @@ public class Attention extends DurService implements Sampler<Concept> {
         return a == null ? Stream.empty() : active.stream();
     }
 
-    @Override
     protected void stopping(NAR nar) {
         //if (active != null) {
-        active.clear();
+        Bag<Term, Activate> a = active;
         active = Bag.EMPTY;
+        a.clear();
+
         //active = null;
         //}
 
-        super.stopping(nar);
     }
 
     @Override
@@ -148,7 +145,8 @@ public class Attention extends DurService implements Sampler<Concept> {
         active.sample(rng, (Activate a) -> each.apply(a.get()));
     }
 
-    public float pri(Termed id, float ifMissing) {
-        return active.pri(id.term(), ifMissing);
+    /** the current priority value of the concept */
+    public float pri(Termed concept, float ifMissing) {
+        return active.pri(concept.term(), ifMissing);
     }
 }

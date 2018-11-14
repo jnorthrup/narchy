@@ -1,21 +1,18 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.pri.bag.Bag;
 import nars.$;
 import nars.NAR;
 import nars.Task;
-import nars.concept.Concept;
 import nars.control.Cause;
 import nars.derive.premise.DeriverRules;
 import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.premise.PremiseRuleProto;
 import nars.derive.timing.NonEternalTaskOccurenceOrPresentDeriverTiming;
-import nars.exe.Attention;
+import nars.attention.ActiveConcepts;
 import nars.exe.Causable;
 import nars.link.Activate;
-import nars.link.TaskLink;
 import nars.term.Term;
 
 import java.util.Set;
@@ -63,7 +60,7 @@ abstract public class Deriver extends Causable {
     }
 
 
-    protected Deriver(Attention attn, Set<PremiseRuleProto> rules, NAR nar) {
+    protected Deriver(ActiveConcepts attn, Set<PremiseRuleProto> rules, NAR nar) {
         this(attn::fire, rules, nar);
     }
 
@@ -110,7 +107,7 @@ abstract public class Deriver extends Causable {
      * punctuation equalizer: value factor for the conclusion punctuation type [0..1.0]
      */
     public final float preAmp(byte concPunc) {
-        return nar.budget.deriving.preAmp(concPunc);
+        return nar.attn.deriving.preAmp(concPunc);
     }
 
 

@@ -111,10 +111,6 @@ public abstract class Param {
 
     public static boolean STRONG_COMPOSITION = false;
 
-    /**
-     * number of clock durations composing a unit of short term memory decay (used by bag forgetting)
-     */
-    public final FloatRange memoryDuration = new FloatRange(1f, 0f, 64f);
 
 
     public static final boolean FILTER_SIMILAR_DERIVATIONS = true;
@@ -136,8 +132,8 @@ public abstract class Param {
 
 
     public static final PriMerge tasklinkMerge =
-            PriMerge.max;
-            //PriMerge.plus;
+            //PriMerge.max;
+            PriMerge.plus;
             //PriMerge.or;
             //PriMerge.avgGeoFast;
 
@@ -233,7 +229,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(32 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 8, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 

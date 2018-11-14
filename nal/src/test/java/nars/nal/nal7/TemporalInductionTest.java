@@ -219,7 +219,7 @@ class TemporalInductionTest {
                 Concept cc = n.concept(term);
                 if (cc == null)
                     return 0;
-                Activate c = n.attn.active.get(cc);
+                Activate c = n.attn.concepts.active.get(cc);
                 if (c == null)
                     return 0;
                 else return c.priElseZero();

@@ -183,7 +183,6 @@ public class IRCNLP extends IRC {
                 .time(new RealTime.MS(false).durFPS(durFPS)).get();
 
         n.conceptActivation.set(0.5f);
-        n.memoryDuration.set(0.5f);
 
         n.freqResolution.set(0.1f);
         n.confResolution.set(0.05f);

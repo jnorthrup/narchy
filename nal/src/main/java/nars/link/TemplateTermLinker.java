@@ -11,7 +11,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
-import nars.budget.Activator;
+import nars.attention.Activator;
 import nars.concept.Concept;
 import nars.derive.Derivation;
 import nars.subterm.Subterms;
@@ -389,7 +389,7 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
 //            Term srcTerm = src.term();
 
         NAR nar = d.nar;
-        Activator linking = nar.budget.linking;
+        Activator linking = nar.attn.linking;
 
         int j = n > 1 ? d.random.nextInt(n) : 0; //random starting position
         boolean inc = n <= 1 || d.random.nextBoolean();

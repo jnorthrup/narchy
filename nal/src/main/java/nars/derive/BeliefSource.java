@@ -9,6 +9,7 @@ import nars.derive.impl.ZipperDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.link.Activate;
 import nars.link.TaskLink;
+import nars.task.Tasklike;
 import nars.term.Term;
 
 import java.util.List;
@@ -26,15 +27,26 @@ public class BeliefSource {
      */
     public static final BiFunction<Concept, Derivation, LinkModel> ConceptTermLinker = (c, d) -> {
 
+        final Bag<Tasklike, TaskLink> tl = c.tasklinks();
+        if (tl.isEmpty())
+            return null;
+
         return new LinkModel() {
 
+            private final Supplier<Term> terms;
             private final Random rng = d.random;
 
+            {
+                terms = (c.term().op().atomic) ?
+                    () -> tl.sample(rng).term()
+                :
+                    () -> c.linker().sample(rng);
+
+            }
             @Override
             public ArrayHashSet<TaskLink> tasklinks(int max, ArrayHashSet<TaskLink> buffer) {
 
-                Bag<?, TaskLink> tl = c.tasklinks();
-                tl.sample(rng, Math.min(max, tl.size()), x -> {
+                tl.sample(rng, max /*Math.min(max, tl.size())*/, x -> {
                     if (x != null) buffer.add(x);
                 });
 
@@ -49,11 +61,7 @@ public class BeliefSource {
     //                @Nullable PriReference<Term> t = ct.sample(rng);
     //                return t != null ? t.get() : null;
     //            };
-                if (c.term().op().atomic) {
-                    return () -> c.tasklinks().sample(rng).term();
-                } else {
-                    return () -> c.linker().sample(rng);
-                }
+               return terms;
             }
         };
     };
@@ -76,7 +84,7 @@ public class BeliefSource {
         @Override
         public Supplier<Term> beliefTerms() {
             return () -> {
-                Activate a = n.attn.fire();
+                Activate a = n.attn.concepts.fire();
                 return a != null ? a.term() : null;
             };
         }

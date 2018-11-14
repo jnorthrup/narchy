@@ -309,9 +309,6 @@ public class Premise implements Comparable<Premise> {
 
     public final void derive(Derivation d, int matchTTL, int deriveTTL) {
 
-        if (task.isDeleted())
-            return;
-
         Counter result;
 
         Emotion e = d.nar.emotion;

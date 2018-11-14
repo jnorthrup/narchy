@@ -98,7 +98,7 @@ public class NAL1Test extends NALTest {
 
 
         test
-                .believe("<parakeet --> bird>", 0.90f, 0.9f) 
+                .believe("<parakeet --> bird>", 0.90f, 0.9f)
                 .believe("<pteradactyl --> bird>") 
                 .mustBelieve(cycles, "<pteradactyl --> parakeet>", 1, 0.42f)
                 .mustBelieve(cycles, "<parakeet --> pteradactyl>", 0.9f, 0.45f)

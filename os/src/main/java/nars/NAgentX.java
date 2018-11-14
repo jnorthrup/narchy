@@ -28,7 +28,7 @@ import nars.derive.impl.BatchDeriver;
 import nars.derive.impl.ZipperDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.timing.ActionTiming;
-import nars.exe.Attention;
+import nars.attention.ActiveConcepts;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
 import nars.gui.NARui;
@@ -205,7 +205,7 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
-                .attention(() -> new Attention(1024))
+                .attention(() -> new ActiveConcepts(1024))
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
@@ -356,9 +356,9 @@ abstract public class NAgentX extends NAgent {
                                 a::dexterity)).relax(0.01f), m)
         );
 
-        m.actionUnipolar($.func("forget", a.id), (f)->{
-            nar.memoryDuration.set(Util.lerp(f, 0.5f, 0.99f));
-        });
+//        m.actionUnipolar($.func("forget", a.id), (f)->{
+//            nar.memoryDuration.set(Util.lerp(f, 0.5f, 0.99f));
+//        });
         m.actionUnipolar($.func("awake", a.id), (f)->{
             nar.conceptActivation.set(Util.lerp(f, 0.1f, 0.99f));
         });
@@ -432,12 +432,7 @@ abstract public class NAgentX extends NAgent {
         //n.freqResolution.set(0.03f);
         n.termVolumeMax.set(30);
 
-
-
         n.conceptActivation.set(1f);
-        n.memoryDuration.set(4f);
-
-
 
         n.beliefPriDefault.set(0.4f);
         n.goalPriDefault.set(0.7f);

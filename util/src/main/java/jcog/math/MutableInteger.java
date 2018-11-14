@@ -27,7 +27,7 @@ import java.util.function.IntSupplier;
 /**
  * A mutable <code>integer</code> wrapper.
  */
-public class MutableInteger extends Number implements Comparable, Mutable,IntSupplier {
+public class MutableInteger extends Number implements Comparable, IntSupplier {
 
 
     /**
@@ -39,6 +39,7 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
      * Constructs a new MutableDouble with the default value of zero.
      */
     public MutableInteger() {
+        this(0);
     }
 
     /**
@@ -47,7 +48,9 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
      * @param value a value.
      */
     public MutableInteger(int value) {
+
         this.value = value;
+        changed();
     }
 
     /**
@@ -57,28 +60,11 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
      * @throws NullPointerException if the object is null
      */
     public MutableInteger(Number value) {
-        this.value = value.intValue();
+        this(value.intValue());
     }
 
     
 
-    /**
-     * Gets the value as a Double instance.
-     *
-     * @return the value as a Double
-     */
-    @Override
-    public Object get() {
-        return (double) value;
-    }
-
-    @Override
-    public void set(Object value) {
-        if (value instanceof Number)
-            set((Number) value);
-        else
-            throw new RuntimeException("not number: " + value.getClass());
-    }
 
 
     /**
@@ -87,7 +73,24 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
      * @param value the value to set
      */
     public void set(int value) {
-        this.value = value;
+        int v = this.value;
+        if (v != value) {
+            this.value = value;
+            changed();
+        }
+    }
+
+
+    public final void set(float value) {
+        if (value!=value)
+            throw new NumberException("NaN", value);
+        set(Math.round(value));
+    }
+
+
+    /** implement in subclasses */
+    protected void changed() {
+
     }
 
     /**
@@ -97,12 +100,10 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
      * @throws NullPointerException if the object is null
      * @throws ClassCastException   if the type is not a {@link Number}
      */
-    public void set(Number value) {
+    public final void set(Number value) {
         set(Math.round(value.floatValue()));
     }
 
-    
-    
 
     /**
      * Returns the value of this MutableDouble as a int.
@@ -111,7 +112,7 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
      * type int.
      */
     @Override
-    public int intValue() {
+    public final int intValue() {
         return value;
     }
 
@@ -127,7 +128,7 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
      * type long.
      */
     @Override
-    public long longValue() {
+    public final long longValue() {
         return value;
     }
 
@@ -138,7 +139,7 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
      * type float.
      */
     @Override
-    public float floatValue() {
+    public final float floatValue() {
         return value;
     }
 
@@ -149,7 +150,7 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
      * type double.
      */
     @Override
-    public double doubleValue() {
+    public final double doubleValue() {
         return value;
     }
 
@@ -158,7 +159,7 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
      *
      * @return true if NaN
      */
-    public boolean isNaN() {
+    public final boolean isNaN() {
         return false;
     }
 
@@ -167,22 +168,12 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
      *
      * @return true if infinite
      */
-    public static boolean isInfinite() {
+    public final boolean isInfinite() {
         return false;
     }
 
     
 
-    /**
-     * Gets this mutable as an instance of Double.
-     *
-     * @return a Double instance containing the value from this mutable
-     */
-    public Double toDouble() {
-        return doubleValue();
-    }
-
-    
 
     /**
      * Increments the value.
@@ -190,7 +181,7 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
      * @since Commons Lang 2.2
      */
     public void increment() {
-        value++;
+        set(value+1);
     }
 
     /**
@@ -199,52 +190,10 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
      * @since Commons Lang 2.2
      */
     public void decrement() {
-        value--;
+        set(value-1);
     }
 
     
-
-    /**
-     * Adds a value.
-     *
-     * @param operand the value to add
-     * @since Commons Lang 2.2
-     */
-    public void add(double operand) {
-        value += operand;
-    }
-
-    /**
-     * Adds a value.
-     *
-     * @param operand the value to add
-     * @throws NullPointerException if the object is null
-     * @since Commons Lang 2.2
-     */
-    public void add(Number operand) {
-        value += operand.doubleValue();
-    }
-
-    /**
-     * Subtracts a value.
-     *
-     * @param operand the value to add
-     * @since Commons Lang 2.2
-     */
-    public void subtract(double operand) {
-        value -= operand;
-    }
-
-    /**
-     * Subtracts a value.
-     *
-     * @param operand the value to add
-     * @throws NullPointerException if the object is null
-     * @since Commons Lang 2.2
-     */
-    public void subtract(Number operand) {
-        value -= operand.doubleValue();
-    }
 
     
 
@@ -285,7 +234,7 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
      * @return <code>true</code> if the objects are the same; <code>false</code>
      * otherwise.
      */
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         return ((MutableInteger) obj).value == value;
     }
 
@@ -294,7 +243,7 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
      *
      * @return a suitable hashcode
      */
-    public int hashCode() {
+    public final int hashCode() {
         return Integer.hashCode(value);
     }
 
@@ -306,7 +255,7 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
      * @throws ClassCastException if the argument is not a MutableDouble
      */
     @Override
-    public int compareTo(Object obj) {
+    public final int compareTo(Object obj) {
         return Integer.compare(value, ((MutableInteger) obj).value);
     }
 
@@ -315,13 +264,13 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
      *
      * @return the mutable value as a string
      */
-    public String toString() {
+    public final String toString() {
         return String.valueOf(value);
     }
 
-    public int getAndSet(int x) {
+    public final int getAndSet(int x) {
         int p = this.value;
-        this.value = x;
+        set(x);
         return p;
     }
 

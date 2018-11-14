@@ -119,7 +119,7 @@ public class NARSpeak {
 
             onFrame(()->{
                 if (nar.random().nextFloat() < 0.1f) {
-                    @Nullable Concept x = nar.attn.sample(nar.random());
+                    @Nullable Concept x = nar.attn.concepts.sample(nar.random());
                     if (x.volume() < 5) {
                         try {
                             nar.input("say(" + $.quote(x.toString()) + ")! |");

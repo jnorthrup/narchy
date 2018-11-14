@@ -37,7 +37,7 @@ public class ConceptSurface extends TabMenu {
                             Plot2D p = new Plot2D(64, Plot2D.Line)
                                     .add("pri", () -> {
 
-                                        Table<?, Activate> bag = n.attn.active;
+                                        Table<?, Activate> bag = n.attn.concepts.active;
                                         if (bag != null) {
                                             Concept ni = n.conceptualize(id);
                                             if (ni!=null) {

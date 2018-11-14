@@ -55,8 +55,8 @@ class NARTestOptimize {
 //                        (NAR n, int f) -> Param.LinkFanoutMax = f)
                 .var("activation", 0, 1f, 0.1f,
                             (NAR n, float f) -> n.conceptActivation.set(f))
-                .var("memoryDuration", 0, 8f, 0.5f,
-                        (NAR n, float f) -> n.memoryDuration.set(f))
+//                .var("memoryDuration", 0, 8f, 0.5f,
+//                        (NAR n, float f) -> n.memoryDuration.set(f))
 //                .var("beliefPriDefault", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.beliefPriDefault.set(f))
 //                .var("questionPriDefault", 0, 1f, 0.1f,
@@ -115,8 +115,6 @@ class NARTestOptimize {
                 return d;
             }).var("ttlMax", 6, 100, 20, (DeductiveMeshTest t, int i) -> {
                 t.test.nar.deriveBranchTTL.set(i);
-            }).var("forgetRate", 0, 1f, 0.2f, (DeductiveMeshTest t, float f) -> {
-                t.test.nar.memoryDuration.set(f);
             });
 
 

@@ -362,7 +362,7 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
      * temperature is a value between 0..1.0 controlling
      * how fast the bag should allow new items. 0.5 is a default value
      */
-    default @Nullable Consumer<V> forget(float temperature) {
+    @Deprecated default @Nullable Consumer<V> forget(float temperature) {
 
         if (temperature > Float.MIN_NORMAL) {
             int size = size();
@@ -378,20 +378,20 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
                         Consumer eachMustForgetPct =
 
 //                        //FAIR
-                        //PriForget.forgetPressure(temperature, cap, pressure, mass);
+                        PriForget.forgetPressure(temperature, cap, pressure, mass);
 
 
                                 //OVERDRIVE (attenuated by size/capacity ratio)
                                 //PriForget.forgetPressure(temperature * (((float)size)/cap), cap, pressure, mass);
 
-                                //..?
-                                PriForget.forgetIdeal(temperature,
-                                        ScalarValue.EPSILON * cap,
-                                        //1f/size,
-                                        //1f/cap,
-                                        //0.1f,
-                                        //0.5f,
-                                        size, cap, pressure, mass);
+//                                //..?
+//                                PriForget.forgetIdeal(temperature,
+//                                        ScalarValue.EPSILON * cap,
+//                                        //1f/size,
+//                                        //1f/cap,
+//                                        //0.1f,
+//                                        //0.5f,
+//                                        size, cap, pressure, mass);
 
                         if (eachMustForgetPct != null)
                             return eachMustForgetPct;

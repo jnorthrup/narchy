@@ -1,4 +1,4 @@
-package nars.budget.derive;
+package nars.attention.derive;
 
 import jcog.pri.ScalarValue;
 import nars.NAR;
@@ -6,7 +6,7 @@ import nars.Task;
 
 import static nars.Op.*;
 
-public class DefaultPuncWeightedDeriverBudget extends DefaultDeriverBudget {
+public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
 
     /** cache of punctuation priorities */
     transient private float beliefPri, goalPri, questionPri, questPri;

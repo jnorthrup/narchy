@@ -2,13 +2,14 @@ package nars;
 
 import jcog.data.list.FasterList;
 import jcog.random.XoRoShiRo128PlusRandom;
+import nars.attention.ActiveConcepts;
+import nars.attention.impl.DefaultAttention;
 import nars.concept.Concept;
 import nars.concept.util.ConceptAllocator;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.DefaultConceptBuilder;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
-import nars.exe.Attention;
 import nars.exe.Exec;
 import nars.exe.UniExec;
 import nars.index.concept.ConceptIndex;
@@ -35,7 +36,9 @@ import static jcog.Util.curve;
 public class NARS {
 
     public final NAR get() {
-        NAR n = new NAR(index.get(), exec.get(), attn.get(), time, rng.get(), conceptBuilder.get());
+        NAR n = new NAR(index.get(), exec.get(),
+                new DefaultAttention(attn.get()),
+                time, rng.get(), conceptBuilder.get());
         step.forEach(x -> x.accept(n));
         n.synch();
         return n;
@@ -49,7 +52,7 @@ public class NARS {
 
     protected Supplier<Random> rng;
 
-    protected Supplier<Attention> attn;
+    protected Supplier<ActiveConcepts> attn;
 
     protected Supplier<ConceptBuilder> conceptBuilder;
 
@@ -80,7 +83,7 @@ public class NARS {
         return this;
     }
 
-    public NARS attention(Supplier<Attention> sa) {
+    public NARS attention(Supplier<ActiveConcepts> sa) {
         this.attn = sa;
         return this;
     }
@@ -119,9 +122,6 @@ public class NARS {
 
 
                 n.conceptActivation.set(0.5f);
-                n.memoryDuration.set(3.5f);
-
-
 
                 n.beliefPriDefault.set(0.5f);
                 n.goalPriDefault.set(0.5f);
@@ -148,7 +148,7 @@ public class NARS {
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
 
-        attention(()->new Attention(96));
+        attention(()->new ActiveConcepts(96));
 
         conceptBuilder = ()->new DefaultConceptBuilder(
                 new ConceptAllocator(

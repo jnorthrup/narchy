@@ -1,4 +1,4 @@
-package nars.budget;
+package nars.attention;
 
 import nars.NAR;
 import nars.NARS;

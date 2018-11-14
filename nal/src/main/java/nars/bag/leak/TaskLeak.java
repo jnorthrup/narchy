@@ -202,7 +202,7 @@ public abstract class TaskLeak extends Causable {
 
         @Override
         public void next(BooleanSupplier kontinue, NAR nar, Consumer<Task> each) {
-            nar.attn.sample(rng, (Predicate<Concept>)(c)->{
+            nar.attn.concepts.sample(rng, (Predicate<Concept>)(c)->{
 
                 if (c == null) return false; //TODO can this even happen
 

@@ -14,24 +14,10 @@ public class IntRange extends MutableInteger {
     }
 
     @Override
-    public void set(int value) {
+    public final void set(int value) {
         super.set(Util.clamp(value, min, max));
     }
 
 
-    public void set(float value) {
-        set(Util.clamp(Math.round(value), min, max));
-    }
-
-    @Override
-    public void set(Number value) {
-        if ((value instanceof Float || value instanceof Double)) {
-            set(Math.round(value.floatValue()));
-        } else if (value instanceof Long) {
-            throw new RuntimeException();
-        } else {
-            set(value.intValue());
-        }
-    }
 
 }

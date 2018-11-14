@@ -13,7 +13,7 @@ import nars.agent.util.RLBooster;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
-import nars.exe.Attention;
+import nars.attention.ActiveConcepts;
 import nars.exe.UniExec;
 import nars.gui.LSTMView;
 import nars.gui.NARui;
@@ -115,7 +115,7 @@ public class TrackXY_NAR extends NAgentX {
         //2 * (W * H) /* to allow pixels to be read at the rate of 1 pixel per cycle */;
 
         NARS nb = new NARS.DefaultNAR(0, true)
-                .attention(() -> new Attention(64))
+                .attention(() -> new ActiveConcepts(64))
                 .exe(new UniExec())
                 .time(new CycleTime().dur(dur))
                 .index(

@@ -1,12 +1,10 @@
-package nars.budget;
+package nars.attention;
 
 import jcog.pri.OverflowDistributor;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
 import nars.link.Activate;
-import nars.task.AbstractTask;
-import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  *  TODO use non-UnitPri entries and then allow this to determine a global amplitude factor via adaptive dynamic range compression of priority
  * */
-public class Activator extends AbstractTask {
+public class Activator  {
 
 
     /** pending concept activation collation */
@@ -31,10 +29,9 @@ public class Activator extends AbstractTask {
 
 //    /** pending termlinking collation */
 //    final ConcurrentHashMap<TermLinkage, TermLinkage> termlink = new ConcurrentHashMap(1024);
-    private final boolean deferredOrInline;
 
-    public Activator(boolean deferredOrInline) {
-        this.deferredOrInline = deferredOrInline;
+    public Activator() {
+
     }
 
 //    /** implements a plus merge (with collected refund)
@@ -73,14 +70,20 @@ public class Activator extends AbstractTask {
     }
 
     public void update(NAR n) {
+
+        concepts.values().removeIf(a -> {
+            n.attn.concepts.activate(a/*.clone()*/);
+            return true;
+        });
+
         //if (!isEmpty()) {
             //deferred
-        if (deferredOrInline) {
-            n.input(this);
-        } else {
+//        if (deferredOrInline) {
+//            n.input(this);
+//        } else {
             //inline
-            ITask.run(this, n);
-        }
+//            ITask.run(this, n);
+//        }
 
     }
 
@@ -140,39 +143,35 @@ public class Activator extends AbstractTask {
 //    }
 
 
-    @Override
-    public ITask next(NAR nar) {
-
-
-        concepts.values().removeIf(a -> {
-            nar.eventActivate.emit(a/*.clone()*/);
-            return true;
-        });
-
-//        int n = termlink.size();
-//        if (n > 0) {
-//            //drain at most n items from the concurrent map to a temporary list, sort it,
-//            //then insert PLinks into the concept termlinks bag as they will be sorted into sequences
-//            //of the same concept.
-//            SortedList<TermLinkage> l = drainageBuffer(n);
+//    @Override
+//    public ITask next(NAR nar) {
 //
 //
-//            Iterator<TermLinkage> ii = termlink.keySet().iterator();
-//            while (ii.hasNext() && n-- > 0) {
-//                TermLinkage x = ii.next();
-//                ii.remove();
 //
-//                l.add(x);
+////        int n = termlink.size();
+////        if (n > 0) {
+////            //drain at most n items from the concurrent map to a temporary list, sort it,
+////            //then insert PLinks into the concept termlinks bag as they will be sorted into sequences
+////            //of the same concept.
+////            SortedList<TermLinkage> l = drainageBuffer(n);
+////
+////
+////            Iterator<TermLinkage> ii = termlink.keySet().iterator();
+////            while (ii.hasNext() && n-- > 0) {
+////                TermLinkage x = ii.next();
+////                ii.remove();
+////
+////                l.add(x);
+////
+////            }
+////
+////
+////            //l.clearReallocate(1024, 8);
+////            l.clear();
+////        }
 //
-//            }
-//
-//
-//            //l.clearReallocate(1024, 8);
-//            l.clear();
-//        }
-
-        return null;
-    }
+//        return null;
+//    }
 
 //    final static ThreadLocal<SortedList<TermLinkage>> drainageBuffers = ThreadLocal.withInitial(()->new SortedList<>(16));
 //

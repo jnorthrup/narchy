@@ -70,7 +70,7 @@ public class RewardBooster extends Causable {
 
                 //n.attn.active.stream().limit(samples).forEach(xx -> {
                 while (kontinue.getAsBoolean()) {
-                    Activate xx = n.attn.active.sample(rng);
+                    Activate xx = n.attn.concepts.active.sample(rng);
                     Concept x = xx.get();
                     if (x == reward || !(x instanceof TaskConcept) || x instanceof ActionConcept) continue;
                     if (!x.op().goalable) continue;

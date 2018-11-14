@@ -14,14 +14,9 @@ public class BagregateConceptGraph2D extends ConceptGraph2D {
 
     public final IntRange maxNodes = new IntRange(256, 1, 512) {
         @Override
-        public void set(int value) {
-
-            super.set(value);
-
-            if (bag!=null) {
-                bag.bag.setCapacity(value);
-            }
-
+        public void changed() {
+            if (bag!=null)
+                bag.bag.setCapacity(intValue());
         }
     };
 

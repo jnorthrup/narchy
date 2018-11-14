@@ -6,7 +6,7 @@ import jcog.data.graph.AdjGraph;
 import jcog.data.graph.GraphMeter;
 import nars.*;
 import nars.derive.Deriver;
-import nars.budget.derive.DefaultDeriverBudget;
+import nars.attention.derive.DefaultDerivePri;
 import nars.derive.impl.BatchDeriver;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -160,7 +160,7 @@ class KIFInputTest {
 
 
         Deriver.derivers(n).forEach( (d)->
-                ((DefaultDeriverBudget)(((BatchDeriver)d).budgeting))
+                ((DefaultDerivePri)(((BatchDeriver)d).budgeting))
                         .gain.set(0.2f) );
 
         n.input("$1.0 possesses(I,#everything)!");

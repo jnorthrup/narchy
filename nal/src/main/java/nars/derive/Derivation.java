@@ -473,7 +473,7 @@ public class Derivation extends PreDerivation {
         setTTL(ttl);
 
 
-        nar.budget.deriving.premise(this);
+        nar.attn.deriving.premise(this);
 
         try {
             deriver.rules.run(this);

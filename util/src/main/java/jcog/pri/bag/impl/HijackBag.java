@@ -290,7 +290,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                             } else {
                                 float priBefore = pri(p);
                                 V next = merge(p, incoming, overflowing);
-                                if (next != null && (next == p || map.compareAndSet(i, p, next))) {
+                                if (next != null && (next == p || map.weakCompareAndSetRelease(i, p, next))) {
                                     if (next != p) {
                                         toRemove = p;
                                         toAdd = next;
@@ -301,7 +301,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                             break;
 
                         case REMOVE:
-                            if (map.compareAndSet(i, p, null)) {
+                            if (map.weakCompareAndSetRelease(i, p, null)) {
                                 toReturn = toRemove = p;
                             }
                             break;
@@ -318,10 +318,10 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 int victim = -1, j = 0;
                 float victimPri = Float.POSITIVE_INFINITY;
                 for (int i = start; j < reprobes; j++ ) {
-                    V mi = map.getOpaque(i);
+                    V mi = map.getAcquire(i);
                     float mp;
                     if (mi == null || ((mp = pri(mi)) != mp)) {
-                        if (map.compareAndSet(i, mi, incoming)) {
+                        if (map.weakCompareAndSetRelease(i, mi, incoming)) {
                             toReturn = toAdd = incoming; /** became empty or deleted, take the slot */
                             break;
                         } else {
@@ -338,13 +338,13 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 if (toReturn == null) {
                     assert(victim!=-1);
 
-                    V existing = map.getOpaque(victim);
+                    V existing = map.getAcquire(victim);
                     if (existing == null) {
                         //acquired new empty cell
                         toReturn = toAdd = incoming;
 
                     } else {
-                        if (replace(incomingPri, existing) && map.compareAndSet(victim, existing, incoming)) {
+                        if (replace(incomingPri, existing) && map.weakCompareAndSetRelease(victim, existing, incoming)) {
                             //acquired
                             toRemove = existing;
                             toReturn = toAdd = incoming;

@@ -46,7 +46,6 @@ class AIMATests {
 
 //        n.freqResolution.set(0.1f);
 //        n.confResolution.set(0.05f);
-        n.memoryDuration.set(12);
         //n.confMin.set(0.1f);
 
         //n.activateConceptRate.set(0.5f);

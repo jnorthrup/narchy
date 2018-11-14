@@ -19,20 +19,19 @@ import jcog.service.Service;
 import jcog.service.Services;
 import jcog.util.TriConsumer;
 import nars.Narsese.NarseseException;
-import nars.budget.Budget;
-import nars.budget.impl.DefaultBudget;
+import nars.attention.Attention;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.control.Cause;
+import nars.control.DurService;
 import nars.control.MetaGoal;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
 import nars.control.proto.Remember;
 import nars.eval.Facts;
-import nars.exe.Attention;
 import nars.exe.Exec;
 import nars.exe.NARLoop;
 import nars.index.concept.ConceptIndex;
@@ -130,9 +129,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     public Logger logger;
 
-    public final Topic<Activate> eventActivate = new ListTopic();
-    public final Budget budget;
-
     public NAR(ConceptIndex concepts, Exec exe, Attention attn, Time time, Random rng, ConceptBuilder conceptBuilder) {
 
         this.random = rng;
@@ -155,15 +151,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         Builtin.init(this);
 
         this.emotion = new Emotion(this);
-        this.budget = new DefaultBudget();
-
         this.attn = attn;
-        this.on(attn);
 
-        onCycle((n)->{
-            input.update(n);
-            budget.update(n);
-        });
+        DurService.on(this, input::update);
+//        onCycle((n)->{
+//            input.update(n);
+//        });
+        on(this.attn);
 
         this.loop = new NARLoop(this);
         exe.start(this);
@@ -1031,7 +1025,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     public Stream<Activate> conceptsActive() {
-        return attn.active();
+        return attn.concepts.active();
     }
 
     public Stream<Concept> concepts() {
@@ -1431,7 +1425,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         Concept c = forceConceptualize ? conceptualize(t) : concept(t);
 
         if (activationApplied >= 0 && c != null /*&& !eventActivate.isEmpty()*/) {
-            eventActivate.emit(new Activate(c, activationApplied * conceptActivation.floatValue()));
+            attn.concepts.activate(new Activate(c, activationApplied * conceptActivation.floatValue()));
         }
 
         return c;

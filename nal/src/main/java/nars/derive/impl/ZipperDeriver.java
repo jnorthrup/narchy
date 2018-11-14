@@ -31,7 +31,7 @@ public class ZipperDeriver extends Deriver {
     @Deprecated final BiFunction<Concept, Derivation, BeliefSource.LinkModel> hypothesizer;
 
     public ZipperDeriver(PremiseDeriverRuleSet rules) {
-        this(rules.nar.attn::fire, rules);
+        this(rules.nar.attn.concepts::fire, rules);
     }
 
     public ZipperDeriver(Consumer<Predicate<Activate>> source, PremiseDeriverRuleSet rules) {
@@ -57,39 +57,44 @@ public class ZipperDeriver extends Deriver {
 
             Concept concept = a.get();
 
-            nar.budget.forgetting.update(concept, nar);
+            nar.attn.forgetting.update(concept, nar);
 
             BeliefSource.LinkModel model = hypothesizer.apply(concept, d);
+            if (model!=null) {
 
-            d.firedTasks.clear();
-            ArrayHashSet<TaskLink> fired = model.tasklinks(tasklinksPerConcept.intValue(), d.firedTaskLinks);
-            Supplier<Term> beliefTerms = model.beliefTerms();
+                d.firedTasks.clear();
+                d.firedTaskLinks.clear();
 
-            int termlinks = /*Util.lerp(cPri, 1, */termlinksPerConcept.intValue();
+                ArrayHashSet<TaskLink> fired = model.tasklinks(tasklinksPerConcept.intValue(), d.firedTaskLinks);
+                Supplier<Term> beliefTerms = model.beliefTerms();
+
+                int termlinks = /*Util.lerp(cPri, 1, */termlinksPerConcept.intValue();
 //            float taskPriSum = 0;
 
 
-            fired.forEach(tasklink -> {
+                fired.forEach(tasklink -> {
 
 
-                Task task = tasklink.apply(nar);
-                if (task != null) {
+                    Task task = tasklink.apply(nar);
+                    if (task != null) {
 
-                    for (int z = 0; z < termlinks; z++) {
+                        d.firedTasks.add(task);
+                        for (int z = 0; z < termlinks; z++) {
 
-                        Term b = beliefTerms.get();
-                        if (b != null) {
-                            new Premise(task, b).derive(d, matchTTL, deriveTTL);
+                            Term b = beliefTerms.get();
+                            if (b != null) {
+                                new Premise(task, b).derive(d, matchTTL, deriveTTL);
+                            }
+
                         }
 
                     }
+                });
 
-                }
-            });
+                //System.out.println((((DerivedTasks.DerivedTasksBag)d.deriver.derived).tasks.map.values()));
 
-            //System.out.println((((DerivedTasks.DerivedTasksBag)d.deriver.derived).tasks.map.values()));
-
-            concept.linker().link(a, d);
+                concept.linker().link(a, d);
+            }
 
             return kontinue.getAsBoolean();
         });

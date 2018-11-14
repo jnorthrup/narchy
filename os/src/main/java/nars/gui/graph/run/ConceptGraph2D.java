@@ -104,7 +104,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
         Term i = nn.id;
         if (i != null && nn.visible()) {
 
-            float pri = Math.max(nar.attn.pri(i, 0f), ScalarValue.EPSILON);
+            float pri = Math.max(nar.attn.concepts.pri(i, 0f), ScalarValue.EPSILON);
 
             nn.color(pri, pri / 2f, 0f);
 
