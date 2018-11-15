@@ -53,21 +53,24 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
                                 cc.on(false);
                         });
                     }
+
+
+                    if (outerAction != null)
+                        outerAction.value(bb, e);
+                    if (action!=null)
+                        action.value((T)bb, e);
                 } else {
 
-                    if (this.buttons.AND(cc -> !cc.on())) {
+                    if (this.buttons.AND(cc -> cc==bb || !cc.on())) {
                         //no other buttons are toggled, so re-toggle this one
                         Exe.invoke(()->{ //HACK
                            bb.on(true);
                         });
+                        return;
                     }
 
                 }
 
-                if (outerAction != null)
-                    outerAction.value(bb, e);
-                if (action!=null)
-                    action.value((T)bb, e);
             });
 
         }
@@ -81,9 +84,10 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
     protected void starting() {
         super.starting();
 
-        if (mode == Mode.One) {
-            this.buttons.first().on(true);
-        }
+//        Exe.later...
+//        if (mode == Mode.One && buttons.AND(b -> !b.on())) {
+//            this.buttons.first().on(true);
+//        }
     }
 
     public void on(ObjectBooleanProcedure<T> action) {

@@ -15,7 +15,7 @@ public class PriForget<P extends Prioritizable> implements Consumer<P> {
 
     public static final float FORGET_TEMPERATURE_DEFAULT = 1f;
 
-    final float mult;
+    public final float mult;
 
     public PriForget(float pctToRemove) {
         this.mult = 1 - pctToRemove;

@@ -23,7 +23,7 @@ abstract public class Forgetting {
 
     abstract public void update(Concept c, NAR n);
 
-    public abstract void update(Bag<Term, Activate> active, long dt, NAR n);
+    public abstract void updateConcepts(Bag<Term, Activate> active, long dt, NAR n);
 
     protected final @Nullable Consumer forget(Bag b, float temperature) {
 
@@ -54,19 +54,27 @@ abstract public class Forgetting {
 
     abstract protected @Nullable Consumer forget(float temperature, int size, int cap, float pressure, float mass);
 
+    /** temporally oblivious; uses only incoming pressure to determine forget amounts */
     public static class AsyncForgetting extends Forgetting {
 
         public final FloatRange conceptForgetRate = new FloatRange(0.5f, 0f, 1f);
         public final FloatRange tasklinkForgetRate = new FloatRange(0.5f, 0f, 1f);
 
-        public void update(Concept c, NAR n) {
+        public final void update(Concept c, NAR n) {
             Bag<Tasklike, TaskLink> tasklinks = c.tasklinks();
-            tasklinks.commit(tasklinks.forget(tasklinkForgetRate.floatValue()));
+            tasklinks.commit(forgetTasklinks(c, tasklinks));
+        }
+
+        protected Consumer<TaskLink> forgetTasklinks(Concept c, Bag<Tasklike, TaskLink> tasklinks) {
+            return forget(tasklinks, tasklinkForgetRate.floatValue());
+        }
+        protected Consumer<Activate> forgetConcepts(Bag<Term, Activate> concepts) {
+            return forget(concepts, conceptForgetRate.floatValue());
         }
 
         @Override
-        public void update(Bag<Term, Activate> active, long dt, NAR n) {
-            active.commit(forget(active, conceptForgetRate.floatValue()));
+        public final void updateConcepts(Bag<Term, Activate> active, long dt, NAR n) {
+            active.commit(forgetConcepts(active));
         }
 
         @Override
@@ -94,7 +102,7 @@ abstract public class Forgetting {
                                         size, cap, pressure, mass);
         }
         @Override
-        public void update(Bag<Term, Activate> active, long dt, NAR n) {
+        public void updateConcepts(Bag<Term, Activate> active, long dt, NAR n) {
             float temperature = 1f - (float) Math.exp(-(((double) dt) / n.dur()) / memoryDuration.floatValue());
             active.commit(active.forget(temperature));
         }

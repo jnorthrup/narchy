@@ -19,7 +19,7 @@ dependencies {
     }
     compile group: 'com.google.guava', name: 'guava', version: '27.0-jre'
     compile group: 'org.ow2.asm', name: 'asm-commons', version: '7.0'
-    compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.9.3'
+    compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.9.4'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
 
 

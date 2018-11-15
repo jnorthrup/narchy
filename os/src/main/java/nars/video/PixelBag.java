@@ -78,8 +78,11 @@ public abstract class PixelBag implements Bitmap2D {
             @Override
             public void update() {
                 b = bb.get();
-                if (b != null)
-                    super.update();
+                if (b != null) {
+                    synchronized (this) {
+                        super.update();
+                    }
+                }
 
             }
 

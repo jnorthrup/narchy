@@ -43,7 +43,7 @@ public abstract class Attention extends DurService {
 
         forgetting.update(nar);
 
-        forgetting.update(concepts.active, dt, n);
+        forgetting.updateConcepts(concepts.active, dt, n);
 
 
         deriving.update(nar);

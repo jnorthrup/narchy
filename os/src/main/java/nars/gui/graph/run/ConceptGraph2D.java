@@ -7,7 +7,6 @@ import nars.NAR;
 import nars.concept.Concept;
 import nars.control.DurService;
 import nars.gui.NARui;
-import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
@@ -181,16 +180,21 @@ public class ConceptGraph2D extends Graph2D<Term> {
 //        }
 //    }
 
-    /**
-     * bad HACK to avoid a term/concept equality issue
-     */
-    @Deprecated
-    public static ProxyTerm wrap(Term l) {
-        return new ProxyTerm(l);
-    }
+//    /**
+//     * bad HACK to avoid a term/concept equality issue
+//     */
+//    @Deprecated
+//    public static ProxyTerm wrap(Term l) {
+//        return new ProxyTerm(l);
+//    }
 
     private static class TasklinkVis implements Graph2D.Graph2DRenderer<Term> {
-        public final AtomicBoolean tasklinks = new AtomicBoolean(true);
+
+        public final AtomicBoolean belief = new AtomicBoolean(true);
+        public final AtomicBoolean goal = new AtomicBoolean(true);
+        public final AtomicBoolean question = new AtomicBoolean(true);
+        public final AtomicBoolean quest = new AtomicBoolean(true);
+
         final NAR n;
 
 
@@ -200,22 +204,31 @@ public class ConceptGraph2D extends Graph2D<Term> {
 
         @Override
         public void node(NodeVis<Term> node, GraphEditing<Term> graph) {
-            if (!tasklinks.get())
+            boolean belief = this.belief.getOpaque();
+            boolean goal = this.goal.getOpaque();
+            boolean question = this.question.getOpaque();
+            boolean quest = this.quest.getOpaque();
+            if (!belief && !goal && !question && !quest)
                 return;
             Term t = node.id;
             if (t == null) return;
             Concept c = n.concept(t);
             if (c != null) {
                 c.tasklinks().forEach(l -> {
+                    byte punc = l.punc();
+                    switch (punc) {
+                        case BELIEF: if (!belief) return; break;
+                        case GOAL: if (!goal) return; break;
+                        case QUESTION: if (!question) return; break;
+                        case QUEST: if (!quest) return; break;
+                    }
 
-                    Term targetTerm = l.term();
+                    Term targetTerm = l.term().concept();
 //                if (targetTerm.equals(sourceTerm.term()))
 //                    return; //ignore
 
-                    Graph2D.EdgeVis<Term> e = graph.edge(node, wrap(targetTerm));
+                    Graph2D.EdgeVis<Term> e = graph.edge(node, targetTerm);
                     if (e != null) {
-                        float p = l.priElseZero();
-                        e.weightLerp(p, WEIGHT_UPDATE_RATE);
                         int r, g, b;
                     /*
                     https://www.colourlovers.com/palette/848743/(_%E2%80%9D_)
@@ -224,7 +237,8 @@ public class ConceptGraph2D extends Graph2D<Term> {
                     GOAL     Green   138,155,15
                     QUEST    Yellow  248,202,0
                     */
-                        switch (l.punc()) {
+
+                        switch (punc) {
                             case BELIEF:
                                 r = 189;
                                 g = 21;
@@ -248,6 +262,10 @@ public class ConceptGraph2D extends Graph2D<Term> {
                             default:
                                 throw new UnsupportedOperationException();
                         }
+
+                        float p = l.priElseZero();
+                        e.weightLerp(0.5f + 0.5f * p, WEIGHT_UPDATE_RATE);
+
                         e//.colorLerp(0,0,0,COLOR_FADE_RATE).colorAdd
                                 .colorLerp
                                         (r / 256f, g / 256f, b / 256f, COLOR_UPDATE_RATE);
@@ -265,6 +283,8 @@ public class ConceptGraph2D extends Graph2D<Term> {
 
         public final AtomicBoolean subterms = new AtomicBoolean(false);
 
+        public final AtomicBoolean visible = new AtomicBoolean(true);
+
         public final FloatRange strength = new FloatRange(0.1f, 0, 1f);
 
         final NAR n;
@@ -275,8 +295,10 @@ public class ConceptGraph2D extends Graph2D<Term> {
 
         @Override
         public void node(NodeVis<Term> node, GraphEditing<Term> graph) {
-            if (!subterms.get())
+            if (!subterms.getOpaque())
                 return;
+
+            boolean visible = this.visible.getOpaque();
 
             float p = strength.floatValue();
 
@@ -289,10 +311,11 @@ public class ConceptGraph2D extends Graph2D<Term> {
                     if (s.op().conceptualizable) {
                         if (t != null) {
                             int v = t.volume();
-                            @Nullable EdgeVis<Term> e = graph.edge(node, s.term());
+                            @Nullable EdgeVis<Term> e = graph.edge(node, s.term().concept());
                             if (e != null) {
-                                e.weightLerp(p, WEIGHT_UPDATE_RATE)
-                                        .colorAdd(p, p, p, COLOR_UPDATE_RATE / v);
+                                e.weightLerp(p, WEIGHT_UPDATE_RATE);
+                                if (visible)
+                                    e.colorAdd(p, p, p, COLOR_UPDATE_RATE / v);
                             }
                         }
                     }

@@ -190,7 +190,8 @@ public class ObjectSurface<X> extends MutableUnitContainer {
             });
             if (xx == initialValue)
                 initialButton = i;
-            b[i++] = tb;
+            b[i] = tb;
+            i++;
         }
 
 

@@ -12,7 +12,6 @@ public class LevelGenerator {
 
     @SuppressWarnings("unused")
     private static final Random levelSeedRandom = new Random();
-    public static long lastSeed;
 
     public static Level createLevel(int width, int height, long seed, int difficulty, int type) {
         LevelGenerator levelGenerator = new LevelGenerator(width, height);
@@ -58,7 +57,7 @@ public class LevelGenerator {
             odds[i] = totalOdds - odds[i];
         }
 
-        lastSeed = seed;
+//        lastSeed = seed;
         level = new Level(width, height);
         random = new Random(seed);
 

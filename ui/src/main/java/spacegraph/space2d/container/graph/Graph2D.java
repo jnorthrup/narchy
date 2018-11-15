@@ -9,6 +9,7 @@ import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.data.map.MRUMap;
 import jcog.data.pool.MetalPool;
 import jcog.data.pool.Pool;
+import jcog.data.set.ArrayHashSet;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
@@ -23,7 +24,6 @@ import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.MutableFloatRect;
 import spacegraph.video.Draw;
 
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -83,12 +83,12 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         s.hide();
     }
 
-    private volatile Graph2DUpdater<X> updater;
+    private volatile Graph2DUpdater<X> updater = NullUpdater;
 
     final static Graph2DUpdater NullUpdater = (c, d) -> {
     };
 
-    private final transient Set<X> wontRemain = new LinkedHashSet();
+    private final transient Set<X> wontRemain = new ArrayHashSet();
 
     private final Consumer<NodeVis<X>> DEFAULT_NODE_BUILDER = x -> x.set(
             new Scale(new PushButton(x.id.toString()), 0.75f)
@@ -106,6 +106,8 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     public Surface widget() {
         return widget(null);
     }
+
+    /** TODO impl using MetaFrame menu */
     public Surface widget(Object controls) {
         Gridding cfg = configWidget();
 

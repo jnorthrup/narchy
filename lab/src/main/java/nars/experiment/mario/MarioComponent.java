@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public class MarioComponent extends JComponent implements Runnable, KeyListener, FocusListener {
@@ -21,10 +22,13 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
     public void startGame() {
 
 
+        int levelType = ThreadLocalRandom.current().nextFloat()  > 0.5f ?
+                LevelGenerator.TYPE_UNDERGROUND
+                :
+                LevelGenerator.TYPE_OVERGROUND;
+
         startLevel((int) (Math.random() * 50000), 1,
-                Math.random() > 0.5f ? LevelGenerator.TYPE_UNDERGROUND
-                        :
-                        LevelGenerator.TYPE_OVERGROUND
+                levelType
         );
     }
 

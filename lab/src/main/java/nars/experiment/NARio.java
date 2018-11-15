@@ -13,7 +13,6 @@ import nars.experiment.mario.Scene;
 import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
 import nars.gui.NARui;
-import nars.sensor.Bitmap2DSensor;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
 import spacegraph.SpaceGraph;
@@ -64,8 +63,8 @@ public class NARio extends NAgentX {
         cc.actions.forEach(a -> a.resolution(0.5f));
 
 
-        Bitmap2DSensor ccb;
-        addCamera(ccb = new Bitmap2DSensor(id, cc, this.nar)).resolution(0.02f);
+//        Bitmap2DSensor ccb;
+//        addCamera(ccb = new Bitmap2DSensor(id, cc, this.nar)).resolution(0.02f);
 
 //        AutoConceptualizer ac;
 //        addSensor(ac = new AutoConceptualizer(new FasterList(ccb.concepts), true, 8 , this.nar));

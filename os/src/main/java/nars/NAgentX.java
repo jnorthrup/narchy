@@ -17,6 +17,7 @@ import nars.agent.NAgent;
 import nars.agent.Reward;
 import nars.agent.SimpleReward;
 import nars.agent.util.RLBooster;
+import nars.attention.ActiveConcepts;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
@@ -28,7 +29,6 @@ import nars.derive.impl.BatchDeriver;
 import nars.derive.impl.ZipperDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.timing.ActionTiming;
-import nars.attention.ActiveConcepts;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
 import nars.gui.NARui;
@@ -427,22 +427,39 @@ abstract public class NAgentX extends NAgent {
                 //40
         );
 
-
         n.confMin.set(0.01f);
         //n.freqResolution.set(0.03f);
         n.termVolumeMax.set(30);
 
         n.conceptActivation.set(1f);
 
-        n.beliefPriDefault.set(0.4f);
-        n.goalPriDefault.set(0.7f);
+        n.beliefPriDefault.set(0.5f);
+        n.goalPriDefault.set(0.6f);
         n.questionPriDefault.set(0.25f);
         n.questPriDefault.set(0.25f);
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
 
-
+//
+//        n.attn.forgetting = new Forgetting.AsyncForgetting() {
+//            @Override
+//            protected Consumer<TaskLink> forgetTasklinks(Concept cc, Bag<Tasklike, TaskLink> tasklinks) {
+//                Consumer<TaskLink> c = super.forgetTasklinks(cc, tasklinks);
+//
+//                if (c==null) return null;
+//
+//                Term cct = cc.term();
+//
+//                Consumer<TaskLink> cSpecial = new PriForget<>(  Util.lerp(0.25f, 0, 1-((PriForget)c).mult));
+//                return (tl)->{
+//                      if (tl.punc()==GOAL || (tl.term().op()==IMPL && tl.term().sub(1).equals(cct)))
+//                          cSpecial.accept(tl);
+//                      else
+//                          c.accept(tl);
+//                };
+//            }
+//        };
 
         n.emotion.want(MetaGoal.PerceiveCmplx, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
