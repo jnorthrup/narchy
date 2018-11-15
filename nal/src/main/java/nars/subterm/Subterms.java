@@ -5,6 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
+import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayUnenforcedSortedSet;
 import nars.$;
@@ -42,6 +43,9 @@ import static nars.Op.ATOM;
  */
 public interface Subterms extends Termlike, Iterable<Term> {
 
+    interface SubtermsBytesCached {
+        void bytes(DynBytes builtWith);
+    }
 
     static int hash(List<Term> term) {
         int h = 1;

@@ -108,7 +108,7 @@ public abstract class UnitCompound implements Compound {
         if (nextDT == XTERNAL) {
             if (op()==CONJ) {
                 //only case it's allowed
-                return TermBuilder.theCompound(CONJ, XTERNAL, new ArrayTermVector(sub()));
+                return TermBuilder.newCompound(CONJ, XTERNAL, new ArrayTermVector(sub()));
             }
         }
         assert(nextDT == DTERNAL);
@@ -117,7 +117,7 @@ public abstract class UnitCompound implements Compound {
 
 
     @Override
-    public Subterms subterms() {
+    public final Subterms subterms() {
         return new UniSubterm(sub());
     }
 

@@ -164,8 +164,8 @@ public class SubtermsTest {
         Assertions.assertEquals(a.hashCode(), b.hashCode());
         Assertions.assertEquals(a.hashCodeSubterms(), b.hashCodeSubterms());
         assertTrue(Iterators.elementsEqual(a.iterator(), b.iterator()));
-        Assertions.assertEquals(Op.terms.theCompound(PROD, a), Op.terms.theCompound(PROD, b));
-        Assertions.assertEquals(Op.terms.theCompound(PROD, b), Op.terms.theCompound(PROD, a));
+        Assertions.assertEquals(Op.terms.newCompound(PROD, a), Op.terms.newCompound(PROD, b));
+        Assertions.assertEquals(Op.terms.newCompound(PROD, b), Op.terms.newCompound(PROD, a));
 
 
         org.junit.jupiter.api.Assertions.assertEquals(0, Subterms.compare(a, b));

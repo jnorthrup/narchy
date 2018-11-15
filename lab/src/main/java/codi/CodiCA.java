@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 public class CodiCA extends CA {
     private int CAChanged;
-    private int InputSum;
+
     private boolean SignalingInited;
 
     /** add blocks every 2 cells TODO verify this is what it actually means */
@@ -38,14 +38,14 @@ public class CodiCA extends CA {
 
     //    private static final int SIG_COL = 5;
 //    private static final int ERROR_COL = 13;
-    private final int[][][] ColorSpace;
+//    private final int[][][] ColorSpace;
 //    private int ActualColor;
 
-    public CodiCA() {
-        super(20, 20, 1);
+    public CodiCA(int w, int h, int d) {
+        super(w, h, d);
 
 
-        ColorSpace = new int[sizeX][sizeY][sizeZ];
+
         cell = new CodiCell[sizeX][sizeY][sizeZ];
         for (int ix = 0; ix < sizeX; ix++)
             for (int iy = 0; iy < sizeY; iy++)
@@ -63,7 +63,7 @@ public class CodiCA extends CA {
         for (int ix = 0; ix < sizeX; ix++)
             for (int iy = 0; iy < sizeY; iy++)
                 for (int iz = 0; iz < sizeZ; iz++) {
-                    ColorSpace[ix][iy][iz] = 0;
+
                     CodiCell cell = this.cell[ix][iy][iz];
                     cell.Type = 0;
                     cell.Activ = 0;
@@ -132,7 +132,7 @@ public class CodiCA extends CA {
                     c.Activ = 0;
                     Arrays.fill(c.IOBuf, 0, 6, 0);
                     if (c.Type == NEURON)
-                        c.Activ = (random.nextInt() % 32);
+                        c.Activ = (random.nextInt() % (32*2))-32;
                 }
     }
 
@@ -175,7 +175,7 @@ public class CodiCA extends CA {
                                 break;
                             }
 
-                            InputSum =
+                            int InputSum =
                                     caio[0] +
                                             caio[1] +
                                             caio[2] +
@@ -265,46 +265,76 @@ public class CodiCA extends CA {
 
 
                             break;
-                        case NEURON:
-                            InputSum = 1 +
+                        case NEURON: {
+                            int antigate = ((ca.Gate % 2) * -2) + 1 + ca.Gate;
+                            int in = 1 +
                                     caio[0] +
                                     caio[1] +
                                     caio[2] +
                                     caio[3] +
                                     caio[4] +
-                                    caio[5] -
-                                    caio[ca.Gate] -
-                                    caio[((ca.Gate % 2) * -2) + 1 + ca.Gate];
+                                    caio[5]
+                                    - caio[ca.Gate]
+                                    - caio[antigate]
+                            ;
 
-                            ca.Activ += InputSum;
+                            ca.Activ += in;
 
                             Arrays.fill(caio, 0);
 
-                            if (ca.Activ > 31) {  //firing threshold
-                                caio[ca.Gate] = 1;
-                                caio[((ca.Gate % 2) * -2) + 1 + ca.Gate] = 1;
-                                ca.Activ = 0;
+                            if (ca.Activ /* */ >= 31) {  //firing threshold
+                                caio[antigate] = caio[ca.Gate] = +31;
+                                //ca.Activ = 0;
+                                //ca.Activ = Math.max(0, ca.Activ - 31);
+                                ca.Activ = ca.Activ - 31; //possible neg refract
+                            } else if (ca.Activ <= -31) {
+                                caio[antigate] = caio[ca.Gate] = -31;
+                                ca.Activ = ca.Activ + 31; //possible pos refract
                             }
                             break;
+                        }
                         case AXON:
-                            for (int i = 0; i < 6; i++)
-                                caio[i] = caio[ca.Gate];
-                            ca.Activ = (caio[ca.Gate]) != 0 ? 1 : 0;
+                            int out = caio[ca.Gate];
+                            for (int i = 0; i < 6; i++) {
+                                caio[i] = out;
+                            }
+                            ca.Activ =
+                                    //out;
+                                    out != 0 ? (out > 0 ? +1 : -1) : 0;
+                                    //out != 0 ? 1 : 0;
+                                    //Util.clamp(ca.Activ + out, -31, +31);
                             break;
-                        case DEND:
-                            InputSum =
+                        case DEND: {
+                            int in =
                                     caio[0] +
                                             caio[1] +
                                             caio[2] +
                                             caio[3] +
                                             caio[4] +
-                                            caio[5];
-                            if (InputSum > 2) InputSum = 2;
+                                            caio[5]
+                                            - caio[ca.Gate]
+                            ;
+
+//                            float avgIn = in/6f;
+//                            float prev = ca.Activ;
+//                            float delta = Math.abs(avgIn - prev);
+//                            if (avgIn>=0 != prev>=0) {
+//                                in = Math.round(in / (1 + delta));
+//                            } else {
+//                                in = Math.round(in * (1 + delta));
+//                            }
+
+                            //if (in > 2) in = 2;
                             Arrays.fill(caio, 0);
 
-                            caio[ca.Gate] = InputSum;
-                            ca.Activ = InputSum != 0 ? 1 : 0;
+                            caio[ca.Gate] =
+                            ca.Activ =
+                                    //in;
+                                    in != 0 ? (in > 0 ? +1 : -1) : 0;
+                                    //in != 0 ? 1 : 0;
+                                    //Util.clamp(ca.Activ + in, -31, +31);
                             break;
+                        }
                     }
                 }
         Kicking();
@@ -450,7 +480,7 @@ public class CodiCA extends CA {
     }
 
     public static void main(String[] args) {
-        CodiCA c = new CodiCA();
+        CodiCA c = new CodiCA(128,128,1);
 
         new Loop() {
 
@@ -459,7 +489,7 @@ public class CodiCA extends CA {
                 c.next();
                 return true;
             }
-        }.setFPS(40);
+        }.setFPS(10);
 
         SpaceGraph.window(new CodiSurface(c), 1000, 1000);
     }

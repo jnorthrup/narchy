@@ -1,6 +1,7 @@
 package nars.term.anon;
 
 import com.google.common.io.ByteArrayDataOutput;
+import jcog.data.byt.DynBytes;
 import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.subterm.Subterms;
@@ -18,7 +19,7 @@ import static nars.term.anon.AnonID.*;
 /**
  * a vector which consists purely of AnonID terms
  */
-public class AnonVector extends TermVector implements FullyInternable {
+public class AnonVector extends TermVector implements Subterms.SubtermsBytesCached {
 
     /*@Stable*/
     private final short[] subterms;
@@ -45,17 +46,11 @@ public class AnonVector extends TermVector implements FullyInternable {
         short[] t = subterms = new short[s.length];
         for (int i = 0, sLength = s.length; i < sLength; i++) {
             Term ss = s[i];
-            boolean neg;
-            if (hasNeg && ss.op() == NEG) {
-                ss = ss.unneg();
-                neg = true;
-            } else {
-                neg = false;
-            }
-            short tt = ((AnonID) ss).anonID;
+            boolean neg = hasNeg && ss.op() == NEG;
             if (neg)
-                tt = (short) -tt;
-            t[i] = tt;
+                ss = ss.unneg();
+            short tt = ((AnonID) ss).anonID;
+            t[i] = neg ? ((short)-tt) : tt;
         }
 
         testIfInitiallyNormalized();
@@ -73,6 +68,7 @@ public class AnonVector extends TermVector implements FullyInternable {
 
     @Override
     public Subterms replaceSub(Term from, Term to, Op superOp) {
+
 
         short fid = AnonID.id(from);
         if (fid == 0)
@@ -117,25 +113,24 @@ public class AnonVector extends TermVector implements FullyInternable {
             return new AnonVector(a);
         } else {
             int n = subs();
-            TermList t = new TermList(n);
+            Term[] tt = new Term[n];
             short[] a = this.subterms;
             if (fid > 0) {
                 for (int i = 0; i < n; i++) { //replace positive or negative, with original polarity
                     short x = a[i];
-                    if (x == fid) t.add(to);
-                    else if (-x == fid) t.add(to.neg());
-                    else t.addWithoutResizeCheck(idToTerm(x));
+                    Term y;
+                    if (x == fid) y = (to);
+                    else if (-x == fid) y = (to.neg());
+                    else y = (idToTerm(x));
+                    tt[i] = (y);
                 }
             } else {
                 for (int i = 0; i < n; i++) { //replace negative only
-                    short x = a[i];
-                    if (a[i] == fid) t.add(to);
-                    else t.addWithoutResizeCheck(idToTerm(x));
+                    tt[i] = (a[i] == fid ? to : idToTerm(a[i]));
                 }
 
             }
-
-            return t;
+            return new TermList(tt);
         }
     }
 
@@ -185,19 +180,6 @@ public class AnonVector extends TermVector implements FullyInternable {
         return count;
     }
 
-    @Override
-    public void appendTo(ByteArrayDataOutput out) {
-        short[] ss = subterms;
-        out.writeByte(ss.length);
-        for (short s: ss) {
-            if (s < 0) {
-
-                out.writeByte(Op.NEG.id);
-                s = (short) -s;
-            }
-            idToTermPos(s).appendTo(out);
-        }
-    }
 
     @Override
     public final int subs() {
@@ -320,4 +302,28 @@ public class AnonVector extends TermVector implements FullyInternable {
     }
 
 
+    private transient byte[] bytes = null;
+
+    @Override
+    public void appendTo(ByteArrayDataOutput out) {
+        if (bytes==null) {
+            short[] ss = subterms;
+            out.writeByte(ss.length);
+            for (short s : ss) {
+                if (s < 0) {
+                    out.writeByte(Op.NEG.id);
+                    s = (short) -s;
+                }
+                idToTermPos(s).appendTo(out);
+            }
+        } else {
+            out.write(bytes);
+        }
+    }
+
+    @Override
+    public void bytes(DynBytes builtWith) {
+        if (bytes == null)
+            bytes = builtWith.arrayCopy(1 /* skip op byte */);
+    }
 }

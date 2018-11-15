@@ -186,9 +186,8 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
 
     @Override
     public final void write(byte[] bytes, int off, int len) {
-        int position = ensureSized(len);
-        System.arraycopy(bytes, off, this.bytes, position, len);
-        this.len = position + len;
+        System.arraycopy(bytes, off, this.bytes, ensureSized(len), len);
+        this.len += len;
     }
 
     private int ensureSized(int extra) {
@@ -258,7 +257,9 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     public final byte[] arrayCopy() {
         return Arrays.copyOf(bytes, len);
     }
-
+    public final byte[] arrayCopy(int offset) {
+        return Arrays.copyOfRange(bytes, offset, len);
+    }
 
     public byte[] compact() {
         return compact(false);

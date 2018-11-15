@@ -18,7 +18,7 @@ public abstract class DirectTermTransform extends TermTransform.NegObliviousTerm
 
     @Override
     public Term the(Op op, int dt, Subterms t) {
-        return TermBuilder.theCompound(op, dt, t);
+        return TermBuilder.newCompound(op, dt, t);
     }
 
 //    class CachedDirectTermTransform implements DirectTermTransform {

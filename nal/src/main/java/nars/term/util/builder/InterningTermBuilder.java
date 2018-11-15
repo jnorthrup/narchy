@@ -103,7 +103,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     private Term compoundInterned(InternedCompound x) {
-        return theCompound(Op.ops[x.op], x.dt, x.rawSubs.get(), null); //x.arrayFinal());
+        return theCompound(Op.ops[x.op], x.dt, x.rawSubs.get(), x.key); //x.arrayFinal());
     }
 
     @Override
@@ -156,7 +156,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     }
 
-    protected Term theCompound(Op o, int dt, Term[] t, @Nullable byte[] key) {
+    protected Term theCompound(Op o, int dt, Term[] t, @Nullable DynBytes key) {
         if (deep)
             resolve(t);
         return super.theCompound(o, dt, t, key);

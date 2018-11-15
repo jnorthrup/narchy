@@ -62,9 +62,9 @@ class TermListTest {
         Subterms[] ab = {mutable, immutable};
         for (Subterms a : ab) {
             for (Subterms b : ab) {
-                TermTest.assertReallyEquals(Op.terms.theCompound(PROD, a), new LightCompound(PROD, b));
-                TermTest.assertReallyEquals(Op.terms.theCompound(SETe, a), new LightCompound(SETe, b));
-                assertNotEquals(Op.terms.theCompound(PROD, a), new LightCompound(SETi, b));
+                TermTest.assertReallyEquals(Op.terms.newCompound(PROD, a), new LightCompound(PROD, b));
+                TermTest.assertReallyEquals(Op.terms.newCompound(SETe, a), new LightCompound(SETe, b));
+                assertNotEquals(Op.terms.newCompound(PROD, a), new LightCompound(SETi, b));
 
             }
         }

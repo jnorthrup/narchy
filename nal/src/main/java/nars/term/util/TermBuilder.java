@@ -1,8 +1,8 @@
 package nars.term.util;
 
 import jcog.WTF;
+import jcog.data.byt.DynBytes;
 import nars.Op;
-import nars.Param;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
@@ -117,8 +117,8 @@ public abstract class TermBuilder {
         return theCompound(o, dt, u, null);
     }
 
-    protected Term theCompound(Op o, int dt, Term[] t, @Nullable byte[] key) {
-        assert (!o.atomic) : o + " is atomic, with subterms: " + Arrays.toString(t);
+    protected Term theCompound(Op o, int dt, Term[] t, @Nullable DynBytes key) {
+        assert (!o.atomic) : o + " is atomic, yet given subterms: " + Arrays.toString(t);
 
         boolean hasEllipsis = false;
 
@@ -147,28 +147,31 @@ public abstract class TermBuilder {
             }
         }
 
-        return theCompound(o, dt, subterms(o, t), key);
+        Subterms subs = subterms(o, t);
+
+        if(key!=null) {
+            if (subs instanceof Subterms.SubtermsBytesCached)
+                ((Subterms.SubtermsBytesCached) subs).bytes(key);
+        }
+
+        return newCompound(o, dt, subs);
     }
 
 
-    public static Compound theCompound(Op op, Subterms subterms) {
-        return theCompound(op, DTERNAL, subterms);
+    public static Compound newCompound(Op op, Subterms subterms) {
+        return newCompound(op, DTERNAL, subterms);
     }
 
-    public static Compound theCompound(Op op, int dt, Subterms subterms) {
-        return theCompound(op, dt, subterms, null);
-    }
-
-    private static Compound theCompound(Op op, int dt, Subterms subterms, @Nullable byte[] key) {
+    public static Compound newCompound(Op op, int dt, Subterms subterms) {
 //        if (subterms instanceof DisposableTermList)
 //            throw new WTF();
         if (!op.temporal && !subterms.hasAny(Op.Temporal)) {
             assert(dt == DTERNAL);
-            if (key!=null && subterms.volume() < Param.TERM_BYTE_KEY_CACHED_BELOW_VOLUME) {
-                return new CachedCompound.SimpleCachedCompoundWithBytes(op, subterms, key);
-            } else {
+//            if (key!=null && subterms.volume() < Param.TERM_BYTE_KEY_CACHED_BELOW_VOLUME) {
+//                return new CachedCompound.SimpleCachedCompoundWithBytes(op, subterms, key);
+//            } else {
                 return new CachedCompound.SimpleCachedCompound(op, subterms);
-            }
+//            }
         } else {
             return new CachedCompound.TemporalCachedCompound(op, dt, subterms);
         }

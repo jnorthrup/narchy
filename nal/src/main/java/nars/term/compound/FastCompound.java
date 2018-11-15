@@ -372,7 +372,7 @@ abstract public class FastCompound implements Compound /* The */ {
         } else {
             
             
-            return TermBuilder.theCompound(opAtSub,
+            return TermBuilder.newCompound(opAtSub,
                     Op.terms.subterms(new SubtermView(this, offset))
                     
             );

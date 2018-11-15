@@ -79,8 +79,7 @@ public abstract class AnonID implements Atomic, The {
     /** POS ONLY assumes non-negative; if the input is negative use idToTermPosOrNeg */
     public static Term idToTermPos(short /* short */ i) {
         byte num = (byte) (i & 0xff);
-        int m = idToMask(i);
-        switch (m) {
+        switch (idToMask(i)) {
             case ATOM_MASK:
                 return Anom.the[num];
             case IMG_MASK:

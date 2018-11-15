@@ -57,8 +57,8 @@ abstract public class Forgetting {
     /** temporally oblivious; uses only incoming pressure to determine forget amounts */
     public static class AsyncForgetting extends Forgetting {
 
-        public final FloatRange conceptForgetRate = new FloatRange(0.5f, 0f, 1f);
-        public final FloatRange tasklinkForgetRate = new FloatRange(0.5f, 0f, 1f);
+        public final FloatRange conceptForgetRate = new FloatRange(0.1f, 0f, 1f);
+        public final FloatRange tasklinkForgetRate = new FloatRange(0.1f, 0f, 1f);
 
         public final void update(Concept c, NAR n) {
             Bag<Tasklike, TaskLink> tasklinks = c.tasklinks();

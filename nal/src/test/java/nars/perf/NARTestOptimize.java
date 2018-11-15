@@ -6,6 +6,7 @@ import jcog.lab.Opti;
 import jcog.lab.Optilive;
 import nars.NAR;
 import nars.NARS;
+import nars.attention.Forgetting;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
@@ -55,15 +56,18 @@ class NARTestOptimize {
 //                        (NAR n, int f) -> Param.LinkFanoutMax = f)
                 .var("activation", 0, 1f, 0.1f,
                             (NAR n, float f) -> n.conceptActivation.set(f))
-//                .var("memoryDuration", 0, 8f, 0.5f,
-//                        (NAR n, float f) -> n.memoryDuration.set(f))
-//                .var("beliefPriDefault", 0, 1f, 0.1f,
-//                        (NAR n, float f) -> n.beliefPriDefault.set(f))
-//                .var("questionPriDefault", 0, 1f, 0.1f,
-//                        (NAR n, float f) -> {
-//                            n.questionPriDefault.set(f);
-//                            n.questPriDefault.set(f);
-//                        })
+                .var("conceptForgetRate", 0, 1f, 0.1f,
+                        (NAR n, float f) -> ((Forgetting.AsyncForgetting)(n.attn.forgetting)).conceptForgetRate.set(f))
+                .var("linkForgetRate", 0, 1f, 0.1f,
+                        (NAR n, float f) -> ((Forgetting.AsyncForgetting)(n.attn.forgetting)).tasklinkForgetRate.set(f))
+
+                .var("beliefPriDefault", 0, 1f, 0.1f,
+                        (NAR n, float f) -> n.beliefPriDefault.set(f))
+                .var("questionPriDefault", 0, 1f, 0.1f,
+                        (NAR n, float f) -> {
+                            n.questionPriDefault.set(f);
+                            n.questPriDefault.set(f);
+                        })
 //                .var("goalPriDefault", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.goalPriDefault.set(f))
 
