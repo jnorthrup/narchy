@@ -234,7 +234,7 @@ public interface Compound extends Term, IPair, Subterms {
             return xx.sub(0).unify(yy.sub(0), u);
         } else {
 
-            if (!Terms.commonStructureTest(xx, yy, u))
+            if (!Subterms.possiblyUnifiable(xx, yy, u))
                 return false;
 
             Op o = op();
@@ -256,15 +256,7 @@ public interface Compound extends Term, IPair, Subterms {
             }
 
 
-            //test only after equality
-            //if ((u.constant(x) && (!u.symmetric || u.constant(y)))) {
-//            if (u.constant(x) && u.constant(y)) {
-//                //constant case, some things can be assumed
-//                if (!x.hasAny(Op.Temporal))
-//                    return false; //temporal terms need to be compared for matching 'dt'
-//                if (xx.volume()!=yy.volume())
-//                    return false;
-//            }
+
 
 
             if (o.commutative /* subs>1 */) {

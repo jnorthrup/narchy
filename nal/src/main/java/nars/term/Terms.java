@@ -9,7 +9,6 @@ import nars.Op;
 import nars.derive.premise.PatternIndex;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
-import nars.unify.Unify;
 import org.eclipse.collections.api.LazyIterable;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
@@ -307,13 +306,6 @@ public enum Terms {
         int yStruct = required & ~(maskedBits);
         return xStruct == 0 || yStruct == 0 ||
                Op.hasAll(yStruct, xStruct);
-    }
-
-    public static boolean commonStructureTest(Termlike x, Termlike y, Unify u) {
-        return /*u.symmetric || */hasAllExcept(x, y, u.varBits);
-    }
-    public static boolean commonStructureTest(int structure, Termlike y, Unify u) {
-        return /*u.symmetric || */hasAllExcept(structure, y.structure(), u.varBits);
     }
 
     /** finds the shortest deterministic subterm path for extracting a subterm in a compound.

@@ -23,7 +23,7 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
     public Bag<Term, Activate> active = Bag.EMPTY;
 
 
-    public final FloatRange conceptForgetRate = new FloatRange(0.9f, 0f, 1f);
+    public final FloatRange conceptForgetRate = new FloatRange(0.5f, 0f, 1f);
 
     /**
      * TODO make dynamicalyl adjustable thru MutableInteger etc
@@ -93,7 +93,7 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
 
 
     private void updateConcepts() {
-        active.commit(nar.attn.forgetting.forget(active, conceptForgetRate.floatValue()));
+        active.commit(nar.attn.forgetting.forget(active, 1f, conceptForgetRate.floatValue()));
     }
 
     @Override

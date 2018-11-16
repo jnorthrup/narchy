@@ -85,6 +85,7 @@ public interface Termlike {
             v = reduce.intValueOf(v, sub(i));
         return v;
     }
+
     /** recursive, visits each component */
     default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
         int n = subs();

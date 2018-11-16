@@ -22,7 +22,7 @@ abstract public class Forgetting {
     abstract public void update(Concept c, NAR n);
 
 
-    public final @Nullable Consumer forget(Bag b, float temperature) {
+    public final @Nullable Consumer forget(Bag b, float depressurizationRate, float temperature) {
 
         if (temperature > Float.MIN_NORMAL) {
             int size = b.size();
@@ -30,7 +30,7 @@ abstract public class Forgetting {
                 int cap = b.capacity();
                 if (cap > 0) {
 
-                    float pressure = depressurize(b, temperature);
+                    float pressure = depressurize(b, depressurizationRate);
 
                     float mass = b.mass();
                     if (mass > Float.MIN_NORMAL) {
@@ -59,8 +59,8 @@ abstract public class Forgetting {
 
         public final FloatRange tasklinkForgetRate = new FloatRange(0.5f, 0f, 1f);
 
-        @Override protected float depressurize(Bag b, float temperatureIgnored) {
-            return b.depressurizePct(1f);
+        @Override protected float depressurize(Bag b, float depressurizationRate) {
+            return b.depressurizePct(depressurizationRate);
         }
 
         public final void update(Concept c, NAR n) {
@@ -69,7 +69,7 @@ abstract public class Forgetting {
         }
 
         protected Consumer<TaskLink> forgetTasklinks(Concept c, Bag<Tasklike, TaskLink> tasklinks) {
-            return forget(tasklinks, tasklinkForgetRate.floatValue());
+            return forget(tasklinks, 1f, tasklinkForgetRate.floatValue());
         }
 
 

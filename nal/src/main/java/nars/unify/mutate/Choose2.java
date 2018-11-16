@@ -1,5 +1,6 @@
 package nars.unify.mutate;
 
+import jcog.TODO;
 import jcog.math.Combinations;
 import jcog.util.ArrayUtils;
 import nars.$;
@@ -21,61 +22,59 @@ import java.util.SortedSet;
  */
 public class Choose2 extends Termutator.AbstractTermutator {
 
-    /*@NotNull*/
-    private final Combinations comb;
-    
+
     /*@NotNull*/
     private final Term[] x;
     /*@NotNull*/
     private final Ellipsis xEllipsis;
     /*@NotNull*/
     private final Unify f;
-    /*@NotNull*/
-    private final ShuffledSubterms yy;
+
 
     private final static Atom CHOOSE_2 = $.the(Choose2.class);
 
     public Choose2(Ellipsis xEllipsis, Unify f, MutableSet<Term> x, SortedSet<Term> yFree) {
         this(xEllipsis, f,
                 Terms.sorted(x),
-                $.vFast(yFree.toArray(Op.EmptyTermArray)));
+                yFree);
     }
 
     public Choose2(Ellipsis xEllipsis, Unify f, SortedSet<Term> x, SortedSet<Term> yFree) {
         this(xEllipsis, f,
                 x.toArray(Op.EmptyTermArray),
-                $.vFast(yFree.toArray(Op.EmptyTermArray)));
+                yFree);
     }
 
-    private Choose2(Ellipsis xEllipsis, Unify f, Term[] x, Subterms yFree) {
+    public Choose2(Ellipsis xEllipsis, Unify u, Term[] x, SortedSet<Term> yFree) {
         super(CHOOSE_2, $.pFast(x), xEllipsis, $.sFast(yFree));
 
-        this.f = f;
+        this.f = u;
 
         this.xEllipsis = xEllipsis;
 
         this.x = x;
 
-        this.yy = new ShuffledSubterms(yFree, f.random  /*new ArrayTermVector(yFree)*/);
-
-        this.comb = new Combinations(yFree.subs(), 2);
     }
 
     @Override
     public int getEstimatedPermutations() {
-        return comb.getTotal()*2;
+        throw new TODO();
+        //return comb.getTotal()*2;
     }
 
     @Override
-    public void mutate(Unify versioneds, Termutator[] chain, int current) {
+    public void mutate(Unify u, Termutator[] chain, int current) {
 
-        Combinations ccc = this.comb;
+        Subterms yFree = sub(1).sub(2).subterms();
+
+
+        Combinations ccc = new Combinations(yFree.subs(), 2);
         ccc.reset();
 
         boolean phase = true;
 
         int start = f.size();
-        ShuffledSubterms yy = this.yy;
+        ShuffledSubterms yy = new ShuffledSubterms(yFree, u.random  /*new ArrayTermVector(yFree)*/);;
 
 
 
@@ -87,11 +86,8 @@ public class Choose2 extends Termutator.AbstractTermutator {
         while (ccc.hasNext() || !phase) {
 
             c = phase ? ccc.next() : c;
-            phase = !phase;
 
-            byte c0 = (byte) c[0];
-            byte c1 = (byte) c[1];
-            ArrayUtils.reverse(c); 
+            byte c0 = (byte) c[0], c1 = (byte) c[1];
 
             Term y1 = yy.sub(c0);
 
@@ -110,6 +106,10 @@ public class Choose2 extends Termutator.AbstractTermutator {
 
             if (!f.revertLive(start))
                 break;
+
+            ArrayUtils.reverse(c);
+            phase = !phase;
+
         }
 
     }

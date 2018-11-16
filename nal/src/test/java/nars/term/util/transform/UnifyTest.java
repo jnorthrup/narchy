@@ -4,6 +4,7 @@ import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.random.XorShift128PlusRandom;
 import nars.*;
 import nars.derive.premise.PatternIndex;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
@@ -27,8 +28,11 @@ public class UnifyTest {
 
     @Test void testCommonStructureAllVariables() {
         Unify u = new UnifyAny(new XoRoShiRo128PlusRandom() );
+//        assertTrue(
+//            Terms.commonStructureTest( $$("(#1,$2,?3)").subterms(), $$("(#3,$2,?1)").subterms(), u)
+//        );
         assertTrue(
-            Terms.commonStructureTest( $$("(#1,$2,?3)").subterms(), $$("(#3,$2,?1)").subterms(), u)
+            Subterms.possiblyUnifiable( $$("(#1,$2,?3)").subterms(), $$("(#3,$2,?1)").subterms(), u)
         );
     }
 

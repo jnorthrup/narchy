@@ -116,7 +116,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     @Override
     public float depressurizePct(float percentage) {
         assertUnitized(percentage);
-        return PRESSURE.getAndUpdate(this, (p,factor)-> Math.min(mass() /* limit */, p * factor), 1-percentage) * percentage;
+        float m = mass();
+        return Math.min(m, PRESSURE.getAndUpdate(this, (p,factor)-> Math.min(m /* limit */, p) * factor, 1-percentage)) * percentage;
     }
 
     @Override

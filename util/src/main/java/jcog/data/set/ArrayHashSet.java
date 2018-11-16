@@ -225,11 +225,14 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
     @Override
     public boolean remove(Object o) {
+        int s = size();
+        if ( s== 0) return false;
         boolean removed = set.remove(o);
         if (removed) {
+            s--;
             list.remove(o);
 
-            switch (size()) {
+            switch (s) {
                 case 0:
                     set = emptySet();
                     break;

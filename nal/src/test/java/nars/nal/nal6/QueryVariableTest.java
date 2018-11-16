@@ -61,7 +61,7 @@ class QueryVariableTest {
 
     @Test
     void testQuery1() throws Narsese.NarseseException {
-        testQueryAnswered(1, 4);
+        testQueryAnswered(2, 8);
     }
 
     private void testQuestionAnswer(String question, String belief) throws Narsese.NarseseException {

@@ -12,7 +12,10 @@ import nars.$;
 import nars.Op;
 import nars.Param;
 import nars.subterm.util.DisposableTermList;
-import nars.term.*;
+import nars.term.Compound;
+import nars.term.Term;
+import nars.term.Termlike;
+import nars.term.Variable;
 import nars.term.atom.Bool;
 import nars.term.util.Image;
 import nars.term.util.transform.MapSubst;
@@ -49,7 +52,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     static int hash(List<Term> term) {
         int h = 1;
-        for (Term aTerm: term) h = Util.hashCombine(h, aTerm);
+        for (Term aTerm : term) h = Util.hashCombine(h, aTerm);
         return h;
     }
 
@@ -83,7 +86,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
         for (int i = 0; i < s; i++)
             t.accept(sub(i), i);
     }
-    default <X> void forEachWith(BiConsumer<Term,X> t, X argConst) {
+
+    default <X> void forEachWith(BiConsumer<Term, X> t, X argConst) {
         int s = subs();
         for (int i = 0; i < s; i++)
             t.accept(sub(i), argConst);
@@ -234,7 +238,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 return ArrayUnenforcedSortedSet.the(the);
             else
                 return ArrayUnenforcedSortedSet.empty;
-        } else if (s ==2 ) {
+        } else if (s == 2) {
             Term a = sub(0);
             Term b = sub(1);
             boolean aok = t.test(a);
@@ -256,7 +260,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
 
     }
-
 
 
     default /*@NotNull*/ TermList toList() {
@@ -500,7 +503,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default int indexOf(/*@NotNull*/ Term t, int after) {
 
         int s = subs();
-        int i = after+1;
+        int i = after + 1;
         if (i >= s)
             return -1;
 
@@ -615,55 +618,106 @@ public interface Subterms extends Termlike, Iterable<Term> {
             case +1:
                 return true;
             default: {
-                switch (xx.size()) {
-                    case 1:
-                        return xx.get(0).unify(yy.get(0), u);
-                    default: {
-                        int xs = xx.structure();
-                        //if (!u.constant(xs) || (u.symmetric && !u.constant(yy))) {
-                        if (!u.constant(xs) || !u.constant(yy)) {
-                            if (Terms.commonStructureTest(xs, yy, u)) {
-
-                                u.termutes.add(new CommutivePermutations(xx, yy));
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
+                if (xx.size() == 1) {
+                    return xx.get(0).unify(yy.get(0), u);
+                } else {
+//                    int xs = xx.structure();
+//                    if (!u.constant(xs) || !u.constant(yy)) {
+//                        if (Terms.commonStructureTest(xs, yy, u)) {
+                    u.termutes.add(new CommutivePermutations(xx, yy));
+                    return true;
+//                        }
+//                    }
+//                    return false;
                 }
             }
         }
 
     }
 
-    /** xs and ys must have variable bits masked before calling, and xs!=0 and ys!=0 */
-    private static boolean possiblyUnifiable(int xs, int ys) {
-        return ((xs & ys)!=0);
-        //return ((((xs & ys)!=0) && Integer.bitCount(xs)==Integer.bitCount(ys)));
+    /**
+     * xs and ys must have variable bits masked before calling, and xs!=0 and ys!=0
+     */
+    public static boolean possiblyUnifiable(int xs, int ys, int varBits) {
+        int xxs = xs & (~varBits);
+        if (xxs == 0)
+            return true; //all var
+        int yys = ys & (~varBits);
+        if (yys == 0)
+            return true; //all var
+
+        return (xxs & yys) != 0; //some non-var match possibility
     }
+
+    static boolean possiblyUnifiable(Subterms xx, Subterms yy, int varBits) {
+        int XS = xx.structure();
+        int XSc = XS & (~varBits);
+        if (XSc == 0)
+            return true; //all vars in X
+        int YS = yy.structure();
+        int YSc = YS & (~varBits);
+        if (YSc == 0)
+            return true; //all vars in Y
+        if (XSc == XS && YSc == YS) {
+            //cheap constant case invariant tests
+            if (XS!=YS || xx.volume() != yy.volume())
+                return false;
+        } //TODO else test invariants of specifically the constant subterms (volume, structure, ..)
+
+        if (XS==XSc && YS==YSc)
+            return true; //done
+
+        //finer-grained sub-constant test
+
+        int xs = xx.structureConstant(varBits);
+        if (xs == 0)
+            return true;
+
+        int ys = yy.structureConstant(varBits);
+        if (ys == 0)
+            return true;
+        //int xs = XS;//xx.structureSurface();
+//        int xxs = xs & (~varBits);
+//        if (xxs == 0)
+//            return true; //all var
+//        int ys = YS;//yy.structureSurface();
+//        int yys = ys & (~varBits);
+//        if (yys == 0)
+//            return true; //all var
+//
+        return (xs & ys) != 0; //any constant commonality
+        //return true;
+    }
+
+    default int structureConstant(int varBits) {
+        return intifyShallow((int v, Term z) -> {
+            int zs = z.structure();
+            return !Op.hasAny(zs, varBits) ? (v | zs) : v;
+        }, 0);
+    }
+
 
     static boolean possiblyUnifiable(Subterms xx, Subterms yy, Unify u) {
         return possiblyUnifiable(xx, yy, u.varBits);
     }
 
-    static boolean possiblyUnifiable(Subterms xx, Subterms yy, int varBits) {
-        int xs = xx.structureSurface() & (~varBits);
-        if (xs == 0)
-            return true; //all var
-        int ys = yy.structureSurface() & (~varBits);
-        if (ys == 0)
-            return true; //all var
-        return possiblyUnifiable(xs, ys);
+    static boolean possiblyUnifiable(Termlike xx, Termlike yy, Unify u) {
+        return possiblyUnifiable(xx.structure(), yy.structure(), u.varBits);
     }
 
-    /** structure of the first layer (surface) only */
+
+    /**
+     * structure of the first layer (surface) only
+     */
     default int structureSurface() {
         return intifyShallow((s, x) -> s | x.op().bit, 0);
     }
 
-    /** first layer operator scan
+    /**
+     * first layer operator scan
+     *
      * @return 0: must unify, -1: impossible, +1: unified already
-     * */
+     */
     private static int possiblyUnifiableWhileEliminatingEqual(TermList xx, TermList yy, Unify u) {
         int xs = 0, ys = 0;
 
@@ -686,13 +740,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         if (xxs == 0)
             return +1; //all eliminated
 
-        xs &= ~u.varBits;
-        if (xs == 0)
-            return 0; //all var
-        ys &= ~u.varBits;
-        if (ys == 0)
-            return 0;//all var
-        if (!possiblyUnifiable(xs, ys))
+        if (!possiblyUnifiable(xs, ys, u.varBits))
             return -1; //first layer has no non-variable commonality, no way to unify
 
         return 0;
@@ -714,7 +762,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     default Term[] subsExcept(MetalBitSet toRemove) {
         int numRemoved = toRemove.cardinality();
-        assert(numRemoved > 0);
+        assert (numRemoved > 0);
         int size = subs();
         int newSize = size - numRemoved;
         Term[] t = new Term[newSize];
@@ -727,7 +775,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default Term[] subsExcept(Collection<Term> except) {
-        assert(!except.isEmpty());
+        assert (!except.isEmpty());
         FasterList<Term> fxs = new FasterList<>(subs());
         forEach(t -> {
             if (!except.contains(t))
@@ -764,13 +812,17 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
     }
 
-    /** must be overriden by any Compound subclasses */
+    /**
+     * must be overriden by any Compound subclasses
+     */
     default boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, Term parent) {
         return AND(s -> s.recurseTerms(aSuperCompoundMust, whileTrue, parent));
     }
 
-    /** must be overriden by any Compound subclasses */
-    default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term,Compound> whileTrue, Compound parent) {
+    /**
+     * must be overriden by any Compound subclasses
+     */
+    default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, Compound parent) {
         return AND(s -> s.recurseTerms(aSuperCompoundMust, whileTrue, parent));
     }
 
@@ -787,10 +839,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
      */
     default Term[] subsExcept(int index) {
         int s = subs();
-        Term[] x = new Term[s -1];
+        Term[] x = new Term[s - 1];
         int k = 0;
         for (int j = 0; j < s; j++) {
-            if (j!=index)
+            if (j != index)
                 x[k++] = sub(j);
         }
         return x;
@@ -806,8 +858,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return Util.hashCombine(this.hashCodeSubterms(), op);
     }
 
-    /** only removes the next found item. if this is for use in non-commutive term, you may need to call this repeatedly */
-    @Nullable default Term[] subsExcept(Term x) {
+    /**
+     * only removes the next found item. if this is for use in non-commutive term, you may need to call this repeatedly
+     */
+    @Nullable
+    default Term[] subsExcept(Term x) {
         int index = indexOf(x);
         return (index == -1) ? null : subsExcept(index);
     }
@@ -825,7 +880,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
     }
 
-    /** dont override */
+    /**
+     * dont override
+     */
     default Subterms replaceSub(Term from, Term to) {
         return replaceSub(from, to, ATOM);
     }
@@ -835,12 +892,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * returns 'x' unchanged if no changes were applied,
      * returns 'y' if changes
      * returns null if untransformable
-     *
+     * <p>
      * superOp is optional (use ATOM as the super-op to disable its use),
      * providing a hint about the target operator the subterms is being constructed for
      * this allows certain fail-fast cases
      */
-    default Subterms transformSubs(TermTransform f,  Op superOp) {
+    default Subterms transformSubs(TermTransform f, Op superOp) {
 
         TermList y = null;
 
@@ -864,7 +921,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                         return Op.FalseSubterm;
                     break;
                 case IMPL:
-                    if (i==0 && yi == Bool.False)
+                    if (i == 0 && yi == Bool.False)
                         return null;
                     break;
 //                case INH:
@@ -879,26 +936,26 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 EllipsisMatch xe = (EllipsisMatch) yi;
                 int xes = xe.subs();
 
-                    if (y == null)
-                        y = new DisposableTermList(s - 1 + xes /*estimate */, i);
-                    else
-                        y.ensureExtraCapacityExact(xes-1);
+                if (y == null)
+                    y = new DisposableTermList(s - 1 + xes /*estimate */, i);
+                else
+                    y.ensureExtraCapacityExact(xes - 1);
 
-                    for (int j = 0; j < xes; j++) {
+                for (int j = 0; j < xes; j++) {
 
-                        Term k = f.transform(xe.sub(j));
+                    Term k = f.transform(xe.sub(j));
 
-                        if (k == null || k == Bool.Null) {
+                    if (k == null || k == Bool.Null) {
+                        return null;
+                    } else if (k instanceof EllipsisMatch) {
+                        if (Param.DEBUG)
+                            throw new TODO("recursive EllipsisMatch unsupported");
+                        else
                             return null;
-                        } else if (k instanceof EllipsisMatch) {
-                            if (Param.DEBUG)
-                                throw new TODO("recursive EllipsisMatch unsupported");
-                            else
-                                return null;
-                        } else {
-                            y.addWithoutResizeCheck(k);
-                        }
+                    } else {
+                        y.addWithoutResizeCheck(k);
                     }
+                }
 
 
             } else {

@@ -185,19 +185,5 @@ public final class EllipsisMatch extends LightCompound {
     }
 
 
-    public boolean rematch(/*@NotNull*/ Subterms y, /*@NotNull*/ Collection<Term> yFree) {
-        /*@NotNull*/
-        Subterms x = subterms();
-        int xs = x.subs();
-        for (int i = 0; i < xs; i++) {
-            Term e = x.sub(i);
-
-
-            if (!y.contains(e) || !yFree.remove(e))
-                return false;
-        }
-        return true;
-    }
-
 
 }

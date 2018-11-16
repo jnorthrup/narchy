@@ -2,6 +2,8 @@ package nars.derive.premise;
 
 import jcog.TODO;
 import jcog.WTF;
+import jcog.data.list.FasterList;
+import nars.$;
 import nars.Builtin;
 import nars.NAR;
 import nars.Op;
@@ -22,10 +24,9 @@ import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
 import nars.unify.mutate.Choose1;
 import nars.unify.mutate.Choose2;
-import org.eclipse.collections.api.set.MutableSet;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -209,10 +210,13 @@ public class PatternIndex extends MapConceptIndex {
             @Override
             public final boolean unifySubterms(Term y, Unify u) {
 
-                Ellipsis ellipsis = this.ellipsis;
-                Term eResolved = u.resolve(ellipsis);
-                if (eResolved != ellipsis)
-                    return eResolved.unify(y, u);
+//                Ellipsis ellipsis = this.ellipsis;
+//                Term eResolved = u.resolve(ellipsis);
+//                if (eResolved != ellipsis)
+//                    return eResolved.unify(y, u);
+//                Term eResolved = u.xy(ellipsis);
+//                if (eResolved != null)
+//                    return false; //already assigned
 
                 if (!Subterms.possiblyUnifiable(subterms(), y.subterms(), u))
                     return false;
@@ -359,128 +363,118 @@ public class PatternIndex extends MapConceptIndex {
 
 //                @Nullable Versioned<MatchConstraint> uc = u.constraints(ellipsis);
 
-                MutableSet<Term> xFixed = null;
+                //xFixed is effectively sorte unless eMatch!=nulld
+                List<Term> xFixed = null;
+
                 SortedSet<Term> yFree =
                         //uc==null ? y.toSetSorted() : y.toSetSorted(yy -> MatchConstraint.valid(yy, uc, u));
                         y.toSetSorted();
 
-                Subterms ss = subterms();
-                int s = ss.subs();
+                Subterms xx = subterms();
+                int s = xx.subs(), x0s = s;
 
                 Ellipsis ellipsis = this.ellipsis;
+                EllipsisMatch eMatch = null; //iterated if found
                 for (int k = 0; k < s; k++) {
 
 
-                    Term x = ss.sub(k);
+                    Term xk = k < x0s ? xx.sub(k) : eMatch.sub(k - x0s);
+                    Term x = xk instanceof Variable ? u.resolve(xk) : xk;
 
-                    if (x.equals(ellipsis)) {
-                        Term v = u.resolve(x);
-                        if (v != x) {
-                            if (v instanceof EllipsisMatch) {
-                                if (!((EllipsisMatch) v).rematch(y, yFree))
-                                    return false;
+                    if (xk == ellipsis) {
+                        if (xk!=x) {
+                            if (x instanceof EllipsisMatch) {
+                                eMatch = ((EllipsisMatch)x);
+                                s += eMatch.subs();
                                 ellipsis = null;
-                            } else {
-
-                                if (u.constant(v) && !yFree.remove(v))
-                                    return false;
                             }
                         }
 
-                        continue;
-                    }
-
-                    
-                    
-                    
-                    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-                    /*if (v instanceof EllipsisMatch) {
-
-                        
-                        if (!((EllipsisMatch) v).addWhileMatching(y, alreadyInY, ellipsis.sizeMin())) {
-                            return false;
-                        } else {
-                            
-                            ellipsisMatched = true;
-                            break; 
-                        }
-
-
-                    } else */
-
-
-                    boolean xConst = u.constant(x);
-                    if (!xConst) {
-
-                        if (xFixed==null)
-                            xFixed = new UnifiedSet<>(1);
-
-                        xFixed.add(x);
-
                     } else {
 
-                        if (!yFree.remove(x)) {
-                            return false;
+                        boolean xConst = u.constant(x);
+                        if (xConst) {
+
+                            if (!yFree.remove(x)) {
+                                return false;
+                            }
+                            //else: eliminated
+
+                        } else {
+
+                            if (xFixed == null)
+                                xFixed = new FasterList<>(s - k);
+
+                            xFixed.add(x);
+
                         }
-
-
                     }
 
 
                 }
 
-                if (ellipsis == null)
-                    return yFree.isEmpty();
+                if (ellipsis == null) {
+                    if (xFixed.size()!=yFree.size())
+                        return false;
 
-                final int xs = xFixed!=null ? xFixed.size() : 0;
+                    return $.sFast(xFixed).unify($.sFast(yFree), u);
+                }
+
+                final int xs = xFixed != null ? xFixed.size() : 0;
                 int ys = yFree.size();
                 int numRemainingForEllipsis = ys - xs;
-
-
                 boolean vs = ellipsis.validSize(numRemainingForEllipsis);
                 if (!vs)
                     return false;
 
+                if (xs >= 1 && ys > 0) {
+                    //test matches against the one constant term
+                    for (int ixs = 0; ixs < xs; ixs++) {
+                        int ixsStruct = xFixed.get(ixs).structure();
+                        int varBits = u.varBits;
+                        if ((ixsStruct & ~varBits) != 0) {
+                            List<Term> yMatchableWithX = null;
+                            for (Term yy : yFree) {
+                                if (Subterms.possiblyUnifiable(ixsStruct, yy.structure(), varBits)) {
+                                    if (yMatchableWithX == null)
+                                        yMatchableWithX = new FasterList(1);
+                                    yMatchableWithX.add(yy);
+                                }
+                            }
+                            if (yMatchableWithX == null) {
+                                return false; //nothing from yFree could match xFixed
+                            }
+                            //else: choose that one
+                        }
+                    }
+                }
+
+
                 switch (xs) {
                     case 0:
-
                         Term match = ys > 0 ? EllipsisMatch.matched(yFree) : EllipsisMatch.empty;
-
-
                         return ellipsis.unify(match, u);
 
-
                     case 1:
-                        Term x0 = xFixed.getOnly();
-                        if (yFree.size() == 1) {
-                            assert (ellipsis.minArity == 0);
-                            return x0.unify(yFree.first(), u) && ellipsis.unify(EllipsisMatch.empty, u);
-                        } else {
-                            return u.termutes.add(new Choose1(ellipsis, x0, yFree));
+                        if (ys == 0)
+                            return false;  //no matches possible
+
+                        Term x0 = xFixed.get(0);
+                        switch (ys) {
+                            case 1:
+                                assert (ellipsis.minArity == 0);
+                                return x0.unify(yFree.first(), u) && ellipsis.unify(EllipsisMatch.empty, u);
+                            default:
+                                return u.termutes.add(new Choose1(ellipsis, x0, yFree));
                         }
 
                     case 2:
-                        return u.termutes.add(new Choose2(ellipsis, u, xFixed, yFree));
+                        Term[] xFixedSorted = eMatch==null ? xFixed.toArray(EmptyTermArray) /* sorted */
+                                                :
+                                              Terms.sorted(xFixed);
+                        return u.termutes.add(new Choose2(ellipsis, u, xFixedSorted, yFree));
 
                     default:
-
                         throw new RuntimeException("unimpl: " + xs + " arity combination unimplemented");
                 }
 

@@ -978,7 +978,7 @@ public class NAL6Test extends NALTest {
     void recursionSmall1() throws nars.Narsese.NarseseException {
 
 
-        test.nar.termVolumeMax.set(16);
+        test.nar.termVolumeMax.set(13);
         test.nar.freqResolution.set(0.1f);
         test
                 .believe("num(x)", 1.0f, 0.9f)

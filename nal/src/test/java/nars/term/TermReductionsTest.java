@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import static nars.$.*;
 import static nars.Op.*;
 import static nars.term.TermTest.*;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -181,8 +182,8 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     void testDiffEqual() {
 
-        assertEquals(Bool.Null, $.diff(p, p));
-        assertEquals(Bool.Null, $.diff(p.neg(), p.neg()));
+        assertEquals(Null, $.diff(p, p));
+        assertEquals(Null, $.diff(p.neg(), p.neg()));
     }
 
 
@@ -201,7 +202,7 @@ public class TermReductionsTest extends NarseseTest {
 
 
         assertEquals(
-                Bool.Null,
+                Null,
                 SetSectDiff.differenceSet(Op.SETe, SETe.the(p, q), SETe.the(p, q))
         );
     }
@@ -391,9 +392,9 @@ public class TermReductionsTest extends NarseseTest {
     void testDisallowInhAndSimBetweenTemporallySimilarButInequalTerms() {
 
 
-        assertEq(Bool.Null, "((x &&+1 y)<->(x &&+10 y))");
-        assertEq(Bool.Null, "((y &&+10 x)<->(x &&+1 y))");
-        assertEq(Bool.Null, "((x=|>y)-->(x ==>-10 y))");
+        assertEq(Null, "((x &&+1 y)<->(x &&+10 y))");
+        assertEq(Null, "((y &&+10 x)<->(x &&+1 y))");
+        assertEq(Null, "((x=|>y)-->(x ==>-10 y))");
     }
 
     @Test
@@ -406,8 +407,8 @@ public class TermReductionsTest extends NarseseTest {
         assertNotEquals("(a-->b)", $("(b --> (--,a))").toString());
         assertEq("((--,a)-->(--,b))", "(--a --> --b)");
 
-        assertEq("((--,a)-->a)", "((--,a)-->a)");
-        assertEq("(a-->(--,a))", "(a-->(--,a))");
+        assertEq(Null /*"((--,a)-->a)"*/, "((--,a)-->a)");
+        assertEq(Null /*"(a-->(--,a))"*/, "(a-->(--,a))");
 
     }
 

@@ -739,9 +739,13 @@ public enum $ {
         return sFast(false, x.toArray(EmptyTermArray));
     }
 
+    public static Term sFast(Collection<Term> x) {
+        return sFast(false, Terms.sorted(x));
+    }
+
     public static Term sFast(boolean sort, Term[] x) {
         if (x.length == 0) throw new UnsupportedOperationException();
-        if (x.length > 1 && sort)
+        if (sort && x.length > 1)
             x = Terms.sorted(x);
         return new LightCompound(Op.SETe, x);
         //return new LighterCompound(Op.SETe, x);

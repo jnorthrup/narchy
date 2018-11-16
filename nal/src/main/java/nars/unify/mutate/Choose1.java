@@ -29,7 +29,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
     private Choose1(Ellipsis xEllipsis, Term x, Term[] yFree /* sorted */) {
         super(CHOOSE_1, x, xEllipsis, $.sFast(false, yFree));
 
-        int ysize = yFree.length;  assert(ysize >= 2): Arrays.toString(yFree) + " must offer choice";
+        assert(yFree.length >= 2): Arrays.toString(yFree) + " must offer choice";
 
         yy = yFree;
         
