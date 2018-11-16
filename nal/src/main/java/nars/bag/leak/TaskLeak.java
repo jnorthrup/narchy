@@ -12,6 +12,7 @@ import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.exe.Causable;
+import nars.link.Activate;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -202,12 +203,13 @@ public abstract class TaskLeak extends Causable {
 
         @Override
         public void next(BooleanSupplier kontinue, NAR nar, Consumer<Task> each) {
-            nar.attn.concepts.sample(rng, (Predicate<Concept>)(c)->{
+            nar.concepts.sample(rng, (Predicate<Activate>)(c)->{
 
                 if (c == null) return false; //TODO can this even happen
 
-                if (termFilter.test(c.term())) { //TODO check for impl filters which assume the term is from a Task, ex: dt!=XTERNAL but would be perfectly normal for a concept's term
-                    Task x = sample(c);
+                Concept cc = c.get();
+                if (termFilter.test(cc.term())) { //TODO check for impl filters which assume the term is from a Task, ex: dt!=XTERNAL but would be perfectly normal for a concept's term
+                    Task x = sample(cc);
                     if (x!=null)
                         each.accept(x);
                 }

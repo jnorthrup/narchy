@@ -31,7 +31,7 @@ public class ZipperDeriver extends Deriver {
     @Deprecated final BiFunction<Concept, Derivation, BeliefSource.LinkModel> hypothesizer;
 
     public ZipperDeriver(PremiseDeriverRuleSet rules) {
-        this(rules.nar.attn.concepts::fire, rules);
+        this(fire(rules.nar), rules);
     }
 
     public ZipperDeriver(Consumer<Predicate<Activate>> source, PremiseDeriverRuleSet rules) {

@@ -24,8 +24,8 @@ public class DefaultScientist<S,E> extends Scientist<S,E> {
 
     final Random random;
 
-    int maxVars = 2;
-    @Deprecated int experimentIterations = 32;
+    int maxVars = -1;
+    @Deprecated int experimentIterations = 256;
 
     public DefaultScientist() {
         this(new Random());
@@ -68,7 +68,7 @@ public class DefaultScientist<S,E> extends Scientist<S,E> {
 
         //current.print(out);
 
-        RealDecisionTree tree = results.tree(3, 6);
+        RealDecisionTree tree = results.tree(2, 6);
         tree.print(out);
         tree.printExplanations(out);
 
@@ -90,9 +90,10 @@ public class DefaultScientist<S,E> extends Scientist<S,E> {
 
     @Override
     public List<Var<S, ?>> vars() {
-        if (vars.size() < maxVars)
+        if (maxVars < 0 || vars.size() < maxVars) {
             return vars;
-        else  {
+        } else  {
+            //random subset
             Var[] v = vars.toArray(new Var[0]);
             ArrayUtils.shuffle(v, random);
             return List.of(ArrayUtils.subarray(v, 0, maxVars));

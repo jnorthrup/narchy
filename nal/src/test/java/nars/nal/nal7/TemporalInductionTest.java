@@ -9,7 +9,6 @@ import nars.NARS;
 import nars.Narsese;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.link.Activate;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.test.TestNAR;
@@ -219,10 +218,7 @@ class TemporalInductionTest {
                 Concept cc = n.concept(term);
                 if (cc == null)
                     return 0;
-                Activate c = n.attn.concepts.active.get(cc);
-                if (c == null)
-                    return 0;
-                else return c.priElseZero();
+                return n.concepts.pri(cc, 0);
             };
         }
 

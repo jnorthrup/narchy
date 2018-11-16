@@ -8,7 +8,8 @@ import java.util.function.BiFunction;
 /**
  * Index which is supported by Map/Cache-like operations
  */
-public abstract class MaplikeConceptIndex extends ConceptIndex {
+public abstract class MaplikeConceptIndex extends AbstractConceptIndex {
+
 
 
     static final BiFunction<? super Termed, ? super Termed, ? extends Termed> setOrReplaceNonPermanent = (prev, next) -> {
@@ -16,5 +17,6 @@ public abstract class MaplikeConceptIndex extends ConceptIndex {
             return prev;
         return next;
     };
+
 
 }

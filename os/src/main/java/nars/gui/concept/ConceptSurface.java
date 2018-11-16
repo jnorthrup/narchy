@@ -1,13 +1,10 @@
 package nars.gui.concept;
 
-import jcog.data.list.table.Table;
 import nars.$;
 import nars.NAR;
-import nars.concept.Concept;
 import nars.gui.BagView;
 import nars.gui.DurSurface;
 import nars.gui.NARui;
-import nars.link.Activate;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -35,20 +32,7 @@ public class ConceptSurface extends TabMenu {
                         "budget", () -> {
 
                             Plot2D p = new Plot2D(64, Plot2D.Line)
-                                    .add("pri", () -> {
-
-                                        Table<?, Activate> bag = n.attn.concepts.active;
-                                        if (bag != null) {
-                                            Concept ni = n.conceptualize(id);
-                                            if (ni!=null) {
-                                                Activate b = bag.get(ni);
-                                                if (b != null)
-                                                    return b.priElseZero();
-                                            }
-                                        }
-
-                                        return 0f;
-                                    });
+                                    .add("pri", () -> n.concepts.pri(id, 0));
                             CheckBox boost = new CheckBox("Boost");
                             return DurSurface.get(new Splitting<>(
 

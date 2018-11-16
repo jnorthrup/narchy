@@ -8,9 +8,9 @@ import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.agent.NAgent;
-import nars.concept.Concept;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
+import nars.link.Activate;
 import nars.op.java.Opjects;
 import nars.term.Functor;
 import nars.term.Term;
@@ -119,7 +119,7 @@ public class NARSpeak {
 
             onFrame(()->{
                 if (nar.random().nextFloat() < 0.1f) {
-                    @Nullable Concept x = nar.attn.concepts.sample(nar.random());
+                    @Nullable Activate x = nar.concepts.sample(nar.random());
                     if (x.volume() < 5) {
                         try {
                             nar.input("say(" + $.quote(x.toString()) + ")! |");

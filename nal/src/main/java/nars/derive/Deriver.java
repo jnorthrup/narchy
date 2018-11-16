@@ -10,7 +10,6 @@ import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.premise.PremiseRuleProto;
 import nars.derive.timing.NonEternalTaskOccurenceOrPresentDeriverTiming;
-import nars.attention.ActiveConcepts;
 import nars.exe.Causable;
 import nars.link.Activate;
 import nars.term.Term;
@@ -60,12 +59,13 @@ abstract public class Deriver extends Causable {
     }
 
 
-    protected Deriver(ActiveConcepts attn, Set<PremiseRuleProto> rules, NAR nar) {
-        this(attn::fire, rules, nar);
-    }
 
     protected Deriver(Consumer<Predicate<Activate>> source, PremiseDeriverRuleSet rules) {
         this(source, rules, rules.nar);
+    }
+
+    protected static Consumer<Predicate<Activate>> fire(NAR nar) {
+        return (Predicate<Activate> each)->nar.concepts.sample(nar.random(), (Predicate)each);
     }
 
 

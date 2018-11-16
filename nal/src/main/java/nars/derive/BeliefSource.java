@@ -11,6 +11,7 @@ import nars.link.Activate;
 import nars.link.TaskLink;
 import nars.task.Tasklike;
 import nars.term.Term;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Random;
@@ -84,7 +85,7 @@ public class BeliefSource {
         @Override
         public Supplier<Term> beliefTerms() {
             return () -> {
-                Activate a = n.attn.concepts.fire();
+                @Nullable Activate a = n.concepts.sample(rng);
                 return a != null ? a.term() : null;
             };
         }

@@ -5,8 +5,8 @@ import jcog.data.list.FasterList;
 import jcog.pri.Prioritized;
 import jcog.pri.ScalarValue;
 import nars.Task;
-import nars.derive.Derivation;
 import nars.attention.DerivePri;
+import nars.derive.Derivation;
 
 /** wraps another DeriverBudgeting implementation and ensures that
  * the sum of the priorities of all a premise's derivation

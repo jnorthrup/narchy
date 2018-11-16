@@ -3,6 +3,7 @@ package jcog.sort;
 import jcog.data.list.FasterList;
 import org.junit.jupiter.api.Test;
 
+import static java.lang.Float.NEGATIVE_INFINITY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** tests for Top, TopN, and CachedTopN */
@@ -22,18 +23,25 @@ class TopTest {
     @Test
     void testTopN() {
         TopN<String> c = new TopN<String>(new String[3], String::length);
+        assertEquals(NEGATIVE_INFINITY, c.minValueIfFull());
         assertAdd(c, "a", "[a]");
         assertAdd(c, "a", "[a, a]"); //duplicate kept
+        assertEquals(1, c.minValue());
+        assertEquals(NEGATIVE_INFINITY, c.minValueIfFull());
         c.clear();
         assertAdd(c, "a", "[a]");
         assertAdd(c, "bbb", "[bbb, a]");
         assertAdd(c, "cc", "[bbb, cc, a]");
+        assertEquals(1, c.minValueIfFull());
         assertAdd(c, "dd", "[bbb, cc, dd]");
+        assertEquals(2, c.minValueIfFull());
         assertAdd(c, "eee", "[bbb, eee, cc]");
         assertAdd(c, "ff", "[bbb, eee, cc]");  //disallow replacement of equal to weakest
         assertAdd(c, "BBB", "[bbb, eee, BBB]");
         assertAdd(c, "xxxx", "[xxxx, bbb, eee]");
         assertAdd(c, "yyyyy", "[yyyyy, xxxx, bbb]");
+        c.clear();
+        assertEquals(NEGATIVE_INFINITY, c.minValueIfFull());
     }
 
     @Test

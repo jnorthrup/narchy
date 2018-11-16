@@ -298,10 +298,6 @@ public abstract class Param {
 
 
 
-    /** concept activation amplifier.  affects both conceptualization priority (Attention)
-     *  and the relative priority of created tasklinks from input tasks.
-     */
-    public final FloatRange conceptActivation = new FloatRange(1f, 0, 2f);
 
     public final FloatRange taskLinkActivation = new FloatRange(1f, 0, 2f);
 

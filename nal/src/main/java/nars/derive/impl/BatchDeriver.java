@@ -61,8 +61,9 @@ public class BatchDeriver extends Deriver {
     }
 
     public BatchDeriver(Set<PremiseRuleProto> rules, NAR nar) {
-        super(nar.attn.concepts, rules, nar);
+        super(fire(nar), rules, nar);
     }
+
 
     public BatchDeriver(Consumer<Predicate<Activate>> source, PremiseDeriverRuleSet rules) {
         super(source, rules, rules.nar);

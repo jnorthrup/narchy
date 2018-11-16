@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 /**
  * Created by me on 2/20/17.
  */
-public class HijackConceptIndex extends ConceptIndex {
+public class HijackConceptIndex extends AbstractConceptIndex {
 
     private final PriLinkHijackBag<Termed,PLink<Termed>> table;
 

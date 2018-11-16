@@ -8,11 +8,6 @@ import nars.NAR;
 import nars.NARS;
 import nars.attention.Forgetting;
 import nars.nal.nal1.NAL1Test;
-import nars.nal.nal2.NAL2Test;
-import nars.nal.nal3.NAL3Test;
-import nars.nal.nal4.NAL4Test;
-import nars.nal.nal5.NAL5Test;
-import nars.nal.nal6.NAL6Test;
 import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
 
@@ -22,7 +17,7 @@ import java.util.function.Supplier;
 class NARTestOptimize {
 
     static {
-        System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "3"); //temporary
+        //System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "3"); //temporary
     }
 
     static class NAL1Optimize {
@@ -31,13 +26,13 @@ class NARTestOptimize {
             boolean parallel = true;
             Class[] testClasses = new Class[] {
                     NAL1Test.class,
-                    NAL2Test.class,
-                    NAL3Test.class,
-                    NAL4Test.class,
-//                    NAL1MultistepTest.class,
-                    //NAL4MultistepTest.class,
-                    NAL5Test.class,
-                    NAL6Test.class,
+//                    NAL2Test.class,
+//                    NAL3Test.class,
+//                    NAL4Test.class,
+////                    NAL1MultistepTest.class,
+//                    //NAL4MultistepTest.class,
+//                    NAL5Test.class,
+//                    NAL6Test.class,
 //                    NAL7Test.class,
 //                    NAL8Test.class,
             };
@@ -54,10 +49,12 @@ class NARTestOptimize {
 //                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
 //                .var("linkFanOut", 1, 16, 1,
 //                        (NAR n, int f) -> Param.LinkFanoutMax = f)
-                .var("activation", 0, 1f, 0.1f,
-                            (NAR n, float f) -> n.conceptActivation.set(f))
-                .var("conceptForgetRate", 0, 1f, 0.1f,
-                        (NAR n, float f) -> ((Forgetting.AsyncForgetting)(n.attn.forgetting)).conceptForgetRate.set(f))
+//                .var("conceptActivation", 0, 1f, 0.1f,
+//                        (NAR n, float f) -> n.conceptActivation.set(f))
+                .var("linkActivation", 0, 1f, 0.1f,
+                        (NAR n, float f) -> n.taskLinkActivation.set(f))
+//                .var("conceptForgetRate", 0, 1f, 0.1f,
+//                        (NAR n, float f) -> ((Forgetting.AsyncForgetting)(n.attn.forgetting)).conceptForgetRate.set(f))
                 .var("linkForgetRate", 0, 1f, 0.1f,
                         (NAR n, float f) -> ((Forgetting.AsyncForgetting)(n.attn.forgetting)).tasklinkForgetRate.set(f))
 
@@ -82,7 +79,7 @@ class NARTestOptimize {
             ;
 
 
-            int suiteIterations = 2;
+            int suiteIterations = 4;
             Optilive<NAR, TestNARSuite> o = l.optilive((Supplier<NAR> s) ->
                             new TestNARSuite(s, testClasses).run(parallel, suiteIterations),
                 (TestNARSuite t) -> (float) t.score());

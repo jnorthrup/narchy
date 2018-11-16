@@ -47,20 +47,21 @@ import static jcog.net.UDPeer.Msg.ADDRESS_BYTES;
 
 /**
  * UDP peer - self-contained generic p2p/mesh network node
- * <p>
+ *
  * see:
+ * Gossip Protocols
  * Gnutella
  * GNU WASTE
- * https:
- * https:
- * https:
+ *
+ * TODO https://github.com/komamitsu/phi-accural-failure-detector/blob/master/src/main/java/org/komamitsu/failuredetector/PhiAccuralFailureDetector.java
+ *
  */
 public class UDPeer extends UDP {
 
     protected final Logger logger;
 
-    public final HashMapTagSet can = new HashMapTagSet("C");
-    public final HashMapTagSet need = new HashMapTagSet("N");
+//    public final HashMapTagSet can = new HashMapTagSet("C");
+//    public final HashMapTagSet need = new HashMapTagSet("N");
 
     public final Bag<Integer, UDProfile> them;
     public final PriHijackBag<Msg, Msg> seen;
@@ -331,7 +332,7 @@ public class UDPeer extends UDP {
      * send to a specific known recipient
      */
     public void send(Msg o, InetSocketAddress to) {
-        outBytes(o.arrayCompactDirect(), to);
+        outBytes(o.arrayDirect(), 0, o.len, to);
     }
 
     @Override
@@ -344,31 +345,29 @@ public class UDPeer extends UDP {
 
         seen.commit();
 
-        boolean updateNeed, updateCan;
-        if (needChanged.compareAndSet(true, false)) {
-            updateNeed = true;
-            tellSome(need);
-            onUpdateNeed();
-        }
-
-        if (canChanged.compareAndSet(true, false)) {
-            updateCan = true;
-            tellSome(can);
-        }
+//        boolean updateNeed, updateCan;
+//        if (needChanged.compareAndSet(true, false)) {
+//            updateNeed = true;
+//            tellSome(need);
+//            onUpdateNeed();
+//        }
+//
+//        if (canChanged.compareAndSet(true, false)) {
+//            updateCan = true;
+//            tellSome(can);
+//        }
 
         return true;
     }
 
-    protected void onUpdateNeed() {
+//    protected void onUpdateNeed() {
+//
+//    }
 
-    }
-
-
-
-    protected void tellSome(HashMapTagSet set) {
-        tellSome(new Msg(ATTN.id, DEFAULT_ATTN_TTL, me, null,
-                set.toBytes()), 1f, false);
-    }
+//    protected void tellSome(HashMapTagSet set) {
+//        tellSome(new Msg(ATTN.id, DEFAULT_ATTN_TTL, me, null,
+//                set.toBytes()), 1f, false);
+//    }
 
     @Override
     public String toString() {
@@ -429,28 +428,28 @@ public class UDPeer extends UDP {
             case TELL:
                 receive(you, m);
                 break;
-            case ATTN:
-                if (you != null) {
-                    HashMapTagSet h = HashMapTagSet.fromBytes(m.data());
-                    if (h != null) {
-
-                        switch (h.id()) {
-                            case "C":
-                                you.can = h;
-                                
-                                break;
-                            case "N":
-                                you.need = h;
-                                need(h, empathy.floatValue());
-                                break;
-                            default:
-                                return;
-                        }
-                        if (logger.isDebugEnabled())
-                            logger.debug("{} attn {}", you.name(), h);
-                    }
-                }
-                break;
+//            case ATTN:
+//                if (you != null) {
+//                    HashMapTagSet h = HashMapTagSet.fromBytes(m.data());
+//                    if (h != null) {
+//
+//                        switch (h.id()) {
+//                            case "C":
+//                                you.can = h;
+//
+//                                break;
+//                            case "N":
+//                                you.need = h;
+//                                need(h, empathy.floatValue());
+//                                break;
+//                            default:
+//                                return;
+//                        }
+//                        if (logger.isDebugEnabled())
+//                            logger.debug("{} attn {}", you.name(), h);
+//                    }
+//                }
+//                break;
             default:
                 return;
         }
@@ -558,20 +557,20 @@ public class UDPeer extends UDP {
     }
 
 
-    public void can(String tag, float pri) {
-        if (can.add(tag, pri))
-            canChanged.set(true);
-    }
-
-    public void need(String tag, float pri) {
-        if (need.add(tag, pri))
-            needChanged.set(true);
-    }
-
-    public void need(HashMapTagSet tag, float pri) {
-        if (need.add(tag, pri))
-            needChanged.set(true);
-    }
+//    public void can(String tag, float pri) {
+//        if (can.add(tag, pri))
+//            canChanged.set(true);
+//    }
+//
+//    public void need(String tag, float pri) {
+//        if (need.add(tag, pri))
+//            needChanged.set(true);
+//    }
+//
+//    public void need(HashMapTagSet tag, float pri) {
+//        if (need.add(tag, pri))
+//            needChanged.set(true);
+//    }
 
     public enum Command {
 
@@ -590,10 +589,10 @@ public class UDPeer extends UDP {
          */
         WHO('w'),
 
-        /**
-         * share my attention
-         */
-        ATTN('a'),
+//        /**
+//         * share my attention
+//         */
+//        ATTN('a'),
 
         /**
          * share a belief claim
@@ -618,8 +617,8 @@ public class UDPeer extends UDP {
 
                 case 't':
                     return TELL;
-                case 'a':
-                    return ATTN;
+//                case 'a':
+//                    return ATTN;
             }
             return null;
         }
@@ -680,9 +679,8 @@ public class UDPeer extends UDP {
 
         }
 
-        final static int INITIAL_CAPACITY = HEADER_SIZE * 2;
         public Msg(byte cmd, byte ttl, int id, InetSocketAddress origin, byte[] payload) {
-            super(INITIAL_CAPACITY);
+            super(HEADER_SIZE + payload.length);
             init(cmd, ttl, id, origin);
 
             if (payload.length > 0)
@@ -693,7 +691,7 @@ public class UDPeer extends UDP {
 
 
         public Msg(byte cmd, byte ttl, int id, InetSocketAddress origin, long payload) {
-            super(INITIAL_CAPACITY);
+            super(HEADER_SIZE + 8);
             init(cmd, ttl, id, origin);
 
             writeLong(payload);

@@ -6,10 +6,8 @@ import jcog.pri.bag.Bag;
 import jcog.pri.op.PriForget;
 import nars.NAR;
 import nars.concept.Concept;
-import nars.link.Activate;
 import nars.link.TaskLink;
 import nars.task.Tasklike;
-import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -23,9 +21,8 @@ abstract public class Forgetting {
 
     abstract public void update(Concept c, NAR n);
 
-    public abstract void updateConcepts(Bag<Term, Activate> active, long dt, NAR n);
 
-    protected final @Nullable Consumer forget(Bag b, float temperature) {
+    public final @Nullable Consumer forget(Bag b, float temperature) {
 
         if (temperature > Float.MIN_NORMAL) {
             int size = b.size();
@@ -33,7 +30,7 @@ abstract public class Forgetting {
                 int cap = b.capacity();
                 if (cap > 0) {
 
-                    float pressure = b.depressurizePct(temperature);
+                    float pressure = depressurize(b, temperature);
 
                     float mass = b.mass();
                     if (mass > Float.MIN_NORMAL) {
@@ -52,13 +49,19 @@ abstract public class Forgetting {
 
     }
 
+    abstract protected float depressurize(Bag b, float temperature);
+
     abstract protected @Nullable Consumer forget(float temperature, int size, int cap, float pressure, float mass);
 
     /** temporally oblivious; uses only incoming pressure to determine forget amounts */
     public static class AsyncForgetting extends Forgetting {
 
-        public final FloatRange conceptForgetRate = new FloatRange(0.1f, 0f, 1f);
+
         public final FloatRange tasklinkForgetRate = new FloatRange(0.1f, 0f, 1f);
+
+        @Override protected float depressurize(Bag b, float temperatureIgnored) {
+            return b.depressurizePct(1f);
+        }
 
         public final void update(Concept c, NAR n) {
             Bag<Tasklike, TaskLink> tasklinks = c.tasklinks();
@@ -68,14 +71,7 @@ abstract public class Forgetting {
         protected Consumer<TaskLink> forgetTasklinks(Concept c, Bag<Tasklike, TaskLink> tasklinks) {
             return forget(tasklinks, tasklinkForgetRate.floatValue());
         }
-        protected Consumer<Activate> forgetConcepts(Bag<Term, Activate> concepts) {
-            return forget(concepts, conceptForgetRate.floatValue());
-        }
 
-        @Override
-        public final void updateConcepts(Bag<Term, Activate> active, long dt, NAR n) {
-            active.commit(forgetConcepts(active));
-        }
 
         @Override
         protected Consumer forget(float temperature, int size, int cap, float pressure, float mass) {
@@ -91,6 +87,10 @@ abstract public class Forgetting {
          */
         public final FloatRange memoryDuration = new FloatRange(1f, 0f, 64f);
 
+        @Override protected float depressurize(Bag b, float temperature) {
+            return b.depressurizePct(temperature);
+        }
+
         @Override
         protected Consumer forget(float temperature, int size, int cap, float pressure, float mass) {
             return PriForget.forgetIdeal(temperature,
@@ -101,11 +101,13 @@ abstract public class Forgetting {
                                         //0.5f,
                                         size, cap, pressure, mass);
         }
-        @Override
-        public void updateConcepts(Bag<Term, Activate> active, long dt, NAR n) {
-            float temperature = 1f - (float) Math.exp(-(((double) dt) / n.dur()) / memoryDuration.floatValue());
-            active.commit(active.forget(temperature));
-        }
+
+
+//        @Override
+//        public void updateConcepts(Bag<Term, Activate> active, long dt, NAR n) {
+//            float temperature = 1f - (float) Math.exp(-(((double) dt) / n.dur()) / memoryDuration.floatValue());
+//            active.commit(active.forget(temperature));
+//        }
 
         public void update(Concept c, NAR n) {
 

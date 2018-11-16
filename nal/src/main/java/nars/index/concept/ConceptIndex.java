@@ -1,16 +1,17 @@
 package nars.index.concept;
 
 import jcog.WTF;
+import jcog.pri.bag.Sampler;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
+import nars.link.Activate;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.Iterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -18,7 +19,7 @@ import java.util.stream.Stream;
 /**
  *
  */
-public abstract class ConceptIndex implements Iterable<Termed> {
+public abstract class ConceptIndex implements Sampler<Activate> {
 
 
     public NAR nar;
@@ -49,7 +50,9 @@ public abstract class ConceptIndex implements Iterable<Termed> {
 
     public void start(NAR nar) {
         this.nar = nar;
+
     }
+
 
     /**
      * # of contained terms
@@ -70,10 +73,6 @@ public abstract class ConceptIndex implements Iterable<Termed> {
 
     abstract public Stream<Termed> stream();
 
-    @Override
-    public Iterator<Termed> iterator() {
-        return stream().iterator();
-    }
 
     /**
      * default impl
@@ -158,5 +157,12 @@ public abstract class ConceptIndex implements Iterable<Termed> {
             }
 //        }
     }
+
+    public abstract Stream<Activate> active();
+
+    public abstract void activate(Concept c, float pri);
+
+    /** the current priority value of the concept */
+    public abstract float pri(Termed concept, float ifMissing);
 
 }

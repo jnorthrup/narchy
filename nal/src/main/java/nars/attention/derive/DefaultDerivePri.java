@@ -4,8 +4,8 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
 import nars.Task;
-import nars.derive.Derivation;
 import nars.attention.DerivePri;
+import nars.derive.Derivation;
 import nars.truth.Truth;
 
 import static nars.truth.TruthFunctions.w2cSafe;

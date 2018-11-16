@@ -2,7 +2,6 @@ package nars;
 
 import jcog.data.list.FasterList;
 import jcog.random.XoRoShiRo128PlusRandom;
-import nars.attention.ActiveConcepts;
 import nars.attention.impl.DefaultAttention;
 import nars.concept.Concept;
 import nars.concept.util.ConceptAllocator;
@@ -37,7 +36,7 @@ public class NARS {
 
     public final NAR get() {
         NAR n = new NAR(index.get(), exec.get(),
-                new DefaultAttention(attn.get()),
+                new DefaultAttention(),
                 time, rng.get(), conceptBuilder.get());
         step.forEach(x -> x.accept(n));
         n.synch();
@@ -52,7 +51,7 @@ public class NARS {
 
     protected Supplier<Random> rng;
 
-    protected Supplier<ActiveConcepts> attn;
+    //protected Supplier<ActiveConcepts> attn;
 
     protected Supplier<ConceptBuilder> conceptBuilder;
 
@@ -83,10 +82,10 @@ public class NARS {
         return this;
     }
 
-    public NARS attention(Supplier<ActiveConcepts> sa) {
-        this.attn = sa;
-        return this;
-    }
+//    public NARS attention(Supplier<ActiveConcepts> sa) {
+//        this.attn = sa;
+//        return this;
+//    }
     /**
      * adds a deriver with the standard rules for the given range (inclusive) of NAL levels
      */
@@ -106,8 +105,9 @@ public class NARS {
 
             if (threadSafe)
                 index =
-                        //() -> new CaffeineIndex(64 * 1024);
-                        () -> new SimpleConceptIndex(64 * 1024, true);
+                        //() -> new CaffeineIndex(64 * 1024)
+                        () -> new SimpleConceptIndex(64 * 1024, true)
+            ;
 
             if (nal > 0)
                 withNAL(1, nal);
@@ -120,13 +120,10 @@ public class NARS {
 
                 n.termVolumeMax.set(26);
 
-
-                n.conceptActivation.set(0.5f);
-
                 n.beliefPriDefault.set(0.5f);
                 n.goalPriDefault.set(0.5f);
-                n.questionPriDefault.set(0.25f);
-                n.questPriDefault.set(0.25f);
+                n.questionPriDefault.set(0.5f);
+                n.questPriDefault.set(0.5f);
 
 
             });
@@ -139,7 +136,10 @@ public class NARS {
      */
     public NARS() {
 
-        index = () -> new SimpleConceptIndex(1024);
+        index = () ->
+                new SimpleConceptIndex(1024)
+                //new TemporaryConceptIndex()
+        ;
 
         time = new CycleTime();
 
@@ -148,7 +148,7 @@ public class NARS {
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
 
-        attention(()->new ActiveConcepts(96));
+//        attention(()->new ActiveConcepts(96));
 
         conceptBuilder = ()->new DefaultConceptBuilder(
                 new ConceptAllocator(

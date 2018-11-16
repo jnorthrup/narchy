@@ -9,6 +9,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** accumulates/buffers/collates a stream of concept activations and termlinkages
@@ -23,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * */
 public class Activator  {
 
-
+//    public final FloatRange conceptActivationRate = new FloatRange(0.1f, 0f, 1f);
     /** pending concept activation collation */
     final ConcurrentHashMap<Term, Activate> concepts = new ConcurrentHashMap(1024);
 
@@ -56,11 +57,11 @@ public class Activator  {
         return activate(x, pri, overflow);
     }
 
-    public final Concept activate(Concept x, float pri) {
+    public Concept activate(Concept x, float pri) {
         return activate(x, pri, null);
     }
 
-    public Concept activate(Concept x, float pri, @Nullable OverflowDistributor<Concept> overflow) {
+    Concept activate(Concept x, float pri, @Nullable OverflowDistributor<Concept> overflow) {
         Activate a = concepts.computeIfAbsent(x.term(), t -> new Activate(x));
 
         if (overflow!=null)
@@ -72,7 +73,7 @@ public class Activator  {
     public void update(NAR n) {
 
         concepts.values().removeIf(a -> {
-            n.attn.concepts.activate(a/*.clone()*/);
+            n.concepts.activate(a.get(), a.pri());
             return true;
         });
 
@@ -85,6 +86,10 @@ public class Activator  {
 //            ITask.run(this, n);
 //        }
 
+    }
+
+    public final void activate(OverflowDistributor<Concept> overflow, Random random) {
+        overflow.shuffle(random).redistribute(this::activate);
     }
 
 //    private static final class TermLinkage extends UnitPri implements Comparable<TermLinkage> {

@@ -26,7 +26,6 @@ import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.control.Cause;
-import nars.control.DurService;
 import nars.control.MetaGoal;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
@@ -146,17 +145,16 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         services = new Services<>(this, exe);
 
         this.conceptBuilder = conceptBuilder;
+        this.attn = attn;
 
         concepts.start(this);
         Builtin.init(this);
 
         this.emotion = new Emotion(this);
-        this.attn = attn;
 
-        DurService.on(this, input::update);
-//        onCycle((n)->{
-//            input.update(n);
-//        });
+        //DurService.on(this, input::update);
+        onCycle(input::update);
+
         on(this.attn);
 
         this.loop = new NARLoop(this);
@@ -1025,7 +1023,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     public Stream<Activate> conceptsActive() {
-        return attn.concepts.active();
+        return concepts.active();
     }
 
     public Stream<Concept> concepts() {
@@ -1423,9 +1421,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         /** conceptualize regardless */
         Concept c = forceConceptualize ? conceptualize(t) : concept(t);
-
-        if (activationApplied >= 0 && c != null /*&& !eventActivate.isEmpty()*/) {
-            attn.concepts.activate(new Activate(c, activationApplied * conceptActivation.floatValue()));
+        if (c!=null && activationApplied >= 0) {
+            attn.activating.activate(c, activationApplied);
         }
 
         return c;

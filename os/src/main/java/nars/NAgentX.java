@@ -17,7 +17,6 @@ import nars.agent.NAgent;
 import nars.agent.Reward;
 import nars.agent.SimpleReward;
 import nars.agent.util.RLBooster;
-import nars.attention.ActiveConcepts;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
@@ -192,7 +191,7 @@ abstract public class NAgentX extends NAgent {
     */
 
 
-        Param.STRONG_COMPOSITION = false;
+        Param.STRONG_COMPOSITION = true;
         Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
@@ -205,7 +204,7 @@ abstract public class NAgentX extends NAgent {
 
         NAR n = new NARS()
 
-                .attention(() -> new ActiveConcepts(1024))
+//                .attention(() -> new ActiveConcepts(1024))
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
@@ -359,9 +358,9 @@ abstract public class NAgentX extends NAgent {
 //        m.actionUnipolar($.func("forget", a.id), (f)->{
 //            nar.memoryDuration.set(Util.lerp(f, 0.5f, 0.99f));
 //        });
-        m.actionUnipolar($.func("awake", a.id), (f)->{
-            nar.conceptActivation.set(Util.lerp(f, 0.1f, 0.99f));
-        });
+//        m.actionUnipolar($.func("awake", a.id), (f)->{
+//            nar.conceptActivation.set(Util.lerp(f, 0.1f, 0.99f));
+//        });
         m.senseNumber($.func("busy", a.id), new FloatNormalized(()->
                 (float) Math.log(1+m.nar().emotion.busyVol.getMean()), 0, 1).relax(0.05f));
 
@@ -431,12 +430,11 @@ abstract public class NAgentX extends NAgent {
         //n.freqResolution.set(0.03f);
         n.termVolumeMax.set(30);
 
-        n.conceptActivation.set(1f);
 
         n.beliefPriDefault.set(0.5f);
-        n.goalPriDefault.set(0.6f);
-        n.questionPriDefault.set(0.25f);
-        n.questPriDefault.set(0.25f);
+        n.goalPriDefault.set(0.5f);
+        n.questionPriDefault.set(0.5f);
+        n.questPriDefault.set(0.5f);
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);

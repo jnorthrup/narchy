@@ -425,7 +425,7 @@ public class SortedArray<X> extends AbstractList<X> {
 
     public final int add(final X element, FloatFunction<X> cmp) {
         float elementRank = cmp.floatValueOf(element);
-        int i = (elementRank == elementRank) ? add(element, cmp, elementRank) : -1;
+        int i = (elementRank == elementRank) ? add(element, elementRank, cmp) : -1;
         if (i < 0)
             rejectOnEntry(element);
         return i;
@@ -433,10 +433,6 @@ public class SortedArray<X> extends AbstractList<X> {
 
     protected void rejectOnEntry(X e) {
 
-    }
-
-    private int add(X element, FloatFunction<X> cmp, float elementRank) {
-        return add(element, elementRank, cmp);
     }
 
     public int add(X element, float elementRank, FloatFunction<X> cmp) {
@@ -768,10 +764,11 @@ public class SortedArray<X> extends AbstractList<X> {
      */
     @Nullable
     public final X first() {
-        X[] ii = items;
-        return ii.length == 0 ? null :
-                //(X) ITEM.getOpaque(items, 0);
-                ii[0];
+        return size == 0 ? null : items[0];
+//        X[] ii = items;
+//        return ii.length == 0 ? null :
+//                //(X) ITEM.getOpaque(items, 0);
+//                ii[0];
     }
 
     /**
@@ -781,10 +778,11 @@ public class SortedArray<X> extends AbstractList<X> {
     public final X last() {
         int size = this.size;
         if (size == 0) return null;
-        X[] ll = items;
-        int i = Math.min(ll.length - 1, size - 1);
+        return items[size-1];
+//        X[] ll = items;
+//        int i = Math.min(ll.length - 1, size - 1);
         //return (X) ITEM.getOpaque(ll, i);
-        return ll[i];
+        //return ll[i];
 
     }
 

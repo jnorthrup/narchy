@@ -63,8 +63,9 @@ public class RealDecisionTree extends DecisionTree<Integer, Float> {
 
         depthToPrecision = (i) -> (0.9f / (1 + (i - 1) / ((float) maxDepth)));
 
-        this.cols = IntStream.range(0, table.cols.length).mapToObj(x -> new DiscretizedScalarFeature(x, table.cols[x], discretization,
-                new QuantileDiscretize1D()
+        this.cols = IntStream.range(0, table.cols.length)
+                .mapToObj(x -> new DiscretizedScalarFeature(x, table.cols[x],
+                        discretization, new QuantileDiscretize1D()
         )).toArray(DiscretizedScalarFeature[]::new);
 
         switch (discretization) {

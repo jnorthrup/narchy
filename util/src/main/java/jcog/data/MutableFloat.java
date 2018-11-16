@@ -277,7 +277,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      * @return the numeric value represented by this object after conversion to type int.
      */
     @Override
-    public int intValue() {
+    public final int intValue() {
         return (int) value;
     }
 
@@ -287,7 +287,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      * @return the numeric value represented by this object after conversion to type long.
      */
     @Override
-    public long longValue() {
+    public final long longValue() {
         return (long) value;
     }
 
@@ -297,7 +297,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      * @return the numeric value represented by this object after conversion to type float.
      */
     @Override
-    public float floatValue() {
+    public final float floatValue() {
         return value;
     }
 
@@ -307,7 +307,7 @@ public class MutableFloat extends NumberX implements FloatSupplier {
      * @return the numeric value represented by this object after conversion to type double.
      */
     @Override
-    public double doubleValue() {
+    public final double doubleValue() {
         return value;
     }
 
@@ -372,8 +372,8 @@ public class MutableFloat extends NumberX implements FloatSupplier {
     }
 
     @Override
-    public float asFloat() {
-        return value;
+    public final float asFloat() {
+        return floatValue();
     }
 
     public float zero() {
@@ -382,18 +382,18 @@ public class MutableFloat extends NumberX implements FloatSupplier {
         return v;
     }
 
-    /** returns the change, between 0 and x */
-    public float subAtMost(float x) {
-        float v = value;
-        if (v > x) {
-            value -= x;
-            return x;
-        } else {
-            
-            set(0f);
-            return v;
-        }
-    }
+//    /** returns the change, between 0 and x */
+//    public float subAtMost(float x) {
+//        float v = value;
+//        if (v > x) {
+//            value -= x;
+//            return x;
+//        } else {
+//
+//            set(0f);
+//            return v;
+//        }
+//    }
 
     public void multiply(float v) {
         this.set(get() * v);

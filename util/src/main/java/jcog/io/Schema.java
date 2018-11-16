@@ -13,6 +13,7 @@ import tech.tablesaw.io.csv.CsvReadOptions;
 import tech.tablesaw.table.Rows;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -141,38 +142,40 @@ public class Schema extends Table {
         if (point.length != columnCount())
             throw new UnsupportedOperationException("row structure mismatch: provided " + point.length + " != expected " + columnCount());
 
+        List<Column<?>> l = columns();
         for (int i = 0; i < point.length; i++) {
             Object c = point[i];
             if (c instanceof Number) {
                 c = ((Number)c).doubleValue(); //come on tablesaw
             }
-            column(i).appendObj(c);
+            l.get(i).appendObj(c);
         }
 
         return true;
     }
 
     public boolean isEmpty() {
-        return rowCount()==0;
+        return size()==0;
     }
 
     @Deprecated public FloatTable<String> toFloatTable() {
 
         FloatTable<String> data = new FloatTable<>(columnNames().toArray(ArrayUtils.EMPTY_STRING_ARRAY) );
 
-        int cols = data.cols.length;
-
-        doWithRows(exp -> {
-            float[] r = new float[cols];
-            for (int i = 0; i < cols; i++) {
-                double v = exp.getDouble(i);
-                //r[i] = v!=null ? ((float)v) : Float.NaN;
-                r[i] = (float)v;
-            }
-            data.add(r);
-        });
+        doWithRows(rr -> data.add(toFloatArray(rr)));
 
         return data;
+    }
+
+    public float[] toFloatArray(Row rr) {
+        int cols = rr.columnCount();
+        float[] r = new float[cols];
+        for (int i = 0; i < cols; i++) {
+            double v = rr.getDouble(i);
+            //r[i] = v!=null ? ((float)v) : Float.NaN;
+            r[i] = (float)v;
+        }
+        return r;
     }
 
     public final int size() {

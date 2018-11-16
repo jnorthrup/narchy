@@ -188,10 +188,14 @@ public class UDP extends Loop {
 
 
     public boolean outBytes(byte[] data, InetSocketAddress to) {
+        return outBytes(data, 0, data.length, to);
+    }
+
+    public boolean outBytes(byte[] data, int dataFrom, int dataTo, InetSocketAddress to) {
         try {
             //System.out.println(this.addr + " send " + to);
 
-            int sent = c.send(ByteBuffer.wrap(data), to);
+            int sent = c.send(ByteBuffer.wrap(data, dataFrom, dataTo), to);
             if (sent < data.length) {
                 logger.warn("output overflow: {}/{} bytes sent to {}", sent, data.length, to);
             }

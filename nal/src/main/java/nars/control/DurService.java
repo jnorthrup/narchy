@@ -107,7 +107,7 @@ abstract public class DurService extends NARService  {
 
     private void run() {
 
-        if (!busy.compareAndSet(false, true))
+        if (!busy.weakCompareAndSetAcquire(false, true))
             return;
 
         try {
@@ -129,11 +129,11 @@ abstract public class DurService extends NARService  {
 
         } catch (Throwable e) {
 
-            logger.error("STOP {} {}", this, e);
+            logger.error("ERR {} {}", this, e);
 
         } finally {
 
-            busy.set(false);
+            busy.setRelease(false);
         }
     }
 

@@ -33,7 +33,11 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         rank(rank);
     }
 
-
+    @Override
+    public void clear() {
+        super.clear();
+        min = NEGATIVE_INFINITY;
+    }
 
     public TopN<X> rank(FloatRank<X> rank) {
         this.rank = rank;
@@ -61,12 +65,12 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     }
 
     @Override
-    public final int add(X element, float elementRank, FloatFunction<X> cmp) {
+    public final int add(X element, float negRank, FloatFunction<X> cmp) {
 
-        return size == capacity() && elementRank >= min
+        return size == capacity() && -negRank <= min
                 ? -1
                 :
-                super.add(element, elementRank, cmp);
+                super.add(element, negRank, cmp);
     }
 
 
@@ -141,7 +145,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
 
     public float minValue() {
         X f = last();
-        return f != null ? rankNeg(f) : Float.NaN;
+        return f != null ? rank.rank(f, Float.NEGATIVE_INFINITY) : Float.NaN;
     }
 
     private float _minValueIfFull() {
@@ -189,7 +193,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
             case 1:
                 return get(0);
             default:
-                return get(Roulette.selectRoulette(n, i -> -rankNeg(get(i)), rng));
+                return get(Roulette.selectRoulette(n, i -> rank.rank(get(i), NEGATIVE_INFINITY), rng));
         }
     }
 
