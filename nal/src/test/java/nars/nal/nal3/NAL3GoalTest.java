@@ -136,7 +136,7 @@ class NAL3GoalTest {
     }
     @Test void intersectionGoalInduction() {
         NAR n = NARS.tmp(3);
-        new BatchDeriver(Derivers.rules(n, "induction.goal.nal"));
+        new BatchDeriver(Derivers.files(n, "induction.goal.nal"));
         new TestNAR(n)
                 .input("(X --> Z)!")
                 .input("((X|Y) --> Z).")

@@ -124,7 +124,11 @@ public interface ScalarValue {
         _y);
     }
 
-
+    default float priGetAndZero() {
+        float p = pri();
+        pri(0);
+        return p;
+    }
 
 
 

@@ -40,7 +40,6 @@ import nars.table.BeliefTable;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.util.TaskException;
-import nars.term.Conceptor;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
@@ -1118,9 +1117,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         conceptBuilder.start(c);
 
-        if (c instanceof Conceptor) {
-            conceptBuilder.on((Conceptor) c);
-        }
+//        if (c instanceof Conceptor) {
+//            conceptBuilder.on((Conceptor) c);
+//        }
 
         return c;
     }

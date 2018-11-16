@@ -6,7 +6,6 @@ import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
-import nars.concept.Operator;
 import nars.concept.TaskConcept;
 import nars.link.TermLinker;
 import nars.subterm.Subterms;
@@ -16,11 +15,11 @@ import nars.table.dynamic.DynamicTruthTable;
 import nars.table.eternal.EternalTable;
 import nars.table.question.QuestionTable;
 import nars.table.temporal.TemporalBeliefTable;
-import nars.term.*;
-import nars.term.atom.Bool;
+import nars.term.Compound;
+import nars.term.Term;
+import nars.term.Termed;
 import nars.term.util.Image;
 import nars.truth.dynamic.DynamicTruthModel;
-import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +34,7 @@ import static nars.Op.*;
  */
 public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed> {
 
-    private final Map<Term, Conceptor> conceptors = new ConcurrentHashMap<>();
+//    private final Map<Term, Conceptor> conceptors = new ConcurrentHashMap<>();
 
     public abstract QuestionTable questionTable(Term term, boolean questionOrQuest);
 
@@ -68,17 +67,17 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
                         newDynamicBeliefTable(t, dmt, false) :
                         BeliefTable.Empty;
             } else {
-                //3. handle dynamic conceptualizers (experimental)
-                Term conceptor = Functor.func(t);
-                if (conceptor != Bool.Null) {
-                    @Nullable Conceptor cc = conceptors.get(conceptor);
-                    if (cc instanceof Conceptor) {
-
-                        Concept x = cc.apply(conceptor, Operator.args(t));
-                        if (x != null)
-                            return x;
-                    }
-                }
+//                //3. handle dynamic conceptualizers (experimental)
+//                Term conceptor = Functor.func(t);
+//                if (conceptor != Bool.Null) {
+//                    @Nullable Conceptor cc = conceptors.get(conceptor);
+//                    if (cc instanceof Conceptor) {
+//
+//                        Concept x = cc.apply(conceptor, Operator.args(t));
+//                        if (x != null)
+//                            return x;
+//                    }
+//                }
 
                 //4. default task concept
                 B = this.newTable(t, true);
@@ -104,9 +103,9 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
     protected abstract NodeConcept nodeConcept(final Term t);
 
-    public void on(Conceptor c) {
-        conceptors.put(c.term, c);
-    }
+//    public void on(Conceptor c) {
+//        conceptors.put(c.term, c);
+//    }
 
 
     private static final Predicate<Term> validDynamicSubterm = x -> Task.taskConceptTerm(x.unneg());
@@ -308,10 +307,10 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
      */
     public static final ConceptBuilder NullConceptBuilder = new ConceptBuilder() {
 
-        @Override
-        public void on(Conceptor c) {
-            throw new UnsupportedOperationException();
-        }
+//        @Override
+//        public void on(Conceptor c) {
+//            throw new UnsupportedOperationException();
+//        }
 
         @Override
         public NodeConcept nodeConcept(Term t) {

@@ -24,8 +24,7 @@ public class Derivers {
                     f.add("nal6.layer2.nal");
                     f.add("nal6.guess.nal");
 
-                    f.add("nal6.to.nal3.nal");
-
+                    //f.add("nal6.to.nal3.nal");
                     //f.add("hol.nal");
 
                         //files.add("nal6.misc.nal"); //<- suspect
@@ -58,25 +57,6 @@ public class Derivers {
         return f;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public static PremiseDeriverRuleSet rules(NAR nar, String... files) {
-        return nal(nar, 0, 0, files);
-    }
 
     /** standard ruleset */
     public static PremiseDeriverRuleSet nal(NAR nar, int minLevel, int maxLevel, String... extraFiles) {

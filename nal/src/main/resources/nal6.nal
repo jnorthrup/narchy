@@ -96,7 +96,9 @@
 
         ((&&,M,X,A..*) ==> C), (Y ==> C) |- subIfUnifiesAny((M ==> C),X,Y), (Belief:AbductionPB)
         ((&&,M,A..+) ==> X), ((&&,A..+) ==> Y) |- subIfUnifiesAny((M ==> X),X,Y,"$"), (Belief:AbductionPB)
+          (--(&&,M,A..+) ==> X), (--(&&,A..+) ==> Y) |- subIfUnifiesAny((--M ==> X),X,Y,"$"), (Belief:AbductionPB)
         ((&&,M,A..+) ==> X), ((&&,A..+) ==> Y) |- subIfUnifiesAny((M ==> Y),Y,X,"$"), (Belief:AbductionPB)
+          (--(&&,M,A..+) ==> X), (--(&&,A..+) ==> Y) |- subIfUnifiesAny((--M ==> Y),Y,X,"$"), (Belief:AbductionPB)
 
 
 //// implication-based syllogism ////////////////////////////////////////////////////////////////////////////////////
@@ -236,15 +238,21 @@
          (Y ==> X), ((&&,--X,A..+) ==> Z)  |- ((&&,Y,A..+) ==> Z), (Belief:DeductionN)
 
 
-    //general implication induction
-    (C ==> Z), X |- ((C && X) ==> Z), (Belief:Induction)
-    (C ==> Z), X |- ((C && --X) ==> Z), (Belief:InductionPN)
+//    //general implication induction
+//    (C ==> Z), X |- ((C && X) ==> Z), (Belief:Induction)
+//    (C ==> Z), X |- ((C && --X) ==> Z), (Belief:InductionPN)
 
 
     (C ==> Z), (B ==> M), eventOf(C,B) |- ((conjWithout(C,B) && M) ==> Z), (Belief:Induction)
         (C ==> Z), (B ==> M), eventOf(C,B) |- ((conjWithout(C,B) && --M) ==> Z), (Belief:InductionPN)
 
 
+// Mutex induction
+    (&&,X,--Y,A..*), (&&,Y,--X,A..*)              |- (&&,--(X && Y),A..*), (Belief:Intersection)
+      (&&,X,--Y,A..*), (&&,Y,--X,A..*)             |-  --(X ==> Y), (Belief:Induction)
+    (&&,X,--Y,A..*), (&&,Y,--X,B..*)              |- (&&,--((&&,A..*) && (&&,B..*))), (Belief:Intersection)
+    ((&&,X,--Y,A..*)==>Z), ((&&,Y,--X,A..*)==>Z)  |- ((&&,--(X && Y),A..*) ==> Z), (Belief:IntersectionSym)
+        //TODO impl predicate mutex
 
 
 

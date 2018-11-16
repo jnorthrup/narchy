@@ -1,6 +1,9 @@
 package nars.nal.nal6;
 
+import nars.derive.Derivers;
+import nars.derive.impl.BatchDeriver;
 import nars.test.NALTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -9,10 +12,11 @@ public class NAL6ToNAL3BridgeTest extends NALTest {
     final static int cycles = 256;
 
 
-//        @BeforeEach
-//        void setup() {
-//            test.confTolerance(0.2f);
-//        }
+        @BeforeEach
+        void setup() {
+            test.confTolerance(0.2f);
+        new BatchDeriver(Derivers.files(test.nar, "nal6.to.nal3.nal"));
+        }
 
     @Test public void test1() { test.input("((X-->A) && (Y-->A)).")
             //.mustGoal(cycles, "((X|Y)-->A)", 1.0f, CONF); }

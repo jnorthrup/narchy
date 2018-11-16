@@ -52,7 +52,7 @@ public class FZero extends NAgentX {
 
     public static void main(String[] args) {
         NAgentX.runRT(n -> {
-            n.freqResolution.set(0.03f);
+            n.freqResolution.set(0.02f);
             return new FZero($.the("fz"), n);
         }, fps);
 
@@ -84,7 +84,7 @@ public class FZero extends NAgentX {
                 24, 20
         ).crop(0, 0.15f, 1f, 1f);
         Bitmap2D vision = visionBuffer.each(a -> {
-            return Util.tanhFast(a * 1.5f);
+            return Util.tanhFast(a * 1.2f);
         });
 
         //onFrame(visionBuffer::update);
@@ -104,7 +104,7 @@ public class FZero extends NAgentX {
             AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p($.the("cae"), id), vision, nx, nx, (subX, subY) -> {
                 return new float[]{/*cc.X, cc.Y*/};
             }, 8, this);
-            camAE.alpha(0.04f);
+            camAE.alpha(0.03f);
             camAE.noise.set(0.05f);
 
             //SpaceGraph.(column(visionView, camAE.newChart()), 500, 500);
@@ -134,6 +134,7 @@ public class FZero extends NAgentX {
         //initTankContinuous();
 
         //BiPolarAction A =
+                //initBipolarRotateRelative(false, 1f);
                 //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(false, 0.9f);
@@ -376,9 +377,10 @@ public class FZero extends NAgentX {
     public BiPolarAction initBipolarRotateRelative(boolean fair, float rotFactor) {
         final float[] _r = {0};
         final MiniPID rotFilter = new MiniPID(0.5f, 0.3, 0.2f);
-        return actionBipolarFrequencyDifferential($.func("turn", id), fair, (r0) -> {
+        return actionBipolarFrequencyDifferential($.p($.the("turn"), id), fair, (r0) -> {
 
-            float r = _r[0] = (float) rotFilter.out(_r[0], r0);
+            //float r = _r[0] = (float) rotFilter.out(_r[0], r0);
+            float r = r0;
 
             fz.playerAngle +=
 

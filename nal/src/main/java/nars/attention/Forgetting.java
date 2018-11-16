@@ -57,7 +57,7 @@ abstract public class Forgetting {
     public static class AsyncForgetting extends Forgetting {
 
 
-        public final FloatRange tasklinkForgetRate = new FloatRange(0.1f, 0f, 1f);
+        public final FloatRange tasklinkForgetRate = new FloatRange(0.5f, 0f, 1f);
 
         @Override protected float depressurize(Bag b, float temperatureIgnored) {
             return b.depressurizePct(1f);

@@ -5,7 +5,7 @@ import jcog.mutex.Treadmill64;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** thread-safe version of MetalPool guarded by spin mutex */
-abstract class SpinMetalPool<X> extends MetalPool<X> {
+public abstract class SpinMetalPool<X> extends MetalPool<X> {
     private static final Treadmill64 mutex = new Treadmill64();
     private static final AtomicInteger serial = new AtomicInteger();
     final int poolID = serial.getAndIncrement();

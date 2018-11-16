@@ -1122,5 +1122,52 @@ public class NAL6Test extends NALTest {
         ;
     }
 
+    @Test void testMutexBelief() {
+        test
+                .believe("--(x && y)")
+                .believe("x")
+                .mustBelieve(cycles, "y", 0f, 0.81f)
+                .mustNotOutput(cycles, "x", BELIEF, 0f, 0.5f, 0, 1f, ETERNAL)
+                .mustNotOutput(cycles, "y", BELIEF, 0.5f, 1f, 0, 1f, ETERNAL)
+        ;
+    }
+    @Test void testMutexConjBeliefInduction() {
+        test
+                .believe("(x && --y)")
+                .believe("(--x && y)")
+                .mustBelieve(cycles, "(x && y)", 0f, 0.81f)
+                .mustBelieve(cycles, "(x ==> y)", 0f, 0.45f)
+                .mustBelieve(cycles, "(y ==> x)", 0f, 0.45f)
+        ;
+    }
+    @Test void testMutexConjBeliefInduction2() {
+        test
+                .believe("(&&,x,--y,a)")
+                .believe("(&&,--x,y,a))")
+                .mustBelieve(cycles, "(--(x && y) && a)", 1f, 0.81f)
+        ;
+    }
+    @Test void testMutexConjImplBeliefInduction() {
+        test
+                .believe("((x && --y) ==> z)")
+                .believe("((--x && y) ==> z)")
+                .mustBelieve(cycles, "(--(x && y) ==> z)", 1f, 0.81f)
+        ;
+    }
+
+    @Test void testMutexAbduction() {
+        test
+                .believe("(--(x && y) ==> z)")
+                .believe("(x && z)")
+                .mustBelieve(cycles, "y", 0f, 0.45f)
+        ;
+    }
+    @Test void testMutexDissociation() {
+        test
+                .believe("(&&, x, --y, a)")
+                .believe("(&&, --x, y, b)")
+                .mustBelieve(cycles, "(a && b)", 0f, 0.81f)
+        ;
+    }
 }
 

@@ -15,9 +15,9 @@ import static java.lang.Float.intBitsToFloat;
 /** @see AtomicFloat */
 public final class AtomicFloatFieldUpdater<X>  {
 
-    private final static int NAN = floatToIntBits(Float.NaN);
-    private final static int ZERO = floatToIntBits(0f);
-    public final MetalAtomicIntegerFieldUpdater<X> updater;
+    public final static int iNaN = floatToIntBits(Float.NaN);
+    public final static int iZero = floatToIntBits(0f);
+    public final MetalAtomicIntegerFieldUpdater<X> INT;
 
 
 //    /** for whatever reason, the field updater needs constructed from within the target class
@@ -29,21 +29,22 @@ public final class AtomicFloatFieldUpdater<X>  {
 //    }
 
     public AtomicFloatFieldUpdater(Class<X> cl, String f) {
-        this.updater = new MetalAtomicIntegerFieldUpdater<>(cl, f);
+        this.INT = new MetalAtomicIntegerFieldUpdater<>(cl, f);
     }
 
     public void setNaN(X x) {
-        updater.set(x, NAN);
+        INT.set(x, iNaN);
     }
 
     public void set(X x, float value) {
-        updater.set(x, floatToIntBits(value));
+        INT.set(x, floatToIntBits(value));
     }
+
 
 
     public void add(X x, float add) {
 
-        updater.updateAndGet(x, v -> floatToIntBits(intBitsToFloat(v) + add));
+        INT.updateAndGet(x, v -> floatToIntBits(intBitsToFloat(v) + add));
 
         //adapted from AtomicDouble:
 //        int i;
@@ -53,14 +54,17 @@ public final class AtomicFloatFieldUpdater<X>  {
     }
 
     private float updateGet(X x, IntUnaryOperator y) {
-        return intBitsToFloat(updater.updateAndGet(x, y));
+        return intBitsToFloat(INT.updateAndGet(x, y));
+    }
+    private float getUpdate(X x, IntUnaryOperator y) {
+        return intBitsToFloat(INT.getAndUpdate(x, y));
     }
     private float updateGet(X x, IntBinaryOperator yMustFloatizeBothInts, float arg) {
-        return intBitsToFloat(updater.accumulateAndGet(x, Float.floatToIntBits(arg), yMustFloatizeBothInts));
+        return intBitsToFloat(INT.accumulateAndGet(x, Float.floatToIntBits(arg), yMustFloatizeBothInts));
     }
 
     private void update(X x, IntUnaryOperator y) {
-        updater.updateAndGet(x, y);
+        INT.updateAndGet(x, y);
     }
 
 
@@ -68,6 +72,9 @@ public final class AtomicFloatFieldUpdater<X>  {
         return updateGet(x, v -> f.valueOf(intBitsToFloat(v)));
     }
 
+    public float getAndUpdate(X x, FloatSupplier f) {
+        return getUpdate(x, v -> floatToIntBits(f.asFloat()));
+    }
     public float updateAndGet(X x, FloatSupplier f) {
         return updateGet(x, v -> floatToIntBits(f.asFloat()));
     }
@@ -78,7 +85,9 @@ public final class AtomicFloatFieldUpdater<X>  {
 
     public float updateAndGet(X x, FloatFloatToFloatFunction f, float y) {
         return updateGet(x, v -> floatToIntBits(f.apply(intBitsToFloat(v), y)));
-        //return updateGet(x, (v, yy) -> floatToIntBits(f.apply(intBitsToFloat(v), intBitsToFloat(yy))), y);
+    }
+    public float getAndUpdate(X x, FloatFloatToFloatFunction f, float y) {
+        return getUpdate(x, v -> floatToIntBits(f.apply(intBitsToFloat(v), y)));
     }
 
 
@@ -87,42 +96,42 @@ public final class AtomicFloatFieldUpdater<X>  {
     }
 
     public float getAndSet(X x, float value) {
-        return intBitsToFloat(updater.getAndSet(x, floatToIntBits(value)));
+        return intBitsToFloat(INT.getAndSet(x, floatToIntBits(value)));
     }
 
 
     public float getAndZero(X x) {
-        return intBitsToFloat(updater.getAndSet(x, ZERO));
+        return intBitsToFloat(INT.getAndSet(x, iZero));
     }
 
     public void zero(X x) {
-        updater.set(x, ZERO);
+        INT.set(x, iZero);
     }
     public void zeroLazy(X x) {
-        updater.lazySet(x, ZERO);
+        INT.lazySet(x, iZero);
     }
 
     public float get(X x) {
-        return intBitsToFloat(updater.get(x));
+        return intBitsToFloat(INT.get(x));
     }
     public float getOpaque(X x) {
-        return intBitsToFloat(updater.getOpaque(x));
+        return intBitsToFloat(INT.getOpaque(x));
     }
 
     public void zero(X v, FloatConsumer with) {
-        this.updater.getAndUpdate(v, x->{
+        this.INT.getAndUpdate(v, x->{
             with.accept(intBitsToFloat(x));
-            return AtomicFloatFieldUpdater.ZERO;
+            return AtomicFloatFieldUpdater.iZero;
         });
     }
 
 
     float getAndZero(X v, FloatConsumer with) {
-        return intBitsToFloat(this.updater.getAndUpdate(v, (x)->{ with.accept(intBitsToFloat(x)); return AtomicFloatFieldUpdater.ZERO; } ));
+        return intBitsToFloat(this.INT.getAndUpdate(v, (x)->{ with.accept(intBitsToFloat(x)); return AtomicFloatFieldUpdater.iZero; } ));
     }
 
     public boolean compareAndSet(X x, float expected, float newvalue) {
-        return updater.compareAndSet(x, floatToIntBits(expected), floatToIntBits(newvalue));
+        return INT.compareAndSet(x, floatToIntBits(expected), floatToIntBits(newvalue));
     }
 
     /** unary */
@@ -145,6 +154,6 @@ public final class AtomicFloatFieldUpdater<X>  {
 
 
     public void setLazy(X x, float v) {
-        updater.lazySet(x, Float.floatToIntBits(v));
+        INT.lazySet(x, Float.floatToIntBits(v));
     }
 }

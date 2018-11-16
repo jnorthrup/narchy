@@ -746,8 +746,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }
 
     @Override
-    public float depressurizePct(float rate) {
-        return PRESSURE.updateAndGet(this, (p,factor)-> p * factor, 1-rate);
+    public float depressurizePct(float percentage) {
+        return PRESSURE.getAndUpdate(this, (p,factor)-> Math.min(mass() /* limit */, p * factor), 1-percentage) * percentage;
     }
 
     @Override
