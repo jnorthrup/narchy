@@ -301,7 +301,8 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
                 case "is": {
-                    match(X, new TermMatch.Is(Op.the($.unquote(Y))), !negated);
+                    Op yy = Op.the($.unquote(Y));
+                    match(X, new TermMatch.Is(yy), !negated);
                     if (negated)
                         negationApplied = true;
                     break;

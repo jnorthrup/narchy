@@ -313,8 +313,8 @@ public class PoleCart extends NAgentX {
         actionUnipolar($.inh(("L"),id), (a) -> {
             if (!manualOverride) {
                 synchronized (PoleCart.this) {
-                    //action = Util.clampBi((float) (action + a));
-                    action = Util.clampBi((float) (action + a * a));
+                    action = Util.clampBi((float) (action + a));
+                    //action = Util.clampBi((float) (action + a * a));
                 }
             }
             return a;
@@ -323,8 +323,8 @@ public class PoleCart extends NAgentX {
             if (!manualOverride) {
 
                 synchronized (PoleCart.this) {
-                    //action = Util.clampBi((float) (action - a));
-                    action = Util.clampBi((float) (action - a * a));
+                    action = Util.clampBi((float) (action - a));
+                    //action = Util.clampBi((float) (action - a * a));
                 }
             }
             return a;

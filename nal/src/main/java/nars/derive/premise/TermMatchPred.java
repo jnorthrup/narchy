@@ -22,7 +22,7 @@ public final class TermMatchPred<X> extends AbstractPred<X> {
     public final Function<X, Term> resolve;
 
     public TermMatchPred(TermMatch match, boolean trueOrFalse, boolean exactOrSuper, Function<X, Term> resolve) {
-        super(name(match, resolve).negIf(!trueOrFalse));
+        super(name(match, resolve, exactOrSuper).negIf(!trueOrFalse));
 
         this.resolve = resolve;
         this.match = match;
@@ -30,9 +30,10 @@ public final class TermMatchPred<X> extends AbstractPred<X> {
         this.exactOrSuper = exactOrSuper;
     }
 
-    static Term name(TermMatch match, Function resolve) {
+    static Term name(TermMatch match, Function resolve, boolean exactOrSuper) {
         Atomic a = Atomic.the(match.getClass().getSimpleName());
         Term r = $.the(resolve.toString());
+        r = exactOrSuper ? r : $.funcFast("in", r);
         Term p = match.param();
         return p!=null ? $.func(a, r, p) : $.func(a, r);
     }

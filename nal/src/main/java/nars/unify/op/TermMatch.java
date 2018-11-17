@@ -2,6 +2,7 @@ package nars.unify.op;
 
 import nars.$;
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.unify.Unify;
 import nars.unify.constraint.UnifyConstraint;
@@ -69,7 +70,8 @@ abstract public class TermMatch {
         @Override
         public boolean testSuper(Term superTerm) {
             //return trueOrFalse == superTerm.hasAny(struct);
-            return (((superTerm.hasAny(struct) && superTerm.subterms().OR(x -> x.hasAny(struct)))));
+            Subterms subs = superTerm.subterms();
+            return subs.hasAny(struct) && subs.OR(x -> x.hasAny(struct));
         }
     }
 
@@ -119,10 +121,11 @@ abstract public class TermMatch {
         @Override
         public boolean testSuper(Term superTerm) {
 
-            return
-                        (superTerm.has(struct, anyOrAll) &&
-                        (volMin == 0 || (superTerm.volume() >= 1+volMin)) &&
-                        superTerm.subterms().OR(x -> x.has(struct, anyOrAll)));
+            if (volMin == 0 || superTerm.volume() >= 1+volMin) {
+                Subterms subs = superTerm.subterms();
+                return subs.has(struct, anyOrAll) && subs.OR(x -> x.has(struct, anyOrAll));
+            }
+            return false;
         }
     }
 

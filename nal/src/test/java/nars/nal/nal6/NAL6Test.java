@@ -1029,6 +1029,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testHypothesizeSubconditionIdentityConj() {
         test
+//                .logDebug()
                 .believe("(&&,f(x),f(#1),g(#1))", 1f, 0.9f)
                 .mustBelieve(cycles, "(&&,f(x),g(x))", 1f, 0.81f)
         ;

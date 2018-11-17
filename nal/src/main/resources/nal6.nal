@@ -16,7 +16,7 @@
 // Conditional syllogism && Independent Variable Elimination
 //      If after M, P usually happens, and M happens, it means P is expected to happen
 
-    A, (A ==> C), --is(A,"--"),--is(A,"#"),--is(C,"#") |- C, (Belief:Pre, Goal:PreWeak, Time:TaskPlusBeliefDT)
+    A, (A ==> C), --is(A,"#"),--is(C,"#") |- C, (Belief:Pre, Goal:PreWeak, Time:TaskPlusBeliefDT)
      B, (A ==> C),--is(A,"--"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B,strict), (Belief:PreRecursive, Goal:PreWeak, Time:TaskPlusBeliefDT)
 
         //antigoal:

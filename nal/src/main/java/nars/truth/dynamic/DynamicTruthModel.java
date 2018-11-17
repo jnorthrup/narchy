@@ -159,8 +159,9 @@ abstract public class DynamicTruthModel {
                         decRange = decomposed.eventRange();
                         break;
                 }
+                boolean startSpecial = (start==ETERNAL || start == XTERNAL);
                 return decomposed.eventsWhile((offset, y) -> {
-                            boolean ixTernal = offset == ETERNAL || offset == XTERNAL;
+                            boolean ixTernal = startSpecial || offset == ETERNAL || offset == XTERNAL;
 
                             long subStart = ixTernal ? start : start + offset;
                             long subEnd = end;

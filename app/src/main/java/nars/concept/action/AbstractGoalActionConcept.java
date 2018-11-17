@@ -124,8 +124,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
         long recent = now - dur*2;
 
         Predicate<Task> fil =
-                withoutCuriosity;
-                //Answer.filter(withoutCuriosity, (t) -> t.endsAfter(recent));
+                //withoutCuriosity;
+                Answer.filter(withoutCuriosity, (t) -> t.startsAfter(recent)); //prevent stronger past from overriding weaker future
 
         try(Answer a = Answer.
                 relevance(true, limit, s, e, term, fil, n)) {

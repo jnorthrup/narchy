@@ -6,7 +6,6 @@ import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;
-import nars.Param;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.GoalActionConcept;
 import nars.table.BeliefTables;
@@ -238,52 +237,60 @@ public interface NAct {
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
 
         float thresh =
-                0.5f + 1*Param.TRUTH_EPSILON;
+                0.5f;// + 1*Param.TRUTH_EPSILON;
                 //0.66f;
 
         float[] lr = new float[] { 0.5f, 0.5f };
 
-        float decay = 0.25f;
+        float decay = 0.9f;
 
         NAR n = nar();
         GoalActionConcept LA = action(l, (b, g) -> {
-            float ll = g != null ? g.expectation() : Util.lerp(decay, lr[0], 0.5f);
+            //float ll = g != null ? g.expectation() : Util.lerp(decay, lr[0], 0.5f);
+            float ll = Math.max(g != null ? g.freq() /*g.expectation()*/ : 0 ,  Util.lerp(decay, lr[0], 0.5f));
             boolean x = ll > thresh;
             boolean conflict = false;
             if (x) {
-                if ((lr[1] - 0.5f) >= Math.abs(ll - 0.5f)) {
+                if ((lr[1] - 0.5f) >= ll - 0.5f) {
                     //conflict = true;
                     x = false;
                     //ll = 0.5f;
                     //stochastic
                     //x = nar().random().nextFloat() < (ll / (Param.TRUTH_EPSILON +ll + lr[1]));
                     //ll = x ? 1 : 0;
+                } else {
+                    lr[1] = 0.5f;
                 }
             }
             lr[0] = x ? ll : 0.5f;
             L.value(x);
             //System.out.println("L=" + x  + " <- " + ll );
-            return $.t(x ? 1 : 0, n.confDefault(BELIEF) * (conflict ? 0.5f : 1f));
+            //return $.t(x ? 1 : 0, n.confDefault(BELIEF) * (conflict ? 0.5f : 1f));
+            return $.t(x ? 1 : 0, n.confDefault(BELIEF) * lr[0]);
             //if (x) return $.t(x ? 1 : 0, n.confDefault(BELIEF)); else return null;
         });
         GoalActionConcept RA = action(r, (b, g) -> {
-            float rr = g != null ? g.expectation() : Util.lerp(decay, lr[1], 0.5f);
+            //float rr = g != null ? g.expectation() : Util.lerp(decay, lr[1], 0.5f);
+            float rr = Math.max(g != null ? g.freq() /*g.expectation()*/ : 0 ,  Util.lerp(decay, lr[1], 0.5f));
             boolean x = rr > thresh;
             boolean conflict = false;
             if (x) {
-                if ((lr[0] - 0.5f) >= Math.abs(rr - 0.5f)) {
+                if ((lr[0] - 0.5f) >= rr - 0.5f) {
                     //conflict = true;
                     x = false;
                     //rr = 0.5f;
                     //stochastic
                     //x = nar().random().nextFloat() < (rr / (Param.TRUTH_EPSILON + rr + lr[0]));
                     //rr = x ? 1 : 0;
+                } else {
+                    lr[0] = 0.5f;
                 }
             }
             lr[1] = x ? rr : 0.5f;
             R.value(x);
             //System.out.println("R=" + x  + " <- " + rr );
-            return $.t(x ? 1 : 0, n.confDefault(BELIEF) * (conflict ? 0.5f : 1f));
+            //return $.t(x ? 1 : 0, n.confDefault(BELIEF) * (conflict ? 0.5f : 1f));
+            return $.t(x ? 1 : 0, n.confDefault(BELIEF) * lr[1]);
             //if (x) return $.t(x ? 1 : 0, n.confDefault(BELIEF)); else return null;
         });
 
@@ -299,7 +306,7 @@ public interface NAct {
 //                    Remember.the(new NALTask(x.term(), BELIEF,
 //                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()), n), n);
 
-            x.resolution(0.5f);
+            //x.resolution(0.5f);
         }
 
         return new GoalActionConcept[]{LA, RA};

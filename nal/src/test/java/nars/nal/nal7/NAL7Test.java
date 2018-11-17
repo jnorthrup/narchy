@@ -204,7 +204,6 @@ public class NAL7Test extends NALTest {
     @Test
     void testShiftPlus() {
         test
-
                 .inputAt(1, "((x &&+1 y) ==>+1 z).")
                 .inputAt(3, "z. :|:")
                 .mustNotOutput(cycles, "x", BELIEF, (t) -> t != 1)
@@ -1133,8 +1132,8 @@ public class NAL7Test extends NALTest {
                 .mustBelieve(cycles, "( (x &| y) ==>+5 z)", 1f, 0.81f)
                 .mustBelieve(cycles, "( x =|> y)", 1f, 0.81f)
                 .mustBelieve(cycles, "( y =|> x)", 1f, 0.81f)
-                .mustQuestion(cycles, "( (x-y) ==>+5 z)")
-                .mustQuestion(cycles, "( (y-x) ==>+5 z)")
+//                .mustQuestion(cycles, "( (x-y) ==>+5 z)")
+//                .mustQuestion(cycles, "( (y-x) ==>+5 z)")
                 .mustNotOutput(cycles, "( (x && y) ==> z)", BELIEF, 0, 1f, 0, 0.81f, t->true)
                 .mustNotOutput(cycles, "( (x &| y) ==> z)", BELIEF, 0, 1f, 0, 0.81f, t->true)
                 //.mustBelieve(cycles, "( --(--x &| --y) ==>+5 z)", 1f, 0.81f)
