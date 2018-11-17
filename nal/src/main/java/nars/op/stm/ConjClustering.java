@@ -46,10 +46,10 @@ public class ConjClustering extends Causable {
     private long now;
     private int dur;
     private float confMin;
-    private int volMax;
+    private int volMax, volMaxSafe;
     private int ditherTime;
     private boolean popConjoinedTasks = false;
-    private int learningIterations = 1;
+
 
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
         this(nar, punc, (t) -> true, centroids, capacity);
@@ -141,7 +141,7 @@ public class ConjClustering extends Causable {
         this.dur = nar.dur();
         this.ditherTime = nar.dtDither();
         this.confMin = nar.confMin.floatValue();
-        this.volMax = Math.round(nar.termVolumeMax.intValue() * termVolumeMaxFactor);
+        this.volMaxSafe = Math.round((this.volMax = nar.termVolumeMax.intValue()) * termVolumeMaxFactor);
 
         //TODO use real 'dt' timing
         data.learn(forgetRate(), 1);
@@ -206,7 +206,7 @@ public class ConjClustering extends Causable {
                 float priMax = Float.NEGATIVE_INFINITY, priMin = Float.POSITIVE_INFINITY;
                 float confMax = Float.NEGATIVE_INFINITY;//, confMin = Float.POSITIVE_INFINITY;
                 int vol = 0;
-                int volMax = 0;
+
 
                 do {
                     if (!gg.hasNext())
@@ -226,9 +226,9 @@ public class ConjClustering extends Causable {
                     }
 
                     int xtv = xt.volume();
-                    volMax = Math.max(volMax, xt.volume());
-                    if (vol + xtv + 1 >= ConjClustering.this.volMax || conf * tx.conf() < confMin) {
-                        continue;
+                    if (vol + xtv + 1 >= ConjClustering.this.volMaxSafe || conf * tx.conf() < confMin) {
+                        //continue;
+                        break;
                     }
 
                     boolean include = false;
@@ -268,7 +268,7 @@ public class ConjClustering extends Causable {
                         if (actualTasks.size() >= Param.STAMP_CAPACITY)
                             break;
                     }
-                } while (vol < ConjClustering.this.volMax - 1 && conf > confMin);
+                } while (vol < ConjClustering.this.volMaxSafe - 1 && conf > confMin);
 
                 int vs = actualTasks.size();
                 if (vs < 2)
@@ -284,10 +284,15 @@ public class ConjClustering extends Causable {
                     if (t != null) {
 
                         Term cj = Conj.conj(vv.keySet());
+                        if (cj.volume() > volMax)
+                            return false;
+
                         if (cj != null) {
 
 
-                            ObjectBooleanPair<Term> cp = Task.tryContent(Task.forceNormalizeForBelief(cj), punc, true);
+                            Term tt = Task.forceNormalizeForBelief(cj);
+
+                            ObjectBooleanPair<Term> cp = Task.tryContent(tt, punc, true);
                             if (cp != null) {
 
 

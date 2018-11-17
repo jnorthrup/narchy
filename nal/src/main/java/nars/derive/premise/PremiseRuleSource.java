@@ -219,7 +219,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 case "in":
                     neq(constraints, X, Y);
-                    constraints.add(new SubOfConstraint(X, Y, Recursive));
+                    constraints.add(new SubOfConstraint(X, Y.unneg(), Recursive, Y.op() == NEG ? -1 : +1));
                     break;
 
                 case "conjParallel":

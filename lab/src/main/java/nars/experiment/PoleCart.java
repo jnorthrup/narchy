@@ -91,7 +91,9 @@ public class PoleCart extends NAgentX {
     static final double poleMass = 0.1;
     static final double poleLength = 1f;
     static final double gravity = 9.8;
-    static final double forceMag = 100.;
+    static final double forceMag =
+            //100.;
+            200;
     public final FloatRange tau = new FloatRange(0.01f, 0.001f, 0.02f);
     //0.01;
     //0.005;
@@ -164,9 +166,8 @@ public class PoleCart extends NAgentX {
         );
 
 
-        initBipolar();
-        //initButtonMutex();
-        //initUnipolar();
+        //initBipolar();
+        initUnipolar();
 
 
 //        SpaceGraph.window(NARui.beliefCharts(512,
@@ -310,13 +311,22 @@ public class PoleCart extends NAgentX {
 
     public void initUnipolar() {
         actionUnipolar($.inh(("L"),id), (a) -> {
-            if (!manualOverride)
-                action = Util.clampBi((float) (action + a));
+            if (!manualOverride) {
+                synchronized (PoleCart.this) {
+                    //action = Util.clampBi((float) (action + a));
+                    action = Util.clampBi((float) (action + a * a));
+                }
+            }
             return a;
         });
         actionUnipolar($.inh(("R"),id), (a) -> {
-            if (!manualOverride)
-                action = Util.clampBi((float) (action - a));
+            if (!manualOverride) {
+
+                synchronized (PoleCart.this) {
+                    //action = Util.clampBi((float) (action - a));
+                    action = Util.clampBi((float) (action - a * a));
+                }
+            }
             return a;
         });
     }

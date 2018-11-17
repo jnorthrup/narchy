@@ -7,10 +7,7 @@ import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
 import jcog.memoize.HijackMemoize;
 import jcog.memoize.Memoizers;
-import nars.$;
-import nars.NAR;
-import nars.Op;
-import nars.Task;
+import nars.*;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
@@ -85,7 +82,7 @@ public class Arithmeticize {
         @Override
         @Nullable
         protected Term newTerm(Task xx) {
-            return Arithmeticize.apply(xx.term(), null, xx.isEternal(), nar.random());
+            return Arithmeticize.apply(xx.term(), null, nar.termVolumeMax.intValue(), xx.isEternal(), nar.random());
         }
     }
 
@@ -93,12 +90,12 @@ public class Arithmeticize {
         return apply(x, true, random);
     }
 
-    public static Term apply(Term x, boolean eternal, Random random) {
-        return apply(x, null, eternal, random);
+    @Deprecated public static Term apply(Term x, boolean eternal, Random random) {
+        return apply(x, null, Param.COMPOUND_VOLUME_MAX, eternal, random);
     }
 
 
-    public static Term apply(Term x, @Nullable Anon anon, boolean eternal, Random random) {
+    public static Term apply(Term x, @Nullable Anon anon, int volMax, boolean eternal, Random random) {
         if (anon == null && !x.hasAny(INT))
             return x;
 
@@ -148,6 +145,7 @@ public class Arithmeticize {
 
         Term y = CONJ.the(equality, eternal ? DTERNAL : 0, yy);
         if (y.op()!=CONJ) return null;
+        if (y.volume() > volMax) return null;
 
 //        Term y = IMPL.the(equality, eternal ? DTERNAL : 0, yy);
 //        if (y.op()!=IMPL) return null;

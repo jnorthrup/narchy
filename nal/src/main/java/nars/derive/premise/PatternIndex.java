@@ -438,15 +438,18 @@ public class PatternIndex extends MapConceptIndex {
                         int ixsStruct = xFixed.get(ixs).structure();
                         int varBits = u.varBits;
                         if ((ixsStruct & ~varBits) != 0) {
-                            List<Term> yMatchableWithX = null;
+//                            List<Term> yMatchableWithX = null;
+                            boolean canMatch = false;
                             for (Term yy : yFree) {
                                 if (Subterms.possiblyUnifiable(ixsStruct, yy.structure(), varBits)) {
-                                    if (yMatchableWithX == null)
-                                        yMatchableWithX = new FasterList(1);
-                                    yMatchableWithX.add(yy);
+//                                    if (yMatchableWithX == null)
+//                                        yMatchableWithX = new FasterList(1);
+//                                    yMatchableWithX.add(yy);
+                                    canMatch = true; break;
                                 }
                             }
-                            if (yMatchableWithX == null) {
+                            //if (yMatchableWithX == null) {
+                            if (!canMatch) {
                                 return false; //nothing from yFree could match xFixed
                             }
                             //else: choose that one

@@ -22,12 +22,6 @@
     (A ==> B), A, task("?")      |- B, (Punctuation:Question)
       (--A ==> B), A, task("?")  |- B, (Punctuation:Question)
 
-//impl expansion
-    (A ==> B), B, task(".")      |- ((A && ?1) ==> B), (Punctuation:Question)
-    (A ==> B), A, task(".")      |- (polarize(A,belief) ==> (B && ?1)), (Punctuation:Question)
-     (A ==> B), A, task(".")      |- (polarize(A,belief) ==> (--B && ?1)), (Punctuation:Question)
-      (--A ==> B), A, task(".")  |- (--polarize(A,belief) ==> (B && ?1)), (Punctuation:Question)
-       (--A ==> B), A, task(".")  |- (--polarize(A,belief) ==> (--B && ?1)), (Punctuation:Question)
 
 //basic impl reduction
     (X ==> C), X, task("?"), is(C,"&&")   |- (X ==> dropAnyEvent(C)), (Punctuation:Question)

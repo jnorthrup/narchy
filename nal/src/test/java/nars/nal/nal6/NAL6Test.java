@@ -73,14 +73,14 @@ public class NAL6Test extends NALTest {
     void variable_unification4() {
 
         TestNAR tester = test;
-        tester.nar.termVolumeMax.set(11);
+        tester.nar.termVolumeMax.set(15);
 
         tester.believe("<<bird --> $x> ==> <robin --> $x>>");
         tester.believe("<<swimmer --> $y> ==> <robin --> $y>>", 0.70f, 0.90f);
-        tester.mustBelieve(cycles, "<(&&,<bird --> $1>,<swimmer --> $1>) ==> <robin --> $1>>", 0.7f /*1f? */, 0.81f);
+        tester.mustBelieve(cycles, "<(&&,(bird --> $1),(swimmer --> $1)) ==> (robin --> $1)>", 0.7f /*1f? */, 0.81f);
 
-        tester.mustBelieve(cycles, "<<bird --> $1> ==> <swimmer --> $1>>", 1f, 0.73F);
-        tester.mustBelieve(cycles, "<<swimmer --> $1> ==> <bird --> $1>>", 0.7f, 0.45f);
+        tester.mustBelieve(cycles, "<(bird --> $1) ==> (swimmer --> $1)>", 1f, 0.73F);
+        tester.mustBelieve(cycles, "<(swimmer --> $1) ==> (bird --> $1)>", 0.7f, 0.45f);
 
 
     }
@@ -366,7 +366,7 @@ public class NAL6Test extends NALTest {
     @Test
     void multiple_variable_elimination2() {
 
-        test.nar.termVolumeMax.set(10);
+        test.nar.termVolumeMax.set(16);
         TestNAR tester = test;
         tester.believe("(lock:$x ==> (key:#y && open(#y,$x)))");
         tester.believe("lock:{lock1}");
@@ -767,7 +767,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void strong_unification_neg() {
-        test.nar.termVolumeMax.set(5);
+        test.nar.termVolumeMax.set(12);
 
         TestNAR tester = test;
         tester.believe("( --sentence($a,is,$b) ==> ($a --> $b) )", 1.00f, 0.90f);
@@ -778,7 +778,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void strong_elimination() {
-        test.nar.termVolumeMax.set(14);
+        test.nar.termVolumeMax.set(16);
         TestNAR tester = test;
         tester.believe("((test($a,is,cat) && sentence($a,is,$b)) ==> ($a --> $b))");
         tester.believe("test(tim,is,cat)");
@@ -1087,6 +1087,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void testDecomposeImplPred2() {
+        test.nar.termVolumeMax.set(12);
         test
                 .believe("( (a,#b) ==> (&&, (x,#b), y, z ) )")
                 .mustBelieve(cycles, "( (a,#b) ==> (x,#b) )", 1f, 0.73f)
@@ -1167,6 +1168,20 @@ public class NAL6Test extends NALTest {
                 .believe("(&&, x, --y, a)")
                 .believe("(&&, --x, y, b)")
                 .mustBelieve(cycles, "(a && b)", 0f, 0.81f)
+        ;
+    }
+    @Test void testMutexSwapPos() {
+        test
+                .believe("--(x && y)")
+                .believe("its(x,a)")
+                .mustBelieve(cycles, "its(--y,a)", 1f, 0.81f)
+        ;
+    }
+    @Test void testMutexSwapNeg() {
+        test
+                .believe("--(x && y)")
+                .believe("its(--x,a)")
+                .mustBelieve(cycles, "its(y,a)", 1f, 0.81f)
         ;
     }
 }

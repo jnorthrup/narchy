@@ -11,6 +11,7 @@ import nars.control.CauseMerge;
 import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.NALTask;
+import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
@@ -40,13 +41,16 @@ public class Remember extends AbstractTask {
     public static Remember the(Task input, NAR n) {
 
         if (!input.isCommand()) {
-//            try {
-                TaskConcept concept = (TaskConcept) n.conceptualize(input);
-                return concept != null ? new Remember(input, concept) : null;
-//            } catch (Throwable t) {
-//                if (Param.DEBUG)
-//                    logger.warn("not conceptualizable: {}", input);
-//            }
+
+            if (Param.VOLMAX_RESTRICTS_INPUT) {
+                int termVol = input.term().volume();
+                int maxVol = n.termVolumeMax.intValue();
+                if (termVol > maxVol)
+                    throw new TaskException(input, "term exceeds volume maximum: " + termVol + " > " + maxVol);
+            }
+
+            TaskConcept concept = (TaskConcept) n.conceptualize(input);
+            return concept != null ? new Remember(input, concept) : null;
         }
 
         return null;

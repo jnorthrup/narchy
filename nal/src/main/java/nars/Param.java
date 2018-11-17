@@ -66,6 +66,8 @@ public abstract class Param {
     /** can produce varieties of terms with dt below the dithered threshold time */
     public static final boolean ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS = false;
 
+    public static final boolean VOLMAX_RESTRICTS_INPUT = false;
+
 
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
 
@@ -229,7 +231,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(32 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(16 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 8, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 

@@ -635,10 +635,10 @@ public class Occurrify extends TimeGraph {
             long[] occurrence(Derivation d) {
                 return OccConjDecompose(d, false);
             }
-            @Override
-            public BeliefProjection beliefProjection() {
-                return BeliefProjection.Raw; //belief
-            }
+//            @Override
+//            public BeliefProjection beliefProjection() {
+//                return BeliefProjection.Raw; //belief
+//            }
         },
 
         /**
@@ -1238,7 +1238,7 @@ public class Occurrify extends TimeGraph {
             if (shift == DTERNAL) {
                 shift = outer.subTimeFirst(inner.neg()); //try negative
                 if (shift == DTERNAL)
-                    return null;
+                    return null; //TODO why if this happens
             }
 
         } else {

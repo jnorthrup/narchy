@@ -49,6 +49,13 @@
     (A-->P), (B-->P)  |- (polarize((A-->P),task) ==> (B-->P)), (Punctuation:Ask)
     (S-->A), (S-->B)  |- (polarize((S-->A),task) ==> (S-->B)), (Punctuation:Ask)
 
+//impl expansion
+    (A ==> B), B, task(".")      |- ((A && ?1) ==> B), (Punctuation:Question)
+    (A ==> B), A, task(".")      |- (polarize(A,belief) ==> (B && ?1)), (Punctuation:Question)
+     (A ==> B), A, task(".")      |- (polarize(A,belief) ==> (--B && ?1)), (Punctuation:Question)
+      (--A ==> B), A, task(".")  |- (--polarize(A,belief) ==> (B && ?1)), (Punctuation:Question)
+       (--A ==> B), A, task(".")  |- (--polarize(A,belief) ==> (--B && ?1)), (Punctuation:Question)
+
 //--
 
 //    X, Y, task("!") |-          (polarize(Y,belief) ==> X), (Punctuation:Question, Time:Relative)

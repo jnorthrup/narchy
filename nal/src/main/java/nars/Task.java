@@ -869,6 +869,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
 
 
+            int volMax = n.termVolumeMax.intValue();
+
             final int[] forked = {0};
             Predicate<Term> each = (y) -> {
 
@@ -876,6 +878,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
                 if (y == Bool.Null)
                     return true; //continue TODO maybe limit these
+                if (y.volume() > volMax)
+                    return true; //oops
 
                 if (Perceive.tryPerceive(this, y, yy, n)) {
                     forked[0]++;
