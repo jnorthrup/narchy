@@ -2,7 +2,6 @@ package nars.unify;
 
 import jcog.TODO;
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.set.ArrayHashSet;
 import jcog.version.VersionMap;
 import jcog.version.Versioned;
@@ -162,8 +161,8 @@ public abstract class Unify extends Versioning implements Subst {
      */
     public final boolean unify(Term x, Term y, boolean finish) {
 
-        if (!(ttl > 0))
-            throw new WTF("likely needs some TTL");
+//        if (!(ttl > 0))
+//            throw new WTF("likely needs some TTL");
 
         if (x.unify(y, this)) {
             if (finish) {

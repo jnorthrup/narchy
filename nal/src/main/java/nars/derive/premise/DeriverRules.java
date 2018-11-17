@@ -72,7 +72,7 @@ public class DeriverRules {
      */
     private boolean test(Derivation d, int branch) {
         could[branch].test(d);
-        return d.revertLive(0, 1);
+        return d.use(1); //return d.revertLive(0, 1);
     }
 
 

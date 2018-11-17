@@ -26,6 +26,11 @@ public final class ConjParallel extends TermMatch {
         return false;
     }
 
+    @Override
+    public boolean testSuper(Term superSuperTerm) {
+        return superSuperTerm.hasAny(CONJ);
+    }
+
     @Nullable
     @Override
     public Term param() {

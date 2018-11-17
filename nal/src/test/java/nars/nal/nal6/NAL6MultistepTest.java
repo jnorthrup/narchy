@@ -34,7 +34,6 @@ public class NAL6MultistepTest {
 
 
 
-
         NAR n = NARS.tmp();
 
         

@@ -1,5 +1,6 @@
 package nars.derive.premise;
 
+import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.data.map.CustomConcurrentHashMap;
@@ -446,10 +447,10 @@ public class PremiseRuleSource extends ProxyTerm {
 
         }
 
-        Op to = taskPattern.op();
-        boolean taskIsPatVar = to == Op.VAR_PATTERN;
+
+
         Op bo = beliefPattern.op();
-        boolean belIsPatVar = bo == Op.VAR_PATTERN;
+
 
 
         TruthFunc beliefTruthOp = NALTruth.get(beliefTruth);
@@ -479,28 +480,10 @@ public class PremiseRuleSource extends ProxyTerm {
             }
         }
 
-        if (!taskIsPatVar) {
-            pre.add(new TermMatchPred(new TermMatch.Is(to), true, true, TaskTerm));
 
-            int ts = taskPattern.structure() & (~Op.VAR_PATTERN.bit);
-            if (Integer.bitCount(ts) > 1) {
-                //if there are additional bits that the structure can filter, include the hasAll predicate
-                pre.add(new TermMatchPred<>(new TermMatch.Has(
-                        ts, false /* all */, taskPattern.complexity()),
-                        true, true, TaskTerm));
-            }
-        }
 
-        if (!belIsPatVar) {
-            pre.add(new TermMatchPred<>(new TermMatch.Is(bo), true, true, BeliefTerm));
-            int bs = beliefPattern.structure() & (~Op.VAR_PATTERN.bit);
-            if (Integer.bitCount(bs) > 1) {
-                //if there are additional bits that the structure can filter, include the hasAll predicate
-                pre.add(new TermMatchPred<>(new TermMatch.Has(
-                        bs, false /* all */, beliefPattern.complexity()),
-                        true, true, BeliefTerm));
-            }
-        }
+        tryGuard(TaskTerm, taskPattern);
+        tryGuard(BeliefTerm, beliefPattern);
 
 
         if (concPunc == null) {
@@ -635,6 +618,39 @@ public class PremiseRuleSource extends ProxyTerm {
 
         this.constraintSet = CONSTRAINTS.toSet();
 
+    }
+
+    private void tryGuard(RootTermAccessor r, Term root) {
+        tryGuard(r, root, new ByteArrayList(2));
+    }
+
+    private void tryGuard(RootTermAccessor r, Term root, ByteArrayList p) {
+
+        byte[] pp = p.toByteArray();
+        Term t = pp.length==0 ? root : root.sub(pp);
+
+        Op to = t.op();
+        if (to == Op.VAR_PATTERN)
+            return;
+
+        Function<PreDerivation, Term> rr = pp.length == 0 ? r : r.path(pp);
+        pre.add(new TermMatchPred<>(new TermMatch.Is(to),  rr));
+
+        int ts = t.structure() & (~Op.VAR_PATTERN.bit);
+        //if (Integer.bitCount(ts) > 1) {
+        //if there are additional bits that the structure can filter, include the hasAll predicate
+        pre.add(new TermMatchPred<>(new TermMatch.Has(ts, false /* all */, t.complexity()), rr));
+
+        int n = t.subs();
+        if (!to.commutative || n == 1) {
+            for (byte i = 0; i < n; i++) {
+                p.add(i);
+                {
+                    tryGuard(r, root, p);
+                }
+                p.popByte();
+            }
+        }
     }
 
 
@@ -904,31 +920,19 @@ public class PremiseRuleSource extends ProxyTerm {
         return taskOrBelief ? TaskTerm : BeliefTerm;
     }
 
-    final static Function<PreDerivation, Term> TaskTerm = new Function<>() {
-
-        @Override
-        public String toString() {
-            return "taskTerm";
-        }
-
+    final static RootTermAccessor TaskTerm = new RootTermAccessor("taskTerm") {
         @Override
         public Term apply(PreDerivation d) {
             return d.taskTerm;
         }
     };
-
-    final static Function<PreDerivation, Term> BeliefTerm = new Function<>() {
-
-        @Override
-        public String toString() {
-            return "beliefTerm";
-        }
-
+    final static RootTermAccessor BeliefTerm = new RootTermAccessor("beliefTerm") {
         @Override
         public Term apply(PreDerivation d) {
             return d.beliefTerm;
         }
     };
+
 
 
     static class UppercaseAtomsToPatternVariables extends DirectTermTransform {
@@ -975,6 +979,25 @@ public class PremiseRuleSource extends ProxyTerm {
         @Override
         public boolean test(PreDerivation preDerivation) {
             return taskPunc.accept(preDerivation.taskPunc);
+        }
+    }
+
+    abstract static class RootTermAccessor implements Function<PreDerivation,Term> {
+
+        final String id;
+
+        protected RootTermAccessor(String id) {
+            this.id = id;
+        }
+
+        @Override
+        public String toString() {
+            return id;
+        }
+
+        public Function<PreDerivation,Term> path(byte... path) {
+            assert(path.length>0);
+            return (d)->apply(d).sub(path);
         }
     }
 }

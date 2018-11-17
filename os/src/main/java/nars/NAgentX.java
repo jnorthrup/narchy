@@ -426,10 +426,9 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         //n.freqResolution.set(0.03f);
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(32);
 
 
-        n.attn.activating.conceptActivationRate.set(0.5f);
         n.beliefPriDefault.set(0.5f);
         n.goalPriDefault.set(0.5f);
         n.questionPriDefault.set(0.5f);

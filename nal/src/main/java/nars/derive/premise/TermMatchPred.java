@@ -21,6 +21,10 @@ public final class TermMatchPred<X> extends AbstractPred<X> {
     public final TermMatch match;
     public final Function<X, Term> resolve;
 
+    public TermMatchPred(TermMatch match, Function<X, Term> resolve) {
+        this(match, true, true, resolve);
+    }
+
     public TermMatchPred(TermMatch match, boolean trueOrFalse, boolean exactOrSuper, Function<X, Term> resolve) {
         super(name(match, resolve, exactOrSuper).negIf(!trueOrFalse));
 
@@ -47,7 +51,7 @@ public final class TermMatchPred<X> extends AbstractPred<X> {
     @Override
     public boolean test(X x) {
         Term y = resolve.apply(x);
-        return (exactOrSuper ? match.test(y) : match.testSuper(y)) == trueOrFalse;
+        return y!=null && (exactOrSuper ? match.test(y) : match.testSuper(y)) == trueOrFalse;
         //return (!exactOrSuper || match.test(y) == trueOrFalse); //bypass testSuper, for testing testSuper
     }
 

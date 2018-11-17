@@ -28,6 +28,8 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
         return (subterm == 0 ? Derivation.TaskTerm : Derivation.BeliefTerm);
     }
 
+    protected static final Atomic UNIFY = $.the("unify");
+
     /**
      * this will be called prior to UnifySubtermThenConclude.
      * so as part of an And condition, it is legitimate for this
@@ -41,7 +43,6 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
          */
         private final int subterm;
 
-        private static final Atomic UNIFY = $.the("unify");
 
         public NextUnify(int subterm, Term pattern) {
             super($.funcFast(UNIFY, UnifyTerm.label(subterm), pattern), pattern);
@@ -50,7 +51,11 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
 
         @Override
         public final boolean test(Derivation d) {
-            return d.unify(pattern, subterm == 0 ? d.taskTerm : d.beliefTerm, false) && d.use(Param.TTL_UNIFY);
+            boolean unified = d.unify(pattern, subterm == 0 ? d.taskTerm : d.beliefTerm, false);
+//            if (!unified) {
+//                System.err.println(pattern + " "+ d);
+//            }
+            return unified && d.use(Param.TTL_UNIFY);
         }
 
     }
@@ -67,7 +72,6 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
         public final int subterm;
         public final PREDICATE<Derivation> eachMatch;
 
-        private static final Atomic UNIFY = Atomic.the("unify");
 
         public NextUnifyTransform(int subterm, /*@NotNull*/ Term pattern, /*@NotNull*/ PREDICATE<Derivation> eachMatch) {
             super($.funcFast(UNIFY, label(subterm), pattern, eachMatch), pattern);
@@ -79,7 +83,10 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
         public final boolean test(Derivation d) {
             d.forEachMatch = eachMatch;
 
-            d.unify(pattern, subterm == 0 ? d.taskTerm : d.beliefTerm, true);
+            boolean unified = d.unify(pattern, subterm == 0 ? d.taskTerm : d.beliefTerm, true);
+//            if (!unified) {
+//                System.err.println(d);
+//            }
 
             d.forEachMatch = null;
 

@@ -16,6 +16,15 @@ public class NAL1GoalTest extends NALTest {
         return NARS.tmp(1);
     }
 
+    @Test
+    void questFromExtensionalSiblingGoal() {
+        test
+                .input("(a-->c)!")
+                .input("(b-->c).")
+                .mustQuest(cycles, "(b-->c)")
+        ;
+    }
+
 
 
 

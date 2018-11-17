@@ -168,22 +168,34 @@ public final class MutableRoulette {
             throw new RuntimeException();
         } else {
 
-            float distance = rng.nextFloat() * weightSum;
-
+            float distance = EPSILON + rng.nextFloat() * weightSum;
 
             int i = this.i;
-            int idle = 0;
+//            int idle = 0;
             float wi;
-            while ((((wi = w[i = Util.next(i, direction, count)]) > EPSILON) && (distance = (distance - wi)) > EPSILON)) {
-                if (idle++ == count + 1)
-                    return -1; //emergency bailout: WTF
-            }
+
+            do {
+                wi = w[i = Util.next(i, direction, count)];
+                distance = (distance - wi);//
+//                    if (idle++ == count + 1)
+//                        return -1; //emergency bailout: WTF
+            } while (distance > 0 && wi < EPSILON);
+
+            assert(wi>EPSILON);
 
             float nextWeight = weightUpdate.valueOf(wi);
             if (nextWeight < EPSILON) {
                 w[i] = 0;
                 weightSum -= wi;
                 remaining--;
+//                {
+//                    int actuallyRemain = 0;
+//                    for (int r = 0; r < w.length; r++) {
+//                        if (w[r] >= EPSILON)
+//                            actuallyRemain++;
+//                    }
+//                    assert(actuallyRemain == remaining);
+//                }
             } else if (nextWeight != wi) {
                 w[i] = nextWeight;
                 weightSum += nextWeight - wi;

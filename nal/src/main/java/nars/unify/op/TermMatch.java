@@ -4,6 +4,8 @@ import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
 import nars.unify.Unify;
 import nars.unify.constraint.UnifyConstraint;
 
@@ -20,9 +22,7 @@ abstract public class TermMatch {
      * test what can be inferred from the superterm if the direct locator was not possible
      * this is not the direct superterm but the root of the term in which the path may be longer than length 1 so several layers may separate them
      */
-    public boolean testSuper(Term superSuperTerm) {
-        return true;
-    }
+    abstract public boolean testSuper(Term superSuperTerm);
 
     /**
      * term representing any unique parameters beyond the the class name which is automatically incorporated into the predicate it forms
@@ -93,13 +93,11 @@ abstract public class TermMatch {
             this.volMin = volMin;
         }
 
+        private static final Atom ANY = (Atom) Atomic.the("any");
+        private static final Atom ALL = (Atom) Atomic.the("all");
         @Override
         public Term param() {
-            if (Integer.bitCount(struct)==1) {
-                return Op.strucTerm(struct);
-            } else {
-                return $.func((anyOrAll ? Op.SECTi.strAtom : Op.SECTe.strAtom), Op.strucTerm(struct));
-            }
+            return $.p( Op.strucTerm(struct), anyOrAll ? ANY : ALL, $.the(volMin));
         }
 
         @Override
@@ -193,7 +191,7 @@ abstract public class TermMatch {
         private final boolean trueOrFalse;
 
         MyUnifyConstraint(Term x, boolean trueOrFalse) {
-            super(x, TermMatch.this.getClass().getSimpleName(), TermMatch.this.param());
+            super(x, TermMatch.this.getClass().getSimpleName(), $.p(TermMatch.this.param(), $.the(trueOrFalse)));
             this.trueOrFalse = trueOrFalse;
         }
 

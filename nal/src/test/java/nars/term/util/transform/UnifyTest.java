@@ -7,7 +7,6 @@ import nars.derive.premise.PatternIndex;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.anon.Anon;
 import nars.test.TestNAR;
 import nars.unify.Unify;
@@ -783,6 +782,13 @@ public class UnifyTest {
         test(Op.VAR_DEP,
                 "t:(#x | {#y})",
                 "t:(x | {y})",
+                true);
+    }
+    @Test
+    void implXternal() {
+        test(Op.VAR_PATTERN,
+                "((--,%1) ==>+- %2)",
+                "((--,(_1&&_2))==>_3)",
                 true);
     }
 

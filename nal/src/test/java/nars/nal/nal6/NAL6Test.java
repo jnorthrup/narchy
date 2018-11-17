@@ -1028,6 +1028,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void testHypothesizeSubconditionIdentityConj() {
+        test.nar.termVolumeMax.set(13);
         test
 //                .logDebug()
                 .believe("(&&,f(x),f(#1),g(#1))", 1f, 0.9f)
