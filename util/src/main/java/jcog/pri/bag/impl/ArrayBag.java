@@ -215,7 +215,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             }
         }
 
-        ArrayBag.MASS.setLazy(this, m);
+        ArrayBag.MASS.set(this, m);
 
 
         int c = capacity();

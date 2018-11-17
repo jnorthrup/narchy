@@ -179,7 +179,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
                 deadline = await(deadline);
             }
         }
-        while (cursor.getOpaque()!= SHUTDOWN && !model.canExit() && !cursor.weakCompareAndSetVolatile(c, -1));
+        while (cursor.getOpaque()!= SHUTDOWN && !model.canExit() && !cursor.compareAndSet(c, -1));
 
         loop = null;
 
@@ -442,7 +442,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 
     void assertRunning() {
-        if (cursor.weakCompareAndSetVolatile(-1, 0)) {
+        if (cursor.compareAndSet(-1, 0)) {
             this.loop = new Thread(this, HashedWheelTimer.class.getSimpleName() +"_" + hashCode());
             this.loop.setDaemon(daemon); 
             this.loop.start();

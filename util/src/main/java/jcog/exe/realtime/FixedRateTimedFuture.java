@@ -39,7 +39,7 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
 
     @Override
     public void execute(HashedWheelTimer t) {
-        if (pending.weakCompareAndSetAcquire(false, true)) {
+        if (pending.compareAndSet(false, true)) {
             try {
                 if (!isCancelled()) {
                     super.execute(t);
@@ -47,7 +47,7 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
                     t._schedule(this);
                 }
             } finally {
-                pending.setRelease(false);
+                pending.set(false);
             }
         }
 

@@ -23,12 +23,14 @@ import nars.time.clock.CycleTime;
 import nars.video.Bitmap2DConceptsView;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.impl.block.factory.Comparators;
+import org.fusesource.jansi.FilterPrintStream;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.video.Draw;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.stream.Collectors.toList;
 import static jcog.Texts.n4;
@@ -44,7 +46,7 @@ public class TrackXY_NAR extends NAgentX {
             targetCam = true,
             gui = true;
     static int
-            W = 4, H = 4;
+            W = 3, H = 1;
             //W = 5, H = 1;
     static int dur = 1;
     static float camResolution = 0.1f;
@@ -53,6 +55,9 @@ public class TrackXY_NAR extends NAgentX {
     private final TrackXY track;
     private float rewardSum = 0;
 
+
+    final public AtomicBoolean log = new AtomicBoolean(true);
+    final public AtomicBoolean trainer = new AtomicBoolean(true);
 
     protected TrackXY_NAR(NAR nar, int W, int H) {
         super("trackXY",
@@ -100,7 +105,32 @@ public class TrackXY_NAR extends NAgentX {
 
         track.randomize();
 
+        Param.DEBUG = true;
+        nar().log(new FilterPrintStream(System.out) {
 
+            @Override
+            public void print(String s) {
+                super.print(s);
+                Util.sleepMS(200);
+            }
+        }, (t)->log.getOpaque() /*&& t instanceof Task && ((Task)t).isGoal()*/);
+
+
+        onFrame(()->{
+            long now = nar.time();
+           if (trainer.getOpaque()) {
+                if (track.ty < track.cy) {
+                    nar().want(0f, $.inh("down", id), now, now+dur, 1f, 0.5f);
+                } else if (track.ty > track.cy) {
+                    nar().want(0f, $.inh("up", id), now, now+dur, 1f, 0.5f);
+                }
+               if (track.tx < track.cx) {
+                   nar().want(0f, $.inh("left", id), now, now+dur, 1f, 0.5f);
+               } else if (track.tx > track.cx) {
+                   nar().want(0f, $.inh("right", id), now, now+dur, 1f, 0.5f);
+               }
+           }
+        });
     }
 
 

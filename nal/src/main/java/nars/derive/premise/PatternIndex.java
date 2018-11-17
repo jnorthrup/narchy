@@ -413,15 +413,20 @@ public class PatternIndex extends MapConceptIndex {
 
                 }
 
-                if (ellipsis == null) {
-                    if (xFixed.size()!=yFree.size())
-                        return false;
-
-                    return $.sFast(xFixed).unify($.sFast(yFree), u);
-                }
 
                 final int xs = xFixed != null ? xFixed.size() : 0;
+
                 int ys = yFree.size();
+                if (ellipsis == null) {
+                    if (xs !=ys)
+                        return false;
+                    if (xs > 1)
+                        return $.sFast(xFixed).unify($.sFast(yFree), u);
+                    else
+                        return xFixed.get(0).unify(yFree.first(), u);
+                }
+
+
                 int numRemainingForEllipsis = ys - xs;
                 boolean vs = ellipsis.validSize(numRemainingForEllipsis);
                 if (!vs)

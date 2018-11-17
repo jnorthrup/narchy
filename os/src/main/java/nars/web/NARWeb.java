@@ -281,7 +281,7 @@ abstract public class NARWeb extends WebServer {
         @Override
         public void accept(Task t) {
             if (out.put(t)!=null) {
-                if (busy.weakCompareAndSetAcquire(false, true)) {
+                if (busy.compareAndSet(false, true)) {
                     Exe.invoke(this::drain);
                 }
             }

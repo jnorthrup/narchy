@@ -478,34 +478,36 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                Task T = d._task;
-                long ts = d.taskStart;
-                Task B = d._belief;
-                long bs = d.beliefStart;
-                if (ts != ETERNAL && bs != ETERNAL) {
+                return rangeCombine(d,OccIntersect.Task);
 
-                    if (d.concSingle)
-                        return new long[]{ts, T.end()};
-                    else {
-//                    if (d.concSingle || d.concPunc == GOAL)
-//                        return new long[]{ ts, T.end()};
+//                Task T = d._task;
+//                long ts = d.taskStart;
+//                Task B = d._belief;
+//                long bs = d.beliefStart;
+//                if (ts != ETERNAL && bs != ETERNAL) {
 //
-
-                        return Longerval.intersectionArray(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd);
-                    }
-
-
-                    //when might Union acceptable since intersection has alrady been tested. this includes when the tasks meet end-to-end in whch case union is just the loosest concatenation of them
-//                    Longerval i = Longerval.union(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
-//                    return new long[]{i.a, i.b};
-
-                } else if (ts == ETERNAL && B != null && bs != ETERNAL) {
-                    return new long[]{bs, B.end()};
-                } else if (ts != ETERNAL && (B == null || bs == ETERNAL)) {
-                    return new long[]{ts, T.end()};
-                } else {
-                    return new long[]{ETERNAL, ETERNAL};
-                }
+////                    if (d.concSingle)
+//                        //return new long[]{ts, ts+range}; //since this isn't raw, the truth has been projected to the task
+////                    else {
+//////                    if (d.concSingle || d.concPunc == GOAL)
+//////                        return new long[]{ ts, T.end()};
+//////
+////
+////                        return Longerval.intersectionArray(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd);
+////                    }
+//
+//
+//                    //when might Union acceptable since intersection has alrady been tested. this includes when the tasks meet end-to-end in whch case union is just the loosest concatenation of them
+////                    Longerval i = Longerval.union(d.taskStart, d.task.end(), d.beliefStart, d.belief.end());
+////                    return new long[]{i.a, i.b};
+//
+//                } else if (ts == ETERNAL && B != null && bs != ETERNAL) {
+//                    return new long[]{bs, B.end()};
+//                } else if (ts != ETERNAL && (B == null || bs == ETERNAL)) {
+//                    return new long[]{ts, T.end()};
+//                } else {
+//                    return new long[]{ETERNAL, ETERNAL};
+//                }
 
             }
         },
@@ -549,7 +551,10 @@ public class Occurrify extends TimeGraph {
             long[] occurrence(Derivation d) {
                 return rangeCombine(d, OccIntersect.Task);
             }
-
+            @Override
+            public BeliefProjection beliefProjection() {
+                return BeliefProjection.Raw;
+            }
         },
         TaskMinusBeliefDT() {
             @Override
@@ -560,6 +565,10 @@ public class Occurrify extends TimeGraph {
             @Override
             long[] occurrence(Derivation d) {
                 return rangeCombine(d, OccIntersect.Task);
+            }
+            @Override
+            public BeliefProjection beliefProjection() {
+                return BeliefProjection.Raw;
             }
         },
 
@@ -626,7 +635,10 @@ public class Occurrify extends TimeGraph {
             long[] occurrence(Derivation d) {
                 return OccConjDecompose(d, false);
             }
-
+            @Override
+            public BeliefProjection beliefProjection() {
+                return BeliefProjection.Raw; //belief
+            }
         },
 
         /**
@@ -692,7 +704,10 @@ public class Occurrify extends TimeGraph {
             long[] occurrence(Derivation d) {
                 throw new UnsupportedOperationException();
             }
-
+            @Override
+            public BeliefProjection beliefProjection() {
+                return BeliefProjection.Raw; //N/A structuraldeduction
+            }
         },
 
 
@@ -897,26 +912,27 @@ public class Occurrify extends TimeGraph {
 //            }
         },
 
-        /**
-         * result occurs in the union time interval, and this always exists.
-         * the evidence integration applied in the truth calculation should
-         * reflect the loss of evidence from any non-intersecting time ranges
-         */
-        Union() {
-            @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                //return solveOccDTWithGoalOverride(d, x);
-                return solveOccDT(d, x, d.occ.reset(x));
-            }
-
-
-            @Override
-            long[] occurrence(Derivation d) {
-                Longerval i = Longerval.union(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd);
-                return new long[]{i.a, i.b};
-            }
-
-        };
+//        /**
+//         * result occurs in the union time interval, and this always exists.
+//         * the evidence integration applied in the truth calculation should
+//         * reflect the loss of evidence from any non-intersecting time ranges
+//         */
+//        Union() {
+//            @Override
+//            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+//                //return solveOccDTWithGoalOverride(d, x);
+//                return solveOccDT(d, x, d.occ.reset(x));
+//            }
+//
+//
+//            @Override
+//            long[] occurrence(Derivation d) {
+//                Longerval i = Longerval.union(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd);
+//                return new long[]{i.a, i.b};
+//            }
+//
+//        }
+        ;
 
         private final Term term;
 

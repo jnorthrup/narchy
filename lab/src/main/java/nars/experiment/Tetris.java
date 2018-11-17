@@ -8,7 +8,6 @@ import nars.NAR;
 import nars.NARS;
 import nars.NAgentX;
 import nars.agent.FrameTrigger;
-import nars.op.Arithmeticize;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -61,8 +60,8 @@ public class Tetris extends NAgentX {
      */
     public Tetris(Term id, NAR n, int width, int height, int timePerFall) {
         super(id,
-                //FrameTrigger.fps(30f),
-                FrameTrigger.durs(1),
+                FrameTrigger.fps(24f),
+                //FrameTrigger.durs(1),
                 n);
 
         state = new TetrisState(width, height, timePerFall) {
@@ -134,7 +133,7 @@ public class Tetris extends NAgentX {
         NAgentX.runRT(n -> {
             n.freqResolution.set(0.03f);
 
-            new Arithmeticize.ArithmeticIntroduction(32, n);
+//            new Arithmeticize.ArithmeticIntroduction(32, n);
 
 //            new Inperience.Believe(n, 32);
 //            new Inperience.Want(n, 32);
@@ -142,7 +141,7 @@ public class Tetris extends NAgentX {
             //new Abbreviation(n, ("z"), 4, 5,  8);
 
             return new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
-        }, FPS);
+        }, -1, FPS, FPS);
 
 //        int instances = 2;
 //        for (int i = 0; i < instances; i++)
@@ -173,10 +172,14 @@ public class Tetris extends NAgentX {
         final Term FALL = $.inh("fall", id);
 
         int debounceDurs = 1;
+        Runnable leftAction = () -> state.act(TetrisState.LEFT);
+        Runnable rightAction = () -> state.act(TetrisState.RIGHT);
 
-        actionPushButton(LEFT, debounce(() -> state.act(TetrisState.LEFT), debounceDurs));
-        actionPushButton(RIGHT, debounce(() -> state.act(TetrisState.RIGHT), debounceDurs));
+//        actionPushButton(LEFT, debounce(leftAction, debounceDurs);
+//        actionPushButton(RIGHT, debounce(() -> state.act(TetrisState.RIGHT), debounceDurs));
 
+
+        actionPushButtonMutex(LEFT, RIGHT, leftAction, rightAction);
 
         actionPushButton(ROT, debounce(() -> state.act(CW), debounceDurs));
 

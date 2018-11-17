@@ -33,7 +33,6 @@ import nars.exe.Revaluator;
 import nars.gui.NARui;
 import nars.index.concept.HijackConceptIndex;
 import nars.op.Arithmeticize;
-import nars.op.Factorize;
 import nars.op.Introduction;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -208,7 +207,7 @@ abstract public class NAgentX extends NAgent {
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
-                        new Revaluator.DefaultRevaluator(0.9f),
+                        new Revaluator.DefaultRevaluator(0.1f),
                         //new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
 
                         threads <= 0 ? Util.concurrencyExcept(2) : threads, true /* affinity */))
@@ -427,7 +426,7 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         //n.freqResolution.set(0.03f);
-        n.termVolumeMax.set(30);
+        n.termVolumeMax.set(24);
 
 
         n.beliefPriDefault.set(0.5f);
@@ -495,7 +494,7 @@ abstract public class NAgentX extends NAgent {
 //                8, 96);
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(64, n);
-        Introduction factorizer = new Factorize.FactorIntroduction(64, n);
+//        Introduction factorizer = new Factorize.FactorIntroduction(64, n);
 
         {
 //            new Inperience.Believe(n, 32);

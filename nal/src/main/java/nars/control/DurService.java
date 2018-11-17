@@ -107,7 +107,7 @@ abstract public class DurService extends NARService  {
 
     private void run() {
 
-        if (!busy.weakCompareAndSetAcquire(false, true))
+        if (!busy.compareAndSet(false, true))
             return;
 
         try {

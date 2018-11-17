@@ -717,8 +717,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         Segment seg;
         while ((seg = segs.getAcquire(index)) == null) {
             Segment s2;
-            //if (segs.compareAndSet(index, null, s2 = new Segment())) {
-            if (segs.weakCompareAndSetRelease(index, null, s2 = new Segment())) {
+            if (segs.compareAndSet(index, null, s2 = new Segment())) {
+            //if (segs.weakCompareAndSetRelease(index, null, s2 = new Segment())) {
                 //segs.setRelease(index, s2);
                 return s2;
             }

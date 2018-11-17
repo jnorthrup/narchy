@@ -606,13 +606,46 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     /**
+     * first layer operator scan
+     *
+     * @return 0: must unify, -1: impossible, +1: unified already
+     */
+    private static int possiblyUnifiableWhileEliminatingEqual(TermList xx, TermList yy, Unify u) {
+        int xs = 0, ys = 0;
+
+        int xn = xx.size();
+        for (int i = 0; i < xn; ) {
+            Term xi = xx.get(i);
+            if (yy.removeFirst(xi)) {
+                xx.removeFast(i);
+                xn--;
+            } else {
+                xs |= xi.op().bit;
+                ys |= yy.get(i).op().bit;
+                i++;
+            }
+        }
+
+        assert (xx.size() == yy.size());
+
+        int xxs = xx.size();
+        if (xxs == 0)
+            return +1; //all eliminated
+
+        else if (!possiblyUnifiable(xs, ys, u.varBits))
+            return -1; //first layer has no non-variable commonality, no way to unify
+
+        else return 0;
+    }
+    /**
      * assume equality, structure commonality, and equal subterm count have been tested
      */
     default boolean unifyCommute(Subterms y, Unify u) {
 
-        final TermList xx = toList(), yy = y.toList();
+        TermList xx = toList(), yy = y.toList();
 
-        switch (possiblyUnifiableWhileEliminatingEqual(xx, yy, u)) {
+        int i = possiblyUnifiableWhileEliminatingEqual(xx, yy, u);
+        switch (i) {
             case -1:
                 return false;
             case +1:
@@ -624,7 +657,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //                    int xs = xx.structure();
 //                    if (!u.constant(xs) || !u.constant(yy)) {
 //                        if (Terms.commonStructureTest(xs, yy, u)) {
-                    u.termutes.add(new CommutivePermutations(xx, yy));
+                    if (xx==this || xx.subs()==subs()) {
+                        //no change
+                        u.termutes.add(new CommutivePermutations(this, y)); //use the original subs
+                    } else {
+                        u.termutes.add(new CommutivePermutations(xx, yy));
+                    }
                     return true;
 //                        }
 //                    }
@@ -691,8 +729,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     default int structureConstant(int varBits) {
         return intifyShallow((int v, Term z) -> {
-            int zs = z.structure();
-            return !Op.hasAny(zs, varBits) ? (v | zs) : v;
+            //int zs = z.structure();
+            //return !Op.hasAny(zs, varBits) ? (v | zs) : v;
+            return (z instanceof Variable && (z.op().bit & varBits)!=0) ? v : (v | z.structure());
         }, 0);
     }
 
@@ -701,9 +740,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return possiblyUnifiable(xx, yy, u.varBits);
     }
 
-    static boolean possiblyUnifiable(Termlike xx, Termlike yy, Unify u) {
-        return possiblyUnifiable(xx.structure(), yy.structure(), u.varBits);
-    }
+
 
 
     /**
@@ -711,39 +748,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
      */
     default int structureSurface() {
         return intifyShallow((s, x) -> s | x.op().bit, 0);
-    }
-
-    /**
-     * first layer operator scan
-     *
-     * @return 0: must unify, -1: impossible, +1: unified already
-     */
-    private static int possiblyUnifiableWhileEliminatingEqual(TermList xx, TermList yy, Unify u) {
-        int xs = 0, ys = 0;
-
-        int xn = xx.size();
-        for (int i = 0; i < xn; ) {
-            Term xi = xx.get(i);
-            if (yy.removeFirst(xi)) {
-                xx.removeFast(i);
-                xn--;
-            } else {
-                xs |= xi.op().bit;
-                ys |= yy.get(i).op().bit;
-                i++;
-            }
-        }
-
-        assert (xx.size() == yy.size());
-
-        int xxs = xx.size();
-        if (xxs == 0)
-            return +1; //all eliminated
-
-        if (!possiblyUnifiable(xs, ys, u.varBits))
-            return -1; //first layer has no non-variable commonality, no way to unify
-
-        return 0;
     }
 
 

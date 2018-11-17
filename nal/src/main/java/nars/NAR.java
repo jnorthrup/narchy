@@ -172,7 +172,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         } else {
 
-            for (int i = 0; i < chan.length() + 2; i++)
+            int n = chan.length() + 2;
+            for (int i = 0; i < n; i++)
                 out.append(' ');
         }
 
@@ -806,8 +807,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         eventTask.on((v) -> {
 
-//            if (includeValue != null && !includeValue.test(v))
-//                return;
+            if (includeValue != null && !includeValue.test(v))
+                return;
 
             try {
                 outputEvent(out, previous[0], "task", v);

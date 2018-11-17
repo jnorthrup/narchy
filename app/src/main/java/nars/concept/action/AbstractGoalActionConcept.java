@@ -88,6 +88,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
 
+    static final Predicate<Task> withoutCuriosity = t -> !(t instanceof CuriosityTask) && !t.isEternal();  /* filter curiosity tasks? */
+
     @Override
     public void update(long prev, long now, long next, NAR n) {
 
@@ -95,7 +97,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         //TODO mine truthpolation .stamp()'s and .cause()'s for clues
 
-        Predicate<Task> withoutCuriosity = t -> !(t instanceof CuriosityTask) && !t.isEternal();  /* filter curiosity tasks? */
+
 
 
         int dur = n.dur();
@@ -119,9 +121,16 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         BeliefTable table = goals();
 
+        long recent = now - dur*2;
+
+        Predicate<Task> fil =
+                withoutCuriosity;
+                //Answer.filter(withoutCuriosity, (t) -> t.endsAfter(recent));
 
         try(Answer a = Answer.
-                relevance(true, limit, s, e, term, withoutCuriosity, n)) {
+                relevance(true, limit, s, e, term, fil, n)) {
+
+
             TruthPolation organic = a.match(table).truthpolation(actionDur);
             if (organic != null) {
                 actionDex = organic.filtered().truth();

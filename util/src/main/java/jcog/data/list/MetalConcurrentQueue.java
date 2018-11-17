@@ -345,10 +345,12 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
         int cap = capacity();
         for (; ; ) {
             final int head = this.head.getOpaque();
-            if (headCursor.weakCompareAndSetAcquire(head, head + 1)) {
+            if (headCursor.compareAndSet(head, head + 1)) {
+            //if (headCursor.weakCompareAndSetAcquire(head, head + 1)) {
                 for (; ; ) {
                     final int tail = this.tail.getOpaque();
-                    if (tailCursor.weakCompareAndSetVolatile(tail, tail + 1)) {
+                    if (tailCursor.compareAndSet(tail, tail + 1)) {
+                    //if (tailCursor.weakCompareAndSetVolatile(tail, tail + 1)) {
 
                         // we just blocked all changes to the queue
 

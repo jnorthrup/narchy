@@ -341,7 +341,9 @@ public class Derivation extends PreDerivation {
             this.beliefStart = nextBelief.start();
             this.beliefEnd = nextBelief.end();
 
-            this.beliefTruthProjectedToTask = nextBelief.truth(taskStart, taskEnd, dur);
+            this.beliefTruthProjectedToTask = taskStart!=ETERNAL ?
+                    nextBelief.truth(taskStart, taskEnd, dur)
+                    : beliefTruthRaw;
 
             if (Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && !(beliefStart == ETERNAL && !beliefTruthProjectedToTask.equals(beliefTruthRaw))) {
                 if (Param.eternalizeInDerivation.test(nextBelief.op())) {

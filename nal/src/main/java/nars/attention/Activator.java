@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * */
 public class Activator  {
 
-    public final FloatRange conceptActivationRate = new FloatRange(0.1f, 0f, 1f);
+    public final FloatRange conceptActivationRate = new FloatRange(0.01f, 0f, 1f);
 
     static final SpinMetalPool<UnitPri> pris = new SpinMetalPool<>() {
         @Override
@@ -65,14 +65,19 @@ public class Activator  {
         @Nullable Concept x = nar.concept(tgtTerm, true);
         if (x == null)
             return null;
-        return activate(x, pri, overflow);
+        return activateRaw(x, pri * conceptActivationRate.floatValue(), overflow);
     }
 
     public Concept activate(Concept x, float pri) {
-        return activate(x, pri * conceptActivationRate.floatValue(), null);
+        return activateRaw(x, pri * conceptActivationRate.floatValue(), null);
     }
 
-    Concept activate(Concept x, float pri, @Nullable OverflowDistributor<Concept> overflow) {
+
+    public final Concept activateRaw(Concept x, float pri) {
+        return activateRaw(x, pri, null);
+    }
+
+    public Concept activateRaw(Concept x, float pri, @Nullable OverflowDistributor<Concept> overflow) {
         UnitPri a = concepts.computeIfAbsent(x, t -> pris.get());
 
         if (overflow!=null)
@@ -109,7 +114,7 @@ public class Activator  {
     }
 
     public final void activate(OverflowDistributor<Concept> overflow, Random random) {
-        overflow.shuffle(random).redistribute(this::activate);
+        overflow.shuffle(random).redistribute(this::activateRaw);
     }
 
 //    private static final class TermLinkage extends UnitPri implements Comparable<TermLinkage> {
