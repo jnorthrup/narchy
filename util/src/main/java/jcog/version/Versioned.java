@@ -9,8 +9,21 @@ import org.jetbrains.annotations.Nullable;
  */
 public class Versioned<X> extends FasterList<X> {
 
+    abstract public static class DummyVersioned<X> extends Versioned<X> {
 
-    private final Versioning context;
+        public DummyVersioned() {
+            super(null, 0);
+        }
+
+        abstract protected void off();
+
+        @Override
+        public void pop() {
+            off();
+        }
+    }
+
+    protected final Versioning context;
 
 
     public Versioned(Versioning<X> sharedContext, int initialCap) {
@@ -80,7 +93,7 @@ public class Versioned<X> extends FasterList<X> {
     }
 
 
-    public final void pop() {
+    public void pop() {
 
 
         items[--size] = null;

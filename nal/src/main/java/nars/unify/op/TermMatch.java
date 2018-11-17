@@ -11,6 +11,8 @@ import nars.unify.constraint.UnifyConstraint;
 
 import javax.annotation.Nullable;
 
+import static nars.Op.VAR_PATTERN;
+
 abstract public class TermMatch {
 
     /**
@@ -71,7 +73,7 @@ abstract public class TermMatch {
         public boolean testSuper(Term superTerm) {
             //return trueOrFalse == superTerm.hasAny(struct);
             Subterms subs = superTerm.subterms();
-            return subs.hasAny(struct) && subs.OR(x -> x.hasAny(struct));
+            return subs.hasAny(struct);// && subs.OR(x -> x.hasAny(struct));
         }
     }
 
@@ -106,8 +108,8 @@ abstract public class TermMatch {
             //all is more specific so should be prioritized ahead
             //more # of bits decreases the cost
             return Math.max(
-                    (anyOrAll ? 0.11f : 0.09f) - 0.001f * Integer.bitCount(struct),
-                    0.001f);
+                    (anyOrAll ? 0.21f : 0.19f) - 0.001f * Integer.bitCount(struct),
+                    0.1f);
 
         }
 
@@ -124,6 +126,56 @@ abstract public class TermMatch {
                 return subs.has(struct, anyOrAll) && subs.OR(x -> x.has(struct, anyOrAll));
             }
             return false;
+        }
+    }
+
+    /**
+     * is of a specific type, and has the term in its structure
+     */
+    public final static class IsHas extends TermMatch {
+
+        final int structAll;
+        final int struct;
+        private final int volMin;
+        private final byte is;
+        private final int depth;
+
+        public static TermMatch get(Term x, int depth) {
+            assert(!(x.op()==VAR_PATTERN));
+
+            int xs = x.subterms().structure() & (~VAR_PATTERN.bit);
+
+            return xs != 0 ? new IsHas(x.op(), xs, x.complexity(), depth) : new Is(x.op());
+        }
+
+        private IsHas(Op is, int struct, int volMin, int depth) {
+            this.is = is.id;
+            this.struct = struct;
+            this.volMin = volMin;
+            this.structAll = struct | is.bit;
+            this.depth = depth;
+        }
+
+
+        @Override
+        public Term param() {
+            return $.p( Op.ops[is].strAtom, Op.strucTerm(struct), $.the(volMin));
+        }
+
+        @Override
+        public float cost() {
+            return 0.15f + 0.001f * depth;
+        }
+
+        @Override
+        public boolean test(Term term) {
+            return term.op().id == is && term.hasAll(structAll) && (volMin == 0 || term.volume() >= volMin);
+        }
+
+        @Override
+        public boolean testSuper(Term superTerm) {
+
+            return (volMin == 0 || superTerm.volume() >= 1 + volMin) && superTerm.subterms().hasAll(structAll);
         }
     }
 

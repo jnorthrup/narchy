@@ -48,11 +48,14 @@ abstract public class RelationConstraint extends UnifyConstraint {
     @Override
     public @Nullable PREDICATE<PreDerivation> preFilter(Term taskPattern, Term beliefPattern) {
 
-        //only test one of the directions
-        // because the opposite y->x will also be created so we only need one predicate filter for both
-        if (x.compareTo(y) > 0) {
-            return mirror().preFilter(taskPattern, beliefPattern); //use a canonical ordering to maximize chances of trie alignment
-        }
+//        //only test one of the directions
+//        // because the opposite y->x will also be created so we only need one predicate filter for both
+//        if (x.compareTo(y) > 0) {
+//            RelationConstraint m = mirror();
+//            if (m.x.compareTo(m.y) > 0)
+//                throw new WTF();
+//            return m.preFilter(taskPattern, beliefPattern); //use a canonical ordering to maximize chances of trie alignment
+//        }
 
 
         byte[] xInTask = Terms.pathConstant(taskPattern, x);

@@ -99,6 +99,11 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
         }
 
         @Override
+        public float cost() {
+            return p.cost() + 0.001f;
+        }
+
+        @Override
         public PREDICATE<X> neg() {
             return p; //unneg
         }

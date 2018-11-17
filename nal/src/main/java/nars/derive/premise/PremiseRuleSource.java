@@ -627,19 +627,20 @@ public class PremiseRuleSource extends ProxyTerm {
     private void tryGuard(RootTermAccessor r, Term root, ByteArrayList p) {
 
         byte[] pp = p.toByteArray();
-        Term t = pp.length==0 ? root : root.sub(pp);
+        int depth = pp.length;
+        Term t = depth ==0 ? root : root.sub(pp);
 
         Op to = t.op();
         if (to == Op.VAR_PATTERN)
             return;
 
-        Function<PreDerivation, Term> rr = pp.length == 0 ? r : r.path(pp);
-        pre.add(new TermMatchPred<>(new TermMatch.Is(to),  rr));
 
-        int ts = t.structure() & (~Op.VAR_PATTERN.bit);
-        //if (Integer.bitCount(ts) > 1) {
-        //if there are additional bits that the structure can filter, include the hasAll predicate
-        pre.add(new TermMatchPred<>(new TermMatch.Has(ts, false /* all */, t.complexity()), rr));
+
+        Function<PreDerivation, Term> rr = depth == 0 ? r : r.path(pp);
+//        int ts = t.structure() & (~Op.VAR_PATTERN.bit);
+//        pre.add(new TermMatchPred<>(new TermMatch.Is(to),  rr));
+//        pre.add(new TermMatchPred<>(new TermMatch.Has(ts, false /* all */, t.complexity()), rr));
+        pre.add(new TermMatchPred<>(TermMatch.IsHas.get(t, depth),  rr));
 
         int n = t.subs();
         if (!to.commutative || n == 1) {

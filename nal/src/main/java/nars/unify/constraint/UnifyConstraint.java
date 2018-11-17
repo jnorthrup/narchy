@@ -31,7 +31,7 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
 //    }
 
     @Override
-    public boolean test(Derivation p) {
+    public final boolean test(Derivation p) {
         return p.constrain(this);
     }
 
@@ -183,22 +183,35 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
             return CompoundConstraint.the(c.stream()).toArray(UnifyConstraint[]::new);
     }
 
-    static final class CompoundConstraint extends UnifyConstraint {
+    static final MultimapBuilder.ListMultimapBuilder matchConstraintMapBuilder = MultimapBuilder.hashKeys(4).arrayListValues(4);
 
+    private static final class BiConstraint extends UnifyConstraint {
+        final UnifyConstraint a, b;
 
-        static final MultimapBuilder.ListMultimapBuilder matchConstraintMapBuilder = MultimapBuilder.hashKeys(4).arrayListValues(4);
+        private BiConstraint(UnifyConstraint a, UnifyConstraint b) {
+            super(a.x, $.funcFast(UnifyIf, a.x, $.sFast(new Term[]  { a,b })));
+            this.a = a;
+            this.b = b;
+        }
+
+        @Override
+        public float cost() {
+            return a.cost() + b.cost();
+        }
+
+        @Override
+        public boolean invalid(Term y, Unify f) {
+            return a.invalid(y, f) || b.invalid(y, f);
+        }
+    }
+
+    private static final class CompoundConstraint extends UnifyConstraint {
 
         private final UnifyConstraint[] cache;
 
         private CompoundConstraint(UnifyConstraint[] c) {
             super(c[0].x, $.funcFast(UnifyIf, c[0].x, $.sFast(c)));
             this.cache = c;
-
-            if (Param.DEBUG) {
-                final Term target = c[0].x;
-                for (int i = 1; i < c.length; i++)
-                    assert (c[i].x.equals(target));
-            }
         }
 
         /**
@@ -217,7 +230,19 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
                 } else {
                     UnifyConstraint[] d = cc.toArray(new UnifyConstraint[ccn]);
                     Arrays.sort(d, PREDICATE.sortByCostIncreasing);
-                    return new CompoundConstraint(d);
+
+                    if (Param.DEBUG) {
+                        final Term target = d[0].x;
+                        for (int i = 1; i < d.length; i++)
+                            assert (d[i].x.equals(target));
+                    }
+
+                    switch (d.length) {
+                        case 2:
+                            return new BiConstraint(d[0], d[1]);
+                        default:
+                            return new CompoundConstraint(d);
+                    }
                 }
             });
 
@@ -237,9 +262,6 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
             return false;
         }
 
-        @Override
-        public boolean test(Derivation derivation) {
-            return derivation.constrain(this);
-        }
+
     }
 }

@@ -13,7 +13,7 @@ public class Versioning<X> {
 
     public Versioning(int stackMax) {
         this.items = new Versioned[stackMax];
-        assert(stackMax > 0);
+        assert (stackMax > 0);
     }
 
     public Versioning(int stackMax, int initialTTL) {
@@ -41,18 +41,6 @@ public class Versioning<X> {
         }
     }
 
-    /** hard clear; use with caution  */
-    private void reset() {
-
-        int s = this.size;
-        this.size = 0;
-
-        for (int i = 0; i < s; i++) {
-            items[i].clear();
-            items[i] = null;
-        }
-
-    }
 
     /**
      * reverts/undo to previous state
@@ -64,25 +52,20 @@ public class Versioning<X> {
         if (s == 0 || s <= when)
             return false;
 
-        if (when == 0) {
-            reset();
-        } else {
+        int c = s - when;
+        final Versioned[] i = this.items;
 
-            int c = s - when;
-            final Versioned[] i = this.items;
-
-            while (c-- > 0) {
-                Versioned x = i[--s];
-                if (x != null) {
-                    x.pop();
-                    i[s] = null;
-                }
+        while (c-- > 0) {
+            Versioned x = i[--s];
+            if (x != null) {
+                x.pop();
+                i[s] = null;
             }
-
-            this.size = s;
-            assert (s == when);
-
         }
+
+        this.size = s;
+        assert (s == when);
+
         return true;
     }
 
@@ -95,30 +78,18 @@ public class Versioning<X> {
     public final boolean add(/*@NotNull*/ Versioned<X> newItem) {
         Versioned<X>[] ii = this.items;
         if (ii.length > this.size) {
-            ii[this.size++] = newItem; 
+            ii[this.size++] = newItem;
             return true;
         }
         return false; //capacity exceeded
     }
 
-    /** returns remaining TTL */
+    /**
+     * returns remaining TTL
+     */
     public final void stop() {
         ttl = 0;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -129,7 +100,7 @@ public class Versioning<X> {
     }
 
     public final void setTTL(int ttl) {
-        assert(ttl > 0);
+        assert (ttl > 0);
         this.ttl = ttl;
     }
 
@@ -142,7 +113,7 @@ public class Versioning<X> {
 
 
     public final void pop() {
-        revert(size-1);
+        revert(size - 1);
     }
 
 }

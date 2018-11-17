@@ -2,6 +2,7 @@ package nars.unify;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.set.ArrayHashSet;
 import jcog.version.VersionMap;
 import jcog.version.Versioned;
@@ -15,7 +16,6 @@ import nars.term.util.TermHashMap;
 import nars.term.util.transform.Subst;
 import nars.unify.constraint.UnifyConstraint;
 import nars.unify.mutate.Termutator;
-import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -247,16 +247,13 @@ public abstract class Unify extends Versioning implements Subst {
 
     public boolean constrain(UnifyConstraint m) {
         Term target = m.x;
-        if (target instanceof Variable)
-            return constrain((Variable)m.x, m);
-        else
-            return true; //its a constant that will be compared with? HACK TODO check how this works (for images)
+        if (target instanceof Variable) {
+            return ((ConstrainedVersionedTerm) xy.getOrCreateIfAbsent((Variable)target)).constrain(m);
+        } else {
+            throw new WTF();
+        }
     }
 
-    private boolean constrain(Variable target, UnifyConstraint... mm) {
-        ((ConstrainedVersionedTerm) xy.getOrCreateIfAbsent(target)).constrain(mm);
-        return true;
-    }
 
     /** xdt and ydt must both not equal either XTERNAL or DTERNAL */
     public boolean unifyDT(int xdt, int ydt) {
@@ -264,18 +261,10 @@ public abstract class Unify extends Versioning implements Subst {
         return Math.abs(xdt - ydt) < dtTolerance;
     }
 
-    @Nullable public Versioned<UnifyConstraint> constraints(Variable v) {
-        ConstrainedVersionedTerm vv = ((ConstrainedVersionedTerm) xy.map.get(v));
-        if (vv!=null) {
-            return vv.constraints;
-        }
-        return null;
-    }
 
     private class ConstrainedVersionMap extends VersionMap<Variable, Term> {
         ConstrainedVersionMap(Versioning versioning, Map<Variable, Versioned<Term>> termMap) {
             super(versioning,
-
                     termMap,
                     1);
         }
@@ -289,12 +278,12 @@ public abstract class Unify extends Versioning implements Subst {
 
     }
 
-    final class ConstrainedVersionedTerm extends Versioned<Term> implements Predicate2<UnifyConstraint, Term> {
+    final class ConstrainedVersionedTerm extends Versioned<Term> {
 
         /**
          * lazily constructed
          */
-        Versioned<UnifyConstraint> constraints;
+        UnifyConstraint constraint;
 
         ConstrainedVersionedTerm() {
             super(Unify.this, new Term[1]);
@@ -303,32 +292,36 @@ public abstract class Unify extends Versioning implements Subst {
         @Nullable
         @Override
         public Versioned<Term> set(Term next) {
-            return valid(next) ? super.set(next) : null;
+            @Nullable Term existing = get();
+            if (existing!=null)
+                return existing.equals(next) ? this : null;
+            if (valid(next) && addWithoutResize(next)) {
+                if (context.add(this))
+                    return this;
+                else
+                    pop();
+            }
+
+            return null;
         }
 
         private boolean valid(Term x) {
-            Versioned<UnifyConstraint> c = this.constraints;
+            UnifyConstraint c = this.constraint;
             //return MatchConstraint.valid(x, c);
-            return c == null || !c.anySatisfyWith(this, x);
+            return c == null || !c.invalid(x, Unify.this);
         }
 
-        void constrain(UnifyConstraint... mm) {
+        boolean constrain(UnifyConstraint c) {
+            constraint = c;
+            return Unify.this.add(off);
+        }
 
-            Versioned<UnifyConstraint> c = this.constraints;
-            if (c == null)
-                c = constraints = new Versioned<>(Unify.this, 4);
-
-            for (UnifyConstraint m : mm) {
-                Versioned<UnifyConstraint> wasSet = c.set(m);
-                assert (wasSet != null);
+        final Versioned off = new DummyVersioned() {
+            @Override
+            protected void off() {
+                constraint = null;
             }
-
-        }
-
-        @Override
-        public boolean accept(UnifyConstraint c, Term x) {
-            return c.invalid(x, Unify.this);
-        }
+        };
     }
 
 }

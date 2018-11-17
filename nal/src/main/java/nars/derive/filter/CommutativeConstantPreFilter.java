@@ -76,12 +76,11 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
         Term containerHolder = ellipsisInTaskOrBelief ?  d.taskTerm : d.beliefTerm;
         Term ellipsisContainer = containerHolder.sub(this.ellipsisPath);
 
-        boolean ok = ellipsisContainer.contains(content);
-        return ok;
+        return ellipsisContainer!=null && ellipsisContainer.contains(content);
     }
 
     @Override
     public float cost() {
-        return 0.1f;
+        return 0.3f;
     }
 }

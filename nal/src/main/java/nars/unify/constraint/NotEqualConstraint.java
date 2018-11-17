@@ -8,16 +8,19 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Predicate;
 
 import static nars.Op.INH;
+import static nars.Op.NEG;
 
 
 public final class NotEqualConstraint extends RelationConstraint {
 
     public NotEqualConstraint(Term target, Term other) {
-        super(target, other, "neq");
+        super(target.unneg(), other.negIf(target.op()==NEG), "neq");
     }
 
     @Override
     protected @Nullable RelationConstraint newMirror(Term newX, Term newY) {
+        if (!(newX instanceof Variable))
+            return null;
         return new NotEqualConstraint(newX, newY);
     }
 
