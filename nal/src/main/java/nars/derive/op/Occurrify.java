@@ -5,7 +5,6 @@ import jcog.data.graph.FromTo;
 import jcog.data.graph.Node;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
-import jcog.math.Longerval;
 import nars.Op;
 import nars.Param;
 import nars.Task;
@@ -34,7 +33,6 @@ import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import static jcog.WTF.WTF;
 import static nars.Op.*;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -98,32 +96,7 @@ public class Occurrify extends TimeGraph {
         this.d = d;
     }
 
-    /**
-     * heuristic for deciding a derivation result from among the calculated options
-     */
-    static protected Event merge(Event a, Event b) {
-        Term at = a.id;
-        Term bt = b.id;
-        if (at.hasXternal() && !bt.hasXternal())
-            return b;
-        if (bt.hasXternal() && !at.hasXternal())
-            return a;
 
-        long bstart = b.start();
-        if (bstart != TIMELESS) {
-            long astart = a.start();
-            if (astart == TIMELESS)
-                return b;
-
-            if (bstart != ETERNAL && astart == ETERNAL) {
-                return b;
-            } else if (astart != ETERNAL && bstart == ETERNAL) {
-                return a;
-            }
-        }
-
-        return null;
-    }
 
     /**
      * whether a term is 'temporal' and its derivations need analyzed by the temporal solver:
@@ -684,31 +657,31 @@ public class Occurrify extends TimeGraph {
             }
         },
 
-        /**
-         * used for single premise conjunction within conjunction result
-         */
-        BeliefSubSequence() {
-            @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                if (d.taskStart == ETERNAL && d.beliefStart == ETERNAL)
-                    return pair(x, new long[]{ETERNAL, ETERNAL});
-
-//                if (d.beliefStart == ETERNAL)
-//                    return pair(x, new long[]{d.taskStart, d.taskEnd});
-
-                //return solveSubSequence(x, d.beliefTerm, d.beliefStart, d.beliefEnd);
-                return solveSubSequence(x, d.beliefTerm, d.taskStart, d.taskEnd);
-            }
-
-            @Override
-            long[] occurrence(Derivation d) {
-                throw new UnsupportedOperationException();
-            }
-            @Override
-            public BeliefProjection beliefProjection() {
-                return BeliefProjection.Raw; //N/A structuraldeduction
-            }
-        },
+//        /**
+//         * used for single premise conjunction within conjunction result
+//         */
+//        BeliefSubSequence() {
+//            @Override
+//            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+//                if (d.taskStart == ETERNAL && d.beliefStart == ETERNAL)
+//                    return pair(x, new long[]{ETERNAL, ETERNAL});
+//
+////                if (d.beliefStart == ETERNAL)
+////                    return pair(x, new long[]{d.taskStart, d.taskEnd});
+//
+//                //return solveSubSequence(x, d.beliefTerm, d.beliefStart, d.beliefEnd);
+//                return solveSubSequence(x, d.beliefTerm, d.taskStart, d.taskEnd);
+//            }
+//
+//            @Override
+//            long[] occurrence(Derivation d) {
+//                throw new UnsupportedOperationException();
+//            }
+//            @Override
+//            public BeliefProjection beliefProjection() {
+//                return BeliefProjection.Raw; //N/A structuraldeduction
+//            }
+//        },
 
 
         /**
@@ -792,10 +765,10 @@ public class Occurrify extends TimeGraph {
                     tt = i;
                 else if (taskTerm.equalsNeg(j) && !beliefTerm.equals(j.unneg()))
                     tt = j;
-                else if (taskTerm.equalsRoot(i))
-                    tt = i;
-                else if (taskTerm.equalsRoot(j))
-                    tt = j;
+//                else if (taskTerm.equalsRoot(i))
+//                    tt = i;
+//                else if (taskTerm.equalsRoot(j))
+//                    tt = j;
                 else
                     return null; //TODO more cases
 
@@ -888,22 +861,23 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                if (d.concSingle || (d._belief == null || d.beliefStart == ETERNAL)) {
-                    return new long[]{d.taskStart, d.taskEnd};
-                } else if (d.taskStart == ETERNAL && d._belief != null) {
-                    return new long[]{d.beliefStart, d.beliefEnd};
-                } else {
-
-                    assert (d._belief != null && d.beliefStart != TIMELESS);
-
-                    long[] i = Longerval.intersectionArray(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd);
-                    if (i == null) {
-                        //if (Param.DEBUG)
-                        //assert(false == intersectFilter.test(d));
-                        throw WTF("shouldnt happen");
-                    }
-                    return i;
-                }
+                throw new UnsupportedOperationException();
+//                if (d.concSingle || (d._belief == null || d.beliefStart == ETERNAL)) {
+//                    return new long[]{d.taskStart, d.taskEnd};
+//                } else if (d.taskStart == ETERNAL && d._belief != null) {
+//                    return new long[]{d.beliefStart, d.beliefEnd};
+//                } else {
+//
+//                    assert (d._belief != null && d.beliefStart != TIMELESS);
+//
+//                    long[] i = Longerval.intersectionArray(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd);
+//                    if (i == null) {
+//                        //if (Param.DEBUG)
+//                        //assert(false == intersectFilter.test(d));
+//                        throw WTF("shouldnt happen");
+//                    }
+//                    return i;
+//                }
             }
 
 //            @Override
@@ -990,11 +964,12 @@ public class Occurrify extends TimeGraph {
                 if (d.taskStart == ETERNAL && (d.concSingle || d.beliefStart == ETERNAL))
                     return true; //both task and belief are eternal; keep eternal
 
-                long NOW = d.time;
-                int rad = Math.round(d.dur * Param.GOAL_PROJECT_TO_PRESENT_RADIUS_DURS);
-                o[0] = NOW;
-                o[1] = NOW + rad;
-                return true;
+                throw new UnsupportedOperationException();
+//                long NOW = d.time;
+//                int rad = Math.round(d.dur * Param.GOAL_PROJECT_TO_PRESENT_RADIUS_DURS);
+//                o[0] = NOW;
+//                o[1] = NOW + rad;
+//                return true;
             }
 
             long target =

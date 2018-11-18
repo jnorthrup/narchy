@@ -4,6 +4,7 @@ import jcog.lab.DefaultScientist;
 import jcog.lab.Lab;
 import jcog.lab.Opti;
 import jcog.lab.Optilive;
+import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.NARS;
 import nars.Param;
@@ -54,18 +55,18 @@ class NARTestOptimize {
                         (NAR n, int i) -> n.deriveBranchTTL.set(i))
 //                .var("linkFanOut", 1, 16, 1,
 //                        (NAR n, int f) -> Param.LinkFanoutMax = f)
-                .var("conceptActivation", 0, 1f, 0.1f,
+                .var("conceptActivation", ScalarValue.EPSILONsqrt, 1f, 0.1f,
                         (NAR n, float f) -> n.attn.activating.conceptActivationRate.set(f))
 //                .var("linkActivation", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.taskLinkActivation.set(f))
-                .var("conceptForgetRate", 0, 1f, 0.1f,
+                .var("conceptForgetRate", ScalarValue.EPSILONsqrt, 1f, 0.1f,
                         (NAR n, float f) -> ((AbstractConceptIndex)n.concepts).conceptForgetRate.set(f))
-                .var("linkForgetRate", 0, 1f, 0.1f,
+                .var("linkForgetRate", ScalarValue.EPSILONsqrt, 1f, 0.1f,
                         (NAR n, float f) -> ((Forgetting.AsyncForgetting)(n.attn.forgetting)).tasklinkForgetRate.set(f))
 
-                .var("beliefPriDefault", 0, 1f, 0.1f,
+                .var("beliefPriDefault", ScalarValue.EPSILONsqrt, 1f, 0.1f,
                         (NAR n, float f) -> n.beliefPriDefault.set(f))
-                .var("questionPriDefault", 0, 1f, 0.1f,
+                .var("questionPriDefault", ScalarValue.EPSILONsqrt, 1f, 0.1f,
                         (NAR n, float f) -> {
                             n.questionPriDefault.set(f);
                             n.questPriDefault.set(f);

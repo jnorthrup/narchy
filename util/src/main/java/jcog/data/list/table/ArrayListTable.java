@@ -61,7 +61,7 @@ abstract public class ArrayListTable<K, V> implements Table<K, V> {
 
     @Override
     public final int capacity() {
-        return CAPACITY.getOpaque(this);
+        return CAPACITY.get(this);
     }
 
 

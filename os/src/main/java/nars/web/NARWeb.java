@@ -290,7 +290,7 @@ abstract public class NARWeb extends WebServer {
 
         protected void drain() {
             if (w.isOpen()) {
-                busy.setRelease(false);
+                busy.set(false);
 
 //                final StringBuilder buf = new StringBuilder(2*1024);
 //

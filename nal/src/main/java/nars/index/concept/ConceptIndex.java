@@ -90,22 +90,18 @@ public abstract class ConceptIndex implements Sampler<Activate> {
         if (_x instanceof Concept && elideConceptGets() && !(((Concept) _x).isDeleted()))
             return ((Concept) _x);
 
-        Term x = _x.term();
-        if (!x.op().conceptualizable)
-            throw new WTF(_x + " not conceptualizable");
-
-        Term xx = x.concept();
-        if (x!=xx && (xx == null || !xx.op().conceptualizable)) {
+        Term x = _x.term().concept();
+        if (x == null || !x.op().conceptualizable) {
             if (Param.DEBUG)
                 throw new WTF(_x + " not conceptualizable");
             else
                 return null;
         }
 
-        if (!xx.the())
-            throw new WTF(_x + " not immutable");
+//        if (!xx.the())
+//            throw new WTF(_x + " not immutable");
 
-        return (Concept) get(xx, createIfMissing);
+        return (Concept) get(x, createIfMissing);
     }
 
     /**

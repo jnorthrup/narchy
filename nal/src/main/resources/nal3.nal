@@ -22,11 +22,15 @@
         //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((union(A,X),union(B,Y)) --> M), (Belief:Union)
 
 //NAL3 single premise decompose
-    (M --> S), X, is(S,"|"), subOf(S,X)   |-     (M --> X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    (M --> S), X, is(S,"|"), subOf(S,--X) |-   --(M --> X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (M --> S), X, is(S,"&"), subOf(S,X)   |-      (M --> X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+      //(M --> S), X, is(S,"&"), subOf(S,X)   |-  --(M --> X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+    (M --> S), X, is(S,"&"), subOf(S,--X) |-    --(M --> X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+      //(M --> S), X, is(S,"&"), subOf(S,--X) |-    (M --> X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
 
-    (S --> M), X, is(S,"&"), subOf(S,X)   |-     (X --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    (S --> M), X, is(S,"&"), subOf(S,--X) |-   --(X --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (S --> M), X, is(S,"|"), subOf(S,X)   |-     (X --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+      //(S --> M), X, is(S,"|"), subOf(S,X)   |- --(X --> M), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+    (S --> M), X, is(S,"|"), subOf(S,--X) |-   --(X --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+      //(S --> M), X, is(S,"|"), subOf(S,--X) |-   (X --> M), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
 
 
 //// inheritance decomposition ////////////////////////////////////////////////////////////////////////////////////

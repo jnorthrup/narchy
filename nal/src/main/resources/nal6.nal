@@ -252,19 +252,19 @@
   (&&,(X<->Y),(Y<->Z),A..+), (X<->Y) |- substitute(substitute((&&,A..+),X,Z,strict),Y,Z,strict), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 
-// Mutex induction
-    (&&,X,--Y,A..*), (&&,Y,--X,A..*)              |- (&&,--(X && Y),A..*), (Belief:Intersection)
-      (&&,X,--Y,A..*), (&&,Y,--X,A..*)             |-  --(X ==> Y), (Belief:Induction)
-    (&&,X,--Y,A..*), (&&,Y,--X,B..*)              |- (&&,--((&&,A..*) && (&&,B..*))), (Belief:Intersection)
-    ((&&,X,--Y,A..*)==>Z), ((&&,Y,--X,A..*)==>Z)  |- ((&&,--(X && Y),A..*) ==> Z), (Belief:IntersectionSym)
-        //TODO impl predicate mutex
-
-//mutex swap
-    Z, (&&,X,Y), in(Z,X)            |- substitute(Z,X,--Y,strict), (Belief:AnalogyPN, Goal:AnalogyPN)
-    Z, (&&,X,Y), in(Z,--X)          |- substitute(Z,--X,Y,strict), (Belief:AnalogyPN, Goal:AnalogyPN)
+//// Mutex induction
+    (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)              |- (&&,--(X && Y),A..*), (Belief:Intersection, Time:Intersect)
+      (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)             |-  --(X ==> Y), (Belief:Induction, Time:Intersect)
+    (&&,X,--Y,A..*), (&&,Y,--X,B..*),neq(X,Y)              |- (&&,--((&&,A..*) && (&&,B..*))), (Belief:Intersection, Time:Intersect)
+    ((&&,X,--Y,A..*)==>Z), ((&&,Y,--X,A..*)==>Z),neq(X,Y)  |- ((&&,--(X && Y),A..*) ==> Z), (Belief:IntersectionSym, Time:Intersect)
+//        //TODO impl predicate mutex
+//
+////mutex swap
+    Z, (&&,X,Y), in(Z,X)            |- substitute(Z,X,--Y,strict), (Belief:AnalogyPN, Goal:AnalogyPN, Time:Intersect)
+    Z, (&&,X,Y), in(Z,--X)          |- substitute(Z,--X,Y,strict), (Belief:AnalogyPN, Goal:AnalogyPN, Time:Intersect)
 
   //internal mutex chain:
-//  (&&,--(X && Y),X,A..*), X          |- (&&,--Y,A..*), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+  (&&,--(X && Y),X,A..*), X,neq(X,Y)          |- (&&,--Y,A..*), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 
 

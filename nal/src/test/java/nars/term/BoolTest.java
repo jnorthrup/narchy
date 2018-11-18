@@ -130,15 +130,15 @@ public class BoolTest {
 
             String diff = o;
 
-
-            assertEq(Bool.False, "(x" + diff + "x)");
-            assertEq(
-
-                    Bool.True,
-                    "(x" + diff + "(--,x))");
-            assertEq(
-                    Bool.True,
-                    "((--,x)" + diff + "x)");
+//
+//            assertEq(Bool.False, "(x" + diff + "x)");
+//            assertEq(
+//
+//                    Bool.True,
+//                    "(x" + diff + "(--,x))");
+//            assertEq(
+//                    Bool.True,
+//                    "((--,x)" + diff + "x)");
 
 
             assertEq("(false-->y)", "((x" + diff + "x)-->y)");
@@ -149,20 +149,20 @@ public class BoolTest {
             assertEq("(y-->true)", "(y --> --(x" + diff + "x))");
 
 
-            assertEquals(Bool.False, $.diff(x, x));
-            assertEquals(Bool.True, $.diff(x, x.neg()));
-            assertEquals(Bool.True, $.diff(x.neg(), x));
+//            assertEquals(Bool.False, $.diff(x, x));
+//            assertEquals(Bool.True, $.diff(x, x.neg()));
+//            assertEquals(Bool.True, $.diff(x.neg(), x));
 
-            assertEquals(Null, $.diff(x, Bool.False));
-            assertEquals(Null, $.diff(x, Bool.True));
+//            assertEquals(Null, $.diff(x, Bool.False));
+//            assertEquals(Null, $.diff(x, Bool.True));
 
 
-            assertEquals(Bool.False, $.diff(Bool.True, Bool.True));
-            assertEquals(Bool.False, $.diff(Bool.False, Bool.False));
-            assertEquals(Null, $.diff(Null, Null));
+//            assertEquals(Bool.False, $.diff(Bool.True, Bool.True));
+//            assertEquals(Bool.False, $.diff(Bool.False, Bool.False));
+//            assertEquals(Null, $.diff(Null, Null));
 
-            assertEquals(Bool.True, $.diff(Bool.True, Bool.False));
-            assertEquals(Bool.False, $.diff(Bool.False, Bool.True));
+//            assertEquals(Bool.True, $.diff(Bool.True, Bool.False));
+//            assertEquals(Bool.False, $.diff(Bool.False, Bool.True));
 
 
         }

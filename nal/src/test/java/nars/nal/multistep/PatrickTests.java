@@ -19,7 +19,7 @@ public class PatrickTests extends NALTest {
 
 
     @Test
-    void testExample1() {
+    void testExample1() throws Narsese.NarseseException {
         /*
         
         
@@ -36,20 +36,19 @@ public class PatrickTests extends NALTest {
          */
 
         TestNAR tt = test;
-        tt.nar.freqResolution.set(0.25f);
+        tt.nar.freqResolution.set(0.1f);
 //        tt.confTolerance(0.2f);
-        tt.nar.termVolumeMax.set(16);
+        tt.nar.termVolumeMax.set(24);
         tt
-
                 .believe("(( ($1-->(REPRESENT,/,$3)) && ($2-->(REPRESENT,/,$4))) ==> REPRESENT({$1,$2},{$3,$4}))")
                 .believe("(cat-->(REPRESENT,/,ANIMAL))")
                 .believe("(eats-->(REPRESENT,/,EATING))")
 
 
-                .askAt(500, "REPRESENT({cat,eats},?1)")
+                .ask( "REPRESENT({cat,eats},?1)")
 
                 //.mustBelieve(2000, "REPRESENT((eats,cat),(EATING,ANIMAL))", 0.9f, 1f, 0.15f, 0.99f);
-                .mustBelieve(4000, "REPRESENT({cat,eats},{ANIMAL,EATING})", 0.9f, 1f, 0.15f, 0.99f);
+                .mustBelieve(200, "REPRESENT({cat,eats},{ANIMAL,EATING})", 0.9f, 1f, 0.15f, 0.99f);
 
     }
 

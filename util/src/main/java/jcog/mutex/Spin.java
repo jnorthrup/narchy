@@ -45,12 +45,12 @@ public class Spin extends AtomicBoolean {
     }
 
     private void start() {
-        while (!weakCompareAndSetAcquire(false, true))
+        while (!compareAndSet(false, true))
             Thread.onSpinWait();
     }
 
     private void end() {
-        setRelease(false);
+        set(false);
     }
 
 }

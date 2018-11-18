@@ -151,16 +151,16 @@ class NAL3GoalTest {
                 .input("(X --> Z).")
                 .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.81f)
                 .run(16);
-        new TestNAR(NARS.tmp(3))
-                .input("((X&Y) --> Z)!")
-                .input("(X --> Z).")
-                .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.81f)
-                .run(16);
-        new TestNAR(NARS.tmp(3))
-                .input("((X&Y) --> Z)!")
-                .input("--(X --> Z).")
-                .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.81f)
-                .run(16);
+//        new TestNAR(NARS.tmp(3))
+//                .input("((X&Y) --> Z)!")
+//                .input("(X --> Z).")
+//                .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.81f)
+//                .run(16);
+//        new TestNAR(NARS.tmp(3))
+//                .input("((X&Y) --> Z)!")
+//                .input("--(X --> Z).")
+//                .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.81f)
+//                .run(16);
 
     }
 }

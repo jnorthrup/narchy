@@ -151,7 +151,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
 
         int cap = capacity();
         for (; ; ) {
-            final int tailSeq = tail.getAcquire();
+            final int tailSeq = tail.get();
             // never offer onto the slot that is currently being polled off
             final int queueStart = tailSeq - cap;
 
@@ -164,7 +164,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
                     // tailSeq is valid and got access without contention
                     set(i(tailSeq, cap), x);
 
-                    tail.setRelease(tailSeq + 1);
+                    tail.set(tailSeq + 1);
 
                     return true;
 
@@ -203,7 +203,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
         int cap = capacity();
 
         for (; ; ) {
-            final int head = this.head.getAcquire();
+            final int head = this.head.get();
             // is there data for us to poll
             if (tail.getOpaque() > head) {
                 // check if we can update the sequence
@@ -211,7 +211,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
 
                     final X pollObj = getAndSet(i(head, cap), null);
 
-                    this.head.setRelease(head + 1);
+                    this.head.set(head + 1);
 
                     return pollObj;
 
@@ -361,7 +361,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
                         // advance head to same location as current end
                         this.tail.incrementAndGet();
                         this.head.addAndGet(tail - head + 1);
-                        headCursor.setRelease(tail + 1);
+                        headCursor.set(tail + 1);
 
                         return;
                     }

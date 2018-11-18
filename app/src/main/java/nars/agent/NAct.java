@@ -242,7 +242,9 @@ public interface NAct {
 
         float[] lr = new float[] { 0.5f, 0.5f };
 
-        float decay = 0.9f;
+        float decay =
+                //0.9f;
+                1f; //instant
 
         NAR n = nar();
         GoalActionConcept LA = action(l, (b, g) -> {
@@ -265,8 +267,9 @@ public interface NAct {
             lr[0] = x ? ll : 0.5f;
             L.value(x);
             //System.out.println("L=" + x  + " <- " + ll );
+            return $.t(x ? 1 : 0, n.confDefault(BELIEF));
             //return $.t(x ? 1 : 0, n.confDefault(BELIEF) * (conflict ? 0.5f : 1f));
-            return $.t(x ? 1 : 0, n.confDefault(BELIEF) * lr[0]);
+            //return $.t(x ? 1 : 0, n.confDefault(BELIEF) * lr[0]);
             //if (x) return $.t(x ? 1 : 0, n.confDefault(BELIEF)); else return null;
         });
         GoalActionConcept RA = action(r, (b, g) -> {
@@ -289,8 +292,9 @@ public interface NAct {
             lr[1] = x ? rr : 0.5f;
             R.value(x);
             //System.out.println("R=" + x  + " <- " + rr );
+            return $.t(x ? 1 : 0, n.confDefault(BELIEF));
             //return $.t(x ? 1 : 0, n.confDefault(BELIEF) * (conflict ? 0.5f : 1f));
-            return $.t(x ? 1 : 0, n.confDefault(BELIEF) * lr[1]);
+            //return $.t(x ? 1 : 0, n.confDefault(BELIEF) * lr[1]);
             //if (x) return $.t(x ? 1 : 0, n.confDefault(BELIEF)); else return null;
         });
 

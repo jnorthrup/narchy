@@ -98,7 +98,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         if (setCapacityIfChanged(nextCapacity)) {
             synchronized (items) {
-                if (size() > nextCapacity)
+                if (size() > capacity() /* must check again */)
                     commit(null);
             }
         }
@@ -242,7 +242,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     public void sample(Random rng, Function<? super Y, SampleReaction> each) {
 
 
-        while (true) {
+        //while (true) {
             Object[] ii;
             int s;
             int i;
@@ -272,7 +272,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             }
 
             return;
-        }
+        //}
 
     }
 
@@ -296,6 +296,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         return Util.bin(targetIndex*targetIndex, size);
     }
+
+//    @Override public ArrayBag sample(Random rng, int max, Consumer<? super Y> each) {
+//
+//    }
 
     /**
      * samples the distribution with the assumption that it is flat

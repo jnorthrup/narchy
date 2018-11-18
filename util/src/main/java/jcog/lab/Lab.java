@@ -411,6 +411,7 @@ public class Lab<X> {
         });
     }
 
+
     public Lab<X> var(String id, float min, float max, float inc, ObjectFloatProcedure<X> apply) {
         vars.put(id, new FloatVar<>(id, min, max, inc, null, (X x, float v) -> {
             apply.value(x, v);

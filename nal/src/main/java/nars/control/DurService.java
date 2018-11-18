@@ -133,7 +133,7 @@ abstract public class DurService extends NARService  {
 
         } finally {
 
-            busy.setRelease(false);
+            busy.set(false);
         }
     }
 

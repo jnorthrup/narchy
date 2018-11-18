@@ -10,12 +10,12 @@ import java.util.function.Predicate;
 
 import static jcog.pri.bag.Sampler.SampleReaction.*;
 
-public interface Sampler<V> {
+public interface Sampler<X> {
 
 
     /* sample the bag, optionally removing each visited element as decided by the visitor's
      * returned value */
-    void sample(Random rng, Function<? super V, SampleReaction> each);
+    void sample(Random rng, Function<? super X, SampleReaction> each);
 
 
     /**
@@ -25,37 +25,37 @@ public interface Sampler<V> {
      * the bag is cycled so that subsequent elements are different.
      */
     @Nullable
-    default V sample(Random rng) {
+    default X sample(Random rng) {
         Object[] result = new Object[1];
-        sample(rng, ((Predicate<? super V>) (x) -> {
+        sample(rng, ((Predicate<? super X>) (x) -> {
             result[0] = x;
             return false;
         }));
-        return (V) result[0];
+        return (X) result[0];
     }
 
 
-    default Sampler<V> sample(Random rng, Predicate<? super V> each) {
-        sample(rng, (Function<V,SampleReaction>)(x -> each.test(x) ? Next : Stop));
+    default Sampler<X> sample(Random rng, Predicate<? super X> each) {
+        sample(rng, (Function<X,SampleReaction>)(x -> each.test(x) ? Next : Stop));
         return this;
     }
 
-    default Sampler<V> sample(Random rng, int max, Consumer<? super V> each) {
+    default Sampler<X> sample(Random rng, int max, Consumer<? super X> each) {
         sampleOrPop(rng, false, max, each);
         return this;
     }
 
-    default Sampler<V> pop(Random rng, int max, Consumer<? super V> each) {
+    default Sampler<X> pop(Random rng, int max, Consumer<? super X> each) {
         sampleOrPop(rng, true, max, each);
         return this;
     }
 
-    default Sampler<V> sampleOrPop(Random rng, boolean pop, int max, Consumer<? super V> each) {
+    default Sampler<X> sampleOrPop(Random rng, boolean pop, int max, Consumer<? super X> each) {
         if (max == 0)
             return this;
 
         final int[] count = {max};
-        sample(rng, (Function<V,SampleReaction>)(x -> {
+        sample(rng, (Function<X,SampleReaction>)(x -> {
             each.accept(x);
             return ((--count[0]) > 0) ? (pop ? Remove : Next) : (pop ? RemoveAndStop : Stop);
         }));
@@ -67,12 +67,12 @@ public interface Sampler<V> {
      * continues while either the predicate hasn't returned false and
      * < max true's have been returned
      */
-    default Sampler<V> sample(Random rng, int max, Predicate<? super V> kontinue) {
+    default Sampler<X> sample(Random rng, int max, Predicate<? super X> kontinue) {
         if (max == 0)
             return this;
 
         final int[] count = {max};
-        sample(rng, (Function<V,SampleReaction>)(x ->
+        sample(rng, (Function<X,SampleReaction>)(x ->
                 (kontinue.test(x) && ((--count[0]) > 0)) ?
                         Next : Stop));
         return this;

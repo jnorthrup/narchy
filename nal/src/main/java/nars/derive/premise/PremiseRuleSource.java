@@ -57,7 +57,7 @@ import static nars.term.control.PREDICATE.sortByCostIncreasing;
 public class PremiseRuleSource extends ProxyTerm {
 
     private static final Pattern ruleImpl = Pattern.compile("\\|\\-");
-    private final String source;
+    public final String source;
     public final Truthify truthify;
     /**
      * return this to being a inline evaluable functor
@@ -87,6 +87,7 @@ public class PremiseRuleSource extends ProxyTerm {
     protected final Termify termify;
     protected final MutableSet<UnifyConstraint> constraintSet;
     private final BytePredicate taskPunc;
+
 
     private PremiseRuleSource(String ruleSrc) throws Narsese.NarseseException {
         super(
@@ -194,11 +195,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
                     if (!(Y.unneg() instanceof VarPattern)) {
                         //constant
-
-                        if (negated)
-                            throw new TODO();
-
-                        match(X, new TermMatch.Contains(Y));
+                        match(X, new TermMatch.Contains(Y), !negated);
 
                     } else {
                         if (!negated)
@@ -206,9 +203,10 @@ public class PremiseRuleSource extends ProxyTerm {
 
                         constraints.add(new SubOfConstraint(X, Y.unneg(), Subterm, Y.op() == NEG ? -1 : +1).negIf(negated));
 
-                        if (negated)
-                            negationApplied = true;
+
                     }
+                    if (negated)
+                        negationApplied = true;
                     break;
                 }
 

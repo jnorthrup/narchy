@@ -464,7 +464,7 @@ public class NAgent extends NARService implements NSense, NAct {
                 logger.info(summary());
 
         } finally {
-            busy.setRelease(false);
+            busy.set(false);
         }
 
     }

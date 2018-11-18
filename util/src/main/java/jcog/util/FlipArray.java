@@ -71,7 +71,7 @@
 ////    }
 //
 //    public void invalidate() {
-//        valid.setRelease(INVALID);
+//        valid.set(INVALID);
 //    }
 //
 //    public X[] readValid(boolean waitIfBusy, Function<X[],X[]> writeTransform) {

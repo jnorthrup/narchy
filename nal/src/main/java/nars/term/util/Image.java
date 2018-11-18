@@ -209,6 +209,8 @@ public enum Image {;
                 return;
             }
             SpecialTermTask transformedInput = new SpecialTermTask(normal, originalInput);
+            if (originalInput.isCyclic())
+                transformedInput.setCyclic(true);
 
             r.setInput(transformedInput, host);
             table.add(r, nar);

@@ -1,6 +1,5 @@
 package nars.attention;
 
-import jcog.data.pool.SpinMetalPool;
 import jcog.math.FloatRange;
 import jcog.pri.OverflowDistributor;
 import jcog.pri.ScalarValue;
@@ -31,17 +30,7 @@ public class Activator  {
 
     public final FloatRange conceptActivationRate = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 1f);
 
-    static final SpinMetalPool<UnitPri> pris = new SpinMetalPool<>() {
-        @Override
-        public UnitPri create() {
-            return new UnitPri(Float.NaN /* start deleted */);
-        }
 
-        @Override
-        public void put(UnitPri i) {
-            super.put(i);
-        }
-    };
 
     /** pending concept activation collation */
     final Map<Concept, UnitPri> concepts =
@@ -70,6 +59,8 @@ public class Activator  {
     }
 
     public Concept activate(Termed tgtTerm, float pri, NAR nar, @Nullable OverflowDistributor<Concept> overflow) {
+        if (pri!=pri)
+            return null;
 
         @Nullable Concept x = nar.concept(tgtTerm, true);
         if (x == null)
@@ -87,10 +78,10 @@ public class Activator  {
     }
 
     public Concept activateRaw(Concept x, float pri, @Nullable OverflowDistributor<Concept> overflow) {
-        if (pri!=pri || pri < ScalarValue.EPSILON)
+        if (pri!=pri)
             return null;
 
-        UnitPri a = concepts.computeIfAbsent(x, t -> pris.get());
+        UnitPri a = concepts.computeIfAbsent(x, t -> new UnitPri());
 
         if (overflow!=null)
             overflow.merge(x, a, pri, Param.conceptMerge);
@@ -107,21 +98,10 @@ public class Activator  {
         while (ii.hasNext()) {
             Map.Entry<Concept, UnitPri> a = ii.next();
             Concept c = a.getKey();
-
             UnitPri p = a.getValue();
-            float pri = p.priGetAndDelete();
-            if (pri!=pri) {
-                //this pri is newly created/recreating, ignore
-                continue;
-            }
-
             ii.remove();
 
-
-
-            pris.put(p);
-
-            n.concepts.activate(c, pri);
+            n.concepts.activate(c, p.priGetAndDelete());
         }
 
 //        removeIf(a -> {

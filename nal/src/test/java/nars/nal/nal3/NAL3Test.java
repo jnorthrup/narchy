@@ -129,14 +129,14 @@ public class NAL3Test extends NALTest {
     void diff_compound_decomposition_single3() {
         TestNAR tester = test;
 
-        tester.believe("<(dinosaur ~ ant) --> [strong]>", 0.9f, 0.9f);
+        tester.believe("<(dinosaur - ant) --> [strong]>", 0.9f, 0.9f);
         tester.mustBelieve(cycles, "<dinosaur --> [strong]>", 0.90f, 0.73f);
         tester.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.73f);
     }
     @Test
     void diff_compound_decomposition_low_dynamic() {
         TestNAR tester = test;
-        tester.believe("<(ant ~ spider) --> [strong]>", 0.1f, 0.9f);
+        tester.believe("<(ant - spider) --> [strong]>", 0.1f, 0.9f);
         tester.mustBelieve(cycles, "<spider --> [strong]>", 0.90f, 0.08f);
         tester.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.08f);
     }
@@ -146,7 +146,7 @@ public class NAL3Test extends NALTest {
 
         TestNAR tester = test;
 
-        tester.believe("(robin --> (bird - swimmer))", 0.9f, 0.9f);
+        tester.believe("(robin --> (bird ~ swimmer))", 0.9f, 0.9f);
         tester.mustBelieve(cycles, "<robin --> bird>", 0.90f, 0.73f);
 
     }
@@ -156,7 +156,7 @@ public class NAL3Test extends NALTest {
     void sect_compound_decomposition_single2() {
 
         TestNAR tester = test;
-        tester.believe("((dinosaur & ant) --> youth)", 0.9f, 0.9f);
+        tester.believe("((dinosaur | ant) --> youth)", 0.9f, 0.9f);
         tester.mustBelieve(cycles, "(dinosaur --> youth)", 0.9f, 0.73f);
 
     }

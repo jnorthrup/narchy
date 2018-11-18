@@ -230,7 +230,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         Section(int capacity) {
             this.capacity = alignToPowerOfTwo(capacity);
             this.table = new AtomicReferenceArray(2 * this.capacity);
-            this.size.setRelease(0);
+            this.size.set(0);
             this.usedBuckets.set(0);
             this.resizeThreshold = (int) (this.capacity * MapFillFactor);
         }
@@ -295,7 +295,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                 while (true) {
                     AtomicReferenceArray table = this.table;
                     K storedKey = (K) table.getOpaque(bucket);
-                    V storedValue = (V) table.getAcquire(bucket + 1);
+                    V storedValue = (V) table.get(bucket + 1);
 
                     if (storedKey!=null && key.equals(storedKey)) {
                         if (!onlyIfAbsent) {
@@ -390,9 +390,9 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
             try {
                 int l = table.length();
                 for (int i = 0; i < l; i++)
-                    table.setRelease(i, null);
-                this.size.setRelease(0);
-                this.usedBuckets.setRelease(0);
+                    table.set(i, null);
+                this.size.set(0);
+                this.usedBuckets.set(0);
             } finally {
                 unlockWrite(stamp);
             }
@@ -473,8 +473,8 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                 K storedKey = (K) table.getOpaque(bucket);
 
                 if (storedKey == null) {
-                    table.setRelease(bucket, key);
-                    table.setRelease(bucket + 1, value);
+                    table.set(bucket, key);
+                    table.set(bucket + 1, value);
                     return;
                 }
 

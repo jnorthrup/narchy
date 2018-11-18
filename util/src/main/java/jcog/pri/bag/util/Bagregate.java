@@ -72,7 +72,7 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
 
 
 //        } finally {
-//            busy.setRelease(false);
+//            busy.set(false);
 //        }
         return true;
     }

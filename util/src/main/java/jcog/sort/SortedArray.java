@@ -81,7 +81,7 @@ public class SortedArray<X> extends AbstractList<X> {
         }
 
 //        Object x = ITEM.getAcquire(l, b);
-//        ITEM.setRelease(l, b, ITEM.getAndSetAcquire(l, a, x));
+//        ITEM.set(l, b, ITEM.getAndSetAcquire(l, a, x));
     }
 
 
@@ -387,13 +387,13 @@ public class SortedArray<X> extends AbstractList<X> {
 //            if (totalOffset > 0) {
 //                size--;
 //                for (int i = index; i < size; i++) {
-//                    ITEM.setRelease(items, i, ITEM.getAcquire(items, i+1));
+//                    ITEM.set(items, i, ITEM.getAcquire(items, i+1));
 //                }
 //                for (int i = size; i < items.length; i++) {
-//                    ITEM.setRelease(items, i, null);
+//                    ITEM.set(items, i, null);
 //                }
 //                //System.arraycopy(items, index + 1, items, index, totalOffset);
-//                //ITEM.setRelease(items, SIZE.decrementAndGet(this), null);
+//                //ITEM.set(items, SIZE.decrementAndGet(this), null);
 //            }
 //            return previous;
         }

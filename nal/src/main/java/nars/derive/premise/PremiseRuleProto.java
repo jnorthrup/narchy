@@ -122,7 +122,7 @@ public class PremiseRuleProto extends PremiseRuleSource {
         RuleCause(PremiseRuleSource rule, short id) {
             super(id);
             this.rule = rule;
-            this.ruleString = rule.toString();
+            this.ruleString = rule.source;
         }
 
         @Override

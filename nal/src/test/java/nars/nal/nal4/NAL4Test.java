@@ -3,19 +3,22 @@ package nars.nal.nal4;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.term.util.Image;
 import nars.test.NALTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static nars.$.$$;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL4Test extends NALTest {
 
 
-    private static final int CYCLES = 50;
+    private static final int CYCLES = 250;
 
     @Override
     protected NAR nar() {
@@ -35,7 +38,15 @@ public class NAL4Test extends NALTest {
                 .mustNotOutput(CYCLES, "(reaction --> (acid,base))", BELIEF, ETERNAL)
         ;
     }
+    @Test
+    void structural_transformation_dont() {
 
+        test
+                .logDebug()
+                .believe( "(acid --> (reaction,/,base))")
+                .mustNotOutput(CYCLES, "(reaction --> (acid,base))", BELIEF, ETERNAL)
+        ;
+    }
     @Test
     void structural_transformationExt_reverse1() {
         test
@@ -257,8 +268,10 @@ public class NAL4Test extends NALTest {
 
     @Test
     public void testNormalize1() {
+        String input = "((likes,cat,\\)-->[blue])";
+        assertEquals("(likes-->(cat,[blue]))", Image.imageNormalize($$(input)).toString());
 
-        test.believe("((likes,cat,\\)-->[blue])")
+        test.believe(input)
                 .mustBelieve(CYCLES, "(likes-->(cat,[blue]))", 1f, 0.9f)
                 .mustNotOutput(CYCLES, "((cat,[blue])-->likes)", BELIEF, 1f, 1f, 0.9f, 0.9f, ETERNAL)
         ;
@@ -266,7 +279,8 @@ public class NAL4Test extends NALTest {
     @Test
     public void testNormalize1a() {
 
-        test.believe("([blue] --> (likes,cat,/))")
+        test
+                .believe("([blue] --> (likes,cat,/))")
                 .mustBelieve(CYCLES, "((cat,[blue])-->likes)", 1f, 0.9f)
                 .mustNotOutput(CYCLES, "(likes-->(cat,[blue]))", BELIEF, 1f, 1f, 0.9f, 0.9f, ETERNAL)
         ;

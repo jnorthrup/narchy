@@ -318,7 +318,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 int victim = -1, j = 0;
                 float victimPri = Float.POSITIVE_INFINITY;
                 for (int i = start; j < reprobes; j++ ) {
-                    V mi = map.getAcquire(i);
+                    V mi = map.get(i);
                     float mp;
                     if (mi == null || ((mp = pri(mi)) != mp)) {
                         if (map.compareAndSet(i, mi, incoming)) {
@@ -338,7 +338,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 if (toReturn == null) {
                     assert(victim!=-1);
 
-                    V existing = map.getAcquire(victim);
+                    V existing = map.get(victim);
                     if (existing == null) {
                         //acquired new empty cell
                         toReturn = toAdd = incoming;
