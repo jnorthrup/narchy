@@ -17,7 +17,7 @@ public class LevelRenderer {
 
     @SuppressWarnings("unused")
     private final Random random = new Random();
-    public boolean renderBehaviors;
+    public boolean renderBehaviors = true;
 
     int width;
     int height;
@@ -61,8 +61,8 @@ public class LevelRenderer {
     }
 
     private void updateArea(int x0, int y0, int w, int h) {
-        g.setBackground(transparent);
-        g.clearRect(x0, y0, w, h);
+        //g.setBackground(transparent);
+        //g.clearRect(x0, y0, w, h);
         int xTileStart = (x0 + xCam) / 16;
         int yTileStart = (y0 + yCam) / 16;
         int xTileEnd = (x0 + xCam + w) / 16;

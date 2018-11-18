@@ -376,10 +376,10 @@ public class LevelGenerator {
         @SuppressWarnings("unused")
         int length = x1 - x0 - 2;
 
-        /*        if (length > 5 && rocks)
+                if (length > 5 && rocks)
          {
          decorate(x0, x1, floor - 4);
-         }*/
+         }
     }
 
     private void fixWalls() {

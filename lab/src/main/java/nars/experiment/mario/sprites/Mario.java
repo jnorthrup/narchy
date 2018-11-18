@@ -62,10 +62,8 @@ public class Mario extends Sprite {
     private int invulnerableTime;
 
     public Sprite carried;
-    private static Mario instance;
 
     public Mario(LevelScene world) {
-        Mario.instance = this;
         this.world = world;
         keys = Scene.keys;
         x = 32;

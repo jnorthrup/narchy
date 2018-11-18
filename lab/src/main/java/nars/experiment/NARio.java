@@ -77,13 +77,14 @@ public class NARio extends NAgentX {
 //        });
 
 
-        onFrame(cc::update);
         int nx = 4;
         AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.inh("cae", id), cc.pixels, nx, nx, (subX, subY) -> {
             return new float[]{/*cc.X, cc.Y, */cc.Z};
         }, 12, this);
         camAE.alpha(0.03f);
         camAE.noise.set(0.05f);
+        onFrame(cc::update);
+
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
             final int tileTypes = 3; //0..4

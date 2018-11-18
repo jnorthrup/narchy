@@ -139,7 +139,8 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
         while (running) {
             scene.tick();
 
-            //float alpha = (float) (System.currentTimeMillis() - lTick);
+//            long nextTM = System.currentTimeMillis();
+//            float alpha = (float) (System.currentTimeMillis() - tm);
 
 
             @SuppressWarnings("unused")
@@ -147,6 +148,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
             @SuppressWarnings("unused")
             int y = (int) (Math.cos(now) * 16 + 120);
 
+            og.setColor(Color.BLACK);
             og.fillRect(0, 0, 320, 240);
 
             float alpha = 0;
@@ -158,7 +160,6 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 //
 //
 //            }
-            og.setColor(Color.BLACK);
 
             if (width != 320 || height != 240) {
                 g.drawImage(image, 0, 0, width, height, null);
@@ -167,7 +168,6 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
             }
 
             if (delay > 0)
-
                 tm += delay;
             Util.sleepMS(Math.max(0, tm - System.currentTimeMillis()));
 

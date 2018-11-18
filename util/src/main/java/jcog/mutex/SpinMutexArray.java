@@ -10,7 +10,7 @@ public final class SpinMutexArray implements SpinMutex {
     private final SpinMutex[] mutex;
 
     public SpinMutexArray() {
-        this(Runtime.getRuntime().availableProcessors(), 4);
+        this(Runtime.getRuntime().availableProcessors(), 4 /* x8 bytes each, less than a 64 byte cache line */ );
     }
 
     public SpinMutexArray(int stripes, int stripeWidth) {
