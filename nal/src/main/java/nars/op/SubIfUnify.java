@@ -131,7 +131,6 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
                 output = null;
             } else {
                 int ttl = Math.max(1, parent.nar.subUnifyTTLMax.intValue() - 1);
-                //MySubUnify u = new MySubUnify();
                 output = u.reset(op, strict).tryMatch(c, x, y, ttl);
                 parent.use(1 + ttl - u.ttl);
             }
@@ -154,7 +153,6 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
             this.strict = strict;
             this.varBits = op;
             this.result = this.transformed = null;
-            //reset();
             clear();
             return this;
         }

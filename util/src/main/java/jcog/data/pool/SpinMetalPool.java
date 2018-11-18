@@ -1,14 +1,11 @@
 package jcog.data.pool;
 
-import jcog.mutex.Treadmill64;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import jcog.mutex.Spin;
 
 /** thread-safe version of MetalPool guarded by spin mutex */
 public abstract class SpinMetalPool<X> extends MetalPool<X> {
-    private static final Treadmill64 mutex = new Treadmill64();
-    private static final AtomicInteger serial = new AtomicInteger();
-    final int poolID = serial.getAndIncrement();
+
+    final Spin spin = new Spin();
 
     public SpinMetalPool() {
         super();
@@ -20,17 +17,17 @@ public abstract class SpinMetalPool<X> extends MetalPool<X> {
 
     @Override
     public void put(X i) {
-        mutex.runWith(poolID, 1, super::put, i);
+        spin.run(super::put, i);
     }
 
     @Override
     public void delete() {
-        mutex.run(poolID, 1, super::delete);
+        spin.run(super::delete);
     }
 
     @Override
     public X get() {
-        X e = mutex.run(poolID, 1, data::poll);
+        X e = spin.run(data::poll);
         return e == null ? create() : e;
     }
 }

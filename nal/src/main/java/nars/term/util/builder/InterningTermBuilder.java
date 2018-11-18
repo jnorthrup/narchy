@@ -28,6 +28,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private final static boolean deep = true;
     private static final int DEFAULT_SIZE = 64 * 1024;
 
+    private static final int maxInternedVolume = 32;
+
     final HijackTermCache[] terms;
 
     private final HijackTermCache normalize;
@@ -204,10 +206,14 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     private static boolean internableSubs(Term[] subterms) {
 
+        int volRemain = maxInternedVolume;
         for (Term x : subterms) {
             if (!internableSub(x))
                 return false;
+            if ((volRemain -= x.volume()) < 0)
+                return false;
         }
+
 
         return true;
     }

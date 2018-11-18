@@ -3,17 +3,19 @@ package nars.attention;
 import jcog.data.pool.SpinMetalPool;
 import jcog.math.FloatRange;
 import jcog.pri.OverflowDistributor;
+import jcog.pri.ScalarValue;
 import jcog.pri.UnitPri;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
 import nars.term.Termed;
+import org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
+//import java.util.concurrent.ConcurrentHashMap;
 
 /** accumulates/buffers/collates a stream of concept activations and termlinkages
  *  to be applied in a batch as a batch
@@ -32,12 +34,19 @@ public class Activator  {
     static final SpinMetalPool<UnitPri> pris = new SpinMetalPool<>() {
         @Override
         public UnitPri create() {
-            return new UnitPri();
+            return new UnitPri(Float.NaN /* start deleted */);
+        }
+
+        @Override
+        public void put(UnitPri i) {
+            super.put(i);
         }
     };
 
     /** pending concept activation collation */
-    final ConcurrentHashMap<Concept, UnitPri> concepts = new ConcurrentHashMap(1024);
+    final Map<Concept, UnitPri> concepts =
+            new ConcurrentHashMapUnsafe<>(1024);
+            //new ConcurrentHashMap(1024);
 
 //    /** pending termlinking collation */
 //    final ConcurrentHashMap<TermLinkage, TermLinkage> termlink = new ConcurrentHashMap(1024);
@@ -78,23 +87,41 @@ public class Activator  {
     }
 
     public Concept activateRaw(Concept x, float pri, @Nullable OverflowDistributor<Concept> overflow) {
+        if (pri!=pri || pri < ScalarValue.EPSILON)
+            return null;
+
         UnitPri a = concepts.computeIfAbsent(x, t -> pris.get());
 
         if (overflow!=null)
-            overflow.merge(x, a, pri, Param.tasklinkMerge);
+            overflow.merge(x, a, pri, Param.conceptMerge);
+        else
+            a.priAdd(pri);
 
         return x;
     }
 
     public void update(NAR n) {
 
+
         Iterator<Map.Entry<Concept, UnitPri>> ii = concepts.entrySet().iterator();
         while (ii.hasNext()) {
             Map.Entry<Concept, UnitPri> a = ii.next();
-            ii.remove();
+            Concept c = a.getKey();
+
             UnitPri p = a.getValue();
-            n.concepts.activate(a.getKey(), p.priGetAndZero());
+            float pri = p.priGetAndDelete();
+            if (pri!=pri) {
+                //this pri is newly created/recreating, ignore
+                continue;
+            }
+
+            ii.remove();
+
+
+
             pris.put(p);
+
+            n.concepts.activate(c, pri);
         }
 
 //        removeIf(a -> {

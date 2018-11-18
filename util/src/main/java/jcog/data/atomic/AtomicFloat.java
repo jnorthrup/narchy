@@ -53,7 +53,7 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
     }
 
     public final float getAndZero() {
-        return F.getAndZero(this);
+        return F.getAndSetZero(this);
     }
 
     public final void zero(FloatConsumer with) {
@@ -62,7 +62,7 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
 
 
     protected final float getAndZero(FloatConsumer with) {
-        return F.getAndZero(this, with);
+        return F.getAndSetZero(this, with);
     }
 
 

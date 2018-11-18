@@ -100,8 +100,11 @@ public final class AtomicFloatFieldUpdater<X>  {
     }
 
 
-    public float getAndZero(X x) {
+    public float getAndSetZero(X x) {
         return intBitsToFloat(INT.getAndSet(x, iZero));
+    }
+    public float getAndSetNaN(X x) {
+        return intBitsToFloat(INT.getAndSet(x, iNaN));
     }
 
     public void zero(X x) {
@@ -126,7 +129,7 @@ public final class AtomicFloatFieldUpdater<X>  {
     }
 
 
-    float getAndZero(X v, FloatConsumer with) {
+    float getAndSetZero(X v, FloatConsumer with) {
         return intBitsToFloat(this.INT.getAndUpdate(v, (x)->{ with.accept(intBitsToFloat(x)); return AtomicFloatFieldUpdater.iZero; } ));
     }
 

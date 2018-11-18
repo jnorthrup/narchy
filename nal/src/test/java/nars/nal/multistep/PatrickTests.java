@@ -36,9 +36,9 @@ public class PatrickTests extends NALTest {
          */
 
         TestNAR tt = test;
-//        tt.nar.freqResolution.set(0.05f);
+        tt.nar.freqResolution.set(0.25f);
 //        tt.confTolerance(0.2f);
-        tt.nar.termVolumeMax.set(12);
+        tt.nar.termVolumeMax.set(16);
         tt
 
                 .believe("(( ($1-->(REPRESENT,/,$3)) && ($2-->(REPRESENT,/,$4))) ==> REPRESENT({$1,$2},{$3,$4}))")

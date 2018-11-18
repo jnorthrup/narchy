@@ -183,29 +183,10 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
             return CompoundConstraint.the(c.stream()).toArray(UnifyConstraint[]::new);
     }
 
-    static final MultimapBuilder.ListMultimapBuilder matchConstraintMapBuilder = MultimapBuilder.hashKeys(4).arrayListValues(4);
 
-    private static final class BiConstraint extends UnifyConstraint {
-        final UnifyConstraint a, b;
-
-        private BiConstraint(UnifyConstraint a, UnifyConstraint b) {
-            super(a.x, $.funcFast(UnifyIf, a.x, $.sFast(new Term[]  { a,b })));
-            this.a = a;
-            this.b = b;
-        }
-
-        @Override
-        public float cost() {
-            return a.cost() + b.cost();
-        }
-
-        @Override
-        public boolean invalid(Term y, Unify f) {
-            return a.invalid(y, f) || b.invalid(y, f);
-        }
-    }
 
     private static final class CompoundConstraint extends UnifyConstraint {
+        static final MultimapBuilder.ListMultimapBuilder matchConstraintMapBuilder = MultimapBuilder.hashKeys(4).arrayListValues(4);
 
         private final UnifyConstraint[] cache;
 
@@ -226,7 +207,7 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
 
                 assert (ccn > 0);
                 if (ccn == 1) {
-                    return (cc.iterator().next());
+                    return cc.iterator().next();
                 } else {
                     UnifyConstraint[] d = cc.toArray(new UnifyConstraint[ccn]);
                     Arrays.sort(d, PREDICATE.sortByCostIncreasing);
@@ -237,12 +218,7 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
                             assert (d[i].x.equals(target));
                     }
 
-                    switch (d.length) {
-                        case 2:
-                            return new BiConstraint(d[0], d[1]);
-                        default:
-                            return new CompoundConstraint(d);
-                    }
+                    return new CompoundConstraint(d);
                 }
             });
 

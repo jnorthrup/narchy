@@ -20,24 +20,27 @@ public class Treadmill64 extends AtomicLongArray implements SpinMutex {
 
     @Override
     public int start(long hash) {
+        if (hash == 0) hash = 1; //skip 0
+
         final int slots = length();
 
-        while (true) {
+        restart: while (true) {
 
             int now = mod.getOpaque();
+            if (now == -1) now = 0; //skip 0
 
             for (int i = slots-1; i >= 0; i--) {
-                long v = getOpaque(i);
-                if (v == hash)
-                    break;  //collision
-
-                if (i == 0) {
-                    if (mod.compareAndSet(now, now+1)) {
-                        for (int j = 0; j < slots; j++)
-                            if (compareAndSet(i, 0, hash))
-                                return i;
-                    }
+                long v = getAcquire(i);
+                if (v == hash) {
+                    Thread.onSpinWait();
+                    continue restart;  //collision
                 }
+            }
+
+            if (mod.compareAndSet(now, now+1)) { //TODO separate into modIn and modOut
+                for (int j = 0; j < slots; j++)
+                    if (weakCompareAndSetRelease(j, 0, hash))
+                        return j;
             }
 
             Thread.onSpinWait();

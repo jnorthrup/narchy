@@ -67,6 +67,7 @@ public abstract class Param {
     public static final boolean ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS = false;
 
     public static final boolean VOLMAX_RESTRICTS_INPUT = false;
+    public static final boolean VOLMAX_RESTRICTS_EVAL = true;
 
 
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
@@ -89,7 +90,7 @@ public abstract class Param {
     public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
 
     /** TODO needs tested whether recursive Unification inherits TTL */
-    public static final int EVALUATION_TTL = 64;
+    public static final int EVALUATION_TTL = 32;
 
     /** within how many durations a difference in dt is acceptable for term unification */
     public static final float UNIFY_DT_TOLERANCE_DUR_FACTOR = 1f;
@@ -232,14 +233,14 @@ public abstract class Param {
      * TTL = 'time to live'
      */
     public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
-    public final IntRange subUnifyTTLMax = new IntRange( 8, 1, 32);
+    public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
     /**
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 4f;
+    public static final float TEST_TIME_MULTIPLIER = 1f;
 
 
     @Range(min = 1, max = 32)

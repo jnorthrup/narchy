@@ -1,6 +1,8 @@
 package jcog.pri;
 
 
+import static jcog.data.atomic.AtomicFloatFieldUpdater.iNaN;
+
 /**
  * default mutable prioritized implementation
  * float 32 bit
@@ -15,7 +17,12 @@ abstract public class Pri extends AtomicPri implements Prioritizable {
     }
 
     public Pri(float p) {
-        pri(p);
+        if (p == p) {
+            pri(p);
+        } else {
+            //start deleted
+            PRI.INT.getAndSet(this, iNaN); //HACK
+        }
     }
 
     /**
@@ -35,5 +42,6 @@ abstract public class Pri extends AtomicPri implements Prioritizable {
     public String toString() {
         return getBudgetString();
     }
+
 
 }
