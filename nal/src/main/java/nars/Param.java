@@ -5,6 +5,7 @@ import jcog.math.FloatRange;
 import jcog.math.FloatRangeRounded;
 import jcog.math.IntRange;
 import jcog.math.Range;
+import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.task.util.TaskBuffer;
@@ -490,22 +491,22 @@ public abstract class Param {
     /**
      * Default priority of input judgment
      */
-    public final FloatRange beliefPriDefault = new FloatRange(0.5f, 0, 1f);
+    public final FloatRange beliefPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 1f);
 
     /**
      * Default priority of input question
      */
-    public final FloatRange questionPriDefault = new FloatRange(0.5f, 0, 1f);
+    public final FloatRange questionPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 1f);
 
     /**
      * Default priority of input judgment
      */
-    public final FloatRange goalPriDefault = new FloatRange(0.5f, 0, 1f);
+    public final FloatRange goalPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 1f);
 
     /**
      * Default priority of input question
      */
-    public final FloatRange questPriDefault = new FloatRange(0.5f, 0, 1f);
+    public final FloatRange questPriDefault = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 1f);
 
 
     public float priDefault(byte punctuation) {

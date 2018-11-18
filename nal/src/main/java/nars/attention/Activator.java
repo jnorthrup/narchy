@@ -29,7 +29,7 @@ import java.util.Random;
  * */
 public class Activator  {
 
-    public final FloatRange conceptActivationRate = new FloatRange(0.5f, 0f, 1f);
+    public final FloatRange conceptActivationRate = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 1f);
 
     static final SpinMetalPool<UnitPri> pris = new SpinMetalPool<>() {
         @Override
