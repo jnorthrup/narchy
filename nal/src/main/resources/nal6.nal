@@ -239,8 +239,8 @@
 
 
 //    //general implication induction
-//    (C ==> Z), X |- ((C && X) ==> Z), (Belief:Induction)
-//    (C ==> Z), X |- ((C && --X) ==> Z), (Belief:InductionPN)
+    (C ==> Z), X |- ((C && X) ==> Z), (Belief:Induction, Time:Intersect)
+    (C ==> Z), X |- ((C && --X) ==> Z), (Belief:InductionPN, Time:Intersect)
 
 
     (C ==> Z), (B ==> M), eventOf(C,B) |- ((conjWithout(C,B) && M) ==> Z), (Belief:Induction)
@@ -249,22 +249,23 @@
 
   (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,strict), (Belief:StructuralDeduction, Goal:StructuralDeduction)
   //chain:
+  (&&,(X<->Y),A..+), (Y<->Z)         |- substitute((&&,A..+),X,Z,strict), (Belief:Analogy, Goal:Analogy)
   (&&,(X<->Y),(Y<->Z),A..+), (X<->Y) |- substitute(substitute((&&,A..+),X,Z,strict),Y,Z,strict), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 
 //// Mutex induction
     (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)              |- (&&,--(X && Y),A..*), (Belief:Intersection, Time:Intersect)
+    ((&&,X,--Y,A..+)==>Z), ((&&,Y,--X,A..+)==>Z),neq(X,Y)  |- ((&&,--(X && Y),A..+) ==> Z), (Belief:IntersectionSym, Time:Intersect)
       (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)             |-  --(X ==> Y), (Belief:Induction, Time:Intersect)
-    (&&,X,--Y,A..*), (&&,Y,--X,B..*),neq(X,Y)              |- (&&,--((&&,A..*) && (&&,B..*))), (Belief:Intersection, Time:Intersect)
-    ((&&,X,--Y,A..*)==>Z), ((&&,Y,--X,A..*)==>Z),neq(X,Y)  |- ((&&,--(X && Y),A..*) ==> Z), (Belief:IntersectionSym, Time:Intersect)
-//        //TODO impl predicate mutex
-//
+      (&&,X,--Y,A..+), (&&,Y,--X,B..+),neq(X,Y)              |- (&&,--((&&,A..+) && (&&,B..+))), (Belief:Intersection, Time:Intersect)
+////        //TODO impl predicate mutex
+////
 ////mutex swap
     Z, (&&,X,Y), in(Z,X)            |- substitute(Z,X,--Y,strict), (Belief:AnalogyPN, Goal:AnalogyPN, Time:Intersect)
     Z, (&&,X,Y), in(Z,--X)          |- substitute(Z,--X,Y,strict), (Belief:AnalogyPN, Goal:AnalogyPN, Time:Intersect)
-
-  //internal mutex chain:
-  (&&,--(X && Y),X,A..*), X,neq(X,Y)          |- (&&,--Y,A..*), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+//
+//  //internal mutex chain:
+  (&&,--(X && Y),X,A..+), X, neq(X,Y)          |- (&&,--Y,A..+), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 
 

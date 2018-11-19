@@ -1,10 +1,12 @@
 package nars.derive.op;
 
 import jcog.WTF;
+import jcog.data.bit.MetalBitSet;
 import jcog.data.graph.FromTo;
 import jcog.data.graph.Node;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
+import jcog.math.Longerval;
 import nars.Op;
 import nars.Param;
 import nars.Task;
@@ -80,9 +82,9 @@ public class Occurrify extends TimeGraph {
             nextPos = new UnifiedSet(8, 0.99f);
 
 
-    /**
-     * temporary set for filtering duplicates
-     */
+
+
+
 
 
 
@@ -279,7 +281,7 @@ public class Occurrify extends TimeGraph {
     }
 
     private ArrayHashSet<Event> solutions(Term pattern) {
-        solutions.clear();
+
         triesRemain = Param.TEMPORAL_SOLVER_ITERATIONS;
 
         solve(pattern, false /* take everything */, this::eachSolution);
@@ -319,10 +321,31 @@ public class Occurrify extends TimeGraph {
     private static int filterSolutions(ArrayHashSet<Event> solutions) {
         int ss = solutions.size();
         if (ss > 1) {
-            int occurrenceSolved = ((FasterList) solutions.list).count(t -> t instanceof Absolute);
-            if (occurrenceSolved > 0 && occurrenceSolved < ss) {
-                if (solutions.removeIf(t -> t instanceof Relative))
-                    ss = solutions.size();
+            MetalBitSet relative = MetalBitSet.bits(ss);
+            MetalBitSet xternal = MetalBitSet.bits(ss);
+            for (int i = 0; i < ss; i++) {
+                Event s = solutions.get(i);
+                if (s instanceof Relative)
+                    relative.set(i);
+                if (s.id.hasXternal())
+                    xternal.set(i);
+            }
+            int xternals = xternal.cardinality();
+            if (xternals > 0 && xternals < ss) {
+                for (int i = 0; i < ss; i++)
+                    if (xternal.get(i))
+                        solutions.list.set(i, null);
+
+                ((FasterList)solutions.list).removeNulls(); //HACK doesnt remove from the ArrayHashSet's Set
+                ss = solutions.list.size();
+            }
+            if (ss > 1) {
+
+                int occurrenceSolved = ((FasterList) solutions.list).count(t -> t instanceof Absolute);
+                if (occurrenceSolved > 0 && occurrenceSolved < ss) {
+                    if (solutions.removeIf(t -> t instanceof Relative))
+                        ss = solutions.size();
+                }
             }
 //            if (ss > 1) {
 //                return filterOOB(solutions);
@@ -861,23 +884,22 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                throw new UnsupportedOperationException();
-//                if (d.concSingle || (d._belief == null || d.beliefStart == ETERNAL)) {
-//                    return new long[]{d.taskStart, d.taskEnd};
-//                } else if (d.taskStart == ETERNAL && d._belief != null) {
-//                    return new long[]{d.beliefStart, d.beliefEnd};
-//                } else {
-//
-//                    assert (d._belief != null && d.beliefStart != TIMELESS);
-//
-//                    long[] i = Longerval.intersectionArray(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd);
-//                    if (i == null) {
-//                        //if (Param.DEBUG)
-//                        //assert(false == intersectFilter.test(d));
-//                        throw WTF("shouldnt happen");
-//                    }
-//                    return i;
-//                }
+                if (d.concSingle || (d._belief == null || d.beliefStart == ETERNAL)) {
+                    return new long[]{d.taskStart, d.taskEnd};
+                } else if (d.taskStart == ETERNAL && d._belief != null) {
+                    return new long[]{d.beliefStart, d.beliefEnd};
+                } else {
+
+                    assert (d._belief != null && d.beliefStart != TIMELESS);
+
+                    long[] i = Longerval.intersectionArray(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd);
+                    if (i == null) {
+                        //if (Param.DEBUG)
+                        //assert(false == intersectFilter.test(d));
+                        throw new WTF("shouldnt happen");
+                    }
+                    return i;
+                }
             }
 
 //            @Override
@@ -924,9 +946,6 @@ public class Occurrify extends TimeGraph {
 //        }
 
         static Pair<Term, long[]> solveShiftBeliefDT(Derivation d, Pair<Term, long[]> p, int sign) {
-            if (p == null)
-                return null;
-
 
             long[] o = p.getTwo();
             long s = o[0];
@@ -1059,11 +1078,7 @@ public class Occurrify extends TimeGraph {
             if ((d.concPunc == BELIEF || d.concPunc == GOAL) && x.hasXternal())
                 return null;
             long[] u = occurrence(d);
-            if (u != null) {
-                return pair(x, u);
-            } else {
-                return null;
-            }
+            return u != null ? pair(x, u) : null;
 
 //            Task task = d.task;
 //            Task belief = d.concSingle ? null : d.belief;

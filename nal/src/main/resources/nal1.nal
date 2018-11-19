@@ -14,7 +14,7 @@
 //               \         /
 //                (A --> C)
 
-    (A --> B), (B --> C), neqRCom(A,C)     |- (A --> C), (Belief:Deduction, Goal:DesirePB)
+    (A --> B), (B --> C), neqRCom(A,C)     |- (A --> C), (Belief:Deduction, Goal:DesirePB, Time:Intersect)
       //(B --> C), (A --> B), neqRCom(A,C)    |- (A --> C), (Belief:DeductionX, Goal:DesirePB)
 
         (A --> B), (B --> C), task("!"), neq(A,C)      |- (A --> C), (Punctuation:Quest)
@@ -22,7 +22,7 @@
         (A --> B), (B --> C), task("?@"), neqRCom(A,C)  |- (A --> C)
         //(B --> C), (A --> B), task("?@"), neqRCom(A,C)  |- (A --> C)
 
-    (A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Goal:DesireWeakPB)
+    (A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Goal:DesireWeakPB, Time:Intersect)
 
         (A --> B), (A --> C), task("!"), neq(B,C)      |- (C --> B), (Punctuation:Quest)
 
@@ -36,7 +36,7 @@
                     //(A --> B), (A --> C), task("?"), belief(negative), neqRCom(B,C) |- (--C --> B), (Punctuation:Question)
             //(A --> B), (A --> C), task("@"), neqRCom(B,C)  |- (B --> C), (Punctuation:Quest)
 
-    (A --> C), (B --> C), neqRCom(A,B)      |- (A --> B), (Belief:Induction, Goal:DesireWeakPB)
+    (A --> C), (B --> C), neqRCom(A,B)      |- (A --> B), (Belief:Induction, Goal:DesireWeakPB, Time:Intersect)
       //(A --> C), (B --> C), neqRCom(A,B)      |- (B --> A), (Belief:Induction, Goal:DesireWeakPB)
 
         (A --> C), (B --> C), task("!"), neq(A,B)      |- (B --> C), (Punctuation:Quest)
@@ -52,7 +52,7 @@
 
             //(A --> C), (B --> C), task("@"), neqRCom(A,B)  |- (B --> A), (Punctuation:Quest)
 
-    (A --> B), (B --> C), neqRCom(A,C)      |- (C --> A), (Belief:Exemplification, Goal:DesireWeakPB)
+    (A --> B), (B --> C), neqRCom(A,C)      |- (C --> A), (Belief:Exemplification, Goal:DesireWeakPB, Time:Intersect)
 
         (A --> B), (B --> C), task("!"), neq(A,C)      |- (C --> A), (Punctuation:Quest)
 
@@ -65,15 +65,15 @@
 //// similarity from inheritance ////////////////////////////////////////////////////////////////////////////////////
 //If S is a special case of P, and P is a special case of S, then S and P are similar
 
-    (S --> P), (P --> S) |- (S <-> P), (Belief:Intersection, Goal:DesireWeakPB)
-    (S --> P), (P --> S) |- --(S <-> P), (Belief:ComparisonSymmetric)
+    (S --> P), (P --> S) |- (S <-> P), (Belief:Intersection, Goal:DesireWeakPB, Time:Intersect)
+    (S --> P), (P --> S) |- --(S <-> P), (Belief:ComparisonSymmetric, Time:Intersect)
 
 //// similarity-based syllogism ////////////////////////////////////////////////////////////////////////////////////
 //If P and S are a special case of M, then they might be similar (weak),
 //also if P and S are a general case of M
 
-    (P --> M), (S --> M), neqRCom(S,P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeakPB)
-    (M --> P), (M --> S), neqRCom(S,P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeakPB)
+    (P --> M), (S --> M), neqRCom(S,P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeakPB, Time:Intersect)
+    (M --> P), (M --> S), neqRCom(S,P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeakPB, Time:Intersect)
 
 
     //this is basically a duplicate of the generalized analogy; see analogy.nal
@@ -84,8 +84,8 @@
 //// inheritance from similarty <- todo check why this one was missing ////////////////////////////////////////////////////////////////////////////////////
     //(S <-> P), P         |- (S --> P), (Belief:Identity)
     //TODO maybe Comparison..
-    (S <-> P), (P --> S) |- (S --> P), (Belief:ReduceConjunction)
-    (P --> S), (S <-> P), task("?") |- (P --> S), (Belief:BeliefStructuralReduction, Punctuation:Belief)
+    (S <-> P), (P --> S) |- (S --> P), (Belief:ReduceConjunction, Time:Intersect)
+    (P --> S), (S <-> P), task("?") |- (P --> S), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Intersect)
 
 
 

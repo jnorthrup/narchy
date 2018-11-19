@@ -209,13 +209,18 @@ public enum Image {;
                 return;
             }
             SpecialTermTask transformedInput = new SpecialTermTask(normal, originalInput);
-            if (originalInput.isCyclic())
-                transformedInput.setCyclic(true);
+
 
             r.setInput(transformedInput, host);
             table.add(r, nar);
 
             FasterList<ITask> rememberance = r.remembered;
+//            if (r.forgotten.containsInstance(transformedInput))
+//                return; //wasnt added
+
+
+            if (originalInput.isCyclic())
+                transformedInput.setCyclic(true);
 //            if (rememberance.contains(transformedInput))
 //                rememberance.replaceAll((x)->x == transformedInput ? originalInput : x); //for TaskEvent emission
 //            else {
@@ -234,7 +239,7 @@ public enum Image {;
 //               return x;
 //            });
                 if (!transformedInput.isDeleted()) {
-                    //rememberance.remove(transformedInput); //if it's present, it may not
+                    rememberance.remove(transformedInput); //if it's present, it may not
                     rememberance.add(originalInput);
                 }
 //            }

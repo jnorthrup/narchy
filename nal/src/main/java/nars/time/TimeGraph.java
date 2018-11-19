@@ -151,19 +151,19 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         Absolute af = (Absolute) f;
                         if (af.start() == ETERNAL)
                             continue;
-                        Longerval merged;
+//                        Longerval merged;
 
                         if (af.containedInButNotEqual(start, end)) {
                             removeNode(f);
                             ff.remove();
-                        } else if ((merged = af.unionIfIntersectsButNotEqual(start, end)) != null) {
+                        } /*else if ((merged = af.unionIfIntersectsButNotEqual(start, end)) != null) {
                             if (merged.a < start)
                                 start = merged.a;
                             if (merged.b > end)
                                 end = merged.b;
                             removeNode(f);
                             ff.remove();
-                        }
+                        }*/
 
 
                     }

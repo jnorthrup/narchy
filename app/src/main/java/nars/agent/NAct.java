@@ -249,7 +249,7 @@ public interface NAct {
         NAR n = nar();
         GoalActionConcept LA = action(l, (b, g) -> {
             //float ll = g != null ? g.expectation() : Util.lerp(decay, lr[0], 0.5f);
-            float ll = Math.max(g != null ? g.freq() /*g.expectation()*/ : 0 ,  Util.lerp(decay, lr[0], 0.5f));
+            float ll = Math.max(g != null ? /*g.freq()*/ g.expectation() : 0 ,  Util.lerp(decay, lr[0], 0.5f));
             boolean x = ll > thresh;
             boolean conflict = false;
             if (x) {
@@ -274,7 +274,7 @@ public interface NAct {
         });
         GoalActionConcept RA = action(r, (b, g) -> {
             //float rr = g != null ? g.expectation() : Util.lerp(decay, lr[1], 0.5f);
-            float rr = Math.max(g != null ? g.freq() /*g.expectation()*/ : 0 ,  Util.lerp(decay, lr[1], 0.5f));
+            float rr = Math.max(g != null ? /*g.freq()*/ g.expectation() : 0 ,  Util.lerp(decay, lr[1], 0.5f));
             boolean x = rr > thresh;
             boolean conflict = false;
             if (x) {

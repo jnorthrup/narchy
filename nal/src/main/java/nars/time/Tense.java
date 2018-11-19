@@ -192,30 +192,30 @@ public enum Tense {
         return (int)occ;
     }
 
-    public static long[] intersection(TaskRegion[] t) {
-        //HACK
-        long[] u = Tense.union(t);
-        if (u[0] == ETERNAL)
-            return u;
-
-
-        //find the min range
-        long minRange = Long.MAX_VALUE;
-        for(TaskRegion x : t) {
-            if (x == null || x.task().isEternal())
-                continue;
-            long r = x.range();
-            if (r < minRange)
-                minRange = r;
-        }
-        long range = minRange-1;
-        if (u[1]-u[0] > range) {
-            //shrink range around estimated center point
-            long mid = (u[1] + u[0])/2L;
-            return new long[] { mid - range/2L, mid + range/2L };
-        }
-        return u;
-    }
+//    public static long[] intersection(TaskRegion[] t) {
+//        //HACK
+//        long[] u = Tense.union(t);
+//        if (u[0] == ETERNAL)
+//            return u;
+//
+//
+//        //find the min range
+//        long minRange = Long.MAX_VALUE;
+//        for(TaskRegion x : t) {
+//            if (x == null || x.task().isEternal())
+//                continue;
+//            long r = x.range();
+//            if (r < minRange)
+//                minRange = r;
+//        }
+//        long range = minRange-1;
+//        if (u[1]-u[0] > range) {
+//            //shrink range around estimated center point
+//            long mid = (u[1] + u[0])/2L;
+//            return new long[] { mid - range/2L, mid + range/2L };
+//        }
+//        return u;
+//    }
 
 
     @Override

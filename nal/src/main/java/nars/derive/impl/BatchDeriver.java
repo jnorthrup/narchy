@@ -42,13 +42,13 @@ public class BatchDeriver extends Deriver {
         }
     }
 
-    public final IntRange conceptsPerIteration = new IntRange(3, 1, 32);
+    public final IntRange conceptsPerIteration = new IntRange(4, 1, 32);
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
      */
     @Range(min = 1, max = 8)
-    private final int premisesPerConcept = 3;
+    private final int premisesPerConcept = 2;
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */

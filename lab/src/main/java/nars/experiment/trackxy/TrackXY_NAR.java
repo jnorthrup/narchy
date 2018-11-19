@@ -39,7 +39,7 @@ import static spacegraph.SpaceGraph.window;
 
 public class TrackXY_NAR extends NAgentX {
 
-    public static final int derivationStrength = 8;
+    public static final int derivationStrength = 32;
     static boolean
             nars = true, rl = !nars,
             sourceNumerics = true, targetNumerics = false,
@@ -48,7 +48,7 @@ public class TrackXY_NAR extends NAgentX {
     static int
             W = 3, H = 1;
             //W = 5, H = 1;
-    static int dur = 1;
+    static int dur = 2;
     static float camResolution = 0.1f;
 
     final Bitmap2DSensor cam;
@@ -120,14 +120,14 @@ public class TrackXY_NAR extends NAgentX {
             long now = nar.time();
            if (trainer.getOpaque()) {
                 if (track.ty < track.cy) {
-                    nar().want(0f, $.inh("down", id), now, now+dur, 1f, 0.5f);
+                    nar().want(0.1f, $.inh("down", id), now, now+dur, 1f, 0.02f);
                 } else if (track.ty > track.cy) {
-                    nar().want(0f, $.inh("up", id), now, now+dur, 1f, 0.5f);
+                    nar().want(0.1f, $.inh("up", id), now, now+dur, 1f, 0.02f);
                 }
                if (track.tx < track.cx) {
-                   nar().want(0f, $.inh("left", id), now, now+dur, 1f, 0.5f);
+                   nar().want(0.1f, $.inh("left", id), now, now+dur, 1f, 0.02f);
                } else if (track.tx > track.cx) {
-                   nar().want(0f, $.inh("right", id), now, now+dur, 1f, 0.5f);
+                   nar().want(0.1f, $.inh("right", id), now, now+dur, 1f, 0.02f);
                }
            }
         });

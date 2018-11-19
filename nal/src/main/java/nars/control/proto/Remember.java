@@ -31,7 +31,8 @@ public class Remember extends AbstractTask {
     public Task input;
 
     public final FasterList<ITask> remembered = new FasterList(2);
-    @Nullable FasterList<Task> forgotten = null;
+    @Nullable
+    public FasterList<Task> forgotten = null;
     public Concept concept;
 
 
@@ -250,8 +251,9 @@ public class Remember extends AbstractTask {
 
         if (input.isInput())
             remember(existing); //link and emit
-        else
-            next(new TaskLinkTask(existing, concept)); //just link
+        else {
+            //next(new TaskLinkTask(existing, concept)); //just link
+        }
 
 
     }
