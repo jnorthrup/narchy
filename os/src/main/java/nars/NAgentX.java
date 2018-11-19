@@ -251,9 +251,8 @@ abstract public class NAgentX extends NAgent {
 
     static void initPlugins2(NAR n, NAgent a) {
 
-        PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8,
-                "induction.nal",
-                "motivation.nal"
+        PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8
+                //"motivation.nal"
         );
         ZipperDeriver sensorAction = BeliefSource.forConcepts(n, rules,
                 (a.rewards.stream().flatMap((Reward x) -> stream(x.spliterator(), false)).collect(Collectors.toList())),
@@ -470,11 +469,11 @@ abstract public class NAgentX extends NAgent {
 
 
 
-        new BatchDeriver(Derivers.nal(n, 1, 8,
+        new BatchDeriver(Derivers.nal(n, 1, 8
 
-            "motivation.nal",
+            //"motivation.nal",
                 //"equivalence.nal"
-                "induction.goal.nal"
+              //  "induction.goal.nal"
         ));
 
         //new STMLinkage(n, 1);

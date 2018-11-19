@@ -5,12 +5,12 @@ import nars.NARS;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.nal.nal8.GoalDecompositionTest;
+import nars.test.NALTest;
 import nars.test.TestNAR;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class NAL3GoalTest {
-
-
 
 
     private final static String X = ("X");
@@ -29,6 +29,7 @@ class NAL3GoalTest {
             }
         }
     }
+
     @Test
     void testDifference() {
         testGoalDiff(true, true, true, true, 0, 0.81f);
@@ -38,7 +39,46 @@ class NAL3GoalTest {
 
     private void testGoalDiff(boolean goalPolarity, boolean beliefPolarity, boolean diffIsGoal, boolean diffIsFwd, float f, float c) {
 
-        testGoalDiff(goalPolarity, beliefPolarity, diffIsGoal, diffIsFwd, true, f, c);
+        String goalTerm, beliefTerm;
+        String first, second;
+        if (diffIsFwd) {
+            first = X;
+            second = Y;
+        } else {
+            first = Y;
+            second = X;
+        }
+        String diff = (true) ?
+                "((" + first + "~" + second + ")-->A)" :
+                "(A-->(" + first + "-" + second + "))";
+        String XX = true ? Xe : Xi;
+        String YY = true ? Ye : Yi;
+        if (diffIsGoal) {
+            goalTerm = diff;
+            beliefTerm = XX;
+        } else {
+            beliefTerm = diff;
+            goalTerm = XX;
+        }
+        if (!goalPolarity)
+            goalTerm = "(--," + goalTerm + ")";
+        if (!beliefPolarity)
+            beliefTerm = "(--," + beliefTerm + ")";
+
+        String goalTask = goalTerm + "!";
+        String beliefTask = beliefTerm + ".";
+
+        String expectedTask = YY + "!";
+        if (f < 0.5f) expectedTask = "(--," + expectedTask + ")";
+
+        System.out.println(goalTask + "\t" + beliefTask + "\t=>\t" + expectedTask);
+
+
+        new TestNAR(NARS.tmp(3))
+                .input(goalTask)
+                .input(beliefTask)
+                .mustGoal(GoalDecompositionTest.cycles, YY, f, c)
+                .run(16);
 
     }
 
@@ -92,49 +132,8 @@ class NAL3GoalTest {
 //                .run(16);
 //    }
 
-    private TestNAR testGoalDiff(boolean goalPolarity, boolean beliefPolarity, boolean diffIsGoal, boolean diffIsFwd, boolean diffIsEx, float f, float c) {
-        String goalTerm, beliefTerm;
-        String first, second;
-        if (diffIsFwd) {
-            first = X;
-            second = Y;
-        } else {
-            first = Y;
-            second = X;
-        }
-        String diff = (diffIsEx) ?
-                "((" + first + "~" + second + ")-->A)" :
-                "(A-->(" + first + "-" + second + "))";
-        String XX = diffIsEx ? Xe : Xi;
-        String YY = diffIsEx ? Ye : Yi;
-        if (diffIsGoal) {
-            goalTerm = diff;
-            beliefTerm = XX;
-        } else {
-            beliefTerm = diff;
-            goalTerm = XX;
-        }
-        if (!goalPolarity)
-            goalTerm = "(--," + goalTerm + ")";
-        if (!beliefPolarity)
-            beliefTerm = "(--," + beliefTerm + ")";
-
-        String goalTask = goalTerm + "!";
-        String beliefTask = beliefTerm + ".";
-
-        String expectedTask = YY + "!";
-        if (f < 0.5f) expectedTask = "(--," + expectedTask + ")";
-
-        System.out.println(goalTask + "\t" + beliefTask + "\t=>\t" + expectedTask);
-
-
-        return new TestNAR(NARS.tmp(3))
-                .input(goalTask)
-                .input(beliefTask)
-                .mustGoal(GoalDecompositionTest.cycles, YY, f, c)
-                .run(16);
-    }
-    @Test void intersectionGoalInduction() {
+    @Test
+    void intersectionGoalInduction() {
         NAR n = NARS.tmp(3);
         new BatchDeriver(Derivers.files(n, "induction.goal.nal"));
         new TestNAR(n)
@@ -144,7 +143,9 @@ class NAL3GoalTest {
                 .run(16);
         //TODO other cases
     }
-    @Test void intersectionGoalDecomposition() {
+
+    @Test
+    void intersectionGoalDecomposition() {
 
         new TestNAR(NARS.tmp(3))
                 .input("((X|Y) --> Z)!")
@@ -161,6 +162,135 @@ class NAL3GoalTest {
 //                .input("--(X --> Z).")
 //                .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.81f)
 //                .run(16);
+
+    }
+
+    static class DecompositionTest extends NALTest {
+
+        public static final int cycles = 150;
+
+
+        @BeforeEach
+        void setTolerance() {
+            test.nar.time.dur(3);
+        }
+
+        @Test
+        void testIntersectionSinglePremiseDecomposeGoal1Pos() {
+            test
+                    .input("((a|b)-->g)!")
+                    .mustGoal(cycles, "(a-->g)", 1f, 0.81f)
+                    .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
+        }
+
+        @Test
+        void testIntersectionConditionalDecomposeGoalPos() {
+            test
+                    .input("((a|b)-->g)!")
+                    .input("(a-->g).")
+                    .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
+        }
+        @Test
+        void testIntersectionConditionalDecomposeGoalPosNeg() {
+            test
+                    .input("((b-a)-->g)!")
+                    .input("--(a-->g).")
+                    .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
+        }
+        @Test
+        void testUnionConditionalDecomposeGoalPosNeg() {
+            test
+                    .input("((a&b)-->g)!")
+                    .input("--(a-->g).")
+                    .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
+        }
+
+
+//    @Test
+//    public void testUnionConditionalDecomposeGoalPosPos() {
+//        test
+//                .input("((a&b)-->g)!")
+//                .input("(a-->g).")
+//                .mustNotGoal(cycles, "(b-->g)", 1f, 0.81f);
+//    }
+
+
+        @Test
+        void testIntersectionPosGoalSinglePremiseDecompose() {
+            test
+                    .input("((a|b)-->g)!")
+                    .mustGoal(cycles, "(a-->g)", 1f, 0.81f)
+                    .mustGoal(cycles, "(b-->g)", 1f, 0.81f)
+            ;
+        }
+
+        @Test
+        void testIntersectionNegGoalSinglePremiseDecompose() {
+            test
+                    .input("--((a|b)-->g)!")
+                    .mustGoal(cycles, "(a-->g)", 0f, 0.81f)
+                    .mustGoal(cycles, "(b-->g)", 0f, 0.81f)
+            ;
+        }
+
+        @Test
+        void testIntersectionConditionalDecomposeGoalNeg() {
+            test
+                    .input("--((a|b)-->g)!")
+                    .input("--(a-->g).")
+                    .mustGoal(cycles, "(b-->g)", 0f, 0.81f);
+        }
+
+        @Test
+        void testIntersectionConditionalDecomposeGoalConfused() {
+            test
+                    .input("--((a|b)-->g)!")
+                    .input("(a-->g).")
+                    .mustGoal(cycles, "(b-->g)", 0f, 0.81f);
+        }
+
+        @Test
+        void testDiffGoal1SemiPos1st() {
+            test
+                    .input("((a~b)-->g)! %0.50;0.90%")
+                    .input("(a-->g). %1.00;0.90%")
+                    .mustGoal(cycles, "(b-->g)", 0.5f, 0.81f);
+        }
+
+        @Test
+        void testMutexDiffGoal1Pos2nd() {
+            test
+                    .input("((a~b)-->g)!")
+                    .input("--(b-->g).")
+                    .mustGoal(cycles, "(a-->g)", 1f, 0.81f);
+        }
+
+
+        @Test
+        void testMutexDiffGoal1Neg() {
+            test
+                    .input("--((a~b)-->g)!")
+                    .input("(a-->g).")
+                    .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
+        }
+
+        @Test
+        void testIntersectSinglePremiseGoal1Neg() {
+            test
+                    .input("--((a|b)-->g)!")
+
+                    .mustGoal(cycles, "(a-->g)", 0f, 0.81f)
+                    .mustGoal(cycles, "(b-->g)", 0f, 0.81f);
+        }
+
+        @Test
+        void testDiffGoal1Pos1st() {
+            test
+                    .input("((a~b)-->g)! %1.00;0.90%")
+                    .input("(a-->g).")
+                    .mustGoal(cycles, "(b-->g)", 0f, 0.81f);
+        }
+
 
     }
 }

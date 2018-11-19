@@ -5,7 +5,11 @@ import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.concept.Concept;
+import nars.table.BeliefTables;
+import nars.table.eternal.EternalTable;
 import nars.term.Termed;
+import nars.time.Tense;
+import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
@@ -43,5 +47,14 @@ public abstract class Reward implements Termed, Iterable<Concept> {
 
     public float summary() {
         return reward;
+    }
+
+    public void setDefault(PreciseTruth t) {
+        for (Concept c : this) {
+            //TODO assert that it has no eternal tables already
+            ((BeliefTables) c.beliefs()).tables.add(new EternalTable(1));
+            nar().believe(c.term(), Tense.Eternal, t.freq(), t.conf());
+        }
+
     }
 }

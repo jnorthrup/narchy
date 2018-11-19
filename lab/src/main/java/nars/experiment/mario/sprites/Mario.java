@@ -10,7 +10,8 @@ import nars.experiment.mario.level.Level;
 public class Mario extends Sprite {
     public static boolean large;
     public static boolean fire;
-    public static int coins;
+    /** TODO non-static */
+    @Deprecated public static int coins;
     public static int lives = 3;
     public static String levelString = "none";
     private final int kill_reward_coins = 4;

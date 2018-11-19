@@ -443,13 +443,13 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-//    BeliefStructuralAbduction() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//
-//            return Abduction.apply($.t(1f, confDefault(m)), B, m, minConf);
-//        }
-//    },
+    @AllowOverlap BeliefStructuralAbduction() {
+        @Override
+        public Truth apply(@Nullable final Truth T, final Truth B, NAR m, float minConf) {
+
+            return Abduction.apply($.t(1f, confDefault(m)), B, m, minConf);
+        }
+    },
 
 
 

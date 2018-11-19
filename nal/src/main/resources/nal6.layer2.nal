@@ -3,10 +3,10 @@
 //// second level variable handling rules ////////////////////////////////////////////////////////////////////////////////////
 //second level variable elimination (termlink level2 growth needed in order for these rules to work)
 
-    (B --> K), (&&,(#X --> L),(($Y --> K) ==> A)) |- substitute(((#X --> L) && A), $Y, B), (Belief:Deduction)
-        (B --> K), (&&,(#X --> L),((--,($Y --> K)) ==> A)) |- substitute(((#X --> L) && A), $Y, B), (Belief:DeductionN)
-    (K --> B), (&&,(L --> #X),((K --> $Y) ==> A)) |- substitute(((L --> #X) && A), $Y, B), (Belief:Deduction)
-        (K --> B), (&&,(L --> #X),((--,(K --> $Y)) ==> A)) |- substitute(((L --> #X) && A), $Y, B), (Belief:DeductionN)
+    (B --> K), (&&,(#X --> L),(($Y --> K) ==> A)) |- substitute(((#X --> L) && A), $Y, B), (Belief:Deduction,Time:Intersect)
+        (B --> K), (&&,(#X --> L),((--,($Y --> K)) ==> A)) |- substitute(((#X --> L) && A), $Y, B), (Belief:DeductionN,Time:Intersect)
+    (K --> B), (&&,(L --> #X),((K --> $Y) ==> A)) |- substitute(((L --> #X) && A), $Y, B), (Belief:Deduction,Time:Intersect)
+        (K --> B), (&&,(L --> #X),((--,(K --> $Y)) ==> A)) |- substitute(((L --> #X) && A), $Y, B), (Belief:DeductionN,Time:Intersect)
       //(K --> B), (&&,(#X --> L),((K --> $Y) ==> A)) |- substitute(((#X --> L) && A), $Y, B), (Belief:Deduction)
         //(K --> B), (&&,(#X --> L),((--,(K --> $Y)) ==> A)) |- substitute(((#X --> L) && A), $Y, B), (Belief:DeductionN)
 
@@ -36,8 +36,8 @@
 
 //conditional abduction by dependent variable
 
-    ((X --> R) ==> Z), ((&&,(#Y --> B),(#Y --> R),A..*) ==> Z)  |- (X --> B), (Belief:AbductionPB)
-        (--(X --> R) ==> Z), ((&&,(#Y --> B),--(#Y --> R),A..*) ==> Z) |- (X --> B), (Belief:AbductionPB)
+    ((X --> R) ==> Z), ((&&,(#Y --> B),(#Y --> R),A..*) ==> Z)  |- (X --> B), (Belief:AbductionPB,Time:Intersect)
+        (--(X --> R) ==> Z), ((&&,(#Y --> B),--(#Y --> R),A..*) ==> Z) |- (X --> B), (Belief:AbductionPB,Time:Intersect)
 
 
 // conditional deduction "An inverse inference has been implemented as a form of deduction" https://code.google.com/p/open-nars/issues/detail?id=40&can=1

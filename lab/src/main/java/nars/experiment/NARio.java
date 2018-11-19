@@ -4,6 +4,7 @@ import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.agent.Reward;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.Signal;
@@ -131,13 +132,13 @@ public class NARio extends NAgentX {
         Signal dvy = senseNumberDifference($$("vy(nario)"), () -> theMario!=null ? theMario.y : 0).resolution(0.02f);
 
 
-        rewardNormalized("goRight", -1, +1, () -> {
+        Reward right = rewardNormalized("goRight", -1, +1, () -> {
 
             float reward;
-            float curX = theMario!=null ? theMario.x : Float.NaN;
+            float curX = theMario != null && theMario.deathTime <= 0 ? theMario.x : Float.NaN;
             if (lastX == lastX && lastX < curX) {
                 reward = //unitize(Math.max(0, (curX - lastX)) / 16f * MoveRight.floatValue());
-                         1;
+                        1;
             } else {
                 reward =
                         //-1;
@@ -147,7 +148,8 @@ public class NARio extends NAgentX {
 
             return reward;
         });
-        rewardNormalized("getCoins", -1, +1, () -> {
+        //right.setDefault($.t(0, 0.5f));
+        Reward getCoins = rewardNormalized("getCoins", -1, +1, () -> {
             int coins = Mario.coins;
             int deltaCoin = coins - lastCoins;
             if (deltaCoin <= 0)
@@ -156,28 +158,31 @@ public class NARio extends NAgentX {
 
             float reward = deltaCoin * EarnCoin.floatValue();
             lastCoins = coins;
-            return Math.max(0,reward);
+            return Math.max(0, reward);
         });
-        rewardNormalized("alive", -1, +1, () -> {
+        //getCoins.setDefault($.t(0, 0.5f));
+        Reward alive = rewardNormalized("alive", -1, +1, () -> {
 //            if (dead)
 //                return -1;
 //
-            if (theMario ==null) {
+            if (theMario == null) {
                 return Float.NaN;
             }
 
-            int t = theMario.deathTime > 0  ? -1 : +1;
+            float t = theMario.deathTime > 0 ? -1 : /*Float.NaN*/ +1;
 //            if (t == -1) {
 //                System.out.println("Dead");
 //                theMario.deathTime = 0;
 //                dead = true;
-                //mario.levelFailed(); //restart level
+            //mario.levelFailed(); //restart level
 //                nar.runAt(nar.time() + theMario.AFTERLIFE_TIME, ()->{
 //                    dead = false;
 //                });
 //            }
             return t;
         });
+        //alive.setDefault($.t(1, 0.5f));
+
     }
 
 

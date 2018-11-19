@@ -1,14 +1,19 @@
 //Similarity to Inheritance
     (S --> P),     (S <-> P),   task("?") |- (S --> P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Intersect)
-      (S --> P), (--S <-> P),   task("?") |- (--S --> P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Intersect)
-      (S --> P),   (S <-> --P), task("?") |- (S --> --P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Intersect)
+      //(S --> P), (--S <-> P),   task("?") |- (--S --> P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Intersect)
+      //(S --> P),   (S <-> --P), task("?") |- (S --> --P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Intersect)
 
     //(S --> P), (S <-> P), task("@") |- (S --> P),   (Goal:BeliefStructuralDeduction, Punctuation:Goal)
 
 //Inheritance to Similarity
-    //(S <-> P), (S --> P), task("?") |- (S <-> P),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
-    //(S <-> P), (S --> P), task("?") |- (--,(S <-> P)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
+    (S <-> P), (S --> P), task("?") |- (S <-> P),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
+//    (S <-> P), (S --> P), task("?") |- (--,(S <-> P)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
 
+////inheritance transform
+    X, (S --> P), task("?"), in(X,P) |- (X <-> substitute(X,P,S,strict)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
+    X, (S --> P), task("?"), in(X,S) |- (X <-> substitute(X,S,P,strict)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
+    //X, (S --> P), task("?"), in(X,P) |- substitute(X,P,S,strict),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
+    //X, (S --> P), task("?"), in(X,S) |- substitute(X,S,P,strict),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
 
 
     //(X --> Y), Y, task("?"), --is(X,"?"), --is(Y,"?") |- (?1 --> Y),   (Punctuation:Question)
@@ -36,7 +41,4 @@
     //(P --> S), (S --> P), task("?") |- (P --> S),   (Belief:Conversion, Punctuation:Belief)
       //(P --> S), (S --> P), task("?"), belief(negative) |- (--,(P --> S)),   (Belief:ConversionPN, Punctuation:Belief)
 
-//inheritance transform
-    //X, (S --> P), task("?"), inPosOrNeg(X,P) |- substitute(X,P,S,strict),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
-    //X, (S --> P), task("?"), inPosOrNeg(X,S) |- substitute(X,S,P,strict),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
 

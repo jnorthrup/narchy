@@ -1,39 +1,39 @@
-    //how goal
-    G, Y, task("!") |-         (?1 ==> G) , (Punctuation:Question)
 
     //changing goal context
-    G, Y, task("!") |-         ((G && ?1) ==> (G && ?2)), (Punctuation:Question)
-      G, Y, task("!") |-         ((G || ?1) && (G || ?2)), (Punctuation:Quest)
+    //G, Y, task("!") |-         ((G && ?1) ==> (G && ?2)), (Punctuation:Question)
+      //G, Y, task("!") |-         ((G || ?1) && (G || ?2)), (Punctuation:Quest)
     //changing non-goal context
-    G, Y, task("!") |-         ((--G && ?1) ==> (--G && ?2)), (Punctuation:Question)
-      G, Y, task("!") |-         ((--G || ?1) && (--G || ?2)), (Punctuation:Quest)
+    //G, Y, task("!") |-         ((--G && ?1) ==> (--G && ?2)), (Punctuation:Question)
+      //G, Y, task("!") |-         ((--G || ?1) && (--G || ?2)), (Punctuation:Quest)
 
 
     //sustain goal
-    G, Y, task("!") |-         ((G && ?1) ==> G) , (Punctuation:Question)
+    //G, Y, task("!") |-         ((G && ?1) ==> G) , (Punctuation:Question)
     //correct goal
-    G, Y, task("!") |-         ((--G && ?1) ==> G) , (Punctuation:Question)
+    //G, Y, task("!") |-         ((--G && ?1) ==> G) , (Punctuation:Question)
 
+    //how goal
+    //G, Y, task("!") |-         (?1 ==> G) , (Punctuation:Question)
     //result of goal
-    G, Y, task("!") |-          (G ==> ?1), (Punctuation:Question)
+    //G, Y, task("!") |-          (G ==> ?1), (Punctuation:Question)
     //result of non-goal
-    G, Y, task("!") |-        (--G ==> ?1), (Punctuation:Question)
+    //G, Y, task("!") |-        (--G ==> ?1), (Punctuation:Question)
     //result of achieving goal and current belief
     G, B, task("!") |-        ((G && polarize(B,belief)) ==> ?1), (Punctuation:Question)
     //result of non-achieving goal and current  belief
     G, B, task("!") |-        ((--G && polarize(B,belief)) ==> ?1), (Punctuation:Question)
 
     //is what with goal
-    G, Y, task("!") |-           (?1 && G), (Punctuation:Question)
+    //G, Y, task("!") |-           (?1 && G), (Punctuation:Question)
     //is what with non-goal
-    G, Y, task("!") |-         (?1 && --G), (Punctuation:Question)
+    //G, Y, task("!") |-         (?1 && --G), (Punctuation:Question)
 
     //should what with goal
-    G, Y, task("!") |-               (?1 && G), (Punctuation:Quest)
+    //G, Y, task("!") |-               (?1 && G), (Punctuation:Quest)
     G, Y, task("!"), --is(Y,"?") |-  (Y && G), (Punctuation:Quest)
 
     //should what with non-goal
-    G, Y, task("!") |-               (?1 && --G), (Punctuation:Quest)
+    //G, Y, task("!") |-               (?1 && --G), (Punctuation:Quest)
     G, Y, task("!"), --is(Y,"?") |-  (Y && --G), (Punctuation:Quest)
 
     //conj quest to impl question
@@ -42,12 +42,12 @@
      (G && B), B, task("@") |-  (--G ==> B), (Punctuation:Question)
 
 //inverted condition question/quest
-    (&&,   X, A..*), X  |- (&&, --X, A..*), (Punctuation:Ask)
-    (&&, --X, A..*), X  |- (&&,   X, A..*), (Punctuation:Ask)
+    (&&,   X, A..+), X  |- (&&, --X, A..+), (Punctuation:Ask)
+    (&&, --X, A..+), X  |- (&&,   X, A..+), (Punctuation:Ask)
 
 //inheritance to impl question/quest
-    (A-->P), (B-->P)  |- (polarize((A-->P),task) ==> (B-->P)), (Punctuation:Ask)
-    (S-->A), (S-->B)  |- (polarize((S-->A),task) ==> (S-->B)), (Punctuation:Ask)
+    //(A-->P), (B-->P)  |- (polarize((A-->P),task) ==> (B-->P)), (Punctuation:Ask)
+    //(S-->A), (S-->B)  |- (polarize((S-->A),task) ==> (S-->B)), (Punctuation:Ask)
 
 //impl expansion
     (A ==> B), B, task(".")      |- ((A && ?1) ==> B), (Punctuation:Question)

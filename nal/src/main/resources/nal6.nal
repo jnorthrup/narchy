@@ -238,9 +238,6 @@
          (Y ==> X), ((&&,--X,A..+) ==> Z)  |- ((&&,Y,A..+) ==> Z), (Belief:DeductionN)
 
 
-//    //general implication induction
-    (C ==> Z), X |- ((C && X) ==> Z), (Belief:Induction, Time:Intersect)
-    (C ==> Z), X |- ((C && --X) ==> Z), (Belief:InductionPN, Time:Intersect)
 
 
     (C ==> Z), (B ==> M), eventOf(C,B) |- ((conjWithout(C,B) && M) ==> Z), (Belief:Induction)

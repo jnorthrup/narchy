@@ -10,6 +10,7 @@ import jcog.math.FloatClamped;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
+import jcog.util.ArrayUtils;
 import nars.$;
 import nars.NAR;
 import nars.Param;
@@ -470,9 +471,9 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     protected void act(long prev, long now, long next) {
-        ActionConcept[] aaa = actions.array();
-//        ActionConcept[] aaa = actions.copy.clone(); //HACK shuffle cloned copy for thread safety
-//        ArrayUtils.shuffle(aaa, random());
+        //ActionConcept[] aaa = actions.array();
+        ActionConcept[] aaa = actions.array().clone(); ArrayUtils.shuffle(aaa, random()); //HACK shuffle cloned copy for thread safety
+
 
         //curiosity conf initial setting  HACK
 

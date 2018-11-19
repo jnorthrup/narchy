@@ -75,20 +75,20 @@ public class NAL3Test extends NALTest {
     @ParameterizedTest
     void compound_decomposition_two_premises_Negative_DiffExtensional(float freq) {
         String known = "<b-->x>";
-        String composed = "<(a ~ b) --> x>";
+        String composed = "<(a - b) --> x>";
         String unknown = "<a --> x>";
 
         TestNAR test = testDecomposeNegDiff(freq, known, composed, unknown);
 
+        test.mustNotOutput(cycles, "<--a --> x>", BELIEF, 0, 1, 0, 1, ETERNAL);
         test.mustNotOutput(cycles, "<--b --> x>", BELIEF, 0, 1, 0, 1, ETERNAL);
 
         //test neqRCom
-        test.mustNotOutput(cycles, "(b --> (a~b))", BELIEF, 0, 1, 0, 1, ETERNAL);
+        test.mustNotOutput(cycles, "(b --> (a-b))", BELIEF, 0, 1, 0, 1, ETERNAL);
     }
 
     private TestNAR testDecomposeNegDiff(float freq, String known, String composed, String unknown) {
         test
-
             .believe(known, freq, 0.9f)
             .believe(composed, 0.0f, 0.9f)
         ;
@@ -162,15 +162,15 @@ public class NAL3Test extends NALTest {
     }
 
 
-    @Test
-    void testDifference() {
-
-        TestNAR tester = test;
-        tester.believe("<swan --> bird>", 0.9f, 0.9f);
-        tester.believe("<dinosaur --> bird>", 0.7f, 0.9f);
-        tester.mustBelieve(cycles, "bird:(swan ~ dinosaur)", 0.27f, 0.81f);
-        tester.mustBelieve(cycles, "bird:(dinosaur ~ swan)", 0.07f, 0.81f);
-    }
+//    @Test
+//    void testDifference() {
+//
+//        TestNAR tester = test;
+//        tester.believe("<swan --> bird>", 0.9f, 0.9f);
+//        tester.believe("<dinosaur --> bird>", 0.7f, 0.9f);
+//        tester.mustBelieve(cycles, "bird:(swan ~ dinosaur)", 0.27f, 0.81f);
+//        tester.mustBelieve(cycles, "bird:(dinosaur ~ swan)", 0.07f, 0.81f);
+//    }
 
     @Test
     void testArity1_Decomposition_IntersectExt() {
@@ -220,7 +220,7 @@ public class NAL3Test extends NALTest {
         test
                 .believe("--(x-->ComplexNumber)")
                 .believe("(x-->RealNumber)")
-                .mustBelieve(cycles, "(x-->(RealNumber&ComplexNumber))", 0f, 0.81f);
+                .mustBelieve(cycles, "(x-->(RealNumber~ComplexNumber))", 1f, 0.81f);
         ;
 
     }

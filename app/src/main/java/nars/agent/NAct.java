@@ -237,19 +237,20 @@ public interface NAct {
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
 
         float thresh =
-                0.5f;// + 1*Param.TRUTH_EPSILON;
+                0.5f;
+                //0.5f + sqr(Param.TRUTH_EPSILON);
                 //0.66f;
 
         float[] lr = new float[] { 0.5f, 0.5f };
 
         float decay =
-                //0.9f;
-                1f; //instant
+                0.5f;
+                //1f; //instant
 
         NAR n = nar();
         GoalActionConcept LA = action(l, (b, g) -> {
             //float ll = g != null ? g.expectation() : Util.lerp(decay, lr[0], 0.5f);
-            float ll = Math.max(g != null ? /*g.freq()*/ g.expectation() : 0 ,  Util.lerp(decay, lr[0], 0.5f));
+            float ll = Math.max(g != null ? /*g.freq()*/ g.expectation() : 0.5f ,  Util.lerp(decay, lr[0], 0.5f));
             boolean x = ll > thresh;
             boolean conflict = false;
             if (x) {
@@ -260,11 +261,9 @@ public interface NAct {
                     //stochastic
                     //x = nar().random().nextFloat() < (ll / (Param.TRUTH_EPSILON +ll + lr[1]));
                     //ll = x ? 1 : 0;
-                } else {
-                    lr[1] = 0.5f;
                 }
             }
-            lr[0] = x ? ll : 0.5f;
+            lr[0] = ll;
             L.value(x);
             //System.out.println("L=" + x  + " <- " + ll );
             return $.t(x ? 1 : 0, n.confDefault(BELIEF));
@@ -274,7 +273,7 @@ public interface NAct {
         });
         GoalActionConcept RA = action(r, (b, g) -> {
             //float rr = g != null ? g.expectation() : Util.lerp(decay, lr[1], 0.5f);
-            float rr = Math.max(g != null ? /*g.freq()*/ g.expectation() : 0 ,  Util.lerp(decay, lr[1], 0.5f));
+            float rr = Math.max(g != null ? /*g.freq()*/ g.expectation() : 0.5f ,  Util.lerp(decay, lr[1], 0.5f));
             boolean x = rr > thresh;
             boolean conflict = false;
             if (x) {
@@ -285,11 +284,9 @@ public interface NAct {
                     //stochastic
                     //x = nar().random().nextFloat() < (rr / (Param.TRUTH_EPSILON + rr + lr[0]));
                     //rr = x ? 1 : 0;
-                } else {
-                    lr[0] = 0.5f;
                 }
             }
-            lr[1] = x ? rr : 0.5f;
+            lr[1] = rr;
             R.value(x);
             //System.out.println("R=" + x  + " <- " + rr );
             return $.t(x ? 1 : 0, n.confDefault(BELIEF));

@@ -11,6 +11,9 @@ G, B, task("@")  |- (polarize(B,belief) ==> G), (Time:Relative, Punctuation:Ques
     (Z --> X), (Z --> (&,X,A..+)) |- (Z --> (&,X,A..+)), (Goal:Desire)
     (Z --> X), (Z --> (|,X,A..+)) |- (Z --> (|,X,A..+)), (Goal:DesireWeak)
 
+//general implication induction
+    (C ==> Z), X |- ((C && X) ==> Z), (Belief:Induction, Time:Intersect)
+    (C ==> Z), X |- ((C && --X) ==> Z), (Belief:InductionPN, Time:Intersect)
 
 //X, (Y==>X), task("!") |- (Y &&   X), (Goal:Intersection)
 //X, (Y==>X), task("!") |- (Y && --X), (Goal:IntersectionNN)

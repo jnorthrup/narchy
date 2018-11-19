@@ -42,7 +42,6 @@ public class NAL4Test extends NALTest {
     void structural_transformation_dont() {
 
         test
-                .logDebug()
                 .believe( "(acid --> (reaction,/,base))")
                 .mustNotOutput(CYCLES, "(reaction --> (acid,base))", BELIEF, ETERNAL)
         ;
