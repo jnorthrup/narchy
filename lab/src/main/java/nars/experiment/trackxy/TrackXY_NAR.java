@@ -19,11 +19,11 @@ import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
+import nars.task.DerivedTask;
 import nars.time.clock.CycleTime;
 import nars.video.Bitmap2DConceptsView;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.impl.block.factory.Comparators;
-import org.fusesource.jansi.FilterPrintStream;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.stream.Collectors.toList;
 import static jcog.Texts.n4;
+import static nars.Op.GOAL;
 import static nars.Op.IMPL;
 import static spacegraph.SpaceGraph.window;
 
@@ -57,8 +58,8 @@ public class TrackXY_NAR extends NAgentX {
     private float rewardSum = 0;
 
 
-    final public AtomicBoolean log = new AtomicBoolean(true);
-    final public AtomicBoolean trainer = new AtomicBoolean(true);
+    //final public AtomicBoolean log = new AtomicBoolean(true);
+    final public AtomicBoolean trainer = new AtomicBoolean(false);
 
     protected TrackXY_NAR(NAR nar, int W, int H) {
         super("trackXY",
@@ -106,15 +107,15 @@ public class TrackXY_NAR extends NAgentX {
 
         track.randomize();
 
-        Param.DEBUG = true;
-        nar().log(new FilterPrintStream(System.out) {
-
-            @Override
-            public void print(String s) {
-                super.print(s);
-                Util.sleepMS(200);
-            }
-        }, (t)->log.getOpaque() /*&& t instanceof Task && ((Task)t).isGoal()*/);
+//        Param.DEBUG = true;
+//        nar().log(new FilterPrintStream(System.out) {
+//
+//            @Override
+//            public void print(String s) {
+//                super.print(s);
+//                Util.sleepMS(200);
+//            }
+//        }, (t)->log.getOpaque() /*&& t instanceof Task && ((Task)t).isGoal()*/);
 
 
         onFrame(()->{
@@ -180,8 +181,8 @@ public class TrackXY_NAR extends NAgentX {
         TrackXY_NAR a = new TrackXY_NAR(n, W, H);
 
         //n.freqResolution.set(0.04f);
-        n.termVolumeMax.set(8);
-        n.timeResolution.set(dur);
+        n.termVolumeMax.set(12);
+        n.timeResolution.set(Math.max(1,dur/2));
 
         if (rl) {
             RLBooster rlb = new RLBooster(a,
@@ -223,7 +224,7 @@ public class TrackXY_NAR extends NAgentX {
                     //6, 8
                     1, 8
                     //2, 8
-                    //, "motivation.nal"
+                    , "motivation.nal"
             )) {
 //                    @Override
 //                    public float puncFactor(byte conclusion) {
@@ -256,11 +257,12 @@ public class TrackXY_NAR extends NAgentX {
 
             //n.log();
 
-//            n.onTask(tt -> {
-//                if (tt instanceof DerivedTask && tt.isGoal()) {
-//                    System.out.println(tt.proof());
-//                }
-//            }, GOAL);
+            Param.DEBUG = true;
+            n.onTask(tt -> {
+                if (tt instanceof DerivedTask && tt.isGoal()) {
+                    System.out.println(tt.proof());
+                }
+            }, GOAL);
 
         }
 

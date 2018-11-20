@@ -26,7 +26,6 @@ import nars.Param;
 import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.and;
-import static jcog.Util.or;
 import static nars.$.t;
 
 /**
@@ -149,7 +148,8 @@ public final class TruthFunctions {
         float f2 = b.freq();
 
 
-        float f0 = or(f1, f2);
+        float f0 = //or(f1, f2);
+                Math.max( and(f1, f2), and(1-f1, 1-f2));
         float c = w2cSafe(and(f0, TruthFunctions.confCompose(a, b)));
         if (c >= minConf) {
             float f = (Util.equals(f0, 0, Param.TRUTH_EPSILON)) ? 0 : (and(f1, f2) / f0);

@@ -1,6 +1,7 @@
 package nars.video;
 
 import com.google.common.collect.Iterables;
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.learn.Autoencoder;
 import jcog.math.FloatRange;
@@ -59,6 +60,7 @@ public class AutoclassifiedBitmap extends AbstractSensor {
     private final int pw, ph;
     private final NAgent agent;
     private final boolean reconstruct = true;
+    private final Term[] feature;
     public boolean learn = true;
 
 
@@ -148,14 +150,19 @@ public class AutoclassifiedBitmap extends AbstractSensor {
 
         this.signals = new FasterList(nw * nh);
 
+        this.feature = new Term[features];
+        for (int i = 0; i < features; i++) {
+            feature[i] = $.quote(Util.uuid64()); //HACK
+        }
+
         Term r = $.the(root);
         this.input = nar.newChannel(this);
         for (int i = 0; i< nw; i++) {
             for (int j = 0; j < nh; j++) {
-                Term coord = coord(r, i, j);
-                for (int k = 0; k < features; k++) {
-                    Term term = $.prop(coord, $.the(k));
-                    int ii = i;  int jj = j; int kk = k;
+                for (int f = 0; f < features; f++) {
+                    //Term term = $.prop(coord(r, i, j), $.the(k));
+                    Term term = coord(r, i, j, f);
+                    int ii = i;  int jj = j; int kk = f;
                     signals.add(
                         new Signal(term, () -> pixEnable[ii][jj][kk] ? 1f : Float.NaN, nar) {
                             @Override
@@ -170,11 +177,11 @@ public class AutoclassifiedBitmap extends AbstractSensor {
         agent.onFrame(this::update);
     }
 
-    public Term coord(Term root, int i, int j) {
-        return $.inh($.p($.the(i), $.the(j)), root);
+    private Term coord(Term root, int i, int j, int f) {
+        return $.inh($.p(feature[f], $.p($.the(i), $.the(j))), root);
     }
 
-    public void update() {
+    private void update() {
         
 
         float minConf = nar.confMin.floatValue();

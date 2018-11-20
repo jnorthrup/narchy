@@ -636,12 +636,12 @@ public class NAL7Test extends NALTest {
     private void compositionTest(int t, int dt) {
 
 
-        test.inputAt(t, "hold(John,key). :|:");
+        test.inputAt(t, "hold(John,key). |");
         test.inputAt(t, "(open(John,door) ==>+" + dt + " enter(John,room)).");
 
 
         String component = "(open(John,door) &| hold(John,key))";
-        test.inputAt(t, component + ".");
+        test.inputAt(t, component + ". |");
 
 
         test.mustBelieve(cycles, "open(John,door)",

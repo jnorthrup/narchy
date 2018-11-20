@@ -92,6 +92,7 @@ public final class Termify extends AbstractPred<Derivation> {
                 return false;
             }
 
+
             Term c2 = timing.getOne();
             long[] occ = timing.getTwo();
             if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&

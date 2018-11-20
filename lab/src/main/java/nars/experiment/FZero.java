@@ -376,17 +376,16 @@ public class FZero extends NAgentX {
 
     public BiPolarAction initBipolarRotateRelative(boolean fair, float rotFactor) {
         final float[] _r = {0};
-        final MiniPID rotFilter = new MiniPID(0.5f, 0.3, 0.2f);
+        final MiniPID rotFilter = new MiniPID(0.35f, 0.3, 0.2f);
         return actionBipolarFrequencyDifferential($.p($.the("turn"), id), fair, (r0) -> {
 
-            //float r = _r[0] = (float) rotFilter.out(_r[0], r0);
-            float r = r0;
+            float r = _r[0] = (float) rotFilter.out(_r[0], r0);
+            //float r = r0;
 
-            fz.playerAngle +=
-
-                    r *
-                            rotSpeed * rotFactor;
-            return r0;
+            fz.playerAngle += r * rotSpeed * rotFactor;
+//            fz.playerAngle = rotFilter.out(fz.playerAngle, fz.playerAngle + r0 * rotSpeed * rotFactor);
+            //return r0;
+            return r;
         });
     }
 

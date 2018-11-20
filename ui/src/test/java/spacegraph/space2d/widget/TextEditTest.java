@@ -20,6 +20,11 @@ public class TextEditTest  {
             SpaceGraph.window(new TextEdit("xyz"), 800, 800);
         }
     }
+//    static class BasicMin {
+//        public static void main(String[] args) {
+//            SpaceGraph.window(new TextEdit("xyz").chars(6, 2), 800, 800);
+//        }
+//    }
 
     static class View {
         public static void main(String[] args) {

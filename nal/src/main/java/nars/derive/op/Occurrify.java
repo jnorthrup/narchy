@@ -539,7 +539,7 @@ public class Occurrify extends TimeGraph {
         TaskPlusBeliefDT() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveShiftBeliefDT(d, solveDT(d, x, d.occ.reset(x, false)), +1);
+                return solveShiftBeliefDT(d, solveDT(d, x, d.occ.reset(true, false, x, false)), +1);
             }
 
 
@@ -547,37 +547,12 @@ public class Occurrify extends TimeGraph {
             long[] occurrence(Derivation d) {
                 return rangeCombine(d, OccIntersect.Task);
             }
-            @Override
-            public BeliefProjection beliefProjection() {
-                return BeliefProjection.Raw;
-            }
+
         },
         TaskMinusBeliefDT() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveShiftBeliefDT(d, solveDT(d, x, d.occ.reset(x, false)), -1);
-            }
-
-            @Override
-            long[] occurrence(Derivation d) {
-                return rangeCombine(d, OccIntersect.Task);
-            }
-            @Override
-            public BeliefProjection beliefProjection() {
-                return BeliefProjection.Raw;
-            }
-        },
-
-        /**
-         * for unprojected truth rules;
-         * result should be left-aligned (relative) to the task's start time
-         * used by temporal induction rules
-         */
-        TaskRelative() {
-            @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-
-                return solveDT(d, x, d.occ.reset(x, false));
+                return solveShiftBeliefDT(d, solveDT(d, x, d.occ.reset(true, false, x, false)), -1);
             }
 
             @Override
@@ -585,12 +560,9 @@ public class Occurrify extends TimeGraph {
                 return rangeCombine(d, OccIntersect.Task);
             }
 
-            @Override
-            public BeliefProjection beliefProjection() {
-                return BeliefProjection.Raw;
-            }
-
         },
+
+
 
         /**
          * for use with ConjDropIfLatest
@@ -733,7 +705,7 @@ public class Occurrify extends TimeGraph {
         BeliefRelative() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveDT(d, x, d.occ.reset(x, false));
+                return solveDT(d, x, d.occ.reset(x, true));
             }
 
             @Override
@@ -747,7 +719,28 @@ public class Occurrify extends TimeGraph {
             }
 
         },
+        /**
+         * for unprojected truth rules;
+         * result should be left-aligned (relative) to the task's start time
+         * used by temporal induction rules
+         */
+        TaskRelative() {
+            @Override
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+                return solveDT(d, x, d.occ.reset(x, true));
+            }
 
+            @Override
+            long[] occurrence(Derivation d) {
+                return rangeCombine(d, OccIntersect.Task);
+            }
+
+            @Override
+            public BeliefProjection beliefProjection() {
+                return BeliefProjection.Raw;
+            }
+
+        },
         /**
          * unprojected span, for sequence induction
          * events are not decomposed as this could confuse the solver unnecessarily.  automatic autoneg?

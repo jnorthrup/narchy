@@ -25,7 +25,10 @@ public class ZoomOrtho extends Ortho {
         if (!(finger.touching() instanceof Finger.WheelAbsorb)) {
             float dy = finger.rotationY(true);
             if (dy != 0) {
-                v2 xy = cam.screenToWorld(finger.posPixel);
+                v2 xy = cam.screenToWorld(dy < 0 ?
+                        finger.posPixel :
+                        new v2(w()-finger.posPixel.x, h()-finger.posPixel.y)
+                );
                 cam.set(xy.x, xy.y, cam.z * (1f + (dy * zoomRate)));
             }
         }

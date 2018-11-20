@@ -30,9 +30,9 @@ public abstract class PixelBag implements Bitmap2D {
      * Z = 0: zoomed in all the way
      * = 1: zoomed out all the way
      */
-    public float X;
-    public float Y;
-    public float Z;
+    public float X = 0.5f;
+    public float Y = 0.5f;
+    public float Z = 1f;
 
 
 
@@ -98,7 +98,6 @@ public abstract class PixelBag implements Bitmap2D {
         this.py = py;
         this.pixels = new float[px][py];
 
-        this.Z = 1f;
     }
 
     /**

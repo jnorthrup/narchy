@@ -96,6 +96,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
                         setValue(view.h);
                     }
 
+
                     @Override
                     public float min() {
                         return viewMin.y;
@@ -114,7 +115,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         scaleH.on((sy, h) -> scroll(view.x, view.y, view.w, h));
 
         set(S, Splitting.row(scrollX, 0.75f, scaleW));
-        set(E, Splitting.column(scrollY, 0.75f, scaleH));
+        set(E, Splitting.column(scrollY, 0.25f, scaleH));
 
 
     }

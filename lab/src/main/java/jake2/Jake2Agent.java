@@ -8,11 +8,16 @@ import jake2.game.edict_t;
 import jake2.render.Base;
 import jake2.render.JoglGL2Renderer;
 import jake2.sys.IN;
+import jcog.math.FloatFirstOrderDifference;
+import jcog.math.FloatNormalized;
+import jcog.signal.wave2d.ScaledBitmap2D;
+import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.Narsese;
-import nars.sensor.Bitmap2DSensor;
+import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
+import spacegraph.space2d.widget.meter.Bitmap2DView;
 
 import java.awt.*;
 import java.awt.color.ColorSpace;
@@ -23,6 +28,8 @@ import java.util.function.Supplier;
 import static jake2.Globals.*;
 import static jake2.render.Base.vid;
 import static nars.$.$;
+import static spacegraph.SpaceGraph.window;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * Created by me on 9/22/16.
@@ -103,13 +110,36 @@ public class Jake2Agent extends NAgentX implements Runnable {
         super("q", nar);
 
 
-        Bitmap2DSensor<PixelBag> qcam = senseCameraRetina(
-                "q", screenshotter, 32, 24);
-        qcam.src.setMinZoomOut(0.5f);
-        qcam.src.setMaxZoomOut(1f);
-        qcam.src.vflip = true;
-        qcam.resolution(0.01f);
+//        Bitmap2DSensor<PixelBag> vision = senseCameraRetina(
+//                "q", screenshotter, 32, 24);
+        PixelBag vision = PixelBag.of(new ScaledBitmap2D(screenshotter, 64, 64), 64, 48);
+        vision.setZoom(0);
+        //vision.addActions($$("q"), this);
+//        vision.setMinZoomOut(0.5f);
+//        vision.setMaxZoomOut(1f);
+        vision.vflip = true;
+        //vision.resolution(0.01f);
 
+        ;
+
+//        {
+        int nx = 4;
+        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p($.the("cae"), id), vision, nx, nx, (subX, subY) -> {
+            return new float[]{/*cc.X, cc.Y*/};
+        }, 8, this);
+        camAE.alpha(0.03f);
+        camAE.noise.set(0.05f);
+
+        //SpaceGraph.(column(visionView, camAE.newChart()), 500, 500);
+//        }
+
+        Bitmap2DView visionView = new Bitmap2DView(vision);
+        onFrame(vision::update);
+        onFrame(visionView::update);
+        window(grid(visionView,
+                camAE.newChart()
+                //new Bitmap2DConceptsView(c, this).withControls()
+        ), 500, 500);
 
 //        senseFields("q", player);
 
@@ -122,7 +152,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
         actionToggle($("q(jump)"), (x) -> CL_input.in_up.state = x ? 1 : 0);
 
 
-        float yawSpeed = 20;
+        float yawSpeed = 40;
         float pitchSpeed = 5;
         actionToggle($("q(look,left)"), (x) ->
                 cl.viewangles[Defines.YAW] += yawSpeed);
@@ -136,22 +166,29 @@ public class Jake2Agent extends NAgentX implements Runnable {
         actionToggle($("q(attak)"), (x) -> CL_input.in_attack.state = x ? 1 : 0);
 
 
-        reward(()->{
-            player.update();
+        onFrame(player::update);
+        rewardNormalized("health", -1, +1, new FloatFirstOrderDifference(nar::time, ()->player.health));
 
-            float nextState = player.health * 4f + player.speed / 2f + player.frags * 2f;
+        rewardNormalized("speed", 0, +1, new FloatNormalized(()-> {
+            return player.speed;
+        }));
+        rewardNormalized("frags", 0, +1, new FloatNormalized(()->player.frags));
 
-            float delta = nextState - state;
-
-            state = nextState;
-
-            return delta;
-        });
+//        ()->{
+//            player.update();
+//
+//            float nextState = player.health * 4f + player.speed / 2f + player.frags * 2f;
+//
+//            float delta = nextState - state;
+//
+//            state = nextState;
+//
+//            return delta;
+//        });
 
         new Thread(this).start();
     }
 
-    float state;
 
     @Override
     public void run() {
@@ -164,7 +201,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
 
                 "+dmflags 1024",
                 "+cl_gun 0",
-                "+timescale 0.5",
+                "+timescale 0.25",
 
 
                 "+map " + nextMap()

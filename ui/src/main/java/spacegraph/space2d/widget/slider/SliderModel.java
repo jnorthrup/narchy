@@ -175,9 +175,10 @@ public class SliderModel extends Surface {
     public static final SliderUI KnobVert = new KnobVert() {
         @Override
         public float p(v2 hitPoint) {
-            return pTarget(hitPoint.y, 0);
+            return 1-pTarget(hitPoint.y, 0);
         }
     };
+
 
     /** default impl, with point-center */
     public static final SliderUI KnobHoriz = new KnobHoriz() {
