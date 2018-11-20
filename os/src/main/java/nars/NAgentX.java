@@ -33,6 +33,7 @@ import nars.exe.Revaluator;
 import nars.gui.NARui;
 import nars.index.concept.HijackConceptIndex;
 import nars.op.Arithmeticize;
+import nars.op.Factorize;
 import nars.op.Introduction;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -458,7 +459,7 @@ abstract public class NAgentX extends NAgent {
 
         n.emotion.want(MetaGoal.PerceiveCmplx, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
-        n.emotion.want(MetaGoal.Believe, 0.02f);
+        n.emotion.want(MetaGoal.Believe, 0.04f);
         n.emotion.want(MetaGoal.Desire, 0.25f);
         n.emotion.want(MetaGoal.Action, +1f);
 
@@ -489,18 +490,18 @@ abstract public class NAgentX extends NAgent {
 
         //ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 2, 32);
 
-//        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof AbstractGoalActionConcept.CuriosityTask) ),
+//        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof CuriosityTask) ),
 //                8, 96);
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(64, n);
-//        Introduction factorizer = new Factorize.FactorIntroduction(64, n);
+        Introduction factorizer = new Factorize.FactorIntroduction(8, n);
 
-        {
-//            new Inperience.Believe(n, 32);
-//            new Inperience.Want(n, 32);
-//            new Inperience.Wonder(n, 16);
-//            new Inperience.Plan(n, 16);
-        }
+//        {
+//            new Inperience.Believe(n, 8);
+//            new Inperience.Want(n, 8);
+//            new Inperience.Wonder(n, 4);
+//            new Inperience.Plan(n, 4);
+//        }
 
 
 //        try {

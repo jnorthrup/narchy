@@ -74,6 +74,12 @@
 (--C ==> M), X, eventOfPosOrNeg(C,X) |- (--conjWithoutPosOrNeg(C,X) ==> M), (Belief:StructuralReduction)
     //TODO disjunction decompose
 
+//Anonymous Deduction and Abduction
+    (V ==> X), X, is(V,"#"), --is(X,"#")      |- X, (Belief:StructuralReduction)
+    (--V ==> X), X, is(V,"#"), --is(X,"#")    |- X, (Belief:StructuralReduction)
+    (X ==> V), X, is(V,"#"), --is(X,"#")      |- X,   (Belief:StructuralAbduction)
+    (--X ==> V), X, is(V,"#"), --is(X,"#")    |- --X, (Belief:StructuralAbduction)
+
     //(M ==> C), M, is(C,"&&") |- (M ==> dropAnyEvent(C)), (Belief:StructuralReduction)
      //(M ==> C), X, eventOf(C,X) |- (M ==> conjWithout(C,X)), (Belief:StructuralReduction)
       //(M ==> C), X, eventOf(C,X) |- (M ==> X), (Belief:StructuralReduction)

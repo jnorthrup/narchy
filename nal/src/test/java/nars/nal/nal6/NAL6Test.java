@@ -73,7 +73,7 @@ public class NAL6Test extends NALTest {
     void variable_unification4() {
 
         TestNAR tester = test;
-        tester.nar.termVolumeMax.set(15);
+        tester.nar.termVolumeMax.set(20);
 
         tester.believe("<<bird --> $x> ==> <robin --> $x>>");
         tester.believe("<<swimmer --> $y> ==> <robin --> $y>>", 0.70f, 0.90f);
@@ -778,7 +778,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void strong_elimination() {
-        test.nar.termVolumeMax.set(16);
+        test.nar.termVolumeMax.set(20);
         TestNAR tester = test;
         tester.believe("((test($a,is,cat) && sentence($a,is,$b)) ==> ($a --> $b))");
         tester.believe("test(tim,is,cat)");
@@ -1028,7 +1028,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void testHypothesizeSubconditionIdentityConj() {
-        test.nar.termVolumeMax.set(13);
+        test.nar.termVolumeMax.set(17);
         test
 //                .logDebug()
                 .believe("(&&,f(x),f(#1),g(#1))", 1f, 0.9f)
@@ -1089,7 +1089,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void testDecomposeImplPred2() {
-        test.nar.termVolumeMax.set(12);
+        test.nar.termVolumeMax.set(16);
         test
                 .believe("( (a,#b) ==> (&&, (x,#b), y, z ) )")
                 .mustBelieve(cycles, "( (a,#b) ==> (x,#b) )", 1f, 0.73f)
@@ -1176,14 +1176,17 @@ public class NAL6Test extends NALTest {
         test
                 .believe("--(x && y)")
                 .believe("its(x,a)")
-                .mustBelieve(cycles, "its(--y,a)", 1f, 0.81f)
+                .mustBelieve(cycles, "(its(x,a)<->its(--y,a))", 1f, 0.45f)
+                //.mustBelieve(cycles, "its(--y,a)", 1f, 0.81f)
         ;
     }
+
     @Test void testMutexSwapNeg() {
         test
                 .believe("--(x && y)")
                 .believe("its(--x,a)")
-                .mustBelieve(cycles, "its(y,a)", 1f, 0.81f)
+                .mustBelieve(cycles, "(its(--x,a)<->its(y,a))", 1f, 0.45f)
+                //.mustBelieve(cycles, "its(y,a)", 1f, 0.81f)
         ;
     }
 }

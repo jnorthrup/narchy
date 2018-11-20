@@ -213,8 +213,10 @@
 
 
 
-    //(X ==> C), M, eventOf(X,M)    |- (conjWithout(X,M) ==> C), (Belief:Deduction)
-    //(X ==> C), M, eventOfNeg(X,M) |- (conjWithout(X,--M) ==> C), (Belief:DeductionPN)
+//    (X ==> C), M, eventOf(X,M)    |- (conjWithout(X,M) ==> C), (Belief:Deduction)
+//      (--X ==> C), M, eventOf(X,M)    |- (--conjWithout(X,M) ==> C), (Belief:Deduction)
+//    (X ==> C), M, eventOfNeg(X,M) |- (conjWithout(X,--M) ==> C), (Belief:DeductionPN)
+//      (--X ==> C), M, eventOfNeg(X,M) |- (--conjWithout(X,--M) ==> C), (Belief:DeductionPN)
 
 
 
@@ -250,18 +252,22 @@
   (&&,(X<->Y),(Y<->Z),A..+), (X<->Y) |- substitute(substitute((&&,A..+),X,Z,strict),Y,Z,strict), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 
-//// Mutex induction
+// Mutex induction
     (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)              |- (&&,--(X && Y),A..*), (Belief:Intersection, Time:Intersect)
     ((&&,X,--Y,A..+)==>Z), ((&&,Y,--X,A..+)==>Z),neq(X,Y)  |- ((&&,--(X && Y),A..+) ==> Z), (Belief:IntersectionSym, Time:Intersect)
       (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)             |-  --(X ==> Y), (Belief:Induction, Time:Intersect)
       (&&,X,--Y,A..+), (&&,Y,--X,B..+),neq(X,Y)              |- (&&,--((&&,A..+) && (&&,B..+))), (Belief:Intersection, Time:Intersect)
-////        //TODO impl predicate mutex
-////
-////mutex swap
-    Z, (&&,X,Y), in(Z,X)            |- substitute(Z,X,--Y,strict), (Belief:AnalogyPN, Goal:AnalogyPN, Time:Intersect)
-    Z, (&&,X,Y), in(Z,--X)          |- substitute(Z,--X,Y,strict), (Belief:AnalogyPN, Goal:AnalogyPN, Time:Intersect)
-//
-//  //internal mutex chain:
+        //TODO impl predicate mutex
+
+//mutex soft-swap
+    Z, (&&,X,Y), in(Z,X)            |- (Z <-> substitute(Z,X,--Y,strict)), (Belief:BeliefStructuralAbductionPN, Time:Intersect)
+    Z, (&&,X,Y), in(Z,--X)          |- (Z <-> substitute(Z,--X,Y,strict)), (Belief:BeliefStructuralAbductionPN, Time:Intersect)
+
+//mutex swap
+//    Z, (&&,X,Y), in(Z,X)            |- substitute(Z,X,--Y,strict), (Belief:AnalogyPN, Goal:AnalogyPN, Time:Intersect)
+//    Z, (&&,X,Y), in(Z,--X)          |- substitute(Z,--X,Y,strict), (Belief:AnalogyPN, Goal:AnalogyPN, Time:Intersect)
+
+//internal mutex chain:
   (&&,--(X && Y),X,A..+), X, neq(X,Y)          |- (&&,--Y,A..+), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 

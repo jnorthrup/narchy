@@ -26,7 +26,7 @@ import static nars.time.Tense.DTERNAL;
 public class InterningTermBuilder extends HeapTermBuilder {
 
     private final static boolean deep = true;
-    private static final int DEFAULT_SIZE = 64 * 1024;
+    private static final int DEFAULT_SIZE = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
 
     private static final int maxInternedVolume = 32;
 

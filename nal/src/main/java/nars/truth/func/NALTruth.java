@@ -428,7 +428,7 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    @AllowOverlap BeliefStructuralAbduction() {
+    BeliefStructuralAbduction() {
         @Override
         public Truth apply(@Nullable final Truth T, final Truth B, NAR m, float minConf) {
 

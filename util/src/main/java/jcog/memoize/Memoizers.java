@@ -24,6 +24,14 @@ public class Memoizers {
     /** static instance */
     public static final Memoizers the = new Memoizers();
 
+    public static final int DEFAULT_HIJACK_REPROBES = 3;
+    public static final int DEFAULT_MEMOIZE_CAPACITY;
+    static {
+        //1gb -> 32k
+        DEFAULT_MEMOIZE_CAPACITY = (int) (Runtime.getRuntime().maxMemory()/(32*1024));
+    }
+
+
     private final CopyOnWriteArrayList<MemoizationStatistics> memoize = new CopyOnWriteArrayList<>();
 
     public Memoizers() {
@@ -40,7 +48,8 @@ public class Memoizers {
     }
 
     @Deprecated public <X,Y> Function<X,Y> memoize(String id, Function<X,Y> computation) {
-        return memoize(id, 32*1024, computation);
+
+        return memoize(id, DEFAULT_MEMOIZE_CAPACITY, computation);
     }
 
     public <X,B extends ByteKey,Y> Function<X,Y> memoize(String id, Function<X,B> byter, Function<B,Y> computation, int capacity) {
@@ -70,7 +79,7 @@ public class Memoizers {
 
     /** provides default memoizer implementation */
     private <X, Y> Memoize<X,Y> memoizer(Function<X, Y> computation, int capacity) {
-        return new HijackMemoize<>(computation, capacity, 4);
+        return new HijackMemoize<>(computation, capacity, DEFAULT_HIJACK_REPROBES);
     }
 
     private static class MemoizationStatistics {

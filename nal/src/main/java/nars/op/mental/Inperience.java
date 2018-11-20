@@ -326,9 +326,10 @@ abstract public class Inperience extends TaskLeakTransform {
         SignalTask y = Task.tryTask(c, punc, t, (tt, tr)->{
             long start = x.start();
             long end;
+            long now = nar.time();
             if (start == ETERNAL) {
                 //start = end = ETERNAL;
-                start = nar.time();
+                start = now;
                 end = start + nar.dur();
             } else {
                 start = Tense.dither(start, nar);
@@ -336,7 +337,7 @@ abstract public class Inperience extends TaskLeakTransform {
             }
             return new SignalTask(tt, punc,
                     tr,
-                    nar.time(), start, end, x.stamp()
+                    now, start, end, x.stamp()
             );
         });
         if (y!=null) {
