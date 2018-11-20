@@ -15,24 +15,24 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DynamicDiffTest extends AbstractDynamicTaskTest {
 
-    @Test
-    void testRawDifference() throws Narsese.NarseseException {
-        NAR n = NARS.shell();
-        n.believe("x", 0.75f, 0.50f);
-        n.believe("y", 0.25f, 0.50f);
-        n.run(1);
-        Term xMinY = $("(x ~ y)");
-        Term yMinX = $("(y ~ x)");
-        assertDynamicTable(xMinY);
-        assertDynamicTable(yMinX);
-        assertEquals(
-                "%.56;.25%", n.beliefTruth(xMinY, n.time()).toString()
-        );
-        assertEquals(
-                "%.06;.25%", n.beliefTruth(yMinX, n.time()).toString()
-        );
-
-    }
+//    @Test
+//    void testRawDifference() throws Narsese.NarseseException {
+//        NAR n = NARS.shell();
+//        n.believe("x", 0.75f, 0.50f);
+//        n.believe("y", 0.25f, 0.50f);
+//        n.run(1);
+//        Term xMinY = $("(x ~ y)");
+//        Term yMinX = $("(y ~ x)");
+//        assertDynamicTable(xMinY);
+//        assertDynamicTable(yMinX);
+//        assertEquals(
+//                "%.56;.25%", n.beliefTruth(xMinY, n.time()).toString()
+//        );
+//        assertEquals(
+//                "%.06;.25%", n.beliefTruth(yMinX, n.time()).toString()
+//        );
+//
+//    }
 
     @Test void testDiffUnion() throws Narsese.NarseseException {
         NAR n = NARS.shell();

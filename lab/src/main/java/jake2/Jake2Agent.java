@@ -36,6 +36,8 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
  */
 public class Jake2Agent extends NAgentX implements Runnable {
 
+    static final int FPS = 8;
+
     ByteBuffer seen;
     int width, height;
     boolean see = true;
@@ -278,6 +280,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
 
 
     public static void main(String[] args) {
+
         runRT(nar1 -> {
             try {
                 return new Jake2Agent(nar1);
@@ -285,7 +288,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
                 e.printStackTrace();
                 return null;
             }
-        }, 8);
+        }, FPS);
     }
 }
 

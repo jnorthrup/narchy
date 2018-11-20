@@ -433,7 +433,7 @@ class NarseseBaseTest extends NarseseTest {
 
     @Test
     void testSimpleTask() throws Narsese.NarseseException {
-        taskParses("(-,mammal,swimmer). %0.00;0.90%");
+        taskParses("x:(-,mammal,swimmer). %0.00;0.90%");
 
     }
 

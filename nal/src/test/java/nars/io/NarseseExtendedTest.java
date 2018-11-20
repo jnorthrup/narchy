@@ -60,11 +60,11 @@ class NarseseExtendedTest extends NarseseTest {
     @Test
     void testOriginalTruth() throws Narsese.NarseseException {
         
-        eternal(task("(a & b). %1.0;0.9%"));
+        eternal(task("(a && b). %1.0;0.9%"));
 
         
-        tensed(task("(a & b). :|: %1.0;0.9%"), Present);
-        tensed(task("(a & b). | %1.0;0.9%"), Present);
+        tensed(task("(a && b). :|: %1.0;0.9%"), Present);
+        tensed(task("(a && b). | %1.0;0.9%"), Present);
     }
 
 
@@ -78,12 +78,12 @@ class NarseseExtendedTest extends NarseseTest {
 
 
 
-        eternal(task("(a & b). %1.0;0.7%"));
+        eternal(task("(a && b). %1.0;0.7%"));
 
         /*tensed(task("(a & b). %1.0|"), Present);
         tensed(task("(a & b). %1.0/"), Future);
         tensed(task("(a & b). %1.0\\"), Past);*/
-        eternal(task("(a & b). %1.0;0.9%"));
+        eternal(task("(a && b). %1.0;0.9%"));
 
 
     }
