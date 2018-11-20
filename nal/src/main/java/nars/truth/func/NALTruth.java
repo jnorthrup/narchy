@@ -242,8 +242,10 @@ public enum NALTruth implements TruthFunc {
     Union() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            @Nullable Truth z = Intersection.apply(T.neg(), B.neg(), m, minConf);
-            return z != null ? z.neg() : null;
+//            @Nullable Truth z = Intersection.apply(T.neg(), B.neg(), m, minConf);
+//            return z != null ? z.neg() : null;
+
+            return TruthFunctions.unionCoNorm(T, B, minConf);
         }
     },
 

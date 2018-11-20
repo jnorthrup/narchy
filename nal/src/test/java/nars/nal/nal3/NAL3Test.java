@@ -265,5 +265,14 @@ public class NAL3Test extends NALTest {
                 .mustQuest(cycles, "((y~x)-->a)")
         ;
     }
+    @Test
+    void unionOfOpposites() {
+        //Coincidentia oppositorum
+        test
+                .believe("((  x&z)-->a)")
+                .believe("((--x&y)-->a)")
+                .mustBelieve(cycles, "((y&z)-->a)", 1f, 0.81f)
+        ;
+    }
 }
 
