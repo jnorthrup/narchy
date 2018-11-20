@@ -1002,9 +1002,13 @@ public class Occurrify extends TimeGraph {
                         return false; //insufficient evidence
                 }
 
-                long range = o[1] - o[0];
+                long range =
+                        //o[1] - o[0];
+                        o[1] > target + d.dur ? o[1] - target
+                                :
+                                d.dur;
                 o[0] = target;
-                o[1] = target + range; //allow only fixed time: benefit of the doubt
+                o[1] = target + range;
             }
 
             return true;
