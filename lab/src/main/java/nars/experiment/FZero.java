@@ -82,7 +82,7 @@ public class FZero extends NAgentX {
 
         ScaledBitmap2D visionBuffer = new ScaledBitmap2D(() -> fz.image,
                 24, 20
-        ).crop(0, 0.15f, 1f, 1f);
+        ).crop(0, 0.23f, 1f, 1f);
         Bitmap2D vision = visionBuffer.each(a -> {
             return Util.tanhFast(a * 1.2f);
         });

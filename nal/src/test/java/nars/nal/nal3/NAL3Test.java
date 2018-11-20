@@ -266,7 +266,7 @@ public class NAL3Test extends NALTest {
         ;
     }
     @Test
-    void unionOfOpposites() {
+    void unionOfOppositesInt() {
         //Coincidentia oppositorum
         test
                 .believe("((  x&z)-->a)")
@@ -274,5 +274,16 @@ public class NAL3Test extends NALTest {
                 .mustBelieve(cycles, "((y&z)-->a)", 1f, 0.81f)
         ;
     }
+
+    @Test
+    void unionOfOppositesExt() {
+        //Coincidentia oppositorum
+        test
+                .believe("(a-->(  x|z))")
+                .believe("(a-->(--x|y))")
+                .mustBelieve(cycles, "(a-->(y|z))", 1f, 0.81f)
+        ;
+    }
+
 }
 

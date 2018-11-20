@@ -140,7 +140,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     static int compare(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
 
-        //if (a.equals(b)) return 0;
+        if (a.equals(b)) return 0;
 
         int s;
         int diff;

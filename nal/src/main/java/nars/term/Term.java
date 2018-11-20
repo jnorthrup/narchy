@@ -427,8 +427,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     default int compareTo(Termed _y) {
         if (this == _y) return 0;
 
-        Term y = _y.term();
-        return compareTo(y.term());
+        return compareTo(_y.term().term());
     }
 
     default int compareTo(Term t) {

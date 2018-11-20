@@ -1,5 +1,6 @@
 package nars.control.proto;
 
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Op;
@@ -50,14 +51,19 @@ public class Remember extends AbstractTask {
                     throw new TaskException(input, "term exceeds volume maximum: " + termVol + " > " + maxVol);
             }
 
-            TaskConcept concept = (TaskConcept) n.conceptualize(input);
-            return concept != null ? new Remember(input, concept) : null;
+            Concept c = n.conceptualize(input);
+            if (c!=null) {
+                if (!(c instanceof TaskConcept))
+                    throw new WTF(c + " is not a TaskConcept");
+
+                return new Remember(input, (TaskConcept) c);
+            }
         }
 
         return null;
     }
 
-    public Remember(Task input, Concept c) {
+    public Remember(Task input, TaskConcept c) {
         setInput(input, c);
     }
 

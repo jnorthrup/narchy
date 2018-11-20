@@ -219,21 +219,6 @@ public final class TruthFunctions {
         return (c < minConf) ? null : $.t(and(v1.freq(), v2.freq()), c);
     }
 
-    public static Truth unionCoNorm(Truth v1, Truth v2, float minConf) {
-        /*
-        https://en.wikipedia.org/wiki/T-norm#T-conorms
-        Probabilistic sum ⊥ s u m ( a , b ) = a + b − a ⋅ b {\displaystyle \bot _{\mathrm {sum} }(a,b)=a+b-a\cdot b} \bot _{{{\mathrm {sum}}}}(a,b)=a+b-a\cdot b is dual to the product t-norm. In probability theory it expresses the probability of the union of independent events. It is also the standard semantics for strong disjunction in such extensions of product fuzzy logic in which it is definable (e.g., those containing involutive negation).
-        */
-
-        float c = confCompose(v1, v2);
-
-        if (c < minConf)
-            return null;
-        else {
-            float f1 = v1.freq(), f2 = v2.freq();
-            return $.t((f1+f2)-(f1*f2), c);
-        }
-    }
 
     /**
      * {(--, (&&, A, B)), B} |- (--, A)

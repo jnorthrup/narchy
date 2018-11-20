@@ -18,6 +18,10 @@ import static nars.time.Tense.DTERNAL;
 public class SetSectDiff {
 
     public static Term intersect(Op o, Term... t ) {
+        return intersect(o, false, t);
+    }
+
+    public static Term intersect(Op o, boolean union,Term... t ) {
 
         switch (t.length) {
             case 0:
@@ -57,7 +61,7 @@ public class SetSectDiff {
                 }
 
                 /** if the boolean value of a key is false, then the entry is negated */
-                ObjectByteHashMap<Term> y = intersect(o, o==SECTe || o == SECTi, ArrayIterator.iterable(t), new ObjectByteHashMap<>(t.length));
+                ObjectByteHashMap<Term> y = intersect(o, o==SECTe || o == SECTi, union, ArrayIterator.iterable(t), new ObjectByteHashMap<>(t.length));
                 if (y == null)
                     return Null;
                 int s = y.size();
@@ -81,7 +85,7 @@ public class SetSectDiff {
     }
 
     /** returns null to short-circuit failure */
-    private static ObjectByteHashMap<Term> intersect(Op o, boolean sect, Iterable<Term> t, ObjectByteHashMap<Term> y) {
+    private static ObjectByteHashMap<Term> intersect(Op o, boolean sect, boolean union, Iterable<Term> t, ObjectByteHashMap<Term> y) {
         if (y == null)
             return null;
 
@@ -106,8 +110,15 @@ public class SetSectDiff {
                     if (existing!=Byte.MIN_VALUE) {
                         if (existing==p)
                             continue; //same exact term and polarity present
-                        else
-                            return null; //contradiction
+                        else {
+                            if (!union) {
+                                return null; //intersection of X and its opposite = contradiction
+                            } else {
+                                //union of X and its opposite = true, so ignore
+                                y.remove(x);
+                                continue;
+                            }
+                        }
                     } else {
                         y.put(x, p);
                     }
@@ -116,7 +127,7 @@ public class SetSectDiff {
                 }
             } else {
                 //recurse
-                if (intersect(o, sect, x.subterms(), y) == null)
+                if (intersect(o, sect, union, x.subterms(), y) == null)
                     return null;
             }
         }

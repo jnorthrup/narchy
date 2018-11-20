@@ -1002,11 +1002,12 @@ public class Occurrify extends TimeGraph {
                         return false; //insufficient evidence
                 }
 
+                long durMin = Math.min(o[1] - o[0], d.dur);
                 long range =
                         //o[1] - o[0];
-                        o[1] > target + d.dur ? o[1] - target
+                        o[1] > target + durMin ? o[1] - target
                                 :
-                                d.dur;
+                                durMin;
                 o[0] = target;
                 o[1] = target + range;
             }

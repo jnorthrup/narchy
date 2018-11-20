@@ -39,7 +39,15 @@ public class SetFunc {
         }
 
     };
+    public static final Functor unionSect = new AbstractBinarySetFunctor("unionSect") {
 
+        @Nullable
+        @Override public Term apply(Term a, Term b, Subterms s) {
+
+            Op op = s.sub(2).equals(Op.SECTe.strAtom) ? Op.SECTe : Op.SECTi;
+            return SetSectDiff.intersect(op, true, a, b);
+        }
+    };
     /**
      * all X which are in the first term AND not in the second term
      */
@@ -187,9 +195,9 @@ public class SetFunc {
 
     }
 
-    abstract static class BinarySetFunctor extends Functor implements Functor.InlineFunctor, The {
+    abstract static class AbstractBinarySetFunctor extends Functor implements Functor.InlineFunctor, The {
 
-        protected BinarySetFunctor( String id) {
+        protected AbstractBinarySetFunctor(String id) {
             super(id);
         }
 
@@ -199,25 +207,51 @@ public class SetFunc {
 
         @Nullable
         @Override
-        @Deprecated public final Term apply(Evaluation e, Subterms x) {
+        @Deprecated
+        public final Term apply(Evaluation e, Subterms x) {
             return applyInline(x);
         }
+
+        @Nullable
+        @Override
+        public Term applyInline(Subterms x) {
+
+            Term a = x.sub(0);
+            if (a instanceof Variable)
+                return null;
+            if (!validOp(a.op()))
+                return Null;
+
+            Term b = x.sub(1);
+            if (b instanceof Variable)
+                return null;
+            if (!validOp(b.op()))
+                return Null;
+
+            return apply(a, b, x);
+        }
+
+        abstract protected Term apply(Term a, Term b, Subterms x);
+
+    }
+
+    abstract static class BinarySetFunctor extends AbstractBinarySetFunctor {
+
+
+        protected BinarySetFunctor( String id) {
+            super(id);
+        }
+
 
         @Nullable
         @Override
         public final Term applyInline(Subterms x) {
             if (x.subs() != 2)
                 throw new UnsupportedOperationException("# args must equal 2");
+            return super.applyInline(x);
+        }
 
-
-            Term a = x.sub(0);
-            Term b = x.sub(1);
-            if ((a instanceof Variable) || (b instanceof Variable))
-                return null;
-
-            if (!validOp(a.op()) || !validOp(b.op()))
-                return Null;
-
+        protected final Term apply(Term a, Term b, Subterms x) {
             return apply(a, b);
         }
 

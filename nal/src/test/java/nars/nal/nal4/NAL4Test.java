@@ -206,11 +206,11 @@ public class NAL4Test extends NALTest {
     }
 
     @Test
-    void testIntersectionOfProductSubterms2ReverseExtensional() {
+    void testIntersectionOfProductSubterms2ReverseIntensional() {
 
         test
-                .believe("f((x&y),z)", 1.0f, 0.9f)
-                .mustBelieve(CYCLES, "((x&y)-->(f,/,z))", 1.0f, 0.9f)
+                .believe("f((x|y),z)", 1.0f, 0.9f)
+                .mustBelieve(CYCLES, "((x|y)-->(f,/,z))", 1.0f, 0.9f)
                 .mustBelieve(CYCLES, "(x-->(f,/,z))", 1.0f, 0.81f)
                 .mustBelieve(CYCLES, "(y-->(f,/,z))", 1.0f, 0.81f)
                 .mustBelieve(CYCLES , "f(x,z)", 1.0f, 0.81f)
@@ -218,7 +218,6 @@ public class NAL4Test extends NALTest {
         ;
 
     }
-
 
     @Test
     void testNeqComRecursiveConstraint() {

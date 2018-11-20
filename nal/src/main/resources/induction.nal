@@ -8,7 +8,7 @@
     B, A, --is(B,"==>") |- polarize((polarize(B,task) ==> A),belief), (Belief:AbductionDepolarized, Time:TaskRelative, Also:VarIntro)
         //B, A, --is(B,"==>") |- (--B ==> A), (Belief:AbductionN, Time:TaskRelative, Also:VarIntro)
 
-    B, A   |- (polarize(B,task) && polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Relative, Also:VarIntro)
+    B, A, --is(A,"==>"), --is(B,"==>")  |- (polarize(B,task) && polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Relative, Also:VarIntro)
       //B, A, --is(A,"==>"), --is(B,"==>"), --is(A,"&&"), --is(B,"&&")   |- (polarize(B,task) || polarize(A,belief)), (Belief:UnionDepolarized, Time:Relative, Also:VarIntro)
 
         //experiment

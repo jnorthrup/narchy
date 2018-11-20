@@ -242,10 +242,8 @@ public enum NALTruth implements TruthFunc {
     Union() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            @Nullable Truth z = Intersection.apply(T.neg(), B.neg(), m, minConf);
-//            return z != null ? z.neg() : null;
-
-            return TruthFunctions.unionCoNorm(T, B, minConf);
+            @Nullable Truth z = Intersection.apply(T.neg(), B.neg(), m, minConf);
+            return z != null ? z.neg() : null;
         }
     },
 
@@ -263,21 +261,6 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-//    /**
-//     * special truth function for implication composition
-//     */
-//    Implsition() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            float tc = T.conf();
-//            float bc = B.conf();
-//            float c = tc * bc;
-//            if (c < minConf) return null;
-//            float f = Util.lerp(bc / (tc + bc), T.freq(), B.freq());
-//            return $.t(f, c);
-//
-//        }
-//    },
     UnionSym() {
         @Override
         public @Nullable Truth apply(@Nullable Truth T, @Nullable Truth B, NAR m, float minConf) {
@@ -453,15 +436,13 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-
-
-
     Desire() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions2.desire(T, B, minConf, true);
         }
     },
+
     DesirePB() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {

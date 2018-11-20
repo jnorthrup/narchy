@@ -2,7 +2,6 @@ package nars.control;
 
 import jcog.WTF;
 import nars.NAR;
-import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.Operator;
@@ -85,13 +84,13 @@ public enum Perceive { ;
 
 
     static boolean perceived(Task t, Collection<ITask> queue, NAR n) {
-        Term tt = t.term();
-        Op tto = tt.op();
-        if (!tto.taskable) {
-            if (tto == NEG) throw new WTF("neg could be inverted and it would be ok"); //HACK
-
-            return false; //fast filter
-        }
+//        Term tt = t.term();
+//        Op tto = tt.op();
+//        if (!tto.taskable) {
+//            if (tto == NEG) throw new WTF("neg could be inverted and it would be ok"); //HACK
+//
+//            return false; //fast filter
+//        }
 
 
         byte punc = t.punc();

@@ -254,6 +254,7 @@ public class Derivation extends PreDerivation {
                     Image.imageInt,
                     Image.imageNormalize,
                     SetFunc.union,
+                    SetFunc.unionSect,
                     SetFunc.differ,
                     SetFunc.intersect,
                     Equal.the,
