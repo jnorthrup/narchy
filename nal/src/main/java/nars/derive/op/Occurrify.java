@@ -989,7 +989,7 @@ public class Occurrify extends TimeGraph {
                     d.taskStart != ETERNAL || d.beliefStart == TIMELESS ? d.taskStart : d.beliefStart;
             //Math.max(d.taskStart, d.time);
 
-            if (o[0] < target) {
+            if (o[1] < target) {
 
                 if (d.concPunc == GOAL || d.concPunc == BELIEF) {
                     //starts and ends before now; entirely past
@@ -1002,12 +1002,17 @@ public class Occurrify extends TimeGraph {
                         return false; //insufficient evidence
                 }
 
-                long durMin = Math.min(o[1] - o[0], d.dur);
-                long range =
-                        //o[1] - o[0];
-                        o[1] > target + durMin ? o[1] - target
-                                :
-                                durMin;
+//                long durMin = Math.min(o[1] - o[0], d.dur);
+//                long range =
+//                        //o[1] - o[0];
+//                        o[1] > target + durMin ? o[1] - target
+//                                :
+//                                durMin;
+//                o[0] = target;
+//                o[1] = target + range;
+
+                long range = o[1] - o[0];
+                range = o[1] > target ? Math.min(range, o[1] - target) : 0;
                 o[0] = target;
                 o[1] = target + range;
             }
@@ -1240,7 +1245,8 @@ public class Occurrify extends TimeGraph {
     }
 
     private static boolean immediatizable(Derivation d) {
-        return (d.taskPunc == GOAL || d.taskPunc == QUEST) && (d.concPunc == GOAL || d.concPunc == QUEST) && d.truthFunction != NALTruth.Identity;
+        return false;
+        //return (d.taskPunc == GOAL || d.taskPunc == QUEST) && (d.concPunc == GOAL || d.concPunc == QUEST) && d.truthFunction != NALTruth.Identity;
     }
 
 
