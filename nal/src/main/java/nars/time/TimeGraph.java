@@ -69,7 +69,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     public final MutableSet<Term> autoNeg = new UnifiedSet() {
         @Override
         public boolean add(Object key) {
-            return super.add(((Term)key).unneg());
+            return super.add(((Term) key).unneg());
         }
     };
 
@@ -131,45 +131,68 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             return null;
 
         Event event;
-        if (start != TIMELESS) {
+        if (start == TIMELESS) {
+            event = new Relative(t);
+        } else {
 
-            Collection<Event> te = byTerm.get(t);
-            if (!te.isEmpty() && start!=ETERNAL) {
-                for (Event f : te) {
-                    if (f instanceof Absolute && ((Absolute) f).containsOrEqual(start, end))
-                        return f;
-                }
+            if (add) {
 
-                if (add) {
+                Collection<Event> te = byTerm.get(t);
+
+                if (!te.isEmpty()) {
+
+                    boolean stable;
+                    do {
+
+                        stable = true;
+
+                        Iterator<Event> ff = te.iterator();
+                        while (ff.hasNext()) {
+                            Event f = ff.next();
+                            if (!(f instanceof Absolute))
+                                continue;
+                            Absolute af = (Absolute) f;
+                            long as = af.start();
+                            if (start == ETERNAL && as == ETERNAL)
+                                return af;
+                            if (as == ETERNAL)
+                                continue;
+                            if (as == start && af.end() == end)
+                                return af;
+                            if (af.containsOrEquals(start, end)) {
+                                add = false;
+                                break; //doesnt affect the stored graph, but return the smaller interval that was input
+                            }
 
 
-                    Iterator<Event> ff = te.iterator();
-                    while (ff.hasNext()) {
-                        Event f = ff.next();
-                        if (!(f instanceof Absolute))
-                            continue;
-                        Absolute af = (Absolute) f;
-                        if (af.start() == ETERNAL)
-                            continue;
-
-
-                        if (af.containedInButNotEqual(start, end)) {
-                            removeNode(f);
-                            ff.remove();
-                        } else {
-                            Longerval merged;
-                            if ((merged = af.unionIfIntersectsButNotEqual(start, end)) != null) {
-                                if (merged.a < start)
-                                    start = merged.a;
-                                if (merged.b > end)
-                                    end = merged.b;
+                            if (af.containedIn(start, end)) {
                                 removeNode(f);
                                 ff.remove();
+                            } else {
+                                long[] merged;
+                                if ((merged = af.unionIfIntersects(start, end)) != null) {
+
+//                                if (merged[0] < start)
+//                                    start = merged[0];
+//                                if (merged[1] > end)
+//                                    end = merged[1];
+                                    //update the stretched but keep the input range the same
+                                    removeNode(f);
+                                    ff.remove();
+                                    if (merged[0] == merged[1]) {
+                                        te.add(new Absolute(t, merged[0]));
+                                    } else {
+                                        te.add(new AbsoluteRange(t, merged[0], merged[1]));
+                                    }
+
+                                    stable = false; //try again, because it may connect with other ranges further in the iteration
+                                    break;
+                                }
                             }
+
+
                         }
-
-
-                    }
+                    } while (!stable);
                 }
             }
 
@@ -177,15 +200,14 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 event = new AbsoluteRange(t, start, end);
             else
                 event = new Absolute(t, start);
-        } else {
-            event = new Relative(t);
         }
 
 
         if (add) {
             return addNode(event).id;
         } else {
-            return event(event);
+            //return event(event);
+            return event;
         }
     }
 
@@ -736,9 +758,6 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
 
-
-
-
     private boolean solution(Event y) {
         if (solutions.add(y)) {
 
@@ -902,13 +921,16 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     boolean bfsPush(Collection<Event> roots, Search<Event, TimeSpan> tv) {
+
+
         List<Event> created = new FasterList(roots.size());
 
+        //maybe should not stretch the timegraph , so temporarily disable potential stretching during adds here?  otherwise this seems to work well
         for (Event r : roots) {
-            if (node(r) == null) {
-                addNode(r);
-                created.add(r);
-            }
+              if (node(r) == null) {
+                    addNode(r);
+                    created.add(r);
+               }
         }
 
         Queue<Pair<List<BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>>>, Node<Event, nars.time.TimeSpan>>> q = new ArrayDeque<>(roots.size() /* estimate TODO find good sizing heuristic */);
@@ -959,10 +981,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                 long endTime;
                 if (startTime != ETERNAL && startTime != XTERNAL/* && x.id.op() != CONJ*/) {
-                    Event s = pathStart(path).id();
-                    Event e = pathEnd(path).id();
-
-                    endTime = startTime + durMerge(s, e);
+                    endTime = startTime + durMerge(pathStart(path).id(), pathEnd(path).id());
                 } else {
                     endTime = startTime;
                 }
@@ -987,8 +1006,6 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     protected Random random() {
         return ThreadLocalRandom.current();
     }
-
-
 
 
     /**
@@ -1030,15 +1047,19 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             return 0;
         }
 
-        /**
-         * contained within but not true if equal
-         */
-        public final boolean containedInButNotEqual(long cs, long ce) {
-            return containedIn(cs, ce) && (start != cs || end() != ce);
-        }
+//        /**
+//         * contained within but not true if equal
+//         */
+//        public final boolean containedInButNotEqual(long cs, long ce) {
+//            return containedIn(cs, ce) && (start != cs || end() != ce);
+//        }
 
         public final boolean containedIn(long cs, long ce) {
             return (cs <= start && ce >= end());
+        }
+
+        public final boolean containsOrEquals(long cs, long ce) {
+            return (cs >= start && ce <= end());
         }
 
 //        public boolean intersectsWith(long cs, long ce) {
@@ -1046,22 +1067,22 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 //        }
 
 
-        /**
-         * contains or is equal to
-         */
-        public boolean containsOrEqual(long cs, long ce) {
-            return (start <= cs && end() >= ce);
-        }
+//        /**
+//         * contains or is equal to
+//         */
+//        public boolean containsOrEqual(long cs, long ce) {
+//            return (start <= cs && end() >= ce);
+//        }
 
         @Nullable
-        public Longerval unionIfIntersectsButNotEqual(long start, long end) {
-            long thisEnd = end();
+        public long[] unionIfIntersects(long start, long end) {
             long thisStart = this.start;
-            if (start != thisStart && end != thisEnd) {
-                if (Longerval.intersectLength(start, end, thisStart, thisEnd) >= 0)
-                    return Longerval.union(start, end, thisStart, thisEnd);
-            }
-            return null;
+
+            long thisEnd = end();
+
+            return Longerval.intersectLength(start, end, thisStart, thisEnd) >= 0 ?
+                    Longerval.unionArray(start, end, thisStart, thisEnd) :
+                    null;
         }
     }
 
@@ -1142,7 +1163,6 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         @Override
         protected Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> next(Node<Event, TimeSpan> n) {
             Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> e = n.edges(true, true);
-
 
             Iterator<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> d = dynamicLink(n);
 

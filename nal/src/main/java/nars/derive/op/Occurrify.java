@@ -458,12 +458,12 @@ public class Occurrify extends TimeGraph {
 
 
                 Pair<Term, long[]> p = solveOccDT(d, x, d.occ.reset(x));
-                if (p != null) {
-                    if (immediatizable(d)) {
-                        if (!immediatize(p.getTwo(), d))
-                            return null;
-                    }
-                }
+//                if (p != null) {
+//                    if (immediatizable(d)) {
+//                        if (!immediatize(p.getTwo(), d))
+//                            return null;
+//                    }
+//                }
                 return p;
             }
 
@@ -958,67 +958,67 @@ public class Occurrify extends TimeGraph {
                     o[0] += bdt;
                     o[1] += bdt;
 
-                    if (immediatizable(d))
-                        if (!immediatize(o, d))
-                            return null;
+//                    if (immediatizable(d))
+//                        if (!immediatize(o, d))
+//                            return null;
                 }
             }
             return p;
         }
 
-        /**
-         * immanentize
-         */
-        private static boolean immediatize(long[] o, Derivation d) {
-
-
-            if (o[0] == ETERNAL) {
-                if (d.taskStart == ETERNAL && (d.concSingle || d.beliefStart == ETERNAL))
-                    return true; //both task and belief are eternal; keep eternal
-
-                throw new UnsupportedOperationException();
-//                long NOW = d.time;
-//                int rad = Math.round(d.dur * Param.GOAL_PROJECT_TO_PRESENT_RADIUS_DURS);
-//                o[0] = NOW;
-//                o[1] = NOW + rad;
-//                return true;
-            }
-
-            long target =
-                    //d.time;
-                    d.taskStart != ETERNAL || d.beliefStart == TIMELESS ? d.taskStart : d.beliefStart;
-            //Math.max(d.taskStart, d.time);
-
-            if (o[1] < target) {
-
-                if (d.concPunc == GOAL || d.concPunc == BELIEF) {
-                    //starts and ends before now; entirely past
-                    // shift and project to present, "as-if" past-perfect/subjunctive tense
-
-                    //discount for projection
-                    long deltaT = Math.abs(target - o[0]); //project from end, closer to now if fully in the past
-                    float eStartFactor = Param.evi(1, deltaT, d.dur);
-                    if (!d.concTruthEviMul(eStartFactor, Param.ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION))
-                        return false; //insufficient evidence
-                }
-
-//                long durMin = Math.min(o[1] - o[0], d.dur);
-//                long range =
-//                        //o[1] - o[0];
-//                        o[1] > target + durMin ? o[1] - target
-//                                :
-//                                durMin;
+//        /**
+//         * immanentize
+//         */
+//        private static boolean immediatize(long[] o, Derivation d) {
+//
+//
+//            if (o[0] == ETERNAL) {
+//                if (d.taskStart == ETERNAL && (d.concSingle || d.beliefStart == ETERNAL))
+//                    return true; //both task and belief are eternal; keep eternal
+//
+//                throw new UnsupportedOperationException();
+////                long NOW = d.time;
+////                int rad = Math.round(d.dur * Param.GOAL_PROJECT_TO_PRESENT_RADIUS_DURS);
+////                o[0] = NOW;
+////                o[1] = NOW + rad;
+////                return true;
+//            }
+//
+//            long target =
+//                    //d.time;
+//                    d.taskStart != ETERNAL || d.beliefStart == TIMELESS ? d.taskStart : d.beliefStart;
+//            //Math.max(d.taskStart, d.time);
+//
+//            if (o[1] < target) {
+//
+//                if (d.concPunc == GOAL || d.concPunc == BELIEF) {
+//                    //starts and ends before now; entirely past
+//                    // shift and project to present, "as-if" past-perfect/subjunctive tense
+//
+//                    //discount for projection
+//                    long deltaT = Math.abs(target - o[0]); //project from end, closer to now if fully in the past
+//                    float eStartFactor = Param.evi(1, deltaT, d.dur);
+//                    if (!d.concTruthEviMul(eStartFactor, Param.ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION))
+//                        return false; //insufficient evidence
+//                }
+//
+////                long durMin = Math.min(o[1] - o[0], d.dur);
+////                long range =
+////                        //o[1] - o[0];
+////                        o[1] > target + durMin ? o[1] - target
+////                                :
+////                                durMin;
+////                o[0] = target;
+////                o[1] = target + range;
+//
+//                long range = o[1] - o[0];
+//                range = o[1] > target ? Math.min(range, o[1] - target) : 0;
 //                o[0] = target;
 //                o[1] = target + range;
-
-                long range = o[1] - o[0];
-                range = o[1] > target ? Math.min(range, o[1] - target) : 0;
-                o[0] = target;
-                o[1] = target + range;
-            }
-
-            return true;
-        }
+//            }
+//
+//            return true;
+//        }
 
         /**
          * fallback
@@ -1244,10 +1244,9 @@ public class Occurrify extends TimeGraph {
         return new long[]{start, start + range};
     }
 
-    private static boolean immediatizable(Derivation d) {
-        return false;
-        //return (d.taskPunc == GOAL || d.taskPunc == QUEST) && (d.concPunc == GOAL || d.concPunc == QUEST) && d.truthFunction != NALTruth.Identity;
-    }
+//    private static boolean immediatizable(Derivation d) {
+//        //return (d.taskPunc == GOAL || d.taskPunc == QUEST) && (d.concPunc == GOAL || d.concPunc == QUEST) && d.truthFunction != NALTruth.Identity;
+//    }
 
 
     private static Pair<Term, long[]> solveSubEvent(Derivation d, Term x, boolean neg) {
