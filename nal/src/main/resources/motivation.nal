@@ -19,9 +19,9 @@
     //result of non-goal
     //G, Y, task("!") |-        (--G ==> ?1), (Punctuation:Question)
     //result of achieving goal and current belief
-    G, B, task("!") |-        ((G && polarize(B,belief)) ==> ?1), (Punctuation:Question)
+    G, B, task("!") |-        ((G && polarize(B,belief)) ==> ?1), (Punctuation:Question, Time:Task)
     //result of non-achieving goal and current  belief
-    G, B, task("!") |-        ((--G && polarize(B,belief)) ==> ?1), (Punctuation:Question)
+    G, B, task("!") |-        ((--G && polarize(B,belief)) ==> ?1), (Punctuation:Question, Time:Task)
 
     //is what with goal
     //G, Y, task("!") |-           (?1 && G), (Punctuation:Question)
@@ -30,31 +30,31 @@
 
     //should what with goal
     //G, Y, task("!") |-               (?1 && G), (Punctuation:Quest)
-    G, Y, task("!"), --is(Y,"?") |-  (Y && G), (Punctuation:Quest)
+    G, Y, task("!"), --is(Y,"?") |-  (Y && G), (Punctuation:Quest, Time:Task)
 
     //should what with non-goal
     //G, Y, task("!") |-               (?1 && --G), (Punctuation:Quest)
-    G, Y, task("!"), --is(Y,"?") |-  (Y && --G), (Punctuation:Quest)
+    G, Y, task("!"), --is(Y,"?") |-  (Y && --G), (Punctuation:Quest, Time:Task)
 
     //conj quest to impl question
-    (G && B), B, task("@") |-  (polarize(B,belief) ==> G), (Punctuation:Question)
-     (G && B), B, task("@") |-  (G ==> B), (Punctuation:Question)
-     (G && B), B, task("@") |-  (--G ==> B), (Punctuation:Question)
+    (G && B), B, task("@") |-  (polarize(B,belief) ==> G), (Punctuation:Question, Time:Task)
+     (G && B), B, task("@") |-  (G ==> B), (Punctuation:Question, Time:Task)
+     (G && B), B, task("@") |-  (--G ==> B), (Punctuation:Question, Time:Task)
 
 //inverted condition question/quest
-    (&&,   X, A..+), X  |- (&&, --X, A..+), (Punctuation:Ask)
-    (&&, --X, A..+), X  |- (&&,   X, A..+), (Punctuation:Ask)
+    (&&,   X, A..+), X  |- (&&, --X, A..+), (Punctuation:Ask, Time:Task)
+    (&&, --X, A..+), X  |- (&&,   X, A..+), (Punctuation:Ask, Time:Task)
 
 //inheritance to impl question/quest
     //(A-->P), (B-->P)  |- (polarize((A-->P),task) ==> (B-->P)), (Punctuation:Ask)
     //(S-->A), (S-->B)  |- (polarize((S-->A),task) ==> (S-->B)), (Punctuation:Ask)
 
 //impl expansion
-    (A ==> B), B, task(".")      |- ((A && ?1) ==> B), (Punctuation:Question)
-    (A ==> B), A, task(".")      |- (polarize(A,belief) ==> (B && ?1)), (Punctuation:Question)
-     (A ==> B), A, task(".")      |- (polarize(A,belief) ==> (--B && ?1)), (Punctuation:Question)
-      (--A ==> B), A, task(".")  |- (--polarize(A,belief) ==> (B && ?1)), (Punctuation:Question)
-       (--A ==> B), A, task(".")  |- (--polarize(A,belief) ==> (--B && ?1)), (Punctuation:Question)
+    (A ==> B), B, task(".")      |- ((A && ?1) ==> B), (Punctuation:Question, Time:Task)
+    (A ==> B), A, task(".")      |- (polarize(A,belief) ==> (B && ?1)), (Punctuation:Question, Time:Task)
+     (A ==> B), A, task(".")      |- (polarize(A,belief) ==> (--B && ?1)), (Punctuation:Question, Time:Task)
+      (--A ==> B), A, task(".")  |- (--polarize(A,belief) ==> (B && ?1)), (Punctuation:Question, Time:Task)
+       (--A ==> B), A, task(".")  |- (--polarize(A,belief) ==> (--B && ?1)), (Punctuation:Question, Time:Task)
 
 //--
 

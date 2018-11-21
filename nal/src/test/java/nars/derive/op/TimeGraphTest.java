@@ -176,7 +176,7 @@ class TimeGraphTest {
     void testImplWithConjPredicate2() {
         //results may be random
         assertSolved("(one ==>+- (two &&+- three))", A,
-                "(one ==>+- (three &&+17 two))", "one ==>+- (two &&+1 three))", "(one ==>+- (two &&+19 three))", "(one ==>+1 (two &&+1 three))", "(one ==>+1 (two &&+19 three))", "(one ==>+19 (two &&+1 three))", "one ==>+19 (two &&+19 three))", "(one ==>+2 (three &&+17 two))", "(one ==>+20 (three &&+17 two))", "(one ==>-16 (three &&+17 two))", "(one ==>-17 (two &&+1 three))", "(one ==>-17 (two &&+19 three))"
+                "(one ==>+- (three &&+17 two))", "(one ==>+- (two &&+1 three))", "(one ==>+- (two &&+19 three))", "(one ==>+1 (two &&+1 three))", "(one ==>+1 (two &&+19 three))", "(one ==>+19 (two &&+1 three))", "(one ==>+19 (two &&+19 three))", "(one ==>+2 (three &&+17 two))", "(one ==>+20 (three &&+17 two))", "(one ==>-16 (three &&+17 two))", "(one ==>-17 (two &&+1 three))", "(one ==>-17 (two &&+19 three))"
         );
     }
 
@@ -265,17 +265,7 @@ class TimeGraphTest {
 
     }
 
-    @Test
-    void testDiffFromEvents() {
-        TimeGraph C = newTimeGraph(1);
-        C.know($$("x"), 1);
-        C.know($$("y"), 3);
 
-        assertSolved("(x~y)", C, "(x~y)@1..3");
-        assertSolved("(y~x)", C, "(y~x)@1..3");
-        assertSolved("(#1 &&+1 (x~y))", C, "(#1 &&+1 (x~y))@0");
-
-    }
 
     @Test
     void testImplCrossParallelInternalConj() throws Narsese.NarseseException {

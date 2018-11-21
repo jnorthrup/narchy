@@ -705,7 +705,7 @@ public class Occurrify extends TimeGraph {
         BeliefRelative() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveDT(d, x, d.occ.reset(x, true));
+                return solveDT(d, x, d.occ.reset(x, false));
             }
 
             @Override
@@ -727,7 +727,7 @@ public class Occurrify extends TimeGraph {
         TaskRelative() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveDT(d, x, d.occ.reset(x, true));
+                return solveDT(d, x, d.occ.reset(x, false));
             }
 
             @Override
@@ -821,21 +821,39 @@ public class Occurrify extends TimeGraph {
         Task() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                //return solveOccDTWithGoalOverride(d, x);
-                @Nullable Pair<Term, long[]> p = solveDT(d, x, d.occ.reset(x));
+                @Nullable Pair<Term, long[]> p = x.hasXternal() ? solveDT(d, x, d.occ.reset(x)) : pair(x, new long[2]);
                 if (p != null) {
-                    long s, e;
-                    if (d.taskStart == ETERNAL && !d.occ.validEternal()) {
-                        s = d.beliefStart;
-                        e = d.beliefEnd;
-                    } else {
-                        s = d.taskStart;
-                        e = d.taskEnd;
-                    }
                     long[] o = p.getTwo();
-                    o[0] = s;
-                    o[1] = e;
-                    return p;
+                    if (d.taskStart != ETERNAL || d.occ.validEternal()) {
+                        o[0] = d.taskStart;
+                        o[1] = d.taskEnd;
+                    } else {
+                        o[0] = d.beliefStart;
+                        o[1] = d.beliefEnd;
+                    }
+                }
+                return p;
+            }
+
+            @Override
+            long[] occurrence(Derivation d) {
+                return new long[]{TIMELESS, TIMELESS}; //HACK to be rewritten by the above method
+            }
+
+        },
+        Belief() {
+            @Override
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+                @Nullable Pair<Term, long[]> p = x.hasXternal() ? solveDT(d, x, d.occ.reset(x)) : pair(x, new long[2]);
+                if (p != null) {
+                    long[] o = p.getTwo();
+                    if (d.beliefStart != ETERNAL || d.occ.validEternal()) {
+                        o[0] = d.beliefStart;
+                        o[1] = d.beliefEnd;
+                    } else {
+                        o[0] = d.taskStart;
+                        o[1] = d.taskEnd;
+                    }
                 }
                 return p;
             }

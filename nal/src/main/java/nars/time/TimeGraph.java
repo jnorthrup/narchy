@@ -265,8 +265,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         if (ee.isEmpty())
             onNewTerm(eventTerm);
 
-        //if (!ee.add(event))
-        if (!byTerm.put(eventTerm, event))
+        if (!ee.add(event))
+        //if (!byTerm.put(eventTerm, event))
             return; //already present
 
         if (decomposeAddedEvent(event)) {
@@ -462,6 +462,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
             if (!a.hasXternal() && !b.hasXternal() && (aEqB || !commonSubEventsWithMultipleOccurrences(a, b))) {
                 UnifiedSet<Event> ae = new UnifiedSet(2);
+                //solveExact(a, ax -> {
                 solveOccurrence(a, ax -> {
                     if (ax instanceof Absolute) ae.add(ax);
                     return true;
@@ -483,6 +484,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                     } else {
                         UnifiedSet<Event> be = new UnifiedSet(2);
+                        //solveExact(b, bx -> { //less exhaustive
                         solveOccurrence(b, bx -> {
                             if (bx instanceof Absolute) be.add(bx);
                             return true;
@@ -662,8 +664,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
     }
 
-    public boolean termsEvent(Term e) {
-        //return e.op().conceptualizable;
+    public static boolean termsEvent(Term e) {
         Op eo = e.op();
         return eo.conceptualizable || eo.var;
     }
@@ -749,10 +750,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 }
 
             }
-        } else {
-
         }
-
 
         throw new UnsupportedOperationException();
     }
@@ -770,9 +768,24 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         }
     }
 
+
+    private boolean solveExact(Event f, Predicate<Event> each) {
+        if (f instanceof Absolute) {
+            if (!each.test(f))
+                return false;
+        }
+        Term x = f.id;
+        return solveExact(f, each, x);
+    }
+
     private boolean solveExact(Term x, Predicate<Event> each) {
+        return solveExact(null, each, x);
+    }
+
+    private boolean solveExact(@Nullable Event f, Predicate<Event> each, Term x) {
+        //try other absolute solutions
         for (Event e : byTerm.get(x)) {
-            if (e instanceof Absolute && !each.test(e))
+            if (e instanceof Absolute && ((!(f instanceof Absolute)) || !e.equals(f)) && !each.test(e))
                 return false;
         }
         return true;
@@ -916,8 +929,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
     }
 
-    boolean bfsPush(Event roots, Search<Event, TimeSpan> tv) {
-        return bfsPush(List.of(roots), tv);
+    boolean bfsPush(Event root, Search<Event, TimeSpan> tv) {
+        return bfsPush(List.of(root), tv);
     }
 
     boolean bfsPush(Collection<Event> roots, Search<Event, TimeSpan> tv) {
@@ -927,6 +940,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         //maybe should not stretch the timegraph , so temporarily disable potential stretching during adds here?  otherwise this seems to work well
         for (Event r : roots) {
+                //if (addNewNode(r)) {
               if (node(r) == null) {
                     addNode(r);
                     created.add(r);
@@ -943,10 +957,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     private boolean solveOccurrence(Event x, Predicate<Event> each) {
-        if (x instanceof Absolute)
-            return each.test(x);
 
-        return solveExact(x.id, each) && bfsPush(x, new CrossTimeSolver() {
+        return solveExact(x, each) && bfsPush(x, new CrossTimeSolver() {
 
             Set<Event> nexts = null;
 
@@ -999,7 +1011,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 }
             }
 
-        }) && each.test(x) /* last resort */;
+        }) && (!(x instanceof Relative) || each.test(x) /* last resort */); //absolute has already been tried first
     }
 
 
