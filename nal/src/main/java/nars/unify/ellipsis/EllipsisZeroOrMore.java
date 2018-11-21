@@ -1,4 +1,4 @@
-package nars.unify.match;
+package nars.unify.ellipsis;
 
 import nars.$;
 import nars.term.Term;

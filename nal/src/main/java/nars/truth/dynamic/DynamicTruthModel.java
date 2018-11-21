@@ -19,6 +19,7 @@ import nars.term.atom.Bool;
 import nars.term.util.Conj;
 import nars.time.Tense;
 import nars.truth.Truth;
+import nars.truth.Truthed;
 import nars.truth.func.NALTruth;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -91,7 +92,7 @@ abstract public class DynamicTruthModel {
 
     public static class DynamicSectTruth {
 
-        final static class SectIntersection extends Intersection  {
+        static class SectIntersection extends Intersection  {
 
             final boolean subjOrPred;
 
@@ -189,8 +190,38 @@ abstract public class DynamicTruthModel {
 
         }
 
+        /** polarity of calculated truth is chosen dynamically majority of component polarities */
+        final static class SectIntersectionBipolar extends SectIntersection  {
+
+            private SectIntersectionBipolar(boolean union, boolean subjOrPred) {
+                super(union, subjOrPred);
+            }
+
+            @Override
+            public Truth apply(DynTruth l, NAR nar) {
+                boolean negComponents = !decidePolarity(l, nar);
+                Truth r = super.apply(l, nar, union ? !negComponents : negComponents, union);
+                return r;
+            }
+
+            private boolean decidePolarity(DynTruth l, NAR nar) {
+                int posCount = l.count(Truthed::isPositive);
+
+                if (posCount == 0) return true;
+
+                int s = l.size();
+                if (posCount == s) return false;
+                
+                return nar.random().nextFloat() <= ((float)posCount)/ s;
+            }
+        }
+
         public static final DynamicTruthModel UnionSubj = new SectIntersection(true, true);
         public static final DynamicTruthModel SectSubj = new SectIntersection(false, true);
+
+        public static final DynamicTruthModel UnionSubjBipolar = new SectIntersectionBipolar(true, true);
+        public static final DynamicTruthModel SectSubjBipolar = new SectIntersectionBipolar(false, true);
+
         public static final DynamicTruthModel UnionPred = new SectIntersection(true, false);
         public static final DynamicTruthModel SectPred = new SectIntersection(false, false);
 
@@ -596,14 +627,19 @@ abstract public class DynamicTruthModel {
 
         @Override
         public Truth apply(DynTruth l, NAR nar) {
+            boolean n = negateFreq();
+            return apply(l, nar, n, n);
+        }
 
+        @Nullable
+        protected Truth apply(DynTruth l, NAR nar, boolean negComponents, boolean negResult) {
             Truth y = null;
             for (TaskRegion li : l) {
                 Truth x = (((Task) li)).truth();
                 if (x == null)
                     return null;
 
-                if (negateFreq())
+                if (negComponents)
                     x = x.neg();
 
                 if (y == null) {
@@ -616,7 +652,7 @@ abstract public class DynamicTruthModel {
             }
 
 
-            return y.negIf(negateFreq());
+            return y.negIf(negResult);
         }
 
     }

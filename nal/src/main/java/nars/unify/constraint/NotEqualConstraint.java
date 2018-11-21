@@ -20,7 +20,7 @@ import static nars.Op.NEG;
 public final class NotEqualConstraint extends RelationConstraint {
 
     public NotEqualConstraint(Term target, Term other) {
-        super(target.unneg(), other.negIf(target.op() == NEG), "neq");
+        super("neq", target.unneg(), other.negIf(target.op() == NEG));
     }
 
     @Override
@@ -50,7 +50,7 @@ public final class NotEqualConstraint extends RelationConstraint {
     public static final class NotEqualRootConstraint extends RelationConstraint {
 
         public NotEqualRootConstraint(Term target, Term other) {
-            super(target, other, "neqRoot");
+            super("neqRoot", target, other);
         }
 
         @Override
@@ -76,7 +76,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 //        }
     }
 
-    static final PREDICATE<PreDerivation> TaskOrBeliefHasNeg = new AbstractPred<PreDerivation>($$("TaskOrBeliefHasNeg")) {
+    static final PREDICATE<PreDerivation> TaskOrBeliefHasNeg = new AbstractPred<>($$("TaskOrBeliefHasNeg")) {
 
         @Override
         public boolean test(PreDerivation d) {
@@ -92,7 +92,7 @@ public final class NotEqualConstraint extends RelationConstraint {
     public static final class EqualNegConstraint extends RelationConstraint {
 
         public EqualNegConstraint(Term target, Term other) {
-            super(target, other, "eqNeg");
+            super("eqNeg", target, other);
         }
 
         @Override
@@ -157,7 +157,7 @@ public final class NotEqualConstraint extends RelationConstraint {
     public static final class NeqRootAndNotRecursiveSubtermOf extends RelationConstraint {
 
         public NeqRootAndNotRecursiveSubtermOf(Term x, Term y) {
-            super(x, y, "neqRCom");
+            super("neqRCom", x, y);
         }
 
         @Override
@@ -250,7 +250,7 @@ public final class NotEqualConstraint extends RelationConstraint {
     public static final class NoCommonInh extends RelationConstraint {
 
         public NoCommonInh(Term target, Term other) {
-            super(target, other, "noCommonInh");
+            super("noCommonInh", target, other);
         }
 
         @Override
@@ -272,7 +272,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 
     public static class NotSetsOrDifferentSets extends RelationConstraint {
         public NotSetsOrDifferentSets(Term target, Term other) {
-            super(target, other, "notSetsOrDifferentSets");
+            super("notSetsOrDifferentSets", target, other);
         }
 
         @Override

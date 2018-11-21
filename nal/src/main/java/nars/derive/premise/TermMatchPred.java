@@ -4,7 +4,7 @@ import nars.$;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
-import nars.unify.op.TermMatch;
+import nars.unify.constraint.TermMatch;
 
 import java.util.function.Function;
 

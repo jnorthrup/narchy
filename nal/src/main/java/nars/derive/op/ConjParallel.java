@@ -1,7 +1,7 @@
 package nars.derive.op;
 
 import nars.term.Term;
-import nars.unify.op.TermMatch;
+import nars.unify.constraint.TermMatch;
 
 import javax.annotation.Nullable;
 

@@ -1,7 +1,6 @@
 package nars.derive.premise;
 
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
-import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.data.map.CustomConcurrentHashMap;
 import nars.$;
@@ -27,7 +26,7 @@ import nars.term.var.VarPattern;
 import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
 import nars.unify.constraint.*;
-import nars.unify.op.TermMatch;
+import nars.unify.constraint.TermMatch;
 import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 import org.eclipse.collections.api.set.ImmutableSet;

@@ -14,7 +14,7 @@ import nars.term.control.FORK;
 import nars.term.control.PREDICATE;
 import nars.term.control.SWITCH;
 import nars.term.util.TermTrie;
-import nars.unify.op.TermMatch;
+import nars.unify.constraint.TermMatch;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;

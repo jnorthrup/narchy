@@ -10,7 +10,7 @@ import nars.derive.op.UnifyTerm;
 import nars.term.Term;
 import nars.term.control.AND;
 import nars.term.control.PREDICATE;
-import nars.unify.match.Ellipsislike;
+import nars.unify.ellipsis.Ellipsislike;
 import org.eclipse.collections.api.tuple.Pair;
 
 import java.util.List;

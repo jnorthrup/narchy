@@ -6,7 +6,7 @@ import nars.Op;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
 import nars.unify.Unify;
-import nars.unify.match.EllipsisMatch;
+import nars.unify.ellipsis.EllipsisMatch;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;

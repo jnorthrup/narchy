@@ -50,13 +50,13 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
     private final static Atomic UnifyIf = Atomic.the("unifyIf");
     public final Term x;
 
-    UnifyConstraint(Term x, Term id) {
+    UnifyConstraint(Term id, Term x) {
         super(id);
         this.x = x;
     }
 
     protected UnifyConstraint(Term x, String func, @Nullable Term... args) {
-        this(x, $.funcFast(UnifyIf, x, args!=null ? $.funcFast(func, args) : $.the(func)));
+        this($.funcFast(UnifyIf, x, args!=null ? $.funcFast(func, args) : $.the(func)), x);
     }
 
 //    public static MatchConstraint[] combineConstraints(MatchConstraint[] cc) {
@@ -191,7 +191,7 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
         private final UnifyConstraint[] cache;
 
         private CompoundConstraint(UnifyConstraint[] c) {
-            super(c[0].x, $.funcFast(UnifyIf, c[0].x, $.sFast(c)));
+            super($.funcFast(UnifyIf, c[0].x, $.sFast(c)), c[0].x);
             this.cache = c;
         }
 

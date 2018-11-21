@@ -1,4 +1,4 @@
-package nars.unify.op;
+package nars.unify.constraint;
 
 import nars.$;
 import nars.Op;
@@ -7,7 +7,6 @@ import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.unify.Unify;
-import nars.unify.constraint.UnifyConstraint;
 
 import javax.annotation.Nullable;
 

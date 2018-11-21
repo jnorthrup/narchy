@@ -115,10 +115,10 @@
 
     //If after S M happens, and after M then P happens, so S then P happens
     (S ==> M), (M ==> P)   |- (S ==> P), (Belief:Deduction)
-     (M ==> P), (S ==> M)  |- (S ==> P), (Belief:DeductionX)
+     //(M ==> P), (S ==> M)  |- (S ==> P), (Belief:DeductionX)
       //if after S --M happens, and after --M then P happens, so S then P happens
       (S ==> M), (--M ==> P)  |- (S ==> P), (Belief:DeductionN)
-       (--M ==> P), (S ==> M) |- (S ==> P), (Belief:DeductionPNX)
+       //(--M ==> P), (S ==> M) |- (S ==> P), (Belief:DeductionPNX)
 
         (S ==> M), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
             //(S ==> M), (M ==> P), task("?") |- (S ==> P), (Punctuation:Question)
@@ -183,18 +183,22 @@
     //Same as for inheritance
     //union/intersection assymmetry: union if subj, intersect if pred
 
-     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:IntersectionSym)
-        (P ==> M), (S ==> M), task("?") |- ((P && S) ==> M), (Punctuation:Question)
-     (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:UnionSym)
-        (P ==> M), (S ==> M), task("?") |- ((P || S) ==> M), (Punctuation:Question)
+     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:Intersection)
+       (P ==> M), (S ==> M) |- --((P && S) ==> M), (Belief:IntersectionNN)
+     (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:Union)
+        (P ==> M), (S ==> M) |- --((P || S) ==> M), (Belief:UnionNN)
+//     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:IntersectionSym)
+//     (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:UnionSym)
+        (P ==> M), (S ==> M), task("?") |- ((P && S) ==> M), (Punctuation:Question, Time:Task)
+        (P ==> M), (S ==> M), task("?") |- ((P || S) ==> M), (Punctuation:Question, Time:Task)
 
                 //...Also:VarIntro)
 
 
      (M ==> P), (M ==> S) |- (M ==> (polarize(P,task) && polarize(S,belief))), (Belief:IntersectionDepolarized)
-        (M ==> P), (M ==> S), task("?") |- (M ==> (polarize(P,task) && polarize(S,belief))), (Punctuation:Question)
+        (M ==> P), (M ==> S), task("?") |- (M ==> (polarize(P,task) && polarize(S,belief))), (Punctuation:Question, Time:Task)
      (M ==> P), (M ==> S) |- (M ==> (polarize(P,task) || polarize(S,belief))), (Belief:UnionDepolarized)
-        (M ==> P), (M ==> S), task("?") |- (M ==> (polarize(P,task) || polarize(S,belief))), (Punctuation:Question)
+        (M ==> P), (M ==> S), task("?") |- (M ==> (polarize(P,task) || polarize(S,belief))), (Punctuation:Question, Time:Task)
 
         //TODO question variations
         //((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P && S),A..+) ==> X), (Belief:IntersectionSym)
@@ -253,19 +257,19 @@
 
 
 // Mutex induction
-    (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)              |- (&&,--(X && Y),A..*), (Belief:Intersection, Time:Intersect)
-    ((&&,X,--Y,A..+)==>Z), ((&&,Y,--X,A..+)==>Z),neq(X,Y)  |- ((&&,--(X && Y),A..+) ==> Z), (Belief:IntersectionSym, Time:Intersect)
-      (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)             |-  --(X ==> Y), (Belief:Induction, Time:Intersect)
-      (&&,X,--Y,A..+), (&&,Y,--X,B..+),neq(X,Y)              |- (&&,--((&&,A..+) && (&&,B..+))), (Belief:Intersection, Time:Intersect)
+    (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)              |- (&&,--(X && Y),A..*), (Belief:Intersection)
+    ((&&,X,--Y,A..+)==>Z), ((&&,Y,--X,A..+)==>Z),neq(X,Y)  |- ((&&,--(X && Y),A..+) ==> Z), (Belief:IntersectionSym)
+      (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)             |-  --(X ==> Y), (Belief:Induction)
+      (&&,X,--Y,A..+), (&&,Y,--X,B..+),neq(X,Y)              |- (&&,--((&&,A..+) && (&&,B..+))), (Belief:Intersection)
         //TODO impl predicate mutex
 
 //mutex soft-swap
-    Z, (&&,X,Y), in(Z,X)            |- (Z <-> substitute(Z,X,--Y,strict)), (Belief:BeliefStructuralAbductionPN, Time:Intersect)
-    Z, (&&,X,Y), in(Z,--X)          |- (Z <-> substitute(Z,--X,Y,strict)), (Belief:BeliefStructuralAbductionPN, Time:Intersect)
+    Z, (&&,X,Y), in(Z,X)            |- (Z <-> substitute(Z,X,--Y,strict)), (Belief:BeliefStructuralAbductionPN)
+    Z, (&&,X,Y), in(Z,--X)          |- (Z <-> substitute(Z,--X,Y,strict)), (Belief:BeliefStructuralAbductionPN)
 
 //mutex swap
-//    Z, (&&,X,Y), in(Z,X)            |- substitute(Z,X,--Y,strict), (Belief:AnalogyPN, Goal:AnalogyPN, Time:Intersect)
-//    Z, (&&,X,Y), in(Z,--X)          |- substitute(Z,--X,Y,strict), (Belief:AnalogyPN, Goal:AnalogyPN, Time:Intersect)
+//    Z, (&&,X,Y), in(Z,X)            |- substitute(Z,X,--Y,strict), (Belief:AnalogyPN, Goal:AnalogyPN)
+//    Z, (&&,X,Y), in(Z,--X)          |- substitute(Z,--X,Y,strict), (Belief:AnalogyPN, Goal:AnalogyPN)
 
 //internal mutex chain:
   (&&,--(X && Y),X,A..+), X, neq(X,Y)          |- (&&,--Y,A..+), (Belief:StructuralDeduction, Goal:StructuralDeduction)

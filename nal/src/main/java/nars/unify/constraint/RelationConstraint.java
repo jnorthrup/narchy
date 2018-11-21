@@ -17,15 +17,15 @@ abstract public class RelationConstraint extends UnifyConstraint {
     protected final Term y, yUnneg;
     protected final boolean yNeg;
 
-    private RelationConstraint(Term x, Term y, Term id) {
-        super(x, id);
+    private RelationConstraint(Term id, Term x, Term y) {
+        super(id, x);
         this.y = y;
         this.yUnneg = y.unneg();
         this.yNeg = y.op()==NEG;
     }
 
-    protected RelationConstraint(Term x, Term y, String func, Term... args) {
-        this(x, y, $.func(func, x, args.length > 0 ? $.pFast(y, $.pFast(args)) : y));
+    protected RelationConstraint(String func, Term x, Term y, Term... args) {
+        this($.func(func, x, args.length > 0 ? $.pFast(y, $.pFast(args)) : y), x, y);
         assert(!x.equals(y));
     }
 
@@ -91,7 +91,7 @@ abstract public class RelationConstraint extends UnifyConstraint {
         private final RelationConstraint r;
 
         public NegRelationConstraint(RelationConstraint r) {
-            super(r.x, r.y, r.ref.neg());
+            super(r.ref.neg(), r.x, r.y);
             this.r = r;
         }
 

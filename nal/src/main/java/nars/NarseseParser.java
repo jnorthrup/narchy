@@ -19,7 +19,7 @@ import nars.term.atom.Bool;
 import nars.term.obj.QuantityTerm;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
-import nars.unify.match.Ellipsis;
+import nars.unify.ellipsis.Ellipsis;
 import org.jetbrains.annotations.Nullable;
 import tec.uom.se.AbstractQuantity;
 

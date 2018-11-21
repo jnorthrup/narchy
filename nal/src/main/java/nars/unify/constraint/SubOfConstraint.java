@@ -29,10 +29,10 @@ public class SubOfConstraint extends RelationConstraint {
     }
 
     private SubOfConstraint(Term x, Term y, /* HACK change to forward semantics */ boolean reverse, SubtermCondition contains, int polarityCompare) {
-        super(x, y,
-                contains.name() +
-                        (!reverse ? "->" : "<-") +
-                        (polarityCompare != 0 ? (polarityCompare == -1 ? "(-)" : "(+)") : "(+|-)"));
+        super(contains.name() +
+                (!reverse ? "->" : "<-") +
+                (polarityCompare != 0 ? (polarityCompare == -1 ? "(-)" : "(+)") : "(+|-)"), x, y
+        );
 
 
         this.forward = !reverse;

@@ -19,9 +19,9 @@ import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
 import nars.term.util.transform.VariableNormalization;
 import nars.unify.Unify;
-import nars.unify.match.Ellipsis;
-import nars.unify.match.EllipsisMatch;
-import nars.unify.match.Ellipsislike;
+import nars.unify.ellipsis.Ellipsis;
+import nars.unify.ellipsis.EllipsisMatch;
+import nars.unify.ellipsis.Ellipsislike;
 import nars.unify.mutate.Choose1;
 import nars.unify.mutate.Choose2;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static nars.Op.*;
 import static nars.time.Tense.XTERNAL;
-import static nars.unify.match.Ellipsis.firstEllipsis;
+import static nars.unify.ellipsis.Ellipsis.firstEllipsis;
 
 /**
  * Index which specifically holds the term components of a deriver ruleset.

@@ -21,7 +21,7 @@ import nars.term.util.Image;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
-import nars.unify.match.EllipsisMatch;
+import nars.unify.ellipsis.EllipsisMatch;
 import nars.unify.mutate.CommutivePermutations;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;

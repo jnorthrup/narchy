@@ -9,7 +9,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.unify.Unify;
-import nars.unify.match.Ellipsis;
+import nars.unify.ellipsis.Ellipsis;
 import nars.unify.mutate.Choose1;
 import nars.unify.mutate.Choose2;
 import nars.unify.mutate.CommutivePermutations;

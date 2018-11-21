@@ -19,7 +19,7 @@ import static nars.time.Tense.ETERNAL;
 public final class CommonSubEventConstraint extends RelationConstraint {
 
     public CommonSubEventConstraint(Term x, Term y) {
-        super(x, y, "eventCommon");
+        super("eventCommon", x, y);
     }
 
     @Override
