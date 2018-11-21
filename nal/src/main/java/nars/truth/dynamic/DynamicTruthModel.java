@@ -211,7 +211,7 @@ abstract public class DynamicTruthModel {
 
                 int s = l.size();
                 if (posCount == s) return false;
-                
+
                 return nar.random().nextFloat() <= ((float)posCount)/ s;
             }
         }

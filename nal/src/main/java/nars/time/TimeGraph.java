@@ -814,12 +814,13 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         this.filterTimeless = filterTimeless;
         this.target = target;
+        this.solving = x;
         solutions.clear();
 
         Predicate<Event> each = this::solution;
-        this.solving = x;
 
-        if (!x.hasAny(Op.Temporal)) {
+        if (!x.hasXternal()) {
+        //if (!x.hasAny(Op.Temporal)) {
             return solveOccurrence(x, each);
         }
 

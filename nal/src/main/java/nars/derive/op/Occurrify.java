@@ -448,10 +448,7 @@ public class Occurrify extends TimeGraph {
 
         },
 
-        /**
-         * Task Dominant. the belief's temporality is secondary, unless task is eternal and belief is temporal
-         * modulating the task.
-         */
+
         Default() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
