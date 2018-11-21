@@ -45,6 +45,11 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
         }
 
         @Override
+        public float pressure() {
+            return 0;
+        }
+
+        @Override
         public void clear() {
         }
 
@@ -418,6 +423,10 @@ public interface Bag<K, V> extends Table<K, V>, Sampler<V> {
     default void forEachKey(Consumer<? super K> each) {
         forEach(b -> each.accept(key(b)));
     }
+
+    /** estimate of current pressure */
+    float pressure();
+
 
 
     /**

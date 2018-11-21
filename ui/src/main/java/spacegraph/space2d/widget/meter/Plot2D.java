@@ -22,7 +22,7 @@ import static java.lang.Float.NaN;
 import static jcog.Texts.n4;
 
 public class Plot2D extends Widget {
-    private final List<Series> series;
+    protected final List<Series> series;
     private String title;
     private Off on;
     private volatile boolean requireUpdate = false;
@@ -135,7 +135,7 @@ public class Plot2D extends Widget {
                 removeAtIndex(0);
         }
 
-        float[] array() {
+        public float[] array() {
             return items;
         }
 

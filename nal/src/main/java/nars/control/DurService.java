@@ -90,6 +90,8 @@ abstract public class DurService extends NARService  {
             }
         };
     }
+
+    /** set period (in durations) */
     public DurService durs(float durations) {
         this.durations.set(durations);
         return this;

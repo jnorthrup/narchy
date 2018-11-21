@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.slider;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.math.FloatRange;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerDragging;
@@ -33,6 +34,14 @@ public class XYSlider extends Surface {
     public XYSlider() {
         super();
         updated();
+    }
+
+    public XYSlider(FloatRange x, FloatRange y) {
+        this();
+        set(x.floatValue(), y.floatValue());
+        on((xx,yy)->{
+           x.setProportionally(xx); y.setProportionally(yy);
+        });
     }
 
     public XYSlider on(FloatFloatProcedure change) {

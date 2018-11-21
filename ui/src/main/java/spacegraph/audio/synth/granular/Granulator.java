@@ -32,13 +32,14 @@ class Granulator {
 	}
 
 	float getSample(long[] grain, long now) {
-		long startIndex = grain[0];
-		
-		long showTime = grain[2];
+
 
 		float[] sb = sourceBuffer;
 
+		long showTime = grain[2];
 		long offset = now - showTime;
+
+		long startIndex = grain[0];
 		int sourceIndex = (int) ((startIndex + offset + sb.length) % sb.length);
 		while (sourceIndex < 0)
 			sourceIndex += sb.length;

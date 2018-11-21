@@ -8,8 +8,10 @@ import jcog.math.Quantiler;
 import jcog.pri.PLinkHashCached;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
+import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
+import jcog.random.XoRoShiRo128PlusRandom;
 import nars.NAR;
 import nars.Task;
 import nars.agent.NAgent;
@@ -17,10 +19,14 @@ import nars.concept.Concept;
 import nars.gui.concept.ConceptColorIcon;
 import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;
+import nars.index.concept.AbstractConceptIndex;
 import nars.term.Termed;
 import nars.truth.Truth;
 import nars.util.MemorySnapshot;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.audio.Audio;
+import spacegraph.audio.synth.granular.Granulize;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.ScrollXY;
@@ -38,7 +44,9 @@ import spacegraph.space2d.widget.menu.view.GridMenuView;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meta.ServicesTable;
+import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.FloatGuage;
+import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.math.Color3f;
@@ -73,18 +81,79 @@ public class NARui {
     }
 
 
+    public static <X extends Prioritized> Surface bagView(Bag<?,X> bag, int bins, NAR n) {
+
+        CheckBox sonify = new CheckBox("Sonify");
+
+        float[] gBuf = new float[256];
+
+        Plot2D budgetChart = new Plot2D(gBuf.length, Plot2D.Line) {
+            private Off c;
+
+            Granulize g = null;
+
+            @Override
+            protected void starting() {
+                super.starting();
+                c = n.onCycle(this::update);
+                sonify.on((x)->{
+                   if (x) {
+                       g = new Granulize(gBuf, 44100, 0.02f, 0.9f, new XoRoShiRo128PlusRandom(1))
+                                    .setStretchFactor(1f);
+                       Audio.the().play(g);
+                   } else {
+                       g.stop();
+                       g = null;
+                   }
+                });
+            }
+
+            @Override
+            public void update() {
+                super.update();
+                if (g!=null) {
+                    ArraySeries s = (ArraySeries) (series.get(0));
+                    float[] f = s.array();
+                    float max = s.maxValue(), min = s.minValue(), range = max - min;
+                    if (range < Float.MIN_NORMAL) range = 1;
+                    System.arraycopy( f,  f.length - gBuf.length, gBuf, 0, gBuf.length);
+                    for (int i = 0, gBufLength = gBuf.length; i < gBufLength; i++) {
+                        gBuf[i] = (gBuf[i] - min) / range;
+                    }
+                    //g.setAmplitude(1f/ m);
+                }
+            }
+
+            @Override
+            protected void stopping() {
+                c.off();
+                c = null;
+                super.stopping();
+            }
+        }
+            .add("Mass", ()->bag.mass())
+            .add("Pressure", ()->bag.pressure())
+        ;
+
+
+        Surface budgetSurface = Splitting.column(
+            budgetChart, 0.1f, new Gridding(
+                sonify
+            )
+        );
+
+        return new Gridding(bagHistogram(bag, bins, n), budgetSurface);
+
+
+    }
+
+    @NotNull
     public static <X extends Prioritized> Surface bagHistogram(Iterable<X> bag, int bins, NAR n) {
-
-
         float[] d = new float[bins];
         return DurSurface.get(new HistogramChart(
                         () -> d,
-                        new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f)),
-
-
+                        new Color3f(0.25f, 0.5f, 0f), new Color3f(1f, 0.5f, 0.1f)),
                 n, () -> PriReference.histogram(bag, d));
-
-
     }
 
 
@@ -121,7 +190,7 @@ public class NARui {
                                 ///causePanel(n),
                 "grp", () -> BagregateConceptGraph2D.get(n).widget(),
                 "svc", () -> new ServicesTable(n.services),
-                "cpt", () -> bagHistogram((Iterable) () -> n.conceptsActive().iterator(), 8, n)
+                "cpt", () -> activeConceptsView(n)
         );
         HashMap<String, Supplier<Surface>> mm = new HashMap();
         mm.putAll(m);
@@ -149,6 +218,19 @@ public class NARui {
                         .north(ExeCharts.runPanel(n))
                 //.south(new OmniBox(new NarseseJShellModel(n))) //+50mb heap
                 ;
+    }
+
+    @NotNull
+    public static Surface activeConceptsView(NAR n) {
+        AbstractConceptIndex cc = (AbstractConceptIndex) n.concepts;
+        return Splitting.row(bagView(
+                //(Iterable) () -> n.conceptsActive().iterator(),
+                cc.active,
+                8, n), 0.8f,
+            new Gridding(
+                new XYSlider(cc.conceptForgetRate, n.attn.activating.conceptActivationRate),
+                new PushButton("Clear", ()->cc.active.clear())
+        ));
     }
 
     public static Surface MemEdit(NAR nar) {

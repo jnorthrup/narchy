@@ -61,6 +61,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         setCapacity(cap);
     }
 
+    @Override
+    public float pressure() {
+        return PRESSURE.get(this);
+    }
+
     /**
      * gets the scalar float value used in a comparison of BLink's
      * essentially the same as b.priIfFiniteElseNeg1 except it also includes a null test. otherwise they are interchangeable

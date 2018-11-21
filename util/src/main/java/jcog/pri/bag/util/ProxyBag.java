@@ -29,6 +29,11 @@ public class ProxyBag<X,Y> implements Bag<X,Y> {
     }
 
     @Override
+    public float pressure() {
+        return bag.pressure();
+    }
+
+    @Override
     public float pri(Y key) {
         return bag.pri(key);
     }

@@ -13,6 +13,13 @@ import java.nio.ByteOrder;
 
 
 public class Audio implements Runnable {
+    /*
+    wtf
+        sudo killall -9 pulseaudio
+        sudo pactl load-module module-detect
+        pulseaudio -v
+
+     */
     private final static Logger logger = LoggerFactory.getLogger(Audio.class);
 
     private static Audio defaultAudio;
@@ -61,15 +68,24 @@ public class Audio implements Runnable {
     public Audio(int polyphony) {
 
         this.maxChannels = polyphony;
-        Mixer mixer = AudioSystem.getMixer(null);
+
+        Mixer.Info[] mixers = AudioSystem.getMixerInfo();
+        for (Mixer.Info i : mixers) {
+            System.out.println(i);
+        }
+
+//        Mixer m =
+//                AudioSystem.getMixer(null);
+                //AudioSystem.getMixer(mixers[2]);
 
         bufferBytes = bufferSize * 2 * 2;
 
-
-        SourceDataLine sdl;
         try {
-            sdl = (SourceDataLine) mixer.getLine(new Line.Info(SourceDataLine.class));
-            sdl.open(new AudioFormat(rate, 16, 2, true, false), bufferBytes);
+            AudioFormat format = new AudioFormat(rate, 16, 2, true, false);
+            sdl = AudioSystem.getSourceDataLine(format);
+            //sdl = (SourceDataLine) AudioSystem.getMixer(null).getLine(new Line.Info(SourceDataLine.class));
+
+            sdl.open(format, bufferBytes);
             soundBuffer.order(ByteOrder.LITTLE_ENDIAN);
             sdl.start();
 
@@ -77,11 +93,10 @@ public class Audio implements Runnable {
         } catch (LineUnavailableException e) {
             logger.error("initialize {} {}", this, e);
             thread = null;
-            sdl = null;
+            throw new WTF(e);
 
         }
 
-        this.sdl = sdl;
 
         try {
             FloatControl volumeControl = (FloatControl) sdl.getControl(FloatControl.Type.MASTER_GAIN);
@@ -101,7 +116,6 @@ public class Audio implements Runnable {
         
         thread.start();
     }
-
 
 	/**
 	 * Prints information about the current Mixer to System.out.
@@ -255,14 +269,16 @@ public class Audio implements Runnable {
 
             if (mixer.isEmpty()) {
                 Util.pauseNextIterative(idle++);
+
             } else {
                 idle = 0;
+                clientTick(0);
+
+                tick();
             }
 
 
-            clientTick(0);
 
-            tick();
 
         }
     }

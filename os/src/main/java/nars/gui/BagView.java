@@ -27,7 +27,7 @@ public class BagView<X extends Prioritized> extends TabMenu {
                         "treechart", () -> {
                             BagChart<X> b = new BagChart<>(bag, (Graph2D.NodeVis<X> n) -> {
                                 Prioritized p = n.id;
-                                float pri = n.pri = Math.max(p.priElseZero(), 1/(2*bag.capacity()));
+                                float pri = n.pri = Math.max(p.priElseZero(), 1f/(2*bag.capacity()));
                                 n.color(pri, 0.25f, 0.25f);
 
                                 if (n.the()==null)

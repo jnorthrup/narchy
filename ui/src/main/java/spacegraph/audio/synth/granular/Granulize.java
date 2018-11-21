@@ -33,7 +33,7 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
         this(s.buf, s.rate, grainSizeSecs, windowSizeFactor, rng);
     }
 
-	private Granulize(float[] buffer, float sampleRate, float grainSizeSecs, float windowSizeFactor, Random rng) {
+	public Granulize(float[] buffer, float sampleRate, float grainSizeSecs, float windowSizeFactor, Random rng) {
 		super(buffer, sampleRate, grainSizeSecs, windowSizeFactor);
 
 		sourceBuffer = buffer;
@@ -117,10 +117,7 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
 		}
 	}
 
-	/** continue */
-	public void cont() {
-		isPlaying = true;
-	}
+
 
 	@Override
 	public String toString() {

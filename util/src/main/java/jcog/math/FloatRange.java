@@ -1,5 +1,6 @@
 package jcog.math;
 
+import jcog.Util;
 import jcog.data.MutableFloat;
 
 
@@ -20,4 +21,7 @@ public class FloatRange extends MutableFloat /*AtomicFloat*/ {
         return unit(initialValue.asFloat());
     }
 
+    public final void setProportionally(float x) {
+        set(Util.lerp(x, min, max));
+    }
 }
