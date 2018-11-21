@@ -821,7 +821,7 @@ public class Occurrify extends TimeGraph {
         Task() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                @Nullable Pair<Term, long[]> p = x.hasXternal() ? solveDT(d, x, d.occ.reset(x)) : pair(x, new long[2]);
+                @Nullable Pair<Term, long[]> p = x.hasXternal() ? solveDT(d, x, d.occ.reset(x,false)) : pair(x, new long[2]);
                 if (p != null) {
                     long[] o = p.getTwo();
                     if (d.taskStart != ETERNAL || d.occ.validEternal()) {
@@ -841,29 +841,7 @@ public class Occurrify extends TimeGraph {
             }
 
         },
-        Belief() {
-            @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                @Nullable Pair<Term, long[]> p = x.hasXternal() ? solveDT(d, x, d.occ.reset(x)) : pair(x, new long[2]);
-                if (p != null) {
-                    long[] o = p.getTwo();
-                    if (d.beliefStart != ETERNAL || d.occ.validEternal()) {
-                        o[0] = d.beliefStart;
-                        o[1] = d.beliefEnd;
-                    } else {
-                        o[0] = d.taskStart;
-                        o[1] = d.taskEnd;
-                    }
-                }
-                return p;
-            }
 
-            @Override
-            long[] occurrence(Derivation d) {
-                return new long[]{TIMELESS, TIMELESS}; //HACK to be rewritten by the above method
-            }
-
-        },
         /**
          * result occurs in the intersecting time interval, if exists; otherwise fails
          */
@@ -873,7 +851,7 @@ public class Occurrify extends TimeGraph {
                 if (!x.hasXternal()) {
                     return pair(x, d.taskBeliefTimeIntersects);
                 } else {
-                    return solveOccDT(d, x, d.occ.reset(x)); //TODO maybe just solveDT
+                    return solveOccDT(d, x, d.occ.reset(false,false,x,true)); //TODO maybe just solveDT
                 }
             }
 

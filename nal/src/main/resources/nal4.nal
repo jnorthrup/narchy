@@ -19,8 +19,12 @@
 ////composition on both sides of a statement
     //((X,P) --> Z), (X --> Y), is(Z,"?"), task("?") |- ((X,P) --> (Y,P)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
     //TODO generalize: imageComposition(A,X,B,Y)
-    ((X,P) --> (Y,P)) , (X --> Y), neq(X,\), neq(Y,\), neq(X,/), neq(Y,/), task("?") |- ((X,P) --> (Y,P)), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Belief)
-    ((P,X) --> (P,Y)) , (X --> Y), neq(X,\), neq(Y,\), neq(X,/), neq(Y,/), task("?") |- ((P,X) --> (P,Y)), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Belief)
+    ((X,P) --> (Y,P)) , (X --> Y), neq(X,\), neq(Y,\), neq(X,/), neq(Y,/), task("?") |- ((X,P) --> (Y,P)), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Task)
+    ((P,X) --> (P,Y)) , (X --> Y), neq(X,\), neq(Y,\), neq(X,/), neq(Y,/), task("?") |- ((P,X) --> (P,Y)), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Task)
+
+    ((A,B)-->X), ((B,A)-->X), neq(A,B) |- ({A,B}-->X), (Belief:Intersection, Time:Intersect)
+    (X-->(A,B)), (X-->(B,A)), neq(A,B) |- (X-->[A,B]), (Belief:Intersection, Time:Intersect)
+
 //
 //    ((\,N,A,_) --> ?X), (N --> R), task("?") |- ((\,N,A,_) --> (\,R,A,_)), (Truth:BeliefStructuralDeduction, Punctuation:Judgment)
 //    ((\,N,A,_) --> (\,R,A,_)), (N --> R), task("?") |- ((\,N,A,_) --> (\,R,A,_)), (Truth:BeliefStructuralDeduction, Punctuation:Judgment)

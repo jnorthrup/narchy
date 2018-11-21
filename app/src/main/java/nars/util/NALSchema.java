@@ -1,6 +1,5 @@
 package nars.util;
 
-import com.google.common.collect.ImmutableList;
 import jcog.Texts;
 import jcog.data.list.FasterList;
 import jcog.io.Schema;
@@ -13,6 +12,7 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
+import tech.tablesaw.api.Row;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +21,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
@@ -140,12 +141,12 @@ public class NALSchema {
 
     public static Stream<Term> terms(ARFF a, BiFunction<Term, Term[], Term> generator) {
         Term ctx = name(a);
-        return a.stream().map(instance->{
-            ImmutableList point = instance.data;
-            int n = point.size();
+        return StreamSupport.stream(a.spliterator(),false).map((Row point)->{
+            //ImmutableList point = instance.data;
+            int n = point.columnCount();
             Term[] t = new Term[n];
             for (int i = 0; i < n; i++) {
-                Object x = point.get(i);
+                Object x = point.getObject(i);
                 if (x instanceof String) {
                     t[i] = attrTerm((String)x); 
                 } else if (x instanceof Number) {

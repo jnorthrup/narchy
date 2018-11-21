@@ -1,16 +1,20 @@
 package nars.util;
 
 import jcog.data.set.ArrayHashSet;
+import jcog.data.set.MetalLongSet;
 import jcog.io.arff.ARFF;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.NAR;
 import nars.NARS;
+import nars.Narsese;
+import nars.truth.Stamp;
 import org.junit.jupiter.api.Test;
 import tech.tablesaw.api.Row;
-import tech.tablesaw.api.Table;
 
 import java.io.IOException;
 import java.util.Random;
+
+import static nars.Op.*;
 
 public class NALSchemaTest {
 
@@ -19,8 +23,8 @@ public class NALSchemaTest {
     @Test
     public void validatePredictionXOR() throws Exception {
         n.questionPriDefault.set(0.5f);
-        n.termVolumeMax.set(10);
-//        n.log();
+        n.termVolumeMax.set(16);
+        n.log();
         validatePrediction(n, xorARFF
                 //,"--(0<->1)."
         ,"XOR(?1,0)?" ,"XOR(?1,1)?"
@@ -43,7 +47,7 @@ public class NALSchemaTest {
     static NAR validatePrediction(NAR n, String arffData, String... hints) throws IOException, ARFF.ARFFParseError {
         ArrayHashSet<Row> data = new ArrayHashSet<>();
 
-        Table dataset = new ARFF(arffData) {
+        ARFF dataset = new ARFF(arffData) {
             @Override
             public boolean add(Object... point) {
                 
@@ -65,7 +69,7 @@ public class NALSchemaTest {
 
         Random rng = new XoRoShiRo128PlusRandom(1);
 
-        //TODO
+
 //        int validationSetSize = 1;
 //        Collection<Row> validationPointsActual = new FasterList(validationSetSize);
 //        Collection<Row> validationPoints = new FasterList(validationSetSize);
@@ -80,33 +84,33 @@ public class NALSchemaTest {
 //
 //        ARFF validation = dataset.clone(validationPoints);
 //        validation.print();
-//
+
 //        assertEquals(originalDataSetSize, validationPoints.size() + data.size());
-//
-//
-//
-//        //n.log();
-//
-//
-//        LongHashSet questions = new LongHashSet();
-//        n.onTask(t->{
-//            if (t.isInput())
-//                questions.add(t.stamp()[0]);
-//        }, QUESTION, QUEST);
-//
-//        n.onTask(t->{
-//            if (Stamp.overlapsAny(questions, t.stamp())) {
-//                //if (t.isInput())
-//                    System.out.println("ANSWER: " + t);
-//            }
-//        }, BELIEF, GOAL);
-//
-//
-//
-//        NALSchema.believe(n, dataset, NALSchema.predictsLast);
-//
-//
-//
+
+
+
+
+
+
+        MetalLongSet questions = new MetalLongSet(4);
+        n.onTask(t->{
+            if (t.isInput())
+                questions.add(t.stamp()[0]);
+        }, QUESTION, QUEST);
+
+        n.onTask(t->{
+            if (Stamp.overlapsAny(questions, t.stamp())) {
+                //if (t.isInput())
+                    System.out.println("ANSWER: " + t);
+            }
+        }, BELIEF, GOAL);
+
+
+
+        NALSchema.believe(n, dataset, NALSchema.predictsLast);
+
+
+
 //        Task[] questions1 = NALSchema.data(n, validation, QUESTION, NALSchema.predictsLast).toArray(Task[]::new);
 //        new DialogTask(n, questions1) {
 //            @Override
@@ -121,12 +125,12 @@ public class NALSchemaTest {
 ////                return true;
 ////            }
 //        };
-//
-//        try {
-//            n.input(hints);
-//        } catch (Narsese.NarseseException e) {
-//            e.printStackTrace();
-//        }
+
+        try {
+            n.input(hints);
+        } catch (Narsese.NarseseException e) {
+            e.printStackTrace();
+        }
 
         n.run(5000);
         return n;
