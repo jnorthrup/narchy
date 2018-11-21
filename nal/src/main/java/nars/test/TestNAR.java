@@ -451,6 +451,10 @@ public class TestNAR {
         return this;
     }
 
+    public TestNAR mustNotOutput(long cyclesAhead, String term, byte punc) {
+        return mustNotOutput(cyclesAhead, term, punc, (t)->true);
+    }
+
     public TestNAR mustNotOutput(long cyclesAhead, String term, byte punc, LongPredicate occ) {
 
 
