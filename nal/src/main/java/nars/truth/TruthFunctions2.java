@@ -247,6 +247,64 @@ public enum TruthFunctions2 {
         return $.t(f, cc);
     }
 
+    @Nullable public static Truth intersectionSym(Truth t, Truth b, float minConf) {
+        float c = confCompose(t, b);
+        if (c < minConf) return null;
+
+        float f;
+        if (t.isPositive()!=b.isPositive()) {
+            //f = 0.5f;
+            return null;
+        } else {
+            f = intersectionSym(t.freq(), b.freq());
+        }
+        return $.t(f, c);
+
+//        if (T.isPositive() && B.isPositive()) {
+//            return Intersection.apply(T, B, m, minConf);
+//        } else if (T.isNegative() && B.isNegative()) {
+//            Truth C = Intersection.apply(T.neg(), B.neg(), m, minConf);
+//            return C != null ? C.neg() : null;
+//        } else {
+//            return null;
+//        }
+    }
+    public static Truth unionSym(Truth t, Truth b, float minConf) {
+        float c = confCompose(t, b);
+        if (c < minConf) return null;
+
+        float f;
+        boolean pos = t.isPositive();
+        if (pos !=b.isPositive()) {
+            //f = 0.5f;
+            return null;
+        } else {
+            f = unionSym(t.freq(), b.freq());
+        }
+        return $.t(f, c);
+    }
+    /** freq: a,b; assumes they are of the same polarity */
+    static float intersectionSym(float a, float b) {
+        if (a >= 0.5f) {
+            a = 2 * (a - 0.5f); b = 2 * (b - 0.5f);
+            return 0.5f + (a * b)/2;
+        } else {
+            a = 2 * (0.5f - a); b = 2 * (0.5f - b);
+            return 0.5f - (a * b)/2;
+        }
+    }
+    /** freq: a,b; assumes they are of the same polarity */
+    static float unionSym(float a, float b) {
+        if (a >= 0.5f) {
+            a = 2 * (a - 0.5f); b = 2 * (b - 0.5f);
+            return 0.5f + (1-((1-a) * (1-b)))/2;
+        } else {
+            a = 2 * (0.5f - a); b = 2 * (0.5f - b);
+            return 0.5f - (1-((1-a) * (1-b)))/2;
+        }
+    }
+
+
 //    public static Truth maybeDuction(Truth a, float bC, float minConf) {
 //
 //        float freqDiff = a.freq();

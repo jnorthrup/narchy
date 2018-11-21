@@ -2,13 +2,17 @@ package nars.unify.constraint;
 
 import com.google.common.collect.Iterables;
 import nars.Op;
+import nars.derive.premise.PreDerivation;
 import nars.term.Term;
 import nars.term.Variable;
+import nars.term.control.AbstractPred;
+import nars.term.control.PREDICATE;
 import nars.term.var.ImDep;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
+import static nars.$.$$;
 import static nars.Op.INH;
 import static nars.Op.NEG;
 
@@ -72,12 +76,33 @@ public final class NotEqualConstraint extends RelationConstraint {
 //        }
     }
 
+    static final PREDICATE<PreDerivation> TaskOrBeliefHasNeg = new AbstractPred<PreDerivation>($$("TaskOrBeliefHasNeg")) {
+
+        @Override
+        public boolean test(PreDerivation d) {
+            return d.taskTerm.hasAny(Op.NEG) || d.beliefTerm.hasAny(Op.NEG);
+        }
+
+        @Override
+        public float cost() {
+            return 0.12f;
+        }
+    };
+
     public static final class EqualNegConstraint extends RelationConstraint {
 
         public EqualNegConstraint(Term target, Term other) {
             super(target, other, "eqNeg");
         }
 
+        @Override
+        public @Nullable PREDICATE<PreDerivation> preFilter(Term taskPattern, Term beliefPattern) {
+            @Nullable PREDICATE<PreDerivation> p = super.preFilter(taskPattern, beliefPattern);
+            if (p ==null) {
+                return TaskOrBeliefHasNeg;
+            }
+            return p;
+        }
 
         @Override
         protected @Nullable RelationConstraint newMirror(Term newX, Term newY) {

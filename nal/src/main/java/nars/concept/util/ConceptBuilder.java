@@ -157,46 +157,48 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
                 //TODO NAL2 set identities?
                 break;
 
-            //TODO not done yet
-            case IMPL: {
-                Term su = t.sub(0);
-                if (su.hasAny(Op.VAR_INDEP))
-                    return null;
-                Term pu = t.sub(1);
-                if (pu.hasAny(Op.VAR_INDEP))
-                    return null;
-
-                Op suo = su.op();
-                //subject has special negation union case
-                boolean subjDyn = (
-                    suo == CONJ && validDynamicSubtermsAndNoSharedVars(su)
-                        ||
-                    suo == NEG && (su.unneg().op()==CONJ && validDynamicSubtermsAndNoSharedVars(su.unneg()))
-                );
-                boolean predDyn = (pu.op() == CONJ && validDynamicSubtermsAndNoSharedVars(pu));
-
-
-                if (subjDyn && predDyn) {
-                    //choose the simpler to dynamically calculate for
-                    if (su.volume() <= pu.volume()) {
-                        predDyn = false; //dyn subj
-                    } else {
-                        subjDyn = false; //dyn pred
-                    }
-                }
-
-                if (subjDyn) {
-                    if (suo==NEG) {
-                        return DynamicTruthModel.DynamicSectTruth.UnionSubj;
-                    } else {
-                        return DynamicTruthModel.DynamicSectTruth.SectSubj;
-                    }
-                } else if (predDyn) {
-                    return DynamicTruthModel.DynamicSectTruth.SectPred;
-                }
-
-                break;
-            }
+//            //TODO not done yet
+//            case IMPL: {
+//                //TODO allow indep var if they are involved in (contained within) either but not both subj and pred
+//                Term su = t.sub(0);
+//                if (su.hasAny(Op.VAR_INDEP))
+//                    return null;
+//                Term pu = t.sub(1);
+//                if (pu.hasAny(Op.VAR_INDEP))
+//                    return null;
+//
+//                Op suo = su.op();
+//                //subject has special negation union case
+//                boolean subjDyn = (
+//                    suo == CONJ && validDynamicSubtermsAndNoSharedVars(su)
+//                        ||
+//                    suo == NEG && (su.unneg().op()==CONJ && validDynamicSubtermsAndNoSharedVars(su.unneg()))
+//                );
+//                boolean predDyn = (pu.op() == CONJ && validDynamicSubtermsAndNoSharedVars(pu));
+//
+//
+//                if (subjDyn && predDyn) {
+//                    //choose the simpler to dynamically calculate for
+//                    if (su.volume() <= pu.volume()) {
+//                        predDyn = false; //dyn subj
+//                    } else {
+//                        subjDyn = false; //dyn pred
+//                    }
+//                }
+//
+//                //TODO these need to be consistent with the IntersectionSymm and UnionSymmetric truth functions used in derivation
+//                if (subjDyn) {
+//                    if (suo==NEG) {
+//                        return DynamicTruthModel.DynamicSectTruth.UnionSubj;
+//                    } else {
+//                        return DynamicTruthModel.DynamicSectTruth.SectSubj;
+//                    }
+//                } else if (predDyn) {
+//                    return DynamicTruthModel.DynamicSectTruth.SectPred;
+//                }
+//
+//                break;
+//            }
 
             case CONJ:
                 if (validDynamicSubtermsAndNoSharedVars(t))

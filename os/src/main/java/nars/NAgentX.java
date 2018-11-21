@@ -459,7 +459,7 @@ abstract public class NAgentX extends NAgent {
 
         n.emotion.want(MetaGoal.PerceiveCmplx, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
-        n.emotion.want(MetaGoal.Believe, 0.04f);
+        n.emotion.want(MetaGoal.Believe, 0.15f);
         n.emotion.want(MetaGoal.Desire, 0.25f);
         n.emotion.want(MetaGoal.Action, +1f);
 

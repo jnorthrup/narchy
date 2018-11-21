@@ -309,6 +309,7 @@ public class TestNAR {
         return this;
     }
 
+
     public TestNAR dur(int newDur) {
         nar.time.dur(newDur);
         return this;

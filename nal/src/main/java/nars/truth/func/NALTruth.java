@@ -250,29 +250,23 @@ public enum NALTruth implements TruthFunc {
     IntersectionSym() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            if (T.isPositive() && B.isPositive()) {
-                return Intersection.apply(T, B, m, minConf);
-            } else if (T.isNegative() && B.isNegative()) {
-                Truth C = Intersection.apply(T.neg(), B.neg(), m, minConf);
-                return C != null ? C.neg() : null;
-            } else {
-                return null;
-            }
+            return TruthFunctions2.intersectionSym(T,B,minConf);
         }
     },
 
     UnionSym() {
         @Override
         public @Nullable Truth apply(@Nullable Truth T, @Nullable Truth B, NAR m, float minConf) {
+            return TruthFunctions2.unionSym(T,B,minConf);
 
-            if (T.isPositive() && B.isPositive()) {
-                return Union.apply(T, B, m, minConf);
-            } else if (T.isNegative() && B.isNegative()) {
-                Truth C = Union.apply(T.neg(), B.neg(), m, minConf);
-                return C != null ? C.neg() : null;
-            } else {
-                return null;
-            }
+//            if (T.isPositive() && B.isPositive()) {
+//                return Union.apply(T, B, m, minConf);
+//            } else if (T.isNegative() && B.isNegative()) {
+//                Truth C = Union.apply(T.neg(), B.neg(), m, minConf);
+//                return C != null ? C.neg() : null;
+//            } else {
+//                return null;
+//            }
         }
     },
     Difference() {

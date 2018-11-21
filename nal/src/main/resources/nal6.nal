@@ -206,10 +206,10 @@
 
 
     //Contradiction Neutralize
-    ((&&,Y,A..+) ==> X), ((&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- ((&&,A..+) ==> X), (Belief:IntersectionSym)
-    (--(&&,Y,A..+) ==> X), (--(&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#") |- (--(&&,A..+) ==> X), (Belief:IntersectionSym)
-    (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- (X ==> (&&,A..+)), (Belief:IntersectionSym)
-      (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:IntersectionSym)
+    ((&&,Y,A..+) ==> X), ((&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- ((&&,A..+) ==> X), (Belief:UnionSym)
+    (--(&&,Y,A..+) ==> X), (--(&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#") |- (--(&&,A..+) ==> X), (Belief:UnionSym)
+    (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- (X ==> (&&,A..+)), (Belief:UnionSym)
+      (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:UnionSym)
 
 
 
