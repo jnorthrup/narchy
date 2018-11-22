@@ -4,6 +4,7 @@ import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
@@ -45,6 +46,11 @@ public abstract class SeparateSubtermsCompound implements Compound {
     @Override
     public void forEach(/*@NotNull*/ Consumer<? super Term> action, int start, int stop) {
         subterms().forEach(action, start, stop);
+    }
+
+    @Override
+    public @Nullable Term sub(int start, int end, byte... path) {
+        return end==start ? this : subterms().subSub(start, end, path);
     }
 
     @Override

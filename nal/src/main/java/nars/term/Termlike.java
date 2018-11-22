@@ -42,6 +42,7 @@ public interface Termlike {
         return i >= subs() ? ifOutOfBounds : sub(i);
     }
 
+
     /**
      * number of subterms. if atomic, size=0
      */

@@ -122,6 +122,20 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
+    public @Nullable Term sub(int start, int end, byte... path) {
+        if (end == start)
+            return this;
+        byte a = path[start];
+        if (a!=0)
+            return null;
+        if (end-start == 1)
+            return sub();
+        else
+            return sub().sub(start+1, end, path);
+    }
+
+
+    @Override
     public boolean impossibleSubVolume(int otherTermVolume) {
         return otherTermVolume > sub().volume() /* volume() -  size() */;
     }

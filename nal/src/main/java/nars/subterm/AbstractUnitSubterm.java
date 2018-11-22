@@ -6,6 +6,7 @@ import nars.Op;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
@@ -16,6 +17,21 @@ import java.util.stream.Stream;
 abstract class AbstractUnitSubterm implements Subterms {
 
     protected abstract Term sub();
+
+    @Override
+    public @Nullable Term subSub(int start, int end, byte[] path) {
+        byte a = path[start];
+        if (a != 0)
+            return null;
+        switch (end-start) {
+            case 1:
+                return sub();
+            default:
+                return sub().sub(start+1, end);
+        }
+    }
+
+
 
     @Override
     public final void appendTo(ByteArrayDataOutput out) {

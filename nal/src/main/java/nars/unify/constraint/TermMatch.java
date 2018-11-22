@@ -23,7 +23,17 @@ abstract public class TermMatch {
      * test what can be inferred from the superterm if the direct locator was not possible
      * this is not the direct superterm but the root of the term in which the path may be longer than length 1 so several layers may separate them
      */
-    abstract public boolean testSuper(Term superSuperTerm);
+    abstract public boolean testSuper(Term x);
+
+    //    abstract public static class TermMatchEliminatesFalseSuper extends TermMatch {
+//
+//        @Override
+//        public boolean testSuper(Term x, boolean trueOrFalse) {
+//            return trueOrFalse ? testSuper(x) : testSuperCant(x);
+//        }
+//
+//        abstract public boolean testSuperCant(Term x);
+//    }
 
     /**
      * term representing any unique parameters beyond the the class name which is automatically incorporated into the predicate it forms
@@ -69,9 +79,9 @@ abstract public class TermMatch {
         }
 
         @Override
-        public boolean testSuper(Term superTerm) {
+        public boolean testSuper(Term x) {
             //return trueOrFalse == superTerm.hasAny(struct);
-            Subterms subs = superTerm.subterms();
+            Subterms subs = x.subterms();
             return subs.hasAny(struct);// && subs.OR(x -> x.hasAny(struct));
         }
     }
@@ -172,9 +182,9 @@ abstract public class TermMatch {
         }
 
         @Override
-        public boolean testSuper(Term superTerm) {
+        public boolean testSuper(Term x) {
 
-            return (volMin == 0 || superTerm.volume() >= 1 + volMin) && superTerm.subterms().hasAll(structAll);
+            return (volMin == 0 || x.volume() >= 1 + volMin) && x.subterms().hasAll(structAll);
         }
     }
 
@@ -203,8 +213,8 @@ abstract public class TermMatch {
         }
 
         @Override
-        public boolean testSuper(Term superTerm) {
-            return superTerm.containsRecursively(x);
+        public boolean testSuper(Term x) {
+            return x.containsRecursively(this.x);
         }
     }
 
@@ -227,14 +237,15 @@ abstract public class TermMatch {
         }
 
         @Override
-        public boolean testSuper(Term superTerm) {
-            return (superTerm.volume() >= subsMin + 1); //this is the minimum possible volume, if it was the term and if it was only atoms
+        public boolean testSuper(Term x) {
+            return (x.volume() >= subsMin + 1); //this is the minimum possible volume, if it was the term and if it was only atoms
         }
 
         @Override
         public float cost() {
             return 0.15f;
         }
+
     }
 
     private final class MyUnifyConstraint extends UnifyConstraint {

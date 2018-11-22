@@ -46,6 +46,21 @@ import static nars.Op.ATOM;
  */
 public interface Subterms extends Termlike, Iterable<Term> {
 
+
+    @Nullable default Term subSub(byte[] path) {
+        return subSub(0, path.length, path);
+    }
+
+    @Nullable default Term subSub(int start, int end, byte[] path) {
+        Termlike ptr = this;
+        for (int i = start; i < end; i++) {
+            byte b = path[i];
+            if ((ptr = ptr.subSafe(b)) == Bool.Null)
+                return null;
+        }
+        return ptr != this ? (Term) ptr : null;
+    }
+
     interface SubtermsBytesCached {
         void bytes(DynBytes builtWith);
     }

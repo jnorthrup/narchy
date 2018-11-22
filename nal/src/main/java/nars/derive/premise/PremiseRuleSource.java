@@ -26,7 +26,6 @@ import nars.term.var.VarPattern;
 import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
 import nars.unify.constraint.*;
-import nars.unify.constraint.TermMatch;
 import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 import org.eclipse.collections.api.set.ImmutableSet;
@@ -732,18 +731,19 @@ public class PremiseRuleSource extends ProxyTerm {
     }
 
     private void matchSuper(boolean taskOrBelief, TermMatch m, boolean trueOrFalse) {
-        pre.add(new TermMatchPred(m, trueOrFalse, false, TaskOrBelief(taskOrBelief)));
+        pre.add(new TermMatchPred<>(m, trueOrFalse, false, TaskOrBelief(taskOrBelief)));
     }
 
 
     private void match(boolean taskOrBelief, byte[] path, TermMatch m, boolean isOrIsnt) {
-        if (path.length == 0) {
-            //root
-            pre.add(new TermMatchPred<>(m, isOrIsnt, true, TaskOrBelief(taskOrBelief)));
-        } else {
-            //subterm
-            pre.add(new TermMatchPred.Subterm(path, m, isOrIsnt, TaskOrBelief(taskOrBelief)));
-        }
+        pre.add(new TermMatchPred<>(m, isOrIsnt, true, TaskOrBelief(taskOrBelief).path(path)));
+//        if (path.length == 0) {
+//            //root
+//            pre.add(new TermMatchPred<>(m, isOrIsnt, true, TaskOrBelief(taskOrBelief)));
+//        } else {
+//            //subterm
+//            pre.add(new TermMatchPred.Subterm(path, m, isOrIsnt, TaskOrBelief(taskOrBelief)));
+//        }
     }
 
 
@@ -807,7 +807,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 }, (inTask, inBelief) -> {
 
-                    if (trueOrFalse) { //positive only (absence of evidence / evidence of absence)
+                    if (trueOrFalse /*|| m instanceof TermMatch.TermMatchEliminatesFalseSuper*/) { //positive only (absence of evidence / evidence of absence)
                         if (inTask)
                             matchSuper(true, m, trueOrFalse);
                         if (inBelief)
@@ -916,7 +916,7 @@ public class PremiseRuleSource extends ProxyTerm {
 //    }
 
 
-    private static Function<PreDerivation, Term> TaskOrBelief(boolean taskOrBelief) {
+    private static RootTermAccessor TaskOrBelief(boolean taskOrBelief) {
         return taskOrBelief ? TaskTerm : BeliefTerm;
     }
 
@@ -996,8 +996,8 @@ public class PremiseRuleSource extends ProxyTerm {
         }
 
         public Function<PreDerivation,Term> path(byte... path) {
-            assert(path.length>0);
-            return (d)->apply(d).sub(path);
+            return (path.length == 0) ? this :
+                    d -> apply(d).sub(path);
         }
     }
 }

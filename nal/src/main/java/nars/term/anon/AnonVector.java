@@ -8,6 +8,7 @@ import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.subterm.TermVector;
 import nars.term.Term;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -203,7 +204,7 @@ public class AnonVector extends TermVector implements Subterms.SubtermsBytesCach
         return indexOf(t.anonID(neg));
     }
 
-    private int indexOf(AnonID t) {
+    public int indexOf(AnonID t) {
         return indexOf(t.anonID);
     }
 
@@ -325,5 +326,25 @@ public class AnonVector extends TermVector implements Subterms.SubtermsBytesCach
     public void bytes(DynBytes builtWith) {
         if (bytes == null)
             bytes = builtWith.arrayCopy(1 /* skip op byte */);
+    }
+
+    @Override
+    public @Nullable Term subSub(int start, int end, byte[] path) {
+        byte z = path[start];
+        if (subterms.length <= z)
+            return null;
+
+        switch (end-start) {
+            case 1:
+                return sub(z);
+            case 2:
+                if (path[start+1]==0) {
+                    short a = this.subterms[z];
+                    if (a < 0)
+                        return AnonID.idToTerm((short) -a); //if the subterm is negative its the only way to realize path of length 2
+                }
+                break;
+        }
+        return null;
     }
 }

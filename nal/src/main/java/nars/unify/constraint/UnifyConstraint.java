@@ -128,20 +128,32 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
 
         /** taskterm, beliefterm -> extracted */
         final BiFunction<Term,Term,Term> extractX, extractY;
+        private float cost;
 
         ConstraintAsPredicate(RelationConstraint m, byte[] xInTask, byte[] xInBelief, byte[] yInTask, byte[] yInBelief) {
             super($.p(m.ref /*term()*/, $.p(pp(xInTask), pp(xInBelief), pp(yInTask), pp(yInBelief))));
             this.constraint = m;
 
-            if (xInTask!=null && (xInBelief == null || xInTask.length < xInBelief.length))
-                extractX = xInTask.length == 0 ? (t,b)->t : (t,b)->t.sub(xInTask);
-            else
-                extractX = xInBelief.length == 0 ? (t,b)->b : (t,b)->b.sub(xInBelief);
+            float cost = m.cost();
+            int costPath = 0;
 
-            if (yInTask!=null && (yInBelief == null || yInTask.length < yInBelief.length))
-                extractY = yInTask.length == 0 ? (t,b)->t : (t,b)->t.sub(yInTask);
-            else
-                extractY = yInBelief.length == 0 ? (t,b)->b : (t,b)->b.sub(yInBelief);
+            if (xInTask!=null && (xInBelief == null || xInTask.length < xInBelief.length)) {
+                extractX = xInTask.length == 0 ? (t, b) -> t : (t, b) -> t.sub(xInTask);
+                costPath += xInTask.length;
+            } else {
+                extractX = xInBelief.length == 0 ? (t, b) -> b : (t, b) -> b.sub(xInBelief);
+                costPath += xInBelief.length;
+            }
+
+            if (yInTask!=null && (yInBelief == null || yInTask.length < yInBelief.length)) {
+                extractY = yInTask.length == 0 ? (t, b) -> t : (t, b) -> t.sub(yInTask);
+                costPath += yInTask.length;
+            } else {
+                extractY = yInBelief.length == 0 ? (t, b) -> b : (t, b) -> b.sub(yInBelief);
+                costPath += yInBelief.length;
+            }
+
+            this.cost = cost + costPath * 0.001f;
         }
 
         @Override
@@ -169,7 +181,7 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
 
         @Override
         public float cost() {
-            return constraint.cost();
+            return cost;
         }
     }
 
