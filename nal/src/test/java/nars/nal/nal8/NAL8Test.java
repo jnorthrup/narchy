@@ -257,7 +257,7 @@ public class NAL8Test extends NALTest {
                 .believe("(x &&+3 y)", Tense.Present, 1f, 0.9f)
                 .mustBelieve(cycles, "x", 1f, 0.81f, 0)
                 .mustBelieve(cycles, "y", 1f, 0.81f, 3)
-                .mustGoal(cycles, "x", 1f, 0.81f, (t) -> t >= 0);
+                .mustGoal(cycles, "x", 1f, 0.81f, (t) -> t == -3);
     }
 
     @Test
@@ -590,7 +590,7 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(0, "(happy ==>-3 out). |")
                 .inputAt(2, "happy! |")
-                .mustGoal(cycles, "out", 1f, 0.45f, (t) -> (t >= 2));
+                .mustGoal(cycles, "out", 1f, 0.45f, (t) -> t==-1);
 
 
     }
@@ -694,7 +694,7 @@ public class NAL8Test extends NALTest {
                 .inputAt(1, "(a &&+3 b). |")
                 .inputAt(5, "b! |")
 
-                .mustGoal(cycles, "a", 1f, 0.3f, t -> (t >= 5))
+                .mustGoal(cycles, "a", 1f, 0.3f, t -> t==2)
                 .mustNotOutput(cycles, "a", GOAL, ETERNAL);
     }
 
@@ -704,7 +704,7 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(3, "(--a &&+3 b). |")
                 .inputAt(6, "b! |")
-                .mustGoal(cycles, "a", 0f, 0.81f, (t -> t >= 6))
+                .mustGoal(cycles, "a", 0f, 0.81f, t -> t==3)
                 .mustNotOutput(cycles, "a", GOAL, ETERNAL);
     }
 
@@ -714,7 +714,7 @@ public class NAL8Test extends NALTest {
         test
             .inputAt(0, "(--a ==>+1 b). |")
             .inputAt(1, "b! |")
-            .mustGoal(5, "a", 0f, 0.81f, (t) -> t >= 1 /* desired at same time as b since it precedes it */);
+            .mustGoal(5, "a", 0f, 0.81f, (t) -> t == 0);
 
     }
 
@@ -724,7 +724,7 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(3, "(a &&+3 --b). |")
                 .inputAt(6, "--b! |")
-                .mustGoal(16, "a", 1f, 0.5f, (t) -> t >= 6)
+                .mustGoal(16, "a", 1f, 0.5f, (t) -> t == 3)
                 .mustNotOutput(16, "a", GOAL, ETERNAL);
     }
 
@@ -870,7 +870,7 @@ public class NAL8Test extends NALTest {
         test
                 .input("x! +0..+100")
                 .input("(y &&+5 x). +20..+30")
-                .mustGoal(cycles, "y", 1f, 0.1f, (t) -> t >= 20 /* dropping 2nd event */)
+                .mustGoal(cycles, "y", 1f, 0.1f, (a,b)->(a==-5 && b==5))
                 .mustNotOutput(cycles, "x", GOAL, (t) -> true /* shouldnt drop first event */)
                 .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0f, 1f, (long s, long e) -> (e-s > 10))
                 .mustNotOutput(cycles, "y", GOAL, 0f, 0.5f, 0f, 1f, (long s, long e) -> (e-s > 10));
@@ -912,22 +912,6 @@ public class NAL8Test extends NALTest {
 
     }
 
-    @Test void testProllyADuplicate() {
-        /*
-        WRONG TIMING
-        $.03 x! 86⋈88 %.75;.03% {103: F;I;P} ((%1,%2,eventOf(%2,%1)),((--,conjWithout(%2,%1)),((DesireWeakN-->Goal),(BeliefSubSequence-->Time))))
-            $.50 x! 101⋈102 %.25;.23% {102: P}
-            $.21 (x &&+4 (--,x)). 86⋈88 %1.0;.81% {92: F;I} ((%1,%2,(--,is(%2,"==>")),(--,is(%1,"==>"))),((polarize(%1,task) &&+- polarize(%2,belief)),((IntersectionDepolarized-->Belief),(Relative-->Time),(VarIntro-->Also))))
-         */
 
-        test.dur(2);
-        test
-                .inputAt(5, "x! |")
-                .inputAt(0, "(x &&+3 --x).")
-                .mustOutput(cycles, "x", GOAL, 0, 0, 0, 0.85f, t->t==7)
-                .mustOutput(cycles, "x", GOAL, 0, 1f, 0, 0.85f, t->(t-5)%3==0)
-                .mustNotOutput(cycles, "x", GOAL, 0, 1f, 0, 0.85f, t->(t-5)%3!=0);
-
-    }
 
 }

@@ -567,7 +567,7 @@ public class Occurrify extends TimeGraph {
         TaskInBelief() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveDT(d, x, d.occ.reset(true, false, x)); //special
+                return x.hasXternal() ? solveDT(d, x, d.occ.reset(x)) : pair(x, occurrence(d)); //special
             }
 
             @Override
@@ -584,7 +584,7 @@ public class Occurrify extends TimeGraph {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
 
-                @Nullable Pair<Term, long[]> p = solveDT(d, x, d.occ.reset(false, true, x));
+                @Nullable Pair<Term, long[]> p = solveDT(d, x, d.occ.reset(x));
                 if (p != null) {
                     long[] se = p.getTwo();
                     if (se[0] != ETERNAL) {
@@ -1220,12 +1220,16 @@ public class Occurrify extends TimeGraph {
 
             Term inner = d.taskTerm, outer = d.beliefTerm;
 
+            //TODO some cases: subTimeLast. also would help to specifically locate the pos/neg one
+
             shift = outer.subTimeFirst(inner);
             if (shift == DTERNAL) {
                 shift = outer.subTimeFirst(inner.neg()); //try negative
                 if (shift == DTERNAL)
                     return null; //TODO why if this happens
             }
+
+            shift = -shift;
 
         } else {
             //shift = the occurrence of the 2nd event (since it was conjDropIfEarly)
@@ -1271,7 +1275,7 @@ public class Occurrify extends TimeGraph {
             }
 
             int offset = offsets[(offsets.length > 1) ? d.nar.random().nextInt(offsets.length) : 0];
-            assert (offset != DTERNAL && offset != XTERNAL);
+                assert (offset != DTERNAL && offset != XTERNAL);
             w = new long[]{d.taskStart + offset, d.taskEnd + offset};
         }
         return pair(x, w);

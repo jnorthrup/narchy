@@ -4,6 +4,7 @@ import com.googlecode.lanterna.input.KeyType;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.exe.Exe;
+import jcog.math.FloatAveraged;
 import jcog.math.Quantiler;
 import jcog.pri.PLinkHashCached;
 import jcog.pri.PriReference;
@@ -98,8 +99,10 @@ public class NARui {
                 c = n.onCycle(this::update);
                 sonify.on((x)->{
                    if (x) {
-                       g = new Granulize(gBuf, 44100, 0.02f, 0.9f, new XoRoShiRo128PlusRandom(1))
-                                    .setStretchFactor(1f);
+                       g = new Granulize(gBuf, 44100, 0.2f, 0.9f, new XoRoShiRo128PlusRandom(1));
+                                    //.setStretchFactor(1/50f)
+                       g.pitchFactor.set(4f);
+
                        Audio.the().play(g);
                    } else {
                        g.stop();
@@ -116,9 +119,11 @@ public class NARui {
                     float[] f = s.array();
                     float max = s.maxValue(), min = s.minValue(), range = max - min;
                     if (range < Float.MIN_NORMAL) range = 1;
-                    System.arraycopy( f,  f.length - gBuf.length, gBuf, 0, gBuf.length);
-                    for (int i = 0, gBufLength = gBuf.length; i < gBufLength; i++) {
-                        gBuf[i] = (gBuf[i] - min) / range;
+
+                    FloatAveraged hp = new FloatAveraged(0.9f, false); //TODO use freq based high-pass filter
+                    int k = 0;
+                    for (int i = f.length - gBuf.length; i < f.length; i++) {
+                        gBuf[k++] = hp.valueOf((f[i] - min)/range);
                     }
                     //g.setAmplitude(1f/ m);
                 }

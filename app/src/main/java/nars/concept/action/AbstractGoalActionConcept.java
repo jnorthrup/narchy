@@ -169,12 +169,14 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 curi = curiDithered;
 
                 //pre-load curiosity for the future
-                long lastCuriosity = curiosityTable.series.end();
-                long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : s;
-                long curiEnd = Math.max(curiStart, e);
-                in.input(
-                        curiosity(curi /*goal*/, curiStart, curiEnd, n)
-                );
+                if (curiosity.goal.getOpaque()) {
+                    long lastCuriosity = curiosityTable.series.end();
+                    long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : s;
+                    long curiEnd = Math.max(curiStart, e);
+                    in.input(
+                            curiosity(curi /*goal*/, curiStart, curiEnd, n)
+                    );
+                }
 
                 actionTruth = curiosity.injection.get().inject(actionTruth, curi);
 

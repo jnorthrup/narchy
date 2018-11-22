@@ -29,7 +29,7 @@ class NAL8EternalMixTest extends NALTest {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.time.dur(1);
         //test.nar.confResolution.set(0.04f); //coarse
-        test.nar.termVolumeMax.set(20);
+        test.nar.termVolumeMax.set(24);
     }
 
     @Test
@@ -377,7 +377,7 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .input("--use! :|:")
                 .inputAt(1, "( hold &&+5 --use ).")
-                .mustGoal(cycles, "hold", 1f, 0.81f, 0)
+                .mustGoal(cycles, "hold", 1f, 0.81f, -5)
                 .mustNotOutput(cycles, "use", GOAL, ETERNAL)
         ;
     }

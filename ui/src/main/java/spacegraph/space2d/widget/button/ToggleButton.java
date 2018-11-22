@@ -46,7 +46,9 @@ public class ToggleButton extends AbstractButton {
         if (this.on.compareAndSet(!on, on)) {
             if (action != null) {
                 //Exe.invoke(()->{
+
                     action.value(this, on);
+
                 //});
             }
         }

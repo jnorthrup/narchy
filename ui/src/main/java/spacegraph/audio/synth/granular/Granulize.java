@@ -15,9 +15,9 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
 	private float playTime;
 
     /** this actually represents the target amplitude which the current amplitude will continuously interpolate towards */
-    private final NumberX amplitude = new AtomicFloat(1.0f);
-	private final NumberX stretchFactor = new AtomicFloat(1.0f);
-	private final Number pitchFactor = new AtomicFloat(1.0f);
+	public final NumberX amplitude = new AtomicFloat(1.0f);
+	public final NumberX stretchFactor = new AtomicFloat(1.0f);
+	public final NumberX pitchFactor = new AtomicFloat(1.0f);
 
     private float currentAmplitude = amplitude.floatValue();
 

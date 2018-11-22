@@ -807,10 +807,12 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 }, (inTask, inBelief) -> {
 
-                    if (inTask)
-                        matchSuper(true, m, trueOrFalse);
-                    if (inBelief)
-                        matchSuper(false, m, trueOrFalse);
+                    if (trueOrFalse) { //positive only (absence of evidence / evidence of absence)
+                        if (inTask)
+                            matchSuper(true, m, trueOrFalse);
+                        if (inBelief)
+                            matchSuper(false, m, trueOrFalse);
+                    }
 
                     constraints.add(m.constraint(x, trueOrFalse));
                 }

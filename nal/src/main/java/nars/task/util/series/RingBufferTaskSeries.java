@@ -4,7 +4,6 @@ import jcog.TODO;
 import jcog.WTF;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.math.Longerval;
-import nars.Param;
 import nars.Task;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,9 +29,9 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
     public final void push(T t) {
         long last = end();
         if (last!=TIMELESS && last >= t.start()) {
-            if (Param.DEBUG)
-                throw new RuntimeException(RingBufferTaskSeries.class + " only supports appending in linear, non-overlapping time sequence");
-            else
+//            if (Param.DEBUG)
+//                throw new RuntimeException(RingBufferTaskSeries.class + " only supports appending in linear, non-overlapping time sequence");
+//            else
                 return; //?
         }
 

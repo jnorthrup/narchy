@@ -536,6 +536,9 @@ public class TestNAR {
     public TestNAR mustGoal(long cyclesAhead, String goalTerm, float freq, float conf, LongPredicate occ) {
         return mustOutput(cyclesAhead, goalTerm, GOAL, freq, freq, conf, conf, occ);
     }
+    public TestNAR mustGoal(long cyclesAhead, String goalTerm, float freq, float conf, LongLongPredicate occ) {
+        return mustOutput(cyclesAhead, goalTerm, GOAL, freq, freq, conf, conf, occ);
+    }
 
 
     public TestNAR mustGoal(long cyclesAhead, String goalTerm, float freq, float conf, long start, long end) {

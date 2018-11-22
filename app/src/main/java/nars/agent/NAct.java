@@ -244,7 +244,8 @@ public interface NAct {
         float[] lr = new float[] { 0.5f, 0.5f };
 
         float decay =
-                0.5f;
+                //0.5f;
+                0.9f;
                 //1f; //instant
 
         NAR n = nar();
@@ -263,7 +264,7 @@ public interface NAct {
                     //ll = x ? 1 : 0;
                 }
             }
-            lr[0] = ll;
+            lr[0] = x?ll:0.5f;
             L.value(x);
             //System.out.println("L=" + x  + " <- " + ll );
             return $.t(x ? 1 : 0, n.confDefault(BELIEF));
@@ -286,7 +287,7 @@ public interface NAct {
                     //rr = x ? 1 : 0;
                 }
             }
-            lr[1] = rr;
+            lr[1] = x?rr:0.5f;
             R.value(x);
             //System.out.println("R=" + x  + " <- " + rr );
             return $.t(x ? 1 : 0, n.confDefault(BELIEF));

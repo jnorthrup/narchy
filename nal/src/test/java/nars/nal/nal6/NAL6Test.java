@@ -1035,42 +1035,42 @@ public class NAL6Test extends NALTest {
         ;
     }
 
-    @Test void testImplIntersectionPos() {
-        test
-                .believe("(A ==> M)", 0.6f, 0.9f)
-                .believe("(B ==> M)", 0.7f, 0.9f)
-                .mustBelieve(cycles, "((A && B) ==> M)", .54f, 0.81f) //some freq and conf, dunno
-        ;
-    }
-    @Test void testImplIntersectionPosNeg() {
-        test
-                .believe("(A ==> M)", 0.25f, 0.9f)
-                .believe("(B ==> M)", 0.75f, 0.9f)
-                .mustNotOutputAnything()
-        ;
-        test.run(10);
-    }
-    @Test void testImplIntersectionNeg() {
-        test
-                .believe("(A ==> M)", 0.4f, 0.9f)
-                .believe("(B ==> M)", 0.3f, 0.9f)
-                .mustBelieve(cycles, "((A && B) ==> M)", .46f, 0.81f) //some freq and conf, dunno
-        ;
-    }
-    @Test void testImplUnionPos() {
-        test
-                .believe("(A ==> M)", 0.6f, 0.9f)
-                .believe("(B ==> M)", 0.7f, 0.9f)
-                .mustBelieve(cycles, "((A || B) ==> M)", .76f, 0.81f)
-        ;
-    }
-    @Test void testImplUnionNeg() {
-        test
-                .believe("(A ==> M)", 0.2f, 0.9f)
-                .believe("(B ==> M)", 0.1f, 0.9f)
-                .mustBelieve(cycles, "((A || B) ==> M)", .04f, 0.81f)
-        ;
-    }
+//    @Test void testImplIntersectionPos() {
+//        test
+//                .believe("(A ==> M)", 0.6f, 0.9f)
+//                .believe("(B ==> M)", 0.7f, 0.9f)
+//                .mustBelieve(cycles, "((A && B) ==> M)", .54f, 0.81f) //some freq and conf, dunno
+//        ;
+//    }
+//    @Test void testImplIntersectionPosNeg() {
+//        test
+//                .believe("(A ==> M)", 0.25f, 0.9f)
+//                .believe("(B ==> M)", 0.75f, 0.9f)
+//                .mustNotOutputAnything()
+//        ;
+//        test.run(10);
+//    }
+//    @Test void testImplIntersectionNeg() {
+//        test
+//                .believe("(A ==> M)", 0.4f, 0.9f)
+//                .believe("(B ==> M)", 0.3f, 0.9f)
+//                .mustBelieve(cycles, "((A && B) ==> M)", .46f, 0.81f) //some freq and conf, dunno
+//        ;
+//    }
+//    @Test void testImplUnionPos() {
+//        test
+//                .believe("(A ==> M)", 0.6f, 0.9f)
+//                .believe("(B ==> M)", 0.7f, 0.9f)
+//                .mustBelieve(cycles, "((A || B) ==> M)", .76f, 0.81f)
+//        ;
+//    }
+//    @Test void testImplUnionNeg() {
+//        test
+//                .believe("(A ==> M)", 0.2f, 0.9f)
+//                .believe("(B ==> M)", 0.1f, 0.9f)
+//                .mustBelieve(cycles, "((A || B) ==> M)", .04f, 0.81f)
+//        ;
+//    }
 
     @Test void testDecomposePositiveImplicationCommonConjunctionSubterm() {
         //tests:

@@ -201,16 +201,19 @@ abstract public class DynamicTruthModel {
             public Truth apply(DynTruth l, NAR nar) {
                 boolean negComponents = !decidePolarity(l, nar);
                 Truth r = super.apply(l, nar, union ? !negComponents : negComponents, union);
+                if (negComponents&&r!=null)
+                    r = r.neg();
                 return r;
             }
 
             private boolean decidePolarity(DynTruth l, NAR nar) {
                 int posCount = l.count(Truthed::isPositive);
 
-                if (posCount == 0) return true;
+                if (posCount == 0) return false;
 
                 int s = l.size();
-                if (posCount == s) return false;
+                if (posCount == s) return true;
+
 
                 return nar.random().nextFloat() <= ((float)posCount)/ s;
             }

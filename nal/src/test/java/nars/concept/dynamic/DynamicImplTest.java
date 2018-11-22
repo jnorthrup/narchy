@@ -45,6 +45,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
         //            n.believe("a:y", 1f, 0.9f);
         //            n.believe("a:(--,y)", 0f, 0.9f);
         n.believe("(z ==> a)", 0f, 0.9f);
+        n.believe("(w ==> a)", 0f, 0.9f);
         n.believe("(--z ==> a)", 0.75f, 0.9f);
         //            n.believe("a:(--,z)", 1f, 0.9f);
         //            n.believe("x:b", 1f, 0.9f);
@@ -59,11 +60,15 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
                 assertTrue(isDynamicTable(pp));
                 assertEquals($.t(1f, 0.81f), n.beliefTruth(pp, now));
 
-                Term pn = $$("((x && z) ==> a)");
-                assertEquals($.t(0f, 0.81f), n.beliefTruth(pn, now));
+//                Term pn = $$("((x && z) ==> a)");
+//                assertEquals($.t(0f, 0.81f), n.beliefTruth(pn, now));
 
                 Term pnn = $$("((x && --z) ==> a)");
                 assertEquals($.t(0.75f, 0.81f), n.beliefTruth(pnn, now));
+
+
+                assertEquals($.t(0f, 0.81f), n.beliefTruth($$("((z && w) ==> a)"), now));
+                assertEquals($.t(0f, 0.81f), n.beliefTruth($$("((z || w) ==> a)"), now));
             }
 
             //OR

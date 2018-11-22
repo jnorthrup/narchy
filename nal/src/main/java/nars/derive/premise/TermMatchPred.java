@@ -1,5 +1,6 @@
 package nars.derive.premise;
 
+import jcog.WTF;
 import nars.$;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -32,6 +33,8 @@ public final class TermMatchPred<X> extends AbstractPred<X> {
         this.match = match;
         this.trueOrFalse = trueOrFalse;
         this.exactOrSuper = exactOrSuper;
+        if (!trueOrFalse && !exactOrSuper)
+            throw new WTF();
     }
 
     static Term name(TermMatch match, Function resolve, boolean exactOrSuper) {
@@ -80,7 +83,7 @@ public final class TermMatchPred<X> extends AbstractPred<X> {
             this.match = m;
             this.path = path;
             this.cost = (float) (1 + Math.log(path.length)) * match.cost();
-            this.preTestSuper = true; //TODO param
+            this.preTestSuper = trueOrFalse; //TODO param
         }
 
         @Override

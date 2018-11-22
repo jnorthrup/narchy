@@ -27,6 +27,8 @@ public class Curiosity {
     private final IntToFloatFunction pri = i -> curiosity.get(i).priElseZero();
     public final NAgent agent;
 
+    public final AtomicBoolean goal = new AtomicBoolean(true);
+
 
     public enum CuriosityInjection {
         Passive {
