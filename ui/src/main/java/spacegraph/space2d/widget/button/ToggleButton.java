@@ -3,6 +3,8 @@ package spacegraph.space2d.widget.button;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.video.ImageTexture;
@@ -42,12 +44,18 @@ public class ToggleButton extends AbstractButton {
         return new IconToggleButton(ImageTexture.awesome(icon));
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(ToggleButton.class);
+
     public ToggleButton on(boolean on) {
         if (this.on.compareAndSet(!on, on)) {
             if (action != null) {
                 //Exe.invoke(()->{
 
+                try {
                     action.value(this, on);
+                } catch (Throwable t) {
+                    logger.error("{}", t);
+                }
 
                 //});
             }

@@ -49,7 +49,7 @@ public class ConjClustering extends Causable {
     private int volMax, volMaxSafe;
     private int ditherTime;
     private boolean popConjoinedTasks = false;
-
+    static final boolean priCopyOrTransfer = true;
 
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
         this(nar, punc, (t) -> true, centroids, capacity);
@@ -309,7 +309,8 @@ public class ConjClustering extends Causable {
 //                                float confFactor =
 //                                        (conf / (conf + confMax));
 
-                                m.pri(Prioritizable.fund(Util.unitize((priMin*uu.length) * cmplFactor /* * freqFactor  * confFactor*/ ), false, uu));
+
+                                m.pri(Prioritizable.fund(Util.unitize((priMin*uu.length) * cmplFactor /* * freqFactor  * confFactor*/ ), priCopyOrTransfer, uu));
 
                                 if (popConjoinedTasks) {
                                     for (Task aa : actualTasks)

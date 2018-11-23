@@ -27,7 +27,9 @@ public abstract class Retemporalize extends TermTransform.NegObliviousTermTransf
         @Override
         public Term transformTemporal(Compound x, int dtNext) {
             Op xo = x.op();
-            return super.transformCompound(x, xo, xo.temporal ? XTERNAL : DTERNAL); // && dtNext == DTERNAL ? XTERNAL : DTERNAL);
+            // && dtNext == DTERNAL ? XTERNAL : DTERNAL);
+            int dt = xo.temporal ? XTERNAL : DTERNAL;
+            return x.transform(this, xo, dt);
 
             //Term y = Retemporalize.super.transformTemporal(x, dtNext);
             //return y != x ? xternalIfNecessary(x, y, dtNext) : x;
@@ -59,7 +61,7 @@ public abstract class Retemporalize extends TermTransform.NegObliviousTermTransf
             if (n == xdt)
                 return super.transformNonNegCompound(x); //fast fail if dt doesnt change
             else {
-                return super.transformCompound(x, xo, n);
+                return x.transform(this, xo, n);
             }
         }
     }

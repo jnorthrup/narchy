@@ -183,4 +183,6 @@ abstract public class TermMetadata implements Termlike {
         return hash;
     }
 
+    @Override
+    abstract public boolean equals(Object obj);
 }

@@ -35,6 +35,7 @@ import java.util.TreeSet;
 
 import static nars.Op.*;
 import static nars.term.Functor.f0;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -78,13 +79,33 @@ public class Builtin {
                 }
             },
 
+//            new Functor.AbstractInlineFunctor2("sectRepolarize") {
+//                @Override
+//                protected Term apply(Term inh, Term subterm) {
+//                    if (inh.hasAny(Op.NEG)) {
+//                        if (subterm == Int.the(0)) {
+//                            if (inh.sub(0).op()==NEG) {
+//                                return INH.the(inh.sub(0).unneg(), inh.sub(1)).neg();
+//                            }
+//                        } else if (subterm == Int.the(1)) {
+//                            if (inh.sub(1).op()==NEG) {
+//                                return INH.the(inh.sub(0), inh.sub(1).unneg()).neg();
+//                            }
+//                        } else
+//                            return Null;
+//                    }
+//
+//                    return inh;
+//                }
+//            },
+
             /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive event */
             new Functor.AbstractInlineFunctor2("conjWithout") {
                 @Override
                 protected Term apply(Term conj, Term event) {
                     Term x = Conj.without(conj, event, false);
                     if (conj.equals(x))
-                        return Bool.Null;
+                        return Null;
                     return x;
                 }
             },
@@ -94,7 +115,7 @@ public class Builtin {
                 protected Term apply(Term include, Term exclude) {
                     Term x = Conj.withoutAll(include, exclude);
                     if (include.equals(x))
-                        return Bool.Null;
+                        return Null;
                     return x;
                 }
             },
@@ -102,7 +123,7 @@ public class Builtin {
             /** applies the changes in structurally similar terms "from" and "to" to the target term */
             Functor.f3((Atom) $.the("substDiff"), (target, from, to) -> {
                 if (from.equals(to))
-                    return Bool.Null;
+                    return Null;
 
                 int n;
                 if (from.op() == to.op() && (n = from.subs()) == to.subs()) {
@@ -122,7 +143,7 @@ public class Builtin {
                             return y;
                     }
                 }
-                return Bool.Null;
+                return Null;
             }),
 
             /** similar to C/Java "indexOf" but returns a set of all numeric indices where the 2nd argument occurrs as a subterm of the first
@@ -142,13 +163,13 @@ public class Builtin {
                         }
                     }
                     if (indices == null)
-                        return Bool.Null;
+                        return Null;
                     else {
                         return SETe.the(indices);
 
                     }
                 }
-                return Bool.Null;
+                return Null;
             }),
             Functor.f2("keyValues", (x, y) -> {
 
@@ -163,11 +184,11 @@ public class Builtin {
                         }
                     }
                     if (indices == null)
-                        return Bool.Null;
+                        return Null;
                     else {
                         switch (indices.size()) {
                             case 0:
-                                return Bool.Null;
+                                return Null;
                             case 1:
                                 return indices.first();
                             default:
@@ -176,7 +197,7 @@ public class Builtin {
                         }
                     }
                 }
-                return Bool.Null;
+                return Null;
             }),
 
             Functor.f2("varMask", (x, y) -> {
@@ -188,7 +209,7 @@ public class Builtin {
                     }
                     return $.p(t);
                 }
-                return Bool.Null;
+                return Null;
             }),
 
 
@@ -217,8 +238,8 @@ public class Builtin {
 
             Functor.f2("ifThen", (condition, conseq) -> {
                 if (!condition.equals(Bool.True)) {
-                    if (condition== Bool.Null)
-                        return Bool.Null;
+                    if (condition== Null)
+                        return Null;
                     return null;
                 } else
                     return conseq;
@@ -233,7 +254,7 @@ public class Builtin {
                     else if (condition == Bool.False)
                         return ifFalse;
                     else
-                        return Bool.Null;
+                        return Null;
                 }
             }),
 
@@ -245,11 +266,11 @@ public class Builtin {
                     else if (condition.equals(Bool.False))
                         return conseqFalse;
                 }
-                return Bool.Null;
+                return Null;
             }),
 
             Functor.f2("ifNeqRoot", (returned, compareTo) ->
-                    !returned.equalsRoot(compareTo) ? returned : Bool.Null
+                    !returned.equalsRoot(compareTo) ? returned : Null
             ),
 
 
@@ -316,7 +337,7 @@ public class Builtin {
 
         nar.on(Functor.f1("varIntro", (x) -> {
             Pair<Term, Map<Term, Term>> result = nars.op.DepIndepVarIntroduction.the.apply(x, nar.random());
-            return result != null ? result.getOne() : Bool.Null;
+            return result != null ? result.getOne() : Null;
         }));
 
 
@@ -328,20 +349,20 @@ public class Builtin {
 
             Term x = c.sub(0, null);
             if (x == null)
-                return Bool.Null;
+                return Null;
 
-            Term index = c.sub(1, Bool.Null);
-            if (index == Bool.Null)
-                return Bool.Null;
+            Term index = c.sub(1, Null);
+            if (index == Null)
+                return Null;
 
             int which;
             if (index != null) {
                 if (index instanceof Variable)
-                    return Bool.Null;
+                    return Null;
 
                 which = $.intValue(index, -1);
                 if (which < 0) {
-                    return Bool.Null;
+                    return Null;
                 }
             } else {
 
@@ -426,13 +447,13 @@ public class Builtin {
                 oo = t.op();
             }
             if (oo != CONJ)
-                return Bool.Null;
+                return Null;
 
             FasterList<LongObjectPair<Term>> ee = Conj.eventList(t);
             ee.remove(nar.random().nextInt(ee.size()));
             Term x = Conj.conj(ee);
             if (x.equals(t))
-                return Bool.Null;
+                return Null;
             assert(x != null);
             return x.negIf(negated);
         }));
@@ -444,7 +465,7 @@ public class Builtin {
             protected Term apply(Term conj, Term event) {
                 Term x = Conj.without(conj, event, true);
                 if (conj.equals(x))
-                    return Bool.Null;
+                    return Null;
                 return x;
             }
         });
@@ -458,7 +479,7 @@ public class Builtin {
                 boolean filterContradiction = false;
                 Term x = Conj.conjDrop(conj, event, false, filterContradiction);
                 if (conj.equals(x))
-                    return Bool.Null;
+                    return Null;
                 return x;
             }
         });
@@ -468,7 +489,7 @@ public class Builtin {
             protected Term apply(Term conj, Term event) {
                 Term x = Conj.conjDrop(conj, event, true, false);
                 if (conj.equals(x))
-                    return Bool.Null;
+                    return Null;
                 return x;
             }
         });

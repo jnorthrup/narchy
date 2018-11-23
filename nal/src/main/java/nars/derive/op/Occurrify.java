@@ -870,9 +870,9 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                if (d.concSingle || (d._belief == null || d.beliefStart == ETERNAL)) {
+                if (d._belief == null || d.concSingle || d.beliefStart == ETERNAL) {
                     return new long[]{d.taskStart, d.taskEnd};
-                } else if (d.taskStart == ETERNAL && d._belief != null) {
+                } else if (d.taskStart == ETERNAL) {
                     return new long[]{d.beliefStart, d.beliefEnd};
                 } else {
 
@@ -880,18 +880,16 @@ public class Occurrify extends TimeGraph {
 
                     long[] i = Longerval.intersectionArray(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd);
                     if (i == null) {
-                        //if (Param.DEBUG)
-                        //assert(false == intersectFilter.test(d));
-                        throw new WTF("shouldnt happen");
+                        throw new WTF("should have been filtered in Truthify");
                     }
                     return i;
                 }
             }
 
-//            @Override
-//            public BeliefProjection beliefProjection() {
-//                return BeliefProjection.Raw;
-//            }
+            @Override
+            public BeliefProjection beliefProjection() {
+                return BeliefProjection.Raw;
+            }
         },
 
 //        /**

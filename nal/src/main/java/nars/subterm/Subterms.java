@@ -23,6 +23,7 @@ import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
 import nars.unify.ellipsis.EllipsisMatch;
 import nars.unify.mutate.CommutivePermutations;
+import org.apache.lucene.index.Terms;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.eclipse.collections.api.set.MutableSet;
@@ -249,10 +250,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         int s = subs();
         if (s == 1) {
             Term the = sub(0);
-            if (t.test(the))
-                return ArrayUnenforcedSortedSet.the(the);
-            else
-                return ArrayUnenforcedSortedSet.empty;
+            return t.test(the) ? ArrayUnenforcedSortedSet.the(the) : ArrayUnenforcedSortedSet.empty;
         } else if (s == 2) {
             Term a = sub(0);
             Term b = sub(1);
@@ -260,18 +258,23 @@ public interface Subterms extends Termlike, Iterable<Term> {
             boolean bok = t.test(b);
             if (aok && bok) {
                 return ArrayUnenforcedSortedSet.the(a, b);
-            } else if (!bok && !bok) {
+            } else if (!aok && !bok) {
                 return ArrayUnenforcedSortedSet.empty;
             } else if (!bok) {
                 return ArrayUnenforcedSortedSet.the(a);
             } else
                 return ArrayUnenforcedSortedSet.the(b);
         } else {
-            TreeSet<Term> u = new TreeSet<>();
+            List<Term> u = new FasterList<>(s);
             forEach(x -> {
                 if (t.test(x)) u.add(x);
             });
-            return u;
+            switch (u.size()) {
+                case 0: return ArrayUnenforcedSortedSet.empty;
+                case 1: return ArrayUnenforcedSortedSet.the(u.get(0));
+                case 2: return ArrayUnenforcedSortedSet.the(u.get(0), u.get(1));
+                default: return ArrayUnenforcedSortedSet.the(u.toArray(Op.EmptyTermArray));
+            }
         }
 
     }
@@ -935,9 +938,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
             //TODO add more
             switch (superOp) {
                 case CONJ:
-                    //cant skip the True yet
+
                     if (yi == Bool.False)
                         return Op.FalseSubterm;
+
                     break;
                 case IMPL:
                     if (i == 0 && yi == Bool.False)

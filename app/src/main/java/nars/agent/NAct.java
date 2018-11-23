@@ -6,6 +6,7 @@ import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;
+import nars.Param;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.GoalActionConcept;
 import nars.table.BeliefTables;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.IntConsumer;
 import java.util.function.IntPredicate;
 
+import static jcog.Util.sqr;
 import static jcog.Util.unitize;
 import static nars.Op.BELIEF;
 
@@ -237,16 +239,16 @@ public interface NAct {
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
 
         float thresh =
-                0.5f;
-                //0.5f + sqr(Param.TRUTH_EPSILON);
+                //0.5f;
+                0.5f + sqr(Param.TRUTH_EPSILON);
                 //0.66f;
 
         float[] lr = new float[] { 0.5f, 0.5f };
 
         float decay =
                 //0.5f;
-                0.9f;
-                //1f; //instant
+                //0.9f;
+                1f; //instant
 
         NAR n = nar();
         GoalActionConcept LA = action(l, (b, g) -> {
@@ -264,7 +266,10 @@ public interface NAct {
                     //ll = x ? 1 : 0;
                 }
             }
-            lr[0] = x?ll:0.5f;
+            lr[0] =
+                    //x?ll:0.5f;
+                    ll;
+
             L.value(x);
             //System.out.println("L=" + x  + " <- " + ll );
             return $.t(x ? 1 : 0, n.confDefault(BELIEF));
@@ -287,7 +292,9 @@ public interface NAct {
                     //rr = x ? 1 : 0;
                 }
             }
-            lr[1] = x?rr:0.5f;
+            lr[1] =
+                    //x?rr:0.5f;
+                    rr;
             R.value(x);
             //System.out.println("R=" + x  + " <- " + rr );
             return $.t(x ? 1 : 0, n.confDefault(BELIEF));
@@ -308,7 +315,7 @@ public interface NAct {
 //                    Remember.the(new NALTask(x.term(), BELIEF,
 //                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()), n), n);
 
-            //x.resolution(0.5f);
+            x.resolution(0.5f);
         }
 
         return new GoalActionConcept[]{LA, RA};

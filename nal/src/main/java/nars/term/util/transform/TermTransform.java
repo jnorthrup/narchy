@@ -14,7 +14,6 @@ import nars.term.var.UnnormalizedVariable;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
-import static nars.time.Tense.XTERNAL;
 
 /**
  * I = input term type, T = transformable subterm type
@@ -51,46 +50,7 @@ public interface TermTransform {
      * transform pathway for compounds
      */
     default Term transformCompound(Compound x) {
-        return transformCompound(x, null, XTERNAL);
-    }
-
-    /**
-     * should not be called directly except by implementations of TermTransform
-     */
-    @Nullable
-    default Term transformCompound(final Compound x, Op op, int dt) {
-
-        boolean sameOpAndDT = op == null;
-        Op xop = x.op();
-
-
-        Op targetOp = sameOpAndDT ? xop : op;
-        Subterms xx = x.subterms(), yy;
-
-        //try {
-            yy = xx.transformSubs(this, targetOp);
-
-//        } catch (StackOverflowError e) {
-//            System.err.println("TermTransform stack overflow: " + this + " " + xx + " " + targetOp);
-//        }
-
-        if (yy == null)
-            return Bool.Null;
-
-        if (yy == xx && (sameOpAndDT || (xop == targetOp && x.dt() == dt)))
-            return x; //no change
-
-        if (targetOp == CONJ) {
-            if (yy == Op.FalseSubterm)
-                return Bool.False;
-            if (yy.subs() == 0)
-                return Bool.True;
-        }
-
-        if (sameOpAndDT)
-            dt = x.dt();
-
-        return transformedCompound(x, targetOp, dt, xx, yy);
+        return x.transform(this);
     }
 
 
@@ -116,7 +76,6 @@ public interface TermTransform {
 
     /** called after subterms transform has been applied */
     @Nullable default Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
-        Term y;
         if (yy != xx) {
             Term[] a = yy instanceof TermList ? ((TermList) yy).arrayKeep() : yy.arrayShared();
             if (op == INH && evalInline() && a[1] instanceof Functor.InlineFunctor && a[0].op()==PROD) {
@@ -221,7 +180,7 @@ public interface TermTransform {
 
         /** HACK */
         protected final Term transformCompoundPlease(Compound x) {
-            return transformCompound(x, null, XTERNAL);
+            return x.transform(this);
         }
 
     }

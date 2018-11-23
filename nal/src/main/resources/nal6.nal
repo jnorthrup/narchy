@@ -210,10 +210,14 @@
 
 
     //Contradiction Neutralize
-    ((&&,Y,A..+) ==> X), ((&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- ((&&,A..+) ==> X), (Belief:UnionSym)
-    (--(&&,Y,A..+) ==> X), (--(&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#") |- (--(&&,A..+) ==> X), (Belief:UnionSym)
-    (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- (X ==> (&&,A..+)), (Belief:UnionSym)
-      (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:UnionSym)
+    ((&&,Y,A..+) ==> X), ((&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- ((&&,A..+) ==> X), (Belief:Intersection)
+      ((&&,Y,A..+) ==> X), ((&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- --((&&,A..+) ==> X), (Belief:IntersectionNN)
+    (--(&&,Y,A..+) ==> X), (--(&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#") |- (--(&&,A..+) ==> X), (Belief:Intersection)
+      (--(&&,Y,A..+) ==> X), (--(&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#") |- --(--(&&,A..+) ==> X), (Belief:IntersectionNN)
+    (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- (X ==> (&&,A..+)), (Belief:Intersection)
+        (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- --(X ==> (&&,A..+)), (Belief:IntersectionNN)
+      (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:Intersection)
+          (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- --(#1 ==> X), (Belief:IntersectionNN)
 
 
 
@@ -258,7 +262,7 @@
 
 // Mutex induction
     (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)              |- (&&,--(X && Y),A..*), (Belief:Intersection)
-    ((&&,X,--Y,A..+)==>Z), ((&&,Y,--X,A..+)==>Z),neq(X,Y)  |- ((&&,--(X && Y),A..+) ==> Z), (Belief:IntersectionSym)
+    ((&&,X,--Y,A..+)==>Z), ((&&,Y,--X,A..+)==>Z),neq(X,Y)  |- ((&&,--(X && Y),A..+) ==> Z), (Belief:Intersection)
       (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)             |-  --(X ==> Y), (Belief:Induction)
       (&&,X,--Y,A..+), (&&,Y,--X,B..+),neq(X,Y)              |- (&&,--((&&,A..+) && (&&,B..+))), (Belief:Intersection)
         //TODO impl predicate mutex

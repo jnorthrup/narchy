@@ -23,8 +23,19 @@ abstract public class ArrayUnenforcedSortedSet<X> extends ArrayUnenforcedSet<X> 
         }
     };
 
-    public ArrayUnenforcedSortedSet(X... xx) {
+    private ArrayUnenforcedSortedSet(X... xx) {
         super((X[])xx);
+    }
+
+    /** assumes u is already sorted and deduplicated */
+    public static <X> SortedSet<X> the(X[] u) {
+        switch (u.length) {
+            case 0: return empty;
+            case 1: return the(u[0]);
+            case 2: return new Two(u[0], u[1]);
+            default:
+                return new ArrayArrayUnenforcedSortedSet<>(u);
+        }
     }
 
     @Override
@@ -109,4 +120,22 @@ abstract public class ArrayUnenforcedSortedSet<X> extends ArrayUnenforcedSet<X> 
     }
 
 
+    private static class ArrayArrayUnenforcedSortedSet<X> extends ArrayUnenforcedSortedSet<X> {
+        private final X[] u;
+
+        public ArrayArrayUnenforcedSortedSet(X[] u) {
+            super(u);
+            this.u = u;
+        }
+
+        @Override
+        public X first() {
+            return u[0];
+        }
+
+        @Override
+        public X last() {
+            return u[u.length-1];
+        }
+    }
 }

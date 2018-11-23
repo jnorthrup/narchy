@@ -263,6 +263,7 @@ public class Derivation extends PreDerivation {
                     SetFunc.intersect,
                     Equal.the,
                     nar.concept("unneg"),
+//                    nar.concept("sectRepolarize"),
                     nar.concept("conjWithout"),
                     nar.concept("conjWithoutAll"),
                     nar.concept("conjWithoutPosOrNeg"),

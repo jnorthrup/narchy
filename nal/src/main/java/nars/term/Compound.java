@@ -34,6 +34,7 @@ import nars.subterm.TermList;
 import nars.term.anon.Anon;
 import nars.term.atom.Bool;
 import nars.term.util.transform.Retemporalize;
+import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -621,6 +622,45 @@ public interface Compound extends Term, IPair, Subterms {
         return false;
     }
 
+
+    default Term transform(TermTransform f) {
+        return transform(f, null, XTERNAL);
+    }
+
+    default Term transform(TermTransform f, Op newOp, int newDT) {
+        boolean sameOpAndDT = newOp == null;
+        Op xop = this.op();
+
+
+        Op targetOp = sameOpAndDT ? xop : newOp;
+        Subterms xx = this.subterms(), yy;
+
+        //try {
+        yy = xx.transformSubs(f, targetOp);
+
+//        } catch (StackOverflowError e) {
+//            System.err.println("TermTransform stack overflow: " + this + " " + xx + " " + targetOp);
+//        }
+
+        if (yy == null)
+            return Bool.Null;
+
+        int thisDT = this.dt();
+        if (yy == xx && (sameOpAndDT || (xop == targetOp && thisDT == newDT)))
+            return this; //no change
+
+        if (targetOp == CONJ) {
+            if (yy == Op.FalseSubterm)
+                return Bool.False;
+            if (yy.subs() == 0)
+                return Bool.True;
+        }
+
+        if (sameOpAndDT)
+            newDT = thisDT;
+
+        return f.transformedCompound(this, targetOp, newDT, xx, yy);
+    }
 
 }
 

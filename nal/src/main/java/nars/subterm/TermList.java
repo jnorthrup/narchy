@@ -90,7 +90,7 @@ public class TermList extends FasterList<Term> implements Subterms {
 //        } else {
 //            if (hashCode()!=obj.hashCode())
 //                return false;
-            return ((Subterms)obj).equalTerms(this);
+        return ((Subterms)obj).equalTerms(this);
 //        }
     }
 

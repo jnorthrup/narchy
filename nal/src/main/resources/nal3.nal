@@ -24,6 +24,7 @@
 //NAL3 single premise decompose
     (M --> S), X, is(S,"&"), subOf(S,X)   |-      (M --> X), (Belief:StructuralDeduction,Goal:StructuralDeduction)
     (M --> S), X, is(S,"&"), subOf(S,--X)   |-      --(M --> X), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+        (M --> S), X, is(S,"&"), subOf(S,X)   |-     --(M --> X), (Goal:StructuralDeductionN)
       //(M --> S), X, is(S,"|"), subOf(S,X)   |-      --(M --> X), (Belief:StructuralDeductionNN)
       //(M --> S), X, is(S,"|"), subOf(S,--X)   |-      (M --> X), (Belief:StructuralDeductionNN)
       //(M --> S), X, is(S,"&"), subOf(S,X)   |-  --(M --> X), (Belief:StructuralDeductionNN)
@@ -32,6 +33,8 @@
 
     (S --> M), X, is(S,"|"), subOf(S,X)   |-     (X --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
     (S --> M), X, is(S,"|"), subOf(S,--X)   |-     --(X --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+        (S --> M), X, is(S,"|"), subOf(S,X)   |-     --(X --> M), (Goal:StructuralDeductionN)
+
       //(S --> M), X, is(S,"&"), subOf(S,X)   |-     --(X --> M), (Belief:StructuralDeductionNN)
       //(S --> M), X, is(S,"&"), subOf(S,--X)   |-     (X --> M), (Belief:StructuralDeductionNN)
       //(S --> M), X, is(S,"|"), subOf(S,X)   |- --(X --> M), (Belief:StructuralDeductionNN)
@@ -85,16 +88,16 @@
 
 //
 //     //similarity (S==P)! (symmetric: DecomposeNegative....)
-//     ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeDiff,Time:Intersect)
-//     (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeDiff,Time:Intersect)
-//        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposeDiff,Time:Intersect)
-//        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposeDiff,Time:Intersect)
+     ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeDiff,Time:Intersect)
+     (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeDiff,Time:Intersect)
+        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposeDiff,Time:Intersect)
+        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposeDiff,Time:Intersect)
 //
 //     //difference --(S==P)! (asymmetric: DecomposePositive... )
-//     ((S ~ P) --> M), (S --> M) |- --(P --> M), (Goal:DecomposePP,Time:Intersect)
-//     (M --> (S - P)), (M --> S) |- --(M --> P), (Goal:DecomposePP,Time:Intersect)
-//        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposePN,Time:Intersect)
-//        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposePN,Time:Intersect)
+     ((S ~ P) --> M), (S --> M) |- --(P --> M), (Goal:DecomposePP,Time:Intersect)
+     (M --> (S - P)), (M --> S) |- --(M --> P), (Goal:DecomposePP,Time:Intersect)
+        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposePN,Time:Intersect)
+        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposePN,Time:Intersect)
 //
 
 
