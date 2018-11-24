@@ -23,10 +23,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Arkancide extends NAgentX {
 
-    static boolean numeric = true;
-    static boolean cam = false;
+    static boolean numeric = false;
+    static boolean cam = true;
 
-    public final FloatRange ballSpeed = new FloatRange(0.75f, 0.04f, 6f);
+    public final FloatRange ballSpeed = new FloatRange(1.75f, 0.04f, 6f);
 
 
     final int visW = 48;

@@ -2,10 +2,10 @@
 //NAL3-----------
 
 //intesection question formation
-    (W --> S), (W --> B), task("?@"), is(S,"|"), neqRCom(S,B) |- (W --> (S | B)), (Time:Task)
-    (W --> S), (W --> B), task("?@"), is(S,"&"), neqRCom(S,B) |- (W --> (S & B)), (Time:Task)
-    (S --> W), (B --> W), task("?@"), is(S,"&"), neqRCom(S,B) |- ((S & B) --> W), (Time:Task)
-    (S --> W), (B --> W), task("?@"), is(S,"|"), neqRCom(S,B) |- ((S | B) --> W), (Time:Task)
+    (W --> S), (W --> B), task("?@"), is(S,"|"), neqRCom(S,B) |- (W --> (S | B)), (Time:Task, Time:Intersect)
+    (W --> S), (W --> B), task("?@"), is(S,"&"), neqRCom(S,B) |- (W --> (S & B)), (Time:Task, Time:Intersect)
+    (S --> W), (B --> W), task("?@"), is(S,"&"), neqRCom(S,B) |- ((S & B) --> W), (Time:Task, Time:Intersect)
+    (S --> W), (B --> W), task("?@"), is(S,"|"), neqRCom(S,B) |- ((S | B) --> W), (Time:Task, Time:Intersect)
 
 ////composition on both sides of a statement:
 
@@ -17,9 +17,9 @@
 
 
 //intersection belief to diff question
-    (W --> (A|B)), W, --is(A,"--"), --is(B,"--") |- (W --> (A-B)), (Punctuation:Ask, Time:Task)
+    (W --> (A|B)), W, --is(A,"--"), --is(B,"--") |- (W --> (A-B)), (Punctuation:Ask, Time:Task, Time:Intersect)
         //(W --> (A|B)), W |- (W --> (A-B)), (Punctuation:Ask)
-    ((A&B) --> W), W, --is(A,"--"), --is(B,"--") |- ((A~B) --> W), (Punctuation:Ask, Time:Task)
+    ((A&B) --> W), W, --is(A,"--"), --is(B,"--") |- ((A~B) --> W), (Punctuation:Ask, Time:Task, Time:Intersect)
         //((A&B) --> W), W |- ((A~B) --> W), (Punctuation:Ask)
       //(A&B), A |- (A~B), (Punctuation:Ask)
 
@@ -27,8 +27,8 @@
 
 
 ////composition on one side of a statement:
-    (W --> S), (W --> B), task("?"), is(S,"|"), subOf(S,B) |- (W --> S), (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Task)
-    (S --> W), (B --> W), task("?"), is(S,"&"), subOf(S,B) |- (S --> W), (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Task)
+    (W --> S), (W --> B), task("?"), is(S,"|"), subOf(S,B) |- (W --> S), (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Intersect)
+    (S --> W), (B --> W), task("?"), is(S,"&"), subOf(S,B) |- (S --> W), (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Intersect)
 
     //(W --> (S-B)), (W --> B), task("?") |- (W --> (S-B)), (Belief:BeliefStructuralDifference, Punctuation:Belief, Time:Task)
     //((S~B) --> W), (B --> W), task("?") |- ((S~B) --> W), (Belief:BeliefStructuralDifference, Punctuation:Belief, Time:Task)

@@ -469,13 +469,14 @@ abstract public class NAgentX extends NAgent {
     public static void initPlugins(NAR n) {
 
 
+        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8
 
-        new BatchDeriver(Derivers.nal(n, 1, 8
-
-            //"motivation.nal",
+                //"motivation.nal",
                 //"equivalence.nal"
-              //  "induction.goal.nal"
+                //  "induction.goal.nal"
         ));
+        bd.termLinksPerTaskLink.set(2);
+        bd.premisesPerConcept.set(4);
 
         //new STMLinkage(n, 1);
 

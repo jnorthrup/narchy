@@ -67,7 +67,7 @@
 
     (S --> P), (P --> S) |- (S <-> P), (Belief:Intersection, Goal:DesireWeakPB, Time:Intersect)
     //(S --> P), (P --> S) |- --(S <-> P), (Belief:ComparisonSymmetric, Time:Intersect)
-    (S --> P), (P --> S) |- (S <-> P), (Belief:Comparison, Time:Intersect)
+    //(S --> P), (P --> S) |- (S <-> P), (Belief:Comparison)
 
 ////// similarity-based syllogism ////////////////////////////////////////////////////////////////////////////////////
 ////If P and S are a special case of M, then they might be similar (weak),

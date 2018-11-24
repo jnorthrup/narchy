@@ -5,7 +5,7 @@ plugins {
 
 mainClassName = 'nars.Shell'
 
-def teaVMversion = '0.6.0-dev-607';
+def teaVMversion = '0.6.0-dev-614';
 
 dependencies {
     compile project(':app')

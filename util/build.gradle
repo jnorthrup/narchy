@@ -17,9 +17,9 @@ dependencies {
         exclude(module: 'commons-lang3')
         exclude(module: 'guava')
     }
-    compile group: 'com.google.guava', name: 'guava', version: '27.0-jre'
+    compile group: 'com.google.guava', name: 'guava', version: '27.0.1-jre'
     compile group: 'org.ow2.asm', name: 'asm-commons', version: '7.0'
-    compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.9.4'
+    compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.9.5'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
 
 
@@ -53,8 +53,8 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2
     compile group: 'org.apache.commons', name: 'commons-vfs2', version: '2.2'
     
-    compile group: 'tech.tablesaw', name: 'tablesaw-core', version: '0.30.0'
-    testCompile group: 'tech.tablesaw', name: 'tablesaw-jsplot', version: '0.30.0'
+    compile group: 'tech.tablesaw', name: 'tablesaw-core', version: '0.30.1'
+    testCompile group: 'tech.tablesaw', name: 'tablesaw-jsplot', version: '0.30.1'
 
     // https://mvnrepository.com/artifact/net.openhft/zero-allocation-hashing
     compile (group: 'net.openhft', name: 'zero-allocation-hashing', version: '0.8') {

@@ -3,7 +3,6 @@ package nars.derive.impl;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.math.IntRange;
-import jcog.math.Range;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.sort.SortedList;
@@ -47,13 +46,13 @@ public class BatchDeriver extends Deriver {
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
      */
-    @Range(min = 1, max = 8)
-    private final int premisesPerConcept = 2;
+    public final IntRange premisesPerConcept = new IntRange(2, 1, 8);
+
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */
-    @Range(min = 1, max = 8)
-    private final int termLinksPerTaskLink = 1;
+    public final IntRange termLinksPerTaskLink = new IntRange(1, 1, 8);
+
 
 
     public BatchDeriver(PremiseDeriverRuleSet rules) {
@@ -99,7 +98,9 @@ public class BatchDeriver extends Deriver {
      */
     private FasterList<Premise> hypothesize(Derivation d) {
 
-        int premisesMax = conceptsPerIteration.intValue() * premisesPerConcept;
+        int premisesMax = conceptsPerIteration.intValue() * premisesPerConcept.intValue();
+
+        int termLinksPerTaskLink = this.termLinksPerTaskLink.intValue();
 
         int tasklinks = Math.max(1, Math.round(premisesMax / ((float) termLinksPerTaskLink)));
 

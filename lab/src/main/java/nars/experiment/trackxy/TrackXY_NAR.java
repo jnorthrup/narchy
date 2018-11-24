@@ -52,14 +52,15 @@ public class TrackXY_NAR extends NAgentX {
             //W = 5, H = 1;
     static int dur = 7;
     static float camResolution = 0.1f;
-
+    static int volMax = 9;
     final Bitmap2DSensor cam;
     private final TrackXY track;
     private float rewardSum = 0;
-
+    static int experimentTime = 200;
+    final public AtomicBoolean trainer = new AtomicBoolean(true);
 
     //final public AtomicBoolean log = new AtomicBoolean(true);
-    final public AtomicBoolean trainer = new AtomicBoolean(false);
+
 
     protected TrackXY_NAR(NAR nar, int W, int H) {
         super("trackXY",
@@ -98,12 +99,16 @@ public class TrackXY_NAR extends NAgentX {
         //actionTriState();
 
 
-        rewardNormalized("reward", -1, 1, () -> {
-            float r = track.act();
-            if (r == r)
-                rewardSum += r;
-            return r;
+        curiosity.enable.set(false);
+        onFrame(x->{
+           track.act();
         });
+//        rewardNormalized("reward", -1, 1, () -> {
+//            float r = track.act();
+//            if (r == r)
+//                rewardSum += r;
+//            return r;
+//        });
 
         track.randomize();
 
@@ -181,7 +186,8 @@ public class TrackXY_NAR extends NAgentX {
         TrackXY_NAR a = new TrackXY_NAR(n, W, H);
 
         //n.freqResolution.set(0.04f);
-        n.termVolumeMax.set(12);
+
+        n.termVolumeMax.set(volMax);
         n.timeResolution.set(Math.max(1,dur/2));
 
         if (rl) {
@@ -224,7 +230,7 @@ public class TrackXY_NAR extends NAgentX {
                     //6, 8
                     1, 8
                     //2, 8
-                    , "motivation.nal"
+                    //, "motivation.nal"
             )) {
 //                    @Override
 //                    public float puncFactor(byte conclusion) {
@@ -289,9 +295,9 @@ public class TrackXY_NAR extends NAgentX {
             });
         }
 
-        a.onFrame(() -> {
-            Util.sleepMS(10);
-        });
+//        a.onFrame(() -> {
+//            Util.sleepMS(10);
+//        });
 
         int epoch = 200;
         DescriptiveStatistics rh = new DescriptiveStatistics(epoch * 4);
@@ -311,7 +317,6 @@ public class TrackXY_NAR extends NAgentX {
 //            }
         });
 
-        int experimentTime = 20000;
         n.run(experimentTime);
 
 
@@ -321,6 +326,7 @@ public class TrackXY_NAR extends NAgentX {
         //n.stats(System.out);
         //n.conceptsActive().forEach(System.out::println);
 
+        n.tasks().forEach(System.out::println);
     }
 
 
