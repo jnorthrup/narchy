@@ -201,7 +201,7 @@ public class Answer implements AutoCloseable {
     }
 
     public static FloatFunction<Task> temporalTaskStrength(long start, long end) {
-        return x -> /*w2cSafe*/(TruthIntegration.evi(x, start, end, 0));
+        return x -> /*w2cSafe*/(TruthIntegration.evi(x, start, end, 1 /*0*/));
     }
 
     boolean ditherTruth = false;

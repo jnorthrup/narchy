@@ -76,15 +76,17 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
     @Override
     public void value(Task t, NAR n) {
 
-        super.value(t, n);
+        if (!(t instanceof CuriosityTask)) {
+            super.value(t, n);
 
-        if (t.isGoal() && !(t instanceof CuriosityTask)) {
-            long now = n.time();
-            long dt = t.minTimeTo(now);
-            int dur = n.dur();
+            if (t.isGoal()) {
+                long now = n.time();
+                long dt = t.minTimeTo(now);
+                int dur = n.dur();
 
-            MetaGoal.Action.learn(t.cause(), w2cSafe(Param.evi(1, dt, dur) * (TruthIntegration.evi(t))), n.causes);
+                MetaGoal.Action.learn(t.cause(), w2cSafe(Param.evi(1, dt, dur) * (TruthIntegration.evi(t))), n.causes);
 
+            }
         }
     }
 
