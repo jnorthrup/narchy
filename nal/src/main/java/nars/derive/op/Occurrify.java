@@ -170,17 +170,24 @@ public class Occurrify extends TimeGraph {
 
 
 
-//        if (!single) {
         boolean taskEte = taskStart == ETERNAL;
         boolean beliefEte = beliefStart == ETERNAL;
-        if (taskEte && !beliefEte && beliefStart != TIMELESS) {
-            taskStart = beliefStart; //use belief time for eternal task
-            taskEnd = beliefEnd;
-        } else if (beliefEte && !taskEte && taskStart != TIMELESS) {
-            beliefStart = taskStart; //use task time for eternal belief
-            beliefEnd = taskEnd;
-        }
+//        if (taskEte && !beliefEte && beliefStart != TIMELESS) {
+//            taskStart = beliefStart; //use belief time for eternal task
+//            taskEnd = beliefEnd;
+//        } else if (beliefEte && !taskEte && taskStart != TIMELESS) {
+//            beliefStart = taskStart; //use task time for eternal belief
+//            beliefEnd = taskEnd;
 //        }
+        if (taskEte && beliefEte) {
+            //both eternal ok
+        } else if (taskEte) {
+            taskStart = d.time;
+            taskEnd = d.time + d.dur;
+        } else if (beliefEte) {
+            beliefStart = d.time;
+            beliefEnd = d.dur;
+        }
 
 
 //        boolean reUse =

@@ -40,21 +40,20 @@ public class AttnDistributor {
 
 
 
+
         pris.clear();
-        concepts.forEach(c -> {
-           float p = n.concepts.pri(c, 0);
-           pris.accept(p);
-        });
+        concepts.forEach(c -> pris.accept(n.concepts.pri(c, 0)));
         long N = pris.getN();
         float range = Math.max(N * ScalarValue.EPSILON, (float) (pris.getMax()-pris.getMin()));
         float variance = (float) pris.getVariance()/range;
-        float threshVariance = 1f/(range* N);
+        float threshVariance = 1f/(range * N);
 
-        float g = lastGain;
 
         float idealPri =
                 //0.5f;
                 1f/ N;
+
+        float g = lastGain;
 
         if (g!=g)
             g = idealPri;

@@ -38,16 +38,18 @@ public class NAgentTest {
     @ValueSource(strings = {"t", "f"})
     public void testSame(String posOrNegChar) {
 
-//        Param.DEBUG = true;
-//        n.log();
+
         int cycles = 2000;
 
         boolean posOrNeg = posOrNegChar.charAt(0) == 't';
 
         NAR n = nar();
-        n.goalPriDefault.set(0.5f);
-        n.beliefPriDefault.set(0.4f);
+        n.goalPriDefault.set(0.9f);
+        n.beliefPriDefault.set(0.8f);
+        n.questionPriDefault.set(0.5f);
+        n.questPriDefault.set(0.5f);
 
+//        Param.DEBUG = true;
 //        n.onTask((t)->{
 //            if (t instanceof DerivedTask)
 //                System.out.println(t.proof());
