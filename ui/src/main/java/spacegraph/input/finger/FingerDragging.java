@@ -18,7 +18,10 @@ abstract public class FingerDragging extends Fingering {
     protected boolean startDrag(Finger f) {
         return true;
     }
-
+    @Override
+    protected boolean escapes() {
+        return true;
+    }
 
     @Override
     public void stop(Finger finger) {

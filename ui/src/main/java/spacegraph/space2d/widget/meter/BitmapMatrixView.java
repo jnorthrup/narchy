@@ -2,9 +2,9 @@ package spacegraph.space2d.widget.meter;
 
 import com.jogamp.opengl.GL2;
 import jcog.math.FloatSupplier;
-import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.RingBufferTensor;
+import jcog.signal.wave2d.Bitmap2D;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.input.finger.Finger;
@@ -25,7 +25,8 @@ import static java.lang.Math.sqrt;
 
 
 /**
- * Created by me on 7/29/16.
+ * 1D/2D bitmap viewer with parametric coloring.
+ * updated and displayed as a bitmap texture
  */
 public class BitmapMatrixView extends Surface {
 
@@ -33,8 +34,8 @@ public class BitmapMatrixView extends Surface {
     private final int h;
     private volatile BitmapPainter view;
     private final Tex bmp;
-    protected v2 touchPos;
-    protected Point2i touchPixel;
+    protected final v2 touchPos = new v2();
+    protected final Point2i touchPixel = new Point2i();
     private BufferedImage buf;
     private int[] pix;
 
@@ -59,6 +60,12 @@ public class BitmapMatrixView extends Surface {
         this.bmp = new Tex();
     }
 
+    public BitmapMatrixView(Bitmap2D bmp) {
+        this(bmp.width(), bmp.height(), (x,y)->{
+            float a = bmp.brightness(x, y);
+            return Draw.rgbInt(a,a,a);
+        });
+    }
 
     public BitmapMatrixView(float[] f) {
         this(f.length, 1, arrayRenderer(f));
@@ -146,23 +153,27 @@ public class BitmapMatrixView extends Surface {
 
     @Override
     public Surface finger(Finger finger) {
-        if (finger != null) {
-            updateTouch(finger);
-        } else {
-            touchPos = null;
-            touchPixel = null;
-        }
+        if (updateTouch(finger))
+            return this;
         return null;
-
     }
 
-    public void updateTouch(Finger finger) {
+    @Override
+    public boolean stop() {
+        if (super.stop()) {
+            bmp.stop();
+            return true;
+        }
+        return false;
+    }
 
-        touchPos = finger.relativePos(this).scaled(w, h);
+    public boolean updateTouch(Finger finger) {
 
-        touchPixel = new Point2i((int) Math.floor(touchPos.x),
-                (int) Math.floor(touchPos.y));
+        finger.relativePos(this).scaled(w, h, touchPos);
 
+        touchPixel.set((int) Math.floor(touchPos.x), (int) Math.floor(touchPos.y));
+
+        return true;
 
     }
 
@@ -173,13 +184,13 @@ public class BitmapMatrixView extends Surface {
 
     protected void paintMatrix(GL2 gl) {
         bmp.paint(gl, bounds);
+
+        /* paint cursor hilited cell */
         if (touchPixel != null) {
-            float w = w() / this.w;
-            float h = h() / this.h;
+            float w = w() / this.w, h = h() / this.h;
+            float x = x(), y = y();
             gl.glColor4f(0.5f, 0.5f, 0.5f, 0.75f);
             gl.glLineWidth(2);
-            float x = x();
-            float y = y();
             Draw.rectStroke(gl, x + touchPixel.x * w, y + touchPixel.y * h, w, h);
         }
     }
@@ -199,9 +210,9 @@ public class BitmapMatrixView extends Surface {
      * the prw, prh represent a rectangular size proportional to the displayed cell size
      */
     public RectFloat cellRect(float x, float y, float prw, float prh) {
-        v2 c = cell(x, y);
         float pw = prw / this.w;
         float ph = prh / this.h;
+        v2 c = cell(x, y);
         return RectFloat.XYWH(c.x, c.y, pw * w(), ph * h());
     }
 
@@ -225,15 +236,15 @@ public class BitmapMatrixView extends Surface {
         return false;
     }
 
-    public boolean equalShape(Tensor x) {
-        int[] shape = x.shape();
-        if (shape.length == 1)
-            return h == 1 && w == shape[0];
-        else if (shape.length == 2) {
-            return w == shape[0] && h == shape[1];
-        } else
-            return false;
-    }
+//    public boolean equalShape(Tensor x) {
+//        int[] shape = x.shape();
+//        if (shape.length == 1)
+//            return h == 1 && w == shape[0];
+//        else if (shape.length == 2) {
+//            return w == shape[0] && h == shape[1];
+//        } else
+//            return false;
+//    }
 
     @FunctionalInterface  public interface ViewFunction1D {
         /**
@@ -268,12 +279,4 @@ public class BitmapMatrixView extends Surface {
         }
     }
 
-    @Override
-    public boolean stop() {
-        if (super.stop()) {
-            bmp.stop();
-            return true;
-        }
-        return false;
-    }
 }

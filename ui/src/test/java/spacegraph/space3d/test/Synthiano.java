@@ -90,10 +90,13 @@ public class Synthiano extends Widget {
         set(new BitmapMatrixView(4,4, (x, y)->0) {
 
             @Override
-            public void updateTouch(Finger finger) {
-                super.updateTouch(finger);
-                if (finger.pressing(0))
-                    key( Math.round((touchPos.y * 4)+touchPos.x));
+            public boolean updateTouch(Finger finger) {
+                if (super.updateTouch(finger)) {
+                    if (finger.pressing(0))
+                        key(Math.round((touchPos.y * 4) + touchPos.x));
+                    return true;
+                }
+                return false;
             }
 
             protected void key(int key) {

@@ -24,7 +24,7 @@ abstract public class Fingering {
     /** whether this is allowed to continue updating the finger's currently
      * touched widget after it activates.
      */
-    boolean escapes() {
+    protected boolean escapes() {
         return false;
     }
 
@@ -62,7 +62,7 @@ abstract public class Fingering {
         }
 
         @Override
-        boolean escapes() {
+        protected boolean escapes() {
             return true;
         }
     };

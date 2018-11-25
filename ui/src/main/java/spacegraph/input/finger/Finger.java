@@ -308,7 +308,7 @@ abstract public class Finger {
 
 //        System.out.println(pressing(i) + "<-" + wasPressed(i));
 
-        if (clickedNow(button)) {
+        if (clickedNow(button) && !dragging(button)) {
             if (relative(posOrtho, c).inUnit()) {
                 commitButton(button); //absorb the event
                 return true;

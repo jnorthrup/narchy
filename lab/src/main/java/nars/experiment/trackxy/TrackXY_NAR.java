@@ -55,9 +55,13 @@ public class TrackXY_NAR extends NAgentX {
     static int volMax = 9;
     final Bitmap2DSensor cam;
     private final TrackXY track;
+
     private float rewardSum = 0;
-    static int experimentTime = 200;
-    final public AtomicBoolean trainer = new AtomicBoolean(true);
+    static int experimentTime = 20000;
+
+
+    final public AtomicBoolean trainer = new AtomicBoolean(false);
+    private final boolean alwaysTrain = false;
 
     //final public AtomicBoolean log = new AtomicBoolean(true);
 
@@ -99,16 +103,19 @@ public class TrackXY_NAR extends NAgentX {
         //actionTriState();
 
 
-        curiosity.enable.set(false);
-        onFrame(x->{
-           track.act();
-        });
-//        rewardNormalized("reward", -1, 1, () -> {
-//            float r = track.act();
-//            if (r == r)
-//                rewardSum += r;
-//            return r;
-//        });
+        if (alwaysTrain) {
+            curiosity.enable.set(false);
+            onFrame(x -> {
+                track.act();
+            });
+        } else {
+            rewardNormalized("reward", -1, 1, () -> {
+                float r = track.act();
+                if (r == r)
+                    rewardSum += r;
+                return r;
+            });
+        }
 
         track.randomize();
 

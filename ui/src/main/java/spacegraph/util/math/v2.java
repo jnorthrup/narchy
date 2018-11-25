@@ -442,6 +442,10 @@ public class v2 implements java.io.Serializable, Cloneable {
         this.y *= sy;
         return this;
     }
+    public final v2 scaled(float sx, float sy, v2 target) {
+        target.set(x * sx, y* sy);
+        return target;
+    }
 
     /**
      * Sets the value of this tuple to the scalar multiplication

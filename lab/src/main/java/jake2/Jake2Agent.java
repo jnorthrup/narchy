@@ -17,7 +17,8 @@ import nars.NAgentX;
 import nars.Narsese;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
-import spacegraph.space2d.widget.meter.Bitmap2DView;
+import spacegraph.space2d.widget.meter.BitmapMatrixView;
+
 
 import java.awt.*;
 import java.awt.color.ColorSpace;
@@ -135,7 +136,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
         //SpaceGraph.(column(visionView, camAE.newChart()), 500, 500);
 //        }
 
-        Bitmap2DView visionView = new Bitmap2DView(vision);
+        BitmapMatrixView visionView = new BitmapMatrixView(vision);
         onFrame(vision::update);
         onFrame(visionView::update);
         window(grid(visionView,

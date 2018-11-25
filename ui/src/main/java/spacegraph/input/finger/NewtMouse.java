@@ -42,7 +42,7 @@ public class NewtMouse extends Finger implements MouseListener, WindowListener {
         if (ff != Fingering.Null) {
             if (!ff.update(this)) {
                 ff.stop(this);
-                fingering.lazySet(Fingering.Null);
+                fingering.set(Fingering.Null);
             }
         }
 

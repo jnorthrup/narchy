@@ -22,7 +22,7 @@ import nars.video.AutoclassifiedBitmap;
 import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.meter.Bitmap2DView;
+import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -110,7 +110,7 @@ public class FZero extends NAgentX {
             //SpaceGraph.(column(visionView, camAE.newChart()), 500, 500);
 //        }
 
-        Bitmap2DView visionView = new Bitmap2DView(vision);
+        BitmapMatrixView visionView = new BitmapMatrixView(vision);
         onFrame(visionBuffer::update);
         onFrame(visionView::update);
         window(grid(visionView,

@@ -118,8 +118,8 @@ public class LevelScene extends Scene implements SpriteContext {
 
     @Override
     public synchronized void tick() {
-        timeLeft--;
-        if (timeLeft == 0) {
+
+        if (--timeLeft == 0) {
             mario.die();
         }
         xCamO = xCam;
@@ -204,7 +204,7 @@ public class LevelScene extends Scene implements SpriteContext {
 
                     if (dir != 0) {
                         byte b = level.getBlock(x, y);
-                        if (((Level.TILE_BEHAVIORS[b & 0xff]) & Level.BIT_ANIMATED) > 0) {
+                        if (((Level.TILE_BEHAVIORS[b & 0xff]) & Level.BIT_ANIMATED) != 0) {
                             if ((b % 16) / 4 == 3 && b / 16 == 0) {
                                 if ((tick - x * 2) % 100 == 0) {
                                     xCannon = x;
@@ -258,8 +258,8 @@ public class LevelScene extends Scene implements SpriteContext {
         }
 
         sprites.addAll(0, spritesToAdd);
-        sprites.removeAll(spritesToRemove);
         spritesToAdd.clear();
+        sprites.removeAll(spritesToRemove);
         spritesToRemove.clear();
     }
 
@@ -436,7 +436,7 @@ public class LevelScene extends Scene implements SpriteContext {
             level.setBlock(x, y, (byte) 4);
             level.setBlockData(x, y, (byte) 4);
 
-            if (((Level.TILE_BEHAVIORS[block & 0xff]) & Level.BIT_SPECIAL) > 0) {
+            if (((Level.TILE_BEHAVIORS[block & 0xff]) & Level.BIT_SPECIAL) != 0) {
 
                 if (!Mario.large) {
                     addSprite(new Mushroom(this, x * 16 + 8, y * 16 + 8));
@@ -450,7 +450,7 @@ public class LevelScene extends Scene implements SpriteContext {
             }
         }
 
-        if ((Level.TILE_BEHAVIORS[block & 0xff] & Level.BIT_BREAKABLE) > 0) {
+        if ((Level.TILE_BEHAVIORS[block & 0xff] & Level.BIT_BREAKABLE) != 0) {
             bumpInto(x, y - 1);
             if (canBreakBricks) {
 
@@ -466,7 +466,7 @@ public class LevelScene extends Scene implements SpriteContext {
 
     public void bumpInto(int x, int y) {
         byte block = level.getBlock(x, y);
-        if (((Level.TILE_BEHAVIORS[block & 0xff]) & Level.BIT_PICKUPABLE) > 0) {
+        if (((Level.TILE_BEHAVIORS[block & 0xff]) & Level.BIT_PICKUPABLE) != 0) {
             Mario.getCoin();
 
             level.setBlock(x, y, (byte) 0);
