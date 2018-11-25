@@ -183,23 +183,11 @@ public class Occurrify extends TimeGraph {
             //both eternal ok
         } else if (taskEte) {
             taskStart = d.time;
-            taskEnd = d.time + d.dur;
+            taskEnd = taskStart + (beliefEnd - beliefStart);
         } else if (beliefEte) {
             beliefStart = d.time;
-            beliefEnd = d.dur;
+            beliefEnd = beliefStart + (taskStart - taskEnd);
         }
-
-
-//        boolean reUse =
-//                        this.decomposeEvents == decomposeEvents &&
-//                        occurrenceQuad[0] == taskStart &&
-//                        occurrenceQuad[1] == taskEnd &&
-//                        occurrenceQuad[2] == beliefStart &&
-//                        occurrenceQuad[3] == beliefEnd &&
-//                        Objects.equals(taskTerm, curTaskTerm) &&
-//                        Objects.equals(beliefTerm, curBeliefTerm) &&
-//                        Objects.equals(autoNeg, autoNegNext);
-
 
         this.decomposeEvents = decomposeEvents;
 
