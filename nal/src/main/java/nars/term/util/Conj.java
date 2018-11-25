@@ -196,9 +196,21 @@ public class Conj extends ByteAnonMap {
         return x;
     }
 
+    /** means that the internal represntation of the term is concurrent */
+    public static boolean concurrentInternal(int dt) {
+        switch (dt) {
+            case XTERNAL:
+            case DTERNAL:
+            case 0:
+                return true;
+        }
+        return false;
+    }
 
-
-    public static boolean concurrent(int dt) {
+    /** this refers to an internal concurrent representation but may not be consistent with all cases */
+    @Deprecated public static boolean concurrent(int dt) {
+        if (dt == XTERNAL)
+            return true; //TEMPORARY
         switch (dt) {
             case XTERNAL:
             case DTERNAL:

@@ -52,7 +52,7 @@ public final class Termify extends AbstractPred<Derivation> {
         nar.emotion.deriveTermify.increment();
 
         Term c1 = d.transform(pattern);
-        if (c1 == null || !c1.op().conceptualizable)
+        if (c1 == null || !c1.unneg().op().taskable)
             return false;
 
 

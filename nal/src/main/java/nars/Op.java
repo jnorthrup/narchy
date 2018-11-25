@@ -1,6 +1,7 @@
 package nars;
 
 
+import jcog.WTF;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
@@ -494,11 +495,12 @@ public enum Op {
         Term[] xx = x.arrayShared();
 
         if (op == CONJ) {
-            if (!Conj.concurrent(nextDT)) {
+            boolean baseConcurrent = Conj.concurrentInternal(baseDT);
+            if (!Conj.concurrentInternal(nextDT)) {
 
                 boolean repeating = xx.length == 2 && xx[0].equals(xx[1]);
 
-                if (Conj.concurrent(baseDT)) {
+                if (baseConcurrent) {
                     if (!repeating)
                         throw new TermException(CONJ, baseDT, xx, "ambiguous DT change from concurrent to non-concurrent and non-repeating");
 
@@ -512,13 +514,13 @@ public enum Op {
                     }
                 }
 
-                if (!Conj.concurrent(baseDT)) {
+                if (!baseConcurrent) {
                     //fast transform non-concurrent -> non-concurrent
                     return Op.compound(CONJ, nextDT, xx);
                 }
             } else {
 
-                if (Conj.concurrent(baseDT)) {
+                if (baseConcurrent) {
                     if (baseDT == XTERNAL) {
                         //changing to non-XTERNAL, check for repeats
                         if (xx.length == 2) {
@@ -547,9 +549,9 @@ public enum Op {
         return ((existing | possiblyIncluded) == existing);
     }
 
-    public static boolean isTrueOrFalse(Term x) {
-        return x == Bool.True || x == Bool.False;
-    }
+//    public static boolean isTrueOrFalse(Term x) {
+//        return x == Bool.True || x == Bool.False;
+//    }
 
 
 //    public static boolean hasNull(Term[] t) {
@@ -575,10 +577,14 @@ public enum Op {
         int xv = x.volume();
         int yv = y.volume();
         boolean root = false;
-        if (xv == yv)
-            return Term.commonStructure(x, y) &&
-                    (x.containsRecursively(y, root, delim) || y.containsRecursively(x, root, delim));
-        else if (xv > yv)
+        if (xv == yv) {
+            return false; //probably impossible
+//            boolean z = Term.commonStructure(x, y) &&
+//                    (x.containsRecursively(y, root, delim) || y.containsRecursively(x, root, delim));
+//            if (z)
+//                throw new WTF();
+//            return z;
+        } else if (xv > yv)
             return x.containsRecursively(y, root, delim);
         else
             return y.containsRecursively(x, root, delim);

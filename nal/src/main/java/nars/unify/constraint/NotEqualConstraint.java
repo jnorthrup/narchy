@@ -60,7 +60,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 
         @Override
         public float cost() {
-            return 0.35f;
+            return 0.2f;
         }
 
         @Override

@@ -19,7 +19,7 @@ public class Statement {
         if (subject == Bool.Null || predicate == Bool.Null)
             return Bool.Null;
 
-        boolean dtConcurrent = Conj.concurrent(dt) && dt!=XTERNAL;
+        boolean dtConcurrent = dt != XTERNAL && Conj.concurrent(dt);
         if (dtConcurrent) {
             if (subject.equals(predicate))
                 return Bool.True;
@@ -28,7 +28,7 @@ public class Statement {
                 if ((subject == Bool.False && predicate == Bool.True) || (predicate == Bool.False && subject == Bool.True))
                     return Bool.False;
 
-                if (subject.equalsRoot(predicate))
+                if (subject.unneg().equalsRoot(predicate.unneg()))
                     return Bool.Null; //dont support non-temporal statements where the root is equal because they cant be conceptualized
             }
         }

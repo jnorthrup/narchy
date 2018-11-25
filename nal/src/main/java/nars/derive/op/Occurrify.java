@@ -886,10 +886,6 @@ public class Occurrify extends TimeGraph {
                 }
             }
 
-            @Override
-            public BeliefProjection beliefProjection() {
-                return BeliefProjection.Raw;
-            }
         },
 
 //        /**
