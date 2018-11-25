@@ -15,7 +15,8 @@ import static nars.Op.BELIEF;
 
 abstract public class AbstractSensor extends NARService implements Sensor {
 
-    private FloatRange pri, res;
+    public FloatRange pri;
+    private FloatRange res;
 
 
     public AbstractSensor(NAR nar) {

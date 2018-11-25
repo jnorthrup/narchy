@@ -8,6 +8,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.NAgentX;
 import nars.agent.FrameTrigger;
+import nars.attention.AttnDistributor;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -116,6 +117,8 @@ public class Tetris extends NAgentX {
 
         window(new Bitmap2DConceptsView(pixels, this).withControls(), 400, 900);
 
+
+        new AttnDistributor(pixels.concepts, pixels.pri::set, nar);
 
         //actionsReflect();
 
