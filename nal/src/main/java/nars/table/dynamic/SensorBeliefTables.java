@@ -1,6 +1,8 @@
 package nars.table.dynamic;
 
+import jcog.Util;
 import jcog.math.FloatRange;
+import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Param;
 import nars.concept.TaskConcept;
@@ -60,6 +62,8 @@ public class SensorBeliefTables extends BeliefTables {
     }
 
 
+    private Truth lastValue = null;
+
     public SeriesBeliefTable.SeriesRemember add(Truth value, long start, long end, TaskConcept c, float dur, NAR n) {
 
 
@@ -75,13 +79,23 @@ public class SensorBeliefTables extends BeliefTables {
         series.clean(tables);
 
         if (x!=null) {
-            x.pri(pri.asFloat());
+            x.pri(pri(pri.asFloat(), lastValue, value));
+            lastValue = value;
             return x.input(c);
         }
 
         return null;
     }
 
+    private float pri(float pri, Truth prev, Truth next) {
+        if (prev == null)
+            return pri;
+        else {
+            float priIfNoChange = ScalarValue.EPSILON; //min pri used if signal value remains the same
+            float fDiff = Math.abs(next.freq() - prev.freq());
+            return Util.lerp(fDiff, priIfNoChange, pri);
+        }
+    }
 
 
     long[] eviShared = null;
