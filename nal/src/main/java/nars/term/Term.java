@@ -364,15 +364,26 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     default int subTimeFirst(Term x) {
         final int[] time = new int[1];
         if (subTimesWhile(x, (w)->{
-            //got it
-            time[0] = w;
-            return false;
+            time[0] = w; //got it
+            return false; //stop
         }) > 0) {
             return time[0];
-        }
-        return DTERNAL;
+        } else
+            return DTERNAL;
     }
-
+    /** returns DTERNAL if not found
+     * TODO optimize traversal
+     * */
+    default int subTimeLast(Term x) {
+        final int[] time = new int[1];
+        if (subTimesWhile(x, (w)->{
+            time[0] = w; //got it
+            return true; //keep going
+        }) > 0) {
+            return time[0];
+        } else
+            return DTERNAL;
+    }
     /**
      *
      * TODO make generic Predicate<Term> selector

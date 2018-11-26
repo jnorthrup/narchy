@@ -189,16 +189,16 @@
         (P ==> M), (S ==> M) |- --((P || S) ==> M), (Belief:UnionNN)
 //     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:IntersectionSym)
 //     (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:UnionSym)
-        (P ==> M), (S ==> M), task("?") |- ((P && S) ==> M), (Punctuation:Question, Time:Task)
-        (P ==> M), (S ==> M), task("?") |- ((P || S) ==> M), (Punctuation:Question, Time:Task)
+        (P ==> M), (S ==> M), task("?") |- ((P && S) ==> M), (Punctuation:Question)
+        (P ==> M), (S ==> M), task("?") |- ((P || S) ==> M), (Punctuation:Question)
 
                 //...Also:VarIntro)
 
 
      (M ==> P), (M ==> S) |- (M ==> (polarize(P,task) && polarize(S,belief))), (Belief:IntersectionDepolarized)
-        (M ==> P), (M ==> S), task("?") |- (M ==> (polarize(P,task) && polarize(S,belief))), (Punctuation:Question, Time:Task)
+        (M ==> P), (M ==> S), task("?") |- (M ==> (polarize(P,task) && polarize(S,belief))), (Punctuation:Question)
      (M ==> P), (M ==> S) |- (M ==> (polarize(P,task) || polarize(S,belief))), (Belief:UnionDepolarized)
-        (M ==> P), (M ==> S), task("?") |- (M ==> (polarize(P,task) || polarize(S,belief))), (Punctuation:Question, Time:Task)
+        (M ==> P), (M ==> S), task("?") |- (M ==> (polarize(P,task) || polarize(S,belief))), (Punctuation:Question)
 
         //TODO question variations
         //((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P && S),A..+) ==> X), (Belief:IntersectionSym)
@@ -323,18 +323,6 @@
 
 
 
-
-
-
-//// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
-//If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
-
-    //CONJ
-    S, C, eventOf(C,S) |-      conjWithout(C,  S), (Belief:DecomposePP, Time:TaskInBelief)
-    S, C, eventOfNeg(C,S) |-   conjWithout(C,--S), (Belief:DecomposeNP, Time:TaskInBelief)
-    //DISJ
-    S, D, eventOfNeg(D,S) |- --conjWithout(D,--S), (Belief:DecomposeNN, Time:TaskInBelief)
-    S, D, eventOf(D,S) |-    --conjWithout(D,  S), (Belief:DecomposePN, Time:TaskInBelief)
 
 
 

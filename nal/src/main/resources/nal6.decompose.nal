@@ -1,14 +1,27 @@
 //conjunction/disjunction structural decomposition
 
   //Conjunction structural decompose: C = (&&,a,b,..)
-    C, X, eventOf(C,X), --is(X,"#")                        |-   conjWithout(C,X), (Belief:StructuralDeduction, Time:TaskSubSequence)
-    C, X, eventOf(C,X), --is(X,"#")                        |-   X, (Belief:StructuralDeduction, Time:TaskSubEventPos)
-    C, X, eventOfNeg(C,X), --is(X,"#")                     |-   conjWithout(C,--X), (Belief:StructuralDeduction, Time:TaskSubSequence)
-    C, X, eventOfNeg(C,X), --is(X,"#")                     |- --X, (Belief:StructuralDeduction, Time:TaskSubEventNeg)
+    C, X, eventOf(C,X)                        |-   conjWithout(C,X), (Belief:StructuralDeduction, Time:TaskSubSequence)
+    C, X, eventOf(C,X)                        |-   X, (Belief:StructuralDeduction, Time:TaskSubEventPos)
+    C, X, eventOfNeg(C,X)                     |-   conjWithout(C,--X), (Belief:StructuralDeduction, Time:TaskSubSequence)
+    C, X, eventOfNeg(C,X)                     |- --X, (Belief:StructuralDeduction, Time:TaskSubEventNeg)
 
       //C, X, eventOf(C,X),    conjParallel(C), --is(X,"#")    |-   X, (  Goal:StructuralDeduction, Time:TaskSubEventPos)
       //C, X, eventOfNeg(C,X), conjParallel(C), --is(X,"#")    |- --X, (  Goal:StructuralDeduction, Time:TaskSubEventNeg)
         //^ use the eventFirstOf() version below
+
+
+
+//// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
+//If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
+
+    //CONJ
+    S, C, eventOf(C,S) |-      conjWithout(C,  S), (Belief:DecomposePP, Time:TaskInBelief)
+    S, C, eventOfNeg(C,S) |-   conjWithout(C,--S), (Belief:DecomposeNP, Time:TaskInBelief)
+    //DISJ
+    S, D, eventOfNeg(D,S) |- --conjWithout(D,--S), (Belief:DecomposeNN, Time:TaskInBelief)
+    S, D, eventOf(D,S) |-    --conjWithout(D,  S), (Belief:DecomposePN, Time:TaskInBelief)
+
 
 
     //goal/antigoal in sequence
@@ -32,9 +45,9 @@
 
     //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
     //  filters to prevent deriving anti-goal if it appears in the precondition, was called: "conjDropIfLatestFiltered"
-    X, C, eventLastOf(C,X)    |- conjDropIfLatest(C,  X), (Goal:Deduction,Time:TaskInBelief)
-      //TODO X, C    |- conjDropIfLatestUnifies(C,  X), (Goal:Deduction,Time:TaskInBelief)
-    X, C, eventLastOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:DeductionN,Time:TaskInBelief)
+    X, C, eventLastOf(C,X)    |- conjDropIfLatest(C,  X), (Goal:Deduction,Time:TaskLastInBeliefPos)
+      //TODO X, C    |- conjDropIfLatestUnifies(C,  X), (Goal:Deduction,..
+    X, C, eventLastOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:DeductionN,Time:TaskLastInBeliefNeg)
 
     C, X, eventFirstOf(C,X)    |- conjDropIfEarliest(C,  X), (Belief:Deduction,Goal:Deduction,Time:BeliefInTask)
       C, X, eventFirstOf(C,X)    |- X, (Goal:StructuralDeduction)

@@ -4,15 +4,15 @@
 //If S can stand for P, P can to a certain low degree also represent the class S
 //If after S usually P happens, then it might be a good guess that usually before P happens, S happens.
 
-    (P ==> S),   (S ==> P),  task("?") |-   (P ==> S),   (Belief:Conversion, Punctuation:Belief)
-    (P ==> S),   (S ==> P),  task("?") |- (--P ==> S),   (Belief:ConversionPN, Punctuation:Belief)
-    (P ==> S), (--S ==> P),  task("?") |-   (P ==> --S), (Belief:Conversion, Punctuation:Belief)
-    (P ==> S), (--S ==> P),  task("?") |- (--P ==> --S), (Belief:ConversionPN, Punctuation:Belief)
+    (P ==> S),   (S ==> P),  task("?") |-   (P ==> S),   (Belief:Conversion, Punctuation:Belief,Time:Intersect)
+    (P ==> S),   (S ==> P),  task("?") |- (--P ==> S),   (Belief:ConversionPN, Punctuation:Belief,Time:Intersect)
+    (P ==> S), (--S ==> P),  task("?") |-   (P ==> --S), (Belief:Conversion, Punctuation:Belief,Time:Intersect)
+    (P ==> S), (--S ==> P),  task("?") |- (--P ==> --S), (Belief:ConversionPN, Punctuation:Belief,Time:Intersect)
 
-    (--P ==> S),   (S ==> P),  task("?") |-   (P ==> --S), (Belief:Conversion, Punctuation:Belief)
-    (--P ==> S),   (S ==> P),  task("?") |- (--P ==> --S), (Belief:ConversionPN, Punctuation:Belief)
-    (--P ==> S), (--S ==> P),  task("?") |-   (P ==> S),   (Belief:Conversion, Punctuation:Belief)
-    (--P ==> S), (--S ==> P),  task("?") |- (--P ==> S),   (Belief:ConversionPN, Punctuation:Belief)
+    (--P ==> S),   (S ==> P),  task("?") |-   (P ==> --S), (Belief:Conversion, Punctuation:Belief,Time:Intersect)
+    (--P ==> S),   (S ==> P),  task("?") |- (--P ==> --S), (Belief:ConversionPN, Punctuation:Belief,Time:Intersect)
+    (--P ==> S), (--S ==> P),  task("?") |-   (P ==> S),   (Belief:Conversion, Punctuation:Belief,Time:Intersect)
+    (--P ==> S), (--S ==> P),  task("?") |- (--P ==> S),   (Belief:ConversionPN, Punctuation:Belief,Time:Intersect)
 
 
 

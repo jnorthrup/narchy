@@ -10,8 +10,8 @@
 //    (S <-> P), (S --> P), task("?") |- (--,(S <-> P)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
 
 ////inheritance transform
-    X, (S --> P), task("?"), in(X,P) |- (X <-> substitute(X,P,S,strict)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief, Time:Intersect)
-    X, (S --> P), task("?"), in(X,S) |- (X <-> substitute(X,S,P,strict)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief, Time:Intersect)
+    X, (S --> P), task("?"), in(X,P), neq(X,S) |- (X <-> substitute(X,P,S,strict)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief, Time:Intersect)
+    X, (S --> P), task("?"), in(X,S), neq(X,P) |- (X <-> substitute(X,S,P,strict)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief, Time:Intersect)
     //X, (S --> P), task("?"), in(X,P) |- substitute(X,P,S,strict),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
     //X, (S --> P), task("?"), in(X,S) |- substitute(X,S,P,strict),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
 

@@ -76,6 +76,11 @@ public class ZoomOrtho extends Ortho {
         }
 
         @Override
+        protected boolean escapes() {
+            return false;
+        }
+
+        @Override
         protected boolean startDrag(Finger f) {
 
 

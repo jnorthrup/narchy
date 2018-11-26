@@ -10,26 +10,30 @@ import nars.time.Tense;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
+import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
 /** statements include: inheritance -->, similarity <->, and implication ==> */
 public class Statement {
 
     public static Term statement(Op op, int dt, Term subject, Term predicate) {
-        if (subject == Bool.Null || predicate == Bool.Null)
-            return Bool.Null;
+        if (subject == Null || predicate == Null)
+            return Null;
 
         boolean dtConcurrent = dt != XTERNAL && Conj.concurrent(dt);
         if (dtConcurrent) {
             if (subject.equals(predicate))
-                return Bool.True;
+                return True;
             if (op == INH || op == SIM) {
 
-                if ((subject == Bool.False && predicate == Bool.True) || (predicate == Bool.False && subject == Bool.True))
-                    return Bool.False;
+                if ((subject == False && predicate == True) || (predicate == False && subject == True))
+                    return False;
+
+                if (subject instanceof Bool || predicate instanceof Bool)
+                    return Null;
 
                 if (subject.unneg().equalsRoot(predicate.unneg()))
-                    return Bool.Null; //dont support non-temporal statements where the root is equal because they cant be conceptualized
+                    return Null; //dont support non-temporal statements where the root is equal because they cant be conceptualized
             }
         }
 
@@ -39,21 +43,21 @@ public class Statement {
         if (op == IMPL) {
 
 
-            if (subject == Bool.True)
+            if (subject == True)
                 return predicate;
-            if (subject == Bool.False)
-                return Bool.Null;
+            if (subject == False)
+                return Null;
             //test this after all of the recursions because they may have logically eliminated an IMPL that was in the input
             //TODO valid cases where subj has impl?
 
             switch (predicate.op()) {
                 case BOOL:
                     //reduce to the subject as a general condition for the superclass to utilize
-                    if (predicate == Bool.True)
+                    if (predicate == True)
                         return subject;
-                    if (predicate == Bool.False)
+                    if (predicate == False)
                         return subject.neg();
-                    return Bool.Null;
+                    return Null;
                 case NEG:
                     return statement(IMPL, dt, subject, predicate.unneg()).neg();//recurse
                 case IMPL: {
@@ -68,7 +72,7 @@ public class Statement {
             }
 
             if (subject.hasAny(IMPL))
-                return Bool.Null;
+                return Null;
 
 
 
@@ -147,7 +151,7 @@ public class Statement {
                     if (subjChange[0]) {
                         Term newSubj = se.term().negIf(subjNeg);
                         if (newSubj instanceof Bool) {
-                            if (newSubj == Bool.True)
+                            if (newSubj == True)
                                 return predicate;
                         }
                         if (dt != DTERNAL) {
@@ -187,7 +191,7 @@ public class Statement {
                     recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;
 
             if ((containEachOther(subject, predicate, delim)))
-                return Bool.Null;
+                return Null;
 
 //            boolean sa = subject instanceof AliasConcept.AliasAtom;
 //            if (sa) {

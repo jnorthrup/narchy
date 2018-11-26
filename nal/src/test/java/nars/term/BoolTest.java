@@ -72,12 +72,13 @@ public class BoolTest {
         }
 
         //allow
-        assertEq("(x-->true)", INH.the(x, Bool.True));
-        assertEq("(x-->false)", INH.the(x, Bool.False));
-        assertEq("(true-->x)", INH.the(Bool.True, x));
-        assertEq("(false-->x)", INH.the(Bool.False, x));
-        assertEq("(x<->true)", SIM.the(Bool.True, x));
-        assertEq("(x<->false)", SIM.the(Bool.False, x));
+//        assertEq("(x-->true)", INH.the(x, Bool.True));
+//        assertEq("(x-->false)", INH.the(x, Bool.False));
+//        assertEq("(true-->x)", INH.the(Bool.True, x));
+//        assertEq("(false-->x)", INH.the(Bool.False, x));
+//        assertEq("(x<->true)", SIM.the(Bool.True, x));
+//        assertEq("(x<->false)", SIM.the(Bool.False, x));
+//        assertEq("((--,x)-->true)", INH.the(x.neg(), Bool.True));
 
         assertEq(Bool.True, INH.the(Bool.True, Bool.True));
         assertEq(Bool.True, SIM.the(Bool.True, Bool.True));
@@ -92,7 +93,6 @@ public class BoolTest {
 
         assertEquals(-Bool.False.compareTo(Bool.True), Bool.True.compareTo(Bool.False));
 
-        assertEq("((--,x)-->true)", INH.the(x.neg(), Bool.True));
     }
 
 
