@@ -267,8 +267,8 @@ public interface NAct {
                 }
             }
             lr[0] =
-                    //x?ll:0.5f;
-                    ll;
+                    x?ll:0.5f;
+                    //ll;
 
             L.value(x);
             //System.out.println("L=" + x  + " <- " + ll );
@@ -293,8 +293,8 @@ public interface NAct {
                 }
             }
             lr[1] =
-                    //x?rr:0.5f;
-                    rr;
+                    x?rr:0.5f;
+                    //rr;
             R.value(x);
             //System.out.println("R=" + x  + " <- " + rr );
             return $.t(x ? 1 : 0, n.confDefault(BELIEF));
