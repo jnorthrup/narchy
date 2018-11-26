@@ -16,11 +16,11 @@
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
 
     //CONJ
-    S, C, eventOf(C,S) |-      conjWithout(C,  S), (Belief:DecomposePP, Time:TaskInBelief)
-    S, C, eventOfNeg(C,S) |-   conjWithout(C,--S), (Belief:DecomposeNP, Time:TaskInBelief)
+    S, C, eventOf(C,S) |-      conjWithout(C,  S), (Belief:DecomposePP, Time:TaskInBeliefPos)
+    S, C, eventOfNeg(C,S) |-   conjWithout(C,--S), (Belief:DecomposeNP, Time:TaskInBeliefNeg)
     //DISJ
-    S, D, eventOfNeg(D,S) |- --conjWithout(D,--S), (Belief:DecomposeNN, Time:TaskInBelief)
-    S, D, eventOf(D,S) |-    --conjWithout(D,  S), (Belief:DecomposePN, Time:TaskInBelief)
+    S, D, eventOfNeg(D,S) |- --conjWithout(D,--S), (Belief:DecomposeNN, Time:TaskInBeliefNeg)
+    S, D, eventOf(D,S) |-    --conjWithout(D,  S), (Belief:DecomposePN, Time:TaskInBeliefPos)
 
 
 
@@ -49,15 +49,15 @@
       //TODO X, C    |- conjDropIfLatestUnifies(C,  X), (Goal:Deduction,..
     X, C, eventLastOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:DeductionN,Time:TaskLastInBeliefNeg)
 
-    C, X, eventFirstOf(C,X)    |- conjDropIfEarliest(C,  X), (Belief:Deduction,Goal:Deduction,Time:BeliefInTask)
+    C, X, eventFirstOf(C,X)    |- conjDropIfEarliest(C,  X), (Belief:Deduction,Goal:Deduction,Time:AfterBeliefInTask)
       C, X, eventFirstOf(C,X)    |- X, (Goal:StructuralDeduction)
-    C, X, eventFirstOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DeductionPN,Time:BeliefInTask)
+    C, X, eventFirstOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DeductionPN,Time:AfterBeliefInTask)
       C, X, eventFirstOfNeg(C,X) |- --X, (Goal:StructuralDeduction)
 
 
     //conditional disjunction decompose
-    D, X, eventOfNeg(D,X) |- --conjWithout(D,--X), (Goal:DeductionNN,Time:BeliefInTask)
-    D, X, eventOf(D,X)    |- --conjWithout(D,  X), (Goal:DeductionNP,Time:BeliefInTask)
+    D, X, eventOfNeg(D,X) |- --conjWithout(D,--X), (Goal:DeductionNN,Time:TaskSubEventNeg)
+    D, X, eventOf(D,X)    |- --conjWithout(D,  X), (Goal:DeductionNP,Time:TaskSubEventPos)
 
 
 

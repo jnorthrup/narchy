@@ -22,7 +22,7 @@ import static nars.time.Tense.ETERNAL;
 class NAL8EternalMixTest extends NALTest {
 
     public static final LongPredicate ZERO = t -> t >= 0;
-    private final int cycles = 200;
+    private final int cycles = 300;
 
     @BeforeEach
     void setTolerance() {
@@ -191,7 +191,7 @@ class NAL8EternalMixTest extends NALTest {
 
                 .input("a:b! :|:")
                 .input("(( c:d &&+5 e:f ) ==>+5 a:b).")
-                .mustGoal(cycles, "( c:d &&+5 e:f)", 1.0f, 0.45f, 0);
+                .mustGoal(cycles, "( c:d &&+5 e:f)", 1.0f, 0.45f, -10);
     }
 
     @Test
@@ -222,8 +222,8 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .input("reachable(SELF,{t002})! :|:")
                 .inputAt(5, "((on($1,#2) &&+0 at(SELF,#2)) =|> reachable(SELF,$1)).")
-                .mustGoal(cycles, "(on({t002},#1) &&+0 at(SELF,#1))", 1.0f, 0.45f, 0)
-                .mustNotOutput(cycles, "(at(SELF,#1) &&+0 on({t002},#1))", GOAL, t -> t == ETERNAL || t == 5);
+                .mustGoal(cycles, "(on({t002},#1) &| at(SELF,#1))", 1.0f, 0.45f, 0)
+                .mustNotOutput(cycles, "(at(SELF,#1) &| on({t002},#1))", GOAL, t -> t == ETERNAL || t == 5);
 
     }
 
@@ -231,8 +231,7 @@ class NAL8EternalMixTest extends NALTest {
     void goal_ded_2() {
 
         TestNAR tester = test;
-
-        tester.inputAt(0, "at(SELF,{t001}). :|:");
+        tester.inputAt(0, "at(SELF,{t001}). |");
         tester.inputAt(0, "(at(SELF,{t001}) &&+5 open({t001}))!");
 
         tester.mustGoal(cycles, "open({t001})", 1.0f, 0.43f, 5);
@@ -248,7 +247,7 @@ class NAL8EternalMixTest extends NALTest {
                 .input("(at:$1 ==>+5 goto:$1).")
 
                 .mustGoal(cycles, "goto:t003", 1.0f, 0.45f, 6)
-                .mustNotOutput(cycles, "goto:t003", GOAL, 0f, 1f, 0.1f, 1f, 1L);
+                .mustNotOutput(cycles, "goto:t003", GOAL, 0f, 1f, 0.3f, 1f, 1L);
 
     }
 
@@ -309,7 +308,7 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .input("(--,on({t002},{t003})). :|:")
                 .inputAt(2, "((--,on({t002},#1)) &&+0 at(SELF,#1)).")
-                .mustBelieve(cycles, "at(SELF,{t003})", 1.0f, 0.73f, 0)
+                .mustBelieve(cycles, "at(SELF,{t003})", 1.0f, 0.43f, 0)
                 .mustNotOutput(cycles, "at(SELF,{t003})", BELIEF, 0, 1f, 0, 1f, ETERNAL);
     }
 

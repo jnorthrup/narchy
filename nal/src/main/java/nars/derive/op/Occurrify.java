@@ -551,72 +551,76 @@ public class Occurrify extends TimeGraph {
         },
 
 
-        /**
-         * for use with ConjDropIfLatest, etc
-         */
-        TaskInBelief() {
+        TaskInBeliefPos() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return x.hasXternal() ? solveDT(d, x, d.occ.reset(x)) : pair(x, occurrence(d)); //special
+                return solveLocal(d, x);
+            }
+
+
+            @Override
+            long[] occurrence(Derivation d) {
+                return occTaskInBelief(d, true, true, true);
+            }
+
+        },
+        TaskInBeliefNeg() {
+            @Override
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+                return solveLocal(d, x);
             }
 
             @Override
             long[] occurrence(Derivation d) {
-                return OccConjDecompose(d, true);
+                return occTaskInBelief(d, true, true, false);
             }
 
         },
         TaskLastInBeliefPos() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return x.hasXternal() ? solveDT(d, x, d.occ.reset(x)) : pair(x, occurrence(d)); //special
+                return solveLocal(d, x);
             }
 
             @Override
             long[] occurrence(Derivation d) {
-                return occTaskInBelief(d, false, true);
+                return occTaskInBelief(d, true, false, true);
             }
         },
         TaskLastInBeliefNeg() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return x.hasXternal() ? solveDT(d, x, d.occ.reset(x)) : pair(x, occurrence(d)); //special
+                return solveLocal(d, x);
             }
 
             @Override
             long[] occurrence(Derivation d) {
-                return occTaskInBelief(d, false, false);
+                return occTaskInBelief(d, true, false, false);
             }
         },
-        /**
-         * for use with ConjDropIfEarliest
-         */
-        BeliefInTask() {
+
+        AfterBeliefInTask() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-
-                @Nullable Pair<Term, long[]> p = solveDT(d, x, d.occ.reset(x));
-                if (p != null) {
-                    long[] se = p.getTwo();
-                    if (se[0] != ETERNAL) {
-                        int shift = d.taskTerm.eventRange() - x.eventRange();
-                        se[0] += shift;
-                        se[1] += shift;
-                    }
+                @Nullable Pair<Term, long[]> p = solveLocal(d, x);
+                long[] pp = p.getTwo();
+                if (d.beliefStart == ETERNAL) {
+                    pp[0] = d.taskStart;
+                    pp[1] = d.taskEnd;
+                } else {
+                    int shift = d.taskTerm.eventRange() - x.eventRange();
+                    pp[0] = d.beliefStart + shift;
+                    pp[1] = d.beliefEnd + shift;
                 }
                 return p;
             }
 
             @Override
             long[] occurrence(Derivation d) {
-                return OccConjDecompose(d, false);
+                return new long[]{TIMELESS, TIMELESS};
             }
-//            @Override
-//            public BeliefProjection beliefProjection() {
-//                return BeliefProjection.Raw; //belief
-//            }
-        },
 
+        },
         /**
          * used for conjunction structural decomposition
          */
@@ -1046,7 +1050,7 @@ public class Occurrify extends TimeGraph {
             return solveAuto(x, d);
         }
 
-//        protected Pair<Term, long[]> solveOccDTWithGoalOverride(Derivation d, Term x) {
+        //        protected Pair<Term, long[]> solveOccDTWithGoalOverride(Derivation d, Term x) {
 //
 //            if (d.concPunc == GOAL) {
 //                return Task.solve(d, x);
@@ -1054,6 +1058,11 @@ public class Occurrify extends TimeGraph {
 //
 //            return solveOccDT(d, x, d.occ(x));
 //        }
+
+        @Nullable
+        protected Pair<Term, long[]> solveLocal(Derivation d, Term x) {
+            return x.hasXternal() ? solveDT(d, x, d.occ.reset(x)) : pair(x, occurrence(d));
+        }
 
         /**
          * gets the optional premise pre-filter for this consequence.
@@ -1200,9 +1209,10 @@ public class Occurrify extends TimeGraph {
         }
     }
 
-    private static long[] occTaskInBelief(Derivation d, boolean firstOrLast, boolean pos) {
-        long base;
-        long range;
+    private static long[] occTaskInBelief(Derivation d, boolean taskInBelief, boolean firstOrLast, boolean pos) {
+
+        long base, range;
+
         if (d.occ.validEternal()) {
             return new long[]{ETERNAL, ETERNAL};
         }
@@ -1211,19 +1221,29 @@ public class Occurrify extends TimeGraph {
             base = d.beliefStart;
             range = d._belief.range() - 1;
         } else {
-            if (d.beliefStart == ETERNAL)
-                range = d._task.range() - 1;
-            else
-                range = Math.min(d._task.range(), d._belief.range()) - 1;
 
-            base = d.taskStart;
+            if (d.beliefStart == ETERNAL) {
+                range = d._task.range() - 1;
+                base = d.taskStart;
+            } else {
+                range = Math.min(d._task.range(), d._belief.range()) - 1;
+                base = taskInBelief ? d.taskStart : d.beliefStart;
+            }
+
         }
 
         assert (base != ETERNAL && base != TIMELESS);
 
 
+        Term inner, outer;
+        if (taskInBelief) {
+            inner = d.taskTerm.negIf(!pos);
+            outer = d.beliefTerm;
+        } else {
+            inner = d.beliefTerm.negIf(!pos);
+            outer = d.taskTerm;
+        }
 
-        Term inner = d.taskTerm.negIf(!pos), outer = d.beliefTerm;
 
         //TODO some cases: subTimeLast. also would help to specifically locate the pos/neg one
 
