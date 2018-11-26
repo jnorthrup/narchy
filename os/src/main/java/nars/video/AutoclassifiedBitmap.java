@@ -10,51 +10,61 @@ import jcog.util.ArrayUtils;
 import jcog.util.IntIntToFloatFunction;
 import nars.$;
 import nars.NAR;
-import nars.Op;
 import nars.agent.NAgent;
 import nars.concept.NodeConcept;
-import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.Signal;
+import nars.concept.sensor.VectorSensor;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 import static nars.$.$$;
+import static nars.Op.BELIEF;
 import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * similar to a convolutional autoencoder
  */
-public class AutoclassifiedBitmap extends AbstractSensor {
+public class AutoclassifiedBitmap extends VectorSensor {
+
+    private static final Logger logger = LoggerFactory.getLogger(AutoclassifiedBitmap.class);
 
     public final Autoencoder ae;
     private final FasterList<Signal> signals;
-    private final CauseChannel<ITask> input;
+
     public final FloatRange alpha = new FloatRange(1f, 0, 1);
-    public final FloatRange noise = new FloatRange(0.01f, 0, 1);;
+    public final FloatRange noise = new FloatRange(0.01f, 0, 1);
+    ;
 
 
     public static final MetaBits NoMetaBits = (x, y) -> ArrayUtils.EMPTY_FLOAT_ARRAY;
 
     private final MetaBits metabits;
-    
+
 
     private final IntIntToFloatFunction pixIn;
 
-    private final boolean[][][] pixEnable;
+    /**
+     * interpret as the frequency component of each encoded cell
+     */
+    private final float[][][] encoded;
+
     private final float[][] pixConf;
 
-    public final float[][] pixRecon; 
+    public final float[][] pixRecon;
 
-    private final float in[];
+    private final float ins[];
     private final int sw, sh;
     private final int nw, nh;
     private final int pw, ph;
@@ -67,18 +77,26 @@ public class AutoclassifiedBitmap extends AbstractSensor {
     public Surface newChart() {
 
         return new Gridding(
-            new BitmapMatrixView(ae.W),
+                new BitmapMatrixView(ae.W),
 
-            new ObjectSurface(this),
+                new ObjectSurface<>(this),
 
-            new BitmapMatrixView(pixRecon)) {
+                new BitmapMatrixView(pixRecon),
+
+                new VectorSensorView(this, nar).withControls()) {
             {
-                agent.onFrame(()-> forEach(x -> {
-                    if(x instanceof BitmapMatrixView)
+                agent.onFrame(() -> forEach(x -> {
+                    if (x instanceof BitmapMatrixView)
                         ((BitmapMatrixView) x).update();
                 }));
             }
-        };
+        }
+                ;
+    }
+
+    @Override
+    public int size() {
+        return signals.size();
     }
 
     public AutoclassifiedBitmap alpha(float alpha) {
@@ -88,12 +106,18 @@ public class AutoclassifiedBitmap extends AbstractSensor {
 
     @Override
     public void update(long last, long now, long next, NAR nar) {
-        update(last, now, signals, input);
+        float confDefault = nar.confDefault(BELIEF);
+        float min = nar.confMin.floatValue();
+        update(last, now, signals, in, (p,n)->{
+            float c = confDefault * Math.abs(n - 0.5f) * 2f;
+            return c>min ? $.t(n, c) : null;
+        });
     }
 
     public interface MetaBits {
         float[] get(int subX, int subY);
     }
+
     @Override
     public Iterable<Termed> components() {
         return Iterables.transform(signals, NodeConcept::term);
@@ -115,36 +139,38 @@ public class AutoclassifiedBitmap extends AbstractSensor {
     }
 
     public AutoclassifiedBitmap(Term root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, NAgent agent) {
-        this(root, (x,y)->pixIn[x][y],
-                pixIn.length,pixIn[0].length,
+        this(root, (x, y) -> pixIn[x][y],
+                pixIn.length, pixIn[0].length,
                 sw, sh, metabits, states, agent);
     }
+
     public AutoclassifiedBitmap(Term root, Bitmap2D b, int sw, int sh, MetaBits metabits, int states, NAgent agent) {
         this(root, b::brightness,
-                b.width(),b.height(),
+                b.width(), b.height(),
                 sw, sh, metabits, states, agent);
     }
+
     /**
      * metabits must consistently return an array of the same size, since now the size of this autoencoder is locked to its dimension
      */
     public AutoclassifiedBitmap(Term root, IntIntToFloatFunction pixIn, int pw, int ph, int sw, int sh, MetaBits metabits, int features, NAgent agent) {
-        super(root, agent.nar());
+        super(agent.nar());
         ae = new Autoencoder(sw * sh + metabits.get(0, 0).length, features, agent.random());
 
         this.metabits = metabits;
         this.agent = agent;
 
         this.pixIn = pixIn;
-        this.sw = sw; 
+        this.sw = sw;
         this.sh = sh;
         this.pw = pw;
         this.ph = ph;
         this.nw = (int) Math.ceil(pw / ((float) sw));
-        this.nh = (int) Math.ceil(ph / ((float) sh)); 
-        this.in = new float[ae.x.length];
+        this.nh = (int) Math.ceil(ph / ((float) sh));
+        this.ins = new float[ae.x.length];
         this.pixRecon = new float[pw][ph];
 
-        this.pixEnable = new boolean[nw][nh][features];
+        this.encoded = new float[nw][nh][features];
         this.pixConf = new float[nw][nh];
 
 
@@ -156,36 +182,54 @@ public class AutoclassifiedBitmap extends AbstractSensor {
         }
 
         Term r = $.the(root);
-        this.input = nar.newChannel(this);
-        for (int i = 0; i< nw; i++) {
+
+        for (int i = 0; i < nw; i++) {
             for (int j = 0; j < nh; j++) {
                 for (int f = 0; f < features; f++) {
                     //Term term = $.prop(coord(r, i, j), $.the(k));
                     Term term = coord(r, i, j, f);
-                    int ii = i;  int jj = j; int kk = f;
+                    int x = i;
+                    int y = j;
+                    int ff = f;
                     signals.add(
-                        new Signal(term, () -> pixEnable[ii][jj][kk] ? 1f : Float.NaN, nar) {
-                            @Override
-                            protected CauseChannel<ITask> newChannel(NAR n) {
-                                return null;
+                            new Signal(term, () -> encoded[x][y][ff], nar) {
+                                @Override
+                                protected CauseChannel<ITask> newChannel(NAR n) {
+                                    return null;
+                                }
                             }
-                        }
                     );
                 }
             }
         }
+        logger.info("{} pixels in={},{} ({}) x {},{} x features={} : encoded={}", this, pw, ph, (pw * ph), nw, nh, features, signals.size());
+        agent.sensors.add(this);
         agent.onFrame(this::update);
     }
 
-    private Term coord(Term root, int i, int j, int f) {
-        return $.inh($.p(feature[f], $.p($.the(i), $.the(j))), root);
+    @Override
+    public Iterator<Signal> iterator() {
+        return signals.iterator();
+    }
+
+    /**
+     * @param root
+     * @param x    x coordinate
+     * @param y    y coordinate
+     * @param f    feature
+     */
+    protected Term coord(Term root, int x, int y, int f) {
+        return $.inh($.p(x, y), feature[f]);
+        //return $.inh($.p($.p($.the(x), $.the(y)), root), feature[f]);
+        //return $.inh($.p(feature[f], $.p($.the(x), $.the(y))), root);
+        //return $.funcImageLast(root, $.p($.the(x), $.the(y)), feature[f]);
     }
 
     private void update() {
-        
+
 
         float minConf = nar.confMin.floatValue();
-        float baseConf = nar.confDefault(Op.BELIEF);
+        float baseConf = nar.confDefault(BELIEF);
 
 
         float alpha = this.alpha.floatValue();
@@ -197,7 +241,7 @@ public class AutoclassifiedBitmap extends AbstractSensor {
         int states = ae.y.length;
         float outputThresh = //TODO make adjustable
                 //1f - (1f / (states - 1));
-                1f - (1f / (states/2f) );
+                1f - (1f / (states / 2f));
 
 
         for (int i = 0; i < nw; ) {
@@ -216,51 +260,50 @@ public class AutoclassifiedBitmap extends AbstractSensor {
 
                         int c = sj + oj;
 
-                        in[p++] = c < ph ? pixIn.value(d, c) : 0.5f;
+                        ins[p++] = c < ph ? pixIn.value(d, c) : 0.5f;
 
                     }
                 }
 
                 float[] metabits = this.metabits.get(i, j);
                 for (float m : metabits) {
-                    in[p++] = m;
+                    ins[p++] = m;
                 }
 
                 short[] po = null;
                 if (learn) {
-                    float regionError = ae.put(in, alpha, noise, 0, true,  false);
+                    float regionError = ae.put(ins, alpha, noise, 0, true, false);
                     sumErr += regionError;
 
-                    
-                    
-                    
+
                     float conf;
                     if ((conf = 1f - (regionError / regionPixels)) > 0) {
                         short[] features = ae.max(outputThresh);
                         if (features != null) {
-                            
-                                conf = w2cSafe(c2wSafe(baseConf * conf)/features.length);
-                                if ((pixConf[i][j] = (conf)) >= minConf) {
-                                    po = features;
-                                }
-                            
+
+                            conf = w2cSafe(c2wSafe(baseConf * conf) / features.length);
+                            if ((pixConf[i][j] = (conf)) >= minConf) {
+                                po = features;
+                            }
+
                         }
                     }
-                    
+
                 } else {
-                    
-                    ae.recode(in, true, false);
+
+                    ae.recode(ins, true, false);
                 }
 
                 float mult;
 
-                boolean[] peij = pixEnable[i][j];
+                float[] peij = encoded[i][j];
 
-                Arrays.fill(peij, false);
-                if (po!=null) {
+                Arrays.fill(peij, 0);
+                if (po != null && po.length > 0) {
                     mult = +1;
+                    float f = 0.5f + 0.5f / po.length;
                     for (short ppp : po)
-                        peij[ppp] = true;
+                        peij[ppp] = f;
                 } else {
                     mult = -1;
                 }
@@ -296,126 +339,7 @@ public class AutoclassifiedBitmap extends AbstractSensor {
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

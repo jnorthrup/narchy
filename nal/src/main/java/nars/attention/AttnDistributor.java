@@ -103,8 +103,11 @@ public class AttnDistributor {
 //                g += grow;
         }
 
-        System.out.println(/*pris + " " +*/
+        /*
+        System.out.println(
                 "var=" + deviation + " > " + devMin + " ? -> " + ((g - lastGain)));
+        */
+
         g = Util.clamp(g, ScalarValue.EPSILON, 1f);
         //control.out(variance, )
 

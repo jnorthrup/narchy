@@ -1,63 +1,42 @@
 package nars.concept.sensor;
 
 import com.google.common.collect.Iterables;
-import jcog.Util;
-import jcog.data.NumberX;
-import jcog.data.atomic.AtomicFloat;
-import jcog.math.FloatSupplier;
-import nars.$;
 import nars.NAR;
 import nars.concept.NodeConcept;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
-import nars.term.Term;
 import nars.term.Termed;
-import nars.truth.Truth;
-import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.stream.StreamSupport;
-
-import static nars.Op.BELIEF;
-
-/** base class for a multi-concept representation of a real scalar value input
- *  TODO make this a special case of BitmapConcepts or some abstraction of it so they share common Tensor-related code
+/** base class for a group of concepts representing a sensor 'vector'
  * */
-abstract public class VectorSensor extends AbstractSensor implements Iterable<Signal>, FloatSupplier {
+abstract public class VectorSensor extends AbstractSensor implements Iterable<Signal> {
 
-    public final NumberX value = new AtomicFloat();
 
     public final CauseChannel<ITask> in;
 
-    public final FloatSupplier input;
 
-    private final FloatFloatToObjectFunction<Truth> truther;
 
-    public final Term term;
-
-    @Override
-    public float asFloat() {
-        return value.floatValue();
-    }
 
     @Override
     public Iterable<Termed> components() {
         return Iterables.transform(this, NodeConcept::term);
     }
 
-    protected VectorSensor(@Nullable FloatSupplier input, @Nullable Term id, NAR nar) {
-        this(input, id, (prev, next) -> next==next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null, nar);
-    }
+//    protected VectorSensor(@Nullable FloatSupplier input, @Nullable Term id, NAR nar) {
+//        this(input, id, (prev, next) -> next==next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null, nar);
+//    }
 
-    protected VectorSensor(@Nullable FloatSupplier input, @Nullable Term id, FloatFloatToObjectFunction<Truth> truther, NAR nar) {
-        super(id, nar);
+    protected VectorSensor(NAR nar) {
+        super(nar);
 
-        this.term = id;
-
-        this.input = input;
         this.in = nar.newChannel(id);
-        this.truther = truther;
     }
+
+    /** best to override */
+    public int size() {
+        return Iterables.size(this);
+    }
+
 
 
 //
@@ -73,14 +52,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
 //        }
 //    }
 
-    public void update(long prev, long now, long next, NAR n) {
 
-        if (input!=null)
-            value.set(input.asFloat());
-
-        in.input(StreamSupport.stream(this.spliterator(), false)
-                .map(x -> x.update(prev, now, truther, n)));
-    }
 
 //    @Override
 //    public void setResolution(FloatRange r) {

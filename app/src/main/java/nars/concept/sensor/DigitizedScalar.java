@@ -25,8 +25,9 @@ import static nars.Op.SETe;
  * <p>
  * expects values which have been normalized to 0..1.0 range (ex: use NormalizedFloat)
  */
-public class DigitizedScalar extends VectorSensor {
+public class DigitizedScalar extends DemultiplexedScalarSensor {
 
+    public final FloatSupplier input;
 
     /**
      * decides the truth value of a 'digit'. returns frequency float
@@ -155,13 +156,17 @@ public class DigitizedScalar extends VectorSensor {
         super(input, $.func(DigitizedScalar.class.getSimpleName(),
                 SETe.the(states)
                 /*,$.quote(Util.toString(input))*/, $.the(freqer.getClass().getSimpleName())
-        ),
-          /** special truther that emphasizes the on concepts more than the off, since more will be off than on usually */
-        (prev, next) -> next==next ? $.t(Util.unitize(next), nar.confDefault(BELIEF) * ((1-1f/states.length) * next) + (1f/states.length)) : null,
+                    ),
+            /** special truther that emphasizes the on concepts more than the off, since more will be off than on usually */
+            (prev, next) -> next==next ? $.t(Util.unitize(next),
+                //nar.confDefault(BELIEF) * ((1-1f/states.length) * next) + (1f/states.length)
+                    nar.confDefault(BELIEF)
+            ) : null,
+            nar
+        );
 
-        nar);
 
-
+        this.input = input;
 
 
         assert (states.length > 1);

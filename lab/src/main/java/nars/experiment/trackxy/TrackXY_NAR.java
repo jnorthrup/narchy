@@ -21,7 +21,7 @@ import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.task.DerivedTask;
 import nars.time.clock.CycleTime;
-import nars.video.Bitmap2DConceptsView;
+import nars.video.VectorSensorView;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.space2d.SurfaceRender;
@@ -289,7 +289,7 @@ public class TrackXY_NAR extends NAgentX {
 
 //            NARui.agentWindow(t);
                 if (a.cam != null) {
-                    window(new Bitmap2DConceptsView(a.cam, n) {
+                    window(new VectorSensorView(a.cam, n) {
                         @Override
                         protected void paint(GL2 gl, SurfaceRender surfaceRender) {
                             super.paint(gl, surfaceRender);

@@ -25,6 +25,7 @@ import static nars.Op.*;
 /**
  * decompiles a continuously trained autoencoding of an input concept vector
  * TODO make DurService
+ * TODO extend VectorSensor
  */
 public class AutoConceptualizer extends AbstractSensor {
 

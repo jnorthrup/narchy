@@ -65,8 +65,12 @@ abstract public class AbstractSensor extends NARService implements Sensor {
     final private FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(Util.unitize(next), nar.confDefault(BELIEF));
 
     /** convenience class for updating a set of signals */
-    protected void update(long last, long now, Iterable<Signal> signals, CauseChannel<ITask> in) {
-        signals.forEach(s -> in.input(s.update(last, now, truther, now - last, nar)));
+    protected final void update(long last, long now, Iterable<Signal> signals, CauseChannel<ITask> in) {
+        update(last, now, signals, in, truther);
+    }
+
+    protected void update(long last, long now, Iterable<Signal> signals, CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> t) {
+        signals.forEach(s -> in.input(s.update(last, now, t, now - last, nar)));
     }
 
 }

@@ -2,9 +2,11 @@ package nars.video;
 
 import jcog.Util;
 import jcog.math.FloatRange;
+import jcog.random.SplitMix64Random;
 import nars.NAR;
 import nars.agent.NAgent;
 import nars.concept.TaskConcept;
+import nars.concept.sensor.VectorSensor;
 import nars.control.DurService;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
@@ -30,16 +32,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
+import static java.lang.Math.sqrt;
+
 /**
  * displays a CameraSensor pixel data as perceived through its concepts (belief/goal state)
  * monochrome
  */
-public class Bitmap2DConceptsView extends BitmapMatrixView implements BitmapMatrixView.ViewFunction2D {
+public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixView.ViewFunction2D {
 
     private static final int AFFECT_CONCEPT_BUTTON = 0;
     private static final int OPEN_CONCEPT_BUTTON = 1; 
 
-    private final Bitmap2DSensor cam;
+    private final VectorSensor sensor;
     private final NAR nar;
 
     private DurService on;
@@ -58,15 +62,38 @@ public class Bitmap2DConceptsView extends BitmapMatrixView implements BitmapMatr
     private TaskConcept touchConcept;
 
     private Consumer<TaskConcept> touchMode = (x) -> { };
+    private final TaskConcept[][] concept;
 
-    public Bitmap2DConceptsView(Bitmap2DSensor cam, NAgent a) {
-        this(cam, a.nar());
+    public VectorSensorView(Bitmap2DSensor sensor, NAgent a) {
+        this(sensor, a.nar());
     }
 
-    public Bitmap2DConceptsView(Bitmap2DSensor cam, NAR n) {
-        super(cam.width, cam.height);
-        this.cam = cam;
+    public VectorSensorView(VectorSensor v, NAR n) {
+        super((int)Math.ceil(v.size()/idealStride(v)), (int)Math.ceil(idealStride(v)) );
+        this.sensor = v;
         this.nar = n;
+
+        this.concept = new TaskConcept[h][w];
+        int x = 0, y = 0;
+
+        for (TaskConcept c : v) {
+            concept[y][x++] = c;
+            if (x == w) {
+                x = 0;
+                y++;
+            }
+        }
+    }
+
+    public static float idealStride(VectorSensor v) {
+        return Math.max(1, v.size() / Math.max(1, (int) Math.ceil(sqrt(v.size()))));
+    }
+
+    public VectorSensorView(Bitmap2DSensor sensor, NAR n) {
+        super(sensor.width, sensor.height);
+        this.sensor = sensor;
+        this.nar = n;
+        this.concept = sensor.concepts.matrix;
     }
 
     public void onConceptTouch(Consumer<TaskConcept > c) {
@@ -113,8 +140,20 @@ public class Bitmap2DConceptsView extends BitmapMatrixView implements BitmapMatr
         if (finger == null) {
             touchConcept = null;
         } else {
-            touchConcept = cam.get(touchPixel.x, cam.height - 1 - touchPixel.y);
+            touchConcept = concept(touchPixel.x, height() - 1 - touchPixel.y);
         }
+    }
+
+    private TaskConcept concept(int x, int y) {
+        return concept[y][x];
+    }
+
+    public int width() {
+        return concept[0].length;
+    }
+
+    public int height() {
+        return concept.length;
     }
 
 
@@ -158,17 +197,25 @@ public class Bitmap2DConceptsView extends BitmapMatrixView implements BitmapMatr
 
     }
 
+    private final SplitMix64Random noise = new SplitMix64Random(1);
+
+    private float noise() {
+        return noise.nextFloat();
+    }
+
     @Override
     public int update(int x, int y) {
 
 
-        TaskConcept s = cam.get(x,y);
+        TaskConcept s = concept(x,y);
+        if (s == null)
+            return 0;
 
         float R = 0, G = 0 , B = 0;
         float bf = 0;
         if (visBelief.get()) {
             Truth b = s.beliefs().truth(start, end, s.term, nar);
-            bf = b != null ? b.freq() : 0.5f;
+            bf = b != null ? b.freq() : noise();
         }
 
         R = bf * 0.75f; G = bf * 0.75f; B = bf * 0.75f;
@@ -205,7 +252,7 @@ public class Bitmap2DConceptsView extends BitmapMatrixView implements BitmapMatr
     /** TODO use DurSurface */
     public static class CameraSensorViewControls extends Gridding {
 
-        private final Bitmap2DConceptsView view;
+        private final VectorSensorView view;
         private DurService on;
 
         /** the procedure to run in the next duration. limits activity to one
@@ -240,7 +287,7 @@ public class Bitmap2DConceptsView extends BitmapMatrixView implements BitmapMatr
             }
         }
 
-        public CameraSensorViewControls(Bitmap2DConceptsView view) {
+        public CameraSensorViewControls(VectorSensorView view) {
             super();
 
             this.view = view;
@@ -258,11 +305,11 @@ public class Bitmap2DConceptsView extends BitmapMatrixView implements BitmapMatr
                 goalCheckBox(view, "Goal+-", 0.5f),
                 goalCheckBox(view, "Goal-", 0f)
             ), new ObjectSurface(List.of(view.visBelief, view.visGoal, view.visPri, view.timeShift)),
-                    new FloatSlider("Pri", view.cam.pri()));
+                    new FloatSlider("Pri", view.sensor.pri()));
         }
 
         @NotNull
-        public CheckBox goalCheckBox(Bitmap2DConceptsView view, String s, float v) {
+        public CheckBox goalCheckBox(VectorSensorView view, String s, float v) {
             return new CheckBox(s, () -> {
                 view.onConceptTouch((c) -> {
                     next.set(() ->

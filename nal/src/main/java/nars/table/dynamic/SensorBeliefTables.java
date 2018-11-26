@@ -1,6 +1,5 @@
 package nars.table.dynamic;
 
-import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
 import nars.NAR;
@@ -67,8 +66,9 @@ public class SensorBeliefTables extends BeliefTables {
     public SeriesBeliefTable.SeriesRemember add(Truth value, long start, long end, TaskConcept c, float dur, NAR n) {
 
 
+        float fRes = Math.max(n.freqResolution.asFloat(), res.asFloat());
         if (value!=null) {
-            value = value.ditherFreq(Math.max(n.freqResolution.asFloat(), res.asFloat()));
+            value = value.ditherFreq(fRes);
         }
 
         SeriesBeliefTable.SeriesTask x = add(value,
@@ -79,7 +79,7 @@ public class SensorBeliefTables extends BeliefTables {
         series.clean(tables);
 
         if (x!=null) {
-            x.pri(pri(pri.asFloat(), lastValue, value));
+            x.pri(pri(pri.asFloat(), lastValue, value, fRes));
             lastValue = value;
             return x.input(c);
         }
@@ -87,13 +87,18 @@ public class SensorBeliefTables extends BeliefTables {
         return null;
     }
 
-    private float pri(float pri, Truth prev, Truth next) {
+    private float pri(float pri, Truth prev, Truth next, float fRes) {
+        float priIfNoChange = ScalarValue.EPSILON; //min pri used if signal value remains the same
+
         if (prev == null)
             return pri;
         else {
-            float priIfNoChange = ScalarValue.EPSILON; //min pri used if signal value remains the same
-            float fDiff = Math.abs(next.freq() - prev.freq());
-            return Util.lerp(fDiff, priIfNoChange, pri);
+//            float fDiff = next!=null ? Math.abs(next.freq() - prev.freq()) : 1f;
+//            return Util.lerp(fDiff, priIfNoChange, pri);
+            if (next == null || Math.abs(next.freq()-prev.freq()) > fRes)
+                return pri;
+            else
+                return priIfNoChange;
         }
     }
 

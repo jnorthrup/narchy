@@ -7,10 +7,8 @@ import nars.$;
 import nars.NAR;
 import nars.concept.NodeConcept;
 import nars.concept.TaskConcept;
-import nars.concept.sensor.AbstractSensor;
 import nars.concept.sensor.Signal;
-import nars.control.channel.CauseChannel;
-import nars.task.ITask;
+import nars.concept.sensor.VectorSensor;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
@@ -18,6 +16,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFu
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
 import java.util.function.BooleanSupplier;
 
 import static nars.Op.BELIEF;
@@ -26,12 +25,12 @@ import static nars.Op.BELIEF;
  * manages reading a camera to a pixel grid of SensorConcepts
  * monochrome
  */
-public class Bitmap2DSensor<P extends Bitmap2D> extends AbstractSensor {
+public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
     public final Bitmap2DConcepts<P> concepts;
     public final P src;
     private final NAR nar;
-    public final CauseChannel<ITask> in;
+
     public final int width, height;
     private FloatFloatToObjectFunction<Truth> mode;
 
@@ -60,12 +59,16 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends AbstractSensor {
                         nar.confDefault(BELIEF)).value(p, v);
 
         mode = SET;
-        this.in = nar.newChannel(this);
     }
 
     public Bitmap2DSensor<P> mode(FloatFloatToObjectFunction<Truth> mode) {
         this.mode = mode;
         return this;
+    }
+
+    @Override
+    public int size() {
+        return width*height;
     }
 
     @Override
@@ -196,6 +199,12 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends AbstractSensor {
 
     public final TaskConcept get(int x, int y) {
         return concepts.get(x, y);
+    }
+
+
+    @Override
+    public final Iterator<Signal> iterator() {
+        return concepts.iterator();
     }
 
 

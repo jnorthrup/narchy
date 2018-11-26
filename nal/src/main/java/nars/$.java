@@ -802,7 +802,7 @@ public enum $ {
         return funcImageLast($.the(f), x);
     }
 
-    public static Term funcImageLast(Atomic f, Term... x) {
+    public static Term funcImageLast(Term f, Term... x) {
         Term[] xx = ArrayUtils.insert(0, x, f);
         xx[x.length] = ImgExt;
         return INH.the(x[x.length-1], PROD.the(xx));

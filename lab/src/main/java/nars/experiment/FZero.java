@@ -9,19 +9,19 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.attention.AttnDistributor;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.SwitchAction;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Signal;
-import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.video.AutoclassifiedBitmap;
+import nars.video.VectorSensorView;
 import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
-import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import javax.swing.*;
@@ -107,6 +107,7 @@ public class FZero extends NAgentX {
             camAE.alpha(0.03f);
             camAE.noise.set(0.05f);
 
+            new AttnDistributor(camAE, camAE.pri::set, n);
             //SpaceGraph.(column(visionView, camAE.newChart()), 500, 500);
 //        }
 
@@ -155,7 +156,7 @@ public class FZero extends NAgentX {
                 new FloatAveraged(0.5f, true));
         Signal dAngVel = senseNumberDifference($.inh($.the("delta"), $.the("ang")), playerAngle).resolution(r);
 
-        int angles = 7;
+        int angles = 15;
         DigitizedScalar ang = senseNumber(angle ->
                         //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         $.funcImageLast("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
@@ -164,10 +165,10 @@ public class FZero extends NAgentX {
                 angles,
                 //DigitizedScalar.Needle
                 DigitizedScalar.FuzzyNeedle
-        ).resolution(0.25f);
-        window(new Gridding(
-                //new CameraSensorView(c, this).withControls(),
-                NARui.beliefIcons(ang.sensors, nar)), 400, 400);
+        ).resolution(0.1f);
+        window(
+                new VectorSensorView(ang, nar).withControls()
+                /*NARui.beliefIcons(ang.sensors, nar))*/, 400, 400);
 
 //        nar.goal($.sim($.func("ang", id, $.varDep(1)),$.func("ang", id, $.varDep(2)).neg()), Tense.ETERNAL);
 //        nar.onTask(t -> {

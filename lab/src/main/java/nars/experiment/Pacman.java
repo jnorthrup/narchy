@@ -9,7 +9,7 @@ import nars.NAgentX;
 import nars.experiment.pacman.PacmanGame;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.atom.Atomic;
-import nars.video.Bitmap2DConceptsView;
+import nars.video.VectorSensorView;
 import nars.video.SwingBitmap2D;
 import spacegraph.space2d.container.grid.Gridding;
 
@@ -38,7 +38,7 @@ public class Pacman extends NAgentX {
                     camScale.filter(cm)
             );
 
-            gg.add(new Bitmap2DConceptsView(c,this)/*.withControls()*/);
+            gg.add(new VectorSensorView(c,this)/*.withControls()*/);
             c.resolution(0.1f);
         }
         window(gg, 900, 300);

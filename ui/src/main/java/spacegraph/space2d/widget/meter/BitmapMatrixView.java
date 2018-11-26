@@ -22,6 +22,7 @@ import java.util.function.Supplier;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static java.lang.Math.sqrt;
+import static jcog.Util.clamp;
 
 
 /**
@@ -31,7 +32,7 @@ import static java.lang.Math.sqrt;
 public class BitmapMatrixView extends Surface {
 
     public final int w;
-    private final int h;
+    public final int h;
     private volatile BitmapPainter view;
     private final Tex bmp;
     protected final v2 touchPos = new v2();
@@ -66,6 +67,7 @@ public class BitmapMatrixView extends Surface {
             return Draw.rgbInt(a,a,a);
         });
     }
+
 
     public BitmapMatrixView(float[] f) {
         this(f.length, 1, arrayRenderer(f));
@@ -171,7 +173,9 @@ public class BitmapMatrixView extends Surface {
 
         finger.relativePos(this).scaled(w, h, touchPos);
 
-        touchPixel.set((int) Math.floor(touchPos.x), (int) Math.floor(touchPos.y));
+        touchPixel.set(
+                clamp((int) Math.floor(touchPos.x),0,w-1),
+                clamp((int) Math.floor(touchPos.y), 0, h-1));
 
         return true;
 

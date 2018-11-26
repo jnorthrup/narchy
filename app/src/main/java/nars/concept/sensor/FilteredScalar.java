@@ -17,7 +17,7 @@ import static nars.Op.CONJ;
 /**
  * calculates a set of derived scalars from an input scalar
  */
-public class FilteredScalar extends VectorSensor {
+public class FilteredScalar extends DemultiplexedScalarSensor {
 
     public final List<Signal> components;
 

@@ -1,14 +1,23 @@
 package nars.experiment;
 
 import java4k.gradius4k.Gradius4K;
+import jcog.data.list.FasterList;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.attention.AttnDistributor;
 import nars.concept.sensor.DigitizedScalar;
+import nars.sensor.Bitmap2DSensor;
+import nars.video.VectorSensorView;
+import spacegraph.space2d.container.grid.Gridding;
 
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 import static java4k.gradius4k.Gradius4K.*;
 import static nars.agent.FrameTrigger.fps;
+import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 4/30/17.
@@ -44,12 +53,14 @@ public class Gradius extends NAgentX {
         int px = 24, py = 24;
 
         assert px % dx == 0 && py % dy == 0;
+
+        List<Bitmap2DSensor> cams = new FasterList();
         for (int i = 0; i < dx; i++)
             for (int j = 0; j < dy; j++) {
                 int ii = i;
                 int jj = j;
                 //Term subSection = $.p(id, $.the(ii), $.the(jj));
-                senseCamera((x, y) ->
+                Bitmap2DSensor c = senseCamera((x, y) ->
                                 $.p(id, $.p($.the(ii), $.the(jj)), $.the(x), $.the(y)),
                         //$.p(
                         //$.inh(
@@ -61,7 +72,15 @@ public class Gradius extends NAgentX {
                                         (float) i / dx, (float) j / dy,
                                         (float) (i + 1) / dx, (float) (j + 1) / dy))
                         .resolution(0.04f);
+
+                cams.add(c);
             }
+        cams.forEach(c -> {
+            new AttnDistributor(c.concepts, c.pri::set, nar);
+        });
+        window(new Gridding(
+                cams.stream().map(c->new VectorSensorView(c, this).withControls()).collect(toList())),
+                400, 900);
 
 
         float width = g.getWidth();
