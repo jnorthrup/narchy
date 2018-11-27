@@ -10,7 +10,6 @@ import nars.subterm.UniSubterm;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.TermBuilder;
-import nars.term.util.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +18,6 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
-import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -136,27 +134,27 @@ public abstract class UnitCompound implements Compound {
             return sub().sub(start+1, end, path);
     }
 
-    @Override
-    public Term transform(TermTransform f) {
-        Term x = sub();
-        Term y = f.transform(x);
-        if (x == y)
-            return this; //no change
-        else {
-            if (y == Null)
-                return Null;
-            else
-                return f.the(op(), DTERNAL, new Term[]{y});
-        }
-    }
+//    @Override
+//    public Term transform(TermTransform f) {
+//        Term x = sub();
+//        Term y = f.transform(x);
+//        if (x == y)
+//            return this; //no change
+//        else {
+//            if (y == Null)
+//                return Null;
+//            else
+//                return f.the(op(), DTERNAL, new Term[]{y});
+//        }
+//    }
 
-    @Override
-    public Term transform(TermTransform f, Op newOp, int newDT) {
-        if (newOp==null || (newOp==op()&&dt()==newDT))
-            return transform(f);
-        else
-            return Compound.super.transform(f, newOp, newDT);
-    }
+//    @Override
+//    public Term transform(TermTransform f, Op newOp, int newDT) {
+//        if (newOp==null || (newOp==op()&&dt()==newDT))
+//            return transform(f);
+//        else
+//            return Compound.super.transform(f, newOp, newDT);
+//    }
 
     @Override
     public boolean impossibleSubVolume(int otherTermVolume) {
@@ -175,15 +173,6 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public final boolean isNormalized() {
-//        Term s = sub();
-//        switch (s.op()) {
-//            case ATOM: return true;
-//            case VAR_PATTERN: return s == $.varPattern(1);
-//            case VAR_DEP: return s == $.varDep(1);
-//            case VAR_INDEP: return s == $.varIndep(1);
-//            case VAR_QUERY: return s == $.varQuery(1);
-//            default: return s.isNormalized();
-//        }
         return sub().isNormalized();
     }
 
@@ -194,20 +183,10 @@ public abstract class UnitCompound implements Compound {
         return events.accept(dt, this);
     }
 
-
-
-    @Override public void appendTo(ByteArrayDataOutput out) {
-
-        Op o = op();
-        out.writeByte(o.id);
-
-        
-        out.writeByte(1); 
+    @Override
+    public void appendSubtermsTo(ByteArrayDataOutput out) {
+        out.writeByte(1);
         sub().appendTo(out);
-
-        if (o.temporal)
-            out.writeInt(dt()); 
-
     }
 
     @Override
@@ -255,10 +234,6 @@ public abstract class UnitCompound implements Compound {
         return sub().vars();
     }
 
-    @Override
-    public boolean hasVars() {
-        return sub().hasVars();
-    }
 
     @Override
     public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {

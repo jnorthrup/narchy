@@ -268,12 +268,6 @@ public class IO {
     }
 
 
-    public static void writeCompoundSuffix(ByteArrayDataOutput out, int dt, Op o) {
-        if (o.temporal) {
-            IntCoding.writeZigZagInt(dt, out);
-            //out.writeInt(dt);
-        }
-    }
 
 
     private static Term[] readTermContainer(DataInput in) throws IOException {

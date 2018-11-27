@@ -1,7 +1,6 @@
 package nars;
 
 
-import jcog.WTF;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
@@ -17,7 +16,7 @@ import nars.term.util.Conj;
 import nars.term.util.SetSectDiff;
 import nars.term.util.TermBuilder;
 import nars.term.util.TermException;
-import nars.term.util.builder.InterningTermBuilder;
+import nars.term.util.builder.HeapTermBuilder;
 import nars.term.var.ImDep;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
@@ -319,12 +318,13 @@ public enum Op {
      * specifier for any NAL level
      */
     private static final int ANY_LEVEL = 0;
-//    public static final int InvalidImplicationSubj = or(IMPL);
+
 
 
     public static TermBuilder terms =
-            //HeapTermBuilder.the;
-            new InterningTermBuilder("", 32 * 1024);
+            HeapTermBuilder.the;
+            //new InterningTermBuilder();
+            //new MemoizingTermBuilder();
 
 
     /**

@@ -16,6 +16,7 @@ import java.util.TreeSet;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.term.TermTest.assertEq;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -63,12 +64,14 @@ public class TemporalTermTest {
     @Test
     void testInvalidInheritanceOfEternalTemporalNegated() throws Narsese.NarseseException {
         assertEquals( 
-                "((--,(a &&+1 b))-->(a&&b))",
-                $("(--(a &&+1 b)-->(a && b))").toString()
+                //"((--,(a &&+1 b))-->(a&&b))",
+                Null,
+                $("(--(a &&+1 b)-->(a && b))")
         );
         assertEquals( 
-                "((a &&+1 b)-->(--,(a&&b)))",
-                $("((a &&+1 b) --> --(a && b))").toString()
+                //"((a &&+1 b)-->(--,(a&&b)))",
+                Null,
+                $("((a &&+1 b) --> --(a && b))")//.toString()
         );
 
     }

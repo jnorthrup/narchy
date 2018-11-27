@@ -1,12 +1,10 @@
 package nars.term.util.builder;
 
-import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.data.byt.RecycledDynBytes;
 import jcog.memoize.Memoizers;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.util.HijackTermCache;
@@ -25,24 +23,25 @@ import static nars.time.Tense.DTERNAL;
  **/
 public class InterningTermBuilder extends HeapTermBuilder {
 
-    private final static boolean deep = true;
-    private static final int DEFAULT_SIZE = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
 
-    private static final int maxInternedVolume = 32;
+    protected static final int DEFAULT_SIZE = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
+    protected static final int maxInternedVolumeDefault = 4;
+
+    private final boolean deep;
+    private final int volInternedMax;
 
     final HijackTermCache[] terms;
 
-    private final HijackTermCache normalize;
-    private final HijackTermCache concept;
-    private final HijackTermCache root;
     private final String id;
 
     public InterningTermBuilder() {
-        this(UUID.randomUUID().toString(), DEFAULT_SIZE);
+        this(UUID.randomUUID().toString(), false, maxInternedVolumeDefault, DEFAULT_SIZE);
     }
 
-    public InterningTermBuilder(String id, int cacheSizePerOp) {
+    public InterningTermBuilder(String id, boolean deep, int volInternedMax, int cacheSizePerOp) {
         this.id = id;
+        this.deep = deep;
+        this.volInternedMax = volInternedMax;
         terms = new HijackTermCache[Op.ops.length];
 
         HijackTermCache statements = newOpCache("statement", this::_statement, cacheSizePerOp * 3);
@@ -59,7 +58,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
             HijackTermCache c;
             if (o == CONJ) {
-                c = newOpCache("conj", j -> super.conj(false, j.dt, j.rawSubs.get()), cacheSizePerOp);
+                c =
+                        newOpCache("conj", j -> super.conj(false, j.dt, j.rawSubs.get()), cacheSizePerOp);
             } else if (o.statement) {
                 c = statements;
             } else {
@@ -68,16 +68,11 @@ public class InterningTermBuilder extends HeapTermBuilder {
             terms[i] = c;
         }
 
-        concept = newOpCache("concept", j -> super.concept((Compound) j.sub0()), cacheSizePerOp);
-
-        root = newOpCache("root", j -> super.root((Compound) j.sub0()), cacheSizePerOp);
-
-        normalize = newOpCache("normalize", j -> super.normalize((Compound) j.sub0(), (byte) 0), cacheSizePerOp);
 
     }
 
 
-    private HijackTermCache newOpCache(String name, Function<InternedCompound, Term> f, int capacity) {
+    protected HijackTermCache newOpCache(String name, Function<InternedCompound, Term> f, int capacity) {
         HijackTermCache h = new HijackTermCache(f, capacity, 4);
         Memoizers.the.add(id + '_' + InterningTermBuilder.class.getSimpleName() + '_' + name, h);
         return h;
@@ -190,7 +185,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         }
     }
 
-    private static boolean internableRoot(Op op, int dt, Term[] u) {
+    private boolean internableRoot(Op op, int dt, Term[] u) {
         boolean i = internableRoot(op, dt) && internableSubs(u);
 //        if (!i) {
 //            System.out.println(op + " " + dt + " " + Arrays.toString(u));
@@ -204,13 +199,13 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 ;
     }
 
-    private static boolean internableSubs(Term[] subterms) {
+    private boolean internableSubs(Term[] subterms) {
 
-        int volRemain = maxInternedVolume;
+        int volRemain = volInternedMax;
         for (Term x : subterms) {
-            if (!internableSub(x))
-                return false;
             if ((volRemain -= x.volume()) < 0)
+                return false;
+            if (!internableSub(x))
                 return false;
         }
 
@@ -222,41 +217,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return x.the();
     }
 
-    @Override
-    public Term normalize(Compound x, byte varOffset) {
-
-//        if (!x.hasVars())
-//            throw new WTF();
-
-        if (varOffset == 0) {
-            if (x.the())
-                return normalize.apply(InternedCompound.get(PROD, x)); //new LighterCompound(PROD, x, NORMALIZE)));
-        }
-
-        return super.normalize(x, varOffset);
-
-    }
-
-
-    @Override
-    public Term concept(Compound x) {
-        if (!x.the())
-            return super.concept(x);
-        return concept.apply(InternedCompound.get(PROD, x));
-    }
-
-    @Override
-    public Term root(Compound x) {
-        if (!x.the())
-            return super.root(x);
-        if (x.volume() < 2)
-            throw new WTF();
-        return root.apply(InternedCompound.get(PROD, x));
-    }
-
-    //    private Term _root(InternedCompound i) {
-//        return ;
-//    }
     @Override
     public Term statement(Op op, int dt, Term subject, Term predicate) {
 

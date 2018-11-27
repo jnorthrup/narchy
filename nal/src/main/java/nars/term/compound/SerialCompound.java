@@ -3,6 +3,7 @@ package nars.term.compound;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.primitives.Ints;
 import jcog.data.byt.DynBytes;
+import jcog.data.byt.util.IntCoding;
 import nars.IO;
 import nars.Op;
 import nars.Param;
@@ -30,10 +31,13 @@ public class SerialCompound extends DynBytes implements Compound, The {
         this(c.op(), c.dt(), c.arrayShared());
     }
 
-    public SerialCompound(Op op, int dt, Term[] subterms) {
+    public SerialCompound(Op o, int dt, Term[] subterms) {
         super(subterms.length * 4 /* estimate */);
 
-        writeByte(op.id);
+        boolean temporal = o.temporal && dt!=DTERNAL;
+
+        writeByte(o.id | (temporal ? IO.TEMPORAL_BIT : 0));
+
         writeByte(subterms.length);
 
         int v = 1;
@@ -45,8 +49,8 @@ public class SerialCompound extends DynBytes implements Compound, The {
             v += x.volume();
         }
 
-        IO.writeCompoundSuffix(this, dt, op);
-
+        if (temporal)
+            IntCoding.writeZigZagInt(dt, this);
 
         assert(v < Param.COMPOUND_VOLUME_MAX);
         this.volume = (byte) v;

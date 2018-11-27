@@ -12,7 +12,7 @@ import nars.term.Statement;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.anon.AnonID;
-import nars.term.anon.AnonVector;
+import nars.subterm.AnonVector;
 import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
@@ -150,8 +150,9 @@ public abstract class TermBuilder {
         Subterms subs = subterms(o, t);
 
         if(key!=null) {
-            if (subs instanceof Subterms.SubtermsBytesCached)
-                ((Subterms.SubtermsBytesCached) subs).bytes(key);
+            if (dt == DTERNAL) //HACK TODO if temporal then the final bytes are for dt should be excluded from what the subterms gets.
+                if (subs instanceof Subterms.SubtermsBytesCached)
+                    ((Subterms.SubtermsBytesCached) subs).acceptBytes(key);
         }
 
         return newCompound(o, dt, subs);

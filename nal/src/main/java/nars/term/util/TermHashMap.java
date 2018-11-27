@@ -113,7 +113,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     @Override
     public void forEach(BiConsumer<? super Term, ? super X> action) {
-        id.forEachKeyValue((x, y) -> action.accept(AnonID.idToTerm(x), y));
+        id.forEachKeyValue((x, y) -> action.accept(AnonID.term(x), y));
         if (!other.isEmpty())
             other.forEach(action);
     }
@@ -149,7 +149,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
         @Override
         public Term getKey() {
-            return AnonID.idToTerm(x.getOne());
+            return AnonID.term(x.getOne());
         }
 
         @Override

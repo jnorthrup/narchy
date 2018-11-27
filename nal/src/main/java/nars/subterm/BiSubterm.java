@@ -17,8 +17,7 @@ import java.util.function.ToIntFunction;
  */
 public class BiSubterm extends TermVector {
 
-    protected final Term x;
-    protected final Term y;
+    protected final Term x,y;
 
     public static class ReversibleBiSubterm extends BiSubterm {
 
@@ -207,6 +206,15 @@ public class BiSubterm extends TermVector {
     }
 
     @Override
+    public boolean ORrecurse(Predicate<Term> p) {
+        return x.ORrecurse(p) || (x==y || y.ORrecurse(p));
+    }
+    @Override
+    public boolean ANDrecurse(Predicate<Term> p) {
+        return x.ANDrecurse(p) && (x==y || y.ANDrecurse(p));
+    }
+
+    @Override
     public Term[] arrayClone() {
         return new Term[]{x, y};
     }
@@ -227,10 +235,11 @@ public class BiSubterm extends TermVector {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj instanceof Subterms) {
-            Subterms t;
-            if (hash == (t = ((Subterms) obj)).hashCodeSubterms()) {
+            Subterms t = ((Subterms) obj);
+            //Subterms t;
+            //if (hash == (t = ((Subterms) obj)).hashCodeSubterms()) {
                 return (t.subs() == 2 && t.sub(0).equals(x) && t.sub(1).equals(y));
-            }
+            //}
         }
         return false;
     }
@@ -239,6 +248,7 @@ public class BiSubterm extends TermVector {
     public final int subs() {
         return 2;
     }
+
 
     @Override
     public Iterator<Term> iterator() {

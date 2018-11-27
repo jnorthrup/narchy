@@ -79,7 +79,7 @@ class NormalizedVariableMap<X> extends AbstractMap<Variable, X> {
 
     @Override
     public void forEach(BiConsumer<? super Variable, ? super X> action) {
-        id.forEachKeyValue((x, y) -> action.accept((Variable) AnonID.idToTerm(x), y));
+        id.forEachKeyValue((x, y) -> action.accept((Variable) AnonID.term(x), y));
 
     }
 
@@ -140,7 +140,7 @@ class NormalizedVariableMap<X> extends AbstractMap<Variable, X> {
 
         @Override
         public Variable getKey() {
-            return (Variable) AnonID.idToTerm(x.getOne());
+            return (Variable) AnonID.term(x.getOne());
         }
 
         @Override

@@ -10,8 +10,6 @@ public class HeapTermBuilder extends TermBuilder {
 
     public final static HeapTermBuilder the = new HeapTermBuilder();
 
-    HeapTermBuilder() {
-    }
 
     @Override
     public Term compound(Op o, int dt, Term[] u) {

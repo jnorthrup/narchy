@@ -23,7 +23,6 @@ import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
 import nars.unify.ellipsis.EllipsisMatch;
 import nars.unify.mutate.CommutivePermutations;
-import org.apache.lucene.index.Terms;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.eclipse.collections.api.set.MutableSet;
@@ -37,6 +36,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 import static nars.Op.ATOM;
 
@@ -62,8 +62,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return ptr != this ? (Term) ptr : null;
     }
 
+    /** allows a Subterms implementation to accept the byte[] key that was used in constructing it,
+     *  allowing it to cache it for fast serialization.  typically it will want to keep:
+     *
+     *      byte[] cached = builtWith.arrayCopy(1) //skip prefix op byte
+     */
     interface SubtermsBytesCached {
-        void bytes(DynBytes builtWith);
+        void acceptBytes(DynBytes constructedWith);
     }
 
     static int hash(List<Term> term) {
@@ -228,10 +233,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        return output;
 //    }
 
-    /*@NotNull*/
+    /** TODO constructing a Stream like this just for the Iterator is not very efficient */
     @Override
     default Iterator<Term> iterator() {
-        throw new TODO();
+        return IntStream.range(0, subs()).mapToObj(this::sub).iterator();
     }
 
 

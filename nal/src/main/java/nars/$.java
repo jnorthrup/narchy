@@ -16,7 +16,7 @@ import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
 import nars.term.anon.AnonID;
-import nars.term.anon.AnonVector;
+import nars.subterm.AnonVector;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;

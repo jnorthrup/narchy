@@ -1,6 +1,8 @@
 package nars.subterm;
 
+import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
+import jcog.data.byt.DynBytes;
 import nars.Op;
 import nars.The;
 import nars.subterm.util.SubtermMetadataCollector;
@@ -16,13 +18,13 @@ import static nars.Op.NEG;
  * a TermVector specifically for subterms.  while both
  * can be
  */
-public abstract class TermVector extends TermMetadata implements Subterms, The {
+public abstract class TermVector extends TermMetadata implements Subterms, The, Subterms.SubtermsBytesCached {
 
     private transient boolean normalized;
     private final boolean the;
 
     /** called by AnonVector */
-    protected TermVector(SubtermMetadataCollector s) {
+    TermVector(SubtermMetadataCollector s) {
         super(s);
         the = true;
     }
@@ -94,7 +96,23 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
     abstract public boolean equals(Object obj);
 
 
+    protected transient byte[] bytes = null;
 
+    @Override
+    public void appendTo(ByteArrayDataOutput out) {
+        byte[] b = this.bytes;
+        if (b ==null) {
+            Subterms.super.appendTo(out);
+        } else {
+            out.write(b);
+        }
+    }
+
+    @Override
+    public void acceptBytes(DynBytes constructedWith) {
+        if (bytes == null)
+            bytes = constructedWith.arrayCopy(1 /* skip op byte */);
+    }
 
 
 }

@@ -110,14 +110,14 @@ abstract public class TermMetadata implements Termlike {
                 /*..*/
             } else if (varID == minID) {
                 //same order, ok
-                int type = AnonID.idToMask(x);
+                int type = AnonID.mask(x);
                 if (typeToMatch == -1)
                     typeToMatch = type;
                 else if (typeToMatch!=type)
                     return false; //same id different type, needs normalized
             } else if (varID == minID + 1) {
                 //increase the order, ok, set new type
-                typeToMatch = AnonID.idToMask(x);
+                typeToMatch = AnonID.mask(x);
                 minID++;
             } else if (varID > minID + 1) {
                 return false; //cant be sure

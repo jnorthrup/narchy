@@ -73,13 +73,15 @@ public abstract class AnonID implements Atomic, The {
 //    }
 
     public static int isVariable(short i, int ifNot) {
-        return ((i & 0xff00) != ATOM_MASK) ? (i & 0xff) : ifNot;
+        int m = mask(i);
+        return (m ==VARDEP_MASK || m==VARINDEP_MASK || m == VARPATTERN_MASK || m == VARQUERY_MASK) ?
+                (i & 0xff) : ifNot;
     }
 
     /** POS ONLY assumes non-negative; if the input is negative use idToTermPosOrNeg */
-    public static Term idToTermPos(short /* short */ i) {
+    public static Term termPos(short /* short */ i) {
         byte num = (byte) (i & 0xff);
-        switch (idToMask(i)) {
+        switch (mask(i)) {
             case ATOM_MASK:
                 return Anom.the[num];
             case IMG_MASK:
@@ -96,12 +98,20 @@ public abstract class AnonID implements Atomic, The {
                 throw new UnsupportedOperationException();
         }
     }
-    public static Term idToTerm(short /* short */ i) {
+
+    public static Term term(int /* short */ i) {
+        return term((short)i);
+    }
+
+    public static Term term(short /* short */ i) {
         boolean neg = i < 0;
         if (neg)
             i = (short) -i;
 
-        return idToTermPos(i).negIf(neg);
+        Term t = termPos(i);
+
+        return neg ? t.negIf(neg) : t;
+
 //        byte num = (byte) (i & 0xff);
 //        byte varType;
 //        switch (idToMask(i)) {
@@ -123,15 +133,18 @@ public abstract class AnonID implements Atomic, The {
 //        return NormalizedVariable.the(varType, num).negIf(neg);
     }
 
-    public static int idToMask(short i) {
+    public static int mask(short i) {
         return i & 0xff00;
+    }
+    public static int mask(AnonID a) {
+        return mask(a.anonID);
     }
 
     public static boolean isAnonPosOrNeg(Term t0) {
         return t0 instanceof AnonID || t0.unneg() instanceof AnonID;
     }
 
-    /** returns 0 if the term is not anon ID */
+    /** returns 0 if the term is not anon ID or a negation of one */
     public static short id(Term t) {
         if (t instanceof AnonID) {
             return ((AnonID)t).anonID;
@@ -147,7 +160,7 @@ public abstract class AnonID implements Atomic, The {
     public static SubtermMetadataCollector subtermMetadata(short[] s) {
         SubtermMetadataCollector c = new SubtermMetadataCollector();
         for (short x : s)
-            c.collectMetadata(idToTerm(x));
+            c.collectMetadata(term(x));
         return c;
     }
 

@@ -188,13 +188,15 @@ public interface Compound extends Term, IPair, Subterms {
 
         out.writeByte(o.id | (temporal ? IO.TEMPORAL_BIT : 0));
 
-        subterms().appendTo(out);
+        appendSubtermsTo(out);
 
-        if (temporal) {
+        if (temporal)
             IntCoding.writeZigZagInt(dt(), out);
-            //out.writeInt(dt());
-        }
 
+    }
+
+    default void appendSubtermsTo(ByteArrayDataOutput out) {
+        subterms().appendTo(out);
     }
 
 
@@ -461,25 +463,22 @@ public interface Compound extends Term, IPair, Subterms {
         if (o == CONJ) {
 
             int dt = dt();
-            boolean decompose = true;
+            boolean decompose;
             switch (dt) {
                 case 0:
-                    if (!decomposeConjParallel)
-                        decompose = false;
+                    decompose = decomposeConjParallel;
                     break;
                 case DTERNAL:
-                    if (!decomposeConjDTernal)
-                        decompose = false;
-                    else
+                    if (decompose = decomposeConjDTernal)
                         dt = 0;
                     break;
                 case XTERNAL:
-                    if (!decomposeXternal)
-                        decompose = false;
-                    else
+                    if (decompose = decomposeXternal)
                         dt = 0;
                     break;
-
+                default:
+                    decompose = true;
+                    break;
             }
 
             if (decompose) {

@@ -225,6 +225,7 @@ public interface Termlike {
 
     /**
      * returns true if evaluates true for any terms
+     * implementations are allowed to skip repeating subterms
      *
      * @param p
      */
@@ -238,6 +239,7 @@ public interface Termlike {
 
     /**
      * returns true if evaluates true for all terms
+     * implementations are allowed to skip repeating subterms
      *
      * @param p
      */
@@ -267,6 +269,7 @@ public interface Termlike {
         return false;
     }
 
+    /** implementations are allowed to skip repeating subterms */
     default boolean ANDrecurse(/*@NotNull*/ Predicate<Term> p) {
         int s = subs();
         for (int i = 0; i < s; i++)
@@ -275,6 +278,7 @@ public interface Termlike {
         return true;
     }
 
+    /** implementations are allowed to skip repeating subterms */
     default boolean ORrecurse(/*@NotNull*/ Predicate<Term> p) {
         int s = subs();
         for (int i = 0; i < s; i++)

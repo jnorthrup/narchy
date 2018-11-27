@@ -393,11 +393,11 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         eventsWhile((when, what)->{
             if (what.equals(match)) {
                 hits[0]++;
-                assert(when >= 0 && when < Integer.MAX_VALUE);
+                //assert(when >= 0 && when < Integer.MAX_VALUE);
                 return kontinue.test((int)when);
             }
             return true;
-        }, 0, true, true, false, 0);
+        }, 0, true, true, true, 0);
         return hits[0];
     }
 

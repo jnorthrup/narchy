@@ -23,11 +23,11 @@ abstract class AbstractUnitSubterm implements Subterms {
         byte a = path[start];
         if (a != 0)
             return null;
-        switch (end-start) {
-            case 1:
-                return sub();
-            default:
-                return sub().sub(start+1, end);
+        else {
+            Term s = sub();
+            return end - start == 1 ?
+                    s :
+                    s.sub(start + 1, end);
         }
     }
 

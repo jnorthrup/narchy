@@ -1,13 +1,12 @@
-package nars.term.anon;
+package nars.subterm;
 
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.byt.DynBytes;
 import jcog.util.ArrayUtils;
 import nars.Op;
-import nars.subterm.Subterms;
-import nars.subterm.TermList;
-import nars.subterm.TermVector;
 import nars.term.Term;
+import nars.term.anon.AnonArrayIterator;
+import nars.term.anon.AnonID;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -122,12 +121,12 @@ public class AnonVector extends TermVector implements Subterms.SubtermsBytesCach
                     Term y;
                     if (x == fid) y = (to);
                     else if (-x == fid) y = (to.neg());
-                    else y = (idToTerm(x));
+                    else y = (term(x));
                     tt[i] = (y);
                 }
             } else {
                 for (int i = 0; i < n; i++) { //replace negative only
-                    tt[i] = (a[i] == fid ? to : idToTerm(a[i]));
+                    tt[i] = (a[i] == fid ? to : term(a[i]));
                 }
 
             }
@@ -137,7 +136,11 @@ public class AnonVector extends TermVector implements Subterms.SubtermsBytesCach
 
     @Override
     public final Term sub(int i) {
-        return idToTerm(subterms[i]);
+        return term(subterms[i]);
+    }
+
+    public final short subRaw(int i) {
+        return (subterms[i]);
     }
 
     @Override
@@ -166,7 +169,7 @@ public class AnonVector extends TermVector implements Subterms.SubtermsBytesCach
         }
         int count = 0;
         for (short s: subterms) {
-            if (s > 0 && idToMask(s) == match)
+            if (s > 0 && AnonID.mask(s) == match)
                 count++;
         }
         return count;
@@ -279,14 +282,13 @@ public class AnonVector extends TermVector implements Subterms.SubtermsBytesCach
     public boolean equals(Object obj) {
         if (this == obj) return true;
 
-        if (this.hash != obj.hashCode()) return false;
-
         if (obj instanceof AnonVector) {
             return Arrays.equals(subterms, ((AnonVector) obj).subterms);
         }
 
         if (obj instanceof Subterms) {
 
+            if (this.hash != obj.hashCode()) return false;
 
             Subterms ss = (Subterms) obj;
             int s = subterms.length;
@@ -303,7 +305,7 @@ public class AnonVector extends TermVector implements Subterms.SubtermsBytesCach
     }
 
 
-    private transient byte[] bytes = null;
+    //private transient byte[] bytes = null;
 
     @Override
     public void appendTo(ByteArrayDataOutput out) {
@@ -315,35 +317,37 @@ public class AnonVector extends TermVector implements Subterms.SubtermsBytesCach
                     out.writeByte(Op.NEG.id);
                     s = (short) -s;
                 }
-                idToTermPos(s).appendTo(out);
+                termPos(s).appendTo(out);
             }
         } else {
             out.write(bytes);
         }
     }
 
-    @Override
-    public void bytes(DynBytes builtWith) {
-        if (bytes == null)
-            bytes = builtWith.arrayCopy(1 /* skip op byte */);
-    }
+//    @Override
+//    public void acceptBytes(DynBytes constructedWith) {
+//        if (bytes == null)
+//            bytes = constructedWith.arrayCopy(1 /* skip op byte */);
+//    }
 
     @Override
     public @Nullable Term subSub(int start, int end, byte[] path) {
-        byte z = path[start];
-        if (subterms.length <= z)
-            return null;
-
-        switch (end-start) {
-            case 1:
-                return sub(z);
-            case 2:
-                if (path[start+1]==0) {
-                    short a = this.subterms[z];
-                    if (a < 0)
-                        return AnonID.idToTerm((short) -a); //if the subterm is negative its the only way to realize path of length 2
+        int depth = end-start;
+        if (depth <= 2) {
+            byte z = path[start];
+            if (subterms.length > z) {
+                switch (depth) {
+                    case 1:
+                        return sub(z);
+                    case 2:
+                        if (path[start+1] == 0) {
+                            short a = this.subterms[z];
+                            if (a < 0)
+                                return AnonID.term((short) -a); //if the subterm is negative its the only way to realize path of length 2
+                        }
+                        break;
                 }
-                break;
+            }
         }
         return null;
     }
