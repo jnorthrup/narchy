@@ -398,7 +398,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
                 return kontinue.test((int)when);
             }
             return true;
-        }, 0, true, true, true, 0);
+        }, 0, true, true, false, 0);
         return hits[0];
     }
 

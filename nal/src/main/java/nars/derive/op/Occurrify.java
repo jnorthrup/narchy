@@ -1,5 +1,6 @@
 package nars.derive.op;
 
+import jcog.TODO;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.graph.FromTo;
@@ -229,6 +230,16 @@ public class Occurrify extends TimeGraph {
         if (so == NEG) nextNeg.add(sub.unneg());
         else if (sup == null || (so == CONJ || sup.op() != NEG))
             nextPos.add(sub); //dont add the inner positive unneg'd term of a negation unless conj (ie. disj)
+
+        if (so == IMPL) {
+            Term a = sub.sub(0);
+            if (a.op()==NEG) nextNeg.add(a);
+            //else if (i.op()==CONJ) { /*recurse? */ }
+            else nextPos.add(a);
+
+            Term b = sub.sub(1);
+            nextPos.add(b);
+        }
     };
 
     final BiConsumer<Term, Compound> negProvide = (sub, sup) -> {
@@ -236,6 +247,16 @@ public class Occurrify extends TimeGraph {
         if (so == NEG) nextNeg.remove(sub.unneg());
         else if (sup == null || (so == CONJ || sup.op() != NEG))
             nextPos.remove(sub); //dont add the inner positive unneg'd term of a negation unless conj (ie. disj)
+
+        if (so == IMPL) {
+            Term a = sub.sub(0);
+            if (a.op()==NEG) nextNeg.remove(a);
+                //else if (i.op()==CONJ) { /*recurse? */ }
+            else nextPos.remove(a);
+
+            Term b = sub.sub(1);
+            nextPos.remove(b);
+        }
     };
 
     private void setAutoNeg(Term pattern, Term taskTerm, Term beliefTerm) {
@@ -852,6 +873,32 @@ public class Occurrify extends TimeGraph {
 
         },
 
+        BeliefAtTask() {
+            @Override
+            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+
+                return solveDT(d, x, false, false, false);
+            }
+
+            @Override
+            long[] occurrence(Derivation d) {
+                long[] o = new long[2];
+                if (d.occ.validEternal()) {
+                    o[0] = o[1] = ETERNAL;
+                } else if (d.beliefStart == ETERNAL) {
+                    o[0] = d.taskStart;
+                    o[1] = d.taskEnd;
+                } else if (d.taskStart != ETERNAL) {
+                    o[0] = d.taskStart;
+                    o[1] = d.taskStart + Math.min(d.taskEnd-d.taskStart, d.beliefEnd - d.beliefStart);
+                } else if (d.taskStart == ETERNAL) {
+                    o[0] = d.beliefStart; o[1] = d.beliefEnd;
+                } else
+                    throw new TODO();//happens?
+                return o;
+            }
+
+        },
         /**
          * result occurs in the intersecting time interval, if exists; otherwise fails
          */
@@ -1065,14 +1112,9 @@ public class Occurrify extends TimeGraph {
             return null;
         }
 
-        @Deprecated @Nullable Pair<Term, long[]> solveDT(Derivation d, Term x, Occurrify o) {
-            long[] occ = occurrence(d);
-            return occ == null ? null : pair(
-                    x.hasXternal() ? o.solveDT(x, o.solutions(x)) : x,
-                    occ);
-        }
         @Nullable Pair<Term, long[]> solveDT(Derivation d, Term x, boolean taskOcc, boolean beliefOcc, boolean decomposeEvents) {
             long[] occ = occurrence(d);
+            assert(occ!=null);
             return occ == null ? null : pair(
                     x.hasXternal() ? d.occ.solveDT(x, d.occ.reset(taskOcc, beliefOcc, x, decomposeEvents).solutions(x)) : x,
                     occ);
@@ -1085,83 +1127,8 @@ public class Occurrify extends TimeGraph {
 
             if ((d.concPunc == BELIEF || d.concPunc == GOAL) && x.hasXternal())
                 return null;
-            long[] u = occurrence(d);
+            long[] u = occurrence(d); assert(u!=null);
             return u != null ? pair(x, u) : null;
-
-//            Task task = d.task;
-//            Task belief = d.concSingle ? null : d.belief;
-//            long s, e;
-//        /*if (task.isQuestOrQuestion() && (!task.isEternal() || belief == null)) {
-//
-//            s = task.start();
-//            e = task.end();
-//        } else*/
-//            boolean taskConj =
-//                    !(task.term().op() == CONJ);
-//
-//            if (task.isEternal()) {
-//                if (belief == null || belief.isEternal()) {
-//
-//                    s = e = ETERNAL;
-//                } else {
-//                    if (taskConj) {
-//                        s = belief.start();
-//                        e = belief.end();
-//                    } else {
-//
-//                        return null;
-//                    }
-//                }
-//            } else {
-//                if (belief == null) {
-//
-//                    s = task.start();
-//                    e = task.end();
-//
-//                } else if (belief.isEternal()) {
-//                    if (!task.isEternal()) {
-//
-//                        s = task.start();
-//                        e = task.end();
-//                    } else {
-//                        s = e = ETERNAL;
-//                    }
-//
-//
-//                } else {
-//                    byte p = d.concPunc;
-//                    if ((p == BELIEF || p == GOAL)) {
-//                        boolean taskEvi = !task.isQuestionOrQuest();
-//                        boolean beliefEvi = !belief.isQuestionOrQuest();
-//                        if (taskEvi && beliefEvi) {
-//                            long[] u = occurrence(d);
-//                            if (u != null) {
-//                                s = u[0];
-//                                e = u[1];
-//                            } else {
-//                                return null;
-//                            }
-//                        } else if (taskEvi) {
-//                            s = task.start();
-//                            e = task.end();
-//                        } else if (beliefEvi) {
-//                            s = belief.start();
-//                            e = belief.end();
-//                        } else {
-//                            throw new UnsupportedOperationException("evidence from nowhere?");
-//                        }
-//                    } else {
-//
-//                        Longerval u = Longerval.union(task.start(), task.end(), belief.start(), belief.end());
-//                        s = u.start();
-//                        e = u.end();
-//                    }
-//                }
-//            }
-//
-//
-//            return pair(x, new long[]{s, e});
-
         }
 
         public BeliefProjection beliefProjection() {

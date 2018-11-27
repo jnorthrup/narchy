@@ -234,8 +234,8 @@ public class TrackXY_NAR extends NAgentX {
 
 
             Deriver d = new BatchDeriver(Derivers.nal(n,
-                    //6, 8
-                    1, 8
+                    6, 8
+                    //1, 8
                     //2, 8
                     //, "motivation.nal"
             )) {

@@ -25,10 +25,10 @@
 
 
     //goal/antigoal in sequence
-    X, C, eventOf(C,X), --eventOfNeg(C,X)   |- C, (Goal:DesireWeak)
-    X, C, eventOfNeg(C,X), --eventOf(C,X)   |- --C, (Goal:DesireWeak)
-    X, C, eventOfNeg(C,X), --eventOf(C,X)   |- C, (Goal:DesireWeakN)
-    X, C, eventOf(C,X), --eventOfNeg(C,X)   |- --C, (Goal:DesireWeakN)
+    X, C, eventOf(C,X), --eventOfNeg(C,X)   |- C, (Goal:DesireWeak, Time:BeliefAtTask)
+    X, C, eventOfNeg(C,X), --eventOf(C,X)   |- --C, (Goal:DesireWeak, Time:BeliefAtTask)
+    X, C, eventOfNeg(C,X), --eventOf(C,X)   |- C, (Goal:DesireWeakN, Time:BeliefAtTask)
+    X, C, eventOf(C,X), --eventOfNeg(C,X)   |- --C, (Goal:DesireWeakN, Time:BeliefAtTask)
 
     //X, C, eventOfNeg(C,X) |- --conjWithout(C,--X), (Goal:DesireWeak, Time:BeliefSubSequence)
     //X, C, eventOf(C,X)    |- --conjWithout(C,X), (Goal:DesireWeakN, Time:BeliefSubSequence)
