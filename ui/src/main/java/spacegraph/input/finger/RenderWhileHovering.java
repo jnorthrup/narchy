@@ -40,7 +40,7 @@ public class RenderWhileHovering extends Fingering {
     }
 
     @Override
-    boolean escapes() {
+    protected boolean escapes() {
         return true;
     }
 

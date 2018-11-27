@@ -50,8 +50,16 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
     private final Queue<Pair<TestDescriptor, JupiterEngineExecutionContext>> all = new ConcurrentLinkedQueue<>();
 
     
-    private final Node.DynamicTestExecutor dte = testDescriptor -> {
-        
+    private final Node.DynamicTestExecutor dte = new Node.DynamicTestExecutor() {
+        @Override
+        public void execute(TestDescriptor testDescriptor) {
+
+        }
+
+        @Override
+        public void awaitFinished() throws InterruptedException {
+
+        }
     };
     private final Iterable<TestEngine> testEngines;
     private final LauncherDiscoveryRequestBuilder request;

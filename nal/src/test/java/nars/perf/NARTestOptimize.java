@@ -7,9 +7,8 @@ import jcog.lab.Optilive;
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
-import nars.attention.Forgetting;
-import nars.index.concept.AbstractConceptIndex;
+import nars.attention.derive.DefaultDerivePri;
+import nars.derive.Deriver;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal3.NAL3Test;
 import nars.nal.nal5.NAL5Test;
@@ -51,33 +50,33 @@ class NARTestOptimize {
 //                .var("attnCapacity", 4, 128, 8,
 //                        (NAR n, int i) -> n.attn.active.setCapacity(i))
 
-                .var("ttlMax", 1 * Param.TTL_MIN, 8 * Param.TTL_MIN, 3,
-                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
+//                .var("ttlMax", 1 * Param.TTL_MIN, 8 * Param.TTL_MIN, 3,
+//                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
 //                .var("linkFanOut", 1, 16, 1,
 //                        (NAR n, int f) -> Param.LinkFanoutMax = f)
                 .var("conceptActivation", ScalarValue.EPSILONsqrt, 1f, 0.1f,
                         (NAR n, float f) -> n.attn.activating.conceptActivationRate.set(f))
 //                .var("linkActivation", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.taskLinkActivation.set(f))
-                .var("conceptForgetRate", ScalarValue.EPSILONsqrt, 1f, 0.1f,
-                        (NAR n, float f) -> ((AbstractConceptIndex)n.concepts).conceptForgetRate.set(f))
-                .var("linkForgetRate", ScalarValue.EPSILONsqrt, 1f, 0.1f,
-                        (NAR n, float f) -> ((Forgetting.AsyncForgetting)(n.attn.forgetting)).tasklinkForgetRate.set(f))
-
-                .var("beliefPriDefault", ScalarValue.EPSILONsqrt, 1f, 0.1f,
-                        (NAR n, float f) -> n.beliefPriDefault.set(f))
-                .var("questionPriDefault", ScalarValue.EPSILONsqrt, 1f, 0.1f,
-                        (NAR n, float f) -> {
-                            n.questionPriDefault.set(f);
-                            n.questPriDefault.set(f);
-                        })
+//                .var("conceptForgetRate", ScalarValue.EPSILONsqrt, 1f, 0.1f,
+//                        (NAR n, float f) -> ((AbstractConceptIndex)n.concepts).conceptForgetRate.set(f))
+//                .var("linkForgetRate", ScalarValue.EPSILONsqrt, 1f, 0.1f,
+//                        (NAR n, float f) -> ((Forgetting.AsyncForgetting)(n.attn.forgetting)).tasklinkForgetRate.set(f))
+//
+//                .var("beliefPriDefault", ScalarValue.EPSILONsqrt, 1f, 0.1f,
+//                        (NAR n, float f) -> n.beliefPriDefault.set(f))
+//                .var("questionPriDefault", ScalarValue.EPSILONsqrt, 1f, 0.1f,
+//                        (NAR n, float f) -> {
+//                            n.questionPriDefault.set(f);
+//                            n.questPriDefault.set(f);
+//                        })
 //                .var("goalPriDefault", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.goalPriDefault.set(f))
 
-//                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
-//                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
-//                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
-//                                        relGrowthExponent.set(f)))
+                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
+                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
+                                ((DefaultDerivePri)(n.attn.deriving)).
+                                        relGrowthExponent.set(f)))
 //                .var("derivationScale", 0.5f, 2f, 0.1f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
 //                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).

@@ -5,9 +5,11 @@ plugins {
 
 mainClassName = 'nars.Shell'
 
-def teaVMversion = '0.6.0-dev-614';
+def teaVMversion = '0.6.0-dev-623';
 
 dependencies {
+
+
     compile project(':app')
 
     compile(group: 'org.boofcv', name: 'boofcv-feature', version: '0.31')

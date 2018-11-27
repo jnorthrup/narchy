@@ -65,19 +65,26 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     private final TaskConcept[][] concept;
 
     public VectorSensorView(Bitmap2DSensor sensor, NAgent a) {
-        this(sensor, a.nar());
+        super(sensor.width, sensor.height);
+        this.sensor = sensor;
+        this.nar = a.nar();
+
+        this.concept = sensor.concepts.matrix;
     }
 
     public VectorSensorView(VectorSensor v, NAR n) {
-        super((int)Math.ceil(v.size()/idealStride(v)), (int)Math.ceil(idealStride(v)) );
+        this(v, (int)Math.ceil(idealStride(v)), (int)Math.ceil(v.size()/idealStride(v)), n);
+    }
+    public VectorSensorView(VectorSensor v, int w, int h, NAR n) {
+        super(w, h);
         this.sensor = v;
         this.nar = n;
 
-        this.concept = new TaskConcept[h][w];
+        this.concept = new TaskConcept[w][h];
         int x = 0, y = 0;
 
         for (TaskConcept c : v) {
-            concept[y][x++] = c;
+            concept[x++][y] = c;
             if (x == w) {
                 x = 0;
                 y++;
@@ -86,7 +93,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     }
 
     public static float idealStride(VectorSensor v) {
-        return Math.max(1, v.size() / Math.max(1, (int) Math.ceil(sqrt(v.size()))));
+        return (float) Math.ceil(sqrt(v.size()));
     }
 
     public VectorSensorView(Bitmap2DSensor sensor, NAR n) {
@@ -145,14 +152,14 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     }
 
     private TaskConcept concept(int x, int y) {
-        return concept[y][x];
-    }
-
-    public int width() {
-        return concept[0].length;
+        return concept[x][y];
     }
 
     public int height() {
+        return concept[0].length;
+    }
+
+    public int width() {
         return concept.length;
     }
 

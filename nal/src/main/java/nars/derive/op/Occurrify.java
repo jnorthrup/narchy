@@ -6,7 +6,6 @@ import jcog.data.graph.FromTo;
 import jcog.data.graph.Node;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
-import jcog.math.Longerval;
 import nars.Op;
 import nars.Param;
 import nars.Task;
@@ -412,7 +411,7 @@ public class Occurrify extends TimeGraph {
         TaskRange() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveDT(d, x, d.occ.reset(x));
+                return solveDT(d, x, true, true, true);
             }
 
             @Override
@@ -527,7 +526,7 @@ public class Occurrify extends TimeGraph {
         TaskPlusBeliefDT() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveShiftBeliefDT(d, solveDT(d, x, d.occ.reset(true, false, x, false)), +1);
+                return solveShiftBeliefDT(d, solveDT(d, x, true, false,  false), +1);
             }
 
 
@@ -540,7 +539,7 @@ public class Occurrify extends TimeGraph {
         TaskMinusBeliefDT() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveShiftBeliefDT(d, solveDT(d, x, d.occ.reset(true, false, x, false)), -1);
+                return solveShiftBeliefDT(d, solveDT(d, x, true, false,  false), -1);
             }
 
             @Override
@@ -717,7 +716,7 @@ public class Occurrify extends TimeGraph {
         BeliefRelative() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveDT(d, x, d.occ.reset(x, false));
+                return solveDT(d, x, true, true, false);
             }
 
             @Override
@@ -739,7 +738,7 @@ public class Occurrify extends TimeGraph {
         TaskRelative() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveDT(d, x, d.occ.reset(x, false));
+                return solveDT(d, x, true, true, false);
             }
 
             @Override
@@ -833,25 +832,22 @@ public class Occurrify extends TimeGraph {
         Task() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                @Nullable Pair<Term, long[]> p = x.hasXternal() ? solveDT(d, x, d.occ.reset(x, false)) : pair(x, new long[2]);
-                if (p != null) {
-                    long[] o = p.getTwo();
-                    if (d.occ.validEternal()) {
-                        o[0] = o[1] = ETERNAL;
-                    } else if (d.taskStart != ETERNAL) {
-                        o[0] = d.taskStart;
-                        o[1] = d.taskEnd;
-                    } else {
-                        o[0] = d.beliefStart;
-                        o[1] = d.beliefEnd;
-                    }
-                }
-                return p;
+                return solveDT(d, x, true, true, false);
             }
 
             @Override
             long[] occurrence(Derivation d) {
-                return new long[]{TIMELESS, TIMELESS}; //HACK to be rewritten by the above method
+                long[] o = new long[2];
+                if (d.occ.validEternal()) {
+                    o[0] = o[1] = ETERNAL;
+                } else if (d.taskStart != ETERNAL) {
+                    o[0] = d.taskStart;
+                    o[1] = d.taskEnd;
+                } else {
+                    o[0] = d.beliefStart;
+                    o[1] = d.beliefEnd;
+                }
+                return o;
             }
 
         },
@@ -862,11 +858,7 @@ public class Occurrify extends TimeGraph {
         Intersect() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                if (!x.hasXternal()) {
-                    return pair(x, d.taskBeliefTimeIntersects);
-                } else {
-                    return solveOccDT(d, x, d.occ.reset(false, false, x, true)); //TODO maybe just solveDT
-                }
+                return solveDT(d, x, false, false, true); //TODO maybe just solveDT
             }
 
             /**
@@ -893,13 +885,14 @@ public class Occurrify extends TimeGraph {
                     return new long[]{d.beliefStart, d.beliefEnd};
                 } else {
 
-                    assert (d._belief != null && d.beliefStart != TIMELESS);
-
-                    long[] i = Longerval.intersectionArray(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd);
-                    if (i == null) {
-                        throw new WTF("should have been filtered in Truthify");
-                    }
-                    return i;
+                    return d.taskBeliefTimeIntersects;
+//                    assert (d.beliefStart != TIMELESS);
+//
+//                    long[] i = Longerval.intersectionArray(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd);
+//                    if (i == null)
+//                        throw new WTF("should have been filtered in Truthify");
+//
+//                    return i;
                 }
             }
 
@@ -1061,7 +1054,7 @@ public class Occurrify extends TimeGraph {
 
         @Nullable
         protected Pair<Term, long[]> solveLocal(Derivation d, Term x) {
-            return x.hasXternal() ? solveDT(d, x, d.occ.reset(x)) : pair(x, occurrence(d));
+            return solveDT(d, x, true, true, true);
         }
 
         /**
@@ -1072,14 +1065,17 @@ public class Occurrify extends TimeGraph {
             return null;
         }
 
-        @Nullable Pair<Term, long[]> solveDT(Derivation d, Term x, Occurrify o) {
-            ArrayHashSet<Event> solutions = o.solutions(x);
-            Term p = o.solveDT(x, solutions);
-//            if (p == null)
-//                p = x;
-
+        @Deprecated @Nullable Pair<Term, long[]> solveDT(Derivation d, Term x, Occurrify o) {
             long[] occ = occurrence(d);
-            return occ == null ? null : pair(p, occ);
+            return occ == null ? null : pair(
+                    x.hasXternal() ? o.solveDT(x, o.solutions(x)) : x,
+                    occ);
+        }
+        @Nullable Pair<Term, long[]> solveDT(Derivation d, Term x, boolean taskOcc, boolean beliefOcc, boolean decomposeEvents) {
+            long[] occ = occurrence(d);
+            return occ == null ? null : pair(
+                    x.hasXternal() ? d.occ.solveDT(x, d.occ.reset(taskOcc, beliefOcc, x, decomposeEvents).solutions(x)) : x,
+                    occ);
         }
 
         /**

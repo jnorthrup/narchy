@@ -2,7 +2,7 @@ buildscript {
     repositories {
         mavenCentral()
 //        mavenLocal()
-        jcenter()
+//        jcenter()
         maven {
             url "http://plugins.gradle.org/m2/"
         }
@@ -73,7 +73,6 @@ subprojects {
     repositories {
 
         mavenCentral()
-//        mavenLocal()
         jcenter()
 	    maven { url 'https://dl.bintray.com/konsoletyper/teavm' }
 
@@ -85,8 +84,8 @@ subprojects {
 
     tasks.withType(JavaCompile) {
 
-//        sourceCompatibility = '1.11'
-//        targetCompatibility = '1.11'
+        sourceCompatibility = '1.12'
+        targetCompatibility = '1.12'
 
         options.encoding = 'UTF-8'
         options.incremental = true // one flag, and things will get MUCH faster //doesnt seem compatible with jdk 11
@@ -107,6 +106,7 @@ subprojects {
         useJUnitPlatform() {
             excludeTags 'slow'
         }
+
         reports {
             junitXml.enabled = false
             html.enabled = false
