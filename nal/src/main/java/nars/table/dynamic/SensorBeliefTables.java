@@ -1,7 +1,6 @@
 package nars.table.dynamic;
 
 import jcog.math.FloatRange;
-import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Param;
 import nars.concept.TaskConcept;
@@ -88,7 +87,9 @@ public class SensorBeliefTables extends BeliefTables {
     }
 
     private float pri(float pri, Truth prev, Truth next, float fRes) {
-        float priIfNoChange = ScalarValue.EPSILON; //min pri used if signal value remains the same
+        float priIfNoChange =
+                //ScalarValue.EPSILON; //min pri used if signal value remains the same
+                pri * pri;
 
         if (prev == null)
             return pri;

@@ -16,7 +16,7 @@ import nars.term.util.Conj;
 import nars.term.util.SetSectDiff;
 import nars.term.util.TermBuilder;
 import nars.term.util.TermException;
-import nars.term.util.builder.HeapTermBuilder;
+import nars.term.util.builder.InterningTermBuilder;
 import nars.term.var.ImDep;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
@@ -322,8 +322,8 @@ public enum Op {
 
 
     public static TermBuilder terms =
-            HeapTermBuilder.the;
-            //new InterningTermBuilder();
+            //HeapTermBuilder.the;
+            new InterningTermBuilder();
             //new MemoizingTermBuilder();
 
 

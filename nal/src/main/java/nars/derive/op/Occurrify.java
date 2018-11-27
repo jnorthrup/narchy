@@ -526,7 +526,7 @@ public class Occurrify extends TimeGraph {
         TaskPlusBeliefDT() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveShiftBeliefDT(d, solveDT(d, x, true, false,  false), +1);
+                return solveShiftBeliefDT(d, solveDT(d, x, true, false,  true), +1);
             }
 
 
@@ -539,7 +539,7 @@ public class Occurrify extends TimeGraph {
         TaskMinusBeliefDT() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveShiftBeliefDT(d, solveDT(d, x, true, false,  false), -1);
+                return solveShiftBeliefDT(d, solveDT(d, x, true, false,  true), -1);
             }
 
             @Override

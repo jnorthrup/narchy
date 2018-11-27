@@ -135,11 +135,11 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             event = new Relative(t);
         } else {
 
-            if (add) {
+            //if (add) {
 
                 Collection<Event> te = byTerm.get(t);
-
-                if (!te.isEmpty()) {
+                int nte = te.size();
+                if (nte > 0) {
 
                     boolean stable;
                     do {
@@ -157,37 +157,36 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                                 return af;
                             if (as == ETERNAL)
                                 continue;
-                            if (as == start && af.end() == end)
-                                return af;
-                            if (af.containsOrEquals(start, end)) {
-                                add = false;
-                                break; //dont affect the stored graph, but return the smaller interval that was input
 
-                                //return af; //return the absorbing event
+                            if (af.containsOrEquals(start, end)) {
+                                //add = false;
+                                //break; //dont affect the stored graph, but return the smaller interval that was input
+
+                                return af; //return the absorbing event
                             }
 
 
-                            if (af.containedIn(start, end)) {
+
+                            if (add && af.containedIn(start, end)) {
+                                //absorb existing
                                 removeNode(f);
                                 ff.remove();
+                                nte--;
                             } else {
                                 long[] merged;
                                 if ((merged = af.unionIfIntersects(start, end)) != null) {
 
-//                                if (merged[0] < start)
-//                                    start = merged[0];
-//                                if (merged[1] > end)
-//                                    end = merged[1];
-                                    //update the stretched but keep the input range the same
-                                    removeNode(f);
-                                    ff.remove();
-                                    if (merged[0] == merged[1]) {
-                                        te.add(new Absolute(t, merged[0]));
-                                    } else {
-                                        te.add(new AbsoluteRange(t, merged[0], merged[1]));
+                                    //stretch
+                                    start = merged[0];
+                                    end = merged[1];
+
+                                    if (add) {
+                                        removeNode(f);
+                                        ff.remove();
+                                        nte--;
                                     }
 
-                                    stable = false; //try again, because it may connect with other ranges further in the iteration
+                                    stable &= nte<=1; //try again if other nodes, because it may connect with other ranges further in the iteration
                                     break;
                                 }
                             }
@@ -195,13 +194,10 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                         }
                     } while (!stable);
-                }
+                //}
             }
 
-            if (end != start)
-                event = new AbsoluteRange(t, start, end);
-            else
-                event = new Absolute(t, start);
+            event = (end != start) ? new AbsoluteRange(t, start, end) : new Absolute(t, start);
         }
 
 
@@ -268,7 +264,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             onNewTerm(eventTerm);
 
         if (!ee.add(event))
-        //if (!byTerm.put(eventTerm, event))
+            //if (!byTerm.put(eventTerm, event))
             return; //already present
 
         if (decomposeAddedEvent(event)) {
@@ -822,7 +818,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         Predicate<Event> each = this::solution;
 
         if (!x.hasXternal()) {
-        //if (!x.hasAny(Op.Temporal)) {
+            //if (!x.hasAny(Op.Temporal)) {
             return solveOccurrence(x, each);
         }
 
@@ -943,11 +939,11 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         //maybe should not stretch the timegraph , so temporarily disable potential stretching during adds here?  otherwise this seems to work well
         for (Event r : roots) {
-                //if (addNewNode(r)) {
-              if (node(r) == null) {
-                    addNode(r);
-                    created.add(r);
-               }
+            //if (addNewNode(r)) {
+            if (node(r) == null) {
+                addNode(r);
+                created.add(r);
+            }
         }
 
         Queue<Pair<List<BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>>>, Node<Event, nars.time.TimeSpan>>> q = new ArrayDeque<>(roots.size() /* estimate TODO find good sizing heuristic */);

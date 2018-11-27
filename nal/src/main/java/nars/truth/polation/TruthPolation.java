@@ -312,8 +312,9 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
                 if (term.volume() <= nar.termVolumeMax.intValue() && Task.taskConceptTerm(term)) {
 
                     this.term = term;
+                    return 1 - dtDiff * 0.5f; //half discounted
                     //return 1 - dtDiff;
-                    return 1; //no discount for difference
+                    //return 1; //no discount for difference
                 }
 
 

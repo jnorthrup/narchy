@@ -441,8 +441,8 @@ public abstract class Param {
         assert(dur > 0);
 
         int falloffDurs =
-                1;
-                //2;
+                //1;
+                2; //nyquist
                 //4;
                 //dur;
                 //8;
