@@ -17,7 +17,7 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
     private final HijackTermCache root;
 
     public MemoizingTermBuilder() {
-        this(UUID.randomUUID().toString(), true, maxInternedVolumeDefault, DEFAULT_SIZE);
+        this(UUID.randomUUID().toString(), false, maxInternedVolumeDefault, DEFAULT_SIZE);
     }
 
     public MemoizingTermBuilder(String id, boolean deep, int volInternedMax, int cacheSizePerOp) {

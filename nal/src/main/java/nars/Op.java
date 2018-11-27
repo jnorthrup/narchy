@@ -16,7 +16,7 @@ import nars.term.util.Conj;
 import nars.term.util.SetSectDiff;
 import nars.term.util.TermBuilder;
 import nars.term.util.TermException;
-import nars.term.util.builder.InterningTermBuilder;
+import nars.term.util.builder.HeapTermBuilder;
 import nars.term.var.ImDep;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
@@ -321,10 +321,7 @@ public enum Op {
 
 
 
-    public static TermBuilder terms =
-            //HeapTermBuilder.the;
-            new InterningTermBuilder();
-            //new MemoizingTermBuilder();
+    public static TermBuilder terms = HeapTermBuilder.the;
 
 
     /**
@@ -523,11 +520,20 @@ public enum Op {
                 if (baseConcurrent) {
                     if (baseDT == XTERNAL) {
                         //changing to non-XTERNAL, check for repeats
-                        if (xx.length == 2) {
+                        if (xx.length < 2) {
+
+                        } else if (xx.length == 2) {
                             if (xx[0].equals(xx[1]))
                                 return xx[0]; //collapse
                             else if (xx[0].equalsNeg(xx[1]))
                                 return Bool.False; //contradict
+                            else if (xx[0].hasAny(CONJ.bit | NEG.bit) || xx[1].hasAny(CONJ.bit | NEG.bit)) {
+                                //need to thoroughly construct
+                                return CONJ.the(nextDT, xx);
+                            }
+                        } else {
+                            //need to thoroughly check for co-negations
+                            return CONJ.the(nextDT, xx);
                         }
                     }
                     //fast transform concurrent -> concurrent, subs wont change
@@ -737,7 +743,7 @@ public enum Op {
     }
 
     public final Term[] sortedIfNecessary(int dt, Term[] u) {
-        return commutative && u.length > 1 && Conj.concurrent(dt) ? sorted(u) : u;
+        return commutative && u.length > 1 && Conj.concurrentInternal(dt) ? sorted(u) : u;
     }
 
     public final Term the(/*@NotNull*/ Collection<Term> sub) {
@@ -762,7 +768,7 @@ public enum Op {
      * - reduction to another term or True/False/Null
      */
     public Term the(int dt, Term... u) {
-        return compound(this, dt, sortedIfNecessary(dt, u));
+        return compound(this, dt, u);
     }
 
     /**

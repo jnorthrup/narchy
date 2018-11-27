@@ -3,16 +3,12 @@ package nars.term.util;
 import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import nars.Op;
-import nars.subterm.ArrayTermVector;
-import nars.subterm.BiSubterm;
-import nars.subterm.Subterms;
-import nars.subterm.UniSubterm;
+import nars.subterm.*;
 import nars.term.Compound;
 import nars.term.Statement;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.anon.AnonID;
-import nars.subterm.AnonVector;
 import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
@@ -42,7 +38,7 @@ public abstract class TermBuilder {
 
     abstract public Term compound(Op o, int dt, Term... u);
 
-    protected abstract Subterms subterms(@Nullable Op inOp, Term... s);
+    protected abstract Subterms subterms(@Nullable Op inOp, Term... u);
 
     public final Term compound(Op o, Term... u) {
         return compound(o, DTERNAL, u);
@@ -57,7 +53,6 @@ public abstract class TermBuilder {
     }
 
 
-
     public Subterms subterms(Collection<Term> s) {
         return subterms(s.toArray(Op.EmptyTermArray));
     }
@@ -68,7 +63,7 @@ public abstract class TermBuilder {
             return Op.EmptySubterms;
 
         boolean purelyAnon = true;
-        for (Term x: t) {
+        for (Term x : t) {
             if (x instanceof EllipsisMatch)
                 throw new RuntimeException("ellipsis match should not be a subterm of ANYTHING");
 
@@ -98,7 +93,7 @@ public abstract class TermBuilder {
                     return
 //                    return (this instanceof InterningTermBuilder) ?
 //                            new BiSubterm.ReversibleBiSubterm(t[0], t[1]) :
-                                new BiSubterm(t0, t1);
+                            new BiSubterm(t0, t1);
                 }
 
                 default: {
@@ -149,7 +144,7 @@ public abstract class TermBuilder {
 
         Subterms subs = subterms(o, t);
 
-        if(key!=null) {
+        if (key != null) {
             if (dt == DTERNAL) //HACK TODO if temporal then the final bytes are for dt should be excluded from what the subterms gets.
                 if (subs instanceof Subterms.SubtermsBytesCached)
                     ((Subterms.SubtermsBytesCached) subs).acceptBytes(key);
@@ -167,11 +162,11 @@ public abstract class TermBuilder {
 //        if (subterms instanceof DisposableTermList)
 //            throw new WTF();
         if (!op.temporal && !subterms.hasAny(Op.Temporal)) {
-            assert(dt == DTERNAL);
+            assert (dt == DTERNAL);
 //            if (key!=null && subterms.volume() < Param.TERM_BYTE_KEY_CACHED_BELOW_VOLUME) {
 //                return new CachedCompound.SimpleCachedCompoundWithBytes(op, subterms, key);
 //            } else {
-                return new CachedCompound.SimpleCachedCompound(op, subterms);
+            return new CachedCompound.SimpleCachedCompound(op, subterms);
 //            }
         } else {
             return new CachedCompound.TemporalCachedCompound(op, dt, subterms);
@@ -196,7 +191,7 @@ public abstract class TermBuilder {
     }
 
     static public Term[] conjPrefilter(int dt, Term[] u) {
-        switch(dt) {
+        switch (dt) {
             case 0:
             case DTERNAL:
                 u = Terms.sorted(u);
@@ -206,7 +201,7 @@ public abstract class TermBuilder {
                 if (v.length != 1)
                     u = v; //only if not collapsed to one item in case of repeat
                 else if (u.length != 2) {
-                    u = new Term[] { u[0], u[0] };
+                    u = new Term[]{u[0], u[0]};
                 }
                 break;
         }
@@ -236,7 +231,7 @@ public abstract class TermBuilder {
 
 
                     return only instanceof Ellipsislike ?
-                            theCompound(CONJ, dt, only)
+                            theCompound(CONJ, XTERNAL, only)
                             :
                             only;
                 }
@@ -330,29 +325,30 @@ public abstract class TermBuilder {
                     default: {
                         if (ul == 2) {
                             //special case: simple arity=2
-                            if (!u[0].equals(u[1]) && !unfoldableInneralXternalConj(u[0]) && !unfoldableInneralXternalConj(u[1])) {
+                            if (!u[0].equals(u[1])) { // && !unfoldableInneralXternalConj(u[0]) && !unfoldableInneralXternalConj(u[1])) {
                                 return theCompound(CONJ, XTERNAL, sorted(u));
-                            }
-                        }
-
-                        MutableSet<Term> uux = new UnifiedSet(ul, 1f);
-                        for (Term uu : u) {
-                            if (unfoldableInneralXternalConj(uu)) {
-                                uu.subterms().forEach(uux::add);
-                            } else {
-                                uux.add(uu);
-                            }
-                        }
-
-
-                        if (uux.size() == 1) {
-                            Term only = uux.getOnly();
-                            return theCompound(CONJ, XTERNAL, only, only); //repeat
+                            } else
+                                return theCompound(CONJ, XTERNAL, u[0], u[0]); //repeat
                         } else {
-                            return theCompound(CONJ, XTERNAL, sorted(uux));
+
+                            MutableSet<Term> uux = new UnifiedSet(ul, 1f);
+                            for (Term uu : u) {
+//                            if (unfoldableInneralXternalConj(uu)) {
+//                                uu.subterms().forEach(uux::add);
+//                            } else {
+                                uux.add(uu);
+//                            }
+                            }
+
+
+                            if (uux.size() == 1) {
+                                Term only = uux.getOnly();
+                                return theCompound(CONJ, XTERNAL, only, only); //repeat
+                            } else {
+                                return theCompound(CONJ, XTERNAL, sorted(uux));
+                            }
                         }
                     }
-
 
 
 //                    case 2: {
@@ -391,7 +387,7 @@ public abstract class TermBuilder {
             default: {
                 if (u.length != 2) {
                     //if (Param.DEBUG_EXTRA)
-                        throw new WTF("temporal conjunction with n!=2 subterms");
+                    throw new WTF("temporal conjunction with n!=2 subterms");
                     //return Null;
                 }
 
@@ -410,11 +406,12 @@ public abstract class TermBuilder {
     public Term root(Compound x) {
         return x.temporalize(Retemporalize.root);
     }
+
     public Term concept(Compound x) {
         Term term = x.unneg().root();
 
         Op op = term.op();
-        assert (op != NEG): this + " concept() to NEG: " + x.unneg().root();
+        assert (op != NEG) : this + " concept() to NEG: " + x.unneg().root();
         if (!op.conceptualizable)
             return Bool.Null;
 
@@ -438,8 +435,51 @@ public abstract class TermBuilder {
     }
 
     public final Term statement(Op op, int dt, Term[] u) {
-        assert (u.length == 2): op + " requires 2 arguments, but got: " + Arrays.toString(u);
+        assert (u.length == 2) : op + " requires 2 arguments, but got: " + Arrays.toString(u);
         return statement(op, dt, u[0], u[1]);
+    }
+
+    /**
+     * compares a TermBuilder impl's results against HeapTermBuilder
+     */
+    public static class VerifyingTermBuilder extends TermBuilder {
+
+        private final TermBuilder a, b;
+
+        public VerifyingTermBuilder(TermBuilder a, TermBuilder b) {
+            this.a = a;
+            this.b = b;
+        }
+
+        @Override
+        public Term compound(Op o, int dt, Term... u) {
+            Term aa = a.compound(o, dt, u);
+            Term bb = b.compound(o, dt, u);
+            if (!equals(aa, bb)) {
+                Term aaa = a.compound(o, dt, u); //temporary for re-debugging
+                Term bbb = b.compound(o, dt, u); //temporary for re-debugging
+                throw new WTF(o + " " + Arrays.toString(u) + " dt=" + dt + " inequal:\n" + aa + "\n" + bb);
+            }
+            return aa;
+        }
+
+        @Override
+        protected Subterms subterms(@Nullable Op inOp, Term... u) {
+            Subterms aa = a.subterms(inOp, u);
+            Subterms bb = b.subterms(inOp, u);
+            if (!equals(aa, bb))
+                throw new WTF(Arrays.toString(u) + (inOp != null ? " (inOp=" + inOp + ") " : "") + " inequal:\n" + aa + "\n" + bb);
+            return aa;
+        }
+
+        protected boolean equals(Term x, Term y) {
+            return x.equals(y);
+        }
+
+        protected boolean equals(Subterms x, Subterms y) {
+            return x.equals(y);
+        }
+
     }
 
 }

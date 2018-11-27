@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
+import static nars.Op.CONJ;
 import static nars.Op.NEG;
 import static nars.time.Tense.DTERNAL;
 
@@ -144,7 +145,10 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
             super(op, dt, subterms);
             this.dt = dt;
 
-//            //TEMPORARY for debug:
+            //TEMPORARY for debug:
+            if (op==CONJ && dt == DTERNAL)
+                if (subterms.sub(0).compareTo(subterms.sub(1)) > 0)
+                    System.out.println(subterms);
 //            anon();
         }
 

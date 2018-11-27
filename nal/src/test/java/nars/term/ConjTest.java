@@ -950,7 +950,8 @@ public class ConjTest {
     @Test
     void testStableConceptualization1() throws Narsese.NarseseException {
         Term c1 = ceptualStable("((((#1,(2,true),true)-->#2)&|((gameOver,(),true)-->#2)) &&+29 tetris(#1,(11,true),true))");
-        assertEq("( &&+- ,((#1,(2,true),true)-->#2),tetris(#1,(11,true),true),((gameOver,(),true)-->#2))", c1.toString());
+        assertEq("( &&+- ,((#1,(2,true),true)-->#2),tetris(#1,(11,true),true),((gameOver,(),true)-->#2))",
+                c1.toString());
     }
 
     @Test
@@ -1402,6 +1403,9 @@ public class ConjTest {
 
         Term cn = $("(x &&+1 --x)");
         assertEq("((--,x) &&+- x)", cn.root());
+    }
+    @Test
+    void testConjRootMultiConj() throws Narsese.NarseseException {
 
         Term d = $("(x &&+1 (y &&+1 z))");
         assertEq("( &&+- ,x,y,z)", d.root());
@@ -1869,6 +1873,21 @@ public class ConjTest {
 
             assertEq("((--,((X,x)&&#1))&|(--,((X,x)&|#1)))", "( (--,((X,x)&&#1)) &| (--,((X,x)&|#1)) )");
         }
+
+    }
+
+    @Test void testConjRepeatXternalEllipsisDontCollapse() {
+
+        assertEq("((%1..+ &&+- %1..+)&&(%2..+ &&+- %2..+))", $$("((%1..+ &&+- %1..+) && (%2..+ &&+- %2..+))"));
+
+        //construct by changed dt to XTERNAL from DTERNAL
+        assertEq("((%1..+ &&+- %1..+) &&+- (%2..+ &&+- %2..+))",
+                $$("((%1..+ &&+- %1..+) && (%2..+ &&+- %2..+))").dt(XTERNAL));
+
+        //construct directly
+        assertEq("((%1..+ &&+- %1..+) &&+- (%2..+ &&+- %2..+))",
+                "((%1..+ &&+- %1..+) &&+- (%2..+ &&+- %2..+))");
+
 
     }
 

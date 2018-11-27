@@ -1,7 +1,6 @@
 package nars.subterm;
 
 import com.google.common.io.ByteArrayDataOutput;
-import jcog.data.byt.DynBytes;
 import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.term.Term;
@@ -14,7 +13,8 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 
 import static nars.Op.NEG;
-import static nars.term.anon.AnonID.*;
+import static nars.term.anon.AnonID.term;
+import static nars.term.anon.AnonID.termPos;
 
 /**
  * a vector which consists purely of AnonID terms

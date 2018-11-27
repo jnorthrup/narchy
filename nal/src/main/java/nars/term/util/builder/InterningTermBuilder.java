@@ -25,7 +25,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int DEFAULT_SIZE = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    protected static final int maxInternedVolumeDefault = 4;
+    protected static final int maxInternedVolumeDefault = 16;
 
     private final boolean deep;
     private final int volInternedMax;
@@ -35,7 +35,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private final String id;
 
     public InterningTermBuilder() {
-        this(UUID.randomUUID().toString(), false, maxInternedVolumeDefault, DEFAULT_SIZE);
+        this(UUID.randomUUID().toString(), true, maxInternedVolumeDefault, DEFAULT_SIZE);
     }
 
     public InterningTermBuilder(String id, boolean deep, int volInternedMax, int cacheSizePerOp) {
@@ -104,16 +104,16 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     @Override
-    public final Term compound(Op op, int dt, Term[] u) {
-        boolean internable = internableRoot(op, dt, u);
+    public final Term compound(Op o, int dt, Term[] u) {
+        boolean internable = internableRoot(o, dt, u);
 //        if (!internable) {
 //            //internable(op, dt, u);
 //            System.out.println("why: " + op + " " + dt + " " + Arrays.toString(u));
 //        }
 
         return internable ?
-                compoundInterned(op, dt, u) :
-                super.compound(op, dt, u);
+                compoundInterned(o, dt, o.sortedIfNecessary(dt,u)) :
+                super.compound(o, dt, u);
     }
 
     private Term compoundInterned(Op op, int dt, Term[] u) {
@@ -122,12 +122,12 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     @Override
-    public Subterms subterms(Op inOp, Term... s) {
-        if (s.length == 0)
+    public Subterms subterms(Op inOp, Term... u) {
+        if (u.length == 0)
             return Op.EmptySubterms;
 
-        if (inOp != PROD && internableSubs(s)) {
-            return compoundInterned(PROD, DTERNAL, s).subterms();
+        if (inOp != PROD && internableSubs(u)) {
+            return compoundInterned(PROD, DTERNAL, u).subterms();
         } else {
 //            if (s.length == 2 && s[0].compareTo(s[1]) > 0) {
 //                //TODO filter purely anon
@@ -148,7 +148,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 //                }
 //            }
 
-            return super.subterms(inOp, s);
+            return super.subterms(inOp, u);
         }
 
     }

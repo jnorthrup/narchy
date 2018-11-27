@@ -1,11 +1,15 @@
 package nars.term.util.transform;
 
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.TreeSet;
+
+import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -29,10 +33,23 @@ public abstract class Retemporalize extends TermTransform.NegObliviousTermTransf
             Op xo = x.op();
             // && dtNext == DTERNAL ? XTERNAL : DTERNAL);
             int dt = xo.temporal ? XTERNAL : DTERNAL;
-            return x.transform(this, xo, dt);
-
-            //Term y = Retemporalize.super.transformTemporal(x, dtNext);
-            //return y != x ? xternalIfNecessary(x, y, dtNext) : x;
+            Term y = x.transform(this, xo, dt);
+            if (y instanceof Compound && y.op()==CONJ) {
+                Subterms yy = y.subterms();
+                if (yy.OR(yyy -> yyy.op()==CONJ)) {
+                    //collapse any embedded CONJ which will inevitably have dt=XTERNAL
+                    TreeSet<Term> t = new TreeSet();
+                    for (Term yyy : yy) {
+                        if (yyy.op()==CONJ) {
+                            yyy.subterms().forEach(t::add);
+                        } else {
+                            t.add(yyy);
+                        }
+                    }
+                    return CONJ.the(XTERNAL, t);
+                }
+            }
+            return y;
         }
 
         @Override

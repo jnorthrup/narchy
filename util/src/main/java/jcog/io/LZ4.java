@@ -17,8 +17,8 @@
 package jcog.io;
 
 
-import org.apache.lucene.store.DataInput;
 import org.apache.lucene.store.ByteArrayDataOutput;
+import org.apache.lucene.store.DataInput;
 import org.apache.lucene.util.packed.PackedInts;
 
 import java.io.IOException;

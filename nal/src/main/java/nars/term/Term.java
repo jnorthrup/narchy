@@ -33,6 +33,7 @@ import nars.term.anon.Anom;
 import nars.term.anon.AnonID;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.atom.Int;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
 import nars.time.Tense;
@@ -460,15 +461,11 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         if (volume == 1) {
             assert(this instanceof Atomic);
 
-            if (this instanceof AnonID) {
-                if (t instanceof AnonID){
-                    return Integer.compare(hashCode(), t.hashCode()); //same op, same hashcode
-                } else {
-                    return -1;
-                }
-            } else {
-                if (t instanceof AnonID)
-                    return +1;
+            if (this instanceof Int && t instanceof Int) {
+                return Integer.compare(((Int)this).id, ((Int)t).id); //avoids zig-zag encoding inconsistency
+            }
+            if (this instanceof AnonID && t instanceof AnonID) {
+                return Integer.compare(hashCode(), t.hashCode()); //same op, same hashcode
             }
 
             return Util.compare(

@@ -9,8 +9,8 @@ import nars.NAgentX;
 import nars.experiment.pacman.PacmanGame;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.atom.Atomic;
-import nars.video.VectorSensorView;
 import nars.video.SwingBitmap2D;
+import nars.video.VectorSensorView;
 import spacegraph.space2d.container.grid.Gridding;
 
 import static spacegraph.SpaceGraph.window;

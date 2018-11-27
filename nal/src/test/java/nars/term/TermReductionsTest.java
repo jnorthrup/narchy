@@ -16,7 +16,8 @@ import static nars.$.*;
 import static nars.Op.*;
 import static nars.term.TermTest.*;
 import static nars.term.atom.Bool.Null;
-import static nars.time.Tense.*;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

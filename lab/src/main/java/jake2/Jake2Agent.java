@@ -19,7 +19,6 @@ import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
-
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;

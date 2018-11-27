@@ -8,7 +8,6 @@ import nars.Op;
 import nars.subterm.*;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
-import nars.subterm.AnonVector;
 import nars.term.anon.AnonWithVarShift;
 import nars.term.util.TermBuilder;
 import nars.term.util.builder.HeapTermBuilder;

@@ -407,13 +407,29 @@ abstract public class DynamicTruthModel {
                     sub = (when, event) -> each.accept(event, when, when + range);
                 }
 
-                //if (event!=superterm)
-                //else
-                //return false;
-                return superterm.eventsWhile(sub, start,
-                        parallel,
-                        dternal,
-                        xternal, 0);
+                if (superterm.hasAny(Op.VAR_DEP)) {
+                    //decompose by the term itself, not individual events which will fail when resolving a VAR_DEP sub-event
+                    Subterms ss = superterm.subterms();
+                    if (ss.subs()==2) {
+                        Term a = ss.sub(0);
+                        Term b = ss.sub(1);
+                        if (superDT > 0) {
+                            return sub.accept(0, a) && sub.accept(superDT, b);
+                        } else {
+                            return sub.accept(0, b) && sub.accept(-superDT, a);
+                        }
+                    } else {
+                        throw new TODO(); //can this happen?
+                    }
+                } else {
+                    //if (event!=superterm)
+                    //else
+                    //return false;
+                    return superterm.eventsWhile(sub, start,
+                            parallel,
+                            dternal,
+                            xternal, 0);
+                }
 
             }
         };
