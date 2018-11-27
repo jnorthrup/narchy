@@ -86,10 +86,13 @@ public interface TermTransform {
             return the(op, dt, a); //transformed subterms
         } else  {
             //same subterms
-            if (op == INH && evalInline() && xx.sub(1) instanceof Functor.InlineFunctor && xx.sub(0).op()==PROD) {
-                Term v = ((Functor.InlineFunctor) xx.sub(1) /* pred */).applyInline(xx.sub(0) /* args */);
-                if (v != null)
-                    return v;
+            if (op == INH && evalInline()) {
+                Term p = xx.sub(1), s;
+                if (p instanceof Functor.InlineFunctor && (s = xx.sub(0)).op() == PROD){
+                    Term v = ((Functor.InlineFunctor) p /* pred */).applyInline(s /* subj = args */);
+                    if (v != null)
+                        return v;
+                }
             }
             if (op != x.op())
                 return the(op, dt, xx);

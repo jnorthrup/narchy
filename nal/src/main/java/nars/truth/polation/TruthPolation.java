@@ -311,18 +311,9 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
                 if (term.volume() <= nar.termVolumeMax.intValue() && Task.taskConceptTerm(term)) {
 
-                    {
-
-                        //assert(diff >= 0 && diff <= 1.0);
-                        //float differenceFactor = 1 - diff;
-
-                        float differenceFactor =
-                                1 - dtDiff;
-                        //1f / (1f + diff);
-
-                        this.term = term;
-                        return differenceFactor;
-                    }
+                    this.term = term;
+                    //return 1 - dtDiff;
+                    return 1; //no discount for difference
                 }
 
 

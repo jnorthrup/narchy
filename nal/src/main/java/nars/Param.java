@@ -49,7 +49,7 @@ public abstract class Param {
             //2;
             //4;
 
-    public static final int TERM_BYTE_KEY_CACHED_BELOW_VOLUME = 8;
+//    public static final int TERM_BYTE_KEY_CACHED_BELOW_VOLUME = 8;
     //public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO
 
     public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 512;

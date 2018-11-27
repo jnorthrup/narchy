@@ -125,7 +125,7 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
 
         } else {
 
-            boolean tryUnify = x.hasAny(op);
+            boolean tryUnify = (x.hasAny(op) || y.hasAny(op)) && (!strict || c.hasAny(op));
 
             if (!tryUnify) {
                 output = null;
