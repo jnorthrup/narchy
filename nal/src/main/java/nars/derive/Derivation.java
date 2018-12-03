@@ -481,7 +481,7 @@ public class Derivation extends PreDerivation {
         setTTL(ttl);
 
 
-        nar.attn.deriving.premise(this);
+        deriver.pri.premise(this);
 
         try {
             deriver.rules.run(this);
@@ -530,8 +530,10 @@ public class Derivation extends PreDerivation {
         return atomic;
     }
 
-    public Derivation next(NAR nar, Deriver deri) {
+    public Derivation next(Deriver deri) {
         NAR pnar = this.nar;
+
+        NAR nar = deri.nar();
 
         if (pnar != nar) {
             init(nar);

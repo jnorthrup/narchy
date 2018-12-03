@@ -7,8 +7,6 @@ import jcog.lab.Optilive;
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.NARS;
-import nars.attention.derive.DefaultDerivePri;
-import nars.derive.Deriver;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal3.NAL3Test;
 import nars.nal.nal5.NAL5Test;
@@ -73,10 +71,10 @@ class NARTestOptimize {
 //                .var("goalPriDefault", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.goalPriDefault.set(f))
 
-                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
-                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
-                                ((DefaultDerivePri)(n.attn.deriving)).
-                                        relGrowthExponent.set(f)))
+//                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
+//                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
+//                                ((DefaultDerivePri)(n.attn.deriving)).
+//                                        relGrowthExponent.set(f)))
 //                .var("derivationScale", 0.5f, 2f, 0.1f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
 //                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).

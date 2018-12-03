@@ -6,16 +6,14 @@ import nars.control.DurService;
 /** abstract attention economy model */
 public abstract class Attention extends DurService {
 
-    public DerivePri deriving;
 
     public Activator activating;
 
     public Forgetting forgetting;
 
 
-    protected Attention(DerivePri deriving, Activator activating, Forgetting forgetting) {
+    protected Attention(Activator activating, Forgetting forgetting) {
         super((NAR)null);
-        this.deriving = deriving;
         this.activating = activating;
         this.forgetting = forgetting;
     }
@@ -36,7 +34,6 @@ public abstract class Attention extends DurService {
     }
 
     private void cycle() {
-        deriving.update(nar);
 
         activating.update(nar);
     }

@@ -257,7 +257,7 @@ public interface NAct {
             boolean x = ll > thresh;
             boolean conflict = false;
             if (x) {
-                if ((lr[1] - 0.5f) >= ll - 0.5f) {
+                if (lr[1] >= ll) {
                     //conflict = true;
                     x = false;
                     //ll = 0.5f;
@@ -267,8 +267,8 @@ public interface NAct {
                 }
             }
             lr[0] =
-                    //x?ll:0.5f;
-                    ll;
+                    x?ll:0.5f;
+                    //ll;
 
             L.value(x);
             //System.out.println("L=" + x  + " <- " + ll );
@@ -283,7 +283,7 @@ public interface NAct {
             boolean x = rr > thresh;
             boolean conflict = false;
             if (x) {
-                if ((lr[0] - 0.5f) >= rr - 0.5f) {
+                if (lr[0] >= rr ) {
                     //conflict = true;
                     x = false;
                     //rr = 0.5f;
@@ -293,8 +293,8 @@ public interface NAct {
                 }
             }
             lr[1] =
-                    //x?rr:0.5f;
-                    rr;
+                    x?rr:0.5f;
+                    //rr;
             R.value(x);
             //System.out.println("R=" + x  + " <- " + rr );
             return $.t(x ? 1 : 0, n.confDefault(BELIEF));

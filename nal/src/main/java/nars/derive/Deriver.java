@@ -4,6 +4,8 @@ import jcog.Util;
 import nars.$;
 import nars.NAR;
 import nars.Task;
+import nars.attention.DerivePri;
+import nars.attention.derive.DefaultPuncWeightedDerivePri;
 import nars.control.Cause;
 import nars.derive.premise.DeriverRules;
 import nars.derive.premise.PremiseDeriverCompiler;
@@ -46,10 +48,14 @@ abstract public class Deriver extends Causable {
 
     protected final DeriverRules rules;
 
+
+
     /**
      * source of concepts supplied to this for this deriver
      */
     protected final Consumer<Predicate<Activate>> source;
+
+    public DerivePri pri = new DefaultPuncWeightedDerivePri();
 
 
     protected Deriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
@@ -93,7 +99,9 @@ abstract public class Deriver extends Causable {
     @Override
     protected final void next(NAR n, final BooleanSupplier kontinue) {
 
-        derive(Derivation.derivation.get().next(n, this), kontinue);
+        pri.update(n);
+
+        derive(Derivation.derivation.get().next(this), kontinue);
 
     }
 
@@ -107,7 +115,7 @@ abstract public class Deriver extends Causable {
      * punctuation equalizer: value factor for the conclusion punctuation type [0..1.0]
      */
     public final float preAmp(byte concPunc) {
-        return nar.attn.deriving.preAmp(concPunc);
+        return pri.preAmp(concPunc);
     }
 
 

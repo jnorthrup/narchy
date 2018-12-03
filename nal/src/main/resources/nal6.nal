@@ -49,17 +49,17 @@
 
 
 
-        B, ((&&,C,A..+) ==> X)         |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:Pre, Goal:PreWeak)
-         B, (X ==> (&&,C,A..+))         |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:Post, Goal:PostStrong)
+        B, ((&&,C,A..+) ==> X)         |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:Pre, Goal:PreWeak, Time:Immediate)
+         B, (X ==> (&&,C,A..+))         |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:Post, Goal:PostStrong, Time:Immediate)
           //B, ((&&,C,A..+) ==> X)         |- subIfUnifiesAny((&&,--X,A..+),C,B), (Belief:DeductionPN, Goal:DesirePN)
-        B, ((&&,--C,A..+) ==> X)       |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:PreN, Goal:PreWeakN)
-         B, (X ==> (&&,--C,A..+))       |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:PostN, Goal:PostStrongN)
+        B, ((&&,--C,A..+) ==> X)       |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:PreN, Goal:PreWeakN, Time:Immediate)
+         B, (X ==> (&&,--C,A..+))       |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:PostN, Goal:PostStrongN, Time:Immediate)
           //B, ((&&,--C,A..+) ==> X)       |- subIfUnifiesAny((&&,--X,A..+),C,B), (Belief:DeductionNN, Goal:DesireNN)
-            B, (--(&&,C,A..+) ==> X)   |- subIfUnifiesAny(--(&&,X,A..+),C,B), (Belief:Pre, Goal:PreWeak)
-             B, (X ==> (&&,C,A..+))   |- subIfUnifiesAny(--(&&,X,A..+),C,B), (Belief:PostPN, Goal:PostStrongPN)
+            B, (--(&&,C,A..+) ==> X)   |- subIfUnifiesAny(--(&&,X,A..+),C,B), (Belief:Pre, Goal:PreWeak, Time:Immediate)
+             B, (X ==> (&&,C,A..+))   |- subIfUnifiesAny(--(&&,X,A..+),C,B), (Belief:PostPN, Goal:PostStrongPN, Time:Immediate)
               //B, (--(&&,C,A..+) ==> X)   |- subIfUnifiesAny(--(&&,--X,A..+),C,B), (Belief:DeductionPN, Goal:DesirePN)
-            B, (--(&&,--C,A..+) ==> X) |- subIfUnifiesAny(--(&&,X,A..+),C,B), (Belief:PreN, Goal:PreWeakN)
-             B, (X ==> (&&,--C,A..+)) |- subIfUnifiesAny(--(&&,X,A..+),C,B), (Belief:PostNN, Goal:PostStrongNN)
+            B, (--(&&,--C,A..+) ==> X) |- subIfUnifiesAny(--(&&,X,A..+),C,B), (Belief:PreN, Goal:PreWeakN, Time:Immediate)
+             B, (X ==> (&&,--C,A..+)) |- subIfUnifiesAny(--(&&,X,A..+),C,B), (Belief:PostNN, Goal:PostStrongNN, Time:Immediate)
               //B, (--(&&,--C,A..+) ==> X) |- subIfUnifiesAny(--(&&,--X,A..+),C,B), (Belief:DeductionNN, Goal:DesireNN)
 
 
@@ -75,21 +75,21 @@
               //  (Y --> P), (Z ==> (&&,--(X-->P),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==> (&&,--(X-->P),A..+)), X,Y,strict), (Belief:DeductionN)
 
 //        //TODO question variations
-        Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny(((&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction)
+        Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny(((&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction, Time:Immediate)
          //Y, ((&&,X,A..+) ==> Z) |- subIfUnifiesAny(((&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
-        Y, ((&&,--X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny(((&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
+        Y, ((&&,--X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny(((&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN, Time:Immediate)
          //Y, ((&&,--X,A..+) ==> Z) |- subIfUnifiesAny(((&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
-                Y, (--(&&,X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny((--(&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction)
+                Y, (--(&&,X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny((--(&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction, Time:Immediate)
                  //Y, (--(&&,X,A..+) ==> Z) |- subIfUnifiesAny((--(&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
-                Y, (--(&&,--X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny((--(&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
+                Y, (--(&&,--X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny((--(&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN, Time:Immediate)
                  //Y, (--(&&,--X,A..+) ==> Z) |- subIfUnifiesAny((--(&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
-        Y, (Z ==> (&&,X,A..+)), neq(X,Y),neq(Y,Z) |- subIfUnifiesAny((Z ==> (&&,X,A..+)), X,Y,strict), (Belief:Abduction)
+        Y, (Z ==> (&&,X,A..+)), neq(X,Y),neq(Y,Z) |- subIfUnifiesAny((Z ==> (&&,X,A..+)), X,Y,strict), (Belief:Abduction, Time:Immediate)
          //Y, (Z ==> (&&,X,A..+)) |- subIfUnifiesAny((Z ==> (&&,X,Y,A..+)), X,Y), (Belief:Abduction)
-        Y, (Z ==> (&&,--X,A..+)), neq(X,Y),neq(Y,Z) |- subIfUnifiesAny((Z ==> (&&,--X,A..+)), X,Y,strict), (Belief:AbductionN)
+        Y, (Z ==> (&&,--X,A..+)), neq(X,Y),neq(Y,Z) |- subIfUnifiesAny((Z ==> (&&,--X,A..+)), X,Y,strict), (Belief:AbductionN, Time:Immediate)
          //Y, (Z ==> (&&,--X,A..+)) |- subIfUnifiesAny((Z ==> (&&,--X,--Y,A..+)), X,Y), (Belief:AbductionN)
 
-    Y, (B ==> (&&,X,A..+)) |- subIfUnifiesAny((B ==> (&&,A..+)),X,Y), (Belief:Deduction)
-    Y, (B ==> (&&,--X,A..+)) |- subIfUnifiesAny((B ==> (&&,A..+)),X,Y), (Belief:DeductionN)
+    Y, (B ==> (&&,X,A..+)) |- subIfUnifiesAny((B ==> (&&,A..+)),X,Y), (Belief:Deduction, Time:Immediate)
+    Y, (B ==> (&&,--X,A..+)) |- subIfUnifiesAny((B ==> (&&,A..+)),X,Y), (Belief:DeductionN, Time:Immediate)
 
 //    Y, ((&&,X,A..+) ==> B) |- subIfUnifiesAny((X ==> B),X,Y), (Belief:Deduction)
 //    Y, ((&&,--X,A..+) ==> B) |- subIfUnifiesAny((--X ==> B),X,Y), (Belief:DeductionN)
