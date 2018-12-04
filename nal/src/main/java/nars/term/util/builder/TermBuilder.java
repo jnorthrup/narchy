@@ -1,4 +1,4 @@
-package nars.term.util;
+package nars.term.util.builder;
 
 import jcog.WTF;
 import jcog.data.byt.DynBytes;
@@ -12,6 +12,7 @@ import nars.term.anon.AnonID;
 import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
+import nars.term.util.Conj;
 import nars.term.util.transform.CompoundNormalization;
 import nars.term.util.transform.Retemporalize;
 import nars.unify.ellipsis.EllipsisMatch;
@@ -190,7 +191,11 @@ public abstract class TermBuilder {
 
     }
 
-    static public Term[] conjPrefilter(int dt, Term[] u) {
+
+
+
+    public Term conj(final int dt, Term[] u) {
+
         switch (dt) {
             case 0:
             case DTERNAL:
@@ -198,25 +203,17 @@ public abstract class TermBuilder {
                 break;
             case XTERNAL:
                 Term[] v = Terms.sorted(u);
-                if (v.length != 1)
+                if (v.length != 1) {
                     u = v; //only if not collapsed to one item in case of repeat
-                else if (u.length != 2) {
-                    u = new Term[]{u[0], u[0]};
+                } else  {
+                    if (/*!(v[0] instanceof Ellipsislike) || */(u.length > 1 && u[0].equals(u[1])))
+                        u = new Term[]{v[0], v[0]};
+                    else {
+                        u = v;
+                    }
                 }
                 break;
         }
-        return u;
-    }
-
-    public Term conj(final int dt, Term[] u) {
-        return conj(true, dt, u);
-    }
-
-    public Term conj(boolean prefilter, final int dt, Term[] u) {
-
-        if (prefilter)
-            u = conjPrefilter(dt, u);
-
         switch (u.length) {
 
             case 0:
@@ -229,14 +226,14 @@ public abstract class TermBuilder {
                     return conj(dt, only.arrayShared());
                 } else {
 
-
                     return only instanceof Ellipsislike ?
-                            theCompound(CONJ, XTERNAL, only)
+                            theCompound(CONJ, dt, only)
                             :
                             only;
                 }
 
         }
+
 
         int trues = 0;
         for (Term t : u) {
@@ -399,9 +396,9 @@ public abstract class TermBuilder {
 
     }
 
-    private static boolean unfoldableInneralXternalConj(Term x) {
-        return x.op() == CONJ && x.dt() == XTERNAL;
-    }
+//    private static boolean unfoldableInneralXternalConj(Term x) {
+//        return x.op() == CONJ && x.dt() == XTERNAL;
+//    }
 
     public Term root(Compound x) {
         return x.temporalize(Retemporalize.root);

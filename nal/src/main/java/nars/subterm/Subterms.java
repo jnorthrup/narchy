@@ -62,6 +62,16 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return ptr != this ? (Term) ptr : null;
     }
 
+    default boolean containsAny(Subterms ofThese) {
+        if (ofThese.subs() < 4 /* threshold */) {
+            return OR(ofThese::contains);
+        } else {
+            MutableSet<Term> xs = ofThese.toSet();
+            return OR(xs::contains);
+        }
+    }
+
+
     /** allows a Subterms implementation to accept the byte[] key that was used in constructing it,
      *  allowing it to cache it for fast serialization.  typically it will want to keep:
      *

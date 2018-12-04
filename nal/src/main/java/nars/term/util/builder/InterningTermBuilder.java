@@ -25,7 +25,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int DEFAULT_SIZE = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    protected static final int maxInternedVolumeDefault = 16;
+    protected static final int maxInternedVolumeDefault = 24;
 
     private final boolean deep;
     private final int volInternedMax;
@@ -59,7 +59,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             HijackTermCache c;
             if (o == CONJ) {
                 c =
-                        newOpCache("conj", j -> super.conj(false, j.dt, j.rawSubs.get()), cacheSizePerOp);
+                        newOpCache("conj", j -> super.conj(j.dt, j.rawSubs.get()), cacheSizePerOp);
             } else if (o.statement) {
                 c = statements;
             } else {
@@ -257,12 +257,12 @@ public class InterningTermBuilder extends HeapTermBuilder {
     @Override
     public Term conj(int dt, Term[] u) {
 
-        u = conjPrefilter(dt, u);
+//        u = conjPrefilter(dt, u);
 
         if (u.length > 1 && internableRoot(CONJ, dt, u))
             return terms[CONJ.id].apply(InternedCompound.get(CONJ, dt, u));
         else
-            return super.conj(false, dt, u);
+            return super.conj(dt, u);
     }
 
 

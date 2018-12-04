@@ -341,9 +341,6 @@ public class ConjTest {
     @Test
     void testConjParallelConceptual() throws Narsese.NarseseException {
 
-        assertEquals(1, $("(&&,a,b,c)").eventCount());
-        assertEquals(3, $("(&|,a,b,c)").eventCount());
-        assertEquals(3, CONJ.the(XTERNAL, new Term[]{$("a"), $("b"), $("c")}).eventCount());
 
         for (int dt : new int[]{ /*XTERNAL,*/ 0, DTERNAL}) {
             assertEquals("( &&+- ,a,b,c)",
@@ -708,7 +705,7 @@ public class ConjTest {
     }
 
     @Test
-    void testConjWithoutAll() {
+    void testConjWithoutAllParallel() {
         assertEquals("(a&&b)", Conj.withoutAll(
                 $$("(&&,a,b,c)"),
                 $$("(&&,c,d,e)")).toString());
@@ -728,6 +725,17 @@ public class ConjTest {
         assertEquals("(a&&b)", Conj.withoutAll(
                 $$("(&&,a,b,--c)"),
                 $$("(&&,--c,d,e)")).toString());
+    }
+
+    @Test
+    void testConjWithoutAllSequence() {
+        assertEquals("z", Conj.withoutAll(
+                $$("((x &&+1 y) &&+1 z)"),
+                $$("(&&,x,y)")).toString());
+
+        assertEquals("z", Conj.withoutAll(
+                $$("((x &&+1 y) &&+1 z)"),
+                $$("(x &&+2 y)")).toString());
     }
 
     @Test
@@ -935,7 +943,6 @@ public class ConjTest {
         Term ab = $.$("(a&|b)");
         assertEquals("[0:a, 0:b]",
                 ab.eventList().toString());
-        assertEquals(2, ab.eventCount());
 
         Term abc = $.$("((a&|b) &&+5 (b&|c))");
         assertEquals(
@@ -943,7 +950,6 @@ public class ConjTest {
 
                 "[0:a, 0:b, 5:b, 5:c]",
                 abc.eventList().toString());
-        assertEquals(4, abc.eventCount());
 
     }
 
@@ -1874,6 +1880,16 @@ public class ConjTest {
             assertEq("((--,((X,x)&&#1))&|(--,((X,x)&|#1)))", "( (--,((X,x)&&#1)) &| (--,((X,x)&|#1)) )");
         }
 
+    }
+
+    @Test void testConjOneEllipsisDontRepeat() {
+        assertEq("(&&,%1..+)", "(&&,%1..+)");
+        assertEq("( &&+- ,%1..+)", $$("(&&,%1..+)").dt(XTERNAL));
+
+    }
+    @Test void testConjOneNonEllipsisDontRepeat() {
+        assertEq("x", "(&&,x)");
+        assertEq("x", "(&&+- , x)");
     }
 
     @Test void testConjRepeatXternalEllipsisDontCollapse() {

@@ -171,7 +171,7 @@ public class Longerval implements LongInterval {
 
 	/** returns -1 if no intersection; 0 = adjacent, > 0 = non-zero interval in common */
 	public static long intersectLength(long x1, long y1, long x2, long y2) {
-		if (!(x1!=ETERNAL && x1!=TIMELESS && x2!=ETERNAL && x2!=TIMELESS))
+		if (x1 == ETERNAL || x1 == TIMELESS || x2 == ETERNAL || x2 == TIMELESS)
 			throw new WTF();
 		long a = max(x1, x2);
 		long b = min(y1, y2);

@@ -234,7 +234,13 @@ public class BiSubterm extends TermVector {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
+
         if (obj instanceof Subterms) {
+            if (obj instanceof TermVector) {
+                if (hash != ((TermVector)obj).hash)
+                    return false;
+            }
+
             Subterms t = ((Subterms) obj);
             //Subterms t;
             //if (hash == (t = ((Subterms) obj)).hashCodeSubterms()) {

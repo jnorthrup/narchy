@@ -1,10 +1,8 @@
 package nars.unify.constraint;
 
-import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.util.Conj;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
-import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
@@ -38,19 +36,14 @@ public final class CommonSubEventConstraint extends RelationConstraint {
         return !haveCommonEvents(xx, yy);
     }
 
-    static boolean haveCommonEvents(Term xx, Term yy) {
+    private static boolean haveCommonEvents(Term xx, Term yy) {
         return xx.volume() < yy.volume() ? _haveCommonEvents(xx, yy) : _haveCommonEvents(yy, xx);
     }
 
-    static boolean _haveCommonEvents(Term xx, Term yy) {
+    /** xx smaller */
+    private static boolean _haveCommonEvents(Term xx, Term yy) {
         if (Conj.concurrent(xx.dt()) && Conj.concurrent(yy.dt())) {
-            Subterms xxx = xx.subterms();
-            if (xx.subs() < 3) {
-                return yy.subterms().OR(xxx::contains);
-            } else {
-                MutableSet<Term> xs = xxx.toSet();
-                return yy.subterms().OR(xs::contains);
-            }
+            return yy.subterms().containsAny(xx.subterms());
         } else {
 
             Set<LongObjectPair<Term>> xe = new UnifiedSet<>(4);

@@ -33,9 +33,10 @@ public class TimeConfRange extends TimeRange {
     /** sorts nearest to the end of a list */
     public static FloatFunction<TaskRegion> distanceFunction(TimeRange a) {
 
-        if (a.start == Tense.ETERNAL) {
+        long aStart = a.start;
+        if (aStart == Tense.ETERNAL) {
             return b -> -(b instanceof Task ? TruthIntegration.evi((Task)b) : (b.confMax() * b.range()));
-        } else if (a.start != a.end) {
+        } else if (aStart != a.end) {
             //return b -> -(Util.mean(b.minTimeTo(a.start), b.minTimeTo(a.end))) -b.range()/tableDur;
             //return b -> -(Util.mean(b.midTimeTo(a.start), b.minTimeTo(a.end))); // -b.range()/tableDur;
             // -b.minTimeTo(a.start, a.end); // -b.range()/tableDur;
@@ -49,7 +50,7 @@ public class TimeConfRange extends TimeRange {
 //                return r; //TODO make sure that the long cast to float is ok
 //            };
         } else {
-            return b -> -b.minTimeTo(a.start); // -b.range()/tableDur;
+            return b -> -b.minTimeTo(aStart); // -b.range()/tableDur;
         }
 
     }

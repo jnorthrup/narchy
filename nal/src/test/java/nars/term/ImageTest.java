@@ -9,9 +9,11 @@ import nars.term.util.Image;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
+import static nars.term.TermTest.assertEq;
 import static nars.term.atom.Bool.Null;
 import static org.junit.jupiter.api.Assertions.*;
 
+/** the NAL "Image" operator, not bitmaps or photos */
 class ImageTest {
 
     @Test
@@ -127,8 +129,7 @@ class ImageTest {
     }
 
     @Test void testNonRepeatableImage() {
-        Term ii = Image.imageExt($$("a(b,/,c)"), $$("c"));
-        assertEquals(Null, ii);
+        assertEquals(Null, Image.imageExt($$("a(b,/,c)"), $$("c")));
     }
 
     @Test void testNormalizeVsImageNormalize() {
@@ -142,19 +143,23 @@ class ImageTest {
     }
 
     @Test void testNormalizeVsImageNormalize2() throws Narsese.NarseseException {
-        Term x = Narsese.term("((--,(4-->(ang,fz,/))) ==>-7600 ((race-->fz)~((8,5)-->(cam,fz))))", false);
+        Term x = Narsese.term("((--,(4-->(ang,fz,/))) ==>-7600 ((race-->fz),((8,5)-->(cam,fz))))", false);
         assertFalse(x.isNormalized());
 
-        String y = "((--,ang(fz,4)) ==>-7600 ((race-->fz)~((8,5)-->(cam,fz))))";
+        String y = "((--,ang(fz,4)) ==>-7600 ((race-->fz),((8,5)-->(cam,fz))))";
         assertTrue(Narsese.term(y, false).isNormalized());
 
         Term xx = x.normalize();
 
-        assertEquals(y,
-                xx.toString()
-        );
+        assertEquals(y, xx.toString());
 
         assertEquals($$(y), xx);
     }
 
+    @Test void testConjNegatedNormalizeWTF() {
+        assertEq("((--,(delta-->vel)) &&+280 (--,vel(fz,y)))", "((--,(delta-->vel)) &&+280 (--,(y-->(vel,fz,/))))");
+
+        assertEq("(((&|,(--,vel(fz,x)),(--,vel(fz,y)),(efficient-->fz)) &&+140 (--,vel(fz,y))) &&+80 (fwd-->fz))",
+                "(((&|,(--,(x-->(vel,fz,/))),(--,(y-->(vel,fz,/))),(efficient-->fz)) &&+140 (--,(y-->(vel,fz,/)))) &&+80 (fwd-->fz))");
+    }
 }

@@ -115,21 +115,22 @@ public enum Image {;
             Subterms pp = null;
             boolean isExt = p.op() == PROD && (pp = p.subterms()).contains(Op.ImgExt);// && !pp.contains(Op.ImgInt);
 
-            Term u;
-            if (isInt && !isExt) {
 
-                u = INH.the(ss.sub(0), PROD.the(Util.replaceDirect(ss.subRangeArray(1, ss.subs()), Op.ImgInt, p)));
+            if (isInt ^ isExt) {
+                Term u;
+                if (isInt) {
 
-            } else if (isExt && !isInt) {
+                    u = INH.the(ss.sub(0), PROD.the(Util.replaceDirect(ss.subRangeArray(1, ss.subs()), Op.ImgInt, p)));
 
-                u = INH.the(PROD.the(Util.replaceDirect(pp.subRangeArray(1, pp.subs()), Op.ImgExt, s)), pp.sub(0));
+                } else {
 
-            } else {
-                return z;
+                    u = INH.the(PROD.the(Util.replaceDirect(pp.subRangeArray(1, pp.subs()), Op.ImgExt, s)), pp.sub(0));
+
+                }
+
+                if (!(u instanceof Bool))
+                    return Image.imageNormalize(u).negIf(negated);
             }
-
-            if (!(u instanceof Bool))
-                return Image.imageNormalize(u).negIf(negated);
 
         }
 

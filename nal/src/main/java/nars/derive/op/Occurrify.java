@@ -570,7 +570,7 @@ public class Occurrify extends TimeGraph {
         TaskLastInBeliefPos() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveLocal(d, x);
+                return immediate(solveLocal(d, x),d);
             }
 
             @Override
@@ -581,7 +581,7 @@ public class Occurrify extends TimeGraph {
         TaskLastInBeliefNeg() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveLocal(d, x);
+                return immediate(solveLocal(d, x),d);
             }
 
             @Override
@@ -1162,6 +1162,10 @@ public class Occurrify extends TimeGraph {
 
         //TODO some cases: subTimeLast. also would help to specifically locate the pos/neg one
 
+        if (inner.op()==CONJ) {
+            inner = (firstOrLast) ? inner.eventFirst() : inner.eventLast();
+        }
+
         int shift = firstOrLast ? outer.subTimeFirst(inner) : outer.subTimeLast(inner);
         if (shift == DTERNAL)
             return null; //TODO why if this happens
@@ -1172,53 +1176,53 @@ public class Occurrify extends TimeGraph {
         return new long[]{start, start + range};
     }
 
-    private static long[] OccConjDecompose(Derivation d, boolean taskInBelief) {
-        long base;
-        long range;
-        if (d.taskStart == ETERNAL && d.beliefStart == ETERNAL) {
-            return new long[]{ETERNAL, ETERNAL};
-        }
-
-        if (d.taskStart == ETERNAL) {
-            base = d.beliefStart;
-            range = d._belief.range() - 1;
-        } else {
-            if (d.beliefStart == ETERNAL)
-                range = d._task.range() - 1;
-            else
-                range = Math.min(d._task.range(), d._belief.range()) - 1;
-
-            base = taskInBelief || d.beliefStart == ETERNAL ? d.taskStart : d.beliefStart;
-        }
-
-        assert (base != ETERNAL && base != TIMELESS);
-
-        int shift;
-
-        if (taskInBelief) {
-
-            Term inner = d.taskTerm, outer = d.beliefTerm;
-
-            //TODO some cases: subTimeLast. also would help to specifically locate the pos/neg one
-
-            shift = outer.subTimeFirst(inner);
-            if (shift == DTERNAL) {
-                shift = outer.subTimeFirst(inner.neg()); //try negative
-                if (shift == DTERNAL)
-                    return null; //TODO why if this happens
-            }
-
-            shift = -shift;
-
-        } else {
-            //shift = the occurrence of the 2nd event (since it was conjDropIfEarly)
-            shift = 0; //applied later
-        }
-
-        long start = base + shift;
-
-        return new long[]{start, start + range};
-    }
+//    private static long[] OccConjDecompose(Derivation d, boolean taskInBelief) {
+//        long base;
+//        long range;
+//        if (d.taskStart == ETERNAL && d.beliefStart == ETERNAL) {
+//            return new long[]{ETERNAL, ETERNAL};
+//        }
+//
+//        if (d.taskStart == ETERNAL) {
+//            base = d.beliefStart;
+//            range = d._belief.range() - 1;
+//        } else {
+//            if (d.beliefStart == ETERNAL)
+//                range = d._task.range() - 1;
+//            else
+//                range = Math.min(d._task.range(), d._belief.range()) - 1;
+//
+//            base = taskInBelief || d.beliefStart == ETERNAL ? d.taskStart : d.beliefStart;
+//        }
+//
+//        assert (base != ETERNAL && base != TIMELESS);
+//
+//        int shift;
+//
+//        if (taskInBelief) {
+//
+//            Term inner = d.taskTerm, outer = d.beliefTerm;
+//
+//            //TODO some cases: subTimeLast. also would help to specifically locate the pos/neg one
+//
+//            shift = outer.subTimeFirst(inner);
+//            if (shift == DTERNAL) {
+//                shift = outer.subTimeFirst(inner.neg()); //try negative
+//                if (shift == DTERNAL)
+//                    return null; //TODO why if this happens
+//            }
+//
+//            shift = -shift;
+//
+//        } else {
+//            //shift = the occurrence of the 2nd event (since it was conjDropIfEarly)
+//            shift = 0; //applied later
+//        }
+//
+//        long start = base + shift;
+//
+//        return new long[]{start, start + range};
+//    }
 
 //    private static Pair<Term, long[]> solveSubEvent(Derivation d, Term x, boolean neg) {
 //

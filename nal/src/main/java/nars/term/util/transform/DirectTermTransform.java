@@ -3,7 +3,7 @@ package nars.term.util.transform;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
-import nars.term.util.TermBuilder;
+import nars.term.util.builder.TermBuilder;
 import nars.term.util.builder.HeapTermBuilder;
 
 /** bypasses interning and */

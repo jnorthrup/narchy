@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
+import static nars.Op.GOAL;
 
 /**
  * see Natural_Language_Processing2.md
@@ -305,5 +306,25 @@ public class PatrickTests extends NALTest {
         n.run(6000);
 
 
+    }
+
+    @Test void memorizePreconditionParallel() {
+        /*
+        <(&/,(&|,<a --> #A>,<a2 --> #A>),+10,(^pick,{SELF},a),+10) =/> <a --> B>>.
+        100
+        <a --> A>. :|:
+        <a2 --> A>. :|:
+        10
+        <a --> B>!
+        ''outputMustContain('(^pick,{SELF},a). :!110: %1.00;0.90%')
+         */
+        test
+            .believe("(((#A:a &| #A:b) &&+1 pick(#A)) ==>+1 c)")
+            .input("x:a. |")
+            .input("x:b. |")
+            .inputAt(3, "c! |")
+            .mustOutput(200, "pick(x)", GOAL, 1f, 1f, 0.05f, 0.81f,
+                    (t)->t>=3)
+            ;
     }
 }

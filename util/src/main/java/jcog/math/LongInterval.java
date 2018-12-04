@@ -157,15 +157,16 @@ public interface LongInterval {
         if (s == ETERNAL || s == when)
             return 0;
 
-        assert (when != ETERNAL);
+        //assert (when != ETERNAL);
         long e = end();
-        if (s == e) {
-            return Math.abs(s - when);
-        } else {
+
+        if (s != e) {
             if (s <= when && e >= when)
                 return 0;
             else
                 return Math.min(Math.abs(s - when), Math.abs(e - when));
+        } else {
+            return Math.abs(s - when);
         }
     }
 

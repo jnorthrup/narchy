@@ -9,7 +9,7 @@ import nars.subterm.*;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.anon.AnonWithVarShift;
-import nars.term.util.TermBuilder;
+import nars.term.util.builder.TermBuilder;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.InterningTermBuilder;
 import nars.term.util.transform.UnifyTest;

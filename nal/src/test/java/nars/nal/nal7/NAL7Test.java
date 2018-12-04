@@ -13,8 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.List;
-
 import static nars.$.$;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
@@ -1288,13 +1286,13 @@ public class NAL7Test extends NALTest {
     @Test
     void testInductionIntervalMerge3Neg() throws Narsese.NarseseException {
 
-        List m = $.newArrayList();
+//        List m = $.newArrayList();
         Term d = $("--(a &&+3 --c)");
         assertEquals(0, d.eventRange());
-        d.events(m::add);
+//        d.events(m::add);
 
-        List l = $.newArrayList();
-        $("(--(a &&+3 --c) &&+4 (e))").events(l::add);
+//        List l = $.newArrayList();
+//        $("(--(a &&+3 --c) &&+4 (e))").events(l::add);
 
         test
                 .inputAt(1, "(--(a &&+3 --c) &&+4 (e)). :|:")

@@ -1,7 +1,5 @@
 package jcog.pri;
 
-import jcog.Util;
-
 /**
  * priority link: numeric link restricted to 0..1.0 range
  */
@@ -12,8 +10,8 @@ public class PLink<X> extends NLink<X> implements UnitPrioritizable {
     }
 
     @Override
-    public float v(float x) {
-        return Util.unitize(x);
+    protected final boolean unit() {
+        return true;
     }
 
     @Override

@@ -33,6 +33,7 @@ import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.anon.Anon;
 import nars.term.atom.Bool;
+import nars.term.compound.UnitCompound;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
@@ -56,22 +57,33 @@ import static nars.time.Tense.*;
 public interface Compound extends Term, IPair, Subterms {
 
 
-    static boolean equals(/*@NotNull*/ Compound a, Object b) {
-        if (a == b) return true;
+    static boolean equals(/*@NotNull*/ Compound A, Object b) {
+        if (A == b) return true;
 
-        if (((b instanceof Compound) && (a.hashCode() == b.hashCode()))) {
+        if (((b instanceof Compound) && (A.hashCode() == b.hashCode()))) {
             Compound B = (Compound) b;
-            Op ao = a.op();
+            Op ao = A.op();
             if (ao == B.op()) {
                 return
-                        (!ao.temporal || (a.dt() == B.dt()))
-                            &&
-                        a.subterms().equals(B.subterms())
+                        (!ao.temporal || (A.dt() == B.dt()))
+                                &&
+                                equalSubs(A, B)
                         ;
             }
         }
 
         return false;
+    }
+
+    static boolean equalSubs(Compound a, Compound b) {
+
+        if (a instanceof UnitCompound || b instanceof UnitCompound)  {
+            //avoid instantiating dummy subterms instance
+            int as = a instanceof UnitCompound ? 1 : a.subs();
+            int bs = b instanceof UnitCompound ? 1 : b.subs();
+            return as == bs && a.sub(0).equals(b.sub(0));
+        } else
+            return a.subterms().equals(b.subterms());
     }
 
     static String toString(Compound c) {
@@ -91,12 +103,14 @@ public interface Compound extends Term, IPair, Subterms {
         return sb;
     }
 
-    /** reference impl for compound hashcode */
+    /**
+     * reference impl for compound hashcode
+     */
     static int hashCode(Compound c) {
         return Util.hashCombine(
                 c.hashCodeSubterms(),
                 c.op().id
-                );
+        );
     }
 
     Op op();
@@ -146,8 +160,6 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-
-
     @Override
     default Term anon() {
         return new Anon(/* TODO size estimate */).put(this);
@@ -167,8 +179,6 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-
-
     @Override
     default boolean ORrecurse(Predicate<Term> p) {
         return p.test(this) || subterms().ORrecurse(p);
@@ -184,7 +194,7 @@ public interface Compound extends Term, IPair, Subterms {
 
         Op o = op();
 
-        boolean temporal = o.temporal && dt()!=DTERNAL;
+        boolean temporal = o.temporal && dt() != DTERNAL;
 
         out.writeByte(o.id | (temporal ? IO.TEMPORAL_BIT : 0));
 
@@ -243,7 +253,7 @@ public interface Compound extends Term, IPair, Subterms {
                 xdt = x.dt();
                 ydt = y.dt();
                 if (xdt != XTERNAL && xdt != DTERNAL) {
-                    if (ydt!=xdt && ydt != XTERNAL && ydt != DTERNAL && !u.unifyDT(xdt,ydt)) {
+                    if (ydt != xdt && ydt != XTERNAL && ydt != DTERNAL && !u.unifyDT(xdt, ydt)) {
                         return false;
                     }
                 }
@@ -254,9 +264,6 @@ public interface Compound extends Term, IPair, Subterms {
             } else {
                 xdt = ydt = DTERNAL;
             }
-
-
-
 
 
             if (o.commutative /* subs>1 */) {
@@ -359,10 +366,6 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     int dt();
 
-    @Override
-    default int eventCount() {
-        return this.dt() != DTERNAL && op() == CONJ ? subterms().sum(Term::eventCount) : 1;
-    }
 
     /**
      * replaces the 'from' term with 'to', recursively
@@ -391,24 +394,25 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     default int subTimeOnly(Term event) {
-        int[] t = subTimes(event);
+        int[] t = subTimes(event, 1);
         if (t == null || t.length != 1) return DTERNAL;
         return t[0];
     }
 
+    default int[] subTimes(Term event) {
+        return subTimes(event, Integer.MAX_VALUE);
+    }
     /**
      * TODO return XTERNAL not DTERNAL on missing, it is more appropriate
      * expect the output array to be sorted
      */
-    default int[] subTimes(Term event) {
+    default int[] subTimes(Term event, int max) {
+        assert(max > 0);
+
         if (equals(event))
             return new int[]{0};
 
-        Op op = op();
-        if (op != CONJ)
-            return null;
-
-        if (impossibleSubTerm(event))
+        if (op() != CONJ || impossibleSubTerm(event))
             return null;
 
         int dt = dt();
@@ -417,17 +421,31 @@ public interface Compound extends Term, IPair, Subterms {
             boolean needDedup = false;
             for (Term x : subterms()) {
                 int[] ss = x.subTimes(event);
-                if (ss!=null) {
+                if (ss != null) {
+                    if (ss.length > max)
+                        return null;
                     if (tt == null)
                         tt = ss;
                     else if (!Arrays.equals(ss, tt)) {
+                        int undupN = ss.length + tt.length;
                         tt = ArrayUtils.addAll(ss, tt);
-                        needDedup = true;
+                        needDedup = tt.length!=undupN;
+                        if (!needDedup && tt.length > max)
+                            return null;
                     }
                 }
             }
             if (needDedup) {
                 tt = ArrayUtils.removeDuplicates(tt);
+                if (tt.length > max)
+                    return null;
+            } else {
+                if (tt !=null) {
+                    if (tt.length > max)
+                        return null;
+                    if (tt.length > 1)
+                        Arrays.sort(tt);
+                }
             }
             return tt;
         }
@@ -436,10 +454,9 @@ public interface Compound extends Term, IPair, Subterms {
             return null;
 
 
-
         int[][] found = new int[1][];
         if ((subTimesWhile(event, (when) -> {
-            found[0] = found[0] == null ? new int[] { when } : ArrayUtils.add(found[0], when);
+            found[0] = found[0] == null ? new int[]{when} : ArrayUtils.add(found[0], when);
             return true;
         })) == 0)
             return null;
@@ -507,7 +524,7 @@ public interface Compound extends Term, IPair, Subterms {
                             level))
                         return false;
 
-                    if (changeDT && i < s-1)
+                    if (changeDT && i < s - 1)
                         t += dt + st.eventRange();
                 }
 
@@ -659,6 +676,35 @@ public interface Compound extends Term, IPair, Subterms {
             newDT = thisDT;
 
         return f.transformedCompound(this, targetOp, newDT, xx, yy);
+    }
+
+    default Term eventFirst() {
+        if (op()==CONJ) {
+            if (eventRange()==0)
+                return sub(0); //default to first subterm
+            final Term[] first = new Term[1];
+            eventsWhile((when,what)->{
+                first[0] = what;
+                return false; //done got first
+            }, 0, true, true, false, 0);
+            return first[0];
+        }
+        return this;
+    }
+
+    /** TODO optimize */
+    default Term eventLast() {
+        if (op()==CONJ) {
+            if (eventRange()==0)
+                return sub(0); //default to first subterm
+            final Term[] last = new Term[1];
+            eventsWhile((when,what)->{
+                last[0] = what;
+                return true; //HACK keep going to end
+            }, 0, true, true, false, 0);
+            return last[0];
+        }
+        return this;
     }
 
 }

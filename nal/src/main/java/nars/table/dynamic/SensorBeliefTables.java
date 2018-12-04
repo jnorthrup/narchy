@@ -32,10 +32,10 @@ public class SensorBeliefTables extends BeliefTables {
     public FloatRange res;
 
     public SensorBeliefTables(Term term, boolean beliefOrGoal, ConceptBuilder b) {
-        this(term, beliefOrGoal, b.newTemporalTable(term, beliefOrGoal));
+        this(term.normalize(), beliefOrGoal, b.newTemporalTable(term.normalize(), beliefOrGoal));
     }
 
-    public SensorBeliefTables(Term c, boolean beliefOrGoal, TemporalBeliefTable t) {
+    SensorBeliefTables(Term c, boolean beliefOrGoal, TemporalBeliefTable t) {
         this(c, beliefOrGoal,
                 //TODO impl time series with concurrent ring buffer from gluegen
                 t,

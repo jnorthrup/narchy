@@ -498,22 +498,6 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
 
-    /**
-     * includes itself in the count unless it's a CONJ sequence in which case it becomes the sum of the subterms event counts
-     */
-    default int eventCount() {
-        return 1;
-    }
-
-
-    /* collects any contained events */
-    @Deprecated
-    default void events(Consumer<LongObjectPair<Term>> events) {
-        eventsWhile((w, t) -> {
-            events.accept(PrimitiveTuples.pair(w, t));
-            return true;
-        }, 0);
-    }
 
     default FasterList<LongObjectPair<Term>> eventList(long offset, int dtDither) {
         return eventList(offset, dtDither, true, false);
@@ -546,13 +530,10 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return eventList(0, 1);
     }
 
-    /* final */ /** conj events */
-    default boolean eventsWhile(LongObjectPredicate<Term> whileEachEvent, long dt) {
-        return eventsWhile(whileEachEvent, dt, true, false, false, 0);
-    }
 
     default boolean eventsWhile(LongObjectPredicate<Term> whileEachEvent, long dt,
-                                boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal, int level) {
+                                boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal,
+                                int level) {
         return whileEachEvent.accept(dt, this);
     }
 
@@ -706,6 +687,13 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return s;
     }
 
+
+    default Term eventFirst() {
+        return this;
+    }
+    default Term eventLast() {
+        return this;
+    }
 
 
 }

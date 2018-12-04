@@ -49,7 +49,7 @@ public class ConjClustering extends Causable {
     private int volMax, volMaxSafe;
     private int ditherTime;
     private boolean popConjoinedTasks = false;
-    static final boolean priCopyOrTransfer = true;
+    static final boolean priCopyOrTransfer = false;
 
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
         this(nar, punc, (t) -> true, centroids, capacity);

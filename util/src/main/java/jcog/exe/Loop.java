@@ -71,7 +71,7 @@ abstract public class Loop extends FixedRateTimedFuture {
         super();
         logger = getLogger(getClass());
 
-        int p = periodMS.intValue();
+        int p = periodMS.getOpaque();
 
         //HACK trigger change in period value to trigger start
         periodMS.set(-1);
@@ -80,7 +80,7 @@ abstract public class Loop extends FixedRateTimedFuture {
     }
 
     public boolean isRunning() {
-        return periodMS.intValue() >= 0;
+        return periodMS.getOpaque() >= 0;
     }
 
     public final Loop setFPS(float fps) {
@@ -201,16 +201,20 @@ abstract public class Loop extends FixedRateTimedFuture {
 
 
     public float getFPS() {
-        if (isRunning()) {
-            return 1000f / periodMS.intValue();
+        int pms = periodMS.getOpaque();
+        if (pms > 0 /* isRunning() */) {
+            return 1000f / pms;
         } else {
-            return 0;
+            if (pms == 0)
+                return Float.POSITIVE_INFINITY;
+            else
+                return 0;
         }
     }
 
     public long periodNS() {
         int m = periodMS.getOpaque();
-        return m >= 0  ? m * 1000000L : -1;
+        return m >= 0  ? m * 1_000_000L : -1;
     }
 
 }

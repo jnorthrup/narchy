@@ -67,12 +67,7 @@ abstract class TemporalStabilityTest {
         long s = t.start();
         if (s == ETERNAL)
             return false;
-        return t.term().eventsWhile((r, xt) -> {
-
-            return !validOccurrence(s + r);
-
-
-        }, 0);
+        return t.term().eventsWhile((r, xt) -> !validOccurrence(s + r), (long) 0, true, false, false, 0);
     }
 
     private void run(int cycles, NAR n) {

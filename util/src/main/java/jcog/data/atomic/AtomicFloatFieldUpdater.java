@@ -91,7 +91,7 @@ public final class AtomicFloatFieldUpdater<X>  {
     }
 
 
-    public void update(X x, FloatFloatToFloatFunction f, float y) {
+    public void update(X x, float y, FloatFloatToFloatFunction f) {
         update(x, v -> floatToIntBits(f.apply(intBitsToFloat(v), y)));
     }
 
@@ -152,7 +152,7 @@ public final class AtomicFloatFieldUpdater<X>  {
 
     /** unary + arg */
     public void update(X x, float arg, FloatFloatToFloatFunction update, FloatToFloatFunction post) {
-        update(x, (xx,yy)-> post.valueOf(update.apply(xx,yy)), arg);
+        update(x, arg, (xx, yy)-> post.valueOf(update.apply(xx,yy)));
     }
 
 

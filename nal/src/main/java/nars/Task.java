@@ -947,6 +947,18 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
     /** maybe */
 
 
+    default float eviIntegTrapezoidal(long dur, long a, long b) {
+        float ea = evi(a, dur);
+        float eb = evi(b, dur);
+        return (ea+eb)/2 * (b-a+1);
+    }
+    default float eviIntegTrapezoidal(long dur, long a, long b, long c) {
+        float ea = evi(a, dur);
+        float eb = evi(b, dur);
+        float ec = evi(c, dur);
+        return ((ea+eb)/2 * (b-a+1)) + ((eb+ec)/2 * (c-b+1));
+    }
+
     /**
      * https:
      * long[] points needs to be sorted, unique, and not contain any ETERNALs
@@ -959,8 +971,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
         //double e = 0;
         float e = 0;
-        float eviPrev = evi(times[0], dur);
         long a = times[0];
+        float eviPrev = evi(times[0], dur);
         for (int i = 1; i < n; i++) {
             long b = times[i];
 
@@ -969,7 +981,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
             long dt = b - a;
 
-            if (dt == 0) continue;
+            if (dt == 0)
+                continue;
             assert(dt > 0);
 
             e += (eviNext+eviPrev)/2 * (dt+1);

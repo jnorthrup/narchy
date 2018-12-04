@@ -3,7 +3,6 @@ package nars.experiment;
 import jcog.Util;
 import jcog.learn.pid.MiniPID;
 import jcog.math.FloatAveraged;
-import jcog.math.FloatNormalizer;
 import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
@@ -48,7 +47,7 @@ public class FZero extends NAgentX {
 
     float fwdSpeed = 7;
     float rotSpeed = 0.15f;
-    static float fps = 24f;
+    static float fps = 25f;
 
 
     public static void main(String[] args) {

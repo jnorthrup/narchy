@@ -74,11 +74,6 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
 
         @Override
-        public final int eventCount() {
-            return 1;
-        }
-
-        @Override
         public final int eventRange() {
             return 0;
         }
@@ -145,11 +140,6 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
             super(op, dt, subterms);
             this.dt = dt;
 
-            //TEMPORARY for debug:
-            if (op==CONJ && dt == DTERNAL)
-                if (subterms.sub(0).compareTo(subterms.sub(1)) > 0)
-                    System.out.println(subterms);
-//            anon();
         }
 
         @Override

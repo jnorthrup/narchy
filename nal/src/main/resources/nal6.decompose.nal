@@ -43,16 +43,24 @@
     //see: https://en.wikipedia.org/wiki/Imperative_logic#Ross.27_Paradox
 
 
-    //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
+    //X is the desired event suffix (outcome).
+    //C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
     //  filters to prevent deriving anti-goal if it appears in the precondition, was called: "conjDropIfLatestFiltered"
-    X, C, eventLastOf(C,X)    |- conjDropIfLatest(C,  X), (Goal:Deduction,Time:TaskLastInBeliefPos)
+    X, C, eventLastOf(C,X)    |- conjWithoutAll(C,  X), (Goal:Deduction,Time:TaskLastInBeliefPos)
       //TODO X, C    |- conjDropIfLatestUnifies(C,  X), (Goal:Deduction,..
     X, C, eventLastOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:DeductionN,Time:TaskLastInBeliefNeg)
 
+    //TODO conjunction sequence suffix
+    //TODO nal3 shortcut - decompose trailing intersection/union event
+
+    //TODO conjunction sequence prefix
+
     C, X, eventFirstOf(C,X)    |- conjDropIfEarliest(C,  X), (Belief:Deduction,Goal:Deduction,Time:AfterBeliefInTask)
       C, X, eventFirstOf(C,X)    |- X, (Goal:StructuralDeduction)
+        //C, X, eventFirstOf(C,X)    |- --X, (Goal:StructuralDeductionN)
     C, X, eventFirstOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DeductionPN,Time:AfterBeliefInTask)
       C, X, eventFirstOfNeg(C,X) |- --X, (Goal:StructuralDeduction)
+        //C, X, eventFirstOfNeg(C,X) |- X, (Goal:StructuralDeductionN)
 
 
     //conditional disjunction decompose

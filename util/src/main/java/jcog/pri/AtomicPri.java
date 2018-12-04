@@ -1,5 +1,6 @@
 package jcog.pri;
 
+import jcog.Util;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.math.FloatSupplier;
 import jcog.util.FloatFloatToFloatFunction;
@@ -56,12 +57,14 @@ public abstract class AtomicPri implements ScalarValue {
         //if the above doesnt work, try converting with intToFloatBits( then do NaN test for equality etc
     }
 
-    /** post-filter */
-    abstract public float v(float x);
 
     /** allows NaN */
-    private float _v(float x) {
-        return x!=x ? Float.NaN : v(x);
+    private static float _vAny(float x) {
+        return x!=x ? Float.NaN : x;
+    }
+    /** allows NaN */
+    private static float _vUnit(float x) {
+        return x!=x ? Float.NaN : Util.unitize(x);
     }
 
     private int _pri() {
@@ -86,7 +89,7 @@ public abstract class AtomicPri implements ScalarValue {
 
     /** set */
     @Override public float pri(float p) {
-        PRI.INT.set(this, floatToIntBits(v(p)));
+        PRI.INT.set(this, floatToIntBits(post().valueOf(p)));
         //INT.set(this, floatToIntBits(v(p)));
         return p;
     }
@@ -98,16 +101,37 @@ public abstract class AtomicPri implements ScalarValue {
 
     /** update */
     @Override public final float pri(FloatToFloatFunction update) {
-        return PRI.updateAndGet(this, update, this::_v);
+        return PRI.updateAndGet(this, update, post());
     }
 
     /** update */
     @Override public final float pri(FloatFloatToFloatFunction update, float x) {
-        return PRI.updateAndGet(this, x, update, this::_v);
+        return PRI.updateAndGet(this, x, update, post());
+    }
+
+    private static final FloatFloatToFloatFunction priAddUpdateFunctionUnit = AtomicPri.post(priAddUpdateFunction,AtomicPri::_vUnit);
+    private static final FloatFloatToFloatFunction priAddUpdateFunctionAny = AtomicPri.post(priAddUpdateFunction,AtomicPri::_vAny);
+
+    @Override
+    public final void priAdd(float a) {
+        PRI.update(this, a, unit() ? priAddUpdateFunctionUnit : priAddUpdateFunctionAny);
     }
 
     @Override
     public final void priUpdate(FloatFloatToFloatFunction update, float x) {
-        PRI.update(this, x, update, this::_v);
+        PRI.update(this, x, update, post());
+    }
+
+    static FloatFloatToFloatFunction post(FloatFloatToFloatFunction update, FloatToFloatFunction post) {
+        return (xx,yy)-> post.valueOf(update.apply(xx,yy));
+    }
+
+    private FloatToFloatFunction post() {
+        return unit() ? AtomicPri::_vUnit : AtomicPri::_vAny;
+    }
+
+    /** override and return true if the implementation clamps values to 0..+1 (unit) */
+    protected boolean unit() {
+        return false;
     }
 }

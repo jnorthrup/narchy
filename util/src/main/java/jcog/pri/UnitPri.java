@@ -17,9 +17,11 @@ public class UnitPri extends Pri implements UnitPrioritizable {
         super(x);
     }
 
-    @Override public float v(float x) {
-        return Util.unitize(x);
+   @Override
+    protected final boolean unit() {
+        return true;
     }
+
 
 
 }

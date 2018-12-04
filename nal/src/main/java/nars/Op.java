@@ -14,7 +14,7 @@ import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.util.Conj;
 import nars.term.util.SetSectDiff;
-import nars.term.util.TermBuilder;
+import nars.term.util.builder.TermBuilder;
 import nars.term.util.TermException;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.var.ImDep;
@@ -157,7 +157,7 @@ public enum Op {
 
         @Override
         public final Term the(int dt, Collection<Term> sub) {
-            return compound(this, dt, Terms.sorted(sub));
+            return Op.terms.theCompound(this, dt, Terms.sorted(sub)); //already sorted
         }
     },
 
@@ -172,7 +172,7 @@ public enum Op {
 
         @Override
         public final Term the(int dt, Collection<Term> sub) {
-            return compound(this, dt, Terms.sorted(sub));
+            return Op.terms.theCompound(this, dt, Terms.sorted(sub)); //already sorted
         }
     },
 

@@ -46,7 +46,9 @@ public abstract class Retemporalize extends TermTransform.NegObliviousTermTransf
                             t.add(yyy);
                         }
                     }
-                    return CONJ.the(XTERNAL, t);
+                    return yy.subs()!=1 && t.size()==1 ?
+                            Op.terms.theCompound(CONJ, XTERNAL, t.first(), t.first()) :
+                            CONJ.the(XTERNAL, t);
                 }
             }
             return y;

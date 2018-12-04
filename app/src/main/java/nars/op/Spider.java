@@ -165,10 +165,6 @@ public class Spider extends Causable {
             super(p);
         }
 
-        @Override
-        public float v(float x) {
-            return x;
-        }
 
         @Override
         public String toString() {

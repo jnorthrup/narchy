@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 900;
+    private static final int cycles = 200;
 
     @BeforeEach
     void setup() {
@@ -73,13 +73,13 @@ public class NAL6Test extends NALTest {
     void variable_unification4() {
 
         TestNAR tester = test;
-        tester.nar.termVolumeMax.set(20);
+        tester.nar.termVolumeMax.set(14);
 
         tester.believe("<<bird --> $x> ==> <robin --> $x>>");
         tester.believe("<<swimmer --> $y> ==> <robin --> $y>>", 0.70f, 0.90f);
         tester.mustBelieve(cycles, "<(&&,(bird --> $1),(swimmer --> $1)) ==> (robin --> $1)>", 0.7f /*1f? */, 0.81f);
 
-        tester.mustBelieve(cycles, "<(bird --> $1) ==> (swimmer --> $1)>", 1f, 0.73F);
+        tester.mustBelieve(cycles, "<(bird --> $1) ==> (swimmer --> $1)>", 1f, 0.36f /*0.73F*/);
         tester.mustBelieve(cycles, "<(swimmer --> $1) ==> (bird --> $1)>", 0.7f, 0.45f);
 
 
@@ -1208,6 +1208,7 @@ public class NAL6Test extends NALTest {
         ;
     }
     @Test void testMutexSwapPos() {
+        test.nar.termVolumeMax.set(14);
         test
                 .believe("--(x && y)")
                 .believe("its(x,a)")

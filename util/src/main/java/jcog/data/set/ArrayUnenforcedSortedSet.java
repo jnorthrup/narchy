@@ -6,11 +6,17 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.SortedSet;
+import java.util.stream.Stream;
 
 /** use with caution */
 abstract public class ArrayUnenforcedSortedSet<X> extends ArrayUnenforcedSet<X> implements SortedSet<X> {
 
     public static final SortedSet empty = new ArrayUnenforcedSortedSet<>() {
+
+        @Override
+        public Stream<Object> stream() {
+            return Stream.empty();
+        }
 
         @Override
         public Object first() {
@@ -91,6 +97,11 @@ abstract public class ArrayUnenforcedSortedSet<X> extends ArrayUnenforcedSet<X> 
         }
 
         @Override
+        public Stream<X> stream() {
+            return Stream.of(get(0));
+        }
+
+        @Override
         public X first() {
             return getFirst();
         }
@@ -105,6 +116,11 @@ abstract public class ArrayUnenforcedSortedSet<X> extends ArrayUnenforcedSet<X> 
 
         private Two(X x, X y) {
             super(x, y);
+        }
+
+        @Override
+        public Stream<X> stream() {
+            return Stream.of(first(), last());
         }
 
         @Override

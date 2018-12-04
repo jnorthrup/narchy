@@ -23,6 +23,17 @@
     //result of non-achieving goal and current  belief
     G, B, task("!") |-        ((--G && polarize(B,belief)) ==> ?1), (Punctuation:Question, Time:Task)
 
+    //bifurcate plan
+    G, B, task("@"), neq(G,B) |-        (  G && B), (Punctuation:Quest, Time:Task)
+    G, B, task("@"), neq(G,B) |-        (--G && B), (Punctuation:Quest, Time:Task)
+
+    //sequence possibility quest
+    C, X, task("@"), eventOfPosOrNeg(C,X) |-  (conjWithoutPosOrNeg(C,X) && ?1), (Punctuation:Quest, Time:Task)
+
+    //avoidance TODO
+//    G, C, task("!"), eventOf(C,G)    |- (--C ==> ?1), (Punctuation:Question)
+//    G, C, task("!"), eventOfNeg(C,G) |- (--C ==> ?1), (Punctuation:Question)
+
     //is what with goal
     //G, Y, task("!") |-           (?1 && G), (Punctuation:Question)
     //is what with non-goal

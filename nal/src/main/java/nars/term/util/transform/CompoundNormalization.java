@@ -36,7 +36,7 @@ public final class CompoundNormalization extends VariableNormalization {
         if (x!=root) {
             if (hasImg) {
                 x = (Compound) Image._imageNormalize(x);
-                hasImg = false;
+                //hasImg = false;
 //                if (y!=x) {
 //                    x = y;
 //                    hasImg = x.hasAll(Image.ImageBits); //check if image bits remain

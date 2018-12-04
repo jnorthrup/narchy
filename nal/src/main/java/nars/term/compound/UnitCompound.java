@@ -9,7 +9,7 @@ import nars.subterm.Subterms;
 import nars.subterm.UniSubterm;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.util.TermBuilder;
+import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -79,7 +79,7 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
-    public final boolean equals(@Nullable Object that) {
+    public boolean equals(@Nullable Object that) {
         return Compound.equals(this, that);
     }
 

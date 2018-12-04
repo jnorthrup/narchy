@@ -1,8 +1,10 @@
 package nars.task;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.pri.Prioritizable;
 import nars.NAR;
+import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
@@ -10,6 +12,7 @@ import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.time.Tense;
 
+import static nars.Op.CONJ;
 import static nars.Op.NEG;
 import static nars.time.Tense.ETERNAL;
 
@@ -46,6 +49,7 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
 //                throw new WTF("what kind of task is " + t);
 
         assert (t.op().conceptualizable && t.op() != NEG);
+        //assert(t.isNormalized());
 
         return new Tasklike(t, punc, when);
     }

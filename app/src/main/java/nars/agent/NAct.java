@@ -6,7 +6,6 @@ import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;
-import nars.Param;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.GoalActionConcept;
 import nars.table.BeliefTables;
@@ -20,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.IntConsumer;
 import java.util.function.IntPredicate;
 
-import static jcog.Util.sqr;
 import static jcog.Util.unitize;
 import static nars.Op.BELIEF;
 
@@ -239,35 +237,37 @@ public interface NAct {
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
 
         float thresh =
-                //0.5f;
-                0.5f + sqr(Param.TRUTH_EPSILON);
+                0.5f;
+                //0.5f + sqr(Param.TRUTH_EPSILON);
                 //0.66f;
 
         float[] lr = new float[] { 0.5f, 0.5f };
 
-        float decay =
-                //0.5f;
-                //0.9f;
-                1f; //instant
+//        float decay =
+//                //0.5f;
+//                //0.9f;
+//                1f; //instant
 
         NAR n = nar();
         GoalActionConcept LA = action(l, (b, g) -> {
             //float ll = g != null ? g.expectation() : Util.lerp(decay, lr[0], 0.5f);
-            float ll = Math.max(g != null ? /*g.freq()*/ g.expectation() : 0.5f ,  Util.lerp(decay, lr[0], 0.5f));
-            boolean x = ll > thresh;
+            //float ll = Math.max(g != null ? /*g.freq()*/ g.expectation() : 0.5f ,  Util.lerp(decay, lr[0], 0.5f));
+            float ll = g != null ? g.freq()/* g.expectation() */: 0f;
+            boolean x = ll > thresh && ll - lr[1] > 0;
             boolean conflict = false;
-            if (x) {
-                if (lr[1] >= ll) {
-                    //conflict = true;
-                    x = false;
-                    //ll = 0.5f;
-                    //stochastic
-                    //x = nar().random().nextFloat() < (ll / (Param.TRUTH_EPSILON +ll + lr[1]));
-                    //ll = x ? 1 : 0;
-                }
-            }
+//            if (x) {
+//                if (lr[1] >= ll) {
+//                    //conflict = true;
+//                    x = false;
+//                    //ll = 0.5f;
+//                    //stochastic
+//                    //x = nar().random().nextFloat() < (ll / (Param.TRUTH_EPSILON +ll + lr[1]));
+//                    //ll = x ? 1 : 0;
+//                }
+//            }
             lr[0] =
-                    x?ll:0.5f;
+                    x?ll:0f;
+                    //x?ll:0.5f;
                     //ll;
 
             L.value(x);
@@ -279,21 +279,23 @@ public interface NAct {
         });
         GoalActionConcept RA = action(r, (b, g) -> {
             //float rr = g != null ? g.expectation() : Util.lerp(decay, lr[1], 0.5f);
-            float rr = Math.max(g != null ? /*g.freq()*/ g.expectation() : 0.5f ,  Util.lerp(decay, lr[1], 0.5f));
-            boolean x = rr > thresh;
+            //float rr = Math.max(g != null ? /*g.freq()*/ g.expectation() : 0.5f ,  Util.lerp(decay, lr[1], 0.5f));
+            float rr = g != null ? g.freq()/* g.expectation()*/ : 0f ;
+            boolean x = rr > thresh && rr - lr[0] > 0;
             boolean conflict = false;
-            if (x) {
-                if (lr[0] >= rr ) {
-                    //conflict = true;
-                    x = false;
-                    //rr = 0.5f;
-                    //stochastic
-                    //x = nar().random().nextFloat() < (rr / (Param.TRUTH_EPSILON + rr + lr[0]));
-                    //rr = x ? 1 : 0;
-                }
-            }
+//            if (x) {
+//                if (lr[0] >= rr ) {
+//                    //conflict = true;
+//                    x = false;
+//                    //rr = 0.5f;
+//                    //stochastic
+//                    //x = nar().random().nextFloat() < (rr / (Param.TRUTH_EPSILON + rr + lr[0]));
+//                    //rr = x ? 1 : 0;
+//                }
+//            }
             lr[1] =
-                    x?rr:0.5f;
+                    x?rr:0f;
+                    //x?rr:0.5f;
                     //rr;
             R.value(x);
             //System.out.println("R=" + x  + " <- " + rr );

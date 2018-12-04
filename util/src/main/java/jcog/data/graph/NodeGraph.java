@@ -3,6 +3,7 @@ package jcog.data.graph;
 import com.google.common.collect.Iterables;
 import jcog.data.graph.search.Search;
 import jcog.data.set.ArrayHashSet;
+import jcog.data.set.ArrayUnenforcedSortedSet;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 
@@ -159,28 +160,86 @@ public abstract class NodeGraph<N, E> {
         }
 
 
-        boolean addIn(FromTo<Node<N, E>, E> e) {
-            if (in == Collections.EMPTY_LIST)
-                in = newEdgeCollection();
-            return in.add(e);
-        }
-
         protected Collection<FromTo<Node<N, E>, E>> newEdgeCollection() {
             return new ArrayHashSet<>(2);
         }
 
+        boolean addIn(FromTo<Node<N, E>, E> e) {
+            return addSet(e, true);
+
+        }
+
         boolean addOut(FromTo<Node<N, E>, E> e) {
-            if (out == Collections.EMPTY_LIST)
-                out = newEdgeCollection();
-            return out.add(e);
+            return addSet(e, false);
+        }
+
+        private boolean addSet(FromTo<Node<N, E>, E> e, boolean inOrOut) {
+            boolean result;
+            Collection<FromTo<Node<N, E>, E>> s = inOrOut ? in : out;
+            if (s == Collections.EMPTY_LIST) {
+                //out = newEdgeCollection();
+                s = ArrayUnenforcedSortedSet.the(e);
+                result = true;
+            } else {
+                if (s instanceof ArrayUnenforcedSortedSet) {
+                    FromTo<Node<N, E>, E> x = ((ArrayUnenforcedSortedSet<FromTo<Node<N, E>, E>>)s).get(0);
+                    if (!e.equals(x)) {
+                        s = newEdgeCollection();
+                        s.add(x);
+                        s.add(e);
+                        result = true;
+                    } else {
+                        result = false;
+                    }
+                } else {
+                    result = s.add(e);
+                }
+            }
+            if (result) {
+                if (inOrOut) in = s; else out = s;
+            }
+            return result;
         }
 
         boolean removeIn(FromTo<Node<N, E>, E> e) {
-            return in.remove(e);
+            return removeSet(e, true);
         }
 
         boolean removeOut(FromTo<Node<N, E>, E> e) {
-            return out.remove(e);
+            return removeSet(e, false);
+        }
+
+        private boolean removeSet(FromTo<Node<N,E>,E> e, boolean inOrOut) {
+            Collection<FromTo<Node<N, E>, E>> s = inOrOut ? in : out;
+            if (s == Collections.EMPTY_LIST)
+                return false;
+
+            boolean changed;
+            if (s instanceof ArrayUnenforcedSortedSet) {
+                if (((ArrayUnenforcedSortedSet)in).get(0).equals(e)) {
+                    s = Collections.EMPTY_LIST;
+                    changed = true;
+                } else {
+                    changed = false;
+                }
+            } else {
+                changed = in.remove(e);
+                if (changed) {
+                    switch (in.size()) {
+                        case 0:
+                            throw new UnsupportedOperationException();
+                        case 1:
+                            s = ArrayUnenforcedSortedSet.the(((ArrayHashSet<FromTo<Node<N,E>,E>>)s).first());
+                            break;
+                    }
+                }
+                //TODO downgrade
+            }
+
+            if (changed) {
+                if (inOrOut) in = s; else out = s;
+            }
+            return changed;
         }
 
         @Override

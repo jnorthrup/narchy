@@ -60,7 +60,7 @@ public class Conj extends ByteAnonMap {
     private Term term = null;
 
     public Conj() {
-        this(4);
+        this(2);
     }
 
 
@@ -73,7 +73,7 @@ public class Conj extends ByteAnonMap {
 
     public Conj(ObjectByteHashMap<Term> x, FasterList<Term> y) {
         super(x, y);
-        event = new LongObjectHashMap<>();
+        event = new LongObjectHashMap<>(2);
     }
 
     public Conj(int n) {
@@ -122,68 +122,83 @@ public class Conj extends ByteAnonMap {
 
         if (concurrent(cdt)) {
             Term[] csDropped = conj.subterms().subsExcept(event);
+
             if (csDropped != null) {
                 if (csDropped.length == 1)
                     return csDropped[0];
                 else
                     return CONJ.the(cdt, csDropped);
             }
+
+            return conj; //no change
+
         } else {
 
             Conj c = Conj.from(conj);
 
-            /* check that event.neg doesnt occurr in the result.
-                for use when deriving goals.
-                 since it would be absurd to goal the opposite just to reach the desired later
-                 */
-            byte id = c.get(event);
-            if (id == Byte.MIN_VALUE)
-                return conj; //not found
-
-
-            long targetTime;
-            if (c.event.size() == 1) {
-
-                targetTime = c.event.keysView().longIterator().next();
-            } else if (earlyOrLate) {
-                Object eternalTemporarilyRemoved = c.event.remove(ETERNAL); //HACK
-                targetTime = c.event.keysView().min();
-                if (eternalTemporarilyRemoved != null) c.event.put(ETERNAL, eternalTemporarilyRemoved); //UNDO HACK
-            } else {
-                targetTime = c.event.keysView().max();
-            }
-            assert (targetTime != XTERNAL);
-
-            if (filterContradiction) {
-
-
-                byte idNeg = (byte) -id;
-
-                final boolean[] contradiction = {false};
-                c.event.forEachKeyValue((w, wh) -> {
-                    if (w == targetTime || contradiction[0])
-                        return; //HACK should return early via predicate method
-
-                    if ((wh instanceof byte[] && ArrayUtils.indexOf((byte[]) wh, idNeg) != -1)
-                            ||
-                            (wh instanceof RoaringBitmap && ((RoaringBitmap) wh).contains(idNeg)))
-                        contradiction[0] = true;
-                });
-                if (contradiction[0])
-                    return Null;
-            }
-
-
-            boolean removed = c.remove(event, targetTime);
-            if (!removed) {
-                return Null;
-            }
-
-            return c.term();
+//            if (event.op()!=CONJ) {
+                return dropEvent(event, earlyOrLate, filterContradiction, c) ? c.term() : Null;
+//            } else {
+//                //TODO drop in correct sequence order
+//                for (Term x : event.subterms()) {
+//                    if (!dropEvent(x, earlyOrLate, filterContradiction, c))
+//                        return Null; //could not drop
+//                }
+//                return c.term();
+//            }
         }
 
-        return conj; //no change
 
+    }
+
+    @Nullable static boolean dropEvent(Term event, boolean earlyOrLate, boolean filterContradiction, Conj c) {
+    /* check that event.neg doesnt occurr in the result.
+        for use when deriving goals.
+         since it would be absurd to goal the opposite just to reach the desired later
+         */
+        byte id = c.get(event);
+        if (id == Byte.MIN_VALUE)
+            return false; //not found
+
+
+        long targetTime;
+        if (c.event.size() == 1) {
+
+            targetTime = c.event.keysView().longIterator().next();
+        } else if (earlyOrLate) {
+            Object eternalTemporarilyRemoved = c.event.remove(ETERNAL); //HACK
+            targetTime = c.event.keysView().min();
+            if (eternalTemporarilyRemoved != null) c.event.put(ETERNAL, eternalTemporarilyRemoved); //UNDO HACK
+        } else {
+            targetTime = c.event.keysView().max();
+        }
+        assert (targetTime != XTERNAL);
+
+        if (filterContradiction) {
+
+
+            byte idNeg = (byte) -id;
+
+            final boolean[] contradiction = {false};
+            c.event.forEachKeyValue((w, wh) -> {
+                if (w == targetTime || contradiction[0])
+                    return; //HACK should return early via predicate method
+
+                if ((wh instanceof byte[] && ArrayUtils.indexOf((byte[]) wh, idNeg) != -1)
+                        ||
+                        (wh instanceof RoaringBitmap && ((RoaringBitmap) wh).contains(idNeg)))
+                    contradiction[0] = true;
+            });
+            if (contradiction[0])
+                return false;
+        }
+
+
+        boolean removed = c.remove(event, targetTime);
+        if (!removed) {
+            return false;
+        }
+        return true;
     }
 
     public static FasterList<LongObjectPair<Term>> eventList(Term t) {
@@ -328,6 +343,11 @@ public class Conj extends ByteAnonMap {
     }
 
     public static Term withoutAll(Term include, Term exclude) {
+        return withoutAll(include, exclude, false);
+    }
+
+    /** if same timing, does not allow relative shift */
+    public static Term withoutAll(Term include, Term exclude, boolean atExactTime) {
         if (include.op() != CONJ)
             return include;
 
@@ -352,15 +372,29 @@ public class Conj extends ByteAnonMap {
 
 
             Conj x = Conj.from(include);
-            int edt = include.dt();
+            int idt = include.dt();
             boolean[] removed = new boolean[]{false};
             exclude.eventsWhile((when, what) -> {
-                removed[0] |= x.remove(what, when);
+                //removed[0] |= x.remove(what, when);
+                removed[0] |= atExactTime ? x.remove(what, when) : x.removeAll(what);
                 return true;
-            }, edt == DTERNAL ? ETERNAL : 0, true, edt == DTERNAL, false, 0);
+            }, idt == DTERNAL ? ETERNAL : 0, true, exclude.dt() == DTERNAL, false, 0);
 
             return removed[0] ? x.term() : include;
         }
+    }
+
+    public boolean removeAll(Term what) {
+        byte id = get(what);
+        if (id != Byte.MIN_VALUE) {
+            long[] events = event.keySet().toArray(); //create an array because removal will interrupt direct iteration of the keySet
+            boolean removed = false;
+            for (long e : events) {
+                removed |= remove(what, e);
+            }
+            return removed;
+        }
+        return false;
     }
 
     static public Term the(Term a, long aStart, Term b, long bStart) {
@@ -1003,10 +1037,10 @@ public class Conj extends ByteAnonMap {
     public boolean remove(Term t, long at) {
 
         byte i = get(t);
-        return remove(at, i);
+        return remove(i, at);
     }
 
-    public boolean remove(long at, byte what) {
+    public boolean remove(byte what, long at) {
         if (what == Byte.MIN_VALUE)
             return false;
 
@@ -1174,7 +1208,7 @@ public class Conj extends ByteAnonMap {
         if (eternal != null && numTimes == 1) {
             ci = eternal;
         } else {
-            FasterList<LongObjectPair<Term>> temporals = new FasterList<>(numTimes - (eternal != null ? 1 : 0));
+            FasterList<LongObjectPair<Term>> temporals = null;
             for (LongObjectPair<Term> next : (Iterable<LongObjectPair<Term>>) event.keyValuesView()) {
                 long when = next.getOne();
                 if (when == ETERNAL)
@@ -1190,23 +1224,29 @@ public class Conj extends ByteAnonMap {
                     return this.term = Null;
                 }
 
+                if(temporals==null)
+                    temporals = new FasterList<>(4);
+
                 temporals.add(pair(when, wt));
             }
-
             Term temporal;
-            int ee = temporals.size();
-            switch (ee) {
-                case 0:
-                    temporal = null;
-                    break;
-                case 1:
-                    temporal = temporals.get(0).getTwo();
-                    break;
-                default:
-                    temporals.sortThisBy(LongObjectPair::getOne);
-                    temporal = conjSeq(temporals);
-                    break;
-            }
+            if (temporals != null) {
+
+                int ee = temporals.size();
+                switch (ee) {
+                    case 0:
+                        temporal = null;
+                        break;
+                    case 1:
+                        temporal = temporals.get(0).getTwo();
+                        break;
+                    default:
+                        temporals.sortThisBy(LongObjectPair::getOne);
+                        temporal = conjSeq(temporals);
+                        break;
+                }
+            } else
+                temporal = null;
 
             if (eternal != null && temporal != null) {
                 ci = CONJ.the(temporal, eternal);

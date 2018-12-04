@@ -247,8 +247,6 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 case "eventOfPosOrNeg":
                     neq(constraints, X, Y);
-
-
                     match(X, new TermMatch.Is(CONJ));
 
                     constraints.add(new SubOfConstraint(X, Y, Event, 0));
@@ -256,8 +254,6 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 case "eventsOf":
                     neq(constraints, X, Y);
-
-
                     match(X, new TermMatch.Is(CONJ));
 
                     constraints.add(new SubOfConstraint(X, Y, Events, 1));
@@ -277,18 +273,6 @@ public class PremiseRuleSource extends ProxyTerm {
                 case "subsMin":
                     match(X, new TermMatch.SubsMin((short) $.intValue(Y)));
                     break;
-
-//                case "imaged": {
-//                    //@Deprecated use subOf and --subOf for both / and \
-//                    if (!taskPattern.containsRecursively(X) && !taskPattern.equals(X))
-//                        throw new TODO("expected/tested occurrence in task concPattern ");
-//
-//                    final byte[] pp = Terms.constantPath(taskPattern, X);
-//                    assert pp != null;
-//                    pre.add(new Imaged(X, !negated, pp));
-//                    if (negated) negationApplied = true;
-//                    break;
-//                }
 
 
                 case "notSet":
@@ -320,26 +304,26 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
                         case "\"?\"":
-                            taskPunc = (t) -> t == QUESTION;
+                            taskPunc = t -> t == QUESTION;
                             break;
                         case "\"@\"":
-                            taskPunc = (t) -> t == QUEST;
+                            taskPunc = t -> t == QUEST;
                             break;
                         case "\".\"":
-                            taskPunc = (t) -> t == BELIEF;
+                            taskPunc = t -> t == BELIEF;
                             break;
                         case "\"!\"":
-                            taskPunc = (t) -> t == GOAL;
+                            taskPunc = t -> t == GOAL;
                             break;
 
                         case "\"?@\"":
-                            taskPunc = (t) -> t == QUESTION || t == QUEST;
-                            concPunc = (c) -> c;  //default
+                            taskPunc = t -> t == QUESTION || t == QUEST;
+                            concPunc = c -> c;  //default
                             break;
 
                         case "\".!\"":
-                            taskPunc = (t) -> t == BELIEF || t == GOAL;
-                            concPunc = (c) -> c; //default
+                            taskPunc = t -> t == BELIEF || t == GOAL;
+                            concPunc = c -> c; //default
                             break;
 //                        case "\"*\"":
 //                            pre.add(new TaskBeliefOp(PROD, true, false));
