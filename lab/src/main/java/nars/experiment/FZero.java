@@ -3,6 +3,7 @@ package nars.experiment;
 import jcog.Util;
 import jcog.learn.pid.MiniPID;
 import jcog.math.FloatAveraged;
+import jcog.math.FloatNormalizer;
 import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
@@ -20,7 +21,6 @@ import nars.term.atom.Atomic;
 import nars.time.Tense;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.VectorSensorView;
-import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
@@ -29,6 +29,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
+import static jcog.Util.compose;
 import static nars.$.$$;
 import static nars.Op.INH;
 import static nars.agent.FrameTrigger.fps;
@@ -146,28 +147,18 @@ public class FZero extends NAgentX {
 
 
         float r = 0.05f;
-        Signal dVelX = senseNumberDifference($.funcImageLast("vel", id, $$("x")), () -> (float) fz.vehicleMetrics[0][7]).resolution(r);
-        Signal dVelY = senseNumberDifference($.funcImageLast("vel", id, $$("y")), () -> (float) fz.vehicleMetrics[0][8]).resolution(r);
+        senseNumber($.funcImageLast("vel", id, $$("x")), compose(() -> (float) fz.vehicleMetrics[0][7], new FloatAveraged(0.5f, false))).resolution(r);
+        senseNumber($.funcImageLast("vel", id, $$("y")), compose(() -> (float) fz.vehicleMetrics[0][8], new FloatAveraged(0.5f, false))).resolution(r);
 
         Signal dAccel = senseNumberDifference($.inh($.the("delta"), $.the("vel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
 
-        FloatSupplier playerAngle = Util.compose(() -> (float) fz.playerAngle,
+        FloatSupplier playerAngle = compose(() -> (float) fz.playerAngle,
                 new FloatAveraged(0.5f, true));
         Signal dAngVel = senseNumberDifference($.inh($.the("delta"), $.the("ang")), playerAngle).resolution(r);
 
         int angles = 15;
-        final Term ANGLE = Atomic.the("ang");
-        DigitizedScalar ang = senseNumber(angle ->
-                        $.inh($.the(angle), ANGLE),
-                        //$.inst($.the(angle), ANGLE),
-                        //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
-                        //$.funcImageLast("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
-                        //$.inh( /*id,*/ $.the(angle),"ang") /*SETe.the($.the(angle)))*/,
-                        ()->(float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                angles,
-                //DigitizedScalar.Needle
-                DigitizedScalar.FuzzyNeedle
-        ).resolution(0.1f);
+        DigitizedScalar ang = senseAngle(()->(float)fz.playerAngle, angles, Atomic.the("ang"));
+        ang.resolution(r);
         window(
                 new VectorSensorView(ang, nar).withControls()
                 /*NARui.beliefIcons(ang.sensors, nar))*/, 400, 400);
@@ -254,6 +245,8 @@ public class FZero extends NAgentX {
 
 
     }
+
+
 
 
     private void actionSwitch() {

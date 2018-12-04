@@ -273,6 +273,14 @@ class NAL3GoalTest {
                     .input("(a-->g).")
                     .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
         }
+//        @Test
+//        void testMutexDiffGoal1NegNAary() {
+//            test
+//                    .logDebug()
+//                    .input("--((&,a,b,--c)-->g)!")
+//                    .input("((a&b)-->g).")
+//                    .mustGoal(cycles, "(c-->g)", 1f, 0.81f);
+//        }
 
         @Test
         void testIntersectSinglePremiseGoal1Neg() {

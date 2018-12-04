@@ -1,20 +1,14 @@
 package nars.experiment;
 
 import java4k.gradius4k.Gradius4K;
-import jcog.data.list.FasterList;
-import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.attention.AttnDistributor;
 import nars.concept.sensor.DigitizedScalar;
 import nars.sensor.Bitmap2DSensor;
+import nars.video.PixelBag;
 import nars.video.VectorSensorView;
-import spacegraph.space2d.container.grid.Gridding;
 
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 import static java4k.gradius4k.Gradius4K.*;
 import static nars.agent.FrameTrigger.fps;
 import static spacegraph.SpaceGraph.window;
@@ -54,31 +48,43 @@ public class Gradius extends NAgentX {
 
         assert px % dx == 0 && py % dy == 0;
 
-        List<Bitmap2DSensor> cams = new FasterList();
-        for (int i = 0; i < dx; i++)
-            for (int j = 0; j < dy; j++) {
-                int ii = i;
-                int jj = j;
-                //Term subSection = $.p(id, $.the(ii), $.the(jj));
-                Bitmap2DSensor c = senseCamera((x, y) ->
-                                $.p(id, $.p($.the(ii), $.the(jj)), $.the(x), $.the(y)),
-                        //$.p(
-                        //$.inh(
-//                                        $.p(x, y),
-//                                        subSection
-//                                ),
-                        new ScaledBitmap2D(() -> g.image, px, py)
-                                .crop(
-                                        (float) i / dx, (float) j / dy,
-                                        (float) (i + 1) / dx, (float) (j + 1) / dy))
-                        .resolution(0.04f);
+        {
+            Bitmap2DSensor<PixelBag> cam = senseCameraRetina(id, () -> g.image, px, py);
+            cam.src.addActions(id,this, false, false, true);
+            onFrame(()->{
+               cam.src.setXRelative(g.player[OBJ_X] / g.getWidth());
+                cam.src.setYRelative(g.player[OBJ_Y] / g.getHeight());
+            });
+            window(new VectorSensorView(cam,this).withControls(), 400, 400);
+        }
 
-                cams.add(c);
-            }
-
-        window(new Gridding(
-                cams.stream().map(c->new VectorSensorView(c, this).withControls()).collect(toList())),
-                400, 900);
+//        {
+//            List<Bitmap2DSensor> cams = new FasterList();
+//            for (int i = 0; i < dx; i++)
+//                for (int j = 0; j < dy; j++) {
+//                    int ii = i;
+//                    int jj = j;
+//                    //Term subSection = $.p(id, $.the(ii), $.the(jj));
+//                    Bitmap2DSensor c = senseCamera((x, y) ->
+//                                    $.p(id, $.p($.the(ii), $.the(jj)), $.the(x), $.the(y)),
+//                            //$.p(
+//                            //$.inh(
+////                                        $.p(x, y),
+////                                        subSection
+////                                ),
+//                            new ScaledBitmap2D(() -> g.image, px, py)
+//                                    .crop(
+//                                            (float) i / dx, (float) j / dy,
+//                                            (float) (i + 1) / dx, (float) (j + 1) / dy))
+//                            .resolution(0.04f);
+//
+//                    cams.add(c);
+//                }
+//
+//            window(new Gridding(
+//                            cams.stream().map(c -> new VectorSensorView(c, this).withControls()).collect(toList())),
+//                    400, 900);
+//        }
 
 
         float width = g.getWidth();

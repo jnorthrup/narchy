@@ -16,6 +16,7 @@ import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.BooleanToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
@@ -213,7 +214,21 @@ public interface NSense {
                         levelTermizer, Term[]::new));
     }
 
-    
+    default DigitizedScalar senseAngle(FloatSupplier angleInRadians, int divisions, Term root) {
+        DigitizedScalar ang = senseNumber(angle ->
+                $.inh($.the(angle), root),
+                //$.inst($.the(angle), ANGLE),
+                //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
+                //$.funcImageLast("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
+                //$.inh( /*id,*/ $.the(angle),"ang") /*SETe.the($.the(angle)))*/,
+                ()->(float) (0.5 + 0.5 * MathUtils.normalizeAngle(angleInRadians.asFloat(), 0) / (Math.PI)),
+                divisions,
+                //DigitizedScalar.Needle
+                DigitizedScalar.FuzzyNeedle
+        );
+        return ang;
+    }
+
     default DigitizedScalar senseNumberBi(Term id, FloatSupplier v) {
         return senseNumber(v, DigitizedScalar.FuzzyNeedle, p(id, LOW), p(id, HIH));
     }

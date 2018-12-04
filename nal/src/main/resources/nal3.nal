@@ -5,11 +5,11 @@
 //  corresponds to extensional union, and extensional intersection corresponds
 //  to intensional union.
 
-    (P --> M), (S --> M), notSetsOrDifferentSets(S,P) |- ((polarize(P,task) | polarize(S,belief)) --> M), (Belief:IntersectionDepolarized, Time:Intersect)
-    (P --> M), (S --> M), notSetsOrDifferentSets(S,P) |- (unionSect(polarize(P,task),polarize(S,belief), "&") --> M), (Belief:UnionDepolarized, Time:Intersect)
+    (P --> M), (S --> M), notSetsOrDifferentSets(S,P),neq(S,P) |- ((polarize(P,task) | polarize(S,belief)) --> M), (Belief:IntersectionDepolarized, Time:Intersect)
+    (P --> M), (S --> M), notSetsOrDifferentSets(S,P),neq(S,P) |- (unionSect(polarize(P,task),polarize(S,belief), "&") --> M), (Belief:UnionDepolarized, Time:Intersect)
 
-    (M --> P), (M --> S), notSetsOrDifferentSets(S,P) |- (M --> (polarize(P,task) & polarize(S,belief))), (Belief:IntersectionDepolarized, Time:Intersect)
-    (M --> P), (M --> S), notSetsOrDifferentSets(S,P) |- (M --> unionSect(polarize(P,task),polarize(S,belief), "|")), (Belief:UnionDepolarized, Time:Intersect)
+    (M --> P), (M --> S), notSetsOrDifferentSets(S,P),neq(S,P) |- (M --> (polarize(P,task) & polarize(S,belief))), (Belief:IntersectionDepolarized, Time:Intersect)
+    (M --> P), (M --> S), notSetsOrDifferentSets(S,P),neq(S,P) |- (M --> unionSect(polarize(P,task),polarize(S,belief), "|")), (Belief:UnionDepolarized, Time:Intersect)
 
 //    (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- ((P ~ S) --> M), (Belief:Difference, Time:Intersect)
 //    (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- ((S ~ P) --> M), (Belief:DifferenceReverse, Time:Intersect)
@@ -87,17 +87,18 @@
 ////        (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeNP)
 
 //
-//     //similarity (S==P)! (symmetric: DecomposeNegative....)
+     //similarity coercion (S==P)! (symmetric: DecomposeNegative....)
      ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeDiff,Time:Intersect)
+       //((&,--P,A..+) --> M), ((&,A..+) --> M) |- (P --> M), (Goal:DecomposeDiff,Time:Intersect) //not working yet
      (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeDiff,Time:Intersect)
         ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposeDiff,Time:Intersect)
         (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposeDiff,Time:Intersect)
 //
-//     //difference --(S==P)! (asymmetric: DecomposePositive... )
-     ((S ~ P) --> M), (S --> M) |- --(P --> M), (Goal:DecomposePP,Time:Intersect)
-     (M --> (S - P)), (M --> S) |- --(M --> P), (Goal:DecomposePP,Time:Intersect)
-        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposePN,Time:Intersect)
-        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposePN,Time:Intersect)
+////     //difference --(S==P)! (asymmetric: DecomposePositive... )
+//     ((S ~ P) --> M), (S --> M) |- --(P --> M), (Goal:DecomposePP,Time:Intersect)
+//     (M --> (S - P)), (M --> S) |- --(M --> P), (Goal:DecomposePP,Time:Intersect)
+//        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposePN,Time:Intersect)
+//        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposePN,Time:Intersect)
 //
 
 

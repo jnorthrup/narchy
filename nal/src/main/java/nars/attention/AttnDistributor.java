@@ -38,7 +38,7 @@ public class AttnDistributor {
         this.concepts = concepts;
         this.gain = gain;
 
-        int windowIterations = 2; //>=1
+        int windowIterations = 1; //>=1
         int N = Iterables.size(concepts); //only an estimate, if this Iterable changes
         pris = new DescriptiveStatistics(N * windowIterations);
 
