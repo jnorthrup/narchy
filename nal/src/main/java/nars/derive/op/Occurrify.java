@@ -615,10 +615,15 @@ public class Occurrify extends TimeGraph {
         /**
          * used for conjunction structural decomposition
          */
-        TaskSubEventPos() {
+        TaskSubEvent() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveSubEvent(d, x, false);
+                //return solveSubEvent(d, x, false);
+                Pair<Term, long[]> p = d.occ.solveOccDT(d.occ.reset(true, d.taskStart == ETERNAL, x, true).solutions(x)).get();
+                if (p!=null && p.getTwo()[0]==TIMELESS)
+                    return null; //HACK
+
+                return p;
             }
 
             @Override
@@ -626,10 +631,6 @@ public class Occurrify extends TimeGraph {
                 throw new UnsupportedOperationException();
             }
 
-            @Override
-            public BeliefProjection beliefProjection() {
-                return BeliefProjection.Raw; //N/A structuraldeduction
-            }
         },
 
         /**
@@ -682,25 +683,7 @@ public class Occurrify extends TimeGraph {
 //        },
 
 
-        /**
-         * used for conjunction structural decomposition
-         */
-        TaskSubEventNeg() {
-            @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveSubEvent(d, x, true);
-            }
 
-            @Override
-            long[] occurrence(Derivation d) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public BeliefProjection beliefProjection() {
-                return BeliefProjection.Raw; //N/A structuraldeduction
-            }
-        },
         /**
          * for unprojected truth rules;
          * result should be left-aligned (relative) to the belief's start time
@@ -1237,46 +1220,41 @@ public class Occurrify extends TimeGraph {
         return new long[]{start, start + range};
     }
 
-//    private static boolean immediatizable(Derivation d) {
-//        //return (d.taskPunc == GOAL || d.taskPunc == QUEST) && (d.concPunc == GOAL || d.concPunc == QUEST) && d.truthFunction != NALTruth.Identity;
+//    private static Pair<Term, long[]> solveSubEvent(Derivation d, Term x, boolean neg) {
+//
+//        long[] w;
+//        if (d.taskStart == ETERNAL)
+//            w = new long[]{ETERNAL, ETERNAL};
+//        else {
+//
+//            int[] offsets = d.taskTerm.subTimes(x.negIf(neg && x.op() != NEG /* not already negative, which is possible as a result from Termify */));
+//            if (offsets == null) {
+//                if (!neg && x.hasAny(CONJ)) {
+//                    //use the first event
+//                    Term[] first = new Term[1];
+//                    x.eventsWhile((when, what) -> {
+//                        first[0] = what;
+//                        return false;
+//                    }, 0, true, true, true, 0);
+//                    if (first[0] != x)
+//                        offsets = d.taskTerm.subTimes(first[0]);
+//                }
+//
+//            }
+//            if (offsets == null || offsets.length == 0) {
+//                if (Param.DEBUG)
+//                    throw new WTF(); //seems to be something involving normalized/unnormalized variables not getting matched
+//                else
+//                    return null;
+//            }
+//
+//            int offset = offsets[(offsets.length > 1) ? d.nar.random().nextInt(offsets.length) : 0];
+//            assert (offset != DTERNAL && offset != XTERNAL);
+//            w = new long[]{d.taskStart + offset, d.taskEnd + offset};
+//        }
+//        return pair(x, w);
 //    }
-
-
-    private static Pair<Term, long[]> solveSubEvent(Derivation d, Term x, boolean neg) {
-
-        long[] w;
-        if (d.taskStart == ETERNAL)
-            w = new long[]{ETERNAL, ETERNAL};
-        else {
-
-            int[] offsets = d.taskTerm.subTimes(x.negIf(neg && x.op() != NEG /* not already negative, which is possible as a result from Termify */));
-            if (offsets == null) {
-                if (!neg && x.hasAny(CONJ)) {
-                    //use the first event
-                    Term[] first = new Term[1];
-                    x.eventsWhile((when, what) -> {
-                        first[0] = what;
-                        return false;
-                    }, 0, true, true, true, 0);
-                    if (first[0] != x)
-                        offsets = d.taskTerm.subTimes(first[0]);
-                }
-
-            }
-            if (offsets == null || offsets.length == 0) {
-                if (Param.DEBUG)
-                    throw new WTF(); //seems to be something involving normalized/unnormalized variables not getting matched
-                else
-                    return null;
-            }
-
-            int offset = offsets[(offsets.length > 1) ? d.nar.random().nextInt(offsets.length) : 0];
-            assert (offset != DTERNAL && offset != XTERNAL);
-            w = new long[]{d.taskStart + offset, d.taskEnd + offset};
-        }
-        return pair(x, w);
-    }
-
+//
 
     private enum OccIntersect {
         Task, Belief, Earliest

@@ -912,6 +912,18 @@ public class NAL8Test extends NALTest {
 
     }
 
-
+@Test void testEventOfNeg() {
+    /*
+    NO
+    $.01 ((--,(reward-->trackXY)) &&+15 (reward-->trackXY))! 5811⋈5817 %1.0;.01% {5814: 1;d.;dÇ;dÓ;dá;dë;d÷;dþ;e7;Cù;D6;DQ;DÀ;DÇ;DÎ;DÖ}
+                X, C, eventOf(C,X), --eventOfNeg(C,X)   |- C, (Goal:DesireWeak, Time:BeliefAtTask)
+        $.50 (reward-->trackXY)! %1.0;.90% {0: 1}
+        $1.0 ((--,(reward-->trackXY)) &&+15 (reward-->trackXY)). 5811⋈5816 %.03;.87% {5814: d.;dÇ;dÓ;dá;dë;d÷;dþ;e4;e7;Cù;D6;DQ;DÀ;DÇ;DÎ;DÖ}
+        */
+    test
+        .believe("(--x &&+1 x)")
+        .goal("x")
+        .mustNotOutput(cycles, "(--x &&+1 x)", GOAL);
+}
 
 }

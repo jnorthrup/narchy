@@ -2,9 +2,9 @@
 
   //Conjunction structural decompose: C = (&&,a,b,..)
     C, X, eventOf(C,X)                        |-   conjWithout(C,X), (Belief:StructuralDeduction, Time:TaskSubSequence)
-    C, X, eventOf(C,X)                        |-   X, (Belief:StructuralDeduction, Time:TaskSubEventPos)
+    C, X, eventOf(C,X)                        |-   X, (Belief:StructuralDeduction, Time:TaskSubEvent)
     C, X, eventOfNeg(C,X)                     |-   conjWithout(C,--X), (Belief:StructuralDeduction, Time:TaskSubSequence)
-    C, X, eventOfNeg(C,X)                     |- --X, (Belief:StructuralDeduction, Time:TaskSubEventNeg)
+    C, X, eventOfNeg(C,X)                     |- --X, (Belief:StructuralDeduction, Time:TaskSubEvent)
 
       //C, X, eventOf(C,X),    conjParallel(C), --is(X,"#")    |-   X, (  Goal:StructuralDeduction, Time:TaskSubEventPos)
       //C, X, eventOfNeg(C,X), conjParallel(C), --is(X,"#")    |- --X, (  Goal:StructuralDeduction, Time:TaskSubEventNeg)
@@ -56,8 +56,8 @@
 
 
     //conditional disjunction decompose
-    D, X, eventOfNeg(D,X) |- --conjWithout(D,--X), (Goal:DeductionNN,Time:TaskSubEventNeg)
-    D, X, eventOf(D,X)    |- --conjWithout(D,  X), (Goal:DeductionNP,Time:TaskSubEventPos)
+    D, X, eventOfNeg(D,X) |- --conjWithout(D,--X), (Goal:DeductionNN,Time:TaskSubEvent)
+    D, X, eventOf(D,X)    |- --conjWithout(D,  X), (Goal:DeductionNP,Time:TaskSubEvent)
 
 
 

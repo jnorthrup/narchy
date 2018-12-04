@@ -86,13 +86,15 @@ abstract public class RelationConstraint extends UnifyConstraint {
         return true;
     }
 
+    /** NOTE: preFilter() does not and should not be overridden.. */
     static final class NegRelationConstraint extends RelationConstraint {
 
         private final RelationConstraint r;
 
-        public NegRelationConstraint(RelationConstraint r) {
+        private NegRelationConstraint(RelationConstraint r) {
             super(r.ref.neg(), r.x, r.y);
             this.r = r;
+            assert(!(r instanceof NegRelationConstraint) && (r.ref.op()!=NEG));
         }
 
         @Override
@@ -115,10 +117,10 @@ abstract public class RelationConstraint extends UnifyConstraint {
             return r.cost();
         }
 
-        @Override
-        public @Nullable PREDICATE<PreDerivation> preFilter(Term taskPattern, Term beliefPattern) {
-            PREDICATE<PreDerivation> p = super.preFilter(taskPattern, beliefPattern);
-            return p != null ? p.neg() : null;
-        }
+//        @Override
+//        public @Nullable PREDICATE<PreDerivation> preFilter(Term taskPattern, Term beliefPattern) {
+//            PREDICATE<PreDerivation> p = super.preFilter(taskPattern, beliefPattern);
+//            return p != null ? p.neg() : null;
+//        }
     }
 }

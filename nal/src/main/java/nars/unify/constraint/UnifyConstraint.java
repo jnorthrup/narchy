@@ -171,12 +171,15 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
             Term t = preDerivation.taskTerm;
             Term b = preDerivation.beliefTerm;
             Term x = extractX.apply(t, b);
-            if (x == null)
-                return false;
-            Term y = extractY.apply(t, b);
-            if (y == null)
-                return false;
-            return !constraint.invalid(x, y);
+            if (x != null) {
+                Term y = extractY.apply(t, b);
+                if (y != null) {
+                    return !constraint.invalid(x, y);
+                }
+            }
+            if (constraint instanceof RelationConstraint.NegRelationConstraint)
+                System.out.println("negrelation");
+            return (constraint instanceof RelationConstraint.NegRelationConstraint);
         }
 
         @Override
