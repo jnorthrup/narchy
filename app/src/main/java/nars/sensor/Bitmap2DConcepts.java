@@ -34,7 +34,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     public final P src;
 
     private final FloatRange pri;
-    private final FloatRange priPixel = new FloatRange(0, 0, 1);
+    //private final FloatRange priPixel = new FloatRange(0, 0, 1);
 
     public final Array2DIterable<Signal> iter;
 
@@ -82,7 +82,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 //                    public TermlinkTemplates templates() {
 //                        return super.templates();
 //                    }
-                }.setPri(priPixel).setResolution(res);
+                }.setPri(pri).setResolution(res);
 
 
                 matrix[x][y] = sss;
@@ -234,7 +234,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
             long sinceLastFrameStart = now - lastFrameStart;
 
-            priPixel.set(priPixel(pri.floatValue()));
+            //priPixel.set(priPixel(pri.floatValue()));
 
 //            int pixelsToProcess = Math.min(pixelsRemainPerUpdate, workToPixels(work));
 //
@@ -302,11 +302,11 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
     }
 
-    private float priPixel(float pri) {
-        return pri;
-        //return pri/area;
-        //return (float) (pri / Math.sqrt(area));
-    }
+//    private float priPixel(float pri) {
+//        return pri;
+//        //return pri/area;
+//        //return (float) (pri / Math.sqrt(area));
+//    }
 
 
 }

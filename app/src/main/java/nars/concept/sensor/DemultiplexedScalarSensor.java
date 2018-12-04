@@ -8,8 +8,6 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
-import java.util.stream.StreamSupport;
-
 /** accepts a scalar input that is decomposed into components represented via multiple concepts */
 abstract public class DemultiplexedScalarSensor extends VectorSensor implements FloatSupplier {
 
@@ -30,8 +28,7 @@ abstract public class DemultiplexedScalarSensor extends VectorSensor implements 
         if (input!=null)
             value.set(input.asFloat());
 
-        in.input(StreamSupport.stream(this.spliterator(), false)
-                .map(x -> x.update(prev, now, truther, n)));
+        super.update(prev, now, next, n);
     }
 
 

@@ -72,7 +72,7 @@ abstract public class RelationConstraint extends UnifyConstraint {
     }
 
     @Override
-    public final boolean invalid(Term xx, Unify f) {
+    public boolean invalid(Term xx, Unify f) {
         Term yy = f.transform(yUnneg);
         return yy != yUnneg
                 &&
@@ -86,7 +86,6 @@ abstract public class RelationConstraint extends UnifyConstraint {
         return true;
     }
 
-    /** NOTE: preFilter() does not and should not be overridden.. */
     static final class NegRelationConstraint extends RelationConstraint {
 
         private final RelationConstraint r;
@@ -113,14 +112,19 @@ abstract public class RelationConstraint extends UnifyConstraint {
         }
 
         @Override
+        public boolean invalid(Term xx, Unify f) {
+            return !r.invalid(xx, f);
+        }
+
+        @Override
         public float cost() {
             return r.cost();
         }
 
-//        @Override
-//        public @Nullable PREDICATE<PreDerivation> preFilter(Term taskPattern, Term beliefPattern) {
-//            PREDICATE<PreDerivation> p = super.preFilter(taskPattern, beliefPattern);
-//            return p != null ? p.neg() : null;
-//        }
+        @Override
+        public @Nullable PREDICATE<PreDerivation> preFilter(Term taskPattern, Term beliefPattern) {
+            PREDICATE<PreDerivation> p = r.preFilter(taskPattern, beliefPattern);
+            return p != null ? p.neg() : null;
+        }
     }
 }

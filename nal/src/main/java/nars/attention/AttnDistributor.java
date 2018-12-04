@@ -10,10 +10,11 @@ import nars.control.DurService;
 import nars.term.Termed;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-/** regulates prioritization of a group of concepts to what is
- *  necessary to produce a minimum threshold anisotropic priority distribution
- *  see: https://en.wikipedia.org/wiki/Entropy_and_life
- *  https://en.wikipedia.org/wiki/Average_absolute_deviation
+/**
+ * regulates prioritization of a group of concepts to what is
+ * necessary to produce a minimum threshold anisotropic priority distribution
+ * see: https://en.wikipedia.org/wiki/Entropy_and_life
+ * https://en.wikipedia.org/wiki/Average_absolute_deviation
  */
 @Paper
 public class AttnDistributor {
@@ -23,13 +24,13 @@ public class AttnDistributor {
     //final MiniPID control = new MiniPID(0.5f, 0.5f, 0.5f);
 
     //v0: bang bang
-    float decay = 0.01f, grow = 0.01f/2f;
+    float decay = 0.01f, grow = 0.01f/2;
 
     float lastGain = Float.NaN;
 
     private final FloatConsumer gain;
 
-//    final RecycledSummaryStatistics pris = new RecycledSummaryStatistics();
+    //    final RecycledSummaryStatistics pris = new RecycledSummaryStatistics();
     final DescriptiveStatistics pris;
 
     public AttnDistributor(Iterable<? extends Termed> concepts, FloatConsumer gain, NAR n) {
@@ -39,13 +40,12 @@ public class AttnDistributor {
 
         int windowIterations = 2; //>=1
         int N = Iterables.size(concepts); //only an estimate, if this Iterable changes
-        pris = new DescriptiveStatistics(N*windowIterations);
+        pris = new DescriptiveStatistics(N * windowIterations);
 
         DurService.on(n, this::update);
     }
+
     private void update(NAR n) {
-
-
 
 
 //        pris.clear();
@@ -65,7 +65,7 @@ public class AttnDistributor {
         dev[0] /= N[0];
 
         double max = pris.getMax();
-        float range =  (float) (max -pris.getMin());
+        float range = (float) (max - pris.getMin());
         if (range < ScalarValue.EPSILON)
             range = 1;
 
@@ -77,18 +77,20 @@ public class AttnDistributor {
                 //(range * 0.5f)/N[0];
                 //(float) (max * 0.5f)/N[0];
                 //(float) ((max * 0.5f)/Math.sqrt(N[0]));
-                (float) ((range )/Math.sqrt(N[0]));
-                //(float) (1f/Math.sqrt(N[0]));
+                //(float) ((range) / Math.sqrt(N[0]));
+                (float) (1 / Math.sqrt(N[0]));
+                //0.5f;
+
 
 
         float idealPri =
                 //0.5f;
                 //1f/ N[0];
-                (float) (1f/ Math.sqrt(N[0]));
+                (float) (1f / Math.sqrt(N[0]));
 
         float g = lastGain;
 
-        if (g!=g)
+        if (g != g)
             g = idealPri;
 
         if (deviation < devMin) {
@@ -102,6 +104,7 @@ public class AttnDistributor {
             else
                 g += grow;
         }
+
 
         /*
         System.out.println(

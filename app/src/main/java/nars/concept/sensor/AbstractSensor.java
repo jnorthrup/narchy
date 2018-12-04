@@ -1,8 +1,6 @@
 package nars.concept.sensor;
 
-import jcog.Util;
 import jcog.math.FloatRange;
-import nars.$;
 import nars.NAR;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
@@ -11,19 +9,17 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
-import static nars.Op.BELIEF;
-
 abstract public class AbstractSensor extends NARService implements Sensor {
 
-    public FloatRange pri;
-    private FloatRange res;
+    public final FloatRange pri;
+    private final FloatRange res;
 
 
-    public AbstractSensor(NAR nar) {
+    protected AbstractSensor(NAR nar) {
         this(null, nar);
     }
 
-    public AbstractSensor(Term id, NAR n) {
+    protected AbstractSensor(Term id, NAR n) {
         super(id, n);
 
         //defaults
@@ -31,10 +27,10 @@ abstract public class AbstractSensor extends NARService implements Sensor {
         res = FloatRange.unit( n.freqResolution );
     }
 
-    public AbstractSensor pri(float v) {
-        pri.set(v);
-        return this;
-    }
+//    public AbstractSensor pri(float v) {
+//        pri.set(v);
+//        return this;
+//    }
 
 //    public void setPri(FloatRange p) {
 //        this.pri = p;
@@ -61,16 +57,20 @@ abstract public class AbstractSensor extends NARService implements Sensor {
 
 
 
-    /** default truther */
-    final private FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(Util.unitize(next), nar.confDefault(BELIEF));
+//    /** default truther */
+//    final private FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(Util.unitize(next), nar.confDefault(BELIEF));
 
-    /** convenience class for updating a set of signals */
-    protected final void update(long last, long now, Iterable<Signal> signals, CauseChannel<ITask> in) {
-        update(last, now, signals, in, truther);
-    }
+//    /** convenience class for updating a set of signals */
+//    protected void update(long last, long now, Iterable<Signal> signals, CauseChannel<ITask> in) {
+//        update(last, now, signals, in, truther);
+//    }
 
-    protected void update(long last, long now, Iterable<Signal> signals, CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> t) {
-        signals.forEach(s -> in.input(s.update(last, now, t, now - last, nar)));
+    protected final void update(long last, long now, Iterable<Signal> signals, CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> t) {
+        int dur = nar.dur();
+        signals.forEach(s -> {
+            s.setPri(pri());
+            in.input(s.update(last, now, t, dur /*now - last*/, nar));
+        });
     }
 
 }

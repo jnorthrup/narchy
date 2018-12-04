@@ -56,7 +56,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
         this(term, BELIEF, signal, n.conceptBuilder.termlinker(term), n);
     }
 
-    public Signal(Term term, byte punc, FloatSupplier signal, TermLinker linker, NAR n) {
+    private Signal(Term term, byte punc, FloatSupplier signal, TermLinker linker, NAR n) {
         super(term,
                 punc == BELIEF ? new SensorBeliefTables(term, true, n.conceptBuilder) : n.conceptBuilder.newTable(term, true),
                 punc == GOAL ? new SensorBeliefTables(term, false, n.conceptBuilder) : n.conceptBuilder.newTable(term, false),
@@ -125,7 +125,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
 
     @Nullable
     public final ITask update(long prev, long now, FloatFloatToObjectFunction<Truth> truther, NAR n) {
-        return update(prev, now, truther, now - prev, n);
+        return update(prev, now, truther, n.dur() /*now - prev*/, n);
     }
 
     @Nullable
@@ -135,6 +135,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
         float nextValue = floatValueOf(term);
 
         SensorBeliefTables s = (SensorBeliefTables) beliefs();
+
         assert(dur > 0);
         return s.add(nextValue == nextValue ? truther.value(prevValue, nextValue) : null, start, end, this, dur, n);
 

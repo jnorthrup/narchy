@@ -177,9 +177,7 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
                     return !constraint.invalid(x, y);
                 }
             }
-            if (constraint instanceof RelationConstraint.NegRelationConstraint)
-                System.out.println("negrelation");
-            return (constraint instanceof RelationConstraint.NegRelationConstraint);
+            return false;
         }
 
         @Override

@@ -104,15 +104,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
         return this;
     }
 
-    @Override
-    public void update(long last, long now, long next, NAR nar) {
-        float confDefault = nar.confDefault(BELIEF);
-        float min = nar.confMin.floatValue();
-        update(last, now, signals, in, (p,n)->{
-            float c = confDefault * Math.abs(n - 0.5f) * 2f;
-            return c>min ? $.t(n, c) : null;
-        });
-    }
+
 
     public interface MetaBits {
         float[] get(int subX, int subY);
@@ -155,6 +147,9 @@ public class AutoclassifiedBitmap extends VectorSensor {
      */
     public AutoclassifiedBitmap(Term root, IntIntToFloatFunction pixIn, int pw, int ph, int sw, int sh, MetaBits metabits, int features, NAgent agent) {
         super(agent.nar());
+
+        NAR nar = agent.nar();
+
         ae = new Autoencoder(sw * sh + metabits.get(0, 0).length, features, agent.random());
 
         this.metabits = metabits;
@@ -205,7 +200,11 @@ public class AutoclassifiedBitmap extends VectorSensor {
         logger.info("{} pixels in={},{} ({}) x {},{} x features={} : encoded={}", this, pw, ph, (pw * ph), nw, nh, features, signals.size());
         agent.sensors.add(this);
         agent.onFrame(this::update);
+
+
     }
+
+
 
     @Override
     public Iterator<Signal> iterator() {

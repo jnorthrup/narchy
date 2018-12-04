@@ -76,10 +76,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return Iterables.transform(concepts, NodeConcept::term);
     }
 
-    @Override
-    public void update(long last, long now, long next, NAR nar) {
-        //..
-    }
+
 
     public void input() {
         input(mode);

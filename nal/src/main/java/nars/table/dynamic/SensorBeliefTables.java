@@ -27,7 +27,7 @@ public class SensorBeliefTables extends BeliefTables {
     /**
      * prioritizes generated tasks
      */
-    private FloatRange pri;
+    @Deprecated private FloatRange pri;
 
     public FloatRange res;
 

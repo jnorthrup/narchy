@@ -9,7 +9,6 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.attention.AttnDistributor;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.SwitchAction;
@@ -108,7 +107,6 @@ public class FZero extends NAgentX {
             camAE.alpha(0.03f);
             camAE.noise.set(0.05f);
 
-            new AttnDistributor(camAE, camAE.pri::set, n);
             //SpaceGraph.(column(visionView, camAE.newChart()), 500, 500);
 //        }
 
@@ -160,7 +158,8 @@ public class FZero extends NAgentX {
         int angles = 15;
         final Term ANGLE = Atomic.the("ang");
         DigitizedScalar ang = senseNumber(angle ->
-                        $.inst($.the(angle), ANGLE),
+                        $.inh($.the(angle), ANGLE),
+                        //$.inst($.the(angle), ANGLE),
                         //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
                         //$.funcImageLast("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
                         //$.inh( /*id,*/ $.the(angle),"ang") /*SETe.the($.the(angle)))*/,

@@ -75,9 +75,7 @@ public class Gradius extends NAgentX {
 
                 cams.add(c);
             }
-        cams.forEach(c -> {
-            new AttnDistributor(c.concepts, c.pri::set, nar);
-        });
+
         window(new Gridding(
                 cams.stream().map(c->new VectorSensorView(c, this).withControls()).collect(toList())),
                 400, 900);

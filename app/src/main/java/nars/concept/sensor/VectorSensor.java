@@ -1,11 +1,15 @@
 package nars.concept.sensor;
 
 import com.google.common.collect.Iterables;
+import nars.$;
 import nars.NAR;
+import nars.attention.AttnDistributor;
 import nars.concept.NodeConcept;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.term.Termed;
+
+import static nars.Op.BELIEF;
 
 /** base class for a group of concepts representing a sensor 'vector'
  * */
@@ -14,6 +18,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
 
     public final CauseChannel<ITask> in;
 
+    private AttnDistributor attn;
 
 
 
@@ -38,31 +43,24 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     }
 
 
-
-//
 //    @Override
-//    public void accept(NAR n) {
-//        synchronized (this) {
-//            long now = n.time();
+//    protected void update(long prev, long now, Iterable<Signal> signals, CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> t) {
+//        if (attn == null) //HACK
+//            attn = new AttnDistributor(this, pri::set, nar);
 //
-//
-//            update(last, now, n);
-//
-//            this.last = now;
-//        }
+//        super.update(prev, now, signals, in, t);
 //    }
 
+    @Override
+    public void update(long last, long now, long next, NAR nar) {
+        if (attn == null) //HACK
+            attn = new AttnDistributor(this, pri::set, nar);
 
-
-//    @Override
-//    public void setResolution(FloatRange r) {
-//        super.setResolution(r);
-//        forEach(s -> s.setResolution(r));
-//    }
-
-//    @Override
-//    public void setPri(FloatRange p) {
-//        super.setPri(p);
-//        forEach(x -> x.setPri(p));
-//    }
+        float confDefault = nar.confDefault(BELIEF);
+        float min = nar.confMin.floatValue();
+        update(last, now, this, in, (p,n)->{
+            float c = confDefault * Math.abs(n - 0.5f) * 2f;
+            return c>min ? $.t(n, c) : null;
+        });
+    }
 }
