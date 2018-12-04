@@ -148,7 +148,7 @@ public class HijackConceptIndex extends AbstractConceptIndex {
         PLink<Termed> existing = table.get(key);
         if (existing==null || existing.get()!=value) {
             remove(key);
-            PLink<Termed> inserted = table.put(new PLinkHashCached<>(value, 1f));
+            PLink<Termed> inserted = table.put(new PLinkHashCached<>(value, initialTask));
             if (inserted == null && value instanceof PermanentConcept) {
                 throw new RuntimeException("unresolvable hash collision between PermanentConcepts: " + inserted + ' ' + value);
             }

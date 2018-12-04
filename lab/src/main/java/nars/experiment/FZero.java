@@ -17,6 +17,7 @@ import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.Signal;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.time.Tense;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.VectorSensorView;
@@ -157,11 +158,13 @@ public class FZero extends NAgentX {
         Signal dAngVel = senseNumberDifference($.inh($.the("delta"), $.the("ang")), playerAngle).resolution(r);
 
         int angles = 15;
+        final Term ANGLE = Atomic.the("ang");
         DigitizedScalar ang = senseNumber(angle ->
-                        //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
-                        $.funcImageLast("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
-                        //$.inh( /*id,*/ $.the(angle),"ang") /*SETe.the($.the(angle)))*/, () ->
-                        (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
+                        $.inst($.the(angle), ANGLE),
+                        //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
+                        //$.funcImageLast("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
+                        //$.inh( /*id,*/ $.the(angle),"ang") /*SETe.the($.the(angle)))*/,
+                        ()->(float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 angles,
                 //DigitizedScalar.Needle
                 DigitizedScalar.FuzzyNeedle

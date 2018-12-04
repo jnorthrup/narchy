@@ -671,7 +671,7 @@ abstract public class DynamicTruthModel {
             }
 
 
-            return y.negIf(negResult);
+            return y!=null ? y.negIf(negResult) : null;
         }
 
     }

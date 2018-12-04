@@ -35,6 +35,7 @@ import nars.index.concept.HijackConceptIndex;
 import nars.op.Arithmeticize;
 import nars.op.Factorize;
 import nars.op.Introduction;
+import nars.op.mental.Abbreviation;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -459,7 +460,7 @@ abstract public class NAgentX extends NAgent {
 
         n.emotion.want(MetaGoal.PerceiveCmplx, 0f); //-0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
-        n.emotion.want(MetaGoal.Believe, 0.15f);
+        n.emotion.want(MetaGoal.Believe, 0.02f);
         n.emotion.want(MetaGoal.Desire, 0.25f);
         n.emotion.want(MetaGoal.Action, +1f);
 
@@ -520,7 +521,7 @@ abstract public class NAgentX extends NAgent {
 //            e.printStackTrace();
 //        }
 
-        //new Abbreviation(n, "z", 5, 9, 0.1f, 8);
+        new Abbreviation("z", 5, 9, n);
 
 //        Impiler.ImpilerTracker t = new Impiler.ImpilerTracker(8, 16, n);
 //        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(8, 8, n);

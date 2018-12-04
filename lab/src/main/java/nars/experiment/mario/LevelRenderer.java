@@ -1,5 +1,6 @@
 package nars.experiment.mario;
 
+import jcog.random.XoRoShiRo128PlusRandom;
 import nars.experiment.mario.level.Level;
 
 import java.awt.*;
@@ -12,12 +13,17 @@ public class LevelRenderer {
     private int yCam;
     public BufferedImage image;
     private final Graphics2D g;
-    private static final Color transparent = new Color(0, 0, 0, 0);
+    //private static final Color transparent = new Color(0, 0, 0, 0);
     private Level level;
 
     @SuppressWarnings("unused")
-    private final Random random = new Random();
-    public boolean renderBehaviors = true;
+    private final Random random =
+            //new Random();
+            new XoRoShiRo128PlusRandom(1);
+
+    public boolean renderBehaviors =
+            false;
+            //true;
 
     int width;
     int height;

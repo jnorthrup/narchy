@@ -40,7 +40,7 @@ public class StableBloomFilter<E> implements CountingLeakySet<E> {
         this.rng = rng;
     }
 
-    public int forget(float forget) {
+    protected int forget(float forget) {
         return (int) Math.ceil(numberOfCells * forget);
     }
 
@@ -56,7 +56,7 @@ public class StableBloomFilter<E> implements CountingLeakySet<E> {
         boolean c = contains(hash);
         if (!c) {
             if (unlearnIfNew > 0)
-                unlearn(unlearnIfNew, rng);
+                forget(unlearnIfNew, rng);
             add(hash);
             return true;
         }
@@ -104,8 +104,8 @@ public class StableBloomFilter<E> implements CountingLeakySet<E> {
     }
 
 
-    public void unlearn(float forgetFactor, Random rng) {
-        for (int i = 0; i < Math.round(forget*forgetFactor); i++) {
+    public void forget(float forgetFactor, Random rng) {
+        for (int i = 0; i < Math.ceil(forget*forgetFactor); i++) {
             int index = rng.nextInt(numberOfCells);
             decrement(index);
         }

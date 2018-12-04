@@ -23,7 +23,7 @@ public class AttnDistributor {
     //final MiniPID control = new MiniPID(0.5f, 0.5f, 0.5f);
 
     //v0: bang bang
-    float decay = 0.01f, grow = 0.01f;
+    float decay = 0.01f, grow = 0.01f/2f;
 
     float lastGain = Float.NaN;
 
@@ -97,10 +97,10 @@ public class AttnDistributor {
             else
                 g -= decay;
         } else {
-//            if (g < idealPri)
-//                g -= decay;
-//            else
-//                g += grow;
+            if (g < idealPri)
+                g -= decay;
+            else
+                g += grow;
         }
 
         /*

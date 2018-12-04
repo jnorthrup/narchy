@@ -238,15 +238,22 @@ abstract public class MultiExec extends UniExec {
                         });
 
                         if (valueRateSum[0] > Double.MIN_NORMAL) {
+
+                            float exploration = explorationRate / (n-sleeping);
+
+                            valueRateSum[0] += explorationRate;
+
                             forEach((InstrumentedWork s) -> {
                                 Causable c = (Causable) s.who;
                                 if (MultiExec.this.sleeping.get(c.scheduledID))
                                     return;
 
 
-                                float p = (float) (s.valueRateNormalized / valueRateSum[0]);
+                                //float p = (float) (s.valueRateNormalized / valueRateSum[0]);
+                                float p = (float) ((exploration + s.valueRateNormalized) / valueRateSum[0]);
                                 s.pri(
-                                        Util.lerp(explorationRate, p, 1f/(n- sleeping))
+                                        //Util.lerp(explorationRate, p, 1f/(n- sleeping))
+                                        p
                                 );
                                 //System.out.println(s + " " + c);
                             });
