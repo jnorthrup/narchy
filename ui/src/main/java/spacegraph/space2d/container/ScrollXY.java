@@ -12,11 +12,13 @@ import spacegraph.space2d.container.grid.GridRenderer;
 import spacegraph.space2d.container.grid.ListModel;
 import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.slider.FloatSlider;
+import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.util.math.v2;
 
 import java.util.List;
 import java.util.function.Function;
 
+import static jcog.Util.lerp;
 import static spacegraph.space2d.widget.slider.SliderModel.KnobHoriz;
 import static spacegraph.space2d.widget.slider.SliderModel.KnobVert;
 
@@ -28,14 +30,15 @@ import static spacegraph.space2d.widget.slider.SliderModel.KnobVert;
 public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
 
-    private final S model;
+    public final S content;
 
     /**
      * proportional in scale to bounds
      */
     private static final float defaultScrollEdge = 0.12f;
 
-    private final FloatSlider scrollX, scrollY, scaleW, scaleH;
+    private final FloatSlider scrollX, scrollY;
+    private final XYSlider scale;
 
     /**
      * current view, in local grid coordinate
@@ -56,7 +59,6 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     public ScrollXY(S scrollable) {
         super();
 
-        borderSize(defaultScrollEdge);
 
         scrollable.update(this);
         if (viewMin == null)
@@ -67,68 +69,41 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
             view = RectFloat.WH(viewMax.x, viewMax.y); //TODO max reasonable limit
 
 
-        set(C, new Clipped((Surface) (model = scrollable)));
+        set(C, new Clipped((Surface) (content = scrollable)));
 
         this.scrollX = new FloatProportionalSlider("X", ()->0, ()->view.w/viewMax.x, ()->viewMax.x - view.w, true);
         this.scrollY = new FloatProportionalSlider("Y", ()->0, ()->view.h/viewMax.y, ()->viewMax.y - view.h, false);
-        this.scaleW = new FloatSlider("W",
-                        new FloatSlider.FloatSliderModel() {
 
-                            {
-                                setValue(view.w);
-                            }
-
-                            @Override
-                            public float min() {
-                                return viewMin.x;
-                            }
-
-                            @Override
-                            public float max() {
-                                return viewMax.x;
-                            }
-                        }
-                ).type(KnobHoriz);
-        this.scaleH = new FloatSlider("H",
-                new FloatSlider.FloatSliderModel() {
-
-                    {
-                        setValue(view.h);
-                    }
+        borderSize(defaultScrollEdge);
 
 
-                    @Override
-                    public float min() {
-                        return viewMin.y;
-                    }
+        this.scale = new XYSlider();
+        set(W,scrollX);
+        set(S,scrollY);
+        set(SE, scale);
 
-                    @Override
-                    public float max() {
-                        return viewMax.y;
-                    }
-                }
-        ).type(KnobVert);
-
+        scale.on((w, h)->{
+            scroll(view.x, view.y, lerp(w, viewMin.x, viewMax.x), lerp(h, viewMin.y, viewMax.y));
+        });
         scrollX.on((sx, x) -> scroll(x, view.y, view.w, view.h));
         scrollY.on((sy, y) -> scroll(view.x, y, view.w, view.h));
-        scaleW.on((sx, w) -> scroll(view.x, view.y, w, view.h));
-        scaleH.on((sy, h) -> scroll(view.x, view.y, view.w, h));
+//        scaleW.on((sx, w) -> ));
+//        scaleH.on((sy, h) -> scroll(view.x, view.y, view.w, h));
 
-        set(S, Splitting.row(scrollX, 0.75f, scaleW));
-        set(E, Splitting.column(scrollY, 0.25f, scaleH));
 
+        scale.set(1,1);
 
     }
 
     public ScrollXY<S> viewMax(v2 viewMax) {
         this.viewMax = viewMax;
-        //TODO update if changed
+        layoutModel(); //TODO update if changed
         return this;
     }
 
     public ScrollXY<S> viewMin(v2 viewMin) {
         this.viewMin = viewMin;
-        //TODO update if changed
+        layoutModel(); //TODO update if changed
         return this;
     }
 
@@ -158,12 +133,12 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
     /** manually trigger layout */
     public final void update() {
-        model.update(this);
+        content.update(this);
         layoutModel();
     }
 
     private void layoutModel() {
-        S m = this.model;
+        S m = this.content;
         if (m instanceof Container)
             ((Container)m).layout();
     }
@@ -201,14 +176,17 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         if (xOrY) {
             scrollX.visible(scrollVisible);
             borderSize(S, scrollVisible ? defaultScrollEdge : 0);
-            scaleW.visible(scaleVisible);
+            //scaleW.visible(scaleVisible);
             borderSize(N, scaleVisible ? defaultScrollEdge : 0);
         } else {
             scrollY.visible(scrollVisible);
             borderSize(E, scrollVisible ? defaultScrollEdge : 0);
-            scaleH.visible(scaleVisible);
+            //scaleH.visible(scaleVisible);
             borderSize(W, scaleVisible ? defaultScrollEdge : 0);
         }
+
+        scale.visible(scrollX.visible()||scrollY.visible());
+
         return this;
     }
 
@@ -233,7 +211,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         return view(RectFloat.X0Y0WH(x, y, w, h));
     }
 
-    protected void scroll(float x, float y, float w, float h) {
+    protected synchronized void scroll(float x, float y, float w, float h) {
 
         float x1, x2, y1, y2;
 

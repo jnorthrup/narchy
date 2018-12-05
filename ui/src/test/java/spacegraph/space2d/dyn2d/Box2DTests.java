@@ -1,10 +1,7 @@
 package spacegraph.space2d.dyn2d;
 
 import spacegraph.space2d.dyn2d.fracture.*;
-import spacegraph.space2d.dyn2d.jbox2d.BlobTest4;
-import spacegraph.space2d.dyn2d.jbox2d.ChainTest;
-import spacegraph.space2d.dyn2d.jbox2d.TheoJansenTest;
-import spacegraph.space2d.dyn2d.jbox2d.VerletTest;
+import spacegraph.space2d.dyn2d.jbox2d.*;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.EdgeShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
@@ -24,6 +21,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.function.Consumer;
 
 /**
  * GUI pre testovacie scenare. Ovladanie:
@@ -45,7 +43,7 @@ public class Box2DTests extends JComponent implements Runnable {
     private volatile Point clickedPoint = null;
     private volatile Graphics2D g;
     private volatile boolean running = false;
-    private volatile ICase testCase;
+    private volatile Consumer<Dynamics2D> testCase;
 
     private volatile Body2D ground;
 
@@ -53,7 +51,7 @@ public class Box2DTests extends JComponent implements Runnable {
     /**
      * Pole testovacich scenarov
      */
-    private static final ICase[] cases = new ICase[]{
+    private static final Consumer<Dynamics2D>[] cases = new Consumer[]{
 
             new MainScene(),
 
@@ -71,7 +69,8 @@ public class Box2DTests extends JComponent implements Runnable {
             new BlobTest4(),
             new TheoJansenTest(),
             new ParticlesTest(),
-            new VerletTest()
+            new VerletTest(),
+            new CarTest()
     };
 
 
@@ -259,11 +258,11 @@ public class Box2DTests extends JComponent implements Runnable {
         return new MyThread();
     }
 
-    private void setCase(ICase testcase) {
+    private void setCase(Consumer<Dynamics2D> testcase) {
         w.invoke(() -> {
             this.testCase = testcase;
             initWorld();
-            testCase.init(w);
+            testCase.accept(w);
             repaint();
         });
     }
@@ -554,7 +553,7 @@ public class Box2DTests extends JComponent implements Runnable {
                             }
                             canvas.t = canvas.createThread();
                             canvas.initWorld();
-                            canvas.testCase.init(canvas.w);
+                            canvas.testCase.accept(canvas.w);
                             canvas.t.start();
                             break;
                     }

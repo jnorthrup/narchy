@@ -21,7 +21,9 @@ public class Wire {
 
     protected Wire(Wire copy) {
         this.a = copy.a;
+        this.aTypeHash = copy.aTypeHash;
         this.b = copy.b;
+        this.bTypeHash = copy.bTypeHash;
         this.hash = copy.hash;
     }
 

@@ -88,7 +88,7 @@ public class Fragment extends Polygon {
      * @param j
      */
     private void swap(int i, int j) {
-        v2[] a = this.array;
+        v2[] a = this.vertices;
         v2 item = a[i];
         a[i] = a[j];
         a[j] = item;

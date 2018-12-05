@@ -98,7 +98,9 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
         float borderWest, borderEast, borderNorth, borderSouth;
         int l = length;
         borderWest = autocollapse && !(l > Bordering.W && get(Bordering.W) != null) ? 0 : this.borderWest;
-        borderEast = autocollapse && !(l > Bordering.E && get(Bordering.E) != null) ? 0 : this.borderEast;
+        boolean se = get(Bordering.SE) != null;
+        boolean ne = get(Bordering.NE) != null;
+        borderEast = autocollapse && !(l > Bordering.E && get(Bordering.E) != null || se || ne) ? 0 : this.borderEast;
         borderNorth = autocollapse && !(l > Bordering.N && get(Bordering.N) != null) ? 0 : this.borderNorth;
         borderSouth = autocollapse && !(l > Bordering.S && get(Bordering.S) != null) ? 0 : this.borderSouth;
 
@@ -150,8 +152,14 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
                     break;
                 case SW:
                     x1 = 0;
-                    y1 = 0;
                     x2 = borderWest * w2;
+                    y1 = 0;
+                    y2 = borderSouth * h2;
+                    break;
+                case SE:
+                    x1 = W - borderEast * w2;
+                    x2 = W;
+                    y1 = 0;
                     y2 = borderSouth * h2;
                     break;
                 default:

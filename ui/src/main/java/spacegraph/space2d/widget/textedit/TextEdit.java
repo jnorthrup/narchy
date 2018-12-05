@@ -1,23 +1,46 @@
 package spacegraph.space2d.widget.textedit;
 
-import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
-import jcog.tree.rtree.rect.RectFloat;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.container.unit.UnitContainer;
-import spacegraph.space2d.widget.Widget;
-import spacegraph.space2d.widget.textedit.buffer.*;
 import spacegraph.util.math.v2;
 
+import java.util.function.BiConsumer;
 
-public class TextEdit extends Widget implements ScrollXY.ScrolledXY {
 
-    public final TextEditModel model;
+public class TextEdit extends ScrollXY<TextEditModel>  {
 
-    @Nullable
-    private ScrollXY scroll = null;
+    public final MyTextEditModel model;
+
+
+
+
+
+    @Deprecated public TextEdit() {
+        this(16, 3);
+    }
+
+    public TextEdit(int cols, int rows /*boolean editable*/) {
+        super(new MyTextEditModel());
+
+        v2 initialSize = new v2(cols, rows);
+        viewMin(new v2(1,1));
+        viewMax(initialSize);
+        view(initialSize);
+
+        this.model = (MyTextEditModel) content;
+        updateScroll();
+
+        model.painter = (gl,r)->{
+            model.paint(bounds, view(), model.focused, gl);
+        };
+
+        model.actions = TextEditActions.DEFAULT_ACTIONS;
+        model.keys = TextEditActions.DEFAULT_KEYS;
+
+    }
 
     public TextEdit(String initialText) {
         this();
@@ -27,7 +50,7 @@ public class TextEdit extends Widget implements ScrollXY.ScrolledXY {
 
     public static Appendable out() {
         TextEdit te = new TextEdit();
-        return new AppendableUnitContainer(te.scrolled()
+        return new AppendableUnitContainer(te
                 .viewMin(new v2(8,8))
                 .viewMax(new v2(32,32))
                 .view(8, 8)) {
@@ -52,66 +75,10 @@ public class TextEdit extends Widget implements ScrollXY.ScrolledXY {
         };
     }
 
-    public ScrollXY scrolled() {
-        ScrollXY s = new ScrollXY<>(this);
-
-        model.buffer.addListener(new BufferListener() {
 
 
-            @Override
-            public void update(Buffer buffer) {
 
-            }
 
-            @Override
-            public void updateCursor(CursorPosition cursor) {
-
-            }
-
-            @Override
-            public void addLine(BufferLine bufferLine) {
-
-            }
-
-            @Override
-            public void removeLine(BufferLine bufferLine) {
-
-            }
-
-            @Override
-            public void moveChar(BufferLine fromLine, BufferLine toLine, BufferChar c) {
-
-            }
-        });
-        return s;
-    }
-
-    public static TextEditModel defaultModel() {
-        TextEditModel e = new TextEditModel();
-        e.actions = TextEditActions.DEFAULT_ACTIONS;
-        e.keys = TextEditActions.DEFAULT_KEYS;
-        return e;
-    }
-
-    public TextEdit() {
-        this(defaultModel());
-    }
-
-    public TextEdit(TextEditModel editor) {
-        this.model = editor;
-    }
-
-    @Override
-    protected final void paintWidget(RectFloat bounds, GL2 gl) {
-        ScrollXY s = this.scroll;
-        model.paint(bounds, s != null ? s.view() : RectFloat.X0Y0WH(0, 0, model.buffer.width(), model.buffer.height()), focused, gl);
-    }
-
-    @Override
-    public final boolean key(KeyEvent e, boolean pressedOrReleased) {
-        //TODO anything from super.key(..) ?
-        return model.keys.key(e, pressedOrReleased, model);
-    }
 
     public void append(String text) {
         model.buffer().insert(text);
@@ -125,16 +92,13 @@ public class TextEdit extends Widget implements ScrollXY.ScrolledXY {
         return model.buffer().text();
     }
 
-    @Override
-    public void update(ScrollXY s) {
-        this.scroll = s;
-        s.viewMin(new v2(1, 1));
-        updateScroll();
-        s.view(0, 0, Math.min(model.buffer.width(), 80), Math.min(model.buffer.height(), 20));
+    private void updateScroll() {
+        viewMax(new v2(model.buffer.width(), model.buffer.height()));
     }
 
-    private void updateScroll() {
-        scroll.viewMax(new v2(model.buffer.width(), model.buffer.height()));
+    public TextEdit focus() {
+        model.focus();
+        return this;
     }
 
     public abstract static class AppendableUnitContainer<S extends Surface> extends UnitContainer<S> implements Appendable {
@@ -145,4 +109,12 @@ public class TextEdit extends Widget implements ScrollXY.ScrolledXY {
 
     }
 
+    private static class MyTextEditModel extends TextEditModel {
+        public BiConsumer<GL2,SurfaceRender> painter = null;
+        @Override
+        protected void paintIt(GL2 gl, SurfaceRender rr) {
+            super.paintIt(gl, rr);
+            painter.accept(gl, rr);
+        }
+    }
 }

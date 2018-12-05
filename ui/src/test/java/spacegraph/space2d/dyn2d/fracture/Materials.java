@@ -1,11 +1,12 @@
 package spacegraph.space2d.dyn2d.fracture;
 
-import spacegraph.space2d.dyn2d.ICase;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.fracture.Material;
 import spacegraph.util.math.v2;
+
+import java.util.function.Consumer;
 
 /**
  * Testovaci scenar, ktory umoznuje testovanie materialov. Podla parametra sa
@@ -14,7 +15,7 @@ import spacegraph.util.math.v2;
  *
  * @author Marek Benovic
  */
-public class Materials implements ICase {
+public class Materials implements Consumer<Dynamics2D> {
     private final Material material;
 
     /**
@@ -27,7 +28,7 @@ public class Materials implements ICase {
     }
 
     @Override
-    public void init(Dynamics2D w) {
+    public void accept(Dynamics2D w) {
         {
             BodyDef bodyDef2 = new BodyDef();
             bodyDef2.type = BodyType.DYNAMIC;

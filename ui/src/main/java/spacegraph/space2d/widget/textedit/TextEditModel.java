@@ -1,13 +1,17 @@
 package spacegraph.space2d.widget.textedit;
 
+import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat;
+import spacegraph.space2d.container.ScrollXY;
+import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.textedit.buffer.Buffer;
 import spacegraph.space2d.widget.textedit.keybind.TextEditKeys;
 import spacegraph.space2d.widget.textedit.view.TextEditView;
+import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
 
-public final class TextEditModel  {
+public class TextEditModel extends Widget implements ScrollXY.ScrolledXY{
 
 
     /** current buffer */
@@ -31,6 +35,28 @@ public final class TextEditModel  {
             buffer = buf;
             view = new TextEditView(buf);
         }
+    }
+    @Override
+    public final boolean key(KeyEvent e, boolean pressedOrReleased) {
+        //TODO anything from super.key(..) ?
+        return keys.key(e, pressedOrReleased, this);
+    }
+
+
+
+    @Override
+    public void update(ScrollXY s) {
+
+        s.viewMin(new v2(1, 1));
+        int w = Math.max(1, Math.min(buffer.width(), 80));
+        int h = Math.max(1, Math.min(buffer.height(), 20));
+        s.viewMax(new v2(w, h));
+        s.view(0, 0, w, h);
+    }
+
+    @Override
+    protected final void paintWidget(RectFloat bounds, GL2 gl) {
+
     }
 
     public void execute(String name, String... args) {

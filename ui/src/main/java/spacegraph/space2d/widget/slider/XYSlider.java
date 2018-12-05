@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.slider;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.math.FloatRange;
+import jcog.pri.ScalarValue;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerDragging;
@@ -145,7 +146,8 @@ public class XYSlider extends Surface {
     }
 
     public XYSlider set(float x, float y) {
-        knob.set(x, y);
+        if (knob.setIfChanged(x, y, ScalarValue.EPSILON))
+            updated();
         return this;
     }
 }

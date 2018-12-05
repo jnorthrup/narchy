@@ -1,19 +1,20 @@
 package spacegraph.space2d.dyn2d.jbox2d;
 
-import spacegraph.space2d.dyn2d.ICase;
 import spacegraph.space2d.phys.collision.shapes.EdgeShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.dynamics.joints.RevoluteJointDef;
 import spacegraph.util.math.v2;
 
+import java.util.function.Consumer;
+
 /**
  * @author Daniel Murphy
  */
-public class ChainTest implements ICase {
+public class ChainTest implements Consumer<Dynamics2D> {
 
     @Override
-    public void init(Dynamics2D w) {
+    public void accept(Dynamics2D w) {
 
 
         Body2D ground = null;

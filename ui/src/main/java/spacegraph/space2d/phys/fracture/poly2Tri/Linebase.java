@@ -48,13 +48,13 @@ public class Linebase implements SplayTreeItem {
         _type = iType;
     }
 
-    public Linebase(Linebase line) {
-        this._id = line._id;
-        this._endp[0] = line._endp[0];
-        this._endp[1] = line._endp[1];
-        this._key = line._key;
-        this._helper = line._helper;
-    }
+//    public Linebase(Linebase line) {
+//        this._id = line._id;
+//        this._endp[0] = line._endp[0];
+//        this._endp[1] = line._endp[1];
+//        this._key = line._key;
+//        this._helper = line._helper;
+//    }
 
     public int id() {
         return _id;

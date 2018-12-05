@@ -1,6 +1,5 @@
 package spacegraph.space2d.dyn2d.jbox2d;
 
-import spacegraph.space2d.dyn2d.ICase;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.EdgeShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
@@ -12,7 +11,9 @@ import spacegraph.space2d.phys.dynamics.joints.RevoluteJoint;
 import spacegraph.space2d.phys.dynamics.joints.RevoluteJointDef;
 import spacegraph.util.math.v2;
 
-public class TheoJansenTest implements ICase {
+import java.util.function.Consumer;
+
+public class TheoJansenTest implements Consumer<Dynamics2D> {
     private static final long CHASSIS_TAG = 1;
     private static final long WHEEL_TAG = 2;
     private static final long MOTOR_TAG = 8;
@@ -63,7 +64,7 @@ public class TheoJansenTest implements ICase {
 
 
     @Override
-    public void init(Dynamics2D w) {
+    public void accept(Dynamics2D w) {
 
         this.w = w;
         

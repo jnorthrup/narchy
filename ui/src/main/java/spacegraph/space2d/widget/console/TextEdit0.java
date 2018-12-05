@@ -22,7 +22,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-public class TextEdit0 extends ConsoleGUI {
+@Deprecated public class TextEdit0 extends ConsoleGUI {
 
     private static final float DEFAULT_ALPHA = 0.9f;
 

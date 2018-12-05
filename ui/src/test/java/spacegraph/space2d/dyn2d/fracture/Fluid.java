@@ -1,6 +1,5 @@
 package spacegraph.space2d.dyn2d.fracture;
 
-import spacegraph.space2d.dyn2d.ICase;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.dynamics.*;
@@ -9,14 +8,16 @@ import spacegraph.space2d.phys.fracture.materials.Diffusion;
 import spacegraph.space2d.phys.particle.ParticleGroupDef;
 import spacegraph.util.math.v2;
 
+import java.util.function.Consumer;
+
 /**
  * Testovaci scenar
  *
  * @author Marek Benovic
  */
-public class Fluid implements ICase {
+public class Fluid implements Consumer<Dynamics2D> {
     @Override
-    public void init(Dynamics2D w) {
+    public void accept(Dynamics2D w) {
         {
             BodyDef bodyDef2 = new BodyDef();
             bodyDef2.type = BodyType.DYNAMIC;

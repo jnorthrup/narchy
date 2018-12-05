@@ -38,8 +38,8 @@ public class PolygonFixture extends Polygon {
      * @param pg
      */
     PolygonFixture(Polygon pg) {
-        array = pg.getArray();
-        count = pg.size();
+        vertices = pg.vertices();
+        vertexCount = pg.size();
     }
 
     /**

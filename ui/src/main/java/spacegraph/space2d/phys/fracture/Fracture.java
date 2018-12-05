@@ -184,7 +184,7 @@ public final class Fracture {
                         Body2D f_body = w.addBody(bodyDef);
                         pgx.flip();
                         PolygonShape ps = new PolygonShape();
-                        ps.set(pgx.getArray(), pgx.size());
+                        ps.set(pgx.vertices(), pgx.size());
                         fd.shape = ps;
                         fd.polygon = null;
                         fd.material = f1.material;

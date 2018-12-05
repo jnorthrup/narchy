@@ -1,6 +1,5 @@
 package spacegraph.space2d.dyn2d.jbox2d;
 
-import spacegraph.space2d.dyn2d.ICase;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.common.MathUtils;
@@ -8,10 +7,12 @@ import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.dynamics.joints.ConstantVolumeJointDef;
 import spacegraph.util.math.v2;
 
-public class BlobTest4 implements ICase {
+import java.util.function.Consumer;
+
+public class BlobTest4 implements Consumer<Dynamics2D> {
 
   @Override
-  public void init(Dynamics2D w) {
+  public void accept(Dynamics2D w) {
     
     
 

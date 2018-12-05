@@ -12,9 +12,11 @@ import spacegraph.space2d.phys.particle.ParticleGroupDef;
 import spacegraph.space2d.phys.particle.ParticleType;
 import spacegraph.util.math.v2;
 
-public class ParticlesTest implements ICase {
+import java.util.function.Consumer;
+
+public class ParticlesTest implements Consumer<Dynamics2D> {
     @Override
-    public void init(Dynamics2D m_world) {
+    public void accept(Dynamics2D m_world) {
 
         Body2D ground = m_world.bodies().iterator().next(); 
         

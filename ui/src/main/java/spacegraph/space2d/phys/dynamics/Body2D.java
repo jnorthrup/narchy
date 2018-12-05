@@ -308,7 +308,7 @@ public class Body2D extends Transform {
         for (Polygon p : convex) {
             p.flip();
             PolygonShape ps = new PolygonShape();
-            ps.set(p.getArray(), p.size());
+            ps.set(p.vertices(), p.size());
             def.shape = ps;
             polygon.fixtureList.add(addFixture(def));
         }

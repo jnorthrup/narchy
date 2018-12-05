@@ -41,7 +41,7 @@ import spacegraph.util.math.v2;
  *
  * @author Daniel Murphy
  */
-class WheelJointDef extends JointDef {
+public class WheelJointDef extends JointDef {
 
     /**
      * The local anchor point relative to body1's origin.
@@ -61,17 +61,17 @@ class WheelJointDef extends JointDef {
     /**
      * Enable/disable the joint motor.
      */
-    public final boolean enableMotor;
+    public boolean enableMotor;
 
     /**
      * The maximum motor torque, usually in N-m.
      */
-    public final float maxMotorTorque;
+    public float maxMotorTorque;
 
     /**
      * The desired motor speed in radians per second.
      */
-    public final float motorSpeed;
+    public float motorSpeed;
 
     /**
      * Suspension frequency, zero indicates no suspension

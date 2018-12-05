@@ -30,7 +30,6 @@ package spacegraph.space2d.dyn2d.jbox2d;
  */
 
 import jcog.data.list.FasterList;
-import spacegraph.space2d.dyn2d.ICase;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.dynamics.joints.RopeJoint;
@@ -38,11 +37,12 @@ import spacegraph.space2d.phys.dynamics.joints.RopeJointDef;
 import spacegraph.util.math.v2;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static java.lang.Math.sqrt;
 import static jcog.Util.sqr;
 
-public class VerletTest implements ICase {
+public class VerletTest implements Consumer<Dynamics2D> {
 
     int DIM=4;
     int REST_LENGTH=3;
@@ -50,7 +50,7 @@ public class VerletTest implements ICase {
     float INNER_STRENGTH = 0.013f;
 
     @Override
-    public void init(Dynamics2D w) {
+    public void accept(Dynamics2D w) {
         
         
         List<Body2D> particles = new FasterList();

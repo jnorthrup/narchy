@@ -34,8 +34,8 @@ public class OBBViewportTransform implements IViewportTransform {
 
     protected static class OBB {
         final Mat22 R = new Mat22();
-        final v2 center = new Vec2();
-        final v2 extents = new Vec2();
+        final v2 center = new v2();
+        final v2 extents = new v2();
     }
 
     private final OBB box = new OBB();

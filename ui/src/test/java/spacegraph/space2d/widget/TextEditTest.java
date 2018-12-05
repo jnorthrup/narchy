@@ -40,7 +40,7 @@ public class TextEditTest  {
             TextEdit b = new TextEdit("?");
             Bordering x = new Bordering(
                     new Gridding(
-                        new TextEdit(lorum).scrolled(),
+                        new TextEdit(lorum),
                         b
                     )
             ).set(S, new Gridding(

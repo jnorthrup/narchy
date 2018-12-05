@@ -31,7 +31,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
      */
     protected float dz = 0;
 
-    protected boolean focused;
+    public boolean focused;
 
     /**
      * indicates current level of activity of this component, which can be raised by various

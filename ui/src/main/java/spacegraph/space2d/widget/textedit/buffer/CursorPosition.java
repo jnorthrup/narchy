@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.textedit.buffer;
 
 public class CursorPosition implements Comparable<CursorPosition> {
-  private volatile int col, row;
+  private int col, row;
 
   public CursorPosition(int row, int col) {
     this.row = row;

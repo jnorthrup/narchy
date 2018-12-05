@@ -47,7 +47,7 @@ public class ConsoleTerminal extends Widget implements Appendable, KeyPressed {
 
             @Override
             public void flush() {
-                flush();
+                //ConsoleTerminal.this.flush();
             }
         };
     }

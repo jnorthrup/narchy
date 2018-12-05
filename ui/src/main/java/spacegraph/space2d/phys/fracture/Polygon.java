@@ -22,12 +22,12 @@ public class Polygon implements Iterable<v2>, Cloneable {
     /**
      * Pole vrcholov.
      */
-    v2[] array;
+    v2[] vertices;
 
     /**
      * Pocet vrcholov.
      */
-    int count;
+    int vertexCount;
 
     /**
      * Vytvori prazdny polygon bez vrcholov. Polygon moze byt konvexny,
@@ -37,8 +37,8 @@ public class Polygon implements Iterable<v2>, Cloneable {
         this(8);
     }
     public Polygon(int capacity) {
-        array = new v2[capacity];
-        count = 0;
+        vertices = new v2[capacity];
+        vertexCount = 0;
     }
 
     /**
@@ -48,8 +48,8 @@ public class Polygon implements Iterable<v2>, Cloneable {
      * @param va Vstupne vrcholy.
      */
     Polygon(v2[] va) {
-        array = va;
-        count = va.length;
+        vertices = va;
+        vertexCount = va.length;
     }
 
     /**
@@ -60,8 +60,8 @@ public class Polygon implements Iterable<v2>, Cloneable {
      * @param n  Pocet aktivnych vrcholov
      */
     private Polygon(v2[] va, int n) {
-        array = va;
-        count = n;
+        vertices = va;
+        vertexCount = n;
     }
 
     /**
@@ -81,12 +81,12 @@ public class Polygon implements Iterable<v2>, Cloneable {
      * @param v Pridavany vrchol
      */
     public void add(v2 v) {
-        if (array.length == count) {
-            v2[] newArray = new v2[count * 2];
-            System.arraycopy(array, 0, newArray, 0, count);
-            array = newArray;
+        if (vertices.length == vertexCount) {
+            v2[] newArray = new v2[vertexCount * 2];
+            System.arraycopy(vertices, 0, newArray, 0, vertexCount);
+            vertices = newArray;
         }
-        array[count++] = v;
+        vertices[vertexCount++] = v;
     }
 
     /**
@@ -94,14 +94,14 @@ public class Polygon implements Iterable<v2>, Cloneable {
      * @return Vrati prvok na danom mieste
      */
     public v2 get(int index) {
-        return array[index];
+        return vertices[index];
     }
 
     /**
      * @return Vrati pocet prvkov
      */
     public int size() {
-        return count;
+        return vertexCount;
     }
 
     /**
@@ -109,7 +109,7 @@ public class Polygon implements Iterable<v2>, Cloneable {
      * @return Vrati vrchol podla poradia s osetrenim pretecenia.
      */
     public v2 cycleGet(int index) {
-        return get(index % count);
+        return get(index % vertexCount);
     }
 
     /**
@@ -117,8 +117,8 @@ public class Polygon implements Iterable<v2>, Cloneable {
      * preto pri iterovani treba brat pocet cez funkciu size a nie
      * cez array.length.
      */
-    public v2[] getArray() {
-        return array;
+    public v2[] vertices() {
+        return vertices;
     }
 
     /**
@@ -133,7 +133,7 @@ public class Polygon implements Iterable<v2>, Cloneable {
         int i, j;
         boolean c = false;
         v2 v = new v2();
-        for (i = 0, j = count - 1; i < count; j = i++) {
+        for (i = 0, j = vertexCount - 1; i < vertexCount; j = i++) {
             v2 a = get(i);
             v2 b = get(j);
             v.set(b);
@@ -150,9 +150,9 @@ public class Polygon implements Iterable<v2>, Cloneable {
      */
     private double mass() {
         double m = 0;
-        for (int i = 0, j = 1; i != count; i = j, j++) {
+        for (int i = 0, j = 1; i != vertexCount; i = j, j++) {
             v2 b1 = get(i);
-            v2 b2 = get(j == count ? 0 : j);
+            v2 b2 = get(j == vertexCount ? 0 : j);
             m += v2.cross(b1, b2);
         }
         m = Math.abs(m / 2);
@@ -166,9 +166,9 @@ public class Polygon implements Iterable<v2>, Cloneable {
         v2 C = new v2();
         double m = 0;
         v2 g = new v2();
-        for (int i = 0, j = 1; i != count; i = j, j++) {
+        for (int i = 0, j = 1; i != vertexCount; i = j, j++) {
             v2 b1 = get(i);
-            v2 b2 = get(j == count ? 0 : j);
+            v2 b2 = get(j == vertexCount ? 0 : j);
             float s = v2.cross(b1, b2);
             m += s;
             g.set(b1);
@@ -185,7 +185,7 @@ public class Polygon implements Iterable<v2>, Cloneable {
      */
     private double radius() {
         double ln = Float.NEGATIVE_INFINITY;
-        for (int i = 0; i < count; ++i) {
+        for (int i = 0; i < vertexCount; ++i) {
             ln = Math.max(get(i).distanceSq(cycleGet(i + 1)), ln);
         }
         return Math.sqrt(ln);
@@ -206,14 +206,14 @@ public class Polygon implements Iterable<v2>, Cloneable {
      */
     public AABB getAABB() {
 
-        if (count == 0) {
+        if (vertexCount == 0) {
             return null;
         } else {
             float minX = Float.POSITIVE_INFINITY;
             float minY = Float.POSITIVE_INFINITY;
             float maxX = Float.NEGATIVE_INFINITY;
             float maxY = Float.NEGATIVE_INFINITY;
-            for (int i = 0; i < count; ++i) {
+            for (int i = 0; i < vertexCount; ++i) {
                 v2 v = get(i);
                 minX = Math.min(v.x, minX);
                 maxX = Math.max(v.x, maxX);
@@ -236,12 +236,12 @@ public class Polygon implements Iterable<v2>, Cloneable {
         }
 
         
-        v2[] reverseArray = new v2[count];
-        for (int i = 0; i < count; ++i) {
-            reverseArray[i] = get(count - i - 1);
+        v2[] reverseArray = new v2[vertexCount];
+        for (int i = 0; i < vertexCount; ++i) {
+            reverseArray[i] = get(vertexCount - i - 1);
         }
 
-        ArrayList<int[]> triangles = Triangulation.triangulate(reverseArray, count);
+        ArrayList<int[]> triangles = Triangulation.triangulate(reverseArray, vertexCount);
 
         int c = triangles.size();
 
@@ -265,10 +265,10 @@ public class Polygon implements Iterable<v2>, Cloneable {
         int size = size();
         int n = size() >> 1;
         for (int i = 0; i < n; i++) {
-            temp = array[i];
+            temp = vertices[i];
             int j = size - 1 - i;
-            array[i] = array[j];
-            array[j] = temp;
+            vertices[i] = vertices[j];
+            vertices[j] = temp;
         }
     }
 
@@ -276,14 +276,14 @@ public class Polygon implements Iterable<v2>, Cloneable {
      * @return Vrati true, pokial je polygon konvexny a pocet vrcholov je maxPolygonVertices
      */
     private boolean isSystemPolygon() {
-        return isConvex() && count <= Settings.maxPolygonVertices;
+        return isConvex() && vertexCount <= Settings.maxPolygonVertices;
     }
 
     /**
      * @return Vrati true, pokial je polygon konvexny.
      */
     private boolean isConvex() {
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < vertexCount; i++) {
             v2 a = get(i);
             v2 b = cycleGet(i + 1);
             v2 c = cycleGet(i + 2);
@@ -318,9 +318,9 @@ public class Polygon implements Iterable<v2>, Cloneable {
      */
     @Override
     public Polygon clone() {
-        v2[] newArray = new v2[count];
-        int newCount = count;
-        System.arraycopy(array, 0, newArray, 0, count);
+        v2[] newArray = new v2[vertexCount];
+        int newCount = vertexCount;
+        System.arraycopy(vertices, 0, newArray, 0, vertexCount);
         return new Polygon(newArray, newCount);
     }
 
@@ -345,7 +345,7 @@ public class Polygon implements Iterable<v2>, Cloneable {
 
         @Override
         public boolean hasNext() {
-            return index < count;
+            return index < vertexCount;
         }
 
         @Override

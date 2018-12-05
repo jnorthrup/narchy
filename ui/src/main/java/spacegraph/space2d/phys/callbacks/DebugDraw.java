@@ -28,10 +28,8 @@
  */
 package spacegraph.space2d.phys.callbacks;
 
-import spacegraph.space2d.phys.common.Color3f;
-import spacegraph.space2d.phys.common.IViewportTransform;
-import spacegraph.space2d.phys.common.Transform;
-import spacegraph.space2d.phys.common.Vec2;
+import spacegraph.space2d.phys.common.*;
+import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.particle.ParticleColor;
 import spacegraph.util.math.v2;
 
@@ -60,18 +58,19 @@ public abstract class DebugDraw {
 
 
     private int m_drawFlags;
-    private IViewportTransform viewportTransform;
+    protected IViewportTransform viewportTransform = new OBBViewportTransform();
+
 
     public DebugDraw() {
-        this(null);
+        m_drawFlags = 0;
     }
 
     private DebugDraw(IViewportTransform viewport) {
-        m_drawFlags = 0;
+        this();
         viewportTransform = viewport;
     }
 
-    public void setViewportTransform(IViewportTransform viewportTransform) {
+    public void view(IViewportTransform viewportTransform) {
         this.viewportTransform = viewportTransform;
     }
 
@@ -119,11 +118,14 @@ public abstract class DebugDraw {
     /**
      * Draw a solid closed polygon provided in CCW order.
      *
+     * @param center
      * @param vertices
      * @param vertexCount
      * @param color
      */
-    public abstract void drawSolidPolygon(v2[] vertices, int vertexCount, Color3f color);
+
+
+    public abstract void drawSolidPolygon(Body2D b, v2[] vertices, int vertexCount, Color3f color);
 
     /**
      * Draw a circle.
