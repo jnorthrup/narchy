@@ -19,6 +19,10 @@ public class ZoomOrtho extends Ortho {
 
     @Override
     public Surface finger(Finger finger) {
+        Surface f = super.finger(finger);
+        if (f!=null)
+            return f;
+
         //absorb remaining rotationY
         float zoomRate = 0.5f;
 
@@ -39,7 +43,7 @@ public class ZoomOrtho extends Ortho {
             }
         }
 
-        return super.finger(finger);
+        return null;
     }
 
     private final Fingering fingerContentPan = new FingerMovePixels(PAN_BUTTON) {

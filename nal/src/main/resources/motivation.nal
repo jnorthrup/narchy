@@ -61,11 +61,11 @@
     //(S-->A), (S-->B)  |- (polarize((S-->A),task) ==> (S-->B)), (Punctuation:Ask)
 
 //impl expansion
-    (A ==> B), B, task(".")      |- ((A && ?1) ==> B), (Punctuation:Question, Time:Task)
-    (A ==> B), A, task(".")      |- (polarize(A,belief) ==> (B && ?1)), (Punctuation:Question, Time:Task)
-     (A ==> B), A, task(".")      |- (polarize(A,belief) ==> (--B && ?1)), (Punctuation:Question, Time:Task)
-      (--A ==> B), A, task(".")  |- (--polarize(A,belief) ==> (B && ?1)), (Punctuation:Question, Time:Task)
-       (--A ==> B), A, task(".")  |- (--polarize(A,belief) ==> (--B && ?1)), (Punctuation:Question, Time:Task)
+//    (A ==> B), B, task(".")      |- ((A && ?1) ==> B), (Punctuation:Question, Time:Task)
+//    (A ==> B), A, task(".")      |- (polarize(A,belief) ==> (B && ?1)), (Punctuation:Question, Time:Task)
+//     (A ==> B), A, task(".")      |- (polarize(A,belief) ==> (--B && ?1)), (Punctuation:Question, Time:Task)
+//      (--A ==> B), A, task(".")  |- (--polarize(A,belief) ==> (B && ?1)), (Punctuation:Question, Time:Task)
+//       (--A ==> B), A, task(".")  |- (--polarize(A,belief) ==> (--B && ?1)), (Punctuation:Question, Time:Task)
 
 //--
 

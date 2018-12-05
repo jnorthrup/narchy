@@ -6,11 +6,11 @@ import java.util.Map;
  * Created by unkei on 2017/04/25.
  */
 public class OsmNode extends OsmElement {
-    public final GeoCoordinate geoCoordinate;
+    public final GeoVec3 pos;
 
-    public OsmNode(long id, GeoCoordinate geoCoordinate, Map<String, String> tags) {
+    public OsmNode(long id, GeoVec3 pos, Map<String, String> tags) {
         super(id, null, tags);
-        this.geoCoordinate = geoCoordinate;
+        this.pos = pos;
     }
 
     

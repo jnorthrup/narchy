@@ -123,8 +123,8 @@ public class NARS {
 
                 n.beliefPriDefault.set(0.5f);
                 n.goalPriDefault.set(0.5f);
-                n.questionPriDefault.set(0.5f);
-                n.questPriDefault.set(0.5f);
+                n.questionPriDefault.set(0.45f);
+                n.questPriDefault.set(0.45f);
 
 
             });
@@ -191,7 +191,7 @@ public class NARS {
                         ),
                         //tasklinks
                         curve(Concept::volume,
-                                1, 64,
+                                1, 48,
                                 24,32,
                                 48,8
                         ))

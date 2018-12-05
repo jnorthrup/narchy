@@ -192,7 +192,7 @@ abstract public class NAgentX extends NAgent {
 
 
         //Param.STRONG_COMPOSITION = true;
-        Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
+//        Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
         RealTime clock =
@@ -208,7 +208,7 @@ abstract public class NAgentX extends NAgent {
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
-                        new Revaluator.DefaultRevaluator(0.1f),
+                        new Revaluator.DefaultRevaluator(0.05f),
                         //new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
 
                         threads <= 0 ? Util.concurrencyExcept(2) : threads, true /* affinity */))

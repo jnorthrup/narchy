@@ -966,8 +966,8 @@ public class Occurrify extends TimeGraph {
                         long deltaT = Math.abs(target - o[0]); //project from end, closer to now if fully in the past
                         float eStartFactor = Param.evi(1, deltaT, d.dur);
                         if (!d.concTruthEviMul(eStartFactor, Param.ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION)) {
-                            //return null; //insufficient evidence
-                            return p; //un-shifted
+                            return null; //insufficient evidence
+                            //return p; //un-shifted
                         }
 //                    }
 

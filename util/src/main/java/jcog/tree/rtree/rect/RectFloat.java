@@ -197,6 +197,11 @@ public class RectFloat implements HyperRegion<Float2D>, Comparable<RectFloat> {
 
 
     @Override
+    public int hashCode() {
+        return Util.hashCombine(Util.hashCombine(Float.hashCode(x), Float.hashCode(y)), Util.hashCombine(Float.hashCode(w), Float.hashCode(h)));
+    }
+
+    @Override
     public boolean equals(Object o) {
         return equals(o, (float) EPSILON);
     }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.jogamp.opengl.GL2;
-import jcog.User;
 import jcog.Util;
 import jcog.io.Grok;
 import jcog.net.UDPeer;
@@ -17,7 +16,6 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.util.geo.IRL;
 import spacegraph.video.Draw;
 
 import java.io.IOException;
@@ -119,9 +117,9 @@ public class SpaceLog {
 
     protected void gui() {
 
-
-        IRL i = new IRL(User.the());
-        i.load(-80.65, 28.58, -80.60, 28.63);
+//
+//        IRL i = new IRL(User.the());
+//        i.load(-80.65, 28.58, -80.60, 28.63);
 
         //Surface space = new OsmSpace(i.osm).surface();
 
