@@ -15,10 +15,9 @@ import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
-import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.button.CheckBox;
+import spacegraph.space2d.widget.button.EnumSwitch;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.IntSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
@@ -27,7 +26,6 @@ import spacegraph.video.Draw;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -83,7 +81,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         builder.on(Runnable.class, (x,relation)-> new PushButton(relationLabel(relation), (Runnable) x));
         builder.on(AtomicBoolean.class, (x,relation) -> new MyAtomicBooleanCheckBox(relationLabel(relation), (AtomicBoolean) x));
 
-        builder.on(MutableEnum.class, (x, relation) -> newSwitch((MutableEnum) x, relationLabel(relation)));
+        builder.on(MutableEnum.class, (x, relation) -> EnumSwitch.newSwitch((MutableEnum) x, relationLabel(relation)));
         builder.on(IntRange.class,  (x, relation) -> !(x instanceof MutableEnum) ? new MyIntSlider((IntRange) x, relationLabel(relation)) : null);
 
         builder.on(Collection.class, (x, relation) -> {
@@ -170,49 +168,6 @@ public class ObjectSurface<X> extends MutableUnitContainer {
 //        }
 //
 //
-
-
-
-
-    private <C extends Enum<C>> Surface newSwitch(MutableEnum x, String label) {
-        EnumSet<C> s = EnumSet.allOf(x.klass);
-
-        Enum initialValue = x.get();
-        int initialButton = -1;
-
-        ToggleButton[] b = new ToggleButton[s.size()];
-        int i = 0;
-        for (C xx : s) {
-            CheckBox tb = new CheckBox(xx.name());
-            tb.on((c, enabled) -> {
-                if (enabled)
-                    x.set(xx);
-            });
-            if (xx == initialValue)
-                initialButton = i;
-            b[i] = tb;
-            i++;
-        }
-
-
-//JDK12 compiler error has trouble with this:
-//        ToggleButton[] b = ((EnumSet) EnumSet.allOf(x.klass)).stream().map(e -> {
-//            CheckBox tb = new CheckBox(e.name());
-//            tb.on((c, enabled) -> {
-//                if (enabled)
-//                    x.set(e);
-//            });
-//            return tb;
-//        }).toArray(ToggleButton[]::new);
-//
-        ButtonSet bs = new ButtonSet(ButtonSet.Mode.One, b);
-
-        if (initialButton != -1) {
-            b[initialButton].on(true);
-        }
-
-        return new LabeledPane(label, bs);
-    }
 
 
     public static class ObjectMetaFrame extends MetaFrame {

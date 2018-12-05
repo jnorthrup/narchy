@@ -20,6 +20,7 @@ import nars.index.concept.CaffeineIndex;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.task.DerivedTask;
+import nars.term.Term;
 import nars.time.clock.CycleTime;
 import nars.video.VectorSensorView;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -40,24 +41,25 @@ import static spacegraph.SpaceGraph.window;
 
 public class TrackXY_NAR extends NAgentX {
 
-    public static final int derivationStrength = 32;
     static boolean
             nars = true, rl = !nars,
-            sourceNumerics = true, targetNumerics = false,
+            sourceNumerics = true,
+            targetNumerics = false,
             targetCam = true,
             gui = true;
     static int
-            W = 4, H = 4;
+            W = 8, H = 8;
             //W = 3, H = 1;
             //W = 5, H = 1;
-    static int dur = 7;
+    public static final int derivationStrength = 8;
+    static int dur = 8;
     static float camResolution = 0.1f;
     static int volMax = 9;
     final Bitmap2DSensor cam;
     private final TrackXY track;
 
     private float rewardSum = 0;
-    static int experimentTime = 20000;
+    static int experimentTime = 30000;
 
 
     final public AtomicBoolean trainer = new AtomicBoolean(false);
@@ -78,20 +80,20 @@ public class TrackXY_NAR extends NAgentX {
         assert(sourceNumerics | targetNumerics | targetCam);
 
         if (sourceNumerics) {
-            senseNumber($.inh("sx", id), new FloatNormalized(() -> track.cx, 0, W));
+            senseNumber($.the("sx"), new FloatNormalized(() -> track.cx, 0, W));
             if (H > 1)
-                senseNumber($.inh("sy", id), new FloatNormalized(() -> track.cy, 0, H));
+                senseNumber($.the("sy"), new FloatNormalized(() -> track.cy, 0, H));
         }
 
 
         if (targetNumerics) {
-            senseNumber($.inh("tx", id), new FloatNormalized(() -> track.tx, 0, W));
+            senseNumber($.the("tx"), new FloatNormalized(() -> track.tx, 0, W));
             if (H > 1)
-                senseNumber($.inh("ty", id), new FloatNormalized(() -> track.ty, 0, H));
+                senseNumber($.the("ty"), new FloatNormalized(() -> track.ty, 0, H));
         }
 
         if (targetCam) {
-            this.cam = addCamera(new Bitmap2DSensor<>(id /* (Term) null*/, track.grid, nar));
+            this.cam = addCamera(new Bitmap2DSensor<>(/*id*/  (Term) null, track.grid, nar));
             cam.resolution(camResolution);
         } else {
             this.cam = null;
@@ -109,7 +111,7 @@ public class TrackXY_NAR extends NAgentX {
                 track.act();
             });
         } else {
-            rewardNormalized("reward", -1, 1, () -> {
+            rewardNormalized($.the("good"), -1, 1, () -> {
                 float r = track.act();
                 if (r == r)
                     rewardSum += r;
@@ -250,10 +252,10 @@ public class TrackXY_NAR extends NAgentX {
 
 
             new STMLinkage(n, 1) {
-                @Override
-                public boolean keep(Task newEvent) {
-                    return newEvent.isGoal();
-                }
+//                @Override
+//                public boolean keep(Task newEvent) {
+//                    return newEvent.isGoal();
+//                }
             };
 
 //            ConjClustering cjB = new ConjClustering(n, BELIEF,
@@ -274,6 +276,19 @@ public class TrackXY_NAR extends NAgentX {
             n.onTask(tt -> {
                 if (tt instanceof DerivedTask && tt.isGoal()) {
                     System.out.println(tt.proof());
+//                    Term ttt = tt.term();
+//                    if (tt.expectation() > 0.5f && tt.start() > n.time()-n.dur() && tt.start() < n.time() + n.dur()) {
+//                        boolean l = ttt.toString().equals("left");
+//                        boolean r = ttt.toString().equals("right");
+//                        if (l || r) {
+//
+//                            float wantsDir = l ? -1 : +1;
+//                            float needsDir = a.track.tx - a.track.cx;
+//
+//                            String summary = (Math.signum(wantsDir)==Math.signum(needsDir)) ? "OK" : "WRONG";
+//                            System.err.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
+//                        }
+//                    }
                 }
             }, GOAL);
 
@@ -282,10 +297,7 @@ public class TrackXY_NAR extends NAgentX {
 
         if (gui) {
             n.runLater(() -> {
-                window(
-                        NARui.agent(a)
-                        , 400, 400);
-                window(new Gridding(NARui.top(n), new ObjectSurface(a.track)), 800, 250);
+                window(new Gridding(NARui.agent(a), NARui.top(n), new ObjectSurface(a.track)), 900, 950);
 
 //            NARui.agentWindow(t);
                 if (a.cam != null) {
@@ -453,7 +465,7 @@ public class TrackXY_NAR extends NAgentX {
 
     private void actionPushButtonMutex() {
         if (track.grid.height() > 1) {
-            actionPushButtonMutex($.inh("up", id), $.inh("down", id), (b) -> {
+            actionPushButtonMutex($.the("up"), $.the("down"), (b) -> {
                 if (b)
                     track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
             }, (b) -> {
@@ -462,12 +474,12 @@ public class TrackXY_NAR extends NAgentX {
             });
         }
 
-        actionPushButtonMutex($.inh("right", id), $.inh("left", id), (b) -> {
-            if (b)
-                track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
-        }, (b) -> {
+        actionPushButtonMutex($.the("left"), $.the("right"), (b) -> {
             if (b)
                 track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
+        }, (b) -> {
+            if (b)
+                track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
         });
     }
 

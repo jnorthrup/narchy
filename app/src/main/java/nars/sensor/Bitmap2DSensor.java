@@ -37,7 +37,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     public Bitmap2DSensor(@Nullable Term root, P src, NAR n) {
         this(src.height() > 1 ?
                 /* 2D default */ RadixProduct(root, src.width(), src.height(), /*RADIX*/1) :
-                /* 1D default */ (x,y)-> $.inh($.the(x), root) //y==1
+                /* 1D default */ (x,y)-> root!=null ? $.inh($.the(x), root) : $.p(x) //y==1
                 , src, n);
     }
 

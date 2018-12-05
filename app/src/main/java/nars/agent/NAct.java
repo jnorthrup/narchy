@@ -252,7 +252,7 @@ public interface NAct {
         GoalActionConcept LA = action(l, (b, g) -> {
             //float ll = g != null ? g.expectation() : Util.lerp(decay, lr[0], 0.5f);
             //float ll = Math.max(g != null ? /*g.freq()*/ g.expectation() : 0.5f ,  Util.lerp(decay, lr[0], 0.5f));
-            float ll = g != null ? g.freq()/* g.expectation() */: 0f;
+            float ll = g != null ? /*g.freq()*/ g.expectation() : 0f;
             boolean x = ll > thresh && ll - lr[1] > 0;
             boolean conflict = false;
 //            if (x) {
@@ -266,9 +266,9 @@ public interface NAct {
 //                }
 //            }
             lr[0] =
-                    x?ll:0f;
+                    //x?ll:0f;
                     //x?ll:0.5f;
-                    //ll;
+                    ll;
 
             L.value(x);
             //System.out.println("L=" + x  + " <- " + ll );
@@ -280,7 +280,7 @@ public interface NAct {
         GoalActionConcept RA = action(r, (b, g) -> {
             //float rr = g != null ? g.expectation() : Util.lerp(decay, lr[1], 0.5f);
             //float rr = Math.max(g != null ? /*g.freq()*/ g.expectation() : 0.5f ,  Util.lerp(decay, lr[1], 0.5f));
-            float rr = g != null ? g.freq()/* g.expectation()*/ : 0f ;
+            float rr = g != null ? /*g.freq()*/ g.expectation() : 0f ;
             boolean x = rr > thresh && rr - lr[0] > 0;
             boolean conflict = false;
 //            if (x) {
@@ -294,9 +294,9 @@ public interface NAct {
 //                }
 //            }
             lr[1] =
-                    x?rr:0f;
+                    //x?rr:0f;
                     //x?rr:0.5f;
-                    //rr;
+                    rr;
             R.value(x);
             //System.out.println("R=" + x  + " <- " + rr );
             return $.t(x ? 1 : 0, n.confDefault(BELIEF));

@@ -120,14 +120,16 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
     }
 
-    public void viewMax(v2 viewMax) {
+    public ScrollXY<S> viewMax(v2 viewMax) {
         this.viewMax = viewMax;
         //TODO update if changed
+        return this;
     }
 
-    public void viewMin(v2 viewMin) {
+    public ScrollXY<S> viewMin(v2 viewMin) {
         this.viewMin = viewMin;
         //TODO update if changed
+        return this;
     }
 
     public ScrollXY<S> view(v2 view) {

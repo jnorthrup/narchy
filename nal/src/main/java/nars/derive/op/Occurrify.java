@@ -831,7 +831,7 @@ public class Occurrify extends TimeGraph {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
 
-                return solveDT(d, x, false, false, false);
+                return immediate(solveDT(d, x, false, false, false), d);
             }
 
             @Override

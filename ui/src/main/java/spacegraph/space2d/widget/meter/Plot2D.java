@@ -22,7 +22,7 @@ import static java.lang.Float.NaN;
 import static jcog.Texts.n4;
 
 public class Plot2D extends Widget {
-    protected final List<Series> series;
+    public final List<Series> series;
     private String title;
     private Off on;
     private volatile boolean requireUpdate = false;
@@ -41,7 +41,7 @@ public class Plot2D extends Widget {
     }
 
 
-    interface Series {
+    public interface Series {
 
         String name();
 
@@ -56,6 +56,8 @@ public class Plot2D extends Widget {
         int size();
 
         float get(int i);
+
+        void clear();
 
         //void forEach(IntFloatConsumer value);
     }
@@ -341,13 +343,16 @@ public class Plot2D extends Widget {
 //    String minValueStr = "", maxValueStr = "";
 
     public static final PlotVis Line = (List<Series> series, GL2 gl, float minValue, float maxValue) -> {
-        plotLine(series, gl, minValue, maxValue, false);
+        plotLine(series, gl, minValue, maxValue, false,false);
     };
     public static final PlotVis LineLanes = (List<Series> series, GL2 gl, float minValue, float maxValue) -> {
-        plotLine(series, gl, minValue, maxValue, true);
+        plotLine(series, gl, minValue, maxValue, true, false);
+    };
+    public static final PlotVis BarLanes = (List<Series> series, GL2 gl, float minValue, float maxValue) -> {
+        plotLine(series, gl, minValue, maxValue, true, true);
     };
 
-    private static void plotLine(List<Series> series, GL2 gl, float minValue, float maxValue, boolean lanes) {
+    private static void plotLine(List<Series> series, GL2 gl, float minValue, float maxValue, boolean lanes, boolean filled) {
         if (minValue == maxValue) {
             float center = minValue;
             minValue = center - (center / 2);
@@ -370,48 +375,84 @@ public class Plot2D extends Widget {
         for (int sn = 0, seriesSize = series.size(); sn < seriesSize; sn++) {
             Series s = series.get(sn);
 
-            float mid = lanes ? ypos(minValue, maxValue, (s.minValue() + s.maxValue()) / 2f, sn, seriesSize) : ypos(minValue, maxValue, (s.minValue() + s.maxValue()) / 2f);
-
-            int ss = s.size();
-
-            int histSize = ss;
 
 
+            float textScale = 1f/(lanes ? sn : 1);
             float range = maxValue - minValue;
             float yy = NaN;
+
+            float mid = ypos((s.minValue() + s.maxValue()) / 2f, lanes, sn, seriesSize, maxValue-minValue, minValue);
+            float base = ypos(s.minValue(), lanes, sn, seriesSize, maxValue-minValue, minValue);
+
             if (range > Float.MIN_NORMAL) {
 
-                gl.glLineWidth(3);
-                gl.glColor3fv(s.color(), 0);
-                gl.glBegin(GL.GL_LINE_STRIP);
+
+
+
+                if (!filled) {
+                    gl.glLineWidth(3);
+                    gl.glBegin(GL.GL_LINE_STRIP);
+                }
+
+
+                int histSize = s.size();
                 float x = 0;
                 float dx = (W / histSize);
 
-                for (int i = 0; i < ss; i++) {
+                float[] color = s.color();
+                float r = color[0], g = color[1], b = color[2];
+
+                for (int i = 0; i < histSize; i++) {
+
                     float v = s.get(i);
-                    float ny = (v == v) ?
-                            (lanes ? ypos(minValue, range, v, sn, seriesSize) : ypos(minValue, range, v))
-                            : mid /*HACK for NaN*/;
-                    gl.glVertex2f(x, yy = ny);
+
+                    float ny = ypos(v, lanes, sn, seriesSize, range, minValue);
+
+
+                    //gl.glColor3fv(color, 0);
+                    float a = ((v==v) ? ((v-minValue)/range) : 0) * 0.5f + 0.5f;
+                    gl.glColor4f(r,g,b,a);
+
+                    yy = ny;
+
+                    if (filled) {
+                        gl.glRectf(x-dx, base, x, yy);
+                    } else {
+                        gl.glVertex2f(x, yy);
+                    }
                     x += dx;
                 }
-                gl.glEnd();
+                if (filled) {
+
+                } else {
+                    gl.glEnd();
+                }
             }
 
             if (yy != yy)
                 yy = 0.5f;
 
+
+            gl.glColor3f(1,1,1);
+
             gl.glLineWidth(2);
-            HersheyFont.hersheyText(gl, s.name(), 0.04f, W, yy, 0, Draw.TextAlignment.Right);
+
+
+            HersheyFont.hersheyText(gl, s.name(), 0.04f * textScale, W , filled ? base : yy, 0, Draw.TextAlignment.Right);
+
 
         }
+    }
+
+    private static float ypos(float v, boolean lanes, int sn, int seriesSize, float range, float minValue) {
+        return lanes ? ypos(minValue, range, v, sn, seriesSize) : ypos(minValue, range, v);
     }
 
     private static float ypos(float minValue, float range, float v) {
         return (v - minValue) / range;
     }
     private static float ypos(float minValue, float range, float v, int lane, int numLanes) {
-        return ((v - minValue) / range) * (1f/numLanes) + (((float)lane)/numLanes);
+        return (v == v ? ((v - minValue) / range) : (0.5f)) * (1f/numLanes) + (((float)lane)/numLanes);
     }
 
     public void update() {

@@ -4,7 +4,9 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ScrollXY;
+import spacegraph.space2d.container.unit.UnitContainer;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.textedit.buffer.*;
 import spacegraph.util.math.v2;
@@ -21,6 +23,33 @@ public class TextEdit extends Widget implements ScrollXY.ScrolledXY {
         this();
 
         text(initialText);
+    }
+
+    public static Appendable out() {
+        TextEdit te = new TextEdit();
+        return new AppendableUnitContainer(te.scrolled()
+                .viewMin(new v2(8,8))
+                .viewMax(new v2(32,32))
+                .view(8, 8)) {
+
+            @Override
+            public Appendable append(CharSequence charSequence) {
+                te.model.buffer().insert(charSequence.toString());
+                return this;
+            }
+
+            @Override
+            public Appendable append(CharSequence charSequence, int i, int i1) {
+                te.model.buffer().insert(charSequence.subSequence(i, i1).toString());
+                return this;
+            }
+
+            @Override
+            public Appendable append(char c) {
+                te.model.buffer().insert(String.valueOf(c));
+                return this;
+            }
+        };
     }
 
     public ScrollXY scrolled() {
@@ -75,7 +104,7 @@ public class TextEdit extends Widget implements ScrollXY.ScrolledXY {
     @Override
     protected final void paintWidget(RectFloat bounds, GL2 gl) {
         ScrollXY s = this.scroll;
-        model.paint(bounds, s !=null ? s.view() : RectFloat.X0Y0WH(0, 0, model.buffer.width(), model.buffer.height()), focused, gl);
+        model.paint(bounds, s != null ? s.view() : RectFloat.X0Y0WH(0, 0, model.buffer.width(), model.buffer.height()), focused, gl);
     }
 
     @Override
@@ -101,11 +130,19 @@ public class TextEdit extends Widget implements ScrollXY.ScrolledXY {
         this.scroll = s;
         s.viewMin(new v2(1, 1));
         updateScroll();
-        s.view(0, 0, Math.min(model.buffer.width(),80), Math.min(model.buffer.height(), 20));
+        s.view(0, 0, Math.min(model.buffer.width(), 80), Math.min(model.buffer.height(), 20));
     }
 
     private void updateScroll() {
         scroll.viewMax(new v2(model.buffer.width(), model.buffer.height()));
+    }
+
+    public abstract static class AppendableUnitContainer<S extends Surface> extends UnitContainer<S> implements Appendable {
+
+        public AppendableUnitContainer(S x) {
+            super(x);
+        }
+
     }
 
 }

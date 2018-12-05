@@ -1,5 +1,6 @@
 package nars.exe;
 
+import com.google.common.base.Joiner;
 import jcog.TODO;
 import jcog.Texts;
 import jcog.Util;
@@ -20,6 +21,7 @@ import nars.task.NALTask;
 import nars.task.TaskProxy;
 import nars.time.clock.RealTime;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicReference;
@@ -311,6 +313,16 @@ abstract public class MultiExec extends UniExec {
 //        //System.out.println(Thread.currentThread() + " " + incoming + " " + batchSize + " " + exe);
 //
 //    }
+
+
+    @Override
+    public void print(Appendable out) {
+        try {
+            Joiner.on('\n').appendTo(out, can.values());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public boolean execute(FasterList b, int concurrency) {
         //TODO sort, distribute etc

@@ -2,7 +2,9 @@ package nars.gui;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.exe.valve.InstrumentedWork;
 import jcog.math.FloatRange;
+import jcog.math.MutableEnum;
 import jcog.sort.TopN;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.NAR;
@@ -19,6 +21,7 @@ import spacegraph.space2d.container.layout.TreeMap2D;
 import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
+import spacegraph.space2d.widget.button.EnumSwitch;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.LoopPanel;
 import spacegraph.space2d.widget.meta.ObjectSurface;
@@ -28,11 +31,13 @@ import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
+import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.video.Draw;
 
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 import static spacegraph.space2d.container.grid.Gridding.row;
 
@@ -129,37 +134,67 @@ public class ExeCharts {
 
     }
 
-    public static Surface causeProfiler(NAR nar) {
-        UniExec.InstrumentedCausable[] cc = ((UniExec) nar.exe).can.valueArray();
-        int history = 256;
-        int n = cc.length;
-        Plot2D pp = new Plot2D(history,
-                Plot2D.LineLanes
-                //Plot2D.Line
-        );
-        //Plot2D[] pp = new Plot2D[n];
-        for (int i = 0, ccLength = cc.length; i < ccLength; i++) {
-            UniExec.InstrumentedCausable c = cc[i];
-            String label = c.c.id.toString();
-            //pp[i] = new Plot2D(history, Plot2D.Line).add(label,
-            pp.add(label,
-
-                        ()->
+    enum CauseProfileMode {
+        Pri() {
+            @Override
+            float valueOf(InstrumentedWork w) {
+                return w.pri();
+            }
+        },
+        Value() {
+            @Override
+            float valueOf(InstrumentedWork w) {
+                return (float) w.value;
+            }
+        },
+        Time() {
+            @Override
+            float valueOf(InstrumentedWork w) {
+                return w.accumTimeNS.longValue()/1_000_000f;
+            }
+        };
+        /* TODO
                                 //c.accumTimeNS.get()/1_000_000.0 //ms
-                                (c.iterations.getMean() * c.iterTimeNS.getMean())/1_000_000.0 //ms
+                                //(c.iterations.getMean() * c.iterTimeNS.getMean())/1_000_000.0 //ms
                                 //c.valuePerSecondNormalized
                                 //c.valueNext
                                 //c.iterations.getN()
                                 //c...
 
                         //,0,1
-                );
+         */
+
+        abstract float valueOf(InstrumentedWork w);
+    };
+
+    public static Surface causeProfiler(NAR nar) {
+        UniExec.InstrumentedCausable[] cc = ((UniExec) nar.exe).can.valueArray();
+        int history = 128;
+        Plot2D pp = new Plot2D(history,
+                Plot2D.BarLanes
+                //Plot2D.LineLanes
+                //Plot2D.Line
+        );
+
+        final MutableEnum<CauseProfileMode> mode = new MutableEnum<>(CauseProfileMode.Pri);
+
+        for (int i = 0, ccLength = cc.length; i < ccLength; i++) {
+            UniExec.InstrumentedCausable c = cc[i];
+            String label = c.c.id.toString();
+            //pp[i] = new Plot2D(history, Plot2D.Line).add(label,
+            pp.add(label, ()-> mode.get().valueOf(c));
         }
-        return DurSurface.get(new Gridding(pp), nar, ()->{
-            //for (Plot2D p : pp) {
-                pp.update();
-            //}
-        });
+
+        Surface controls = new Gridding(
+                EnumSwitch.newSwitch(mode, "Mode"),
+                new PushButton("Print", ()-> {
+                    Appendable t = TextEdit.out();
+                    nar.exe.print(t);
+                    window(t, 400, 400);
+                }),
+                new PushButton("Clear", ()->pp.series.forEach(Plot2D.Series::clear))
+        );
+        return DurSurface.get(Splitting.column(pp, 0.1f, controls), nar, pp::update);
     }
 
     public static Surface focusPanel(NAR nar) {

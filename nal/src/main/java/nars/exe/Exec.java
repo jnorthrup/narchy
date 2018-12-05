@@ -6,7 +6,7 @@ import nars.task.ITask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.PrintStream;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
@@ -100,8 +100,14 @@ abstract public class Exec implements Executor {
     abstract public int concurrencyMax();
 
 
-    public void print(PrintStream out) {
-        out.println(this);
+    public void print(Appendable out) {
+        try {
+            out.append(this.toString());
+            out.append('\n');
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 
