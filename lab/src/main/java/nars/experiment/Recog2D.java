@@ -2,11 +2,14 @@ package nars.experiment;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.math.FloatAveraged;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.Param;
 import nars.agent.NAgent;
+import nars.agent.Reward;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.gui.BeliefTableChart;
@@ -33,6 +36,8 @@ import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
+import static jcog.Util.compose;
+import static nars.Op.GOAL;
 
 /**
  * Created by me on 10/8/16.
@@ -93,7 +98,7 @@ public class Recog2D extends NAgentX {
 //                outs, nar);
 //        train = null;
 
-        rewardNormalized("correct", -1, +1, ()->{
+        Reward r = rewardNormalized("correct", -1, +1, compose(() -> {
             float error = 0;
             for (int i = 0; i < maxImages; i++) {
 
@@ -104,8 +109,14 @@ public class Recog2D extends NAgentX {
             }
 
             return Util.clamp(2 * -(error / maxImages - 0.5f), -1, +1);
-        });
+        }, new FloatAveraged(0.1f, true)));
 
+        Param.DEBUG = true;
+        nar.onTask((t)->{
+            if (!t.isEternal() && t.term().equals(r.term())) {
+                System.out.println(t.proof());
+            }
+        }, GOAL);
         SpaceGraph.window(conceptTraining(outs, nar), 800, 600);
 
 

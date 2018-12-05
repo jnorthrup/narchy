@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 200;
+    private static final int cycles = 400;
 
     @BeforeEach
     void setup() {
@@ -354,6 +354,7 @@ public class NAL6Test extends NALTest {
     void multiple_variable_elimination() {
 
         TestNAR tester = test;
+        tester.nar.termVolumeMax.set(16);
         tester.believe("((($x --> key) && ($y --> lock)) ==> open($x, $y))");
         tester.believe("({lock1} --> lock)");
         tester.mustBelieve(cycles, "(($1 --> key) ==> open($1, {lock1}))", 1.00f,

@@ -99,8 +99,8 @@ public abstract class Param {
 
     public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = true;
 
-    /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
-    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
+//    /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
+//    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
 
     /** TODO needs tested whether recursive Unification inherits TTL */
     public static final int EVALUATION_TTL = 32;
@@ -181,8 +181,8 @@ public abstract class Param {
     /**
      * maximum time (in durations) that a signal task can latch its last value before it becomes unknown
      */
-    public final static float SIGNAL_LATCH_DUR = 32;
-    public final static float SIGNAL_STRETCH_DUR = 1f;
+    public final static float SIGNAL_LATCH_DUR = 128;
+    public final static float SIGNAL_STRETCH_DUR = 0.5f;
 
 
     /**
@@ -257,7 +257,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 2;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 1;
 
 
     /**

@@ -26,9 +26,9 @@
 
     //goal/antigoal in sequence
     X, C, eventOf(C,X), --eventOfNeg(C,X)   |- C, (Goal:Deduction, Time:BeliefAtTask)
-    X, C, eventOfNeg(C,X), --eventOf(C,X)   |- --C, (Goal:Deduction, Time:BeliefAtTask)
+      //X, C, eventOfNeg(C,X), --eventOf(C,X)   |- --C, (Goal:Deduction, Time:BeliefAtTask)
     X, C, eventOfNeg(C,X), --eventOf(C,X)   |- C, (Goal:DeductionN, Time:BeliefAtTask)
-    X, C, eventOf(C,X), --eventOfNeg(C,X)   |- --C, (Goal:DeductionN, Time:BeliefAtTask)
+      //X, C, eventOf(C,X), --eventOfNeg(C,X)   |- --C, (Goal:DeductionN, Time:BeliefAtTask)
 
     //X, C, eventOfNeg(C,X) |- --conjWithout(C,--X), (Goal:DesireWeak, Time:BeliefSubSequence)
     //X, C, eventOf(C,X)    |- --conjWithout(C,X), (Goal:DesireWeakN, Time:BeliefSubSequence)
@@ -146,3 +146,8 @@
                 //((&&,(--,%S),A..+) ==> M), M |- ((&&,A..+) ==> M), (Belief:StructuralDeduction)
 
 
+//Unlock Conjoined Implications
+  ((A ==> B) && (  B ==> C)),      B |-   (A==>C), (Belief:Deduction)
+    ((A ==> B) && --( B ==> C )),  B |- --(A==>C), (Belief:Deduction)
+((A ==> --B) && (--B ==> C)),      B |-   (A==>C), (Belief:DeductionPN)
+   ((A ==> --B) && --(--B ==> C)), B |- --(A==>C), (Belief:DeductionPN)

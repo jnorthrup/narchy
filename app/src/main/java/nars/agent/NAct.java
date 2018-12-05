@@ -6,6 +6,7 @@ import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;
+import nars.Param;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.GoalActionConcept;
 import nars.table.BeliefTables;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.IntConsumer;
 import java.util.function.IntPredicate;
 
+import static jcog.Util.sqr;
 import static jcog.Util.unitize;
 import static nars.Op.BELIEF;
 
@@ -237,11 +239,12 @@ public interface NAct {
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
 
         float thresh =
-                0.5f;
+                sqr(Param.TRUTH_EPSILON);
+                //0.5f;
                 //0.5f + sqr(Param.TRUTH_EPSILON);
                 //0.66f;
 
-        float[] lr = new float[] { 0.5f, 0.5f };
+        float[] lr = new float[] { 0f, 0f };
 
 //        float decay =
 //                //0.5f;
@@ -253,7 +256,7 @@ public interface NAct {
             //float ll = g != null ? g.expectation() : Util.lerp(decay, lr[0], 0.5f);
             //float ll = Math.max(g != null ? /*g.freq()*/ g.expectation() : 0.5f ,  Util.lerp(decay, lr[0], 0.5f));
             float ll = g != null ? /*g.freq()*/ g.expectation() : 0f;
-            boolean x = ll > thresh && ll - lr[1] > 0;
+            boolean x = ll > 0.5f && ll - lr[1] > thresh;
             boolean conflict = false;
 //            if (x) {
 //                if (lr[1] >= ll) {
@@ -281,7 +284,7 @@ public interface NAct {
             //float rr = g != null ? g.expectation() : Util.lerp(decay, lr[1], 0.5f);
             //float rr = Math.max(g != null ? /*g.freq()*/ g.expectation() : 0.5f ,  Util.lerp(decay, lr[1], 0.5f));
             float rr = g != null ? /*g.freq()*/ g.expectation() : 0f ;
-            boolean x = rr > thresh && rr - lr[0] > 0;
+            boolean x = rr > 0.5f && rr - lr[0] > thresh;
             boolean conflict = false;
 //            if (x) {
 //                if (lr[0] >= rr ) {
