@@ -56,10 +56,10 @@
     //TODO conjunction sequence prefix
 
     C, X, eventFirstOf(C,X)    |- conjDropIfEarliest(C,  X), (Belief:Deduction,Goal:Deduction,Time:AfterBeliefInTask)
-      //C, X, eventFirstOf(C,X)    |- X, (Goal:StructuralDeduction)
+      C, X, eventFirstOf(C,X)    |- X, (Goal:StructuralDeduction)
         //C, X, eventFirstOf(C,X)    |- --X, (Goal:StructuralDeductionN)
     C, X, eventFirstOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DeductionPN,Time:AfterBeliefInTask)
-      //C, X, eventFirstOfNeg(C,X) |- --X, (Goal:StructuralDeduction)
+      C, X, eventFirstOfNeg(C,X) |- --X, (Goal:StructuralDeduction)
         //C, X, eventFirstOfNeg(C,X) |- X, (Goal:StructuralDeductionN)
 
 

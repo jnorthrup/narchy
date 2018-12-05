@@ -623,7 +623,7 @@ public class Occurrify extends TimeGraph {
                 if (p!=null && p.getTwo()[0]==TIMELESS)
                     return null; //HACK
 
-                return p;
+                return immediate(p,d);
             }
 
             @Override
