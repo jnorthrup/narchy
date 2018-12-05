@@ -463,7 +463,7 @@ public class PatternIndex extends MapConceptIndex {
                         Term match = ys > 0 ? EllipsisMatch.matched(yFree) : EllipsisMatch.empty;
                         return ellipsis.unify(match, u);
 
-                    case 1:
+                    case 1: {
                         if (ys == 0)
                             return false;  //no matches possible
 
@@ -472,9 +472,26 @@ public class PatternIndex extends MapConceptIndex {
                             case 1:
                                 assert (ellipsis.minArity == 0);
                                 return x0.unify(yFree.first(), u) && ellipsis.unify(EllipsisMatch.empty, u);
-                            default:
-                                return u.termutes.add(new Choose1(ellipsis, x0, yFree));
+                            case 2:
+                                //check if both elements actually could match x0.  if only one can, then no need to termute.
+                                //TODO generalize to n-terms
+                                int x0struct = x0.structure();
+                                //TODO include volume pre-test
+                                Term aa = yFree.first();
+                                boolean a = Subterms.possiblyUnifiable(x0struct, aa.structure(), u.varBits);
+                                Term bb = yFree.last();
+                                boolean b = Subterms.possiblyUnifiable(x0struct, bb.structure(), u.varBits);
+                                if (!a && !b) {
+                                    return false; //impossible
+                                } else if (a && !b) {
+                                    return x0.unify(aa, u) && ellipsis.unify(bb, u);
+                                } else if (b && !a) {
+                                    return x0.unify(bb, u) && ellipsis.unify(aa, u);
+                                } //else: continue below
+                                break;
                         }
+                        return u.termutes.add(new Choose1(ellipsis, x0, yFree));
+                    }
 
                     case 2:
                         Term[] xFixedSorted = eMatch==null ? xFixed.toArray(EmptyTermArray) /* sorted */

@@ -49,7 +49,7 @@ class RouletteTest {
     void testMutableRouletteRandom() {
         for (int seed = 1; seed < 3; seed++) {
             for (int n = 1; n < 10; n++) {
-                testMutableRouletteRandom(n, n * 100, seed);
+                testMutableRouletteRandom(n, n * 1000, seed);
             }
         }
     }

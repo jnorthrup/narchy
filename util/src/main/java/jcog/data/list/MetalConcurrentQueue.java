@@ -64,20 +64,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
 
 
 
-    public int clear(Consumer<X> each) {
-        return clear(each, -1);
-    }
 
-    public int clear(Consumer<X> each, int limit) {
-        int count = 0;
-        int s = limit >= 0 ? Math.min(limit, size()) : size();
-        X next;
-        while ((s-- > 0) && (next = poll()) != null) {
-            each.accept(next);
-            count++;
-        }
-        return count;
-    }
 
     public void forEach(Consumer<? super X> each) {
         int s = size();
@@ -258,12 +245,11 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
     }
 
     // drain the whole queue at once
+    /** This employs a "batch" mechanism to load all objects from the ring
+     * in a single update.    This could have significant cost savings in comparison
+     * with poll
+     */
     public int remove(final X[] x, int maxElements) {
-
-        /* This employs a "batch" mechanism to load all objects from the ring
-         * in a single update.    This could have significant cost savings in comparison
-         * with poll
-         */
 
         int spin = 0;
 
@@ -279,10 +265,62 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
             if (nToRead > 0) {
                 // if we still control the sequence, update and return
                 if(headCursor.compareAndSet(pollPos,  pollPos+nToRead)) {
-                    int n0 = i(pollPos, cap);
-                    int n = n0;
+                    int n = i(pollPos, cap);
                     for (int i = 0; i < nToRead; i++) {
                         x[i] = getAndSet(n++, null);
+                        if (n == cap) n = 0;
+                    }
+
+                    head.addAndGet(nToRead);
+                    return nToRead;
+                } else {
+                    spin = progressiveYield(spin); // wait for access
+                }
+
+
+            } else {
+                // nothing to read now
+                return 0;
+            }
+
+        }
+    }
+    public int clear(Consumer<X> each) {
+        return clear(each, -1);
+    }
+
+//    public int clear(Consumer<X> each, int limit) {
+//        int count = 0;
+//        int s = limit >= 0 ? Math.min(limit, size()) : size();
+//        X next;
+//        while ((s-- > 0) && (next = poll()) != null) {
+//            each.accept(next);
+//            count++;
+//        }
+//        return count;
+//    }
+    public int clear(final Consumer<X> each, int limit) {
+
+        int ss = size();
+        int s = limit >= 0 ? Math.min(limit, ss) : ss;
+        if (s == 0)
+            return 0;
+
+        int spin = 0;
+
+        int cap = capacity();
+        for (; ; ) {
+            final int pollPos = head.get(); // prepare to qualify?
+            // is there data for us to poll
+            // note we must take a difference in values here to guard against
+            // integer overflow
+            final int nToRead = Math.min((tail.get() - pollPos), s);
+            if (nToRead > 0) {
+                // if we still control the sequence, update and return
+                if(headCursor.compareAndSet(pollPos,  pollPos+nToRead)) {
+                    int n = i(pollPos, cap);
+                    for (int i = 0; i < nToRead; i++) {
+                        each.accept( getAndSet(n++, null) );
                         if (n == cap) n = 0;
                     }
 

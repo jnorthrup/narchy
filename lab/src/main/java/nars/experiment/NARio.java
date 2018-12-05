@@ -4,9 +4,11 @@ import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.Op;
 import nars.agent.Reward;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.GoalActionConcept;
+import nars.concept.sensor.SelectorSensor;
 import nars.concept.sensor.Signal;
 import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
@@ -14,12 +16,18 @@ import nars.experiment.mario.Scene;
 import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
 import nars.gui.NARui;
+import nars.term.Term;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
+import nars.video.VectorSensorView;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.widget.text.LabeledPane;
 
 import javax.swing.*;
+import java.util.List;
 
+import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static nars.agent.FrameTrigger.fps;
 import static nars.experiment.mario.level.Level.*;
@@ -88,17 +96,23 @@ public class NARio extends NAgentX {
 
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
-            final int tileTypes = 3; //0..4
+        {
 
-            senseSwitch((i)->$.funcImageLast($.the("tile"), $.the("nario"), $.p($.the("right"), $.the(i))),
-                     () -> tile(1, 0), 0, tileTypes);
-            senseSwitch((i)->$.funcImageLast($.the("tile"), $.the("nario"), $.p($.the("below"), $.the(i))),
-                    () -> tile(0, 1), 0, tileTypes);
-            senseSwitch((i)->$.funcImageLast($.the("tile"), $.the("nario"), $.p($.the("left"), $.the(i))),
-                    () -> tile(-1, 0), 0, tileTypes);
-            senseSwitch((i)->$.funcImageLast($.the("tile"), $.the("nario"), $.p($.the("above"), $.the(i))),
-                    () -> tile(0, -1), 0, tileTypes);
 
+
+            List<SelectorSensor> tileSensors = List.of(
+                    tileSwitch($.the("left"), -1, 0),
+                    tileSwitch($.the("right"), +1, 0),
+                    tileSwitch($.the("up"), 0, -1),
+                    tileSwitch($.the("down"), 0, +1),
+                    tileSwitch(Op.SETi.the($.the("left"), $.the("up")), -1, -1),
+                    tileSwitch(Op.SETi.the($.the("right"), $.the("up")), +1, -1),
+                    tileSwitch(Op.SETi.the($.the("left"), $.the("down")), -1, +1),
+                    tileSwitch(Op.SETi.the($.the("right"), $.the("down")), +1, +1)
+            );
+            SpaceGraph.window(new LabeledPane("Tile types",
+                    new Gridding(tileSensors.stream().map(z -> new VectorSensorView(z, nar).withControls()).collect(toList()))), 100, 100);
+        }
 
 
 
@@ -185,6 +199,12 @@ public class NARio extends NAgentX {
 
     }
 
+
+    static final int tileTypes = 3; //0..4
+    private SelectorSensor tileSwitch(Term label, int dx, int dy) {
+        return senseSwitch(i -> $.inh(label, $.the("tile" + i)),
+                () -> tile(dx, dy), tileTypes);
+    }
 
 
     int tile(int dx, int dy) {

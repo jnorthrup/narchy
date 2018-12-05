@@ -966,8 +966,8 @@ public class Occurrify extends TimeGraph {
                         long deltaT = Math.abs(target - o[0]); //project from end, closer to now if fully in the past
                         float eStartFactor = Param.evi(1, deltaT, d.dur);
                         if (!d.concTruthEviMul(eStartFactor, Param.ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION)) {
-                            return null; //insufficient evidence
-                            //return p; //un-shifted
+                            //return null; //insufficient evidence
+                            return p; //un-shifted
                         }
 //                    }
 
@@ -983,7 +983,9 @@ public class Occurrify extends TimeGraph {
                     long range = o[1] - o[0];
                     //range = o[1] > target ? Math.min(range, o[1] - target) : 0;
                     o[0] = target;
-                    o[1] = target + range;
+                    o[1] = target +
+                            range;
+                            //Math.max(range, d.dur);
                 }
             }
             return p;
@@ -1168,7 +1170,7 @@ public class Occurrify extends TimeGraph {
 
         int shift = firstOrLast ? outer.subTimeFirst(inner) : outer.subTimeLast(inner);
         if (shift == DTERNAL)
-            return null; //TODO why if this happens
+            return null; //TODO why if this happens. could try the negation it seems to be what is actually there but why
 
 
         long start = base - shift;

@@ -5,10 +5,11 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Stacking;
+import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.text.VectorLabel;
 
-public class KeyboardChip extends Stacking implements KeyPressed {
+public class KeyboardChip extends Widget implements KeyPressed {
 
     private final VectorLabel txt;
     private final TypedPort<Integer> out;
@@ -16,12 +17,13 @@ public class KeyboardChip extends Stacking implements KeyPressed {
     public KeyboardChip() {
         super();
 
-        set(out = new TypedPort<>(Integer.class), txt = new VectorLabel());
+        set(new Stacking(out = new TypedPort<>(Integer.class), txt = new VectorLabel()));
     }
 
     @Override
     public Surface finger(Finger finger) {
         //TODO request focus
+    focus();
         return super.finger(finger);
     }
 
@@ -78,15 +80,27 @@ public class KeyboardChip extends Stacking implements KeyPressed {
         protected int map(int keyCode) {
             switch(keyCode) {
                 case KeyEvent.VK_LEFT:
+                    keyLeft();
                     return 1;
                 case KeyEvent.VK_RIGHT:
+                    keyRight();
                     return 2;
                 case KeyEvent.VK_UP:
+                    keyUp();
                     return 3;
                 case KeyEvent.VK_DOWN:
+                    keyDown();
                     return 4;
             }
+            keyNone();
             return 0;
         }
+
+
+        protected void keyLeft() { }
+        protected void keyRight() { }
+        protected void keyUp() { }
+        protected void keyDown() { }
+        protected void keyNone() { }
     }
 }

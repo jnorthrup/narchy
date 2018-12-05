@@ -122,10 +122,10 @@ public class FZero extends NAgentX {
 
         //initPushButtonTank();
 
-        //initLeftRightPushButtonMutex();
+        initLeftRightPushButtonMutex();
         //initToggleLeftRight();
 
-//        initToggleFwdStop();
+
 //        window(new Gridding(
 //                //new CameraSensorView(c, this).withControls(),
 //                NARui.beliefCharts(actions, nar)), 400, 400);
@@ -134,7 +134,7 @@ public class FZero extends NAgentX {
         //initTankContinuous();
 
         //BiPolarAction A =
-                initBipolarRotateRelative(false, 1f);
+            //initBipolarRotateRelative(false, 1f);
                 //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(false, 0.9f);

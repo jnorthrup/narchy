@@ -12,6 +12,7 @@ import nars.NAR;
 import nars.Narsese;
 import nars.concept.action.BiPolarAction;
 import nars.concept.sensor.DigitizedScalar;
+import nars.concept.sensor.SelectorSensor;
 import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
@@ -72,7 +73,7 @@ public interface NSense {
 
     /**
      * interpret an int as a selector between enumerated values
-     */
+     TODO move to a SelectorSensor constuctor */
     default <E extends Enum> void senseSwitch(String term, Supplier<E> value) throws Narsese.NarseseException {
         E[] values = ((Class<? extends E>) value.get().getClass()).getEnumConstants();
         for (E e : values) {
@@ -80,12 +81,19 @@ public interface NSense {
         }
     }
 
-    default void senseSwitch(Term term, IntSupplier value, int min, int max) {
-        senseSwitch((e) -> switchTerm(term, the(e)), value, min, max);
+    /** TODO move to a SelectorSensor constuctor */
+    default SelectorSensor senseSwitch(Term term, IntSupplier value, int min, int max) {
+        return senseSwitch((e) -> switchTerm(term, the(e)), value, min, max);
     }
 
-    default void senseSwitch(IntFunction<Term> termer, IntSupplier value, int min, int max) {
-        senseSwitch(value, Util.intArray(min, max), termer);
+    /**
+     * min inclusive, max exclusive
+     * TODO move to a SelectorSensor constuctor */
+    default SelectorSensor senseSwitch(IntFunction<Term> termer, IntSupplier value, int min, int max) {
+        return senseSwitch(value, Util.intArray(min, max), termer);
+    }
+    default SelectorSensor senseSwitch(IntFunction<Term> termer, IntSupplier value, int N) {
+        return senseSwitch(termer, value, 0, N);
     }
 
 //    static class EnumSignal extends AbstractSensor {
@@ -104,11 +112,12 @@ public interface NSense {
     /**
      * interpret an int as a selector between (enumerated) integer values
      */
-    default void senseSwitch(IntSupplier value, int[] values, IntFunction<Term> termizer) {
-        assert(values.length > 1);
-        for (int e : values)
-            sense(termizer.apply(e), () -> value.getAsInt() == e);
+    default SelectorSensor senseSwitch(IntSupplier value, int[] values, IntFunction<Term> termizer) {
+        SelectorSensor ss = new SelectorSensor(value, values, termizer, nar());
+        addSensor(ss);
+        return ss;
     }
+
 
     /**
      * interpret an int as a selector between (enumerated) object values

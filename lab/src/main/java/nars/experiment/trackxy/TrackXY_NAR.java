@@ -27,7 +27,9 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.widget.chip.KeyboardChip;
 import spacegraph.space2d.widget.meta.ObjectSurface;
+import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.video.Draw;
 
 import java.util.List;
@@ -48,13 +50,13 @@ public class TrackXY_NAR extends NAgentX {
             targetCam = true,
             gui = true;
     static int
-            W = 8, H = 8;
+            W = 3, H = 3;
             //W = 3, H = 1;
             //W = 5, H = 1;
     public static final int derivationStrength = 8;
     static int dur = 8;
     static float camResolution = 0.1f;
-    static int volMax = 9;
+    static int volMax = 5;
     final Bitmap2DSensor cam;
     private final TrackXY track;
 
@@ -63,7 +65,7 @@ public class TrackXY_NAR extends NAgentX {
 
 
     final public AtomicBoolean trainer = new AtomicBoolean(false);
-    private final boolean alwaysTrain = false;
+
 
     //final public AtomicBoolean log = new AtomicBoolean(true);
 
@@ -80,9 +82,9 @@ public class TrackXY_NAR extends NAgentX {
         assert(sourceNumerics | targetNumerics | targetCam);
 
         if (sourceNumerics) {
-            senseNumber($.the("sx"), new FloatNormalized(() -> track.cx, 0, W));
+            senseNumber($.the("sx"), new FloatNormalized(() -> track.cx, 0, W-1));
             if (H > 1)
-                senseNumber($.the("sy"), new FloatNormalized(() -> track.cy, 0, H));
+                senseNumber($.the("sy"), new FloatNormalized(() -> track.cy, 0, H-1));
         }
 
 
@@ -104,20 +106,38 @@ public class TrackXY_NAR extends NAgentX {
         //actionSwitch();
         //actionTriState();
 
+        {
+            GraphEdit w = new GraphEdit(RectFloat.X0Y0WH(0, 0, 256, 256));
 
-        if (alwaysTrain) {
+            w.add(new KeyboardChip.ArrowKeysChip() {
+                @Override
+                protected void keyLeft() {
+                    long now = nar.time();
+                    nar().want(0.1f, $.the("left"), now, now+dur, 1f, 0.02f);
+                }
+                @Override
+                protected void keyRight() {
+                    long now = nar.time();
+                    nar().want(0.1f, $.the("right"), now, now+dur, 1f, 0.02f);
+                }
+            }).pos(0, 0, 256, 256);
+
+            window(w, 256, 256);
+        }
+
+//        if (alwaysTrain) {
             curiosity.enable.set(false);
-            onFrame(x -> {
-                track.act();
-            });
-        } else {
+//            onFrame(x -> {
+//                track.act();
+//            });
+//        } else {
             rewardNormalized($.the("good"), -1, 1, () -> {
                 float r = track.act();
                 if (r == r)
                     rewardSum += r;
                 return r;
             });
-        }
+//        }
 
         track.randomize();
 
@@ -136,14 +156,14 @@ public class TrackXY_NAR extends NAgentX {
             long now = nar.time();
            if (trainer.getOpaque()) {
                 if (track.ty < track.cy) {
-                    nar().want(0.1f, $.inh("down", id), now, now+dur, 1f, 0.02f);
+                    nar().want(0.1f, $.the("down"), now, now+dur, 1f, 0.02f);
                 } else if (track.ty > track.cy) {
-                    nar().want(0.1f, $.inh("up", id), now, now+dur, 1f, 0.02f);
+                    nar().want(0.1f, $.the("up"), now, now+dur, 1f, 0.02f);
                 }
                if (track.tx < track.cx) {
-                   nar().want(0.1f, $.inh("left", id), now, now+dur, 1f, 0.02f);
+                   nar().want(0.1f, $.the("left"), now, now+dur, 1f, 0.02f);
                } else if (track.tx > track.cx) {
-                   nar().want(0.1f, $.inh("right", id), now, now+dur, 1f, 0.02f);
+                   nar().want(0.1f, $.the("right"), now, now+dur, 1f, 0.02f);
                }
            }
         });

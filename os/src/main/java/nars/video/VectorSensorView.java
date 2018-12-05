@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerDragging;
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
@@ -251,7 +250,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
                 /*, 0.5f + 0.5f * p*/);
     }
 
-    public Surface withControls() {
+    public Splitting withControls() {
         return new Splitting(this, new CameraSensorViewControls(this), 0.1f);
     }
 
