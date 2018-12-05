@@ -118,7 +118,7 @@ public class Tetris extends NAgentX {
 
 
 
-        //actionsReflect();
+        actionsReflect();
 
         actionsPushButton();
         //actionsToggle();

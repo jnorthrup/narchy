@@ -35,6 +35,7 @@ import nars.index.concept.HijackConceptIndex;
 import nars.op.Arithmeticize;
 import nars.op.Factorize;
 import nars.op.Introduction;
+import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -235,8 +236,8 @@ abstract public class NAgentX extends NAgent {
 
                         //new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
                         new HijackConceptIndex(
-                                128 * 1024,
-                                //64 * 1024,
+                                //128 * 1024,
+                                64 * 1024,
                                 //32 * 1024,
                                 //8 * 1024,
                                 4)
@@ -498,10 +499,10 @@ abstract public class NAgentX extends NAgent {
         Introduction factorizer = new Factorize.FactorIntroduction(8, n);
 
 //        {
-//            new Inperience.Believe(n, 8);
-//            new Inperience.Want(n, 8);
-//            new Inperience.Wonder(n, 4);
-//            new Inperience.Plan(n, 4);
+            new Inperience.Believe(n, 8);
+            new Inperience.Want(n, 8);
+            new Inperience.Wonder(n, 4);
+            new Inperience.Plan(n, 4);
 //        }
 
 

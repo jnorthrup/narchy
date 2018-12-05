@@ -118,7 +118,7 @@ public abstract class NodeGraph<N, E> {
             this(id, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
         }
 
-        public MutableNode(N id, Collection<FromTo<Node<N, E>, E>> in, Collection<FromTo<Node<N, E>, E>> out) {
+        MutableNode(N id, Collection<FromTo<Node<N, E>, E>> in, Collection<FromTo<Node<N, E>, E>> out) {
             super(id);
             this.in = in;
             this.out = out;
@@ -160,7 +160,7 @@ public abstract class NodeGraph<N, E> {
         }
 
 
-        protected Collection<FromTo<Node<N, E>, E>> newEdgeCollection() {
+        Collection<FromTo<Node<N, E>, E>> newEdgeCollection() {
             return new ArrayHashSet<>(2);
         }
 
@@ -216,16 +216,16 @@ public abstract class NodeGraph<N, E> {
 
             boolean changed;
             if (s instanceof ArrayUnenforcedSortedSet) {
-                if (((ArrayUnenforcedSortedSet)in).get(0).equals(e)) {
+                if (((ArrayUnenforcedSortedSet)s).get(0).equals(e)) {
                     s = Collections.EMPTY_LIST;
                     changed = true;
                 } else {
                     changed = false;
                 }
             } else {
-                changed = in.remove(e);
+                changed = s.remove(e);
                 if (changed) {
-                    switch (in.size()) {
+                    switch (s.size()) {
                         case 0:
                             throw new UnsupportedOperationException();
                         case 1:
