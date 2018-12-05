@@ -61,7 +61,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
             tailCursor = new AtomicInteger()
     ;
 
-    private static final boolean drainNullifies = true;
+
 
 
     public int clear(Consumer<X> each) {
@@ -277,38 +277,27 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
             // integer overflow
             final int nToRead = Math.min((tail.get() - pollPos), maxElements);
             if (nToRead > 0) {
-
-                int n0 = i(pollPos, cap);
-                {
-                    int n = n0;
-                    for (int i = 0; i < nToRead; i++) {
-                        x[i] = getOpaque(n++);
-                        if (n == cap) n = 0;
-                    }
-                }
-
                 // if we still control the sequence, update and return
                 if(headCursor.compareAndSet(pollPos,  pollPos+nToRead)) {
-
-                    //optional: clear the buffer what was extracted
-                    if (drainNullifies) {
-
-                            int n = n0;
-                            for (int i = 0; i < nToRead; i++) {
-                                lazySet(n++, null); if (n == cap) n = 0;
-                            }
-
+                    int n0 = i(pollPos, cap);
+                    int n = n0;
+                    for (int i = 0; i < nToRead; i++) {
+                        x[i] = getAndSet(n++, null);
+                        if (n == cap) n = 0;
                     }
 
                     head.addAndGet(nToRead);
                     return nToRead;
+                } else {
+                    spin = progressiveYield(spin); // wait for access
                 }
+
+
             } else {
                 // nothing to read now
                 return 0;
             }
-            // wait for access
-            spin = progressiveYield(spin);
+
         }
     }
 

@@ -8,7 +8,7 @@ abstract public class AbstractTimedRunnable extends AbstractTimedFuture<Void> {
 
     protected AbstractTimedRunnable() {
         super();
-        run = null;
+        run = this;
     }
 
     protected AbstractTimedRunnable(int rounds, Runnable run) {

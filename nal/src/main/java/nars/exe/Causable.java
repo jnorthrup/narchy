@@ -5,7 +5,7 @@ import nars.NAR;
 import nars.control.NARService;
 import nars.term.Term;
 
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 
 import static nars.time.Tense.TIMELESS;
@@ -28,7 +28,7 @@ abstract public class Causable extends NARService {
     /** id as set by the scheduler to identify it */
     @Deprecated public volatile int scheduledID = -1;
 
-    final Semaphore instance;
+    final AtomicBoolean busy;
 
     private volatile long sleepUntil = TIMELESS;
 
@@ -52,7 +52,8 @@ abstract public class Causable extends NARService {
         if (nar != null)
             nar.on(this);
         this.nar = nar;
-        this.instance = new Semaphore(singleton() ?  1 : Runtime.getRuntime().availableProcessors());
+        this.busy = //new Semaphore(singleton() ?  1 : Runtime.getRuntime().availableProcessors());
+            singleton() ? new AtomicBoolean(false) : null;
     }
 
     @Override

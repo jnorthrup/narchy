@@ -24,6 +24,7 @@ import nars.time.clock.RealTime;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -134,11 +135,13 @@ abstract public class MultiExec extends UniExec {
 
     @Override
     public void start(NAR n) {
-        this.nextCycle = n.loop.run;
+
         super.start(n);
         ons.add(DurService.on(n, this::onDur));
 
-
+        this.nextCycle = n.loop.run;
+        if (nextCycle==null)
+            throw new NullPointerException();
 
 
     }
@@ -338,8 +341,8 @@ abstract public class MultiExec extends UniExec {
             b.forEach(this::executeNow);
         } else {
 
-            float granularity = 2;
-            int chunkSize = Math.max(1, (int) Math.min(concurrency, b.size() / (concurrency * granularity)));
+            float granularity = 1 * (concurrency/2);
+            int chunkSize = Math.max(1, (int) Math.min(concurrency, b.size() / (granularity)));
 
             (((FasterList<?>) b).chunkView(chunkSize))
                     .parallelStream().forEach(x -> x.forEach(this::executeNow));
@@ -442,7 +445,7 @@ abstract public class MultiExec extends UniExec {
         }
 
         final AtomicReference<Runnable> narCycle = new AtomicReference(null);
-
+        final AtomicBoolean narCycleBusy = new AtomicBoolean(false);
 
         /**
          * a lucky worker gets to execute the next NAR cycle when ready
@@ -450,8 +453,15 @@ abstract public class MultiExec extends UniExec {
         final boolean tryCycle() {
             Runnable r = narCycle.getAndSet(null);
             if (r != null) {
-                nar.run();
-                return true;
+                if (narCycleBusy.compareAndSet(false, true)) {
+                    try {
+                        nar.run();
+                        return true;
+                    } finally {
+                        narCycleBusy.set(false);
+                    }
+                }
+                return false;
             }
             return false;
         }
@@ -459,14 +469,16 @@ abstract public class MultiExec extends UniExec {
         @Override
         protected void nextCycle(Runnable r) {
             //it will be the same instance each time.  so only concerned if it wasnt already cleared by now
-            if (this.narCycle.getAndSet(r) != null) {
 
-                //TODO measure
-                //if this happens excessively then probably need to reduce the framerate, ie. backpressure
-
-                //logger.warn("lag trying to execute NAR cycle");
-
-            }
+            this.narCycle.set(r);
+//            if (this.narCycle.getAndSet(r) != null) {
+//
+//                //TODO measure
+//                //if this happens excessively then probably need to reduce the framerate, ie. backpressure
+//
+//                //logger.warn("lag trying to execute NAR cycle");
+//
+//            }
         }
 
         @Override
@@ -533,12 +545,18 @@ abstract public class MultiExec extends UniExec {
             private long work() {
                 long workStart = System.nanoTime();
 
+                tryCycle();
+
                 do {
                     int available = in.size(); //in.capacity();
+                    float granularity =
+                            //concurrency() - 1;
+                            concurrency() / 2;
+                            //1;
                     int batchSize =
                             Util.lerp(nar.loop.throttle.floatValue(),
                                     available, /* all of it if low throttle. this allows other threads to remains asleep while one awake thread takes care of it all */
-                                    (int) Math.ceil((((float) available) / Math.max(1, (concurrency()-1))))
+                                    (int) Math.ceil((((float) available) / Math.max(1, granularity)))
                             );
 
                     int drained = in.remove(schedule, batchSize);
@@ -546,8 +564,6 @@ abstract public class MultiExec extends UniExec {
                         execute(schedule, 1);
                     }
                 } while (!queueSafe());
-
-                tryCycle();
 
                 long workEnd = System.nanoTime();
 
@@ -557,22 +573,20 @@ abstract public class MultiExec extends UniExec {
             private void play(long playTime) {
 
 
-                long until = System.nanoTime() + playTime;
 
                 //generate planning
 
 
 
-                double granularity = Math.max(1, can.size());
-
                 //autojiffy
-                double jiffies = Math.max(1, granularity/(concurrency())) //((double)granularity) * Math.max(1, (granularity - 1)) / concurrency();
-                        ;
-                double jiffyTime = playTime / jiffies;
-                double minJiffyTime = jiffyTime;
-                double maxJiffyTime = playTime;
 
-                while (queueSafe() && (until > System.nanoTime())) {
+                int granularity = 1;
+                //double jiffyShort = 2 * Math.max(1, granularity/(concurrency())); //((double)granularity) * Math.max(1, (granularity - 1)) / concurrency();
+                double minJiffyTime = 0;
+                double maxJiffyTime = playTime / ((double) (granularity * Math.max(1, can.size() )));
+
+                long until = System.nanoTime() + playTime;
+                do {
                     //int ii = i;
                     InstrumentedCausable c = can.getIndex(rng);
                     if (c == null) break; //empty
@@ -583,7 +597,7 @@ abstract public class MultiExec extends UniExec {
                         continue;
 
                     boolean singleton = c.c.singleton();
-                    if (!singleton || c.c.instance.tryAcquire()) {
+                    if (!singleton || c.c.busy.weakCompareAndSetAcquire(false,true)) {
                         try {
 
                             long runtimeNS =
@@ -596,17 +610,16 @@ abstract public class MultiExec extends UniExec {
 
                         } finally {
                             if (singleton)
-                                c.c.instance.release();
+                                c.c.busy.setRelease(false);
                         }
                     }
 
-                    tryCycle();
                     //if (ii == 0)
                     //System.out.println(c + " for " + Texts.timeStr(runtimeNS) + " " + c.iterations.getMean() + " iters");
 
                     //schedule.add((Runnable) () -> c.runFor(runtimeNS));
                     //});
-                }
+                } while (queueSafe() && (until > System.nanoTime()));
                 //}
             }
 
