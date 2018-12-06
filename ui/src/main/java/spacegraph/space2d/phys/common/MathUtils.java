@@ -198,7 +198,7 @@ public class MathUtils extends PlatformMathUtils {
     }
 
     public static v2 clamp(final v2 a, final v2 low, final v2 high) {
-        final v2 min = new Vec2();
+        final v2 min = new v2();
         min.x = a.x < high.x ? a.x : high.x;
         min.y = a.y < high.y ? a.y : high.y;
         min.x = low.x > min.x ? low.x : min.x;

@@ -25,18 +25,17 @@ package spacegraph.space2d.phys.dynamics.contacts;
 
 import spacegraph.space2d.phys.collision.Manifold.ManifoldType;
 import spacegraph.space2d.phys.common.Settings;
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.util.math.v2;
 
 class ContactPositionConstraint {
     final v2[] localPoints = new v2[Settings.maxManifoldPoints];
-    final v2 localNormal = new Vec2();
-    final v2 localPoint = new Vec2();
+    final v2 localNormal = new v2();
+    final v2 localPoint = new v2();
     int indexA;
     int indexB;
     float invMassA, invMassB;
-    final v2 localCenterA = new Vec2();
-    final v2 localCenterB = new Vec2();
+    final v2 localCenterA = new v2();
+    final v2 localCenterB = new v2();
     float invIA, invIB;
     ManifoldType type;
     float radiusA, radiusB;
@@ -44,7 +43,7 @@ class ContactPositionConstraint {
 
     public ContactPositionConstraint() {
         for (int i = 0; i < localPoints.length; i++) {
-            localPoints[i] = new Vec2();
+            localPoints[i] = new v2();
         }
     }
 }

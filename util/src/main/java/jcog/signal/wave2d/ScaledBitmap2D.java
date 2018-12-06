@@ -57,13 +57,14 @@ public class ScaledBitmap2D extends MonoBufImgBitmap2D /* TODO extends ArrayBitm
         if (in == null)
             return;
 
-        if (sourceImage == null || outgfx == null || sourceImage.getWidth() != pw || sourceImage.getHeight() != ph) {
+        if (raster == null || outgfx == null || raster.getWidth() != pw || raster.getHeight() != ph) {
 
             if (outgfx!=null)
                 outgfx.dispose();
 
-            sourceImage = new BufferedImage(pw, ph, BufferedImage.TYPE_INT_RGB);
-            outgfx = sourceImage.createGraphics();
+            img = new BufferedImage(pw, ph, BufferedImage.TYPE_INT_RGB);
+            raster = img.getRaster();
+            outgfx = img.createGraphics();
 
 
 

@@ -29,7 +29,7 @@ import spacegraph.util.math.v2;
 
 public class RaycastResult {
     private float lambda = 0.0f;
-    private final v2 normal = new Vec2();
+    private final v2 normal = new v2();
 
     public RaycastResult set(RaycastResult argOther) {
         lambda = argOther.lambda;

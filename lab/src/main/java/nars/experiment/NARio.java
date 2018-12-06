@@ -1,6 +1,7 @@
 package nars.experiment;
 
 import jcog.math.FloatRange;
+import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -67,8 +68,15 @@ public class NARio extends NAgentX {
 
         game.start();
 
-        PixelBag cc = PixelBag.of(() -> game.image, 32, 24);
+        PixelBag cc = new PixelBag(new MonoBufImgBitmap2D(() -> game.image), 32, 24) {
+            @Override
+            protected float noise() {
+                return 0.5f;
+            }
+        };
+
         cc.addActions(id, this, false, false, true);
+        //addCamera(new Bitmap2DSensor(id, cc, nar));
         cc.actions.forEach(a -> a.resolution(0.5f));
 
 
@@ -87,12 +95,11 @@ public class NARio extends NAgentX {
 
 
         int nx = 4;
-        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.inh("cae", id), cc.pixels, nx, nx, (subX, subY) -> {
+        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.inh("cae", id), cc, nx, nx, (subX, subY) -> {
             return new float[]{/*cc.X, cc.Y, */cc.Z};
         }, 12, this);
         camAE.alpha(0.03f);
         camAE.noise.set(0.05f);
-        onFrame(cc::update);
 
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
@@ -131,6 +138,7 @@ public class NARio extends NAgentX {
                 float y = (M.y - yCam) / 240f;
                 cc.setXRelative(x);
                 cc.setYRelative(y);
+                cc.setMinZoom(1);
             } else {
                 theMario = null;
             }

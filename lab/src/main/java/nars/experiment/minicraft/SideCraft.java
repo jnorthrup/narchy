@@ -1,6 +1,7 @@
 package nars.experiment.minicraft;
 
 import jcog.Util;
+import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -44,7 +45,7 @@ public class SideCraft extends NAgentX {
 
         BufferedImage camBuffer = ((AwtGraphicsHandler) craft.gfx).buffer;
 
-        PixelBag cam = PixelBag.of(() -> camBuffer, 48, 32).addActions($.$("cra"), this);
+        PixelBag cam = new PixelBag(new MonoBufImgBitmap2D(() -> camBuffer), 48, 32).addActions($.$("cra"), this);
 
 
         camAE = new AutoclassifiedBitmap("cra", cam.pixels, 8, 8, 32, this);

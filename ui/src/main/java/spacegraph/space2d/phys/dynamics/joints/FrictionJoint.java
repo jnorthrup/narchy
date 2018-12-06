@@ -31,7 +31,6 @@ package spacegraph.space2d.phys.dynamics.joints;
 import spacegraph.space2d.phys.common.Mat22;
 import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.Rot;
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
 import spacegraph.util.math.v2;
@@ -66,10 +65,10 @@ public class FrictionJoint extends Joint {
 
     FrictionJoint(IWorldPool argWorldPool, FrictionJointDef def) {
         super(argWorldPool, def);
-        m_localAnchorA = new Vec2(def.localAnchorA);
-        m_localAnchorB = new Vec2(def.localAnchorB);
+        m_localAnchorA = new v2(def.localAnchorA);
+        m_localAnchorB = new v2(def.localAnchorB);
 
-        m_linearImpulse = new Vec2();
+        m_linearImpulse = new v2();
         m_angularImpulse = 0.0f;
 
         m_maxForce = def.maxForce;

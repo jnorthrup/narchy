@@ -150,7 +150,7 @@ public class Mat33 implements Serializable {
      * @return
      */
     public final v2 solve22(v2 b) {
-        v2 x = new Vec2();
+        v2 x = new v2();
         solve22ToOut(b, x);
         return x;
     }

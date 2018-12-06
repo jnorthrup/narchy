@@ -23,7 +23,6 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.collision;
 
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.util.math.v2;
 
 
@@ -36,8 +35,8 @@ public class RayCastInput {
     public float maxFraction;
 
     public RayCastInput() {
-        p1 = new Vec2();
-        p2 = new Vec2();
+        p1 = new v2();
+        p2 = new v2();
         maxFraction = 0;
     }
 

@@ -1,6 +1,5 @@
 package spacegraph.space2d.phys.fracture.fragmentation;
 
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.fracture.Fragment;
 import spacegraph.util.math.v2;
 
@@ -9,7 +8,7 @@ import spacegraph.util.math.v2;
  *
  * @author Marek Benovic
  */
-public class Vec2Intersect extends Vec2 {
+public class Vec2Intersect extends v2 {
     /**
      * Fragmenty, ktore rozdeluje hrana, na ktorej sa nachadza prienikovy bod
      */
@@ -47,9 +46,11 @@ public class Vec2Intersect extends Vec2 {
      * @param k Pozicia na hrane primaneho polygonu (podla k prebehne triedenie)
      */
     public Vec2Intersect(v2 a, double k) {
+        super();
         this.x = a.x;
         this.y = a.y;
         this.k = k;
         this.vec2 = a;
     }
+
 }

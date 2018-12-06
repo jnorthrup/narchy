@@ -58,7 +58,7 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
         expandBuffers(0, m_nodeCapacity);
 
         for (int i = 0; i < drawVecs.length; i++) {
-            drawVecs[i] = new Vec2();
+            drawVecs[i] = new v2();
         }
     }
 
@@ -193,7 +193,7 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
         }
     }
 
-    private final v2 r = new Vec2();
+    private final v2 r = new v2();
     private final AABB aabb = new AABB();
     private final RayCastInput subInput = new RayCastInput();
 
@@ -844,7 +844,7 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
     }
 
     private final Color3f color = new Color3f();
-    private final v2 textVec = new Vec2();
+    private final v2 textVec = new v2();
 
     private void drawTree(DebugDraw argDraw, int node, int spot, int height) {
         AABB a = m_aabb[node];

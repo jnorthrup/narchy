@@ -6,7 +6,6 @@ import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.EdgeShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.collision.shapes.Shape;
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.dynamics.joints.DistanceJoint;
 import spacegraph.space2d.phys.dynamics.joints.Joint;
@@ -86,7 +85,7 @@ public class Box2DTests extends JComponent implements Runnable {
     private volatile MouseJointDef mjdef;
     private volatile MouseJoint mj;
     private volatile boolean destroyMj = false;
-    private volatile v2 mousePosition = new Vec2();
+    private volatile v2 mousePosition = new v2();
 
     private void initMouse() {
         addMouseWheelListener((MouseWheelEvent e) -> {
@@ -309,8 +308,8 @@ public class Box2DTests extends JComponent implements Runnable {
 
     private void drawJoint(Joint joint) {
         g.setColor(Color.GREEN);
-        v2 v1 = new Vec2();
-        v2 v2 = new Vec2();
+        v2 v1 = new v2();
+        v2 v2 = new v2();
         switch (joint.getType()) {
             case DISTANCE:
                 DistanceJoint dj = (DistanceJoint) joint;
@@ -360,7 +359,7 @@ public class Box2DTests extends JComponent implements Runnable {
         } else {
             g.setColor(Color.GRAY);
         }
-        v2 v = new Vec2();
+        v2 v = new v2();
         MyList<PolygonFixture> generalPolygons = new MyList<>();
         for (Fixture f = body.fixtures; f != null; f = f.next) {
             PolygonFixture pg = f.polygon;

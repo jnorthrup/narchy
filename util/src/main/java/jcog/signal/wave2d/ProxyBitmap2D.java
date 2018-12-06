@@ -20,21 +20,20 @@ public class ProxyBitmap2D implements Bitmap2D {
     }
 
     public synchronized <P extends ProxyBitmap2D> P set(@Nullable Bitmap2D src) {
-        if (this.src!=src) {
-            this.w = this.h = 1; //set to zero while switching
-            this.src = src;
-            if (src!=null) {
-                this.w = src.width();
-                this.h = src.height();
-            }
-        }
+        this.src = src;
         return (P) this;
     }
 
 
     @Override
     public void update() {
-        src.update();
+        if (src!=null) {
+            src.update();
+            w = src.width();
+            h = src.height();
+        } else {
+            w = h = 0;
+        }
     }
 
     @Override
@@ -51,4 +50,5 @@ public class ProxyBitmap2D implements Bitmap2D {
     public float brightness(int x, int y) {
         return src.brightness(x, y);
     }
+
 }

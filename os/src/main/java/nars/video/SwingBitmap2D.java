@@ -4,6 +4,8 @@ import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import spacegraph.util.AWTCamera;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.function.Supplier;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -11,7 +13,7 @@ import static java.lang.Math.min;
 /**
  * Captures a awt/swing component to a bitmap and scales it down, returning an image pixel by pixel
  */
-public class SwingBitmap2D extends MonoBufImgBitmap2D {
+public class SwingBitmap2D extends MonoBufImgBitmap2D implements Supplier<BufferedImage> /* HACK */ {
 
     private final Component component;
 
@@ -23,12 +25,13 @@ public class SwingBitmap2D extends MonoBufImgBitmap2D {
         super();
         this.component = component;
         input(0, 0, component.getWidth(), component.getHeight());
-        source = ()->{
-            return AWTCamera.get(component, sourceImage, in);
-        };
+        source = ()-> AWTCamera.get(component, img, in);
         update();
     }
 
+    @Deprecated @Override public BufferedImage get() {
+        return img;
+    }
 
     public void input(int x, int y, int w, int h) {
         this.in = new Rectangle(x, y, w, h);

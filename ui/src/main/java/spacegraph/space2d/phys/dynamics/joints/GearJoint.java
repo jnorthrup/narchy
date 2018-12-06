@@ -31,7 +31,6 @@ package spacegraph.space2d.phys.dynamics.joints;
 import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
@@ -63,13 +62,13 @@ public class GearJoint extends Joint {
     private final Body2D m_bodyD;
 
     
-    private final v2 m_localAnchorA = new Vec2();
-    private final v2 m_localAnchorB = new Vec2();
-    private final v2 m_localAnchorC = new Vec2();
-    private final v2 m_localAnchorD = new Vec2();
+    private final v2 m_localAnchorA = new v2();
+    private final v2 m_localAnchorB = new v2();
+    private final v2 m_localAnchorC = new v2();
+    private final v2 m_localAnchorD = new v2();
 
-    private final v2 m_localAxisC = new Vec2();
-    private final v2 m_localAxisD = new Vec2();
+    private final v2 m_localAxisC = new v2();
+    private final v2 m_localAxisD = new v2();
 
     private final float m_referenceAngleA;
     private final float m_referenceAngleB;
@@ -81,11 +80,11 @@ public class GearJoint extends Joint {
 
     
     private int m_indexA, m_indexB, m_indexC, m_indexD;
-    private final v2 m_lcA = new Vec2(), m_lcB = new Vec2(), m_lcC = new Vec2(),
-            m_lcD = new Vec2();
+    private final v2 m_lcA = new v2(), m_lcB = new v2(), m_lcC = new v2(),
+            m_lcD = new v2();
     private float m_mA, m_mB, m_mC, m_mD;
     private float m_iA, m_iB, m_iC, m_iD;
-    private final v2 m_JvAC = new Vec2(), m_JvBD = new Vec2();
+    private final v2 m_JvAC = new v2(), m_JvBD = new v2();
     private float m_JwA, m_JwB, m_JwC, m_JwD;
     private float m_mass;
 

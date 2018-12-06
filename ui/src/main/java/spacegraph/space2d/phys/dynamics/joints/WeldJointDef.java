@@ -23,7 +23,6 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics.joints;
 
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.util.math.v2;
 
@@ -62,8 +61,8 @@ public class WeldJointDef extends JointDef {
 
     public WeldJointDef() {
         super(JointType.WELD);
-        localAnchorA = new Vec2();
-        localAnchorB = new Vec2();
+        localAnchorA = new v2();
+        localAnchorB = new v2();
         referenceAngle = 0.0f;
     }
 

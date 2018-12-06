@@ -42,8 +42,8 @@ public class ChainShape extends Shape {
 
     public v2[] m_vertices;
     public int m_count;
-    private final v2 m_prevVertex = new Vec2();
-    private final v2 m_nextVertex = new Vec2();
+    private final v2 m_prevVertex = new v2();
+    private final v2 m_nextVertex = new v2();
     private boolean m_hasPrevVertex = false;
     private boolean m_hasNextVertex = false;
 
@@ -201,9 +201,9 @@ public class ChainShape extends Shape {
             }
         }
         for (int i = 0; i < count; i++) {
-            m_vertices[i] = new Vec2(vertices[i]);
+            m_vertices[i] = new v2(vertices[i]);
         }
-        m_vertices[count] = new Vec2(m_vertices[0]);
+        m_vertices[count] = new v2(m_vertices[0]);
         m_prevVertex.set(m_vertices[m_count - 2]);
         m_nextVertex.set(m_vertices[1]);
         m_hasPrevVertex = true;
@@ -230,7 +230,7 @@ public class ChainShape extends Shape {
             }
         }
         for (int i = 0; i < m_count; i++) {
-            m_vertices[i] = new Vec2(vertices[i]);
+            m_vertices[i] = new v2(vertices[i]);
         }
         m_hasPrevVertex = false;
         m_hasNextVertex = false;

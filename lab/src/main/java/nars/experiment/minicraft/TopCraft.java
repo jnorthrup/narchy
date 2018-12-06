@@ -1,5 +1,6 @@
 package nars.experiment.minicraft;
 
+import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -30,7 +31,7 @@ public class TopCraft extends NAgentX {
         TopDownMinicraft.start(craft);
         //craft.changeLevel(1);
 
-        PixelBag p = PixelBag.of(() -> craft.image, 64, 64).addActions(id, this);
+        PixelBag p = new PixelBag(new MonoBufImgBitmap2D(() -> craft.image), 64, 64).addActions(id, this);
         int nx = 8;
         camAE = new AutoclassifiedBitmap("cae", p.pixels, nx, nx, (subX, subY) -> {
             return new float[1]; //return new float[]{p.X, p.Y, p.Z};

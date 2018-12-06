@@ -28,7 +28,6 @@
  */
 package spacegraph.space2d.phys.dynamics.joints;
 
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.util.math.v2;
 
@@ -62,8 +61,8 @@ class FrictionJointDef extends JointDef {
 
     public FrictionJointDef() {
         super(JointType.FRICTION);
-        localAnchorA = new Vec2();
-        localAnchorB = new Vec2();
+        localAnchorA = new v2();
+        localAnchorB = new v2();
         maxForce = 0f;
         maxTorque = 0f;
     }

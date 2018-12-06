@@ -10,8 +10,9 @@ import jake2.render.JoglGL2Renderer;
 import jake2.sys.IN;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
+import jcog.signal.wave2d.BrightnessNormalize;
+import jcog.signal.wave2d.ImageFlip;
 import jcog.signal.wave2d.ScaledBitmap2D;
-import jcog.signal.wave2d.WhiteEqualize;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -49,6 +50,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
     final ColorSpace raster = ColorSpace.getInstance(1000);
     final ComponentColorModel colorModel = new ComponentColorModel(raster, nBits, false, false, 1, 0);
 
+    /** may be vertically flipped, sorry */
     final Supplier<BufferedImage> screenshotter = () -> {
         if (seen == null || width == 0 || height == 0)
             return null;
@@ -115,12 +117,11 @@ public class Jake2Agent extends NAgentX implements Runnable {
 
 //        Bitmap2DSensor<PixelBag> vision = senseCameraRetina(
 //                "q", screenshotter, 32, 24);
-        PixelBag vision = PixelBag.of(
-                new WhiteEqualize(
-                        new ScaledBitmap2D(screenshotter, 64, 48)
+        PixelBag vision = new PixelBag(
+                new BrightnessNormalize(
+                        new ImageFlip(false, true, new ScaledBitmap2D(screenshotter, 64, 48))
                 ), 64, 48);
         vision.setZoom(0);
-        vision.vflip = true;
         //vision.addActions($$("q"), this);
 //        vision.setMinZoomOut(0.5f);
 //        vision.setMaxZoomOut(1f);

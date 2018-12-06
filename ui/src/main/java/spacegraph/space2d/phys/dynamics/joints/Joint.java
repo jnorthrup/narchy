@@ -30,7 +30,6 @@ import spacegraph.space2d.phys.pooling.IWorldPool;
 import spacegraph.util.math.v2;
 
 
-
 /**
  * The base joint class. Joints are used to constrain two bodies together in various fashions. Some
  * joints also feature limits and motors.
@@ -48,11 +47,11 @@ public abstract class Joint {
 
     @Override
     public boolean equals(Object obj) {
-        return this==obj;
+        return this == obj;
     }
 
     public static Joint build(Dynamics2D world, JointDef def) {
-        
+
         switch (def.type) {
             case MOUSE:
                 return new MouseJoint(world.pool, (MouseJointDef) def);
@@ -99,12 +98,8 @@ public abstract class Joint {
 
     private Object data;
 
-    IWorldPool pool;
+    @Deprecated IWorldPool pool;
 
-    
-    
-    
-    
 
     Joint(IWorldPool worldPool, JointDef def) {
         assert (def.bodyA != def.bodyB);
@@ -129,8 +124,7 @@ public abstract class Joint {
         edgeB.prev = null;
         edgeB.next = null;
 
-        
-        
+
     }
 
     /**
@@ -189,7 +183,6 @@ public abstract class Joint {
     public abstract float getReactionTorque(float inv_dt);
 
 
-
     /**
      * get the user data pointer.
      */
@@ -241,7 +234,6 @@ public abstract class Joint {
      */
     void destructor() {
     }
-
 
 
 }

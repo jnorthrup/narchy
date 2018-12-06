@@ -29,7 +29,6 @@ import spacegraph.space2d.phys.collision.RayCastOutput;
 import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.util.math.v2;
 
 /**
@@ -43,20 +42,20 @@ public class EdgeShape extends Shape {
     /**
      * edge vertex 1
      */
-    public final v2 m_vertex1 = new Vec2();
+    public final v2 m_vertex1 = new v2();
     /**
      * edge vertex 2
      */
-    public final v2 m_vertex2 = new Vec2();
+    public final v2 m_vertex2 = new v2();
 
     /**
      * optional adjacent vertex 1. Used for smooth collision
      */
-    public final v2 m_vertex0 = new Vec2();
+    public final v2 m_vertex0 = new v2();
     /**
      * optional adjacent vertex 2. Used for smooth collision
      */
-    public final v2 m_vertex3 = new Vec2();
+    public final v2 m_vertex3 = new v2();
     public boolean m_hasVertex0 = false, m_hasVertex3 = false;
 
 

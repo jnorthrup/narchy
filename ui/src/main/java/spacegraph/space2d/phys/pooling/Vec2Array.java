@@ -23,7 +23,6 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.pooling;
 
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.util.math.v2;
 
 import java.util.HashMap;
@@ -51,7 +50,7 @@ public class Vec2Array {
     private static v2[] getInitializedArray(int argLength) {
         final v2[] ray = new v2[argLength];
         for (int i = 0; i < ray.length; i++) {
-            ray[i] = new Vec2();
+            ray[i] = new v2();
         }
         return ray;
     }

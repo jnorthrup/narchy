@@ -4,8 +4,9 @@ import jcog.Util;
 import jcog.learn.pid.MiniPID;
 import jcog.math.FloatAveraged;
 import jcog.math.FloatSupplier;
+import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
-import jcog.signal.wave2d.WhiteEqualize;
+import jcog.signal.wave2d.BrightnessNormalize;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -80,17 +81,18 @@ public class FZero extends NAgentX {
 //        Param.DEBUG_ENSURE_DITHERED_TRUTH = true;
 //        Param.DEBUG_EXTRA = true;
 
-        ScaledBitmap2D visionBuffer = new ScaledBitmap2D(() -> fz.image,
+
+        ScaledBitmap2D visionBuffer = new ScaledBitmap2D(()->fz.image,
                 24, 20
         ).crop(0, 0.23f, 1f, 1f);
 
 //        Bitmap2D vision = visionBuffer.each(a -> {
 //            return Util.tanhFast(a * 1.2f);
 //        });
-        WhiteEqualize vision = new WhiteEqualize(visionBuffer);
-        onFrame(()->vision.update());
+        BrightnessNormalize vision = new BrightnessNormalize(visionBuffer);
 
-        //onFrame(visionBuffer::update);
+
+
 
 //        c = senseCamera($.p($.the("cam"), id), vision/*.blur()*/)
 //            //.diff()

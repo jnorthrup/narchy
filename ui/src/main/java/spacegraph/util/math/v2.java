@@ -31,10 +31,10 @@
 
 package spacegraph.util.math;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.pri.ScalarValue;
 import jcog.tree.rtree.Spatialization;
-import org.jetbrains.annotations.NotNull;
 import spacegraph.space3d.phys.BulletGlobals;
 
 /**
@@ -76,6 +76,7 @@ public class v2 implements java.io.Serializable, Cloneable {
         this.x = t[0];
         this.y = t[1];
     }
+
 
     public static v2 abs(v2 a) {
         return new v2(Math.abs(a.x), Math.abs(a.y));
@@ -149,25 +150,25 @@ public class v2 implements java.io.Serializable, Cloneable {
     }
 
     public boolean isNaN() {
-        return (x!=x) || (y!=y);
+        return (x != x) || (y != y);
     }
 
     /**
      * Returns the length of this vector.
+     *
      * @return the length of this vector
      */
-    public final float length()
-    {
-        return (float) Math.sqrt(this.x*this.x + this.y*this.y);
+    public final float length() {
+        return (float) Math.sqrt(this.x * this.x + this.y * this.y);
     }
 
     /**
      * Returns the squared length of this vector.
+     *
      * @return the squared length of this vector
      */
-    public final float lengthSquared()
-    {
-        return (this.x*this.x + this.y*this.y);
+    public final float lengthSquared() {
+        return (this.x * this.x + this.y * this.y);
     }
 
 
@@ -177,8 +178,7 @@ public class v2 implements java.io.Serializable, Cloneable {
      * @param t1 the Tuple2f containing the initialization x y data
      */
     public v2(v2 t1) {
-        this.x = t1.x;
-        this.y = t1.y;
+        this(t1.x, t1.y);
     }
 
 
@@ -197,8 +197,7 @@ public class v2 implements java.io.Serializable, Cloneable {
      * Constructs and initializes a Tuple2f to (0,0).
      */
     public v2() {
-        this.x = 0.0f;
-        this.y = 0.0f;
+
     }
 
 
@@ -214,6 +213,28 @@ public class v2 implements java.io.Serializable, Cloneable {
         return this;
     }
 
+    /**
+     * Add another vector to this one and returns result - alters this vector.
+     */
+    public final v2 addLocal(v2 v) {
+        return addLocal(v.x, v.y);
+    }
+
+    /**
+     * Subtract another vector from this one and return result - alters this vector.
+     */
+    public final v2 addLocal(float x, float y) {
+        this.x += x;
+        this.y += y;
+        return this;
+    }
+
+    /**
+     * Subtract another vector from this one and return result - alters this vector.
+     */
+    public final v2 subLocal(v2 v) {
+        return addLocal(-v.x, -v.y);
+    }
 
     /**
      * Sets the value of this tuple from the 2 values specified in
@@ -237,13 +258,6 @@ public class v2 implements java.io.Serializable, Cloneable {
         this.y = t1.y;
         return this;
     }
-
-
-
-
-
-
-
 
 
     /**
@@ -430,7 +444,9 @@ public class v2 implements java.io.Serializable, Cloneable {
         return this;
     }
 
-    /** multiplies each component */
+    /**
+     * multiplies each component
+     */
     public final v2 scaled(v2 z) {
         this.x *= z.x;
         this.y *= z.y;
@@ -442,8 +458,9 @@ public class v2 implements java.io.Serializable, Cloneable {
         this.y *= sy;
         return this;
     }
+
     public final v2 scaled(float sx, float sy, v2 target) {
-        target.set(x * sx, y* sy);
+        target.set(x * sx, y * sy);
         return target;
     }
 
@@ -498,14 +515,14 @@ public class v2 implements java.io.Serializable, Cloneable {
      * @param t the vector with which the comparison is made
      * @return true or false
      */
-    public boolean equals(@NotNull v2 t, float epsilon) {
+    public boolean equals(v2 t, float epsilon) {
         return (this == t) ||
-               (
-               Util.equals(this.x, t.x, epsilon) && Util.equals(this.y, t.y, epsilon)
-               );
+                (
+                        Util.equals(this.x, t.x, epsilon) && Util.equals(this.y, t.y, epsilon)
+                );
     }
 
-    public boolean equals(@NotNull v2 t1) {
+    public boolean equals(v2 t1) {
         return equals(t1, BulletGlobals.SIMD_EPSILON);
     }
 
@@ -514,16 +531,20 @@ public class v2 implements java.io.Serializable, Cloneable {
      * data members of t1 are equal to the corresponding data members in
      * this Tuple2f.
      *
-     * @param t1 the object with which the comparison is made
+     * @param x the object with which the comparison is made
      * @return true or false
      */
-    public boolean equals(Object t1) {
-        try {
-            v2 t2 = (v2) t1;
-            return (this.x == t2.x && this.y == t2.y);
-        } catch (NullPointerException | ClassCastException e2) {
-            return false;
-        }
+    public boolean equals(Object x) {
+        if (x == this)
+            return true;
+
+        v2 t2 = (v2) x;
+
+        if (!(x instanceof v2)) return false;
+        v2 other = (v2) x;
+        if (Float.floatToIntBits(this.x) != Float.floatToIntBits(other.x)) return false;
+        return Float.floatToIntBits(y) == Float.floatToIntBits(other.y);
+
 
     }
 
@@ -713,27 +734,18 @@ public class v2 implements java.io.Serializable, Cloneable {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    /**
+     * Return a new vector that has positive components.
+     */
+    public final v2 abs() {
+        return new v2(Math.abs(x), Math.abs(y));
+    }
 
 
     public v2 clone() {
         return new v2(x, y);
     }
+
     public final void absLocal() {
         x = Math.abs(x);
         y = Math.abs(y);
@@ -743,11 +755,20 @@ public class v2 implements java.io.Serializable, Cloneable {
      * Normalizes this vector in place.
      */
     public final float normalize() {
+        return normalize(1f);
+    }
+
+    public final v2 normalized(float scale) {
+        normalize(scale);
+        return this;
+    }
+
+    public final float normalize(float scale) {
         float sqrNorm = (this.x * this.x + this.y * this.y);
         if (sqrNorm >= Spatialization.sqrEPSILONf) {
             float norm = (float) Math.sqrt(sqrNorm);
             if (norm >= Spatialization.EPSILONf) {
-                set(this.x / norm, this.y / norm);
+                set(scale * this.x / norm, scale * this.y / norm);
                 return norm;
             }
         }
@@ -808,13 +829,14 @@ public class v2 implements java.io.Serializable, Cloneable {
         return d;
     }
 
-    public void setZero() {
-        set(0,0);
+    public final void setZero() {
+        set(0, 0);
     }
 
     public v2 add(v2 u) {
         return new v2(x + u.x, y + u.y);
     }
+
     public v2 sub(v2 u) {
         return new v2(x - u.x, y - u.y);
     }
@@ -822,6 +844,7 @@ public class v2 implements java.io.Serializable, Cloneable {
     public v2 scale(float s) {
         return new v2(x * s, y * s);
     }
+
     public v2 scale(float sx, float sy) {
         return new v2(x * sx, y * sy);
     }
@@ -835,10 +858,70 @@ public class v2 implements java.io.Serializable, Cloneable {
     }
 
     public void ensureFinite() {
-        Util.assertFinite(x); Util.assertFinite(y);
+        Util.assertFinite(x);
+        Util.assertFinite(y);
     }
 
     public float distance(v2 x) {
         return (float) Math.sqrt(distanceSq(x));
+    }
+
+    /**
+     * move linear
+     */
+    public void move(v2 other, float rate) {
+        setAnim(other, rate, false);
+    }
+
+    /**
+     * move lerp (exponential)
+     */
+    public void lerp(v2 other, float rate) {
+        setAnim(other, rate, true);
+    }
+
+    /**
+     * returns true if changed
+     */
+    public boolean setAnim(v2 other, float rate, boolean lerpOrLinear) {
+        if (rate < Float.MIN_NORMAL || this == other)
+            return false;
+
+
+        float nx = other.x, ny = other.y;
+        float px = this.x, py = this.y;
+        if (nx == px && ny == py)
+            return false;
+
+        float dx = nx - px;
+        if (dx < Spatialization.EPSILONf) {
+            px = this.x = nx;
+            dx = 0;
+        }
+        float dy = ny - py;
+        if (dy < Spatialization.EPSILONf) {
+            py = this.y = ny;
+            dy = 0;
+        }
+
+        if (dx == 0 && dy == 0)
+            return false;
+
+        if (lerpOrLinear) {
+            throw new TODO();
+        } else {
+
+            float lenSq = dx * dx + dy * dy;
+
+            if (lenSq < rate * rate) {
+                set(nx, ny); //finished
+            } else {
+                this.addLocal(new v2(dx, dy).scaled((float) (rate / Math.sqrt(lenSq))));
+            }
+
+        }
+
+        return true;
+
     }
 }

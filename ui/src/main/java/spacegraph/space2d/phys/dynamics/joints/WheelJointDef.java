@@ -28,7 +28,6 @@
  */
 package spacegraph.space2d.phys.dynamics.joints;
 
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.util.math.v2;
 
@@ -46,17 +45,17 @@ public class WheelJointDef extends JointDef {
     /**
      * The local anchor point relative to body1's origin.
      */
-    public final v2 localAnchorA = new Vec2();
+    public final v2 localAnchorA = new v2();
 
     /**
      * The local anchor point relative to body2's origin.
      */
-    public final v2 localAnchorB = new Vec2();
+    public final v2 localAnchorB = new v2();
 
     /**
      * The local translation axis in body1.
      */
-    public final v2 localAxisA = new Vec2();
+    public final v2 localAxisA = new v2();
 
     /**
      * Enable/disable the joint motor.

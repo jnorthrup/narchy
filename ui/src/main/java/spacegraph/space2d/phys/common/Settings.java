@@ -23,6 +23,8 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.common;
 
+import static jcog.Util.sqr;
+
 /**
  * Global tuning constants based on MKS units and various integer maximums (vertices per shape,
  * pairs, etc.).
@@ -228,6 +230,7 @@ public class Settings {
      * The initial size of particle data buffers.
      */
     public static final int minParticleBufferCapacity = 1024;
+    public static final float EPSILONsqr = sqr(EPSILON);
 
 
     /**

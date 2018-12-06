@@ -46,7 +46,6 @@
 
 package spacegraph.space2d.phys.collision.shapes;
 
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.util.math.v2;
 
 
@@ -72,7 +71,7 @@ public class MassData {
      */
     public MassData() {
         mass = I = 0f;
-        center = new Vec2();
+        center = new v2();
     }
 
     /**

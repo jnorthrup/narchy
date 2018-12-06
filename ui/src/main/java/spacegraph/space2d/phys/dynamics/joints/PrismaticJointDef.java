@@ -23,7 +23,6 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics.joints;
 
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.util.math.v2;
 
@@ -92,8 +91,8 @@ class PrismaticJointDef extends JointDef {
 
     public PrismaticJointDef() {
         super(JointType.PRISMATIC);
-        localAnchorA = new Vec2();
-        localAnchorB = new Vec2();
+        localAnchorA = new v2();
+        localAnchorB = new v2();
         localAxisA = new v2(1.0f, 0.0f);
         referenceAngle = 0.0f;
         enableLimit = false;

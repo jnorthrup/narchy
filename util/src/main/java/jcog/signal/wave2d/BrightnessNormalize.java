@@ -1,0 +1,123 @@
+package jcog.signal.wave2d;
+
+import jcog.TODO;
+import jcog.Util;
+import jcog.pri.ScalarValue;
+import jcog.random.SplitMix64Random;
+
+/** TODO extends MonoBufImgBitmap2D */
+public class BrightnessNormalize implements Bitmap2D {
+
+    private final Bitmap2D src;
+//    BufferedImage store = null;
+
+    private transient float[] s = null;
+    int W, H;
+
+    /** for noise */
+    private SplitMix64Random rng = new SplitMix64Random(1);
+
+    public BrightnessNormalize(Bitmap2D src) {
+        this.src = src;
+        update(); //initialize
+    }
+
+    @Override
+    public synchronized void update() {
+
+        src.update();
+
+//        BufferedImage from = src.get();
+//        if (from == null) {
+//            W = H = 0;
+//            store = null;
+//            return;
+//        }
+
+
+        W = src.width();
+        H = src.height();
+//        if (store == null || store.getWidth()!= W || store.getHeight()!= H)
+//            store = new BufferedImage(W, H, BufferedImage.TYPE_BYTE_GRAY);
+//
+//        s = ((DataBufferByte) store.getRaster().getDataBuffer()).getData();
+        if (s == null || s.length!=W*H)
+            s = new float[W * H];
+
+        int i = 0;
+
+        double brightSum = 0;
+        float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
+        for (int y = 0; y < H; y++) {
+            for (int x = 0; x < W; x++) {
+//                int rgb = from.getRGB(x,y);
+//                float r = Bitmap2D.decode8bRed(rgb);
+//                float g = Bitmap2D.decode8bGreen(rgb);
+//                float b = Bitmap2D.decode8bBlue(rgb);
+//                float bri = (r + g + b)/3f;
+                float bri = src.brightness(x, y);
+                if (bri == bri) {
+                    if (bri < min) min = bri;
+                    if (bri > max) max = bri;
+                    brightSum += bri;
+                } else {
+                    bri = Float.NaN;
+                }
+
+                s[i++] = bri;
+            }
+        }
+        float mean = (float) (brightSum / (W * H));
+        float range = max-min;
+        if (range < ScalarValue.EPSILON)
+            return; //no change, just pass-thru
+
+        //center around the mean value
+        if (max - mean < mean - min)
+            max = Util.min(1, (mean - min) + mean);
+        else
+            min = Util.max(0, mean - (max - mean));
+
+        range = max - min;
+
+        for (i = 0; i < s.length; i++) {
+            float b = s[i];
+            if (b==b)
+                s[i] = (b/range + min);
+        }
+
+
+    }
+
+//    @Override
+//    public BufferedImage get() {
+//        update();
+//        return store;
+//    }
+
+    @Override
+    public int width() {
+        return W;
+    }
+
+    @Override
+    public int height() {
+        return H;
+    }
+
+    @Override
+    public float brightness(int xx, int yy) {
+        if (s == null)
+            return rng.nextFloat();
+
+        float x = s[yy * W + xx];
+        if (x != x)
+            return rng.nextFloat();
+        return x;
+    }
+
+    @Override
+    public float brightness(int xx, int yy, float rFactor, float gFactor, float bFactor) {
+        throw new TODO();
+    }
+}

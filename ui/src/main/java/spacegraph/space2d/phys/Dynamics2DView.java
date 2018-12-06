@@ -187,7 +187,7 @@ public class Dynamics2DView extends Surface {
             gl.glEnd();
         }
 
-        private final v2 zero = new Vec2();
+        private final v2 zero = new v2();
 
         @Override
         public void drawPolygon(v2[] vertices, int vertexCount, Color3f color) {
@@ -404,8 +404,8 @@ public class Dynamics2DView extends Surface {
             gl.glPopMatrix();
         }
 
-        private final v2 temp = new Vec2();
-        private final v2 temp2 = new Vec2();
+        private final v2 temp = new v2();
+        private final v2 temp2 = new v2();
 
         @Override
         public void drawTransform(Transform xf) {

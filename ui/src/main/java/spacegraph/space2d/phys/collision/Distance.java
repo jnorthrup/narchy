@@ -227,7 +227,7 @@ public class Distance {
         private final v2 case3 = new v2();
         private final v2 case33 = new v2();
 
-        void getWitnessPoints(Vec2 pA, v2 pB) {
+        void getWitnessPoints(v2 pA, v2 pB) {
             switch (m_count) {
                 case 0:
                     assert (false);

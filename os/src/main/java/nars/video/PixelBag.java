@@ -1,135 +1,110 @@
 package nars.video;
 
 import jcog.Util;
-import jcog.random.XorShift128PlusRandom;
+import jcog.random.SplitMix64Random;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.agent.NAgent;
 import nars.concept.action.ActionConcept;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import spacegraph.util.math.v2;
 
-import java.awt.image.BufferedImage;
 import java.util.List;
-import java.util.Random;
-import java.util.function.Supplier;
 
 import static jcog.Util.lerp;
 
 /**
  * 2D flat Raytracing Retina
  */
-public abstract class PixelBag implements Bitmap2D {
+public class PixelBag implements Bitmap2D {
 
     private final int px;
     private final int py;
 
-    final Random rng = new XorShift128PlusRandom(1);
+    final SplitMix64Random rng = new SplitMix64Random(1);
 
     /**
      * Z = 0: zoomed in all the way
      * = 1: zoomed out all the way
      */
-    public float X = 0.5f;
-    public float Y = 0.5f;
-    public float Z = 1f;
+    public final v2 pos = new v2(0.5f, 0.5f), posNext = new v2(pos);
+    private final Bitmap2D src;
+    public float Z = 1f, Znext = Z;
 
 
-
-
+    float panSpeed = 0.5f, zoomRate = 0.75f;
 
 
     public final float[][] pixels;
 
     /* > 0 */
-    float minZoomOut = 0.05f;
+    float maxZoom;
 
     /**
      * increase >1 to allow zoom out beyond input size (ex: thumbnail size)
      */
-    float maxZoomOut =
-            1.0f;
-            
+    float minZoom =
+            1f;
 
-    public boolean vflip;
+
     public List<ActionConcept> actions;
-    private float fr = 1f;
-    private float fg = 1f;
-    private float fb = 1f;
     float minClarity = 1f, maxClarity = 1f;
-    private final boolean inBoundsOnly = false; 
+    private final boolean inBoundsOnly = false;
 
 
-    public static PixelBag of(Supplier<BufferedImage> bb, int px, int py) {
-        return new PixelBag(px, py) {
-
-            public BufferedImage b;
-
-            @Override
-            public int sw() {
-                return b.getWidth();
-            }
-
-            @Override
-            public int sh() {
-                return b.getHeight();
-            }
-
-            @Override
-            public void update() {
-                if (bb instanceof Bitmap2D)
-                    ((Bitmap2D)bb).update();
-
-                b = bb.get();
-                if (b != null) {
-                    synchronized (this) {
-                        super.update();
-                    }
-                }
-
-            }
-
-            @Override
-            public int rgb(int sx, int sy) {
-                return b.getRGB(sx, sy);
-            }
-        };
-    }
-
-    public PixelBag(int px, int py) {
+    public PixelBag(Bitmap2D src, int px, int py) {
+        this.src = src;
         this.px = px;
         this.py = py;
         this.pixels = new float[px][py];
+        this.maxZoom = 1f / (Math.min(px, py)); //one pixel observation
 
     }
 
     /**
      * source width, in pixels
      */
-    abstract public int sw();
+    public int sw() {
+        return src.width();
+    }
 
     /**
      * source height, in pixels
      */
-    abstract public int sh();
+    public int sh() {
+        return src.height();
+    }
 
     @Override
     public void update() {
 
+        src.update();
+
         int sw = sw(), sh = sh();
 
-        float ew, eh;
+
+        pos.move(posNext, panSpeed);
 
 
-        float z = lerp(Z, maxZoomOut, minZoomOut);
-        ew = z * sw;
-        eh = z * sh;
+        //TODO zoom lerp
+        Z = Util.lerp(zoomRate, Z, Znext);
+
+
+        float X = pos.x, Y = pos.y;
+        float Z = this.Z;
+
+
+
+        float visibleProportion = (float) lerp(Math.sqrt(1 - Z), maxZoom, minZoom);
+        float ew = visibleProportion * (sw);
+        float eh = visibleProportion * (sh);
 
 
         float minX, maxX, minY, maxY;
         if (inBoundsOnly) {
-            
-            
+
+
             float mw, mh;
             if (ew > sw) {
                 mw = 0;
@@ -152,54 +127,33 @@ public abstract class PixelBag implements Bitmap2D {
             maxY = (Y * sh) + eh / 2f;
         }
 
-        
-
-        float cx = px / 2f;
-        float cy = py / 2f;
-
-
-
-        float pxf = px - 1;
-        float pyf = py - 1;
-
-        float fr = this.fr, fg = this.fg, fb = this.fb;
-        float fSum = fr + fg + fb;
-
-        float xRange = maxX - minX;
-        float yRange = maxY - minY;
-
-        updateClip(sw, sh, minX, maxX, minY, maxY, cx, cy, pxf, pyf, fr, fg, fb, fSum, xRange, yRange);
+        updateClip(sw, sh, minX, maxX, minY, maxY);
     }
 
-    private void updateClip(int sw, int sh, float minX, float maxX, float minY, float maxY, float cx, float cy, float pxf, float pyf, float fr, float fg, float fb, float fSum, float xRange, float yRange) {
-        int supersampling = Math.min((int) Math.floor(xRange / px / 2f), (int) Math.floor(yRange / py / 2f));
+    private void updateClip(int sw, int sh, float minX, float maxX, float minY, float maxY) {
 
-        
-        
+        float px = this.px, py = this.py;
+        float cx = px / 2f, cy = py / 2f;
+
+        float xRange = maxX - minX, yRange = maxY - minY;
+
+        int supersamplingX = (int) Math.floor(xRange / px / 2f),
+                supersamplingY = (int) Math.floor(yRange / py / 2f);
+
         float maxCenterDistanceSq = Math.max(cx, cy) * Math.max(cx, cy) * 2;
 
-        for (int ly = 0; ly < py; ly++) {
-            float l = ly / pyf;
-            int sy = Math.round(lerp(!vflip ? l : 1f - l, minY, maxY));
+        for (int oy = 0; oy < py; oy++) {
+            int sy = (int) Math.floor(lerp((oy / py), minY, maxY));
 
-            float dy = Math.abs(ly - cy);
+            float dy = Math.abs(oy - cy);
             float yDistFromCenterSq = dy * dy;
 
-            for (int lx = 0; lx < px; lx++) {
+            for (int ox = 0; ox < px; ox++) {
 
 
-
-
-
-
-
-
-                
-
-
-                if (minClarity <1 ||maxClarity < 1) {
-                    float dx = Math.abs(lx - cx);
-                    float distFromCenterSq = dx * dx + yDistFromCenterSq; 
+                if (minClarity < 1 || maxClarity < 1) {
+                    float dx = Math.abs(ox - cx);
+                    float distFromCenterSq = dx * dx + yDistFromCenterSq;
 
                     float clarity = (float) lerp(Math.sqrt(distFromCenterSq / maxCenterDistanceSq), maxClarity, minClarity);
                     if (rng.nextFloat() > clarity)
@@ -209,30 +163,42 @@ public abstract class PixelBag implements Bitmap2D {
 
                 //TODO optimize sources which are already gray (ex: 8-bit grayscale)
 
-                int sx = Math.round(lerp(lx / pxf, minX, maxX));
+                int sx = (int) Math.floor(lerp((ox) / px, minX, maxX));
 
-                int samples = 0;
-                float R = 0, G = 0, B = 0;
-                for (int esx = Math.max(0, sx - supersampling); esx <= Math.min(sw - 1, sx + supersampling); esx++) {
+                float samples = 0;
+                float brightSum = 0;
+                //float R = 0, G = 0, B = 0;
+                for (int esx = Math.max(0, sx - supersamplingX); esx <= Math.min(sw - 1, sx + 1 + supersamplingX); esx++) {
 
-                    if (esx < 0 || esx >= sw)
-                        continue;
+                    int dpx = esx - sx;
 
-                    for (int esy = Math.max(0, sy - supersampling); esy <= Math.min(sh - 1, sy + supersampling); esy++) {
-                        if (esy < 0 || esy >= sh)
-                            continue;
+                    for (int esy = Math.max(0, sy - supersamplingY); esy <= Math.min(sh - 1, sy + 1 + supersamplingY); esy++) {
 
-                        int RGB = rgb(esx, esy);
-                        R += Bitmap2D.decode8bRed(RGB);
-                        G += Bitmap2D.decode8bGreen(RGB);
-                        B += Bitmap2D.decode8bBlue(RGB);
-                        samples++;
+                        int dpy = esy - sy;
+
+                        //TODO gaussian blur, not just flat average
+                        float b = src.brightness(esx, esy);
+                        if (b == b) {
+                            float a = kernelFade(dpx, dpy);
+                            brightSum += b * a;
+                            samples += a;
+                        } //else: random?
                     }
                 }
-                float v = (samples == 0) ? 0.5f : (fr * R + fg * G + fb * B) / fSum / samples;
-                pixels[lx][ly] = v;
+                pixels[ox][oy] = (samples > 0) ? brightSum / samples : noise();
             }
         }
+    }
+
+    /** TODO refine */
+    private float kernelFade(int dpx, int dpy) {
+        int manhattan = Math.abs(dpx) + Math.abs(dpy);
+        return manhattan > 0 ? 1f/(1+manhattan*manhattan) : 1;
+    }
+
+    protected float noise() {
+        return rng.nextFloat();
+        //return Float.NaN;
     }
 
     public void setClarity(float minClarity, float maxClarity) {
@@ -240,14 +206,14 @@ public abstract class PixelBag implements Bitmap2D {
         this.maxClarity = maxClarity;
     }
 
-    abstract public int rgb(int sx, int sy);
+//    abstract public int rgb(int sx, int sy);
 
-    public void setMinZoomOut(float minZoomOut) {
-        this.minZoomOut = minZoomOut;
+    public void setMaxZoom(float maxZoom) {
+        this.maxZoom = maxZoom;
     }
 
-    public void setMaxZoomOut(float maxZoomOut) {
-        this.maxZoomOut = maxZoomOut;
+    public void setMinZoom(float minZoom) {
+        this.minZoom = minZoom;
     }
 
     @Override
@@ -265,71 +231,49 @@ public abstract class PixelBag implements Bitmap2D {
         return pixels[xx][yy];
     }
 
-    static float u(float f) {
-        return f / 2f + 0.5f;
-    }
 
     public float setZoom(float f) {
-        Z = (float)Math.sqrt(Util.unitize(f)); 
-        
+        Znext = (Util.unitize(f));
         return f;
     }
 
     public float setYRelative(float f) {
-        Y = f;
+        posNext.y = f;
         return f;
     }
 
     public float setXRelative(float f) {
-        X = f;
+        posNext.x = f;
         return f;
     }
-
-    public void setFilter(float r, float g, float b) {
-        this.fr = r;
-        this.fg = g;
-        this.fb = b;
-    }
-
-    public boolean setRedFilter(float f) {
-        this.fr = f;
-        return true;
-    }
-
-    public boolean setGreenFilter(float f) {
-        this.fr = f;
-        return true;
-    }
-
-    public boolean setBlueFilter(float f) {
-        this.fr = f;
-        return true;
-    }
-
 
     public PixelBag addActions(Term termRoot, NAgent a) {
         return addActions(termRoot, a, true, true, true);
     }
 
     public PixelBag addActions(Term termRoot, NAgent a, boolean horizontal, boolean vertical, boolean zoom) {
+        if (this.actions != null && !this.actions.isEmpty())
+            throw new UnsupportedOperationException("actions already added");
+
         actions = $.newArrayList(3);
 
         if (horizontal)
-            actions.add(a.actionUnipolar($.p( termRoot, Atomic.the("panX")), this::setXRelative));
-        else
-            X = 0.5f;
+            actions.add(a.actionUnipolar($.p(termRoot, Atomic.the("panX")), this::setXRelative));
+        else {
+            pos.x = posNext.x = 0.5f;
+        }
 
         if (vertical)
-            actions.add(a.actionUnipolar($.p( termRoot, Atomic.the("panY")), this::setYRelative));
-        else
-            Y = 0.5f;
+            actions.add(a.actionUnipolar($.p(termRoot, Atomic.the("panY")), this::setYRelative));
+        else {
+            pos.y = posNext.y = 0.5f;
+        }
 
-        if (zoom)
-            actions.add(a.actionUnipolar($.p( termRoot, Atomic.the("zoom")), this::setZoom));
-        else
-            Z = 0.5f;
-
-
+        if (zoom) {
+            actions.add(a.actionUnipolar($.p(termRoot, Atomic.the("zoom")), this::setZoom));
+            //minZoom = 1.5f; //expand to allow viewing the entire image as summary
+        } else
+            Z = Znext = 0.5f;
 
 
         return this;

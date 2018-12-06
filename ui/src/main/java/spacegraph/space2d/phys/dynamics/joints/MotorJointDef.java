@@ -1,6 +1,5 @@
 package spacegraph.space2d.phys.dynamics.joints;
 
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.util.math.v2;
 
@@ -13,7 +12,7 @@ class MotorJointDef extends JointDef {
     /**
      * Position of bodyB minus the position of bodyA, in bodyA's frame, in meters.
      */
-    public final v2 linearOffset = new Vec2();
+    public final v2 linearOffset = new v2();
 
     /**
      * The bodyB angle minus bodyA angle in radians.

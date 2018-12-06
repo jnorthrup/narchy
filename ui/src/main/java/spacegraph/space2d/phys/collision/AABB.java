@@ -25,7 +25,6 @@ package spacegraph.space2d.phys.collision;
 
 import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.Settings;
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.pooling.IWorldPool;
 import spacegraph.space2d.phys.pooling.normal.DefaultWorldPool;
 import spacegraph.util.math.v2;
@@ -111,7 +110,7 @@ public class AABB {
      * @return
      */
     public final v2 getCenter() {
-        final Vec2 center = new Vec2(lowerBound);
+        final v2 center = new v2(lowerBound);
         center.addLocal(upperBound);
         center.scaled(.5f);
         return center;

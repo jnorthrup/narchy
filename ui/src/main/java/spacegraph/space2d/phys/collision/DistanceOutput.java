@@ -23,7 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.collision;
 
-import spacegraph.space2d.phys.common.Vec2;
+import spacegraph.util.math.v2;
 
 /**
  * Output for Distance.
@@ -34,12 +34,12 @@ class DistanceOutput {
     /**
      * Closest point on shapeA
      */
-    public final Vec2 pointA = new Vec2();
+    public final v2 pointA = new v2();
 
     /**
      * Closest point on shapeB
      */
-    public final Vec2 pointB = new Vec2();
+    public final v2 pointB = new v2();
 
     public float distance;
 

@@ -1,7 +1,6 @@
 package spacegraph.space2d.phys.fracture.voronoi;
 
 import jcog.random.XoRoShiRo128PlusRandom;
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.util.math.v2;
 
 import java.util.Arrays;
@@ -94,7 +93,7 @@ public class SingletonVD {
             triangles[i] = new Triangle(i); 
         }
         for (int i = 0; i < points.length; ++i) {
-            points[i] = new Vec2(); 
+            points[i] = new v2();
         }
         for (int i = 0; i < 0x100; ++i) {
             for (int j = i + 1; j < 0x100; ++j) {

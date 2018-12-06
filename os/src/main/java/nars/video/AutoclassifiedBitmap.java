@@ -45,7 +45,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
 
     public final FloatRange alpha = new FloatRange(1f, 0, 1);
     public final FloatRange noise = new FloatRange(0.01f, 0, 1);
-    ;
+
 
 
     public static final MetaBits NoMetaBits = (x, y) -> ArrayUtils.EMPTY_FLOAT_ARRAY;
@@ -71,6 +71,9 @@ public class AutoclassifiedBitmap extends VectorSensor {
     private final NAgent agent;
     private final boolean reconstruct = true;
     private final Term[] feature;
+
+    private Bitmap2D src = null;
+
     public boolean learn = true;
 
 
@@ -141,6 +144,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
                 b.width(), b.height(),
                 sw, sh, metabits, states, agent);
 
+        this.src = b;
     }
 
     /**
@@ -227,6 +231,8 @@ public class AutoclassifiedBitmap extends VectorSensor {
 
     private void update() {
 
+        if (src!=null)
+            src.update();
 
         float minConf = nar.confMin.floatValue();
         float baseConf = nar.confDefault(BELIEF);

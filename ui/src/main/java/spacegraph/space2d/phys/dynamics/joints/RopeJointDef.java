@@ -1,6 +1,5 @@
 package spacegraph.space2d.phys.dynamics.joints;
 
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.util.math.v2;
 
@@ -15,12 +14,12 @@ public class RopeJointDef extends JointDef {
     /**
      * The local anchor point relative to bodyA's origin.
      */
-    public final v2 localAnchorA = new Vec2();
+    public final v2 localAnchorA = new v2();
 
     /**
      * The local anchor point relative to bodyB's origin.
      */
-    public final v2 localAnchorB = new Vec2();
+    public final v2 localAnchorB = new v2();
 
     /**
      * The maximum length of the rope. Warning: this must be larger than b2_linearSlop or the joint

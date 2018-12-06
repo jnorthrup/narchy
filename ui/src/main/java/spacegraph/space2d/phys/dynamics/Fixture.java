@@ -32,7 +32,6 @@ import spacegraph.space2d.phys.collision.shapes.Shape;
 import spacegraph.space2d.phys.collision.shapes.ShapeType;
 import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.Transform;
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.contacts.Contact;
 import spacegraph.space2d.phys.dynamics.contacts.ContactEdge;
 import spacegraph.space2d.phys.fracture.Material;
@@ -418,7 +417,7 @@ public class Fixture {
 
     private final AABB pool1 = new AABB();
     private final AABB pool2 = new AABB();
-    private final v2 displacement = new Vec2();
+    private final v2 displacement = new v2();
 
     /**
      * Internal method

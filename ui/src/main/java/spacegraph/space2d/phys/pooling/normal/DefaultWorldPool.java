@@ -308,7 +308,7 @@ public class DefaultWorldPool implements IWorldPool {
         if (!avecs.containsKey(argLength)) {
             v2[] ray = new v2[argLength];
             for (int i = 0; i < argLength; i++) {
-                ray[i] = new Vec2();
+                ray[i] = new v2();
             }
             avecs.put(argLength, ray);
         }

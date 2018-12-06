@@ -31,7 +31,6 @@ import spacegraph.space2d.phys.collision.RayCastInput;
 import spacegraph.space2d.phys.common.Color3f;
 import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.Settings;
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.util.math.v2;
 
 /**
@@ -72,7 +71,7 @@ public class DynamicTree implements BroadPhaseStrategy {
         m_freeList = 0;
 
         for (int i = 0; i < drawVecs.length; i++) {
-            drawVecs[i] = new Vec2();
+            drawVecs[i] = new v2();
         }
     }
 
@@ -861,7 +860,7 @@ public class DynamicTree implements BroadPhaseStrategy {
     }
 
     private final Color3f color = new Color3f();
-    private final v2 textVec = new Vec2();
+    private final v2 textVec = new v2();
 
     private void drawTree(DebugDraw argDraw, DynamicTreeNode node, int spot, int height) {
         node.aabb.getVertices(drawVecs);

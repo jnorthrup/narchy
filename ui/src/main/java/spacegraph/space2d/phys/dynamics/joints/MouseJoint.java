@@ -56,7 +56,7 @@ public class MouseJoint extends Joint {
     private float m_invMassB;
     private float m_invIB;
     private final Mat22 m_mass = new Mat22();
-    private final v2 m_C = new Vec2();
+    private final v2 m_C = new v2();
 
     public MouseJoint(IWorldPool argWorld, MouseJointDef def) {
         super(argWorld, def);

@@ -1,6 +1,8 @@
 package nars.experiment;
 
 import java4k.gradius4k.Gradius4K;
+import jcog.signal.wave2d.BrightnessNormalize;
+import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -49,13 +51,21 @@ public class Gradius extends NAgentX {
         assert px % dx == 0 && py % dy == 0;
 
         {
-            Bitmap2DSensor<PixelBag> cam = senseCameraRetina(id, () -> g.image, px, py);
-            cam.src.addActions(id,this, false, false, true);
-            onFrame(()->{
-               cam.src.setXRelative(g.player[OBJ_X] / g.getWidth());
-                cam.src.setYRelative(g.player[OBJ_Y] / g.getHeight());
-            });
-            window(new VectorSensorView(cam,this).withControls(), 400, 400);
+            PixelBag retina = new PixelBag(new MonoBufImgBitmap2D(() -> g.image), px, py) {
+                @Override
+                protected float noise() {
+                    return 0;
+                }
+            };
+//            retina.addActions(id,this, false, false, true);
+//            onFrame(()->{
+//               retina.setXRelative(g.player[OBJ_X] / g.getWidth());
+//                retina.setYRelative(g.player[OBJ_Y] / g.getHeight());
+//            });
+            Bitmap2DSensor sensor = new Bitmap2DSensor(id, new BrightnessNormalize(retina), nar);
+            addCamera(sensor);
+            retina.addActions(id, this);
+            window(new VectorSensorView(sensor, this).withControls(), 400, 400);
         }
 
 //        {

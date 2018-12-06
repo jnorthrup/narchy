@@ -554,9 +554,10 @@ abstract public class NAgentX extends NAgent {
 
 
     protected Bitmap2DSensor<PixelBag> senseCameraRetina(Term id, Supplier<BufferedImage> w, int pw, int ph) {
-        PixelBag pb = PixelBag.of(w, pw, ph);
-        pb.addActions(id, this);
-        return senseCamera(id, pb);
+        return senseCamera(id, new PixelBag(new MonoBufImgBitmap2D(w), pw, ph));
+    }
+    protected Bitmap2DSensor<PixelBag> senseCameraRetina(Term id, Bitmap2D w, int pw, int ph) {
+        return senseCamera(id, new PixelBag(w, pw, ph));
     }
 
     protected Bitmap2DSensor<WaveletBag> senseCameraFreq(String id, Supplier<BufferedImage> w, int pw, int ph) {

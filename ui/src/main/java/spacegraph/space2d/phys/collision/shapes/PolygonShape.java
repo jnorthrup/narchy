@@ -29,7 +29,6 @@ import spacegraph.space2d.phys.collision.RayCastOutput;
 import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
-import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.util.math.v2;
 
 /**
@@ -45,7 +44,7 @@ public class PolygonShape extends Shape {
     /**
      * Local position of the shape centroid in parent body frame.
      */
-    public final Vec2 centroid = new Vec2();
+    public final v2 centroid = new v2();
 
     /**
      * The vertices of the shape. Note: use getVertexCount(), not m_vertices.length, to get number of
@@ -65,10 +64,10 @@ public class PolygonShape extends Shape {
     public int vertices;
 
     
-    private final v2 pool1 = new Vec2();
-    private final Vec2 pool2 = new Vec2();
-    private final v2 pool3 = new Vec2();
-    private final v2 pool4 = new Vec2();
+    private final v2 pool1 = new v2();
+    private final v2 pool2 = new v2();
+    private final v2 pool3 = new v2();
+    private final v2 pool4 = new v2();
     private final Transform poolt1 = new Transform();
 
     public PolygonShape() {
@@ -179,7 +178,7 @@ public class PolygonShape extends Shape {
         
         for (int i = 0; i < vertices; ++i) {
             if (vertex[i] == null) {
-                vertex[i] = new Vec2();
+                vertex[i] = new v2();
             }
             vertex[i].set(verts[hull[i]]);
         }
@@ -529,7 +528,7 @@ public class PolygonShape extends Shape {
         return false;
     }
 
-    private void computeCentroidToOut(final v2[] vs, final int count, final Vec2 out) {
+    private void computeCentroidToOut(final v2[] vs, final int count, final v2 out) {
         assert (count >= 3);
 
         out.set(0.0f, 0.0f);
@@ -603,7 +602,7 @@ public class PolygonShape extends Shape {
 
         
         
-        final Vec2 s = pool2;
+        final v2 s = pool2;
         s.setZero();
         
         for (int i = 0; i < vertices; ++i) {

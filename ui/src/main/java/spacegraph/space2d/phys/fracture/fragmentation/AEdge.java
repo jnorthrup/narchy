@@ -2,7 +2,8 @@ package spacegraph.space2d.phys.fracture.fragmentation;
 
 import spacegraph.util.math.v2;
 
-import static spacegraph.space2d.phys.common.Vec2.cross;
+import static spacegraph.util.math.v2.cross;
+
 
 /**
  * Hrana polygonu voronoi diagramu - sluzi na spracovanie prienikov polygonu
@@ -109,6 +110,7 @@ abstract class AEdge {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o instanceof AEdge) {
             AEdge d = (AEdge) o;
             return (d.p1 == p1 && d.p2 == p2) || (d.p1 == p2 && d.p2 == p1);
