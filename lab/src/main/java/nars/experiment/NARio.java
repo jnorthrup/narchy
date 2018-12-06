@@ -70,7 +70,7 @@ public class NARio extends NAgentX {
 
         PixelBag cc = new PixelBag(new MonoBufImgBitmap2D(() -> game.image), 32, 24) {
             @Override
-            protected float noise() {
+            protected float missing() {
                 return 0.5f;
             }
         };

@@ -53,7 +53,7 @@ public class Gradius extends NAgentX {
         {
             PixelBag retina = new PixelBag(new MonoBufImgBitmap2D(() -> g.image), px, py) {
                 @Override
-                protected float noise() {
+                protected float missing() {
                     return 0;
                 }
             };

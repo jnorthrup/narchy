@@ -12,6 +12,7 @@ import spacegraph.util.math.v2;
 
 import java.util.List;
 
+import static java.lang.Math.round;
 import static jcog.Util.lerp;
 
 /**
@@ -49,7 +50,7 @@ public class PixelBag implements Bitmap2D {
 
 
     public List<ActionConcept> actions;
-    float minClarity = 1f, maxClarity = 1f;
+
     private final boolean inBoundsOnly = false;
 
 
@@ -93,7 +94,6 @@ public class PixelBag implements Bitmap2D {
 
         float X = pos.x, Y = pos.y;
         float Z = this.Z;
-
 
 
         float visibleProportion = (float) lerp(Math.sqrt(1 - Z), maxZoom, minZoom);
@@ -140,73 +140,81 @@ public class PixelBag implements Bitmap2D {
         int supersamplingX = (int) Math.floor(xRange / px / 2f),
                 supersamplingY = (int) Math.floor(yRange / py / 2f);
 
-        float maxCenterDistanceSq = Math.max(cx, cy) * Math.max(cx, cy) * 2;
-
         for (int oy = 0; oy < py; oy++) {
-            int sy = (int) Math.floor(lerp((oy / py), minY, maxY));
-
-            float dy = Math.abs(oy - cy);
-            float yDistFromCenterSq = dy * dy;
+            float sy = (lerp((oy / py), minY, maxY));
 
             for (int ox = 0; ox < px; ox++) {
 
-
-                if (minClarity < 1 || maxClarity < 1) {
-                    float dx = Math.abs(ox - cx);
-                    float distFromCenterSq = dx * dx + yDistFromCenterSq;
-
-                    float clarity = (float) lerp(Math.sqrt(distFromCenterSq / maxCenterDistanceSq), maxClarity, minClarity);
-                    if (rng.nextFloat() > clarity)
-                        continue;
-                }
-
-
                 //TODO optimize sources which are already gray (ex: 8-bit grayscale)
 
-                int sx = (int) Math.floor(lerp((ox) / px, minX, maxX));
+                float sx = (lerp((ox) / px, minX, maxX));
 
-                float samples = 0;
-                float brightSum = 0;
-                //float R = 0, G = 0, B = 0;
-                for (int esx = Math.max(0, sx - supersamplingX); esx <= Math.min(sw - 1, sx + 1 + supersamplingX); esx++) {
 
-                    int dpx = esx - sx;
+                /** sampled pixels in the original image (inclusive) */
+                int x1 = Math.max(0, round(sx - supersamplingX));
+                int x2 = Math.min(sw - 1, round(sx + supersamplingX + 1));
+                int y1 = Math.max(0, round(sy - supersamplingY));
+                int y2 = Math.min(sh - 1, round(sy + supersamplingY + 1));
 
-                    for (int esy = Math.max(0, sy - supersamplingY); esy <= Math.min(sh - 1, sy + 1 + supersamplingY); esy++) {
+                float v;
+                if (x1 == x2 && y1 == y2) {
+                    //simple case: the pixel exactly
+                    v = src.brightness(x1, y2);
+                } //else if (x2 - x1 == 2 && y2 - y1 == 2) {
+                //TODO bicubic interpolation
+                // }
+                else {
 
-                        int dpy = esy - sy;
+                    //generic n-ary interpolation
+                    float samples = 0;
+                    float brightSum = 0;
+                    //float R = 0, G = 0, B = 0;
+                    for (int esx = x1; esx <= x2; esx++) {
 
-                        //TODO gaussian blur, not just flat average
-                        float b = src.brightness(esx, esy);
-                        if (b == b) {
-                            float a = kernelFade(dpx, dpy);
-                            brightSum += b * a;
-                            samples += a;
-                        } //else: random?
+                        float dpx = esx - sx;
+
+                        for (int esy = y1; esy <= y2; esy++) {
+
+                            //TODO gaussian blur, not just flat average
+                            float b = src.brightness(esx, esy);
+                            if (b == b) {
+
+                                float dpy = esy - sy;
+
+                                float a = kernelFade(dpx, dpy);
+                                brightSum += b * a;
+                                samples += a;
+                            } //else: random?
+                        }
                     }
+
+                    v = (samples > 0) ? brightSum / samples : Float.NaN;
                 }
-                pixels[ox][oy] = (samples > 0) ? brightSum / samples : noise();
+
+
+                if (v != v) {
+                    v = missing();
+                }
+                pixels[ox][oy] = v;
             }
+
         }
+
     }
 
-    /** TODO refine */
-    private float kernelFade(int dpx, int dpy) {
-        int manhattan = Math.abs(dpx) + Math.abs(dpy);
-        return manhattan > 0 ? 1f/(1+manhattan*manhattan) : 1;
+
+    /**
+     * cheap sampling approximation
+     */
+    private static float kernelFade(float dpx, float dpy) {
+        float manhattan = Math.abs(dpx) + Math.abs(dpy);
+        return manhattan > Float.MIN_NORMAL ? 1f / (1 + 4 * manhattan) : 1;
     }
 
-    protected float noise() {
+    protected float missing() {
         return rng.nextFloat();
         //return Float.NaN;
     }
-
-    public void setClarity(float minClarity, float maxClarity) {
-        this.minClarity = minClarity;
-        this.maxClarity = maxClarity;
-    }
-
-//    abstract public int rgb(int sx, int sy);
 
     public void setMaxZoom(float maxZoom) {
         this.maxZoom = maxZoom;
