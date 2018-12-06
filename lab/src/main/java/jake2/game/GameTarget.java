@@ -43,7 +43,7 @@ public class GameTarget {
             return;
         }
         if (!GameBase.st.noise.contains(".wav"))
-            buffer = "" + GameBase.st.noise + ".wav";
+            buffer = GameBase.st.noise + ".wav";
         else
             buffer = GameBase.st.noise;
 

@@ -21,23 +21,31 @@ package java4k.supermarioland4k;
  *
  */
 
-import java.applet.Applet;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class a extends Applet implements Runnable {
+public class a extends JPanel implements Runnable {
 
+  public static void main(String[] args) {
+    JFrame w = new JFrame();
+    java4k.supermarioland4k.a a = new a();
+    w.getContentPane().add(a);
+
+
+    w.setSize(800,800);
+    w.setVisible(true);
+
+    a.enableEvents(8);
+    new Thread(a).start();
+
+  }
   
   private final boolean[] a = new boolean[32768];
 
-  @Override
-  public void start() {
-    enableEvents(8);
-    new Thread(this).start();
-  }
 
   @Override
   public void run() {

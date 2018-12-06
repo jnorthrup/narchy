@@ -80,7 +80,7 @@ public class GameUtil {
         
         if ((ent.message != null)
                 && (activator.svflags & Defines.SVF_MONSTER) == 0) {
-            game_import_t.centerprintf(activator, "" + ent.message);
+            game_import_t.centerprintf(activator, ent.message);
             if (ent.noise_index != 0)
                 game_import_t.sound(activator, Defines.CHAN_AUTO,
                         ent.noise_index, 1, Defines.ATTN_NORM, 0);
@@ -523,9 +523,7 @@ public class GameUtil {
         if (self.movetarget == null) {
             self.goalentity = self.movetarget = self.enemy;
             GameAI.HuntTarget(self);
-            game_import_t.dprintf("" + self.classname + "at "
-                    + Lib.vtos(self.s.origin) + ", combattarget "
-                    + self.combattarget + " not found\n");
+            game_import_t.dprintf(self.classname + "at " + Lib.vtos(self.s.origin) + ", combattarget " + self.combattarget + " not found\n");
             return;
         }
 

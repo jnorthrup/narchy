@@ -188,13 +188,11 @@ public class GameSpawn {
                 game_import_t.configstring(Defines.CS_SKY, GameBase.st.sky);
             else
                 game_import_t.configstring(Defines.CS_SKY, "unit1_");
-            game_import_t.configstring(Defines.CS_SKYROTATE, ""
-                    + GameBase.st.skyrotate);
+            game_import_t.configstring(Defines.CS_SKYROTATE, String.valueOf(GameBase.st.skyrotate));
             game_import_t.configstring(Defines.CS_SKYAXIS, Lib
                     .vtos(GameBase.st.skyaxis));
-            game_import_t.configstring(Defines.CS_CDTRACK, "" + ent.sounds);
-            game_import_t.configstring(Defines.CS_MAXCLIENTS, ""
-                    + (int) (GameBase.maxclients.value));
+            game_import_t.configstring(Defines.CS_CDTRACK, String.valueOf(ent.sounds));
+            game_import_t.configstring(Defines.CS_MAXCLIENTS, String.valueOf((int) (GameBase.maxclients.value)));
             
             if (GameBase.deathmatch.value != 0)
                 game_import_t.configstring(Defines.CS_STATUSBAR, "" + dm_statusbar);
@@ -495,7 +493,7 @@ public class GameSpawn {
         if (skill_level > 3)
             skill_level = 3;
         if (GameBase.skill.value != skill_level)
-            game_import_t.cvar_forceset("skill", "" + skill_level);
+            game_import_t.cvar_forceset("skill", String.valueOf(skill_level));
 
         PlayerClient.SaveClientData();
 

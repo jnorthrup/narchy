@@ -77,6 +77,9 @@ public abstract class PixelBag implements Bitmap2D {
 
             @Override
             public void update() {
+                if (bb instanceof Bitmap2D)
+                    ((Bitmap2D)bb).update();
+
                 b = bb.get();
                 if (b != null) {
                     synchronized (this) {
@@ -203,7 +206,9 @@ public abstract class PixelBag implements Bitmap2D {
                         continue;
                 }
 
-                
+
+                //TODO optimize sources which are already gray (ex: 8-bit grayscale)
+
                 int sx = Math.round(lerp(lx / pxf, minX, maxX));
 
                 int samples = 0;

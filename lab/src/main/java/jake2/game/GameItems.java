@@ -1202,9 +1202,7 @@ public class GameItems {
         if (ent.spawnflags != 0) {
             if (Lib.strcmp(ent.classname, "key_power_cube") != 0) {
                 ent.spawnflags = 0;
-                game_import_t.dprintf("" + ent.classname + " at "
-                        + Lib.vtos(ent.s.origin)
-                        + " has invalid spawnflags set\n");
+                game_import_t.dprintf(ent.classname + " at " + Lib.vtos(ent.s.origin) + " has invalid spawnflags set\n");
             }
         }
     

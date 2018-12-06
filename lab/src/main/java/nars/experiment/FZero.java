@@ -4,8 +4,8 @@ import jcog.Util;
 import jcog.learn.pid.MiniPID;
 import jcog.math.FloatAveraged;
 import jcog.math.FloatSupplier;
-import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
+import jcog.signal.wave2d.WhiteEqualize;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -83,9 +83,12 @@ public class FZero extends NAgentX {
         ScaledBitmap2D visionBuffer = new ScaledBitmap2D(() -> fz.image,
                 24, 20
         ).crop(0, 0.23f, 1f, 1f);
-        Bitmap2D vision = visionBuffer.each(a -> {
-            return Util.tanhFast(a * 1.2f);
-        });
+
+//        Bitmap2D vision = visionBuffer.each(a -> {
+//            return Util.tanhFast(a * 1.2f);
+//        });
+        WhiteEqualize vision = new WhiteEqualize(visionBuffer);
+        onFrame(()->vision.update());
 
         //onFrame(visionBuffer::update);
 
@@ -101,7 +104,8 @@ public class FZero extends NAgentX {
 
 //        {
             int nx = 4;
-            AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p($.the("cae"), id), vision, nx, nx, (subX, subY) -> {
+            AutoclassifiedBitmap camAE = new AutoclassifiedBitmap(
+                    $.p($.the("cae"), id), vision, nx, nx, (subX, subY) -> {
                 return new float[]{/*cc.X, cc.Y*/};
             }, 8, this);
             camAE.alpha(0.03f);
@@ -111,7 +115,6 @@ public class FZero extends NAgentX {
 //        }
 
         BitmapMatrixView visionView = new BitmapMatrixView(vision);
-        onFrame(visionBuffer::update);
         onFrame(visionView::update);
         window(grid(visionView,
                 camAE.newChart()

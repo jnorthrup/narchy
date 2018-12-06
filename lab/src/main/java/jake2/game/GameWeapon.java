@@ -875,7 +875,7 @@ public class GameWeapon {
                 .modelindex("models/objects/rocket/tris.md2");
         rocket.owner = self;
         rocket.touch = rocket_touch;
-        rocket.nextthink = GameBase.level.time + 8000 / speed;
+        rocket.nextthink = GameBase.level.time + 8000f / speed;
         rocket.think = GameUtil.G_FreeEdictA;
         rocket.dmg = damage;
         rocket.radius_dmg = radius_damage;
@@ -971,7 +971,7 @@ public class GameWeapon {
         bfg.s.modelindex = game_import_t.modelindex("sprites/s_bfg1.sp2");
         bfg.owner = self;
         bfg.touch = bfg_touch;
-        bfg.nextthink = GameBase.level.time + 8000 / speed;
+        bfg.nextthink = GameBase.level.time + 8000f/ speed;
         bfg.think = GameUtil.G_FreeEdictA;
         bfg.radius_dmg = damage;
         bfg.dmg_radius = damage_radius;

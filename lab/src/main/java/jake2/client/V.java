@@ -200,7 +200,7 @@ public final class V extends Globals {
             ent = r_entities[i];
 
             r = 64 * ((i % 4) - 1.5f);
-            f = 64 * (i / 4) + 128;
+            f = 64 * (i / 4f) + 128;
 
             for (j = 0; j < 3; j++)
                 ent.origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j] * f
@@ -230,7 +230,7 @@ public final class V extends Globals {
             dl = r_dlights[i];
 
             r = 64 * ((i % 4) - 1.5f);
-            f = 64 * (i / 4) + 128;
+            f = 64 * (i / 4f) + 128;
 
             for (j = 0; j < 3; j++)
                 dl.origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j] * f

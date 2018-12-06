@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
-import static nars.Op.CONJ;
 import static nars.Op.NEG;
 import static nars.time.Tense.DTERNAL;
 

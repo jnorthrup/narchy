@@ -298,14 +298,14 @@ public class Cvar extends Globals {
      * networt "rate" string --> 10000 became "10000.0" and that wasn't right.
      */
     public static void SetValue(String var_name, int value) {
-        Cvar.Set(var_name, "" + value);
+        Cvar.Set(var_name, String.valueOf(value));
     }
 
     public static void SetValue(String var_name, float value) {
         if (value == (int)value) {
-            Cvar.Set(var_name, "" + (int)value);
+            Cvar.Set(var_name, String.valueOf((int) value));
         } else {
-            Cvar.Set(var_name, "" + value);
+            Cvar.Set(var_name, String.valueOf(value));
         }
     }
 

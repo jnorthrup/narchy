@@ -973,7 +973,7 @@ public final class SCR extends Globals {
 
                 Console.DrawAltString(x + 32, y, ci.name);
                 Console.DrawString(x + 32, y + 8, "Score: ");
-                Console.DrawAltString(x + 32 + 7 * 8, y + 8, "" + score);
+                Console.DrawAltString(x + 32 + 7 * 8, y + 8, String.valueOf(score));
                 Console.DrawString(x + 32, y + 16, "Ping:  " + ping);
                 Console.DrawString(x + 32, y + 24, "Time:  " + time);
 

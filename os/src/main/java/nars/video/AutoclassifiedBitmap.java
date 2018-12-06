@@ -140,6 +140,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
         this(root, b::brightness,
                 b.width(), b.height(),
                 sw, sh, metabits, states, agent);
+
     }
 
     /**

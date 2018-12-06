@@ -206,8 +206,7 @@ public class SV_INIT {
         sv.configstrings[Defines.CS_NAME] = server;
 
         if (Cvar.VariableValue("deathmatch") != 0) {
-            sv.configstrings[Defines.CS_AIRACCEL] = ""
-                    + SV_MAIN.sv_airaccelerate.value;
+            sv.configstrings[Defines.CS_AIRACCEL] = String.valueOf(SV_MAIN.sv_airaccelerate.value);
             PMove.pm_airaccelerate = SV_MAIN.sv_airaccelerate.value;
         } else {
             sv.configstrings[Defines.CS_AIRACCEL] = "0";
@@ -241,7 +240,7 @@ public class SV_INIT {
                     sv.configstrings[Defines.CS_MODELS + 1], false, iw);
         }
         checksum = iw[0];
-        sv.configstrings[Defines.CS_MAPCHECKSUM] = "" + checksum;
+        sv.configstrings[Defines.CS_MAPCHECKSUM] = String.valueOf(checksum);
 
 
         

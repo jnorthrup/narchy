@@ -124,11 +124,11 @@ public final class Cmd {
             String cmd = "";
             int c = Cmd.Argc();
             for (int i = 2; i < c; i++) {
-                cmd = cmd + Cmd.Argv(i);
+                cmd += Cmd.Argv(i);
                 if (i != (c - 1))
-                    cmd = cmd + ' ';
+                    cmd += ' ';
             }
-            cmd = cmd + '\n';
+            cmd += '\n';
 
             a.value = cmd;
         }
@@ -1057,7 +1057,7 @@ public final class Cmd {
         if (team)
             text = '(' + ent.client.pers.netname + "): ";
         else
-            text = "" + ent.client.pers.netname + ": ";
+            text = ent.client.pers.netname + ": ";
 
         if (arg0) {
             text += Cmd.Argv(0);
@@ -1104,7 +1104,7 @@ public final class Cmd {
         }
 
         if (Globals.dedicated.value != 0)
-            SV_GAME.PF_cprintf(null, Defines.PRINT_CHAT, "" + text + "");
+            SV_GAME.PF_cprintf(null, Defines.PRINT_CHAT, text);
 
         for (j = 1; j <= GameBase.game.maxclients; j++) {
             other = GameBase.g_edicts[j];
@@ -1116,7 +1116,7 @@ public final class Cmd {
                 if (!GameUtil.OnSameTeam(ent, other))
                     continue;
             }
-            SV_GAME.PF_cprintf(other, Defines.PRINT_CHAT, "" + text + "");
+            SV_GAME.PF_cprintf(other, Defines.PRINT_CHAT, text);
         }
 
     }
@@ -1138,18 +1138,13 @@ public final class Cmd {
             if (!e2.inuse)
                 continue;
 
-            st = ""
-                    + (GameBase.level.framenum - e2.client.resp.enterframe)
-                    / 600
-                    + ':'
-                    + ((GameBase.level.framenum - e2.client.resp.enterframe) % 600)
-                    / 10 + ' ' + e2.client.ping + ' ' + e2.client.resp.score
-                    + ' ' + e2.client.pers.netname + ' '
-                    + (e2.client.resp.spectator ? " (spectator)" : "") + '\n';
+            st = String.valueOf((GameBase.level.framenum - e2.client.resp.enterframe)
+                    / 600) + ':' + ((GameBase.level.framenum - e2.client.resp.enterframe) % 600)
+                    / 10 + ' ' + e2.client.ping + ' ' + e2.client.resp.score + ' ' + e2.client.pers.netname + ' ' + (e2.client.resp.spectator ? " (spectator)" : "") + '\n';
 
             if (text.length() + st.length() > 1024 - 50) {
                 text += "And more...\n";
-                SV_GAME.PF_cprintfhigh(ent, "" + text + "");
+                SV_GAME.PF_cprintfhigh(ent, text);
                 return;
             }
             text += st;

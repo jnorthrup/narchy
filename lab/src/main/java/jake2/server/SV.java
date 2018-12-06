@@ -266,10 +266,7 @@ public final class SV {
         boolean retry = false;
 
         do {
-            if (ent.clipmask != 0)
-                mask = ent.clipmask;
-            else
-                mask = Defines.MASK_SOLID;
+            mask = ent.clipmask != 0 ? ent.clipmask : Defines.MASK_SOLID;
 
             trace = game_import_t
                     .trace(start, ent.mins, ent.maxs, end, ent, mask);
@@ -318,8 +315,7 @@ public final class SV {
         
         
         for (i = 0; i < 3; i++) {
-            float temp;
-            temp = move[i] * 8.0f;
+            float temp = move[i] * 8.0f;
             if (temp > 0.0)
                 temp += 0.5;
             else
@@ -708,7 +704,7 @@ public final class SV {
             speed = Math.abs(ent.velocity[2]);
             control = speed < Defines.sv_stopspeed ? Defines.sv_stopspeed
                     : speed;
-            friction = Defines.sv_friction / 3;
+            friction = Defines.sv_friction / 3f;
             newspeed = speed - (Defines.FRAMETIME * control * friction);
             if (newspeed < 0)
                 newspeed = 0;

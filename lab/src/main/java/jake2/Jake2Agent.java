@@ -11,6 +11,7 @@ import jake2.sys.IN;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
 import jcog.signal.wave2d.ScaledBitmap2D;
+import jcog.signal.wave2d.WhiteEqualize;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -114,12 +115,15 @@ public class Jake2Agent extends NAgentX implements Runnable {
 
 //        Bitmap2DSensor<PixelBag> vision = senseCameraRetina(
 //                "q", screenshotter, 32, 24);
-        PixelBag vision = PixelBag.of(new ScaledBitmap2D(screenshotter, 64, 64), 64, 48);
+        PixelBag vision = PixelBag.of(
+                new WhiteEqualize(
+                        new ScaledBitmap2D(screenshotter, 64, 48)
+                ), 64, 48);
         vision.setZoom(0);
+        vision.vflip = true;
         //vision.addActions($$("q"), this);
 //        vision.setMinZoomOut(0.5f);
 //        vision.setMaxZoomOut(1f);
-        vision.vflip = true;
         //vision.resolution(0.01f);
 
         ;
@@ -290,6 +294,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
             }
         }, FPS);
     }
+
 }
 
 

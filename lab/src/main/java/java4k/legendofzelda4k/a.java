@@ -145,10 +145,10 @@ public class a extends GamePanel {
  
     int attacking = 0;
     boolean attackReleased = true;
-    boolean acquiredSword = false;
+    boolean acquiredSword = true;
     boolean acquiredCandle = false;
     boolean acquiredKey = false;
-    boolean scrolling = false;
+    boolean scrolling = true;
     boolean flash = false;
     boolean fading = true;
     boolean won = false;

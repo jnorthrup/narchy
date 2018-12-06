@@ -155,7 +155,7 @@ public final class JOALSoundImpl implements Sound {
 				case AL.AL_INVALID_VALUE: message = "invalid value"; break;
 				case AL.AL_INVALID_ENUM: message = "invalid enum"; break;
 				case AL.AL_INVALID_NAME: message = "invalid name"; break;
-				default: message = "" + error;
+				default: message = String.valueOf(error);
 			}
 		}
 		return message; 

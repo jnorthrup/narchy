@@ -112,7 +112,7 @@ public final class Netchan extends SV_MAIN {
 
         showpackets = Cvar.Get("showpackets", "0", 0);
         showdrop = Cvar.Get("showdrop", "0", 0);
-        qport = Cvar.Get("qport", "" + port, Defines.CVAR_NOSET);
+        qport = Cvar.Get("qport", String.valueOf(port), Defines.CVAR_NOSET);
     }
 
     private static final byte send_buf[] = new byte[Defines.MAX_MSGLEN];

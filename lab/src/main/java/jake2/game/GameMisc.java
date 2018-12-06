@@ -598,14 +598,14 @@ public class GameMisc {
 
     public static void func_clock_format_countdown(edict_t self) {
         if (self.style == 0) {
-            self.message = "" + self.health;
+            self.message = String.valueOf(self.health);
             
             
             return;
         }
 
         if (self.style == 1) {
-            self.message = "" + self.health / 60 + ':' + self.health % 60;
+            self.message = String.valueOf(self.health / 60) + ':' + self.health % 60;
             
             
             /*
@@ -615,9 +615,7 @@ public class GameMisc {
         }
 
         if (self.style == 2) {
-            self.message = "" + self.health / 3600 + ':'
-                    + (self.health - (self.health / 3600) * 3600) / 60 + ':'
-                    + self.health % 60;
+            self.message = String.valueOf(self.health / 3600) + ':' + (self.health - (self.health / 3600) * 3600) / 60 + ':' + self.health % 60;
             /*
              * Com_sprintf( self.message, CLOCK_MESSAGE_SIZE, "%2i:%2i:%2i",
              * self.health / 3600, (self.health - (self.health / 3600) * 3600) /
@@ -1297,7 +1295,7 @@ public class GameMisc {
             if ((null == other.groundentity) || (other.groundentity == self))
                 return;
 
-            ratio = (float) other.mass / (float) self.mass;
+            ratio = (float) other.mass / self.mass;
             Math3D.VectorSubtract(self.s.origin, other.s.origin, v);
             M.M_walkmove(self, Math3D.vectoyaw(v), 20 * ratio
                     * Defines.FRAMETIME);
@@ -1321,7 +1319,7 @@ public class GameMisc {
             Math3D.VectorMA(self.absmin, 0.5f, self.size, self.s.origin);
 
             
-            spd = 1.5f * (float) self.dmg / 200.0f;
+            spd = 1.5f * self.dmg / 200.0f;
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
             org[2] = self.s.origin[2] + Lib.crandom() * self.size[2];
@@ -1334,7 +1332,7 @@ public class GameMisc {
                     org);
 
             
-            spd = 1.75f * (float) self.dmg / 200.0f;
+            spd = 1.75f * self.dmg / 200.0f;
             Math3D.VectorCopy(self.absmin, org);
             ThrowDebris(self, "models/objects/debris3/tris.md2", spd,
                     org);
@@ -1353,7 +1351,7 @@ public class GameMisc {
                     org);
 
             
-            spd = 2 * self.dmg / 200;
+            spd = 2 * self.dmg / 200f;
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
             org[2] = self.s.origin[2] + Lib.crandom() * self.size[2];
@@ -1815,8 +1813,7 @@ public class GameMisc {
                 self.health--;
             } else {
                 Calendar c = Calendar.getInstance();
-                self.message = "" + c.get(Calendar.HOUR_OF_DAY) + ':'
-                        + c.get(Calendar.MINUTE) + ':' + c.get(Calendar.SECOND);
+                self.message = String.valueOf(c.get(Calendar.HOUR_OF_DAY)) + ':' + c.get(Calendar.MINUTE) + ':' + c.get(Calendar.SECOND);
 
                 /*
                  * struct tm * ltime; time_t gmtime;

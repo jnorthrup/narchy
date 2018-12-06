@@ -34,6 +34,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 public class CM {
 
@@ -348,7 +349,7 @@ public class CM {
         Com.DPrintf("CMod_LoadSurfaces()\n");
         texinfo_t in;
         mapsurface_t out;
-        int i, count;
+        int count;
 
         if ((l.filelen % texinfo_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
@@ -364,22 +365,28 @@ public class CM {
         if (debugloadmap)
             Com.DPrintf("surfaces:\n");
 
-        for (i = 0; i < count; i++) {
-            out = map_surfaces[i] = new mapsurface_t();
-            in = new texinfo_t(cmod_base, l.fileofs + i * texinfo_t.SIZE,
-                    texinfo_t.SIZE);
+        //for (int i = 0; i < count; i++)
+        IntStream.range(0, count).parallel().forEach(i->
+            CMod_LoadSurfaces(l, i)
+        );
+    }
 
-            out.c.name = in.texture;
-            out.rname = in.texture;
-            out.c.flags = in.flags;
-            out.c.value = in.value;
+    private static void CMod_LoadSurfaces(lump_t l, int i) {
+        mapsurface_t out;
+        texinfo_t in;
+        out = map_surfaces[i] = new mapsurface_t();
+        in = new texinfo_t(cmod_base, l.fileofs + i * texinfo_t.SIZE,
+                texinfo_t.SIZE);
 
-            if (debugloadmap) {
-                Com.DPrintf("|%20s|%20s|%6i|%6i|\n", new Vargs()
-                        .add(out.c.name).add(out.rname).add(out.c.value).add(
-                                out.c.flags));
-            }
+        out.c.name = in.texture;
+        out.rname = in.texture;
+        out.c.flags = in.flags;
+        out.c.value = in.value;
 
+        if (debugloadmap) {
+            Com.DPrintf("|%20s|%20s|%6i|%6i|\n", new Vargs()
+                    .add(out.c.name).add(out.rname).add(out.c.value).add(
+                            out.c.flags));
         }
     }
 
@@ -388,8 +395,8 @@ public class CM {
         Com.DPrintf("CMod_LoadNodes()\n");
         qfiles.dnode_t in;
         int child;
-        cnode_t out;
-        int i, j, count;
+
+        int j, count;
 
         if ((l.filelen % qfiles.dnode_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size:"
@@ -408,20 +415,29 @@ public class CM {
             Com.DPrintf("nodes(planenum, child[0], child[1])\n");
         }
 
-        for (i = 0; i < count; i++) {
-            in = new qfiles.dnode_t(ByteBuffer.wrap(cmod_base,
-                    qfiles.dnode_t.SIZE * i + l.fileofs, qfiles.dnode_t.SIZE));
-            out = map_nodes[i];
+        //for (int i = 0; i < count; i++)
+        IntStream.range(0, count).parallel().forEach(i->
+            loadNode(l, i)
+        );
+    }
 
-            out.plane = map_planes[in.planenum];
-            for (j = 0; j < 2; j++) {
-                child = in.children[j];
-                out.children[j] = child;
-            }
-            if (debugloadmap) {
-                Com.DPrintf("|%6i| %6i| %6i|\n", new Vargs().add(in.planenum)
-                        .add(out.children[0]).add(out.children[1]));
-            }
+    private static void loadNode(lump_t l, int i) {
+        qfiles.dnode_t in;
+        int j;
+        int child;
+        in = new qfiles.dnode_t(ByteBuffer.wrap(cmod_base,
+                qfiles.dnode_t.SIZE * i + l.fileofs, qfiles.dnode_t.SIZE));
+
+        cnode_t out = map_nodes[i];
+
+        out.plane = map_planes[in.planenum];
+        for (j = 0; j < 2; j++) {
+            child = in.children[j];
+            out.children[j] = child;
+        }
+        if (debugloadmap) {
+            Com.DPrintf("|%6i| %6i| %6i|\n", new Vargs().add(in.planenum)
+                    .add(out.children[0]).add(out.children[1]));
         }
     }
 
@@ -429,8 +445,7 @@ public class CM {
     public static void CMod_LoadBrushes(lump_t l) {
         Com.DPrintf("CMod_LoadBrushes()\n");
         qfiles.dbrush_t in;
-        cbrush_t out;
-        int i, count;
+        int count;
 
         if ((l.filelen % qfiles.dbrush_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
@@ -445,19 +460,26 @@ public class CM {
         if (debugloadmap) {
             Com.DPrintf("brushes:(firstbrushside, numsides, contents)\n");
         }
-        for (i = 0; i < count; i++) {
-            in = new qfiles.dbrush_t(ByteBuffer.wrap(cmod_base, i
-                    * qfiles.dbrush_t.SIZE + l.fileofs, qfiles.dbrush_t.SIZE));
-            out = map_brushes[i];
-            out.firstbrushside = in.firstside;
-            out.numsides = in.numsides;
-            out.contents = in.contents;
 
-            if (debugloadmap) {
-                Com.DPrintf("| %6i| %6i| %8X|\n", new Vargs().add(
-                	out.firstbrushside).add(out.numsides).add(
-                        out.contents));
-            }
+
+        //for (int i = 0; i < count; i++)
+        IntStream.range(0, count).parallel().forEach(i->
+            loadBrush(l, i)
+        );
+    }
+
+    private static void loadBrush(lump_t l, int i) {
+        qfiles.dbrush_t in = new qfiles.dbrush_t(ByteBuffer.wrap(cmod_base, i
+                * qfiles.dbrush_t.SIZE + l.fileofs, qfiles.dbrush_t.SIZE));
+        cbrush_t out = map_brushes[i];
+        out.firstbrushside = in.firstside;
+        out.numsides = in.numsides;
+        out.contents = in.contents;
+
+        if (debugloadmap) {
+            Com.DPrintf("| %6i| %6i| %8X|\n", new Vargs().add(
+                out.firstbrushside).add(out.numsides).add(
+                    out.contents));
         }
     }
 

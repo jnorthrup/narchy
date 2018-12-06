@@ -1309,7 +1309,7 @@ public abstract class Main extends Base {
             VID.Printf(
                     Defines.PRINT_ALL,
                     "gl.glGetError() = 0x%x\n\t%s\n",
-                    new Vargs(2).add(err).add("" + gl.glGetString(err)));
+                    new Vargs(2).add(err).add(gl.glGetString(err)));
 
         glImpl.endFrame();
         return true;
@@ -1519,7 +1519,7 @@ public abstract class Main extends Base {
             return;
 
         Math3D.PerpendicularVector(perpvec, normalized_direction);
-        Math3D.VectorScale(perpvec, e.frame / 2, perpvec);
+        Math3D.VectorScale(perpvec, e.frame / 2f, perpvec);
 
         for (int i = 0; i < 6; i++) {
             Math3D.RotatePointAroundVector(

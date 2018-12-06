@@ -358,7 +358,7 @@ public class CL_newfx {
             Math3D.VectorMA(p.vel, d, u, p.vel);
 
             p.accel[0] = p.accel[1] = 0;
-            p.accel[2] = -CL_fx.PARTICLE_GRAVITY / 2;
+            p.accel[2] = -CL_fx.PARTICLE_GRAVITY / 2f;
             p.alpha = 1.0f;
 
             p.alphavel = -1.0f / (0.5f + Globals.rnd.nextFloat() * 0.3f);
@@ -402,7 +402,7 @@ public class CL_newfx {
             Math3D.VectorMA(p.vel, d, u, p.vel);
 
             p.accel[0] = p.accel[1] = 0;
-            p.accel[2] = -CL_fx.PARTICLE_GRAVITY / 2;
+            p.accel[2] = -CL_fx.PARTICLE_GRAVITY / 2f;
             p.alpha = 1.0f;
 
             p.alphavel = -1.0f / (0.5f + Globals.rnd.nextFloat() * 0.3f);

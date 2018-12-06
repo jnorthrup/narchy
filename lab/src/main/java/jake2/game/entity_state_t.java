@@ -128,11 +128,11 @@ public class entity_state_t implements Cloneable
 
 	public void set(entity_state_t from)
 	{
-		number = from.number;
 		Math3D.VectorCopy(from.origin, origin);
 		Math3D.VectorCopy(from.angles, angles);
 		Math3D.VectorCopy(from.old_origin, old_origin);
 
+		number = from.number;
 		modelindex = from.modelindex;
 		modelindex2 = from.modelindex2;
 		modelindex3 = from.modelindex3;

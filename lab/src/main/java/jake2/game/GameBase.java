@@ -519,7 +519,7 @@ public class GameBase {
                     && 0 != Lib.Q_stricmp(spectator_password.string, "none"))
                 need |= 2;
 
-            game_import_t.cvar_set("needpass", "" + need);
+            game_import_t.cvar_set("needpass", String.valueOf(need));
         }
     }
 

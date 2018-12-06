@@ -705,7 +705,7 @@ public class a extends GamePanel {
 				g.drawString(msg, 40, 280);
 				g.drawString(msg2, 40, 320);
 				strategy.show();
-				try { Thread.sleep(15); } catch (Exception e) {}
+				try { Thread.sleep(60); } catch (Exception e) {}
 				if (--msgWait == 0) {
 					msg2 = "";
 					if (game_over) {

@@ -5,7 +5,6 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUtessellator;
 import com.jogamp.opengl.glu.GLUtessellatorCallback;
-import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.tree.rtree.rect.RectFloat;

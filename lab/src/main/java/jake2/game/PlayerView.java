@@ -99,7 +99,7 @@ public class PlayerView {
 
         
         if ((client.anim_priority < Defines.ANIM_PAIN)
-                & (player.s.modelindex == 255)) {
+                && (player.s.modelindex == 255)) {
             client.anim_priority = Defines.ANIM_PAIN;
             if ((client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
                 player.s.frame = M_Player.FRAME_crpain1 - 1;

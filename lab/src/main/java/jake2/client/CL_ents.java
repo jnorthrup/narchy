@@ -611,7 +611,7 @@ public class CL_ents {
 		int effects, renderfx;
 
 		
-		autorotate = Math3D.anglemod(Globals.cl.time / 10);
+		autorotate = Math3D.anglemod(Globals.cl.time / 10f);
 
 		
 		autoanim = 2 * Globals.cl.time / 1000;
@@ -746,7 +746,7 @@ public class CL_ents {
 			
 			else if ((effects & Defines.EF_SPINNINGLIGHTS) != 0) {
 				ent.angles[0] = 0;
-				ent.angles[1] = Math3D.anglemod(Globals.cl.time / 2) + s1.angles[1];
+				ent.angles[1] = Math3D.anglemod(Globals.cl.time / 2f) + s1.angles[1];
 				ent.angles[2] = 180;
                 float[] forward = { 0, 0, 0 };
                 float[] start = { 0, 0, 0 };

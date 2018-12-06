@@ -1,14 +1,13 @@
 package nars.attention;
 
-import com.google.common.collect.Iterables;
 import jcog.Paper;
 import jcog.Util;
+import jcog.math.RecycledSummaryStatistics;
 import jcog.pri.ScalarValue;
 import jcog.util.FloatConsumer;
 import nars.NAR;
 import nars.control.DurService;
 import nars.term.Termed;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 /**
  * regulates prioritization of a group of concepts to what is
@@ -30,17 +29,14 @@ public class AttnDistributor {
 
     private final FloatConsumer gain;
 
-    //    final RecycledSummaryStatistics pris = new RecycledSummaryStatistics();
-    final DescriptiveStatistics pris;
+    final RecycledSummaryStatistics pris = new RecycledSummaryStatistics();
+
 
     public AttnDistributor(Iterable<? extends Termed> concepts, FloatConsumer gain, NAR n) {
         super();
         this.concepts = concepts;
         this.gain = gain;
 
-        int windowIterations = 1; //>=1
-        int N = Iterables.size(concepts); //only an estimate, if this Iterable changes
-        pris = new DescriptiveStatistics(N * windowIterations);
 
         DurService.on(n, this::update);
     }
@@ -48,21 +44,20 @@ public class AttnDistributor {
     private void update(NAR n) {
 
 
-//        pris.clear();
+        pris.clear();
 
         final float[] dev = {0};
-        final int[] N = {0};
 
         float mean = (float) pris.getMean();
         concepts.forEach(c -> {
             float p = n.concepts.pri(c, 0);
-            pris.addValue(p);
+
             dev[0] += Math.abs(p - mean);
-            N[0]++;
-            //pris.accept(p)
+            pris.accept(p);
         });
 
-        dev[0] /= N[0];
+        long N = pris.getN();
+        dev[0] /= N;
 
         double max = pris.getMax();
         float range = (float) (max - pris.getMin());
@@ -77,7 +72,7 @@ public class AttnDistributor {
                 //(range * 0.5f)/N[0];
                 //(float) (max * 0.5f)/N[0];
                 //(float) ((max * 0.5f)/Math.sqrt(N[0]));
-                (float) (0.5f * (range) / Math.sqrt(N[0]));
+                (float) (0.5f * (range) / Math.sqrt(N));
                 //(float) (1 / Math.sqrt(N[0]));
                 //0.5f;
 
@@ -86,7 +81,7 @@ public class AttnDistributor {
         float idealPri =
                 //0.5f;
                 //1f/ N[0];
-                (float) (1f / Math.sqrt(N[0]));
+                (float) (1f / Math.sqrt(N));
 
         float g = lastGain;
 

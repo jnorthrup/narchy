@@ -140,8 +140,7 @@ public class SV_MAIN {
             cl = SV_INIT.svs.clients[i];
             if (cl.state == Defines.cs_connected
                     || cl.state == Defines.cs_spawned) {
-                player = "" + cl.edict.client.ps.stats[Defines.STAT_FRAGS]
-                        + ' ' + cl.ping + '"' + cl.name + "\"\n";
+                player = String.valueOf(cl.edict.client.ps.stats[Defines.STAT_FRAGS]) + ' ' + cl.ping + '"' + cl.name + "\"\n";
 
                 playerLength = player.length();
                 statusLength = status.length();
@@ -500,7 +499,7 @@ public class SV_MAIN {
             Com.Printf("bad connectionless packet from "
                     + NET.AdrToString(Globals.net_from) + '\n');
             Com.Printf('[' + s + "]\n");
-            Com.Printf("" + Lib.hexDump(Globals.net_message.data, 128, false));
+            Com.Printf(Lib.hexDump(Globals.net_message.data, 128, false));
         }
     }
 

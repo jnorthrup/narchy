@@ -3,8 +3,8 @@ package nars.term.util.transform;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
-import nars.term.util.builder.TermBuilder;
 import nars.term.util.builder.HeapTermBuilder;
+import nars.term.util.builder.TermBuilder;
 
 /** bypasses interning and */
 public abstract class DirectTermTransform extends TermTransform.NegObliviousTermTransform {
