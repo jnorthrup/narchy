@@ -27,9 +27,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.chip.KeyboardChip;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.video.Draw;
 
 import java.util.List;
@@ -106,27 +104,28 @@ public class TrackXY_NAR extends NAgentX {
         //actionSwitch();
         //actionTriState();
 
-        {
-            GraphEdit w = new GraphEdit(RectFloat.X0Y0WH(0, 0, 256, 256));
-
-            w.add(new KeyboardChip.ArrowKeysChip() {
-                @Override
-                protected void keyLeft() {
-                    long now = nar.time();
-                    nar().want(0.1f, $.the("left"), now, now+dur, 1f, 0.02f);
-                }
-                @Override
-                protected void keyRight() {
-                    long now = nar.time();
-                    nar().want(0.1f, $.the("right"), now, now+dur, 1f, 0.02f);
-                }
-            }).pos(0, 0, 256, 256);
-
-            window(w, 256, 256);
-        }
+//        {
+//            curiosity.enable.set(false);
+//            GraphEdit w = new GraphEdit(RectFloat.X0Y0WH(0, 0, 256, 256));
+//
+//            w.add(new KeyboardChip.ArrowKeysChip() {
+//                @Override
+//                protected void keyLeft() {
+//                    long now = nar.time();
+//                    nar().want(0.1f, $.the("left"), now, now+dur, 1f, 0.02f);
+//                }
+//                @Override
+//                protected void keyRight() {
+//                    long now = nar.time();
+//                    nar().want(0.1f, $.the("right"), now, now+dur, 1f, 0.02f);
+//                }
+//            }).pos(0, 0, 256, 256);
+//
+//            window(w, 256, 256);
+//        }
 
 //        if (alwaysTrain) {
-            curiosity.enable.set(false);
+//            curiosity.enable.set(false);
 //            onFrame(x -> {
 //                track.act();
 //            });

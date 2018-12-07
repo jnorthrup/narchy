@@ -273,8 +273,8 @@
         //TODO impl predicate mutex
 
 //mutex soft-swap
-    Z, (&&,X,Y), in(Z,X)            |- (Z <-> substitute(Z,X,--Y,strict)), (Belief:BeliefStructuralAbductionPN)
-    Z, (&&,X,Y), in(Z,--X)          |- (Z <-> substitute(Z,--X,Y,strict)), (Belief:BeliefStructuralAbductionPN)
+//    Z, (&&,X,Y), in(Z,X)            |- (Z <-> substitute(Z,X,--Y,strict)), (Belief:BeliefStructuralAbductionPN)
+//    Z, (&&,X,Y), in(Z,--X)          |- (Z <-> substitute(Z,--X,Y,strict)), (Belief:BeliefStructuralAbductionPN)
 
 //mutex swap
 //    Z, (&&,X,Y), in(Z,X)            |- substitute(Z,X,--Y,strict), (Belief:AnalogyPN, Goal:AnalogyPN)

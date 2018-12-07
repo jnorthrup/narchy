@@ -236,12 +236,13 @@ public enum Image {;
 //
 //               return x;
 //            });
-                if (!transformedInput.isDeleted()) {
-                    r.forget(transformedInput);
-                    r.remember(originalInput);
-//                    rememberance.remove(transformedInput); //if it's present, it may not
-//                    rememberance.add(originalInput);
+
+            if (!transformedInput.isDeleted()) {
+                if (r.remembered != null) {
+                    r.remembered.remove(transformedInput); //if it's present, it may not
                 }
+                r.remember(originalInput);
+            }
 //            }
         }
 

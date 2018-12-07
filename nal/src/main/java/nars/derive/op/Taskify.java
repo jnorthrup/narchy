@@ -40,7 +40,7 @@ public class Taskify extends AbstractPred<Derivation> {
 
     static boolean valid(Term x, byte punc) {
         return x != null &&
-                x.unneg().op().conceptualizable &&
+                x.unneg().op().taskable &&
                 !x.hasAny(Op.VAR_PATTERN) &&
                 ((punc != BELIEF && punc != GOAL) || (!x.hasXternal() && !x.hasVarQuery()));
     }

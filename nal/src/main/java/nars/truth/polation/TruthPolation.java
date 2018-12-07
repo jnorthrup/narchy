@@ -309,7 +309,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
                         firstStart != ETERNAL && secondStart != ETERNAL ? secondStart - firstStart : 0,
                         b, e1Evi[0] / (e1Evi[0] + e2Evi[0]), nar);
 
-                if (term.volume() <= nar.termVolumeMax.intValue() && Task.taskConceptTerm(term)) {
+                if (Task.taskConceptTerm(term)) {
 
                     this.term = term;
                     return 1 - dtDiff * 0.5f; //half discounted

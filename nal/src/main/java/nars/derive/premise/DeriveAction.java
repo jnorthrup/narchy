@@ -5,26 +5,24 @@ import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.derive.op.Truthify;
 import nars.term.control.AND;
+import nars.term.control.PREDICATE;
 
-final class DeriveAction extends AND<Derivation> /*implements ThrottledAction<Derivation>*/ {
+final class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
 
     public final Cause cause;
     private final Truthify truth;
+    public final PREDICATE<Derivation> run;
 
-    private DeriveAction(AND<Derivation> procedure, PremiseRuleProto.RuleCause cause, Truthify t) {
-        super(procedure.cond);
+    private DeriveAction(PREDICATE<Derivation> procedure, PremiseRuleProto.RuleCause cause, Truthify t) {
+        this.run = procedure;
         this.cause = cause;
         this.truth = t;
     }
 
-    static DeriveAction action(PremiseRuleProto.RuleCause cause, AND<Derivation> POST) {
 
-//        PremiseRuleProto.RuleCause cause = ((Taskify) AND.last(
-//                ((UnifyTerm.NextUnifyTransform)
-//                AND.last(POST)
-//        ).eachMatch)).channel;
+    static DeriveAction action(PremiseRuleProto.RuleCause cause, PREDICATE<Derivation> POST) {
 
-        Truthify t = (Truthify) AND.first(POST, x -> x instanceof Truthify);
+        Truthify t = (Truthify) AND.first((AND)POST, x -> x instanceof Truthify);
         if (t == null)
             throw new NullPointerException();
 
@@ -42,9 +40,10 @@ final class DeriveAction extends AND<Derivation> /*implements ThrottledAction<De
 //    }
 
 
-
-    /** compute probabilistic throttle value, in consideration of the premise's task and the punctuation outcome
-     * with respect to the deriver's punctuation equalization */
+    /**
+     * compute probabilistic throttle value, in consideration of the premise's task and the punctuation outcome
+     * with respect to the deriver's punctuation equalization
+     */
     public final float value(Derivation d) {
 
         byte punc = truth.preFilter(d);
@@ -57,7 +56,7 @@ final class DeriveAction extends AND<Derivation> /*implements ThrottledAction<De
 
         float causeValue =
                 cause.amp();
-                //tanhFast(cause.value());
+        //tanhFast(cause.value());
 
         return causeValue * puncFactor;
     }

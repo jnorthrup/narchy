@@ -120,6 +120,9 @@ public class Remember extends AbstractTask {
 
                 Task rr = (Task)r;
 
+                if (!rr.isInput() && (rr.volume() > n.termVolumeMax.intValue()))
+                    throw new WTF();
+
                 if (tasklink())
                    ll.add(new TaskLinkTask(rr, conceptTerm !=null && conceptTerm.equals(rr.term().concept()) ? concept : null));
 

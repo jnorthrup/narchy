@@ -40,7 +40,7 @@ public class TaskLinkTask extends AbstractTask {
 
         //2. tasklink
         TaskLink.link(
-                TaskLink.tasklink(task, pri, n),
+                TaskLink.tasklink(task, pri* n.taskLinkActivation.floatValue(), n),
                 c.tasklinks(), null);
 
 

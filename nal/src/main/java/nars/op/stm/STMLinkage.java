@@ -112,7 +112,7 @@ public class STMLinkage extends NARService {
 //            }
 
 
-            float factor = this.strength.floatValue();
+            float factor = this.strength.floatValue() * nar.taskLinkActivation.floatValue();
             stm.forEach(x -> link(y, yc, x, factor, nar));
 
             if (keep(y)) {

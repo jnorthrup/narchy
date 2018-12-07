@@ -294,6 +294,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
             stop();
 
+            clear();
+
+            input.clear();
+
             time.clear(this);
             time.reset();
 
@@ -301,11 +305,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
             if (running)
                 loop.setFPS(fps);
-
-            logger.info("reset");
-
-
         }
+
+        logger.info("reset");
 
     }
 
@@ -1019,14 +1021,23 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     @Nullable
     public final Concept concept(/**/Termed x, boolean createIfMissing) {
+        if (Param.DEBUG) {
+            int v = x.term().volume();
+            int max = termVolumeMax.intValue();
+            if (v > max) {
+                //return null; //too complex
+                logger.warn("too complex for conceptualization ({}/{}): " + x, v, max);
+            }
+        }
+
         return concepts.concept(x, createIfMissing);
     }
 
-    public Stream<Activate> conceptsActive() {
+    public final Stream<Activate> conceptsActive() {
         return concepts.active();
     }
 
-    public Stream<Concept> concepts() {
+    public final Stream<Concept> concepts() {
         return concepts.stream()/*.filter(Concept.class::isInstance)*/.map(Concept.class::cast);
     }
 
@@ -1470,6 +1481,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         Concept x = concept(concept);
         if (x == null) {
             Term ct = concept.term();
+
+            if (ct.volume() > termVolumeMax.intValue())
+                return null; //too complex
+
             if (ConceptBuilder.dynamicModel(ct) != null  || Image.imageNormalize(ct)!=ct) {
                 //try conceptualizing the dynamic
                 return conceptualize(concept);

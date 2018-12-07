@@ -32,7 +32,7 @@ public class GLScreenShot implements Supplier<BufferedImage> {
 
     volatile private BufferedImage current;
 
-    boolean rgbOrDepth = false;
+    boolean rgbOrDepth = true;
 
     /**
      * may be vertically flipped, sorry

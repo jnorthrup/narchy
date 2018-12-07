@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL4Test extends NALTest {
 
 
-    private static final int CYCLES = 250;
+    private static final int CYCLES = 50;
 
     @Override
     protected NAR nar() {
@@ -279,8 +279,17 @@ public class NAL4Test extends NALTest {
 
         test
                 .believe("([blue] --> (likes,cat,/))")
-                .mustBelieve(CYCLES, "((cat,[blue])-->likes)", 1f, 0.9f)
+                //.mustBelieve(CYCLES, "((cat,[blue])-->likes)", 1f, 0.9f)
                 .mustNotOutput(CYCLES, "(likes-->(cat,[blue]))", BELIEF, 1f, 1f, 0.9f, 0.9f, ETERNAL)
+        ;
+    }
+    @Test
+    public void testNormalize1aQ() throws Narsese.NarseseException {
+
+        test
+                .ask("([blue] --> (likes,cat,/))")
+                .mustQuestion(CYCLES, "((cat,[blue])-->likes)")
+                .mustNotOutput(CYCLES, "(likes-->(cat,[blue]))", QUESTION, 1f, 1f, 0.9f, 0.9f, ETERNAL)
         ;
     }
 

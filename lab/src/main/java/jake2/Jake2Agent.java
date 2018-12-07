@@ -2,6 +2,7 @@ package jake2;
 
 import jake2.client.CL_input;
 import jake2.client.Key;
+import jake2.game.EntHurtAdapter;
 import jake2.game.PlayerView;
 import jake2.game.edict_t;
 import jake2.sys.IN;
@@ -19,6 +20,8 @@ import nars.video.PixelBag;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.video.GLScreenShot;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static jake2.Globals.STAT_FRAGS;
 import static jake2.Globals.cl;
 import static nars.$.$;
@@ -30,7 +33,11 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
  */
 public class Jake2Agent extends NAgentX implements Runnable {
 
-    static final int FPS = 16;
+    static final int FPS = 10;
+    static float timeScale = 0.5f;
+
+    static float yawSpeed = 10;
+    static float pitchSpeed = 5;
     private final GLScreenShot screenshot;
 
 
@@ -43,10 +50,34 @@ public class Jake2Agent extends NAgentX implements Runnable {
         public int weaponState;
         public short frags;
         public float angle;
+        edict_t player = null;
 
-        protected void update() {
+        final AtomicInteger damageInflicted = new AtomicInteger();
+
+        protected synchronized void update() {
+
             edict_t p = PlayerView.current_player;
-            if (p == null) return;
+            if (player == null || player!=p) {
+                if (p==null)
+                    return;
+                player = p;
+                p.hurt = new EntHurtAdapter() {
+                    @Override
+                    public void hurt(edict_t self, edict_t other, int damage) {
+                        if (other!=self) {
+                            System.err.println("hurt " + other + " (" + damage + ")");
+                            damageInflicted.addAndGet(damage);
+                        }
+                    }
+
+                    @Override
+                    public String getID() {
+                        return "player_hurt";
+                    }
+                };
+            }
+
+
             if (p.deadflag > 0) {
 
 
@@ -105,7 +136,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
         ;
 
 //        {
-        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p($.the("cae"), id), vision, nx, nx, (subX, subY) -> {
+        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.the("see"), vision, nx, nx, (subX, subY) -> {
             return new float[]{/*cc.X, cc.Y*/};
         }, aeStates, this);
         camAE.alpha(0.03f);
@@ -115,7 +146,6 @@ public class Jake2Agent extends NAgentX implements Runnable {
 //        }
 
         BitmapMatrixView visionView = new BitmapMatrixView(vision);
-        onFrame(vision::update);
         onFrame(visionView::update);
         window(grid(visionView,
                 camAE.newChart()
@@ -124,36 +154,47 @@ public class Jake2Agent extends NAgentX implements Runnable {
 
 //        senseFields("q", player);
 
-        actionToggle($("q(move,fore)"), (x) -> CL_input.in_forward.state = x ? 1 : 0);
-        actionToggle($("q(move,back)"), (x) -> CL_input.in_back.state = x ? 1 : 0);
+        actionPushButtonMutex(
+                $.the("fore"), $.the("back"),
+                x -> CL_input.in_forward.state = x ? 1 : 0,
+                x -> CL_input.in_back.state = x ? 1 : 0
+        );
+
+//        actionPushButtonMutex(
+//                $.the("strafeLeft"), $.the("strafeRight"),
+//                x -> CL_input.in_moveleft.state = x ? 1 : 0,
+//                x -> CL_input.in_moveright.state = x ? 1 : 0
+//        );
+
+        actionPushButtonMutex(
+                $.the("left"), $.the("right"),
+                ()->cl.viewangles[Defines.YAW] += yawSpeed,
+                ()->cl.viewangles[Defines.YAW] -= yawSpeed
+        );
+
+        actionToggle($("jump"), (x) -> CL_input.in_up.state = x ? 1 : 0);
+        actionToggle($("fire"), (x) -> CL_input.in_attack.state = x ? 1 : 0);
+
+        actionPushButtonMutex(
+                $.the("lookUp"), $.the("lookDown"),
+                ()->cl.viewangles[Defines.PITCH] = Math.min(30, cl.viewangles[Defines.PITCH] + pitchSpeed),
+                ()->cl.viewangles[Defines.PITCH] = Math.max(-30, cl.viewangles[Defines.PITCH] - pitchSpeed)
+        );
 
 
-        actionToggle($("q(move,left)"), (x) -> CL_input.in_moveleft.state = x ? 1 : 0);
-        actionToggle($("q(move,right)"), (x) -> CL_input.in_moveright.state = x ? 1 : 0);
-        actionToggle($("q(jump)"), (x) -> CL_input.in_up.state = x ? 1 : 0);
 
-
-        float yawSpeed = 40;
-        float pitchSpeed = 5;
-        actionToggle($("q(look,left)"), (x) ->
-                cl.viewangles[Defines.YAW] += yawSpeed);
-        actionToggle($("q(look,right)"), (x) ->
-                cl.viewangles[Defines.YAW] -= yawSpeed);
-        actionToggle($("q(look,up)"), (x) ->
-                cl.viewangles[Defines.PITCH] = Math.min(30, cl.viewangles[Defines.PITCH] + pitchSpeed));
-        actionToggle($("q(look,down)"), (x) ->
-                cl.viewangles[Defines.PITCH] = Math.max(-30, cl.viewangles[Defines.PITCH] - pitchSpeed));
-
-        actionToggle($("q(attak)"), (x) -> CL_input.in_attack.state = x ? 1 : 0);
 
 
         onFrame(player::update);
-        rewardNormalized("health", -1, +1, new FloatFirstOrderDifference(nar::time, () -> player.health));
+
+        rewardNormalized("health", -1, +1, new FloatFirstOrderDifference(nar::time, () -> player.health).nanIfZero());
 
         rewardNormalized("speed", 0, +1, new FloatNormalized(() -> {
             return player.speed;
         }));
-        rewardNormalized("frags", 0, +1, new FloatNormalized(() -> player.frags));
+        rewardNormalized("frags", 0, +1,
+                new FloatFirstOrderDifference(nar::time, player.damageInflicted::getOpaque).nanIfZero());
+
 
 //        ()->{
 //            player.update();
@@ -182,7 +223,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
 
                 "+dmflags 1024",
                 "+cl_gun 0",
-                "+timescale 0.25",
+                "+timescale " + timeScale,
 
 
                 "+map " + nextMap()

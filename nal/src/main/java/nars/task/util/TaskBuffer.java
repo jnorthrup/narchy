@@ -2,6 +2,7 @@ package nars.task.util;
 
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
+import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
@@ -15,6 +16,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
+
 abstract public class TaskBuffer  {
 
 
@@ -22,6 +26,8 @@ abstract public class TaskBuffer  {
     public abstract Task add(Task x);
 
     public abstract void update(NAR n);
+
+    public abstract void clear();
 
     /** known or estimated number of tasks present */
     abstract public int size();
@@ -89,6 +95,11 @@ abstract public class TaskBuffer  {
         }
 
         @Override
+        public void clear() {
+            tasks.clear();
+        }
+
+        @Override
         public int size() {
             return tasks.size();
         }
@@ -122,11 +133,11 @@ abstract public class TaskBuffer  {
      */
     public static class BagTasksBuffer extends TaskBuffer {
 
-        final boolean inlineOrDeferredInput;
+        public boolean inlineOrDeferredInput;
         /**
          * temporary buffer before input so they can be merged in case of duplicates
          */
-        public final PriArrayBag<Task> tasks =
+        public final Bag<Task,Task> tasks =
                 new PriArrayBag<Task>(PriMerge.max,
                         //new HashMap()
                         new UnifiedMap()
@@ -136,7 +147,13 @@ abstract public class TaskBuffer  {
                         return BagTasksBuffer.this.merge(existing, incoming);
                     }
                 };
+
                 //new HijackBag...
+
+        @Override
+        public void clear() {
+            tasks.clear();
+        }
 
         @Override
         public int size() {
@@ -226,4 +243,49 @@ abstract public class TaskBuffer  {
         }
     }
 
+    public static class BagPuncTasksBuffer extends TaskBuffer {
+
+        public final TaskBuffer belief, goal, question;
+
+        public BagPuncTasksBuffer(int capacity, float rate) {
+            belief = new BagTasksBuffer(capacity, rate);
+            goal = new BagTasksBuffer(capacity, rate);
+            question = new BagTasksBuffer(capacity, rate);
+        }
+
+        private TaskBuffer buffer(byte punc) {
+            switch (punc) {
+                case BELIEF:
+                    return belief;
+                case GOAL:
+                    return goal;
+                default:
+                    return question;
+            }
+        }
+
+        @Override
+        public void clear() {
+            belief.clear();
+            goal.clear();
+            question.clear();
+        }
+
+        @Override
+        public Task add(Task x) {
+            return buffer(x.punc()).add(x);
+        }
+
+        @Override
+        public void update(NAR n) {
+            belief.update(n);
+            goal.update(n);
+            question.update(n);
+        }
+
+        @Override
+        public int size() {
+            return belief.size() + goal.size() + question.size();
+        }
+    }
 }

@@ -26,6 +26,7 @@ import java.util.Random;
 
 import static nars.Op.CONJ;
 import static nars.Op.IMPL;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -58,18 +59,18 @@ public class Revision {
     }
 
 
-    static Term intermpolate(/*@NotNull*/ Term a, long bOffset, /*@NotNull*/ Term b, float aProp, float curDepth, NAR nar) {
+    private static Term intermpolate(/*@NotNull*/ Term a, long bOffset, /*@NotNull*/ Term b, float aProp, float curDepth, NAR nar) {
 
         if (a.equals(b) && bOffset == 0)
             return a;
 
         if (a instanceof Atomic || b instanceof Atomic)
-            return Bool.Null; //atomics differ
+            return Null; //atomics differ
 
         Op ao = a.op();
         Op bo = b.op();
         if (ao != bo)
-            return Bool.Null;
+            return Null;
 
 
         int len = a.subs();
@@ -102,7 +103,7 @@ public class Revision {
                 if (!ai.equals(bi)) {
                     Term y = intermpolate(ai, 0, bi, aProp, curDepth / 2f, nar);
                     if (y instanceof Bool)
-                        return Bool.Null;
+                        return Null;
 
                     if (!ai.equals(y)) {
                         change = true;
@@ -130,10 +131,10 @@ public class Revision {
             return a.dt(dt);
         } else {
             Term na = intermpolate(a0, 0, b0, aProp, depth, nar);
-            if (na == Bool.Null || na == Bool.False) return na;
+            if (na == Null || na == Bool.False) return na;
 
             Term nb = intermpolate(a1, 0, b1, aProp, depth, nar);
-            if (nb == Bool.Null || nb == Bool.False) return nb;
+            if (nb == Null || nb == Bool.False) return nb;
 
 
             return a.op().the(dt, na, nb);
@@ -232,7 +233,12 @@ public class Revision {
      * a is left aligned, dt is any temporal shift between where the terms exist in the callee's context
      */
     public static Term intermpolate(/*@NotNull*/ Term a, long dt, /*@NotNull*/ Term b, float aProp, NAR nar) {
-        return intermpolate(a, dt, b, aProp, 1, nar);
+        Term term = intermpolate(a, dt, b, aProp, 1, nar);
+
+        if (term.volume() > nar.termVolumeMax.intValue())
+            return Null;
+
+        return term;
     }
 
 

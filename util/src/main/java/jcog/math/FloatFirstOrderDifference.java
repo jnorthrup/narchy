@@ -12,6 +12,7 @@ public class FloatFirstOrderDifference implements FloatSupplier {
     float lastDifference = 0;
     private final AtomicLong lastUpdate;
     private final LongSupplier clock;
+    private boolean nanIfZero;
 
     public FloatFirstOrderDifference(LongSupplier clock, FloatSupplier in) {
         this.in = in;
@@ -22,7 +23,13 @@ public class FloatFirstOrderDifference implements FloatSupplier {
 
     @Override
     public float asFloat() {
+        float x = update();
+        if (nanIfZero && x == 0)
+            return Float.NaN;
+        return x;
+    }
 
+    private float update() {
         long now = clock.getAsLong();
         long before = lastUpdate.get();
         if (!lastUpdate.compareAndSet(before, now)) {
@@ -41,5 +48,10 @@ public class FloatFirstOrderDifference implements FloatSupplier {
             return (lastDifference = (currentValue - lastValue));
         }
 
+    }
+
+    public FloatFirstOrderDifference nanIfZero() {
+        this.nanIfZero = true;
+        return this;
     }
 }

@@ -63,12 +63,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default boolean containsAny(Subterms ofThese) {
-        if (ofThese.subs() < 4 /* threshold */) {
+        //if (ofThese.subs() < 4 /* threshold */) {
             return OR(ofThese::contains);
-        } else {
-            MutableSet<Term> xs = ofThese.toSet();
-            return OR(xs::contains);
-        }
+//        } else {
+//            MutableSet<Term> xs = ofThese.toSet();
+//            return OR(xs::contains);
+//        }
     }
 
 

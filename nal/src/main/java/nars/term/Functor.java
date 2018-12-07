@@ -36,11 +36,11 @@ import static nars.term.Terms.atomOrNull;
  */
 abstract public class Functor extends NodeConcept implements PermanentConcept, BiFunction<Evaluation, Subterms, Term>, Atomic {
 
-    protected Functor(@NotNull String atom) {
+    protected Functor(String atom) {
         this(fName(atom));
     }
 
-    protected Functor(@NotNull Atom atom) {
+    protected Functor(Atom atom) {
         super(atom, TermLinker.NullLinker, ConceptBuilder.NullConceptBuilder);
     }
 
@@ -61,8 +61,10 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
 
-
-
+    @Override
+    public Term term() {
+        return this;
+    }
     @Override
     public final int opX() {
         return term.opX();
@@ -75,27 +77,27 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     /**
      * creates a new functor from a term name and a lambda
      */
-    public static LambdaFunctor f(@NotNull String termAtom, @NotNull Function<Subterms, Term> f) {
+    public static LambdaFunctor f(String termAtom, Function<Subterms, Term> f) {
         return f(fName(termAtom), f);
     }
 
     /**
      * creates a new functor from a term name and a lambda
      */
-    private static LambdaFunctor f(@NotNull Atom termAtom, @NotNull Function<Subterms, Term> f) {
+    private static LambdaFunctor f(Atom termAtom, Function<Subterms, Term> f) {
         return new LambdaFunctor(termAtom, f);
     }
 
-    public static LambdaFunctor f(@NotNull String termAtom, int arityRequired, @NotNull Function<Subterms, Term> ff) {
+    public static LambdaFunctor f(String termAtom, int arityRequired, Function<Subterms, Term> ff) {
         return f(fName(termAtom), arityRequired, ff);
     }
 
-    private static LambdaFunctor f(@NotNull Atom termAtom, int arityRequired, @NotNull Function<Subterms, Term> ff) {
+    private static LambdaFunctor f(Atom termAtom, int arityRequired, Function<Subterms, Term> ff) {
         return f(termAtom, tt ->
                 (tt.subs() == arityRequired) ? ff.apply(tt) : Bool.Null
         );
     }
-    private static LambdaFunctor f(@NotNull Atom termAtom, int minArity, int maxArity, @NotNull Function<Subterms, Term> ff) {
+    private static LambdaFunctor f(Atom termAtom, int minArity, int maxArity, Function<Subterms, Term> ff) {
         return f(termAtom, (tt) -> {
             int n = tt.subs();
             return ((n >= minArity) && ( n<=maxArity)) ? ff.apply(tt) : Bool.Null;
@@ -104,15 +106,15 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     /**
      * zero argument (void) functor (convenience method)
      */
-    private static LambdaFunctor f0(@NotNull Atom termAtom, @NotNull Supplier<Term> ff) {
+    private static LambdaFunctor f0(Atom termAtom, Supplier<Term> ff) {
         return f(termAtom, 0, (tt) -> ff.get());
     }
 
-    public static LambdaFunctor f0(@NotNull String termAtom, @NotNull Supplier<Term> ff) {
+    public static LambdaFunctor f0(String termAtom, Supplier<Term> ff) {
         return f0(fName(termAtom), ff);
     }
 
-    public static LambdaFunctor r0(@NotNull String termAtom, @NotNull Supplier<Runnable> ff) {
+    public static LambdaFunctor r0(String termAtom, Supplier<Runnable> ff) {
         Atom fName = fName(termAtom);
         return f0(fName, () -> new AbstractPred<>($.inst($.quote(Util.uuid64()), fName)) {
 
@@ -133,23 +135,23 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     /**
      * one argument functor (convenience method)
      */
-    public static LambdaFunctor f1(@NotNull Atom termAtom, @NotNull Function<Term, Term> ff) {
+    public static LambdaFunctor f1(Atom termAtom, Function<Term, Term> ff) {
         return f(termAtom, 1, (tt) -> ff.apply(tt.sub(0)));
     }
 
-    public static LambdaFunctor f1(@NotNull String termAtom, @NotNull Function<Term, Term> ff) {
+    public static LambdaFunctor f1(String termAtom, Function<Term, Term> ff) {
         return f1(fName(termAtom), safeFunctor(ff));
     }
 
-    public static Functor f1Inline(@NotNull String termAtom, @NotNull Function<Term, Term> ff) {
+    public static Functor f1Inline(String termAtom, Function<Term, Term> ff) {
         return new MyAbstractInlineFunctor1Inline(termAtom, ff);
     }
 
-    public static Functor f2Inline(@NotNull String termAtom, @NotNull BiFunction<Term, Term, Term> ff) {
+    public static Functor f2Inline(String termAtom, BiFunction<Term, Term, Term> ff) {
         return new MyAbstractInlineFunctor2Inline(termAtom, ff);
     }
 
-    public static <X extends Term> LambdaFunctor f1Const(@NotNull String termAtom, @NotNull Function<X, Term> ff) {
+    public static <X extends Term> LambdaFunctor f1Const(String termAtom, Function<X, Term> ff) {
         return f1(fName(termAtom), (Term x) -> {
             if (x == null || x.hasVars())
                 return null;
@@ -158,7 +160,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
 
-    private static Function<Term, Term> safeFunctor(@NotNull Function<Term, Term> ff) {
+    private static Function<Term, Term> safeFunctor(Function<Term, Term> ff) {
         return x ->
                 (x == null) ? null
                         :
@@ -168,7 +170,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     /**
      * a functor involving a concept resolved by the 1st argument term
      */
-    public static LambdaFunctor f1Concept(@NotNull String termAtom, NAR nar, @NotNull BiFunction<Concept, NAR, Term> ff) {
+    public static LambdaFunctor f1Concept(String termAtom, NAR nar, BiFunction<Concept, NAR, Term> ff) {
         return f1(fName(termAtom), t -> {
             Concept c = nar.concept(t);
             if (c != null) {
@@ -183,32 +185,32 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     /**
      * two argument functor (convenience method)
      */
-    private static LambdaFunctor f2(@NotNull Atom termAtom, @NotNull BiFunction<Term, Term, Term> ff) {
+    private static LambdaFunctor f2(Atom termAtom, BiFunction<Term, Term, Term> ff) {
         return f(termAtom, 2, tt -> ff.apply(tt.sub(0), tt.sub(1)));
     }
 
     /**
      * two argument functor (convenience method)
      */
-    public static LambdaFunctor f2(@NotNull String termAtom, @NotNull BiFunction<Term, Term, Term> ff) {
+    public static LambdaFunctor f2(String termAtom, BiFunction<Term, Term, Term> ff) {
         return f2(fName(termAtom), ff);
     }
-    public static LambdaFunctor f3(@NotNull String termAtom, @NotNull TriFunction<Term, Term, Term, Term> ff) {
+    public static LambdaFunctor f3(String termAtom, TriFunction<Term, Term, Term, Term> ff) {
         return f3(fName(termAtom), ff);
     }
 
     /**
      * three argument functor (convenience method)
      */
-    public static LambdaFunctor f3(@NotNull Atom termAtom, @NotNull TriFunction<Term, Term, Term, Term> ff) {
+    public static LambdaFunctor f3(Atom termAtom, TriFunction<Term, Term, Term, Term> ff) {
         return f(termAtom, 3, (tt) -> ff.apply(tt.sub(0), tt.sub(1), tt.sub(2)));
     }
 
-    public static LambdaFunctor f2Or3(@NotNull String termAtom, @NotNull Function<Term[], Term> ff) {
+    public static LambdaFunctor f2Or3(String termAtom, Function<Term[], Term> ff) {
         return f2Or3(fName(termAtom), ff);
     }
 
-    private static LambdaFunctor f2Or3(@NotNull Atom termAtom, @NotNull Function<Term[], Term> ff) {
+    private static LambdaFunctor f2Or3(Atom termAtom, Function<Term[], Term> ff) {
         return f(termAtom, 2, 3, (tt) -> ff.apply(tt.arrayShared()));
     }
     /**
@@ -319,7 +321,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
 
         private final Function<Subterms, Term> f;
 
-        LambdaFunctor(@NotNull Atom termAtom, @NotNull Function<Subterms, Term> f) {
+        LambdaFunctor(Atom termAtom, Function<Subterms, Term> f) {
             super(termAtom);
             this.f = f;
         }
@@ -603,7 +605,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         private @NotNull
         final Function<Term, Term> ff;
 
-        MyAbstractInlineFunctor1Inline(@NotNull String termAtom, @NotNull Function<Term, Term> ff) {
+        MyAbstractInlineFunctor1Inline(String termAtom, Function<Term, Term> ff) {
             super(termAtom);
             this.ff = ff;
         }
@@ -616,7 +618,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
     static class TheAbstractInlineFunctor1Inline extends MyAbstractInlineFunctor1Inline implements The {
-        public TheAbstractInlineFunctor1Inline(@NotNull String termAtom, @NotNull Function<Term, Term> ff) {
+        public TheAbstractInlineFunctor1Inline(String termAtom, Function<Term, Term> ff) {
             super(termAtom, ff);
         }
     }
@@ -625,7 +627,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         private @NotNull
         final BiFunction<Term, Term, Term> ff;
 
-        MyAbstractInlineFunctor2Inline(@NotNull String termAtom, @NotNull BiFunction<Term, Term, Term> ff) {
+        MyAbstractInlineFunctor2Inline(String termAtom, BiFunction<Term, Term, Term> ff) {
             super(termAtom);
             this.ff = ff;
         }

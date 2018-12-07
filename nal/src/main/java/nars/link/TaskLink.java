@@ -31,13 +31,14 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
     /** main tasklink constructor */
     static TaskLink tasklink(Task task, float pri, NAR n) {
 
-        if (pri > 0)
-            pri = pri * n.taskLinkActivation.floatValue();
+        //assert(task.term().volume() < n.termVolumeMax.intValue());
+
 
 //        if (task instanceof SignalTask) {
 //            return new DirectTaskLink(task, pri);
 //        } else {
-            return new GeneralTaskLink(Tasklike.seed(task, n), pri);
+
+        return new GeneralTaskLink(Tasklike.seed(task, n), pri);
         //}
     }
 

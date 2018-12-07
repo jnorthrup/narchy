@@ -40,6 +40,8 @@ public abstract class TaskLeak extends Causable {
      */
     private final byte[] puncs;
 
+    transient protected int volMax;
+
     protected TaskLeak(@Nullable NAR n, byte... puncs) {
         this(new TaskTableSource(), n, puncs);
 
@@ -105,6 +107,7 @@ public abstract class TaskLeak extends Causable {
 
     @Override
     protected void next(NAR nar, BooleanSupplier kontinue) {
+        volMax = nar.termVolumeMax.intValue();
         source.next(kontinue, nar, this::leak);
     }
 

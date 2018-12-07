@@ -534,7 +534,10 @@ public class GameCombat {
             if (targ.pain != null)
                 targ.pain.pain(targ, attacker, knockback, take);
         }
-    
+
+        if (attacker.hurt!=null) {
+            attacker.hurt.hurt(attacker, targ, take);
+        }
         
         
         

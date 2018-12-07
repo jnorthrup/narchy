@@ -5,10 +5,14 @@ import nars.Task;
 import nars.bag.leak.TaskLeakTransform;
 import nars.task.UnevaluatedTask;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class Introduction extends TaskLeakTransform {
 
+    protected Introduction(NAR nar) {
+        super(nar);
+    }
     protected Introduction(int capacity, NAR nar) {
         super(capacity, nar);
     }
@@ -22,7 +26,7 @@ public abstract class Introduction extends TaskLeakTransform {
 
         Term y = newTerm(xx);
 
-        if (y != null) {
+        if (y != null && !(y instanceof Bool) && (y.volume() < volMax)) {
             Term x = xx.term();
             if (!y.equals(x) && y.op().conceptualizable) {
 

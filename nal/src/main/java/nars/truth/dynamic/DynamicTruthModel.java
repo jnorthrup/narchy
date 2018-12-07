@@ -16,6 +16,7 @@ import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.Conj;
+import nars.term.util.Image;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.Truthed;
@@ -107,14 +108,14 @@ abstract public class DynamicTruthModel {
             }
 
             protected static Term reconstruct(Term superterm, List<Task> components, boolean subjOrPred, boolean union) {
-                if (!superterm.hasAny(Op.Temporal))
-                    return superterm; //shortcut
-
                 return stmtReconstruct(superterm, components, subjOrPred, union);
             }
 
             @Override
             public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+
+                superterm = Image.imageNormalize(superterm);
+
                 Term common = stmtCommon(subjOrPred, superterm);
                 Term decomposed = stmtCommon(!subjOrPred, superterm);
                 Op op = superterm.op();

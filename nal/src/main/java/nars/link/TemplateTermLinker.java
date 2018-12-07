@@ -53,7 +53,7 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
 //            1f;
 //            //0.5f;
 
-    static final float tasklinkSpreadRate = 1f;
+
 
 
     /**
@@ -353,12 +353,15 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
                     OverflowDistributor<Bag> overflow = n > 1 ? new OverflowDistributor<>() : null;
 
                     NAR nar = d.nar;
+
+                    float taskLinkRate = nar.taskLinkActivation.floatValue();
+
                     for (int i = 0; i < n; i++) {
 
                         Task t = taskedLinked.get(i);
                         TaskLink tt = TaskLink.tasklink(t, 0 /* cloned next */, nar);
 
-                        link(tt, t.priElseZero() * tasklinkSpreadRate, firedConcepts, overflow);
+                        link(tt, t.priElseZero() * taskLinkRate, firedConcepts, overflow);
 
                         if (overflow != null) {
                             overflow.shuffle(d.random).redistribute((b, p) -> b.putAsync(tt.clone(p)));

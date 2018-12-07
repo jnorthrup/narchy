@@ -7,9 +7,12 @@
 
 
 //image structural transform reverse
-(X --> P), X,                is(P,"*"), subsMin(P,2), subOf(P,/) |- imageNormalize((X-->P)), (Belief:Identity, Goal:Identity, Time:Task)
+// note: the beliefs should already be present in the host concept.  they may not be output because the belief table cant distinguish them so it will seem like a duplicate
+// so the belief/goal normalization effectively is redundant so i've commented it out.
+// questions may also benefit form this strategy
+//(X --> P), X,                is(P,"*"), subsMin(P,2), subOf(P,/) |- imageNormalize((X-->P)), (Belief:Identity, Goal:Identity, Time:Task)
     (X --> P), X, task("?@"), is(P,"*"), subsMin(P,2), subOf(P,/) |- imageNormalize((X-->P)), (Time:Task)
-(P --> X), X,                is(P,"*"), subsMin(P,2), subOf(P,\) |- imageNormalize((P-->X)), (Belief:Identity, Goal:Identity, Time:Task)
+//(P --> X), X,                is(P,"*"), subsMin(P,2), subOf(P,\) |- imageNormalize((P-->X)), (Belief:Identity, Goal:Identity, Time:Task)
     (P --> X), X, task("?@"), is(P,"*"), subsMin(P,2), subOf(P,\) |- imageNormalize((P-->X)), (Time:Task)
 
 

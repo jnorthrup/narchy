@@ -102,7 +102,7 @@ public class PremiseRuleProto extends PremiseRuleSource {
             postpost[k++] = p;
 
         this.rule = pair(PRE,
-                DeriveAction.action(cause, (AND) AND.the(postpost)));
+                DeriveAction.action(cause, AND.the(postpost)));
     }
 
     private static boolean hasEllipsis(Term x) {

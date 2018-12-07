@@ -165,6 +165,9 @@ public class edict_t {
 
     public EntUseAdapter use;
 
+    /** causes pain */
+    public EntHurtAdapter hurt;
+
     public EntPainAdapter pain;
 
     public EntDieAdapter die;

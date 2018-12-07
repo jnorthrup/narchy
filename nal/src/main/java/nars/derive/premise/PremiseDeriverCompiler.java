@@ -4,30 +4,24 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.memoize.Memoizers;
 import jcog.tree.perfect.TrieNode;
-import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.derive.Derivation;
 import nars.derive.op.Branchify;
 import nars.derive.op.UnifyTerm;
+import nars.term.Term;
 import nars.term.control.AND;
 import nars.term.control.FORK;
 import nars.term.control.PREDICATE;
 import nars.term.control.SWITCH;
 import nars.term.util.TermTrie;
-import nars.unify.constraint.TermMatch;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.io.PrintStream;
 import java.util.*;
 import java.util.function.Function;
-
-import static nars.derive.premise.PremiseRuleSource.BeliefTerm;
-import static nars.derive.premise.PremiseRuleSource.TaskTerm;
 
 /**
  * high-level interface for compiling premise deriver rules
@@ -87,7 +81,7 @@ public enum PremiseDeriverCompiler {
 
 
         return new DeriverRules(
-                PremiseDeriverCompiler.compile(path, null),
+                PremiseDeriverCompiler.compile(path),
                 rootBranches);
     }
 
@@ -110,9 +104,9 @@ public enum PremiseDeriverCompiler {
         } else if (p instanceof AND) {
             out.println("and {");
             AND ac = (AND) p;
-            for (PREDICATE b : ac.cond) {
-                print(b, out, indent + 2);
-            }
+            ac.subStream().forEach(b->
+                print(b, out, indent + 2)
+            );
             TermTrie.indent(indent);
             out.println("}");
         } /*else if (p instanceof Try) {
@@ -175,12 +169,12 @@ public enum PremiseDeriverCompiler {
     }
 
 
-    static PREDICATE<Derivation> compile(TermTrie<PREDICATE<Derivation>, DeriveAction> trie, Function<PREDICATE<Derivation>, PREDICATE<Derivation>> each) {
+    static PREDICATE<Derivation> compile(TermTrie<PREDICATE<Derivation>, DeriveAction> trie) {
         Collection<PREDICATE<Derivation>> bb = compile(trie.root);
 
         PREDICATE<Derivation> tf = FORK.fork(bb, (Function<PREDICATE<Derivation>[], PREDICATE<Derivation>>) FORK::new);
-        if (each != null)
-            tf = tf.transform(each);
+//        if (each != null)
+//            tf = tf.transform(each);
 
         return tf;
     }
@@ -214,8 +208,8 @@ public enum PremiseDeriverCompiler {
         if (bb.isEmpty())
             return null;
         else {
-            return compileSwitch(bb, 2);
-            //return bb;
+            //return compileSwitch(bb, 2);
+            return bb;
         }
     }
 
@@ -232,10 +226,10 @@ public enum PremiseDeriverCompiler {
 
         Map<PREDICATE, SubCond> conds = new HashMap(x.size());
         for (int b = 0, xSize = n; b < xSize; b++) {
-            PREDICATE p = x.get(b);
+            PREDICATE  p = x.get(b);
             if (p instanceof AND) {
-                for (PREDICATE xx : ((AND<PREDICATE>) p).cond)
-                    SubCond.bumpCond(conds, xx, b);
+                int bb = b;
+                ((AND) p).subStream().forEach((xx)-> SubCond.bumpCond(conds, (PREDICATE)xx, bb));
             } else if (p instanceof FORK) {
 
             } else {
@@ -257,7 +251,9 @@ public enum PremiseDeriverCompiler {
                         xx.remove();
 
                         if (px instanceof AND) {
-                            px = AND.the(ArrayUtils.removeAllOccurences(((AND) px).cond, fx.p));
+                            if (((AND)px).subterms().contains(fx.p)) {
+                                px = AND.the((Term[])((AND)px).subterms().subsExcept(fx.p));
+                            }
                             bundle.add(px);
                         } else {
 
@@ -301,68 +297,68 @@ public enum PremiseDeriverCompiler {
         return FORK.fork(x, builder);
     }
 
-    private static Set<PREDICATE<Derivation>> compileSwitch(Set<PREDICATE<Derivation>> branches, int minCases) {
+//    private static Set<PREDICATE<Derivation>> compileSwitch(Set<PREDICATE<Derivation>> branches, int minCases) {
+//
+//        if (branches.size() < minCases)
+//            return branches; //dont bother
+//
+////        branches = factorSubOpToSwitch(branches, true, minCases);
+////        branches = factorSubOpToSwitch(branches, false, minCases);
+//
+//        return branches;
+//    }
 
-        if (branches.size() < minCases)
-            return branches; //dont bother
-
-//        branches = factorSubOpToSwitch(branches, true, minCases);
-//        branches = factorSubOpToSwitch(branches, false, minCases);
-
-        return branches;
-    }
-
-    //broken temporarily
-    private static Set<PREDICATE<Derivation>> factorSubOpToSwitch(Set<PREDICATE<Derivation>> bb, boolean taskOrBelief, int minToCreateSwitch) {
-        if (!bb.isEmpty()) {
-            /** TermMatch as field of TaskBeliefMatch */
-            Map<TermMatch.Is, PREDICATE<Derivation>> cases = new UnifiedMap(8);
-            Set<PREDICATE<Derivation>> removed = new UnifiedSet(8);
-            bb.forEach(p -> {
-                if (p instanceof AND) {
-                    AND ac = (AND) p;
-                    ac.forEach(x -> {
-                        if (x instanceof TermMatchPred) {
-                            TermMatchPred tb = (TermMatchPred) x;
-                            TermMatch m = tb.match;
-                            if (m instanceof TermMatch.Is) {
-                                if ((taskOrBelief && tb.resolve==TaskTerm) || (!taskOrBelief && tb.resolve==BeliefTerm)) {
-                                    PREDICATE acw = ac.without(tb);
-                                    if (null == cases.putIfAbsent((TermMatch.Is)m, acw)) {
-                                        removed.add(p);
-                                    }
-                                }
-                            }
-                        }
-                    });
-
-                }
-            });
-
-
-            int numCases = cases.size();
-            if (numCases >= minToCreateSwitch) {
-                if (numCases != removed.size()) {
-                    throw new RuntimeException("switch fault");
-                }
-
-                EnumMap<Op, PREDICATE<Derivation>> caseMap = new EnumMap(Op.class);
-                cases.forEach((c, p) -> {
-                    int cs = c.struct;
-                    Op[] opVals = Op.values();
-                    for (int i = 0; i < opVals.length; i++) {
-                        if ((cs & (1 << i)) != 0)
-                            caseMap.put(opVals[i], p);
-                    }
-
-                });
-                bb.removeAll(removed);
-                bb.add(new SWITCH<>(taskOrBelief, caseMap));
-            }
-        }
-
-        return bb;
-    }
+//    //broken temporarily
+//    private static Set<PREDICATE<Derivation>> factorSubOpToSwitch(Set<PREDICATE<Derivation>> bb, boolean taskOrBelief, int minToCreateSwitch) {
+//        if (!bb.isEmpty()) {
+//            /** TermMatch as field of TaskBeliefMatch */
+//            Map<TermMatch.Is, PREDICATE<Derivation>> cases = new UnifiedMap(8);
+//            Set<PREDICATE<Derivation>> removed = new UnifiedSet(8);
+//            bb.forEach(p -> {
+//                if (p instanceof AND) {
+//                    AND ac = (AND) p;
+//                    ac.forEach(x -> {
+//                        if (x instanceof TermMatchPred) {
+//                            TermMatchPred tb = (TermMatchPred) x;
+//                            TermMatch m = tb.match;
+//                            if (m instanceof TermMatch.Is) {
+//                                if ((taskOrBelief && tb.resolve==TaskTerm) || (!taskOrBelief && tb.resolve==BeliefTerm)) {
+//                                    PREDICATE acw = ac.without(tb);
+//                                    if (null == cases.putIfAbsent((TermMatch.Is)m, acw)) {
+//                                        removed.add(p);
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    });
+//
+//                }
+//            });
+//
+//
+//            int numCases = cases.size();
+//            if (numCases >= minToCreateSwitch) {
+//                if (numCases != removed.size()) {
+//                    throw new RuntimeException("switch fault");
+//                }
+//
+//                EnumMap<Op, PREDICATE<Derivation>> caseMap = new EnumMap(Op.class);
+//                cases.forEach((c, p) -> {
+//                    int cs = c.struct;
+//                    Op[] opVals = Op.values();
+//                    for (int i = 0; i < opVals.length; i++) {
+//                        if ((cs & (1 << i)) != 0)
+//                            caseMap.put(opVals[i], p);
+//                    }
+//
+//                });
+//                bb.removeAll(removed);
+//                bb.add(new SWITCH<>(taskOrBelief, caseMap));
+//            }
+//        }
+//
+//        return bb;
+//    }
 
     private static class SubCond {
         final PREDICATE p;
@@ -373,7 +369,7 @@ public enum PremiseDeriverCompiler {
             branches.add(branch);
         }
 
-        static void bumpCond(Map<PREDICATE, SubCond> conds, PREDICATE p, int branch) {
+        static <X> void bumpCond(Map<PREDICATE, SubCond> conds, PREDICATE p, int branch) {
             float pc = p.cost();
             if (!Float.isFinite(pc))
                 return;

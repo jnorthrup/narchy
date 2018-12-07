@@ -1,7 +1,6 @@
 package nars.term.control;
 
 import com.google.common.collect.Iterables;
-import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import nars.term.ProxyTerm;
@@ -68,7 +67,7 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
      * warning: these need to return constant values for sort consistency
      */
     default float cost() {
-        throw new TODO();
+        return Float.POSITIVE_INFINITY;
     }
 
     /** optimization subsumption: determines whether this predicate
@@ -94,7 +93,7 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
         private final PREDICATE<X> p;
 
         public NegPredicate(PREDICATE<X> p) {
-            super(p instanceof ProxyTerm ? ((ProxyTerm)p).ref.neg() : p.neg());
+            super(p instanceof ProxyTerm ? ((ProxyTerm)p).ref.neg() : p.term().neg());
             this.p = p;
         }
 

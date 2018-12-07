@@ -38,7 +38,6 @@ public final class Termify extends AbstractPred<Derivation> {
 
     }
 
-
     @Override
     public final boolean test(Derivation d) {
 
@@ -52,8 +51,8 @@ public final class Termify extends AbstractPred<Derivation> {
         nar.emotion.deriveTermify.increment();
 
         Term c1 = d.transform(pattern);
-        if (c1 == null || !c1.unneg().op().taskable)
-            return false;
+
+
 
 
         if (!Taskify.valid(c1, (byte) 0 /* dont consider punc consequences until after temporalization */)) {
