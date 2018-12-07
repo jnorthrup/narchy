@@ -61,23 +61,23 @@ public class S {
 				Class.forName("org.lwjgl.openal.AL");
 				Class.forName("jake2.sound.lwjgl.LWJGLSoundImpl");
 			} catch (Throwable e) {
-				
+
 			    Com.DPrintf("could not init lwjgl sound driver class.");
 			}
-		
+
                         try {
                                 Class.forName("jake2.sound.jsound.JSoundImpl");
                         } catch (Throwable e) {
-                                
+
                             Com.DPrintf("could not init jsound sound driver class.");
                         }
 
-			
+
 			try {
 				Class.forName("com.jogamp.openal.AL");
 				Class.forName("jake2.sound.joal.JOALSoundImpl");
 			} catch (Throwable e) {
-				
+
 			    Com.DPrintf("could not init joal sound driver class.");
 			}
 		
@@ -98,9 +98,9 @@ public class S {
 	/**
 	 * Switches to the specific sound driver.
 	 */
-	public static void useDriver(String driverName) {
+	private static void useDriver(String driverName) {
 		Sound driver = null;
-		int count = drivers.size();
+//		int count = drivers.size();
 		for (Object driver1 : drivers) {
 			driver = (Sound) driver1;
 			if (driver.getName().equals(driverName)) {

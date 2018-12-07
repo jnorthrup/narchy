@@ -5,6 +5,7 @@ import jake2.client.Key;
 import jake2.game.EntHurtAdapter;
 import jake2.game.PlayerView;
 import jake2.game.edict_t;
+import jake2.qcommon.Cvar;
 import jake2.sys.IN;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
@@ -107,7 +108,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
     }
 
     protected String nextMap() {
-        return "demo2";
+        return "demo3";
     }
 
     final PlayerData player = new PlayerData();
@@ -208,6 +209,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
 //            return delta;
 //        });
 
+
         new Thread(this).start();
     }
 
@@ -219,8 +221,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
         IN.mouse_avail = false;
         Jake2.run(new String[]{
                 "+god",
-
-
+                "+deathmatch 1",
                 "+dmflags 1024",
                 "+cl_gun 0",
                 "+timescale " + timeScale,

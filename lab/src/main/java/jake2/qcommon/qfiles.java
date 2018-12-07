@@ -177,9 +177,9 @@ public class qfiles {
 	public static final int IDALIASHEADER =	(('2'<<24)+('P'<<16)+('D'<<8)+'I');
 	public static final int ALIAS_VERSION = 8;
 	
-	public static final int MAX_TRIANGLES = 4096;
+	//public static final int MAX_TRIANGLES = 4096;
 	public static final int MAX_VERTS = 2048;
-	public static final int MAX_FRAMES = 512;
+	//public static final int MAX_FRAMES = 512;
 	public static final int MAX_MD2SKINS = 32;
 	public static final int MAX_SKINNAME = 64;
 	
