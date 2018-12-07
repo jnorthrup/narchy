@@ -2,9 +2,9 @@ package spacegraph.space2d.widget.chip;
 
 import jcog.event.Off;
 import jcog.signal.Tensor;
+import spacegraph.audio.AudioBuffer;
 import spacegraph.audio.AudioBufferView;
 import spacegraph.audio.AudioSource;
-import spacegraph.audio.AudioBuffer;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.widget.port.Port;
 import spacegraph.space2d.widget.port.TypedPort;

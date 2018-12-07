@@ -9,6 +9,8 @@ def boofVersion =
         //'0.31-SNAPSHOT'
         '0.31'
 
+def jogampVersion = '2.3.2'
+
 dependencies {
     compile project(':util')
 
@@ -38,10 +40,10 @@ dependencies {
 //    compile group: 'io.netty', name: 'netty-all', version:'5.0.0.Alpha2'
 //    compile group: 'com.airhacks', name: 'afterburner.fx', version:'1.7.0'
 
-    compile group: 'org.jogamp.gluegen', name: 'gluegen-rt-main', version: '2.3.2'
+    compile group: 'org.jogamp.gluegen', name: 'gluegen-rt-main', version: jogampVersion
     compile(group: 'org.jogamp.jogl',
             name: 'jogl-all-noawt-main',
-            version: '2.3.2')
+            version: jogampVersion)
 
 
 

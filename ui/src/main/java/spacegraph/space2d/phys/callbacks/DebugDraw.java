@@ -28,7 +28,10 @@
  */
 package spacegraph.space2d.phys.callbacks;
 
-import spacegraph.space2d.phys.common.*;
+import spacegraph.space2d.phys.common.Color3f;
+import spacegraph.space2d.phys.common.IViewportTransform;
+import spacegraph.space2d.phys.common.OBBViewportTransform;
+import spacegraph.space2d.phys.common.Transform;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.particle.ParticleColor;
 import spacegraph.util.math.v2;

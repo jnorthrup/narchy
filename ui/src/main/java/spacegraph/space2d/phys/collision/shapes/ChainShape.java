@@ -27,7 +27,10 @@ package spacegraph.space2d.phys.collision.shapes;
 import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.RayCastInput;
 import spacegraph.space2d.phys.collision.RayCastOutput;
-import spacegraph.space2d.phys.common.*;
+import spacegraph.space2d.phys.common.MathUtils;
+import spacegraph.space2d.phys.common.Rot;
+import spacegraph.space2d.phys.common.Settings;
+import spacegraph.space2d.phys.common.Transform;
 import spacegraph.util.math.v2;
 
 /**

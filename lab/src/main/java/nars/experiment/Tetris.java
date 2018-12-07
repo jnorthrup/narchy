@@ -8,11 +8,11 @@ import nars.NAR;
 import nars.NARS;
 import nars.NAgentX;
 import nars.agent.FrameTrigger;
+import nars.gui.sensor.VectorSensorView;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.gui.sensor.VectorSensorView;
 import org.eclipse.collections.api.block.function.primitive.BooleanToBooleanFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 

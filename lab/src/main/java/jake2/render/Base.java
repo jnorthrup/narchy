@@ -29,8 +29,6 @@ import jake2.render.opengl.GLDriver;
 import jake2.render.opengl.QGL;
 import jake2.render.opengl.QGLConst;
 
-import java.nio.ByteBuffer;
-
 /**
  * Base
  * 
