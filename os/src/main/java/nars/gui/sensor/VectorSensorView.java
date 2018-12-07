@@ -1,4 +1,4 @@
-package nars.video;
+package nars.gui.sensor;
 
 import jcog.Util;
 import jcog.math.FloatRange;

@@ -9,7 +9,7 @@ import nars.NAgentX;
 import nars.concept.sensor.DigitizedScalar;
 import nars.sensor.Bitmap2DSensor;
 import nars.video.PixelBag;
-import nars.video.VectorSensorView;
+import nars.gui.sensor.VectorSensorView;
 
 import static java4k.gradius4k.Gradius4K.*;
 import static nars.agent.FrameTrigger.fps;

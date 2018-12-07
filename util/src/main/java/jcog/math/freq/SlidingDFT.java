@@ -22,36 +22,29 @@ public class SlidingDFT {
     private final int bins;
 
 
-    private final double[] cos;
-    private final double[] sin;
+    private final float[] cos;
+    private final float[] sin;
     private final float[][] timeBuf;
-    private final double[][] fftBufD;
+    private final float[][] fftBufD;
     private final int[] timeBufIdx;
 
     public SlidingDFT(int fftSize, int numChannels) {
         this.fftSize = fftSize;
 
-        final double d1;
-        final int binsH;
-        double d2;
-
-        bins = fftSize >> 1;
+        bins = fftSize / 2;
         fftSizeP2 = fftSize + 2;
-        fftBufD = new double[numChannels][fftSizeP2];
-        d1 = Math.PI * 2 / fftSize;
+        fftBufD = new float[numChannels][fftSizeP2];
 
-
-        binsH = bins >> 1;
-
-
-        cos = new double[bins + 1];
-        sin = new double[bins + 1];
+        cos = new float[bins + 1];
+        sin = new float[bins + 1];
         timeBuf = new float[numChannels][fftSize];
         timeBufIdx = new int[numChannels];
 
 
+        float d1 = (float) (Math.PI * 2 / fftSize);
+        final int binsH = bins / 2;
         for (int i = 0, j = bins, k = binsH, m = binsH; i < binsH; i++, j--, k--, m++) {
-            d2 = Math.cos(d1 * i);
+            float d2 = (float) Math.cos(d1 * i);
             cos[i] = d2;
             cos[j] = -d2;
             sin[k] = d2;
@@ -60,38 +53,32 @@ public class SlidingDFT {
     }
 
     public void next(float[] inBuf, int chan, float[] fftBuf) {
-        next(inBuf, 0, fftSize, chan, fftBuf);
+        next(inBuf, 0, inBuf.length, chan, fftBuf);
     }
 
-    public void next(float[] inBuf, int inOff, int len, int chan, float[] fftBuf) {
+    private void next(float[] inBuf, int inOff, int inLen, int chan, float[] fftBuf) {
 
-        if (len == 0 || inBuf.length == 0)
+        if (inLen == 0 || inBuf.length == 0)
             return;
 
-        final double[] fftBufDC = fftBufD[chan];
+        final float[] fftBufDC = fftBufD[chan];
         final float[] timeBufC = timeBuf[chan];
         int timeBufIdxC = timeBufIdx[chan];
-        double delta, re1, im1, re2, im2;
+        float delta, re1, im1, re2, im2;
         float f1;
 
-        for (int i = 0, j = inOff; i < len; i++, j++) {
+        for (int i = 0, j = inOff; i < inLen; i++, j++) {
             f1 = inBuf[j];
-            delta = (double) f1 - timeBufC[timeBufIdxC];
+            delta = f1 - timeBufC[timeBufIdxC];
 
             timeBufC[timeBufIdxC] = f1;
             for (int k = 0, m = 0; m < fftSizeP2; k++) {
 
-
-                if ((k & 1) == 0) {
-                    re1 = fftBufDC[m] + delta;
-                } else {
-                    re1 = fftBufDC[m] - delta;
-                }
+                re1 = fftBufDC[m] + ((k & 1) == 0 ? +1 : -1) * delta;
                 im1 = fftBufDC[m + 1];
 
                 re2 = cos[k];
                 im2 = sin[k];
-
 
                 fftBufDC[m++] = re1 * re2 - im1 * im2;
                 fftBufDC[m++] = re1 * im2 + re2 * im1;
@@ -100,10 +87,7 @@ public class SlidingDFT {
         }
         timeBufIdx[chan] = timeBufIdxC;
 
-        for (int i = 0; i < fftSizeP2; i++) {
-            fftBuf[i] = (float) fftBufDC[i];
-        }
-
+        System.arraycopy(fftBufDC, 0, fftBuf, 0, Math.min(fftBuf.length, fftSize));
 
     }
 }

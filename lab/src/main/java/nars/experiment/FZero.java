@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.learn.pid.MiniPID;
 import jcog.math.FloatAveraged;
 import jcog.math.FloatSupplier;
-import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import jcog.signal.wave2d.BrightnessNormalize;
 import nars.$;
@@ -20,7 +19,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.time.Tense;
 import nars.video.AutoclassifiedBitmap;
-import nars.video.VectorSensorView;
+import nars.gui.sensor.VectorSensorView;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 

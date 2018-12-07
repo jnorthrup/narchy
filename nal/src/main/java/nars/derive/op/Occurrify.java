@@ -1067,7 +1067,7 @@ public class Occurrify extends TimeGraph {
 
         @Nullable Pair<Term, long[]> solveDT(Derivation d, Term x, boolean taskOcc, boolean beliefOcc, boolean decomposeEvents) {
             long[] occ = occurrence(d);
-            assert (occ != null);
+            //assert (occ != null);
             return occ == null ? null : pair(
                     x.hasXternal() ? d.occ.solveDT(x, d.occ.reset(taskOcc, beliefOcc, x, decomposeEvents).solutions(x)) : x,
                     occ);

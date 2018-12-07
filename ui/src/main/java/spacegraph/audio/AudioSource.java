@@ -1,8 +1,10 @@
 package spacegraph.audio;
 
-import com.google.common.base.Joiner;
 import jcog.math.FloatRange;
+import jcog.math.IntRange;
 import jcog.signal.buffer.CircularFloatBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sound.sampled.*;
 import java.nio.ByteBuffer;
@@ -12,17 +14,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Signal sampled from system sound devices (via Java Media)
  */
-public class AudioSource implements WaveSource {
-    private final FloatRange frameRate;
+public class AudioSource {
+
+    /** buffer time in milliseconds */
+    public final IntRange bufferSize;
+
     private final int sampleRate;
     private TargetDataLine line;
     private final DataLine.Info dataLineInfo;
     public final AudioFormat audioFormat;
 
     private final int bytesPerSample;
+
     public final FloatRange gain = new FloatRange(1f, 0, 128f);
 
-
+    private static final Logger logger = LoggerFactory.getLogger(AudioSource.class);
 
     private byte[] preByteBuffer;
     private short[] preShortBuffer;
@@ -34,30 +40,21 @@ public class AudioSource implements WaveSource {
 
 
     /** frameRate determines buffer size and frequency that events are emitted; can also be considered a measure of latency */
-    public AudioSource(float frameRate) {
-        this.frameRate = new FloatRange(frameRate, 1f, 40f);
-
+    public AudioSource() {
 
         sampleRate = 22050;
         bytesPerSample = 2;
+
+        this.bufferSize = new IntRange(sampleRate/16, 1, sampleRate * 2);
+
         audioFormat = new AudioFormat(sampleRate, 8*bytesPerSample, 1, true, false);
-
-        dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
-//        System.out.println(dataLineInfo);
-
-
+        dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat, bufferSize.intValue());
     }
 
-    @Override
     public int samplesPerSecond() {
         return sampleRate;
     }
 
-    public void printDevices() {
-        
-        Mixer.Info[] minfoSet = AudioSystem.getMixerInfo();
-        System.out.println("Devices:\n\t" + Joiner.on("\n\t").join(minfoSet));
-    }
 
     public static void print() {
         Mixer.Info[] minfoSet = AudioSystem.getMixerInfo();
@@ -69,24 +66,23 @@ public class AudioSource implements WaveSource {
 
     }
 
-    @Override public int channelsPerSample() {
+    public int channelsPerSample() {
         return audioFormat.getChannels();
     }
 
-    @Override
     public int start() {
         
         
         try {
             
             line = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
+            logger.info("open {} {}", dataLineInfo);
 
             int sampleRate = (int) audioFormat.getSampleRate();
             int numChannels = audioFormat.getChannels();
 
-            float period = 1.0f / frameRate.floatValue();
 
-            int audioBufferSamples = (int) Math.ceil(sampleRate * numChannels * period);
+            int audioBufferSamples = (int) Math.ceil(numChannels * bufferSize.intValue());
 
 
             preByteBuffer = new byte[audioBufferSamples * bytesPerSample];
@@ -97,6 +93,8 @@ public class AudioSource implements WaveSource {
             line.open(audioFormat, audioBufferSamples);
             line.start();
 
+
+
             return audioBufferSamples;
         } catch (LineUnavailableException e) {
             e.printStackTrace();
@@ -106,14 +104,12 @@ public class AudioSource implements WaveSource {
 
     }
 
-    @Override
     public void stop() {
 
     }
 
-    private final AtomicBoolean busy = new AtomicBoolean();
+    private final AtomicBoolean busy = new AtomicBoolean(false);
 
-    @Override
     public int next(CircularFloatBuffer buffer) {
 
 
@@ -123,9 +119,10 @@ public class AudioSource implements WaveSource {
         try {
 
             int capacity = preByteBuffer.length;
-
-            int availableBytes = Math.min(capacity, line.available());
-            audioBytesRead = line.read(preByteBuffer, 0, availableBytes);
+            //int availableBytes = Math.min(capacity, line.available());
+            audioBytesRead = line.read(preByteBuffer, 0, capacity);
+            if(audioBytesRead==0)
+                return 0;
             int nSamplesRead = audioBytesRead / 2;
 
             ByteBuffer.wrap(preByteBuffer).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(preShortBuffer);

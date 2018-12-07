@@ -15,6 +15,7 @@ import nars.concept.NodeConcept;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
 import nars.control.channel.CauseChannel;
+import nars.gui.sensor.VectorSensorView;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;

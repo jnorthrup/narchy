@@ -22,7 +22,7 @@ import nars.sensor.Bitmap2DSensor;
 import nars.task.DerivedTask;
 import nars.term.Term;
 import nars.time.clock.CycleTime;
-import nars.video.VectorSensorView;
+import nars.gui.sensor.VectorSensorView;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.space2d.SurfaceRender;

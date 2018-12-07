@@ -17,7 +17,7 @@ import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
-import nars.video.VectorSensorView;
+import nars.gui.sensor.VectorSensorView;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;

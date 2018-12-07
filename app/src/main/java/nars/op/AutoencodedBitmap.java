@@ -1,4 +1,4 @@
-package nars.video;
+package nars.op;
 
 import jcog.learn.Autoencoder;
 import jcog.random.XoRoShiRo128PlusRandom;

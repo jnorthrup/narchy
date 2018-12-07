@@ -56,7 +56,7 @@ public class NARchy extends NARS {
 
         new BatchDeriver(Derivers.nal(nar, 1, 8, "motivation.nal"));
 
-        new Arithmeticize.ArithmeticIntroduction(32, nar);
+        new Arithmeticize.ArithmeticIntroduction(nar);
 
         return nar;
     }

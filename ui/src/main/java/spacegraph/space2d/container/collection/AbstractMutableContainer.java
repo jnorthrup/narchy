@@ -10,7 +10,7 @@ public abstract class AbstractMutableContainer extends Container {
         //synchronized (this) {
             forEach(c -> c.start(this));
         //}
-        layout();
+        //layout();
     }
 
 

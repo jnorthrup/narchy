@@ -2,8 +2,9 @@ package spacegraph.space2d.widget.chip;
 
 import jcog.event.Off;
 import jcog.signal.Tensor;
+import spacegraph.audio.AudioBufferView;
 import spacegraph.audio.AudioSource;
-import spacegraph.audio.WaveCapture;
+import spacegraph.audio.AudioBuffer;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.widget.port.Port;
 import spacegraph.space2d.widget.port.TypedPort;
@@ -12,14 +13,15 @@ import spacegraph.space2d.widget.text.LabeledPane;
 public class AudioCaptureChip extends Bordering {
 
     final Port out = new TypedPort<Tensor>(Tensor.class);
-    private final WaveCapture au;
+    private final AudioBuffer au;
     private Off on;
 
     public AudioCaptureChip() {
-        au = new WaveCapture(new AudioSource(20), 4f);
+        au = new AudioBuffer(new AudioSource(), 4f);
         au.setFPS(20f);
 
-        set(au.view());
+
+        set(new AudioBufferView(au));
         set(S, LabeledPane.awesome(out, "play"));
 
     }

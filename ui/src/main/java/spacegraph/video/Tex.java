@@ -31,6 +31,7 @@ public class Tex {
 
     public com.jogamp.opengl.util.texture.Texture texture;
 
+
     private boolean mipmap = false;
 
 
@@ -45,6 +46,11 @@ public class Tex {
 
     private Object src;
     protected GL2 gl;
+
+    public Tex mipmap(boolean mipmap) {
+        this.mipmap = mipmap;
+        return this;
+    }
 
     public final void paint(GL2 gl, RectFloat bounds) {
         paint(gl, bounds, 1f);

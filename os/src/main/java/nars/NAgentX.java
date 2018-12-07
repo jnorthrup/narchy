@@ -42,7 +42,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
 import nars.time.clock.RealTime;
-import nars.video.AutoencodedBitmap;
+import nars.op.AutoencodedBitmap;
 import nars.video.PixelBag;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
@@ -494,8 +494,8 @@ abstract public class NAgentX extends NAgent {
 //        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof CuriosityTask) ),
 //                8, 96);
 
-        Introduction arith = new Arithmeticize.ArithmeticIntroduction(64, n);
-        Introduction factorizer = new Factorize.FactorIntroduction(8, n);
+        Introduction arith = new Arithmeticize.ArithmeticIntroduction(n);
+        Introduction factorizer = new Factorize.FactorIntroduction( n);
 
 //        {
         new Inperience.Believe(n, 8);

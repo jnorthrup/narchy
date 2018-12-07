@@ -4,7 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.pri.ScalarValue;
 import jcog.signal.buffer.CircularFloatBuffer;
-import spacegraph.audio.WaveCapture;
+import spacegraph.audio.AudioBuffer;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerDragging;
 import spacegraph.input.finger.FingerMove;
@@ -38,9 +38,10 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
         vis = new BitmapWave(pixWidth, pixHeight, wave);
         set(vis);
     }
-    @Deprecated public WaveView(WaveCapture capture, float seconds, int pixWidth, int pixHeight) {
+    @Deprecated public WaveView(AudioBuffer capture, float seconds, int pixWidth, int pixHeight) {
         super();
-        int totalSamples = (int) Math.ceil(seconds * capture.source.samplesPerSecond());
+
+        int totalSamples = Math.round(capture.source().samplesPerSecond() * seconds);
 
         this.wave = capture.buffer.peekLast(new float[totalSamples]);
 

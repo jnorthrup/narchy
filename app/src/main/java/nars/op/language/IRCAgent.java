@@ -222,8 +222,8 @@ public class IRCAgent extends IRC {
                 .exe(new MultiExec.WorkerExec(new Revaluator.DefaultRevaluator(0.5f),2))
                 .time(new RealTime.MS(false).durFPS(durFPS)).get();
 
-        new Factorize.FactorIntroduction(16, n);
-        new Arithmeticize.ArithmeticIntroduction(16, n);
+        new Factorize.FactorIntroduction(n);
+        new Arithmeticize.ArithmeticIntroduction(n);
         new ConjClustering(n, BELIEF, 4, 16);
 
         n.termVolumeMax.set(20);

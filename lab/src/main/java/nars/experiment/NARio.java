@@ -20,7 +20,7 @@ import nars.gui.NARui;
 import nars.term.Term;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
-import nars.video.VectorSensorView;
+import nars.gui.sensor.VectorSensorView;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.text.LabeledPane;

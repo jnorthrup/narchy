@@ -1,4 +1,4 @@
-package nars.video;
+package nars.op;
 
 import jcog.math.FloatRange;
 import jcog.random.XorShift128PlusRandom;
