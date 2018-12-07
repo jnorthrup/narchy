@@ -25,15 +25,19 @@
  */
 package jake2;
 
+import com.jogamp.opengl.GL;
 import jake2.qcommon.Com;
 import jake2.qcommon.Cvar;
 import jake2.qcommon.Q2DataTool;
 import jake2.qcommon.Qcommon;
+import jake2.render.JoglGL2Renderer;
 import jake2.sys.Timer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
+import java.util.function.Consumer;
 
+import static jake2.Globals.re;
 
 
 /**
@@ -62,7 +66,7 @@ public final class Jake2 {
         run(args, null);
     }
 
-    public static void run(String[] args, @Nullable Runnable onFrame) {
+    public static void run(String[] args, @Nullable Consumer<GL> onFrame) {
         boolean dedicated = false;
 
         
@@ -124,7 +128,7 @@ public final class Jake2 {
                 Qcommon.Frame(time);
 
             if (onFrame!=null)
-                onFrame.run();
+                onFrame.accept(((JoglGL2Renderer) re).gl);
 
             oldtime = newtime;
         }

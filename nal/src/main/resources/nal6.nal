@@ -13,6 +13,7 @@
 //    (X ==> Y), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z), (Belief:AbductionPB)
 
 
+
 // Conditional syllogism && Independent Variable Elimination
 //      If after M, P usually happens, and M happens, it means P is expected to happen
 
@@ -93,6 +94,10 @@
 
 //    Y, ((&&,X,A..+) ==> B) |- subIfUnifiesAny((X ==> B),X,Y), (Belief:Deduction)
 //    Y, ((&&,--X,A..+) ==> B) |- subIfUnifiesAny((--X ==> B),X,Y), (Belief:DeductionN)
+
+    //general implication induction
+    (A ==> B), X, neq(A,X)                  |- ((A && X) ==> B), (Belief:Induction)
+    (A ==> B), X, neq(A,X)                  |- ((A && --X) ==> B), (Belief:InductionPN)
 
         ((&&,M,X,A..*) ==> C), (Y ==> C) |- subIfUnifiesAny((M ==> C),X,Y), (Belief:AbductionPB)
         ((&&,M,A..+) ==> X), ((&&,A..+) ==> Y) |- subIfUnifiesAny((M ==> X),X,Y,"$"), (Belief:AbductionPB)

@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static nars.truth.TruthFunctions.w2cSafe;
+import static jcog.math.LongInterval.ETERNAL;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
@@ -143,14 +143,23 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //
 //    static private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long start, long end, int dur) {
 //
-        return (Task x) -> (x.endsAfter(futureThresh) ? presentAndFutureBoost : 1f) *
-                //(TruthIntegration.eviAvg(x, 0))/ (1 + x.maxTimeTo(now)/((float)dur));
-                ///w2cSafe(TruthIntegration.evi(x));
-                //w2cSafe(TruthIntegration.evi(x)) / (1 + x.midTimeTo(now)/((float)dur));
-                //w2cSafe(x.evi(now, dur));
-                //(x.evi(now, dur)) * x.range();
-                w2cSafe(x.evi(now, dur)) * x.range();
-                //w2cSafe(x.evi(now, dur)) * (float)Math.log(x.range());
+        return (Task x) -> {
+            long s = x.start();
+            if (s == ETERNAL)
+                return x.evi();
+            else {
+                long e = x.end();
+                return (e >= futureThresh ? presentAndFutureBoost : 1f) *
+                        /*w2cSafe*/(x.evi(now, dur)) * (e-s+1)/*x.range()*/;
+            }
+
+            //(TruthIntegration.eviAvg(x, 0))/ (1 + x.maxTimeTo(now)/((float)dur));
+            ///w2cSafe(TruthIntegration.evi(x));
+            //w2cSafe(TruthIntegration.evi(x)) / (1 + x.midTimeTo(now)/((float)dur));
+            //w2cSafe(x.evi(now, dur));
+            //(x.evi(now, dur)) * x.range();
+            //w2cSafe(x.evi(now, dur)) * (float)Math.log(x.range());
+        };
     }
 
 

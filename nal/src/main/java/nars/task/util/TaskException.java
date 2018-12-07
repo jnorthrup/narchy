@@ -1,7 +1,7 @@
 package nars.task.util;
 
 import nars.Task;
-import nars.term.Termed;
+import nars.term.Termlike;
 import nars.util.SoftException;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,10 +10,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class TaskException extends SoftException {
 
-    private final Termed task;
+    private final Termlike task;
 
 
-    public TaskException(Termed t, String message) {
+    public TaskException(Termlike t, String message) {
         super(message);
         this.task = t;
         if (t instanceof Task)

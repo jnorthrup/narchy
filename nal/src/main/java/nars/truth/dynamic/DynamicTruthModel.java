@@ -6,7 +6,6 @@ import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Op;
-import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -41,13 +40,13 @@ abstract public class DynamicTruthModel {
 
         assert (superterm.op() != NEG);
 
-        DynStampTruth d = new DynStampTruth(0);
+        DynStampTruth d = new DynStampTruth(0); //TODO pool?
 
 
         Predicate<Task> filter = Answer.filter(superFilter, d::doesntOverlap);
 
         //TODO expand the callback interface allowing models more specific control over matching/answering/sampling subtasks
-        
+
         return components(superterm, start, end, (Term subTerm, long subStart, long subEnd) -> {
 
             if (subTerm instanceof Bool)
@@ -63,7 +62,7 @@ abstract public class DynamicTruthModel {
 
             BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
             Task bt = forceProjection ? table.answer(subStart, subEnd, subTerm, filter, n) :
-                                table.match(subStart, subEnd, subTerm, filter, n);
+                    table.match(subStart, subEnd, subTerm, filter, n);
             if (bt == null)
                 return false;
 
@@ -92,7 +91,7 @@ abstract public class DynamicTruthModel {
 
     public static class DynamicSectTruth {
 
-        static class SectIntersection extends Intersection  {
+        static class SectIntersection extends Intersection {
 
             final boolean subjOrPred;
 
@@ -104,6 +103,10 @@ abstract public class DynamicTruthModel {
 
             @Override
             public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
+                return reconstruct(superterm, components, subjOrPred, union);
+            }
+
+            protected static Term reconstruct(Term superterm, List<Task> components, boolean subjOrPred, boolean union) {
                 if (!superterm.hasAny(Op.Temporal))
                     return superterm; //shortcut
 
@@ -122,76 +125,28 @@ abstract public class DynamicTruthModel {
                     );
                 }
 
-                if (union) {
-                    if (decomposed.op() == NEG) {
-                        if (superterm.op() == IMPL) {
-                            decomposed = decomposed.unneg();
-                        } else {
-                            //leave as-is
-                            // assert (decomposed.op() == CONJ /* and not Sect/Union */) : "unneg'd decomposed " + decomposed + " in superterm " + superterm;
-                        }
-                    }
-                }
+//                if (union) {
+//                    if (decomposed.op() == NEG) {
+//                        if (superterm.op() == IMPL) {
+//                            decomposed = decomposed.unneg();
+//                        } else {
+//                            //leave as-is
+//                            // assert (decomposed.op() == CONJ /* and not Sect/Union */) : "unneg'd decomposed " + decomposed + " in superterm " + superterm;
+//                        }
+//                    }
+//                }
 
-
-                if (op == IMPL && decomposed.op() == CONJ /* NEG , union ?  */) {
-                    return decomposeImplConj(superterm, start, end, each, common, decomposed, op);
-
-                }
-
-                if (Param.DEBUG_EXTRA)
-                    throw new TODO();
 
                 return false;
-            }
-
-            private boolean decomposeImplConj(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term common, Term decomposed, Op op) {
-                int outerDT = superterm.dt();
-                int innerDT = decomposed.dt();
-                int decRange;
-                switch (outerDT) {
-                    case DTERNAL:
-                        decRange = 0;
-                        break;
-                    case XTERNAL:
-                        decRange = XTERNAL;
-                        break;
-                    default:
-                        decRange = decomposed.eventRange();
-                        break;
-                }
-                boolean startSpecial = (start==ETERNAL || start == XTERNAL);
-                return decomposed.eventsWhile((offset, y) -> {
-                            boolean ixTernal = startSpecial || offset == ETERNAL || offset == XTERNAL;
-
-                            long subStart = ixTernal ? start : start + offset;
-                            long subEnd = end;
-                            if (subEnd < subStart) {
-                                //swap
-                                long x = subStart;
-                                subStart = subEnd;
-                                subEnd = x;
-                            }
-
-                            int occ = (outerDT != DTERNAL && decRange != XTERNAL) ? occToDT(decRange - offset + outerDT) : XTERNAL;
-                            Term x = stmtDecompose(op, subjOrPred, y, common,
-                                    ixTernal ? DTERNAL : occ, union, false);
-
-                            if (x == Bool.Null)
-                                return false;
-
-                            return each.accept(x, subStart, subEnd);
-                        }
-                        , outerDT == DTERNAL ? ETERNAL : 0, innerDT == 0,
-                        innerDT == DTERNAL,
-                        innerDT == XTERNAL, 0);
             }
 
 
         }
 
-        /** polarity of calculated truth is chosen dynamically majority of component polarities */
-        final static class SectIntersectionBipolar extends SectIntersection  {
+        /**
+         * polarity of calculated truth is chosen dynamically majority of component polarities
+         */
+        final static class SectIntersectionBipolar extends SectIntersection {
 
             private SectIntersectionBipolar(boolean union, boolean subjOrPred) {
                 super(union, subjOrPred);
@@ -199,42 +154,66 @@ abstract public class DynamicTruthModel {
 
             @Override
             public Truth apply(DynTruth l, NAR nar) {
-                boolean negComponents = !decidePolarity(l, nar);
-                Truth r = super.apply(l, nar, union ? !negComponents : negComponents, union);
-                if (negComponents&&r!=null)
+                boolean negComponents = !decidePolarity(l);
+                Truth r = super.apply(l, nar, false, union);
+                if (negComponents && r != null)
                     r = r.neg();
                 return r;
             }
 
-            private boolean decidePolarity(DynTruth l, NAR nar) {
+            @Override
+            public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
+                Term t = super.reconstruct(superterm, components, nar);
+//                if (t!=null && !decidePolarity((FasterList)components))
+//                    t = t.neg();
+//
+                return t;
+            }
+
+            private boolean decidePolarity(FasterList<? extends Truthed> l) {
                 int posCount = l.count(Truthed::isPositive);
 
-                if (posCount == 0) return false;
+                return posCount >= (l.size() - posCount);
 
-                int s = l.size();
-                if (posCount == s) return true;
+                //if (posCount == 0) return false;
 
+                //int s = l.size();
+                //if (posCount == s) return true;
 
-                return nar.random().nextFloat() <= ((float)posCount)/ s;
+                //return nar.random().nextFloat() <= ((float)posCount)/ s;
             }
         }
 
         public static final DynamicTruthModel UnionSubj = new SectIntersection(true, true);
         public static final DynamicTruthModel SectSubj = new SectIntersection(false, true);
 
-        public static final DynamicTruthModel UnionSubjBipolar = new SectIntersectionBipolar(true, true);
-        public static final DynamicTruthModel SectSubjBipolar = new SectIntersectionBipolar(false, true);
 
         public static final DynamicTruthModel UnionPred = new SectIntersection(true, false);
         public static final DynamicTruthModel SectPred = new SectIntersection(false, false);
+
+        /**
+         * according to composition rules, the intersection term is computed with union truth, and vice versa
+         */
+        public static final DynamicTruthModel SectImplSubj = new SectImplSubj();
+        public static final DynamicTruthModel UnionImplSubj = new UnionImplSubj();
+
+        public static final DynamicTruthModel SectImplPred = new SectIntersection(false, false) {
+            @Override
+            public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+                Term common = stmtCommon(subjOrPred, superterm);
+                Term decomposed = stmtCommon(!subjOrPred, superterm);
+                return decomposeImplConj(superterm, start, end, each, common, decomposed, IMPL, false, false);
+            }
+        };
+
 
         public static final DynamicTruthModel SectRoot = new Intersection(false) {
 
             @Override
             protected boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-                assert(superterm.op()==SECTe);
+                assert (superterm.op() == SECTe);
                 return superterm.subterms().AND(s ->
-                   each.accept(s, start, end)
+                        each.accept(s, start, end)
                 );
             }
 
@@ -252,6 +231,45 @@ abstract public class DynamicTruthModel {
             }
 
         };
+
+        private static class SectImplSubj extends SectIntersection {
+            public SectImplSubj() {
+                super(true, true);
+            }
+
+            @Override
+            public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+                return components(superterm, start, end, each, superterm.sub(0));
+            }
+
+            protected boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term subj) {
+                return decomposeImplConj(superterm, start, end, each, superterm.sub(1), subj, IMPL, true, false);
+            }
+
+            @Override
+            public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
+                return reconstruct(superterm, components, true, false);
+            }
+        }
+        private static class UnionImplSubj extends SectIntersection {
+            public UnionImplSubj() {
+                super(false, true);
+            }
+
+            @Override
+            public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+                return components(superterm, start, end, each, superterm.sub(0).unneg());
+            }
+
+            protected boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term subj) {
+                return decomposeImplConj(superterm, start, end, each, superterm.sub(1), subj, IMPL, true, true);
+            }
+
+            @Override
+            public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
+                return reconstruct(superterm, components, true, true);
+            }
+        }
     }
 
 //    public static class DynamicDiffTruth {
@@ -410,7 +428,7 @@ abstract public class DynamicTruthModel {
                 if (superterm.hasAny(Op.VAR_DEP)) {
                     //decompose by the term itself, not individual events which will fail when resolving a VAR_DEP sub-event
                     Subterms ss = superterm.subterms();
-                    if (ss.subs()==2) {
+                    if (ss.subs() == 2) {
                         Term a = ss.sub(0);
                         Term b = ss.sub(1);
                         if (superDT > 0) {
@@ -450,7 +468,7 @@ abstract public class DynamicTruthModel {
         Term s, p;
 
         boolean outerNegate = false;
-        if (structural && subterm.op()==NEG) {
+        if (structural && subterm.op() == NEG) {
             outerNegate = true;
             subterm = subterm.unneg();
         }
@@ -633,7 +651,9 @@ abstract public class DynamicTruthModel {
 
     abstract static class Intersection extends DynamicTruthModel {
 
-        /** true = union, false = intersection */
+        /**
+         * true = union, false = intersection
+         */
         final boolean union;
 
         Intersection(boolean union) {
@@ -671,10 +691,52 @@ abstract public class DynamicTruthModel {
             }
 
 
-            return y!=null ? y.negIf(negResult) : null;
+            return y != null ? y.negIf(negResult) : null;
         }
 
     }
 
+
+    static public boolean decomposeImplConj(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term common, Term decomposed, Op op, boolean subjOrPred, boolean negateComponents) {
+        int outerDT = superterm.dt();
+        int innerDT = decomposed.dt();
+        int decRange;
+        switch (outerDT) {
+            case DTERNAL:
+                decRange = 0;
+                break;
+            case XTERNAL:
+                decRange = XTERNAL;
+                break;
+            default:
+                decRange = decomposed.eventRange();
+                break;
+        }
+        boolean startSpecial = (start == ETERNAL || start == XTERNAL);
+        return decomposed.eventsWhile((offset, y) -> {
+                    boolean ixTernal = startSpecial || offset == ETERNAL || offset == XTERNAL;
+
+                    long subStart = ixTernal ? start : start + offset;
+                    long subEnd = end;
+                    if (subEnd < subStart) {
+                        //swap
+                        long x = subStart;
+                        subStart = subEnd;
+                        subEnd = x;
+                    }
+
+                    int occ = (outerDT != DTERNAL && decRange != XTERNAL) ? occToDT(decRange - offset + outerDT) : XTERNAL;
+                    Term x = stmtDecompose(op, subjOrPred, y, common,
+                            ixTernal ? DTERNAL : occ, negateComponents, false);
+
+                    if (x == Bool.Null)
+                        return false;
+
+                    return each.accept(x, subStart, subEnd);
+                }
+                , outerDT == DTERNAL ? ETERNAL : 0, innerDT == 0,
+                innerDT == DTERNAL,
+                innerDT == XTERNAL, 0);
+    }
 
 }

@@ -46,10 +46,6 @@ public final class Operator extends NodeConcept implements PermanentConcept, Ato
     }
 
 
-    @Override
-    public Term term() {
-        return this;
-    }
 
     @Override
     public int opX() {

@@ -501,8 +501,8 @@ abstract public class NAgentX extends NAgent {
 //        {
             new Inperience.Believe(n, 8);
             new Inperience.Want(n, 8);
-            new Inperience.Wonder(n, 4);
-            new Inperience.Plan(n, 4);
+            //new Inperience.Wonder(n, 4);
+            //new Inperience.Plan(n, 4);
 //        }
 
 

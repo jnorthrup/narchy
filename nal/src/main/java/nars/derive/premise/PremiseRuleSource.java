@@ -639,7 +639,7 @@ public class PremiseRuleSource extends ProxyTerm {
             new CustomConcurrentHashMap<>(STRONG, EQUALS, WEAK, EQUALS, 1024);
 
     private static UnifyConstraint intern(UnifyConstraint x) {
-        UnifyConstraint y = constra.putIfAbsent(x.term(), x);
+        UnifyConstraint y = constra.putIfAbsent(x, x);
         return y != null ? y : x;
     }
 

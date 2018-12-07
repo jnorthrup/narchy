@@ -61,10 +61,6 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
 
-    @Override
-    public final Term term() {
-        return this;
-    }
 
 
     @Override

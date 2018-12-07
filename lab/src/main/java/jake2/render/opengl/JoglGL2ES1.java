@@ -12,7 +12,7 @@ import java.nio.ShortBuffer;
 
 public class JoglGL2ES1 implements QGL {
 
-    private GL2ES1 gl;
+    public GL2ES1 gl;
     protected ImmModeSink ims;
     private boolean inBlock; 
 

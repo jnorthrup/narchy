@@ -94,7 +94,7 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
         private final PREDICATE<X> p;
 
         public NegPredicate(PREDICATE<X> p) {
-            super(p instanceof ProxyTerm ? ((ProxyTerm)p).ref.neg() : p.term().neg());
+            super(p instanceof ProxyTerm ? ((ProxyTerm)p).ref.neg() : p.neg());
             this.p = p;
         }
 

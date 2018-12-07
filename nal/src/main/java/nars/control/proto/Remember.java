@@ -31,7 +31,7 @@ import static nars.time.Tense.ETERNAL;
 public class Remember extends AbstractTask {
     public Task input;
 
-    public final FasterList<ITask> remembered = new FasterList(2);
+    public FasterList<ITask> remembered = null;
     @Nullable
     public FasterList<Task> forgotten = null;
     public Concept concept;
@@ -105,34 +105,32 @@ public class Remember extends AbstractTask {
         if (forgotten!=null)
             forgotten.forEach(Task::delete);
 
-         if (!remembered.isEmpty()) {
+         if (remembered!=null && !remembered.isEmpty())
+             commitRemembered(n);
+    }
 
-             Term conceptTerm = concept!=null ? concept.term() : null;
+    private void commitRemembered(NAR n) {
+        Term conceptTerm = concept!=null ? concept.term() : null;
 
-             ListIterator<ITask> ll = remembered.listIterator();
-             while (ll.hasNext()) {
-                 ITask r = ll.next();
-                 if (r instanceof Task) {
-                     ll.remove();
+        ListIterator<ITask> ll = remembered.listIterator();
+        while (ll.hasNext()) {
+            ITask r = ll.next();
+            if (r instanceof Task) {
+                ll.remove();
 
-                     Task rr = (Task)r;
+                Task rr = (Task)r;
 
-                     if (tasklink())
-                        ll.add(new TaskLinkTask(rr, conceptTerm !=null && conceptTerm.equals(rr.term().concept()) ? concept : null));
+                if (tasklink())
+                   ll.add(new TaskLinkTask(rr, conceptTerm !=null && conceptTerm.equals(rr.term().concept()) ? concept : null));
 
-                     if (taskevent())
-                        ll.add(new TaskEvent(rr));
+                if (taskevent())
+                   ll.add(new TaskEvent(rr));
 
-                 }
-             }
+            }
+        }
 
-             remembered.forEach(r -> ITask.run(r, n));
-             remembered.clear();
-
-             //return AbstractTask.of(remembered);
-
-
-         }
+        remembered.forEach(r -> ITask.run(r, n));
+        remembered = null;
 
     }
 
@@ -218,7 +216,7 @@ public class Remember extends AbstractTask {
 
 
     public void forget(Task x) {
-        if (remembered.removeInstance(x)) {
+        if (remembered!=null && remembered.removeInstance(x)) {
             //throw new TODO();
             //TODO filter next tasks with any involving that task
         }
@@ -233,7 +231,12 @@ public class Remember extends AbstractTask {
     }
 
     public void remember(Task x) {
-        add(x, this.remembered);
+        if (this.remembered == null) {
+            remembered = new FasterList<>(2);
+            remembered.add(x);
+        } else {
+            add(x, this.remembered);
+        }
     }
 
 
@@ -290,13 +293,11 @@ public class Remember extends AbstractTask {
 
 
     public boolean forgotten(Task input) {
-        if (forgotten == null)
-            return false;
-        return forgotten.containsInstance(input);
+        return forgotten!=null && forgotten.containsInstance(input);
     }
 
     public final boolean done() {
-        return input==null || remembered.containsInstance(input);
+        return (remembered != null && remembered.containsInstance(input)) || input == null;
     }
 
 }

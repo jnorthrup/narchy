@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.function.Supplier;
 
+import static java.awt.color.ColorSpace.TYPE_RGB;
+
 /**
  * Pan/Zoom filter for a BuferredImage source
  */
@@ -62,7 +64,7 @@ public class ScaledBitmap2D extends MonoBufImgBitmap2D /* TODO extends ArrayBitm
             if (outgfx!=null)
                 outgfx.dispose();
 
-            img = new BufferedImage(pw, ph, BufferedImage.TYPE_INT_RGB);
+            img = new BufferedImage(pw, ph, in instanceof BufferedImage ? ((BufferedImage)in).getType() : TYPE_RGB);
             raster = img.getRaster();
             outgfx = img.createGraphics();
 
@@ -94,8 +96,7 @@ public class ScaledBitmap2D extends MonoBufImgBitmap2D /* TODO extends ArrayBitm
                                       Color bgcolor,
                                       ImageObserver observer);
          */
-        int sw = in.getWidth(null);
-        int sh = in.getHeight(null);
+        int sw = in.getWidth(null), sh = in.getHeight(null);
 
         //boolean stillChanging =
         outgfx.drawImage(in,

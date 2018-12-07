@@ -74,7 +74,7 @@ public class NodeConcept implements Concept {
     @Override public QuestionTable quests() { return QuestionTable.Empty; }
 
     @Override
-    public Term term() {
+    public final Term term() {
         return term;
     }
 

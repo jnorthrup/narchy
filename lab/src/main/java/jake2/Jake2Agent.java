@@ -2,11 +2,8 @@ package jake2;
 
 import jake2.client.CL_input;
 import jake2.client.Key;
-import jake2.client.refexport_t;
 import jake2.game.PlayerView;
 import jake2.game.edict_t;
-import jake2.render.Base;
-import jake2.render.JoglGL2Renderer;
 import jake2.sys.IN;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
@@ -20,15 +17,10 @@ import nars.Narsese;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
+import spacegraph.video.GLScreenShot;
 
-import java.awt.*;
-import java.awt.color.ColorSpace;
-import java.awt.image.*;
-import java.nio.ByteBuffer;
-import java.util.function.Supplier;
-
-import static jake2.Globals.*;
-import static jake2.render.Base.vid;
+import static jake2.Globals.STAT_FRAGS;
+import static jake2.Globals.cl;
 import static nars.$.$;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.grid;
@@ -38,31 +30,9 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
  */
 public class Jake2Agent extends NAgentX implements Runnable {
 
-    static final int FPS = 8;
+    static final int FPS = 16;
+    private final GLScreenShot screenshot;
 
-    ByteBuffer seen;
-    int width, height;
-    boolean see = true;
-
-    final int[] nBits = {8, 8, 8};
-    final int[] bOffs1 = {2, 1, 0};
-
-    final ColorSpace raster = ColorSpace.getInstance(1000);
-    final ComponentColorModel colorModel = new ComponentColorModel(raster, nBits, false, false, 1, 0);
-
-    /** may be vertically flipped, sorry */
-    final Supplier<BufferedImage> screenshotter = () -> {
-        if (seen == null || width == 0 || height == 0)
-            return null;
-
-        byte[] bb = seen.array();
-
-        WritableRaster raster1 = Raster.createInterleavedRaster(
-                new DataBufferByte(bb, bb.length), width, height, width * 3, 3, bOffs1, new Point(0, 0));
-
-        BufferedImage b = new BufferedImage(colorModel, raster1, false, null);
-        return b;
-    };
 
     public class PlayerData {
         public float health;
@@ -117,10 +87,15 @@ public class Jake2Agent extends NAgentX implements Runnable {
 
 //        Bitmap2DSensor<PixelBag> vision = senseCameraRetina(
 //                "q", screenshotter, 32, 24);
+
+
+        //int px = 64, py = 48, nx = 4, aeStates = 8;
+        int px = 64, py = 48, nx = 8, aeStates = 16;
+        screenshot = new GLScreenShot();
         PixelBag vision = new PixelBag(
                 new BrightnessNormalize(
-                        new ImageFlip(false, true, new ScaledBitmap2D(screenshotter, 64, 48))
-                ), 64, 48);
+                        new ImageFlip(false, true, new ScaledBitmap2D(screenshot, px, py))
+                ), px, py);
         vision.setZoom(0);
         //vision.addActions($$("q"), this);
 //        vision.setMinZoomOut(0.5f);
@@ -130,10 +105,9 @@ public class Jake2Agent extends NAgentX implements Runnable {
         ;
 
 //        {
-        int nx = 4;
         AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p($.the("cae"), id), vision, nx, nx, (subX, subY) -> {
             return new float[]{/*cc.X, cc.Y*/};
-        }, 8, this);
+        }, aeStates, this);
         camAE.alpha(0.03f);
         camAE.noise.set(0.05f);
 
@@ -174,12 +148,12 @@ public class Jake2Agent extends NAgentX implements Runnable {
 
 
         onFrame(player::update);
-        rewardNormalized("health", -1, +1, new FloatFirstOrderDifference(nar::time, ()->player.health));
+        rewardNormalized("health", -1, +1, new FloatFirstOrderDifference(nar::time, () -> player.health));
 
-        rewardNormalized("speed", 0, +1, new FloatNormalized(()-> {
+        rewardNormalized("speed", 0, +1, new FloatNormalized(() -> {
             return player.speed;
         }));
-        rewardNormalized("frags", 0, +1, new FloatNormalized(()->player.frags));
+        rewardNormalized("frags", 0, +1, new FloatNormalized(() -> player.frags));
 
 //        ()->{
 //            player.update();
@@ -213,7 +187,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
 
                 "+map " + nextMap()
 
-        }, this::onDraw);
+        }, screenshot::update);
 
 
         /*
@@ -263,23 +237,6 @@ public class Jake2Agent extends NAgentX implements Runnable {
         Follow us: @CheatCodes on Twitter | CheatCodes on Facebook
 
          */
-
-    }
-
-    protected synchronized void onDraw() {
-
-        refexport_t r = re;
-        JoglGL2Renderer renderer = (JoglGL2Renderer) r;
-
-        if (see) {
-            if (seen != null) {
-                seen.rewind();
-            }
-
-            width = vid.getWidth();
-            height = vid.getHeight();
-            seen = ((Base) renderer.impl).see(seen);
-        }
 
     }
 

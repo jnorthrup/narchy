@@ -64,7 +64,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
 //                assertEquals($.t(0f, 0.81f), n.beliefTruth(pn, now));
 
                 Term pnn = $$("((x && --z) ==> a)");
-                assertEquals($.t(0.75f, 0.81f), n.beliefTruth(pnn, now));
+                assertEquals($.t(1 /*0.75f*/, 0.81f), n.beliefTruth(pnn, now));
 
 
                 assertEquals($.t(0f, 0.81f), n.beliefTruth($$("((z && w) ==> a)"), now));
@@ -225,28 +225,32 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
                 n.believe(x, xf, 0.9f);
                 n.believe(y, yf, 0.9f);
 
+                assertTrue(((BeliefTables)n.conceptualizeDynamic(pt_p).beliefs()).tableFirst(DynamicTruthTable.class)!=null);; //match first then concept(), tests if the match was enough to conceptualize
+
                 Task task = n.answer(pt_p, BELIEF, 0);
-                //System.out.println(task);
-
-                Truth truth = n.truth(pt_p, BELIEF, 0);
-
-                assertTrue(((BeliefTables)n.concept(pt_p).beliefs()).tableFirst(DynamicTruthTable.class)!=null);; //match first then concept(), tests if the match was enough to conceptualize
-
                 assertNotNull(task);
 
                 assertEquals(pt_p.toString(), task.term().toString(), cccase);
-                assertEquals(2, task.stamp().length);
-                assertEquals(truth, task.truth());
+                assertEquals(2, task.stamp().length, cccase);
 
-                boolean intersection = mode>0; //else union
+                Truth truth = n.truth(pt_p, BELIEF, 0);
+                assertEquals(truth, task.truth(), cccase);
+
+                boolean intersection;
+                boolean subjDecomposed = pt_p.sub(1).op().atomic;
+                if (subjDecomposed)
+                    intersection = !(mode > 0);
+                else
+                    intersection = mode>0; //else union
+
                 float fxy = intersection ? Util.and(xf, yf) : Util.or(xf, yf);
                 if (mode == -2) {
                     //negated pred
                     fxy = 1f - fxy;
                 }
-                assertEquals(fxy, task.freq(), 0.01f);
+                assertEquals(fxy, task.freq(), 0.01f, cccase);
 
-                assertEquals(0.81f, task.conf(), 0.01f);
+                assertEquals(0.81f, task.conf(), 0.01f, cccase);
             }
         }
     }

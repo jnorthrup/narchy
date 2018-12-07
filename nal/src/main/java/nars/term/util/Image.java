@@ -2,7 +2,6 @@ package nars.term.util;
 
 import jcog.TODO;
 import jcog.Util;
-import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.Op;
@@ -12,7 +11,6 @@ import nars.control.proto.Remember;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.table.EmptyBeliefTable;
-import nars.task.ITask;
 import nars.task.proxy.SpecialTermTask;
 import nars.task.util.Answer;
 import nars.term.Compound;
@@ -215,7 +213,6 @@ public enum Image {;
             r.setInput(transformedInput, host);
             table.add(r, nar);
 
-            FasterList<ITask> rememberance = r.remembered;
 //            if (r.forgotten.containsInstance(transformedInput))
 //                return; //wasnt added
 
@@ -240,8 +237,10 @@ public enum Image {;
 //               return x;
 //            });
                 if (!transformedInput.isDeleted()) {
-                    rememberance.remove(transformedInput); //if it's present, it may not
-                    rememberance.add(originalInput);
+                    r.forget(transformedInput);
+                    r.remember(originalInput);
+//                    rememberance.remove(transformedInput); //if it's present, it may not
+//                    rememberance.add(originalInput);
                 }
 //            }
         }

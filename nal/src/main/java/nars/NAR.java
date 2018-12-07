@@ -719,7 +719,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     @Nullable
-    public final BeliefTable truths(Termed concept, byte punc) {
+    public final BeliefTable truths(Term concept, byte punc) {
         assert (punc == BELIEF || punc == GOAL);
         @Nullable Concept c = conceptualizeDynamic(concept);
         if (c == null)
@@ -733,7 +733,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     @Nullable
     public Truth truth(Termed concept, byte punc, long start, long end) {
         @Nullable Concept c = conceptualizeDynamic(concept);
-        return c != null ? ((BeliefTable) c.table(punc)).truth(start, end, null, this) : null;
+        return c != null ? ((BeliefTable) c.table(punc)).truth(start, end, concept instanceof Term ? ((Term)concept) : null, this) : null;
     }
 
     @Nullable
@@ -1000,8 +1000,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * resolves a term or concept to its currrent Concept
      */
     @Nullable
-    public final Concept concept(Termed termed) {
-        return concept(termed, false);
+    public final Concept concept(Termed x) {
+        return concept(x, false);
     }
 
     @Nullable

@@ -188,13 +188,13 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
                 if (subjDyn) {
                     if (suo==NEG) {
-                        return DynamicTruthModel.DynamicSectTruth.UnionSubjBipolar;
+                        return DynamicTruthModel.DynamicSectTruth.UnionImplSubj;
                     } else {
-                        return DynamicTruthModel.DynamicSectTruth.SectSubjBipolar;
+                        return DynamicTruthModel.DynamicSectTruth.SectImplSubj;
                     }
                 } else if (predDyn) {
                     //TODO infer union case if the subterms of the pred's conj are all negative
-                    return DynamicTruthModel.DynamicSectTruth.SectPred;
+                    return DynamicTruthModel.DynamicSectTruth.SectImplPred;
                 }
 
                 break;

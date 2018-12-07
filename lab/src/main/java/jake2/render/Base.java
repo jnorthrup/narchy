@@ -186,26 +186,5 @@ public abstract class Base implements QGLConst, RenderAPI {
 	vid.setSize(width, height);
     }
 
-    public ByteBuffer see(ByteBuffer rgb) {
-
-        int size = vid.getWidth() * vid.getHeight() * 3;
-
-        if (rgb == null || rgb.remaining()<size) {
-            rgb = ByteBuffer.allocate(size);
-        }
-
-        
-        if (vid.getWidth() % 4 != 0) {
-            gl.glPixelStorei(GL_PACK_ALIGNMENT, 1);
-        }
-
-        
-        gl.glReadPixels(0, 0, vid.getWidth(), vid.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, rgb);
-
-        
-        gl.glPixelStorei(GL_PACK_ALIGNMENT, 4);
-
-        return rgb;
-    }
 
 }

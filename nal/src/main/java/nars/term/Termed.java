@@ -11,6 +11,25 @@ public interface Termed extends Termlike {
 
     Term term();
 
+    @Override
+    default int volume() {
+        return term().volume();
+    }
+    @Override
+    default int complexity() {
+        return term().complexity();
+    }
+
+    @Override
+    default int structure() {
+        return term().structure();
+    }
+
+    @Override
+    default int subs(Predicate<Term> match) {
+        return term().subs(match);
+    }
+
     default Op op() {
         return term().op();
     }

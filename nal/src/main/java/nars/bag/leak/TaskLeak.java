@@ -188,6 +188,7 @@ public abstract class TaskLeak extends Causable {
         private byte[] puncs;
         int nextPunc = 0;
         private NAR nar;
+        long[] when;
 
         @Override
         public @Nullable Off starting(TaskLeak t, NAR n) {
@@ -203,12 +204,16 @@ public abstract class TaskLeak extends Causable {
 
         @Override
         public void next(BooleanSupplier kontinue, NAR nar, Consumer<Task> each) {
+
+            when = focus();
+
             nar.concepts.sample(rng, (Predicate<Activate>)(c)->{
 
                 if (c == null) return false; //TODO can this even happen
 
                 Concept cc = c.get();
-                if (termFilter.test(cc.term())) { //TODO check for impl filters which assume the term is from a Task, ex: dt!=XTERNAL but would be perfectly normal for a concept's term
+                Term ct = cc.term();
+                if (ct.hasAny(Op.Temporal) || termFilter.test(cc.term())) { //TODO check for impl filters which assume the term is from a Task, ex: dt!=XTERNAL but would be perfectly normal for a concept's term
                     Task x = sample(cc);
                     if (x!=null)
                         each.accept(x);
@@ -228,7 +233,7 @@ public abstract class TaskLeak extends Causable {
         }
 
         @Nullable private Task sample(Concept c) {
-            long[] when = focus();
+
 
             Term ct = c.term();
             boolean hasTemporal = ct.hasAny(Op.Temporal);
@@ -237,17 +242,17 @@ public abstract class TaskLeak extends Causable {
             for (int i = 0; i < p.length; i++) {
                 Task x = c.table(p[nextPunc]).sample(when[0], when[1], null, t ->{
                     Term tt = t.term();
-                    if (hasTemporal && !ct.equals(tt))
-                        if (!termFilter.test(tt)) //re-test
-                            return false;
+                    if (!hasTemporal || termFilter.test(tt)) //test temporal containing term as this was not done when testing concept
+                        return false;
 
                     return taskFilter.test(t);
                 }, nar);
+
+                if (++nextPunc == p.length)
+                    nextPunc = 0;
+
                 if (x!=null)
                     return x;
-                nextPunc++;
-                if (nextPunc == p.length)
-                    nextPunc = 0;
             }
             return null;
         }
