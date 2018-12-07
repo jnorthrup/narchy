@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import static nars.Op.NEG;
+
 
 /* recurses a pair of compound term tree's subterms
 across a hierarchy of sequential and permutative fanouts
@@ -259,6 +261,29 @@ public abstract class Unify extends Versioning implements Subst {
     public boolean unifyDT(int xdt, int ydt) {
         //assert(xdt!=DTERNAL && xdt!=XTERNAL && ydt!=DTERNAL && ydt!=XTERNAL);
         return Math.abs(xdt - ydt) < dtTolerance;
+    }
+
+    public Term tryResolve(Term x) {
+        Op o = x.op();
+        boolean neg = o == NEG;
+        Term xx;
+        if (neg) {
+            xx = x.unneg();
+            o = xx.op();
+        } else
+            xx = x;
+
+        if (matchType(o)) {
+            Term y = resolve((Variable) xx);
+            if (y != xx) {
+                if (neg)
+                    y = y.neg();
+                return y;
+                //return y.negIf(neg);
+            }
+        }
+
+        return x; //no change
     }
 
 

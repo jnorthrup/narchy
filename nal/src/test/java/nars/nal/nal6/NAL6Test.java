@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 400;
+    private static final int cycles = 600;
 
     @BeforeEach
     void setup() {
@@ -573,8 +573,8 @@ public class NAL6Test extends NALTest {
         tester.believe("<<$1 --> lock> ==> (&&,<#2 --> key>,open(#2,$1))>", 1.00f, 0.90f);
         tester.believe("<{key1} --> key>", 1.00f, 0.90f);
         tester.mustBelieve(cycles, "<<$1 --> lock> ==> open({key1},$1)>", 1.00f,
-                //0.81f
-                0.4f
+                0.81f
+                //0.4f
         );
         //0.73f
         //0.43f);
@@ -1208,23 +1208,23 @@ public class NAL6Test extends NALTest {
                 .mustBelieve(cycles, "(a && b)", 0f, 0.81f)
         ;
     }
-    @Test void testMutexSwapPos() {
-        test.nar.termVolumeMax.set(14);
-        test
-                .believe("--(x && y)")
-                .believe("its(x,a)")
-                .mustBelieve(cycles, "(its(x,a)<->its(--y,a))", 1f, 0.45f)
-                //.mustBelieve(cycles, "its(--y,a)", 1f, 0.81f)
-        ;
-    }
-
-    @Test void testMutexSwapNeg() {
-        test
-                .believe("--(x && y)")
-                .believe("its(--x,a)")
-                .mustBelieve(cycles, "(its(--x,a)<->its(y,a))", 1f, 0.45f)
-                //.mustBelieve(cycles, "its(y,a)", 1f, 0.81f)
-        ;
-    }
+//    @Test void testMutexSwapPos() {
+//        test.nar.termVolumeMax.set(14);
+//        test
+//                .believe("--(x && y)")
+//                .believe("its(x,a)")
+//                .mustBelieve(cycles, "(its(x,a)<->its(--y,a))", 1f, 0.45f)
+//                //.mustBelieve(cycles, "its(--y,a)", 1f, 0.81f)
+//        ;
+//    }
+//
+//    @Test void testMutexSwapNeg() {
+//        test
+//                .believe("--(x && y)")
+//                .believe("its(--x,a)")
+//                .mustBelieve(cycles, "(its(--x,a)<->its(y,a))", 1f, 0.45f)
+//                //.mustBelieve(cycles, "its(y,a)", 1f, 0.81f)
+//        ;
+//    }
 }
 

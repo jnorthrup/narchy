@@ -182,7 +182,10 @@ public abstract class Param {
      * maximum time (in durations) that a signal task can latch its last value before it becomes unknown
      */
     public final static float SIGNAL_LATCH_DUR = 128;
-    public final static float SIGNAL_STRETCH_DUR = 0.5f;
+    public final static float SIGNAL_STRETCH_DUR =
+            //0.5f;
+            //1f;
+            2f;
 
 
     /**

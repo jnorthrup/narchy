@@ -511,7 +511,8 @@ abstract public class DynamicTruthModel {
         //extract passive term and verify they all match (could differ temporally, for example)
         Term[] common = new Term[1];
         if (!((FasterList<Task>) components).allSatisfy(tr -> {
-            Term tt = subSubjPredWithNegRewrap(subjOrPred, tr);
+            Term uu = tr.term().unneg();
+            Term tt = subjOrPred ? uu.sub(1) : uu.sub(0);
             Term p = common[0];
             if (p == null) {
                 common[0] = tt;

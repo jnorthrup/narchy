@@ -93,7 +93,7 @@ class DynamicConjTest {
             assertEquals(2, n.concept("(a:x && a:y)").beliefs().size());
 
             Task ttNow = n.matchBelief($("(a:x &| a:y)"), now);
-            assertTrue(ttNow.toString().contains("((x-->a)&|(y-->a)). 0 %.27;.94%"));
+            assertTrue(ttNow.toString().contains("((x-->a)&|(y-->a)). 0 %.32;.93%"), ttNow.toString());
         }
 
 

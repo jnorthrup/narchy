@@ -684,11 +684,11 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_induction0SimpleDepVar3() {
         TestNAR tester = test;
-        test.nar.termVolumeMax.set(4);
+        test.nar.termVolumeMax.set(8);
         tester.believe("((x1 && #1) ==> (a && #1))");
         tester.believe("((#1 && #2) ==> (a && #2))");
-        tester.mustBelieve(cycles*2, "(x1 ==> #1)", 1.00f, 0.45f);
-        tester.mustBelieve(cycles*2, "(#1 ==> x1)", 1.00f, 0.45f);
+        tester.mustBelieve(cycles, "(x1 ==> #1)", 1.00f, 0.45f);
+        tester.mustBelieve(cycles, "(#1 ==> x1)", 1.00f, 0.45f);
     }
 
     @Test

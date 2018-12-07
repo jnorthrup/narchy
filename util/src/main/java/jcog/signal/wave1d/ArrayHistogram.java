@@ -16,6 +16,14 @@ public class ArrayHistogram extends ArrayTensor {
 
     public ArrayHistogram(float min, float max, int bins) {
         super(bins);
+        range(min, max);
+    }
+
+    private void range(float min, float max) {
+        if (Util.equals(max, min, Float.MIN_NORMAL)) {
+            min -= Float.MIN_NORMAL;
+            max += Float.MIN_NORMAL;
+        }
         this.rangeMin = min;
         this.rangeMax = max;
     }
@@ -24,8 +32,7 @@ public class ArrayHistogram extends ArrayTensor {
         if (bins() != bins)
             return new ArrayHistogram(min, max, bins);
         else {
-            this.rangeMin = min;
-            this.rangeMax = max;
+            range(min, max);
             clear();
             return this;
         }
@@ -47,19 +54,25 @@ public class ArrayHistogram extends ArrayTensor {
 
         float f = rng.nextFloat() * mass;
         int n = bins();
-        int i;
-        //for (i = 0; i < n && f > 0; i++) {
-        for (i = n-1; (i >= 0); ) {
-            f -= data[i];
-            i--;
-            if (f < 0)
-                break;
-
+        int i; float ii;
+        if (rng.nextBoolean()) {
+            for (i = n - 1; (i >= 0); ) //downward
+                if ((f -= data[i--]) < 0)
+                    break;
+            ii = i + 0.5f;
+        } else {
+            for (i = 0; i < n; ) //upward
+                if ((f -= data[i++]) < 0)
+                    break;
+            ii = i - 0.5f;
         }
+
+        float iii = ii + (rng.nextFloat() - 0.5f);
+
         //TODO sub-bin interpolate?
         //randomize within the bin's proximity, naively assuming a normal PDF
         //TODO use the relative density of the adjacent bin
-        return Util.unitize((((i+0.5f) /(n-1)) + (rng.nextFloat() - 0.5f))) * (rangeMax - rangeMin) + rangeMin;
+        return Util.unitize( iii/(n-1) ) * (rangeMax - rangeMin) + rangeMin;
     }
 
     public final int bins() {

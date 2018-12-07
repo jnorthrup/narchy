@@ -87,7 +87,7 @@ public interface Variable extends Atomic {
 
 
         Term x = u.resolve(this);
-        Term y = (_y instanceof Variable) ? u.resolve(_y) : _y;
+        Term y = (_y instanceof Variable) ? u.resolve((Variable)_y) : _y;
         if (x!=this || y != _y) {
             return x.unify(y, u);
         }

@@ -1,7 +1,6 @@
 package nars.table.dynamic;
 
 import jcog.WTF;
-import jcog.math.Longerval;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -77,12 +76,12 @@ public final class DynamicTruthTable extends DynamicTaskTable {
                     e = yy.maxValue(Stamp::end);
                 }
 
-                //trim
-                if (a.time.start!=ETERNAL && Longerval.intersects(s, e, a.time.start, a.time.end)) {
-                    s = Math.max(a.time.start, s);
-                    if (a.time.end != ETERNAL)
-                        e = Math.min(a.time.end, e);
-                }
+//                //trim
+//                if (a.time.start!=ETERNAL && Longerval.intersects(s, e, a.time.start, a.time.end)) {
+//                    s = Math.max(a.time.start, s);
+//                    if (a.time.end != ETERNAL)
+//                        e = Math.min(a.time.end, e);
+//                }
 
             }
 

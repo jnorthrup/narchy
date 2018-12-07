@@ -39,7 +39,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     private static final AtomicFloatFieldUpdater<ArrayBag> PRESSURE =
             new AtomicFloatFieldUpdater(ArrayBag.class, "pressure");
 
-    private static final int HISTOGRAM_BINS = 8;
+
 
     @Deprecated private final PriMerge mergeFunction;
 
@@ -200,12 +200,13 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         float m = 0;
 
         int c = capacity();
-        int histRange = Math.min(c, Util.round(s * 2, 4));
+        int histRange = s;
+        int bins = s > 64 ? 16 : 8; //TODO refine
         ArrayHistogram hist = this.hist;
         if (hist == null) {
-            hist = new ArrayHistogram(0, histRange-1, HISTOGRAM_BINS);
+            hist = new ArrayHistogram(0, histRange-1, bins);
         } else {
-            hist = hist.clear(0, histRange-1, HISTOGRAM_BINS);
+            hist = hist.clear(0, histRange-1, bins);
         }
         for (int i = 0; i < s; ) {
             Y y = (Y) l[i];

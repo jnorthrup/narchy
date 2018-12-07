@@ -32,10 +32,7 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.*;
 import java.util.stream.IntStream;
 
 import static nars.Op.ATOM;
@@ -258,6 +255,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default /*@NotNull*/ SortedSet<Term> toSetSorted() {
         TreeSet u = new TreeSet();
         forEach(u::add);
+        return u;
+    }
+
+    default /*@NotNull*/ SortedSet<Term> toSetSorted(Function<Term,Term> map) {
+        TreeSet u = new TreeSet();
+        forEach(z -> u.add(map.apply(z)));
         return u;
     }
 
