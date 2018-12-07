@@ -152,7 +152,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         this.emotion = new Emotion(this);
 
         //DurService.on(this, input::update);
-        onCycle(input::update);
+        onCycle((n)-> input.commit(this, this::input));
 
         on(this.attn);
 

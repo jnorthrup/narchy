@@ -1,31 +1,38 @@
 package nars.task.util;
 
+import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.bag.Bag;
+import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
-import nars.NAR;
 import nars.Task;
 import nars.control.CauseMerge;
 import nars.task.ITask;
 import nars.task.NALTask;
+import nars.time.Tense;
+import nars.util.Timed;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 
-abstract public class TaskBuffer  {
+/** regulates a flow of supplied tasks to a target consumer */
+abstract public class TaskBuffer implements Consumer<Task> {
 
 
 
+    /** returns the input task, or the existing task if a pending duplicate was present */
     public abstract Task add(Task x);
 
-    public abstract void update(NAR n);
+    public abstract void commit(Timed time, Consumer<Task> target);
 
     public abstract void clear();
 
@@ -37,6 +44,11 @@ abstract public class TaskBuffer  {
     /** calculate or estimate current capacity, as a value between 0 and 100% [0..1.0] */
     public final float volume() {
         return size() / capacity.floatValue();
+    }
+
+    @Override
+    public final void accept(Task task) {
+        add(task);
     }
 
     //TODO
@@ -114,11 +126,11 @@ abstract public class TaskBuffer  {
             return n;
         }
 
-        @Override
-        public void update(NAR n) {
+        /** TODO time-sensitive */
+        @Override public void commit(Timed time, Consumer<Task> target) {
             Iterator<Task> ii = tasks.values().iterator();
             while (ii.hasNext()) {
-                n.input(ii.next());
+                target.accept(ii.next());
                 ii.remove();
             }
         }
@@ -133,11 +145,11 @@ abstract public class TaskBuffer  {
      */
     public static class BagTasksBuffer extends TaskBuffer {
 
-        public boolean inlineOrDeferredInput;
+
         /**
          * temporary buffer before input so they can be merged in case of duplicates
          */
-        public final Bag<Task,Task> tasks =
+        public final Bag<Task, Task> tasks =
                 new PriArrayBag<Task>(PriMerge.max,
                         //new HashMap()
                         new UnifiedMap()
@@ -148,7 +160,7 @@ abstract public class TaskBuffer  {
                     }
                 };
 
-                //new HijackBag...
+        //new HijackBag...
 
         @Override
         public void clear() {
@@ -165,7 +177,7 @@ abstract public class TaskBuffer  {
 //                return true;
 //            }
 
-            //            @Override
+        //            @Override
 //            public Task put(Task incoming, NumberX overflow) {
 //                //fast merge intercept: avoids synchronization in normal insert procedure
 //                Task existing = map.get(incoming);
@@ -189,28 +201,23 @@ abstract public class TaskBuffer  {
 //            }
 
 
-
-
-        /** max percent of capacity allowed input */
+        /**
+         * max percent of capacity allowed input
+         */
         public final FloatRange drainRate = new FloatRange(0.5f, 0, 1f);
 
-        private final TaskBagDrainer tasksDrainer = new TaskBagDrainer(tasks, true,
-                (size, capacity) -> Math.min(size, Math.round(capacity * drainRate.floatValue()))
-        );
+        final AtomicBoolean busy = new AtomicBoolean(false);
 
+        static final ThreadLocal<FasterList<ITask>> batch = ThreadLocal.withInitial(FasterList::new);
 
-        public BagTasksBuffer(int capacity, float rate) {
-            this(capacity, rate, true);
-        }
-
+        private transient long prev = Long.MIN_VALUE;
 
         /**
          * @capacity size of buffer for tasks that have been input (and are being de-duplicated) but not yet input.
          * input may happen concurrently (draining the bag) while inputs are inserted from another thread.
          */
-        public BagTasksBuffer(int capacity, float rate, boolean inlineOrDeferredInput) {
+        public BagTasksBuffer(int capacity, float rate) {
             this.capacity.set(capacity);
-            this.inlineOrDeferredInput = inlineOrDeferredInput;
             this.drainRate.set(rate);
             this.tasks.setCapacity(capacity);
         }
@@ -221,27 +228,59 @@ abstract public class TaskBuffer  {
         }
 
         @Override
-        public void update(NAR nar) {
+        public void commit(Timed time, Consumer<Task> target) {
 
-            tasks.setCapacity(capacity.intValue());
-
-            int s = tasks.size();
-
-            //System.out.println(this + " " + s);
-
-            if (s > 0) {
+            if (!busy.compareAndSet(false, true))
+                return; //an operation is in-progress
 
 
-                if (inlineOrDeferredInput) {
-                    ITask.run(tasksDrainer, nar); //inline
-                } else {
-                    nar.exe.execute(tasksDrainer);
+            try {
+
+                long now = time.time();
+                if (prev == Long.MIN_VALUE) {
+                    prev = now;
                 }
 
+                long dt = now - prev;
 
+                tasks.setCapacity(capacity.intValue());
+
+                int s = tasks.size();
+                if (s == 0)
+                    return;
+
+                tasks.commit(null /* no forget */);
+
+                int n = batchSize(dt);
+                if (n > 0) {
+
+                    if (tasks instanceof ArrayBag) {
+                        FasterList<ITask> batch = BagTasksBuffer.batch.get();
+                        ((ArrayBag) tasks).popBatch(n, batch);
+                        if (!batch.isEmpty()) {
+                            batch.forEach(target);
+                            batch.clear();
+                        }
+
+                    } else {
+                        tasks.pop(null, n, target); //per item.. may be slow
+                    }
+                }
+
+            } finally {
+                busy.set(false);
             }
+
+        }
+
+        /**  TODO abstract */
+        protected int batchSize(long dt) {
+            //rateControl.apply(tasks.size(), tasks.capacity());
+            return Tense.occToDT(Math.round(dt * drainRate.floatValue() * tasks.capacity()));
         }
     }
+
+
 
     public static class BagPuncTasksBuffer extends TaskBuffer {
 
@@ -251,6 +290,8 @@ abstract public class TaskBuffer  {
             belief = new BagTasksBuffer(capacity, rate);
             goal = new BagTasksBuffer(capacity, rate);
             question = new BagTasksBuffer(capacity, rate);
+
+            this.capacity.set(belief.capacity.intValue() + goal.capacity.intValue() + question.capacity.intValue());
         }
 
         private TaskBuffer buffer(byte punc) {
@@ -277,11 +318,13 @@ abstract public class TaskBuffer  {
         }
 
         @Override
-        public void update(NAR n) {
-            belief.update(n);
-            goal.update(n);
-            question.update(n);
+        public void commit(Timed time, Consumer<Task> target) {
+            //TODO parallelize
+            belief.commit(time, target);
+            goal.commit(time, target);
+            question.commit(time, target);
         }
+
 
         @Override
         public int size() {

@@ -27,6 +27,8 @@ import static jcog.signal.meter.Meter.meter;
  * manages non-logical/meta states of the system
  * and collects/provides information about them to the system
  * variables used to record emotional values
+ *
+ * TODO cycleCounter, durCounter etc
  */
 public class Emotion implements Meter {
 
@@ -135,10 +137,10 @@ public class Emotion implements Meter {
      */
     public void cycle() {
 
+
         termVolMax = nar.termVolumeMax.floatValue();
 
         _happy = happy.commitSum();
-
 
         busyVol.commit();
 
