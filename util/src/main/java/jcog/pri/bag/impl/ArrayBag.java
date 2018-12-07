@@ -13,6 +13,7 @@ import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.op.PriMerge;
+import jcog.signal.wave1d.ArrayHistogram;
 import jcog.sort.SortedArray;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,8 +39,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     private static final AtomicFloatFieldUpdater<ArrayBag> PRESSURE =
             new AtomicFloatFieldUpdater(ArrayBag.class, "pressure");
 
+    private static final int HISTOGRAM_BINS = 8;
 
     @Deprecated private final PriMerge mergeFunction;
+
+    private transient ArrayHistogram hist = null;
 
     private volatile int mass, pressure;
 
@@ -194,10 +198,20 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         int mustSortTo = -1;
         int s = size();
         float m = 0;
+
+        int c = capacity();
+        int histRange = Math.min(c, Util.round(s * 2, 4));
+        ArrayHistogram hist = this.hist;
+        if (hist == null) {
+            hist = new ArrayHistogram(0, histRange-1, HISTOGRAM_BINS);
+        } else {
+            hist = hist.clear(0, histRange-1, HISTOGRAM_BINS);
+        }
         for (int i = 0; i < s; ) {
             Y y = (Y) l[i];
             assert y != null;
             float p = pri(y);
+
             if (update != null && p == p) {
                 update.accept(y);
                 p = pri(y);
@@ -205,6 +219,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             if (p == p) {
 //                min = Math.min(min, p);
 //                max = Math.max(max, p);
+
+                hist.add(i, p);
 
                 m += p;
                 if (p - above >= ScalarValue.EPSILON)
@@ -220,10 +236,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             }
         }
 
+        this.hist = hist;
         ArrayBag.MASS.set(this, m);
-
-
-        int c = capacity();
 
         while (s > c) {
             trash.add(this.items.removeLast());
@@ -289,7 +303,15 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         if (size == 1 || rng == null)
             return 0;
         else {
-            return sampleNextLinear(rng, size);
+            if (hist == null || hist.mass < Float.MIN_NORMAL)
+                return rng.nextInt(size);
+            else {
+                int index = (int)hist.sample(rng);
+                if (index >= size)
+                    index = size-1;
+                return index;
+            }
+            //return sampleNextLinear(rng, size);
             //return sampleNextBiLinear(rng, size);
         }
     }

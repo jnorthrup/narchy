@@ -110,7 +110,7 @@ abstract public class NAgentX extends NAgent {
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, float clockFPS) {
-        return runRT(init,  -1, clockFPS, clockFPS);
+        return runRT(init, -1, clockFPS, clockFPS);
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, int threads, float narFPS, float durFPS) {
@@ -123,24 +123,24 @@ abstract public class NAgentX extends NAgent {
 
             n.on(a);
 
-            n.runLater(() -> {
+            initPlugins(n);
+            initPlugins2(n, a);
 
-                initPlugins(n);
-                initPlugins2(n, a);
+            Loop loop = n.startFPS(narFPS);
 
-                //System.gc();
-            });
+            //System.gc();
         });
 
-        Loop loop = n.startFPS(narFPS);
+        n.synch();
 
         return n;
     }
 
-    /** agent builder should name each agent instance uniquely
+    /**
+     * agent builder should name each agent instance uniquely
      * ex: new PoleCart($.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()), n);
      */
-    public static NAR runRTNet(Function<NAR,NAgent> a, int threads, float narFPS, float durFPS, float netFPS) {
+    public static NAR runRTNet(Function<NAR, NAgent> a, int threads, float narFPS, float durFPS, float netFPS) {
         return runRT((n) -> {
 
             NAgent aa = a.apply(n);
@@ -209,7 +209,7 @@ abstract public class NAgentX extends NAgent {
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
-                        new Revaluator.DefaultRevaluator(0.05f),
+                        new Revaluator.DefaultRevaluator(0.25f),
                         //new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
 
                         threads <= 0 ? Util.concurrencyExcept(2) : threads, true /* affinity */))
@@ -236,8 +236,8 @@ abstract public class NAgentX extends NAgent {
 
                         //new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
                         new HijackConceptIndex(
-                                //128 * 1024,
-                                64 * 1024,
+                                128 * 1024,
+                                //64 * 1024,
                                 //32 * 1024,
                                 //8 * 1024,
                                 4)
@@ -280,7 +280,6 @@ abstract public class NAgentX extends NAgent {
 //////                        return conclusion == GOAL ? 1 : 0.5f;
 //////                    }
 ////                };
-
 
 
         window(new Gridding(NARui.agent(a), NARui.top(n)), 1200, 900);
@@ -360,8 +359,8 @@ abstract public class NAgentX extends NAgent {
 //        m.actionUnipolar($.func("awake", a.id), (f)->{
 //            nar.conceptActivation.set(Util.lerp(f, 0.1f, 0.99f));
 //        });
-        m.senseNumber($.func("busy", a.id), new FloatNormalized(()->
-                (float) Math.log(1+m.nar().emotion.busyVol.getMean()), 0, 1).relax(0.05f));
+        m.senseNumber($.func("busy", a.id), new FloatNormalized(() ->
+                (float) Math.log(1 + m.nar().emotion.busyVol.getMean()), 0, 1).relax(0.05f));
 
         for (Sensor s : a.sensors) {
             if (!(s instanceof Signal)) { //HACK only if compound sensor
@@ -411,7 +410,6 @@ abstract public class NAgentX extends NAgent {
 //        m.actionUnipolar($.func("curious", a.id), (cur) -> {
 //            a.curiosity.set(lerp(cur, 0.01f, 0.25f));
 //        });//.resolution(0.05f);
-
 
 
         return m;
@@ -499,10 +497,10 @@ abstract public class NAgentX extends NAgent {
         Introduction factorizer = new Factorize.FactorIntroduction(8, n);
 
 //        {
-            new Inperience.Believe(n, 8);
-            new Inperience.Want(n, 8);
-            //new Inperience.Wonder(n, 4);
-            //new Inperience.Plan(n, 4);
+        new Inperience.Believe(n, 8);
+        new Inperience.Want(n, 8);
+        //new Inperience.Wonder(n, 4);
+        //new Inperience.Plan(n, 4);
 //        }
 
 
@@ -525,7 +523,6 @@ abstract public class NAgentX extends NAgent {
 
 //        Impiler.ImpilerTracker t = new Impiler.ImpilerTracker(8, 16, n);
 //        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(8, 8, n);
-
 
 
     }
@@ -556,6 +553,7 @@ abstract public class NAgentX extends NAgent {
     protected Bitmap2DSensor<PixelBag> senseCameraRetina(Term id, Supplier<BufferedImage> w, int pw, int ph) {
         return senseCamera(id, new PixelBag(new MonoBufImgBitmap2D(w), pw, ph));
     }
+
     protected Bitmap2DSensor<PixelBag> senseCameraRetina(Term id, Bitmap2D w, int pw, int ph) {
         return senseCamera(id, new PixelBag(w, pw, ph));
     }
@@ -578,12 +576,12 @@ abstract public class NAgentX extends NAgent {
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> addCameraCoded(@Nullable Term
-                                                                                id, Supplier<BufferedImage> bc, int sx, int sy, int ox, int oy) {
+                                                                            id, Supplier<BufferedImage> bc, int sx, int sy, int ox, int oy) {
         return addCamera(new Bitmap2DSensor(id, new AutoencodedBitmap(new MonoBufImgBitmap2D(bc), sx, sy, ox, oy), nar()));
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> addCameraCoded(@Nullable Term id, C bc, int sx, int sy,
-                                                                        int ox, int oy) {
+                                                                    int ox, int oy) {
         return addCamera(new Bitmap2DSensor(id, new AutoencodedBitmap(bc, sx, sy, ox, oy), nar()));
     }
 

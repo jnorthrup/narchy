@@ -115,7 +115,7 @@ class BagTest {
         float min = b.priMin(), max = b.priMax(), range = max-min;
         for (int i = 0; i < batches; i++) {
             b.sample(rng, batchSize, x -> {
-                f.data[Util.bin((b.pri(x)-min)*range, bins)]++;
+                f.data[Util.bin(b.pri(x), bins)]++;
                 String s = x.get();
                 hits.addValue(s);
                 hit.add(s);
@@ -166,7 +166,7 @@ class BagTest {
     }
 
     static void testBagSamplingDistributionSquashed(Bag<PLink<String>, PLink<String>> bag, float batchSizeProp) {
-        fill(bag, bag.capacity(), (x)-> (x + 0.5f)/2f);
+        fill(bag, bag.capacity(), (x)-> (x/2f) + 0.5f);
         testBagSamplingDistribution(bag, batchSizeProp);
     }
 

@@ -30,6 +30,7 @@ public enum Roulette {
 
     /**
      * faster if the sum is already known
+     * TODO use a generic FloatSupplier instead of Random
      */
     public static int selectRoulette(final int count, IntToFloatFunction weight, float weight_sum, Random rng) {
 
