@@ -1,10 +1,13 @@
 package jake2;
 
+import com.jogamp.opengl.GL;
 import jake2.client.CL_input;
 import jake2.client.Key;
 import jake2.game.EntHurtAdapter;
 import jake2.game.PlayerView;
 import jake2.game.edict_t;
+import jake2.sound.jsound.SND_DMA;
+import jake2.sound.jsound.SND_JAVA;
 import jake2.sys.IN;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
@@ -15,12 +18,17 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.Narsese;
+import nars.concept.sensor.FreqVectorSensor;
+import nars.gui.sensor.VectorSensorView;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
+import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
+import spacegraph.space2d.widget.meter.WaveView;
 import spacegraph.video.GLScreenShot;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import static jake2.Globals.STAT_FRAGS;
 import static jake2.Globals.cl;
@@ -33,12 +41,13 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
  */
 public class Jake2Agent extends NAgentX implements Runnable {
 
-    static final int FPS = 10;
+    static final int FPS = 24;
     static float timeScale = 0.5f;
 
     static float yawSpeed = 10;
     static float pitchSpeed = 5;
-    private final GLScreenShot screenshot;
+    private final GLScreenShot rgb, depth = null;
+    private final FreqVectorSensor hear;
 
 
     public class PlayerData {
@@ -122,35 +131,50 @@ public class Jake2Agent extends NAgentX implements Runnable {
 
         //int px = 64, py = 48, nx = 4, aeStates = 8;
         int px = 64, py = 48, nx = 8, aeStates = 16;
-        screenshot = new GLScreenShot();
-        PixelBag vision = new PixelBag(
+
+        rgb = new GLScreenShot(true);
+        //depth = new GLScreenShot(false);
+
+        PixelBag rgbVision = new PixelBag(
                 new BrightnessNormalize(
-                        new ImageFlip(false, true, new ScaledBitmap2D(screenshot, px, py))
+                        new ImageFlip(false, true, new ScaledBitmap2D(rgb, px, py))
                 ), px, py);
-        vision.setZoom(0);
-        //vision.addActions($$("q"), this);
-//        vision.setMinZoomOut(0.5f);
-//        vision.setMaxZoomOut(1f);
-        //vision.resolution(0.01f);
+        rgbVision.setZoom(0);
 
-        ;
+//        PixelBag depthVision = new PixelBag(
+//                new BrightnessNormalize(
+//                        new ImageFlip(false, true, new ScaledBitmap2D(depth, px/2, py/2))
+//                ), px/2, py/2);
+//        depthVision.setZoom(0);
 
-//        {
-        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.the("see"), vision, nx, nx, (subX, subY) -> {
-            return new float[]{/*cc.X, cc.Y*/};
-        }, aeStates, this);
-        camAE.alpha(0.03f);
-        camAE.noise.set(0.05f);
+        AutoclassifiedBitmap rgbAE = new AutoclassifiedBitmap($.the("gray"), rgbVision, nx, nx, aeStates, this);
+        rgbAE.alpha(0.03f);
+        rgbAE.noise.set(0.05f);
+
+//        AutoclassifiedBitmap depthAE = new AutoclassifiedBitmap($.the("depth"), depthVision, nx/2, nx/2, aeStates/4, this);
+//        depthAE.alpha(0.03f);
+//        depthAE.noise.set(0.05f);
 
         //SpaceGraph.(column(visionView, camAE.newChart()), 500, 500);
 //        }
 
-        BitmapMatrixView visionView = new BitmapMatrixView(vision);
-        onFrame(visionView::update);
-        window(grid(visionView,
-                camAE.newChart()
-                //new Bitmap2DConceptsView(c, this).withControls()
-        ), 500, 500);
+        BitmapMatrixView rgbView = new BitmapMatrixView(rgbVision);
+        onFrame(rgbView::update);
+
+//        BitmapMatrixView depthView = new BitmapMatrixView(depthVision);
+//        onFrame(depthView::update);
+
+        window(grid(rgbView, rgbAE.newChart() /*, depthView, depthAE.newChart()*/), 500, 500);
+
+        hear = new FreqVectorSensor((f)->$.inh($.the(f), "hear"), 512,16, nar);
+        addSensor(hear);
+        WaveView hearView = new WaveView(hear.buf, 300, 64);
+        onFrame(()->{
+            hearView.updateLive();
+        });
+        window(grid(new VectorSensorView(hear, nar).withControls(),
+                //spectrogram(hear.buf, 0.1f,512, 16),
+                new ObjectSurface(hear), hearView), 400, 400);
 
 //        senseFields("q", player);
 
@@ -219,16 +243,59 @@ public class Jake2Agent extends NAgentX implements Runnable {
 
         IN.mouse_avail = false;
         Jake2.run(new String[]{
-                "+god",
-                "+deathmatch 1",
+                //"+god 1",
+                //"+deathmatch 1",
+                "vid_width 800",
+                "vid_height 600",
                 "+dmflags 1024",
                 "+cl_gun 0",
+                "lookspring 1",
                 "+timescale " + timeScale,
 
 
                 "+map " + nextMap()
 
-        }, screenshot::update);
+        }, new Consumer<GL>() {
+
+            int lastSamplePos = -1;
+
+            @Override
+            public void accept(GL g) {
+                rgb.update(g);
+
+
+
+                int samples = 1024;
+                int sample = SND_JAVA.SNDDMA_GetDMAPos();
+                if (sample!=lastSamplePos) {
+                    byte[] b = SND_DMA.dma.buffer;
+
+                    //System.out.println(sample + " " + SND_MIX.paintedtime);
+
+                    if (hear.buf.available() < samples*2)
+                        hear.buf.skip(samples*2);
+
+                    int from = (sample - samples * 4) % b.length;
+                    int to = (sample - samples * 2) % b.length;
+
+                    while (from < 0) from += b.length;
+                    while (to < 0) to += b.length;
+
+                    if (from <= to) {
+                        hear.writeS16(b, from, to, 1);
+                    } else {
+                        hear.writeS16(b, from, b.length, 1);
+                        hear.writeS16(b, 0, to, 1);
+                    }
+
+
+
+                    lastSamplePos = sample;
+                }
+
+                //depth.update(g);
+            }
+        });
 
 
         /*

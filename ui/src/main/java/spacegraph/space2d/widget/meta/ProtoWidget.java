@@ -104,7 +104,7 @@ public class ProtoWidget extends Bordering {
             return new HaarWaveletTensor(t, 64);
         }).buffered(), "Tensor");
         add("SlidingDFT", ()->new FunctionChip<>((Tensor t)->{
-            return new SlidingDFTTensor(t, 64);
+            return new SlidingDFTTensor(t, 64, true);
         }).buffered(), "Tensor");
 
 

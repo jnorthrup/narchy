@@ -12,9 +12,16 @@
  */
 package jcog.math.freq;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * For the sliding DFT algorithm, see for example
  * Bradford/Dobson/ffitch "Sliding is smoother than jumping".
+ *
+ *
+ * The FFT provides you with amplitude and phase. The amplitude is encoded as the magnitude of the complex number (sqrt(x^2+y^2)) while the phase is encoded as the angle (atan2(y,x)). To have a strictly real result from the FFT, the incoming signal must have even symmetry (i.e. x[n]=conj(x[N-n])).
+ *  If all you care about is intensity, the magnitude of the complex number is sufficient for analysis.
+ * https://stackoverflow.com/questions/10304532/why-does-fft-produce-complex-numbers-instead-of-real-numbers#10304604
  */
 public class SlidingDFT {
     private final int fftSize;
@@ -27,6 +34,7 @@ public class SlidingDFT {
     private final float[][] timeBuf;
     private final float[][] fftBufD;
     private final int[] timeBufIdx;
+
 
     public SlidingDFT(int fftSize, int numChannels) {
         this.fftSize = fftSize;
@@ -56,7 +64,23 @@ public class SlidingDFT {
         next(inBuf, 0, inBuf.length, chan, fftBuf);
     }
 
-    private void next(float[] inBuf, int inOff, int inLen, int chan, float[] fftBuf) {
+    public void nextFreq(float[] inBuf, int chan, float[] fftBuf) {
+        next(inBuf, 0, inBuf.length, chan, null);
+
+        float[] f = fftBufD[chan];
+        int n = (f.length-2);
+        assert(fftBuf.length >= n/2);
+        int k = 0;
+        for (int i = 2; i < f.length; ) {
+            float real = f[i++];
+            float imag = f[i++];
+            float amp = real*real + imag*imag;
+            fftBuf[k++] = amp;
+        }
+
+    }
+
+    private void next(float[] inBuf, int inOff, int inLen, int chan, @Nullable float[] fftBuf) {
 
         if (inLen == 0 || inBuf.length == 0)
             return;
@@ -66,6 +90,7 @@ public class SlidingDFT {
         int timeBufIdxC = timeBufIdx[chan];
         float delta, re1, im1, re2, im2;
         float f1;
+
 
         for (int i = 0, j = inOff; i < inLen; i++, j++) {
             f1 = inBuf[j];
@@ -87,7 +112,8 @@ public class SlidingDFT {
         }
         timeBufIdx[chan] = timeBufIdxC;
 
-        System.arraycopy(fftBufDC, 0, fftBuf, 0, Math.min(fftBuf.length, fftSize));
+        if (fftBuf!=null)
+            System.arraycopy(fftBufDC, 0, fftBuf, 0, Math.min(fftBuf.length, fftSize));
 
     }
 }

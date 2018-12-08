@@ -165,7 +165,7 @@ abstract public class NAgentX extends NAgent {
             n.on(a);
 
 
-            window(new Gridding(NARui.agent(a), NARui.top(n)), 1200, 900);
+            window(new Gridding(NARui.agent(a), NARui.top(n)), 400, 300);
 
 
             new RLBooster(a,
@@ -236,7 +236,8 @@ abstract public class NAgentX extends NAgent {
 
                         //new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
                         new HijackConceptIndex(
-                                128 * 1024,
+                                //128 * 1024,
+                                96 * 1024,
                                 //64 * 1024,
                                 //32 * 1024,
                                 //8 * 1024,
@@ -283,7 +284,7 @@ abstract public class NAgentX extends NAgent {
 ////                };
 
 
-        window(new Gridding(NARui.agent(a), NARui.top(n)), 1200, 900);
+        window(new Gridding(NARui.agent(a), NARui.top(n)), 400, 300);
 
 //                if (a instanceof NAgentX) {
 //                    NAgent m = metavisor(a);

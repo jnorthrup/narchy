@@ -65,7 +65,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
 
     public final float[][] pixRecon;
 
-    private final float ins[];
+    private final float[] ins;
     private final int sw, sh;
     private final int nw, nh;
     private final int pw, ph;
@@ -138,6 +138,9 @@ public class AutoclassifiedBitmap extends VectorSensor {
         this(root, (x, y) -> pixIn[x][y],
                 pixIn.length, pixIn[0].length,
                 sw, sh, metabits, states, agent);
+    }
+    public AutoclassifiedBitmap(Term root, Bitmap2D b, int sw, int sh, int states, NAgent agent) {
+        this(root, b, sw, sh, NoMetaBits, states, agent);
     }
 
     public AutoclassifiedBitmap(Term root, Bitmap2D b, int sw, int sh, MetaBits metabits, int states, NAgent agent) {
@@ -319,7 +322,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
                 if (reconstruct) {
 
 
-                    float z[] = this.ae.z;
+                    float[] z = this.ae.z;
                     p = 0;
                     for (int si = 0; si < sw; si++) {
                         int d = si + oi;

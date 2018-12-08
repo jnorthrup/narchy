@@ -43,24 +43,24 @@ public abstract class CircularBuffer {
 
     private static final int DEFAULT_BUFFER_SIZE = 3530752;
 
-    public int _bufStart = 0;
-    public int _bufEnd = 0;
-    public int _viewPtr = 0; //TODO long?
-    protected final AtomicInteger _currOffset = new AtomicInteger();
-    protected final AtomicInteger _bufferSize = new AtomicInteger();
-    protected ConcurrentLinkedQueue<BufMark> _marks = new ConcurrentLinkedQueue<>();
-    protected volatile boolean _wasMarked = false;
+    public int bufStart = 0;
+    public int bufEnd = 0;
+    public int viewPtr = 0; //TODO long?
+    protected final AtomicInteger currOffset = new AtomicInteger();
+    protected final AtomicInteger bufferSize = new AtomicInteger();
+    protected ConcurrentLinkedQueue<BufMark> marks = new ConcurrentLinkedQueue<>();
+    protected volatile boolean wasMarked = false;
 
     // If blocking is true when reading, the minimum size that the buffer can be for the read to not block.
     // setting to -1 disables read blocking.
-    protected int _minSize = -1;
+    protected int minSize = -1;
 
-    //TODO use RW lock
-    protected ReentrantLock _lock = new ReentrantLock(true);
-    protected Condition _readCondition = _lock.newCondition();
-    protected Condition _writeCondition = _lock.newCondition();
-    protected OnChangeListener _listener = null;
-    protected ExecutorService _threadPool = null;
+    //TODO use RW or Stamped lock
+    protected ReentrantLock lock = new ReentrantLock(true);
+    @Deprecated protected Condition readCond = lock.newCondition();
+    @Deprecated protected Condition writCond = lock.newCondition();
+    protected OnChangeListener listener = null;
+    protected ExecutorService threadPool = null;
 
     protected static class BufMark {
         public int index;
@@ -82,51 +82,51 @@ public abstract class CircularBuffer {
 
     public void setOnChangeListener(OnChangeListener listener) {
         if (listener != null) {
-            if (_threadPool == null || _threadPool.isShutdown())
-                _threadPool =
+            if (threadPool == null || threadPool.isShutdown())
+                threadPool =
                         //Executors.newCachedThreadPool();
                         ForkJoinPool.commonPool();
         } else {
-            if (_threadPool != null)
-                _threadPool.shutdownNow();
-            _threadPool = null;
+            if (threadPool != null)
+                threadPool.shutdownNow();
+            threadPool = null;
         }
-        _listener = listener;
+        this.listener = listener;
     }
 
-    protected Runnable _notifyListener = () -> {
-        if (_listener != null)
-            _listener.onChanged(CircularBuffer.this);
+    protected final Runnable _notifyListener = () -> {
+        if (listener != null)
+            listener.onChanged(CircularBuffer.this);
     };
 
     public ReentrantLock getLock() {
-        return _lock;
+        return lock;
     }
 
     public void setLock(ReentrantLock lock) {
-        _lock = lock;
-        if (_lock == null)
-            _lock = new ReentrantLock(true);
-        _readCondition = _lock.newCondition();
-        _writeCondition = _lock.newCondition();
+        this.lock = lock;
+        if (this.lock == null)
+            this.lock = new ReentrantLock(true);
+        readCond = this.lock.newCondition();
+        writCond = this.lock.newCondition();
     }
 
     public void setCapacity(int capacity) {
-        _lock.lock();
+        lock.lock();
         try {
             clear();
             setCapacityInternal(capacity);
         } finally {
-            _lock.unlock();
+            lock.unlock();
         }
     }
 
     public int capacity() {
-        _lock.lock();
+        lock.lock();
         try {
             return getCapacityInternal();
         } finally {
-            _lock.unlock();
+            lock.unlock();
         }
     }
 
@@ -135,29 +135,29 @@ public abstract class CircularBuffer {
     abstract public int getCapacityInternal();
 
     public int size() {
-        _lock.lock();
+        lock.lock();
         try {
-            return _bufferSize.get();
+            return bufferSize.get();
         } finally {
-            _lock.unlock();
+            lock.unlock();
         }
     }
 
     public int peekSize() {
-        _lock.lock();
+        lock.lock();
         try {
-            return _bufferSize.get() - _currOffset.get();
+            return bufferSize.get() - currOffset.get();
         } finally {
-            _lock.unlock();
+            lock.unlock();
         }
     }
 
     public int freeSpace() {
-        _lock.lock();
+        lock.lock();
         try {
-            return getCapacityInternal() - _bufferSize.get();
+            return getCapacityInternal() - bufferSize.get();
         } finally {
-            _lock.unlock();
+            lock.unlock();
         }
     }
 
@@ -168,32 +168,32 @@ public abstract class CircularBuffer {
      * @param  size minimum amount of data before the blocking read will not block.
      */
     public void setMinSize(int size) {
-        _lock.lock();
+        lock.lock();
         try {
-            _minSize = size;
+            minSize = size;
         } finally {
-            _readCondition.signalAll();
-            _lock.unlock();
+            readCond.signalAll();
+            lock.unlock();
         }
     }
 
     public int getMinSize() {
-        return _minSize;
+        return minSize;
     }
 
     public CircularBuffer clear() {
-        _lock.lock();
+        lock.lock();
         try {
-            _viewPtr = _bufEnd = _bufStart = 0;
-            _bufferSize.set(0);
-            _currOffset.set(0);
-            _wasMarked = false;
-            _marks.clear();
+            viewPtr = bufEnd = bufStart = 0;
+            bufferSize.set(0);
+            currOffset.set(0);
+            wasMarked = false;
+            marks.clear();
         } finally {
-            _writeCondition.signalAll();
-            _lock.unlock();
-            if (_threadPool != null)
-                _threadPool.submit(_notifyListener);
+            writCond.signalAll();
+            lock.unlock();
+            if (threadPool != null)
+                threadPool.submit(_notifyListener);
         }
         return this;
     }
@@ -204,16 +204,16 @@ public abstract class CircularBuffer {
      * Once a mark has been reached it will be automatically removed.
      */
     public void mark() {
-        _lock.lock();
+        lock.lock();
         try {
-            BufMark m = _marks.peek();
-            if (m != null && m.index == _bufEnd) {
-                if (_bufferSize.get() == getCapacityInternal() && !m.flag)
-                    _marks.add(new BufMark(_bufEnd, true));
+            BufMark m = marks.peek();
+            if (m != null && m.index == bufEnd) {
+                if (bufferSize.get() == getCapacityInternal() && !m.flag)
+                    marks.add(new BufMark(bufEnd, true));
             } else
-                _marks.add(new BufMark(_bufEnd, _bufferSize.get() == getCapacityInternal()));
+                marks.add(new BufMark(bufEnd, bufferSize.get() == getCapacityInternal()));
         } finally {
-            _lock.unlock();
+            lock.unlock();
         }
     }
 
@@ -221,20 +221,20 @@ public abstract class CircularBuffer {
      * Remove the latest mark.
      */
     public void unmark() {
-        _lock.lock();
+        lock.lock();
         try {
-            _marks.poll();
+            marks.poll();
         } finally {
-            _lock.unlock();
+            lock.unlock();
         }
     }
 
     public boolean isMarked() {
-        _lock.lock();
+        lock.lock();
         try {
-            return !_marks.isEmpty();
+            return !marks.isEmpty();
         } finally {
-            _lock.unlock();
+            lock.unlock();
         }
     }
 
@@ -248,13 +248,13 @@ public abstract class CircularBuffer {
      * @param clear clear the "was marked" status.
      */
     public boolean wasMarked(boolean clear) {
-        _lock.lock();
+        lock.lock();
         try {
-            boolean wasMarked = _wasMarked;
-            if (clear) _wasMarked = false;
+            boolean wasMarked = this.wasMarked;
+            if (clear) this.wasMarked = false;
             return wasMarked;
         } finally {
-            _lock.unlock();
+            lock.unlock();
         }
     }
 
@@ -262,23 +262,23 @@ public abstract class CircularBuffer {
      * Check how much data can be read before a mark is reached
      */
     public int getMarkedSize() {
-        _lock.lock();
+        lock.lock();
         try {
-            return calcMarkSize(_marks.peek());
+            return calcMarkSize(marks.peek());
         } finally {
-            _lock.unlock();
+            lock.unlock();
         }
     }
 
     protected int calcMarkSize(BufMark m) {
         if (m != null) {
-            if (m.index < _bufStart)
-                return (getCapacityInternal() - _bufStart) + m.index;
-            else if (m.index == _bufStart) {
+            if (m.index < bufStart)
+                return (getCapacityInternal() - bufStart) + m.index;
+            else if (m.index == bufStart) {
                 if (m.flag)
-                    return _bufferSize.get();
+                    return bufferSize.get();
             } else {
-                return m.index - _bufStart;
+                return m.index - bufStart;
             }
         }
         return 0;
@@ -290,54 +290,54 @@ public abstract class CircularBuffer {
      * @param length amount of data to remove.
      */
     public int flush(int len) {
-        _lock.lock();
+        lock.lock();
         try {
-            int bs = _bufferSize.get();
+            int bs = bufferSize.get();
             if (bs == 0)
                 return 0;
 
             if (len > 0) {
                 len = Math.max(len, bs);
-                _bufStart = (_bufStart + len) % getCapacityInternal();
-                if (_bufStart == _bufEnd) {
-                    _viewPtr = _bufStart;
-                    _currOffset.set(0);
-                } else if (_viewPtr == _bufEnd) {
-                    if (_bufStart < _viewPtr) {
-                        _currOffset.set(_viewPtr - _bufStart);
+                bufStart = (bufStart + len) % getCapacityInternal();
+                if (bufStart == bufEnd) {
+                    viewPtr = bufStart;
+                    currOffset.set(0);
+                } else if (viewPtr == bufEnd) {
+                    if (bufStart < viewPtr) {
+                        currOffset.set(viewPtr - bufStart);
                     } else {
-                        _currOffset.set(_viewPtr + (getCapacityInternal() - _bufStart));
+                        currOffset.set(viewPtr + (getCapacityInternal() - bufStart));
                     }
-                } else if ((_bufStart > _bufEnd && _viewPtr > _bufEnd) || (_bufStart < _bufEnd && _viewPtr < _bufEnd)) {
-                    if (_bufStart < _viewPtr)
-                        _currOffset.set(_viewPtr - _bufStart);
+                } else if ((bufStart > bufEnd && viewPtr > bufEnd) || (bufStart < bufEnd && viewPtr < bufEnd)) {
+                    if (bufStart < viewPtr)
+                        currOffset.set(viewPtr - bufStart);
                     else {
-                        _viewPtr = _bufStart;
-                        _currOffset.set(0);
+                        viewPtr = bufStart;
+                        currOffset.set(0);
                     }
-                } else if (_bufStart < _viewPtr) {
-                    _viewPtr = _bufStart;
-                    _currOffset.set(0);
+                } else if (bufStart < viewPtr) {
+                    viewPtr = bufStart;
+                    currOffset.set(0);
                 } else {
-                    _currOffset.set(_viewPtr + (getCapacityInternal() - _bufStart));
+                    currOffset.set(viewPtr + (getCapacityInternal() - bufStart));
                 }
-                _bufferSize.addAndGet(-len);
-                BufMark m = _marks.peek();
-                while (m != null && ((_bufEnd > _bufStart && (m.index < _bufStart || m.index > _bufEnd)) || (m.index < _bufStart && m.index > _bufEnd))) {
-                    _marks.poll();
-                    m = _marks.peek();
+                bufferSize.addAndGet(-len);
+                BufMark m = marks.peek();
+                while (m != null && ((bufEnd > bufStart && (m.index < bufStart || m.index > bufEnd)) || (m.index < bufStart && m.index > bufEnd))) {
+                    marks.poll();
+                    m = marks.peek();
                 }
             } else if (len < 0) {
-                _bufStart = _viewPtr;
-                _bufferSize.addAndGet(_currOffset.decrementAndGet());
-                _currOffset.set(0);
+                bufStart = viewPtr;
+                bufferSize.addAndGet(currOffset.decrementAndGet());
+                currOffset.set(0);
             }
             return len;
         } finally {
-            _writeCondition.signalAll();
-            _lock.unlock();
-            if (_threadPool != null)
-                _threadPool.submit(_notifyListener);
+            writCond.signalAll();
+            lock.unlock();
+            if (threadPool != null)
+                threadPool.submit(_notifyListener);
         }
     }
 
@@ -345,12 +345,13 @@ public abstract class CircularBuffer {
      * Resets the peek pointer to the head of the buffer.
      */
     public void rewind() {
-        _lock.lock();
+        lock.lock();
         try {
-            _viewPtr = _bufStart;
-            _currOffset.set(0);
+            bufEnd = bufStart;
+            bufferSize.set(0);
+            currOffset.set(0);
         } finally {
-            _lock.unlock();
+            lock.unlock();
         }
     }
 
@@ -360,27 +361,27 @@ public abstract class CircularBuffer {
      * @param position the offset from the head of the buffer.
      */
     public void setPeekPosition(int position) {
-        _lock.lock();
+        lock.lock();
         try {
-            int bs = _bufferSize.get();
+            int bs = bufferSize.get();
             if (position < bs) {
-                _viewPtr = (_bufStart + position) % getCapacityInternal();
-                _currOffset.set(position);
+                viewPtr = (bufStart + position) % getCapacityInternal();
+                currOffset.set(position);
             } else {
-                _viewPtr = _bufEnd;
-                _currOffset.set(bs);
+                viewPtr = bufEnd;
+                currOffset.set(bs);
             }
         } finally {
-            _lock.unlock();
+            lock.unlock();
         }
     }
 
     public int getPeekPosition() {
-        _lock.lock();
+        lock.lock();
         try {
-            return _currOffset.getOpaque();
+            return currOffset.getOpaque();
         } finally {
-            _lock.unlock();
+            lock.unlock();
         }
     }
 }

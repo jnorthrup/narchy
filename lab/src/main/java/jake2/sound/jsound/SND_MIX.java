@@ -141,7 +141,7 @@ public class SND_MIX extends SND_JAVA {
 
     static int snd_vol;
 
-    static int paintedtime; 
+    public static int paintedtime;
 
     static final playsound_t s_pendingplays = new playsound_t();
 

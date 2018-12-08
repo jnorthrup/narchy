@@ -42,16 +42,16 @@ public class SND_JAVA extends Globals {
 	static cvar_t sndspeed;
 	static cvar_t sndchannels;
 
-	static class dma_t {
+	public static class dma_t {
 		int channels;
-		int samples; 
+		public int samples;
 		int submission_chunk; 
 		
 		int samplebits;
 		int speed;
-		byte[] buffer;
+		public byte[] buffer;
 	}
-  	static final SND_DMA.dma_t dma = new dma_t();
+  	public static final SND_DMA.dma_t dma = new dma_t();
   	
   	static class SoundThread extends Thread {
   		final byte[] b;
@@ -136,7 +136,7 @@ public class SND_JAVA extends Globals {
 
 	}
 
-	static int SNDDMA_GetDMAPos() {		
+	public static int SNDDMA_GetDMAPos() {
 		
 		return thread.getSamplePos(); 
 	}

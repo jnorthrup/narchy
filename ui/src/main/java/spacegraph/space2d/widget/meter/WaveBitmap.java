@@ -9,7 +9,7 @@ import spacegraph.space2d.container.Stacking;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class BitmapWave extends Stacking implements BitmapMatrixView.BitmapPainter {
+public class WaveBitmap extends Stacking implements BitmapMatrixView.BitmapPainter {
 
     private final int w, h;
     private final CircularFloatBuffer buffer;
@@ -27,7 +27,7 @@ public class BitmapWave extends Stacking implements BitmapMatrixView.BitmapPaint
     public long start;
     public long end;
 
-    public BitmapWave(int w, int h, CircularFloatBuffer buffer) {
+    public WaveBitmap(int w, int h, CircularFloatBuffer buffer) {
         this.w = w;
         this.h = h;
         this.yMin = -1;
@@ -85,8 +85,13 @@ public class BitmapWave extends Stacking implements BitmapMatrixView.BitmapPaint
     }
 
     public void updateLive() {
-        this.end = buffer._bufEnd;
-        this.start = this.end - buffer.capacity();
+        updateLive(Integer.MAX_VALUE);
+    }
+
+    public void updateLive(int lastSamples) {
+        lastSamples = Math.min(buffer.capacity()-1, lastSamples);
+        this.end = buffer.bufEnd;
+        this.start = (this.end - lastSamples);
         update = true;
     }
 

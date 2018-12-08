@@ -158,7 +158,7 @@ public enum Util {
     public static int hash(byte[] bytes, int from, int to) {
         //return hashBytes(bytes, from, to);
         //return hashFNV(bytes, from, to);
-        long hash = _hashFn.hashBytes(bytes, from, to-from);
+        long hash = _hashFn.hashBytes(bytes, from, to - from);
         return Long.hashCode(hash);
     }
 
@@ -444,7 +444,7 @@ public enum Util {
     }
 
     public static int hashCombine(int a, long b) {
-        return Util.hashCombine(a, (int)b, (int) (b >> 32));
+        return Util.hashCombine(a, (int) b, (int) (b >> 32));
     }
 
     public static int hashCombine(int a, long[] b) {
@@ -482,15 +482,23 @@ public enum Util {
 
     }
 
-    /** custom designed to preserve some alpha numeric natural ordering */
+    /**
+     * custom designed to preserve some alpha numeric natural ordering
+     */
     public static int hashByteString(byte[] str) {
         switch (str.length) {
-            case 0: return 0;
-            case 1: return str[0];
-            case 2: return str[0] << 8 | str[1];
-            case 3: return str[0] << 16 | str[1] << 8 | str[2];
-            case 4: return str[0] << 24 | str[1] << 16 | str[2] << 8 | str[3];
-            default: return Long.hashCode(hashELF(str, 0));
+            case 0:
+                return 0;
+            case 1:
+                return str[0];
+            case 2:
+                return str[0] << 8 | str[1];
+            case 3:
+                return str[0] << 16 | str[1] << 8 | str[2];
+            case 4:
+                return str[0] << 24 | str[1] << 16 | str[2] << 8 | str[3];
+            default:
+                return Long.hashCode(hashELF(str, 0));
         }
 
     }
@@ -599,7 +607,9 @@ public enum Util {
                 clampSafe(x, 0, 1);
     }
 
-    /** no checking of x */
+    /**
+     * no checking of x
+     */
     public static float lerpSafe(float x, float min, float max) {
         return min + (max - min) * x;
     }
@@ -624,6 +634,7 @@ public enum Util {
     public static float mean(float a, float b) {
         return (a + b) / 2;
     }
+
     public static long mean(long a, long b) {
         return (a + b) / 2;
     }
@@ -640,7 +651,7 @@ public enum Util {
     public static double mean(double... d) {
         double result = 0.0;
 
-        for( double val : d )
+        for (double val : d)
             result += val;
 
         return result / d.length;
@@ -676,25 +687,25 @@ public enum Util {
     @Contract("_ -> param1")
     public static float assertFinite(float x) throws NumberException {
         if (!Float.isFinite(x))
-            throw new NumberException("non-finite",x);
+            throw new NumberException("non-finite", x);
         return x;
     }
 
     public static double assertFinite(double x) throws NumberException {
         if (!Double.isFinite(x))
-            throw new NumberException("non-finite",x);
+            throw new NumberException("non-finite", x);
         return x;
     }
 
     public static float notNaN(float x) throws NumberException {
         if (x != x)
-            throw new NumberException("NaN",x);
+            throw new NumberException("NaN", x);
         return x;
     }
 
     public static double notNaN(double x) throws NumberException {
         if (x != x)
-            throw new NumberException("NaN",x);
+            throw new NumberException("NaN", x);
         return x;
     }
 
@@ -735,7 +746,7 @@ public enum Util {
     public static int round(int x, int dither) {
 
         //return dither * Math.round(((float) x) / dither);
-        return (int)round((long)x, dither);
+        return (int) round((long) x, dither);
     }
 
     public static long round(long x, int dither) {
@@ -834,7 +845,7 @@ public enum Util {
 
     public static int bin(float x, int bins) {
         //return (int) (x  * bins);
-        return Math.round( x * (bins - 1) );
+        return Math.round(x * (bins - 1));
 
         //return (int) ((x + 0.5f) * bins);
         //        return (int) Math.floor((x + (0.5 / bins)) * bins);
@@ -1009,6 +1020,12 @@ public enum Util {
         }
 
         return output;
+    }
+
+
+    public static float[] normalize(float[] x) {
+        float[] minmax = minmax(x);
+        return normalize(x, minmax[0], minmax[1]);
     }
 
     public static float[] normalize(float[] x, float min, float max) {
@@ -1286,6 +1303,7 @@ public enum Util {
             y += f;
         return y;
     }
+
     public static double max(double... x) {
         double y = Double.NEGATIVE_INFINITY;
         for (double f : x) {
@@ -1294,6 +1312,7 @@ public enum Util {
         }
         return y;
     }
+
     public static float max(float... x) {
         float y = Float.NEGATIVE_INFINITY;
         for (float f : x) {
@@ -1302,6 +1321,7 @@ public enum Util {
         }
         return y;
     }
+
     public static double min(double... x) {
         double y = Double.POSITIVE_INFINITY;
         for (double f : x) {
@@ -1310,6 +1330,7 @@ public enum Util {
         }
         return y;
     }
+
     public static float min(float... x) {
         float y = Float.POSITIVE_INFINITY;
         for (float f : x) {
@@ -1545,6 +1566,7 @@ public enum Util {
     public static int sqr(int x) {
         return x * x;
     }
+
     public static int cube(int x) {
         return x * x * x;
     }
@@ -1588,7 +1610,7 @@ public enum Util {
      * see: https:
      */
     public static void pauseNextIterative(int previousContiguousPauses) {
-        if (previousContiguousPauses <512) {
+        if (previousContiguousPauses < 512) {
             onSpinWait();
         } else if (previousContiguousPauses < 1024) {
 
@@ -1658,7 +1680,9 @@ public enum Util {
     }
 
 
-    /** modified from guava: */
+    /**
+     * modified from guava:
+     */
     public static void sleep(long sleepFor, TimeUnit unit) {
         sleepNS(unit.toNanos(sleepFor));
     }
@@ -1670,12 +1694,12 @@ public enum Util {
     public static void sleepNS(long remainingNanos, long thresholdNS) {
         //try {
 
-            long end = System.nanoTime() + remainingNanos;
-            while (remainingNanos > thresholdNS) {
+        long end = System.nanoTime() + remainingNanos;
+        while (remainingNanos > thresholdNS) {
 //                if (remainingNanos < 10 * 1000) {
 //                    Thread.onSpinWait();
 //                } else if (remainingNanos < 2 * 1000 * 1000 /* 2ms */) {
-                    LockSupport.parkNanos(remainingNanos);
+            LockSupport.parkNanos(remainingNanos);
 //                } else {
 //
 //                    try {
@@ -1688,8 +1712,8 @@ public enum Util {
 //                    }
 //                }
 
-                remainingNanos = end - System.nanoTime();
-            }
+            remainingNanos = end - System.nanoTime();
+        }
 //        } finally {
 //            if (interrupted) {
 //                Thread.currentThread().interrupt();
@@ -2405,6 +2429,7 @@ public enum Util {
             assertUnitized(x);
         }
     }
+
     public static float assertUnitized(float x) {
         if (!Float.isFinite(x) || x < 0 || x > 1)
             throw new UnsupportedOperationException("non-unitized value: " + x);
@@ -2458,7 +2483,6 @@ public enum Util {
     public static FasterList<Class<?>> typesOf(Object[] orgs, int from, int to) {
         return new FasterList<>(typesOfArray(orgs, from, to));
     }
-
 
 
     /**
@@ -2542,10 +2566,13 @@ public enum Util {
     }
 
     public static <X> IntSet intSet(ToIntFunction<X> f, X... items) {
-        switch(items.length) {
-            case 0: return IntSets.immutable.empty();
-            case 1: return IntSets.immutable.of(f.applyAsInt(items[0]));
-            case 2: return IntSets.immutable.of(f.applyAsInt(items[0]), f.applyAsInt(items[1]));
+        switch (items.length) {
+            case 0:
+                return IntSets.immutable.empty();
+            case 1:
+                return IntSets.immutable.of(f.applyAsInt(items[0]));
+            case 2:
+                return IntSets.immutable.of(f.applyAsInt(items[0]), f.applyAsInt(items[1]));
             //...
             default:
                 IntHashSet i = new IntHashSet(items.length);
@@ -2561,4 +2588,33 @@ public enum Util {
         return p != null ? Integer.parseInt(p) : defaultValue;
     }
 
+    public static float interpSum(float[] data, float sStart, float sEnd) {
+        return interpSum(data, sStart, sEnd, false);
+    }
+
+    public static float interpSum(float[] data, float sStart, float sEnd, boolean wrap) {
+        int iStart = (int) Math.ceil(sStart);
+        int iEnd = (int) Math.floor(sEnd);
+
+        float sum = 0;
+        int i = iStart - 1;
+
+        if (i < 0) {
+            if (wrap)
+                while (i < 0) i += data.length;
+            else
+                i = 0;
+        }
+
+        sum += iStart > 0 ? (iStart - sStart) * data[i++] : 0;
+
+        for (int k = iStart; k < iEnd; k++) {
+            if (i == data.length) i = 0;
+            sum += data[i++];
+        }
+
+        if (i == data.length) i = 0;
+        sum += (sEnd - iEnd) * data[i];
+        return sum;
+    }
 }

@@ -636,9 +636,10 @@ public enum Draw {
         float[] f = new float[4];
         hsb(f, hue, saturation, brightness, a);
         gl.glColor4fv(f, 0);
+
     }
 
-    private static int hsb(float hue, float saturation, float brightness) {
+    public static int hsb(float hue, float saturation, float brightness) {
         float[] f = new float[4];
         hsb(f, hue, saturation, brightness, 1);
         return rgbInt(f[0], f[1], f[2]);
@@ -697,6 +698,99 @@ public enum Draw {
         return target;
     }
 
+
+    public static int colorHSB(float hue, float saturation, float brightness) {
+
+        float r, g, b;
+        if (saturation < Float.MIN_NORMAL) {
+            r = g = b = (int) (brightness * 255.0f + 0.5f);
+        } else if (brightness < Float.MIN_NORMAL) {
+            return 0;
+        } else {
+            float h = (hue - (float) Math.floor(hue)) * 6.0f;
+            float f = h - (float) Math.floor(h);
+            float p = brightness * (1.0f - saturation);
+            float q = brightness * (1.0f - saturation * f);
+            float t = brightness * (1.0f - (saturation * (1.0f - f)));
+            switch ((int) h) {
+                case 0:
+                    r = (brightness);
+                    g = (t);
+                    b = (p);
+                    break;
+                case 1:
+                    r = (q);
+                    g = (brightness);
+                    b = (p);
+                    break;
+                case 2:
+                    r = (p);
+                    g = (brightness);
+                    b = (t);
+                    break;
+                case 3:
+                    r = (p);
+                    g = (q);
+                    b = (brightness);
+                    break;
+                case 4:
+                    r = (t);
+                    g = (p);
+                    b = (brightness);
+                    break;
+                case 5:
+                    r = (brightness);
+                    g = (p);
+                    b = (q);
+                    break;
+                default:
+                    return 0; //should not happen
+            }
+        }
+        return rgbInt(r, g, b);
+    }
+    /**
+     * Converts an HSL color value to RGB. Conversion formula
+     * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+     * Assumes h, s, and l are contained in the set [0, 1] and
+     * returns r, g, and b in the set [0, 255].
+     *
+     * @param h       The hue
+     * @param s       The saturation
+     * @param l       The lightness
+     * @return int array, the RGB representation
+     */
+    public static int colorHSL(float h, float s, float l){
+        float r, g, b;
+
+        if (s == 0f) {
+            r = g = b = l; // achromatic
+        } else {
+            float q = l < 0.5f ? l * (1 + s) : l + s - l * s;
+            float p = 2 * l - q;
+            r = hueToRgb(p, q, h + 1f/3f);
+            g = hueToRgb(p, q, h);
+            b = hueToRgb(p, q, h - 1f/3f);
+        }
+        return rgbInt(r, g, b);
+//        int[] rgb = {(int) (r * 255), (int) (g * 255), (int) (b * 255)};
+//        return rgb;
+    }
+
+    /** Helper method that converts hue to rgb */
+    static float hueToRgb(float p, float q, float t) {
+        if (t < 0f)
+            t += 1f;
+        if (t > 1f)
+            t -= 1f;
+        if (t < 1f/6f)
+            return p + (q - p) * 6f * t;
+        if (t < 1f/2f)
+            return q;
+        if (t < 2f/3f)
+            return p + (q - p) * (2f/3f - t) * 6f;
+        return p;
+    }
     /**
      * uses the built-in color scheme for displaying values in the range -1..+1
      */
@@ -719,7 +813,6 @@ public enum Draw {
     }
 
     public static int colorBipolar(float v) {
-
 
         float r, g, b;
         if (v != v) {

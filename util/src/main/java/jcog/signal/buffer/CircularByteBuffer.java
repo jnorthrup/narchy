@@ -76,10 +76,10 @@ public class CircularByteBuffer extends CircularBuffer {
                 throw new IOException("Stream was closed");
             if(isEOS)
                 return -1;
-            _lock.lock();
+            lock.lock();
             try {
-                if (_wasMarked) {
-                    _wasMarked = false;
+                if (wasMarked) {
+                    wasMarked = false;
                     isEOS = true;
                     return -1;
                 }
@@ -88,7 +88,7 @@ public class CircularByteBuffer extends CircularBuffer {
                     return -1;
                 return singleByteBuf[0] & 0x000000FF;
             } finally {
-                _lock.unlock();
+                lock.unlock();
             }
         }
 
@@ -99,10 +99,10 @@ public class CircularByteBuffer extends CircularBuffer {
                 throw new IOException("Stream was closed");
             if(isEOS)
                 return -1;
-            _lock.lock();
+            lock.lock();
             try {
-                if (_wasMarked) {
-                    _wasMarked = false;
+                if (wasMarked) {
+                    wasMarked = false;
                     isEOS = true;
                     return -1;
                 }
@@ -112,18 +112,18 @@ public class CircularByteBuffer extends CircularBuffer {
                 }
                 return result;
             } finally {
-                _lock.unlock();
+                lock.unlock();
             }
         }
 
         @Override
         public void close() throws IOException {
             isClosed = true;
-            _lock.lock();
+            lock.lock();
             try {
-                _wasMarked = false;
+                wasMarked = false;
             } finally {
-                _lock.unlock();
+                lock.unlock();
             }
             super.close();
         }
@@ -157,43 +157,43 @@ public class CircularByteBuffer extends CircularBuffer {
 
     public int write(byte[] data, int offset, int length, boolean blocking) {
         int len = length;
-        _lock.lock();
+        lock.lock();
         try {
             if (length > 0) {
-                int emptySize = _circBuffer.length - _bufferSize.get();
+                int emptySize = _circBuffer.length - bufferSize.get();
                 while (blocking && emptySize < length) {
                     try {
-                        _writeCondition.await();
+                        writCond.await();
                     } catch (InterruptedException e) {
                         return -1;
                     }
-                    emptySize = _circBuffer.length - _bufferSize.get();
+                    emptySize = _circBuffer.length - bufferSize.get();
                 }
                 if (emptySize > 0) {
                     if (len > emptySize)
                         len = emptySize;
 
-                    int tmpIdx = _bufEnd + len;
+                    int tmpIdx = bufEnd + len;
                     int tmpLen;
                     if (tmpIdx > _circBuffer.length) {
-                        tmpLen = _circBuffer.length - _bufEnd;
-                        System.arraycopy(data, offset, _circBuffer, _bufEnd, tmpLen);
-                        _bufEnd = (tmpIdx) % _circBuffer.length;
-                        System.arraycopy(data, tmpLen + offset, _circBuffer, 0, _bufEnd);
+                        tmpLen = _circBuffer.length - bufEnd;
+                        System.arraycopy(data, offset, _circBuffer, bufEnd, tmpLen);
+                        bufEnd = (tmpIdx) % _circBuffer.length;
+                        System.arraycopy(data, tmpLen + offset, _circBuffer, 0, bufEnd);
                     } else {
-                        System.arraycopy(data, offset, _circBuffer, _bufEnd, len);
-                        _bufEnd = (tmpIdx) % _circBuffer.length;
+                        System.arraycopy(data, offset, _circBuffer, bufEnd, len);
+                        bufEnd = (tmpIdx) % _circBuffer.length;
                     }
-                    _bufferSize.addAndGet(len);
+                    bufferSize.addAndGet(len);
                     return len;
                 }
             }
             return 0;
         } finally {
-            _readCondition.signalAll();
-            _lock.unlock();
-            if (_threadPool != null)
-                _threadPool.submit(_notifyListener);
+            readCond.signalAll();
+            lock.unlock();
+            if (threadPool != null)
+                threadPool.submit(_notifyListener);
         }
     }
 
@@ -206,42 +206,42 @@ public class CircularByteBuffer extends CircularBuffer {
      */
     public int peek(byte[] data, int length) {
         int len = length;
-        _lock.lock();
+        lock.lock();
         try {
-            int remSize = _bufferSize.get() - _currOffset.get();
+            int remSize = bufferSize.get() - currOffset.get();
             if (length > 0 && remSize > 0) {
                 if (len > remSize)
                     len = remSize;
-                int tmpIdx = _viewPtr + len;
+                int tmpIdx = viewPtr + len;
                 int tmpLen;
                 if (tmpIdx > _circBuffer.length) {
-                    tmpLen = _circBuffer.length - _viewPtr;
-                    System.arraycopy(_circBuffer, _viewPtr, data, 0, tmpLen);
-                    _viewPtr = (tmpIdx) % _circBuffer.length;
-                    System.arraycopy(_circBuffer, 0, data, tmpLen, _viewPtr);
+                    tmpLen = _circBuffer.length - viewPtr;
+                    System.arraycopy(_circBuffer, viewPtr, data, 0, tmpLen);
+                    viewPtr = (tmpIdx) % _circBuffer.length;
+                    System.arraycopy(_circBuffer, 0, data, tmpLen, viewPtr);
                 } else {
-                    System.arraycopy(_circBuffer, _viewPtr, data, 0, len);
-                    _viewPtr = (tmpIdx) % _circBuffer.length;
+                    System.arraycopy(_circBuffer, viewPtr, data, 0, len);
+                    viewPtr = (tmpIdx) % _circBuffer.length;
                 }
-                _currOffset.addAndGet(len);
+                currOffset.addAndGet(len);
                 return len;
             }
             return 0;
         } finally {
-            _lock.unlock();
+            lock.unlock();
         }
     }
 
     public int readFully(byte[] data, int offset, int length) {
-        _lock.lock();
+        lock.lock();
         try {
             if (length > 0) {
-                int minSize = _minSize < 0 ? 0 : _minSize;
-                while (_bufferSize.get() - minSize < length) {
+                int minSize = this.minSize < 0 ? 0 : this.minSize;
+                while (bufferSize.get() - minSize < length) {
                     try {
-                        _readCondition.await();
+                        readCond.await();
                     } catch (InterruptedException e) {
-                        _wasMarked = false;
+                        wasMarked = false;
                         return -1;
                     }
                 }
@@ -249,8 +249,8 @@ public class CircularByteBuffer extends CircularBuffer {
             }
             return 0;
         } finally {
-            _writeCondition.signalAll();
-            _lock.unlock();
+            writCond.signalAll();
+            lock.unlock();
         }
     }
 
@@ -260,59 +260,59 @@ public class CircularByteBuffer extends CircularBuffer {
 
     public int read(byte[] data, int offset, int length, boolean blocking) {
         int len = length;
-        _lock.lock();
+        lock.lock();
         try {
-            _wasMarked = false;
+            wasMarked = false;
             if (length > 0) {
-                while (blocking && _minSize > -1 && _bufferSize.get() <= _minSize) {
+                while (blocking && minSize > -1 && bufferSize.get() <= minSize) {
                     try {
-                        _readCondition.await();
+                        readCond.await();
                     } catch (InterruptedException e) {
                         return -1;
                     }
                 }
-                int minSize = _minSize < 0 ? 0 : _minSize;
-                if (_bufferSize.get() > 0) {
-                    if (len > _bufferSize.get() - minSize)
-                        len = _bufferSize.get() - minSize;
+                int minSize = this.minSize < 0 ? 0 : this.minSize;
+                if (bufferSize.get() > 0) {
+                    if (len > bufferSize.get() - minSize)
+                        len = bufferSize.get() - minSize;
                     int tmpLen;
-                    CircularBuffer.BufMark m = _marks.peek();
+                    CircularBuffer.BufMark m = marks.peek();
                     if (m != null) {
                         tmpLen = calcMarkSize(m);
                         if (tmpLen <= len) {
-                            _marks.poll();
+                            marks.poll();
                             len = tmpLen;
-                            _wasMarked = true;
+                            wasMarked = true;
                         }
                     }
                     if (len > 0) {
-                        int tmpIdx = _bufStart + len;
+                        int tmpIdx = bufStart + len;
                         if (tmpIdx > _circBuffer.length) {
-                            tmpLen = _circBuffer.length - _bufStart;
-                            System.arraycopy(_circBuffer, _bufStart, data, offset, tmpLen);
-                            _bufStart = (tmpIdx) % _circBuffer.length;
-                            System.arraycopy(_circBuffer, 0, data, offset + tmpLen, _bufStart);
+                            tmpLen = _circBuffer.length - bufStart;
+                            System.arraycopy(_circBuffer, bufStart, data, offset, tmpLen);
+                            bufStart = (tmpIdx) % _circBuffer.length;
+                            System.arraycopy(_circBuffer, 0, data, offset + tmpLen, bufStart);
                         } else {
-                            System.arraycopy(_circBuffer, _bufStart, data, offset, len);
-                            _bufStart = (tmpIdx) % _circBuffer.length;
+                            System.arraycopy(_circBuffer, bufStart, data, offset, len);
+                            bufStart = (tmpIdx) % _circBuffer.length;
                         }
-                        if (tmpIdx < _viewPtr)
-                            _currOffset.set(_viewPtr - _bufStart);
+                        if (tmpIdx < viewPtr)
+                            currOffset.set(viewPtr - bufStart);
                         else {
-                            _viewPtr = _bufStart;
-                            _currOffset.set(0);
+                            viewPtr = bufStart;
+                            currOffset.set(0);
                         }
-                        _bufferSize.addAndGet(-len);
+                        bufferSize.addAndGet(-len);
                     }
                     return len;
                 }
             }
             return 0;
         } finally {
-            _writeCondition.signalAll();
-            _lock.unlock();
-            if (_threadPool != null)
-                _threadPool.submit(_notifyListener);
+            writCond.signalAll();
+            lock.unlock();
+            if (threadPool != null)
+                threadPool.submit(_notifyListener);
         }
     }
 }

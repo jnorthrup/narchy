@@ -1,6 +1,7 @@
 package spacegraph.audio;
 
 import jcog.event.Off;
+import jcog.signal.buffer.CircularFloatBuffer;
 import jcog.signal.wave1d.Spectrogram;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
@@ -31,7 +32,7 @@ public class AudioBufferView extends Gridding {
                     private final Off off;
 
                     {
-                        this.off = a.frame.on(this::update);
+                        this.off = a.frame.on((Runnable)this::updateLive);
                     }
 
                     @Override
@@ -43,13 +44,13 @@ public class AudioBufferView extends Gridding {
                         return false;
                     }
 
-                    @Override
-                    public void update() {
-                        long width = vis.end - vis.start;
-                        vis.end = a.buffer._viewPtr; //getPeekPosition();
-                        vis.start = Math.max(0, vis.end - (width));
-                        super.update();
-                    }
+//                    /** TODO use updateLive */
+//                    @Override public void update() {
+//                        long width = vis.end - vis.start;
+//                        vis.end = a.buffer.viewPtr; //getPeekPosition();
+//                        vis.start = a.buffer.idx((int) (vis.end - (width)));
+//                        super.update();
+//                    }
 
 
                 },
@@ -64,7 +65,9 @@ public class AudioBufferView extends Gridding {
 
     public static Surface spectrogram(AudioBuffer capture, float sampleTime, int fftSize, int history) {
 
-        Spectrogram s = new Spectrogram(capture.buffer,
+        CircularFloatBuffer buffer = capture.buffer;
+
+        Spectrogram s = new Spectrogram(buffer,
                 sampleTime,
                 capture.source().samplesPerSecond(), fftSize, history);
 
@@ -74,9 +77,11 @@ public class AudioBufferView extends Gridding {
             float v =
                     s.freq.get(x, y);
             //t.data[y * stride + x];
-            return Draw.colorBipolar(v);
+            //return Draw.colorBipolar(v);
+            //v = unitize(v);
+            return Draw.colorHSB(0.3f * (1-v),0.9f,v);
         });
-        bmp.bmp.mipmap(true);
+        //bmp.bmp.mipmap(true);
 
         return new Gridding(bmp) {
 

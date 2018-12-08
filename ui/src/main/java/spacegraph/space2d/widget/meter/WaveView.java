@@ -27,7 +27,7 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
     final static float PAN_SPEED = 1/100f;
 
     private final float[] wave;
-    protected final BitmapWave vis;
+    protected final WaveBitmap vis;
 
     public WaveView(CircularFloatBuffer wave, int pixWidth, int pixHeight) {
         //int totalSamples = wave.capacity(); //int) Math.ceil(seconds * capture.source.samplesPerSecond());
@@ -35,7 +35,7 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
         this.wave = null; ///capture.buffer.peekLast(new float[totalSamples]);
 
 
-        vis = new BitmapWave(pixWidth, pixHeight, wave);
+        vis = new WaveBitmap(pixWidth, pixHeight, wave);
         set(vis);
     }
     @Deprecated public WaveView(AudioBuffer capture, float seconds, int pixWidth, int pixHeight) {
@@ -46,7 +46,7 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
         this.wave = capture.buffer.peekLast(new float[totalSamples]);
 
 
-        vis = new BitmapWave(pixWidth, pixHeight, new CircularFloatBuffer(wave));
+        vis = new WaveBitmap(pixWidth, pixHeight, new CircularFloatBuffer(wave));
         set(vis);
     }
 
@@ -150,5 +150,8 @@ public class WaveView extends Widget implements MetaFrame.Menu, Finger.WheelAbso
 
     public void updateLive() {
         vis.updateLive();
+    }
+    public void updateLive(int samples) {
+        vis.updateLive(samples);
     }
 }
