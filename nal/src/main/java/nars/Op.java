@@ -11,7 +11,6 @@ import nars.term.anon.Anom;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.compound.CachedCompound;
 import nars.term.util.Conj;
 import nars.term.util.SetSectDiff;
 import nars.term.util.TermException;
@@ -297,7 +296,7 @@ public enum Op {
 
     public static final Term[] EmptyTermArray = new Term[0];
     public static final Subterms EmptySubterms = new ArrayTermVector(EmptyTermArray);
-    public static final Term EmptyProduct = new CachedCompound.SimpleCachedCompoundWithBytes(Op.PROD, EmptySubterms);
+    public static final Term EmptyProduct = TermBuilder.newCompound(Op.PROD, EmptySubterms);
     public static final int[] NALLevelEqualAndAbove = new int[8 + 1];
 
 

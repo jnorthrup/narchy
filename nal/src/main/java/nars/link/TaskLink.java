@@ -28,8 +28,11 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
     Term term();
     byte punc();
 
-    /** main tasklink constructor */
-    static TaskLink tasklink(Task task, float pri, NAR n) {
+    /** main tasklink constructor
+     * @param generify  if the task's term contains temporal information, discarding this coalesces the link with other similar tasklinks (weaker, more generic).
+     *                   otherwise a unique tasklink is created
+     * */
+    static TaskLink tasklink(Task task, boolean generify, float pri, NAR n) {
 
         //assert(task.term().volume() < n.termVolumeMax.intValue());
 
@@ -38,7 +41,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 //            return new DirectTaskLink(task, pri);
 //        } else {
 
-        return new GeneralTaskLink(Tasklike.seed(task, n), pri);
+        return new GeneralTaskLink(Tasklike.seed(task, generify, n), pri);
         //}
     }
 

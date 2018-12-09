@@ -3,6 +3,7 @@ package nars.term.util.transform;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.compound.CachedCompound;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
 
@@ -18,7 +19,7 @@ public abstract class DirectTermTransform extends TermTransform.NegObliviousTerm
 
     @Override
     public Term the(Op op, int dt, Subterms t) {
-        return TermBuilder.newCompound(op, dt, t);
+        return CachedCompound.newCompound(op, dt, t);
     }
 
 //    class CachedDirectTermTransform implements DirectTermTransform {

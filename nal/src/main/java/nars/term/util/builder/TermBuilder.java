@@ -151,27 +151,12 @@ public abstract class TermBuilder {
                     ((Subterms.SubtermsBytesCached) subs).acceptBytes(key);
         }
 
-        return newCompound(o, dt, subs);
+        return CachedCompound.newCompound(o, dt, subs);
     }
 
 
     public static Compound newCompound(Op op, Subterms subterms) {
-        return newCompound(op, DTERNAL, subterms);
-    }
-
-    public static Compound newCompound(Op op, int dt, Subterms subterms) {
-//        if (subterms instanceof DisposableTermList)
-//            throw new WTF();
-        if (!op.temporal && !subterms.hasAny(Op.Temporal) && subterms.isNormalized()) {
-            assert (dt == DTERNAL);
-//            if (key!=null && subterms.volume() < Param.TERM_BYTE_KEY_CACHED_BELOW_VOLUME) {
-//                return new CachedCompound.SimpleCachedCompoundWithBytes(op, subterms, key);
-//            } else {
-            return new CachedCompound.SimpleCachedCompound(op, subterms);
-//            }
-        } else {
-            return new CachedCompound.TemporalCachedCompound(op, dt, subterms);
-        }
+        return CachedCompound.newCompound(op, DTERNAL, subterms);
     }
 
 

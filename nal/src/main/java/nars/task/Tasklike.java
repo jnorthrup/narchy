@@ -3,7 +3,6 @@ package nars.task;
 import jcog.Util;
 import jcog.pri.Prioritizable;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.task.signal.SignalTask;
@@ -51,13 +50,13 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
         return new Tasklike(t, punc, when);
     }
 
-    public static Tasklike seed(Task t, NAR n) {
+    public static Tasklike seed(Task t, boolean conceptRoot, NAR n) {
 
         long when = t.isEternal() ? ETERNAL : Tense.dither(
                 t instanceof SignalTask ? t.start() /* in case its end stretches */ : t.mid()
                 , n);
 
-        Term u = Param.TASKLINK_CONCEPT_TERM ? t.term().concept() : t.term();
+        Term u = conceptRoot ? t.term().concept() : t.term();
 
 
 

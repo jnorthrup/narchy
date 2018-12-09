@@ -1,9 +1,6 @@
 package nars.term.compound;
 
-import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
-import jcog.data.byt.DynBytes;
-import nars.IO;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
@@ -11,9 +8,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-
-import static nars.Op.NEG;
 import static nars.time.Tense.DTERNAL;
 
 
@@ -38,9 +32,24 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
     private final short _volume;
     private final int _structure;
 
-    public static class SimpleCachedCompound extends CachedCompound {
+    public static Compound newCompound(Op op, int dt, Subterms subterms) {
+//        if (subterms instanceof DisposableTermList)
+//            throw new WTF();
+        if (!op.temporal && !subterms.hasAny(Op.Temporal) && subterms.isNormalized()) {
+            assert (dt == DTERNAL);
+//            if (key!=null && subterms.volume() < Param.TERM_BYTE_KEY_CACHED_BELOW_VOLUME) {
+//                return new CachedCompound.SimpleCachedCompoundWithBytes(op, subterms, key);
+//            } else {
+            return new SimpleCachedCompound(op, subterms);
+//            }
+        } else {
+            return new TemporalCachedCompound(op, dt, subterms);
+        }
+    }
 
-        public SimpleCachedCompound(Op op, Subterms subterms) {
+    private static class SimpleCachedCompound extends CachedCompound {
+
+        SimpleCachedCompound(Op op, Subterms subterms) {
             super(op, DTERNAL, subterms);
         }
 
@@ -77,42 +86,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
     }
 
-    public static final class SimpleCachedCompoundWithBytes extends SimpleCachedCompound {
 
-        final byte[] key;
-
-        public SimpleCachedCompoundWithBytes(Op op, Subterms subterms) {
-            this(op, subterms, null);
-        }
-
-        public SimpleCachedCompoundWithBytes(Op op, Subterms subterms, @Nullable byte[] knownKey) {
-            super(op, subterms);
-
-            if (knownKey == null) {
-                DynBytes d = new DynBytes(IO.termBytesEstimate(subterms) + 1);
-                super.appendTo((ByteArrayDataOutput) d);
-                key = d.arrayCompactDirect();
-            } else {
-                key = knownKey;
-            }
-        }
-
-        @Override
-        public boolean equals(Object that) {
-            if (this == that) return true;
-            if (that instanceof SimpleCachedCompoundWithBytes) {
-                SimpleCachedCompoundWithBytes tha = ((SimpleCachedCompoundWithBytes) that);
-                return hash == tha.hash && Arrays.equals(key, tha.key);
-            } else {
-                return Compound.equals(this, that);
-            }
-        }
-
-        @Override
-        public void appendTo(ByteArrayDataOutput out) {
-            out.write(key);
-        }
-    }
 
 
     /**
@@ -151,17 +125,13 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
     private CachedCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
 
-        assert (op != NEG) : "can not construct " + CachedCompound.class + " for NEG: dt=" + dt + ", subs=" + subterms;
-
         int h = (this.subterms = subterms).hashWith(this.op = op.id);
         this.hash = (dt == DTERNAL) ? h : Util.hashCombine(h, dt);
 
 
         this._structure = subterms.structure() | op.bit;
 
-        int _volume = subterms.volume();
-        assert (_volume < Short.MAX_VALUE - 1);
-        this._volume = (short) _volume;
+        this._volume = (short) subterms.volume();
     }
 
 

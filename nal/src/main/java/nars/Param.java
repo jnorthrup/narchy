@@ -74,7 +74,7 @@ public abstract class Param {
      *
      *  seems to enable more temporal precision at the cost of more links.
      */
-    public static final boolean TASKLINK_CONCEPT_TERM = false;
+    public static final boolean TASKLINK_CONCEPT_TERM = true;
 
     /** can produce varieties of terms with dt below the dithered threshold time */
     public static final boolean ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS = false;

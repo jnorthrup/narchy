@@ -165,10 +165,10 @@ abstract public class Inperience extends TaskLeakTransform {
         protected Term reify(Task t) {
             Term tt = t.term().eval(nar);
 
-            if (!tt.op().conceptualizable)
+            if (!tt.op().taskable)
                 return Bool.Null;
 
-            return reifyBeliefOrGoal(t, tt.negIf(t.isNegative()), nar);
+            return reifyBeliefOrGoal(t, tt, nar);
         }
 
         @Deprecated protected Term reifyBeliefOrGoal(Task t, Term tt, NAR nar) {
@@ -179,16 +179,19 @@ abstract public class Inperience extends TaskLeakTransform {
             Term self = nar.self();
 
             if (t.punc() == BELIEF) {
-                Task belief = c.table(BELIEF)
-                        .answer(t.start(), t.end(), tt.unneg(), null, nar);
+                Task belief =
+                        t;
+                        //c.table(BELIEF).answer(t.start(), t.end(), tt, null, nar);
 
-                Term bb = belief != null ? Described.transform(belief.term().negIf(belief.isNegative())) : Described.transform(tt);
+                Term bb = //belief != null ? Described.transform(belief.term().negIf(belief.isNegative())) :
+                        Described.transform(tt);
                 return $.funcImageLast(believe, self, bb);
             } else {
-                Task goal = c.table(GOAL)
-                        .answer(t.start(), t.end(), tt.unneg(), null, nar);
+                Task goal = t;
+                        //c.table(GOAL).answer(t.start(), t.end(), tt.unneg(), null, nar);
 
-                Term gg = goal!=null ? Described.transform(goal.term().negIf(goal.isNegative())) : Described.transform(tt);
+                Term gg = //goal!=null ? Described.transform(goal.term().negIf(goal.isNegative())) :
+                        Described.transform(tt);
                 return $.funcImageLast(want, self, gg);
 
 //                else {

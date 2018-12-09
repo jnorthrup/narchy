@@ -359,7 +359,9 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
                     for (int i = 0; i < n; i++) {
 
                         Task t = taskedLinked.get(i);
-                        TaskLink tt = TaskLink.tasklink(t, 0 /* cloned next */, nar);
+
+                        //contextual compartmentalization: generify=true -> dont spam propagating tasklinks with the temporal specifics
+                        TaskLink tt = TaskLink.tasklink(t, true, 0 /* pri will be set in each clone */, nar);
 
                         link(tt, t.priElseZero() * taskLinkRate, firedConcepts, overflow);
 

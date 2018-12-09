@@ -15,10 +15,11 @@ public interface Termed extends Termlike {
     default int volume() {
         return term().volume();
     }
-    @Override
-    default int complexity() {
-        return term().complexity();
-    }
+
+//    @Override
+//    default int complexity() {
+//        return term().complexity();
+//    }
 
     @Override
     default int structure() {
