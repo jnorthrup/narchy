@@ -77,6 +77,7 @@ public class NALTask extends UnitPri implements Task {
 
     }
 
+
     protected int hashCalculate() {
         return Task.hash(
                 term,

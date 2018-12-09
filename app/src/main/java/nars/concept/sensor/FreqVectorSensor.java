@@ -16,7 +16,7 @@ import static jcog.Util.unitize;
 /** frequency domain representation of a waveform */
 public class FreqVectorSensor extends VectorSensor {
 
-    public final CircularFloatBuffer buf = new CircularFloatBuffer(8*1024);
+    public final CircularFloatBuffer buf;
 
     final int sampleWindow;
 
@@ -32,8 +32,10 @@ public class FreqVectorSensor extends VectorSensor {
     public final FloatRange center, bandwidth;
     private float intensity;
 
-    public FreqVectorSensor(IntFunction<Term> termizer, int fftSize, int components, NAR n) {
+    public FreqVectorSensor(CircularFloatBuffer buf, IntFunction<Term> termizer, int fftSize, int components, NAR n) {
         super(n);
+
+        this.buf = buf;
 
         assert(fftSize >= components*2);
 
@@ -80,21 +82,6 @@ public class FreqVectorSensor extends VectorSensor {
         Util.normalize(componentValue, 0, intensity = Util.max(componentValue));
 
         super.update(last, now, next, nar);
-    }
-
-    public final int writeS16(byte[] sample, int from, int to, float gain) {
-        return buf.writeS16(sample, from, to, gain);
-    }
-
-    public final void write(float[] sample) {
-        buf.write(sample);
-    }
-    public final void write(float sample) {
-        write(new float[] { sample });
-    }
-
-    public float freq(int i) {
-        return unitize(0.5f + freqValue[i]/10f);
     }
 
     @Override

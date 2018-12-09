@@ -157,6 +157,7 @@ public class HijackConceptIndex extends AbstractConceptIndex {
 
     @Override
     public void clear() {
+        super.clear();
         table.clear();
     }
 

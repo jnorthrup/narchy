@@ -2,7 +2,7 @@
 //  When P and then S happened according to an observation, by induction (weak) it may be that alyways after P, usually S happens.
 //      According to reductions: For implications, the predicate may be allowed an implication, but not subject
 
-    B, A, --is(A,"==>"), neq(A,B) |- polarize((polarize(A,belief) ==> B),task), (Belief:InductionDepolarized, Time:BeliefRelative, Also:VarIntro)
+    B, A, --is(A,"==>") |- polarize((polarize(A,belief) ==> B),task), (Belief:InductionDepolarized, Time:BeliefRelative, Also:VarIntro)
         //B, A, --is(A,"==>") |- (--A ==> B), (Belief:InductionPN, Time:BeliefRelative, Also:VarIntro)
 
     B, A, --is(B,"==>"), neq(A,B) |- polarize((polarize(B,task) ==> A),belief), (Belief:AbductionDepolarized, Time:TaskRelative, Also:VarIntro)

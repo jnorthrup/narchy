@@ -43,6 +43,7 @@ public class TemporaryConceptIndex extends AbstractConceptIndex {
 
     @Override
     public void clear() {
+        super.clear();
         permanent.clear();
     }
 

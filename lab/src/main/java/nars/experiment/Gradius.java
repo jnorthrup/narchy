@@ -1,16 +1,19 @@
 package nars.experiment;
 
 import java4k.gradius4k.Gradius4K;
-import jcog.signal.wave2d.BrightnessNormalize;
-import jcog.signal.wave2d.MonoBufImgBitmap2D;
+import jcog.data.list.FasterList;
+import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.concept.sensor.DigitizedScalar;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
-import nars.video.PixelBag;
+import spacegraph.space2d.container.grid.Gridding;
 
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 import static java4k.gradius4k.Gradius4K.*;
 import static nars.agent.FrameTrigger.fps;
 import static spacegraph.SpaceGraph.window;
@@ -50,51 +53,51 @@ public class Gradius extends NAgentX {
 
         assert px % dx == 0 && py % dy == 0;
 
-        {
-            PixelBag retina = new PixelBag(new MonoBufImgBitmap2D(() -> g.image), px, py) {
-                @Override
-                protected float missing() {
-                    return 0;
-                }
-            };
-//            retina.addActions(id,this, false, false, true);
-//            onFrame(()->{
-//               retina.setXRelative(g.player[OBJ_X] / g.getWidth());
-//                retina.setYRelative(g.player[OBJ_Y] / g.getHeight());
-//            });
-            Bitmap2DSensor sensor = new Bitmap2DSensor(id, new BrightnessNormalize(retina), nar);
-            addCamera(sensor);
-            retina.addActions(id, this);
-            window(new VectorSensorView(sensor, this).withControls(), 400, 400);
-        }
-
 //        {
-//            List<Bitmap2DSensor> cams = new FasterList();
-//            for (int i = 0; i < dx; i++)
-//                for (int j = 0; j < dy; j++) {
-//                    int ii = i;
-//                    int jj = j;
-//                    //Term subSection = $.p(id, $.the(ii), $.the(jj));
-//                    Bitmap2DSensor c = senseCamera((x, y) ->
-//                                    $.p(id, $.p($.the(ii), $.the(jj)), $.the(x), $.the(y)),
-//                            //$.p(
-//                            //$.inh(
-////                                        $.p(x, y),
-////                                        subSection
-////                                ),
-//                            new ScaledBitmap2D(() -> g.image, px, py)
-//                                    .crop(
-//                                            (float) i / dx, (float) j / dy,
-//                                            (float) (i + 1) / dx, (float) (j + 1) / dy))
-//                            .resolution(0.04f);
-//
-//                    cams.add(c);
+//            PixelBag retina = new PixelBag(new MonoBufImgBitmap2D(() -> g.image), px, py) {
+//                @Override
+//                protected float missing() {
+//                    return 0;
 //                }
-//
-//            window(new Gridding(
-//                            cams.stream().map(c -> new VectorSensorView(c, this).withControls()).collect(toList())),
-//                    400, 900);
+//            };
+////            retina.addActions(id,this, false, false, true);
+////            onFrame(()->{
+////               retina.setXRelative(g.player[OBJ_X] / g.getWidth());
+////                retina.setYRelative(g.player[OBJ_Y] / g.getHeight());
+////            });
+//            Bitmap2DSensor sensor = new Bitmap2DSensor(id, new BrightnessNormalize(retina), nar);
+//            addCamera(sensor);
+//            retina.addActions(id, this);
+//            window(new VectorSensorView(sensor, this).withControls(), 400, 400);
 //        }
+
+        {
+            List<Bitmap2DSensor> cams = new FasterList();
+            for (int i = 0; i < dx; i++)
+                for (int j = 0; j < dy; j++) {
+                    int ii = i;
+                    int jj = j;
+                    //Term subSection = $.p(id, $.the(ii), $.the(jj));
+                    Bitmap2DSensor c = senseCamera((x, y) ->
+                                    $.p(id, $.p($.the(ii), $.the(jj)), $.the(x), $.the(y)),
+                            //$.p(
+                            //$.inh(
+//                                        $.p(x, y),
+//                                        subSection
+//                                ),
+                            new ScaledBitmap2D(() -> g.image, px, py)
+                                    .crop(
+                                            (float) i / dx, (float) j / dy,
+                                            (float) (i + 1) / dx, (float) (j + 1) / dy))
+                            .resolution(0.04f);
+
+                    cams.add(c);
+                }
+
+            window(new Gridding(
+                            cams.stream().map(c -> new VectorSensorView(c, this).withControls()).collect(toList())),
+                    400, 900);
+        }
 
 
         float width = g.getWidth();

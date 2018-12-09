@@ -120,7 +120,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
         Art.init(graphicsConfiguration);
 
-        image = new BufferedImage(320, 240, BufferedImage.TYPE_4BYTE_ABGR);
+        image = new BufferedImage(320, 240, BufferedImage.TYPE_INT_RGB);
         image.setAccelerationPriority(1f);
         Graphics g = getGraphics();
         Graphics og = image.getGraphics();

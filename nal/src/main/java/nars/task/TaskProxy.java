@@ -32,6 +32,7 @@ public class TaskProxy extends UnitPri implements Task {
             setCyclic(true);
     }
 
+
     protected boolean inheritCyclic() {
         return true;
     }

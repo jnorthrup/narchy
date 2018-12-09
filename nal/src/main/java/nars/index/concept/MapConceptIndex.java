@@ -52,6 +52,7 @@ public class MapConceptIndex extends MaplikeConceptIndex {
 
     @Override
     public void clear() {
+        super.clear();
         concepts.clear();
     }
 

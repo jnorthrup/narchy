@@ -12,6 +12,7 @@ import nars.op.language.NARSpeak;
 import nars.op.stm.ConjClustering;
 import nars.time.clock.RealTime;
 import nars.video.NARVideo;
+import spacegraph.audio.AudioSource;
 import spacegraph.audio.speech.NativeSpeechDispatcher;
 
 import static nars.Op.BELIEF;
@@ -82,7 +83,7 @@ public class NARchy extends NARS {
             }
 
             new NARVideo(nar);
-            new NARAudio(nar, 4f);
+            new NARAudio(nar, new AudioSource(), 4f);
 
 
 

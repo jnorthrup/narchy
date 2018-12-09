@@ -126,6 +126,8 @@ public class Tetris extends NAgentX {
 
         state.reset();
 
+
+
     }
 
     public static void main(String[] args) {
@@ -160,6 +162,7 @@ public class Tetris extends NAgentX {
 
         Opjects oo = new Opjects(nar);
         oo.exeThresh.set(0.51f);
+//        oo.pri.set(ScalarValue.EPSILON);
 
         Opjects.methodExclusions.add("toVector");
 

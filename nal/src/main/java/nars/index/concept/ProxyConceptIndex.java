@@ -28,10 +28,6 @@ public class ProxyConceptIndex extends MaplikeConceptIndex {
         ref.set(src, target);
     }
 
-    @Override
-    public void clear() {
-        
-    }
 
     @Override
     public int size() {

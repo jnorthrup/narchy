@@ -4,12 +4,15 @@ import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
+import jcog.pri.bag.impl.hijack.PriHijackBag;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
+import nars.control.DurService;
 import nars.link.Activate;
 import nars.term.Term;
 import nars.term.Termed;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -49,7 +52,48 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
     public void start(NAR nar) {
         super.start(nar);
 
-        Bag<Term, Activate> arrayBag = new ArrayBag<>(
+
+        active =
+                nar.exe.concurrent() ?
+
+                        arrayBag()
+                        //hijackBag()
+
+                        //new FastPutProxyBag<>(arrayBag,
+                        //      1024)
+
+                        :
+                        arrayBag();
+
+
+        active.setCapacity(activeCapacity.intValue());
+
+
+        //nar.onCycle(this::updateConcepts);
+        DurService.on(nar, (n)->updateConcepts());
+
+    }
+
+    @Override
+    public void clear() {
+        active.clear();
+    }
+
+    @NotNull
+    public PriHijackBag<Term, Activate> hijackBag() {
+        return new PriHijackBag<>(Math.round(activeCapacity.intValue() * 1.5f /* estimate */), 4) {
+
+            @Override
+            public Term key(Activate value) {
+                return value.term();
+            }
+
+
+        };
+    }
+
+    protected Bag<Term, Activate> arrayBag() {
+        return new ArrayBag<>(
                 activeCapacity.intValue(),
                 Param.conceptMerge,
                 new HashMap<>(activeCapacity.intValue() * 2, 0.99f)
@@ -61,35 +105,8 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
             }
 
         };
-        active =
-                nar.exe.concurrent() ?
-//
-//                        new PriHijackBag<>(Math.round(concepts * 1.5f /* estimate */), 4) {
-//
-//                            @Override
-//                            public Term key(Activate value) {
-//                                return value.term();
-//                            }
-//
-//
-//                        }
-
-                        //new FastPutProxyBag<>(arrayBag,
-                        //      1024)
-
-                        arrayBag
-
-                        :
-                        arrayBag;
-
-
-        active.setCapacity(activeCapacity.intValue());
-
-
-        nar.onCycle(this::updateConcepts);
-        //DurService.on(nar, (n)->updateConcepts(active));
-        nar.eventClear.on(this.active::clear);
     }
+
 
 
     private void updateConcepts() {

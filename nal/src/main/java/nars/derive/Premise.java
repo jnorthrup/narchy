@@ -204,12 +204,7 @@ public class Premise implements Comparable<Premise> {
                     beliefFilter() :
                     null;
 
-        //dont dither because this task isnt directly input to the system.  derivations will be dithered at the end
-        //TODO factor in the Task's stamp so it can try to avoid those tasks, thus causing overlap in double premise cases
-        return Answer.relevance(true, Answer.BELIEF_SAMPLE_CAPACITY,
-                focus[0], focus[1], beliefTerm, beliefFilter, nar)
-                .match(bb)
-                .task(false, false, false);
+        return bb.sample(focus[0], focus[1], beliefTerm, beliefFilter, nar);
     }
 
 
@@ -221,8 +216,10 @@ public class Premise implements Comparable<Premise> {
             long qStart = task.start();
             int limit = qStart == ETERNAL ? Answer.TASK_LIMIT_ETERNAL_QUESTION : Answer.TASK_LIMIT_DEFAULT;
             Task match =
-                    Answer.relevance(true, limit, qStart, task.end(), beliefTerm, null /*beliefFilter*/, d.nar)
-                            //.ditherTruth(true)
+                    Answer.relevance(true, limit,
+                            qStart, task.end(),
+                            beliefTerm, null /*beliefFilter*/, d.nar)
+                            .ditherTruth(true)
                             .match(answerTable).task(true, true, true);
 
             if (match != null) {

@@ -239,6 +239,7 @@ public interface NAct {
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
 
         float thresh =
+                //0;
                 sqr(Param.TRUTH_EPSILON);
                 //0.5f;
                 //0.5f + sqr(Param.TRUTH_EPSILON);

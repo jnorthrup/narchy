@@ -84,6 +84,7 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
 
     @Override
     public void clear() {
+        super.clear();
         concepts.invalidateAll();
     }
 

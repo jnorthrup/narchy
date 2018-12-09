@@ -111,6 +111,8 @@ public class Opjects extends DefaultTermizer {
     float doubtFreq = 0.5f;
     float uninvokeFreq = 1f - invokeFreq;
 
+    public final FloatRange pri = new FloatRange(1f, 0f, 1f);
+
     /**
      * cached; updated at most each duration
      */
@@ -212,7 +214,7 @@ public class Opjects extends DefaultTermizer {
         doubtEvi = Util.lerp(doubtEviFactor, cMin, cMax);
         invokeEvi = Util.lerp(invokeEviFactor, cMin, cMax);
         uninvokeEvi = Util.lerp(uninvokeEviFactor, cMin, cMax);
-        invokePri = beliefPri = nar.priDefault(BELIEF);
+        invokePri = beliefPri = pri.floatValue() * nar.priDefault(BELIEF);
 
         probing.forEach(p -> p.update(nar));
     }

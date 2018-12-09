@@ -187,8 +187,8 @@ public class TreeConceptIndex extends AbstractConceptIndex implements Consumer<N
 
     @Override
     public void clear() {
+        super.clear();
         concepts.clear();
-        //throw new UnsupportedOperationException("yet");
     }
 
     @Override

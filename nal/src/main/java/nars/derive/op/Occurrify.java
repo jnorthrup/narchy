@@ -932,61 +932,46 @@ public class Occurrify extends TimeGraph {
         @Nullable
         protected Pair<Term, long[]> immediate(Pair<Term, long[]> p, Derivation d) {
             //if (p != null && (d.taskPunc == GOAL || d.taskPunc == QUEST) && (d.concPunc==QUEST || d.concPunc==GOAL)) {
-            if (p != null && (d.taskPunc == GOAL ) && (d.concPunc==GOAL)) {
-
-                long[] o = p.getTwo();
-                if (o[0] == ETERNAL) {
-                    if (d.occ.validEternal())
-                        return p;
-//                    if (d.taskStart == ETERNAL && (d.concSingle || d.beliefStart == ETERNAL))
-//                        return true; //both task and belief are eternal; keep eternal
-
-//                    throw new UnsupportedOperationException();
+            if (p != null && (d.concPunc==GOAL || d.concPunc == QUEST)) {
+//
+//                long[] o = p.getTwo();
+//                if (o[0] == ETERNAL) {
+//                    if (d.occ.validEternal())
+//                        return p;
+////                    if (d.taskStart == ETERNAL && (d.concSingle || d.beliefStart == ETERNAL))
+////                        return true; //both task and belief are eternal; keep eternal
+//
+////                    throw new UnsupportedOperationException();
 //                long NOW = d.time;
-//                int rad = Math.round(d.dur * Param.GOAL_PROJECT_TO_PRESENT_RADIUS_DURS);
+//                int rad = Math.round(d.dur * 1); //Param.GOAL_PROJECT_TO_PRESENT_RADIUS_DURS);
 //                o[0] = NOW;
 //                o[1] = NOW + rad;
-//                return true;
-                }
+//                return p;
+//                }
 
-                long target =
-                        //d.time;
-                        //d.taskStart != ETERNAL || d.beliefStart == TIMELESS ? d.taskStart : d.beliefStart;
-                        d.taskStart != ETERNAL ? d.taskStart : d.time;
-
-
-                if (o[0] < target) {
-                //if (o[1] < target) {
-
-                    //if (d.concPunc == GOAL /*|| d.concPunc == BELIEF*/) {
-                        //starts and ends before now; entirely past
-                        // shift and project to present, "as-if" past-perfect/subjunctive tense
-
-                        //discount for projection
-                        long deltaT = Math.abs(target - o[0]); //project from end, closer to now if fully in the past
-                        float eStartFactor = Param.evi(1, deltaT, d.dur);
-                        if (!d.concTruthEviMul(eStartFactor, Param.ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION)) {
-                            //return null; //insufficient evidence
-                            return p; //un-shifted
-                        }
-//                    }
-
-//                long durMin = Math.min(o[1] - o[0], d.dur);
-//                long range =
-//                        //o[1] - o[0];
-//                        o[1] > target + durMin ? o[1] - target
-//                                :
-//                                durMin;
-//                o[0] = target;
-//                o[1] = target + range;
-
-                    long range = o[1] - o[0];
-                    //range = o[1] > target ? Math.min(range, o[1] - target) : 0;
-                    o[0] = target;
-                    o[1] = target +
-                            range;
-                            //Math.max(range, d.dur);
-                }
+//                long target =
+//                        //d.time;
+//                        //d.taskStart != ETERNAL || d.beliefStart == TIMELESS ? d.taskStart : d.beliefStart;
+//                        d.taskStart != ETERNAL ? d.taskStart : d.time;
+//
+//
+//                if (o[0] < target) {
+//
+//                        //discount for projection
+//                        long deltaT = Math.abs(target - o[0]); //project from end, closer to now if fully in the past
+//                        float eStartFactor = Param.evi(1, deltaT, d.dur);
+//                        if (!d.concTruthEviMul(eStartFactor, Param.ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION)) {
+//                            //return null; //insufficient evidence
+//                            return p; //un-shifted
+//                        }
+//
+//                    long range = o[1] - o[0];
+//                    //range = o[1] > target ? Math.min(range, o[1] - target) : 0;
+//                    o[0] = target;
+//                    o[1] = target +
+//                            range;
+//                            //Math.max(range, d.dur);
+//                }
             }
             return p;
         }

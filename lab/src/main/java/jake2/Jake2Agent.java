@@ -11,6 +11,7 @@ import jake2.sound.jsound.SND_JAVA;
 import jake2.sys.IN;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
+import jcog.signal.buffer.CircularFloatBuffer;
 import jcog.signal.wave2d.BrightnessNormalize;
 import jcog.signal.wave2d.ImageFlip;
 import jcog.signal.wave2d.ScaledBitmap2D;
@@ -166,7 +167,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
 
         window(grid(rgbView, rgbAE.newChart() /*, depthView, depthAE.newChart()*/), 500, 500);
 
-        hear = new FreqVectorSensor((f)->$.inh($.the(f), "hear"), 512,16, nar);
+        hear = new FreqVectorSensor(new CircularFloatBuffer(8*1024), (f)->$.inh($.the(f), "hear"), 512,16, nar);
         addSensor(hear);
         WaveView hearView = new WaveView(hear.buf, 300, 64);
         onFrame(()->{
@@ -282,10 +283,10 @@ public class Jake2Agent extends NAgentX implements Runnable {
                     while (to < 0) to += b.length;
 
                     if (from <= to) {
-                        hear.writeS16(b, from, to, 1);
+                        hear.buf.writeS16(b, from, to, (float) 1);
                     } else {
-                        hear.writeS16(b, from, b.length, 1);
-                        hear.writeS16(b, 0, to, 1);
+                        hear.buf.writeS16(b, from, b.length, (float) 1);
+                        hear.buf.writeS16(b, 0, to, (float) 1);
                     }
 
 

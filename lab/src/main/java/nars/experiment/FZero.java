@@ -232,16 +232,16 @@ public class FZero extends NAgentX {
 
             return Math.max(0, progress);
         }));
-        rewardNormalized("efficient", 0, +1, (() -> {
-
-//            float bias =
-//                    //0.25f;
-//                    //0.01f;
-//                    0f;
-//            float R = progress - bias;
-
-            return Math.max(0, 1 + Math.min(progress, 0) - (fz.left ? 0.25f : 0) - (fz.right ? 0.25f : 0));
-        }));
+//        rewardNormalized("efficient", 0, +1, (() -> {
+//
+////            float bias =
+////                    //0.25f;
+////                    //0.01f;
+////                    0f;
+////            float R = progress - bias;
+//
+//            return Math.max(0, 1 + Math.min(progress, 0) - (fz.left ? 0.25f : 0) - (fz.right ? 0.25f : 0));
+//        }));
 
         //reward("noCollide", ()->fz.power >= FZeroGame.FULL_POWER- ScalarValue.EPSILON ? +1 : -1 ); //dont bump edges
 

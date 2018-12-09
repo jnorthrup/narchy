@@ -111,7 +111,8 @@ public interface TaskTable {
         return answer(start, end, template, null, n);
     }
     @Nullable default Task answer(long start, long end, Term template, Predicate<Task> filter, NAR n) {
-        return !isEmpty() ? matching(start, end, template, filter, n).task(true, true, true) : null;
+        return !isEmpty() ? matching(start, end, template, filter, n)
+                .task(true, true, true) : null;
     }
 
 

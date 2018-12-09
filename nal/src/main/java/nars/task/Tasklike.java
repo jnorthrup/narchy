@@ -92,15 +92,15 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
     public Task get(NAR n, Prioritizable link) {
 
 
-        long start, end;
-        if (when == ETERNAL) start = end = ETERNAL;
-        else {
-            int dur = n.dur();
-            start = Tense.dither(when - dur/2, n);
-            end = Tense.dither(when + dur/2, n);
-        }
-
-        long[] se = new long[] { start , end };
+//        long start, end;
+//        if (when == ETERNAL) start = end = ETERNAL;
+//        else {
+//            int dur = n.dur();
+//            start = Tense.dither(when - dur/2, n);
+//            end = Tense.dither(when + dur/2, n);
+//        }
+//
+//        long[] se = new long[] { start , end };
 
         Term t = term;//.unneg();
         Concept c =
@@ -109,7 +109,7 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
         Task task;
         if (c != null) {
 
-            task = c.table(punc).sample(se[0], se[1], t, n);
+            task = c.table(punc).sample(when, when, t, n);
 //            if (task!=null) {
 //                    byte punc = task.punc();
 //                    //dynamic question answering

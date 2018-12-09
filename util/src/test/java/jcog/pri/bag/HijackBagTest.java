@@ -4,8 +4,6 @@ import com.google.common.base.Joiner;
 import jcog.data.list.table.Table;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
-import jcog.pri.Prioritizable;
-import jcog.pri.Prioritized;
 import jcog.pri.bag.impl.hijack.DefaultHijackBag;
 import jcog.pri.op.PriMerge;
 import org.junit.jupiter.api.Test;
@@ -23,11 +21,11 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class HijackBagTest {
 
-    static void max(Prioritizable existing, Prioritized incoming) {
-        float p = incoming.priElseZero();
-        if (p > 0)
-            existing.priMax(p);
-    }
+//    static void max(Prioritizable existing, Prioritized incoming) {
+//        float p = incoming.priElseZero();
+//        if (p > 0)
+//            existing.priMax(p);
+//    }
     @Test
     void testPutMinMaxAndUniquenesses() {
         for (int reprobes : new int[] { 2, 4, 8 }) {

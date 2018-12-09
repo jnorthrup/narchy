@@ -1,5 +1,6 @@
 package nars.concept.action;
 
+import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -23,7 +24,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-import static nars.Op.GOAL;
 import static nars.time.Tense.TIMELESS;
 
 
@@ -215,7 +215,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
         }
 
         SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd, evi);
-        curiosity.pri(this.curiosity.agent.pri.floatValue() * n.priDefault(GOAL));
+        curiosity.pri(
+                //this.curiosity.agent.pri.floatValue() * n.priDefault(GOAL)
+                ScalarValue.EPSILON
+        );
         return curiosity;
     }
 

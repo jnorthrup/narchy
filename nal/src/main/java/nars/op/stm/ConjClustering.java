@@ -302,7 +302,7 @@ public class ConjClustering extends Causable {
 
                                 int v = cp.getOne().volume();
                                 float cmplFactor =
-                                        Util.unitize(((float) v) / (v + volMax));
+                                        1f - Util.unitize(((float) v) / volMax);
 
 //                                float freqFactor =
 //                                        t.freq();
@@ -310,7 +310,7 @@ public class ConjClustering extends Causable {
 //                                        (conf / (conf + confMax));
 
 
-                                m.pri(Prioritizable.fund(Util.unitize((priMin*uu.length) * cmplFactor /* * freqFactor  * confFactor*/ ), priCopyOrTransfer, uu));
+                                m.pri(Prioritizable.fund(Util.unitize((priMin /* * uu.length*/ ) * cmplFactor /* * freqFactor  * confFactor*/ ), priCopyOrTransfer, uu));
 
                                 if (popConjoinedTasks) {
                                     for (Task aa : actualTasks)

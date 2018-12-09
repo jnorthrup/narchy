@@ -45,6 +45,7 @@ public class Answer implements AutoCloseable {
     public static final int QUESTION_SAMPLE_CAPACITY = 1;
 
 
+    boolean ditherTruth = false;
 
     public final NAR nar;
     public int triesRemain;
@@ -204,7 +205,7 @@ public class Answer implements AutoCloseable {
         return x -> /*w2cSafe*/(TruthIntegration.evi(x, start, end, 1 /*0*/));
     }
 
-    boolean ditherTruth = false;
+
 
 
     public Answer ditherTruth(boolean ditherTruth) {

@@ -68,7 +68,7 @@ abstract public class DynamicTruthModel {
                 return false;
 
             /* project to a specific time, and apply negation if necessary */
-            bt = Task.project(forceProjection, bt, subStart, subEnd, n, negated);
+            bt = Task.project(forceProjection, true, bt, subStart, subEnd, n, negated);
             if (bt == null)
                 return false;
 

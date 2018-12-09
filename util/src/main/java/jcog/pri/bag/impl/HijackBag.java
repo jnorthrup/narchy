@@ -7,7 +7,7 @@ import jcog.data.MutableFloat;
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
-import jcog.decide.MutableRoulette;
+import jcog.decide.Roulette;
 import jcog.mutex.SpinMutex;
 import jcog.mutex.SpinMutexArray;
 import jcog.pri.ScalarValue;
@@ -85,8 +85,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     private static final AtomicReferenceArray EMPTY_ARRAY = new AtomicReferenceArray(0);
 
     public final int reprobes;
-
-
 
 
     protected HijackBag(int initialCapacity, int reprobes) {
@@ -239,7 +237,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     /**
      * core update function
      * TODO add compacting procedure which, if nulls are detected while scanning and a
-     *  a result is found after it, to move the result to the earlier null position.
+     * a result is found after it, to move the result to the earlier null position.
      */
     private V update(/*@NotNull*/ Object k, @Nullable V incoming /* null to remove */, Mode mode, @Nullable NumberX overflowing) {
 
@@ -273,7 +271,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         }
 
         try {
-
 
 
             probing:
@@ -322,7 +319,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
                 int victim = -1, j = 0;
                 float victimPri = Float.POSITIVE_INFINITY;
-                for (int i = start; j < reprobes; j++ ) {
+                for (int i = start; j < reprobes; j++) {
                     V mi = map.get(i);
                     float mp;
                     if (mi == null || ((mp = pri(mi)) != mp)) {
@@ -334,14 +331,15 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                         }
                     }
                     if (mp < victimPri) {
-                        victim = i; victimPri = mp;
+                        victim = i;
+                        victimPri = mp;
                     }
                     if (++i == c) i = 0;
                 }
 
 
                 if (toReturn == null) {
-                    assert(victim!=-1);
+                    assert (victim != -1);
 
                     V existing = map.get(victim);
                     if (existing == null) {
@@ -468,7 +466,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
      * roulette fair
      */
     private boolean hijackFair(float newPri, float oldPri) {
-            return rng.nextFloat() < newPri / (newPri + oldPri);
+        return rng.nextFloat() < newPri / (newPri + oldPri);
 
 //        float priEpsilon = ScalarValue.EPSILON;
 //
@@ -499,6 +497,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }
 
     /**
+     *
      */
     @Override
     public final V put(/*@NotNull*/ V v,  /* TODO */ NumberX overflowing) {
@@ -564,106 +563,106 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                     //(1 + reprobes)
                     Math.min(s, 2 * reprobes)
             );
-            final int entryCell = windowCap - 1;
 
             final float[] wPri = new float[windowCap];
             final Object[] wVal = new Object[windowCap];
-            //int wSlide = Math.max(1, reprobes-1);
 
             /** emergency null counter, in case map becomes totally null avoids infinite loop*/
             int mapNullSeen = 0;
 
             IntToFloatFunction weight = (k) -> wPri[k];
-            MutableRoulette roulette = new MutableRoulette(windowCap, weight, random);
+            //MutableRoulette roulette = new MutableRoulette(windowCap, weight, random);
 
-            int prefilled = 1; //leave the (highest) entryCell open for the first slide to cover it
-            if (windowCap > 1) {
-                while ((mapNullSeen + prefilled) < c /*&& size > 0*/) {
-                    V v = map.getOpaque(i);
+            int windowSize = 0;
 
+            while ((mapNullSeen + windowSize) < c /*&& size > 0*/) {
+                V v = map.getOpaque(i);
 
-                    i = Util.next(i, direction, c);
-
-                    if (v != null) {
-                        wVal[windowCap - 1 - prefilled] = v;
-                        wPri[windowCap - 1 - prefilled] = priElse(v, 0);
-
-
-                        if (++prefilled >= windowCap - 1) {
+                if (v != null) {
+                    float p = priElse(v, 0);
+                    if (p != p) {
+                        evict(map, i, v);
+                        mapNullSeen++;
+                    } else {
+                        wVal[windowSize] = v;
+                        wPri[windowSize] = p;
+                        if (++windowSize >= windowCap) {
                             break;
                         }
-                    } else {
-                        mapNullSeen++;
                     }
-
+                } else {
+                    mapNullSeen++;
                 }
+
+                i = Util.next(i, direction, c);
+
             }
 
+            if (windowSize == 0)
+                return; //emptied
 
             mapNullSeen = 0;
 
             while (mapNullSeen < c) {
 
-                V v0 = map.getOpaque(i = Util.next(i, direction, c));
+                //System.out.println(n2(wPri) + "\t" + Arrays.toString(wVal));
 
-                //slide
-                float p;
+                //int which = roulette.reweigh(weight).next();
+                int which = Roulette.selectRoulette(windowSize, weight, random);
 
-                if (v0 == null) {
-                    if (mapNullSeen++ >= c)
-                        break restart;
-                } else if ((p = pri(v0)) != p) {
-                    evict(map, i, v0);
-                    if (mapNullSeen++ >= c)
-                        break restart;
-                } else {
-                    mapNullSeen = 0;
+                V v = (V) wVal[which];
+                if (v == null)
+                    continue; //assert(v!=null);
 
-                    if (wVal[entryCell]!=null) {
-                        //TODO if there are any holes in the window maybe fill those rather than sliding
-                        System.arraycopy(wVal, 1, wVal, 0, entryCell);
-                        System.arraycopy(wPri, 1, wPri, 0, entryCell);
+                SampleReaction next = each.apply(v);
+
+                if (next.stop) {
+                    break restart;
+                } else if (next.remove) {
+
+                    if (windowSize == windowCap) {
+
+                        wVal[which] = null;
+                        wPri[which] = 0;
+                    } else {
+                        //compact the array by swapping the empty cell with the entry cell's (TODO or any other non-null)
+                        ArrayUtils.swap(wVal, windowSize - 1, which);
+                        ArrayUtils.swap(wPri, windowSize - 1, which);
+
                     }
-                    wVal[entryCell] = v0;
-                    wPri[entryCell] = Math.max(p, ScalarValue.EPSILON);
-
-
-                    //System.out.println(n2(wPri) + "\t" + Arrays.toString(wVal));
-
-                    int which = roulette.reweigh(weight).next();
-
-                    V v = (V) wVal[which];
-                    if (v == null)
-                        continue; //assert(v!=null);
-
-                    SampleReaction next = each.apply(v);
-                    if (next.remove) {
-                        //evict(map, i, v);
-                        remove(key(v));
-                    }
-
-                    if (next.stop) {
-                        break restart;
-                    } else if (next.remove) {
-
-                        if (which == entryCell || wVal[0] == null) {
-
-                            wVal[which] = null;
-                            wPri[which] = 0;
-                        } else {
-                            //compact the array by swapping the empty cell with the entry cell's (TODO or any other non-null)
-                            ArrayUtils.swap(wVal, 0, which);
-                            ArrayUtils.swap(wPri, 0, which);
-                        }
-                        remove(key(v));
-                    }
-
-
-                    if (map != this.map)
-                        continue restart;
-
+                    windowSize--;
+                    remove(key(v));
                 }
 
+
+                if (map != this.map)
+                    continue restart;
+
+
+                //shift window
+
+                V v0;
+                float p = Float.NaN;
+                mapNullSeen = 0;
+                do {
+                    v0 = map.getOpaque(i = Util.next(i, direction, c));
+                    if (v0 == null) {
+                        if (mapNullSeen++ >= c)
+                            break restart;
+                    } else if ((p = pri(v0)) != p) {
+                        evict(map, i, v0);
+                        if (mapNullSeen++ >= c)
+                            break restart;
+                    }
+                } while (v0 == null);
+
+                if (windowSize >= windowCap) {
+                    //TODO if there are any holes in the window maybe fill those rather than sliding
+                    System.arraycopy(wVal, 1, wVal, 0, windowSize - 1);
+                    System.arraycopy(wPri, 1, wPri, 0, windowSize - 1);
+                }
+                wVal[windowSize - 1] = v0;
+                wPri[windowSize - 1] = Math.max(p, ScalarValue.EPSILON);
 
             }
 
@@ -747,12 +746,12 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     @Override
     public void depressurize(float priAmount) {
-        PRESSURE.update(this, priAmount, (p, a)->Math.max(0,p-a));
+        PRESSURE.update(this, priAmount, (p, a) -> Math.max(0, p - a));
     }
 
     @Override
     public float depressurizePct(float percentage) {
-        return PRESSURE.getAndUpdate(this, (p,factor)-> Math.min(mass() /* limit */, p * factor), 1-percentage) * percentage;
+        return PRESSURE.getAndUpdate(this, (p, factor) -> Math.min(mass() /* limit */, p * factor), 1 - percentage) * percentage;
     }
 
     @Override

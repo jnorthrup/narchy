@@ -35,10 +35,7 @@ public class AudioSource {
     private float[] preFloatBuffer;
     volatile public int audioBytesRead;
 
-
-
-
-
+    //TODO parameterize with device
     /** frameRate determines buffer size and frequency that events are emitted; can also be considered a measure of latency */
     public AudioSource() {
 

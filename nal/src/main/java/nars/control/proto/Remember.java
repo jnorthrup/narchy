@@ -12,6 +12,7 @@ import nars.control.CauseMerge;
 import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.NALTask;
+import nars.task.TaskProxy;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.time.Tense;
@@ -49,6 +50,13 @@ public class Remember extends AbstractTask {
                 int maxVol = n.termVolumeMax.intValue();
                 if (termVol > maxVol)
                     throw new TaskException(input, "term exceeds volume maximum: " + termVol + " > " + maxVol);
+            }
+
+            if((!input.isInput() || input instanceof TaskProxy) && input.isBeliefOrGoal() && input.conf() < n.confMin.floatValue()) {
+                if(Param.DEBUG)
+                    throw new TaskException(input, "insufficient evidence for non-input Task");
+                else
+                    return null;
             }
 
             Concept c = n.conceptualize(input);
