@@ -118,7 +118,7 @@ public class PatrickTests extends NALTest {
         TestNAR tt = test;
 
 
-        int cycles = 6000;
+        int cycles = 9000;
 
         tt.confTolerance(0.9f);
 
@@ -324,7 +324,7 @@ public class PatrickTests extends NALTest {
             .input("x:b. |")
             .inputAt(3, "c! |")
             .mustOutput(200, "pick(x)", GOAL, 1f, 1f, 0.05f, 0.81f,
-                    (t)->t>=3)
+                    (t)->t>=1)
             ;
     }
 }

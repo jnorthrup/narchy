@@ -162,7 +162,7 @@ public abstract class TermBuilder {
     public static Compound newCompound(Op op, int dt, Subterms subterms) {
 //        if (subterms instanceof DisposableTermList)
 //            throw new WTF();
-        if (!op.temporal && !subterms.hasAny(Op.Temporal)) {
+        if (!op.temporal && !subterms.hasAny(Op.Temporal) && subterms.isNormalized()) {
             assert (dt == DTERNAL);
 //            if (key!=null && subterms.volume() < Param.TERM_BYTE_KEY_CACHED_BELOW_VOLUME) {
 //                return new CachedCompound.SimpleCachedCompoundWithBytes(op, subterms, key);
@@ -401,6 +401,7 @@ public abstract class TermBuilder {
 //    }
 
     public Term root(Compound x) {
+
         return x.temporalize(Retemporalize.root);
     }
 
@@ -413,18 +414,19 @@ public abstract class TermBuilder {
             return Bool.Null;
 
 
-        Term term2 = term.normalize();
-        if (term2 != term) {
-            if (term2 == null)
-                return Bool.Null;
-
-            //assert (term2.op() == op): term2 + " not a normal normalization of " + term; //<- allowed to happen when image normalization is involved
-
-            term = term2.unneg();
-        }
-
-
-        return term;
+        return term.normalize();
+//        Term term2 = term.normalize();
+//        if (term2 != term) {
+//            if (term2 == null)
+//                return Bool.Null;
+//
+//            //assert (term2.op() == op): term2 + " not a normal normalization of " + term; //<- allowed to happen when image normalization is involved
+//
+//            term = term2.unneg();
+//        }
+//
+//
+//        return term;
     }
 
     protected Term statement(Op op, int dt, Term subject, Term predicate) {

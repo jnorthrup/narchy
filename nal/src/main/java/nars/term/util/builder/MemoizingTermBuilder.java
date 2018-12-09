@@ -13,7 +13,7 @@ import static nars.Op.PROD;
 public class MemoizingTermBuilder extends InterningTermBuilder {
 
     private final HijackTermCache normalize;
-    private final HijackTermCache concept;
+    //private final HijackTermCache concept;
     private final HijackTermCache root;
 
     public MemoizingTermBuilder() {
@@ -23,11 +23,12 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
     public MemoizingTermBuilder(String id, boolean deep, int volInternedMax, int cacheSizePerOp) {
         super(id, deep, volInternedMax, cacheSizePerOp);
 
-        concept = newOpCache("concept", j -> super.concept((Compound) j.sub0()), cacheSizePerOp);
 
         root = newOpCache("root", j -> super.root((Compound) j.sub0()), cacheSizePerOp);
 
         normalize = newOpCache("normalize", j -> super.normalize((Compound) j.sub0(), (byte) 0), cacheSizePerOp);
+
+//        concept = newOpCache("concept", j -> super.concept((Compound) j.sub0()), cacheSizePerOp);
 
     }
 
@@ -47,12 +48,12 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
     }
 
 
-    @Override
-    public Term concept(Compound x) {
-        if (!x.the())
-            return super.concept(x);
-        return concept.apply(InternedCompound.get(PROD, x));
-    }
+//    @Override
+//    public Term concept(Compound x) {
+//        if (!x.the())
+//            return super.concept(x);
+//        return concept.apply(InternedCompound.get(PROD, x));
+//    }
 
     @Override
     public Term root(Compound x) {

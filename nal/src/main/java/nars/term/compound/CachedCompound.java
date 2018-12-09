@@ -45,18 +45,6 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
         }
 
         @Override
-        public final boolean equalsRoot(Term x) {
-            //return x instanceof SimpleCachedCompound ? equals(x) : (!x.hasAny(Op.Temporal) ? false : equals(x.root()));
-            return equals(x);
-        }
-
-//        @Override
-//        public final boolean equalsNegRoot(Term x) {
-//            //return x instanceof SimpleCachedCompound ? equalsNeg(x) : equalsNeg(x.root());
-//            return equalsNeg(x);
-//        }
-
-        @Override
         public final Term root() {
             return this;
         }

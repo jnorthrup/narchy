@@ -138,6 +138,9 @@ public class Truthify extends AbstractPred<Derivation> {
                 if (single) {
                     beliefTruth = null;
                 } else {
+                    if (d.taskStart==d.beliefStart && d.taskPunc==d._belief.punc() && d.taskTerm.equals(d.beliefTerm))
+                        return false; //auto-filter double-premise, with same term and same time
+
                     beliefTruth = beliefProjection(d);
                     if (beliefTruth == null)
                         return false;

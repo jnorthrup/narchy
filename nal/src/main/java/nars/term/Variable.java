@@ -25,6 +25,7 @@ public interface Variable extends Atomic {
 //        return x.in(Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit);
 //    }
 
+
     @Override
     @Nullable
     default Term normalize() {

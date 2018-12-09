@@ -29,6 +29,35 @@ public final class Neg extends UnitCompound implements The {
         return sub;
     }
 
+    @Override
+    public Term root() {
+        Term x = unneg().root();
+        if (x!=this)
+            return x.neg();
+        return this;
+    }
+
+    @Override
+    public Term concept() {
+        return unneg().concept();
+    }
+
+
+    @Override
+    public @Nullable Term normalize() {
+        Term x = unneg().normalize();
+        if (x!=this)
+            return x.neg();
+        return this;
+    }
+
+    @Override
+    public @Nullable Term normalize(byte varOffset) {
+        Term x = unneg().normalize(varOffset);
+        if (x!=this)
+            return x.neg();
+        return this;
+    }
 
     /** condensed NEG compound byte serialization - elides length byte */
     @Override public final void appendTo(ByteArrayDataOutput out) {
