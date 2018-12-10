@@ -101,33 +101,33 @@ public class SubtermsTest {
 
     }
 
-    @Test
-    void testEqualityOfBiSubtermReverseImpls() {
-        Term a = Atomic.the("a");
-        Term b = Atomic.the("b");
-        Subterms ab = new BiSubterm(a,b);
-        Subterms x = new BiSubterm.ReversibleBiSubterm(a,b).reverse();
-        Subterms x0 = new BiSubterm.ReversibleBiSubterm(a,b).reverse();
-        Assertions.assertEquals(x, x0);
-        assertNotEquals(ab, x);
-
-        Subterms y = new ArrayTermVector(b, a);
-        Assertions.assertEquals(x, y);
-
-        Assertions.assertEquals(y.hashCode(), x.hashCode());
-        Assertions.assertEquals(y.hashCodeSubterms(), x.hashCodeSubterms());
-        Assertions.assertEquals(x, y);
-        Assertions.assertEquals(y, x);
-
-        Subterms z =  new BiSubterm.ReversibleBiSubterm(a,b).reverse();
-        Assertions.assertEquals(y.hashCode(), z.hashCode());
-        Assertions.assertEquals(y.hashCodeSubterms(), z.hashCodeSubterms());
-        Assertions.assertEquals(y, z);
-        Assertions.assertEquals(x, z);
-        Assertions.assertEquals(z, y);
-        Assertions.assertEquals(z, x);
-
-    }
+//    @Test
+//    void testEqualityOfBiSubtermReverseImpls() {
+//        Term a = Atomic.the("a");
+//        Term b = Atomic.the("b");
+//        Subterms ab = new BiSubterm(a,b);
+//        Subterms x = new BiSubterm.ReversibleBiSubterm(a,b).reverse();
+//        Subterms x0 = new BiSubterm.ReversibleBiSubterm(a,b).reverse();
+//        Assertions.assertEquals(x, x0);
+//        assertNotEquals(ab, x);
+//
+//        Subterms y = new ArrayTermVector(b, a);
+//        Assertions.assertEquals(x, y);
+//
+//        Assertions.assertEquals(y.hashCode(), x.hashCode());
+//        Assertions.assertEquals(y.hashCodeSubterms(), x.hashCodeSubterms());
+//        Assertions.assertEquals(x, y);
+//        Assertions.assertEquals(y, x);
+//
+//        Subterms z =  new BiSubterm.ReversibleBiSubterm(a,b).reverse();
+//        Assertions.assertEquals(y.hashCode(), z.hashCode());
+//        Assertions.assertEquals(y.hashCodeSubterms(), z.hashCodeSubterms());
+//        Assertions.assertEquals(y, z);
+//        Assertions.assertEquals(x, z);
+//        Assertions.assertEquals(z, y);
+//        Assertions.assertEquals(z, x);
+//
+//    }
 
 
 //    /**

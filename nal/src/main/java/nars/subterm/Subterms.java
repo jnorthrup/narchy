@@ -872,7 +872,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default Subterms reversed() {
-        return subs() > 1 ? new ReverseSubterms(this) : this;
+        return subs() > 1 ? MappedSubterms.reverse(this) : this;
     }
 
 //    default Subterms sorted() {

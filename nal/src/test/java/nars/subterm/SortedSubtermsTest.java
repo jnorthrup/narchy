@@ -19,16 +19,16 @@ public class SortedSubtermsTest {
     @Test
     void test3ary() {
         Subterms direct = assertEq(new Term[]{x, y, z}, new Term[]{x, y, z});
-        assertTrue(!(direct instanceof SortedSubterms.MappedSubterms));
+        assertTrue(!(direct instanceof MappedSubterms));
 
         Subterms remapped = assertEq(new Term[]{y, x, z}, new Term[]{y, x, z}); //non-canonical, mapped order
-        assertTrue(remapped instanceof SortedSubterms.MappedSubterms);
+        assertTrue(remapped instanceof MappedSubterms);
 
         Subterms remapped2 = assertEq(new Term[]{x, x, z}, new Term[]{x, x, z}); //repeats
-        assertTrue(!(remapped2 instanceof SortedSubterms.MappedSubterms));
+        assertTrue(!(remapped2 instanceof MappedSubterms));
 
         Subterms remapped3 = assertEq(new Term[]{x, z, x}, new Term[]{x, z, x}); //repeats, unordered
-        assertTrue(remapped3 instanceof SortedSubterms.MappedSubterms);
+        assertTrue(remapped3 instanceof MappedSubterms);
 
     }
 
