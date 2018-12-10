@@ -59,7 +59,7 @@ public class NLPGen {
         }
 
         try {
-            train(natural, Narsese.the().task(narsese, terminal));
+            train(natural, Narsese.task(narsese, terminal));
         } catch (Narsese.NarseseException e) {
             e.printStackTrace();
         }

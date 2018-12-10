@@ -43,7 +43,7 @@ public class UnifyTest {
 
 
     public static /**/ Term pattern(/**/ String s) throws Narsese.NarseseException {
-        return pattern(Narsese.the().term(s, false));
+        return pattern(Narsese.term(s, false));
     }
 
     private static Term pattern(Term ss) {
@@ -64,16 +64,16 @@ public class UnifyTest {
 
         try {
 
-            Term t2 = Narsese.the().term(s2, true);
+            Term t2 = Narsese.term(s2, true);
             if (anon2) t2 = a.put(t2).normalize();
 
             Term t1;
             if (type == Op.VAR_PATTERN) {
-                t1 = Narsese.the().term(s1, false);
+                t1 = Narsese.term(s1, false);
                 if (anon1) t1 = pattern(a.put(t1)).normalize();
                 else t1 = pattern(t1).normalize();
             } else {
-                t1 = Narsese.the().term(s1, true);
+                t1 = Narsese.term(s1, true);
                 if (anon1) t1 = a.put(t1).normalize();
             }
 

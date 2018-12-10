@@ -162,4 +162,8 @@ class ImageTest {
         assertEq("(((&|,(--,vel(fz,x)),(--,vel(fz,y)),(efficient-->fz)) &&+140 (--,vel(fz,y))) &&+80 (fwd-->fz))",
                 "(((&|,(--,(x-->(vel,fz,/))),(--,(y-->(vel,fz,/))),(efficient-->fz)) &&+140 (--,(y-->(vel,fz,/)))) &&+80 (fwd-->fz))");
     }
+    @Test void testImageProductNormalized() throws Narsese.NarseseException {
+        Term x = Narsese.term("(y,\\,x)", false);
+        assertTrue(x.isNormalized());
+    }
 }

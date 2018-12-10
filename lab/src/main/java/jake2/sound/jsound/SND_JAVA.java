@@ -137,8 +137,7 @@ public class SND_JAVA extends Globals {
 	}
 
 	public static int SNDDMA_GetDMAPos() {
-		
-		return thread.getSamplePos(); 
+		return thread.getSamplePos();
 	}
 
 	static void SNDDMA_Shutdown() {

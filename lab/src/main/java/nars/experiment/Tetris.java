@@ -183,7 +183,7 @@ public class Tetris extends NAgentX {
                 $.the("fall");
                 //$.inh("fall", id);
 
-        int debounceDurs = 0;
+        int debounceDurs = 1;
         Runnable leftAction = () -> state.act(TetrisState.LEFT);
         Runnable rightAction = () -> state.act(TetrisState.RIGHT);
 

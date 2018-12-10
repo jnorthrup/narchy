@@ -21,6 +21,7 @@ import nars.NAgentX;
 import nars.Narsese;
 import nars.concept.sensor.FreqVectorSensor;
 import nars.gui.sensor.VectorSensorView;
+import nars.sensor.Bitmap2DSensor;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
 import spacegraph.space2d.widget.meta.ObjectSurface;
@@ -47,7 +48,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
 
     static float yawSpeed = 10;
     static float pitchSpeed = 5;
-    private final GLScreenShot rgb, depth = null;
+    private final GLScreenShot rgb, depth;
     private final FreqVectorSensor hear;
 
 
@@ -134,7 +135,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
         int px = 64, py = 48, nx = 8, aeStates = 16;
 
         rgb = new GLScreenShot(true);
-        //depth = new GLScreenShot(false);
+        depth = new GLScreenShot(false);
 
         PixelBag rgbVision = new PixelBag(
                 new BrightnessNormalize(
@@ -142,19 +143,16 @@ public class Jake2Agent extends NAgentX implements Runnable {
                 ), px, py);
         rgbVision.setZoom(0);
 
-//        PixelBag depthVision = new PixelBag(
-//                new BrightnessNormalize(
-//                        new ImageFlip(false, true, new ScaledBitmap2D(depth, px/2, py/2))
-//                ), px/2, py/2);
-//        depthVision.setZoom(0);
+        Bitmap2DSensor depthVision = senseCamera("depth", new BrightnessNormalize(
+            new ImageFlip(false, true, new ScaledBitmap2D(depth, px / 2, py / 2)
+        )));
+
 
         AutoclassifiedBitmap rgbAE = new AutoclassifiedBitmap($.the("gray"), rgbVision, nx, nx, aeStates, this);
         rgbAE.alpha(0.03f);
         rgbAE.noise.set(0.05f);
 
-//        AutoclassifiedBitmap depthAE = new AutoclassifiedBitmap($.the("depth"), depthVision, nx/2, nx/2, aeStates/4, this);
-//        depthAE.alpha(0.03f);
-//        depthAE.noise.set(0.05f);
+
 
         //SpaceGraph.(column(visionView, camAE.newChart()), 500, 500);
 //        }
@@ -162,10 +160,10 @@ public class Jake2Agent extends NAgentX implements Runnable {
         BitmapMatrixView rgbView = new BitmapMatrixView(rgbVision);
         onFrame(rgbView::update);
 
-//        BitmapMatrixView depthView = new BitmapMatrixView(depthVision);
-//        onFrame(depthView::update);
+        BitmapMatrixView depthView = new BitmapMatrixView(depthVision.src);
+        onFrame(depthView::update);
 
-        window(grid(rgbView, rgbAE.newChart() /*, depthView, depthAE.newChart()*/), 500, 500);
+        window(grid(rgbView, rgbAE.newChart(), depthView ), 500, 500);
 
         hear = new FreqVectorSensor(new CircularFloatBuffer(8*1024), (f)->$.inh($.the(f), "hear"), 512,16, nar);
         addSensor(hear);
@@ -263,13 +261,15 @@ public class Jake2Agent extends NAgentX implements Runnable {
             @Override
             public void accept(GL g) {
                 rgb.update(g);
+                depth.update(g);
 
-
-
+                byte[] b = SND_DMA.dma.buffer;
+                if(b ==null)
+                    return;
                 int samples = 1024;
                 int sample = SND_JAVA.SNDDMA_GetDMAPos();
                 if (sample!=lastSamplePos) {
-                    byte[] b = SND_DMA.dma.buffer;
+
 
                     //System.out.println(sample + " " + SND_MIX.paintedtime);
 
@@ -294,7 +294,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
                     lastSamplePos = sample;
                 }
 
-                //depth.update(g);
+
             }
         });
 

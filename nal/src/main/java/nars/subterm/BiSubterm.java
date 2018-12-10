@@ -174,7 +174,7 @@ public class BiSubterm extends TermVector {
         super(x, y);
         this.x = x;
         this.y = y;
-        testIfInitiallyNormalized();
+        testIfAutoNormalized();
     }
 
 
@@ -244,7 +244,11 @@ public class BiSubterm extends TermVector {
             Subterms t = ((Subterms) obj);
             //Subterms t;
             //if (hash == (t = ((Subterms) obj)).hashCodeSubterms()) {
-                return (t.subs() == 2 && t.sub(0).equals(x) && t.sub(1).equals(y));
+                if (t.subs() == 2 && t.sub(0).equals(x) && t.sub(1).equals(y)) {
+                    if (t instanceof TermVector)
+                        equivalentTo((TermVector) t);
+                    return true;
+                }
             //}
         }
         return false;

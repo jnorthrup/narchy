@@ -1799,7 +1799,7 @@ public class ConjTest {
 
     private void assertInvalidTask(@NotNull String ss) {
         try {
-            Narsese.the().task(ss, n);
+            Narsese.task(ss, n);
             fail("");
         } catch (Exception e) {
             assertTrue(true);

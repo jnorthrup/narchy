@@ -61,10 +61,6 @@ abstract public class TermMetadata implements Termlike {
             if (v instanceof Variable) {
                 if (v instanceof NormalizedVariable) {
 
-//                    /** automatic disqualification if image variable is present, because this may be in a term that will be Image normalized. see CompoundNormalization */
-//                    if (v == Op.ImgInt || v == Op.ImgExt)
-//                        return false;
-
                     NormalizedVariable nv = (NormalizedVariable) v;
                     byte varID = nv.id;
                     if (varID == minID[0]) {

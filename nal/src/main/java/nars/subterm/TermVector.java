@@ -3,7 +3,6 @@ package nars.subterm;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import jcog.data.byt.DynBytes;
-import nars.Op;
 import nars.The;
 import nars.subterm.util.SubtermMetadataCollector;
 import nars.subterm.util.TermMetadata;
@@ -11,7 +10,7 @@ import nars.term.Term;
 
 import java.util.Iterator;
 
-import static nars.Op.NEG;
+import static nars.Op.*;
 
 /**
  * what differentiates TermVector from TermContainer is that
@@ -20,7 +19,7 @@ import static nars.Op.NEG;
  */
 public abstract class TermVector extends TermMetadata implements Subterms, The, Subterms.SubtermsBytesCached {
 
-    private transient boolean normalized;
+    transient boolean normalized;
     private final boolean the;
 
     /** called by AnonVector */
@@ -39,10 +38,10 @@ public abstract class TermVector extends TermMetadata implements Subterms, The, 
         return the;
     }
 
-    protected void testIfInitiallyNormalized() {
-        if (!hasAny(Op.IMG)) {
+    protected void testIfAutoNormalized() {
+        if (!hasAny(IMG) || (op()==PROD && AND(z -> z.op()==IMG || !z.hasAny(IMG)))) { //the product containing an image itself may be normalized but superterms containing it are not automatically considered normal
             if (vars() == 0 || testIfInitiallyNormalized(this))
-              setNormalized();
+              normalized = true;
         }
     }
 
@@ -52,14 +51,9 @@ public abstract class TermVector extends TermMetadata implements Subterms, The, 
     }
 
     void equivalentTo(TermVector that) {
-
-
-        boolean an, bn = that.normalized;
-        if (!(an = this.normalized) && bn)
-            this.normalized = true;
-        else if (an && !bn)
-            that.normalized = true;
-
+        //share normalize state if different
+        if (normalized ^ that.normalized)
+            this.normalized = that.normalized = true;
 
     }
 

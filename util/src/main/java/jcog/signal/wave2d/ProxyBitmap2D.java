@@ -21,6 +21,7 @@ public class ProxyBitmap2D implements Bitmap2D {
 
     public synchronized <P extends ProxyBitmap2D> P set(@Nullable Bitmap2D src) {
         this.src = src;
+        update();
         return (P) this;
     }
 

@@ -73,7 +73,7 @@ public class NARHear extends Loop {
         @NotNull List<Narsese.NarseseException> errors = $.newArrayList();
 
         try {
-            Narsese.the().tasks(msg, parsed, nar);
+            Narsese.tasks(msg, parsed, nar);
         } catch (Narsese.NarseseException ignored) {
             
         }

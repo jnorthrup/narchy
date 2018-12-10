@@ -1,9 +1,10 @@
 package jcog.signal.wave2d;
 
 import jcog.TODO;
-import jcog.Util;
 import jcog.pri.ScalarValue;
 import jcog.random.SplitMix64Random;
+
+import static jcog.Util.unitize;
 
 /** TODO extends MonoBufImgBitmap2D */
 public class BrightnessNormalize implements Bitmap2D {
@@ -73,17 +74,17 @@ public class BrightnessNormalize implements Bitmap2D {
             return; //no change, just pass-thru
 
         //center around the mean value
-        if (max - mean < mean - min)
-            max = Util.min(1, (mean - min) + mean);
-        else
-            min = Util.max(0, mean - (max - mean));
-
-        range = max - min;
+        //TODO refine
+//        if (max - mean < mean - min)
+//            max = Util.min(1, (mean - min) + mean);
+//        else
+//            min = Util.max(0, mean - (max - mean));
 
         for (i = 0; i < s.length; i++) {
             float b = s[i];
-            if (b==b)
-                s[i] = (b/range + min);
+            if (b==b) {
+                s[i] = unitize((b-min)/range );
+            }
         }
 
 

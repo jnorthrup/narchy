@@ -344,11 +344,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
 
     public <T extends Task> T inputTask(String taskText) throws Narsese.NarseseException {
-        return (T) inputTask(Narsese.the().task(taskText, (this)));
+        return (T) inputTask(Narsese.task(taskText, (this)));
     }
 
     public List<Task> input(String text) throws NarseseException, TaskException {
-        List<Task> l = Narsese.the().tasks(text, this);
+        List<Task> l = Narsese.tasks(text, this);
         switch (l.size()) {
             case 0:
                 return List.of();
@@ -931,7 +931,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             List<Task> yy = $.newArrayList(tt.length);
             for (String s : tt) {
                 try {
-                    yy.addAll(Narsese.the().tasks(s, this));
+                    yy.addAll(Narsese.tasks(s, this));
                 } catch (NarseseException e) {
                     logger.error("{} for: {}", e, s);
                     e.printStackTrace();

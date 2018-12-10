@@ -138,7 +138,7 @@ public class Narsese {
     /**
      * parse one task
      */
-    static public Task task(String input, NAR n) throws NarseseException {
+    public static Task task(String input, NAR n) throws NarseseException {
         List<Task> tt = tasks(input, n);
         if (tt.size() != 1)
             throw new NarseseException(tt.size() + " tasks parsed in single-task parse: " + input);
@@ -241,17 +241,8 @@ public class Narsese {
     }
 
     public static Term term(String s, boolean normalize) throws NarseseException {
-
         Term y = term(s);
-        if (normalize) {
-            return nullIfNull(y.normalize());
-        } else {
-            return y;
-
-
-        }
-
-
+        return normalize ? nullIfNull(y.normalize()) : y;
     }
 
     public static Term term(String s) throws NarseseException {
