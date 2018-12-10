@@ -12,4 +12,5 @@ public final class TermKey extends ByteKey.ByteKeyExternal {
         super(IO.termToDynBytes(t));
         this.term = t;
     }
+
 }

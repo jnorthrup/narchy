@@ -13,7 +13,8 @@ public abstract class Introduction extends TaskLeakTransform {
     protected Introduction(NAR nar) {
         super(nar);
     }
-    protected Introduction(int capacity, NAR nar) {
+
+    protected Introduction(NAR nar, int capacity) {
         super(capacity, nar);
     }
 

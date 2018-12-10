@@ -6,10 +6,11 @@ import jcog.decide.Roulette;
 import jcog.memoize.Memoizers;
 import nars.$;
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
-import nars.term.util.TermKey;
+import nars.term.util.SubtermsKey;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.Pair;
@@ -60,17 +61,17 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     }
 
     @Override
-    protected Term[] select(Term input) {
-        return select.apply(input);
+    protected Term[] select(Subterms input) {
+        return select.apply(Terms.sorted(input));
     }
 
-    private final static Function<Term,Term[]> select = Memoizers.the.memoize(
+    private final static Function<Subterms,Term[]> select = Memoizers.the.memoize(
             DepIndepVarIntroduction.class.getSimpleName() + "_select",
-            TermKey::new,
+            SubtermsKey::new,
             DepIndepVarIntroduction::_select, 8*1024);
 
-    static protected Term[] _select(TermKey input) {
-        return Terms.nextRepeat(input.term, depIndepFilter, 2);
+    static protected Term[] _select(SubtermsKey input) {
+        return Terms.nextRepeat(input.subs, depIndepFilter, 2);
     }
 
 

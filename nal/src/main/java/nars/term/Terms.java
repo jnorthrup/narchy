@@ -8,6 +8,7 @@ import nars.IO;
 import nars.Op;
 import nars.derive.premise.PatternIndex;
 import nars.subterm.Subterms;
+import nars.subterm.TermList;
 import nars.term.atom.Atom;
 import org.eclipse.collections.api.LazyIterable;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
@@ -67,20 +68,26 @@ public enum Terms {
                 if (ab == 0) {
                     return sorted(a, c); //a=b, so just combine a and c (recurse)
                 } else if (ab > 0) {
-                    Term x = a;  a = b; b = x;
+                    Term x = a;
+                    a = b;
+                    b = x;
                 }
                 int bc = b.compareTo(c);
                 if (bc == 0) {
                     //assert(a.compareTo(b) < 0); //temporary
                     return new Term[]{a, b}; //b=c so just combine a and b
                 } else if (bc > 0) {
-                    Term x = b;  b = c; c = x;
+                    Term x = b;
+                    b = c;
+                    c = x;
                     int ab2 = a.compareTo(b);
                     if (ab2 == 0) {
                         //assert(a.compareTo(c) < 0); //temporary
                         return new Term[]{a, c};
                     } else if (ab2 > 0) {
-                        Term y = a;  a = b; b = y;
+                        Term y = a;
+                        a = b;
+                        b = y;
                     }
                 }
                 if (t[0] == a && t[1] == b && t[2] == c)
@@ -187,11 +194,13 @@ public enum Terms {
     public static boolean allNegated(Subterms subterms) {
         return subterms.hasAny(Op.NEG) && subterms.AND((Term t) -> t.op() == NEG);
     }
+
     public static int countNegated(Subterms subterms) {
         return subterms.hasAny(Op.NEG) ? subterms.subs(NEG) : 0;
     }
+
     public static int negatedNonConjCount(Subterms subterms) {
-        return subterms.hasAny(Op.NEG) ? subterms.subs(x->x.op()==NEG && !x.hasAny(CONJ)) : 0;
+        return subterms.hasAny(Op.NEG) ? subterms.subs(x -> x.op() == NEG && !x.hasAny(CONJ)) : 0;
     }
 
     /**
@@ -199,7 +208,8 @@ public enum Terms {
      * when there is a chocie, it prefers least aggressive introduction. and then random choice if
      * multiple equals are introducible
      */
-    @Nullable public static Term[] nextRepeat(Term c, ToIntFunction<Term> countIf, int minCount) {
+    @Nullable
+    public static Term[] nextRepeat(Subterms c, ToIntFunction<Term> countIf, int minCount) {
         ObjectIntHashMap<Term> oi = Terms.subtermScore(c, countIf, minCount);
         if (oi == null)
             return null;
@@ -209,7 +219,7 @@ public enum Terms {
             case 0:
                 return null;
             case 1:
-                return new Term[] { ok.getFirst() };
+                return new Term[]{ok.getFirst()};
         }
 
 
@@ -222,15 +232,17 @@ public enum Terms {
      * counts the repetition occurrence count of each subterm within a compound
      */
     @Nullable
-    public static ObjectIntHashMap<Term> subtermScore(Term c, ToIntFunction<Term> score, int minTotalScore) {
+    public static ObjectIntHashMap<Term> subtermScore(Subterms c, ToIntFunction<Term> score, int minTotalScore) {
         ObjectIntHashMap<Term> uniques = new ObjectIntHashMap(c.volume());
 
-        c.recurseTerms((Term subterm) -> {
-            if (subterm == c)
-                return;
-            int s = score.applyAsInt(subterm);
-            if (s > 0)
-                uniques.addToValue(subterm, s);
+        c.forEach(cc -> {
+            cc.recurseTerms((Term subterm) -> {
+                if (subterm == c)
+                    return;
+                int s = score.applyAsInt(subterm);
+                if (s > 0)
+                    uniques.addToValue(subterm, s);
+            });
         });
 
         int total = uniques.size();
@@ -305,35 +317,45 @@ public enum Terms {
         int xStruct = requirer & ~(maskedBits);
         int yStruct = required & ~(maskedBits);
         return xStruct == 0 || yStruct == 0 ||
-               Op.hasAll(yStruct, xStruct);
+                Op.hasAll(yStruct, xStruct);
     }
 
-    /** finds the shortest deterministic subterm path for extracting a subterm in a compound.
-     *  paths in subterms of commutive terms are excluded also because the
-     *  position is undeterministic. */
-    @Nullable public static byte[] pathConstant(Term container, Term subterm) {
+    /**
+     * finds the shortest deterministic subterm path for extracting a subterm in a compound.
+     * paths in subterms of commutive terms are excluded also because the
+     * position is undeterministic.
+     */
+    @Nullable
+    public static byte[] pathConstant(Term container, Term subterm) {
         if (!canExtractFixedPath(container))
             return null;
 
         final byte[][] p = new byte[1][];
         container.pathsTo(subterm,
 
-            Terms::canExtractFixedPath,
+                Terms::canExtractFixedPath,
 
-            (path, xx) -> {
-                if (p[0] == null || p[0].length > path.size()) {
-                    //found first or shorter
-                    p[0] = path.isEmpty() ? ArrayUtils.EMPTY_BYTE_ARRAY : path.toArray();
-                }
-                return true; //continue
-        });
+                (path, xx) -> {
+                    if (p[0] == null || p[0].length > path.size()) {
+                        //found first or shorter
+                        p[0] = path.isEmpty() ? ArrayUtils.EMPTY_BYTE_ARRAY : path.toArray();
+                    }
+                    return true; //continue
+                });
         return p[0];
     }
 
     private static boolean canExtractFixedPath(Term container) {
-        return !container.isCommutative()
-                && !(container instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsis);
+        return !(container instanceof PatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsis)
+                &&
+               !container.isCommutative();
+    }
 
+    /** provides canonically sorted subterms of subterms */
+    public static Subterms sorted(Subterms x) {
+        if (x.isSorted())
+            return x;
+        return new TermList(Terms.sorted(x.arrayShared()));
     }
 }
 

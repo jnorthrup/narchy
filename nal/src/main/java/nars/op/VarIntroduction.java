@@ -1,5 +1,6 @@
 package nars.op;
 
+import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import org.eclipse.collections.api.tuple.Pair;
@@ -17,7 +18,7 @@ abstract class VarIntroduction {
             return null;
 
 
-        Term[] uu = select(x);
+        Term[] uu = select(x.subterms());
         if (uu == null || uu.length == 0)
             return null;
 
@@ -36,7 +37,7 @@ abstract class VarIntroduction {
     }
 
     /** determine the choice of subterms which can be replaced with a variable */
-    @Nullable protected abstract Term[] select(Term input);
+    @Nullable protected abstract Term[] select(Subterms input);
 
     protected abstract Term choose(Term[] x, Random rng);
 

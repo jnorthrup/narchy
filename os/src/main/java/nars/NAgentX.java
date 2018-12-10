@@ -495,8 +495,8 @@ abstract public class NAgentX extends NAgent {
 //        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof CuriosityTask) ),
 //                8, 96);
 
-        Introduction arith = new Arithmeticize.ArithmeticIntroduction(n);
-        Introduction factorizer = new Factorize.FactorIntroduction( n);
+        Introduction arith = new Arithmeticize.ArithmeticIntroduction(n,16);
+        Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
 
 //        {
         new Inperience.Believe(n, 8);

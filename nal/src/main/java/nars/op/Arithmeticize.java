@@ -49,8 +49,9 @@ public class Arithmeticize {
     final static Variable V = $.varDep("A_");
 
     public static class ArithmeticIntroduction extends Introduction {
-        public ArithmeticIntroduction(NAR n) {
-            super(n);
+
+        public ArithmeticIntroduction(NAR n, int capacity) {
+            super(n, capacity);
         }
 
         @Override

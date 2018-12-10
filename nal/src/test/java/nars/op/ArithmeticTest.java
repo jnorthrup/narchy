@@ -145,7 +145,7 @@ class ArithmeticTest {
     @Test
     void testCompleteAddInduction() {
         NAR n = NARS.tmp(6);
-        new Arithmeticize.ArithmeticIntroduction( n);
+        new Arithmeticize.ArithmeticIntroduction( n, 16);
 
         final int cycles = 500;
 

@@ -202,9 +202,10 @@ abstract public class TaskBuffer implements Consumer<Task> {
 
 
         /**
-         * max percent of capacity allowed input
+         * perceptual valve
+         * dilation factor
          */
-        public final FloatRange drainRate = new FloatRange(0.5f, 0, 1f);
+        public final FloatRange valve = new FloatRange(0.5f, 0, 1f);
 
         final AtomicBoolean busy = new AtomicBoolean(false);
 
@@ -218,7 +219,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
          */
         public BagTasksBuffer(int capacity, float rate) {
             this.capacity.set(capacity);
-            this.drainRate.set(rate);
+            this.valve.set(rate);
             this.tasks.setCapacity(capacity);
         }
 
@@ -276,7 +277,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
         /**  TODO abstract */
         protected int batchSize(long dt) {
             //rateControl.apply(tasks.size(), tasks.capacity());
-            return Tense.occToDT(Math.round(dt * drainRate.floatValue() * tasks.capacity()));
+            return Tense.occToDT(Math.round(dt * valve.floatValue() * tasks.capacity()));
         }
     }
 

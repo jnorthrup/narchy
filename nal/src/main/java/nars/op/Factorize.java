@@ -1,17 +1,16 @@
 package nars.op;
 
 import jcog.Paper;
+import jcog.Util;
 import jcog.memoize.Memoizers;
 import nars.$;
 import nars.NAR;
+import nars.Op;
 import nars.Task;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
-import nars.term.Compound;
-import nars.term.Functor;
-import nars.term.Term;
-import nars.term.Variable;
-import nars.term.util.TermKey;
+import nars.term.*;
+import nars.term.util.SubtermsKey;
 import nars.time.Tense;
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.list.MutableList;
@@ -51,45 +50,47 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  */
 @Paper
 public class Factorize {
-    public static Term apply(Term x) {
-        if (x.op() == NEG) {
+
+    public static Term apply(Term x, int volMax) {
+        Op xo = x.op();
+        if (xo == NEG) {
             Term xu = x.unneg();
-            if (xu.op() == CONJ) {
-                Term y = apply(xu);
-                if (y != xu)
-                    return y.neg();
-            }
+            Term y = apply(xu, volMax-1);
+            if (y != xu)
+                return y.neg();
             return x;
         }
 
-        if (x.op() != CONJ || !Tense.dtSpecial(x.dt()))
+        if (xo != CONJ || !Tense.dtSpecial(x.dt()))
             return x; //unchanged
 
-        return factorize.apply(x);
-    }
-
-    static final Function<Term,Term> factorize = Memoizers.the.memoize(
-            Factorize.class.getSimpleName() + "_factorize",
-            TermKey::new,
-            Factorize::_factorize, 8 * 1024);
-
-    private static Term _factorize(TermKey _x) {
-        Term x = _x.term;
-        Subterms xx = x.subterms();
-
-        Term[] xxx = distribute(xx);
-        if (xxx == null)
-            return x; //not worth changing
-
-        @Nullable Set<Term> y = applyConj(xxx, x.hasVarDep() ? f : fIfNoDep);
+        Term[] y = factorize.apply(Terms.sorted(x.subterms()));
         if (y == null)
             return x; //unchanged
 
-//        Term[] yy = Terms.sorted(y);
+        if (Util.sum(Term::volume, y) > volMax)
+            return x; //excessively complex result
+
+        //        Term[] yy = Terms.sorted(y);
 //        if (xx.equalTerms(yy))
 //            return x; //unchanged
 
         return CONJ.the(x.dt(), y);
+    }
+
+    static final Function<Subterms,Term[]> factorize = Memoizers.the.memoize(
+            Factorize.class.getSimpleName() + "_factorize",
+            SubtermsKey::new,
+            Factorize::_factorize, 8 * 1024);
+
+    private static Term[] _factorize(SubtermsKey x) {
+        Subterms xx = x.subs;
+
+        Term[] xxx = distribute(xx);
+        if (xxx == null)
+            return null; //not worth changing
+
+        return applyConj(xxx, xx.hasVarDep() ? f : fIfNoDep);
     }
 
     /** returns null if detects no reason to re-process */
@@ -157,10 +158,10 @@ public class Factorize {
     }
 
     /**
-     * returns the subterms, as a set, for the new conjunction.  or null if there was nothing factorable
+     * returns the subterms, as a sorted term array set, for the new conjunction.  or null if there was nothing factorable
      */
     @Nullable
-    protected static Set<Term> applyConj(Term[] x, Variable f) {
+    protected static Term[] applyConj(Term[] x, Variable f) {
 
         /** shadow term -> replacements */
         UnifiedSetMultimap<Term, ObjectIntPair<Term>> p = UnifiedSetMultimap.newMultimap();
@@ -199,18 +200,22 @@ public class Factorize {
                 t.add(x[i]);
         t.add(rr.getOne() /* shadow */);
         t.add($.func(Member.the, f, $.sete(rr.getTwo().collect(ObjectIntPair::getOne))));
-        return t;
+        return Terms.sorted(t);
     }
 
     public static Term applyAndNormalize(Term x) {
-        Term y = apply(x);
+        return applyAndNormalize(x, Integer.MAX_VALUE);
+    }
+
+    public static Term applyAndNormalize(Term x, int volMax) {
+        Term y = apply(x, volMax);
         return y != x ? y.normalize() : x;
     }
 
     public static class FactorIntroduction extends Introduction {
 
-        public FactorIntroduction( NAR nar) {
-            super(nar);
+        public FactorIntroduction( NAR nar, int capacity) {
+            super(nar, capacity);
         }
 
         @Override

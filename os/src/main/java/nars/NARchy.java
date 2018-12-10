@@ -6,7 +6,6 @@ import nars.derive.impl.BatchDeriver;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
 import nars.index.concept.CaffeineIndex;
-import nars.op.Arithmeticize;
 import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
 import nars.op.stm.ConjClustering;
@@ -57,7 +56,7 @@ public class NARchy extends NARS {
 
         new BatchDeriver(Derivers.nal(nar, 1, 8, "motivation.nal"));
 
-        new Arithmeticize.ArithmeticIntroduction(nar);
+        //new Arithmeticize.ArithmeticIntroduction(nar, );
 
         return nar;
     }

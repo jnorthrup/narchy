@@ -43,12 +43,12 @@ public abstract class TaskLeak extends Causable {
     transient protected int volMax;
 
     protected TaskLeak(@Nullable NAR n, byte... puncs) {
-        this(new TaskTableSource(), n, puncs);
+        this(new TableSource(), n, puncs);
 
     }
     protected TaskLeak(int capacity, @Nullable NAR n, byte... puncs) {
         this(
-                new BaggedTaskEvents(//new FastPutProxyBag<>(
+                new BufferSource(//new FastPutProxyBag<>(
                         new PLinkArrayBag<>(Param.taskMerge, capacity)
                         //Runtime.getRuntime().availableProcessors()*128)
                 )
@@ -108,7 +108,11 @@ public abstract class TaskLeak extends Causable {
     @Override
     protected void next(NAR nar, BooleanSupplier kontinue) {
         volMax = nar.termVolumeMax.intValue();
-        source.next(kontinue, nar, this::leak);
+        source.next((t)->{
+            if (t!=null)
+                leak(t);
+            return kontinue.getAsBoolean();
+        }, nar);
     }
 
     public static abstract class TaskSource {
@@ -120,7 +124,7 @@ public abstract class TaskLeak extends Causable {
 
         @Nullable abstract public Off starting(TaskLeak t, NAR n);
 
-        public abstract void next(BooleanSupplier kontinue, NAR nar, Consumer<Task> each);
+        public abstract void next(Predicate<Task> each, NAR nar);
 
         public Off start(TaskLeak t, NAR nar) {
             this.pri = t::priFiltered; //not t::pri
@@ -128,12 +132,14 @@ public abstract class TaskLeak extends Causable {
         }
     }
 
-    /** adds task event's to a bag, leaks elements from the bag by its .sample() methods */
-    public static class BaggedTaskEvents extends TaskSource  {
+    /**
+     * TODO merge with TaskBuffer
+     * adds task event's to a bag, leaks elements from the bag by its .sample() methods */
+    public static class BufferSource extends TaskSource  {
         protected final Bag<Task, PriReference<Task>> bag;
         @Nullable Consumer<PriReference<Task>> bagUpdateFn = null;
 
-        public BaggedTaskEvents(Bag<Task, PriReference<Task>> bag) {
+        public BufferSource(Bag<Task, PriReference<Task>> bag) {
             this.bag = bag;
         }
 
@@ -156,17 +162,14 @@ public abstract class TaskLeak extends Causable {
         }
 
         @Override
-        public void next(BooleanSupplier kontinue, NAR nar, Consumer<Task> each) {
+        public void next(Predicate<Task> each, NAR nar) {
             if (!bag.commit(bagUpdateFn).isEmpty()) {
-                Random rng = nar.random();
-                bag.sample(rng, (PriReference<Task> v) -> {
+                bag.sample(nar.random(), (PriReference<Task> v) -> {
                     Task t = v.get();
                     if (t.isDeleted())
                         return Sampler.SampleReaction.Remove;
 
-                    each.accept(t);
-
-                    return kontinue.getAsBoolean() ? Sampler.SampleReaction.Remove : Sampler.SampleReaction.RemoveAndStop;
+                    return each.test(t) ? Sampler.SampleReaction.Remove : Sampler.SampleReaction.RemoveAndStop;
                 });
             } else {
 //        if (bag.isEmpty())
@@ -182,7 +185,7 @@ public abstract class TaskLeak extends Causable {
      *     //tasklink bag of active concepts
      *  TODO configurable "burst" size per visited concept
      * */
-    public static class TaskTableSource extends TaskSource {
+    public static class TableSource extends TaskSource {
 
         private Predicate<Term> termFilter;
         private Predicate<Task> taskFilter;
@@ -206,7 +209,7 @@ public abstract class TaskLeak extends Causable {
         }
 
         @Override
-        public void next(BooleanSupplier kontinue, NAR nar, Consumer<Task> each) {
+        public void next(Predicate<Task> each, NAR nar) {
 
             when = focus();
 
@@ -216,12 +219,14 @@ public abstract class TaskLeak extends Causable {
 
                 Concept cc = c.get();
                 Term ct = cc.term();
+
+                Task x;
                 if (ct.hasAny(Op.Temporal) || termFilter.test(cc.term())) { //TODO check for impl filters which assume the term is from a Task, ex: dt!=XTERNAL but would be perfectly normal for a concept's term
-                    Task x = sample(cc);
-                    if (x!=null)
-                        each.accept(x);
-                }
-                return kontinue.getAsBoolean();
+                    x = sample(cc);
+                } else
+                    x = null;
+
+                return each.test(x);
             });
         }
 

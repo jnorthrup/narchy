@@ -170,12 +170,20 @@ public class Tetris extends NAgentX {
 
     }
     void actionsPushButton() {
-        final Term LEFT = $.inh("left", id);
-        final Term RIGHT = $.inh("right", id);
-        final Term ROT = $.inh("rotate", id);
-        final Term FALL = $.inh("fall", id);
+        final Term LEFT =
+                $.the("left");
+                //$.inh("left", id);
+        final Term RIGHT =
+                $.the("right");
+                //$.inh("right", id);
+        final Term ROT =
+                $.the("rotate");
+                //$.inh("rotate", id);
+        final Term FALL =
+                $.the("fall");
+                //$.inh("fall", id);
 
-        int debounceDurs = 1;
+        int debounceDurs = 0;
         Runnable leftAction = () -> state.act(TetrisState.LEFT);
         Runnable rightAction = () -> state.act(TetrisState.RIGHT);
 

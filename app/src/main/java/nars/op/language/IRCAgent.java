@@ -8,8 +8,6 @@ import nars.Task;
 import nars.bag.leak.TaskLeak;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
-import nars.op.Arithmeticize;
-import nars.op.Factorize;
 import nars.op.language.util.IRC;
 import nars.op.stm.ConjClustering;
 import nars.time.clock.RealTime;
@@ -222,8 +220,6 @@ public class IRCAgent extends IRC {
                 .exe(new MultiExec.WorkerExec(new Revaluator.DefaultRevaluator(0.5f),2))
                 .time(new RealTime.MS(false).durFPS(durFPS)).get();
 
-        new Factorize.FactorIntroduction(n);
-        new Arithmeticize.ArithmeticIntroduction(n);
         new ConjClustering(n, BELIEF, 4, 16);
 
         n.termVolumeMax.set(20);
