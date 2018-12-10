@@ -5,6 +5,7 @@ import nars.Narsese;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.TermTest;
 import nars.term.Terms;
 import nars.term.atom.Atomic;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ class TermVectorTest {
         assertNotEquals(a, b);
         assertNotEquals(a.hashCode(), b.hashCode());
 
-        SubtermsTest.assertEquals(a.subterms(), b.subterms());
+        TermTest.assertEq(a.subterms(), b.subterms());
 
 
         assertNotEquals(0, a.compareTo(b));

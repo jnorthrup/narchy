@@ -1,20 +1,16 @@
 package nars.subterm;
 
-import com.google.common.collect.Iterators;
 import nars.$;
-import nars.IO;
 import nars.Narsese;
-import nars.Op;
 import nars.op.SetFunc;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.TermTest;
 import nars.term.atom.Atomic;
 import nars.term.util.SetSectDiff;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static nars.Op.PROD;
-import static nars.Op.SETe;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -88,7 +84,7 @@ public class SubtermsTest {
 
         Subterms y = new ArrayTermVector(a, b);
 
-        assertEquals(x, y);
+        TermTest.assertEq(x, y);
 
         Assertions.assertEquals(y.hashCode(), x.hashCode());
         Assertions.assertEquals(y.hashCodeSubterms(), x.hashCodeSubterms());
@@ -157,55 +153,7 @@ public class SubtermsTest {
 //
 //    }
 
-    public static void assertEquals(Subterms a, Subterms b) {
-        Assertions.assertEquals(a, b);
-        Assertions.assertEquals(b, a);
-        Assertions.assertEquals(a.toString(), b.toString());
-        Assertions.assertEquals(a.hashCode(), b.hashCode());
-        Assertions.assertEquals(a.hashCodeSubterms(), b.hashCodeSubterms());
-        assertTrue(Iterators.elementsEqual(a.iterator(), b.iterator()));
-        Assertions.assertEquals(Op.terms.newCompound(PROD, a), Op.terms.newCompound(PROD, b));
-        Assertions.assertEquals(Op.terms.newCompound(PROD, b), Op.terms.newCompound(PROD, a));
-
-
-        org.junit.jupiter.api.Assertions.assertEquals(0, Subterms.compare(a, b));
-        org.junit.jupiter.api.Assertions.assertEquals(0, Subterms.compare(a, b));
-
-        {
-            byte[] bytesExpected = IO.termToBytes($.pFast(a));
-            byte[] bytesActual = IO.termToBytes($.pFast(b));
-            assertArrayEquals(bytesExpected, bytesActual);
-        }
-        {
-            if (a.subs() > 0) {
-                byte[] bytesExpected = IO.termToBytes($.sFast(a));
-                byte[] bytesActual = IO.termToBytes($.sFast(b));
-                assertArrayEquals(bytesExpected, bytesActual);
-            }
-        }
-        {
-            byte[] bytesExpected = IO.termToBytes(PROD.the(a));
-            byte[] bytesActual = IO.termToBytes(PROD.the(b));
-            assertArrayEquals(bytesExpected, bytesActual);
-        }
-
-        {
-            byte[] bytesExpected = IO.termToBytes(PROD.the(a));
-            byte[] bytesActual = IO.termToBytes(PROD.the(b));
-            assertArrayEquals(bytesExpected, bytesActual);
-        }
-
-        {
-            if (a.subs() > 0) {
-                byte[] bytesExpected = IO.termToBytes(SETe.the(a));
-                byte[] bytesActual = IO.termToBytes(SETe.the(b));
-                assertArrayEquals(bytesExpected, bytesActual);
-            }
-        }
-
-    }
-
-//    @Disabled
+    //    @Disabled
 //    @Test
 //    void testCommonSubterms() throws Narsese.NarseseException {
 //        assertTrue(commonSubtermOrContainment($("x"), $("x")));

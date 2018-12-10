@@ -127,14 +127,14 @@ public class AnonTest {
 
         Term[] x = {Anom.the(3), Anom.the(1), Anom.the(2)};
 
-        SubtermsTest.assertEquals(new UniSubterm(x[0]), new AnonVector(x[0]));
-        SubtermsTest.assertEquals(new UniSubterm(x[0]), new TermList(x[0]));
+        TermTest.assertEq(new UniSubterm(x[0]), new AnonVector(x[0]));
+        TermTest.assertEq(new UniSubterm(x[0]), new TermList(x[0]));
 
-        SubtermsTest.assertEquals(new BiSubterm(x[0], x[1]), new AnonVector(x[0], x[1]));
-        SubtermsTest.assertEquals(new BiSubterm(x[0], x[1]), new TermList(x[0], x[1]));
+        TermTest.assertEq(new BiSubterm(x[0], x[1]), new AnonVector(x[0], x[1]));
+        TermTest.assertEq(new BiSubterm(x[0], x[1]), new TermList(x[0], x[1]));
 
-        SubtermsTest.assertEquals(new ArrayTermVector(x), new AnonVector(x));
-        SubtermsTest.assertEquals(new ArrayTermVector(x), new TermList(x));
+        TermTest.assertEq(new ArrayTermVector(x), new AnonVector(x));
+        TermTest.assertEq(new ArrayTermVector(x), new TermList(x));
 
     }
 
@@ -145,7 +145,7 @@ public class AnonTest {
 
         AnonVector av = new AnonVector(x);
         ArrayTermVector bv = new ArrayTermVector(x);
-        SubtermsTest.assertEquals(bv, av);
+        TermTest.assertEq(bv, av);
 
         assertFalse(av.contains(x[0].neg()));
         assertFalse(av.containsRecursively(x[0].neg()));
@@ -172,9 +172,9 @@ public class AnonTest {
 
             ArrayUtils.shuffle(x, rng);
 
-            SubtermsTest.assertEquals(new UniSubterm(x[0]), new AnonVector(x[0]));
-            SubtermsTest.assertEquals(new BiSubterm(x[0], x[1]), new AnonVector(x[0], x[1]));
-            SubtermsTest.assertEquals(new ArrayTermVector(x), new AnonVector(x));
+            TermTest.assertEq(new UniSubterm(x[0]), new AnonVector(x[0]));
+            TermTest.assertEq(new BiSubterm(x[0], x[1]), new AnonVector(x[0], x[1]));
+            TermTest.assertEq(new ArrayTermVector(x), new AnonVector(x));
         }
     }
 

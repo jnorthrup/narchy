@@ -15,6 +15,8 @@ import org.junit.jupiter.api.Test;
 import static nars.$.*;
 import static nars.Op.*;
 import static nars.term.TermTest.*;
+import static nars.term.TermTestMisc.assertValid;
+import static nars.term.TermTestMisc.assertValidTermValidConceptInvalidTaskContent;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;

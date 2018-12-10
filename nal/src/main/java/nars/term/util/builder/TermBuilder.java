@@ -61,6 +61,9 @@ public abstract class TermBuilder {
     }
 
     public Subterms theSubterms(boolean tryAnon, Term... t) {
+        final int tLength = t.length;
+        if (tLength == 0)
+            return Op.EmptySubterms;
 
         if (tryAnon) {
             Subterms s = theAnonSubterms(t);
@@ -97,8 +100,8 @@ public abstract class TermBuilder {
     static Subterms newSubtermsVector(Term[] t) {
         Term t0 = t[0];
         switch (t.length) {
-//            case 0:
-//                throw new UnsupportedOperationException();
+            case 0:
+                throw new UnsupportedOperationException();
 
             case 1: {
                 return new UniSubterm(t0);

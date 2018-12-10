@@ -38,7 +38,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private final String id;
 
     /** memory-saving */
-    private static final boolean sortCanonically = false;
+    private static final boolean sortCanonically = true;
 
     public InterningTermBuilder() {
         this(UUID.randomUUID().toString(), true, maxInternedVolumeDefault, DEFAULT_SIZE);
@@ -155,11 +155,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     public Subterms theSubterms(Term... t) {
-        final int tLength = t.length;
-        if (tLength == 0)
-            return Op.EmptySubterms;
-
-
         if (deep)
             resolve(t);
 

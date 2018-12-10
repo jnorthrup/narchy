@@ -2,6 +2,7 @@ package nars.term.compound;
 
 import nars.Narsese;
 import nars.term.Compound;
+import nars.term.Term;
 import nars.term.TermTest;
 import org.junit.jupiter.api.Test;
 
@@ -60,7 +61,7 @@ class FastCompoundTest {
 
     private static void assertEquivalent(Compound c) {
         FastCompound f = FastCompound.get(c);
-        TermTest.assertReallyEquals(c, f);
+        TermTest.assertEq((Term) c, f);
 
 
     }

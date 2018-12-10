@@ -1,5 +1,6 @@
 package nars.subterm;
 
+import nars.Op;
 import nars.term.Term;
 import nars.term.Terms;
 
@@ -8,6 +9,13 @@ import java.util.function.Function;
 
 public class SortedSubterms {
 
+    public static Subterms the(Term[] x) {
+        return the(x, Op.terms::subterms);
+    }
+
+    public static Subterms the(Term[] x, Function<Term[],Subterms> b) {
+        return the(x, b, false);
+    }
 
     public static Subterms the(Term[] x, Function<Term[],Subterms> b, boolean dedup) {
 
@@ -22,7 +30,7 @@ public class SortedSubterms {
                 if (i <= 0)
                     return b.apply(x);
                 else
-                    return b.apply(x).reversed();
+                    return b.apply(new Term[]{ x[1], x[0] }).reversed();
 
             default: {
                 Term[] xx;
@@ -61,6 +69,11 @@ public class SortedSubterms {
             for (int i = 0, xLength = target.length; i < xLength; i++)
                 m[i] = (byte) base.indexOf(target[i]);
             return new MappedSubterms(base, m);
+        }
+
+        @Override
+        public int hashCodeSubterms() {
+            return hash;
         }
 
         @Override

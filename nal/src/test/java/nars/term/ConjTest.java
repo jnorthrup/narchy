@@ -23,6 +23,8 @@ import static nars.Op.CONJ;
 import static nars.io.NarseseTest.assertInvalidTerms;
 import static nars.term.TemporalTermTest.*;
 import static nars.term.TermTest.*;
+import static nars.term.TermTestMisc.assertValid;
+import static nars.term.TermTestMisc.assertValidTermValidConceptInvalidTaskContent;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 import static org.junit.jupiter.api.Assertions.*;
