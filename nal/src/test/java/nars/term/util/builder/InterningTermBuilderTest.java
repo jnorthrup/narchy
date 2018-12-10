@@ -1,11 +1,11 @@
 package nars.term.util.builder;
 
 import com.google.common.collect.Iterators;
+import jcog.memoize.byt.ByteHijackMemoize;
 import jcog.pri.PriProxy;
 import nars.Op;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.util.HijackTermCache;
 import nars.term.util.InternedCompound;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +23,7 @@ class InterningTermBuilderTest {
         Term pab = t.compound(PROD, a, b);
         assertEquals( "(a,b)", pab.toString());
 
-        HijackTermCache prodCache = t.terms[PROD.id];
+        ByteHijackMemoize<InternedCompound, Term> prodCache = t.terms[PROD.id];
 
         PriProxy<InternedCompound, Term> pabEntry = Iterators.get(prodCache.iterator(), 0);
         assertEquals(pab, pabEntry.get());

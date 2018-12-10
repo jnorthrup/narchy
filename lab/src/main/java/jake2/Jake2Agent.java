@@ -118,7 +118,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
     }
 
     protected String nextMap() {
-        return "demo3";
+        return "demo1";
     }
 
     final PlayerData player = new PlayerData();

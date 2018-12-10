@@ -2,7 +2,6 @@ package nars.subterm;
 
 import jcog.math.ShuffledPermutations;
 import nars.term.Term;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
@@ -20,7 +19,6 @@ public final class ShuffledSubterms extends ProxySubterms {
         reset(rng);
     }
 
-    @NotNull
     @Override
     public Term sub(int i) {
         return super.sub(shuffle.permute(i));

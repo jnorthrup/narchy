@@ -19,7 +19,7 @@ public class HeapTermBuilder extends TermBuilder {
     }
 
     @Override
-    public Subterms subterms(Op inOp, Term... u) {
-        return theSubterms(u);
+    protected Subterms subterms(Op inOp, Term... u) {
+        return theSubterms(true, u);
     }
 }

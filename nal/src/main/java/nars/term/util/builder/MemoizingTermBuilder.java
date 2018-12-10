@@ -1,8 +1,8 @@
 package nars.term.util.builder;
 
+import jcog.memoize.byt.ByteHijackMemoize;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.util.HijackTermCache;
 import nars.term.util.InternedCompound;
 
 import java.util.UUID;
@@ -12,9 +12,9 @@ import static nars.Op.PROD;
 /** memoizes certain term operations in addition to interning */
 public class MemoizingTermBuilder extends InterningTermBuilder {
 
-    private final HijackTermCache normalize;
-    //private final HijackTermCache concept;
-    private final HijackTermCache root;
+    //TODO <Term,Term>
+    private final ByteHijackMemoize<InternedCompound,Term> normalize;
+    private final ByteHijackMemoize<InternedCompound,Term> root;
 
     public MemoizingTermBuilder() {
         this(UUID.randomUUID().toString(), true, maxInternedVolumeDefault, DEFAULT_SIZE);

@@ -50,23 +50,37 @@ public abstract class TermBuilder {
 //    }
 
     public final Subterms subterms(Term... s) {
+        if (s.length == 0)
+            return Op.EmptySubterms;
         return subterms(null, s);
     }
 
 
-    public Subterms subterms(Collection<Term> s) {
+    public final Subterms subterms(Collection<Term> s) {
         return subterms(s.toArray(Op.EmptyTermArray));
     }
 
-    public Subterms theSubterms(Term... t) {
-        final int tLength = t.length;
-        if (tLength == 0)
-            return Op.EmptySubterms;
+    public Subterms theSubterms(boolean tryAnon, Term... t) {
 
+        if (tryAnon) {
+            Subterms s = theAnonSubterms(t);
+            if (s !=null)
+                return s;
+        }
+
+
+        return newSubtermsVector(t);
+
+    }
+
+    @Nullable static Subterms theAnonSubterms(Term[] t) {
+        return isAnon(t) ? new AnonVector(t) : null;
+    }
+
+    static boolean isAnon(Term[] t) {
         boolean purelyAnon = true;
         for (Term x : t) {
-            if (x instanceof EllipsisMatch)
-                throw new RuntimeException("ellipsis match should not be a subterm of ANYTHING");
+            //assert (!(x instanceof EllipsisMatch)) : "ellipsis match should not be a subterm of ANYTHING";
 
             if (purelyAnon) {
                 if (!(x instanceof AnonID)) {
@@ -77,35 +91,33 @@ public abstract class TermBuilder {
                 }
             }
         }
+        return purelyAnon;
+    }
 
-        if (!purelyAnon) {
-            Term t0 = t[0];
-            switch (t.length) {
-                case 0:
-                    throw new UnsupportedOperationException();
+    static Subterms newSubtermsVector(Term[] t) {
+        Term t0 = t[0];
+        switch (t.length) {
+//            case 0:
+//                throw new UnsupportedOperationException();
 
-                case 1: {
-                    return new UniSubterm(t0);
-                }
+            case 1: {
+                return new UniSubterm(t0);
+            }
 
-                case 2: {
-                    Term t1 = t[1];
+            case 2: {
+                Term t1 = t[1];
 
-                    return
+                return
 //                    return (this instanceof InterningTermBuilder) ?
 //                            new BiSubterm.ReversibleBiSubterm(t[0], t[1]) :
-                            new BiSubterm(t0, t1);
-                }
-
-                default: {
-                    //TODO Param.SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME
-                    return new ArrayTermVector(t);
-                }
+                        new BiSubterm(t0, t1);
             }
-        } else {
-            return new AnonVector(t);
-        }
 
+            default: {
+                //TODO Param.SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME
+                return new ArrayTermVector(t);
+            }
+        }
     }
 
 

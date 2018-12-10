@@ -3,11 +3,13 @@ package nars.term.util.builder;
 import jcog.data.byt.DynBytes;
 import jcog.data.byt.RecycledDynBytes;
 import jcog.memoize.Memoizers;
+import jcog.memoize.byt.ByteHijackMemoize;
 import nars.Op;
+import nars.subterm.AnonVector;
+import nars.subterm.SortedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.util.HijackTermCache;
 import nars.term.util.InternedCompound;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,9 +32,13 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private final boolean deep;
     private final int volInternedMax;
 
-    final HijackTermCache[] terms;
+    final ByteHijackMemoize<InternedCompound, Subterms> subterms, anonSubterms;
+    final ByteHijackMemoize<InternedCompound, Term>[] terms;
 
     private final String id;
+
+    /** memory-saving */
+    private static final boolean sortCanonically = false;
 
     public InterningTermBuilder() {
         this(UUID.randomUUID().toString(), true, maxInternedVolumeDefault, DEFAULT_SIZE);
@@ -42,9 +48,12 @@ public class InterningTermBuilder extends HeapTermBuilder {
         this.id = id;
         this.deep = deep;
         this.volInternedMax = volInternedMax;
-        terms = new HijackTermCache[Op.ops.length];
+        terms = new ByteHijackMemoize[Op.ops.length];
 
-        HijackTermCache statements = newOpCache("statement", this::_statement, cacheSizePerOp * 3);
+
+        subterms = newOpCache("subterms", x -> theSubterms(x.rawSubs.get()), cacheSizePerOp * 2);
+        anonSubterms = newOpCache("anonSubterms", x -> new AnonVector(x.rawSubs.get()), cacheSizePerOp);
+        ByteHijackMemoize statements = newOpCache("statement", this::_statement, cacheSizePerOp * 3);
 
         for (int i = 0; i < Op.ops.length; i++) {
             Op o = Op.ops[i];
@@ -56,14 +65,13 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
             //TODO use multiple PROD slices to decrease contention
 
-            HijackTermCache c;
+            ByteHijackMemoize c;
             if (o == CONJ) {
-                c =
-                        newOpCache("conj", j -> super.conj(j.dt, j.rawSubs.get()), cacheSizePerOp);
+                c = newOpCache("conj", j -> super.conj(j.dt, j.rawSubs.get()), cacheSizePerOp);
             } else if (o.statement) {
                 c = statements;
             } else {
-                c = newOpCache(o.str, this::compoundInterned, s);
+                c = newOpCache(o.str, x -> theCompound(Op.ops[x.op], x.dt, x.rawSubs.get(), x.key), s);
             }
             terms[i] = c;
         }
@@ -72,14 +80,18 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
 
-    protected HijackTermCache newOpCache(String name, Function<InternedCompound, Term> f, int capacity) {
-        HijackTermCache h = new HijackTermCache(f, capacity, 4);
+    protected ByteHijackMemoize newOpCache(String name, Function<InternedCompound, ?> f, int capacity) {
+        ByteHijackMemoize h = new ByteHijackMemoize(f, capacity, 4, false);
         Memoizers.the.add(id + '_' + InterningTermBuilder.class.getSimpleName() + '_' + name, h);
         return h;
     }
 
-    private Term apply(InternedCompound x) {
+    private Term compoundInterned(InternedCompound x) {
         return terms[x.op].apply(x);
+    }
+
+    private Subterms subsInterned(ByteHijackMemoize<InternedCompound,Subterms> m, Term[] t) {
+        return m.apply(InternedCompound.get(PROD, DTERNAL, t));
     }
 
     @Nullable
@@ -99,10 +111,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
 
-    private Term compoundInterned(InternedCompound x) {
-        return theCompound(Op.ops[x.op], x.dt, x.rawSubs.get(), x.key); //x.arrayFinal());
-    }
-
     @Override
     public final Term compound(Op o, int dt, Term[] u) {
         boolean internable = internableRoot(o, dt, u);
@@ -112,57 +120,50 @@ public class InterningTermBuilder extends HeapTermBuilder {
 //        }
 
         return internable ?
-                compoundInterned(o, dt, o.sortedIfNecessary(dt,u)) :
+                compoundInterned(o, dt, o.sortedIfNecessary(dt, u)) :
                 super.compound(o, dt, u);
     }
 
     private Term compoundInterned(Op op, int dt, Term[] u) {
-        return apply(InternedCompound.get(op, dt, u));
+        return compoundInterned(InternedCompound.get(op, dt, u));
     }
 
 
     @Override
-    public Subterms subterms(Op inOp, Term... u) {
-        if (u.length == 0)
-            return Op.EmptySubterms;
+    protected Subterms subterms(Op inOp, Term... t) {
 
-        if (inOp != PROD && internableSubs(u)) {
-            return compoundInterned(PROD, DTERNAL, u).subterms();
-        } else {
-//            if (s.length == 2 && s[0].compareTo(s[1]) > 0) {
-//                //TODO filter purely anon
-//                return ((BiSubterm.ReversibleBiSubterm)newSubterms(inOp, s[1], s[0])).reverse();
-//            }
+        if (t.length == 0)
+            return EmptySubterms;
 
 
-            //resolve already-interned subterms
-            /// s.clone() ?
-//            for (int i = 0, sLength = s.length; i < sLength; i++) {
-//                Term x = s[i];
-//
-//                HijackTermCache tt = terms[x.op().id];
-//                if (tt != null) {
-//                    Term z = tt.getIfPresent(InternedCompound.get(x));
-//                    if (z != x && z != null)
-//                        s[i] = z;
-//                }
-//            }
+        //TODO separate cache for anon's
+        if (isAnon(t))
+            return subsInterned(anonSubterms, t);
 
-            return super.subterms(inOp, u);
+        if (internableSubs(t)) {
+            if (sortCanonically) {
+                return SortedSubterms.the(t, u ->
+                        subsInterned(subterms, u), false);
+            } else {
+                return subsInterned(subterms, t);
+            }
         }
 
+
+        return theSubterms(t);
     }
 
-    protected Term theCompound(Op o, int dt, Term[] t, @Nullable DynBytes key) {
-        if (deep)
-            resolve(t);
-        return super.theCompound(o, dt, t, key);
-    }
 
     public Subterms theSubterms(Term... t) {
+        final int tLength = t.length;
+        if (tLength == 0)
+            return Op.EmptySubterms;
+
+
         if (deep)
             resolve(t);
-        return super.theSubterms(t);
+
+        return super.theSubterms(false, t);
     }
 
 

@@ -24,13 +24,17 @@ public final class InternedCompound extends ByteKey.ByteKeyExternal  {
 
     private InternedCompound(DynBytes key, Op o, int dt, Supplier<Term[]> rawSubs) {
         super(key);
-        this.op = o.id; this. dt = dt; this.rawSubs = rawSubs;
+        this.op = o.id; this.dt = dt; this.rawSubs = rawSubs;
+    }
+    public static InternedCompound get(Op o, Term... subs) {
+        return get(o, DTERNAL, subs);
     }
 
     public Term sub0() {
         return rawSubs.get()[0];
     }
 
+    //TODO conslidate the following two highly similar procedures
     /** for look-up */
     public static InternedCompound get(Term x) {
 
@@ -66,9 +70,6 @@ public final class InternedCompound extends ByteKey.ByteKeyExternal  {
         return new InternedCompound((DynBytes) out, o, dt, x::arrayShared);
     }
 
-    public static InternedCompound get(Op o, Term... subs) {
-        return get(o, DTERNAL, subs);
-    }
 
     public static InternedCompound get(Op o, int dt, Term... subs) {
         DynBytes out = tmpKey();
