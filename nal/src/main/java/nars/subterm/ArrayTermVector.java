@@ -23,7 +23,7 @@ public class ArrayTermVector extends TermVector {
     public ArrayTermVector(/*@NotNull */Term... terms) {
         super(terms);
         this.terms = terms;
-        testIfAutoNormalized();
+        normalized = preNormalize(this);
     }
 
 

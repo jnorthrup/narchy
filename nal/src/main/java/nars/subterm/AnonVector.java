@@ -27,13 +27,9 @@ public class AnonVector extends TermVector implements Subterms.SubtermsBytesCach
     private AnonVector(short[] s) {
         super(AnonID.subtermMetadata(s));
         this.subterms = s;
-        testIfAutoNormalized();
+        this.normalized = preNormalize();
     }
 
-    protected void testIfAutoNormalized() {
-        if (vars() == 0 || testIfInitiallyNormalized(subterms))
-            normalized = true;
-    }
 
     /**
      * assumes the array contains only AnonID instances
@@ -53,7 +49,11 @@ public class AnonVector extends TermVector implements Subterms.SubtermsBytesCach
             t[i] = neg ? ((short)-tt) : tt;
         }
 
-        testIfAutoNormalized();
+        this.normalized = preNormalize();
+    }
+
+    private boolean preNormalize() {
+        return vars() == 0 || preNormalize(subterms);
     }
 
 

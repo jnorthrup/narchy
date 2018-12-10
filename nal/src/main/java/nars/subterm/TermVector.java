@@ -30,7 +30,11 @@ public abstract class TermVector extends TermMetadata implements Subterms, The, 
 
     protected TermVector(Term... terms) {
         super(terms);
-        the = Util.and(terms, Term::the);
+        the = isThe(terms);
+    }
+
+    private boolean isThe(Term[] terms) {
+        return Util.and(terms, Term::the);
     }
 
     @Override
@@ -38,12 +42,7 @@ public abstract class TermVector extends TermMetadata implements Subterms, The, 
         return the;
     }
 
-    protected void testIfAutoNormalized() {
-        if (!hasAny(IMG) || (op()==PROD && AND(z -> z.op()==IMG || !z.hasAny(IMG)))) { //the product containing an image itself may be normalized but superterms containing it are not automatically considered normal
-            if (vars() == 0 || testIfInitiallyNormalized(this))
-              normalized = true;
-        }
-    }
+
 
     @Override
     public boolean containsNeg(Term x) {

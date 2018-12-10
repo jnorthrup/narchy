@@ -7,6 +7,8 @@ import nars.term.Variable;
 import nars.term.anon.AnonID;
 import nars.term.var.NormalizedVariable;
 
+import static nars.Op.IMG;
+
 /**
  * cached values for term/subterm metadata
  */
@@ -52,7 +54,16 @@ abstract public class TermMetadata implements Termlike {
     }
 
 
-    protected static boolean testIfInitiallyNormalized(Subterms x) {
+    /** not a conclusive test but meant to catch most cases where the term is already normalized */
+    public static boolean preNormalize(Subterms x) {
+
+        //the product containing an image itself may be normalized but superterms containing it are not automatically considered normal
+        if (x.hasAny(IMG) && (!x.AND(z -> z.op() == IMG || !z.hasAny(IMG))))
+            return false;
+
+        if (x.vars()==0)
+            return true;
+
         //depth first traversal, determine if variables encountered are monotonically increasing
 
         final int[] minID = {0};
@@ -92,7 +103,7 @@ abstract public class TermMetadata implements Termlike {
     /**
      * for AnonVector
      */
-    protected static boolean testIfInitiallyNormalized(short[] subterms) {
+    protected static boolean preNormalize(short[] subterms) {
         /* checks for monotonically increasing variable numbers starting from 1,
          which will indicate that the subterms is normalized
          */

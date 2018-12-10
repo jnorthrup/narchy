@@ -28,6 +28,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     protected static final int DEFAULT_SIZE = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
     protected static final int maxInternedVolumeDefault = 16;
+    protected static boolean deepDefault = false;
+
+    /** memory-saving */
+    private static final boolean sortCanonically = true;
 
     private final boolean deep;
     private final int volInternedMax;
@@ -37,11 +41,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     private final String id;
 
-    /** memory-saving */
-    private static final boolean sortCanonically = true;
+
 
     public InterningTermBuilder() {
-        this(UUID.randomUUID().toString(), true, maxInternedVolumeDefault, DEFAULT_SIZE);
+        this(UUID.randomUUID().toString(), deepDefault, maxInternedVolumeDefault, DEFAULT_SIZE);
     }
 
     public InterningTermBuilder(String id, boolean deep, int volInternedMax, int cacheSizePerOp) {

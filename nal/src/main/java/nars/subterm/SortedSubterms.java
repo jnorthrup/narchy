@@ -1,11 +1,14 @@
 package nars.subterm;
 
+import jcog.util.ArrayUtils;
 import nars.Op;
+import nars.subterm.util.TermMetadata;
 import nars.term.Term;
 import nars.term.Terms;
 
 import java.util.Arrays;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class SortedSubterms {
 
@@ -51,18 +54,112 @@ public class SortedSubterms {
         }
     }
 
+    /** assumes that each items in the base subterm are utilized exactly once in the structure, containment, etc.
+     * a relaxed variation of this can be created without this assumption */
     public static class MappedSubterms extends ProxySubterms {
 
         /** TODO even more compact 2-bit, 3-bit etc representations */
         final byte[] map;
         final int hash;
+        private boolean normalized;
 
         protected MappedSubterms(Subterms base, byte[] map) {
             super(base);
+            assert(base.subs()==map.length);
             this.map = map;
-
             this.hash = super.hashCode();
+            this.normalized = TermMetadata.preNormalize(this);
         }
+
+        @Override
+        public boolean contains(Term t) {
+            return ref.contains(t);
+        }
+
+        @Override
+        public boolean containsRecursively(Term x, boolean root, Predicate<Term> subTermOf) {
+            return ref.containsRecursively(x, root, subTermOf);
+        }
+
+        @Override
+        public boolean has(int structuralVector, boolean anyOrAll) {
+            return ref.has(structuralVector,anyOrAll);
+        }
+
+        @Override
+        public int vars() {
+            return ref.vars();
+        }
+
+        @Override
+        public int varDep() {
+            return ref.varDep();
+        }
+
+        @Override
+        public int varIndep() {
+            return ref.varIndep();
+        }
+
+        @Override
+        public int varPattern() {
+            return ref.varPattern();
+        }
+
+        @Override
+        public int varQuery() {
+            return ref.varQuery();
+        }
+
+        @Override
+        public Subterms reversed() {
+            byte[] r = map.clone();
+            ArrayUtils.reverse(r);
+            if (Arrays.equals(r, map)) //palindrome?
+                return this;
+            return new MappedSubterms(ref, r);
+        }
+
+        @Override
+        public boolean hasXternal() {
+            return ref.hasXternal();
+        }
+
+        @Override
+        public int structure() {
+            return ref.structure();
+        }
+
+        @Override
+        public boolean these() {
+            return ref.these();
+        }
+
+        @Override
+        public boolean isNormalized() {
+            return normalized;
+        }
+
+        @Override
+        public void setNormalized() {
+            this.normalized = true;
+        }
+
+        @Override
+        public int structureSurface() {
+            return ref.structureSurface();
+        }
+
+        @Override
+        public int volume() {
+            return ref.volume();
+        }
+
+        @Override
+        public int complexity() {
+            return ref.complexity();
+        }
+
 
         public static MappedSubterms the(Term[] target, Subterms base) {
             byte[] m = new byte[target.length];

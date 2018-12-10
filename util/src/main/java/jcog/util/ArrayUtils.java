@@ -1325,9 +1325,8 @@ public enum ArrayUtils {;
      * @param array the array to reverse, may be {@code null}
      */
     public static void reverse(final byte[] array) {
-        if (array == null) {
+        if (array == null || array.length < 2)
             return;
-        }
         reverse(array, 0, array.length);
     }
 
