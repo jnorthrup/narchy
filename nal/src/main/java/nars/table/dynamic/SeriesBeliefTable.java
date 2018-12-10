@@ -207,7 +207,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
 //        }
 
         @Override
-        protected void input(NAR n) {
+        protected void add(NAR n) {
             //DONT. just go straight to postprocessing
         }
     }

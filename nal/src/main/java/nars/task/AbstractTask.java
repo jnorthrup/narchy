@@ -57,7 +57,8 @@ public abstract class AbstractTask implements ITask, Prioritizable {
 
     @Override
     public final float pri(float p) {
-        return 1f;
+        //return 1f;
+        throw new UnsupportedOperationException();
     }
 
 

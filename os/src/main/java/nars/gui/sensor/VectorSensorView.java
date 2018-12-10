@@ -311,7 +311,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
                 goalCheckBox(view, "Goal+-", 0.5f),
                 goalCheckBox(view, "Goal-", 0f)
             ), new ObjectSurface(List.of(view.visBelief, view.visGoal, view.visPri, view.timeShift)),
-                    new FloatSlider("Pri", view.sensor.pri()));
+                    new FloatSlider("Pri", view.sensor.pri));
         }
 
         @NotNull

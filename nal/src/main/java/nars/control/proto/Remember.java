@@ -98,7 +98,7 @@ public class Remember extends AbstractTask {
 
         validate(n);
 
-        input(n);
+        add(n);
 
         commit(n);
 
@@ -151,9 +151,9 @@ public class Remember extends AbstractTask {
     }
 
     /**
-     * attempt to insert into belief table
+     * attempt to insert into the concept's belief table
      */
-    protected void input(NAR n) {
+    protected void add(NAR n) {
         //if (!(input instanceof DynTruth.DynamicTruthTask))
             ((TaskConcept) concept).add(this, n);
     }

@@ -28,14 +28,10 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     public final int width, height, area;
     public final P src;
 
-    private final FloatRange pri;
-    //private final FloatRange priPixel = new FloatRange(0, 0, 1);
-
     public final Array2DIterable<Signal> iter;
 
-    protected Bitmap2DConcepts(P src, @Nullable Int2Function<Term> pixelTerm, FloatRange pri, FloatRange res, NAR n) {
+    protected Bitmap2DConcepts(P src, @Nullable Int2Function<Term> pixelTerm, FloatRange res, NAR n) {
 
-        this.pri = pri;
         last = n.time();
         this.width = src.width();
         this.height = src.height();
@@ -77,7 +73,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 //                    public TermlinkTemplates templates() {
 //                        return super.templates();
 //                    }
-                }.setPri(pri).setResolution(res);
+                }.setResolution(res);
 
 
                 matrix[x][y] = sss;

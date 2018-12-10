@@ -65,7 +65,6 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
 
         this.source = signal;
 
-        setPri(FloatRange.unit(punc == BELIEF ? n.beliefPriDefault : n.goalPriDefault));
         ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(n.freqResolution));
 
         in = newChannel(n);
@@ -153,18 +152,9 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     }
 
     @Override
-    public FloatRange pri() {
-        return ((SensorBeliefTables) beliefs()).pri();
-    }
-
-    @Override
     public void update(long prev, long now, long next, NAR nar) {
         in.input(update(prev, now, (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)),nar));
     }
 
-    public Signal setPri(FloatRange pri) {
-        ((SensorBeliefTables) beliefs()).setPri(pri);
-        return this;
-    }
 
 }

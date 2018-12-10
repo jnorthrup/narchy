@@ -12,7 +12,6 @@ import nars.term.Termed;
 public interface Sensor extends Termed {
 
     FloatRange resolution();
-    FloatRange pri();
 
     void update(long last, long now, long next, NAR nar);
 

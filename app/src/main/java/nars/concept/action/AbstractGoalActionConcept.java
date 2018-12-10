@@ -1,6 +1,5 @@
 package nars.concept.action;
 
-import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -215,15 +214,16 @@ public class AbstractGoalActionConcept extends ActionConcept {
         }
 
         SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd, evi);
-        curiosity.pri(
-                //this.curiosity.agent.pri.floatValue() * n.priDefault(GOAL)
-                ScalarValue.EPSILON
-        );
+        priCuriosity(curiosity);
         return curiosity;
     }
 
     @Nullable public SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long now, long next, float dur, NAR nar) {
-        return ((SensorBeliefTables) beliefs()).add(f, now, next, this, dur, nar);
+        SeriesBeliefTable.SeriesRemember r = ((SensorBeliefTables) beliefs()).add(f, now, next, this, dur, nar);
+        if (r!=null) {
+            priFeedback(r.input);
+        }
+        return r;
     }
 
 

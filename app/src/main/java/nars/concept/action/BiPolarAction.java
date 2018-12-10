@@ -6,6 +6,7 @@ import nars.NAR;
 import nars.agent.NSense;
 import nars.concept.sensor.AbstractSensor;
 import nars.control.channel.CauseChannel;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -153,10 +154,13 @@ public class BiPolarAction extends AbstractSensor {
 
 
         float dur = now - prev;
-        feedback.input(
+
+        this.feedback.input(
                 pos.feedback(Pb, now, next, dur, nar), neg.feedback(Nb, now, next, dur, nar)
         );
     }
+
+
 
     @Override
     public Iterable<Termed> components() {

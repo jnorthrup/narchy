@@ -363,30 +363,30 @@ abstract public class NAgentX extends NAgent {
 //        });
         m.senseNumber($.func("busy", a.id), new FloatNormalized(() ->
                 (float) Math.log(1 + m.nar().emotion.busyVol.getMean()), 0, 1).relax(0.05f));
-
-        for (Sensor s : a.sensors) {
-            if (!(s instanceof Signal)) { //HACK only if compound sensor
-                Term term = s.term();
-
-                //HACK
-                if (s instanceof DigitizedScalar)
-                    term = $.quote(term.toString()); //throw new RuntimeException("overly complex sensor term");
-
-                //HACK TODO divide by # of contained concepts, reported by Sensor interface
-                float maxPri;
-                if (s instanceof Bitmap2DSensor) {
-                    maxPri = 8f / (float) (Math.sqrt(((Bitmap2DSensor) s).concepts.area));
-                } else {
-                    maxPri = 1;
-                }
-
-                m.actionUnipolar($.func("aware", term), (p) -> {
-                    FloatRange pp = s.pri();
-                    pp.set(lerp(p, 0f, maxPri * nar.priDefault(BELIEF)));
-                });
-
-            }
-        }
+//
+//        for (Sensor s : a.sensors) {
+//            if (!(s instanceof Signal)) { //HACK only if compound sensor
+//                Term term = s.term();
+//
+//                //HACK
+//                if (s instanceof DigitizedScalar)
+//                    term = $.quote(term.toString()); //throw new RuntimeException("overly complex sensor term");
+//
+//                //HACK TODO divide by # of contained concepts, reported by Sensor interface
+//                float maxPri;
+//                if (s instanceof Bitmap2DSensor) {
+//                    maxPri = 8f / (float) (Math.sqrt(((Bitmap2DSensor) s).concepts.area));
+//                } else {
+//                    maxPri = 1;
+//                }
+//
+//                m.actionUnipolar($.func("aware", term), (p) -> {
+//                    FloatRange pp = s.pri();
+//                    pp.set(lerp(p, 0f, maxPri * nar.priDefault(BELIEF)));
+//                });
+//
+//            }
+//        }
 
 //        actionUnipolar($.inh(this.nar.self(), $.the("deep")), (d) -> {
 //            if (d == d) {

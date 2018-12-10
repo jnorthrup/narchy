@@ -24,11 +24,6 @@ public class SensorBeliefTables extends BeliefTables {
 
     public final SensorBeliefTable series;
 
-    /**
-     * prioritizes generated tasks
-     */
-    @Deprecated private FloatRange pri;
-
     public FloatRange res;
 
     public SensorBeliefTables(Term term, boolean beliefOrGoal, ConceptBuilder b) {
@@ -78,7 +73,6 @@ public class SensorBeliefTables extends BeliefTables {
         series.clean(tables);
 
         if (x!=null) {
-            x.pri(pri(pri.asFloat(), lastValue, value, fRes));
             lastValue = value;
             return x.input(c);
         }
@@ -86,22 +80,7 @@ public class SensorBeliefTables extends BeliefTables {
         return null;
     }
 
-    private float pri(float pri, Truth prev, Truth next, float fRes) {
-        float priIfNoChange =
-                //ScalarValue.EPSILON; //min pri used if signal value remains the same
-                pri * pri;
 
-        if (prev == null)
-            return pri;
-        else {
-//            float fDiff = next!=null ? Math.abs(next.freq() - prev.freq()) : 1f;
-//            return Util.lerp(fDiff, priIfNoChange, pri);
-            if (next == null || Math.abs(next.freq()-prev.freq()) > fRes)
-                return pri;
-            else
-                return priIfNoChange;
-        }
-    }
 
 
     long[] eviShared = null;
@@ -216,22 +195,11 @@ public class SensorBeliefTables extends BeliefTables {
         }
     }
 
-//    @Override
-//    public void sample(Answer a) {
-//        match(a); //same preference as match
-//    }
-
-    public FloatRange pri() {
-        return pri;
-    }
 
     public FloatRange resolution() {
         return res;
     }
 
-    public void setPri(FloatRange pri) {
-        this.pri = pri;
-    }
     public void resolution(FloatRange res) {
         this.res = res;
     }

@@ -1,6 +1,7 @@
 package nars.concept.action;
 
 import jcog.math.FloatRange;
+import jcog.pri.UnitPri;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -27,6 +28,8 @@ import static nars.truth.TruthFunctions.w2cSafe;
 
 public abstract class ActionConcept extends TaskConcept implements Sensor, PermanentConcept {
 
+    public final UnitPri pri = new UnitPri();
+
     protected ActionConcept(Term term, TermLinker linker, NAR n) {
         this(term,
                 new SensorBeliefTables(term, true, n.conceptBuilder),
@@ -45,13 +48,24 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
     protected ActionConcept(Term term, BeliefTable beliefs, BeliefTable goals, TermLinker l, NAR n) {
         super(term, beliefs, goals, l, n.conceptBuilder);
 
-        ((SensorBeliefTables) beliefs()).setPri(
+        pri.pri(
                 FloatRange.unit(
                         //Util.or(n.priDefault(BELIEF), n.priDefault(GOAL))
                         n.goalPriDefault //even though the tasks are beliefs
                 )
         );
         ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(n.freqResolution));
+    }
+
+    protected void priFeedback(Task f) {
+        f.pri(pri.pri());
+    }
+    protected void priCuriosity(Task c) {
+        c.pri(
+                //this.curiosity.agent.pri.floatValue() * n.priDefault(GOAL)
+                //ScalarValue.EPSILON
+                pri.pri()
+        );
     }
 
     @Override
@@ -67,10 +81,6 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
     @Override
     public FloatRange resolution() {
         return ((SensorBeliefTables) beliefs()).resolution();
-    }
-    @Override
-    public FloatRange pri() {
-        return ((SensorBeliefTables) beliefs()).pri();
     }
 
     @Override

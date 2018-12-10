@@ -2,8 +2,10 @@ package nars.concept.sensor;
 
 import jcog.math.FloatRange;
 import nars.NAR;
+import nars.Task;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -27,50 +29,49 @@ abstract public class AbstractSensor extends NARService implements Sensor {
         res = FloatRange.unit( n.freqResolution );
     }
 
-//    public AbstractSensor pri(float v) {
-//        pri.set(v);
-//        return this;
-//    }
-
-//    public void setPri(FloatRange p) {
-//        this.pri = p;
-//    }
-
     public <S extends AbstractSensor> S resolution(float v) {
         this.res.set(v);
         return (S) this;
     }
 
-//    public void setResolution(FloatRange r) {
-//        this.res = r;
-//    }
 
     @Override
     public final FloatRange resolution() {
         return res;
     }
 
-    @Override
-    public final FloatRange pri() {
-        return pri;
-    }
-
-
-
-//    /** default truther */
-//    final private FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(Util.unitize(next), nar.confDefault(BELIEF));
-
-//    /** convenience class for updating a set of signals */
-//    protected void update(long last, long now, Iterable<Signal> signals, CauseChannel<ITask> in) {
-//        update(last, now, signals, in, truther);
-//    }
-
     protected final void update(long last, long now, Iterable<Signal> signals, CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> t) {
         int dur = nar.dur();
         signals.forEach(s -> {
-            s.setPri(pri());
-            in.input(s.update(last, now, t, dur /*now - last*/, nar));
+            SeriesBeliefTable.SeriesRemember x = s.update(last, now, t, dur /*now - last*/, nar);
+            if (x!=null) {
+                pri(x.input);
+                in.input(x);
+            }
         });
     }
+
+    /** TODO abstract different priority distribution methods:
+     *    uniform, divide equally, according to amount of value change, etc */
+    protected void pri(Task x) {
+        x.pri(pri);
+    }
+
+//    private float pri(float pri, Truth prev, Truth next, float fRes) {
+//        float priIfNoChange =
+//                //ScalarValue.EPSILON; //min pri used if signal value remains the same
+//                pri * pri;
+//
+//        if (prev == null)
+//            return pri;
+//        else {
+////            float fDiff = next!=null ? Math.abs(next.freq() - prev.freq()) : 1f;
+////            return Util.lerp(fDiff, priIfNoChange, pri);
+//            if (next == null || Math.abs(next.freq()-prev.freq()) > fRes)
+//                return pri;
+//            else
+//                return priIfNoChange;
+//        }
+//    }
 
 }
