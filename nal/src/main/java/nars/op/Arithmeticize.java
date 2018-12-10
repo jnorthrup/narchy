@@ -110,7 +110,7 @@ public class Arithmeticize {
                 ints.add(((Int) t).id);
             }
             return true;
-        }, x);
+        }, null);
 
         int ui = ints.size();
         if (ui < minInts)

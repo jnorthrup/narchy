@@ -34,7 +34,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     protected VectorSensor(NAR nar) {
         super(nar);
 
-        this.in = nar.newChannel(id);
+        this.in = nar.newChannel(id!=null ? id : this);
     }
 
     /** best to override */

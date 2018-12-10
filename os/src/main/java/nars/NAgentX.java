@@ -192,7 +192,7 @@ abstract public class NAgentX extends NAgent {
     */
 
 
-        Param.STRONG_COMPOSITION = false;
+        Param.STRONG_COMPOSITION = true;
 //        Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
@@ -237,7 +237,7 @@ abstract public class NAgentX extends NAgent {
                         //new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
                         new HijackConceptIndex(
                                 //128 * 1024,
-                                96 * 1024,
+                                128 * 1024,
                                 //64 * 1024,
                                 //32 * 1024,
                                 //8 * 1024,
@@ -432,8 +432,8 @@ abstract public class NAgentX extends NAgent {
 
         n.beliefPriDefault.set(0.5f);
         n.goalPriDefault.set(0.5f);
-        n.questionPriDefault.set(0.5f);
-        n.questPriDefault.set(0.5f);
+        n.questionPriDefault.set(0.4f);
+        n.questPriDefault.set(0.4f);
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
@@ -495,8 +495,8 @@ abstract public class NAgentX extends NAgent {
 //        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof CuriosityTask) ),
 //                8, 96);
 
-        Introduction arith = new Arithmeticize.ArithmeticIntroduction(n,16);
-        Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
+        Introduction arith = new Arithmeticize.ArithmeticIntroduction(n,64);
+        Introduction factorizer = new Factorize.FactorIntroduction( n, 8);
 
 //        {
         new Inperience.Believe(n, 8);
@@ -589,7 +589,6 @@ abstract public class NAgentX extends NAgent {
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> addCamera(Bitmap2DSensor<C> c) {
         addSensor(c);
-        c.readAdaptively(enabled::get);
         return c;
     }
 

@@ -9,8 +9,11 @@ import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.concept.util.ConceptBuilder;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
+import nars.table.BeliefTables;
+import nars.table.dynamic.DynamicTruthTable;
 import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
@@ -83,6 +86,14 @@ abstract public class DynamicTruthModel {
      * used to reconstruct a dynamic term from some or all components
      */
     abstract public Term reconstruct(Term superterm, List<Task> c, NAR nar);
+
+    public BeliefTable newTable(Term t, boolean beliefOrGoal, ConceptBuilder cb) {
+        return new BeliefTables(
+                new DynamicTruthTable(t, this, beliefOrGoal),
+                cb.newTemporalTable(t, beliefOrGoal),
+                cb.newEternalTable(t)
+        );
+    }
 
     @FunctionalInterface
     interface ObjectLongLongPredicate<T> {
@@ -741,4 +752,26 @@ abstract public class DynamicTruthModel {
                 innerDT == XTERNAL, 0);
     }
 
+    public static final DynamicTruthModel ImageDynamicTruthModel = new DynamicTruthModel() {
+
+        @Override
+        public BeliefTable newTable(Term t, boolean beliefOrGoal, ConceptBuilder cb) {
+            return new Image.ImageBeliefTable(t, Image.imageNormalize(t), beliefOrGoal);
+        }
+
+        @Override
+        public Truth apply(DynTruth var1, NAR nar) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Term reconstruct(Term superterm, List<Task> c, NAR nar) {
+            throw new UnsupportedOperationException();
+        }
+    };
 }

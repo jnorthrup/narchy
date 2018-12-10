@@ -184,9 +184,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                                         removeNode(f);
                                         ff.remove();
                                         nte--;
+                                        stable &= nte<=1; //try again if other nodes, because it may connect with other ranges further in the iteration
                                     }
 
-                                    stable &= nte<=1; //try again if other nodes, because it may connect with other ranges further in the iteration
                                     break;
                                 }
                             }

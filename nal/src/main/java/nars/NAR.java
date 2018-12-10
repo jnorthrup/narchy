@@ -1485,7 +1485,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             if (ct.volume() > termVolumeMax.intValue())
                 return null; //too complex
 
-            if (ConceptBuilder.dynamicModel(ct) != null  || Image.imageNormalize(ct)!=ct) {
+            if (ConceptBuilder.dynamicModel(ct) != null) {
                 //try conceptualizing the dynamic
                 return conceptualize(concept);
             }

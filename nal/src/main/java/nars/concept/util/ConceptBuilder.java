@@ -10,8 +10,6 @@ import nars.concept.TaskConcept;
 import nars.link.TermLinker;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
-import nars.table.BeliefTables;
-import nars.table.dynamic.DynamicTruthTable;
 import nars.table.eternal.EternalTable;
 import nars.table.question.QuestionTable;
 import nars.table.temporal.TemporalBeliefTable;
@@ -40,7 +38,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
     public abstract BeliefTable newTable(Term t, boolean beliefOrGoal);
 
-    protected abstract EternalTable newEternalTable(Term c);
+    public abstract EternalTable newEternalTable(Term c);
 
     public abstract TemporalBeliefTable newTemporalTable(Term c, boolean beliefOrGoal);
 
@@ -50,23 +48,16 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
         BeliefTable B, G;
 
-        //1. handle images
-        Term it = Image.imageNormalize(t);
-        if (it!=t) {
-            assert(t.op()==INH);
-            B = new Image.ImageBeliefTable(t, it, true);
-            G = new Image.ImageBeliefTable(t, it, false);
+
+        DynamicTruthModel dmt = ConceptBuilder.dynamicModel(t);
+        if (dmt != null) {
+
+            //2. handle dynamic truth tables
+            B = dmt.newTable(t, true, this);
+            G = goalable(t) ?
+                    dmt.newTable(t, false, this) :
+                    BeliefTable.Empty;
         } else {
-
-            DynamicTruthModel dmt = ConceptBuilder.dynamicModel(t);
-            if (dmt != null) {
-
-                //2. handle dynamic truth tables
-                B = newDynamicBeliefTable(t, dmt, true);
-                G = goalable(t) ?
-                        newDynamicBeliefTable(t, dmt, false) :
-                        BeliefTable.Empty;
-            } else {
 //                //3. handle dynamic conceptualizers (experimental)
 //                Term conceptor = Functor.func(t);
 //                if (conceptor != Bool.Null) {
@@ -79,27 +70,19 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 //                    }
 //                }
 
-                //4. default task concept
-                B = this.newTable(t, true);
-                G = goalable(t) ? this.newTable(t, false) : BeliefTable.Empty;
+            //4. default task concept
+            B = this.newTable(t, true);
+            G = goalable(t) ? this.newTable(t, false) : BeliefTable.Empty;
 
-            }
         }
 
 
         return new TaskConcept(t, B, G,
-                        this.questionTable(t, true), this.questionTable(t, false),
-                        this.termlinker(t),
-                        this.newLinkBag(t));
+                this.questionTable(t, true), this.questionTable(t, false),
+                this.termlinker(t),
+                this.newLinkBag(t));
     }
 
-    private BeliefTables newDynamicBeliefTable(Term t, DynamicTruthModel dmt, boolean beliefOrGoal) {
-        return new BeliefTables(
-                new DynamicTruthTable(t, dmt, beliefOrGoal),
-                newTemporalTable(t, beliefOrGoal),
-                newEternalTable(t)
-        );
-    }
 
     protected abstract NodeConcept nodeConcept(final Term t);
 
@@ -114,25 +97,24 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
     private static boolean validDynamicSubterms(Subterms subterms) {
         return subterms.AND(validDynamicSubterm);
     }
+
+
     private static boolean validDynamicSubtermsAndNoSharedVars(Term conj) {
         Subterms conjSubterms = conj.subterms();
         if (validDynamicSubterms(conjSubterms)) {
             if (conjSubterms.hasAny(VAR_DEP)) {
-                Map<Term,Term> varLocations = new UnifiedMap(conjSubterms.subs());
 
-                return conj.eventsWhile((when,event) -> {
-                   if (event.hasAny(VAR_DEP)) {
-                       boolean valid = event.recurseTerms((Compound x)->x.hasAny(VAR_DEP), (Term possiblyVar, Compound parent) -> {
-                           if (possiblyVar.op()==VAR_DEP)
-                               if (varLocations.putIfAbsent(possiblyVar, event)!=null)
-                                   return false;
-                           return true;
-                       }, null);
-                       if (!valid)
-                           return false;
-                   }
-                   return true;
-                }, 0, true, true, true, 0);
+                Map<Term, Term> varLocations = new UnifiedMap(conjSubterms.subs());
+
+                return conj.eventsWhile((when, event) ->
+                                !event.hasAny(VAR_DEP) ||
+                                        event.recurseTerms(x -> x.hasAny(VAR_DEP),
+                                                (possiblyVar, parent) ->
+                                                        (possiblyVar.op() != VAR_DEP) ||
+                                                                varLocations.putIfAbsent(possiblyVar, event) == null
+                                                , null)
+
+                        , 0, true, true, true, 0);
             }
             return true;
         }
@@ -160,19 +142,21 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 //            //TODO not done yet
             case IMPL: {
                 //TODO allow indep var if they are involved in (contained within) either but not both subj and pred
+                if (t.hasAny(Op.VAR_INDEP))
+                    return null;
                 Term su = t.sub(0);
-                if (su.hasAny(Op.VAR_INDEP))
-                    return null;
+//                if (su.hasAny(Op.VAR_INDEP))
+//                    return null;
                 Term pu = t.sub(1);
-                if (pu.hasAny(Op.VAR_INDEP))
-                    return null;
+//                if (pu.hasAny(Op.VAR_INDEP))
+//                    return null;
 
                 Op suo = su.op();
                 //subject has special negation union case
                 boolean subjDyn = (
-                    suo == CONJ && validDynamicSubtermsAndNoSharedVars(su)
-                        ||
-                    suo == NEG && (su.unneg().op()==CONJ && validDynamicSubtermsAndNoSharedVars(su.unneg()))
+                        suo == CONJ && validDynamicSubtermsAndNoSharedVars(su)
+                                ||
+                                suo == NEG && (su.unneg().op() == CONJ && validDynamicSubtermsAndNoSharedVars(su.unneg()))
                 );
                 boolean predDyn = (pu.op() == CONJ && validDynamicSubtermsAndNoSharedVars(pu));
 
@@ -187,7 +171,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
                 }
 
                 if (subjDyn) {
-                    if (suo==NEG) {
+                    if (suo == NEG) {
                         return DynamicTruthModel.DynamicSectTruth.UnionImplSubj;
                     } else {
                         return DynamicTruthModel.DynamicSectTruth.SectImplSubj;
@@ -220,56 +204,61 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
         //quick pre-test
         Subterms tt = t.subterms();
-        if (!tt.hasAny(Op.Sect | Op.PROD.bit))
-            return null;
-
-        if ((tt.OR(s -> s.isAny(Op.Sect )))) {
+        if (tt.hasAny(Op.Sect | Op.PROD.bit)) {
 
 
-            Term subj = tt.sub(0), pred = tt.sub(1);
-
-            Op so = subj.op(), po = pred.op();
+            if ((tt.OR(s -> s.isAny(Op.Sect)))) {
 
 
-            if ((so == Op.SECTi) || (so == Op.SECTe) ) {
+                Term subj = tt.sub(0), pred = tt.sub(1);
 
-                //TODO move this to impl-specific test function
-                Subterms subjsubs = subj.subterms();
-                int s = subjsubs.subs();
-                for (int i = 0; i < s; i++) {
-                    if (!validDynamicSubterm.test(INH.the(subjsubs.sub(i), pred)))
-                        return null;
+                Op so = subj.op(), po = pred.op();
+
+
+                if ((so == Op.SECTi) || (so == Op.SECTe)) {
+
+                    //TODO move this to impl-specific test function
+                    Subterms subjsubs = subj.subterms();
+                    int s = subjsubs.subs();
+                    for (int i = 0; i < s; i++) {
+                        if (!validDynamicSubterm.test(INH.the(subjsubs.sub(i), pred)))
+                            return null;
+                    }
+
+                    switch (so) {
+                        case SECTi:
+                            return DynamicTruthModel.DynamicSectTruth.SectSubj;
+                        case SECTe:
+                            return DynamicTruthModel.DynamicSectTruth.UnionSubj;
+                    }
+
+
                 }
 
-                switch (so) {
-                    case SECTi:
-                        return DynamicTruthModel.DynamicSectTruth.SectSubj;
-                    case SECTe:
-                        return DynamicTruthModel.DynamicSectTruth.UnionSubj;
-                }
+
+                if (((po == Op.SECTi) || (po == Op.SECTe))) {
 
 
-            }
+                    Compound cpred = (Compound) pred;
+                    int s = cpred.subs();
+                    for (int i = 0; i < s; i++) {
+                        if (!validDynamicSubterm.test(INH.the(subj, cpred.sub(i))))
+                            return null;
+                    }
 
-
-            if (((po == Op.SECTi) || (po == Op.SECTe) )) {
-
-
-                Compound cpred = (Compound) pred;
-                int s = cpred.subs();
-                for (int i = 0; i < s; i++) {
-                    if (!validDynamicSubterm.test(INH.the(subj, cpred.sub(i))))
-                        return null;
-                }
-
-                switch (po) {
-                    case SECTi:
-                        return DynamicTruthModel.DynamicSectTruth.UnionPred;
-                    case SECTe:
-                        return DynamicTruthModel.DynamicSectTruth.SectPred;
+                    switch (po) {
+                        case SECTi:
+                            return DynamicTruthModel.DynamicSectTruth.UnionPred;
+                        case SECTe:
+                            return DynamicTruthModel.DynamicSectTruth.SectPred;
+                    }
                 }
             }
         }
+
+        Term it = Image.imageNormalize(t);
+        if (it != t)
+            return DynamicTruthModel.ImageDynamicTruthModel;
 
         return null;
     }
@@ -289,7 +278,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
         Concept c = Task.taskConceptTerm(x) ? taskConcept(x) : nodeConcept(x);
         if (c == null)
-            throw new WTF( x + " unconceptualizable");
+            throw new WTF(x + " unconceptualizable");
 
 
         start(c);
@@ -297,7 +286,9 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
         return c;
     }
 
-    /** called after constructing a new concept, or after a permanent concept has been installed */
+    /**
+     * called after constructing a new concept, or after a permanent concept has been installed
+     */
     public void start(Concept c) {
 
     }

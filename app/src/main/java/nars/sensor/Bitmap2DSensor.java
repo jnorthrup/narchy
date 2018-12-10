@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
-import java.util.function.BooleanSupplier;
 
 import static nars.Op.BELIEF;
 
@@ -36,8 +35,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
     public Bitmap2DSensor(@Nullable Term root, P src, NAR n) {
         this(src.height() > 1 ?
-                /* 2D default */ RadixProduct(root, src.width(), src.height(), /*RADIX*/1) :
-                /* 1D default */ (x,y)-> root!=null ? $.inh($.the(x), root) : $.p(x) //y==1
+                        /* 2D default */ RadixProduct(root, src.width(), src.height(), /*RADIX*/1) :
+                        /* 1D default */ (x, y) -> root != null ? $.inh($.the(x), root) : $.p(x) //y==1
                 , src, n);
     }
 
@@ -68,7 +67,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
     @Override
     public int size() {
-        return width*height;
+        return width * height;
     }
 
     @Override
@@ -77,26 +76,27 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
 
-
     public void input() {
         input(mode);
     }
 
-    /** manually inputs the contents of the current frame */
+    /**
+     * manually inputs the contents of the current frame
+     */
     public void input(FloatFloatToObjectFunction<Truth> mode) {
-        in.input( concepts.stream(mode, nar) );
+        in.input(concepts.stream(mode, nar));
     }
 
     protected int dur() {
         return nar.dur();
     }
 
-    public Bitmap2DConcepts.Bitmap2DReader readAdaptively() {
-        return concepts.newReader(in, mode, nar);
-    }
-    public Bitmap2DConcepts.Bitmap2DReader readAdaptively(BooleanSupplier enable) {
-        return concepts.newReader(in, mode, enable, nar);
-    }
+//    public Bitmap2DConcepts.Bitmap2DReader readAdaptively() {
+//        return concepts.newReader(in, mode, nar);
+//    }
+//    public Bitmap2DConcepts.Bitmap2DReader readAdaptively(BooleanSupplier enable) {
+//        return concepts.newReader(in, mode, enable, nar);
+//    }
 
 //    public DurService readDirectEachDuration() {
 //        return readDirectEachDuration(mode);
@@ -116,7 +116,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
     public static Int2Function<Term> XY(Term root, int radix, int width, int height) {
         return (x, y) ->
-                
+
                 $.p(root, $.pRadix(x, radix, width), $.pRadix(y, radix, height));
     }
 
@@ -124,8 +124,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return (x, y) -> {
             Term coords = radix > 1 ?
                     $.p(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
-                    
-                    
+
+
                     $.p(x, y);
             return root == null ? coords : $.inh(coords, root);
         };
@@ -158,17 +158,17 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         for (int i = 0; i < m; i++) {
             Term xy;
             char levelPrefix =
-                    (char) ('a' + (m - 1 - i)); 
-            
+                    (char) ('a' + (m - 1 - i));
+
 
             if (i >= sx && i >= sy) {
-                
+
                 xy = $.p($.the(x[ix++]), $.the(levelPrefix), $.the(y[iy++]));
             } else if (i >= sx) {
-                
+
                 xy = $.p($.the(levelPrefix), $.the(x[ix++]));
-            } else { 
-                
+            } else {
+
                 xy = $.p($.the(y[iy++]), $.the(levelPrefix));
             }
             r[i] = xy;
@@ -183,8 +183,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
     @NotNull
     public static Term[] coord(int n, int max, int radix) {
-        
-        
+
+
         return $.radixArray(n, radix, max);
     }
 
@@ -193,6 +193,11 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return this;
     }
 
+    @Override
+    public void update(long last, long now, long next, NAR nar) {
+        src.update();
+        super.update(last, now, next, nar);
+    }
 
     public final TaskConcept get(int x, int y) {
         return concepts.get(x, y);
@@ -290,87 +295,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     /*private long nextStamp() {
         return stamp;
     }*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

@@ -54,12 +54,12 @@ public abstract class Param {
     public static final int LinkFanoutMax =
             //32;
             //16;
-            10;
+            //10;
             //8;
-            //7;
+            7;
             //6;
             //2;
-            //4;
+            //1;
 
 //    public static final int TERM_BYTE_KEY_CACHED_BELOW_VOLUME = 8;
     //public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO

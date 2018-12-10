@@ -20,21 +20,32 @@ import static org.junit.jupiter.api.Assertions.*;
 class DynamicImplTest extends AbstractDynamicTaskTest {
 
     @Test void eligibleDynamicImpl() {
-        //((--,(([add(#1,2)]<->[#1])&|equal(#1,0)))=|>([add(#1,2)]<->[#1]))
-        String t = "((x && y) ==> a)";
-        assertDynamicTable(t);
+        assertDynamicTable("((x && y) ==> a)");
+        assertDynamicTable("(a ==> (x && y))");
         assertDynamicTable("(((x,#1) && y) ==> a)"); //#1 not shared between components
-        assertFalse(isDynamicTable("((#1 && (y,#1)) ==> a)")); //raw depvar componnet
-        assertFalse(isDynamicTable("(((x,#1) && (y,#1)) ==> a)"));
-        assertFalse(isDynamicTable("(((x,$1) && y) ==> (a,$1))")); //indepvar shared between subj and impl
+    }
+
+    @Test void ineligibleDynamicImpl1() {
+        assertNotDynamicTable("(((x,#1) && (y,#1)) ==> a)"); //depvar shared between terms
+        assertNotDynamicTable("((#1 && (y,#1)) ==> a)"); //raw depvar componnet
+        assertNotDynamicTable("(((x,$1) && y) ==> (a,$1))"); //indepvar shared between subj and impl
+    }
+
+    private void assertNotDynamicTable(String t) {
+        assertFalse(isDynamicTable(t));
     }
 
 
-
     @Test void eligibleDynamicImpl2() {
-        assertFalse(isDynamicTable("(((x,#1) && y) ==> (a,#1))")); //depvar shared between subj and impl
-        String s = "(((x,#1) && (y,#1)) ==> (a,#1))";
-        assertDynamicTable(s); //all share the variable so it could be
+        assertNotDynamicTable("(((x,#1) && (y,#2)) ==> z)"); //depvar unique between subj components
+        assertNotDynamicTable("(((x,#1) && (y,#2)) ==> (z,#3))"); //depvar unique between subj components
+        assertNotDynamicTable("(((x,#1) && (y,#2)) ==> (z,#1))"); //depvar unique between subj components
+    }
+    @Test void eligibleDynamicImpl3() {
+        assertNotDynamicTable("(((x,#1) && y) ==> (a,#1))"); //depvar shared between subj and impl
+    }
+    @Test void eligibleDynamicImpl4() {
+        assertDynamicTable("(((x,#1) && (y,#1)) ==> (a,#1))"); //all share the variable so it could be
     }
 
 
