@@ -269,7 +269,7 @@ public class ExeCharts {
                         new FloatSlider("Dur*", dur),
                         new FloatSlider("Throttle", loop.throttle)
                 );
-                dur.set(time.durRatio(loop));
+                //dur.set(time.durRatio(loop));
             } else {
 
                 time = null;
@@ -281,9 +281,9 @@ public class ExeCharts {
 
             super.update();
             if (loop.isRunning()) {
-                if (time != null) {
-                    time.durRatio(loop, dur.floatValue());
-                }
+//                if (time != null) {
+//                    time.durRatio(loop, dur.floatValue());
+//                }
             }
 
         }

@@ -543,7 +543,7 @@ public class Derivation extends PreDerivation {
         long now = nar.time();
         if (now != this.time) {
             this.time = now;
-            this.dur = deri.dur();
+            this.dur = nar.dur();
             this.dtTolerance = Math.round(Param.UNIFY_DT_TOLERANCE_DUR_FACTOR * dur);
             this.ditherTime = nar.dtDither();
             this.confMin = nar.confMin.floatValue();

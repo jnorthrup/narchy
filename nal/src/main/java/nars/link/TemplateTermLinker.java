@@ -396,7 +396,7 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
         firedConcepts.clear();
 
 
-        n = Math.min(n, Param.LinkFanoutMax);
+        n = Math.min(n, d.deriver.tasklinkSpread.intValue());
 
         float taskPriSum = Math.max(ScalarValue.EPSILON, (float) (((FasterList<Task>) (d.firedTasks.list))
                 .sumOfFloat(Prioritized::priElseZero)));

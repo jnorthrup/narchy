@@ -87,10 +87,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         in.input(concepts.stream(mode, nar));
     }
 
-    protected int dur() {
-        return nar.dur();
-    }
-
 //    public Bitmap2DConcepts.Bitmap2DReader readAdaptively() {
 //        return concepts.newReader(in, mode, nar);
 //    }

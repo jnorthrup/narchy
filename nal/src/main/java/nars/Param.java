@@ -51,7 +51,7 @@ public abstract class Param {
     /** in Revision.dtDiff measurement */
     public static final float TRUTHPOLATION_INTERMPOLATION_THRESH = 0.5f;
 
-    public static final int LinkFanoutMax =
+    public static final int TaskLinkSpreadDefault =
             //32;
             //16;
             //10;

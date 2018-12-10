@@ -1,8 +1,10 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.math.IntRange;
 import nars.$;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.attention.DerivePri;
 import nars.attention.derive.DefaultPuncWeightedDerivePri;
@@ -56,6 +58,7 @@ abstract public class Deriver extends Causable {
     protected final Consumer<Predicate<Activate>> source;
 
     public DerivePri pri = new DefaultPuncWeightedDerivePri();
+    public final IntRange tasklinkSpread =  new IntRange(Param.TaskLinkSpreadDefault, 1, 32);
 
 
     protected Deriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
@@ -141,11 +144,6 @@ abstract public class Deriver extends Causable {
     }
 
 
-    //public final FloatRange sustain = new FloatRange(0f, 0f, 0.99f);
-    public int dur() {
-        //return Math.round((nar.dur() * (1/(1- sustain.floatValue()))));
-        return nar.dur();
-    }
 
     @Deprecated
     private static final AtomicInteger serial = new AtomicInteger();
