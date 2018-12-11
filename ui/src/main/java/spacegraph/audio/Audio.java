@@ -39,7 +39,6 @@ public class Audio implements Runnable {
 
 
     private final int bufferBytes;
-    private final int maxChannels;
 
     private final SourceDataLine sdl;
 
@@ -47,8 +46,8 @@ public class Audio implements Runnable {
 
     /** TODO make dynamically reconfigurable */
     private final int bufferSize = rate /
-            //20 /* = 50ms */
-            10 /* = 100ms */
+            20 /* = 50ms */
+            //10 /* = 100ms */
     ;
 
     private final SoundMixer mixer;
@@ -69,8 +68,6 @@ public class Audio implements Runnable {
 
 
     public Audio(int polyphony) {
-
-        this.maxChannels = polyphony;
 
         Mixer.Info[] mixers = AudioSystem.getMixerInfo();
         for (Mixer.Info i : mixers) {
@@ -183,7 +180,7 @@ public class Audio implements Runnable {
 
         @Override
         public float getY(float alpha) {
-            return 0 + (1.0f - producer.getAmplitude()) * distanceFactor;
+            return 0 + (1.0f /*- producer.amp()*/) * distanceFactor;
         }
 
         @Override

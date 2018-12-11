@@ -2,11 +2,10 @@ package net.beadsproject.beads.core.io;
 
 import jcog.TODO;
 import net.beadsproject.beads.core.*;
-import spacegraph.audio.SoundProducer;
 
 import javax.sound.sampled.*;
 
-public class UGenOutput extends AudioIO implements SoundProducer {
+public class UGenOutput extends AudioIO {
 
     /**
      * The default system buffer size.
@@ -70,8 +69,6 @@ public class UGenOutput extends AudioIO implements SoundProducer {
             buf[c++] = context.out.getValue(j, i);
         }
 
-
-
     }
 
     @Override
@@ -79,15 +76,11 @@ public class UGenOutput extends AudioIO implements SoundProducer {
         throw new TODO();
     }
 
-    @Override
-    public boolean isLive() {
-        return context.isRunning();
-    }
-
-    @Override
-    public void stop() {
-        context.stop();
-    }
+//    @Override
+//    public void stop() {
+//        super.stop();
+//        context.stop();
+//    }
 
     /**
      * JavaSoundRTInput gathers audio from the JavaSound audio input device.

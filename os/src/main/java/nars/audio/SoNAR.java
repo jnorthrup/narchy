@@ -1,7 +1,6 @@
 package nars.audio;
 
 import jcog.exe.Loop;
-import jcog.random.XorShift128PlusRandom;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
@@ -20,7 +19,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -41,7 +39,7 @@ public class SoNAR extends TimerTask {
     public static class SampleDirectory {
         final Map<String, SoundSample> samples = new ConcurrentHashMap<>();
 
-        final Random random = new XorShift128PlusRandom(System.currentTimeMillis());
+//        final Random random = new XorShift128PlusRandom(System.currentTimeMillis());
 
         public SoundSample sample(String file) {
             return samples.computeIfAbsent(file, SampleLoader::load);
@@ -176,17 +174,17 @@ public class SoNAR extends TimerTask {
                 else if (stretchFactor < 0 && stretchFactor > -0.05f) stretchFactor = -0.05f;
                 ((Granulize) s.producer).setStretchFactor(stretchFactor);
             }
-            if (s.producer instanceof SoundProducer.Amplifiable) {
-
-                ((SoundProducer.Amplifiable) s.producer).setAmplitude(2f * (b.freq() - 0.5f));
-            }
+//            if (s.producer instanceof SoundProducer.Amplifiable) {
+//
+//                ((SoundProducer.Amplifiable) s.producer).setAmplitude(2f * (b.freq() - 0.5f));
+//            }
 
 
             return true;
         } else {
-            if (s.producer instanceof SoundProducer.Amplifiable) {
-                ((SoundProducer.Amplifiable) s.producer).setAmplitude(0f);
-            }
+//            if (s.producer instanceof SoundProducer.Amplifiable) {
+//                ((SoundProducer.Amplifiable) s.producer).setAmplitude(0f);
+//            }
             return false;
 
 

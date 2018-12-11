@@ -4,6 +4,8 @@
 package net.beadsproject.beads.core;
 
 
+import spacegraph.audio.SoundProducer;
+
 /**
  * AudioIO is the abstract base class for setting up interaction between {@link AudioContext} and the world. It is
  * designed to be largely controlled by {@link AudioContext}. To be precise, AudioContext will prepare(), start(), and stop() the
@@ -11,7 +13,7 @@ package net.beadsproject.beads.core;
  *
  * @author ollie
  */
-public abstract class AudioIO {
+public abstract class AudioIO extends SoundProducer {
 
     /**
      * The context.
@@ -26,15 +28,6 @@ public abstract class AudioIO {
      */
     protected abstract boolean start();
 
-    /**
-     * Stops the AudioIO. Note this is not usually needed because the more usual way
-     * for the system to stop is simply to check {@link AudioContext#isRunning()} at
-     * each time step.
-     *
-     * @return true, if successful.
-     */
-    protected void stop() {
-    }
 
     /**
      * Gets an audio input {@link UGen}. The argument specifies an array of channel numbers

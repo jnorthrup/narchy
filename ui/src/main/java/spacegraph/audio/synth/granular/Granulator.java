@@ -6,10 +6,6 @@ class Granulator {
 	private final int grainSizeSamples;
 	private final GrainWindow window;
 
-	
-	
-	
-	
 
 	Granulator(float[] sourceBuffer, float sampleRate,
                float grainSizeSecs, float windowSizeFactor) {
