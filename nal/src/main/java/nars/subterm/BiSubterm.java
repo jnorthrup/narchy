@@ -1,12 +1,9 @@
 package nars.subterm;
 
-import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
 import nars.term.Term;
-import nars.term.Terms;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;

@@ -270,7 +270,7 @@ public class Narsese {
                 else if (x instanceof Term)
                     return (Term) x;
             } else {
-                Object[] x = Util.map(0, stack.size(), stack::peek, Object[]::new);
+                Object[] x = Util.map(0, stack.size(), Object[]::new, stack::peek);
                 ee = new SoftException("incomplete parse: " + Arrays.toString(x));
             }
 

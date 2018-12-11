@@ -7,6 +7,7 @@ import nars.concept.TaskConcept;
 import nars.link.TaskLink;
 import nars.task.AbstractTask;
 import nars.task.ITask;
+import nars.task.Tasklike;
 import org.jetbrains.annotations.Nullable;
 
 /** creates a seed tasklink for a processed Task that can subdivide recursively on propagation */
@@ -40,8 +41,9 @@ public class TaskLinkTask extends AbstractTask {
 
         //2. tasklink
         TaskLink.link(
-                TaskLink.tasklink(task, false, pri* n.taskLinkActivation.floatValue(), n),
-                c.tasklinks(), null);
+                tasklink(pri, n),
+                //TaskLink.tasklink(task, generify(), eternalize(),pri * n.taskLinkActivation.floatValue(), n),
+                c);
 
 
         //3. feel
@@ -51,6 +53,18 @@ public class TaskLinkTask extends AbstractTask {
 
         //finished
         return null;
+    }
+
+    protected TaskLink.GeneralTaskLink tasklink(float pri, NAR n) {
+        return new TaskLink.GeneralTaskLink(Tasklike.seed(task, generify(), eternalize(), n), pri);
+    }
+
+    protected boolean generify() {
+        return false;
+    }
+
+    protected boolean eternalize() {
+        return false;
     }
 
 

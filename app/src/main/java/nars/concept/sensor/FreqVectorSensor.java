@@ -11,8 +11,6 @@ import nars.term.Term;
 import java.util.Iterator;
 import java.util.function.IntFunction;
 
-import static jcog.Util.unitize;
-
 /** frequency domain representation of a waveform */
 public class FreqVectorSensor extends VectorSensor {
 

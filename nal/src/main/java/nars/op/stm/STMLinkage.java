@@ -62,8 +62,8 @@ public class STMLinkage extends NARService {
 
 
             Task bt = b.getOne();
-            TaskLink.link(TaskLink.tasklink(bt, false,bt.priElseZero() * factor, nar), ac.tasklinks(), null);
-            TaskLink.link(TaskLink.tasklink(at, false,at.priElseZero() * factor, nar), bc.tasklinks(), null);
+            link(ac, bt, factor, nar);
+            link(bc, at, factor, nar);
 
         }
 
@@ -74,6 +74,10 @@ public class STMLinkage extends NARService {
         //  }
         // }
 
+    }
+
+    static void link(Concept target, Task task, float factor, NAR nar) {
+        TaskLink.link(TaskLink.tasklink(task, false, false, task.priElseZero() * factor, nar), target.tasklinks(), null);
     }
 
 

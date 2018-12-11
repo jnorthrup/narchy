@@ -6,7 +6,6 @@ import jcog.exe.Loop;
 import jcog.learn.ql.HaiQae;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
-import jcog.math.FloatRange;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
@@ -17,9 +16,6 @@ import nars.agent.NAgent;
 import nars.agent.Reward;
 import nars.agent.SimpleReward;
 import nars.agent.util.RLBooster;
-import nars.concept.sensor.DigitizedScalar;
-import nars.concept.sensor.Sensor;
-import nars.concept.sensor.Signal;
 import nars.control.DurService;
 import nars.control.MetaGoal;
 import nars.derive.BeliefSource;
@@ -69,7 +65,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.StreamSupport.stream;
-import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static spacegraph.SpaceGraph.window;
@@ -165,7 +160,7 @@ abstract public class NAgentX extends NAgent {
             n.on(a);
 
 
-            window(new Gridding(NARui.agent(a), NARui.top(n)), 400, 300);
+            window(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
 
 
             new RLBooster(a,
@@ -192,7 +187,7 @@ abstract public class NAgentX extends NAgent {
     */
 
 
-        Param.STRONG_COMPOSITION = true;
+        //Param.STRONG_COMPOSITION = true;
 //        Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
@@ -212,7 +207,7 @@ abstract public class NAgentX extends NAgent {
                         new Revaluator.DefaultRevaluator(0.25f),
                         //new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
 
-                        threads <= 0 ? Util.concurrencyExcept(2) : threads, true /* affinity */))
+                        threads <= 0 ? Util.concurrencyExcept(2) : threads, false /* affinity */))
 
 //                .exe(MixMultiExec.get(
 //                            1024,
@@ -284,7 +279,7 @@ abstract public class NAgentX extends NAgent {
 ////                };
 
 
-        window(new Gridding(NARui.agent(a), NARui.top(n)), 400, 300);
+        window(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
 
 //                if (a instanceof NAgentX) {
 //                    NAgent m = metavisor(a);

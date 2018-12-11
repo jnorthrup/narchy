@@ -243,7 +243,7 @@ public class Gridding extends MutableListContainer {
     }
 
     public static Gridding grid(int num, IntFunction<Surface> build) {
-        Surface[] x = Util.map(0, num, build, Surface[]::new);
+        Surface[] x = Util.map(0, num, Surface[]::new, build);
         return new Gridding(x);
     }
 

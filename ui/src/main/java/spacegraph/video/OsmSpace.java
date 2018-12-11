@@ -242,30 +242,25 @@ public class OsmSpace  {
 
             Osm tile = irl.tile(cx, cy);
 
-//            RectFloat b = tile.geoBounds;
-//            if (b!=null) {
-//                cx = b.cx(); //use the actual position
-//                cy = b.cy(); //use the actual position
-//            }
+            RectFloat b = tile.geoBounds;
+            if (b!=null) {
+                cx = b.cx(); //use the actual position
+                cy = b.cy(); //use the actual position
+            }
 
 //            System.out.println(tile.id + " at " + cx + " " + cy);
 
             gl.glPushMatrix();
 
-            float viewScale = Math.max(bounds.w, bounds.h) * mapScale;
-
             gl.glTranslatef(bounds.x + bounds.w/2,
                     bounds.y + bounds.h/2, 0); //center in view
 
-//            gl.glTranslatef((-(translate.x))/viewScale + 0.5f,
-//                    (-(translate.y))/viewScale + 0.5f, 0);
-
-
-
-
+            float viewScale = Math.max(bounds.w, bounds.h) * mapScale;
 
             gl.glScalef( viewScale, viewScale, 1);
 
+            gl.glTranslatef(((translate.x-cx)),
+                    ((translate.y-cy)), 0); //center in view
 
 
 

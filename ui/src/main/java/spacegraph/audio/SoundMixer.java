@@ -65,12 +65,13 @@ public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProduce
             if (i < audibleSources) {
                 float[] buf = this.buf;
 
-                sound.read(buf, readRate);
+                sound.producer.read(buf, readRate);
 
                 float pan = sound.pan;
 
-                float rp = (pan < 0 ? 1 : 1 - pan) * sound.amplitude;
-                float lp = (pan > 0 ? 1 : 1 + pan) * sound.amplitude;
+                float amp = sound.amplitude;
+                float rp = (pan <= 0 ? 1 : 1 + pan) * amp;
+                float lp = (pan >= 0 ? 1 : 1 - pan) * amp;
 
                 int l = leftBuf.length;
                 int j;

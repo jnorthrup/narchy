@@ -140,16 +140,16 @@ public class KIFInput {
         
         fn.forEach((f, s) -> {
             int ds = s.domain.isEmpty() ? 0 : s.domain.keySet().max();
-            Term[] vt = Util.map(0, ds, i -> $.varDep(1 + i), Term[]::new);
+            Term[] vt = Util.map(0, ds, Term[]::new, i -> $.varDep(1 + i));
             Term v = null;
             if (s.range != null) {
                 v = $.varDep("R");
                 vt = ArrayUtils.add(vt, v);
             }
             final int[] k = {1};
-            Term[] typeConds = Util.map(0, ds, i ->
+            Term[] typeConds = Util.map(0, ds, Term[]::new, i ->
                     INH.the($.varDep(1 + i),
-                            s.domain.getIfAbsent(1 + i, () -> $.varDep(k[0]++))), Term[]::new);
+                            s.domain.getIfAbsent(1 + i, () -> $.varDep(k[0]++))));
             if (s.range != null) {
                 typeConds = ArrayUtils.add(typeConds, INH.the(v, s.range));
             }

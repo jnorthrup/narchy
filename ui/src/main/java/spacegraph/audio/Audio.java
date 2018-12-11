@@ -30,7 +30,7 @@ public class Audio implements Runnable {
     public synchronized static Audio the() {
 
             if (defaultAudio == null) {
-                defaultAudio = new Audio(16);
+                defaultAudio = new Audio(32);
             }
 
         return defaultAudio;
@@ -46,7 +46,10 @@ public class Audio implements Runnable {
     private final int rate = 44100;
 
     /** TODO make dynamically reconfigurable */
-    private final int bufferSize = rate / 20; /* 50ms */
+    private final int bufferSize = rate /
+            //20 /* = 50ms */
+            10 /* = 100ms */
+    ;
 
     private final SoundMixer mixer;
 

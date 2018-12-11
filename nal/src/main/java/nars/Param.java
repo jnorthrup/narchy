@@ -68,13 +68,7 @@ public abstract class Param {
 //    public static final int CURIOSITY_BELIEF_TABLE_SERIES_SIZE = 64;
 
 
-    /** if true, then tasklinks are created for the concept() of the term.  this has consequences for temporal
-     *  terms such that unique and specific temporal data is not preserved in the tasklink, thereby reducing
-     *  the demand on tasklinks.
-     *
-     *  seems to enable more temporal precision at the cost of more links.
-     */
-    public static final boolean TASKLINK_CONCEPT_TERM = true;
+
 
     /** can produce varieties of terms with dt below the dithered threshold time */
     public static final boolean ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS = false;
@@ -206,8 +200,8 @@ public abstract class Param {
 
     public final TaskBuffer input =
             //new DerivedTasks.DerivedTasksMap(4096);
-            new TaskBuffer.BagTasksBuffer(512, 0.15f);
-            //new TaskBuffer.BagPuncTasksBuffer(512, 0.33f);
+            //new TaskBuffer.BagTasksBuffer(512, 0.15f);
+            new TaskBuffer.BagPuncTasksBuffer(128, 0.25f);
 
 
     /**

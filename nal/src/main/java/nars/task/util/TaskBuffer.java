@@ -11,7 +11,6 @@ import nars.Task;
 import nars.control.CauseMerge;
 import nars.task.ITask;
 import nars.task.NALTask;
-import nars.time.Tense;
 import nars.util.Timed;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
@@ -243,6 +242,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
                 }
 
                 long dt = now - prev;
+                prev = now;
 
                 tasks.setCapacity(capacity.intValue());
 
@@ -252,7 +252,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
 
                 tasks.commit(null /* no forget */);
 
-                int n = batchSize(dt);
+                int n = batchSize((float)(((double)dt)/time.dur()));
                 if (n > 0) {
 
                     if (tasks instanceof ArrayBag) {
@@ -275,9 +275,9 @@ abstract public class TaskBuffer implements Consumer<Task> {
         }
 
         /**  TODO abstract */
-        protected int batchSize(long dt) {
+        protected int batchSize(float dtDurs) {
             //rateControl.apply(tasks.size(), tasks.capacity());
-            return Tense.occToDT(Math.round(dt * valve.floatValue() * tasks.capacity()));
+            return Math.max(1,Math.round(dtDurs * valve.floatValue() * tasks.capacity()));
         }
     }
 

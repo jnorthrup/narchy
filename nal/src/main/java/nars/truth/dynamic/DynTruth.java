@@ -67,7 +67,7 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
     @Nullable
     public short[] cause() {
         return CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(),
-                Util.map(0, size(), x -> get(x).cause(), short[][]::new));
+                Util.map(0, size(), short[][]::new, x -> get(x).cause()));
     }
 
 

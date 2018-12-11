@@ -97,7 +97,7 @@ public class PrologToNAL {
                         return atom;
                     } else {
                         return $.inh(
-                                $.p((Term[])Util.map(0, arity, i -> N(s.sub(i)), Term[]::new)),
+                                $.p((Term[])Util.map(0, arity, Term[]::new, i -> N(s.sub(i)))),
                                 atom);
                     }
             }

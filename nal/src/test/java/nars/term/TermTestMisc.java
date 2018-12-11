@@ -24,7 +24,6 @@ import static nars.$.$$;
 import static nars.Op.*;
 import static nars.task.RevisionTest.x;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** term tests to be organzied more specifically */
 public class TermTestMisc {

@@ -11,7 +11,7 @@ import nars.term.util.SetSectDiff;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Created by me on 3/1/16.

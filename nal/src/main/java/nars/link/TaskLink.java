@@ -8,6 +8,7 @@ import jcog.pri.UnitPrioritizable;
 import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Task;
+import nars.concept.Concept;
 import nars.task.Tasklike;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
@@ -31,8 +32,15 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
     /** main tasklink constructor
      * @param generify  if the task's term contains temporal information, discarding this coalesces the link with other similar tasklinks (weaker, more generic).
      *                   otherwise a unique tasklink is created
+     *
+     *      if concept only, then tasklinks are created for the concept() of the term.  this has consequences for temporal
+     *      terms such that unique and specific temporal data is not preserved in the tasklink, thereby reducing
+     *      the demand on tasklinks.
+     *
+     *      otherwise non-concept for temporal includes more temporal precision at the cost of more links.
+     *
      * */
-    static TaskLink tasklink(Task task, boolean generify, float pri, NAR n) {
+    static TaskLink tasklink(Task task, boolean generify, boolean eternalize, float pri, NAR n) {
 
         //assert(task.term().volume() < n.termVolumeMax.intValue());
 
@@ -41,10 +49,14 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 //            return new DirectTaskLink(task, pri);
 //        } else {
 
-        return new GeneralTaskLink(Tasklike.seed(task, generify, n), pri);
+        return new GeneralTaskLink(Tasklike.seed(task, generify, eternalize, n), pri);
         //}
     }
 
+
+    static void link(TaskLink x, Concept c) {
+        link(x, c.tasklinks(), null);
+    }
 
     static void link(TaskLink x, Bag<?, TaskLink> b, @Nullable OverflowDistributor<Bag> overflow) {
 

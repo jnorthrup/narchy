@@ -3,7 +3,6 @@ package spacegraph.audio.synth.granular;
 class Granulator {
 
 	private final float[] sourceBuffer;
-	final float sampleRate;
 	private final int grainSizeSamples;
 	private final GrainWindow window;
 
@@ -17,12 +16,8 @@ class Granulator {
 		this.sourceBuffer = sourceBuffer;
 		grainSizeSamples = Math.round(sampleRate * grainSizeSecs);
 
-		window = new HanningWindow(Math.round(sampleRate * grainSizeSecs
-				* windowSizeFactor));
+		window = new HanningWindow(Math.round(grainSizeSamples * windowSizeFactor));
 		
-		
-
-		this.sampleRate = sampleRate;
 	}
 
 	boolean hasMoreSamples(long[] grain, long now) {
@@ -31,7 +26,7 @@ class Granulator {
 		return now < showTime + length + window.getSize();
 	}
 
-	float getSample(long[] grain, long now) {
+	float sample(long[] grain, long now) {
 
 
 		float[] sb = sourceBuffer;
@@ -40,9 +35,10 @@ class Granulator {
 		long offset = now - showTime;
 
 		long startIndex = grain[0];
-		int sourceIndex = (int) ((startIndex + offset + sb.length) % sb.length);
+		int sourceIndex = (int) ((startIndex + offset + sb.length));
 		while (sourceIndex < 0)
 			sourceIndex += sb.length;
+		sourceIndex %= sb.length;
 		return sb[sourceIndex] * window.getFactor( ((int)offset) );
 				
 	}
@@ -50,7 +46,7 @@ class Granulator {
 	static boolean isFading(long[] grain, long now) {
 		long length = grain[1];
 		long showTime = grain[2];
-		return now > showTime + length;
+		return now >= showTime + length;
 	}
 
 	long[] nextGrain(long[] grain, int startIndex, float fadeInTime) {

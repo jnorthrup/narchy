@@ -19,8 +19,6 @@ import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ListIterator;
-
 import static jcog.WTF.WTF;
 import static nars.time.Tense.ETERNAL;
 
@@ -43,122 +41,6 @@ public class Remember extends AbstractTask {
     @Nullable
     public static Remember the(Task input, NAR n) {
 
-        if (!input.isCommand()) {
-
-            if (Param.VOLMAX_RESTRICTS_INPUT) {
-                int termVol = input.term().volume();
-                int maxVol = n.termVolumeMax.intValue();
-                if (termVol > maxVol)
-                    throw new TaskException(input, "term exceeds volume maximum: " + termVol + " > " + maxVol);
-            }
-
-            if((!input.isInput() || input instanceof TaskProxy) && input.isBeliefOrGoal() && input.conf() < n.confMin.floatValue()) {
-                if(Param.DEBUG)
-                    throw new TaskException(input, "insufficient evidence for non-input Task");
-                else
-                    return null;
-            }
-
-            Concept c = n.conceptualize(input);
-            if (c!=null) {
-                if (!(c instanceof TaskConcept))
-                    throw new WTF(c + " is not a TaskConcept");
-
-                return new Remember(input, (TaskConcept) c);
-            }
-        }
-
-        return null;
-    }
-
-    public Remember(Task input, TaskConcept c) {
-        setInput(input, c);
-    }
-
-//    public void setInput(@Nullable Task input, NAR n) {
-//        if (input!=null)
-//            setInput(input, n.conceptualize(input));
-//    }
-
-    /** concept must correspond to the input task */
-    public void setInput(Task input, @Nullable Concept c) {
-        if (c != null) {
-            this.input = input;
-            this.concept = c;
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "Remember(" + input + ')';
-    }
-
-    @Override
-    public ITask next(NAR n) {
-
-        validate(n);
-
-        add(n);
-
-        commit(n);
-
-        return null;
-    }
-
-    /**
-     * finalization and cleanup work
-     * @param n
-     */
-    protected final void commit(NAR n) {
-        if (forgotten!=null)
-            forgotten.forEach(Task::delete);
-
-         if (remembered!=null && !remembered.isEmpty())
-             commitRemembered(n);
-    }
-
-    private void commitRemembered(NAR n) {
-        Term conceptTerm = concept!=null ? concept.term() : null;
-
-        ListIterator<ITask> ll = remembered.listIterator();
-        while (ll.hasNext()) {
-            ITask r = ll.next();
-            if (r instanceof Task) {
-                ll.remove();
-
-                Task rr = (Task)r;
-
-                if (tasklink())
-                   ll.add(new TaskLinkTask(rr, conceptTerm !=null && conceptTerm.equals(rr.term().concept()) ? concept : null));
-
-                if (taskevent())
-                   ll.add(new TaskEvent(rr));
-
-            }
-        }
-
-        remembered.forEach(r -> ITask.run(r, n));
-        remembered = null;
-
-    }
-
-    protected boolean tasklink() {
-        return true;
-    }
-
-    protected boolean taskevent() {
-        return true;
-    }
-
-    /**
-     * attempt to insert into the concept's belief table
-     */
-    protected void add(NAR n) {
-        //if (!(input instanceof DynTruth.DynamicTruthTask))
-            ((TaskConcept) concept).add(this, n);
-    }
-
-    private void validate(NAR n) {
         assert (input.op().taskable);
 
 
@@ -201,7 +83,117 @@ public class Remember extends AbstractTask {
                 }
             }
         }
+
+        if (!input.isCommand()) {
+
+            if (Param.VOLMAX_RESTRICTS_INPUT) {
+                int termVol = input.term().volume();
+                int maxVol = n.termVolumeMax.intValue();
+                if (termVol > maxVol)
+                    throw new TaskException(input, "term exceeds volume maximum: " + termVol + " > " + maxVol);
+            }
+
+            if((!input.isInput() || input instanceof TaskProxy) && input.isBeliefOrGoal() && input.conf() < n.confMin.floatValue()) {
+                if(Param.DEBUG)
+                    throw new TaskException(input, "insufficient evidence for non-input Task");
+                else
+                    return null;
+            }
+
+            Concept c = n.conceptualize(input);
+            if (c!=null) {
+                if (!(c instanceof TaskConcept))
+                    throw new WTF(c + " is not a TaskConcept");
+
+                return new Remember(input, (TaskConcept) c);
+            }
+        }
+
+        return null;
     }
+
+    public Remember(Task input, TaskConcept c) {
+        setInput(input, c);
+    }
+
+
+    /** concept must correspond to the input task */
+    public void setInput(Task input, @Nullable Concept c) {
+        if (c != null) {
+            this.input = input;
+            this.concept = c;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Remember(" + input + ')';
+    }
+
+    @Override
+    public ITask next(NAR n) {
+
+        add(n);
+
+        if (forgotten!=null)
+            forgotten.forEach(Task::delete);
+
+        if (remembered!=null && !remembered.isEmpty())
+            commit(n);
+
+        return null;
+    }
+
+    private void commit(NAR n) {
+        Term conceptTerm = concept!=null ? concept.term() : null;
+
+        for (int i = 0, rememberedSize = remembered.size(); i < rememberedSize; i++) {
+            ITask r = remembered.get(i);
+            if (r instanceof Task) {
+                commit(n, conceptTerm, (Task) r);
+            } else {
+                ITask.run(r.next(n), n);
+            }
+        }
+
+        remembered = null;
+    }
+
+    private void commit(NAR n, Term conceptTerm, Task r) {
+        Task rr = r;
+
+        if (tasklink()) {
+            Concept c = conceptTerm != null && conceptTerm.equals(rr.term().concept()) ? concept : null;
+            TaskLinkTask t = tasklink(rr, c);
+            if (t!=null)
+                t.next(n);
+        }
+
+        if (taskevent())
+           new TaskEvent(rr).next(n);
+    }
+
+
+    protected TaskLinkTask tasklink(Task rr, Concept c) {
+        return new TaskLinkTask(rr, c);
+    }
+
+    protected boolean tasklink() {
+        return true;
+    }
+
+    protected boolean taskevent() {
+        return true;
+    }
+
+    /**
+     * attempt to insert into the concept's belief table
+     */
+    protected void add(NAR n) {
+        //if (!(input instanceof DynTruth.DynamicTruthTask))
+            ((TaskConcept) concept).add(this, n);
+    }
+
 
     //TODO: private static final class ListTask extends FasterList<ITask> extends NativeTask {
 
@@ -238,7 +230,7 @@ public class Remember extends AbstractTask {
         }
     }
 
-    public void remember(Task x) {
+    public void remember(ITask x) {
         if (this.remembered == null) {
             remembered = new FasterList<>(2);
             remembered.add(x);
@@ -285,12 +277,11 @@ public class Remember extends AbstractTask {
     }
 
 
-    private static boolean add(Task x, FasterList f) {
+    private static boolean add(ITask x, FasterList f) {
         if (x != null) {
             //if (!f.isEmpty()) {
-                if (f.containsInstance(x)) {
+                if (f.containsInstance(x))
                     return false;
-                }
             //}
 
             f.add(x);

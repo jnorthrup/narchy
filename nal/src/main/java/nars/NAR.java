@@ -45,7 +45,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.util.Image;
 import nars.time.Tense;
 import nars.time.Time;
 import nars.truth.PreciseTruth;

@@ -10,7 +10,7 @@ import nars.term.Term;
 
 import java.util.Iterator;
 
-import static nars.Op.*;
+import static nars.Op.NEG;
 
 /**
  * what differentiates TermVector from TermContainer is that

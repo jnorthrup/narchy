@@ -1,10 +1,11 @@
 package nars.gui;
 
 import com.googlecode.lanterna.input.KeyType;
+import com.jogamp.opengl.GL2;
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.exe.Exe;
-import jcog.math.FloatAveraged;
 import jcog.math.Quantiler;
 import jcog.pri.PLinkHashCached;
 import jcog.pri.PriReference;
@@ -27,8 +28,10 @@ import nars.util.MemorySnapshot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.audio.Audio;
+import spacegraph.audio.Sound;
 import spacegraph.audio.synth.granular.Granulize;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.container.Splitting;
@@ -45,6 +48,7 @@ import spacegraph.space2d.widget.menu.view.GridMenuView;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meta.ServicesTable;
+import spacegraph.space2d.widget.meta.WindowToggleButton;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.FloatGuage;
 import spacegraph.space2d.widget.slider.XYSlider;
@@ -82,72 +86,112 @@ public class NARui {
     }
 
 
-    public static <X extends Prioritized> Surface bagView(Bag<?,X> bag, int bins, NAR n) {
+    public static class HistogramSonification extends Gridding {
+        private final float[] d;
 
-        CheckBox sonify = new CheckBox("Sonify");
+        final Granulize g[];
 
-        float[] gBuf = new float[256];
+        public HistogramSonification(float[] d) {
+            this.d = d;
 
-        Plot2D budgetChart = new Plot2D(gBuf.length, Plot2D.Line) {
-            private Off c;
+            float[] sample = new float[32*1024];
+            for (int i = 0; i < sample.length; i++)
+                sample[i] = (float) Math.sin((i*0.2)/(2*Math.PI)); //TODO tune
 
-            Granulize g = null;
+            final Random rng = new XoRoShiRo128PlusRandom(1);
 
-            @Override
-            protected void starting() {
-                super.starting();
-                c = n.onCycle(this::update);
-                sonify.on((x)->{
-                   if (x) {
-                       g = new Granulize(gBuf, 44100, 0.2f, 0.9f, new XoRoShiRo128PlusRandom(1));
-                                    //.setStretchFactor(1/50f)
-                       g.pitchFactor.set(4f);
+            this.g = Util.map(d.length, Granulize[]::new, i ->
+                new Granulize(sample, 44100f, 0.05f, 1.5f, rng)
+            );
 
-                       Audio.the().play(g);
-                   } else {
-                       g.stop();
-                       g = null;
-                   }
-                });
+        }
+
+        /** maps the bin to a musical note */
+        float freq(int bin) {
+            //TODO scale select
+            int shift = 1;
+            float note = bin*6; //
+
+            double exponent = (shift+note) / 12.0;
+            return (float) (Math.pow(2, exponent) * 240.0f)/440f;
+        }
+
+        @Override
+        protected void starting() {
+            super.starting();
+
+            Granulize[] g1 = this.g;
+            for (int i = 0, g1Length = g1.length; i < g1Length; i++) {
+                Granulize g = g1[i];
+                float f = freq(i);
+                g.pitchFactor.set(1*f);
+                g.setAmplitude(0);
+                Sound<Granulize> s = Audio.the().play(g);
+                s.pan = (i%2==0) ? -0.5f : + 0.5f; //stereo effect
             }
 
-            @Override
-            public void update() {
-                super.update();
-                if (g!=null) {
-                    ArraySeries s = (ArraySeries) (series.get(0));
-                    float[] f = s.array();
-                    float max = s.maxValue(), min = s.minValue(), range = max - min;
-                    if (range < Float.MIN_NORMAL) range = 1;
+//            sonify.on((x)->{
+//                if (x) {
+////                    g = new Granulize(gBuf, 44100, 0.2f, 0.9f, new XoRoShiRo128PlusRandom(1));
+////                    //.setStretchFactor(1/50f)
+////                    g.pitchFactor.set(4f);
+//
+//                    Audio.the().play(g);
+//                } else {
+//                    g.stop();
+//                    g = null;
+//                }
+//            });
+        }
 
-                    FloatAveraged hp = new FloatAveraged(0.9f, false); //TODO use freq based high-pass filter
-                    int k = 0;
-                    for (int i = f.length - gBuf.length; i < f.length; i++) {
-                        gBuf[k++] = hp.valueOf((f[i] - min)/range);
-                    }
-                    //g.setAmplitude(1f/ m);
-                }
-            }
-
-            @Override
-            protected void stopping() {
-                c.off();
-                c = null;
-                super.stopping();
+        @Override
+        protected void stopping() {
+            for (Granulize g : this.g) {
+                g.stop();
             }
         }
+
+        @Override
+        protected void paintIt(GL2 gl, SurfaceRender r) {
+            super.paintIt(gl, r);
+            update();
+        }
+
+        public void update() {
+            Granulize[] g1 = this.g;
+            for (int i = 0, n = g1.length; i < n; i++) {
+                float d = this.d[i];
+                if (!Float.isFinite(d)) d = 0;
+                d = Math.max(0, d);
+                g1[i].setAmplitude(d / 2); //dB log scale ?
+            }
+
+
+//            Plot2D.ArraySeries s = (Plot2D.ArraySeries) (series.get(0));
+//            float[] f = s.array();
+//            float max = s.maxValue(), min = s.minValue(), range = max - min;
+//            if (range < Float.MIN_NORMAL) range = 1;
+//
+//            FloatAveraged hp = new FloatAveraged(0.9f, false); //TODO use freq based high-pass filter
+//            int k = 0;
+//            for (int i = f.length - gBuf.length; i < f.length; i++) {
+//                gBuf[k++] = hp.valueOf((f[i] - min)/range);
+//            }
+//            //g.setAmplitude(1f/ m);
+        }
+    }
+
+    public static <X extends Prioritized> Surface bagView(Bag<?,X> bag, int bins, NAR n) {
+
+
+
+        Plot2D budgetChart = new Plot2D(256, Plot2D.Line)
             .add("Mass", ()->bag.mass())
             .add("Pressure", ()->bag.pressure())
         ;
 
 
-        Surface budgetSurface = Splitting.column(
-            budgetChart, 0.1f, new Gridding(
-                sonify
-            )
-        );
-
-        return new Gridding(bagHistogram(bag, bins, n), budgetSurface);
+        return new Gridding(DurSurface.get(budgetChart, n, budgetChart::update), bagHistogram(bag, bins, n));
 
 
     }
@@ -155,10 +199,20 @@ public class NARui {
     @NotNull
     public static <X extends Prioritized> Surface bagHistogram(Iterable<X> bag, int bins, NAR n) {
         float[] d = new float[bins];
-        return DurSurface.get(new HistogramChart(
+        DurSurface hc = DurSurface.get(new HistogramChart(
                         () -> d,
                         new Color3f(0.25f, 0.5f, 0f), new Color3f(1f, 0.5f, 0.1f)),
-                n, () -> PriReference.histogram(bag, d));
+                n, () -> {
+                    PriReference.histogram(bag, d);
+                });
+
+        return Splitting.column(
+            hc, 0.1f, new Gridding(
+                    new WindowToggleButton("Sonify", ()->
+                        new HistogramSonification(d)
+                    )
+            )
+        );
     }
 
 

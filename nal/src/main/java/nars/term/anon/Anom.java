@@ -65,8 +65,8 @@ public final class Anom extends AnonID {
 //        }
 //    }
 
-    static final Anom[] the = Util.map(0, Byte.MAX_VALUE, (i) -> new Anom((byte) i), Anom[]::new);
-    private static final Term[] theNeg = Util.map(0, Byte.MAX_VALUE, (i) -> new Neg(the[i]), Term[]::new);
+    static final Anom[] the = Util.map(0, Byte.MAX_VALUE, Anom[]::new, (i) -> new Anom((byte) i));
+    private static final Term[] theNeg = Util.map(0, Byte.MAX_VALUE, Term[]::new, (i) -> new Neg(the[i]));
     static {
         the[0] = null;
         theNeg[0] = null;

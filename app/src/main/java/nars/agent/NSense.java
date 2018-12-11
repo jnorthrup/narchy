@@ -220,7 +220,7 @@ public interface NSense {
 
         return senseNumber(v, model,
                 Util.map(0, precision,
-                        levelTermizer, Term[]::new));
+                        Term[]::new, levelTermizer));
     }
 
     default DigitizedScalar senseAngle(FloatSupplier angleInRadians, int divisions, Term root) {

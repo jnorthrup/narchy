@@ -534,10 +534,10 @@ abstract public class DynamicTruthModel {
         }) || (common[0] == null))
             return null; //differing passive component; TODO this can be detected earlier, before truth evaluation starts
 
-        return Util.map(0, components.size(), tr ->
+        return Util.map(0, components.size(), Term[]::new, tr ->
                         //components.get(tr).task().term().sub(subjOrPred ? 0 : 1)
                         subSubjPredWithNegRewrap(!subjOrPred, components.get(tr))
-                , Term[]::new);
+        );
     }
 
     private static Term subSubjPredWithNegRewrap(boolean subjOrPred, TaskRegion tr) {

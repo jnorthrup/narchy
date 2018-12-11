@@ -41,7 +41,7 @@ public final class VariableSet extends NodeSet<VariableNode> {
     public static VariableSet of(NodeType... variableTypes) {
         if (variableTypes.length == 0) return Empty;
         else return new VariableSet(Util.map(0, variableTypes.length,
-                i -> new VariableNode(i, variableTypes[i]), VariableNode[]::new));
+                VariableNode[]::new, i -> new VariableNode(i, variableTypes[i])));
     }
 
 

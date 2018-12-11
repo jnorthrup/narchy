@@ -15,7 +15,7 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
 	private float playTime;
 
     /** this actually represents the target amplitude which the current amplitude will continuously interpolate towards */
-	public final NumberX amplitude = new AtomicFloat(1.0f);
+	public final AtomicFloat amplitude = new AtomicFloat(1.0f);
 	public final NumberX stretchFactor = new AtomicFloat(1.0f);
 	public final NumberX pitchFactor = new AtomicFloat(1.0f);
 
@@ -48,57 +48,7 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
 		return this;
 	}
 
-	private void process(float[] output, int readRate) {
-		if (currentGrain == null && isPlaying) {
-			currentGrain = nextGrain(null);
-		}
-        float dNow = ((sampleRate / readRate)) * pitchFactor.floatValue();
-
-        float amp = currentAmplitude;
-        float dAmp = (amplitude.floatValue() - amp) / output.length;
-
-        float n = now;
-
-
-        boolean p = isPlaying;
-        if (!p)
-            dAmp = (0 - amp) / output.length; 
-
-        long samples = output.length;
-
-        long[] cGrain = currentGrain;
-        long[] fGrain = fadingGrain;
-
-		for (int i = 0; i < samples; i++ ) {
-            float nextSample = 0;
-            long lnow = Math.round(n);
-			if (cGrain != null) {
-				nextSample = getSample(cGrain, lnow);
-				if (Granulator.isFading(cGrain, lnow)) {
-					fGrain = cGrain;
-					cGrain = p ? nextGrain(cGrain) : null;
-				}
-			}
-			if (fGrain != null) {
-                nextSample += getSample(fGrain, lnow);
-				if (!hasMoreSamples(fGrain, lnow)) {
-					fGrain = null;
-				}
-			}
-			n += dNow;
-            output[i] = nextSample * amp;
-            amp += dAmp;
-		}
-
-
-        
-        currentGrain = cGrain;
-        fadingGrain = fGrain;
-        now = n;
-        currentAmplitude = amp;
-	}
-
-    @Override
+	@Override
 	public final void setAmplitude(float amplitude) {
         this.amplitude.set(amplitude);
     }
@@ -122,7 +72,6 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
 	@Override
 	public String toString() {
 		return "Granulize{" +
-				"sampleRate=" + sampleRate +
 				", now=" + now +
 				", playTime=" + playTime +
 				", amplitude=" + amplitude +
@@ -140,6 +89,7 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
 	private long[] nextGrain(long[] targetGrain) {
 		
         targetGrain = nextGrain(targetGrain, calculateCurrentBufferIndex(), now);
+
         return targetGrain;
 	}
 
@@ -158,12 +108,58 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
 
     @Override
     public void read(float[] buf, int readRate) {
-        process(buf, readRate);
-    }
+		if (currentGrain == null && isPlaying) {
+			currentGrain = nextGrain(null);
+		}
+		float dNow = pitchFactor.floatValue();
+
+		float amp =
+			currentAmplitude;
+		float dAmp = (amplitude.floatValue() - amp) / buf.length;
+
+		float n = now;
+
+
+		boolean p = isPlaying;
+		if (!p)
+			dAmp = (0 - amp) / buf.length;
+
+		long samples = buf.length;
+
+		long[] cGrain = currentGrain;
+		long[] fGrain = fadingGrain;
+
+		for (int i = 0; i < samples; i++ ) {
+            float nextSample = 0;
+            long lnow = Math.round(n);
+			if (cGrain != null) {
+				nextSample = sample(cGrain, lnow);
+				if (Granulator.isFading(cGrain, lnow)) {
+					fGrain = cGrain;
+					cGrain = p ? nextGrain(cGrain) : null;
+				}
+			}
+			if (fGrain != null) {
+                nextSample += sample(fGrain, lnow);
+				if (!hasMoreSamples(fGrain, lnow)) {
+					fGrain = null;
+				}
+			}
+			n += dNow;
+            buf[i] = nextSample * amp;
+            amp += dAmp;
+		}
+
+
+		currentGrain = cGrain;
+		fadingGrain = fGrain;
+		now = n;
+		currentAmplitude = amp;
+	}
 
     @Override
     public void skip(int samplesToSkip, int readRate) {
-        
+        now += (pitchFactor.floatValue() * samplesToSkip);// / readRate;
     }
 
     @Override

@@ -6,8 +6,11 @@ import nars.Param;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.control.proto.Remember;
+import nars.link.TaskLink;
 import nars.table.BeliefTables;
 import nars.table.temporal.TemporalBeliefTable;
+import nars.task.AbstractTask;
+import nars.task.ITask;
 import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.series.RingBufferTaskSeries;
@@ -74,7 +77,8 @@ public class SensorBeliefTables extends BeliefTables {
 
         if (x!=null) {
             lastValue = value;
-            return x.input(c);
+            SeriesBeliefTable.SeriesRemember y = x.input(c);
+            y.remember(new MyTaskLink(c));
         }
 
         return null;
@@ -96,6 +100,7 @@ public class SensorBeliefTables extends BeliefTables {
             evi = nar.evidence(); //unique
         }
 
+
         return new SeriesBeliefTable.SeriesTask(
                 term,
                 punc,
@@ -105,7 +110,7 @@ public class SensorBeliefTables extends BeliefTables {
     }
 
 
-    public SeriesBeliefTable.SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, float dur, Term term, byte punc, NAR nar) {
+    private SeriesBeliefTable.SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, float dur, Term term, byte punc, NAR nar) {
 
         SeriesBeliefTable.SeriesTask nextT = null;
         SeriesBeliefTable.SeriesTask last = series.series.last();
@@ -160,16 +165,8 @@ public class SensorBeliefTables extends BeliefTables {
 
         if (!stretchPrev && next != null) {
             nextT = newTask(term, punc, nextStart, nextEnd, next, nar);
-            if (nextT == null)
-                return null;
-
-            synchronized (series) {
-
-                series.series.compress();
-
-                series.series.push(nextT);
-
-            }
+            if (nextT != null)
+                series.add(nextT);
         }
 
         return nextT;
@@ -204,4 +201,17 @@ public class SensorBeliefTables extends BeliefTables {
         this.res = res;
     }
 
+    private class MyTaskLink extends AbstractTask {
+        private final TaskConcept c;
+
+        public MyTaskLink(TaskConcept c) {
+            this.c = c;
+        }
+
+        @Override
+        public ITask next(NAR n) {
+            TaskLink.link(series.tasklink, c);
+            return null;
+        }
+    }
 }

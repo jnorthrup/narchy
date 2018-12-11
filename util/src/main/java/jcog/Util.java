@@ -2021,7 +2021,11 @@ public enum Util {
             ff[i] *= scale;
     }
 
-    public static <X> X[] map(int from, int to, IntFunction<X> build, IntFunction<X[]> arrayizer) {
+    public static <X> X[] map(int n, IntFunction<X[]> arrayizer, IntFunction<X> build) {
+        return map(0, n, arrayizer, build);
+    }
+
+    public static <X> X[] map(int from, int to, IntFunction<X[]> arrayizer, IntFunction<X> build) {
         assert (to >= from);
         X[] x = arrayizer.apply(to - from);
         for (int i = from, j = 0; i < to; ) {

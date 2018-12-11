@@ -6,7 +6,6 @@ import nars.NAR;
 import nars.agent.NSense;
 import nars.concept.sensor.AbstractSensor;
 import nars.control.channel.CauseChannel;
-import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;

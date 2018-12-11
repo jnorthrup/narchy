@@ -8,10 +8,11 @@ import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
 import nars.control.proto.Remember;
+import nars.link.TaskLink;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
-import nars.task.ITask;
+import nars.task.Tasklike;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
@@ -24,6 +25,7 @@ import java.util.stream.Stream;
 
 import static jcog.math.LongInterval.TIMELESS;
 import static nars.Op.CONJ;
+import static nars.task.Tasklike.seed;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -34,9 +36,25 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
 
     public final AbstractTaskSeries<T> series;
 
+
+    /** current tasklink seed for newly cloned Tasklinks */
+    Tasklike tasklinkPtr = null;
+
+    /** permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation */
+    final TaskLink.GeneralTaskLink tasklink;
+
     public SeriesBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<T> s) {
         super(c, beliefOrGoal);
         this.series = s;
+
+        updateTaskLinkPtr(ETERNAL);
+        tasklink = new TaskLink.GeneralTaskLink(seed(term, punc(), ETERNAL), 0) {
+            @Override
+            public TaskLink clone(float pri) {
+                return new GeneralTaskLink(tasklinkPtr, pri);
+            }
+        };
+
     }
 
     @Override
@@ -131,6 +149,21 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
         return x;
     }
 
+    public void add(T nextT) {
+        synchronized (this) {
+
+            series.compress();
+
+            series.push(nextT);
+
+            updateTaskLinkPtr(nextT.end() /* start, mid */);
+        }
+    }
+
+    private void updateTaskLinkPtr(long when) {
+        tasklinkPtr = seed(term, punc(), when);
+    }
+
     /** has special equality and hashcode convention allowing the end to stretch;
      *  otherwise it would be seen as unique when tested after stretch */
     public static final class SeriesTask extends SignalTask {
@@ -188,17 +221,22 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
 
     }
 
+
+
+
+
     public static final class SeriesRemember extends Remember {
 
-        private SeriesRemember(SeriesTask task, TaskConcept concept) {
+
+
+        private SeriesRemember(SeriesTask task,  TaskConcept concept) {
             super(task, concept);
             remember(task);
         }
 
         @Override
-        public ITask next(NAR n) {
-            commit(n);
-            return null;
+        protected boolean tasklink() {
+            return false; //tasklink add procedure is added manually in SensorBeliefTables
         }
 
 //        @Override

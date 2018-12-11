@@ -67,10 +67,6 @@ public class Sound<S extends SoundProducer> implements SoundSource, Comparable
         return true;
     }
 
-    public void read(float[] buf, int readRate)    {
-        producer.read(buf, readRate);
-    }
-
     public void skip(int samplesToSkip, int readRate)
     {
         producer.skip(samplesToSkip, readRate);
