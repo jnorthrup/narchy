@@ -27,11 +27,12 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int DEFAULT_SIZE = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    protected static final int maxInternedVolumeDefault = 16;
-    protected static boolean deepDefault = false;
+    protected static final int maxInternedVolumeDefault = 20;
+    protected static boolean deepDefault = true;
 
     /** memory-saving */
     private static final boolean sortCanonically = true;
+    private boolean cacheSubtermKeyBytes = false;
 
     private final boolean deep;
     private final int volInternedMax;
@@ -40,7 +41,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
     final ByteHijackMemoize<InternedCompound, Term>[] terms;
 
     private final String id;
-
 
 
     public InterningTermBuilder() {
@@ -89,6 +89,19 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return h;
     }
 
+    @Override
+    protected Subterms subterms(Op o, Term[] t, int dt, @Nullable DynBytes key) {
+        Subterms subs = super.subterms(o, t, dt, key);
+
+        if (key != null && cacheSubtermKeyBytes) {
+            if (dt == DTERNAL) //HACK TODO if temporal then the final bytes are for dt should be excluded from what the subterms gets.
+                if (subs instanceof Subterms.SubtermsBytesCached)
+                    ((Subterms.SubtermsBytesCached) subs).acceptBytes(key);
+        }
+
+        return subs;
+    }
+
     private Term compoundInterned(InternedCompound x) {
         return terms[x.op].apply(x);
     }
@@ -108,7 +121,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         if (internableRoot(xo, x.dt())) {
             Term y = terms[xo.id].apply(InternedCompound.get(x));
             if (y != null)
-                return y.negIf(negate);
+                return negate ? y.neg() : y;
         }
         return null;
     }

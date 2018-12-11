@@ -53,7 +53,7 @@ public class AutoBuilder<X, Y> {
         if (!add(root))
             return null; //cycle
 
-        List<Pair<X, Iterable<Y>>> bb = new FasterList<>();
+        List<Pair<X, Iterable<Y>>> target = new FasterList<>();
 
 
         FasterList<BiFunction<X, Object, Y>> builders = new FasterList();
@@ -74,18 +74,18 @@ public class AutoBuilder<X, Y> {
             classBuilders(root, builders); //TODO check subtypes/supertypes etc
             if (!builders.isEmpty()) {
                 Iterable<Y> yy = () -> builders.stream().map(b -> b.apply(root, relation)).filter(Objects::nonNull).iterator();
-                bb.add(pair(root, yy));
+                target.add(pair(root, yy));
             }
         }
 
         //if (bb.isEmpty()) {
         if (depth <= maxDepth) {
-            collectFields(root, parentRepr, bb, depth + 1);
+            collectFields(root, parentRepr, target, depth + 1);
         }
         //}
 
 
-        return building.build(bb, root, parentRepr);
+        return building.build(target, root, relation);
     }
 
     private void classBuilders(X x, FasterList<BiFunction<X, Object, Y>> ll) {
@@ -167,6 +167,6 @@ public class AutoBuilder<X, Y> {
 
     @FunctionalInterface
     public interface AutoBuilding<X, Y> {
-        Y build(List<Pair<X, Iterable<Y>>> content, @Nullable X parent, @Nullable Y parentRepr);
+        Y build(List<Pair<X, Iterable<Y>>> target, @Nullable X obj, @Nullable Object context);
     }
 }

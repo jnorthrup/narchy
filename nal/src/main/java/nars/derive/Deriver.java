@@ -57,7 +57,7 @@ abstract public class Deriver extends Causable {
      */
     protected final Consumer<Predicate<Activate>> source;
 
-    public DerivePri pri = new DefaultPuncWeightedDerivePri();
+    public DerivePri pri;
     public final IntRange tasklinkSpread =  new IntRange(Param.TaskLinkSpreadDefault, 1, 32);
 
 
@@ -78,10 +78,15 @@ abstract public class Deriver extends Causable {
     }
 
 
-    private Deriver(Consumer<Predicate<Activate>> source, DeriverRules rules, NAR nar) {
+    protected Deriver(Consumer<Predicate<Activate>> source, DeriverRules rules, NAR nar) {
+        this(source, rules, nar.attn.derivePri, nar);
+    }
+
+    protected Deriver(Consumer<Predicate<Activate>> source, DeriverRules rules, DerivePri pri, NAR nar) {
         super(
                 $.func("deriver", $.the(serial.getAndIncrement()))
         );
+        this.pri = pri;
         this.rules = rules;
         this.source = source;
         this.timing =
@@ -102,7 +107,6 @@ abstract public class Deriver extends Causable {
     @Override
     protected final void next(NAR n, final BooleanSupplier kontinue) {
 
-        pri.update(n);
 
         derive(Derivation.derivation.get().next(this), kontinue);
 

@@ -23,29 +23,28 @@
     //result of non-achieving goal and current  belief
     G, B, task("!") |-        ((--G && polarize(B,belief)) ==> ?1), (Punctuation:Question, Time:Task)
 
+    //is what with goal
+    //G, B, task("!") |-           (?1 && G), (Punctuation:Question)
+    //is what with non-goal
+    //G, B, task("!") |-         (?1 && --G), (Punctuation:Question)
+
+    //should what with goal/non-goal
+      G, B, task("!"), neq(G,B), --is(B,"?") |-        (polarity(G,task) && B), (Punctuation:Quest)
+
     //bifurcate plan
-    G, B, task("@"), neq(G,B) |-        (  G && B), (Punctuation:Quest, Time:Task)
-    G, B, task("@"), neq(G,B) |-        (--G && B), (Punctuation:Quest, Time:Task)
+    G, B, task("@"), neq(G,B), --is(B,"?") |-        (  G && B), (Punctuation:Quest, Time:Task)
+    G, B, task("@"), neq(G,B), --is(B,"?") |-        (--G && B), (Punctuation:Quest, Time:Task)
 
     //sequence possibility quest
     C, X, task("@"), eventOfPosOrNeg(C,X) |-  (conjWithoutPosOrNeg(C,X) && ?1), (Punctuation:Quest, Time:Task)
+
+    //continue desire/non-desire?
+    X, X, task("!") |- polarity(((polarity(X,task) && #Y) ==> X),belief), (Punctuation:Question)
 
     //avoidance TODO
 //    G, C, task("!"), eventOf(C,G)    |- (--C ==> ?1), (Punctuation:Question)
 //    G, C, task("!"), eventOfNeg(C,G) |- (--C ==> ?1), (Punctuation:Question)
 
-    //is what with goal
-    //G, Y, task("!") |-           (?1 && G), (Punctuation:Question)
-    //is what with non-goal
-    //G, Y, task("!") |-         (?1 && --G), (Punctuation:Question)
-
-    //should what with goal
-    //G, Y, task("!") |-               (?1 && G), (Punctuation:Quest)
-    G, Y, task("!"), --is(Y,"?") |-  (Y && G), (Punctuation:Quest, Time:Task)
-
-    //should what with non-goal
-    //G, Y, task("!") |-               (?1 && --G), (Punctuation:Quest)
-    G, Y, task("!"), --is(Y,"?") |-  (Y && --G), (Punctuation:Quest, Time:Task)
 
     //conj quest to impl question
     (G && B), B, task("@") |-  (polarize(B,belief) ==> G), (Punctuation:Question, Time:Task)
@@ -53,8 +52,8 @@
      (G && B), B, task("@") |-  (--G ==> B), (Punctuation:Question, Time:Task)
 
 //inverted condition question/quest
-    (&&,   X, A..+), X  |- (&&, --X, A..+), (Punctuation:Ask, Time:Task)
-    (&&, --X, A..+), X  |- (&&,   X, A..+), (Punctuation:Ask, Time:Task)
+    C, X, eventOf(C,X)     |- substitute(C,X,--X), (Punctuation:Ask, Time:Task)
+    C, X, eventOfNeg(C,X)  |- substitute(C,--X,X), (Punctuation:Ask, Time:Task)
 
 //inheritance to impl question/quest
     //(A-->P), (B-->P)  |- (polarize((A-->P),task) ==> (B-->P)), (Punctuation:Ask)

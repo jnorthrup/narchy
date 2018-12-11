@@ -935,22 +935,43 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     boolean bfsPush(Collection<Event> roots, Search<Event, TimeSpan> tv) {
 
 
-        List<Event> created = new FasterList(roots.size());
+        List<Event> created = null;
 
         //maybe should not stretch the timegraph , so temporarily disable potential stretching during adds here?  otherwise this seems to work well
         for (Event r : roots) {
-            //if (addNewNode(r)) {
-            if (node(r) == null) {
-                addNode(r);
+            if (addNewNode(r)) {
+                if (created == null)
+                    created = new FasterList(4);
                 created.add(r);
             }
         }
 
         Queue<Pair<List<BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>>>, Node<Event, nars.time.TimeSpan>>> q = new ArrayDeque<>(roots.size() /* estimate TODO find good sizing heuristic */);
 
-        boolean result = bfs(roots, tv, q);
+//        Iterable<Node<Event,TimeSpan>> rr = Iterables.transform(roots, r -> {
+//            Node<Event, TimeSpan> n = node(r);
+//            if (n == null) {
+//                //virtual node
+//                n = new AbstractNode<>(r) {
+//                    @Override
+//                    public Iterable edges(boolean in, boolean out) {
+//                        if (out) {
+//                            return ()->((TimeSolver)tv).dynamicLink(this);
+//                        } else {
+//                            return List.of();
+//                        }
+//                    }
+//                };
+//
+//            }
+//            return n;
+//        });
+//        boolean result = bfs(q, rr, tv);
 
-        created.forEach(this::removeNode);
+        boolean result = bfs(roots, q, tv);
+
+        if (created!=null)
+            created.forEach(this::removeNode);
 
         return result;
     }

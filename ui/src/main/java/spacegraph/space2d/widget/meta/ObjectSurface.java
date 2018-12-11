@@ -50,9 +50,9 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         super();
 
         this.obj = x;
-        AutoBuilder.AutoBuilding<Object,Surface> building = (List<Pair<Object, Iterable<Surface>>> content, @Nullable Object parent, @Nullable Surface parentRepr) -> {
-            List<Surface> c =  new FasterList(content.size());
-            for (Pair<Object, Iterable<Surface>> p : content) {
+        AutoBuilder.AutoBuilding<Object,Surface> building = (List<Pair<Object, Iterable<Surface>>> target, @Nullable Object obj, @Nullable Object context) -> {
+            List<Surface> c =  new FasterList(target.size());
+            for (Pair<Object, Iterable<Surface>> p : target) {
                 //Object o = p.getOne();
                 ArrayList<Surface> cx = Lists.newArrayList(p.getTwo());
                 switch(cx.size()) {
@@ -68,10 +68,10 @@ public class ObjectSurface<X> extends MutableUnitContainer {
             if (c.isEmpty())
                 return null;
 
-            return new ObjectMetaFrame(parent, c.size() > 1 ? new Gridding(c) : c.get(0));
+            return new ObjectMetaFrame(obj, c.size() > 1 ? new Gridding(c) : c.get(0), context);
         };
 
-        builder = new AutoBuilder<Object, Surface>(maxDepth, building);
+        builder = new AutoBuilder<>(maxDepth, building);
 
         initDefaults();
     }
@@ -174,15 +174,18 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         public final Object instance;
         public final Surface surface;
         private final int instanceHash;
+        private final Object context;
 
-        public ObjectMetaFrame(Object instance, Surface surface) {
+        public ObjectMetaFrame(Object instance, Surface surface, Object context) {
             super(surface);
             if (instance instanceof Surface)
                 throw new TODO();
+            this.context = context;
             this.instance = instance;
             this.instanceHash = instance.hashCode();
             this.surface = surface;
         }
+
 
         @Override
         protected void paintIt(GL2 gl, SurfaceRender r) {
@@ -192,7 +195,10 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         }
 
         @Override protected String name() {
-            return instance != null ? instance.toString() : "";
+            if (context instanceof Field) {
+                return ((Field)context).getName();
+            }
+            return context != null ? context.toString() : (instance!=null ? instance.toString() : null);
         }
 
 

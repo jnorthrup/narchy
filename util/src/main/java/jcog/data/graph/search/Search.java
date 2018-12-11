@@ -67,7 +67,8 @@ abstract public class Search<N, E> {
     }
     
     private boolean bfs(Node<N,E> start, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N,E>,E>>>, Node<N,E>>> q) {
-
+        if (start==null)
+            return true;  //??
 
         q.add(Tuples.pair(path = Collections.emptyList(), start));
         log.visit(start);

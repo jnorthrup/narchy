@@ -176,7 +176,10 @@ class TimeGraphTest {
     void testImplWithConjPredicate2() {
         //results may be random
         assertSolved("(one ==>+- (two &&+- three))", A,
-                "(one ==>+- (three &&+17 two))", "(one ==>+- (two &&+1 three))", "(one ==>+- (two &&+19 three))", "(one ==>+1 (two &&+1 three))", "(one ==>+1 (two &&+19 three))", "(one ==>+19 (two &&+1 three))", "(one ==>+19 (two &&+19 three))", "(one ==>+2 (three &&+17 two))", "(one ==>+20 (three &&+17 two))", "(one ==>-16 (three &&+17 two))", "(one ==>-17 (two &&+1 three))", "(one ==>-17 (two &&+19 three))"
+
+                "(one ==>+- (three &&+17 two))", "(one ==>+- (two &&+1 three))", "(one ==>+- (two &&+19 three))", "(one ==>+1 (two &&+1 three))", "(one ==>+19 (two &&+1 three))", "(one ==>+19 (two &&+19 three))", "(one ==>+20 (three &&+17 two))"
+                //"(one ==>+19 (two &&+19 three))"
+                //"(one ==>+2 (three &&+17 two))", "(one ==>+20 (three &&+17 two))", "(one ==>-16 (three &&+17 two))", "(one ==>-17 (two &&+1 three))", "(one ==>-17 (two &&+19 three))"
         );
     }
 

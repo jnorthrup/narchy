@@ -56,19 +56,19 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
                 .view(8, 8)) {
 
             @Override
-            public Appendable append(CharSequence charSequence) {
+            public AppendableUnitContainer append(CharSequence charSequence) {
                 te.model.buffer().insert(charSequence.toString());
                 return this;
             }
 
             @Override
-            public Appendable append(CharSequence charSequence, int i, int i1) {
+            public AppendableUnitContainer append(CharSequence charSequence, int i, int i1) {
                 te.model.buffer().insert(charSequence.subSequence(i, i1).toString());
                 return this;
             }
 
             @Override
-            public Appendable append(char c) {
+            public AppendableUnitContainer append(char c) {
                 te.model.buffer().insert(String.valueOf(c));
                 return this;
             }

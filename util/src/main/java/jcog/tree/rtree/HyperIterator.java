@@ -79,11 +79,8 @@ public class HyperIterator<X> implements AutoCloseable {
      * surveys the contents of the node, producing a new 'stack frame' for navigation
      */
     private void expand(Node<X> at) {
-        int atSize = at.size();
-        if (atSize == 0)
+        if (at.size() == 0)
             return;
-
-        boolean notNodeFiltering = (nodeFilter == null || plan.isEmpty()); //dont filter root node (traversed while plan is null)
 
         at.forEachLocal(itemOrNode -> {
             if (itemOrNode instanceof Node) {
@@ -96,15 +93,13 @@ public class HyperIterator<X> implements AutoCloseable {
                         node = (Node) first; //this might indicate a problem in the tree structure that could have been flattened automatically
                     else {
 
-                        if (notNodeFiltering || nodeFilter.tryVisit(node)) {
-                            plan.accept(first);
-                        }
+                        //dont filter root node (traversed while plan is null)
+                        addPlan(node, first);
                         return;
                     }
                 }
 
-                if (notNodeFiltering || nodeFilter.tryVisit(node))
-                    plan.accept(node);
+                addPlan(node, node);
 
             } else {
                 plan.accept(itemOrNode);
@@ -112,6 +107,12 @@ public class HyperIterator<X> implements AutoCloseable {
         });
 
 
+    }
+
+    private void addPlan(Node node, Object first) {
+        if (nodeFilter == null || plan.isEmpty() || nodeFilter.tryVisit(node)) {
+            plan.accept(first);
+        }
     }
 
 

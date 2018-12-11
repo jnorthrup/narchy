@@ -32,7 +32,6 @@ public class NARLoop extends InstrumentedLoop {
     @Override
     public final boolean next() {
 
-        nar.emotion.cycle();
 
         nar.time.cycle(nar);
 

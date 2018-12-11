@@ -187,7 +187,7 @@ abstract public class NAgentX extends NAgent {
     */
 
 
-        //Param.STRONG_COMPOSITION = true;
+        Param.STRONG_COMPOSITION = true;
 //        Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
@@ -207,7 +207,7 @@ abstract public class NAgentX extends NAgent {
                         new Revaluator.DefaultRevaluator(0.25f),
                         //new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
 
-                        threads <= 0 ? Util.concurrencyExcept(2) : threads, false /* affinity */))
+                        threads <= 0 ? Util.concurrencyExcept(2) : threads, true/* affinity */))
 
 //                .exe(MixMultiExec.get(
 //                            1024,
@@ -231,8 +231,9 @@ abstract public class NAgentX extends NAgent {
 
                         //new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
                         new HijackConceptIndex(
+                                //256 * 1024,
+                                192 * 1024,
                                 //128 * 1024,
-                                128 * 1024,
                                 //64 * 1024,
                                 //32 * 1024,
                                 //8 * 1024,

@@ -1,5 +1,6 @@
 package nars.gui;
 
+import com.google.common.base.Joiner;
 import com.googlecode.lanterna.input.KeyType;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
@@ -47,6 +48,7 @@ import spacegraph.space2d.widget.slider.FloatGuage;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
+import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.util.math.Color3f;
 
 import java.io.File;
@@ -183,9 +185,20 @@ public class NARui {
         return Splitting.row(bagView(
                 //(Iterable) () -> n.conceptsActive().iterator(),
                 cc.active,
-                8, n), 0.8f,
+                16, n), 0.8f,
             new Gridding(
                 new XYSlider(cc.conceptForgetRate, n.attn.activating.conceptActivationRate),
+                new PushButton("Print", () -> {
+                    Appendable a = null;
+                    try {
+                        a = TextEdit.out().append(
+                            Joiner.on('\n').join(cc.active)
+                        );
+                        window(a, 800, 500);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }),
                 new PushButton("Clear", ()->cc.active.clear())
         ));
     }

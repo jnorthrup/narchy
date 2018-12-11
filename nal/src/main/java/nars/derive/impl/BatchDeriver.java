@@ -30,23 +30,23 @@ import java.util.function.Supplier;
 /** buffers premises in batches*/
 public class BatchDeriver extends Deriver {
 
-    /**
-     * forms matrices of premises of M tasklinks and N termlinks which
-     * are evaluated after buffering some limited amount of these in a set
-     */
-    abstract static class MatrixDeriver extends Deriver {
-        /* TODO */
-        protected MatrixDeriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
-            super(source, rules, nar);
-        }
-    }
+//    /**
+//     * TODO forms matrices of premises of M tasklinks and N termlinks which
+//     * are evaluated after buffering some limited amount of these in a set
+//     */
+//    abstract static class MatrixDeriver extends Deriver {
+//        /* TODO */
+//        protected MatrixDeriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
+//            super(source, rules, nar);
+//        }
+//    }
 
-    public final IntRange conceptsPerIteration = new IntRange(4, 1, 32);
+    public final IntRange conceptsPerIteration = new IntRange(6, 1, 32);
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
      */
-    public final IntRange premisesPerConcept = new IntRange(2, 1, 8);
+    public final IntRange premisesPerConcept = new IntRange(1, 1, 8);
 
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks

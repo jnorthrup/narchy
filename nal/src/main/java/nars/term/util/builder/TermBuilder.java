@@ -158,15 +158,13 @@ public abstract class TermBuilder {
             }
         }
 
-        Subterms subs = subterms(o, t);
-
-        if (key != null) {
-            if (dt == DTERNAL) //HACK TODO if temporal then the final bytes are for dt should be excluded from what the subterms gets.
-                if (subs instanceof Subterms.SubtermsBytesCached)
-                    ((Subterms.SubtermsBytesCached) subs).acceptBytes(key);
-        }
+        Subterms subs = subterms(o, t, dt, key);
 
         return CachedCompound.newCompound(o, dt, subs);
+    }
+
+    protected Subterms subterms(Op o, Term[] t, int dt, @Nullable DynBytes key) {
+        return subterms(o, t);
     }
 
 

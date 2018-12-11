@@ -43,15 +43,19 @@ public abstract class NodeGraph<N, E> {
     }
 
     public boolean bfs(N startingNode, Search<N, E> tv) {
-        return bfs(List.of(startingNode), tv, new ArrayDeque());
+        return bfs(List.of(startingNode), new ArrayDeque(), tv);
     }
 
     private boolean dfs(Iterable<N> startingNodes, Search<N, E> search) {
         return search.dfs(Iterables.transform(startingNodes, this::node));
     }
 
-    public boolean bfs(Iterable<N> startingNodes, Search<N, E> search, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q) {
-        return search.bfs(Iterables.transform(startingNodes, this::node), q);
+    public boolean bfs(Iterable<N> startingNodes, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q, Search<N, E> search) {
+        return bfs(q, Iterables.transform(startingNodes, this::node), search);
+    }
+
+    public boolean bfs(Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q, Iterable<Node<N, E>> nn, Search<N, E> search) {
+        return search.bfs(nn, q);
     }
 
 

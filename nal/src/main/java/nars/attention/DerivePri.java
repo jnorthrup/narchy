@@ -1,6 +1,5 @@
 package nars.attention;
 
-import nars.NAR;
 import nars.Task;
 import nars.derive.Derivation;
 
@@ -24,10 +23,7 @@ public interface DerivePri {
     float pri(Task t, float derivedFreq, float derivedEvi, Derivation d);
 
 
-    /** allows deriver parameters to be updated.  called each duration */
-    default void update(NAR nar) {
 
-    }
 
     /** result punctuation factor; allows weighting probabilty according to the determined derived task punctuations of each choice */
     default float preAmp(byte conclusion) {

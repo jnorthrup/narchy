@@ -91,7 +91,7 @@ public abstract class Param {
     public static final boolean INT_CONCEPTUALIZABLE = false;
 
 
-    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = false;
+    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = true;
 
 //    /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
 //    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
@@ -200,7 +200,7 @@ public abstract class Param {
 
     public final TaskBuffer input =
             //new DerivedTasks.DerivedTasksMap(4096);
-            //new TaskBuffer.BagTasksBuffer(512, 0.15f);
+            //new TaskBuffer.BagTasksBuffer(256, 0.25f);
             new TaskBuffer.BagPuncTasksBuffer(128, 0.25f);
 
 
@@ -251,7 +251,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 1f;
+    public static final float TEST_TIME_MULTIPLIER = 2f;
 
 
     @Range(min = 1, max = 32)

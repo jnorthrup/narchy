@@ -188,7 +188,10 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
         }
     }
 
-    public N put(double... x) {
+    private transient double maxError;
+    private transient short _maxErrorNeighbour;
+
+    public synchronized N put(double... x) {
         if (x.length != dimension)
             throw new ArrayIndexOutOfBoundsException();
 
@@ -289,21 +292,22 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
             }
 
 
-            final double[] maxError = {Double.NEGATIVE_INFINITY};
-            short _maxErrorNeighbour[] = {-1};
+            maxError = Double.NEGATIVE_INFINITY;
+            _maxErrorNeighbour = -1;
+
             edges.edgesOf(maxErrorID, (otherNodeID) -> {
 
                 Centroid otherNode = this.centroids[otherNodeID];
 
-                if (otherNode.localError() > maxError[0]) {
-                    _maxErrorNeighbour[0] = otherNodeID;
-                    maxError[0] = otherNode.localError();
+                if (otherNode.localError() > maxError) {
+                    _maxErrorNeighbour = otherNodeID;
+                    maxError = otherNode.localError();
                 }
             });
 
-            if (_maxErrorNeighbour[0] != -1) {
+            if (_maxErrorNeighbour != -1) {
 
-                short maxErrorNeighborID = _maxErrorNeighbour[0];
+                short maxErrorNeighborID = _maxErrorNeighbour;
 
 
                 edges.removeEdge(maxErrorID, maxErrorNeighborID);

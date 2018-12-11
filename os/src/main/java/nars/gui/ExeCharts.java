@@ -95,9 +95,9 @@ public class ExeCharts {
 
     public static Surface exePanel(NAR n) {
         int plotHistory = 100;
-        Plot2D exeQueue = new Plot2D(plotHistory, Plot2D.Line)
+        Plot2D exeQueue = new Plot2D(plotHistory, Plot2D.BarLanes)
                 .add("queueSize", ((UniExec) n.exe)::queueSize);
-        Plot2D busy = new Plot2D(plotHistory, Plot2D.Line)
+        Plot2D busy = new Plot2D(plotHistory, Plot2D.BarLanes)
                 .add("Busy", n.emotion.busyVol::getSum);
         return grid(
                 DurSurface.get(exeQueue, n, exeQueue::update),
@@ -113,7 +113,7 @@ public class ExeCharts {
     }
 
     public static Surface inputPanel(NAR n) {
-        Plot2D plot = new Plot2D(256, Plot2D.Line).add("vol", () -> n.input.volume(), 0, 1);
+        Plot2D plot = new Plot2D(256, Plot2D.Line).add("load", () -> n.input.volume(), 0, 1);
         return new DurSurface(new Gridding(new ObjectSurface(n.input), plot), n) {
             @Override protected void update() {
                 plot.update();

@@ -13,6 +13,7 @@ import jcog.signal.meter.FastCounter;
 import jcog.signal.meter.Meter;
 import jcog.signal.meter.MetricsMapper;
 import jcog.signal.meter.event.AtomicMeanFloat;
+import nars.control.DurService;
 import nars.control.MetaGoal;
 
 import java.util.List;
@@ -94,7 +95,7 @@ public class Emotion implements Meter {
 
         this.busyVol = new AtomicMeanFloat("busyV");
 
-
+        DurService.on(n, this::commit);
     }
 
     /**
@@ -135,7 +136,7 @@ public class Emotion implements Meter {
     /**
      * new frame started
      */
-    public void cycle() {
+    public void commit() {
 
 
         termVolMax = nar.termVolumeMax.floatValue();
