@@ -5,17 +5,24 @@ import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.concept.Concept;
+import nars.concept.sensor.Signal;
+import nars.control.channel.CauseChannel;
 import nars.table.BeliefTables;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.eternal.EternalTable;
+import nars.task.ITask;
 import nars.term.Termed;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
+import java.util.Objects;
+import java.util.stream.Stream;
+
 import static nars.Op.BELIEF;
 
-public abstract class Reward implements Termed, Iterable<Concept> {
+public abstract class Reward implements Termed, Iterable<Signal> {
 
     //public final FloatRange motivation = new FloatRange(1f, 0, 1f);
 
@@ -24,6 +31,8 @@ public abstract class Reward implements Termed, Iterable<Concept> {
 
     protected transient volatile float reward = Float.NaN;
 
+    protected final CauseChannel<ITask> in;
+    transient private float pri;
 
     public Reward(NAgent a, FloatSupplier r) {
     //TODO
@@ -31,14 +40,24 @@ public abstract class Reward implements Termed, Iterable<Concept> {
         this.agent = a;
         this.rewardFunc = r;
 
+        in = a.nar().newChannel(this);
 
     }
 
     public final NAR nar() { return agent.nar(); }
 
-    public void update(long prev, long now, long next) {
-        reward = rewardFunc.asFloat();
+    public void pri(float pri) {
+        this.pri = pri;
     }
+
+    public final void update(long prev, long now, long next) {
+        reward = rewardFunc.asFloat();
+        in.input(updateReward(prev, now, next).filter(Objects::nonNull).peek(r -> {
+            r.input.pri(pri);
+        }));
+    }
+
+    abstract protected Stream<SeriesBeliefTable.SeriesRemember> updateReward(long prev, long now, long next);
 
     protected FloatFloatToObjectFunction<Truth> truther() {
         return (prev, next) -> (next == next) ?
@@ -57,4 +76,5 @@ public abstract class Reward implements Termed, Iterable<Concept> {
         }
 
     }
+
 }

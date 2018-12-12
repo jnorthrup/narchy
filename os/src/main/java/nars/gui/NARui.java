@@ -16,6 +16,7 @@ import nars.NAR;
 import nars.Task;
 import nars.agent.NAgent;
 import nars.concept.Concept;
+import nars.concept.sensor.Signal;
 import nars.gui.concept.ConceptColorIcon;
 import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;
@@ -181,6 +182,7 @@ public class NARui {
 
     @NotNull
     public static Surface activeConceptsView(NAR n) {
+
         AbstractConceptIndex cc = (AbstractConceptIndex) n.concepts;
         return Splitting.row(bagView(
                 //(Iterable) () -> n.conceptsActive().iterator(),
@@ -360,7 +362,7 @@ public class NARui {
 
     public static Surface agent(NAgent a) {
 
-        Iterable<Concept> rewards = () -> a.rewards.stream().flatMap(r -> StreamSupport.stream(r.spliterator(), false)).iterator();
+        Iterable<Signal> rewards = () -> a.rewards.stream().flatMap(r -> StreamSupport.stream(r.spliterator(), false)).iterator();
         Iterable<? extends Concept> actions = a.actions;
 
         Menu aa = new TabMenu(Map.of(

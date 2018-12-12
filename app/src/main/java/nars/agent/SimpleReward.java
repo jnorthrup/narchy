@@ -3,15 +3,14 @@ package nars.agent;
 import com.google.common.collect.Iterators;
 import jcog.math.FloatSupplier;
 import nars.NAR;
-import nars.concept.Concept;
 import nars.concept.sensor.Signal;
-import nars.control.channel.CauseChannel;
-import nars.task.ITask;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 import static nars.Op.GOAL;
 
@@ -21,14 +20,12 @@ public class SimpleReward extends Reward {
 
     private final FloatFloatToObjectFunction<Truth> truther;
 
-    protected final CauseChannel<ITask> in;
 
     public SimpleReward(Term id, FloatSupplier r, NAgent a) {
         super(a, r);
         NAR nar = nar();
         concept = new Signal(id, () -> reward, nar);
 
-        in = a.nar().newChannel(this);
 
         truther = truther();
         agent.//alwaysWant
@@ -43,8 +40,10 @@ public class SimpleReward extends Reward {
 //        }, true);
     }
 
+
+
     @Override
-    public final Iterator<Concept> iterator() {
+    public final Iterator<Signal> iterator() {
         return Iterators.singletonIterator(concept);
     }
 
@@ -53,9 +52,9 @@ public class SimpleReward extends Reward {
         return concept.term();
     }
 
+
     @Override
-    public void update(long prev, long now, long next) {
-        super.update(prev, now, next);
-        in.input( concept.update(prev, now, truther, nar()) );
+    protected Stream<SeriesBeliefTable.SeriesRemember> updateReward(long prev, long now, long next) {
+        return Stream.of(concept.update(prev, now, truther, nar()));
     }
 }

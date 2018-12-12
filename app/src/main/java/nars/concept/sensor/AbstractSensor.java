@@ -40,17 +40,6 @@ abstract public class AbstractSensor extends NARService implements Sensor {
         return res;
     }
 
-    protected final void update(long last, long now, Iterable<Signal> signals, CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> t) {
-        int dur = nar.dur();
-        signals.forEach(s -> {
-            SeriesBeliefTable.SeriesRemember x = s.update(last, now, t, dur /*now - last*/, nar);
-            if (x!=null) {
-                pri(x.input);
-                in.input(x);
-            }
-        });
-    }
-
     /** TODO abstract different priority distribution methods:
      *    uniform, divide equally, according to amount of value change, etc */
     protected void pri(Task x) {

@@ -59,6 +59,21 @@ shadowJar {
     classifier = null
     baseName = 'lab.jar'
     version = null
-    //minimize()
+
+
+//    minimize {
+//        exclude(dependency('narchy:.*:.*'))
+//
+//        exclude(dependency('org.slf4j:.*:.*'))
+//        exclude(dependency('org.jogamp.*:.*:.*'))
+//        exclude(dependency('com.fasterxml.*:.*:.*'))
+//        exclude(dependency('org.msgpack.*:.*:.*'))
+//        exclude(dependency('net.openhft:zero-allocation-hashing:.*'))
+//        exclude(dependency('com.google.guava:guava:.*'))
+//        exclude(dependency('com.conversantmedia:disruptor:.*'))
+//        exclude(dependency('org.eclipse.collections:.*:.*'))
+//        exclude(dependency('org.roaringbitmap:.*:.*'))
+//
+//    }
 
 }

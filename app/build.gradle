@@ -1,7 +1,6 @@
 
 dependencies {
     compile project(':nal')
-    compile project(':ui')
     compile project(':logic')
 
 

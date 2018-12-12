@@ -123,8 +123,8 @@ public class NARS {
 
                 n.beliefPriDefault.set(0.5f);
                 n.goalPriDefault.set(0.5f);
-                n.questionPriDefault.set(0.45f);
-                n.questPriDefault.set(0.45f);
+                n.questionPriDefault.set(0.35f);
+                n.questPriDefault.set(0.35f);
 
 
             });

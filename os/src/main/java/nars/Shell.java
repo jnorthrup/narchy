@@ -5,7 +5,6 @@ import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
-import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.IOSafeTerminal;
 import com.googlecode.lanterna.terminal.TerminalResizeListener;
@@ -362,7 +361,7 @@ public class Shell {
 
 
                 setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                setBackground(Color.BLACK); 
+                setBackground(Color.BLACK);
                 pack();
 
                 
@@ -423,7 +422,7 @@ public class Shell {
              *
              * @param keyStroke Key stroke input event to put on the queue
              */
-            public void addInput(KeyStroke keyStroke) {
+            public void addInput(com.googlecode.lanterna.input.KeyStroke keyStroke) {
                 swingTerminal.addInput(keyStroke);
             }
 
@@ -431,11 +430,11 @@ public class Shell {
             
             
             @Override
-            public KeyStroke pollInput() {
+            public com.googlecode.lanterna.input.KeyStroke pollInput() {
                 if (disposed) {
-                    return new KeyStroke(KeyType.EOF);
+                    return new com.googlecode.lanterna.input.KeyStroke(KeyType.EOF);
                 }
-                KeyStroke keyStroke = swingTerminal.pollInput();
+                com.googlecode.lanterna.input.KeyStroke keyStroke = swingTerminal.pollInput();
                 if (autoCloseTriggers.contains(TerminalEmulatorAutoCloseTrigger.CloseOnEscape) &&
                         keyStroke != null &&
                         keyStroke.getKeyType() == KeyType.Escape) {
@@ -445,7 +444,7 @@ public class Shell {
             }
 
             @Override
-            public KeyStroke readInput() {
+            public com.googlecode.lanterna.input.KeyStroke readInput() {
                 return swingTerminal.readInput();
             }
 

@@ -137,63 +137,62 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
             //if (add) {
 
-                Collection<Event> te = byTerm.get(t);
-                int nte = te.size();
-                if (nte > 0) {
+            Collection<Event> te = byTerm.get(t);
+            int nte = te.size();
+            if (nte > 0) {
 
-                    boolean stable;
-                    do {
+                boolean stable;
+                do {
 
-                        stable = true;
+                    stable = true;
 
-                        Iterator<Event> ff = te.iterator();
-                        while (ff.hasNext()) {
-                            Event f = ff.next();
-                            if (!(f instanceof Absolute))
-                                continue;
-                            Absolute af = (Absolute) f;
-                            long as = af.start();
-                            if (start == ETERNAL && as == ETERNAL)
-                                return af;
-                            if (as == ETERNAL)
-                                continue;
+                    Iterator<Event> ff = te.iterator();
+                    while (ff.hasNext()) {
+                        Event f = ff.next();
+                        if (!(f instanceof Absolute))
+                            continue;
+                        Absolute af = (Absolute) f;
+                        long as = af.start();
+                        if (start == ETERNAL && as == ETERNAL)
+                            return af;
+                        if (as == ETERNAL)
+                            continue;
 
-                            if (af.containsOrEquals(start, end)) {
-                                //add = false;
-                                //break; //dont affect the stored graph, but return the smaller interval that was input
+                        if (af.containsOrEquals(start, end)) {
+                            //add = false;
+                            //break; //dont affect the stored graph, but return the smaller interval that was input
 
-                                return af; //return the absorbing event
-                            }
-
-
-
-                            if (add && af.containedIn(start, end)) {
-                                //absorb existing
-                                removeNode(f);
-                                ff.remove();
-                                nte--;
-                            } else {
-                                long[] merged;
-                                if ((merged = af.unionIfIntersects(start, end)) != null) {
-
-                                    //stretch
-                                    start = merged[0];
-                                    end = merged[1];
-
-                                    if (add) {
-                                        removeNode(f);
-                                        ff.remove();
-                                        nte--;
-                                        stable &= nte<=1; //try again if other nodes, because it may connect with other ranges further in the iteration
-                                    }
-
-                                    break;
-                                }
-                            }
-
-
+                            return af; //return the absorbing event
                         }
-                    } while (!stable);
+
+
+                        if (add && af.containedIn(start, end)) {
+                            //absorb existing
+                            removeNode(f);
+                            ff.remove();
+                            nte--;
+                        } else {
+                            long[] merged;
+                            if ((merged = af.unionIfIntersects(start, end)) != null) {
+
+                                //stretch
+                                start = merged[0];
+                                end = merged[1];
+
+                                if (add) {
+                                    removeNode(f);
+                                    ff.remove();
+                                    nte--;
+                                    stable &= nte <= 1; //try again if other nodes, because it may connect with other ranges further in the iteration
+                                }
+
+                                break;
+                            }
+                        }
+
+
+                    }
+                } while (!stable);
                 //}
             }
 
@@ -518,10 +517,89 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     @Override
                     protected boolean next(BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>> move, Node<Event, TimeSpan> next) {
 
+                        /**
+                         * assuming the path starts with one of the end-points (a and b),
+                         * if the path ends at either one of them
+                         * this computes the dt to the other one,
+                         * and (if available) the occurence startTime of the path
+                         * returns (startTime, dt) if solved, null if dt can not be calculated.
+                         */
 
-                        long[] startDT = pathDT(next, a, b, path);
-                        if (startDT == null)
+                        long[] startDT;
+                        Event startEvent, endEvent;
+                        Term startTerm;
+                        Term endTerm = next.id().id;
+                        int adjEnd;
+                        boolean endA = ((adjEnd = choose(a.subTimes(endTerm))) == 0);
+                        boolean endB = !endA &&
+                                ((adjEnd = choose(b.subTimes(endTerm))) == 0);
+
+                        if (adjEnd != DTERNAL && (endA || endB)) {
+
+                            startEvent = pathStart(path).id();
+
+                            startTerm = startEvent.id;
+
+                            boolean fwd = endB && (startTerm.equals(a) || choose(a.subTimes(startTerm)) == 0);
+                            boolean rev = !fwd && (
+                                    endA && (startTerm.equals(b) || choose(b.subTimes(startTerm)) == 0));
+                            if (fwd || rev) {
+
+                                long startTime = startEvent.start();
+
+                                endEvent = Search.pathEnd(path).id();
+                                long endTime = endEvent.start();
+
+
+                                long dt;
+                                if (startTime != TIMELESS && startTime != ETERNAL && endTime != TIMELESS && endTime != ETERNAL) {
+                                    dt = endTime - startTime;
+                                } else {
+                                    dt = pathTime(path, false);
+                                    if (dt == TIMELESS)
+                                        return true;
+                                }
+
+                                if (dt == ETERNAL) {
+                                    long w;
+                                    if (startTime == TIMELESS) {
+                                        w = endTime;
+                                    } else {
+                                        if (startTime == ETERNAL)
+                                            w = endTime;
+                                        else {
+                                            w = startTime;
+                                        }
+                                    }
+
+                                    startDT = new long[]{w, ETERNAL};
+                                } else {
+
+                                    if (a.equals(b))
+                                        rev = random().nextBoolean();
+
+                                    if (rev) {
+                                        dt = -dt;
+                                        long s = startTime;
+                                        startTime = endTime;
+                                        endTime = s;
+                                    }
+
+
+                                    startDT = new long[]{
+                                            (startTime != TIMELESS || endTime == TIMELESS) ?
+                                                    startTime :
+                                                    (endTime != ETERNAL ? endTime - dt : ETERNAL)
+                                            , dt};
+                                }
+
+                            } else {
+                                return true;
+                            }
+                        } else {
                             return true;
+                        }
+
 
                         long start = startDT[0];
                         if (x.op() != CONJ)
@@ -529,7 +607,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         long ddt = startDT[1];
                         return TimeGraph.this.solveDT(x, start, ddt,
                                 (start != ETERNAL && start != XTERNAL) ?
-                                        durMerge(pathStart(path).id(), pathEnd(path).id()) : 0
+                                        durMerge(startEvent, endEvent) : 0
                                 , path, each);
                     }
                 });
@@ -922,13 +1000,13 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     /**
      * solves the start time for the given Unsolved event.  returns whether callee should continue iterating
      */
-    protected boolean solveOccurrence(Term t, Predicate<Event> each) {
+    protected final boolean solveOccurrence(Term t, Predicate<Event> each) {
 
         return solveOccurrence(event(t, TIMELESS, false), each);
 
     }
 
-    boolean bfsPush(Event root, Search<Event, TimeSpan> tv) {
+    final boolean bfsPush(Event root, Search<Event, TimeSpan> tv) {
         return bfsPush(List.of(root), tv);
     }
 
@@ -970,7 +1048,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         boolean result = bfs(roots, q, tv);
 
-        if (created!=null)
+        if (created != null && result /* tail call optimization  - dont bother removing if we're done anyway */)
             created.forEach(this::removeNode);
 
         return result;
@@ -1200,89 +1278,6 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
             return (d != null) ? Iterables.concat(e, new FasterList<>(d)) : e;
         }
-    }
-
-    /**
-     * assuming the path starts with one of the end-points (a and b),
-     * if the path ends at either one of them
-     * this computes the dt to the other one,
-     * and (if available) the occurence startTime of the path
-     * returns (startTime, dt) if solved, null if dt can not be calculated.
-     */
-    @Nullable
-    protected long[] pathDT(Node<Event, TimeSpan> n, Term a, Term b, List<BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>>> path) {
-        Term endTerm = n.id().id;
-        int adjEnd;
-        boolean endA = ((adjEnd = choose(a.subTimes(endTerm))) == 0);
-        boolean endB = !endA &&
-                ((adjEnd = choose(b.subTimes(endTerm))) == 0);
-
-        if (adjEnd == DTERNAL)
-            return null;
-
-        if (endA || endB) {
-            Event startEvent = pathStart(path).id();
-
-            Term startTerm = startEvent.id;
-
-            boolean fwd = endB && (startTerm.equals(a) || choose(a.subTimes(startTerm)) == 0);
-            boolean rev = !fwd && (
-                    endA && (startTerm.equals(b) || choose(b.subTimes(startTerm)) == 0));
-            if (fwd || rev) {
-
-                long startTime = startEvent.start();
-
-                Event endEvent = Search.pathEnd(path).id();
-                long endTime = endEvent.start();
-
-
-                long dt;
-                if (startTime != TIMELESS && startTime != ETERNAL && endTime != TIMELESS && endTime != ETERNAL) {
-
-                    dt = endTime - startTime;
-                } else {
-
-
-                    dt = pathTime(path, false);
-                }
-                if (dt == TIMELESS)
-                    return null;
-
-                if (dt == ETERNAL) {
-                    long w;
-                    if (startTime == TIMELESS) {
-                        w = endTime;
-                    } else {
-                        if (startTime == ETERNAL)
-                            w = endTime;
-                        else {
-                            w = startTime;
-                        }
-                    }
-
-                    return new long[]{w, ETERNAL};
-                } else {
-
-                    if (a.equals(b))
-                        rev = random().nextBoolean();
-
-                    if (rev) {
-                        dt = -dt;
-                        long s = startTime;
-                        startTime = endTime;
-                        endTime = s;
-                    }
-
-
-                    return new long[]{
-                            (startTime != TIMELESS || endTime == TIMELESS) ?
-                                    startTime :
-                                    (endTime != ETERNAL ? endTime - dt : ETERNAL)
-                            , dt};
-                }
-            }
-        }
-        return null;
     }
 
     private int choose(int[] subTimes) {

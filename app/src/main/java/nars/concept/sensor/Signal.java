@@ -123,7 +123,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     }
 
     @Nullable
-    public final ITask update(long prev, long now, FloatFloatToObjectFunction<Truth> truther, NAR n) {
+    public final SeriesBeliefTable.SeriesRemember update(long prev, long now, FloatFloatToObjectFunction<Truth> truther, NAR n) {
         return update(prev, now, truther, n.dur() /*now - prev*/, n);
     }
 

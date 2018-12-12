@@ -28,7 +28,7 @@ public abstract class Param {
                 //HeapTermBuilder.the;
                 //new InterningTermBuilder();
                 new MemoizingTermBuilder();
-//                new TermBuilder.VerifyingTermBuilder(HeapTermBuilder.the,
+//                new VerifyingTermBuilder(HeapTermBuilder.the,
 //                        //new InterningTermBuilder()
 //                        new MemoizingTermBuilder()
 //                );
@@ -200,7 +200,7 @@ public abstract class Param {
 
     public final TaskBuffer input =
             //new DerivedTasks.DerivedTasksMap(4096);
-            //new TaskBuffer.BagTasksBuffer(256, 0.25f);
+            //new TaskBuffer.BagTasksBuffer(128, 0.25f);
             new TaskBuffer.BagPuncTasksBuffer(128, 0.25f);
 
 
@@ -244,7 +244,7 @@ public abstract class Param {
      * TTL = 'time to live'
      */
     public final IntRange deriveBranchTTL = new IntRange(6 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
-    public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
+    public final IntRange subUnifyTTLMax = new IntRange( 6, 1, 32);
     public final IntRange matchTTL = new IntRange(6, 1, 32);
 
     /**

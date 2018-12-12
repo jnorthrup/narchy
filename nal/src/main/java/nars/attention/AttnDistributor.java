@@ -8,6 +8,7 @@ import jcog.util.FloatConsumer;
 import nars.NAR;
 import nars.control.DurService;
 import nars.term.Termed;
+import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 
 /**
  * regulates prioritization of a group of concepts to what is
@@ -30,6 +31,7 @@ public class AttnDistributor {
     private final FloatConsumer gain;
 
     final RecycledSummaryStatistics pris = new RecycledSummaryStatistics();
+    final FloatArrayList pp = new FloatArrayList();
 
 
     public AttnDistributor(Iterable<? extends Termed> concepts, FloatConsumer gain, NAR n) {
@@ -45,18 +47,25 @@ public class AttnDistributor {
 
 
         pris.clear();
+        pp.clear();
 
         final float[] dev = {0};
 
-        float mean = (float) pris.getMean();
         concepts.forEach(c -> {
-            float p = n.concepts.pri(c, 0);
+            pp.add(n.concepts.pri(c, 0));
+        });
+        if (pp.isEmpty())
+            return;
 
+        float mean = (float) pp.average();
+
+        pp.forEach(p -> {
             dev[0] += Math.abs(p - mean);
             pris.accept(p);
         });
 
         long N = pris.getN();
+
         dev[0] /= N;
 
         double max = pris.getMax();
@@ -82,6 +91,11 @@ public class AttnDistributor {
                 //0.5f;
                 //1f/ N[0];
                 (float) (1f / Math.sqrt(N));
+        float minPri =
+            2 * ScalarValue.EPSILONsqrt;
+            //ScalarValue.EPSILON
+            //1f  / (Util.cube(N*2));
+
 
         float g = lastGain;
 
@@ -106,7 +120,7 @@ public class AttnDistributor {
                 "var=" + deviation + " > " + devMin + " ? -> " + ((g - lastGain)));
         */
 
-        g = Util.clamp(g, ScalarValue.EPSILON, 1f);
+        g = Util.clamp(g, minPri, 1f);
         //control.out(variance, )
 
         gain.accept(lastGain = g);

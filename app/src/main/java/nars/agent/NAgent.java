@@ -1,5 +1,7 @@
 package nars.agent;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FastCoWList;
@@ -15,6 +17,7 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.attention.AttnDistributor;
 import nars.concept.Concept;
 import nars.concept.action.AbstractGoalActionConcept;
 import nars.concept.action.ActionConcept;
@@ -77,6 +80,8 @@ public class NAgent extends NARService implements NSense, NAct {
 
     public final Curiosity curiosity = DefaultCuriosity.defaultCuriosity(this);
 
+    final AttnDistributor actReward;
+
     public volatile long prev;
     protected volatile long now;
     public volatile long next;
@@ -109,6 +114,17 @@ public class NAgent extends NARService implements NSense, NAct {
         this.nar = nar;
         this.frameTrigger = frameTrigger;
         this.prev = ETERNAL;
+
+        actReward = new AttnDistributor(
+                Iterables.concat(
+                    () -> Iterators.singletonIterator(nar.conceptualize(term())),
+                    Iterables.concat(actions,
+                    Iterables.concat(rewards))), (p)->{
+
+            actions.forEach(a->a.pri.pri(p));
+            rewards.forEach(r->r.pri(p));
+            pri.set(p);
+        }, nar);
 
         nar.on(this);
     }

@@ -10,6 +10,7 @@ import nars.subterm.SortedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.util.InternedCompound;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +28,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int DEFAULT_SIZE = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    protected static final int maxInternedVolumeDefault = 20;
+    protected static final int maxInternedVolumeDefault = 30;
     protected static boolean deepDefault = true;
 
     /** memory-saving */
@@ -233,28 +234,31 @@ public class InterningTermBuilder extends HeapTermBuilder {
     public Term statement(Op op, int dt, Term subject, Term predicate) {
 
 
-        if (subject.the() && predicate.the()) {
+        if (!(subject instanceof Bool) && !(predicate instanceof Bool) && subject.the() && predicate.the() && (subject.volume() + predicate.volume() < volInternedMax)) {
 
             boolean negate = false;
 
             //quick preparations to reduce # of unique entries
-            switch (op) {
-                case SIM:
-                    //pre-sort by swapping to avoid saving redundant mappings
-                    if (subject.compareTo(predicate) > 0) {
-                        Term x = predicate;
-                        predicate = subject;
-                        subject = x;
-                    }
-                    break;
-                case IMPL:
-                    negate = (predicate.op() == NEG);
-                    if (negate)
-                        predicate = predicate.unneg();
-                    break;
-            }
 
-            return this.terms[op.id].apply(InternedCompound.get(op, dt, subject, predicate)).negIf(negate);
+            if (!(((op==INH || op ==SIM) && (dt!=DTERNAL || subject.equals(predicate))))) {
+                switch (op) {
+                    case SIM:
+                        //pre-sort by swapping to avoid saving redundant mappings
+                        if (subject.compareTo(predicate) > 0) {
+                            Term x = predicate;
+                            predicate = subject;
+                            subject = x;
+                        }
+                        break;
+                    case IMPL:
+                        negate = (predicate.op() == NEG);
+                        if (negate)
+                            predicate = predicate.unneg();
+                        break;
+                }
+
+                return this.terms[op.id].apply(InternedCompound.get(op, dt, subject, predicate)).negIf(negate);
+            }
 
             //return statements.apply(InternedCompound.get(op, dt, subject, predicate));
         }

@@ -8,14 +8,15 @@ import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.Param;
-import nars.concept.Concept;
 import nars.concept.sensor.FilteredScalar;
 import nars.concept.sensor.Signal;
 import nars.table.BeliefTables;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.eternal.EternalTable;
 import nars.term.Term;
 
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 import static jcog.Util.compose;
 import static nars.Op.GOAL;
@@ -76,7 +77,7 @@ public class DetailedReward extends Reward {
     }
 
     @Override
-    public Iterator<Concept> iterator() {
+    public Iterator<Signal> iterator() {
         return Iterators.transform(concept.components.iterator(), x-> x);
     }
 
@@ -86,16 +87,7 @@ public class DetailedReward extends Reward {
     }
 
     @Override
-    public void update(long prev, long now, long next) {
-        super.update(prev, now, next);
-
-        NAR nar = nar();
-
-        concept.update(prev, now, next, nar);
-
-//            Truth happynowT = nar.beliefTruth(concept, last, now);
-//            float happynow = happynowT != null ? (happynowT.freq() - 0.5f) * 2f : 0;
-//            nar.emotion.happy(/* motivation.floatValue() * */ dexterity(last, now) * happynow /* /nar.confDefault(GOAL) */);
-
+    protected Stream<SeriesBeliefTable.SeriesRemember> updateReward(long prev, long now, long next) {
+        return concept.updateSensor(prev, now, nar());
     }
 }

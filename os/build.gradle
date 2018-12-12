@@ -11,6 +11,8 @@ dependencies {
 
 
     compile project(':app')
+    compile project(':ui')
+
 
     compile(group: 'org.boofcv', name: 'boofcv-feature', version: '0.31')
     compile(group: 'org.boofcv', name: 'boofcv-geo', version: '0.31')
