@@ -433,7 +433,7 @@ public class FasterList<X> extends FastList<X> {
         int index = this.indexOf(object);
         if (index >= 0) {
             X r = get(index);
-            this.remove(index);
+            this.removeFast(index);
             return r;
         }
         return null;

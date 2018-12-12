@@ -82,57 +82,64 @@ public enum Image {;
         return Bool.Null;
     }
 
-    public static Term imageNormalize(Term _t) {
-        if (!(_t instanceof Compound) || !_t.hasAll(ImageBits))
-            return _t;
+    public static Term imageNormalize(Term x) {
 
-        return _imageNormalize(_t);
+        if (x.op()==NEG)
+            throw new TODO();
+
+        if (!(x instanceof Compound) || x.op()!=INH || !x.hasAll(ImageBits))
+            return x;
+
+        return _imageNormalize((Compound) x);
     }
 
 
-    public static Term _imageNormalize(Term z) {
-        boolean negated;
+    /** assumes that input is INH op has been tested for all image bits */
+    public static Term _imageNormalize(Compound t) {
+//        boolean negated;
+//
+//        Term t;
+        //Op o = t.op();
+//        if (o == NEG) {
+//            negated = true;
+//            t = z.unneg();
+//            o = t.op();
+//        } else {
+//            t = z;
+//            negated = false;
+//        }
 
-        Term t;
-        Op o = z.op();
-        if (o == NEG) {
-            negated = true;
-            t = z.unneg();
-            o = t.op();
-        } else {
-            t = z;
-            negated = false;
-        }
+        //assert(!(o==NEG));
+        //if (o == INH /*&& t.hasAll(ImageBits)*/) {
+        assert(t.op()==INH);
 
-        if (o == INH /*&& t.hasAll(ImageBits)*/) {
-            Term s = t.sub(0);
-            Subterms ss = null;
-            boolean isInt = s.op() == PROD && (ss = s.subterms()).contains(Op.ImgInt);// && !ss.contains(Op.ImgExt);
+        Term s = t.sub(0);
+        Subterms ss = null;
+        boolean isInt = s.op() == PROD && (ss = s.subterms()).contains(Op.ImgInt);// && !ss.contains(Op.ImgExt);
 
-            Term p = t.sub(1);
-            Subterms pp = null;
-            boolean isExt = p.op() == PROD && (pp = p.subterms()).contains(Op.ImgExt);// && !pp.contains(Op.ImgInt);
+        Term p = t.sub(1);
+        Subterms pp = null;
+        boolean isExt = p.op() == PROD && (pp = p.subterms()).contains(Op.ImgExt);// && !pp.contains(Op.ImgInt);
 
 
-            if (isInt ^ isExt) {
-                Term u;
-                if (isInt) {
+        if (isInt ^ isExt) {
+            Term u;
+            if (isInt) {
 
-                    u = INH.the(ss.sub(0), PROD.the(Util.replaceDirect(ss.subRangeArray(1, ss.subs()), Op.ImgInt, p)));
+                u = INH.the(ss.sub(0), PROD.the(Util.replaceDirect(ss.subRangeArray(1, ss.subs()), Op.ImgInt, p)));
 
-                } else {
+            } else {
 
-                    u = INH.the(PROD.the(Util.replaceDirect(pp.subRangeArray(1, pp.subs()), Op.ImgExt, s)), pp.sub(0));
+                u = INH.the(PROD.the(Util.replaceDirect(pp.subRangeArray(1, pp.subs()), Op.ImgExt, s)), pp.sub(0));
 
-                }
-
-                if (!(u instanceof Bool))
-                    return Image.imageNormalize(u).negIf(negated);
             }
 
+
+            return Image.imageNormalize(u);//.negIf(negated);
         }
 
-        return z;
+        return t;
+
 
     }
 
@@ -190,11 +197,7 @@ public enum Image {;
             //HACK rewrite the tasks directly in the TopN selection
                 Object[] tt = m.tasks.items;
                 for (int i = 0; i < results; i++) {
-                    Task x = (Task) tt[i];
-                    SpecialTermTask y = new SpecialTermTask(image, x);
-                    if (x.isCyclic())
-                        y.setCyclic(true); //cyclic propagation is fine here but only here
-                    tt[i] = y;
+                    tt[i] = new ImgTermTask((Task) tt[i]);
                 }
             }
         }
@@ -256,5 +259,15 @@ public enum Image {;
             return beliefOrGoal ? h.beliefs() : h.goals();
         }
 
+        private class ImgTermTask extends SpecialTermTask {
+            public ImgTermTask(Task x) {
+                super(ImageBeliefTable.this.image, x);
+            }
+
+            @Override
+            protected boolean inheritCyclic() {
+                return true; //cyclic propagation is fine here but only here
+            }
+        }
     }
 }

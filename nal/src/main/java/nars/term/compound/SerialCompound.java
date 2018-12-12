@@ -58,6 +58,7 @@ public class SerialCompound extends DynBytes implements Compound, The {
     }
 
 
+
     public Compound build() {
         return (Compound) IO.bytesToTerm(bytes);
     }

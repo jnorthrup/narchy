@@ -328,8 +328,12 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * true if the operator bit is included in the enabld bits of the provided vector
      */
     default boolean isAny(int bitsetOfOperators) {
-        int s = op().bit;
+        int s = opBit();
         return (bitsetOfOperators & s) != 0;
+    }
+
+    default int opBit() {
+        return op().bit;
     }
 
     void appendTo(Appendable w) throws IOException;
@@ -643,10 +647,8 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return Anom.the(1);
     }
 
-    @Override
-    default int structure() {
-        return Termed.super.structure() | op().bit;
-    }
+
+    int structure();
 
     default boolean the() {
         return this instanceof The;

@@ -23,7 +23,7 @@ public class BiSubterm extends TermVector {
         super(x, y);
         this.x = x;
         this.y = y;
-        this.normalized = preNormalize(this);
+        normalized = preNormalize(this);
     }
 
 
@@ -85,20 +85,14 @@ public class BiSubterm extends TermVector {
         if (this == obj) return true;
 
         if (obj instanceof Subterms) {
-            if (obj instanceof TermVector) {
-                if (hash != ((TermVector)obj).hash)
-                    return false;
-            }
-
-            Subterms t = ((Subterms) obj);
-            //Subterms t;
-            //if (hash == (t = ((Subterms) obj)).hashCodeSubterms()) {
+            Subterms t;
+            if (hash == (t = ((Subterms) obj)).hashCodeSubterms()) {
                 if (t.subs() == 2 && t.sub(0).equals(x) && t.sub(1).equals(y)) {
                     if (t instanceof TermVector)
                         equivalentTo((TermVector) t);
                     return true;
                 }
-            //}
+            }
         }
         return false;
     }

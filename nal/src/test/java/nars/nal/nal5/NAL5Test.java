@@ -769,6 +769,7 @@ public class NAL5Test extends NALTest {
     void testPosPosImplicationConc() {
 
 
+        test.nar.termVolumeMax.set(4);
         test
 
                 .input("x. %1.0;0.90%")

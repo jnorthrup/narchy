@@ -19,6 +19,11 @@ public class LighterCompound extends TermList implements AbstractLightCompound {
     }
 
 
+    @Override
+    public final int opBit() {
+        return 1<<op;
+    }
+
     public LighterCompound(Op op) {
         this(op.id);
     }

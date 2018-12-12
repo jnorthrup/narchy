@@ -28,10 +28,7 @@ import org.roaringbitmap.ImmutableBitmapDataProvider;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.IntPredicate;
 
 import static java.lang.System.arraycopy;
@@ -1333,7 +1330,7 @@ public class Conj extends ByteAnonMap {
         final byte[] b;
         int n;
         if (what instanceof byte[]) {
-            rb = null;
+            //rb = null;
             b = (byte[]) what;
             n = indexOfZeroTerminated(b, (byte) 0); //TODO cardinality(byte[] b)
         } else {
@@ -1350,32 +1347,33 @@ public class Conj extends ByteAnonMap {
             return sub(b[0], null, validator);
         }
 
-        MutableSet<Term> t = new UnifiedSet<>(8);
-        final boolean[] negatives = {false};
-        if (b != null) {
-            for (byte x : b) {
-                if (x == 0)
-                    break;
-                Term s = sub(x, negatives, validator);
-                if (s instanceof Bool) {
-                    if (s == Bool.False || s == Null)
-                        return s;
-                    else {
-                        //ignore True case
-                    }
-                }
-                t.add(s);
-            }
-        } else {
+        if (b == null)
             return todoOrNull();
+
+        TreeSet<Term> t = new TreeSet();
+        final boolean[] negatives = {false};
+
+        for (byte x : b) {
+            if (x == 0)
+                break;
+            Term s = sub(x, negatives, validator);
+            if (s instanceof Bool) {
+                if (s == Bool.False || s == Null)
+                    return s;
+                else {
+                    //ignore True case
+                }
+            }
+            t.add(s);
         }
+
 
         int ts = t.size();
         switch (ts) {
             case 0:
                 return Bool.True;
             case 1:
-                return t.getOnly();
+                return t.first();
             default: {
                 int cdt = when == ETERNAL ? DTERNAL : 0;
                 if (Util.or(z->z.dt()==cdt && z.op()==CONJ, t)) {

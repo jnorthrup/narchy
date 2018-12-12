@@ -611,6 +611,11 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     @Override
+    default int structure() {
+        return intifyShallow((s, x) -> s | x.structure(), opBit());
+    }
+
+    @Override
     @Nullable
     default Term temporalize(Retemporalize r) {
         return r.transformCompound(this);

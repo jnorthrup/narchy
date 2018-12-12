@@ -190,10 +190,13 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
     @Override
     public final Op op() {
-
         return Op.ops[op];
     }
 
+    @Override
+    public final int opBit() {
+        return 1<<op;
+    }
 
     @Override
     public final String toString() {

@@ -313,7 +313,7 @@ public interface Atomic extends Term {
 
     @Override
     default int structure() {
-        return op().bit;
+        return opBit();
     }
 
     @Override

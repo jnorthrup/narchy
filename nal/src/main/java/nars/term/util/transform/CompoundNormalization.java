@@ -7,6 +7,8 @@ import nars.term.atom.Atomic;
 import nars.term.util.Image;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.Op.INH;
+
 /** procedure for Compound term Normalization */
 public final class CompoundNormalization extends VariableNormalization {
 
@@ -33,17 +35,15 @@ public final class CompoundNormalization extends VariableNormalization {
     protected @Nullable Term transformNonNegCompound(Compound x) {
         /* if x is not the root term (ie. a subterm) */
         boolean hasImg = x.hasAll(Image.ImageBits);
-        if (x!=root) {
-            if (hasImg) {
-                x = (Compound) Image._imageNormalize(x);
+        if (hasImg && x!=root && x.op()==INH) {
+            x = (Compound) Image._imageNormalize(x);
                 //hasImg = false;
 //                if (y!=x) {
 //                    x = y;
 //                    hasImg = x.hasAll(Image.ImageBits); //check if image bits remain
 //                }
-            }
         }
-        return x.hasVars() || hasImg ?  transformCompoundPlease(x) : x;
+        return hasImg || x.hasVars() ? transformCompoundPlease(x) : x;
     }
 
 

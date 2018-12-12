@@ -3,6 +3,7 @@ package nars.subterm;
 import com.google.common.io.ByteArrayDataOutput;
 import nars.Op;
 import nars.The;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.compound.UnitCompound;
 import org.jetbrains.annotations.Nullable;
@@ -87,7 +88,7 @@ public final class Neg extends UnitCompound implements The {
         if (that instanceof Neg) {
             return sub.equals(((Neg)that).sub);
         } else {
-            return super.equals(that);
+            return Compound.equals(this, that);
         }
     }
 }

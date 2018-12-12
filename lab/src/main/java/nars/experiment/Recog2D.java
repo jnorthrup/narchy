@@ -111,7 +111,7 @@ public class Recog2D extends NAgentX {
             return Util.clamp(2 * -(error / maxImages - 0.5f), -1, +1);
         }, new FloatAveraged(0.1f, true)));
 
-        Param.DEBUG = true;
+//        Param.DEBUG = true;
         nar.onTask((t)->{
             if (!t.isEternal() && t.term().equals(r.term())) {
                 System.out.println(t.proof());

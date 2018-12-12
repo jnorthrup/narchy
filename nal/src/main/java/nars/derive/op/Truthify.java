@@ -1,6 +1,5 @@
 package nars.derive.op;
 
-import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.$;
 import nars.Op;
@@ -104,45 +103,43 @@ public class Truthify extends AbstractPred<Derivation> {
         switch (punc) {
             case BELIEF:
             case GOAL:
-                byte overlapIf;
-                if (punc == BELIEF) {
-                    switch (beliefSingle) {
-                        case -1:
-                            throw new WTF(); //return false; //actually this shouldnt reach here if culled properly in a prior stage
-                        case 1:
-                            single = true;
-                            break;
-                        default:
-                            single = false;
-                            break;
-                    }
-                    overlapIf = beliefOverlap;
-                } else {
-                    switch (goalSingle) {
-                        case -1:
-                            throw new WTF(); //return false; //actually this shouldnt reach here if culled properly in a prior stage
-                        case 1:
-                            single = true;
-                            break;
-                        default:
-                            single = false;
-                            break;
-                    }
-                    overlapIf = goalOverlap;
-                }
-                if (!(overlapIf == 1) && (single ? d.overlapSingle : d.overlapDouble))
-                    return false;
 
+//                byte overlapIf;
+//                if (punc == BELIEF) {
+//                    switch (beliefSingle) {
+//                        case -1:
+//                            throw new WTF(); //return false; //actually this shouldnt reach here if culled properly in a prior stage
+//                        case 1:
+//                            single = true;
+//                            break;
+//                        default:
+//                            single = false;
+//                            break;
+//                    }
+//                    overlapIf = beliefOverlap;
+//                } else {
+//                    switch (goalSingle) {
+//                        case -1:
+//                            throw new WTF(); //return false; //actually this shouldnt reach here if culled properly in a prior stage
+//                        case 1:
+//                            single = true;
+//                            break;
+//                        default:
+//                            single = false;
+//                            break;
+//                    }
+//                    overlapIf = goalOverlap;
+//                }
+//                if (!(overlapIf == 1) && (single ? d.overlapSingle : d.overlapDouble))
+//                    return false;
+
+                single = (punc==BELIEF ? beliefSingle : goalSingle)==1;
                 TruthFunc f = punc == BELIEF ? belief : goal;
                 Truth beliefTruth;
                 if (single) {
                     beliefTruth = null;
                 } else {
-                    if (d.taskStart==d.beliefStart && d.taskPunc==d._belief.punc() && d.taskTerm.equals(d.beliefTerm))
-                        return false; //auto-filter double-premise, with same term and same time
-
-                    beliefTruth = beliefProjection(d);
-                    if (beliefTruth == null)
+                    if ((beliefTruth = beliefProjection(d))==null)
                         return false;
                 }
 
@@ -182,7 +179,7 @@ public class Truthify extends AbstractPred<Derivation> {
         return true;
     }
 
-    public Truth beliefProjection(Derivation d) {
+    private Truth beliefProjection(Derivation d) {
 
         switch (beliefProjection) {
             case Raw:
@@ -193,7 +190,7 @@ public class Truthify extends AbstractPred<Derivation> {
 
             //case Union: throw new TODO();
             default:
-                throw new UnsupportedOperationException(beliefProjection + " unimplemented");
+                throw new UnsupportedOperationException();
         }
 
     }

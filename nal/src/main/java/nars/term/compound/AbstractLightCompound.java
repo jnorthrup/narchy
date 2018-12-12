@@ -19,6 +19,8 @@ public interface AbstractLightCompound extends Compound {
     @Override
     Subterms subterms();
 
+
+
     @Override
     default boolean the() {
         //throw new TODO();

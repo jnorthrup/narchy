@@ -85,7 +85,9 @@ class AIMATests {
         n.run(9000);
 //        n.synch();
 
-        n.concept(Q).print();
+//        Concept qc = n.concept(Q);
+//        assertNotNull(qc)
+//        qc.print();
 
         Task y = n.belief($.$("Criminal(West)"));
         assertNotNull(y);

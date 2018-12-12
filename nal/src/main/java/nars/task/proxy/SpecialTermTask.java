@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 /** accepts a separate term as a facade to replace the apparent content term of
  * a proxied task
   */
-public final class SpecialTermTask extends TaskProxy {
+public class SpecialTermTask extends TaskProxy {
 
     private final Term term;
 

@@ -439,7 +439,11 @@ public class Derivation extends PreDerivation {
                 taskStamp.addAll(_task.stamp());
             }
 
-            this.overlapDouble = Stamp.overlaps(this._task, _belief);
+            this.overlapDouble =
+                    Stamp.overlaps(this._task, _belief)
+                    ||
+                    //auto-filter double-premise, with same term and same time
+                    taskStart==beliefStart && taskPunc==_belief.punc() && taskTerm.equals(beliefTerm);
 
 
         } else {

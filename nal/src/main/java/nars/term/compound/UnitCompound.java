@@ -127,10 +127,8 @@ public abstract class UnitCompound implements Compound {
         byte a = path[start];
         if (a!=0)
             return null;
-        if (end-start == 1)
-            return sub();
-        else
-            return sub().sub(start+1, end, path);
+        Term s = sub();
+        return ((end - start) == 1) ? s : s.sub(start + 1, end, path);
     }
 
 //    @Override
@@ -205,7 +203,7 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public int structure() {
-        return sub().structure() | op().bit;
+        return sub().structure() | opBit();
     }
 
     @Override

@@ -17,14 +17,14 @@ import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.set.primitive.ByteSet;
 import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
+import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.multimap.set.UnifiedSetMultimap;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.ListIterator;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Function;
 
 import static nars.Op.CONJ;
@@ -120,16 +120,19 @@ public class Factorize {
                             return null;
                         }
 
-                        Subterms rs = r.subterms();
 
                         //erase even if un-used, it would have no effect
-                        x.remove(i);
+                        x.removeFast(i);
+
+                        Subterms rs = null;
 
                         ListIterator<Term> jj = x.listIterator();
                         while (jj.hasNext()) {
                             Term xj = jj.next();
                             if (xj.containsRecursively(var)) {
                                 jj.remove();
+                                if (rs == null)
+                                     rs = r.subterms();
                                 for (Term rr : rs) {
                                     jj.add(xj.replace(var, rr));
                                 }
@@ -150,6 +153,10 @@ public class Factorize {
 
     private final static Variable f = $.varDep("_f");
     private final static Variable fIfNoDep = $.varDep(1);
+    static final Comparator<Pair<Term, RichIterable<ObjectBytePair<Term>>>> c = Comparator
+            .comparingInt((Pair<Term, RichIterable<ObjectBytePair<Term>>> p) -> -p.getTwo().size()) //more unique subterms involved
+            .thenComparingInt((Pair<Term, RichIterable<ObjectBytePair<Term>>> p) -> -p.getOne().volume()) //longest common path
+            .thenComparingInt((Pair<Term, RichIterable<ObjectBytePair<Term>>> p) -> -(int)(p.getTwo().sumOfInt(z -> z.getOne().volume())));  //larger subterms involved
 
     //TODO static class ShadowCompound extends Compound(Compound base, ByteList masked)
 
@@ -164,7 +171,7 @@ public class Factorize {
     protected static Term[] applyConj(Term[] x, Variable f) {
 
         /** shadow term -> replacements */
-        UnifiedSetMultimap<Term, ObjectIntPair<Term>> p = UnifiedSetMultimap.newMultimap();
+        final UnifiedSetMultimap<Term, ObjectBytePair<Term>>[] pp = new UnifiedSetMultimap[]{null};
         byte n = (byte) x.length;
         for (int i = 0; i < n; i++) {
             Term s = x[i];
@@ -172,34 +179,38 @@ public class Factorize {
             if (s instanceof Compound) {
                 int ii = i;
                 s.pathsTo((Term v) -> true, v -> true, (path, what) -> {
-                    if (what instanceof Variable)
-                        return true; //dont remap variables
-                    if (path.size() >= pathMin) {
-                        p.put(shadow(s, path, f), pair(what, ii));
+                    //dont remap variables
+                    if (!(what instanceof Variable)) {
+                        if (path.size() >= pathMin) {
+                            if (pp[0] == null)
+                                pp[0] = UnifiedSetMultimap.newMultimap();
+                            pp[0].put(shadow(s, path, f), pair(what, (byte)ii));
+                        }
                     }
                     return true;
                 });
+
             }
         }
-        MutableList<Pair<Term, RichIterable<ObjectIntPair<Term>>>> r = p.keyMultiValuePairsView().select((pathwhat) -> pathwhat.getTwo().size() > 1).toSortedList(
-                Comparator
-                        .comparingInt((Pair<Term, RichIterable<ObjectIntPair<Term>>> pp) -> -pp.getTwo().size()) //more unique subterms involved
-                        .thenComparingInt((Pair<Term, RichIterable<ObjectIntPair<Term>>> pp) -> -pp.getOne().volume()) //longest common path
-                        .thenComparingInt((Pair<Term, RichIterable<ObjectIntPair<Term>>> pp) -> -(int) (pp.getTwo().sumOfInt(z -> z.getOne().volume()))) //larger subterms involved
-        );
+
+        UnifiedSetMultimap<Term, ObjectBytePair<Term>> p = pp[0];
+        if (p == null)
+            return null;
+
+        MutableList<Pair<Term, RichIterable<ObjectBytePair<Term>>>> r = p.keyMultiValuePairsView().select((pathwhat) -> pathwhat.getTwo().size() > 1).toSortedList(c);
 
         if (r.isEmpty())
             return null;
 
 
-        Pair<Term, RichIterable<ObjectIntPair<Term>>> rr = r.get(0);
-        ByteSet masked = rr.getTwo().collectByte(bb->(byte)bb.getTwo()).toSet().toImmutable();
-        Set<Term> t = new UnifiedSet<>(n - masked.size() + 1);
+        Pair<Term, RichIterable<ObjectBytePair<Term>>> rr = r.get(0);
+        ByteSet masked = rr.getTwo().collectByte(ObjectBytePair::getTwo).toSet();
+        SortedSet<Term> t = new TreeSet<>();//n - masked.size() + 1);
         for (byte i = 0; i < n; i++)
             if (!masked.contains(i))
                 t.add(x[i]);
         t.add(rr.getOne() /* shadow */);
-        t.add($.func(Member.the, f, $.sete(rr.getTwo().collect(ObjectIntPair::getOne))));
+        t.add($.func(Member.the, f, $.sete(rr.getTwo().collect(ObjectBytePair::getOne))));
         return Terms.sorted(t);
     }
 

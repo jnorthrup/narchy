@@ -69,6 +69,10 @@ public class CachedUnitCompound extends UnitCompound implements The {
     public final /*@NotNull*/ Op op() {
         return Op.ops[op];
     }
+    @Override
+    public final int opBit() {
+        return 1<<op;
+    }
 
     @Override
     public boolean impossibleSubVolume(int otherTermVolume) {

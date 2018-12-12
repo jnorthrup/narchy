@@ -86,7 +86,7 @@ public abstract class SeparateSubtermsCompound implements Compound {
 
     @Override
     public int structure() {
-        return subterms().structure() | op().bit;
+        return subterms().structure() | opBit();
     }
 
     @Override

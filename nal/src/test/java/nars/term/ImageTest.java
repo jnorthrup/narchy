@@ -4,13 +4,14 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.subterm.util.TermMetadata;
 import nars.term.atom.Int;
 import nars.term.util.Image;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
-import static nars.term.util.TermTest.assertEq;
 import static nars.term.atom.Bool.Null;
+import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
 
 /** the NAL "Image" operator, not bitmaps or photos */
@@ -98,8 +99,17 @@ class ImageTest {
     }
     @Test void testConceptualizationNormalizesImages() throws Narsese.NarseseException {
         //"$.04 ((|,(--,(cart,"+")),(--,(cart,"-")),(--,angX))-->(believe,"-ß2~czîÊeå",/))! 406461⋈406503 %.06;.04%"
+
+        Term t = Narsese.term("(x, (y --> (z,/)))",false);
+
+
+        assertFalse(TermMetadata.preNormalize(t.subterms()));
+        assertFalse(t.subterms().isNormalized());
+        assertFalse(t.isNormalized());
+
         NAR n = NARS.shell();
-        assertEquals("(x,z(y))", n.conceptualize("(x, (y --> (z,/)))").term().toString());
+
+        assertEq("(x,z(y))", n.conceptualize("(x, (y --> (z,/)))").term());
     }
     @Test void testRecursiveUnwrapping() {
         //assertEquals(

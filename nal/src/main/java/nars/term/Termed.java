@@ -26,6 +26,7 @@ public interface Termed extends Termlike {
         return term().structure();
     }
 
+
     @Override
     default int subs(Predicate<Term> match) {
         return term().subs(match);

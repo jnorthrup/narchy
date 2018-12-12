@@ -661,8 +661,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 xx.removeFast(i);
                 xn--;
             } else {
-                xs |= xi.op().bit;
-                ys |= yy.get(i).op().bit;
+                xs |= xi.opBit();
+                ys |= yy.get(i).opBit();
                 i++;
             }
         }
@@ -772,7 +772,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return intifyShallow((int v, Term z) -> {
             //int zs = z.structure();
             //return !Op.hasAny(zs, varBits) ? (v | zs) : v;
-            return (z instanceof Variable && (z.op().bit & varBits)!=0) ? v : (v | z.structure());
+            return (z instanceof Variable && (z.opBit() & varBits)!=0) ? v : (v | z.structure());
         }, 0);
     }
 
@@ -788,7 +788,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * structure of the first layer (surface) only
      */
     default int structureSurface() {
-        return intifyShallow((s, x) -> s | x.op().bit, 0);
+        return intifyShallow((s, x) -> s | x.opBit(), 0);
     }
 
 
