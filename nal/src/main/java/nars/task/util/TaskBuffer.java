@@ -11,7 +11,6 @@ import nars.Task;
 import nars.control.CauseMerge;
 import nars.task.ITask;
 import nars.task.NALTask;
-import nars.util.Timed;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.Iterator;
@@ -20,8 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
+import static nars.Op.*;
 
 /** regulates a flow of supplied tasks to a target consumer */
 abstract public class TaskBuffer implements Consumer<Task> {
@@ -31,7 +29,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
     /** returns the input task, or the existing task if a pending duplicate was present */
     public abstract Task add(Task x);
 
-    public abstract void commit(Timed time, Consumer<Task> target);
+    public abstract void commit(long now, int dur, Consumer<Task> target);
 
     public abstract void clear();
 
@@ -126,7 +124,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
         }
 
         /** TODO time-sensitive */
-        @Override public void commit(Timed time, Consumer<Task> target) {
+        @Override public void commit(long now, int dur, Consumer<Task> target) {
             Iterator<Task> ii = tasks.values().iterator();
             while (ii.hasNext()) {
                 target.accept(ii.next());
@@ -203,6 +201,8 @@ abstract public class TaskBuffer implements Consumer<Task> {
         /**
          * perceptual valve
          * dilation factor
+         * input rate
+         * proportional to # of capacities/durations of time
          */
         public final FloatRange valve = new FloatRange(0.5f, 0, 1f);
 
@@ -211,6 +211,10 @@ abstract public class TaskBuffer implements Consumer<Task> {
         static final ThreadLocal<FasterList<ITask>> batch = ThreadLocal.withInitial(FasterList::new);
 
         private transient long prev = Long.MIN_VALUE;
+
+        float commitDurs = 4;
+
+        float durRemain = commitDurs;
 
         /**
          * @capacity size of buffer for tasks that have been input (and are being de-duplicated) but not yet input.
@@ -228,20 +232,20 @@ abstract public class TaskBuffer implements Consumer<Task> {
         }
 
         @Override
-        public void commit(Timed time, Consumer<Task> target) {
+        public void commit(long now, int dur, Consumer<Task> target) {
 
             if (!busy.compareAndSet(false, true))
                 return; //an operation is in-progress
 
-
             try {
 
-                long now = time.time();
-                if (prev == Long.MIN_VALUE) {
-                    prev = now;
-                }
+                if (prev == Long.MIN_VALUE)
+                    prev = now - 1;
 
                 long dt = now - prev;
+                if (dt == 0)
+                    return;
+
                 prev = now;
 
                 tasks.setCapacity(capacity.intValue());
@@ -250,21 +254,31 @@ abstract public class TaskBuffer implements Consumer<Task> {
                 if (s == 0)
                     return;
 
-                tasks.commit(null /* no forget */);
 
-                int n = batchSize((float)(((double)dt)/time.dur()));
-                if (n > 0) {
 
-                    if (tasks instanceof ArrayBag) {
-                        FasterList<ITask> batch = BagTasksBuffer.batch.get();
-                        ((ArrayBag) tasks).popBatch(n, batch);
-                        if (!batch.isEmpty()) {
-                            batch.forEach(target);
-                            batch.clear();
+                float dDur = (float) (((double) dt) / dur);
+
+                durRemain -= dDur;
+                if (durRemain < 0) {
+                    commitDur();
+                    durRemain = Math.max(0, (durRemain + commitDurs));
+                }
+
+                if (!tasks.isEmpty()) {
+                    int n = batchSize(dDur);
+                    if (n > 0) {
+
+                        if (tasks instanceof ArrayBag) {
+                            FasterList<ITask> batch = BagTasksBuffer.batch.get();
+                            ((ArrayBag) tasks).popBatch(n, batch);
+                            if (!batch.isEmpty()) {
+                                batch.forEach(target);
+                                batch.clear();
+                            }
+
+                        } else {
+                            tasks.pop(null, n, target); //per item.. may be slow
                         }
-
-                    } else {
-                        tasks.pop(null, n, target); //per item.. may be slow
                     }
                 }
 
@@ -272,6 +286,10 @@ abstract public class TaskBuffer implements Consumer<Task> {
                 busy.set(false);
             }
 
+        }
+
+        protected void commitDur() {
+            tasks.commit(null /* no forget */);
         }
 
         /**  TODO abstract */
@@ -285,14 +303,24 @@ abstract public class TaskBuffer implements Consumer<Task> {
 
     public static class BagPuncTasksBuffer extends TaskBuffer {
 
-        public final TaskBuffer belief, goal, question;
+        public final TaskBuffer belief, goal, question, quest;
+        private final TaskBuffer[] ALL;
 
         public BagPuncTasksBuffer(int capacity, float rate) {
-            belief = new BagTasksBuffer(capacity, rate);
+            belief = new BagTasksBuffer(capacity, rate) {
+                @Override
+                protected void commitDur() {
+                    //valve.set(...)
+                    super.commitDur();
+                }
+            };
             goal = new BagTasksBuffer(capacity, rate);
             question = new BagTasksBuffer(capacity, rate);
+            quest = new BagTasksBuffer(capacity, rate);
 
-            this.capacity.set(belief.capacity.intValue() + goal.capacity.intValue() + question.capacity.intValue());
+            ALL = new TaskBuffer[] {belief, goal, question, quest};
+
+            this.capacity.set(capacity);
         }
 
         private TaskBuffer buffer(byte punc) {
@@ -301,16 +329,19 @@ abstract public class TaskBuffer implements Consumer<Task> {
                     return belief;
                 case GOAL:
                     return goal;
-                default:
+                case QUESTION:
                     return question;
+                case QUEST:
+                    return quest;
+                default:
+                    return null;
             }
         }
 
         @Override
         public void clear() {
-            belief.clear();
-            goal.clear();
-            question.clear();
+            for (TaskBuffer x : ALL)
+                x.clear();
         }
 
         @Override
@@ -319,17 +350,23 @@ abstract public class TaskBuffer implements Consumer<Task> {
         }
 
         @Override
-        public void commit(Timed time, Consumer<Task> target) {
+        public void commit(long now, int dur, Consumer<Task> target) {
             //TODO parallelize
-            belief.commit(time, target);
-            goal.commit(time, target);
-            question.commit(time, target);
+
+            int c = Math.max(1, capacity.intValue() / ALL.length);
+            for (TaskBuffer x : ALL) {
+                x.capacity.set(c);
+                x.commit(now, dur, target);
+            }
         }
 
 
         @Override
         public int size() {
-            return belief.size() + goal.size() + question.size();
+            int s = 0;
+            for (TaskBuffer x : ALL)
+                s += x.size();
+            return s;
         }
     }
 }

@@ -7662,38 +7662,38 @@ public enum ArrayUtils {;
         }
     }
 
-    /**
-     * Removes the occurrences of the specified element from the specified array.
-     *
-     * <p>
-     * All subsequent elements are shifted to the left (subtracts one from their indices).
-     * If the array doesn't contains such an element, no elements are removed from the array.
-     * <code>null</code> will be returned if the input array is <code>null</code>.
-     * </p>
-     *
-     * @param <T>     the type of object in the array
-     * @param element the element to remove
-     * @param array   the input array
-     * @return A new array containing the existing elements except the occurrences of the specified element.
-     * @since 3.5
-     */
-    public static <T> T[] removeAllOccurences(final T[] array, final T element) {
-        int index = indexOf(array, element);
-        if (index == INDEX_NOT_FOUND) {
-
-            return array;
-        }
-
-        final int[] indices = new int[array.length - index];
-        indices[0] = index;
-        int count = 1;
-
-        while ((index = indexOf(array, element, indices[count - 1] + 1)) != INDEX_NOT_FOUND) {
-            indices[count++] = index;
-        }
-
-        return removeAll(array, Arrays.copyOf(indices, count));
-    }
+//    /**
+//     * Removes the occurrences of the specified element from the specified array.
+//     *
+//     * <p>
+//     * All subsequent elements are shifted to the left (subtracts one from their indices).
+//     * If the array doesn't contains such an element, no elements are removed from the array.
+//     * <code>null</code> will be returned if the input array is <code>null</code>.
+//     * </p>
+//     *
+//     * @param <T>     the type of object in the array
+//     * @param element the element to remove
+//     * @param array   the input array
+//     * @return A new array containing the existing elements except the occurrences of the specified element.
+//     * @since 3.5
+//     */
+//    public static <T> T[] removeAllOccurences(final T[] array, final T element) {
+//        int index = indexOf(array, element);
+//        if (index == INDEX_NOT_FOUND) {
+//
+//            return array;
+//        }
+//
+//        final MetalBitSet indices = MetalBitSet.bits(array.length);
+//        indices[0] = index;
+//        int count = 1;
+//
+//        while ((index = indexOf(array, element, indices[count - 1] + 1)) != INDEX_NOT_FOUND) {
+//            indices[count++] = index;
+//        }
+//
+//        return removeAll(array, Arrays.copyOf(indices, count));
+//    }
 
     /**
      * <p>Returns an array containing the string representation of each element in the argument array.</p>

@@ -32,8 +32,7 @@ import static nars.time.Tense.ETERNAL;
 @Skill({"Interpolation", "Extrapolation"})
 abstract public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
-    public final long start;
-    public final long end;
+    public final long start, end;
     int dur;
 
     /**
@@ -55,7 +54,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
      * computes the final truth value
      */
     @Nullable
-    public abstract Truth truth(NAR nar);
+    public abstract Truth truth(NAR nar, float eviMin);
 
     public boolean add(Task t) {
         return add(new TaskComponent(t));
@@ -66,27 +65,28 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
      * remove components contributing no evidence
      */
     public final TruthPolation filter() {
-        removeIf(x -> update(x) == null);
+        removeIf(x -> update(x, Float.MIN_NORMAL) == null);
         return this;
     }
 
     @Nullable
-    final TaskComponent update(int i) {
-        return update(get(i));
+    final TaskComponent update(int i, float eviMin) {
+        return update(get(i), eviMin);
     }
 
     @Nullable
-    private TaskComponent update(TaskComponent tc) {
+    private TaskComponent update(TaskComponent tc, float eviMin) {
         if (!tc.isComputed()) {
 
             Task task = tc.task;
 
-            if ((tc.evi = TruthIntegration.evi(task, start, end, dur)) >= Param.TRUTH_MIN_EVI) {
+            if ((tc.evi = TruthIntegration.evi(task, start, end, dur)) >= eviMin) {
                 tc.freq = task.freq(start, end);
-            }
+            } else
+                return null;
         }
 
-        return tc.evi >= Param.TRUTH_MIN_EVI ? tc : null;
+        return tc.evi >= eviMin ? tc : null;
     }
 
     public final TruthPolation filtered() {
@@ -379,7 +379,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
     @Nullable
     public final Truth truth() {
-        return truth(null);
+        return truth(null, Float.MIN_NORMAL);
     }
 
 //    /** refined time involving the actual contained tasks.  the pre-specified interval may be larger but

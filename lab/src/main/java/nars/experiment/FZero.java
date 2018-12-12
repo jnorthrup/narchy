@@ -54,7 +54,7 @@ public class FZero extends NAgentX {
         NAgentX.runRT(n -> {
             n.freqResolution.set(0.02f);
             return new FZero($.the("fz"), n);
-        }, -1, fps*2, fps);
+        }, -1, fps, fps);
 
 //        int instances = 2;
 //        for (int i = 0; i < instances; i++)

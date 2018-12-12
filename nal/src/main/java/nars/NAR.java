@@ -136,24 +136,24 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         named(Param.randomSelf());
 
-
+        this.attn = attn;
 
         this.exe = exe;
 
         services = new Services<>(this, exe);
 
         this.conceptBuilder = conceptBuilder;
-        this.attn = attn;
 
         concepts.start(this);
         Builtin.init(this);
 
         this.emotion = new Emotion(this);
 
-        //DurService.on(this, input::update);
-        onCycle((n)-> input.commit(this, this::input));
-
         on(this.attn);
+
+        //DurService.on(this, input::update);
+        onCycle((n)-> input.commit(n.time(), n.dur(), this::input));
+
 
         this.loop = new NARLoop(this);
         exe.start(this);

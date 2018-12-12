@@ -152,7 +152,7 @@ public class Remember extends AbstractTask {
             if (r instanceof Task) {
                 commit(n, conceptTerm, (Task) r);
             } else {
-                ITask.run(r.next(n), n);
+                ITask.run(r, n);
             }
         }
 

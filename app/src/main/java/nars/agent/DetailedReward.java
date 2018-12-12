@@ -87,7 +87,8 @@ public class DetailedReward extends Reward {
     }
 
     @Override
-    protected Stream<SeriesBeliefTable.SeriesRemember> updateReward(long prev, long now, long next) {
+    protected Stream<SeriesBeliefTable.SeriesRemember> updateReward(long prev, long now, long next, float pri) {
+        concept.pri.set(pri);
         return concept.updateSensor(prev, now, nar());
     }
 }

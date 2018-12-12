@@ -29,6 +29,7 @@ import static nars.Op.IMPL;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
+import static nars.truth.TruthFunctions.c2wSafe;
 
 /**
  * Revision / Projection / Revection Utilities
@@ -267,6 +268,7 @@ public class Revision {
 
         assert(tasks.length > 1);
 
+        float eviMin = c2wSafe(nar.confMin.floatValue());
 
         TruthPolation T = Param.truth(start, end, 0).add(tasks);
 
@@ -277,7 +279,7 @@ public class Revision {
         if (T.size() == 1)
             return null; //fail
 
-        Truth truth = T.truth(nar);
+        Truth truth = T.truth(nar, eviMin);
         if (truth == null)
             return null;
 

@@ -28,7 +28,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int DEFAULT_SIZE = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    protected static final int maxInternedVolumeDefault = 30;
+    protected static final int maxInternedVolumeDefault = 20;
     protected static boolean deepDefault = true;
 
     /** memory-saving */
@@ -36,7 +36,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private boolean cacheSubtermKeyBytes = false;
 
     private final boolean deep;
-    private final int volInternedMax;
+    protected final int volInternedMax;
 
     final ByteHijackMemoize<InternedCompound, Subterms> subterms, anonSubterms;
     final ByteHijackMemoize<InternedCompound, Term>[] terms;
@@ -152,12 +152,11 @@ public class InterningTermBuilder extends HeapTermBuilder {
         if (t.length == 0)
             return EmptySubterms;
 
-
-        //TODO separate cache for anon's
-        if (isAnon(t))
-            return subsInterned(anonSubterms, t);
-
         if (internableSubs(t)) {
+            //TODO separate cache for anon's
+            if (isAnon(t))
+                return subsInterned(anonSubterms, t);
+
             if (sortCanonically) {
                 return SortedSubterms.the(t, u ->
                         subsInterned(subterms, u), false);
@@ -186,7 +185,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private void resolve(Term[] t) {
         for (int i = 0, tLength = t.length; i < tLength; i++) {
             Term x = t[i];
-            if (x instanceof Atomic)
+            if (x instanceof Atomic || x.volume() > volInternedMax)
                 continue;
             if (!internableSub(x))
                 continue;
@@ -198,7 +197,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         }
     }
 
-    private boolean internableRoot(Op op, int dt, Term[] u) {
+    protected boolean internableRoot(Op op, int dt, Term[] u) {
         boolean i = internableRoot(op, dt) && internableSubs(u);
 //        if (!i) {
 //            System.out.println(op + " " + dt + " " + Arrays.toString(u));
@@ -206,7 +205,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return i;
     }
 
-    private static boolean internableRoot(Op op, int dt) {
+    protected static boolean internableRoot(Op op, int dt) {
         return !op.atomic && op != NEG
                 //&& Tense.dtSpecial(dt)
                 ;
@@ -273,7 +272,23 @@ public class InterningTermBuilder extends HeapTermBuilder {
     @Override
     public Term conj(int dt, Term[] u) {
 
+        //preFilter
 //        u = conjPrefilter(dt, u);
+//        boolean trues = false;
+//        for (int i = 0, uLength = u.length; i < uLength; i++) {
+//            Term x = u[i];
+//            if (x == True) {
+//                u[i] = null;
+//                trues = true;
+//            }
+//            if (x == False)
+//                return False;
+//            if (x == Null)
+//                return Null;
+//        }
+//        if (trues) {
+//            u = ArrayUtils.removeNulls(u, Term[]::new);
+//        }
 
         if (u.length > 1 && internableRoot(CONJ, dt, u))
             return terms[CONJ.id].apply(InternedCompound.get(CONJ, dt, u));

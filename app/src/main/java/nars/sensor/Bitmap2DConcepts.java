@@ -10,8 +10,6 @@ import nars.concept.sensor.Signal;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
-import nars.truth.Truth;
-import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -32,7 +30,6 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
     protected Bitmap2DConcepts(P src, @Nullable Int2Function<Term> pixelTerm, FloatRange res, NAR n) {
 
-        last = n.time();
         this.width = src.width();
         this.height = src.height();
         this.area = width * height;
@@ -113,28 +110,28 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     }
 
 
-    /**
-     * streams (potentially) all pixels
-     */
-    public final Stream<ITask> stream(FloatFloatToObjectFunction<Truth> truther, NAR nar) {
-        return stream(truther, 0, area, nar);
-    }
+//    /**
+//     * streams (potentially) all pixels
+//     */
+//    public final Stream<ITask> stream(FloatFloatToObjectFunction<Truth> truther, NAR nar) {
+//        return stream(truther, 0, area, nar);
+//    }
 
-    private long last;
+//    private long last;
 
-    /**
-     * stream of tasks containing changes in all updated pixels
-     */
-    public Stream<ITask> stream(FloatFloatToObjectFunction<Truth> truther, int pixelStart, int pixelEnd, NAR nar) {
-
-        long now = nar.time();
-
-        long tStart = last; //now - dur / 2;
-        long tEnd = now;// + Math.max(0, dur / 2 - 1);
-        last = now;
-        float dur = nar.dur() * area;
-        return pixels(pixelStart, pixelEnd).map(p -> p.update(tStart, tEnd, truther, dur, nar));
-    }
+//    /**
+//     * stream of tasks containing changes in all updated pixels
+//     */
+//    public Stream<ITask> stream(FloatFloatToObjectFunction<Truth> truther, int pixelStart, int pixelEnd, NAR nar) {
+//
+//        long now = nar.time();
+//
+//        long tStart = last; //now - dur / 2;
+//        long tEnd = now;// + Math.max(0, dur / 2 - 1);
+//        last = now;
+//        float dur = nar.dur() * area;
+//        return pixels(pixelStart, pixelEnd).map(p -> p.update(tStart, tEnd, truther, dur, nar));
+//    }
 
     /**
      * range of pixels, selected by the sequential 1-d ID

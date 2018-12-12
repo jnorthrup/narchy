@@ -41,7 +41,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
     Tasklike tasklinkPtr = null;
 
     /** permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation */
-    final TaskLink.GeneralTaskLink tasklink;
+    public final TaskLink.GeneralTaskLink tasklink;
 
     public SeriesBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<T> s) {
         super(c, beliefOrGoal);

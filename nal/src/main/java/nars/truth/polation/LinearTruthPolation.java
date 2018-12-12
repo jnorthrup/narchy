@@ -22,10 +22,13 @@ public class LinearTruthPolation extends TruthPolation {
         super(start, end, dur);
     }
 
+    public final Truth truth(NAR nar) {
+        return truth(nar, Float.MIN_NORMAL);
+    }
 
     @Override
     @Nullable
-    public Truth truth(NAR nar) {
+    public Truth truth(NAR nar, float eviMin) {
 
         //trim TODO test. may need to invalidate some computed values if the range changes
 //        int s0 = size();
@@ -68,7 +71,7 @@ public class LinearTruthPolation extends TruthPolation {
         float wFreqSum = 0;
         eSum = 0;
         for (int i = 0; i < s; i++) {
-            TaskComponent x = update(i);
+            TaskComponent x = update(i, eviMin);
             if (x == null)
                 continue;
 
@@ -80,7 +83,7 @@ public class LinearTruthPolation extends TruthPolation {
 
         }
 
-        if (eSum < Param.TRUTH_MIN_EVI)
+        if (eSum < eviMin)
             return null;
 
 
@@ -94,10 +97,8 @@ public class LinearTruthPolation extends TruthPolation {
             long range = 1 + (end - start);
             eAvg = eSum / range;
         }
-        if (eAvg >= Param.TRUTH_MIN_EVI)
-            return PreciseTruth.byEvi(f, eAvg);
-        else
-            return null;
+
+        return PreciseTruth.byEvi(f, eAvg);
     }
 
     public long range() {

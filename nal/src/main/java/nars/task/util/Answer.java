@@ -26,7 +26,7 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.w2cSafe;
+import static nars.truth.TruthFunctions.c2wSafe;
 
 /**
  * heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
@@ -165,11 +165,10 @@ public class Answer implements AutoCloseable {
             float base = strength.rank(x, min);
             if (base != base)
                 return Float.NaN;
-            float b = w2cSafe(base);
-            if (b < min)
+            if (base < min)
                 return Float.NaN;
 
-            return b * (1 / (1+Revision.dtDiff(template, x.term())));
+            return base * (1 / (1+Revision.dtDiff(template, x.term())));
         };
     }
 
@@ -242,8 +241,8 @@ public class Answer implements AutoCloseable {
                             else
                                 t = root;
 
-                            if (ditherTruth && t == root) {
-                                if (root.conf() < nar.confMin.floatValue())
+                            if (ditherTruth) {
+                                if (t.evi() < eviMin())
                                     return null;
                             }
                         }
@@ -276,6 +275,10 @@ public class Answer implements AutoCloseable {
         }
     }
 
+    public float eviMin() {
+        return ditherTruth ? c2wSafe(nar.confMin.floatValue()) : Float.MIN_NORMAL;
+    }
+
     /**
      * clears the cache and tasks before returning
      */
@@ -284,14 +287,18 @@ public class Answer implements AutoCloseable {
         try {
             TruthPolation p = truthpolation();
             if (p!=null) {
-                TruthPolation t = p.filtered();
-                if (t!=null)
-                    return t.truth(nar);
+                TruthPolation tp = p.filtered();
+                if (tp!=null)
+                    return truth(tp);
             }
             return null;
         } finally {
             close();
         }
+    }
+
+    @Nullable private Truth truth(TruthPolation tp) {
+        return tp.truth(nar, eviMin());
     }
 
     private Task taskFirst(boolean topOrSample) {
@@ -314,7 +321,7 @@ public class Answer implements AutoCloseable {
             return root;
 
 
-        @Nullable Truth tt = tp.truth(nar);
+        @Nullable Truth tt = truth(tp);
         if (tt == null)
             return root;
 

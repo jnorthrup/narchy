@@ -54,7 +54,7 @@ public class SimpleReward extends Reward {
 
 
     @Override
-    protected Stream<SeriesBeliefTable.SeriesRemember> updateReward(long prev, long now, long next) {
-        return Stream.of(concept.update(prev, now, truther, nar()));
+    protected Stream<SeriesBeliefTable.SeriesRemember> updateReward(long prev, long now, long next, float pri) {
+        return Stream.of(concept.update(prev, now, pri, truther, nar()));
     }
 }

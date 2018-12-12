@@ -13,7 +13,7 @@ public abstract class Attention extends DurService {
     public Forgetting forgetting;
 
     /** default derivePri for derivers */
-    public DerivePri derivePri;
+    public DerivePri derivePri = new DefaultPuncWeightedDerivePri();
 
 
     protected Attention(Activator activating, Forgetting forgetting) {
@@ -24,11 +24,11 @@ public abstract class Attention extends DurService {
 
     @Override
     protected void starting(NAR nar) {
+
         super.starting(nar);
-        on(
-            nar.onCycle(this::cycle)
-        );
-        this.derivePri = new DefaultPuncWeightedDerivePri(nar);
+//        on(
+//            nar.onCycle(this::cycle)
+//        );
     }
 
     @Override
@@ -36,10 +36,11 @@ public abstract class Attention extends DurService {
 
         forgetting.update(n);
         activating.update(n);
+        derivePri.update(n);
 
     }
 
-    private void cycle(NAR n) {
-
-    }
+//    private void cycle(NAR n) {
+//
+//    }
 }

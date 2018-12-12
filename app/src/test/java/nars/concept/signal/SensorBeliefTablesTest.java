@@ -5,7 +5,6 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.concept.sensor.Signal;
-import nars.control.DurService;
 import nars.table.dynamic.SensorBeliefTables;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +19,7 @@ class SensorBeliefTablesTest {
         AtomicFloat xx = new AtomicFloat(0);
         Signal x = new Signal($.the("x"), xx, n);
 
-        DurService xAuto = x.auto(n, 1);
+//        DurService xAuto = x.auto(n, 1);
         n.run(1);
 
         SensorBeliefTables xb = (SensorBeliefTables) x.beliefs();

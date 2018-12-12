@@ -12,6 +12,7 @@ import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
+import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -64,12 +65,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
         if (attn == null) //HACK
             attn = new AttnDistributor(this, pri::set, nar);
 
-        updateSensor(last, now, nar).forEach(x -> {
-            if (x != null) {
-                pri(x.input);
-                in.input(x);
-            }
-        });
+        updateSensor(last, now, nar).filter(Objects::nonNull).forEach(in::input);
     }
 
     public final Stream<SeriesBeliefTable.SeriesRemember> updateSensor(long last, long now, NAR nar) {
@@ -85,7 +81,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
 
     protected final Stream<SeriesBeliefTable.SeriesRemember> updateSensor(long last, long now, FloatFloatToObjectFunction<Truth> truther, int dur) {
         return StreamSupport.stream(spliterator(), false).map(
-                s -> s.update(last, now, truther, dur, nar));
+                s -> s.update(last, now, pri.floatValue(), truther, dur, nar));
     }
 
 }

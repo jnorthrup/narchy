@@ -1,5 +1,6 @@
 package nars.attention;
 
+import nars.NAR;
 import nars.Task;
 import nars.derive.Derivation;
 
@@ -8,6 +9,10 @@ public interface DerivePri {
 
     /** called on new premise.  useful if an implementation wants to cache values that are common to all derivations of a premise  */
     default void premise(Derivation d) {
+
+    }
+
+    default void update(NAR n) {
 
     }
 

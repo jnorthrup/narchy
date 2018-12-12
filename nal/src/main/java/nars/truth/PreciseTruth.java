@@ -1,7 +1,5 @@
 package nars.truth;
 
-import nars.Param;
-
 import static nars.truth.TruthFunctions.c2w;
 import static nars.truth.TruthFunctions.w2cSafe;
 
@@ -37,8 +35,8 @@ public final class PreciseTruth extends DiscreteTruth {
 
     private PreciseTruth(float freq, float conf, float evi) {
         super(freq, conf);
-        if (evi < Param.TRUTH_MIN_EVI)
-            throw new TruthException("evidence underflow", evi);
+//        if (evi < Param.TRUTH_MIN_EVI)
+//            throw new TruthException("evidence underflow", evi);
         this.e = evi;
         this.f = freq;
     }

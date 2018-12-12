@@ -58,9 +58,8 @@ public class SensorBeliefTables extends BeliefTables {
     }
 
 
-    private Truth lastValue = null;
 
-    public SeriesBeliefTable.SeriesRemember add(Truth value, long start, long end, TaskConcept c, float dur, NAR n) {
+    public SeriesBeliefTable.SeriesRemember add(Truth value, long start, long end, float pri, TaskConcept c, float dur, NAR n) {
 
 
         float fRes = Math.max(n.freqResolution.asFloat(), res.asFloat());
@@ -76,9 +75,11 @@ public class SensorBeliefTables extends BeliefTables {
         series.clean(tables);
 
         if (x!=null) {
-            lastValue = value;
             SeriesBeliefTable.SeriesRemember y = x.input(c);
             y.remember(new MyTaskLink(c));
+            y.input.pri(pri);
+            series.tasklink.pri(pri);
+            return y;
         }
 
         return null;
@@ -211,6 +212,7 @@ public class SensorBeliefTables extends BeliefTables {
         @Override
         public ITask next(NAR n) {
             TaskLink.link(series.tasklink, c);
+            n.activate(c, series.tasklink.pri());
             return null;
         }
     }

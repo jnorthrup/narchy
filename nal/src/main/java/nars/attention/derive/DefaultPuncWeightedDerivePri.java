@@ -3,7 +3,6 @@ package nars.attention.derive;
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Task;
-import nars.control.DurService;
 
 import static nars.Op.*;
 
@@ -12,12 +11,11 @@ public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
     /** cache of punctuation priorities */
     transient private float beliefPri, goalPri, questionPri, questPri;
 
-    public DefaultPuncWeightedDerivePri(NAR n) {
-        DurService.on(n, this::update); //permanent
+    public DefaultPuncWeightedDerivePri() {
     }
 
     /** repurposes nar's default punctuation priorities (for input) as the derivation punctuation weighting */
-    public void update(NAR nar) {
+    @Override public void update(NAR nar) {
 
         float beliefPri = nar.beliefPriDefault.floatValue();
         float goalPri = nar.goalPriDefault.floatValue();

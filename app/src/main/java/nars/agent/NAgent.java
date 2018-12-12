@@ -1,7 +1,6 @@
 package nars.agent;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FastCoWList;
@@ -117,13 +116,17 @@ public class NAgent extends NARService implements NSense, NAct {
 
         actReward = new AttnDistributor(
                 Iterables.concat(
-                    () -> Iterators.singletonIterator(nar.conceptualize(term())),
+                    //() -> Iterators.singletonIterator(nar.conceptualize(term())),
                     Iterables.concat(actions,
-                    Iterables.concat(rewards))), (p)->{
+                    Iterables.concat(rewards))),
+            (_p)->{
+                //float p = 0.5f + _p/2f; //HACK
+                float p = _p;
+                actions.forEach(a->a.pri.pri(p));
+//                rewards.forEach(r->r.pri(p));
+//                pri.set(p);
 
-            actions.forEach(a->a.pri.pri(p));
-            rewards.forEach(r->r.pri(p));
-            pri.set(p);
+                rewards.forEach(r->r.pri(pri.floatValue()));
         }, nar);
 
         nar.on(this);

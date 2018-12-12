@@ -81,10 +81,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
             //0;
             -1;
 
-    public AbstractGoalActionConcept actionDur(int actionDur) {
-        this.actionSustain = actionDur;
-        return this;
-    }
+//    public AbstractGoalActionConcept actionDur(int actionDur) {
+//        this.actionSustain = actionDur;
+//        return this;
+//    }
 
 
     static final Predicate<Task> withoutCuriosity = t -> !(t instanceof CuriosityTask) && !t.isEternal();  /* filter curiosity tasks? */
@@ -120,9 +120,9 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         BeliefTable table = goals();
 
-        long recent =
-                //now - dur*2;
-                prev;
+//        long recent =
+//                //now - dur*2;
+//                prev;
 
         Predicate<Task> fil =
                 withoutCuriosity;
@@ -219,10 +219,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
     }
 
     @Nullable public SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long now, long next, float dur, NAR nar) {
-        SeriesBeliefTable.SeriesRemember r = ((SensorBeliefTables) beliefs()).add(f, now, next, this, dur, nar);
-        if (r!=null) {
-            priFeedback(r.input);
-        }
+        SeriesBeliefTable.SeriesRemember r = ((SensorBeliefTables) beliefs()).add(f, now, next, pri.pri(), this, dur, nar);
+
         return r;
     }
 

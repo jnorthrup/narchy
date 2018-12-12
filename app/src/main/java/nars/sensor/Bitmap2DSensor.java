@@ -76,16 +76,16 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
 
-    public void input() {
-        input(mode);
-    }
-
-    /**
-     * manually inputs the contents of the current frame
-     */
-    public void input(FloatFloatToObjectFunction<Truth> mode) {
-        in.input(concepts.stream(mode, nar));
-    }
+//    public void input() {
+//        input(mode);
+//    }
+//
+//    /**
+//     * manually inputs the contents of the current frame
+//     */
+//    public void input(FloatFloatToObjectFunction<Truth> mode) {
+//        in.input(concepts.stream(mode, nar));
+//    }
 
 //    public Bitmap2DConcepts.Bitmap2DReader readAdaptively() {
 //        return concepts.newReader(in, mode, nar);

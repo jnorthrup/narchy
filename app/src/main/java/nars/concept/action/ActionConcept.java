@@ -48,18 +48,16 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
     protected ActionConcept(Term term, BeliefTable beliefs, BeliefTable goals, TermLinker l, NAR n) {
         super(term, beliefs, goals, l, n.conceptBuilder);
 
-        pri.pri(
-                FloatRange.unit(
-                        //Util.or(n.priDefault(BELIEF), n.priDefault(GOAL))
-                        n.goalPriDefault //even though the tasks are beliefs
-                )
-        );
+//        pri.pri(
+//                FloatRange.unit(
+//                        //Util.or(n.priDefault(BELIEF), n.priDefault(GOAL))
+//                        n.goalPriDefault //even though the tasks are beliefs
+//                )
+//        );
         ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(n.freqResolution));
     }
 
-    protected void priFeedback(Task f) {
-        f.pri(pri.pri());
-    }
+
     protected void priCuriosity(Task c) {
         c.pri(
                 //this.curiosity.agent.pri.floatValue() * n.priDefault(GOAL)

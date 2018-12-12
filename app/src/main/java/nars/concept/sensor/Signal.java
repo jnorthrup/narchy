@@ -96,39 +96,20 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
         return currentValue;
     }
 
-    @Deprecated
-    public final DurService auto(NAR n) {
-        return auto(n, 1);
-    }
-
-    @Deprecated
-    public DurService auto(NAR n, float durs) {
-        FloatFloatToObjectFunction<Truth> truther =
-                (prev, next) -> $.t(next, n.confDefault(BELIEF));
-
-        return DurService.on(n, nn ->
-                nn.input(update(truther, n))).durs(durs);
-    }
 
     @Nullable
     @Deprecated
-    public final ITask update(FloatFloatToObjectFunction<Truth> truther, NAR n) {
-        return update(truther, n.time(), n.dur(), n);
+    public ITask update(float pri, FloatFloatToObjectFunction<Truth> truther, long time, int dur, NAR n) {
+        return update(time - dur / 2, time + Math.max(0, (dur / 2 - 1)), pri, truther, dur, n);
     }
 
     @Nullable
-    @Deprecated
-    public ITask update(FloatFloatToObjectFunction<Truth> truther, long time, int dur, NAR n) {
-        return update(time - dur / 2, time + Math.max(0, (dur / 2 - 1)), truther, dur, n);
+    public final SeriesBeliefTable.SeriesRemember update(long prev, long now, float pri, FloatFloatToObjectFunction<Truth> truther, NAR n) {
+        return update(prev, now, pri, truther, n.dur() /*now - prev*/, n);
     }
 
     @Nullable
-    public final SeriesBeliefTable.SeriesRemember update(long prev, long now, FloatFloatToObjectFunction<Truth> truther, NAR n) {
-        return update(prev, now, truther, n.dur() /*now - prev*/, n);
-    }
-
-    @Nullable
-    public SeriesBeliefTable.SeriesRemember update(long start, long end, FloatFloatToObjectFunction<Truth> truther, float dur, NAR n) {
+    public SeriesBeliefTable.SeriesRemember update(long start, long end, float pri, FloatFloatToObjectFunction<Truth> truther, float dur, NAR n) {
 
         float prevValue = currentValue;
         float nextValue = floatValueOf(term);
@@ -136,7 +117,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
         SensorBeliefTables s = (SensorBeliefTables) beliefs();
 
         assert(dur > 0);
-        return s.add(nextValue == nextValue ? truther.value(prevValue, nextValue) : null, start, end, this, dur, n);
+        return s.add(nextValue == nextValue ? truther.value(prevValue, nextValue) : null, start, end, pri, this, dur, n);
 
 
     }
@@ -153,7 +134,8 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
 
     @Override
     public void update(long prev, long now, long next, NAR nar) {
-        in.input(update(prev, now, (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)),nar));
+        float pri = nar.beliefPriDefault.floatValue(); //HACK
+        in.input(update(prev, now, pri, (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)),nar));
     }
 
 

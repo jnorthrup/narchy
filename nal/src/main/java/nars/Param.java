@@ -53,11 +53,13 @@ public abstract class Param {
 
     public static final int TaskLinkSpreadDefault =
             //32;
-            //16;
+            16;
+            //12;
             //10;
             //8;
-            7;
+            //7;
             //6;
+            //5;
             //2;
             //1;
 
@@ -85,7 +87,7 @@ public abstract class Param {
         //return o == IMPL;
     };
 
-    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
+//    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
 
     /** whether INT atoms can name a concept directly */
     public static final boolean INT_CONCEPTUALIZABLE = false;
@@ -200,8 +202,8 @@ public abstract class Param {
 
     public final TaskBuffer input =
             //new DerivedTasks.DerivedTasksMap(4096);
-            //new TaskBuffer.BagTasksBuffer(128, 0.25f);
-            new TaskBuffer.BagPuncTasksBuffer(128, 0.25f);
+            new TaskBuffer.BagTasksBuffer(512, 0.25f);
+            //new TaskBuffer.BagPuncTasksBuffer(1024, 0.1f);
 
 
     /**
@@ -243,8 +245,8 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(6 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
-    public final IntRange subUnifyTTLMax = new IntRange( 6, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(6, 1, 32);
 
     /**

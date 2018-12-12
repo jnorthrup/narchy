@@ -52,12 +52,10 @@ public abstract class Reward implements Termed, Iterable<Signal> {
 
     public final void update(long prev, long now, long next) {
         reward = rewardFunc.asFloat();
-        in.input(updateReward(prev, now, next).filter(Objects::nonNull).peek(r -> {
-            r.input.pri(pri);
-        }));
+        in.input(updateReward(prev, now, next, pri).filter(Objects::nonNull));
     }
 
-    abstract protected Stream<SeriesBeliefTable.SeriesRemember> updateReward(long prev, long now, long next);
+    abstract protected Stream<SeriesBeliefTable.SeriesRemember> updateReward(long prev, long now, long next, float pri);
 
     protected FloatFloatToObjectFunction<Truth> truther() {
         return (prev, next) -> (next == next) ?
