@@ -9,6 +9,7 @@ import nars.derive.impl.ZipperDeriver;
 public class NAL1ZipperDeriverTest extends NAL1Test {
 
     @Override protected NAR nar() {
+        cycles = 1000;
         NAR n = NARS.tmp(0);
         new ZipperDeriver(Derivers.nal(n, 1, 1));
         return n;

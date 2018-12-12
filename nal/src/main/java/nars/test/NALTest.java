@@ -18,9 +18,9 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 @Execution(CONCURRENT)
 public abstract class NALTest {
 
-    protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(NALTest.class);
-
     public TestNAR test;
+
+    protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(NALTest.class);
 
     protected NALTest() {
         test = new TestNAR(nar());

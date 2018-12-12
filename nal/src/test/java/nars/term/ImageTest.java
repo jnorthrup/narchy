@@ -9,7 +9,7 @@ import nars.term.util.Image;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
-import static nars.term.TermTest.assertEq;
+import static nars.term.util.TermTest.assertEq;
 import static nars.term.atom.Bool.Null;
 import static org.junit.jupiter.api.Assertions.*;
 

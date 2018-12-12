@@ -481,10 +481,10 @@ public class NAL6Test extends NALTest {
         test
                 .believe("open({key1},{lock1})")
                 .believe("key:{key1}")
-                .mustBelieve(cycles, "(key:{$1} ==> open({$1},{lock1}))", 1.00f, 0.45f)
-                //.mustBelieve(cycles, "(key:$1 ==> open($1,{lock1}))", 1.00f, 0.45f)
-                .mustBelieve(cycles, "(&&,open({#1},{lock1}),key:{#1})", 1.00f, 0.81f);
-        //.mustBelieve(cycles, "(&&,open(#1,{lock1}),key:#1)", 1.00f, 0.81f);
+                //.mustBelieve(cycles, "(key:{$1} ==> open({$1},{lock1}))", 1.00f, 0.45f)
+                .mustBelieve(cycles, "(key:$1 ==> open($1,{lock1}))", 1.00f, 0.42f)
+                //.mustBelieve(cycles, "(&&,open({#1},{lock1}),key:{#1})", 1.00f, 0.81f);
+                .mustBelieve(cycles, "(&&,open(#1,{lock1}),key:#1)", 1.00f, 0.81f);
 
     }
 

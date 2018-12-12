@@ -15,7 +15,7 @@ import java.util.TreeSet;
 
 import static nars.$.$;
 import static nars.$.$$;
-import static nars.term.TermTest.assertEq;
+import static nars.term.util.TermTest.assertEq;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;

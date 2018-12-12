@@ -52,15 +52,16 @@ public class InterningTermBuilder extends HeapTermBuilder {
         this.id = id;
         this.deep = deep;
         this.volInternedMax = volInternedMax;
-        terms = new ByteHijackMemoize[Op.ops.length];
+        Op[] ops = values();
+        terms = new ByteHijackMemoize[ops.length];
 
 
         subterms = newOpCache("subterms", x -> theSubterms(x.rawSubs.get()), cacheSizePerOp * 2);
         anonSubterms = newOpCache("anonSubterms", x -> new AnonVector(x.rawSubs.get()), cacheSizePerOp);
         ByteHijackMemoize statements = newOpCache("statement", this::_statement, cacheSizePerOp * 3);
 
-        for (int i = 0; i < Op.ops.length; i++) {
-            Op o = Op.ops[i];
+        for (int i = 0; i < ops.length; i++) {
+            Op o = ops[i];
             if (o.atomic || o == NEG) continue;
 
             int s = cacheSizePerOp;
@@ -75,7 +76,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             } else if (o.statement) {
                 c = statements;
             } else {
-                c = newOpCache(o.str, x -> theCompound(Op.ops[x.op], x.dt, x.rawSubs.get(), x.key), s);
+                c = newOpCache(o.str, x -> theCompound(ops[x.op], x.dt, x.rawSubs.get(), x.key), s);
             }
             terms[i] = c;
         }
@@ -185,9 +186,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private void resolve(Term[] t) {
         for (int i = 0, tLength = t.length; i < tLength; i++) {
             Term x = t[i];
-            if (x instanceof Atomic || x.volume() > volInternedMax)
-                continue;
-            if (!internableSub(x))
+            if (x instanceof Atomic || x.volume() > volInternedMax || !internableSub(x))
                 continue;
 
             Term y = get(x);

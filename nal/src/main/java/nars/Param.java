@@ -26,13 +26,20 @@ public abstract class Param {
     static {
         Op.terms =
                 //HeapTermBuilder.the;
-                //new InterningTermBuilder();
-                new MemoizingTermBuilder();
-//                new VerifyingTermBuilder(HeapTermBuilder.the,
-//                        //new InterningTermBuilder()
-//                        new MemoizingTermBuilder()
-//                );
 
+                //new InterningTermBuilder();
+
+                new MemoizingTermBuilder();
+
+//                new VerifyingTermBuilder(
+//                    new MemoizingTermBuilder(),
+//                    new VerifyingTermBuilder(
+//                            new MemoizingTermBuilder() //new InterningTermBuilder()
+//                            ,
+//                            HeapTermBuilder.the
+//                    )
+//                )
+        ;
     }
 
     public static final boolean FILTER_SIGNAL_TABLE_TEMPORAL_TASKS = true;
@@ -53,9 +60,9 @@ public abstract class Param {
 
     public static final int TaskLinkSpreadDefault =
             //32;
-            16;
+            //16;
             //12;
-            //10;
+            10;
             //8;
             //7;
             //6;
@@ -245,7 +252,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(5 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(6, 1, 32);
 
@@ -253,7 +260,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 2f;
+    public static final float TEST_TIME_MULTIPLIER = 1f;
 
 
     @Range(min = 1, max = 32)

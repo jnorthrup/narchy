@@ -5,7 +5,7 @@ import nars.Narsese;
 import nars.op.SetFunc;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.TermTest;
+import nars.term.util.TermTest;
 import nars.term.atom.Atomic;
 import nars.term.util.SetSectDiff;
 import org.junit.jupiter.api.Assertions;

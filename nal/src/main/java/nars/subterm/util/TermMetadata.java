@@ -5,9 +5,8 @@ import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Variable;
 import nars.term.anon.AnonID;
+import nars.term.util.Image;
 import nars.term.var.NormalizedVariable;
-
-import static nars.Op.IMG;
 
 /**
  * cached values for term/subterm metadata
@@ -58,7 +57,7 @@ abstract public class TermMetadata implements Termlike {
     public static boolean preNormalize(Subterms x) {
 
         //the product containing an image itself may be normalized but superterms containing it are not automatically considered normal
-        if (x.hasAny(IMG) && (!x.AND(z -> z.op() == IMG || !z.hasAny(IMG))))
+        if (x.hasAll(Image.ImageBits) && x.OR(z -> z.hasAll(Image.ImageBits) && !z.isNormalized()))
             return false;
 
         if (x.vars()==0)

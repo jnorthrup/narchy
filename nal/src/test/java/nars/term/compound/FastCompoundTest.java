@@ -3,7 +3,7 @@ package nars.term.compound;
 import nars.Narsese;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.TermTest;
+import nars.term.util.TermTest;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;

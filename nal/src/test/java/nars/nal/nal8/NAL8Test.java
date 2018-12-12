@@ -918,7 +918,7 @@ public class NAL8Test extends NALTest {
 
                 .inputAt(0, "(x &&+1 y)! |")
                 .inputAt(0, "(z &&+1 (x &&+1 y)).")
-                .mustGoal(cycles, "z", 1, 0.59f, t->true)
+                .mustGoal(cycles, "z", 1, 0.81f, t->true)
         ;
     }
 

@@ -4,6 +4,7 @@ import jcog.WTF;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.util.TermTest;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -42,11 +43,23 @@ public class VerifyingTermBuilder extends TermBuilder {
     }
 
     protected boolean equals(Term x, Term y) {
-        return x.equals(y);
+        try {
+            TermTest.assertEq(x, y);
+            return true;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
     }
 
     protected boolean equals(Subterms x, Subterms y) {
-        return x.equals(y);
+        try {
+            TermTest.assertEq(x, y);
+            return true;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
     }
 
 }

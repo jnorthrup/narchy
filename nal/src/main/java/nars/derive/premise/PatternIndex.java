@@ -418,20 +418,27 @@ public class PatternIndex extends MapConceptIndex {
                 final int xs = xFixed != null ? xFixed.size() : 0;
 
                 int ys = yFree.size();
-                if (ellipsis == null) {
+
+                int numRemainingForEllipsis = ys - xs;
+
+                if (ellipsis!=null) {
+                    boolean vs = ellipsis.validSize(numRemainingForEllipsis);
+                    if (!vs)
+                        return false;
+                } else {
+                    //ellipsis matched already
                     if (xs !=ys)
                         return false;
                     if (xs > 1)
                         return $.sFast(xFixed).unify($.sFast(yFree), u);
-                    else
+                    else if (xs == 1)
                         return xFixed.get(0).unify(yFree.first(), u);
+                    else
+                        return true;
                 }
 
 
-                int numRemainingForEllipsis = ys - xs;
-                boolean vs = ellipsis.validSize(numRemainingForEllipsis);
-                if (!vs)
-                    return false;
+
 
                 if (xs >= 1 && ys > 0) {
                     //test matches against the one constant term

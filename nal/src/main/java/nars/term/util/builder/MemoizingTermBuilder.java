@@ -57,8 +57,9 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
     public Term root(Compound x) {
         if (internable(x)) {
             return root.apply(InternedCompound.get(PROD, x));
+        } else {
+            return super.root(x);
         }
-        return super.root(x);
 //        if (x.volume() < 2)
 //            throw new WTF();
     }

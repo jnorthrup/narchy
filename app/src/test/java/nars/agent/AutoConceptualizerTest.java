@@ -38,7 +38,7 @@ public class AutoConceptualizerTest {
 
         n.log();
         for (int i =0; i< 155; i++) {
-            c.input();
+            CameraSensorTest.next(n, ac);
             n.run(1);
         }
 

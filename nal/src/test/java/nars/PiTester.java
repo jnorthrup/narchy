@@ -5,6 +5,7 @@ import jcog.data.list.FasterList;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.term.*;
+import nars.term.util.TermTest;
 import org.pitest.classinfo.ClassInfo;
 import org.pitest.classpath.ClassloaderByteArraySource;
 import org.pitest.classpath.CodeSource;

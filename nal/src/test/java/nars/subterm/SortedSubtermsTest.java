@@ -1,7 +1,7 @@
 package nars.subterm;
 
 import nars.term.Term;
-import nars.term.TermTest;
+import nars.term.util.TermTest;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;

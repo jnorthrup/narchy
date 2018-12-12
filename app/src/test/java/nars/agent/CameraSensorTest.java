@@ -5,6 +5,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.concept.TaskConcept;
+import nars.concept.sensor.AbstractSensor;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -45,7 +46,7 @@ public class CameraSensorTest {
 
         System.out.println("all 0");
         for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) f[i][j] = 0f;
-        c.input();
+        next(n, c);
         n.run(1);
         assertEquals(c, f, n.time(),n);
 
@@ -55,14 +56,14 @@ public class CameraSensorTest {
 
         System.out.println("all 1");
         for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) f[i][j] = 1f;
-        c.input();
+        next(n, c);
         n.run(3);  
         assertEquals(c, f, n.time(),n);
 
 
         System.out.println("all 0");
         for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) f[i][j] = 0f;
-        c.input();
+        next(n, c);
         n.run(1);
         assertEquals(c, f, n.time(), n);
 
@@ -70,7 +71,7 @@ public class CameraSensorTest {
 
         System.out.println("all 1");
         for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) f[i][j] = 1f;
-        c.input();
+        next(n, c);
         n.run(1);
         assertEquals(c, f, n.time(), n);
 
@@ -78,6 +79,10 @@ public class CameraSensorTest {
 
 
 
+    }
+
+    public static void next(NAR n, AbstractSensor c) {
+        c.update(n.time()-1, n.time(), n.time()+1, n);
     }
 
     static final float tolerance = 0.47f;

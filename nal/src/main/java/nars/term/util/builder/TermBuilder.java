@@ -65,36 +65,23 @@ public abstract class TermBuilder {
         if (tLength == 0)
             return Op.EmptySubterms;
 
-        if (tryAnon) {
-            Subterms s = theAnonSubterms(t);
-            if (s !=null)
-                return s;
-        }
+        if (tryAnon && isAnon(t))
+            return new AnonVector(t);
+        else
+            return newSubtermsVector(t);
 
-
-        return newSubtermsVector(t);
-
-    }
-
-    @Nullable static Subterms theAnonSubterms(Term[] t) {
-        return isAnon(t) ? new AnonVector(t) : null;
     }
 
     static boolean isAnon(Term[] t) {
-        boolean purelyAnon = true;
         for (Term x : t) {
             //assert (!(x instanceof EllipsisMatch)) : "ellipsis match should not be a subterm of ANYTHING";
-
-            if (purelyAnon) {
-                if (!(x instanceof AnonID)) {
-                    Term ux = x.unneg();
-                    if (x == ux || !(ux instanceof AnonID)) {
-                        purelyAnon = false;
-                    }
-                }
-            }
+            if (x instanceof AnonID)
+                continue;
+            if (x instanceof Neg && x.unneg() instanceof AnonID)
+                continue;
+            return false;
         }
-        return purelyAnon;
+        return true;
     }
 
     static Subterms newSubtermsVector(Term[] t) {

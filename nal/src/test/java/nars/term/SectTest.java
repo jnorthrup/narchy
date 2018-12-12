@@ -1,5 +1,6 @@
 package nars.term;
 
+import nars.term.util.TermTest;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;

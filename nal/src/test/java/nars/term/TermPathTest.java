@@ -5,7 +5,7 @@ import org.eclipse.collections.impl.factory.primitive.ByteLists;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
-import static nars.term.TermTest.assertEq;
+import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class TermPathTest {

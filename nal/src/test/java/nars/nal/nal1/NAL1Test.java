@@ -11,15 +11,16 @@ import static nars.Op.BELIEF;
 
 public class NAL1Test extends NALTest {
 
-    private final int cycles = 350;
+    protected int cycles = 50;
 
-    @Override protected NAR nar() {
+    @Override
+    protected NAR nar() {
 
         return NARS.tmp(1);
     }
 
     @Test
-    void deduction()  {
+    void deduction() {
 
         test
                 .believe("<bird --> animal>")
@@ -27,7 +28,7 @@ public class NAL1Test extends NALTest {
                 .es("bird es un tipo de animal.")
                 .de("bird ist eine art des animal.");*/
                 .believe("<robin --> bird>")
-                        
+
                 .mustBelieve(cycles, "<robin --> animal>", 0.81f);
     }
 
@@ -43,63 +44,57 @@ public class NAL1Test extends NALTest {
 
 
     @Test
-    void revision()  {
+    void revision() {
 
         String belief = "<bird --> swimmer>";
 
         test
                 .mustBelieve(4, belief, 0.87f, 0.91f)
-                .believe(belief)                 
-                .believe(belief, 0.10f, 0.60f)                 
-                ;
+                .believe(belief)
+                .believe(belief, 0.10f, 0.60f)
+        ;
     }
 
 
     @Test
-    void abduction()  {
+    void abduction() {
         test
                 .believe("<sport --> competition>", 1f, 0.9f)
                 .believe("<chess --> competition>", 0.90f, 0.9f)
                 .mustBelieve(cycles, "(chess --> sport)", 0.9f, 0.45f)
-                .mustNotOutput(cycles, "(chess --> sport)", BELIEF, 1f, 1f, 0.42f,0.42f, (t)->true)
+                .mustNotOutput(cycles, "(chess --> sport)", BELIEF, 1f, 1f, 0.42f, 0.42f, (t) -> true)
                 .mustBelieve(cycles, "(sport --> chess)", 1f, 0.42f)
-                .mustNotOutput(cycles, "(sport --> chess)", BELIEF, 0.9f, 0.9f, 0.45f,0.45f, (t)->true)
-                ;
+                .mustNotOutput(cycles, "(sport --> chess)", BELIEF, 0.9f, 0.9f, 0.45f, 0.45f, (t) -> true)
+        ;
     }
 
     @Test
-    void abduction2()  {
+    void abduction2() {
         
         /*
         <swan --> swimmer>. %0.9;0.9%
         <swan --> bird>.
          */
-        
+
 
         test
-            .believe("<swan --> swimmer>", 0.90f, 0.9f) 
-            .believe("<swan --> bird>") 
-            .mustBelieve(cycles, "<bird --> swimmer>", 1f, 0.42f) 
-            
-            .mustBelieve(cycles, "<swimmer --> bird>", 0.9f, 0.45f)
-            
-            ;
-    }
+                .believe("<swan --> swimmer>", 0.90f, 0.9f)
+                .believe("<swan --> bird>")
+                .mustBelieve(cycles, "<bird --> swimmer>", 1f, 0.42f)
 
+                .mustBelieve(cycles, "<swimmer --> bird>", 0.9f, 0.45f)
+
+        ;
+    }
 
 
     @Test
     void induction() {
-        
-
-
-
-
 
 
         test
                 .believe("<parakeet --> bird>", 0.90f, 0.9f)
-                .believe("<pteradactyl --> bird>") 
+                .believe("<pteradactyl --> bird>")
                 .mustBelieve(cycles, "<pteradactyl --> parakeet>", 1, 0.42f)
                 .mustBelieve(cycles, "<parakeet --> pteradactyl>", 0.9f, 0.45f)
         ;
@@ -107,33 +102,27 @@ public class NAL1Test extends NALTest {
 
 
     @Test
-    void exemplification()  {
+    void exemplification() {
 
         test
 
-            .believe("<robin --> bird>")
-            .believe("<bird --> animal>")
-            .mustOutput(cycles, "<animal --> robin>. %1.00;0.4475%");
+                .believe("<robin --> bird>")
+                .believe("<bird --> animal>")
+                .mustOutput(cycles, "<animal --> robin>. %1.00;0.4475%");
     }
-
-
-
-
-
-
-
 
 
     @Test
     void backwardInference() throws nars.Narsese.NarseseException {
 
         test
-                .believe("<bird --> swimmer>", 1.0f, 0.8f) 
-                .ask(    "<?1 --> swimmer>") 
-                .mustOutput(cycles, "<?1 --> bird>?") 
-                .mustOutput(cycles, "<bird --> ?1>?") 
+                .believe("<bird --> swimmer>", 1.0f, 0.8f)
+                .ask("<?1 --> swimmer>")
+                .mustOutput(cycles, "<?1 --> bird>?")
+                .mustOutput(cycles, "<bird --> ?1>?")
         ;
     }
+
     @Test
     void backwardInference2() throws nars.Narsese.NarseseException {
 
@@ -144,12 +133,11 @@ public class NAL1Test extends NALTest {
 
         test
                 .believe("(x --> y)")
-                .ask(    "(x --> z)")
+                .ask("(x --> z)")
                 .mustOutput(cycles, "<y --> z>?")
                 .mustOutput(cycles, "<z --> y>?")
         ;
     }
-
 
 
     @Disabled
@@ -162,6 +150,7 @@ public class NAL1Test extends NALTest {
         tester.mustBelieve(cycles, "<bright --> smart>", 0.9f, 0.9f);
 
     }
+
     @Test
     void revisionSim() {
 
@@ -185,29 +174,19 @@ public class NAL1Test extends NALTest {
     void comparison2() {
 
         TestNAR tester = test;
-        tester.believe("<sport --> competition>"); 
+        tester.believe("<sport --> competition>");
         tester.believe("<chess --> competition>", 0.9f, 0.9f);
         tester.mustBelieve(cycles, "<chess <-> sport>", 0.9f, 0.45f);
 
     }
 
 
-
-
-
-
-
-
-
-
-
-
     @Test
     void analogy() {
         test
-            .believe("<swan --> swimmer>")
-            .believe("<gull <-> swan>")
-            .mustBelieve(cycles, "<gull --> swimmer>", 1.0f, 0.81f);
+                .believe("<swan --> swimmer>")
+                .believe("<gull <-> swan>")
+                .mustBelieve(cycles, "<gull --> swimmer>", 1.0f, 0.81f);
     }
 
     @Test
@@ -218,7 +197,6 @@ public class NAL1Test extends NALTest {
         tester.believe("<gull <-> swan>");
         tester.mustBelieve(cycles, "<swan --> swimmer>", 1.0f, 0.81f);
     }
-
 
 
     @Test
@@ -241,8 +219,11 @@ public class NAL1Test extends NALTest {
 
     }
 
-    /** ReduceConjunction */
-    @Test void inheritanceToSimilarity2() {
+    /**
+     * ReduceConjunction
+     */
+    @Test
+    void inheritanceToSimilarity2() {
 
         TestNAR tester = test;
         tester.believe("<swan --> bird>");

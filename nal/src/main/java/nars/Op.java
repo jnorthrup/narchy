@@ -326,21 +326,20 @@ public enum Op {
     /**
      * True wrapped in a subterm as the only element
      */
-    public static final Subterms TrueSubterm = Op.terms.subterms(Bool.True);
+    public static final Subterms TrueSubterm = HeapTermBuilder.the.subterms(Bool.True);
 
     /**
      * False wrapped in a subterm as the only element
      */
-    public static final Subterms FalseSubterm = Op.terms.subterms(Bool.False);
+    public static final Subterms FalseSubterm = HeapTermBuilder.the.subterms(Bool.False);
 
 
     static {
         for (Op o : Op.values()) {
             int l = o.minLevel;
             if (l < 0) l = 0;
-            for (int i = l; i <= 8; i++) {
+            for (int i = l; i <= 8; i++)
                 NALLevelEqualAndAbove[i] |= o.bit;
-            }
         }
 
         final Map<String, Op> _stringToOperator = new HashMap<>(values().length * 2);

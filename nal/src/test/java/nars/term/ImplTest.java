@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.io.NarseseTest.assertInvalidTerms;
-import static nars.term.TermTest.assertEq;
+import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 

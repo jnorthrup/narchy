@@ -9,6 +9,7 @@ import nars.task.util.TaskException;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.TermException;
+import nars.term.util.TermTest;
 import nars.util.Timed;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;

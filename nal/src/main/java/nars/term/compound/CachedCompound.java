@@ -35,8 +35,8 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
     public static Compound newCompound(Op op, int dt, Subterms subterms) {
 //        if (subterms instanceof DisposableTermList)
 //            throw new WTF();
-        boolean hasTemporal = op.temporal || subterms.hasAny(Op.Temporal);
-        boolean isNormalized = subterms.isNormalized();
+//        boolean hasTemporal = op.temporal || subterms.hasAny(Op.Temporal);
+//        boolean isNormalized = subterms.isNormalized();
         if (!op.temporal && !subterms.hasAny(Op.Temporal) && subterms.isNormalized()) {
             assert (dt == DTERNAL);
 //            if (key!=null && subterms.volume() < Param.TERM_BYTE_KEY_CACHED_BELOW_VOLUME) {

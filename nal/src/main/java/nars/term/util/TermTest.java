@@ -14,13 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http:
  */
-package nars.term;
+package nars.term.util;
 
 import com.google.common.collect.Iterators;
 import nars.$;
 import nars.IO;
 import nars.Narsese;
 import nars.subterm.Subterms;
+import nars.term.Compound;
+import nars.term.Term;
+import nars.term.Termed;
+import nars.term.Termlike;
 import nars.term.compound.CachedCompound;
 import org.junit.jupiter.api.Assertions;
 
@@ -144,6 +148,7 @@ public enum TermTest { ;
         Assertions.assertEquals(x.varQuery(), y.varQuery());
         Assertions.assertEquals(x.hasVarPattern(), y.hasVarPattern());
         Assertions.assertEquals(x.varPattern(), y.varPattern());
+
     }
 
     public static void assertEq(Compound a, Compound b) {
@@ -171,6 +176,11 @@ public enum TermTest { ;
         Assertions.assertEquals(0, Subterms.compare(a, b));
         Assertions.assertEquals(0, Subterms.compare(a, b));
 
+        boolean aNorm = a.isNormalized();
+        boolean bNorm = b.isNormalized();
+        assertEquals(aNorm, bNorm,  a + " (" + a.getClass() + ") normalized=" + aNorm + ", " + " (" + b.getClass() + ") normalized=" + bNorm );
+        assertEquals(a.isSorted(), b.isSorted());
+
         {
             byte[] bytesExpected = IO.termToBytes($.pFast(a));
             byte[] bytesActual = IO.termToBytes($.pFast(b));
@@ -183,25 +193,25 @@ public enum TermTest { ;
                 assertArrayEquals(bytesExpected, bytesActual);
             }
         }
-        {
-            byte[] bytesExpected = IO.termToBytes(PROD.the(a));
-            byte[] bytesActual = IO.termToBytes(PROD.the(b));
-            assertArrayEquals(bytesExpected, bytesActual);
-        }
-
-        {
-            byte[] bytesExpected = IO.termToBytes(PROD.the(a));
-            byte[] bytesActual = IO.termToBytes(PROD.the(b));
-            assertArrayEquals(bytesExpected, bytesActual);
-        }
-
-        {
-            if (a.subs() > 0) {
-                byte[] bytesExpected = IO.termToBytes(SETe.the(a));
-                byte[] bytesActual = IO.termToBytes(SETe.the(b));
-                assertArrayEquals(bytesExpected, bytesActual);
-            }
-        }
+//        {
+//            byte[] bytesExpected = IO.termToBytes(PROD.the(a));
+//            byte[] bytesActual = IO.termToBytes(PROD.the(b));
+//            assertArrayEquals(bytesExpected, bytesActual);
+//        }
+//
+//        {
+//            byte[] bytesExpected = IO.termToBytes(PROD.the(a));
+//            byte[] bytesActual = IO.termToBytes(PROD.the(b));
+//            assertArrayEquals(bytesExpected, bytesActual);
+//        }
+//
+//        {
+//            if (a.subs() > 0) {
+//                byte[] bytesExpected = IO.termToBytes(SETe.the(a));
+//                byte[] bytesActual = IO.termToBytes(SETe.the(b));
+//                assertArrayEquals(bytesExpected, bytesActual);
+//            }
+//        }
 
     }
 

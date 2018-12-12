@@ -4,6 +4,8 @@ import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import nars.Op;
 import nars.term.Term;
+import nars.term.Variable;
+import nars.term.var.NormalizedVariable;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.jetbrains.annotations.Nullable;
@@ -112,7 +114,11 @@ abstract class AbstractUnitSubterm implements Subterms {
 
     @Override
     public boolean isNormalized() {
-        return sub().isNormalized();
+        Term s = sub();
+        if (s instanceof Variable) {
+            return s instanceof NormalizedVariable && ((NormalizedVariable)s).id==1;
+        }
+        return s.isNormalized();
     }
 
     @Override

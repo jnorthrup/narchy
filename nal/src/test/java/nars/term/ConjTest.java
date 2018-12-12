@@ -22,7 +22,7 @@ import static nars.$.*;
 import static nars.Op.CONJ;
 import static nars.io.NarseseTest.assertInvalidTerms;
 import static nars.term.TemporalTermTest.*;
-import static nars.term.TermTest.*;
+import static nars.term.util.TermTest.*;
 import static nars.term.TermTestMisc.assertValid;
 import static nars.term.TermTestMisc.assertValidTermValidConceptInvalidTaskContent;
 import static nars.time.Tense.*;
@@ -260,7 +260,7 @@ public class ConjTest {
     }
 
     @Test
-    void testPromoteEternalToParallelDont() {
+    void testPromoteEternalToParallel2() {
         assertEq("((b&|c)&&a)"
                 , "(a&&(b&|c))");
     }
@@ -741,7 +741,7 @@ public class ConjTest {
     }
 
     @Test
-    void testConjWithoutAllMixEternalAndParallel() {
+    void testPromoteEternalToParallel3() {
 
 
         assertEq(//"((b&&c)&|(x&&y))",
@@ -1067,27 +1067,6 @@ public class ConjTest {
 
 
 
-    @Test
-    void testParseOperationInFunctionalForm2() throws Narsese.NarseseException {
-        assertEquals(
-                "(((a)&&(b))&|do(that))",
-
-                $.$("(do(that) &| ((a)&&(b)))").toString());
-
-        Termed nt = $.$("(((that)-->do) &| ((a)&&(b)))");
-        assertEquals(
-                "(((a)&&(b))&|do(that))",
-
-                nt.toString());
-
-
-        assertEq(
-
-                "( &&+- ,do(that),(a),(b))",
-                n.conceptualize(nt).toString());
-
-
-    }
 
     @Test public void testIndepVarWTF() {
         assertEq("(x1&&$1)", new Conj().with(ETERNAL, $$("(&&,x1,$1)")).term());
@@ -1628,9 +1607,13 @@ public class ConjTest {
 
     @Test
     void testEmbeddedConjNormalizationB() {
+        String x = "((((--,noid(0,5)) &&+- noid(11,2)) &&+- noid(11,2)) &&+- noid(11,2))";
+        assertEq(x, x);
+
         assertEq(
                 "((--,noid(0,5)) &&+- noid(11,2))",
-                "((((--,noid(0,5)) &&+- noid(11,2)) &&+- noid(11,2)) &&+- noid(11,2))");
+                $$(x).concept()
+        );
     }
 
     @Test
@@ -1722,10 +1705,6 @@ public class ConjTest {
         assertInvalidTask("(x &| (--,x)).");
     }
 
-    @Test
-    void testMaintainParallelAmongEternal() {
-        assertEquals("((x&|y)&&e)", $$("((x&|y)&&e)").toString());
-    }
 
     @Test
     void testAtemporalization2() throws Narsese.NarseseException {
