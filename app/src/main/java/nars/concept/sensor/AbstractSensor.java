@@ -4,18 +4,11 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
 import nars.control.NARService;
-import nars.control.channel.CauseChannel;
-import nars.table.dynamic.SeriesBeliefTable;
-import nars.task.ITask;
 import nars.term.Term;
-import nars.truth.Truth;
-import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
 abstract public class AbstractSensor extends NARService implements Sensor {
 
-    public final FloatRange pri;
     private final FloatRange res;
-
 
     protected AbstractSensor(NAR nar) {
         this(null, nar);
@@ -25,7 +18,6 @@ abstract public class AbstractSensor extends NARService implements Sensor {
         super(id, n);
 
         //defaults
-        pri = FloatRange.unit( n.beliefPriDefault );
         res = FloatRange.unit( n.freqResolution );
     }
 
@@ -40,11 +32,6 @@ abstract public class AbstractSensor extends NARService implements Sensor {
         return res;
     }
 
-    /** TODO abstract different priority distribution methods:
-     *    uniform, divide equally, according to amount of value change, etc */
-    protected void pri(Task x) {
-        x.pri(pri);
-    }
 
 //    private float pri(float pri, Truth prev, Truth next, float fRes) {
 //        float priIfNoChange =

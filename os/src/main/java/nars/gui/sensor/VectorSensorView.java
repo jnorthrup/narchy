@@ -23,7 +23,6 @@ import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
-import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.video.Draw;
 
 import java.util.List;
@@ -299,28 +298,29 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
             this.view = view;
 
             /** TODO use MutableEnum */
-            set(new ButtonSet(ButtonSet.Mode.One,
-                new CheckBox("Pri+", ()->{
-                    view.onConceptTouch((c)->{
-                        next.set(()->
-                            view.nar.activate(c, 1f)
-                        );
-                    });
-                }),
+            set(new ButtonSet<>(ButtonSet.Mode.One,
+                    new CheckBox("Pri+", ()->{
+                        view.onConceptTouch((c)->{
+                            next.set(()->
+                                view.nar.activate(c, 1f)
+                            );
+                        });
+                    }
+                ),
                 goalCheckBox(view, "Goal+", 1f),
                 goalCheckBox(view, "Goal+-", 0.5f),
                 goalCheckBox(view, "Goal-", 0f)
-            ), new ObjectSurface(List.of(view.visBelief, view.visGoal, view.visPri, view.timeShift)),
-                    new FloatSlider("Pri", view.sensor.pri));
+            ), new ObjectSurface<>(List.of(view.visBelief, view.visGoal, view.visPri, view.timeShift))
+                    //TODO attn node plot: supply/demand
+                    //new FloatSlider("Supply", view.sensor.attn.supply)
+            );
         }
 
         @NotNull
         public CheckBox goalCheckBox(VectorSensorView view, String s, float v) {
             return new CheckBox(s, () -> {
                 view.onConceptTouch((c) -> {
-                    next.set(() ->
-                            view.nar.want(c.term(), Tense.Present, v)
-                    );
+                    next.set(() -> view.nar.want(c.term(), Tense.Present, v));
                 });
             });
         }

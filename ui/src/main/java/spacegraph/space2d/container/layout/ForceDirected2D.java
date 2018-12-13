@@ -11,7 +11,7 @@ import spacegraph.util.math.v2;
 
 import java.util.Random;
 
-public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect> {
+public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> {
 
     final Random rng = new XoRoShiRo128PlusRandom(1);
     private int iterations = 1;
@@ -19,8 +19,8 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect> {
 
 
     @Override
-    protected MutableFloatRect newContainer() {
-        return new MutableFloatRect();
+    protected MutableFloatRect<X> newContainer() {
+        return new MutableFloatRect<>();
     }
 
     public final FloatRange repelSpeed = new FloatRange(4f, 0, 16f);
@@ -67,11 +67,8 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect> {
 
         assert (AUTOSCALE == AUTOSCALE);
 
-        for (MutableFloatRect m : nodes) {
-            float pri = m.node.pri;
-            float p = (float) (1f + Math.sqrt(pri)) * AUTOSCALE;
-            m.size(p, p);
-        }
+        for (MutableFloatRect<X> m : nodes)
+            size(m, AUTOSCALE);
 
         maxRepelDist = (float) ((2 * g.radius()) * Math.sqrt(2) / 2); //estimate
 
@@ -89,7 +86,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect> {
         for (int ii = 0; ii < iterations; ii++) {
 
             for (int x = 0; x < n; x++) {
-                MutableFloatRect a = nodes.get(x);
+                MutableFloatRect<X> a = nodes.get(x);
 
                 attract(a, attractSpeed);
 
@@ -111,6 +108,11 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect> {
 
         }
 
+    }
+
+    protected void size(MutableFloatRect<X> m, float a) {
+        float p = (float) (1f + Math.sqrt(m.node.pri)) * a;
+        m.size(p, p);
     }
 
 

@@ -13,6 +13,7 @@ import jcog.data.set.ArrayHashSet;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.collection.MutableMapContainer;
 import spacegraph.space2d.container.grid.Gridding;
@@ -122,7 +123,6 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         ) {
             @Override
             protected void paintIt(GL2 gl, SurfaceRender r) {
-
 
                 gl.glColor4f(0,0,0, 0.9f);
                 Draw.rect(bounds, gl);
@@ -246,9 +246,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     protected void stopping() {
         super.stopping();
         //synchronized (this) {
-            nodeCache.values().forEach(n -> {
-                n.stop();
-            });
+            nodeCache.values().forEach(Container::stop);
             nodeCache.clear();
             edgePool.delete();
         //}

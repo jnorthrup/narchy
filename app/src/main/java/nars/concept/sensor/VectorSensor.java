@@ -3,7 +3,7 @@ package nars.concept.sensor;
 import com.google.common.collect.Iterables;
 import nars.$;
 import nars.NAR;
-import nars.attention.AttnDistributor;
+import nars.attention.AttVectorNode;
 import nars.concept.NodeConcept;
 import nars.control.channel.CauseChannel;
 import nars.table.dynamic.SeriesBeliefTable;
@@ -26,7 +26,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
 
     public final CauseChannel<ITask> in;
 
-    private AttnDistributor attn;
+    public final AttVectorNode attn;
 
 
     @Override
@@ -41,7 +41,13 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     protected VectorSensor(NAR nar) {
         super(nar);
 
-        this.in = nar.newChannel(id != null ? id : this);
+        attn = new AttVectorNode(this, this);
+
+        this.in = newChannel(nar);
+    }
+
+    protected CauseChannel<ITask> newChannel(NAR nar) {
+        return nar.newChannel(id != null ? id : this);
     }
 
     /**
@@ -62,8 +68,6 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
 
     @Override
     public void update(long last, long now, long next, NAR nar) {
-        if (attn == null) //HACK
-            attn = new AttnDistributor(this, pri::set, nar);
 
         updateSensor(last, now, nar).filter(Objects::nonNull).forEach(in::input);
     }
@@ -80,8 +84,14 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     }
 
     protected final Stream<SeriesBeliefTable.SeriesRemember> updateSensor(long last, long now, FloatFloatToObjectFunction<Truth> truther, int dur) {
+        float pri = attn.supply.priElseZero()/size();
         return StreamSupport.stream(spliterator(), false).map(
-                s -> s.update(last, now, pri.floatValue(), truther, dur, nar));
+                s -> {
+                    SeriesBeliefTable.SeriesRemember t = s.update(last, now, pri, truther, dur, nar);
+                    if (t!=null)
+                        attn.supply.priSub(t.input.priElseZero());
+                    return t;
+                });
     }
 
 }

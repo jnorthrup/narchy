@@ -2,35 +2,41 @@ package nars.agent;
 
 import com.google.common.collect.Iterators;
 import jcog.math.FloatSupplier;
+import nars.$;
 import nars.NAR;
+import nars.Task;
+import nars.attention.AttNode;
 import nars.concept.sensor.Signal;
-import nars.table.dynamic.SeriesBeliefTable;
+import nars.control.channel.CauseChannel;
+import nars.op.mental.Inperience;
+import nars.task.ITask;
+import nars.task.NALTask;
 import nars.term.Term;
-import nars.truth.Truth;
-import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
 import java.util.Iterator;
-import java.util.stream.Stream;
 
 import static nars.Op.GOAL;
+import static nars.time.Tense.ETERNAL;
 
 public class SimpleReward extends Reward {
 
     public final Signal concept;
 
-    private final FloatFloatToObjectFunction<Truth> truther;
-
-
     public SimpleReward(Term id, FloatSupplier r, NAgent a) {
         super(a, r);
         NAR nar = nar();
-        concept = new Signal(id, () -> reward, nar);
+        concept = new Signal(id, () -> reward, nar) {
+            @Override
+            protected CauseChannel<ITask> newChannel(NAR n) {
+                return in;
+            }
+        };
+        concept.attn.parent(attn);
 
-
-        truther = truther();
-        agent.//alwaysWant
-                alwaysWantEternally
-                    (concept.term, nar.confDefault(GOAL));
+        alwaysWantEternally(concept.term);
+//        agent.//alwaysWant
+//                alwaysWantEternally
+//                    (concept.term, nar.confDefault(GOAL));
 //        agent.alwaysQuestionDynamic(()->{
 //            int dt =
 //                    //0;
@@ -40,6 +46,32 @@ public class SimpleReward extends Reward {
 //        }, true);
     }
 
+    public void alwaysWantEternally(Term goal) {
+        alwaysWantEternally(goal, nar().confDefault(GOAL));
+    }
+
+    public void alwaysWantEternally(Term goal, float conf) {
+        Task t = new NALTask(goal, GOAL, $.t(1f, conf), nar().time(),
+                ETERNAL, ETERNAL,
+                nar().evidence()
+                //Stamp.UNSTAMPED
+        );
+
+        AttNode a = new AttNode($.func(Inperience.want, this.term(), goal)) {
+            @Override
+            protected float childDemand(NAR nar) {
+                return (1f - nar.concepts.pri(t, 0));
+            }
+
+            @Override
+            public void update(NAR nar) {
+                super.update(nar);
+                t.take(supply, Math.min(supply.priElseZero(), demand.floatValue()), true, false);
+                in.input(t);
+            }
+        };
+        a.parent(attn);
+    }
 
 
     @Override
@@ -54,7 +86,7 @@ public class SimpleReward extends Reward {
 
 
     @Override
-    protected Stream<SeriesBeliefTable.SeriesRemember> updateReward(long prev, long now, long next, float pri) {
-        return Stream.of(concept.update(prev, now, pri, truther, nar()));
+    protected void updateReward(long prev, long now, long next) {
+        concept.update(prev, now, next, nar());
     }
 }

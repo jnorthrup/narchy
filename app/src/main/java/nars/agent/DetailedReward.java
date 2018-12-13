@@ -10,13 +10,13 @@ import nars.NAR;
 import nars.Param;
 import nars.concept.sensor.FilteredScalar;
 import nars.concept.sensor.Signal;
+import nars.control.channel.CauseChannel;
 import nars.table.BeliefTables;
-import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.eternal.EternalTable;
+import nars.task.ITask;
 import nars.term.Term;
 
 import java.util.Iterator;
-import java.util.stream.Stream;
 
 import static jcog.Util.compose;
 import static nars.Op.GOAL;
@@ -52,7 +52,13 @@ public class DetailedReward extends Reward {
                         new FloatAveraged(0.1f, false),
                         new FloatPolarNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE_FAST)
                 ))
-        );
+        ) {
+            @Override
+            protected CauseChannel<ITask> newChannel(NAR nar) {
+                return in;
+            }
+        };
+        concept.attn.parent(attn);
 
         {
              //TODO add these to On/Off
@@ -87,8 +93,7 @@ public class DetailedReward extends Reward {
     }
 
     @Override
-    protected Stream<SeriesBeliefTable.SeriesRemember> updateReward(long prev, long now, long next, float pri) {
-        concept.pri.set(pri);
-        return concept.updateSensor(prev, now, nar());
+    protected void updateReward(long prev, long now, long next) {
+        concept.updateSensor(prev, now, nar());
     }
 }

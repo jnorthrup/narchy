@@ -4,11 +4,11 @@ import jcog.Util;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
+import nars.attention.AttNode;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
 import nars.control.channel.CauseChannel;
 import nars.table.BeliefTables;
-import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.eternal.EternalTable;
 import nars.task.ITask;
 import nars.term.Termed;
@@ -16,9 +16,6 @@ import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
-
-import java.util.Objects;
-import java.util.stream.Stream;
 
 import static nars.Op.BELIEF;
 
@@ -32,7 +29,9 @@ public abstract class Reward implements Termed, Iterable<Signal> {
     protected transient volatile float reward = Float.NaN;
 
     protected final CauseChannel<ITask> in;
-    transient private float pri;
+
+
+    final AttNode attn;
 
     public Reward(NAgent a, FloatSupplier r) {
     //TODO
@@ -40,24 +39,22 @@ public abstract class Reward implements Termed, Iterable<Signal> {
         this.agent = a;
         this.rewardFunc = r;
 
+        this.attn = new AttNode(this);
+
         in = a.nar().newChannel(this);
 
     }
 
     public final NAR nar() { return agent.nar(); }
 
-    public void pri(float pri) {
-        this.pri = pri;
-    }
-
     public final void update(long prev, long now, long next) {
         reward = rewardFunc.asFloat();
-        in.input(updateReward(prev, now, next, pri).filter(Objects::nonNull));
+        updateReward(prev, now, next);
     }
 
-    abstract protected Stream<SeriesBeliefTable.SeriesRemember> updateReward(long prev, long now, long next, float pri);
+    abstract protected void updateReward(long prev, long now, long next);
 
-    protected FloatFloatToObjectFunction<Truth> truther() {
+    @Deprecated protected FloatFloatToObjectFunction<Truth> truther() {
         return (prev, next) -> (next == next) ?
                 $.t(Util.unitize(next), nar().confDefault(BELIEF)) : null;
     }

@@ -1,6 +1,5 @@
 package nars.agent;
 
-import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FastCoWList;
@@ -16,13 +15,15 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.attention.AttnDistributor;
+import nars.attention.AttNode;
 import nars.concept.Concept;
 import nars.concept.action.AbstractGoalActionConcept;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.DefaultCuriosity;
 import nars.concept.sensor.Sensor;
+import nars.concept.sensor.Signal;
+import nars.concept.sensor.VectorSensor;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
 import nars.link.Activate;
@@ -79,7 +80,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
     public final Curiosity curiosity = DefaultCuriosity.defaultCuriosity(this);
 
-    final AttnDistributor actReward;
+    public final AttNode attn;
 
     public volatile long prev;
     protected volatile long now;
@@ -90,7 +91,7 @@ public class NAgent extends NARService implements NSense, NAct {
         @Nullable Task get(long prev, long now, long next);
     }
 
-    private final FastCoWList<ReinforcedTask> always = new FastCoWList<>(ReinforcedTask[]::new);
+    @Deprecated private final FastCoWList<ReinforcedTask> always = new FastCoWList<>(ReinforcedTask[]::new);
 
     @Deprecated
     private CauseChannel<ITask> in = null;
@@ -111,59 +112,69 @@ public class NAgent extends NARService implements NSense, NAct {
     public NAgent(Term id, FrameTrigger frameTrigger, NAR nar) {
         super(id);
         this.nar = nar;
+        this.attn = new AttNode(id);
         this.frameTrigger = frameTrigger;
         this.prev = ETERNAL;
-
-        actReward = new AttnDistributor(
-                Iterables.concat(
-                    //() -> Iterators.singletonIterator(nar.conceptualize(term())),
-                    Iterables.concat(actions,
-                    Iterables.concat(rewards))),
-            (_p)->{
-                //float p = 0.5f + _p/2f; //HACK
-                float p = _p;
-                actions.forEach(a->a.pri.pri(p));
-//                rewards.forEach(r->r.pri(p));
-//                pri.set(p);
-
-                rewards.forEach(r->r.pri(pri.floatValue()));
-        }, nar);
+//
+//        actReward = new AttnDistributor(
+//                Iterables.concat(
+//                    //() -> Iterators.singletonIterator(nar.conceptualize(term())),
+//                    Iterables.concat(actions,
+//                    Iterables.concat(rewards))),
+//            (_p)->{
+//                //float p = 0.5f + _p/2f; //HACK
+//                float p = _p;
+//                actions.forEach(a->a.pri.pri(p));
+////                rewards.forEach(r->r.pri(p));
+////                pri.set(p);
+//
+//                rewards.forEach(r->r.pri(pri.floatValue()));
+//        }, nar);
 
         nar.on(this);
     }
 
 
     @Override
-    public <A extends ActionConcept> A addAction(A c) {
+    public final <A extends ActionConcept> A addAction(A c) {
         actions.add(c);
-
-        actionAdded(c);
 
         nar().on(c);
         return c;
     }
 
-    protected <A extends ActionConcept> void actionAdded(A a) {
-
-        //alwaysQuest(a, true);
-        //alwaysQuestionEternally(Op.IMPL.the($.varQuery(1), a.term), true, false);
-
-//        alwaysQuestionEternally(a,
-//                false,
-//                false
-//        );
-
-
-//        alwaysQuestion(IMPL.the(c.term, 0, $$("reward:#x")), true);
-//        alwaysQuestion(IMPL.the(c.term.neg(), 0, $$("reward:#x")), true);
-        //alwaysQuestionEternally(Op.CONJ.the($.varDep(1), a.term.neg()));
-    }
+//    protected <A extends ActionConcept> void actionAdded(A a) {
+//
+//        //alwaysQuest(a, true);
+//        //alwaysQuestionEternally(Op.IMPL.the($.varQuery(1), a.term), true, false);
+//
+////        alwaysQuestionEternally(a,
+////                false,
+////                false
+////        );
+//
+//
+////        alwaysQuestion(IMPL.the(c.term, 0, $$("reward:#x")), true);
+////        alwaysQuestion(IMPL.the(c.term.neg(), 0, $$("reward:#x")), true);
+//        //alwaysQuestionEternally(Op.CONJ.the($.varDep(1), a.term.neg()));
+//    }
 
     @Override
-    public <S extends Sensor> S addSensor(S s) {
+    public final <S extends Sensor> S addSensor(S s) {
         //TODO check for existing
         sensors.add(s);
+        addAttention(s);
         return s;
+    }
+
+    protected void addAttention(Object s) {
+        if (s instanceof VectorSensor) {
+            ((VectorSensor)s).attn.parent(attn);
+        } else if (s instanceof Signal) {
+            ((Signal)s).attn.parent(attn);
+        } else if (s instanceof Reward) {
+            ((Reward)s).attn.parent(attn);
+        }
     }
 
 //    public final Bitmap2DSensor sense(Bitmap2DSensor bmp) {
@@ -173,7 +184,7 @@ public class NAgent extends NARService implements NSense, NAct {
 ////        return bmp;
 //    }
 
-    public Task alwaysWantEternally(Termed x, float conf) {
+    @Deprecated public Task alwaysWantEternally(Termed x, float conf) {
         Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), nar.time(),
                 ETERNAL, ETERNAL,
                 nar.evidence()
@@ -290,8 +301,8 @@ public class NAgent extends NARService implements NSense, NAct {
         this.in = nar.newChannel(this);
 
 
-        super.starting(nar);
 
+        super.starting(nar);
 
         this.frameTrigger.start(this);
 
@@ -387,6 +398,7 @@ public class NAgent extends NARService implements NSense, NAct {
             throw new RuntimeException("reward exists with the ID: " + r.term());
 
         rewards.add(r);
+        addAttention(r);
         return r;
     }
 
@@ -416,9 +428,9 @@ public class NAgent extends NARService implements NSense, NAct {
             @Override
             public void next(NAgent a, int iteration, long prev, long now, long next) {
 
-                a.reinforce(prev, now, next);
-
                 a.sense(prev, now, next);
+
+                a.reinforce(prev, now, next);
 
                 //long adjustedPrev = Math.max(prev, now - (next-now)); //prevent stretching and evaluating too far in the past
                 a.act(prev, now, next);
@@ -476,6 +488,10 @@ public class NAgent extends NARService implements NSense, NAct {
             this.now = now;
             this.next = next;
 
+
+            attn.supply.pri(pri.floatValue());
+            attn.update(nar);
+
             cycle.next(this, iteration.getAndIncrement(), prev, now, next);
 
             this.prev = now;
@@ -529,7 +545,7 @@ public class NAgent extends NARService implements NSense, NAct {
         rewards.forEach(r -> r.update(prev, now, next));
     }
 
-    protected void reinforce(long prev, long now, long next) {
+    @Deprecated protected void reinforce(long prev, long now, long next) {
 
         in.input(always.stream().map(x -> x.get(prev, now, next)).filter(Objects::nonNull).peek(x -> {
             x.pri(

@@ -7,6 +7,7 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
+import nars.control.NARService;
 import nars.op.FileFunc;
 import nars.subterm.AnonVector;
 import nars.subterm.Subterms;
@@ -821,6 +822,13 @@ public enum $ {
         }
         //throw new UnsupportedOperationException();
         return SECTe.the(a, b.neg());
+    }
+
+    public static Term identity(Object x) {
+        if (x instanceof Term)
+            return ((Term)x);
+        else
+            return $.p($.quote(x.getClass().getName()), $.the(System.identityHashCode(x)));
     }
 
 

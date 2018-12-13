@@ -5,9 +5,10 @@ import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
+import nars.attention.AttNode;
+import nars.attention.AttVectorNode;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
-import nars.control.DurService;
 import nars.control.channel.CauseChannel;
 import nars.link.TermLinker;
 import nars.table.dynamic.SensorBeliefTables;
@@ -35,6 +36,8 @@ import static nars.Op.GOAL;
  * http://www.cheniere.org/misc/interview1991.htm#Scalar%20Detector
  */
 public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, FloatSupplier, PermanentConcept {
+
+    public final AttNode attn;
 
     /**
      * update directly with next value
@@ -64,6 +67,8 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
                 n.conceptBuilder);
 
         this.source = signal;
+
+        this.attn = new AttVectorNode(term, List.of(this));
 
         ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(n.freqResolution));
 
@@ -97,11 +102,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     }
 
 
-    @Nullable
-    @Deprecated
-    public ITask update(float pri, FloatFloatToObjectFunction<Truth> truther, long time, int dur, NAR n) {
-        return update(time - dur / 2, time + Math.max(0, (dur / 2 - 1)), pri, truther, dur, n);
-    }
+
 
     @Nullable
     public final SeriesBeliefTable.SeriesRemember update(long prev, long now, float pri, FloatFloatToObjectFunction<Truth> truther, NAR n) {
@@ -134,8 +135,14 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
 
     @Override
     public void update(long prev, long now, long next, NAR nar) {
-        float pri = nar.beliefPriDefault.floatValue(); //HACK
-        in.input(update(prev, now, pri, (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)),nar));
+
+        float pri = attn.supply.priElseZero();
+        SeriesBeliefTable.SeriesRemember t = update(prev, now, pri, (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), nar.dur(), nar);
+        if (t!=null) {
+            attn.supply.priSub(t.input.priElseZero());
+            in.input(t);
+        }
+
     }
 
 

@@ -280,6 +280,8 @@ abstract public class NAgentX extends NAgent {
 ////                };
 
 
+        window(AttentionUI.attentionGraph(n, a), 600, 600);
+
         window(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
 
 //                if (a instanceof NAgentX) {

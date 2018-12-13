@@ -9,7 +9,7 @@ import static jcog.data.atomic.AtomicFloatFieldUpdater.iNaN;
  *
  * range is not bounded; for 0..1.0 limit use UnitPri
  */
-abstract public class Pri extends AtomicPri implements Prioritizable {
+public class Pri extends AtomicPri implements Prioritizable {
 
 
     public Pri(Prioritized b) {

@@ -48,12 +48,12 @@ abstract public class Inperience extends TaskLeakTransform {
 
     public static final Logger logger = LoggerFactory.getLogger(Inperience.class);
 
-    private static final Atomic believe = Atomic.the("believe");
-    private static final Atomic want = Atomic.the("want");
+    public static final Atomic believe = Atomic.the("believe");
+    public static final Atomic want = Atomic.the("want");
 
 
     public static final Atomic wonder = Atomic.the("wonder");
-    private static final Atomic evaluate = Atomic.the("plan");
+    public static final Atomic evaluate = Atomic.the("plan");
     private static final Atomic reflect = Atomic.the("reflect");
     private static final ImmutableSet<Atomic> operators = Sets.immutable.of(
             believe, want, wonder, evaluate, reflect);

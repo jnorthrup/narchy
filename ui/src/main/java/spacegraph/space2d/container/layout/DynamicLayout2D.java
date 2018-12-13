@@ -5,22 +5,27 @@ import jcog.data.pool.MetalPool;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.util.MutableFloatRect;
 
-public abstract class DynamicLayout2D<X, M extends MutableFloatRect> implements Graph2D.Graph2DUpdater<X> {
-    protected final FasterList<M> nodes = new FasterList();
-    private final MetalPool<M> nodesPool = new MetalPool<>() {
+public abstract class DynamicLayout2D<X, M extends MutableFloatRect<X>> implements Graph2D.Graph2DUpdater<X> {
+
+    protected final FasterList<MutableFloatRect<X>> nodes = new FasterList<>();
+
+    private final MetalPool<MutableFloatRect<X>> nodesPool = new MetalPool<>() {
+
         @Override
-        public M create() {
+        public MutableFloatRect<X> create() {
             return newContainer();
         }
 
         @Override
-        public void put(M i) {
+        public void put(MutableFloatRect<X> i) {
             i.clear();
             super.put(i);
         }
     };
 
-    abstract protected M newContainer();
+    protected MutableFloatRect<X> newContainer() {
+        return new MutableFloatRect<X>();
+    }
 
     @Override
     public void update(Graph2D<X> g, int dtMS) {
@@ -37,7 +42,7 @@ public abstract class DynamicLayout2D<X, M extends MutableFloatRect> implements 
     private boolean get(Graph2D<X> g) {
         g.forEachValue(v -> {
             if (v.visible() && !v.pinned()) {
-                M m = nodesPool.get();
+                MutableFloatRect<X> m = nodesPool.get();
                 m.set(v);
                 nodes.add(m);
             }
@@ -55,7 +60,7 @@ public abstract class DynamicLayout2D<X, M extends MutableFloatRect> implements 
     /** apply to node after layout
      * default impl: copy directly
      * */
-    protected void put(M mover, Graph2D.NodeVis node) {
+    protected void put(MutableFloatRect<X> mover, Graph2D.NodeVis node) {
         node.posxyWH(mover.x, mover.y, mover.w, mover.h);
     }
 

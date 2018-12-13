@@ -12,8 +12,8 @@ class ServicesTest {
         Services<?, String> s = new Services("");
         StringBuilder sb = new StringBuilder();
 
-        s.set("x", new DummyService(sb), true);
-        s.set("y", new DummyService(sb), true);
+        s.add("x", new DummyService(sb));
+        s.add("y", new DummyService(sb));
 
         s.print(System.out);
 

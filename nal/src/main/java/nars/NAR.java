@@ -633,11 +633,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * asynchronously adds the service
      */
     public final void on(NARService s) {
-        services.set(s.term(), s, true);
+        services.add(s.term(), s);
     }
 
     public final void off(NARService s) {
-        services.set(s.term(), s, false);
+        services.remove(s.term(), s);
     }
 
     /**
@@ -732,7 +732,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * returns concept belief/goal truth evaluated at a given time
      */
     @Nullable
-    public Truth truth(Termed concept, byte punc, long start, long end) {
+    public final Truth truth(Termed concept, byte punc, long start, long end) {
         @Nullable Concept c = conceptualizeDynamic(concept);
         return c != null ? ((BeliefTable) c.table(punc)).truth(start, end, concept instanceof Term ? ((Term)concept) : null, this) : null;
     }

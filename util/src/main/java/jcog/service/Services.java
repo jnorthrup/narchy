@@ -129,10 +129,14 @@ public class Services<C /* context */, K /* service key */> {
     }
 
     public final void remove(K serviceID) {
-        set(serviceID, null, false);
+        remove(serviceID, null);
     }
 
-    public final void set(K key, @Nullable Service<C> added, boolean start) {
+    public final void remove(K serviceID, Service<C> s) {
+        set(serviceID, s, false);
+    }
+
+    private void set(K key, @Nullable Service<C> added, boolean start) {
 
         if (added == null && start)
             throw new WTF();
