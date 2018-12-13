@@ -176,7 +176,11 @@ public interface Truth extends Truthed {
 
     @Nullable
     static PreciseTruth theDithered(float f, float e, NAR nar) {
-        float eviMin = c2wSafe(nar.confMin.floatValue());
+        return theDithered(f, e, c2wSafe(nar.confMin.floatValue()), nar);
+    }
+
+    @Nullable
+    static PreciseTruth theDithered(float f, float e, float eviMin, NAR nar) {
         if (e < eviMin)
             return null;
 
@@ -185,7 +189,6 @@ public interface Truth extends Truthed {
                 e,
                 nar.confResolution.floatValue());
     }
-
 
     static float w2cDithered(float evi, float confRes) {
         return confSafe(w2cSafe(evi), confRes);

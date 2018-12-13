@@ -17,14 +17,26 @@ public interface Prioritizable extends Prioritized, ScalarValue {
     }
 
     default float take(Prioritizable source, float p, boolean amountOrFraction, boolean copyOrMove) {
+
+        assert(this!=source);
+
         float amount;
+
+        if (p!=p || p < ScalarValue.EPSILON)
+            return 0; //amount is insignificant
+
         if (amountOrFraction) {
-            amount = p;
+            float s = source.pri();
+            if (s!=s || s < ScalarValue.EPSILON)
+                return 0; //source is depleted
+
+            amount = Math.min(s, p);
         } else {
             assert(p <= 1f);
             amount = source.priElseZero() * p;
+            if (amount < ScalarValue.EPSILON)
+                return 0; //request*source is insignificant
         }
-        if (amount < ScalarValue.EPSILON) return 0;
 
         final float[] before = new float[1];
 
@@ -42,6 +54,10 @@ public interface Prioritizable extends Prioritized, ScalarValue {
         float taken = after - b;
 
         if (!copyOrMove) {
+//            float taken = source.priDelta((exist,subtracting)->{
+//
+//            }, amount);
+            //TODO verify source actually had it.  this would involve somehow combining the 2 atomic ops
             source.priSub(taken);
         }
 

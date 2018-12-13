@@ -4,13 +4,17 @@ import jcog.Util;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
+import nars.Task;
 import nars.attention.AttNode;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
 import nars.control.channel.CauseChannel;
+import nars.op.mental.Inperience;
 import nars.table.BeliefTables;
 import nars.table.eternal.EternalTable;
 import nars.task.ITask;
+import nars.task.NALTask;
+import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
@@ -18,6 +22,8 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
+import static nars.time.Tense.ETERNAL;
 
 public abstract class Reward implements Termed, Iterable<Signal> {
 
@@ -71,5 +77,30 @@ public abstract class Reward implements Termed, Iterable<Signal> {
         }
 
     }
+    public void alwaysWantEternally(Term goal) {
+        alwaysWantEternally(goal, nar().confDefault(GOAL));
+    }
 
+    public void alwaysWantEternally(Term goal, float conf) {
+        Task t = new NALTask(goal, GOAL, $.t(1f, conf), nar().time(),
+                ETERNAL, ETERNAL,
+                nar().evidence()
+                //Stamp.UNSTAMPED
+        );
+
+        AttNode a = new AttNode($.func(Inperience.want, this.term(), goal)) {
+            @Override
+            protected float childDemand(NAR nar) {
+                return (1f - nar.concepts.pri(t, 0));
+            }
+
+            @Override
+            public void update(NAR nar) {
+                super.update(nar);
+                take(t, demand.floatValue());
+                in.input(t);
+            }
+        };
+        a.parent(attn);
+    }
 }

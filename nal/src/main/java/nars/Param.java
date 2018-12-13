@@ -62,8 +62,8 @@ public abstract class Param {
             //32;
             //16;
             //12;
-            10;
-            //8;
+            //10;
+            8;
             //7;
             //6;
             //5;
@@ -117,7 +117,7 @@ public abstract class Param {
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
     /** can be > 1 */
-    public static final float ANSWER_COMPLETENESS = 1f;
+    public static final float ANSWER_COMPLETENESS = 2f;
 
 
 //    public static final int EVALUATION_MAX_TERMUTATORS = 8;
@@ -252,7 +252,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(6, 1, 32);
 
@@ -294,8 +294,6 @@ public abstract class Param {
     @Range(min = 0, max = 64)
     public static final int TTL_DERIVE_TASK_REPEAT = 3;
 
-    @Range(min = 0, max = 64)
-    public static final int TTL_DERIVE_TASK_UNPRIORITIZABLE = 3;
 
     /**
      * cost of a task derived, but too similar to one of its parents
@@ -308,7 +306,9 @@ public abstract class Param {
      * cost of a failed/aborted task derivation
      */
     @Range(min = 0, max = 64)
-    public static final int TTL_DERIVE_TASK_FAIL = 4;
+    public static final int TTL_DERIVE_TASK_FAIL = 1;
+    @Range(min = 0, max = 64)
+    public static final int TTL_DERIVE_TASK_UNPRIORITIZABLE = TTL_DERIVE_TASK_FAIL;
 
 
     /**

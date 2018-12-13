@@ -42,7 +42,7 @@ public class Taskify extends AbstractPred<Derivation> {
         return x != null &&
                 x.unneg().op().taskable &&
                 !x.hasAny(Op.VAR_PATTERN) &&
-                ((punc != BELIEF && punc != GOAL) || (!x.hasXternal() && !x.hasVarQuery()));
+                ((punc != BELIEF && punc != GOAL) || (!x.hasVarQuery()));
     }
 
     private static boolean spam(Derivation d, int cost) {
@@ -57,14 +57,15 @@ public class Taskify extends AbstractPred<Derivation> {
     @Override
     public boolean test(Derivation d) {
 
-        Term x0 = d.concTerm;
 
         final byte punc = d.concPunc;
-        assert (punc != 0) : "no punctuation assigned";
+        if (punc == 0)
+            throw new RuntimeException("no punctuation assigned");
 
-        if ((punc == BELIEF || punc == GOAL) && x0.hasXternal()) {
+        Term x0 = d.concTerm;
+        if ((punc == BELIEF || punc == GOAL) && x0.hasXternal() && !d.taskTerm.hasXternal() && !d.beliefTerm.hasXternal()) {
             //HACK this is for deficiencies in the temporal solver that can be fixed
-            x0 = x0.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
+            x0 = Retemporalize.retemporalizeXTERNALToDTERNAL.transform(x0);
             if (!Taskify.valid(x0, d.concPunc)) {
                 d.nar.emotion.deriveFailTemporal.increment();
                 return spam(d, Param.TTL_DERIVE_TASK_FAIL);
@@ -82,19 +83,26 @@ public class Taskify extends AbstractPred<Derivation> {
 //        }
 
         Term x = Task.forceNormalizeForBelief(x1);
-        if (!x.op().conceptualizable)
+        Op xo = x.op();
+        if (!xo.conceptualizable)
             return spam(d, Param.TTL_DERIVE_TASK_FAIL);
 
+        if (xo==NEG)
+            x = x.unneg();
 
         Truth tru;
 
         if (punc == BELIEF || punc == GOAL) {
+
             tru = d.concTruth;
-            if (tru.conf() < d.confMin)
-                return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
 
             //dither truth
-            tru = tru.dithered(d.nar);
+            float f = tru.freq();
+            if (xo == NEG) {
+                f = 1 - f;
+            }
+
+            tru = Truth.theDithered(f, tru.evi(), d.eviMin, d.nar);
             if (tru == null)
                 return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
 

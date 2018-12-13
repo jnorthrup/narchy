@@ -29,6 +29,7 @@ import nars.term.atom.Bool;
 import nars.term.control.PREDICATE;
 import nars.term.util.Image;
 import nars.term.util.transform.Retemporalize;
+import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
@@ -49,7 +50,7 @@ import static nars.Param.TTL_UNIFY;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
-import static nars.truth.TruthFunctions.w2cSafe;
+import static nars.truth.TruthFunctions.c2wSafe;
 
 
 /**
@@ -93,6 +94,7 @@ public class Derivation extends PreDerivation {
         }
     };
     public NAR nar;
+
 
     /**
      * second layer additional substitutions
@@ -142,7 +144,7 @@ public class Derivation extends PreDerivation {
      * current NAR time, set at beginning of derivation
      */
     public transient long time = ETERNAL;
-    public transient float confMin;
+    public transient float confMin, eviMin;
     public transient int termVolMax;
 
 
@@ -547,10 +549,15 @@ public class Derivation extends PreDerivation {
         long now = nar.time();
         if (now != this.time) {
             this.time = now;
+
             this.dur = nar.dur();
-            this.dtTolerance = Math.round(Param.UNIFY_DT_TOLERANCE_DUR_FACTOR * dur);
             this.ditherTime = nar.dtDither();
-            this.confMin = nar.confMin.floatValue();
+
+            mySubIfUnify.u.dtTolerance = unifyPremise.dtTolerance = this.dtTolerance =
+                    Math.round(Param.UNIFY_DT_TOLERANCE_DUR_FACTOR * dur);
+
+            this.eviMin = c2wSafe(this.confMin = nar.confMin.floatValue());
+
             this.termVolMax = nar.termVolumeMax.intValue();
             this.beliefEvi = this.taskEvi = Float.NaN;
         }
@@ -654,8 +661,7 @@ public class Derivation extends PreDerivation {
     }
 
     public boolean concTruthEvi(float e) {
-        float cc = w2cSafe(e);
-        return cc >= confMin && (this.concTruth = $.t(concTruth.freq(), cc)) != null;
+        return e >= eviMin && (this.concTruth = PreciseTruth.byEvi(concTruth.freq(), e)) != null;
     }
 
     public float parentEvi() {

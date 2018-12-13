@@ -46,32 +46,7 @@ public class SimpleReward extends Reward {
 //        }, true);
     }
 
-    public void alwaysWantEternally(Term goal) {
-        alwaysWantEternally(goal, nar().confDefault(GOAL));
-    }
 
-    public void alwaysWantEternally(Term goal, float conf) {
-        Task t = new NALTask(goal, GOAL, $.t(1f, conf), nar().time(),
-                ETERNAL, ETERNAL,
-                nar().evidence()
-                //Stamp.UNSTAMPED
-        );
-
-        AttNode a = new AttNode($.func(Inperience.want, this.term(), goal)) {
-            @Override
-            protected float childDemand(NAR nar) {
-                return (1f - nar.concepts.pri(t, 0));
-            }
-
-            @Override
-            public void update(NAR nar) {
-                super.update(nar);
-                t.take(supply, Math.min(supply.priElseZero(), demand.floatValue()), true, false);
-                in.input(t);
-            }
-        };
-        a.parent(attn);
-    }
 
 
     @Override

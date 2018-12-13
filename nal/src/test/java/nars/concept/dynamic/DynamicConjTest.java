@@ -98,10 +98,10 @@ class DynamicConjTest {
 
 
         Truth tAfter = n.beliefTruth($("(a:x &| a:y)"), now + 2);
-        assertTrue($.t(0.27f, 0.84f).equalsIn(tAfter, n), () -> tAfter.toString());
+        assertTrue($.t(0.32f, 0.82f).equalsIn(tAfter, n), () -> tAfter.toString());
 
         Truth tLater = n.beliefTruth($("(a:x &| a:y)"), now + 5);
-        assertTrue($.t(0.27f, 0.72f).equalsIn(tLater, n), () -> tLater.toString());
+        assertTrue($.t(0.32f, 0.69f).equalsIn(tLater, n), () -> tLater.toString());
     }
 
     @Test

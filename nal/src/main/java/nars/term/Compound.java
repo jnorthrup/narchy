@@ -240,6 +240,7 @@ public interface Compound extends Term, IPair, Subterms {
         if ((xs = xx.subs()) != yy.subs())
             return false;
 
+        boolean xSpecific = false, ySpecific = false;
         if (xs == 1) {
             return xx.sub(0).unify(yy.sub(0), u);
         } else {
@@ -252,30 +253,52 @@ public interface Compound extends Term, IPair, Subterms {
             if (o.temporal) {
                 xdt = x.dt();
                 ydt = y.dt();
-                if (xdt != XTERNAL && xdt != DTERNAL) {
-                    if (ydt != xdt && ydt != XTERNAL && ydt != DTERNAL && !u.unifyDT(xdt, ydt)) {
-                        return false;
-                    }
+                if (xdt!=ydt) {
+                    xSpecific = (xdt != XTERNAL && xdt != DTERNAL);
+                    ySpecific = (ydt != XTERNAL && ydt != DTERNAL);
+                    if (xSpecific && ySpecific)
+                        if (!u.unifyDT(xdt, ydt))
+                            return false;
                 }
 
                 //compound equality would have been true if non-temporal
                 if (xx.equals(yy))
                     return true;
+
+
+
             } else {
                 xdt = ydt = DTERNAL;
             }
 
 
+            boolean result;
             if (o.commutative /* subs>1 */) {
                 if (o == CONJ && !dtSpecial(xdt)) {
                     //assert(xs==2);
-                    return (xdt >= 0) == (ydt >= 0) ? xx.unifyLinear(yy, u) : xx.unifyLinear(yy.reversed(), u);
+                    result = (xdt >= 0) == (ydt >= 0) ? xx.unifyLinear(yy, u) : xx.unifyLinear(yy.reversed(), u);
                 } else {
-                    return xx.unifyCommute(yy, u);
+                    result = xx.unifyCommute(yy, u);
                 }
             } else { //TODO if temporal, compare in the correct order
-                return xx.unifyLinear(yy, u);
+                result = xx.unifyLinear(yy, u);
             }
+
+            return result;
+//            if (result) {
+//                if (xSpecific^ySpecific && u instanceof Derivation) {
+//                    //one is not specified.  specify via substitution
+//                    Derivation du = (Derivation) u;
+//                    if (!xSpecific) {
+//                        du.refinements.put(x, x.dt(ydt));
+//                    } else {
+//                        du.refinements.put(y, y.dt(xdt));
+//                    }
+//                }
+//
+//                return true;
+//            }
+//            return false;
         }
     }
 

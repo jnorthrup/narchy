@@ -70,7 +70,7 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
     public final static Term DEP_VAR = $.quote("#");
     public static final Atom SubIfUnify = (Atom) Atomic.the("subIfUnifiesAny");
 
-    private final MySubUnify u; //TODO find what state is being held that contaminated repeated use of this
+    public final MySubUnify u; //TODO find what state is being held that contaminated repeated use of this
 
     private final Derivation parent;
 
@@ -140,7 +140,7 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
         return (output == null || (strict && c.equals(output))) ? Null : output;
     }
 
-    private final class MySubUnify extends SubUnify {
+    public final class MySubUnify extends SubUnify {
 
         private boolean strict;
 

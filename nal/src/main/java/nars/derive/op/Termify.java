@@ -45,6 +45,7 @@ public final class Termify extends AbstractPred<Derivation> {
         d.concTerm = null;
         d.concOcc = null;
         d.retransform.clear();
+//        d.refinements.clear();
 
         NAR nar = d.nar;
 
@@ -74,6 +75,15 @@ public final class Termify extends AbstractPred<Derivation> {
             return false;
         }
 
+//        if (!d.refinements.isEmpty()) {
+//
+//            for (Map.Entry<Term,Term> xy : d.refinements.entrySet()) {
+//                Term x = xy.getKey(), y = xy.getValue();
+//                Term cr = c1.replace(x, y);
+//                if (cr.op() == c1.op()) //TODO other validity tests?
+//                    c1 = cr;
+//            }
+//        }
 
         if (d.temporal) {
 
@@ -99,7 +109,7 @@ public final class Termify extends AbstractPred<Derivation> {
             long[] occ = timing.getTwo();
             if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&
                     (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
-                    (occ[1] >= occ[0])))
+                    (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
                 throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
 
 
@@ -134,11 +144,6 @@ public final class Termify extends AbstractPred<Derivation> {
                         rule + "\n\t" + d + "\n\t -> " + c1e + "\t->\t" + c2
                 */);
                 return false;
-            }
-
-
-            if (occ[0] == ETERNAL && !d.occ.validEternal()) {
-                throw new RuntimeException("illegal eternal temporalization");
             }
 
 
