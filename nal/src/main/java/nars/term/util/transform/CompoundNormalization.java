@@ -36,11 +36,18 @@ public final class CompoundNormalization extends VariableNormalization {
         /* if x is not the root term (ie. a subterm) */
         boolean hasImg = x.hasAll(Image.ImageBits);
         if (hasImg && x!=root && x.op()==INH) {
-            x = (Compound) Image._imageNormalize(x);
+            Term y = Image._imageNormalize(x);
+            if (x!=y) {
+                if (!(y instanceof Compound))
+                    return y;
+                x = (Compound) y;
+                hasImg = x.hasAll(Image.ImageBits); //check if image bits remain
+            }
+
                 //hasImg = false;
 //                if (y!=x) {
 //                    x = y;
-//                    hasImg = x.hasAll(Image.ImageBits); //check if image bits remain
+
 //                }
         }
         return hasImg || x.hasVars() ? transformCompoundPlease(x) : x;

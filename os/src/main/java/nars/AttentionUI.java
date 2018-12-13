@@ -1,6 +1,5 @@
 package nars;
 
-import jcog.Util;
 import nars.agent.NAgent;
 import nars.attention.AttNode;
 import nars.gui.DurSurface;
@@ -39,7 +38,7 @@ public class AttentionUI {
                                 );
 
                         float s = (float)(Math.sqrt((Math.max(0, q))));
-                        s = Util.clamp(s, 0.1f, 2) * a;
+                        s = Math.max(Math.min(s, 2) * a, 32);
                         m.size(s, s);
                     }
                 });

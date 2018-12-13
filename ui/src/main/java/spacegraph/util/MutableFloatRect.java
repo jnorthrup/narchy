@@ -23,22 +23,18 @@ public class MutableFloatRect<X> {
     }
 
     public void set(RectFloat r) {
-        this.x0 = this.x = r.x;
-        this.y0 = this.y = r.y;
+        this.x0 = this.x = r.cx();
+        this.y0 = this.y = r.cy();
         size(r.w, r.h);
     }
 
     public float radius() {
-        float r = this.rad;
-        if (r != r) {
-            r = this.rad = (float) Math.sqrt((w * w) + (h * h));
-        }
-        return r;
+        return rad;
     }
 
-    public MutableFloatRect pos(float dx, float dy) {
-        this.x = dx + w / 2;
-        this.y = dy + h / 2;
+    public MutableFloatRect pos(float x, float y) {
+        this.x = x;
+        this.y = y;
         return this;
     }
 
@@ -50,28 +46,32 @@ public class MutableFloatRect<X> {
 
 
     public float cx() {
-        return x + w / 2;
+        return x;
     }
 
     public float cy() {
-        return y + h / 2;
+        return y;
     }
 
-    public void commit(float speedLimit, float momentum) {
+    public void commit(float speedLimit) {
         v2 delta = new v2(x, y);
-        delta.subbed(x0, y0);
-        float len = delta.normalize();
+        float lenSq = delta.lengthSquared();
+        if (lenSq > speedLimit*speedLimit) {
 
-        delta.scaled(Math.min(speedLimit,len));
-        x = Util.lerp(momentum, x0 + delta.x, x0);
-        y = Util.lerp(momentum, y0 + delta.y, y0);
+            delta.subbed(x0, y0);
+
+            float len = (float) Math.sqrt(lenSq);
+            delta.scaled(speedLimit/len);
+            //x = Util.lerp(momentum, x0 + delta.x, x0);
+            //y = Util.lerp(momentum, y0 + delta.y, y0);
+            x = x0 + delta.x;
+            y = y0 + delta.y;
+        }
 
     }
 
     public void move(double dx, double dy) {
-
-        x += dx;
-        y += dy;
+        move((float)dx, (float)dy);
     }
 
     public void moveTo(float x, float y, float rate) {
@@ -103,14 +103,14 @@ public class MutableFloatRect<X> {
 
     /** keeps this rectangle within the given bounds */
     public void fence(RectFloat bounds) {
-        x = Util.clamp(x, bounds.left(), bounds.right()-w);
-        y = Util.clamp(y, bounds.top(), bounds.bottom()-h);
+        x = Util.clamp(x, bounds.left()+w/2, bounds.right()-w/2);
+        y = Util.clamp(y, bounds.top()+h/2, bounds.bottom()-h/2);
     }
 
     public void size(float w, float h) {
         this.w = w;
         this.h = h;
-        this.rad = Float.NaN; //TODO only set NaN if w,h change
+        this.rad = (float) Math.sqrt((w * w) + (h * h));
     }
 
     @Override

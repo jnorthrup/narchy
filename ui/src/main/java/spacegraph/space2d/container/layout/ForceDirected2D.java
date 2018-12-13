@@ -34,7 +34,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> 
 
     public final FloatRange needSpeedLimit = new FloatRange(25f, 0f, 100f);
 
-    public final FloatRange nodeMomentum = new FloatRange(0.5f, 0f, 1f);
+
 
 
     private float maxRepelDist;
@@ -99,9 +99,9 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> 
             }
 
             RectFloat gg = g.bounds;
-            float momentum = nodeMomentum.floatValue();
+
             for (MutableFloatRect b : nodes) {
-                b.commit(maxSpeedPerIter, momentum);
+                b.commit(maxSpeedPerIter);
                 b.fence(gg);
             }
 
@@ -119,18 +119,17 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> 
     /**
      * HACK this reads the positions from the nodevis not the rectangle
      */
-    private void attract(MutableFloatRect b, float attractSpeed) {
+    private void attract(MutableFloatRect a, float attractSpeed) {
 
-        Graph2D.NodeVis<X> from = b.node;
-        float px = b.cx(), py = b.cy();
+        Graph2D.NodeVis<X> from = a.node;
+        float px = a.cx(), py = a.cy();
 
 
-        float fromRad = b.radius();
+        float fromRad = a.radius();
 
         ConcurrentFastIteratingHashMap<X, Graph2D.EdgeVis<X>> read = from.outs;
         //int neighbors = read.size();
 
-        v2 total = new v2(), delta = new v2();
         read.forEachValue(edge -> {
             if (edge == null)
                 return; //wtf
@@ -139,26 +138,31 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> 
             if (who == null)
                 return;
 
-            MutableFloatRect to = who.mover;
-            if (to == null)
+            MutableFloatRect b = who.mover;
+            if (b == null)
                 return;
 
-            delta.set(to.cx() - px, to.cy() - py);
+            v2 delta = new v2();
+            delta.set(b.cx() - px, b.cy() - py);
 
-            float scale = fromRad + to.radius();
+            float scale = fromRad + b.radius();
             float len = delta.normalize();
-            if (len > (scale * equilibriumDist)) {
+            float idealLen = scale * equilibriumDist;
+            //if (len > idealLen) {
 //            len = len * (1+Util.tanhFast(len - (scale)))/2;
 
 
                 //attractSpeed/=neighbors;
 
-                float s = attractSpeed * weightToVelocity(edge.weight);
-                total.add(delta.x * s, delta.y * s);
-            }
+                float s = (len - idealLen) * attractSpeed * weightToVelocity(edge.weight) / 2;
+                if (s > Float.MIN_NORMAL) {
+                    delta.scaled(s);
+                    a.move(delta.x, delta.y);
+                    b.move(-delta.x, -delta.y);
+                }
+            //}
         });
 
-        b.move(total.x, total.y);
     }
 
     private float weightToVelocity(float weight) {

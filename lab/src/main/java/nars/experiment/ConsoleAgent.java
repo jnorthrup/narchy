@@ -29,7 +29,7 @@ public class ConsoleAgent extends NAgentX {
 
     static final char[] alphabet =
             //new char[] { ' ', 'a', 'b' };
-            new char[] { ' ', 'x' };
+            new char[]{' ', 'x'};
 
     final static int WIDTH = 4;
     final static int HEIGHT = 2;
@@ -88,7 +88,6 @@ public class ConsoleAgent extends NAgentX {
             }
 
 
-
         };
 
 
@@ -118,7 +117,7 @@ public class ConsoleAgent extends NAgentX {
                     }
                 });
                 for (char c : alphabet) {
-                    actionPushButton($.func(WRITE, $.the(c)), ()->write(c));
+                    actionPushButton($.func(WRITE, $.the(c)), () -> write(c));
                 }
 
             }
@@ -147,8 +146,8 @@ public class ConsoleAgent extends NAgentX {
 
         NAgentX.runRT((n) -> {
             ConsoleAgent a = new ConsoleAgent(n);
-            SpaceGraph.window(a.R, WIDTH*100, HEIGHT*100);
-            SpaceGraph.window(a.W, WIDTH*100, HEIGHT*100);
+            SpaceGraph.window(a.R, WIDTH * 100, HEIGHT * 100);
+            SpaceGraph.window(a.W, WIDTH * 100, HEIGHT * 100);
             return a;
         }, fps);
 
@@ -190,14 +189,17 @@ public class ConsoleAgent extends NAgentX {
             AttNode charAttn = new AttNode(this);
             charAttn.parent(attn);
 
-            for (int i = 0, alphabetLength = alphabet.length; i < alphabetLength; i++) {
-                char a = alphabet[i];
-                for (int x = 0; x < w; x++) {
-                    for (int y = 0; y < h; y++) {
-                        Term xya = $.funcImageLast(id, $.the(a), $.p($.the(x), $.the(y)));
+            for (int x = 0; x < w; x++) {
+                for (int y = 0; y < h; y++) {
+                    Term XY = $.p($.the(x), $.the(y));
+                    AttNode xy = new AttNode(XY);
+                    xy.parent(charAttn);
+                    for (int i = 0, alphabetLength = alphabet.length; i < alphabetLength; i++) {
+                        char a = alphabet[i];
+                        Term xya = $.funcImageLast(id, $.the(a), XY);
                         int xx = x;
                         int yy = y;
-                        (charMatrix[x][y][i] = sense(xya, ()->chars[xx][yy]==a)).attn.reparent(charAttn);
+                        (charMatrix[x][y][i] = sense(xya, () -> chars[xx][yy] == a)).attn.reparent(xy);
                     }
                 }
             }

@@ -72,7 +72,10 @@ public class Gradius extends NAgentX {
 //        }
 
         {
+
             List<Bitmap2DSensor> cams = new FasterList();
+            //AttNode camGroup = addGroup(cams)
+
             for (int i = 0; i < dx; i++)
                 for (int j = 0; j < dy; j++) {
                     int ii = i;
@@ -89,7 +92,7 @@ public class Gradius extends NAgentX {
                                     .crop(
                                             (float) i / dx, (float) j / dy,
                                             (float) (i + 1) / dx, (float) (j + 1) / dy))
-                            .resolution(0.04f);
+                            .resolution(0.02f);
 
                     cams.add(c);
                 }
