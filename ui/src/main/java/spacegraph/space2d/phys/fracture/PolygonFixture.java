@@ -2,7 +2,7 @@ package spacegraph.space2d.phys.fracture;
 
 import spacegraph.space2d.phys.dynamics.Fixture;
 import spacegraph.space2d.phys.fracture.util.MyList;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.util.List;
 

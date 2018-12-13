@@ -47,7 +47,7 @@
 package spacegraph.space2d.phys.dynamics.joints;
 
 import spacegraph.space2d.phys.dynamics.Body2D;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * Revolute joint definition. This requires defining an anchor point where the bodies are joined.

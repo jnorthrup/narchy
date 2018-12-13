@@ -1,6 +1,6 @@
 package spacegraph.space2d.phys.fracture.voronoi;
 
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * Trojuholnik delaunay triangulacie

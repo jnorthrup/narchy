@@ -4,7 +4,7 @@ import com.jogamp.opengl.GL2;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.math.Color4f;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 import spacegraph.video.Draw;
 
 public abstract class SurfaceHiliteOverlay extends Surface {

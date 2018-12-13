@@ -10,7 +10,7 @@ import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.contacts.Position;
 import spacegraph.space2d.phys.particle.ParticleGroupDef;
 import spacegraph.space2d.phys.particle.ParticleType;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.util.function.Consumer;
 

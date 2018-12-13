@@ -31,6 +31,9 @@
 
 package spacegraph.util.math;
 
+import jcog.math.VecMathUtil;
+import jcog.math.v2;
+
 /**
  * A generic 2-element tuple that is represented by double-precision  
  * floating point x,y coordinates.

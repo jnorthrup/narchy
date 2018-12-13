@@ -23,7 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.common;
 
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * Contains methods from MathUtils that rely on JVM features. These are separated out from

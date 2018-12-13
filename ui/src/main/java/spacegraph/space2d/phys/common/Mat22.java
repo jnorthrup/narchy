@@ -23,7 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.common;
 
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.io.Serializable;
 
@@ -218,8 +218,8 @@ public class Mat22 implements Serializable {
 
     /* djm: added */
     public final void absLocal() {
-        ex.absLocal();
-        ey.absLocal();
+        ex.absolute();
+        ey.absolute();
     }
 
     /**

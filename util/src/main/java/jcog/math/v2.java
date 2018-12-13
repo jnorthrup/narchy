@@ -29,13 +29,11 @@
  * $State$
  */
 
-package spacegraph.util.math;
+package jcog.math;
 
 import jcog.TODO;
 import jcog.Util;
-import jcog.pri.ScalarValue;
 import jcog.tree.rtree.Spatialization;
-import spacegraph.space3d.phys.BulletGlobals;
 
 /**
  * A generic 2-element tuple that is represented by single-precision
@@ -133,21 +131,21 @@ public class v2 implements java.io.Serializable, Cloneable {
         return x >= 0 && x <= 1f && y >= 0 && y <= 1f;
     }
 
-    public float minDimension() {
-        return Math.min(x, y);
-    }
-
-    public int xInt() {
-        return Math.round(x);
-    }
-
-    public int yInt() {
-        return Math.round(y);
-    }
-
-    public boolean equalsZero() {
-        return Util.equals(x, 0, ScalarValue.EPSILON) && Util.equals(y, 0, ScalarValue.EPSILON);
-    }
+//    public float minDimension() {
+//        return Math.min(x, y);
+//    }
+//
+//    public int xInt() {
+//        return Math.round(x);
+//    }
+//
+//    public int yInt() {
+//        return Math.round(y);
+//    }
+//
+//    public boolean equalsZero() {
+//        return Util.equals(x, 0, ScalarValue.EPSILON) && Util.equals(y, 0, ScalarValue.EPSILON);
+//    }
 
     public boolean isNaN() {
         return (x != x) || (y != y);
@@ -260,15 +258,15 @@ public class v2 implements java.io.Serializable, Cloneable {
     }
 
 
-    /**
-     * Sets the value of this tuple to the value of the Tuple2d argument.
-     *
-     * @param t1 the tuple to be copied
-     */
-    public final void set(Tuple2d t1) {
-        this.x = (float) t1.x;
-        this.y = (float) t1.y;
-    }
+//    /**
+//     * Sets the value of this tuple to the value of the Tuple2d argument.
+//     *
+//     * @param t1 the tuple to be copied
+//     */
+//    public final void set(Tuple2d t1) {
+//        this.x = (float) t1.x;
+//        this.y = (float) t1.y;
+//    }
 
 
     /**
@@ -523,7 +521,7 @@ public class v2 implements java.io.Serializable, Cloneable {
     }
 
     public boolean equals(v2 t1) {
-        return equals(t1, BulletGlobals.SIMD_EPSILON);
+        return equals(t1, Float.MIN_NORMAL);
     }
 
     /**
@@ -538,37 +536,33 @@ public class v2 implements java.io.Serializable, Cloneable {
         if (x == this)
             return true;
 
-        v2 t2 = (v2) x;
-
         if (!(x instanceof v2)) return false;
         v2 other = (v2) x;
         if (Float.floatToIntBits(this.x) != Float.floatToIntBits(other.x)) return false;
         return Float.floatToIntBits(y) == Float.floatToIntBits(other.y);
-
-
     }
 
-    /**
-     * Returns true if the L-infinite distance between this tuple
-     * and tuple t1 is less than or equal to the epsilon parameter,
-     * otherwise returns false.  The L-infinite
-     * distance is equal to MAX[abs(x1-x2), abs(y1-y2)].
-     *
-     * @param t1      the tuple to be compared to this tuple
-     * @param epsilon the threshold value
-     * @return true or false
-     */
-    public boolean epsilonEquals(v2 t1, float epsilon) {
-
-        float diff = x - t1.x;
-        if (Float.isNaN(diff)) return false;
-        if ((diff < 0 ? -diff : diff) > epsilon) return false;
-
-        diff = y - t1.y;
-        if (Float.isNaN(diff)) return false;
-        return (diff < 0 ? -diff : diff) <= epsilon;
-
-    }
+//    /**
+//     * Returns true if the L-infinite distance between this tuple
+//     * and tuple t1 is less than or equal to the epsilon parameter,
+//     * otherwise returns false.  The L-infinite
+//     * distance is equal to MAX[abs(x1-x2), abs(y1-y2)].
+//     *
+//     * @param t1      the tuple to be compared to this tuple
+//     * @param epsilon the threshold value
+//     * @return true or false
+//     */
+//    public boolean epsilonEquals(v2 t1, float epsilon) {
+//
+//        float diff = x - t1.x;
+//        if (Float.isNaN(diff)) return false;
+//        if ((diff < 0 ? -diff : diff) > epsilon) return false;
+//
+//        diff = y - t1.y;
+//        if (Float.isNaN(diff)) return false;
+//        return (diff < 0 ? -diff : diff) <= epsilon;
+//
+//    }
 
     /**
      * Returns a string that contains the values of this Tuple2f.
@@ -590,22 +584,8 @@ public class v2 implements java.io.Serializable, Cloneable {
      * @param t   the source tuple, which will not be modified
      */
     public final void clamp(float min, float max, v2 t) {
-        if (t.x > max) {
-            x = max;
-        } else if (t.x < min) {
-            x = min;
-        } else {
-            x = t.x;
-        }
-
-        if (t.y > max) {
-            y = max;
-        } else if (t.y < min) {
-            y = min;
-        } else {
-            y = t.y;
-        }
-
+        x = Util.clamp(t.x, min, max);
+        y = Util.clamp(t.y, min, max);
     }
 
 
@@ -618,9 +598,7 @@ public class v2 implements java.io.Serializable, Cloneable {
      */
     public final void clampMin(float min, v2 t) {
         x = t.x < min ? min : t.x;
-
         y = t.y < min ? min : t.y;
-
     }
 
 
@@ -633,9 +611,7 @@ public class v2 implements java.io.Serializable, Cloneable {
      */
     public final void clampMax(float max, v2 t) {
         x = t.x > max ? max : t.x;
-
         y = t.y > max ? max : t.y;
-
     }
 
 
@@ -646,8 +622,7 @@ public class v2 implements java.io.Serializable, Cloneable {
      * @param t the source tuple, which will not be modified
      */
     public final void absolute(v2 t) {
-        x = Math.abs(t.x);
-        y = Math.abs(t.y);
+        set(Math.abs(t.x),Math.abs(t.y));
     }
 
 
@@ -715,7 +690,6 @@ public class v2 implements java.io.Serializable, Cloneable {
     public final void interpolate(v2 t1, v2 t2, float alpha) {
         this.x = (1 - alpha) * t1.x + alpha * t2.x;
         this.y = (1 - alpha) * t1.y + alpha * t2.y;
-
     }
 
 
@@ -746,11 +720,6 @@ public class v2 implements java.io.Serializable, Cloneable {
         return new v2(x, y);
     }
 
-    public final void absLocal() {
-        x = Math.abs(x);
-        y = Math.abs(y);
-    }
-
     /**
      * Normalizes this vector in place.
      */
@@ -765,9 +734,9 @@ public class v2 implements java.io.Serializable, Cloneable {
 
     public final float normalize(float scale) {
         float sqrNorm = (this.x * this.x + this.y * this.y);
-        if (sqrNorm >= Spatialization.sqrEPSILONf) {
+        if (sqrNorm >= Float.MIN_NORMAL) {
             float norm = (float) Math.sqrt(sqrNorm);
-            if (norm >= Spatialization.EPSILONf) {
+            if (norm >= Util.sqrtMIN_NORMAL) {
                 set(scale * this.x / norm, scale * this.y / norm);
                 return norm;
             }
@@ -894,7 +863,7 @@ public class v2 implements java.io.Serializable, Cloneable {
             return false;
 
         float dx = nx - px;
-        if (dx < Spatialization.EPSILONf) {
+        if (dx < Float.MIN_NORMAL) {
             px = this.x = nx;
             dx = 0;
         }

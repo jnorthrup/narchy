@@ -31,7 +31,7 @@ import spacegraph.space2d.phys.collision.RayCastInput;
 import spacegraph.space2d.phys.common.Color3f;
 import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.Settings;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * A dynamic tree arranges data in a binary tree to accelerate queries such as volume queries and

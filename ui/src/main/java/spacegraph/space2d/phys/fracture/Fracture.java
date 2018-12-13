@@ -9,7 +9,7 @@ import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.dynamics.contacts.Contact;
 import spacegraph.space2d.phys.fracture.fragmentation.Smasher;
 import spacegraph.space2d.phys.fracture.util.MyList;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.util.List;
 import java.util.Objects;

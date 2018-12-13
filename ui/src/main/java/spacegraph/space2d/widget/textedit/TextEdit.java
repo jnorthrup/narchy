@@ -5,7 +5,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.container.unit.UnitContainer;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.util.function.BiConsumer;
 

@@ -15,7 +15,7 @@ import spacegraph.space2d.phys.dynamics.TimeStep;
 import spacegraph.space2d.phys.dynamics.contacts.Position;
 import spacegraph.space2d.phys.dynamics.contacts.Velocity;
 import spacegraph.space2d.phys.particle.VoronoiDiagram.VoronoiDiagramCallback;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -1713,7 +1713,7 @@ public class ParticleSystem {
         if (v2 == 0) v2 = Float.MAX_VALUE;
         for (int proxy = firstProxy; proxy < lastProxy; ++proxy) {
             int i = m_proxyBuffer[proxy].index;
-            final spacegraph.util.math.v2 posI = m_positionBuffer.data[i];
+            final jcog.math.v2 posI = m_positionBuffer.data[i];
             final float px = point1.x - posI.x;
             final float py = point1.y - posI.y;
             float pv = px * vx + py * vy;
@@ -1732,11 +1732,11 @@ public class ParticleSystem {
                         continue;
                     }
                 }
-                final spacegraph.util.math.v2 n = tempVec;
+                final jcog.math.v2 n = tempVec;
                 tempVec.x = px + t * vx;
                 tempVec.y = py + t * vy;
                 n.normalize();
-                final spacegraph.util.math.v2 point = tempv2;
+                final jcog.math.v2 point = tempv2;
                 point.x = point1.x + t * vx;
                 point.y = point1.y + t * vy;
                 float f = callback.reportParticle(i, point, n, t);

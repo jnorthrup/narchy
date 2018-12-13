@@ -17,7 +17,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import spacegraph.space2d.container.graph.Timeline2D;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.io.IOException;
 import java.net.URL;

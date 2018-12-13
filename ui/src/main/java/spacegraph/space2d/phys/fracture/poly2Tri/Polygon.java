@@ -7,7 +7,7 @@ import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import spacegraph.space2d.phys.fracture.poly2Tri.splayTree.BTreeNode;
 import spacegraph.space2d.phys.fracture.poly2Tri.splayTree.SplayTree;
 import spacegraph.space2d.phys.fracture.poly2Tri.splayTree.SplayTreeAction;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.io.FileWriter;
 import java.io.IOException;

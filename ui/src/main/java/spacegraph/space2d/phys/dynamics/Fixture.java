@@ -36,7 +36,7 @@ import spacegraph.space2d.phys.dynamics.contacts.Contact;
 import spacegraph.space2d.phys.dynamics.contacts.ContactEdge;
 import spacegraph.space2d.phys.fracture.Material;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * A fixture is used to attach a shape to a body for collision detection. A fixture inherits its

@@ -23,7 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics.contacts;
 
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 public class Velocity extends v2 {
     public float w;

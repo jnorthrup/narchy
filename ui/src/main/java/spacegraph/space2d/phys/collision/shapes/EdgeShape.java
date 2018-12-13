@@ -29,7 +29,7 @@ import spacegraph.space2d.phys.collision.RayCastOutput;
 import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * A line segment (edge) shape. These can be connected in chains or loops to other edge shapes. The
@@ -132,7 +132,7 @@ public class EdgeShape extends Shape {
         final v2 v1 = m_vertex1;
         final v2 v2 = m_vertex2;
         final Rot xfq = xf;
-        final spacegraph.util.math.v2 xfp = xf.pos;
+        final jcog.math.v2 xfp = xf.pos;
 
         
         

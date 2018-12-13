@@ -9,7 +9,7 @@ import spacegraph.space2d.phys.dynamics.contacts.Position;
 import spacegraph.space2d.phys.dynamics.joints.DistanceJointDef;
 import spacegraph.space2d.phys.dynamics.joints.RevoluteJoint;
 import spacegraph.space2d.phys.dynamics.joints.RevoluteJointDef;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.util.function.Consumer;
 

@@ -4,7 +4,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMovePixels;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.Surface;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 import spacegraph.util.math.v3;
 import spacegraph.video.JoglSpace;
 

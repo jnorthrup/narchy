@@ -34,7 +34,7 @@ import spacegraph.space2d.phys.common.Transform;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.Fixture;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * The class manages contact between two shapes. A contact exists for each overlapping AABB in the

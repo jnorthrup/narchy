@@ -1,8 +1,8 @@
 package spacegraph.space2d.phys.fracture.fragmentation;
 
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
-import static spacegraph.util.math.v2.cross;
+import static jcog.math.v2.cross;
 
 
 /**

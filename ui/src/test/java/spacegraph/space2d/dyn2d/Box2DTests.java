@@ -14,7 +14,7 @@ import spacegraph.space2d.phys.dynamics.joints.MouseJointDef;
 import spacegraph.space2d.phys.fracture.Material;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
 import spacegraph.space2d.phys.fracture.util.MyList;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import javax.swing.*;
 import java.awt.*;

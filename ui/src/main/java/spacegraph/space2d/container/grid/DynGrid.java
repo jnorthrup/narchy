@@ -7,7 +7,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.container.collection.MutableMapContainer;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import static jcog.Util.short2Int;
 

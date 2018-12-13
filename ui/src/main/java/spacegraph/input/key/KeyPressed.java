@@ -1,7 +1,7 @@
 package spacegraph.input.key;
 
 import com.jogamp.newt.event.KeyEvent;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /** for surfaces which react to key presses */
 public interface KeyPressed {

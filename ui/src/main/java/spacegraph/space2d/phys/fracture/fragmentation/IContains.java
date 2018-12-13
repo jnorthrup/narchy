@@ -1,6 +1,6 @@
 package spacegraph.space2d.phys.fracture.fragmentation;
 
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * Interface na definovanie toho, ktore ohniska budu zahrnute vo frakturacnej

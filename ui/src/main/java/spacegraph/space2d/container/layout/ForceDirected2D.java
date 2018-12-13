@@ -7,7 +7,7 @@ import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.util.MutableFloatRect;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.util.Random;
 

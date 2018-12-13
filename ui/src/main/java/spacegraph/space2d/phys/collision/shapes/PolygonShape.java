@@ -29,7 +29,7 @@ import spacegraph.space2d.phys.collision.RayCastOutput;
 import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * A convex polygon shape. Polygons have a maximum number of vertices equal to _maxPolygonVertices.

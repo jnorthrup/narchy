@@ -23,7 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.common;
 
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * This is the viewport transform used from drawing. Use yFlip if you are drawing from the top-left

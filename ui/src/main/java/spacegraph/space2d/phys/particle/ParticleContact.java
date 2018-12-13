@@ -1,6 +1,6 @@
 package spacegraph.space2d.phys.particle;
 
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 public class ParticleContact {
     /**

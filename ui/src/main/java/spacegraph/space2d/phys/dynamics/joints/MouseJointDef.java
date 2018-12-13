@@ -23,7 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics.joints;
 
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * Mouse joint definition. This requires a world target point, tuning parameters, and the time step.

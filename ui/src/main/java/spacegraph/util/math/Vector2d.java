@@ -31,6 +31,8 @@
 
 package spacegraph.util.math;
 
+import jcog.math.v2;
+
 /**
  * A 2-element vector that is represented by double-precision floating 
  * point x,y coordinates.

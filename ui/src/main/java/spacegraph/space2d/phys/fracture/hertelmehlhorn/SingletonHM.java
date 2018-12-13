@@ -2,7 +2,7 @@ package spacegraph.space2d.phys.fracture.hertelmehlhorn;
 
 import spacegraph.space2d.phys.common.PlatformMathUtils;
 import spacegraph.space2d.phys.fracture.Polygon;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.util.Arrays;
 

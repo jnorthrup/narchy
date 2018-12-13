@@ -3,6 +3,7 @@ package spacegraph.util.math;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.math.v2;
 
 import java.util.Collections;
 

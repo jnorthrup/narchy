@@ -102,16 +102,14 @@ public class Tetris extends NAgentX {
             }
         };
 
-        addCamera(
-                pixels = new Bitmap2DSensor<>(
-                        (x, y) -> $.inh($.p(x, y), id),
-                        grid, n)
-//                .mode((p,v)->{
-//                    float c = n.confDefault(BELIEF);
-//                    return $.t(v, p!=v || v > 0.5f ? c : c/2);
-//                })
-
-        );
+        //                .mode((p,v)->{
+        //                    float c = n.confDefault(BELIEF);
+        //                    return $.t(v, p!=v || v > 0.5f ? c : c/2);
+        //                })
+        Bitmap2DSensor<Bitmap2D> c = pixels = new Bitmap2DSensor<>(
+                (x, y) -> $.inh($.p(x, y), id),
+                grid, n);
+        addSensor(c);
         pixels.resolution(0.25f);
 
         window(new VectorSensorView(pixels, this).withControls(), 400, 900);

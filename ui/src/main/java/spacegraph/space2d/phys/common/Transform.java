@@ -24,7 +24,7 @@
 package spacegraph.space2d.phys.common;
 
 import com.jogamp.opengl.GL2;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 
 /**

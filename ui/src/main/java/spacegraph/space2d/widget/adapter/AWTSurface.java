@@ -10,7 +10,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.util.AWTCamera;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 import spacegraph.video.Tex;
 
 import javax.swing.*;

@@ -28,7 +28,7 @@ import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 
 /**

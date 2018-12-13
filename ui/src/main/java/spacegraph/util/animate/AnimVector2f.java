@@ -2,7 +2,7 @@ package spacegraph.util.animate;
 
 import jcog.Util;
 import jcog.data.atomic.AtomicFloat;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * Created by me on 12/3/16.

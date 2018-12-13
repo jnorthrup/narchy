@@ -25,7 +25,7 @@ package spacegraph.space2d.phys.common;
 
 
 
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 public class RaycastResult {
     private float lambda = 0.0f;

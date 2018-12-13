@@ -1,7 +1,7 @@
 package spacegraph.space2d.phys.dynamics.joints;
 
 import spacegraph.space2d.phys.dynamics.Body2D;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * Rope joint definition. This requires two body anchor points and a maximum lengths. Note: by

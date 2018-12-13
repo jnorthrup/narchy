@@ -34,7 +34,7 @@ import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * Functions used for computing contact points, distance queries, and TOI queries. Collision methods
@@ -315,7 +315,7 @@ public class Collision {
             
             
             
-            final spacegraph.util.math.v2 normal = normals[normalIndex];
+            final jcog.math.v2 normal = normals[normalIndex];
             manifold.localNormal.x = normal.x;
             manifold.localNormal.y = normal.y;
             manifold.localPoint.x = (v1.x + v2.x) * .5f;
@@ -374,7 +374,7 @@ public class Collision {
 
             final float tx = cLocalx - fcx;
             final float ty = cLocaly - fcy;
-            final spacegraph.util.math.v2 normal = normals[vertIndex1];
+            final jcog.math.v2 normal = normals[vertIndex1];
             separation = tx * normal.x + ty * normal.y;
             if (separation > radius) {
                 return;
@@ -523,7 +523,7 @@ public class Collision {
 
         
         v2 v2 = vertices2[i2];
-        spacegraph.util.math.v2 out1 = c1.v;
+        jcog.math.v2 out1 = c1.v;
         out1.x = (xf2q.c * v2.x - xf2q.s * v2.y) + xf2.pos.x;
         out1.y = (xf2q.s * v2.x + xf2q.c * v2.y) + xf2.pos.y;
         c1.id.indexA = (byte) edge1;
@@ -779,7 +779,7 @@ public class Collision {
                 final v2 A2 = B;
                 final v2 e2 = e1;
                 e2.set(B2).subbed(A2);
-                float v2 = spacegraph.util.math.v2.dot(e2, temp.set(Q).subbed(A2));
+                float v2 = jcog.math.v2.dot(e2, temp.set(Q).subbed(A2));
 
                 
                 if (v2 > 0.0f) {
@@ -928,14 +928,14 @@ public class Collision {
      */
     static class ReferenceFace {
         int i1, i2;
-        final spacegraph.util.math.v2 v1 = new v2();
-        final spacegraph.util.math.v2 v2 = new v2();
-        final spacegraph.util.math.v2 normal = new v2();
+        final jcog.math.v2 v1 = new v2();
+        final jcog.math.v2 v2 = new v2();
+        final jcog.math.v2 normal = new v2();
 
-        final spacegraph.util.math.v2 sideNormal1 = new v2();
+        final jcog.math.v2 sideNormal1 = new v2();
         float sideOffset1;
 
-        final spacegraph.util.math.v2 sideNormal2 = new v2();
+        final jcog.math.v2 sideNormal2 = new v2();
         float sideOffset2;
     }
 

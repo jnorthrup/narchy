@@ -1,4 +1,4 @@
-package nars.video;
+package nars.sensor;
 
 import jcog.Util;
 import jcog.random.SplitMix64Random;
@@ -8,7 +8,7 @@ import nars.agent.NAgent;
 import nars.concept.action.ActionConcept;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.util.List;
 
@@ -133,7 +133,7 @@ public class PixelBag implements Bitmap2D {
     private void updateClip(int sw, int sh, float minX, float maxX, float minY, float maxY) {
 
         float px = this.px, py = this.py;
-        float cx = px / 2f, cy = py / 2f;
+        //float cx = px / 2f, cy = py / 2f;
 
         float xRange = maxX - minX, yRange = maxY - minY;
 
@@ -282,7 +282,6 @@ public class PixelBag implements Bitmap2D {
             //minZoom = 1.5f; //expand to allow viewing the entire image as summary
         } else
             Z = Znext = 0.5f;
-
 
         return this;
     }

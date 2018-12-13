@@ -48,6 +48,11 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         this.src = concepts.src;
         this.nar = n;
 
+        if (src instanceof PixelBag) {
+            //HACK steal the actions for this attn group
+            ((PixelBag)src).actions.forEach(aa -> aa.attn.reparent(attn));
+        }
+
         /** modes */
         SET = (p, v) ->
                 Signal.SET.apply(() ->

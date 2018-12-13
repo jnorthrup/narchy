@@ -29,7 +29,7 @@
  * $State$
  */
 
-package spacegraph.util.math;
+package jcog.math;
 
 /**
  * Utility vecmath class used when computing the hash code for vecmath
@@ -55,7 +55,7 @@ public enum VecMathUtil { ;
      * @return the integer bits representing that floating-point
      * number, after first mapping -0.0f to 0.0f
      */
-    static int floatToIntBits(float f) {
+    public static int floatToIntBits(float f) {
 	
         return f == 0.0f ? 0 : Float.floatToIntBits(f);
     }
@@ -79,7 +79,7 @@ public enum VecMathUtil { ;
      * @return the integer bits representing that floating-point
      * number, after first mapping -0.0f to 0.0f
      */
-    static long doubleToLongBits(double d) {
+    public static long doubleToLongBits(double d) {
 	
         return d == 0.0 ? 0L : Double.doubleToLongBits(d);
     }

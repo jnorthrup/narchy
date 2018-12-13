@@ -93,7 +93,10 @@ public class TrackXY_NAR extends NAgentX {
         }
 
         if (targetCam) {
-            this.cam = addCamera(new Bitmap2DSensor<>(/*id*/  (Term) null, track.grid, nar));
+            Bitmap2DSensor<jcog.signal.wave2d.ArrayBitmap2D> c = new Bitmap2DSensor<>(/*id*/  (Term) null, track.grid, nar);
+            addSensor(c);
+            /*id*/
+            this.cam = c;
             cam.resolution(camResolution);
         } else {
             this.cam = null;

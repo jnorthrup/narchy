@@ -15,7 +15,7 @@ import spacegraph.space2d.widget.meta.ProtoWidget;
 import spacegraph.space2d.widget.meta.WizardFrame;
 import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.space2d.widget.shape.VerletSurface;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 import toxi.geom.Vec2D;
 import toxi.physics2d.VerletParticle2D;
 import toxi.physics2d.behavior.AttractionBehavior2D;

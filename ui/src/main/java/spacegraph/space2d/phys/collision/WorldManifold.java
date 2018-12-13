@@ -27,7 +27,7 @@ import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * This is used to compute the current state of a contact manifold.

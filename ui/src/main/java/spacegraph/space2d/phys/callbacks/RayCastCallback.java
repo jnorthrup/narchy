@@ -30,7 +30,7 @@ package spacegraph.space2d.phys.callbacks;
 
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.Fixture;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * Callback class for ray casts.

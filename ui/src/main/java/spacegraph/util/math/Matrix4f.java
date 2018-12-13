@@ -31,6 +31,8 @@
 
 package spacegraph.util.math;
 
+import jcog.math.VecMathUtil;
+
 /**
  * A single precision floating point 4 by 4 matrix.
  * Primarily to support 3D rotations.

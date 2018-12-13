@@ -14,7 +14,7 @@ import spacegraph.space2d.phys.fracture.Polygon;
 import spacegraph.space2d.phys.fracture.util.HashTabulka;
 import spacegraph.space2d.phys.fracture.util.MyList;
 import spacegraph.space2d.phys.fracture.voronoi.SingletonVD;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -259,7 +259,7 @@ public class Smasher {
                 Fragment opposite = ep.d1 == px ? ep.d2 : ep.d1;
 
                 if (opposite != null && !opposite.visited) {
-                    spacegraph.util.math.v2 centroid = opposite.centroid();
+                    jcog.math.v2 centroid = opposite.centroid();
                     opposite.visited = true;
                     if (ic.contains(centroid)) {
                         boolean intersection = false;

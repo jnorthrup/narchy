@@ -47,7 +47,7 @@ import spacegraph.space3d.phys.shape.*;
 import spacegraph.space3d.phys.util.BulletStack;
 import spacegraph.space3d.widget.EDraw;
 import spacegraph.util.math.Quat4f;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 import spacegraph.util.math.v3;
 
 import java.util.function.Consumer;

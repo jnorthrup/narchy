@@ -53,7 +53,7 @@ public class AnonVector extends TermVector implements Subterms.SubtermsBytesCach
     }
 
     private boolean preNormalize() {
-        return vars() == 0 || preNormalize(subterms);
+        return vars() == 0 || normalized(subterms);
     }
 
 

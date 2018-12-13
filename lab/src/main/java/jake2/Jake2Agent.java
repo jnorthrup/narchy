@@ -23,7 +23,7 @@ import nars.concept.sensor.FreqVectorSensor;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
 import nars.video.AutoclassifiedBitmap;
-import nars.video.PixelBag;
+import nars.sensor.PixelBag;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.meter.WaveView;

@@ -5,7 +5,7 @@ import spacegraph.space2d.phys.common.PlatformMathUtils;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.fracture.hertelmehlhorn.SingletonHM;
 import spacegraph.space2d.phys.fracture.poly2Tri.Triangulation;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.util.ArrayList;
 import java.util.Iterator;

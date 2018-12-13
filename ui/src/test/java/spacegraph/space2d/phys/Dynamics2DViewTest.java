@@ -4,7 +4,7 @@ import com.jogamp.opengl.GL2;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.dyn2d.jbox2d.BlobTest4;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import static spacegraph.SpaceGraph.window;
 

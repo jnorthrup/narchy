@@ -3,7 +3,7 @@ package spacegraph.input.finger;
 import com.jogamp.newt.opengl.GLWindow;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.widget.windo.Windo;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 import spacegraph.video.JoglSpace;
 
 public class FingerResizeWindow extends FingerResize {

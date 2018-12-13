@@ -10,7 +10,7 @@ import nars.experiment.minicraft.side.SideScrollMinicraft;
 import nars.experiment.minicraft.side.awtgraphics.AwtGraphicsHandler;
 import nars.sensor.Bitmap2DSensor;
 import nars.video.AutoclassifiedBitmap;
-import nars.video.PixelBag;
+import nars.sensor.PixelBag;
 import spacegraph.SpaceGraph;
 
 import java.awt.image.BufferedImage;
@@ -45,7 +45,8 @@ public class SideCraft extends NAgentX {
 
         BufferedImage camBuffer = ((AwtGraphicsHandler) craft.gfx).buffer;
 
-        PixelBag cam = new PixelBag(new MonoBufImgBitmap2D(() -> camBuffer), 48, 32).addActions($.$("cra"), this);
+        PixelBag cam = new PixelBag(new MonoBufImgBitmap2D(() -> camBuffer), 48, 32)
+                .addActions($.$("cra"), this);
 
 
         camAE = new AutoclassifiedBitmap("cra", cam.pixels, 8, 8, 32, this);

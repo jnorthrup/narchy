@@ -5,7 +5,7 @@ import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 
 /**

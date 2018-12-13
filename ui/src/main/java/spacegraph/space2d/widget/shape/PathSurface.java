@@ -6,7 +6,7 @@ import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.Path2D;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * rendered using GL LINE_STRIP / lineWidth

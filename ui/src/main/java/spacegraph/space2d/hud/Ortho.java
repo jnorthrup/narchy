@@ -17,7 +17,7 @@ import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.container.Container;
 import spacegraph.util.animate.AnimVector3f;
 import spacegraph.util.animate.Animated;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 import spacegraph.util.math.v3;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.JoglWindow;

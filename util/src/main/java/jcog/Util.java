@@ -80,6 +80,7 @@ public enum Util {
     ;
 
     public static final Unsafe unsafe;
+    public static float sqrtMIN_NORMAL = (float)Math.sqrt(Float.MIN_NORMAL);
 
     static {
         try {

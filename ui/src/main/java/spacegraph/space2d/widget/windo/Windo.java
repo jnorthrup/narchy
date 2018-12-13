@@ -8,7 +8,7 @@ import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.ZoomOrtho;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 import spacegraph.video.Draw;
 
 import java.util.EnumMap;

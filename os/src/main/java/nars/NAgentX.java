@@ -39,7 +39,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
 import nars.time.clock.RealTime;
-import nars.video.PixelBag;
+import nars.sensor.PixelBag;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
 import net.beadsproject.beads.core.AudioContext;
@@ -559,8 +559,7 @@ abstract public class NAgentX extends NAgent {
     }
 
     protected Bitmap2DSensor<WaveletBag> senseCameraFreq(String id, Supplier<BufferedImage> w, int pw, int ph) {
-        WaveletBag pb = new WaveletBag(w, pw, ph);
-        return senseCamera(id, pb);
+        return senseCamera(id, new WaveletBag(w, pw, ph));
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable String id, C bc) {
@@ -568,24 +567,27 @@ abstract public class NAgentX extends NAgent {
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable Term id, C bc) {
-        return addCamera(new Bitmap2DSensor(id, bc, nar()));
+        Bitmap2DSensor c = new Bitmap2DSensor(id, bc, nar());
+        addSensor(c);
+        return c;
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable Int2Function<Term> id, C bc) {
-        return addCamera(new Bitmap2DSensor(id, bc, nar()));
+        Bitmap2DSensor c = new Bitmap2DSensor(id, bc, nar());
+        addSensor(c);
+        return c;
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> addCameraCoded(@Nullable Term
                                                                             id, Supplier<BufferedImage> bc, int sx, int sy, int ox, int oy) {
-        return addCamera(new Bitmap2DSensor(id, new AutoencodedBitmap(new MonoBufImgBitmap2D(bc), sx, sy, ox, oy), nar()));
+        Bitmap2DSensor c = new Bitmap2DSensor(id, new AutoencodedBitmap(new MonoBufImgBitmap2D(bc), sx, sy, ox, oy), nar());
+        addSensor(c);
+        return c;
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> addCameraCoded(@Nullable Term id, C bc, int sx, int sy,
                                                                     int ox, int oy) {
-        return addCamera(new Bitmap2DSensor(id, new AutoencodedBitmap(bc, sx, sy, ox, oy), nar()));
-    }
-
-    protected <C extends Bitmap2D> Bitmap2DSensor<C> addCamera(Bitmap2DSensor<C> c) {
+        Bitmap2DSensor c = new Bitmap2DSensor(id, new AutoencodedBitmap(bc, sx, sy, ox, oy), nar());
         addSensor(c);
         return c;
     }

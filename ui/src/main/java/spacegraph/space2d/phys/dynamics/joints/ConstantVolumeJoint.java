@@ -27,7 +27,7 @@ import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.SolverData;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 public class ConstantVolumeJoint extends Joint {
 

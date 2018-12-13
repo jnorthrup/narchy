@@ -1,7 +1,7 @@
 package spacegraph.space2d.phys.particle;
 
 import spacegraph.space2d.phys.collision.shapes.Shape;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * A particle group definition holds all the data needed to construct a particle group. You can

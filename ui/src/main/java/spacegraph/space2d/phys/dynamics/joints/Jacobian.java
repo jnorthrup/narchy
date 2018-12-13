@@ -23,7 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics.joints;
 
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 class Jacobian {
     public final v2 linearA = new v2();

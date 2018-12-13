@@ -18,7 +18,7 @@ import spacegraph.space3d.AbstractSpatial;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.util.geo.IRL;
 import spacegraph.util.geo.osm.Osm;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.util.List;
 import java.util.function.Consumer;

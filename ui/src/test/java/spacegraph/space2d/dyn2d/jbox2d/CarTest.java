@@ -8,7 +8,7 @@ import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.dynamics.joints.RevoluteJointDef;
 import spacegraph.space2d.phys.dynamics.joints.WheelJoint;
 import spacegraph.space2d.phys.dynamics.joints.WheelJointDef;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.util.function.Consumer;
 

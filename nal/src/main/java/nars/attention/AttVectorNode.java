@@ -68,7 +68,7 @@ public class AttVectorNode extends AttNode {
 
         long N = pris.getN();
 
-        return (float) ((1-mean) * Math.sqrt(N));
+        return Math.max(0, (1f/N)-mean)*N;
 
 //
 //        dev[0] /= N;

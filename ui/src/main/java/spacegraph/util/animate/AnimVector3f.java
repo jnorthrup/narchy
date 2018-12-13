@@ -65,13 +65,8 @@ public class AnimVector3f extends v3 implements Animated {
         float dz = w.z - this.z;
 
         float lenSq = dx * dx + dy * dy + dz * dz;
-        if (lenSq < Spatialization.sqrtEPSILONf)
+        if (lenSq < Util.sqrtMIN_NORMAL)
             return;
-
-
-
-
-
 
 
         float len = (float) Math.sqrt(lenSq);

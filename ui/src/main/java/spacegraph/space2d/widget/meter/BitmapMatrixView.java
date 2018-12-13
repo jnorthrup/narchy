@@ -10,7 +10,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.math.Point2i;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 import spacegraph.video.Draw;
 import spacegraph.video.Tex;
 

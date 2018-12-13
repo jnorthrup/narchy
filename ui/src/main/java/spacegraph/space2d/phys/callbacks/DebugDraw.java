@@ -34,7 +34,7 @@ import spacegraph.space2d.phys.common.OBBViewportTransform;
 import spacegraph.space2d.phys.common.Transform;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.particle.ParticleColor;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * Implement this abstract class to allow JBox2d to automatically draw your physics for debugging

@@ -38,7 +38,7 @@ import spacegraph.space2d.phys.dynamics.contacts.ContactEdge;
 import spacegraph.space2d.phys.dynamics.joints.JointEdge;
 import spacegraph.space2d.phys.fracture.Polygon;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;

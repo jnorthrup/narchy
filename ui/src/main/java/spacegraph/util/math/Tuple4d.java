@@ -31,6 +31,8 @@
 
 package spacegraph.util.math;
 
+import jcog.math.VecMathUtil;
+
 /**
  * A 4 element tuple represented by double precision floating point
  * x,y,z,w coordinates.

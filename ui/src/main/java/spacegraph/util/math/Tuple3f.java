@@ -32,6 +32,7 @@
 package spacegraph.util.math;
 
 import jcog.Util;
+import jcog.math.VecMathUtil;
 import jcog.tree.rtree.Spatialization;
 import org.jetbrains.annotations.Nullable;
 

@@ -23,7 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics;
 
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * A body definition holds all the data needed to construct a rigid body. You can safely re-use body

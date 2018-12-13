@@ -2,7 +2,7 @@ package spacegraph.input.finger;
 
 import com.jogamp.opengl.GL2;
 import jcog.math.FloatAveraged;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 import spacegraph.video.Draw;
 
 import static com.jogamp.opengl.GL.GL_COLOR_LOGIC_OP;

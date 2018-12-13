@@ -103,7 +103,7 @@ class ImageTest {
         Term t = Narsese.term("(x, (y --> (z,/)))",false);
 
 
-        assertFalse(TermMetadata.preNormalize(t.subterms()));
+        assertFalse(TermMetadata.normalized(t.subterms()));
         assertFalse(t.subterms().isNormalized());
         assertFalse(t.isNormalized());
 

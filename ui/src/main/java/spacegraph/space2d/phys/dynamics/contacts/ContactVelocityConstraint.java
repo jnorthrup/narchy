@@ -25,7 +25,7 @@ package spacegraph.space2d.phys.dynamics.contacts;
 
 import spacegraph.space2d.phys.common.Mat22;
 import spacegraph.space2d.phys.common.Settings;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 public class ContactVelocityConstraint {
     public final VelocityConstraintPoint[] points = new VelocityConstraintPoint[Settings.maxManifoldPoints];

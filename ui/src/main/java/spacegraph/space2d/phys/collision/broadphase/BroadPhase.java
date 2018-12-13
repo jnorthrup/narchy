@@ -6,7 +6,7 @@ import spacegraph.space2d.phys.callbacks.TreeCallback;
 import spacegraph.space2d.phys.callbacks.TreeRayCastCallback;
 import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.RayCastInput;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 
 public interface BroadPhase {

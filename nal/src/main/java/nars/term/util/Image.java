@@ -68,7 +68,6 @@ public enum Image {;
                         Term[] qq = ArrayUtils.prepend(t.sub(1 - prodSub), ss.arrayShared(), Term[]::new);
 
                         do {
-
                             qq[index + 1] = target;
                             index = ss.indexOf(x, index);
                         } while (index != -1);
@@ -84,18 +83,33 @@ public enum Image {;
 
     public static Term imageNormalize(Term x) {
 
-        if (x.op()==NEG)
-            throw new TODO();
-
-        if (!(x instanceof Compound) || x.op()!=INH || !x.hasAll(ImageBits))
+        if (!(x instanceof Compound))
             return x;
 
-        return _imageNormalize((Compound) x);
+        Op xo = x.op();
+        if (xo ==NEG)
+            throw new TODO();
+
+        if (xo !=INH || !x.hasAll(ImageBits))
+            return x;
+
+        Term y = normalize((Compound) x);
+
+        return y;
     }
 
 
+    public static Term normalize(Compound x) {
+        return normalize(x, true);
+    }
+
+
+    public static boolean imageNormalizable(Term x) {
+        return x instanceof Compound && x.op()==INH && x.hasAll(ImageBits) && normalize((Compound)x, false)==null;
+    }
+
     /** assumes that input is INH op has been tested for all image bits */
-    public static Term _imageNormalize(Compound t) {
+    @Nullable private static Term normalize(Compound x, boolean actuallyNormalize) {
 //        boolean negated;
 //
 //        Term t;
@@ -111,18 +125,26 @@ public enum Image {;
 
         //assert(!(o==NEG));
         //if (o == INH /*&& t.hasAll(ImageBits)*/) {
-        assert(t.op()==INH);
+        assert(x.op()==INH);
 
-        Term s = t.sub(0);
+        Term s = x.sub(0);
         Subterms ss = null;
         boolean isInt = s.op() == PROD && (ss = s.subterms()).contains(Op.ImgInt);// && !ss.contains(Op.ImgExt);
 
-        Term p = t.sub(1);
+        Term p = x.sub(1);
         Subterms pp = null;
         boolean isExt = p.op() == PROD && (pp = p.subterms()).contains(Op.ImgExt);// && !pp.contains(Op.ImgInt);
 
 
-        if (isInt ^ isExt) {
+        boolean normalizable = isInt ^ isExt;
+
+        if (!actuallyNormalize) {
+            return normalizable ? null : x;
+        }
+
+        if (normalizable) {
+
+
             Term u;
             if (isInt) {
 
@@ -138,10 +160,11 @@ public enum Image {;
             return Image.imageNormalize(u);//.negIf(negated);
         }
 
-        return t;
+        return x;
 
 
     }
+
 
     public static class ImageBeliefTable extends EmptyBeliefTable {
 

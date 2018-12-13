@@ -54,12 +54,13 @@ abstract public class TermMetadata implements Termlike {
 
 
     /** not a conclusive test but meant to catch most cases where the term is already normalized */
-    public static boolean preNormalize(Subterms x) {
+    public static boolean normalized(Subterms x) {
 
         //the product containing an image itself may be normalized but superterms containing it are not automatically considered normal
         if (x.hasAll(Image.ImageBits) &&
-                x.OR(xx -> xx.hasAll(Image.ImageBits)))
+                x.OR(xx -> !xx.isNormalized() || !Image.imageNormalizable(xx))) {
             return false;
+        }
 
         if (x.vars()==0)
             return true;
@@ -103,7 +104,7 @@ abstract public class TermMetadata implements Termlike {
     /**
      * for AnonVector
      */
-    protected static boolean preNormalize(short[] subterms) {
+    protected static boolean normalized(short[] subterms) {
         /* checks for monotonically increasing variable numbers starting from 1,
          which will indicate that the subterms is normalized
          */

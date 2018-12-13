@@ -3,7 +3,7 @@ package spacegraph.util;
 import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.graph.Graph2D;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * similar to RectFloat2D with additional

@@ -5,7 +5,7 @@ import spacegraph.space2d.phys.fracture.fragmentation.Smasher;
 import spacegraph.space2d.phys.fracture.materials.Diffusion;
 import spacegraph.space2d.phys.fracture.materials.Glass;
 import spacegraph.space2d.phys.fracture.materials.Uniform;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import static spacegraph.space2d.phys.common.Settings.EPSILON;
 

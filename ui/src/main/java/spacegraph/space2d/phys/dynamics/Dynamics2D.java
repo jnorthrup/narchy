@@ -52,7 +52,7 @@ import spacegraph.space2d.phys.particle.*;
 import spacegraph.space2d.phys.pooling.IWorldPool;
 import spacegraph.space2d.phys.pooling.Vec2Array;
 import spacegraph.space2d.phys.pooling.normal.DefaultWorldPool;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.util.Collection;
 import java.util.function.Consumer;

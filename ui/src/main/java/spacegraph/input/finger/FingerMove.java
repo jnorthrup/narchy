@@ -1,6 +1,6 @@
 package spacegraph.input.finger;
 
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 public abstract class FingerMove extends FingerDragging {
 

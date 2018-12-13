@@ -14,7 +14,7 @@ import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.Fixture;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
 import spacegraph.space2d.phys.particle.ParticleColor;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 public class Dynamics2DView extends Surface {
 

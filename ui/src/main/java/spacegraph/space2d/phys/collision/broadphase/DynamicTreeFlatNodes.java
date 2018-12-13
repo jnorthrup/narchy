@@ -32,7 +32,7 @@ import spacegraph.space2d.phys.common.BufferUtils;
 import spacegraph.space2d.phys.common.Color3f;
 import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.Settings;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
     public static final int MAX_STACK_SIZE = 64;

@@ -27,7 +27,7 @@ import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.pooling.IWorldPool;
 import spacegraph.space2d.phys.pooling.normal.DefaultWorldPool;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * An axis-aligned bounding box.

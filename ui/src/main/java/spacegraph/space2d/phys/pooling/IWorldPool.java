@@ -32,7 +32,7 @@ import spacegraph.space2d.phys.common.Mat33;
 import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Vec3;
 import spacegraph.space2d.phys.dynamics.contacts.Contact;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * World pool interface

@@ -10,7 +10,7 @@ import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.SurfaceHiliteOverlay;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;

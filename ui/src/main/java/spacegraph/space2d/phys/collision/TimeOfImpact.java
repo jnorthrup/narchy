@@ -27,7 +27,7 @@ import spacegraph.space2d.phys.collision.Distance.DistanceProxy;
 import spacegraph.space2d.phys.collision.Distance.SimplexCache;
 import spacegraph.space2d.phys.common.*;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * Class used for computing the time of impact. This class should not be constructed usually, just

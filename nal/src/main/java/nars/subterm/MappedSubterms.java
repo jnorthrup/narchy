@@ -150,7 +150,7 @@ abstract public class MappedSubterms extends ProxySubterms {
     @Override
     public boolean isNormalized() {
         if (!normalizedKnown && !normalized) {
-            normalized = TermMetadata.preNormalize(this);
+            normalized = TermMetadata.normalized(this);
             normalizedKnown = true;
         }
         return normalized;

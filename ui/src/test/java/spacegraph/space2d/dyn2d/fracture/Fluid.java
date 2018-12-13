@@ -6,7 +6,7 @@ import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
 import spacegraph.space2d.phys.fracture.materials.Diffusion;
 import spacegraph.space2d.phys.particle.ParticleGroupDef;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.util.function.Consumer;
 

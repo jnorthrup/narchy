@@ -4,7 +4,7 @@ import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
 import spacegraph.space2d.phys.fracture.materials.Diffusion;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 import java.util.function.Consumer;
 

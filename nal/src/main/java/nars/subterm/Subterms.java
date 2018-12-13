@@ -12,12 +12,12 @@ import nars.$;
 import nars.Op;
 import nars.Param;
 import nars.subterm.util.DisposableTermList;
+import nars.subterm.util.TermMetadata;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Variable;
 import nars.term.atom.Bool;
-import nars.term.util.Image;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
@@ -358,7 +358,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * assume its normalized if no variables are present
      */
     default boolean isNormalized() {
-        return !hasAny(Op.Variable) && !hasAll(Image.ImageBits);
+        //return !hasAny(Op.Variable) && !hasAll(Image.ImageBits);
+        return TermMetadata.normalized(this);
     }
 
     /**

@@ -6,7 +6,7 @@ import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.dynamics.contacts.Velocity;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.v2;
+import jcog.math.v2;
 
 /**
  * A rope joint enforces a maximum distance between two points on two bodies. It has no other

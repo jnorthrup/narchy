@@ -32,6 +32,7 @@
 package spacegraph.util.math;
 
 import jcog.Util;
+import jcog.math.v2;
 import spacegraph.space3d.phys.BulletGlobals;
 
 import java.util.Random;
