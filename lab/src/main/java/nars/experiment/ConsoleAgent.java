@@ -1,100 +1,156 @@
 package nars.experiment;
 
 import com.googlecode.lanterna.TextCharacter;
+import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
-import jcog.Util;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.Task;
+import nars.attention.AttNode;
 import nars.concept.sensor.Signal;
-import nars.control.channel.CauseChannel;
-import nars.task.ITask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
+import spacegraph.input.finger.Finger;
+import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.widget.console.ConsoleSurface;
-import spacegraph.space2d.widget.textedit.TextEdit;
+import spacegraph.space2d.widget.console.VectorTextGrid;
 
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * executes a unix shell and perceives the output as a grid of symbols
  * which can be interactively tagged by human, and optionally edited by NARS
  */
-public abstract class ConsoleAgent extends NAgentX {
+public class ConsoleAgent extends NAgentX {
 
-    final BlockingQueue<Task> queue = Util.blockingQueue(16);
 
-    static final char[] alphabet = new char[] { ' ', 'a', 'b' };
+    static final Atomic WRITE = Atomic.the("write");
+
+    static final char[] alphabet =
+            //new char[] { ' ', 'a', 'b' };
+            new char[] { ' ', 'x' };
 
     final static int WIDTH = 4;
-    final static int HEIGHT = 1;
-    final Surface Rlabel = new TextEdit();
+    final static int HEIGHT = 2;
+    static final float fps = 8f;
 
-    final TestConsole R = new TestConsole(
-            Atomic.the("it"),
-            WIDTH, HEIGHT, alphabet);
-
+    final TestConsole R;
     final TestConsole W;
-
-
-    protected void input(Task t) {
-        queue.add(t);
-    }
+    float prevSim;
 
 
     public ConsoleAgent(NAR nar) {
         super("term", nar);
 
-        W = new TestConsole(
-                nar.self(),
-                R.W(), R.H(), alphabet).write( alphabet[0], alphabet[1], alphabet[2] );
+        R = new TestConsole(
+                Atomic.the("it"),
+                WIDTH, HEIGHT, alphabet) {
 
-
-        SpaceGraph.window(Rlabel, 400, 200);
-        SpaceGraph.window(R, 600, 600);
-        SpaceGraph.window(W, 600, 600);
-
-
-        CauseChannel<ITask> s = nar.newChannel(this + "_HumanKeys");
-        onFrame(() -> {
-
-            List<Task> q = $.newArrayList(queue.size());
-            Iterator<Task> qq = queue.iterator();
-            while (qq.hasNext()) {
-                q.add(qq.next());
-                qq.remove();
+            @Override
+            public Surface finger(Finger finger) {
+                if (finger.pressedNow(0))
+                    root().keyFocus(this);
+                return super.finger(finger);
             }
 
-            s.input(q);
+            @Override
+            public boolean key(KeyEvent e, boolean pressed) {
+
+                if (pressed) {
+                    if (!e.isPrintableKey()) {
+                        switch (e.getKeyCode()) {
+                            case KeyEvent.VK_DOWN:
+                                Down();
+                                return true;
+                            case KeyEvent.VK_UP:
+                                Up();
+                                return true;
+                            case KeyEvent.VK_LEFT:
+                                Left();
+                                return true;
+                            case KeyEvent.VK_RIGHT:
+                                Right();
+                                return true;
+                        }
+                        return false;
+                    } else {
+                        char c = e.getKeyChar();
+                        //TODO restrict alphabet?
+                        write(c);
+                        return true;
+                    }
+                }
+
+
+                return false;
+
+            }
+
+
+
+        };
+
+
+        W = new TestConsole(
+                nar.self(),
+                R.W(), R.H(), alphabet) {
+            {
+                actionTriState($.func("go", Atomic.the("x")), (d) -> {
+                    switch (d) {
+                        case -1:
+                            Left();
+                            break;
+
+                        case +1:
+                            Right();
+                            break;
+                    }
+                });
+                actionTriState($.func("go", Atomic.the("y")), (d) -> {
+                    switch (d) {
+                        case -1:
+                            Up();
+                            break;
+                        case +1:
+                            Down();
+                            break;
+                    }
+                });
+                for (char c : alphabet) {
+                    actionPushButton($.func(WRITE, $.the(c)), ()->write(c));
+                }
+
+            }
+
+        };
+
+        rewardNormalized("similar", -1, +1, () -> {
+
+            float s = similarity(R.chars, W.chars);
+            float d = s - prevSim;
+            prevSim = s;
+            if (d == 0)
+                return s == 0 ? +1 : Float.NaN;
+            if (d < 0)
+                return -1;
+            else
+                return +1;
+            //return d==0 ? Float.NaN : Util.tanhFast(d);
         });
+
+
     }
 
     public static void main(String[] args) {
 
+
         NAgentX.runRT((n) -> {
-            @NotNull ConsoleAgent a = new ConsoleAgent(n) {
-                float prevSim;
-
-                {
-                    reward(() -> {
-
-                        float s = similarity(R.chars, W.chars);
-                        float d = s - prevSim;
-                        prevSim = s;
-                        return d;
-                    });
-                }
-            };
-
+            ConsoleAgent a = new ConsoleAgent(n);
+            SpaceGraph.window(a.R, WIDTH*100, HEIGHT*100);
+            SpaceGraph.window(a.W, WIDTH*100, HEIGHT*100);
             return a;
-        }, 16f);
+        }, fps);
 
     }
 
@@ -109,72 +165,44 @@ public abstract class ConsoleAgent extends NAgentX {
         return (equal) / ((float) total);
     }
 
-    private class TestConsole extends ConsoleSurface {
+    private class TestConsole extends VectorTextGrid implements KeyPressed {
 
         final char[][] chars;
 
-        private final Signal[][][] beliefs;
+        private final Signal[][][] charMatrix;
+        private final char[] alphabet;
         int c[] = new int[2];
+
 
         public TestConsole(Term id, int w, int h, char[] alphabet) {
             super(w, h);
+
+            this.alphabet = alphabet;
 
             this.chars = new char[w][h];
             for (char[] cc : chars)
                 Arrays.fill(cc, alphabet[0]);
 
-            this.beliefs = new Signal[w][h][alphabet.length];
+            //TODO use Bitmap3D or Tensor something
+            this.charMatrix = new Signal[w][h][alphabet.length];
 
+
+            AttNode charAttn = new AttNode(this);
+            charAttn.parent(attn);
 
             for (int i = 0, alphabetLength = alphabet.length; i < alphabetLength; i++) {
                 char a = alphabet[i];
                 for (int x = 0; x < w; x++) {
                     for (int y = 0; y < h; y++) {
-                        Term xya = $.p(id, $.the(x), $.the(y), $.the(a));
+                        Term xya = $.funcImageLast(id, $.the(a), $.p($.the(x), $.the(y)));
                         int xx = x;
                         int yy = y;
-                        beliefs[x][y][a] = sense(xya, ()->chars[xx][yy]==a);
+                        (charMatrix[x][y][i] = sense(xya, ()->chars[xx][yy]==a)).attn.reparent(charAttn);
                     }
                 }
             }
             c[0] = 0;
             c[1] = 0;
-        }
-
-        public TestConsole write(char... vocabulary) {
-            Atomic agentID = Atomic.the("test");
-            actionTriState($.func("cursor", Atomic.the("x"), agentID), (d) -> {
-                switch (d) {
-                    case -1:
-                        Left();
-                        break;
-
-                    case +1:
-                        Right();
-                        break;
-                }
-            });
-            actionTriState($.func("cursor", Atomic.the("y"), agentID), (d) -> {
-                switch (d) {
-                    case -1:
-                        Up();
-                        break;
-                    case +1:
-                        Down();
-                        break;
-
-
-                }
-            });
-            for (char c : vocabulary) {
-
-
-                actionToggle($.func(Atomic.the("write"), $.the(String.valueOf(c)), agentID), d -> {
-                    if (d) write(c);
-                });
-            }
-
-            return this;
         }
 
         @Override
@@ -185,17 +213,16 @@ public abstract class ConsoleAgent extends NAgentX {
 
         @Override
         public TextCharacter charAt(int col, int row) {
-            char c = chars[col][row];
-            return new TextCharacter(c);
+            TextCharacter t = new TextCharacter(chars[col][row]);
+            return t;
         }
 
 
         @Override
         protected boolean setBackgroundColor(GL2 gl, TextCharacter c, int col, int row) {
-            float cc = 1f;
+            float cc = 0.5f; //nar.concepts.pri(charMatrix[col][row].term, 0);
             if (cc == cc) {
-                float s = 0.3f * cc;
-                gl.glColor4f(s, 0, 0, 0.95f);
+                gl.glColor4f(cc, cc, cc, 0.95f);
                 return true;
             }
             return false;
@@ -233,8 +260,8 @@ public abstract class ConsoleAgent extends NAgentX {
             chars[cx][cy] = value;
         }
 
-        protected void believe(char c, int x, int y) {
-            chars[x][y] = c;
+//        protected void believe(char c, int x, int y) {
+//            chars[x][y] = c;
 //            char value = chars[cx][cy];
 //
 //            if (prev == 0 || (value != prev)) {
@@ -249,45 +276,18 @@ public abstract class ConsoleAgent extends NAgentX {
 //                        () -> nar.time.nextStamp(),
 //                        nar.time(), nar.dur(), nar);
 //            }
-        }
+//        }
 
 //        @Override
 //        protected void doLayout(int dtMS) {
 //
 //        }
 
-//        @Override
-//        public boolean tryKey(KeyEvent e, boolean pressed) {
-//            if (write) return false;
-//
-//            if (pressed) {
-//                if (!e.isPrintableKey()) {
-//                    switch (e.getKeyCode()) {
-//                        case KeyEvent.VK_DOWN:
-//                            Down();
-//                            return true;
-//                        case KeyEvent.VK_UP:
-//                            Up();
-//                            return true;
-//                        case KeyEvent.VK_LEFT:
-//                            Left();
-//                            return true;
-//                        case KeyEvent.VK_RIGHT:
-//                            Right();
-//                            return true;
-//                    }
-//                    return false;
-//                } else {
-//                    char c = e.getKeyChar();
-//                    write(c);
-//                    return true;
-//                }
-//            }
-//
-//
-//            return false;
-//
-//        }
+
+        @Override
+        public boolean key(com.jogamp.newt.event.KeyEvent e, boolean pressedOrReleased) {
+            return false;
+        }
 
         public int H() {
             return chars[0].length;

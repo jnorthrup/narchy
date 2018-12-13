@@ -300,7 +300,7 @@ public class BiPolarAction extends AbstractSensor {
 
         @Override
         protected AttNode newAttn() {
-            return attn;
+            return BiPolarAction.this.attn;
         }
 
         @Override

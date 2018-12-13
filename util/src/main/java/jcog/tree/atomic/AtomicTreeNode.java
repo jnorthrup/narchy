@@ -41,8 +41,13 @@ public abstract class AtomicTreeNode<T extends AtomicTreeNode<T>> {
         }
 
         assert(this!=parent);
-        if (!this.parent.compareAndSet(null, parent))
+        if (!this.parent.compareAndSet(null, parent)) {
+            T curParent = parent();
+            if (curParent == parent)
+                return; //same parent
+            
             throw new UnsupportedOperationException(this + " parent already set: " + this.parent.get());
+        }
         parent.children.add(this);
     }
 

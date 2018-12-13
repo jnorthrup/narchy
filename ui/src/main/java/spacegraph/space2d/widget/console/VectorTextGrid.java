@@ -10,8 +10,10 @@ import spacegraph.video.font.HersheyFont;
 import java.awt.*;
 
 
-/** vector font console */
-public abstract class ConsoleSurface extends AbstractConsoleSurface {
+/** vector font console
+ * TODO combine with BitmapTextGrid
+ * */
+@Deprecated public abstract class VectorTextGrid extends AbstractConsoleSurface {
 
     private Color bg;
 
@@ -34,7 +36,7 @@ public abstract class ConsoleSurface extends AbstractConsoleSurface {
     private float fgAlpha = 0.9f;
 
 
-    protected ConsoleSurface(int cols, int rows) {
+    protected VectorTextGrid(int cols, int rows) {
         resize(cols, rows);
     }
 
@@ -198,7 +200,7 @@ public abstract class ConsoleSurface extends AbstractConsoleSurface {
     }
 
 
-    public ConsoleSurface opacity(float v) {
+    public VectorTextGrid opacity(float v) {
         fgAlpha = v;
         return this;
     }
