@@ -140,6 +140,7 @@ public class NAgent extends NARService implements NSense, NAct {
         actions.add(c);
 
         nar().on(c);
+        addAttention(c);
         return c;
     }
 
@@ -174,6 +175,8 @@ public class NAgent extends NARService implements NSense, NAct {
             ((Signal)s).attn.parent(attn);
         } else if (s instanceof Reward) {
             ((Reward)s).attn.parent(attn);
+        } else if (s instanceof ActionConcept) {
+            ((ActionConcept)s).attn.parent(attn);
         }
     }
 

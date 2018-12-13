@@ -62,10 +62,17 @@ public abstract class AtomicPri implements ScalarValue {
     private static float _vAny(float x) {
         return x!=x ? Float.NaN : x;
     }
+    private static float _vNonZero(float x) {
+        return x!=x ? Float.NaN : Math.max(0, x);
+    }
     /** allows NaN */
     private static float _vUnit(float x) {
         return x!=x ? Float.NaN : Util.unitize(x);
     }
+    private static final FloatFloatToFloatFunction priAddUpdateFunctionUnit = AtomicPri.post(priAddUpdateFunction,AtomicPri::_vUnit);
+    private static final FloatFloatToFloatFunction priAddUpdateFunctionNonZero = AtomicPri.post(priAddUpdateFunction,AtomicPri::_vNonZero);
+    private static final FloatFloatToFloatFunction priAddUpdateFunctionAny = AtomicPri.post(priAddUpdateFunction,AtomicPri::_vAny);
+
 
     private int _pri() {
         return PRI.INT.getOpaque(this);
@@ -109,12 +116,10 @@ public abstract class AtomicPri implements ScalarValue {
         return PRI.updateAndGet(this, x, update, post());
     }
 
-    private static final FloatFloatToFloatFunction priAddUpdateFunctionUnit = AtomicPri.post(priAddUpdateFunction,AtomicPri::_vUnit);
-    private static final FloatFloatToFloatFunction priAddUpdateFunctionAny = AtomicPri.post(priAddUpdateFunction,AtomicPri::_vAny);
 
     @Override
     public final void priAdd(float a) {
-        PRI.update(this, a, unit() ? priAddUpdateFunctionUnit : priAddUpdateFunctionAny);
+        PRI.update(this, a, unit() ? priAddUpdateFunctionUnit : priAddUpdateFunctionNonZero);
     }
 
     public final float priUpdate(FloatToFloatFunction update) {
@@ -131,7 +136,7 @@ public abstract class AtomicPri implements ScalarValue {
     }
 
     private FloatToFloatFunction post() {
-        return unit() ? AtomicPri::_vUnit : AtomicPri::_vAny;
+        return unit() ? AtomicPri::_vUnit : AtomicPri::_vNonZero;
     }
 
     /** override and return true if the implementation clamps values to 0..+1 (unit) */

@@ -1,6 +1,7 @@
 package nars.concept.sensor;
 
 import com.google.common.collect.Iterables;
+import jcog.pri.Pri;
 import nars.$;
 import nars.NAR;
 import nars.attention.AttVectorNode;
@@ -58,18 +59,11 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     }
 
 
-//    @Override
-//    protected void update(long prev, long now, Iterable<Signal> signals, CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> t) {
-//        if (attn == null) //HACK
-//            attn = new AttnDistributor(this, pri::set, nar);
-//
-//        super.update(prev, now, signals, in, t);
-//    }
 
     @Override
     public void update(long last, long now, long next, NAR nar) {
 
-        updateSensor(last, now, nar).filter(Objects::nonNull).forEach(in::input);
+        in.input(updateSensor(last, now, nar).filter(Objects::nonNull));
     }
 
     public final Stream<SeriesBeliefTable.SeriesRemember> updateSensor(long last, long now, NAR nar) {
@@ -84,12 +78,12 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     }
 
     protected final Stream<SeriesBeliefTable.SeriesRemember> updateSensor(long last, long now, FloatFloatToObjectFunction<Truth> truther, int dur) {
-        float pri = attn.supply.priElseZero()/size();
-        return StreamSupport.stream(spliterator(), false).map(
-                s -> {
+        Pri supply = attn.supply;
+        float pri = supply.priElseZero()/size();
+        return StreamSupport.stream(spliterator(), false).map(s -> {
                     SeriesBeliefTable.SeriesRemember t = s.update(last, now, pri, truther, dur, nar);
                     if (t!=null)
-                        attn.supply.priSub(t.input.priElseZero());
+                        attn.taken(t.input.priElseZero());
                     return t;
                 });
     }

@@ -101,26 +101,16 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
         return currentValue;
     }
 
-
-
-
-    @Nullable
-    public final SeriesBeliefTable.SeriesRemember update(long prev, long now, float pri, FloatFloatToObjectFunction<Truth> truther, NAR n) {
-        return update(prev, now, pri, truther, n.dur() /*now - prev*/, n);
-    }
-
     @Nullable
     public SeriesBeliefTable.SeriesRemember update(long start, long end, float pri, FloatFloatToObjectFunction<Truth> truther, float dur, NAR n) {
 
-        float prevValue = currentValue;
-        float nextValue = floatValueOf(term);
-
-        SensorBeliefTables s = (SensorBeliefTables) beliefs();
-
         assert(dur > 0);
-        return s.add(nextValue == nextValue ? truther.value(prevValue, nextValue) : null, start, end, pri, this, dur, n);
 
+        float prevValue = currentValue, nextValue = floatValueOf(term);
 
+        return ((SensorBeliefTables) beliefs())
+                .add(nextValue == nextValue ? truther.value(prevValue, nextValue) : null,
+                        start, end, pri, this, dur, n);
     }
 
 
@@ -139,7 +129,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
         float pri = attn.supply.priElseZero();
         SeriesBeliefTable.SeriesRemember t = update(prev, now, pri, (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), nar.dur(), nar);
         if (t!=null) {
-            attn.supply.priSub(t.input.priElseZero());
+            attn.taken(t.input.priElseZero());
             in.input(t);
         }
 

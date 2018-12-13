@@ -153,7 +153,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> 
 
                 //attractSpeed/=neighbors;
 
-                float s = attractSpeed * len * weightToVelocity(edge.weight);
+                float s = attractSpeed * weightToVelocity(edge.weight);
                 total.add(delta.x * s, delta.y * s);
             }
         });
@@ -162,7 +162,8 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> 
     }
 
     private float weightToVelocity(float weight) {
-        return weight * weight;
+        return weight;
+        //return weight * weight;
     }
 
     private void repel(MutableFloatRect a, v2 aCenter, float ar, MutableFloatRect b, float repelSpeed) {

@@ -270,6 +270,7 @@ public interface NSense {
         NAgent a = (NAgent) this;
         a.addAction(pn.pos);
         a.addAction(pn.neg);
+        a.addAttention(pn);
         onFrame(x -> pn.update(a.prev, a.now, a.next, a.nar()));
         return pn;
     }

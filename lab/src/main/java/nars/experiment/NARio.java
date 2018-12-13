@@ -7,6 +7,7 @@ import nars.NAR;
 import nars.NAgentX;
 import nars.Op;
 import nars.agent.Reward;
+import nars.attention.AttNode;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.SelectorSensor;
@@ -98,6 +99,7 @@ public class NARio extends NAgentX {
         AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.inh("cae", id), cc, nx, nx, (subX, subY) -> {
             return new float[]{/*cc.X, cc.Y, */cc.Z};
         }, 12, this);
+
         camAE.alpha(0.03f);
         camAE.noise.set(0.05f);
 
@@ -117,8 +119,15 @@ public class NARio extends NAgentX {
                     tileSwitch(Op.SETi.the($.the("left"), $.the("down")), -1, +1),
                     tileSwitch(Op.SETi.the($.the("right"), $.the("down")), +1, +1)
             );
+
+            AttNode tileAttnGroup = new AttNode(tileSensors);
+            tileAttnGroup.parent(attn);
+            for (SelectorSensor s : tileSensors)
+                s.attn.reparent(tileAttnGroup);
+
             SpaceGraph.window(new LabeledPane("Tile types",
                     new Gridding(tileSensors.stream().map(z -> new VectorSensorView(z, nar).withControls()).collect(toList()))), 100, 100);
+
         }
 
 

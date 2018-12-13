@@ -201,19 +201,23 @@ public class AutoclassifiedBitmap extends VectorSensor {
                                 protected CauseChannel<ITask> newChannel(NAR n) {
                                     return null;
                                 }
+
                             }
                     );
                 }
             }
         }
         logger.info("{} pixels in={},{} ({}) x {},{} x features={} : encoded={}", this, pw, ph, (pw * ph), nw, nh, features, signals.size());
-        agent.sensors.add(this);
-        agent.onFrame(this::update);
+        agent.addSensor(this);
 
 
     }
 
-
+    @Override
+    public void update(long last, long now, long next, NAR nar) {
+        this.update();
+        super.update(last, now, next, nar);
+    }
 
     @Override
     public Iterator<Signal> iterator() {

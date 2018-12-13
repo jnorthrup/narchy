@@ -61,7 +61,11 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         ((BeliefTables)goals()).tables.add(curiosityTable = new CuriosityGoalTable(term, 64));
 
-        in = n.newChannel(this);
+        in = newChannel(n);
+    }
+
+    protected CauseChannel<ITask> newChannel(NAR n) {
+        return n.newChannel(this);
     }
 
     public AbstractGoalActionConcept curiosity(Curiosity curiosity) {
@@ -214,13 +218,16 @@ public class AbstractGoalActionConcept extends ActionConcept {
         }
 
         SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd, evi);
-        priCuriosity(curiosity);
+        attn.take(curiosity, 0.5f*attn.supply.priElseZero());
         return curiosity;
     }
 
-    @Nullable public SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long now, long next, float dur, NAR nar) {
-        SeriesBeliefTable.SeriesRemember r = ((SensorBeliefTables) beliefs()).add(f, now, next, pri.pri(), this, dur, nar);
+    @Deprecated @Nullable public SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long now, long next, float dur, float pct, NAR nar) {
 
+        SeriesBeliefTable.SeriesRemember r = ((SensorBeliefTables) beliefs()).add(f, now, next, attn.supply.priElseZero(), this, dur, nar);
+        if (r!=null) {
+            attn.taken(r.input.priElseZero());
+        }
         return r;
     }
 

@@ -5,6 +5,7 @@ import jcog.pri.Pri;
 import jcog.tree.atomic.AtomicTreeNode;
 import nars.$;
 import nars.NAR;
+import nars.Task;
 import nars.concept.Concept;
 import nars.term.Term;
 
@@ -67,4 +68,11 @@ public class AttNode extends AtomicTreeNode<AttNode> {
         return childrenStream().map(x -> nar.concept(x.id)).filter(Objects::nonNull);
     }
 
+    public void take(Task c, float pri) {
+        c.take(supply, pri, true, false);
+    }
+
+    public void taken(float p) {
+        supply.priSub(p);
+    }
 }

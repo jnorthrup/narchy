@@ -1,10 +1,10 @@
 package nars.concept.action;
 
 import jcog.math.FloatRange;
-import jcog.pri.UnitPri;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.attention.AttNode;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.concept.action.curiosity.CuriosityTask;
@@ -28,7 +28,7 @@ import static nars.truth.TruthFunctions.w2cSafe;
 
 public abstract class ActionConcept extends TaskConcept implements Sensor, PermanentConcept {
 
-    public final UnitPri pri = new UnitPri();
+    public final AttNode attn;
 
     protected ActionConcept(Term term, TermLinker linker, NAR n) {
         this(term,
@@ -48,23 +48,18 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
     protected ActionConcept(Term term, BeliefTable beliefs, BeliefTable goals, TermLinker l, NAR n) {
         super(term, beliefs, goals, l, n.conceptBuilder);
 
-//        pri.pri(
-//                FloatRange.unit(
-//                        //Util.or(n.priDefault(BELIEF), n.priDefault(GOAL))
-//                        n.goalPriDefault //even though the tasks are beliefs
-//                )
-//        );
+        this.attn = newAttn();
         ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(n.freqResolution));
     }
 
-
-    protected void priCuriosity(Task c) {
-        c.pri(
-                //this.curiosity.agent.pri.floatValue() * n.priDefault(GOAL)
-                //ScalarValue.EPSILON
-                pri.pri()
-        );
+    protected AttNode newAttn() {
+        return new AttNode(term);
     }
+
+    protected void pri(Task c, float pct) {
+        attn.take(c, attn.supply.priElseZero() * pct);
+    }
+
 
     @Override
     public Iterable<Termed> components() {

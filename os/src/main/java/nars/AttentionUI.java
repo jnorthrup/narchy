@@ -1,5 +1,6 @@
 package nars;
 
+import jcog.Util;
 import nars.agent.NAgent;
 import nars.attention.AttNode;
 import nars.gui.DurSurface;
@@ -19,8 +20,8 @@ public class AttentionUI {
                         node.id.children.forEach(c ->
                                 {
                                     Graph2D.EdgeVis<AttNode> e = graph.edge(node, c);
-                                    e.weight(5);
-                                    e.color(1, 1, 1);
+                                    e.weight(1f);
+                                    e.color(0.5f, 0.5f, 0.5f);
                                 }
                         );
                         float s = node.id.supply.pri();
@@ -32,11 +33,13 @@ public class AttentionUI {
                 .update(new ForceDirected2D<>() {
                     @Override
                     protected void size(MutableFloatRect<AttNode> m, float a) {
-                        float q =
-                                m.node.id.demand.floatValue();
-                                //m.node.id.supply.pri();
-                        float s = (float) ((Math.sqrt((Math.max(0, q))) + 0.1f) * a);
-                        s = Math.min(s, 150);
+                        float q = Math.max(
+                                    m.node.id.demand.floatValue(),
+                                    m.node.id.supply.pri()
+                                );
+
+                        float s = (float)(Math.sqrt((Math.max(0, q))));
+                        s = Util.clamp(s, 0.1f, 2) * a;
                         m.size(s, s);
                     }
                 });

@@ -4,6 +4,8 @@ import jcog.Util;
 import nars.$;
 import nars.NAR;
 import nars.agent.NSense;
+import nars.attention.AttNode;
+import nars.attention.AttVectorNode;
 import nars.concept.sensor.AbstractSensor;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
@@ -28,6 +30,8 @@ public class BiPolarAction extends AbstractSensor {
     private final CauseChannel<ITask> feedback;
     private final Polarization model;
     private final FloatToFloatFunction motor;
+
+    final AttNode attn;
 
     /** model for computing the net result from the current truth inputs */
     public interface Polarization {
@@ -55,15 +59,15 @@ public class BiPolarAction extends AbstractSensor {
 
         feedback = nar.newChannel(id);
 
+        this.attn = new AttVectorNode(id, List.of(pos, neg));
 
-        this.pos = new AbstractGoalActionConcept(pos,
-                //TemplateTermLinker.of(pos),
-                //TemplateTermLinker.of(pos, 4, neg),
-                nar);
-        this.neg = new AbstractGoalActionConcept(neg,
-                //TemplateTermLinker.of(neg),
-                //TemplateTermLinker.of(neg, 4, pos),
-                nar);
+        this.pos = new MyAbstractGoalActionConcept(pos, nar);
+        this.neg = new MyAbstractGoalActionConcept(neg, nar);
+
+
+//                //TemplateTermLinker.of(neg),
+//                //TemplateTermLinker.of(neg, 4, pos),
+//                nar);
 
         this.model = model;
         this.motor = motor;
@@ -155,7 +159,7 @@ public class BiPolarAction extends AbstractSensor {
         float dur = now - prev;
 
         this.feedback.input(
-                pos.feedback(Pb, now, next, dur, nar), neg.feedback(Nb, now, next, dur, nar)
+                pos.feedback(Pb, now, next, dur, 0.5f, nar), neg.feedback(Nb, now, next, dur, 0.5f, nar)
         );
     }
 
@@ -287,5 +291,21 @@ public class BiPolarAction extends AbstractSensor {
             //return t != null ? ((freqOrExp ? (t.freq()>=0.5f ? t.freq() : 0) : t.expectation()) ) : Float.NaN;
         }
 
+    }
+
+    private class MyAbstractGoalActionConcept extends AbstractGoalActionConcept {
+        public MyAbstractGoalActionConcept(Term pos, NAR nar) {
+            super(pos, nar);
+        }
+
+        @Override
+        protected AttNode newAttn() {
+            return attn;
+        }
+
+        @Override
+        protected CauseChannel<ITask> newChannel(NAR n) {
+            return feedback;
+        }
     }
 }

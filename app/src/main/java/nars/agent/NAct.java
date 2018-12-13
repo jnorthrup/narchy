@@ -236,6 +236,7 @@ public interface NAct {
         return actionPushButtonMutex(l, r, (x)->{ if (x) L.run(); }, (x)->{if (x) R.run(); } );
     }
 
+    /** TODO shared AttNode */
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
 
         float thresh =
