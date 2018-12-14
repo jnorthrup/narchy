@@ -1,6 +1,7 @@
 package nars.control;
 
 import jcog.WTF;
+import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 
 import static nars.Op.*;
+import static nars.term.atom.Bool.True;
 
 /** transforms an input task into any smaller sub-tasks that constitute the perception process */
 public enum Perceive { ;
@@ -36,19 +38,21 @@ public enum Perceive { ;
         if (!input.term().equals(y)) {
             byte punc = input.punc();
             if (y.op()==BOOL) {
-//                if (punc == QUESTION || punc == QUEST) {
-//                    //conver to an answering belief/goal now that the absolute truth has been determined
-//
-//
-//                    byte answerPunc;
-//                    if (punc == QUESTION) answerPunc = BELIEF;
-//                    else answerPunc = GOAL;
-//
-//                    t = Task.clone(input, input.term().negIf(y == False), (c, tr)->
-//                        new UnevaluatedTask(c, answerPunc, tr, n.time(), input.start(), input.end(), input.stamp())
-//                    );
-//
-//                } else
+                if (punc == QUESTION || punc == QUEST) {
+                    //conver to an answering belief/goal now that the absolute truth has been determined
+
+
+                    byte answerPunc;
+                    if (punc == QUESTION) answerPunc = BELIEF;
+                    else answerPunc = GOAL;
+
+                    t = Task.clone(input,
+                            input.term(),
+                            $.t(y==True ? 1 : 0, n.confDefault(answerPunc)),
+                            answerPunc,
+                            input.start(), input.end());
+
+                } else
                 {
 
                     return false;

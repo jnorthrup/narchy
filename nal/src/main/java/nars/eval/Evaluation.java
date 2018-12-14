@@ -11,8 +11,10 @@ import nars.op.mental.Inperience;
 import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
+import nars.term.Termlike;
 import nars.term.atom.Atom;
 import nars.term.atom.Bool;
+import nars.term.util.transform.TermTransform;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +26,7 @@ import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 import static nars.$.$$;
+import static nars.Op.PROD;
 
 public class Evaluation {
 
@@ -218,6 +221,15 @@ public class Evaluation {
                     if (!removeEntry && eval) {
                         Functor func = (Functor) a.sub(1);
                         Subterms args = a.sub(0).subterms();
+                        if (canEval(args)) {
+                            //evaluate subterms recursively
+                            args = args.transformSubs(new TermTransform() {
+                                @Override
+                                public Term transform(Term x) {
+                                    return Evaluation.solveFirst(x, (Function<Atom, Functor>) e.funcResolver);
+                                }
+                            }, PROD);
+                        }
 
                         z = func.apply(this, args);
                         if (z == Bool.Null) {
@@ -342,8 +354,12 @@ public class Evaluation {
      * returns first result. returns null if no solutions
      */
     public static Term solveFirst(Term x, NAR n) {
+        return solveFirst(x, n::functor);
+    }
+
+    public static Term solveFirst(Term x, Function<Atom,Functor> resolver) {
         Term[] y = new Term[1];
-        Evaluation.eval(x, n, (what) -> {
+        Evaluation.eval(x, resolver, (what) -> {
             if (what instanceof Bool) {
                 if (y[0]!=null)
                     return true; //ignore and continue try to find a non-bool solution
@@ -485,7 +501,7 @@ public class Evaluation {
         }
     }
 
-    public static boolean canEval(Term x) {
+    public static boolean canEval(Termlike x) {
         return x.hasAll(Op.FuncBits);
     }
 

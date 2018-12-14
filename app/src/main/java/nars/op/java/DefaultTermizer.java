@@ -273,9 +273,7 @@ public class DefaultTermizer implements Termizer {
      * generic instance term representation
      */
     public static Term instanceTerm(Object o) {
-
-
-        return $.the(System.identityHashCode(o), 36);
+        return $.p(System.identityHashCode(o), 36);
     }
 
     @Nullable

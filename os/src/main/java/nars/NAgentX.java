@@ -87,7 +87,7 @@ abstract public class NAgentX extends NAgent {
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, float clockFPS) {
-        return runRT(init, -1, clockFPS, clockFPS);
+        return runRT(init, -1, 2*clockFPS, clockFPS);
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, int threads, float narFPS, float durFPS) {
@@ -213,10 +213,10 @@ abstract public class NAgentX extends NAgent {
 
                         //new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
                         new HijackConceptIndex(
-                                128 * 1024,
+
                                 //192 * 1024,
                                 //128 * 1024,
-                                //64 * 1024,
+                                64 * 1024,
                                 //32 * 1024,
                                 //8 * 1024,
                                 4)
@@ -372,9 +372,9 @@ abstract public class NAgentX extends NAgent {
     public static void initPlugins(NAR n) {
 
 
-        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
+        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8
 
-                "motivation.nal"
+                //"motivation.nal"
                 //"equivalence.nal"
                 //  "induction.goal.nal"
         ));
@@ -387,9 +387,9 @@ abstract public class NAgentX extends NAgent {
                 Task::isInput,
                 //t->true,
                 8, 64);
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF,
-                t->!t.isInput(),
-                3, 8);
+//        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF,
+//                t->!t.isInput(),
+//                3, 8);
 //        {
 //
 //            SpaceGraph.window(

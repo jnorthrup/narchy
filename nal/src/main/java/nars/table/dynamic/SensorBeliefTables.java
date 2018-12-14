@@ -124,10 +124,11 @@ public class SensorBeliefTables extends BeliefTables {
 
             double gapDurs = ((double)(nextStart - lastEnd)) / dur;
             if (gapDurs <= series.series.stretchDurs()) {
+                double stretchDurs = ((double) (nextEnd - lastStart)) / dur;
+                boolean stretchable = (stretchDurs <= series.series.latchDur());
 
                 if (next!=null) {
-                    double stretchDurs = ((double) (nextEnd - lastStart)) / dur;
-                    if (stretchDurs <= series.series.latchDur()) {
+                    if (stretchable) {
                         Truth lastEnds = last.truth(lastEnd, 0);
                         if (lastEnds.equals(next)) {
                             //stretch
@@ -141,14 +142,19 @@ public class SensorBeliefTables extends BeliefTables {
                 long midGap = Math.max(lastEnd, (lastEnd + nextStart)/2L);
                 assert(midGap >= lastEnd): lastEnd + " " + midGap + ' ' + nextStart;
                 last.setEnd(midGap);
-                if (next == null) {
-                    return last; //TODO check right time
-                }
+
 
                 nextStart = midGap+1; //Tense.dither(midGap, nar);
                 //midGap+1; //start the new task directly after the midpoint between its start and the end of the last task
                 nextEnd = Math.max(nextStart, nextEnd);
                 stretchPrev = false;
+
+                if (next == null) {
+                    if (stretchable)
+                        return last;
+                    else
+                        return null;
+                }
 
             } else {
 

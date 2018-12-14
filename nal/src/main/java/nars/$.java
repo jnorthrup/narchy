@@ -446,7 +446,7 @@ public enum $ {
     /**
      * gets the atomic term of an integer, with specific radix (up to 36)
      */
-    public static Atom the(int i, int radix) {
+    public static Atom iRadix(int i, int radix) {
         return (Atom) Atomic.the(Integer.toString(i, radix));
     }
 

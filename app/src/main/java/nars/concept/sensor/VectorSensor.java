@@ -70,7 +70,6 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
         float confDefault = nar.confDefault(BELIEF);
         float min = nar.confMin.floatValue();
 
-        int dur = VectorSensor.this.nar.dur();
         return updateSensor(last, now, (p, n) -> {
             float c = confDefault;// * Math.abs(n - 0.5f) * 2f;
             return c > min ? $.t(n, c) : null;

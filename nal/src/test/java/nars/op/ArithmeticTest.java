@@ -8,6 +8,7 @@ import nars.Narsese;
 import nars.term.Term;
 import nars.term.atom.Int;
 import nars.test.TestNAR;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
@@ -98,6 +99,8 @@ class ArithmeticTest {
         assertSolves("(&&,(#1,add(#2,1)),equal(#2,3),(#1,#2))", "((#1,4)&&(#1,3))");
 
     }
+
+    @Disabled
     @Test
     void testSimBackSubstitution() throws Narsese.NarseseException {
         assertSolves("(&&,(#1,#2),(#2 <-> 3))", "(#1,3)");
@@ -147,13 +150,13 @@ class ArithmeticTest {
         NAR n = NARS.tmp(6);
         new Arithmeticize.ArithmeticIntroduction( n, 16);
 
-        final int cycles = 500;
+        final int cycles = 1500;
 
         TestNAR t = new TestNAR(n);
         t.confTolerance(0.8f);
         n.freqResolution.set(0.1f);
-        n.termVolumeMax.set(12);
-        //t.log();
+        n.termVolumeMax.set(19);
+        t.log();
 
 
         for (int a = 0; a <= 2; a++) {

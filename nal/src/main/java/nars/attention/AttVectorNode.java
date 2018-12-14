@@ -1,15 +1,16 @@
 package nars.attention;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
 import jcog.Paper;
-import jcog.math.RecycledSummaryStatistics;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.term.Termed;
-import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 
 import java.util.Objects;
 import java.util.stream.Stream;
+
+import static nars.Op.BELIEF;
 
 /**
  * attention distribution node
@@ -31,10 +32,10 @@ public class AttVectorNode extends AttNode {
 //    float decay = 0.01f, grow = 0.01f/2, decaySlow = decay/2;
 
 
-    final RecycledSummaryStatistics pris = new RecycledSummaryStatistics();
-    final FloatArrayList pp = new FloatArrayList();
+//    final RecycledSummaryStatistics pris = new RecycledSummaryStatistics();
+//    final FloatArrayList pp = new FloatArrayList();
 
-    float priMin = 0.01f;
+//    float priMin = 0.01f;
 
     public AttVectorNode(Object id, Iterable<? extends Termed> components) {
         super(id);
@@ -46,36 +47,44 @@ public class AttVectorNode extends AttNode {
         return Streams.stream(components).map(nar::concept).filter(Objects::nonNull);
     }
 
-    private float elementIdeal(int n) {
-        return 1; //each component important as a top level concept
-        //return 1f / Util.sqrt(n); //shared by sqrt of components
-        //return 1f / n; //shared by all components
+    protected float elementIdeal(int n, NAR nar) {
+        float i;
+        i = 1; //each component important as a top level concept
+        //i = 1f / Util.sqrt(n); //shared by sqrt of components
+        //i = 1f / n; //shared by all components
+        return elementPri(nar) * i;
+    }
+
+    protected float elementPri(NAR nar) {
+        return nar.priDefault(BELIEF);
     }
 
     @Override protected float myDemand(NAR n) {
 
 
-        pris.clear();
-        pp.clear();
+//        pris.clear();
+//        pp.clear();
+//
+//        final float[] dev = {0};
+//
+//        concepts(n).forEach(c -> {
+//            pp.add(n.concepts.pri(c, 0));
+//        });
+//        if (pp.isEmpty())
+//            return 0;
+//
+//        float mean = (float) pp.average();
+//
+//        pp.forEach(p -> {
+//            dev[0] += Math.abs(p - mean);
+//            pris.accept(p);
+//        });
+//        long N = pris.getN();
 
-        final float[] dev = {0};
+        long N = Iterables.size(this.components);
 
-        concepts(n).forEach(c -> {
-            pp.add(n.concepts.pri(c, 0));
-        });
-        if (pp.isEmpty())
-            return 0;
-
-        float mean = (float) pp.average();
-
-        pp.forEach(p -> {
-            dev[0] += Math.abs(p - mean);
-            pris.accept(p);
-        });
-
-        long N = pris.getN();
-
-        return Math.max(priMin, elementIdeal((int) N) - mean) * N;
+        //return Math.max(priMin, elementIdeal((int) N) - mean) * N;
+        return elementIdeal((int) N, n) * N;
 
 //
 //        dev[0] /= N;

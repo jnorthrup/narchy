@@ -489,20 +489,36 @@ public class TrackXY_NAR extends NAgentX {
     private void actionPushButtonMutex() {
         if (track.grid.height() > 1) {
             actionPushButtonMutex($.the("up"), $.the("down"), (b) -> {
-                if (b)
+                if (b) {
+                    float pcy = track.cy;
                     track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
+                    return track.cy != pcy;
+                } else
+                    return false;
             }, (b) -> {
-                if (b)
+                if (b) {
+                    float pcy = track.cy;
                     track.cy = Util.clamp(track.cy - track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
+                    return track.cy != pcy;
+                } else
+                    return false;
             });
         }
 
         actionPushButtonMutex($.the("left"), $.the("right"), (b) -> {
-            if (b)
+            if (b) {
+                float pcx = track.cx;
                 track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
+                return track.cx != pcx;
+            } else
+                return false;
         }, (b) -> {
-            if (b)
+            if (b) {
+                float pcx = track.cx;
                 track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
+                return track.cx != pcx;
+            } else
+                return false;
         });
     }
 

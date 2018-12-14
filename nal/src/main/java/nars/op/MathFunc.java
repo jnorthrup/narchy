@@ -25,7 +25,7 @@ public enum MathFunc { ;
                 @Nullable protected Term preFilter(Term x, int xx, boolean xi, Term y, int yy, boolean yi) {
 
                     if (!(xi && yi) && x.equals(y))
-                        return $.func("mul", x, Int.TWO); 
+                        return $.func((Atomic) mul.term, x, Int.TWO);
 
                     if (xi && xx == 0)
                         return y;

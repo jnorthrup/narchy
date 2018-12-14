@@ -3,7 +3,6 @@ package nars.attention;
 import jcog.data.atomic.AtomicFloat;
 import jcog.pri.Pri;
 import jcog.pri.Prioritizable;
-import jcog.pri.ScalarValue;
 import jcog.tree.atomic.AtomicTreeNode;
 import nars.$;
 import nars.NAR;
@@ -39,24 +38,27 @@ public class AttNode extends AtomicTreeNode<AttNode> {
         float myDemand = myDemand(nar);
         float childrenDemand = childDemand(nar);
         float totalDemand = myDemand + childrenDemand;
-        float demandNet = Math.max(0, totalDemand - supply.pri());
-        this.demand.set(demandNet);
+        //float demandNet = Math.max(0, totalDemand - supply.pri());
+        this.demand.set(totalDemand);
 
+    // AUTO SUPPLY
+        childrenStream().forEach(c -> c.supply.pri(c.demand.floatValue()));
 
-        if (childrenDemand > ScalarValue.EPSILON) {
-            float totalSupply = supply.pri();
-            float childrenSupply = totalSupply * (totalDemand > ScalarValue.EPSILON ? childrenDemand / totalDemand : 0);
-            childrenStream().forEach(c -> {
-                float cd = c.demand.floatValue();
-                if (cd > ScalarValue.EPSILON) {
-                    float dFrac = cd / (childrenDemand);
-                    float dSub = Math.min(cd, dFrac * childrenSupply);
-                    if (dSub > ScalarValue.EPSILON) {
-                        float givenToChild = c.supply.take(this.supply, dSub, true, false);
-                    }
-                }
-            });
-        }
+    // RESTRICT
+//        if (childrenDemand > ScalarValue.EPSILON) {
+//            float totalSupply = supply.pri();
+//            float childrenSupply = totalSupply * (totalDemand > ScalarValue.EPSILON ? childrenDemand / totalDemand : 0);
+//            childrenStream().forEach(c -> {
+//                float cd = c.demand.floatValue() - c.supply.pri();
+//                if (cd > ScalarValue.EPSILON) {
+//                    float dFrac = cd / (childrenDemand);
+//                    float dSub = Math.min(cd, dFrac * childrenSupply);
+//                    if (dSub > ScalarValue.EPSILON) {
+//                        float givenToChild = c.supply.take(this.supply, dSub, true, false);
+//                    }
+//                }
+//            });
+//        }
     }
 
     protected float childDemand(NAR nar) {

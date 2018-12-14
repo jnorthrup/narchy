@@ -21,6 +21,7 @@ import nars.term.atom.Atomic;
 import nars.time.Tense;
 import nars.video.AutoclassifiedBitmap;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
+import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import javax.swing.*;
@@ -54,7 +55,7 @@ public class FZero extends NAgentX {
         NAgentX.runRT(n -> {
             n.freqResolution.set(0.02f);
             return new FZero($.the("fz"), n);
-        }, -1, fps, fps);
+        }, fps);
 
 //        int instances = 2;
 //        for (int i = 0; i < instances; i++)
@@ -106,7 +107,7 @@ public class FZero extends NAgentX {
 //        {
             int nx = 4;
             AutoclassifiedBitmap camAE = new AutoclassifiedBitmap(
-                    $.p($.the("cae"), id), vision, nx, nx, (subX, subY) -> {
+                    null /*$.p($.the("cae"), id)*/, vision, nx, nx, (subX, subY) -> {
                 return new float[]{/*cc.X, cc.Y*/};
             }, 8, this);
             camAE.alpha(0.03f);
@@ -322,7 +323,7 @@ public class FZero extends NAgentX {
 
         this.actionPushButtonMutex(
                 $.inh($$("left"), id), $.inh($$("right"), id),
-                l -> fz.left = l, r -> fz.right = r
+                ((BooleanProcedure) l -> fz.left = l), r -> fz.right = r
         );
     }
 

@@ -19,6 +19,7 @@ import nars.gui.sensor.VectorSensorView;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.space2d.Surface;
@@ -154,7 +155,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
     /**
      * metabits must consistently return an array of the same size, since now the size of this autoencoder is locked to its dimension
      */
-    public AutoclassifiedBitmap(Term root, IntIntToFloatFunction pixIn, int pw, int ph, int sw, int sh, MetaBits metabits, int features, NAgent agent) {
+    public AutoclassifiedBitmap(@Nullable Term root, IntIntToFloatFunction pixIn, int pw, int ph, int sw, int sh, MetaBits metabits, int features, NAgent agent) {
         super(agent.nar());
 
         NAR nar = agent.nar();
@@ -230,8 +231,9 @@ public class AutoclassifiedBitmap extends VectorSensor {
      * @param y    y coordinate
      * @param f    feature
      */
-    protected Term coord(Term root, int x, int y, int f) {
-        return $.inh($.p(x, y), feature[f]);
+    protected Term coord(@Nullable Term root, int x, int y, int f) {
+        return root!=null ? $.p(root, feature[f], $.p(x, y)) : $.p(feature[f], $.p(x, y));
+        //return $.inh(component, feature[f]);
         //return $.inh($.p($.p($.the(x), $.the(y)), root), feature[f]);
         //return $.inh($.p(feature[f], $.p($.the(x), $.the(y))), root);
         //return $.funcImageLast(root, $.p($.the(x), $.the(y)), feature[f]);

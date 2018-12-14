@@ -41,6 +41,8 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
+import static nars.term.atom.Bool.False;
+import static nars.term.atom.Bool.True;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -889,10 +891,12 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
                 @Override
                 protected Term bool(Term y, Bool b) {
                     //filter non-true
-                    if (b == Bool.True && y.equals(x))
-                        return y;
+                    if (b == True && y.equals(x))
+                        return True; //y;
+                    else if (b == False && y.equals(x))
+                        return False; //y.neg();
                     else
-                        return Bool.Null;
+                        return Bool.Null; //TODO
                 }
             };
             e.eval(new Evaluator(n::functor), x);

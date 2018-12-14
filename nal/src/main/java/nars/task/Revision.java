@@ -11,6 +11,7 @@ import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.util.Conj;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
@@ -21,8 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Random;
-
+import static nars.Op.CONJ;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -81,12 +81,11 @@ public class Revision {
 
 
         if (ao.temporal) {
-//            if (ao == CONJ) {
-//                return Conj.conjIntermpolate(a, b, aProp, bOffset);
-//            } else if (ao == IMPL) {
+            if (ao == CONJ && curDepth == 1) {
+                return Conj.conjIntermpolate(a, b, aProp, bOffset); //root only: conj sequence merge
+            } else  {
                 return dtMergeDirect(a, b, aProp, curDepth, nar);
-//            } else
-//                throw new UnsupportedOperationException();
+            }
         } else {
 
             Subterms aa = a.subterms(), bb = b.subterms();
@@ -207,13 +206,13 @@ public class Revision {
     //    static Term choose(Term a, Term b, float aProp, /*@NotNull*/ Random rng) {
 //        return (rng.nextFloat() < aProp) ? a : b;
 //    }
-    static int choose(int a, int b, float aProp, /*@NotNull*/ Random rng) {
-        return rng.nextFloat() < aProp ? a : b;
-    }
-
-    static long choose(long a, long b, float aProp, /*@NotNull*/ Random rng) {
-        return rng.nextFloat() < aProp ? a : b;
-    }
+//    static int choose(int a, int b, float aProp, /*@NotNull*/ Random rng) {
+//        return rng.nextFloat() < aProp ? a : b;
+//    }
+//
+//    static long choose(long a, long b, float aProp, /*@NotNull*/ Random rng) {
+//        return rng.nextFloat() < aProp ? a : b;
+//    }
 
 //    /*@NotNull*/
 //    public static Term[] choose(/*@NotNull*/ Term[] a, Term[] b, float aBalance, /*@NotNull*/ Random rng) {

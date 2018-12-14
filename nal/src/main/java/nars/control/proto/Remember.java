@@ -194,7 +194,7 @@ public class Remember extends AbstractTask {
      */
     protected void add(NAR n) {
         //if (!(input instanceof DynTruth.DynamicTruthTask))
-            ((TaskConcept) concept).add(this, n);
+            concept.add(this, n);
     }
 
 

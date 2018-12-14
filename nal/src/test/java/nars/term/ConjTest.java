@@ -920,10 +920,6 @@ public class ConjTest {
         assertEquals(Bool.False, $$("((--,chronic(g))&&((--,up)&|false))"));
     }
 
-    @Test
-    public void testFactorDternalComponentIntoTemporals1() {
-        assertEquals("((a&|x) &&+1 (a&|y))", $$("((x &&+1 y) && a)").toString());
-    }
 
     @Test
     public void testParallelFromEternalIfInXTERNAL() {

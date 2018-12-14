@@ -56,7 +56,20 @@ public abstract class Param {
 
 
     /** in Revision.dtDiff measurement */
-    public static final float TRUTHPOLATION_INTERMPOLATION_THRESH = 0.5f;
+    public static final float TRUTHPOLATION_INTERMPOLATION_THRESH =
+            //0.5f;
+            1f;
+
+    /**
+     * when merging dt's, ratio of the maximum difference in dt allowed
+     * ratio of the dt difference compared to the smaller dt of the two being merged
+     * probably values less than 0.5 are safe
+     */
+    public final FloatRange intermpolationRangeLimit = new FloatRange(
+            //0.5f
+            1f
+            , 0, 1);
+
 
     public static final int TaskLinkSpreadDefault =
             //32;
@@ -170,10 +183,11 @@ public abstract class Param {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-        //(t,b)->Util.unitize(t+b);
-        Util::and;
-        //Util::or;
+        (t,b)->Util.unitize(t+b);
         //Math::max;
+        //Math::min;
+        //Util::and;
+        //Util::or;
         //Util::mean;
 
 
@@ -185,7 +199,7 @@ public abstract class Param {
     /**
      * maximum time (in durations) that a signal task can latch its last value before it becomes unknown
      */
-    public final static float SIGNAL_LATCH_DUR = 128;
+    public final static float SIGNAL_LATCH_DUR = 64;
     public final static float SIGNAL_STRETCH_DUR =
             //0.5f;
             //1f;
@@ -200,20 +214,12 @@ public abstract class Param {
     public final static float HAPPINESS_RE_SENSITIZATION_RATE_FAST = 0.0004f;
 
 
-    /**
-     * when merging dt's, ratio of the maximum difference in dt allowed
-     * ratio of the dt difference compared to the smaller dt of the two being merged
-     * probably values less than 0.5 are safe
-     */
-    public final FloatRange intermpolationRangeLimit = new FloatRange(
-            //0.5f
-            1f
-            , 0, 1);
+
 
 
     public final TaskBuffer input =
             //new DerivedTasks.DerivedTasksMap(4096);
-            new TaskBuffer.BagTasksBuffer(512, 0.25f);
+            new TaskBuffer.BagTasksBuffer(512, 0.2f);
             //new TaskBuffer.BagPuncTasksBuffer(1024, 0.1f);
 
 
@@ -256,7 +262,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(6, 1, 32);
 

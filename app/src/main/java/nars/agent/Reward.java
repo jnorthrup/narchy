@@ -19,6 +19,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
+import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
@@ -87,11 +88,16 @@ public abstract class Reward implements Termed, Iterable<Signal> {
     public void alwaysWantEternally(Term goal, float conf) {
         Task t = new NALTask(goal, GOAL, $.t(1f, conf), nar().time(),
                 ETERNAL, ETERNAL,
-                nar().evidence()
-                //Stamp.UNSTAMPED
+                //nar().evidence()
+                Stamp.UNSTAMPED
         );
 
         AttNode a = new AttVectorNode($.func(Inperience.want, this.term(), goal), List.of(t)) {
+
+            @Override
+            protected float elementPri(NAR nar) {
+                return nar.priDefault(GOAL);
+            }
 
             @Override
             public void update(NAR nar) {

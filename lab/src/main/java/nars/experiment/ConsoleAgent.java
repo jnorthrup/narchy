@@ -3,6 +3,7 @@ package nars.experiment;
 import com.googlecode.lanterna.TextCharacter;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
+import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -17,6 +18,8 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.console.VectorTextGrid;
 
 import java.util.Arrays;
+
+import static nars.$.$$;
 
 /**
  * executes a unix shell and perceives the output as a grid of symbols
@@ -94,31 +97,38 @@ public class ConsoleAgent extends NAgentX {
         W = new TestConsole(
                 nar.self(),
                 R.W(), R.H(), alphabet) {
-            {
-                actionTriState($.func("go", Atomic.the("x")), (d) -> {
-                    switch (d) {
-                        case -1:
-                            Left();
-                            break;
 
-                        case +1:
-                            Right();
-                            break;
-                    }
-                });
-                actionTriState($.func("go", Atomic.the("y")), (d) -> {
-                    switch (d) {
-                        case -1:
-                            Up();
-                            break;
-                        case +1:
-                            Down();
-                            break;
-                    }
-                });
+            final FloatRange moveThresh = new FloatRange(0.75f, 0, 1f);
+            final FloatRange writeThresh = new FloatRange(0.75f, 0, 1f);
+
+            {
+
+                actionPushButtonMutex($$("left"), $$("right"), ()->Left(), ()->Right(), moveThresh::floatValue);
+                actionPushButtonMutex($$("up"), $$("down"), ()->Up(), ()->Down(), moveThresh::floatValue);
                 for (char c : alphabet) {
-                    actionPushButton($.func(WRITE, $.the(c)), () -> write(c));
+                    actionPushButton($.func(WRITE, $.the(c)), writeThresh::floatValue, () -> write(c));
                 }
+//                actionTriState($.func("go", Atomic.the("x")), (d) -> {
+//                    switch (d) {
+//                        case -1:
+//                            Left();
+//                            break;
+//
+//                        case +1:
+//                            Right();
+//                            break;
+//                    }
+//                });
+//                actionTriState($.func("go", Atomic.the("y")), (d) -> {
+//                    switch (d) {
+//                        case -1:
+//                            Up();
+//                            break;
+//                        case +1:
+//                            Down();
+//                            break;
+//                    }
+//                });
 
             }
 

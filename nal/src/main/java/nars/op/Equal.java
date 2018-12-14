@@ -53,7 +53,9 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
         if (p != null)
             return p;
 
-        if (x.hasVars() || y.hasVars()) {
+        boolean xHasVar = x.hasVars();
+        boolean yHasVar = y.hasVars();
+        if (xHasVar || yHasVar) {
             //algebraic solutions TODO use symbolic algebra system
             Term xf = Functor.func(x);
             if (xf.equals(MathFunc.add)) {
@@ -83,7 +85,7 @@ public final class Equal extends Functor.InlineCommutiveBinaryBidiFunctor implem
 
             //indeterminable in non-evaluation context
             return null;
-        } else if (xVar && yVar) {
+        } else if (xHasVar && yHasVar) {
             //indeterminable
             return null;
         } else {

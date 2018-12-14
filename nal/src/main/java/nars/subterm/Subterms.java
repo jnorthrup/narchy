@@ -1020,10 +1020,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
 
 
-        if (y != null) {
-            return y.commit(this, superOp);
-        } else
-            return this;
+        return y != null ? y.commit(this, superOp) : this;
     }
 
     default boolean these() {

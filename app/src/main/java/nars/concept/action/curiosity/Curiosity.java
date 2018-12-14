@@ -43,7 +43,7 @@ public class Curiosity {
         Revise {
             @java.lang.Override
             public Truth inject(Truth actionTruth, Truth curi) {
-                return actionTruth == null ? curi : Revision.revise(curi, actionTruth);
+                return actionTruth == null ? curi : (curi == null ?  actionTruth : Revision.revise(curi, actionTruth));
             }
         },
         Override {

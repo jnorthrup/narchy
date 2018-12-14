@@ -28,11 +28,11 @@ public class MetaAgent {
 
 
 
-    int startupDurs = 20000;
+    int startupDurs = 10000;
 
-    float curiMax = 0.5f;
-    float curiMinOld = 0.001f,
-            curiMinYoung = 0.05f;
+    float curiMax = 0.2f;
+    float curiMinOld = 0.01f,
+            curiMinYoung = 0.1f;
 
 
     private final GoalActionConcept curiosityAction;

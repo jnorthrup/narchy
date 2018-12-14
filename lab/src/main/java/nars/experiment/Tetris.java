@@ -19,6 +19,7 @@ import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.experiment.Tetris.TetrisState.*;
 import static spacegraph.SpaceGraph.window;
@@ -32,13 +33,18 @@ public class Tetris extends NAgentX {
 
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
-    static boolean easy = false;
+
     private final Bitmap2D grid;
+
+    private final boolean opjects = true;
+
     private boolean canFall = false;
 
     public final FloatRange timePerFall = new FloatRange(1f, 1f, 32f);
+    public final AtomicBoolean easy;
+
     public final Bitmap2DSensor<Bitmap2D> pixels;
-    private TetrisState state;
+    private final TetrisState state;
 
 
     public Tetris(NAR nar) {
@@ -64,23 +70,21 @@ public class Tetris extends NAgentX {
                 //FrameTrigger.durs(1),
                 n);
 
-        state = new TetrisState(width, height, timePerFall) {
-            @Override
-            protected int nextBlock() {
-                if (easy) {
-                    return 1; //square
-                } else {
-                    return super.nextBlock();
-                }
-            }
-        };
+        state = opjects ?
+                    actionsReflect() :
+                    new TetrisState(width, height, timePerFall);
+
+        easy = state.easy;
 
         onFrame(() -> {
             state.timePerFall = Math.round(this.timePerFall.floatValue());
             state.next();
         });
+        rewardNormalized("score", 0 /* ignore decrease */, 1,
+                state::score
+                //new FloatFirstOrderDifference(n::time, state::score).nanIfZero()
+        );
         rewardNormalized("height", 0, 1, () ->
-                //state.score()
                 1 - ((float) state.rowsFilled) / state.height
         );
         rewardNormalized("density", 0, 1, () -> {
@@ -116,7 +120,7 @@ public class Tetris extends NAgentX {
 
 
 
-        actionsReflect();
+
 
         actionsPushButton();
         //actionsToggle();
@@ -132,7 +136,7 @@ public class Tetris extends NAgentX {
 
 
         NAgentX.runRT(n -> {
-            n.freqResolution.set(0.03f);
+            n.freqResolution.set(0.02f);
 
 //            new Arithmeticize.ArithmeticIntroduction(32, n);
 
@@ -142,7 +146,7 @@ public class Tetris extends NAgentX {
             //new Abbreviation(n, ("z"), 4, 5,  8);
 
             return new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
-        }, -1, FPS, FPS);
+        }, FPS);
 
 //        int instances = 2;
 //        for (int i = 0; i < instances; i++)
@@ -156,7 +160,7 @@ public class Tetris extends NAgentX {
 
     }
 
-    private void actionsReflect() {
+    private TetrisState actionsReflect() {
 
         Opjects oo = new Opjects(nar);
         oo.exeThresh.set(0.51f);
@@ -164,9 +168,9 @@ public class Tetris extends NAgentX {
 
         Opjects.methodExclusions.add("toVector");
 
-        state = oo.a("tetris", TetrisState.class, tetris_width, tetris_height, 2);
-
+        return oo.a("tetris", TetrisState.class, tetris_width, tetris_height, 2);
     }
+
     void actionsPushButton() {
         final Term LEFT =
                 $.the("left");
@@ -181,65 +185,21 @@ public class Tetris extends NAgentX {
                 $.the("fall");
                 //$.inh("fall", id);
 
-        int debounceDurs = 1;
-        Runnable leftAction = () -> state.act(TetrisState.LEFT);
-        Runnable rightAction = () -> state.act(TetrisState.RIGHT);
-
-//        actionPushButton(LEFT, debounce(leftAction, debounceDurs);
-//        actionPushButton(RIGHT, debounce(() -> state.act(TetrisState.RIGHT), debounceDurs));
-
-
-        actionPushButtonMutex(LEFT, RIGHT, leftAction, rightAction);
-
-        actionPushButton(ROT, debounce(() -> state.act(CW), debounceDurs));
-
-        if (canFall)
-            actionPushButton(FALL, debounce(() -> state.act(TetrisState.FALL), debounceDurs*2));
-
-    }
-    void actionsToggle() {
-        final Term LEFT = $.inh("left", id);
-        final Term RIGHT = $.inh("right", id);
-        final Term ROT = $.inh("rotate", id);
-        final Term FALL = $.inh("fall", id);
-
         actionPushButtonMutex(LEFT, RIGHT,
-                b -> state.act(TetrisState.LEFT, b),
-                b -> state.act(TetrisState.RIGHT, b));
+                b -> { if (b) { return state.act(TetrisState.LEFT); } else return false; },
+                b -> { if (b) { return state.act(TetrisState.RIGHT); } else return false; }
+        );
 
         int debounceDurs = 1;
-
-        actionPushButton(ROT, debounce(() -> state.act(CW), debounceDurs));
+        actionPushButton(ROT, debounce(b -> { if (b) { return state.act(TetrisState.CW); } else return false; }, debounceDurs));
 
         if (canFall)
-            actionPushButton(FALL, debounce(() -> state.act(TetrisState.FALL), debounceDurs*2));
+            actionPushButton(FALL, debounce(b -> { if (b) { return state.act(TetrisState.FALL); } else return false; }, debounceDurs*2));
 
     }
 
-    public BooleanToBooleanFunction debounce(Runnable f, float durations) {
-        return debounce((x)-> { if (x) f.run();  }, durations);
-    }
 
-    public BooleanToBooleanFunction debounce(BooleanProcedure f, float durations) {
-        return debounce((x)-> { f.value(x); return x; }, durations);
-    }
-    public BooleanToBooleanFunction debounce(BooleanToBooleanFunction f, float durations) {
-        NAR n = nar();
-        final long[] last = {Math.round(n.time() - durations * n.dur())};
 
-        return (x)->{
-            if (x) {
-                long now = n.time();
-                if (now - last[0] >= durations * n.dur()) {
-                    if (f.valueOf(true)) {
-                        last[0] = now;
-                        return true;
-                    }
-                }
-            }
-            return f.valueOf(false);
-        };
-    }
 
     void actionsTriState() {
 
@@ -572,6 +532,8 @@ public class Tetris extends NAgentX {
         public int timePerFall;
         Vector<TetrisPiece> possibleBlocks = new Vector<>();
         private int rowsFilled;
+
+        public final AtomicBoolean easy = new AtomicBoolean(false);
 
 
         public TetrisState(int width, int height, int timePerFall) {
@@ -939,7 +901,12 @@ public class Tetris extends NAgentX {
         }
 
         protected int nextBlock() {
-            return randomGenerator.nextInt(possibleBlocks.size());
+            if (easy.get()) {
+                return 1; //square
+            } else {
+                return randomGenerator.nextInt(possibleBlocks.size());
+            }
+
         }
 
         public void checkScore() {

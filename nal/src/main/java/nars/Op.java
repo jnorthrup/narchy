@@ -495,10 +495,11 @@ public enum Op {
 
                 boolean repeating = xx.length == 2 && xx[0].equals(xx[1]);
 
-                if (baseConcurrent) {
-                    if (!repeating)
-                        throw new TermException(CONJ, baseDT, xx, "ambiguous DT change from concurrent to non-concurrent and non-repeating");
-
+                if (Param.DEBUG_EXTRA) {
+                    if (baseConcurrent) {
+                        if (!repeating)
+                            throw new TermException(CONJ, baseDT, xx, "ambiguous DT change from concurrent to non-concurrent and non-repeating");
+                    }
                 }
 
                 if (repeating) {

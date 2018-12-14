@@ -5,15 +5,14 @@ import jcog.math.FloatSupplier;
 import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
-import nars.Narsese;
 import nars.Param;
+import nars.agent.util.UnipolarMotor;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.GoalActionConcept;
-import nars.table.BeliefTables;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.eclipse.collections.api.block.function.primitive.BooleanToBooleanFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
+import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +20,6 @@ import java.util.function.IntConsumer;
 import java.util.function.IntPredicate;
 
 import static jcog.Util.sqr;
-import static jcog.Util.unitize;
 import static nars.Op.BELIEF;
 
 /**
@@ -193,11 +191,14 @@ public interface NAct {
     }
 
     default void actionPushButton(Term s, Runnable r) {
-        actionPushButton(s, (b) -> {
-            if (b) {
+        actionPushButton(s, midThresh(), r);
+    }
+
+    default void actionPushButton(Term s, FloatSupplier thresh, Runnable r) {
+        actionPushButton(s, b -> {
+            if (b)
                 r.run();
-            }
-        });
+        }, thresh);
     }
 
     default GoalActionConcept actionToggle(Term s, BooleanProcedure onChange) {
@@ -225,28 +226,62 @@ public interface NAct {
     }
 
     default GoalActionConcept actionPushButton(Term t, BooleanProcedure on) {
-        return actionPushButton(t, (x) -> {
+        return actionPushButton(t, on, midThresh());
+    }
+
+    default GoalActionConcept actionPushButton(Term t, BooleanProcedure on, FloatSupplier thresh) {
+        return actionPushButton(t, x -> {
             on.value(x);
             return x;
-        });
+        }, thresh);
     }
 
-
-    default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, Runnable L, Runnable R) {
-        return actionPushButtonMutex(l, r, (x)->{ if (x) L.run(); }, (x)->{if (x) R.run(); } );
+    /** normally, feedback indicating whether the action caused any effect is HELPFUL so this method is not going to be as good as the BooleanPredicate one */
+    @Deprecated default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, Runnable L, Runnable R) {
+        return actionPushButtonMutex(l, r, L, R, midThresh());
     }
 
-    /** TODO shared AttNode */
-    default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
+    /** normally, feedback indicating whether the action caused any effect is HELPFUL so this method is not going to be as good as the BooleanPredicate one */
+    @Deprecated default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, Runnable L, Runnable R, FloatSupplier thresh) {
+        return actionPushButtonMutex(l, r, x -> {
+            if (x) L.run();
+        }, x -> {
+            if (x) R.run();
+        }, thresh);
+    }
 
-        float thresh =
+    /** normally, feedback indicating whether the action caused any effect is HELPFUL so this method is not going to be as good as the BooleanPredicate one */
+    @Deprecated default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
+        return actionPushButtonMutex(l, r, L, R, midThresh());
+    }
+
+    /** normally, feedback indicating whether the action caused any effect is HELPFUL so this method is not going to be as good as the BooleanPredicate one */
+    @Deprecated default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R, FloatSupplier thresh) {
+        return actionPushButtonMutex(l, r,
+                    x->{ L.value(x); return x; },
+                    x->{ R.value(x); return x; },
+                thresh);
+    }
+
+    default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanPredicate L, BooleanPredicate R) {
+        return actionPushButtonMutex(l, r, L, R, midThresh());
+    }
+
+    /**
+     * TODO shared AttNode
+     */
+    default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanPredicate L, BooleanPredicate R, FloatSupplier thresh) {
+
+        boolean freqOrExp = false;
+
+        float compareThresh =
                 //0;
                 sqr(Param.TRUTH_EPSILON);
-                //0.5f;
-                //0.5f + sqr(Param.TRUTH_EPSILON);
-                //0.66f;
+        //0.5f;
+        //0.5f + sqr(Param.TRUTH_EPSILON);
+        //0.66f;
 
-        float[] lr = new float[] { 0f, 0f };
+        float[] lr = new float[]{0f, 0f};
 
 //        float decay =
 //                //0.5f;
@@ -255,59 +290,19 @@ public interface NAct {
 
         NAR n = nar();
         GoalActionConcept LA = action(l, (b, g) -> {
-            //float ll = g != null ? g.expectation() : Util.lerp(decay, lr[0], 0.5f);
-            //float ll = Math.max(g != null ? /*g.freq()*/ g.expectation() : 0.5f ,  Util.lerp(decay, lr[0], 0.5f));
-            float ll = g != null ? /*g.freq()*/ g.expectation() : 0f;
-            boolean x = ll > 0.5f && ll - lr[1] > thresh;
-            boolean conflict = false;
-//            if (x) {
-//                if (lr[1] >= ll) {
-//                    //conflict = true;
-//                    x = false;
-//                    //ll = 0.5f;
-//                    //stochastic
-//                    //x = nar().random().nextFloat() < (ll / (Param.TRUTH_EPSILON +ll + lr[1]));
-//                    //ll = x ? 1 : 0;
-//                }
-//            }
-            lr[0] =
-                    //x?ll:0f;
-                    //x?ll:0.5f;
-                    ll;
+            float ll = g != null ? (freqOrExp ? g.freq() : g.expectation()) : 0f;
+            lr[0] = ll;
 
-            L.value(x);
-            //System.out.println("L=" + x  + " <- " + ll );
-            return $.t(x ? 1 : 0, n.confDefault(BELIEF));
-            //return $.t(x ? 1 : 0, n.confDefault(BELIEF) * (conflict ? 0.5f : 1f));
-            //return $.t(x ? 1 : 0, n.confDefault(BELIEF) * lr[0]);
-            //if (x) return $.t(x ? 1 : 0, n.confDefault(BELIEF)); else return null;
+            boolean x = (ll > thresh.asFloat()) && (ll - lr[1] > compareThresh);
+            return $.t(L.accept(x) ? 1 : 0, n.confDefault(BELIEF));
+
         });
         GoalActionConcept RA = action(r, (b, g) -> {
-            //float rr = g != null ? g.expectation() : Util.lerp(decay, lr[1], 0.5f);
-            //float rr = Math.max(g != null ? /*g.freq()*/ g.expectation() : 0.5f ,  Util.lerp(decay, lr[1], 0.5f));
-            float rr = g != null ? /*g.freq()*/ g.expectation() : 0f ;
-            boolean x = rr > 0.5f && rr - lr[0] > thresh;
-            boolean conflict = false;
-//            if (x) {
-//                if (lr[0] >= rr ) {
-//                    //conflict = true;
-//                    x = false;
-//                    //rr = 0.5f;
-//                    //stochastic
-//                    //x = nar().random().nextFloat() < (rr / (Param.TRUTH_EPSILON + rr + lr[0]));
-//                    //rr = x ? 1 : 0;
-//                }
-//            }
-            lr[1] =
-                    //x?rr:0f;
-                    //x?rr:0.5f;
-                    rr;
-            R.value(x);
-            //System.out.println("R=" + x  + " <- " + rr );
-            return $.t(x ? 1 : 0, n.confDefault(BELIEF));
-            //return $.t(x ? 1 : 0, n.confDefault(BELIEF) * (conflict ? 0.5f : 1f));
-            //return $.t(x ? 1 : 0, n.confDefault(BELIEF) * lr[1]);
-            //if (x) return $.t(x ? 1 : 0, n.confDefault(BELIEF)); else return null;
+            float rr = g != null ? (freqOrExp ? g.freq() : g.expectation()) : 0f;
+            lr[1] = rr;
+
+            boolean x = (rr > thresh.asFloat()) && (rr - lr[0] > compareThresh);
+            return $.t(R.accept(x) ? 1 : 0, n.confDefault(BELIEF));
         });
 
         for (GoalActionConcept x : new GoalActionConcept[]{LA, RA}) {
@@ -322,17 +317,23 @@ public interface NAct {
 //                    Remember.the(new NALTask(x.term(), BELIEF,
 //                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()), n), n);
 
-            x.resolution(0.5f);
+            //x.resolution(0.5f);
         }
 
         return new GoalActionConcept[]{LA, RA};
     }
 
-    default GoalActionConcept actionPushButton(Term t, BooleanToBooleanFunction on) {
-        return actionPushButton(t, () -> 0.5f + nar().freqResolution.get(), on);
+    default GoalActionConcept actionPushButton(Term t, BooleanPredicate on) {
+        return actionPushButton(t, on, midThresh());
     }
 
-    default GoalActionConcept actionPushButton(Term t, FloatSupplier thresh, BooleanToBooleanFunction on) {
+    default FloatSupplier midThresh() {
+        //return () -> 0.5f + nar().freqResolution.get()/2f; ///<-ok for freq
+        return () -> 0.5f; //<- for exp
+    }
+
+
+    default GoalActionConcept actionPushButton(Term t, BooleanPredicate on, FloatSupplier thresh) {
 
 
         FloatToFloatFunction ifGoalMissing =
@@ -340,21 +341,21 @@ public interface NAct {
 
         GoalActionConcept x = actionUnipolar(t, true, ifGoalMissing, (f) -> {
             boolean posOrNeg = f >= thresh.asFloat();
-            return on.valueOf(posOrNeg) ?
+            return on.accept(posOrNeg) ?
                     1f :
                     0;  //deliberate off
-                    //Float.NaN; //default off
+            //Float.NaN; //default off
         });
-        //x.resolution(1f);
-        {
-            //resting state
-            NAR n = nar();
-            float conf =
-                    n.confMin.floatValue();
-                    //n.confDefault(BELIEF)/4;
-            BeliefTables xb = (BeliefTables) x.beliefs();
-            //BeliefTables xg = (BeliefTables) x.goals();
-            //xg.tables.add(new EternalTable(1));
+        x.resolution(0.5f);
+        //{
+        //resting state
+        //NAR n = nar();
+        //float conf =
+        //        n.confMin.floatValue();
+        //n.confDefault(BELIEF)/4;
+        //BeliefTables xb = (BeliefTables) x.beliefs();
+        //BeliefTables xg = (BeliefTables) x.goals();
+        //xg.tables.add(new EternalTable(1));
 //            xg.tableFirst(EternalTable.class).add(
 //                    Remember.the(new NALTask(x.term(), GOAL,
 //                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()).pri(n), n), n);
@@ -363,31 +364,14 @@ public interface NAct {
 //            xb.tableFirst(EternalTable.class).add(
 //                    Remember.the(new NALTask(x.term(), BELIEF,
 //                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()).pri(n), n), n);
-        }
+        //}
         return x;
-    }
-
-
-    /**
-     * the supplied value will be in the range -1..+1. if the predicate returns false, then
-     * it will not allow feedback through. this can be used for situations where the action
-     * hits a limit or boundary that it did not pass through.
-     * <p>
-     * TODO make a FloatToFloatFunction variation in which a returned value in 0..+1.0 proportionally decreasese the confidence of any feedback
-     */
-
-    default GoalActionConcept action(String s, GoalActionConcept.MotorFunction update) throws Narsese.NarseseException {
-        return action($.$(s), update);
     }
 
 
     default GoalActionConcept action(Term s, GoalActionConcept.MotorFunction update) {
         return addAction(new GoalActionConcept(s, nar(), update));
     }
-
-//    default BeliefActionConcept react( Term s,  Consumer<Truth> update) {
-//        return addAction(new BeliefActionConcept(s, nar(), update));
-//    }
 
 
     default GoalActionConcept actionUnipolar(Term s, FloatConsumer update) {
@@ -407,57 +391,85 @@ public interface NAct {
      */
     default GoalActionConcept actionUnipolar(Term s, boolean freqOrExp, FloatToFloatFunction ifGoalMissing, FloatToFloatFunction update) {
 
+        ActionConcept.MotorFunction motor = new UnipolarMotor(freqOrExp, ifGoalMissing, update, f ->
+                $.t(f, nar().confDefault(BELIEF))
+        );
 
-        final float[] lastF = {0.5f};
-        return action(s, (b, g) -> {
-            float gg = (g != null) ?
-                    (freqOrExp ? g.freq() : g.expectation()) : ifGoalMissing.valueOf(lastF[0]);
-
-            lastF[0] = gg;
-
-            float bFreq = (gg == gg) ? update.valueOf(gg) : Float.NaN;
-            if (bFreq == bFreq) {
-                float confFeedback =
-                        nar().confDefault(BELIEF);
-
-
-                return $.t(bFreq, confFeedback);
-            } else
-                return null;
-
-        });
+        return addAction(new GoalActionConcept(s, nar(), motor));
     }
 
-    /**
-     * supplies values in range -1..+1, where 0 ==> expectation=0.5
-     */
 
-    default GoalActionConcept actionExpUnipolar(Term s, FloatToFloatFunction update) {
-        final float[] x = {0f}, xPrev = {0f};
+    default BooleanPredicate debounce(Runnable f, float durations) {
+        return debounce((x)-> { if (x) f.run();  }, durations);
+    }
 
-        return action(s, (b, d) -> {
-            float o = (d != null) ?
+    default BooleanPredicate debounce(BooleanProcedure f, float durations) {
+        return debounce((x)-> { f.value(x); return x; }, durations);
+    }
+    
+    default BooleanPredicate debounce(BooleanPredicate f, float durations) {
+        NAR n = nar();
+        final long[] last = {Math.round(n.time() - durations * n.dur())};
 
-                    d.expectation() - 0.5f
-                    : xPrev[0];
-            float ff;
-            if (o >= 0f) {
-
-
-                float fb = update.valueOf(o /*y.asFloat()*/);
-                if (fb != fb) {
-
-                    return null;
-                } else {
-                    xPrev[0] = fb;
+        return (x)->{
+            if (x) {
+                long now = n.time();
+                if (now - last[0] >= durations * n.dur()) {
+                    if (f.accept(true)) {
+                        last[0] = now;
+                        return true;
+                    }
                 }
-                ff = (fb / 2f) + 0.5f;
-            } else {
-                ff = 0f;
             }
-            return $.t(unitize(ff), nar().confDefault(BELIEF));
-        });
+            return f.accept(false);
+        };
     }
+
+//    /**
+//     * the supplied value will be in the range -1..+1. if the predicate returns false, then
+//     * it will not allow feedback through. this can be used for situations where the action
+//     * hits a limit or boundary that it did not pass through.
+//     * <p>
+//     * TODO make a FloatToFloatFunction variation in which a returned value in 0..+1.0 proportionally decreasese the confidence of any feedback
+//     */
+//
+//    default GoalActionConcept action(String s, GoalActionConcept.MotorFunction update) throws Narsese.NarseseException {
+//        return action($.$(s), update);
+//    }
+
+
+//    default BeliefActionConcept react( Term s,  Consumer<Truth> update) {
+//        return addAction(new BeliefActionConcept(s, nar(), update));
+//    }
+//    /**
+//     * supplies values in range -1..+1, where 0 ==> expectation=0.5
+//     */
+//    default GoalActionConcept actionExpUnipolar(Term s, FloatToFloatFunction update) {
+//        final float[] x = {0f}, xPrev = {0f};
+//
+//        return action(s, (b, d) -> {
+//            float o = (d != null) ?
+//
+//                    d.expectation() - 0.5f
+//                    : xPrev[0];
+//            float ff;
+//            if (o >= 0f) {
+//
+//
+//                float fb = update.valueOf(o /*y.asFloat()*/);
+//                if (fb != fb) {
+//
+//                    return null;
+//                } else {
+//                    xPrev[0] = fb;
+//                }
+//                ff = (fb / 2f) + 0.5f;
+//            } else {
+//                ff = 0f;
+//            }
+//            return $.t(unitize(ff), nar().confDefault(BELIEF));
+//        });
+//    }
 
 }
 
