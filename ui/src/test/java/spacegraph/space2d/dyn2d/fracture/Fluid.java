@@ -1,12 +1,12 @@
 package spacegraph.space2d.dyn2d.fracture;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
 import spacegraph.space2d.phys.fracture.materials.Diffusion;
 import spacegraph.space2d.phys.particle.ParticleGroupDef;
-import jcog.math.v2;
 
 import java.util.function.Consumer;
 

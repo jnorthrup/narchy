@@ -2,11 +2,11 @@ package spacegraph.util;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.math.v2;
 import jcog.pri.ScalarValue;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
-import jcog.math.v2;
 
 import static spacegraph.util.math.Simplify2D.collinear;
 import static spacegraph.util.math.Simplify2D.collinearity;

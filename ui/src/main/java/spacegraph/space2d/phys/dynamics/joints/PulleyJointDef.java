@@ -28,9 +28,9 @@
  */
 package spacegraph.space2d.phys.dynamics.joints;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.dynamics.Body2D;
-import jcog.math.v2;
 
 /**
  * Pulley joint definition. This requires two ground anchors, two dynamic body anchor points, and a

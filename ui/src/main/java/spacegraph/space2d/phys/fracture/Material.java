@@ -1,11 +1,11 @@
 package spacegraph.space2d.phys.fracture;
 
 import jcog.Util;
+import jcog.math.v2;
 import spacegraph.space2d.phys.fracture.fragmentation.Smasher;
 import spacegraph.space2d.phys.fracture.materials.Diffusion;
 import spacegraph.space2d.phys.fracture.materials.Glass;
 import spacegraph.space2d.phys.fracture.materials.Uniform;
-import jcog.math.v2;
 
 import static spacegraph.space2d.phys.common.Settings.EPSILON;
 

@@ -7,6 +7,7 @@ import com.jogamp.opengl.glu.GLUtessellator;
 import com.jogamp.opengl.glu.GLUtessellatorCallback;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
+import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,6 @@ import spacegraph.space3d.AbstractSpatial;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.util.geo.IRL;
 import spacegraph.util.geo.osm.Osm;
-import jcog.math.v2;
 
 import java.util.List;
 import java.util.function.Consumer;

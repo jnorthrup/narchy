@@ -1,6 +1,7 @@
 package nars.sensor;
 
 import jcog.Util;
+import jcog.math.v2;
 import jcog.random.SplitMix64Random;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
@@ -8,7 +9,6 @@ import nars.agent.NAgent;
 import nars.concept.action.ActionConcept;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import jcog.math.v2;
 
 import java.util.List;
 

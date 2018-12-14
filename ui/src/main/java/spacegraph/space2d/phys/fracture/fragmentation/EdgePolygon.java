@@ -1,7 +1,7 @@
 package spacegraph.space2d.phys.fracture.fragmentation;
 
-import spacegraph.space2d.phys.fracture.util.MyList;
 import jcog.math.v2;
+import spacegraph.space2d.phys.fracture.util.MyList;
 
 import java.util.List;
 

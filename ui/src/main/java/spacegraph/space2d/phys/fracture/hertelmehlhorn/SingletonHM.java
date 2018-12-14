@@ -1,8 +1,8 @@
 package spacegraph.space2d.phys.fracture.hertelmehlhorn;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.common.PlatformMathUtils;
 import spacegraph.space2d.phys.fracture.Polygon;
-import jcog.math.v2;
 
 import java.util.Arrays;
 

@@ -49,7 +49,7 @@ class RouletteTest {
     void testMutableRouletteRandom() {
         for (int seed = 1; seed < 3; seed++) {
             for (int n = 1; n < 10; n++) {
-                testMutableRouletteRandom(n, n * 1000, seed);
+                testMutableRouletteRandom(n, n * 5000, seed);
             }
         }
     }
@@ -72,9 +72,9 @@ class RouletteTest {
         for (int i = 0; i < samples; i++)
             f.addValue(m.next());
 
-        //System.out.println(f);
+        System.out.println(f);
 
-        assertEquals(f.getUniqueCount(), uniques);
+        assertEquals(uniques, f.getUniqueCount());
         float total = f.getSumFreq();
         for (int i = 0; i < uniques; i++)
             assertEquals(f.getCount(i) / total, w[i] / m.weightSum(), 1f / (4 * uniques));

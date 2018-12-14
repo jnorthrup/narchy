@@ -5,6 +5,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.attention.AttNode;
+import nars.attention.AttVectorNode;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.concept.action.curiosity.CuriosityTask;
@@ -48,13 +49,10 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
     protected ActionConcept(Term term, BeliefTable beliefs, BeliefTable goals, TermLinker l, NAR n) {
         super(term, beliefs, goals, l, n.conceptBuilder);
 
-        this.attn = newAttn();
+        this.attn = new AttVectorNode(term, List.of(term));
         ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(n.freqResolution));
     }
 
-    protected AttNode newAttn() {
-        return new AttNode(term);
-    }
 
     protected void pri(Task c, float pct) {
         attn.take(c, attn.supply.priElseZero() * pct);

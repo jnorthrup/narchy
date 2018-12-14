@@ -5,7 +5,7 @@ dependencies {
 
     compile group: 'org.eclipse.collections', name: 'eclipse-collections', version: '10.0.0.M2'
 
-    compile(group: 'com.conversantmedia', name: 'disruptor', version: '1.2.13') {
+    compile(group: 'com.conversantmedia', name: 'disruptor', version: '1.2.14') {
         exclude(module:'slf4j-api')
     }
     compile group: 'org.fusesource.jansi', name: 'jansi', version: '1.17.1'
@@ -19,7 +19,7 @@ dependencies {
     }
     compile group: 'com.google.guava', name: 'guava', version: '27.0.1-jre'
     compile group: 'org.ow2.asm', name: 'asm-commons', version: '7.0'
-    compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.9.5'
+    compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.9.6'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
 
 
@@ -27,7 +27,7 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.8.0-beta2'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.8.0-beta2'
 
-    compile group: 'org.apache.lucene', name: 'lucene-core', version: '7.5.0'
+    compile group: 'org.apache.lucene', name: 'lucene-core', version: '7.6.0'
 
     compile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.3.2'
     compile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: '5.3.2'

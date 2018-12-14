@@ -1,7 +1,7 @@
 package spacegraph.space2d.phys.fracture.voronoi;
 
-import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.math.v2;
+import jcog.random.XoRoShiRo128PlusRandom;
 
 import java.util.Arrays;
 import java.util.Random;

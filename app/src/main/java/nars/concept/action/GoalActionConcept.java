@@ -34,7 +34,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
         );
 
         in.input(
-            feedback(fb, now, next, now-prev, 1f, n)
+            feedback(fb, now, next,1f, n)
         );
 
     }

@@ -1,7 +1,7 @@
 package spacegraph.space2d.phys.fracture.fragmentation;
 
-import spacegraph.space2d.phys.fracture.Polygon;
 import jcog.math.v2;
+import spacegraph.space2d.phys.fracture.Polygon;
 
 /**
  * Vrchol rovinneho grafu. Sluzi na zjednocovanie fragmentov polygonu.

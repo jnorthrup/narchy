@@ -28,15 +28,14 @@ import nars.truth.Truthed;
 import nars.truth.polation.TruthIntegration;
 import org.eclipse.collections.api.PrimitiveIterable;
 import org.eclipse.collections.api.list.primitive.ByteList;
-import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
@@ -850,8 +849,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
     default float expectation(long start, long end, int dur) {
         Truth t = truth(start, end, dur);
-        if (t == null) return Float.NaN;
-        return t.expectation();
+        return t == null ? Float.NaN : t.expectation();
     }
 
     default ITask next(NAR n) {
@@ -859,19 +857,19 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
 
 
+
         Term x = term();
 
-        MutableSet<ITask> yy = new UnifiedSet<>(1);
+        List<ITask> yy = new FasterList(1);
 
         final int[] tried = {0};
 
         if (Evaluation.canEval(x)) {
 
-
-
             int volMax = n.termVolumeMax.intValue();
 
             final int[] forked = {0};
+
             Predicate<Term> each = (y) -> {
 
                 tried[0]++;
@@ -903,17 +901,26 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
             Perceive.tryPerceive(this, x, yy, n);
         }
 
-        switch (yy.size()) {
+        int yys = yy.size();
+        switch (yys) {
             case 0:
                 return null;
             case 1:
-                return yy.getOnly();
-            default:
-                return AbstractTask.of(yy);
+                return yy.get(0);
+            case 2:
+                if (yy.get(0).equals(yy.get(1)))
+                    return yy.get(0);
+                break;
         }
 
-
-
+        //test for deduplication
+        java.util.Set<ITask> yyy = new HashSet(yys);
+        yyy.addAll(yy);
+        int yyys = yyy.size();
+        if (yyys==1)
+            return yy.get(0);
+        else
+            return AbstractTask.of(yyys ==yys ? /*the original list */ yy : /* the deduplicated set */ yyy);
 
     }
 

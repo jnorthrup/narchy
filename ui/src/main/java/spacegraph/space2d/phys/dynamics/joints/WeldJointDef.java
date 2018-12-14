@@ -23,8 +23,8 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics.joints;
 
-import spacegraph.space2d.phys.dynamics.Body2D;
 import jcog.math.v2;
+import spacegraph.space2d.phys.dynamics.Body2D;
 
 /**
  * Created at 3:38:52 AM Jan 15, 2011

@@ -2,7 +2,6 @@ package nars.truth.polation;
 
 import jcog.pri.ScalarValue;
 import nars.NAR;
-import nars.Param;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;

@@ -28,11 +28,11 @@
  */
 package spacegraph.space2d.phys.dynamics.joints;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import jcog.math.v2;
 
 /**
  * The pulley joint is connected to two bodies and two fixed ground points. The pulley supports a

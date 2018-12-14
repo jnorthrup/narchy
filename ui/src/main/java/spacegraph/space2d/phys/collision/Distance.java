@@ -23,12 +23,12 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.collision;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.collision.shapes.*;
 import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
-import jcog.math.v2;
 
 
 /**

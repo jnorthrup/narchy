@@ -1,9 +1,9 @@
 package spacegraph.space2d.phys.fracture.materials;
 
+import jcog.math.v2;
 import jcog.random.XoRoShiRo128PlusRandom;
 import spacegraph.space2d.phys.common.Transform;
 import spacegraph.space2d.phys.fracture.Material;
-import jcog.math.v2;
 
 import java.util.Random;
 

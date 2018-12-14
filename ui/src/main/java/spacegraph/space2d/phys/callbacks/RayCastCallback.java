@@ -28,9 +28,9 @@
  */
 package spacegraph.space2d.phys.callbacks;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.Fixture;
-import jcog.math.v2;
 
 /**
  * Callback class for ray casts.

@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.meter;
 
 import com.jogamp.opengl.GL2;
 import jcog.math.FloatSupplier;
+import jcog.math.v2;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.tree.rtree.rect.RectFloat;
@@ -10,7 +11,6 @@ import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.math.Point2i;
-import jcog.math.v2;
 import spacegraph.video.Draw;
 import spacegraph.video.Tex;
 

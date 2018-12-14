@@ -23,6 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.collision.broadphase;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.callbacks.DebugDraw;
 import spacegraph.space2d.phys.callbacks.TreeCallback;
 import spacegraph.space2d.phys.callbacks.TreeRayCastCallback;
@@ -32,7 +33,6 @@ import spacegraph.space2d.phys.common.BufferUtils;
 import spacegraph.space2d.phys.common.Color3f;
 import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.Settings;
-import jcog.math.v2;
 
 public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
     public static final int MAX_STACK_SIZE = 64;

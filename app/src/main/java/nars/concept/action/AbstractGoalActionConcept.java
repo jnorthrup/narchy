@@ -12,7 +12,9 @@ import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.table.dynamic.SeriesBeliefTable;
+import nars.table.eternal.EternalTable;
 import nars.table.temporal.RTreeBeliefTable;
+import nars.table.temporal.TemporalBeliefTable;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
@@ -106,8 +108,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
         int dur = n.dur();
         //long s = prev, e = now;
         //long s = now, e = next;
-        //long s = now - dur/2, e = next - dur/2;
-        long s = now - dur, e = next - dur;
+        long s = now - dur/2, e = next - dur/2;
+        //long s = now - dur, e = next - dur;
         //long s = prev, e = next;
         //long agentDur = (now - prev);
         //long s = now - agentDur/2, e = now + agentDur/2;
@@ -137,7 +139,15 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 relevance(true, limit, s, e, term, fil, n)) {
 
 
-            TruthPolation organic = a.match(table).truthpolation(actionDur);
+            @Nullable TemporalBeliefTable temporalTable = ((BeliefTables) goals()).tableFirst(TemporalBeliefTable.class);
+            if (temporalTable!=null)
+                a.match(temporalTable);
+            @Nullable EternalTable eternalTable = ((BeliefTables) goals()).tableFirst(EternalTable.class);
+            if (eternalTable!=null)
+                a.match(eternalTable);
+
+            TruthPolation organic = a.truthpolation(actionDur);
+
             if (organic != null) {
                 actionDex = organic.filtered().truth();
                 if (actionDex!=null) {
@@ -149,28 +159,13 @@ public class AbstractGoalActionConcept extends ActionConcept {
         }
 
 
-        try (Answer a = Answer.
-                relevance(true, limit, s, e, term, null, n).match(table)) {
-            TruthPolation raw = a.truthpolation(actionDur);
-            if (raw != null) {
-                actionTruth = raw.filtered().truth();
-            } else
-                actionTruth = null;
-        }
+        Truth actionCuri = curiosity.curiosity(this);
+        if (actionCuri!=null) {
 
-        //if this happens, for whatever reason..
-        if (actionTruth == null && actionDex!=null)
-            actionTruth = actionDex;
-
-
-
-        Truth curi = curiosity.curiosity(this);
-        if (curi!=null) {
-
-            Truth curiDithered = curi.ditherFreq(resolution().floatValue()).dithered(n);
+            Truth curiDithered = actionCuri.ditherFreq(resolution().floatValue()).dithered(n);
             if (curiDithered != null) {
 
-                curi = curiDithered;
+                actionCuri = curiDithered;
 
                 //pre-load curiosity for the future
                 if (curiosity.goal.getOpaque()) {
@@ -178,16 +173,29 @@ public class AbstractGoalActionConcept extends ActionConcept {
                     long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : s;
                     long curiEnd = Math.max(curiStart, e);
                     in.input(
-                            curiosity(curi /*goal*/, curiStart, curiEnd, n)
+                            curiosity(actionCuri /*goal*/, curiStart, curiEnd, n)
                     );
                 }
 
-                actionTruth = curiosity.injection.get().inject(actionTruth, curi);
 
-            } /*else {
-                logger.info("curiosity too weak for NAR: {} confMin > {} ( from: {} )",
-                        n.confMin.floatValue(), curiDithered, curi);
-            }*/
+            }
+        } else {
+            //use past curiosity
+            @Nullable CuriosityGoalTable curiTable = ((BeliefTables) goals()).tableFirst(CuriosityGoalTable.class);
+            try (Answer a = Answer.
+                    relevance(true, 1, s, e, term, null, n).match(curiTable)) {
+                TruthPolation curi = a.truthpolation(actionDur);
+                if (curi != null) {
+                    actionCuri = curi.filtered().truth();
+                } else
+                    actionCuri = null;
+            }
+        }
+
+        if (actionDex != null || actionCuri != null) {
+            actionTruth = curiosity.injection.get().inject(actionDex, actionCuri);
+        } else {
+            actionTruth = null;
         }
 
         //System.out.println(actionTruth + " " + actionDex);
@@ -223,11 +231,16 @@ public class AbstractGoalActionConcept extends ActionConcept {
         return curiosity;
     }
 
-    @Deprecated @Nullable public SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long now, long next, float dur, float pct, NAR nar) {
+    @Deprecated @Nullable public SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long now, long next, float pct, NAR nar) {
 
-        SeriesBeliefTable.SeriesRemember r = ((SensorBeliefTables) beliefs()).add(f, now, next, attn.supply.priElseZero(), this, dur, nar);
+        SeriesBeliefTable.SeriesRemember r = ((SensorBeliefTables) beliefs()).add(f, now, next, pct * attn.supply.priElseZero(), this, nar.dur(), nar);
         if (r!=null) {
-            attn.taken(r.input.priElseZero());
+
+            float rPri = r.input.priElseZero();
+//            if (rPri < ScalarValue.EPSILON)
+//                throw new WTF();
+
+            attn.taken(rPri);
         }
         return r;
     }

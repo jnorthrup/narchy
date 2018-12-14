@@ -9,8 +9,8 @@ import nars.Narsese;
 import nars.experiment.minicraft.side.SideScrollMinicraft;
 import nars.experiment.minicraft.side.awtgraphics.AwtGraphicsHandler;
 import nars.sensor.Bitmap2DSensor;
-import nars.video.AutoclassifiedBitmap;
 import nars.sensor.PixelBag;
+import nars.video.AutoclassifiedBitmap;
 import spacegraph.SpaceGraph;
 
 import java.awt.image.BufferedImage;

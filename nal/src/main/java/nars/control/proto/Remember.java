@@ -1,6 +1,5 @@
 package nars.control.proto;
 
-import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Op;
@@ -33,7 +32,7 @@ public class Remember extends AbstractTask {
     public FasterList<ITask> remembered = null;
     @Nullable
     public FasterList<Task> forgotten = null;
-    public Concept concept;
+    public TaskConcept concept;
 
 
 //    static final Logger logger = LoggerFactory.getLogger(Remember.class);
@@ -102,8 +101,12 @@ public class Remember extends AbstractTask {
 
             Concept c = n.conceptualize(input);
             if (c!=null) {
-                if (!(c instanceof TaskConcept))
-                    throw new WTF(c + " is not a TaskConcept");
+                if (!(c instanceof TaskConcept)) {
+                    if (Param.DEBUG)
+                        throw new TaskException(input, c + " is not a TaskConcept");
+                    else
+                        return null;
+                }
 
                 return new Remember(input, (TaskConcept) c);
             }
@@ -118,7 +121,7 @@ public class Remember extends AbstractTask {
 
 
     /** concept must correspond to the input task */
-    public void setInput(Task input, @Nullable Concept c) {
+    public void setInput(Task input, @Nullable TaskConcept c) {
         if (c != null) {
             this.input = input;
             this.concept = c;

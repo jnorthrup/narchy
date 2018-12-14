@@ -1,6 +1,7 @@
 package spacegraph.space2d.phys.fracture;
 
 import jcog.data.list.FasterList;
+import jcog.math.v2;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.collision.shapes.Shape;
@@ -9,7 +10,6 @@ import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.dynamics.contacts.Contact;
 import spacegraph.space2d.phys.fracture.fragmentation.Smasher;
 import spacegraph.space2d.phys.fracture.util.MyList;
-import jcog.math.v2;
 
 import java.util.List;
 import java.util.Objects;

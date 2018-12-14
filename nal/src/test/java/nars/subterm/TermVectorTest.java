@@ -5,9 +5,9 @@ import nars.Narsese;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.util.TermTest;
 import nars.term.Terms;
 import nars.term.atom.Atomic;
+import nars.term.util.TermTest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

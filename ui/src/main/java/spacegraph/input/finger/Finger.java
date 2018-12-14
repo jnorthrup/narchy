@@ -3,6 +3,7 @@ package spacegraph.input.finger;
 import com.jogamp.opengl.GL2;
 import jcog.data.atomic.AtomicFloat;
 import jcog.data.bit.AtomicMetalBitSet;
+import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
@@ -10,7 +11,6 @@ import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.SurfaceHiliteOverlay;
-import jcog.math.v2;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;

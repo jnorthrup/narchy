@@ -25,6 +25,7 @@ package spacegraph.space2d.phys.dynamics;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.math.v2;
 import spacegraph.space2d.phys.collision.broadphase.BroadPhase;
 import spacegraph.space2d.phys.collision.shapes.MassData;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
@@ -38,7 +39,6 @@ import spacegraph.space2d.phys.dynamics.contacts.ContactEdge;
 import spacegraph.space2d.phys.dynamics.joints.JointEdge;
 import spacegraph.space2d.phys.fracture.Polygon;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
-import jcog.math.v2;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;

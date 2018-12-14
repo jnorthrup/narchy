@@ -1,7 +1,7 @@
 package spacegraph.input.finger;
 
-import spacegraph.space2d.Surface;
 import jcog.math.v2;
+import spacegraph.space2d.Surface;
 
 import java.util.function.Consumer;
 

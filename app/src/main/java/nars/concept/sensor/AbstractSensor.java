@@ -2,7 +2,6 @@ package nars.concept.sensor;
 
 import jcog.math.FloatRange;
 import nars.NAR;
-import nars.Task;
 import nars.control.NARService;
 import nars.term.Term;
 

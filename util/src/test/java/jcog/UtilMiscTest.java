@@ -1,11 +1,16 @@
 package jcog;
 
 import jcog.io.SparkLine;
+import jcog.random.XoRoShiRo128PlusRandom;
+import org.apache.commons.math3.stat.Frequency;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
@@ -13,23 +18,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class UtilMiscTest {
 
-    @Test
-    void test() {
-        assertEquals(0, Util.bin(0, 10));
-        assertEquals(1, Util.bin(0.1f, 10));
-        assertEquals(8, Util.bin(0.9f, 10));
-        assertEquals(8, Util.bin(0.925f, 10));
-        assertEquals(9, Util.bin(0.975f, 10));
-        assertEquals(9, Util.bin(1.0f, 10));
-        
-        
-        assertEquals(0, Util.bin(0.0f, 9));
-        assertEquals(1, Util.bin(0.1f, 9));
-        assertEquals(7, Util.bin(0.9f, 9));
-        assertEquals(7, Util.bin(1.0f - 1.0f/9f - 2 * Float.MIN_NORMAL, 9));
-        assertEquals(8, Util.bin(1.0f - 1.0f/9f + 2 * Float.MIN_NORMAL, 9));
-        assertEquals(8, Util.bin(1.0f, 9));
+    @Test void testBinDistribution() {
+        int seed = 1;
+        int samples = 5000;
+
+        Random r = new XoRoShiRo128PlusRandom(seed);
+        for (int bins = 2; bins < 15; bins++) {
+            Frequency f = new Frequency();
+            for (int s = 0; s < samples; s++)
+                f.addValue( Util.bin(r.nextFloat(), bins) );
+            assertEquals(bins, f.getUniqueCount());
+            SummaryStatistics s = new SummaryStatistics();
+            for (int b = 0; b < bins; b++)
+                s.addValue(f.getPct(b));
+            System.out.println(f);
+            System.out.println(s);
+            assertTrue(s.getVariance() < 0.01f);
+        }
     }
+
 
     @Test
     void testCurveSawtooth() {

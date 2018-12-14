@@ -29,6 +29,9 @@ public class Curiosity {
 
     public final AtomicBoolean goal = new AtomicBoolean(true);
 
+    /** activation probabilitiy */
+    public final FloatRange rate = new FloatRange(0, 0, 1f);
+
 
     public enum CuriosityInjection {
         Passive {
@@ -46,28 +49,30 @@ public class Curiosity {
         Override {
             @java.lang.Override
             public Truth inject(Truth actionTruth, Truth curi) {
-                return curi;
+                return curi!=null ? curi : actionTruth;
             }
         };
 
 
-        abstract public Truth inject(Truth actionTruth, Truth curi);
+        abstract public Truth inject(Truth dex, Truth curi);
     }
 
 
     /** injection mode */
     public final MutableEnum<CuriosityInjection> injection = new MutableEnum<>(
-            CuriosityInjection.Override
-            //CuriosityInjection.Revise
+            //CuriosityInjection.Override
+            CuriosityInjection.Revise
     );
 
 
 
     private MutableRoulette select = null;
 
-    public Curiosity(NAgent a) {
+    public Curiosity(NAgent a, float initialRate) {
 
         this.agent = a;
+
+        this.rate.set(initialRate);
 
         update();
         a.onFrame(this::update);
@@ -94,7 +99,7 @@ public class Curiosity {
      * acction concept per frame
      */
     @Nullable public final Truth curiosity(AbstractGoalActionConcept concept) {
-        return (enable.getOpaque() && select != null) ?
+        return (select != null && enable.getOpaque() && agent.random().nextFloat() < rate.floatValue()) ?
                 curiosity.get(select.next()).get(concept, this) : null;
     }
 

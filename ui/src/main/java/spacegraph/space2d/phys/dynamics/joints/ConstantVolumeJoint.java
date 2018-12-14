@@ -23,11 +23,11 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics.joints;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.SolverData;
-import jcog.math.v2;
 
 public class ConstantVolumeJoint extends Joint {
 

@@ -1,5 +1,6 @@
 package spacegraph.space2d.dyn2d;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.common.MathUtils;
@@ -7,7 +8,6 @@ import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.dynamics.joints.DistanceJointDef;
 import spacegraph.space2d.phys.dynamics.joints.RevoluteJoint;
 import spacegraph.space2d.phys.dynamics.joints.RevoluteJointDef;
-import jcog.math.v2;
 
 import static java.lang.Math.abs;
 

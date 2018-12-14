@@ -23,6 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics.contacts;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.collision.Manifold;
 import spacegraph.space2d.phys.collision.ManifoldPoint;
 import spacegraph.space2d.phys.collision.WorldManifold;
@@ -32,7 +33,6 @@ import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.Fixture;
 import spacegraph.space2d.phys.dynamics.TimeStep;
 import spacegraph.space2d.phys.dynamics.contacts.ContactVelocityConstraint.VelocityConstraintPoint;
-import jcog.math.v2;
 
 /**
  * @author Daniel

@@ -2,9 +2,9 @@ package spacegraph.space2d;
 
 import com.jogamp.opengl.GL2;
 import jcog.data.list.FasterList;
+import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.hud.Ortho;
-import jcog.math.v2;
 
 import java.util.function.BiConsumer;
 

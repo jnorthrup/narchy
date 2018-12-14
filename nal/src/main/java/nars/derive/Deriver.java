@@ -7,7 +7,6 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.attention.DerivePri;
-import nars.attention.derive.DefaultPuncWeightedDerivePri;
 import nars.control.Cause;
 import nars.derive.premise.DeriverRules;
 import nars.derive.premise.PremiseDeriverCompiler;

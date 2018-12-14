@@ -2,10 +2,11 @@ package nars.attention;
 
 import jcog.data.atomic.AtomicFloat;
 import jcog.pri.Pri;
+import jcog.pri.Prioritizable;
+import jcog.pri.ScalarValue;
 import jcog.tree.atomic.AtomicTreeNode;
 import nars.$;
 import nars.NAR;
-import nars.Task;
 import nars.concept.Concept;
 import nars.term.Term;
 
@@ -29,27 +30,36 @@ public class AttNode extends AtomicTreeNode<AttNode> {
 
 
 
+    protected float myDemand(NAR nar) {
+        return 0;
+    }
+
     public void update(NAR nar) {
 
-        float dAll = childDemand(nar);
-        demand.set(dAll);
+        float myDemand = myDemand(nar);
+        float demand = myDemand + childDemand(nar);
+        float demandNet = Math.max(0, demand - supply.pri());
+        this.demand.set(demandNet);
 
-        float rate = Math.min(1, supply.priElseZero()/dAll);
 
+        float totalSupply = supply.pri();
         childrenStream().forEach(c -> {
-            float cd = c.demand.floatValue() - c.supply.priElseZero();
+            float cd = c.demand.floatValue();
             if (cd > 0) {
-                float dSub = cd * rate;
-                float taken = c.supply.take(supply, dSub, true, false);
+                float demandFraction = cd / demand;
+                float dSub = Math.min(cd, demandFraction * totalSupply);
+                if (dSub > ScalarValue.EPSILON) {
+                    float givenToChild = c.supply.take(this.supply, dSub, true, false);
+                }
             }
         });
     }
 
     protected float childDemand(NAR nar) {
-        return Math.max(0, Math.max(0, (float)childrenStream().mapToDouble(c->{
-            c.update( nar);
-            return Math.max(c.demand.floatValue() - c.supply.priElseZero(), 0);
-        }).sum()));
+        return Math.max(0, (float)childrenStream().mapToDouble(c->{
+            c.update( nar );
+            return Math.max(c.demand.floatValue(), 0);
+        }).sum());
     }
 
 
@@ -68,7 +78,7 @@ public class AttNode extends AtomicTreeNode<AttNode> {
         return childrenStream().map(x -> nar.concept(x.id)).filter(Objects::nonNull);
     }
 
-    public void take(Task c, float pri) {
+    public void take(Prioritizable c, float pri) {
         c.take(supply, pri, true, false);
     }
 

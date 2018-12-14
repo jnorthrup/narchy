@@ -173,16 +173,18 @@ public class Occurrify extends TimeGraph {
         if (taskEte && beliefEte) {
             //both eternal ok
         } else if (taskEte) {
-            if (d.taskPunc == BELIEF || d.taskPunc == GOAL) {
-                taskStart = d.time;
-                taskEnd = taskStart + (beliefEnd - beliefStart);
-            } else {
+//            if (d.taskPunc == BELIEF || d.taskPunc == GOAL) {
+//                taskStart = d.time;
+//                taskEnd = taskStart + (beliefEnd - beliefStart);
+//            } else {
                 taskStart = beliefStart;
                 taskEnd = beliefEnd;
-            }
+//            }
         } else if (beliefEte) {
-            beliefStart = d.time;
-            beliefEnd = beliefStart + (taskStart - taskEnd);
+//            beliefStart = d.time;
+//            beliefEnd = beliefStart + (taskStart - taskEnd);
+            beliefStart = taskStart;
+            beliefEnd = taskEnd;
         }
 
         this.decomposeEvents = decomposeEvents;

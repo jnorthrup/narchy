@@ -1,7 +1,7 @@
 package spacegraph.space2d.phys.callbacks;
 
-import spacegraph.space2d.phys.dynamics.Fixture;
 import jcog.math.v2;
+import spacegraph.space2d.phys.dynamics.Fixture;
 
 public interface ParticleRaycastCallback {
     /**

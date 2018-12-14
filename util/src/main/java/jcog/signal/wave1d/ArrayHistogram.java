@@ -44,7 +44,7 @@ public class ArrayHistogram extends ArrayTensor {
     }
 
     public void add(float value, float weight) {
-        int bin = Util.bin(Util.unitize((value-rangeMin)/(rangeMax-rangeMin)), bins());
+        int bin = Util.bin((value-rangeMin)/(rangeMax-rangeMin), bins());
         data[bin] += weight;
         mass += weight;
     }

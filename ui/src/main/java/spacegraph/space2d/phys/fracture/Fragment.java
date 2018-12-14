@@ -1,7 +1,7 @@
 package spacegraph.space2d.phys.fracture;
 
-import spacegraph.space2d.phys.common.PlatformMathUtils;
 import jcog.math.v2;
+import spacegraph.space2d.phys.common.PlatformMathUtils;
 
 /**
  * Polygon pre voronoi diagram. Funguje ako ArrayList 2D bodov typu Point2D,

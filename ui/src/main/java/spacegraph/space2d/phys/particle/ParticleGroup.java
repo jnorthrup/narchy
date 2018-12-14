@@ -1,7 +1,7 @@
 package spacegraph.space2d.phys.particle;
 
-import spacegraph.space2d.phys.common.Transform;
 import jcog.math.v2;
+import spacegraph.space2d.phys.common.Transform;
 
 public class ParticleGroup {
 

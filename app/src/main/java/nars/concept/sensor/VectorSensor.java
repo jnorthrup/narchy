@@ -74,14 +74,14 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
         return updateSensor(last, now, (p, n) -> {
             float c = confDefault;// * Math.abs(n - 0.5f) * 2f;
             return c > min ? $.t(n, c) : null;
-        }, dur);
+        });
     }
 
-    protected final Stream<SeriesBeliefTable.SeriesRemember> updateSensor(long last, long now, FloatFloatToObjectFunction<Truth> truther, int dur) {
+    protected final Stream<SeriesBeliefTable.SeriesRemember> updateSensor(long last, long now, FloatFloatToObjectFunction<Truth> truther) {
         Pri supply = attn.supply;
         float pri = supply.priElseZero()/size();
         return StreamSupport.stream(spliterator(), false).map(s -> {
-                    SeriesBeliefTable.SeriesRemember t = s.update(last, now, pri, truther, dur, nar);
+                    SeriesBeliefTable.SeriesRemember t = s.update(last, now, pri, truther, nar);
                     if (t!=null)
                         attn.taken(t.input.priElseZero());
                     return t;

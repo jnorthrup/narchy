@@ -201,7 +201,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         int c = capacity();
         int histRange = s;
-        int bins = s > 64 ? 16 : 8; //TODO refine
+        int bins = histogramBins(s);
         ArrayHistogram hist = this.hist;
         if (hist == null) {
             hist = new ArrayHistogram(0, histRange-1, bins);
@@ -250,6 +250,24 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
             sort(0, Math.min(s, mustSortTo));
 
         return s;
+    }
+
+    static int histogramBins(int s) {
+        //TODO refine
+             if (s < 8)
+            return 4;
+        else if (s < 16)
+            return 6;
+        else if (s < 32)
+            return 8;
+        else if (s < 64)
+            return 10;
+        else if (s < 128)
+            return 12;
+        else if (s < 256)
+            return 14;
+        else
+            return 16;
     }
 
     /**

@@ -23,6 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.collision;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.collision.Distance.SimplexCache;
 import spacegraph.space2d.phys.collision.Manifold.ManifoldType;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
@@ -34,7 +35,6 @@ import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import jcog.math.v2;
 
 /**
  * Functions used for computing contact points, distance queries, and TOI queries. Collision methods

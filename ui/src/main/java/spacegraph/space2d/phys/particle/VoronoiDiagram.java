@@ -1,9 +1,9 @@
 package spacegraph.space2d.phys.particle;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.pooling.IDynamicStack;
 import spacegraph.space2d.phys.pooling.normal.MutableStack;
-import jcog.math.v2;
 
 public class VoronoiDiagram {
 

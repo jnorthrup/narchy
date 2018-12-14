@@ -28,6 +28,7 @@
  */
 package spacegraph.space2d.phys.pooling.normal;
 
+import jcog.math.v2;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.Collision;
@@ -37,7 +38,6 @@ import spacegraph.space2d.phys.common.*;
 import spacegraph.space2d.phys.dynamics.contacts.*;
 import spacegraph.space2d.phys.pooling.IDynamicStack;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import jcog.math.v2;
 
 /**
  * Provides object pooling for all objects used in the engine. Objects retrieved from here should

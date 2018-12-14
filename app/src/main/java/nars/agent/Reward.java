@@ -6,6 +6,7 @@ import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.attention.AttNode;
+import nars.attention.AttVectorNode;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
 import nars.control.channel.CauseChannel;
@@ -20,6 +21,8 @@ import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
+
+import java.util.List;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
@@ -88,16 +91,12 @@ public abstract class Reward implements Termed, Iterable<Signal> {
                 //Stamp.UNSTAMPED
         );
 
-        AttNode a = new AttNode($.func(Inperience.want, this.term(), goal)) {
-            @Override
-            protected float childDemand(NAR nar) {
-                return (1f - nar.concepts.pri(t, 0));
-            }
+        AttNode a = new AttVectorNode($.func(Inperience.want, this.term(), goal), List.of(t)) {
 
             @Override
             public void update(NAR nar) {
                 super.update(nar);
-                take(t, demand.floatValue());
+                take(t, supply.pri());
                 in.input(t);
             }
         };

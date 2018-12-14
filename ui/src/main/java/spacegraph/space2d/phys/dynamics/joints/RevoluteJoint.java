@@ -23,12 +23,12 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics.joints;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.common.*;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import jcog.math.v2;
 
 
 /**

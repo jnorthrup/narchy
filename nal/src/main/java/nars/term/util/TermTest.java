@@ -29,7 +29,8 @@ import nars.term.compound.CachedCompound;
 import org.junit.jupiter.api.Assertions;
 
 import static nars.$.$$;
-import static nars.Op.*;
+import static nars.Op.PROD;
+import static nars.Op.terms;
 import static nars.time.Tense.DTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,6 +1,7 @@
 package spacegraph.space2d.phys.fracture.fragmentation;
 
 import jcog.data.list.FasterList;
+import jcog.math.v2;
 import spacegraph.space2d.phys.callbacks.ContactImpulse;
 import spacegraph.space2d.phys.collision.WorldManifold;
 import spacegraph.space2d.phys.common.PlatformMathUtils;
@@ -14,7 +15,6 @@ import spacegraph.space2d.phys.fracture.Polygon;
 import spacegraph.space2d.phys.fracture.util.HashTabulka;
 import spacegraph.space2d.phys.fracture.util.MyList;
 import spacegraph.space2d.phys.fracture.voronoi.SingletonVD;
-import jcog.math.v2;
 
 import java.util.ArrayList;
 import java.util.Arrays;

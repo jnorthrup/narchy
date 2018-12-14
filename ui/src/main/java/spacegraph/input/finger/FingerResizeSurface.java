@@ -1,9 +1,9 @@
 package spacegraph.input.finger;
 
+import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Windo;
-import jcog.math.v2;
 
 /**
  * resizes a rectangular surface in one of the four cardinal or four diagonal directions

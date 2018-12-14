@@ -2,21 +2,13 @@ package nars.agent;
 
 import com.google.common.collect.Iterators;
 import jcog.math.FloatSupplier;
-import nars.$;
 import nars.NAR;
-import nars.Task;
-import nars.attention.AttNode;
 import nars.concept.sensor.Signal;
 import nars.control.channel.CauseChannel;
-import nars.op.mental.Inperience;
 import nars.task.ITask;
-import nars.task.NALTask;
 import nars.term.Term;
 
 import java.util.Iterator;
-
-import static nars.Op.GOAL;
-import static nars.time.Tense.ETERNAL;
 
 public class SimpleReward extends Reward {
 

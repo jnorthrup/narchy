@@ -7,7 +7,6 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.Param;
 import nars.agent.NAgent;
 import nars.agent.Reward;
 import nars.concept.Concept;

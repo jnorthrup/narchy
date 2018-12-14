@@ -24,6 +24,7 @@
 package spacegraph.space2d.phys.dynamics.contacts;
 
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.callbacks.ContactListener;
 import spacegraph.space2d.phys.collision.ContactID;
 import spacegraph.space2d.phys.collision.Manifold;
@@ -34,7 +35,6 @@ import spacegraph.space2d.phys.common.Transform;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.Fixture;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import jcog.math.v2;
 
 /**
  * The class manages contact between two shapes. A contact exists for each overlapping AABB in the

@@ -23,13 +23,13 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.collision.broadphase;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.callbacks.DebugDraw;
 import spacegraph.space2d.phys.callbacks.PairCallback;
 import spacegraph.space2d.phys.callbacks.TreeCallback;
 import spacegraph.space2d.phys.callbacks.TreeRayCastCallback;
 import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.RayCastInput;
-import jcog.math.v2;
 
 import java.util.Arrays;
 

@@ -52,7 +52,7 @@ public class TrackXY_NAR extends NAgentX {
             //W = 3, H = 1;
             //W = 5, H = 1;
     public static final int derivationStrength = 8;
-    static int dur = 8;
+    static int dur = 4;
     static float camResolution = 0.1f;
     static int volMax = 5;
     final Bitmap2DSensor cam;
@@ -80,16 +80,16 @@ public class TrackXY_NAR extends NAgentX {
         assert(sourceNumerics | targetNumerics | targetCam);
 
         if (sourceNumerics) {
-            senseNumber($.the("sx"), new FloatNormalized(() -> track.cx, 0, W-1));
+            senseNumberBi($.the("sx"), new FloatNormalized(() -> track.cx, 0, W-1));
             if (H > 1)
-                senseNumber($.the("sy"), new FloatNormalized(() -> track.cy, 0, H-1));
+                senseNumberBi($.the("sy"), new FloatNormalized(() -> track.cy, 0, H-1));
         }
 
 
         if (targetNumerics) {
-            senseNumber($.the("tx"), new FloatNormalized(() -> track.tx, 0, W));
+            senseNumberBi($.the("tx"), new FloatNormalized(() -> track.tx, 0, W));
             if (H > 1)
-                senseNumber($.the("ty"), new FloatNormalized(() -> track.ty, 0, H));
+                senseNumberBi($.the("ty"), new FloatNormalized(() -> track.ty, 0, H));
         }
 
         if (targetCam) {

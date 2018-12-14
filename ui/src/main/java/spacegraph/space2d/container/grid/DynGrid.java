@@ -1,13 +1,13 @@
 package spacegraph.space2d.container.grid;
 
 import jcog.data.map.CellMap;
+import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.container.collection.MutableMapContainer;
-import jcog.math.v2;
 
 import static jcog.Util.short2Int;
 

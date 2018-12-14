@@ -1,5 +1,6 @@
 package spacegraph.space2d.phys.particle;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.callbacks.ParticleDestructionListener;
 import spacegraph.space2d.phys.callbacks.ParticleQueryCallback;
 import spacegraph.space2d.phys.callbacks.ParticleRaycastCallback;
@@ -15,7 +16,6 @@ import spacegraph.space2d.phys.dynamics.TimeStep;
 import spacegraph.space2d.phys.dynamics.contacts.Position;
 import spacegraph.space2d.phys.dynamics.contacts.Velocity;
 import spacegraph.space2d.phys.particle.VoronoiDiagram.VoronoiDiagramCallback;
-import jcog.math.v2;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;

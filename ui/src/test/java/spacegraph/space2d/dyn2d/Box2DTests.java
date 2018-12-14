@@ -1,5 +1,6 @@
 package spacegraph.space2d.dyn2d;
 
+import jcog.math.v2;
 import spacegraph.space2d.dyn2d.fracture.*;
 import spacegraph.space2d.dyn2d.jbox2d.*;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
@@ -14,7 +15,6 @@ import spacegraph.space2d.phys.dynamics.joints.MouseJointDef;
 import spacegraph.space2d.phys.fracture.Material;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
 import spacegraph.space2d.phys.fracture.util.MyList;
-import jcog.math.v2;
 
 import javax.swing.*;
 import java.awt.*;

@@ -7,7 +7,6 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
-import nars.control.NARService;
 import nars.op.FileFunc;
 import nars.subterm.AnonVector;
 import nars.subterm.Subterms;

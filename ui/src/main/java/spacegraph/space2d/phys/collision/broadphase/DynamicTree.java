@@ -23,6 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.collision.broadphase;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.callbacks.DebugDraw;
 import spacegraph.space2d.phys.callbacks.TreeCallback;
 import spacegraph.space2d.phys.callbacks.TreeRayCastCallback;
@@ -31,7 +32,6 @@ import spacegraph.space2d.phys.collision.RayCastInput;
 import spacegraph.space2d.phys.common.Color3f;
 import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.common.Settings;
-import jcog.math.v2;
 
 /**
  * A dynamic tree arranges data in a binary tree to accelerate queries such as volume queries and

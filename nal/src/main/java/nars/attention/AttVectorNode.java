@@ -2,6 +2,7 @@ package nars.attention;
 
 import com.google.common.collect.Streams;
 import jcog.Paper;
+import jcog.Util;
 import jcog.math.RecycledSummaryStatistics;
 import nars.NAR;
 import nars.concept.Concept;
@@ -27,13 +28,14 @@ public class AttVectorNode extends AttNode {
 
     //final MiniPID control = new MiniPID(0.5f, 0.5f, 0.5f);
 
-    //v0: bang bang
-    float decay = 0.01f, grow = 0.01f/2, decaySlow = decay/2;
+//    //v0: bang bang
+//    float decay = 0.01f, grow = 0.01f/2, decaySlow = decay/2;
 
-    float lastGain = Float.NaN;
 
     final RecycledSummaryStatistics pris = new RecycledSummaryStatistics();
     final FloatArrayList pp = new FloatArrayList();
+
+    float priMin = 0.01f;
 
     public AttVectorNode(Object id, Iterable<? extends Termed> components) {
         super(id);
@@ -45,7 +47,13 @@ public class AttVectorNode extends AttNode {
         return Streams.stream(components).map(nar::concept).filter(Objects::nonNull);
     }
 
-    @Override protected float childDemand(NAR n) {
+    private float elementIdeal(int n) {
+        //return 1; //each component important as a top level concept
+        return 1f / Util.sqrt(n); //shared by sqrt of components
+        //return 1f / n; //shared by all components
+    }
+
+    @Override protected float myDemand(NAR n) {
 
 
         pris.clear();
@@ -68,7 +76,7 @@ public class AttVectorNode extends AttNode {
 
         long N = pris.getN();
 
-        return Math.max(0, (1f/N)-mean)*N;
+        return Math.max(priMin, elementIdeal((int) N) - mean) * N;
 
 //
 //        dev[0] /= N;
@@ -130,7 +138,6 @@ public class AttVectorNode extends AttNode {
 //
 //        return (lastGain = g)*N;
     }
-
 
 
 

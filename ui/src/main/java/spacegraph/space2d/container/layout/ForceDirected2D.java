@@ -2,12 +2,12 @@ package spacegraph.space2d.container.layout;
 
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.math.FloatRange;
+import jcog.math.v2;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.util.MutableFloatRect;
-import jcog.math.v2;
 
 import java.util.Random;
 

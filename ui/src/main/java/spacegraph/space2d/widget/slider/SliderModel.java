@@ -2,13 +2,13 @@ package spacegraph.space2d.widget.slider;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.math.v2;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerDragging;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
-import jcog.math.v2;
 import spacegraph.video.Draw;
 
 /**

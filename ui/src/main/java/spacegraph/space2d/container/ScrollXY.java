@@ -3,6 +3,7 @@ package spacegraph.space2d.container;
 import jcog.TODO;
 import jcog.Util;
 import jcog.math.FloatSupplier;
+import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
@@ -13,7 +14,6 @@ import spacegraph.space2d.container.grid.ListModel;
 import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.XYSlider;
-import jcog.math.v2;
 
 import java.util.List;
 import java.util.function.Function;

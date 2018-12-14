@@ -1,9 +1,9 @@
 package spacegraph.input.finger;
 
+import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.widget.windo.Windo;
-import jcog.math.v2;
 
 public abstract class FingerResize extends FingerDragging {
     private final static float aspectRatioRatioLimit = 0.1f;

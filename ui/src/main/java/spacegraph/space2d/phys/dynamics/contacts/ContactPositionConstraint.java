@@ -23,9 +23,9 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics.contacts;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.collision.Manifold.ManifoldType;
 import spacegraph.space2d.phys.common.Settings;
-import jcog.math.v2;
 
 class ContactPositionConstraint {
     final v2[] localPoints = new v2[Settings.maxManifoldPoints];

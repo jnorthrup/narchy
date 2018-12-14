@@ -3,8 +3,8 @@ package nars.subterm;
 import nars.Narsese;
 import nars.Op;
 import nars.term.Term;
-import nars.term.util.TermTest;
 import nars.term.compound.LightCompound;
+import nars.term.util.TermTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 

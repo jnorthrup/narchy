@@ -32,6 +32,7 @@ import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.texture.Texture;
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
@@ -47,7 +48,6 @@ import spacegraph.space3d.phys.shape.*;
 import spacegraph.space3d.phys.util.BulletStack;
 import spacegraph.space3d.widget.EDraw;
 import spacegraph.util.math.Quat4f;
-import jcog.math.v2;
 import spacegraph.util.math.v3;
 
 import java.util.function.Consumer;

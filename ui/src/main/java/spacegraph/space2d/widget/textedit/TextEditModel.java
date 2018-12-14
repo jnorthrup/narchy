@@ -2,13 +2,13 @@ package spacegraph.space2d.widget.textedit;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
+import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.textedit.buffer.Buffer;
 import spacegraph.space2d.widget.textedit.keybind.TextEditKeys;
 import spacegraph.space2d.widget.textedit.view.TextEditView;
-import jcog.math.v2;
 import spacegraph.video.Draw;
 
 public class TextEditModel extends Widget implements ScrollXY.ScrolledXY{

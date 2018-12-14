@@ -845,20 +845,25 @@ public enum Util {
     }
 
     public static int bin(float x, int bins) {
+        return Util.clamp((int)(x * bins), 0, bins-1);
+        //return (int) Math.floor(x * bins);
         //return (int) (x  * bins);
-        return Math.round(x * (bins - 1));
 
-        //return (int) ((x + 0.5f) * bins);
+        //return Math.round(x * (bins - 1));
+        //return Util.clamp((int)((x * bins) + 0.5f/bins), 0, bins-1);
+
+
+        //return (int) ((x + 0.5f/bins) * (bins-1));
         //        return (int) Math.floor((x + (0.5 / bins)) * bins);
         //        return Util.clamp(b, 0, bins-1);
     }
 
-    /**
-     * bins a priority value to an integer
-     */
-    public static int decimalize(float v) {
-        return bin(v, 10);
-    }
+//    /**
+//     * bins a priority value to an integer
+//     */
+//    public static int decimalize(float v) {
+//        return bin(v, 10);
+//    }
 
     /**
      * finds the mean value of a given bin
@@ -2537,6 +2542,8 @@ public enum Util {
     }
 
     public static int sqrt(int x) {
+        if (x < 0)
+            throw new NumberException("sqrt of negative value", x);
         return (int) Math.round(Math.sqrt(x));
     }
 

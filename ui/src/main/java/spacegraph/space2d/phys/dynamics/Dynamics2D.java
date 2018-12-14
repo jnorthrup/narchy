@@ -27,6 +27,7 @@ import jcog.data.list.FasterList;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.math.FloatSupplier;
+import jcog.math.v2;
 import spacegraph.space2d.phys.callbacks.*;
 import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.RayCastInput;
@@ -52,7 +53,6 @@ import spacegraph.space2d.phys.particle.*;
 import spacegraph.space2d.phys.pooling.IWorldPool;
 import spacegraph.space2d.phys.pooling.Vec2Array;
 import spacegraph.space2d.phys.pooling.normal.DefaultWorldPool;
-import jcog.math.v2;
 
 import java.util.Collection;
 import java.util.function.Consumer;

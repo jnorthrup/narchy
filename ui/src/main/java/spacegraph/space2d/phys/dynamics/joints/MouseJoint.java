@@ -23,10 +23,10 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics.joints;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.common.*;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import jcog.math.v2;
 
 /**
  * A mouse joint is used to make a point on a body track a specified world point. This a soft

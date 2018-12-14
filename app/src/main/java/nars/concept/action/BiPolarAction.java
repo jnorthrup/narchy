@@ -31,7 +31,7 @@ public class BiPolarAction extends AbstractSensor {
     private final Polarization model;
     private final FloatToFloatFunction motor;
 
-    final AttNode attn;
+    public final AttNode attn;
 
     /** model for computing the net result from the current truth inputs */
     public interface Polarization {
@@ -156,10 +156,9 @@ public class BiPolarAction extends AbstractSensor {
         }
 
 
-        float dur = now - prev;
 
         this.feedback.input(
-                pos.feedback(Pb, now, next, dur, 0.5f, nar), neg.feedback(Nb, now, next, dur, 0.5f, nar)
+                pos.feedback(Pb, now, next, 1, nar), neg.feedback(Nb, now, next, 1, nar)
         );
     }
 
@@ -296,11 +295,6 @@ public class BiPolarAction extends AbstractSensor {
     private class MyAbstractGoalActionConcept extends AbstractGoalActionConcept {
         public MyAbstractGoalActionConcept(Term pos, NAR nar) {
             super(pos, nar);
-        }
-
-        @Override
-        protected AttNode newAttn() {
-            return BiPolarAction.this.attn;
         }
 
         @Override

@@ -22,7 +22,7 @@ import static nars.time.Tense.ETERNAL;
 class NAL8EternalMixTest extends NALTest {
 
     public static final LongPredicate ZERO = t -> t >= 0;
-    private final int cycles = 300;
+    private final int cycles = 600;
 
     @BeforeEach
     void setTolerance() {
@@ -429,10 +429,13 @@ class NAL8EternalMixTest extends NALTest {
 
         TestNAR tester = test;
         tester.input("((hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001}))) ==>+5 opened:{t001}).");
-        tester.inputAt(2, "hold(SELF,{t002}). :|: ");
+        tester.inputAt(2, "hold(SELF,{t002}). | ");
 
         tester.mustBelieve(cycles, "((at(SELF,{t001}) &&+5 open({t001})) ==>+5 opened:{t001})",
-                1.0f, 0.81f, 2 + 5);
+                1.0f, 0.81f,
+                t->true
+                //2 + 5
+        );
 
     }
 

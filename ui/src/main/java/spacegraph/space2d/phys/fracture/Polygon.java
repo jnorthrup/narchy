@@ -1,11 +1,11 @@
 package spacegraph.space2d.phys.fracture;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.common.PlatformMathUtils;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.fracture.hertelmehlhorn.SingletonHM;
 import spacegraph.space2d.phys.fracture.poly2Tri.Triangulation;
-import jcog.math.v2;
 
 import java.util.ArrayList;
 import java.util.Iterator;

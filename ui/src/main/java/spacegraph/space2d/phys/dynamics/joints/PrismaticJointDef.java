@@ -23,8 +23,8 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics.joints;
 
-import spacegraph.space2d.phys.dynamics.Body2D;
 import jcog.math.v2;
+import spacegraph.space2d.phys.dynamics.Body2D;
 
 /**
  * Prismatic joint definition. This requires defining a line of motion using an axis and an anchor

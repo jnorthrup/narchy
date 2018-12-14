@@ -1,11 +1,11 @@
 package spacegraph.space2d.dyn2d.jbox2d;
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.common.MathUtils;
 import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.dynamics.joints.ConstantVolumeJointDef;
-import jcog.math.v2;
 
 import java.util.function.Consumer;
 

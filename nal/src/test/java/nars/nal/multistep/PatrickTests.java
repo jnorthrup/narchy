@@ -78,13 +78,13 @@ public class PatrickTests extends NALTest {
 
         tt.confTolerance(0.5f);
 
-        tt.nar.freqResolution.set(0.05f);
+        tt.nar.freqResolution.set(0.1f);
         tt.nar.confResolution.set(0.02f);
 
 
         int dur = cycles / 4;
         tt.nar.time.dur(dur);
-        tt.nar.termVolumeMax.set(16);
+        tt.nar.termVolumeMax.set(18);
 
         tt.nar.timeResolution.set(10);
 

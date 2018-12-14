@@ -4,6 +4,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
+import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -93,6 +94,10 @@ abstract public class DynamicTruthModel {
                 cb.newTemporalTable(t, beliefOrGoal),
                 cb.newEternalTable(t)
         );
+    }
+
+    public Bag newTaskLinkBag(Term t, ConceptBuilder b) {
+        return b.newLinkBag(t);
     }
 
     @FunctionalInterface
@@ -773,5 +778,11 @@ abstract public class DynamicTruthModel {
         public Term reconstruct(Term superterm, List<Task> c, NAR nar) {
             throw new UnsupportedOperationException();
         }
+
+//        @Override
+//        public Bag newTaskLinkBag(Term t, ConceptBuilder b) {
+//
+//            return new ProxyBag(b);
+//        }
     };
 }

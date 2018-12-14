@@ -1,6 +1,7 @@
 package spacegraph.space2d.dyn2d;
 
 
+import jcog.math.v2;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.dynamics.Body2D;
@@ -10,7 +11,6 @@ import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.contacts.Position;
 import spacegraph.space2d.phys.particle.ParticleGroupDef;
 import spacegraph.space2d.phys.particle.ParticleType;
-import jcog.math.v2;
 
 import java.util.function.Consumer;
 

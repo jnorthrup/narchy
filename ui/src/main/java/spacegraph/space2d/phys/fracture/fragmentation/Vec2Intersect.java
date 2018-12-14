@@ -1,7 +1,7 @@
 package spacegraph.space2d.phys.fracture.fragmentation;
 
-import spacegraph.space2d.phys.fracture.Fragment;
 import jcog.math.v2;
+import spacegraph.space2d.phys.fracture.Fragment;
 
 /**
  * Bod prieniku 2 polygonov (primarneho a konvexneho z voronoi diagramu)

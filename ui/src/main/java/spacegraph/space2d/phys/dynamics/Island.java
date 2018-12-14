@@ -24,6 +24,7 @@
 package spacegraph.space2d.phys.dynamics;
 
 import com.google.common.base.Joiner;
+import jcog.math.v2;
 import spacegraph.space2d.phys.callbacks.ContactImpulse;
 import spacegraph.space2d.phys.callbacks.ContactListener;
 import spacegraph.space2d.phys.common.MathUtils;
@@ -34,7 +35,6 @@ import spacegraph.space2d.phys.dynamics.contacts.*;
 import spacegraph.space2d.phys.dynamics.contacts.ContactSolver.ContactSolverDef;
 import spacegraph.space2d.phys.dynamics.joints.Joint;
 import spacegraph.space2d.phys.fracture.fragmentation.Smasher;
-import jcog.math.v2;
 
 import static spacegraph.space2d.phys.dynamics.BodyType.DYNAMIC;
 import static spacegraph.space2d.phys.dynamics.BodyType.STATIC;

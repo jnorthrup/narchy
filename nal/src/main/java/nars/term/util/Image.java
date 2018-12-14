@@ -7,6 +7,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
+import nars.concept.TaskConcept;
 import nars.control.proto.Remember;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
@@ -175,7 +176,7 @@ public enum Image {;
         private final boolean beliefOrGoal;
 
         @Nullable
-        transient Concept host = null;
+        transient TaskConcept host = null;
 
         public ImageBeliefTable(Term image, Term imageNormalized, boolean beliefOrGoal) {
             this.image = image;
@@ -207,8 +208,13 @@ public enum Image {;
         }
 
         @Override
+        public void sample(Answer m) {
+            match(m); //HACK
+        }
+
+        @Override
         public void match(Answer m) {
-            BeliefTable table = relink(m.nar, false);
+            BeliefTable table = relink(m.nar, true);
             if (table == null)
                 return;
 
@@ -217,10 +223,10 @@ public enum Image {;
 
             int results = m.tasks.size();
             if (results > 0) {
-            //HACK rewrite the tasks directly in the TopN selection
+            //HACK apply this as an add-on transformation to a final result, not every intermediate possible result
                 Object[] tt = m.tasks.items;
                 for (int i = 0; i < results; i++) {
-                    tt[i] = new ImgTermTask((Task) tt[i]);
+                    tt[i] = new ImgTermTask(image, (Task) tt[i]);
                 }
             }
         }
@@ -275,16 +281,16 @@ public enum Image {;
         @Nullable private BeliefTable relink(NAR n, boolean conceptualize) {
             Concept h = host;
             if (h == null || h.isDeleted()) {
-                h = (host = n.concept(normal, conceptualize)); //TODO set atomically
+                h = (host = (TaskConcept) n.concept(normal, conceptualize)); //TODO set atomically
                 if (h == null)
                     return null;
             }
             return beliefOrGoal ? h.beliefs() : h.goals();
         }
 
-        private class ImgTermTask extends SpecialTermTask {
-            public ImgTermTask(Task x) {
-                super(ImageBeliefTable.this.image, x);
+        private static class ImgTermTask extends SpecialTermTask {
+            public ImgTermTask(Term t, Task x) {
+                super(t, x);
             }
 
             @Override

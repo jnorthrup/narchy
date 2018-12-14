@@ -8,8 +8,8 @@ import nars.Narsese;
 import nars.experiment.minicraft.top.InputHandler;
 import nars.experiment.minicraft.top.TopDownMinicraft;
 import nars.sensor.Bitmap2DSensor;
-import nars.video.AutoclassifiedBitmap;
 import nars.sensor.PixelBag;
+import nars.video.AutoclassifiedBitmap;
 import spacegraph.SpaceGraph;
 
 

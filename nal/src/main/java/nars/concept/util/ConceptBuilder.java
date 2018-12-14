@@ -50,6 +50,8 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
 
         DynamicTruthModel dmt = ConceptBuilder.dynamicModel(t);
+
+        Bag L;
         if (dmt != null) {
 
             //2. handle dynamic truth tables
@@ -57,6 +59,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
             G = goalable(t) ?
                     dmt.newTable(t, false, this) :
                     BeliefTable.Empty;
+            L = dmt.newTaskLinkBag(t, this);
         } else {
 //                //3. handle dynamic conceptualizers (experimental)
 //                Term conceptor = Functor.func(t);
@@ -73,14 +76,15 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
             //4. default task concept
             B = this.newTable(t, true);
             G = goalable(t) ? this.newTable(t, false) : BeliefTable.Empty;
-
+            L = this.newLinkBag(t);
         }
+
 
 
         return new TaskConcept(t, B, G,
                 this.questionTable(t, true), this.questionTable(t, false),
                 this.termlinker(t),
-                this.newLinkBag(t));
+                L);
     }
 
 

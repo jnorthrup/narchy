@@ -1,7 +1,7 @@
 package spacegraph.space2d.phys.fracture.fragmentation;
 
-import spacegraph.space2d.phys.fracture.Fragment;
 import jcog.math.v2;
+import spacegraph.space2d.phys.fracture.Fragment;
 
 /**
  * Hrana Voronoi diagramu.

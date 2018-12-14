@@ -3,13 +3,13 @@ package spacegraph.space2d.widget.meter;
 import com.jogamp.opengl.GL2;
 import jcog.learn.gng.NeuralGasNet;
 import jcog.learn.gng.impl.Centroid;
+import jcog.math.v2;
 import jcog.tree.rtree.rect.MutableHyperRectDouble;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.VectorLabel;
-import jcog.math.v2;
 import spacegraph.video.Draw;
 
 import java.util.stream.Stream;

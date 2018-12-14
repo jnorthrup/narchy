@@ -23,8 +23,8 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.collision;
 
-import spacegraph.space2d.phys.common.Settings;
 import jcog.math.v2;
+import spacegraph.space2d.phys.common.Settings;
 
 /**
  * A manifold for two touching convex shapes. Box2D supports multiple types of contact:

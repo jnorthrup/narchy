@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.adapter;
 
 import com.jogamp.newt.event.KeyEvent;
 import jcog.event.Off;
+import jcog.math.v2;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
@@ -10,7 +11,6 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.util.AWTCamera;
-import jcog.math.v2;
 import spacegraph.video.Tex;
 
 import javax.swing.*;

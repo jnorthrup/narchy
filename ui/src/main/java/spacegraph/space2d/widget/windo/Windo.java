@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.windo;
 
 import com.jogamp.opengl.GL2;
+import jcog.math.v2;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.*;
 import spacegraph.space2d.Surface;
@@ -8,7 +9,6 @@ import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.ZoomOrtho;
-import jcog.math.v2;
 import spacegraph.video.Draw;
 
 import java.util.EnumMap;

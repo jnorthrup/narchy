@@ -1,5 +1,6 @@
 package nars.agent;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FastCoWList;
@@ -63,7 +64,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
     public final FrameTrigger frameTrigger;
 
-    public final FloatRange pri = new FloatRange(0.5f, 0, 2f);
+    public final FloatRange pri = new FloatRange(1f, 0, 32f);
 
     public final AtomicBoolean enabled = new AtomicBoolean(false);
     private final AtomicBoolean busy = new AtomicBoolean(false);
@@ -177,7 +178,10 @@ public class NAgent extends NARService implements NSense, NAct {
             ((Reward)s).attn.parent(attn);
         } else if (s instanceof ActionConcept) {
             ((ActionConcept)s).attn.parent(attn);
-        }
+        } else if (s instanceof AttNode)
+            ((AttNode)s).parent(attn);
+        else
+            throw new TODO();
     }
 
 //    public final Bitmap2DSensor sense(Bitmap2DSensor bmp) {
@@ -478,6 +482,7 @@ public class NAgent extends NARService implements NSense, NAct {
             return;
 
         try {
+
             int d = nar.timeResolution.intValue();
             long now = Tense.dither(nar.time(), d);
             long prev = this.prev;
@@ -486,14 +491,13 @@ public class NAgent extends NARService implements NSense, NAct {
             else if (now <= prev)
                 return;
 
+            attn.supply.pri(pri.floatValue());
+            attn.update(nar);
+
             long next = Tense.dither(Math.max(now, frameTrigger.next(now)), d);
 
             this.now = now;
             this.next = next;
-
-
-            attn.supply.pri(pri.floatValue());
-            attn.update(nar);
 
             cycle.next(this, iteration.getAndIncrement(), prev, now, next);
 
@@ -551,9 +555,10 @@ public class NAgent extends NARService implements NSense, NAct {
     @Deprecated protected void reinforce(long prev, long now, long next) {
 
         in.input(always.stream().map(x -> x.get(prev, now, next)).filter(Objects::nonNull).peek(x -> {
-            x.pri(
-                    pri.floatValue() * nar.priDefault(x.punc())
-            );
+            throw new UnsupportedOperationException();
+//            x.pri(
+//                    pri.floatValue() * nar.priDefault(x.punc())
+//            );
         }));
     }
 

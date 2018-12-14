@@ -1,5 +1,6 @@
 package spacegraph.space2d.phys.fracture.poly2Tri;
 
+import jcog.math.v2;
 import org.eclipse.collections.api.iterator.IntIterator;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
@@ -7,7 +8,6 @@ import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import spacegraph.space2d.phys.fracture.poly2Tri.splayTree.BTreeNode;
 import spacegraph.space2d.phys.fracture.poly2Tri.splayTree.SplayTree;
 import spacegraph.space2d.phys.fracture.poly2Tri.splayTree.SplayTreeAction;
-import jcog.math.v2;
 
 import java.io.FileWriter;
 import java.io.IOException;

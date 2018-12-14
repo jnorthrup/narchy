@@ -1,7 +1,7 @@
 package spacegraph.space2d.phys.particle;
 
-import spacegraph.space2d.phys.dynamics.Body2D;
 import jcog.math.v2;
+import spacegraph.space2d.phys.dynamics.Body2D;
 
 public class ParticleBodyContact {
     /**

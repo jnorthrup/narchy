@@ -1,22 +1,17 @@
 package nars;
 
-import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.exe.Loop;
 import jcog.learn.ql.HaiQae;
-import jcog.math.FloatFirstOrderDifference;
-import jcog.math.FloatNormalized;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
-import jcog.tree.rtree.rect.RectFloat;
 import jcog.util.Int2Function;
 import nars.agent.FrameTrigger;
+import nars.agent.MetaAgent;
 import nars.agent.NAgent;
 import nars.agent.Reward;
-import nars.agent.SimpleReward;
 import nars.agent.util.RLBooster;
-import nars.control.DurService;
 import nars.control.MetaGoal;
 import nars.derive.BeliefSource;
 import nars.derive.Derivers;
@@ -35,31 +30,18 @@ import nars.op.Introduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
+import nars.sensor.PixelBag;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.time.Tense;
 import nars.time.clock.RealTime;
-import nars.sensor.PixelBag;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
-import net.beadsproject.beads.core.AudioContext;
-import net.beadsproject.beads.core.Auvent;
-import net.beadsproject.beads.core.UGen;
-import net.beadsproject.beads.data.WaveFactory;
-import net.beadsproject.beads.ugens.*;
-import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
-import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
-import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.meter.Cluster2DView;
-import spacegraph.video.Draw;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.function.Function;
-import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -204,7 +186,7 @@ abstract public class NAgentX extends NAgent {
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
-                        new Revaluator.DefaultRevaluator(0.5f),
+                        new Revaluator.DefaultRevaluator(0.1f),
                         //new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
 
                         threads <= 0 ? Util.concurrencyExcept(2) : threads, true/* affinity */))
@@ -263,11 +245,11 @@ abstract public class NAgentX extends NAgent {
         sensorAction.timing = new ActionTiming(n);
 
 
-        ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.files(n,
-                "nal6.nal", "motivation.nal"),
-                a.actions.stream().collect(Collectors.toList())
-        );
-        motorInference.timing = new ActionTiming(n);
+//        ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.files(n,
+//                "nal6.nal", "motivation.nal"),
+//                a.actions.stream().collect(Collectors.toList())
+//        );
+//        motorInference.timing = new ActionTiming(n);
 
 
         //sd.timing = new ActionTiming(n);
@@ -279,6 +261,8 @@ abstract public class NAgentX extends NAgent {
 //////                    }
 ////                };
 
+
+        MetaAgent meta = new MetaAgent(a);
 
         window(AttentionUI.attentionGraph(n, a), 600, 600);
 
@@ -332,88 +316,6 @@ abstract public class NAgentX extends NAgent {
 //        }));
     }
 
-    private static NAgent metavisor(NAgent a) {
-
-//        new NARSpeak.VocalCommentary( a.nar());
-
-        //
-//        a.nar().onTask(x -> {
-//           if (x.isGoal() && !x.isInput())
-//               System.out.println(x.proof());
-//        });
-
-        int durs = 4;
-        NAR nar = a.nar();
-
-        NAgent m = new NAgent($.func("meta", a.id), FrameTrigger.durs(durs), nar);
-
-        m.reward(
-                new SimpleReward($.func("dex", a.id),
-                        new FloatNormalized(new FloatFirstOrderDifference(a.nar()::time,
-                                a::dexterity)).relax(0.01f), m)
-        );
-
-//        m.actionUnipolar($.func("forget", a.id), (f)->{
-//            nar.memoryDuration.set(Util.lerp(f, 0.5f, 0.99f));
-//        });
-//        m.actionUnipolar($.func("awake", a.id), (f)->{
-//            nar.conceptActivation.set(Util.lerp(f, 0.1f, 0.99f));
-//        });
-        m.senseNumber($.func("busy", a.id), new FloatNormalized(() ->
-                (float) Math.log(1 + m.nar().emotion.busyVol.getMean()), 0, 1).relax(0.05f));
-//
-//        for (Sensor s : a.sensors) {
-//            if (!(s instanceof Signal)) { //HACK only if compound sensor
-//                Term term = s.term();
-//
-//                //HACK
-//                if (s instanceof DigitizedScalar)
-//                    term = $.quote(term.toString()); //throw new RuntimeException("overly complex sensor term");
-//
-//                //HACK TODO divide by # of contained concepts, reported by Sensor interface
-//                float maxPri;
-//                if (s instanceof Bitmap2DSensor) {
-//                    maxPri = 8f / (float) (Math.sqrt(((Bitmap2DSensor) s).concepts.area));
-//                } else {
-//                    maxPri = 1;
-//                }
-//
-//                m.actionUnipolar($.func("aware", term), (p) -> {
-//                    FloatRange pp = s.pri();
-//                    pp.set(lerp(p, 0f, maxPri * nar.priDefault(BELIEF)));
-//                });
-//
-//            }
-//        }
-
-//        actionUnipolar($.inh(this.nar.self(), $.the("deep")), (d) -> {
-//            if (d == d) {
-//                //deep incrases both duration and max term volume
-//                this.nar.time.dur(Util.lerp(d * d, 20, 120));
-//                this.nar.termVolumeMax.set(Util.lerp(d, 30, 60));
-//            }
-//            return d;
-//        });
-
-//        actionUnipolar($.inh(this.nar.self(), $.the("awake")), (a)->{
-//            if (a == a) {
-//                this.nar.activateConceptRate.set(Util.lerp(a, 0.2f, 1f));
-//            }
-//            return a;
-//        });
-
-//        actionUnipolar($.prop(nar.self(), $.the("focus")), (a)->{
-//            nar.forgetRate.set(Util.lerp(a, 0.9f, 0.8f)); //inverse forget rate
-//            return a;
-//        });
-
-//        m.actionUnipolar($.func("curious", a.id), (cur) -> {
-//            a.curiosity.set(lerp(cur, 0.01f, 0.25f));
-//        });//.resolution(0.05f);
-
-
-        return m;
-    }
 
 
     public static void config(NAR n) {
@@ -435,6 +337,8 @@ abstract public class NAgentX extends NAgent {
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
+
+//        n.attn.activating.conceptActivationRate.set(0.1f);
 
 //
 //        n.attn.forgetting = new Forgetting.AsyncForgetting() {
@@ -468,18 +372,21 @@ abstract public class NAgentX extends NAgent {
     public static void initPlugins(NAR n) {
 
 
-        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8
+        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
 
-                //"motivation.nal",
+                "motivation.nal"
                 //"equivalence.nal"
                 //  "induction.goal.nal"
         ));
-        bd.termLinksPerTaskLink.set(2);
-        bd.premisesPerConcept.set(4);
+        //bd.termLinksPerTaskLink.set(2);
+        //bd.premisesPerConcept.set(4);
 
         //new STMLinkage(n, 1);
 
-        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 96);
+        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF,
+                //(Task::isInput),
+                t->true,
+                8, 96);
 //        {
 //
 //            SpaceGraph.window(
@@ -592,160 +499,6 @@ abstract public class NAgentX extends NAgent {
         return c;
     }
 
-    /**
-     * increments/decrements within a finite set of powers-of-two so that harmonics
-     * wont interfere as the resolution changes
-     * <p>
-     * TODO allow powers other than 2, ex: 1.618
-     */
-    public static class StepController implements IntConsumer, IntObjectPair<StepController> {
-
-        final float[] v;
-        private final FloatProcedure update;
-        int x;
-
-        public StepController(FloatProcedure update, float... steps) {
-            v = steps;
-            this.update = update;
-        }
-
-        public static StepController harmonic(FloatProcedure update, float min, float max) {
-
-            FloatArrayList f = new FloatArrayList();
-            float x = min;
-            while (x <= max) {
-                f.add(x);
-                x *= 2;
-            }
-            assert (f.size() > 1);
-            return new StepController(update, f.toArray());
-
-        }
-
-        private void set(int i) {
-            if (i < 0) i = 0;
-            if (i >= v.length) i = v.length - 1;
-
-            update.value(v[x = i]);
-
-        }
-
-        @Override
-        public void accept(int aa) {
-
-
-            switch (aa) {
-                case 0:
-                    set(x - 1);
-                    break;
-                case 1:
-                    set(x + 1);
-                    break;
-                default:
-                    throw new RuntimeException("OOB");
-
-
-            }
-        }
-
-        /**
-         * number actions
-         */
-        @Override
-        public int getOne() {
-            return 2;
-        }
-
-        @Override
-        public StepController getTwo() {
-            return this;
-        }
-
-        @Override
-        public int compareTo(IntObjectPair<StepController> o) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-
-    private static class Metronome {
-        public Metronome(Term id, Clock cc, NAR n) {
-            cc.on(new Auvent<Clock>() {
-
-                public final Envelope kickEnv, snareEnv;
-                final AudioContext ac = cc.getContext();
-
-                {
-                    kickEnv = new Envelope(ac, 0.0f);
-
-                    UGen kickGain = new Gain(ac, 1, kickEnv).in(
-                            new BiquadFilter(ac, BiquadFilter.BESSEL_LP, 500.0f, 1.0f).in(
-                                    new WavePlayer(ac, 100.0f, WaveFactory.SINE)));
-
-                    ac.out.in(kickGain);
-
-                }
-
-                {
-                    snareEnv = new Envelope(ac, 0.0f);
-
-                    WavePlayer snareNoise = new WavePlayer(ac, 1.0f, WaveFactory.NOISE);
-                    WavePlayer snareTone = new WavePlayer(ac, 200.0f, WaveFactory.SINE);
-
-                    IIRFilter snareFilter = new BiquadFilter(ac, BiquadFilter.BP_SKIRT, 2500.0f, 1.0f);
-                    snareFilter.in(snareNoise);
-                    snareFilter.in(snareTone);
-
-                    Gain snareGain = new Gain(ac, 1, snareEnv);
-                    snareGain.in(snareFilter);
-
-
-                    ac.out.in(snareGain);
-                }
-
-                @Override
-                protected void on(Clock c) {
-                    if (c.isBeat(16)) {
-                        snareEnv.add(0.5f, 2.00f);
-                        snareEnv.add(0.2f, 8.0f);
-                        snareEnv.add(0.0f, 80.0f);
-                        n.believe($.inh("snare", id), Tense.Present);
-                    }
-                    if (c.isBeat(4)) {
-
-                        kickEnv.add(0.5f, 2.0f);
-                        kickEnv.add(0.2f, 5.0f);
-                        kickEnv.add(0.0f, 50.0f);
-                        n.believe($.inh("kick", id), Tense.Present);
-
-
-                    }
-                }
-            });
-        }
-    }
-
-
-    static class ConjClusterView extends Cluster2DView {
-
-        private final ConjClustering conj;
-
-        public ConjClusterView(ConjClustering c) {
-            this.conj = c;
-            DurService.on(c.nar(), () -> update(c.data.net));
-        }
-
-        @Override
-        protected void paintIt(GL2 gl, SurfaceRender r) {
-            conj.data.bag.forEach(l -> {
-                Task t = l.get();
-                RectFloat b = bounds(new double[]{t.mid(), t.priElseZero()}, 35);
-                gl.glColor3f(0.5f, 0.25f, 0f);
-                Draw.rect(b, gl);
-            });
-            super.paintIt(gl, r);
-        }
-    }
 
 }
 

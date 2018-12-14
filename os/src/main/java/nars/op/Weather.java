@@ -3,6 +3,7 @@ package nars.op;
 import com.fasterxml.jackson.databind.JsonNode;
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.math.v2;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
@@ -17,7 +18,6 @@ import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import spacegraph.space2d.container.graph.Timeline2D;
-import jcog.math.v2;
 
 import java.io.IOException;
 import java.net.URL;

@@ -102,15 +102,13 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     }
 
     @Nullable
-    public SeriesBeliefTable.SeriesRemember update(long start, long end, float pri, FloatFloatToObjectFunction<Truth> truther, float dur, NAR n) {
-
-        assert(dur > 0);
+    public SeriesBeliefTable.SeriesRemember update(long start, long end, float pri, FloatFloatToObjectFunction<Truth> truther, NAR n) {
 
         float prevValue = currentValue, nextValue = floatValueOf(term);
 
         return ((SensorBeliefTables) beliefs())
                 .add(nextValue == nextValue ? truther.value(prevValue, nextValue) : null,
-                        start, end, pri, this, dur, n);
+                        start, end, pri, this, n.dur(), n);
     }
 
 
@@ -127,7 +125,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     public void update(long prev, long now, long next, NAR nar) {
 
         float pri = attn.supply.priElseZero();
-        SeriesBeliefTable.SeriesRemember t = update(prev, now, pri, (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), nar.dur(), nar);
+        SeriesBeliefTable.SeriesRemember t = update(prev, now, pri, (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), nar);
         if (t!=null) {
             attn.taken(t.input.priElseZero());
             in.input(t);
