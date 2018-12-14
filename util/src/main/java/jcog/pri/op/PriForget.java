@@ -22,7 +22,7 @@ public class PriForget<P extends Prioritizable> implements Consumer<P> {
     }
 
     @Nullable
-    public static Consumer<? extends Prioritizable> forgetPressure(float temperature, int cap, float pressure, float mass) {
+    public static Consumer<? extends Prioritizable> forgetPressure(float temperature, int size, int cap, float pressure, float mass) {
         //            float idealPri = 1 - temperature; //headroom median balanced
         //            float totalQuell = (mass + pressure ) - (s * idealPri);
         //            float eachMustForgetPct =
@@ -31,7 +31,7 @@ public class PriForget<P extends Prioritizable> implements Consumer<P> {
         if (pressure > Float.MIN_NORMAL) {
 
             float eachMustForgetPct =
-                    temperature * Util.unitize(pressure / mass);
+                    temperature * size / cap * Util.unitize(pressure / mass);
 
             //temperature * Util.unitize(pressure / (pressure + mass));
             //Util.unitize(pressure * temperature / mass);

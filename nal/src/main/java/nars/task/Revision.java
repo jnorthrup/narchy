@@ -11,7 +11,6 @@ import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.util.Conj;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
@@ -24,8 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
-import static nars.Op.CONJ;
-import static nars.Op.IMPL;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -62,14 +59,13 @@ public class Revision {
 
     private static Term intermpolate(/*@NotNull*/ Term a, long bOffset, /*@NotNull*/ Term b, float aProp, float curDepth, NAR nar) {
 
-        if (a.equals(b) && bOffset == 0)
+        if (a.equals(b)/* && bOffset == 0*/)
             return a;
 
         if (a instanceof Atomic || b instanceof Atomic)
             return Null; //atomics differ
 
-        Op ao = a.op();
-        Op bo = b.op();
+        Op ao = a.op(), bo = b.op();
         if (ao != bo)
             return Null;
 
@@ -85,22 +81,22 @@ public class Revision {
 
 
         if (ao.temporal) {
-            if (ao == CONJ) {
-                return Conj.conjIntermpolate(a, b, aProp, bOffset);
-            } else if (ao == IMPL) {
+//            if (ao == CONJ) {
+//                return Conj.conjIntermpolate(a, b, aProp, bOffset);
+//            } else if (ao == IMPL) {
                 return dtMergeDirect(a, b, aProp, curDepth, nar);
-            } else
-                throw new UnsupportedOperationException();
+//            } else
+//                throw new UnsupportedOperationException();
         } else {
 
+            Subterms aa = a.subterms(), bb = b.subterms();
+//            if (aa.equals(bb))
+//                return a;
 
             Term[] ab = new Term[len];
             boolean change = false;
-            Subterms aa = a.subterms();
-            Subterms bb = b.subterms();
             for (int i = 0; i < len; i++) {
-                Term ai = aa.sub(i);
-                Term bi = bb.sub(i);
+                Term ai = aa.sub(i), bi = bb.sub(i);
                 if (!ai.equals(bi)) {
                     Term y = intermpolate(ai, 0, bi, aProp, curDepth / 2f, nar);
                     if (y instanceof Bool)
@@ -123,7 +119,6 @@ public class Revision {
     /*@NotNull*/
     private static Term dtMergeDirect(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, float depth, NAR nar) {
 
-        depth /= 2f;
 
         Term a0 = a.sub(0), a1 = a.sub(1), b0 = b.sub(0), b1 = b.sub(1);
 
@@ -131,12 +126,14 @@ public class Revision {
         if (a0.equals(b0) && a1.equals(b1)) {
             return a.dt(dt);
         } else {
+
+            depth /= 2f;
+
             Term na = intermpolate(a0, 0, b0, aProp, depth, nar);
             if (na == Null || na == Bool.False) return na;
 
             Term nb = intermpolate(a1, 0, b1, aProp, depth, nar);
             if (nb == Null || nb == Bool.False) return nb;
-
 
             return a.op().the(dt, na, nb);
         }
@@ -176,11 +173,14 @@ public class Revision {
      */
     static int merge(int adt, int bdt, float aProp, NAR nar) {
         /*if (adt >= 0 == bdt >= 0)*/ { //require same sign ?
-            int delta = Math.abs(adt - bdt);
-            int range = Math.max(Math.abs(adt), Math.abs(bdt));
+
+            int range = //Math.max(Math.abs(adt), Math.abs(bdt));
+                        Math.abs(adt - bdt);
+            int ab = Util.lerp(aProp, bdt, adt);
+            int delta = Math.max(Math.abs(ab-adt), Math.abs(ab- bdt));
             float ratio = ((float) delta) / range;
             if (ratio <= nar.intermpolationRangeLimit.floatValue()) {
-                return Util.lerp(aProp, bdt, adt);
+                return ab;
             }
         }
 

@@ -62,6 +62,10 @@ public class ConjTest {
     }
 
 
+    @Test void testDternalize() {
+        assertEq("((a &&+3 b)&&c)", $$("((a &&+3 b) &&+3 c)").dt(DTERNAL));
+    }
+
     @Test
     void testSimpleEternals() {
         Conj c = new Conj();
@@ -181,10 +185,7 @@ public class ConjTest {
         c.add(ETERNAL, x);
         c.add(1, y);
         c.add(2, z);
-        assertEquals(
-                //"((y &&+1 z)&&x)",
-                "((x&|y) &&+1 (x&|z))",
-                c.term().toString());
+        assertEq("((y &&+1 z)&&x)", c.term());
 
     }
 
@@ -602,8 +603,8 @@ public class ConjTest {
 
         Term xEternal = $$("((((--,angX) &&+4 x) &&+10244 angX) && y)");
         assertEquals(
-                //"((((--,angX) &&+4 x) &&+10244 angX)&&y)",
-                "((((--,angX)&|y) &&+4 (x&|y)) &&+10244 (y&|angX))",
+                "((((--,angX) &&+4 x) &&+10244 angX)&&y)",
+                //"((((--,angX)&|y) &&+4 (x&|y)) &&+10244 (y&|angX))",
                 xEternal.toString());
     }
 

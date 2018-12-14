@@ -54,7 +54,7 @@ public class TrackXY_NAR extends NAgentX {
     public static final int derivationStrength = 8;
     static int dur = 8;
     static float camResolution = 0.1f;
-    static int volMax = 5;
+    static int volMax = 7;
     final Bitmap2DSensor cam;
     private final TrackXY track;
 
@@ -94,10 +94,11 @@ public class TrackXY_NAR extends NAgentX {
 
         if (targetCam) {
             Bitmap2DSensor<jcog.signal.wave2d.ArrayBitmap2D> c = new Bitmap2DSensor<>(/*id*/  (Term) null, track.grid, nar);
+            c.resolution(camResolution);
             addSensor(c);
             /*id*/
             this.cam = c;
-            cam.resolution(camResolution);
+
         } else {
             this.cam = null;
         }

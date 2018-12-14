@@ -580,8 +580,6 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
     default Term dt(int dt) {
-
-
         return this;
     }
 

@@ -75,7 +75,7 @@ abstract public class Forgetting {
 
         @Override
         protected Consumer forget(float temperature, int size, int cap, float pressure, float mass) {
-            return PriForget.forgetPressure(temperature, cap, pressure, mass);
+            return PriForget.forgetPressure(temperature, size, cap, pressure, mass);
         }
     }
 

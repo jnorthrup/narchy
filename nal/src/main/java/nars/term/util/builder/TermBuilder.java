@@ -178,7 +178,7 @@ public abstract class TermBuilder {
 
 
 
-
+    //TODO presorted flag
     public Term conj(final int dt, Term[] u) {
 
         switch (dt) {
@@ -279,7 +279,7 @@ public abstract class TermBuilder {
                     if (!a.hasAny(Op.CONJ.bit) && !b.hasAny(Op.CONJ.bit)) {
                         //fast construct for simple case, verified above to not contradict itself
                         //return compound(CONJ, dt, sorted(u[0], u[1]));
-                        return theCompound(CONJ, dt, sorted(u[0], u[1]));
+                        return theCompound(CONJ, dt, /*sorted*/u[0], u[1]);
                     }
 
                 }

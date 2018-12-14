@@ -19,11 +19,11 @@ public class IntermpolationTest {
 
     @Test
     void testIntermpolation0() throws Narsese.NarseseException {
-        Compound a = $.$("(a &&+3 (b &&+3 c))");
-        Compound b = $.$("(a &&+3 (b &&+1 c))");
+        Compound a = $.$("((a &&+3 b) &&+3 c)");
+        Compound b = $.$("((a &&+3 b) &&+1 c)");
         RevisionTest.permuteChoose(a, b,
-                //"[((a &&+3 b) &&+1 c), ((a &&+3 b) &&+2 c), ((a &&+3 b) &&+3 c)]"
-                "[((a &&+3 b) &&+1 (c &&+2 c))]"
+                "[((a &&+3 b) &&+1 c), ((a &&+3 b) &&+2 c), ((a &&+3 b) &&+3 c)]"
+                //"[((a &&+3 b) &&+1 (c &&+2 c))]"
         );
     }
 
@@ -31,7 +31,8 @@ public class IntermpolationTest {
     void testIntermpolation0b() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+3 (b &&+3 c))");
         Compound b = $.$("(a &&+1 (b &&+1 c))");
-        RevisionTest.permuteChoose(a, b, "[((a &&+1 b) &&+1 c), ((a &&+1 b) &&+5 c), ((a &&+3 b) &&+3 c), ((a &&+2 c) &&+1 b)]");
+        RevisionTest.permuteChoose(a, b,
+                "[((a &&+1 b) &&+1 c), ((a &&+1 b) &&+5 c), ((a &&+3 b) &&+3 c), ((a &&+2 c) &&+1 b)]");
     }
 
     @Test
@@ -181,7 +182,11 @@ public class IntermpolationTest {
     void testIntermpolation2() throws Narsese.NarseseException {
         Compound f = $.$("(a &&+1 b)");
         Compound g = $.$("(a &&-1 b)");
-        RevisionTest.permuteChoose(f, g, "[(a&&b)]");
+        RevisionTest.permuteChoose(f, g, "[(b &&+1 a), (a&|b), (a &&+1 b)]");
+    }
+
+    @Test
+    void testIntermpolation2b() throws Narsese.NarseseException {
 
         Compound h = $.$("(a &&+1 b)");
         Compound i = $.$("(a &| b)");

@@ -9,6 +9,7 @@ import nars.subterm.AnonVector;
 import nars.subterm.SortedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.InternedCompound;
@@ -270,7 +271,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     @Override
     public Term conj(int dt, Term[] u) {
-
+        if(dt==0 || dt==DTERNAL) u = Terms.sorted(u); //pre-sort
         //preFilter
 //        u = conjPrefilter(dt, u);
 //        boolean trues = false;

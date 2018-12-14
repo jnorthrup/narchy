@@ -769,9 +769,8 @@ public class NAL5Test extends NALTest {
     void testPosPosImplicationConc() {
 
 
-        test.nar.termVolumeMax.set(4);
+        test.nar.termVolumeMax.set(2);
         test
-
                 .input("x. %1.0;0.90%")
                 .input("(x ==> y).")
                 .mustBelieve(cycles, "y", 1.0f, 0.81f)

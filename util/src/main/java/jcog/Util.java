@@ -620,11 +620,11 @@ public enum Util {
     }
 
     public static long lerp(float x, long min, long max) {
-        return min + Math.round((max - min) * unitize((double) x));
+        return Math.round(min + (max - min) * unitize((double) x));
     }
 
     public static int lerp(float x, int min, int max) {
-        return min + Math.round((max - min) * unitize(x));
+        return Math.round(min + (max - min) * unitize(x));
     }
 
 

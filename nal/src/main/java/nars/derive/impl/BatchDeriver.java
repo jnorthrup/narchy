@@ -1,5 +1,6 @@
 package nars.derive.impl;
 
+import com.google.common.base.Joiner;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.math.IntRange;

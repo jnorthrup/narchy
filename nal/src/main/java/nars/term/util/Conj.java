@@ -923,9 +923,10 @@ public class Conj extends ByteAnonMap {
                 Conj c = new Conj();
                 int dtdt = eternal ? DTERNAL : 0;
 
+
                 conj.eventsWhile((whn, wht) ->
                                 c.add(whn, CONJ.the(dtdt, wht, incoming)), 0,
-                        true /*false*/, true, false, 0);
+                        true, false, true, 0);
                 Term d = c.term();
                 if (d.equals(conj))
                     return conj;  //no change but the incoming has been absorbed
@@ -968,7 +969,8 @@ public class Conj extends ByteAnonMap {
         Term incomingUnneg = incoming.unneg();
         if (!Term.commonStructure(existingUnneg, incomingUnneg))
             return null; //no potential for interaction
-
+        if (!incomingUnneg.hasAny(CONJ) && !existingUnneg.containsRecursively(incomingUnneg))
+            return null; //simple case
 
         boolean xConj = incomingUnneg.op() == CONJ;
         boolean eConj = existingUnneg.op() == CONJ;

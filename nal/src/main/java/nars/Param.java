@@ -205,7 +205,10 @@ public abstract class Param {
      * ratio of the dt difference compared to the smaller dt of the two being merged
      * probably values less than 0.5 are safe
      */
-    public final FloatRange intermpolationRangeLimit = new FloatRange(0.5f, 0, 1);
+    public final FloatRange intermpolationRangeLimit = new FloatRange(
+            //0.5f
+            1f
+            , 0, 1);
 
 
     public final TaskBuffer input =
