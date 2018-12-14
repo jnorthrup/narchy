@@ -185,7 +185,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
             feature[i] = $.quote(Util.uuid64()); //HACK
         }
 
-        Term r = $.the(root);
+        Term r = root;
 
         for (int i = 0; i < nw; i++) {
             for (int j = 0; j < nh; j++) {

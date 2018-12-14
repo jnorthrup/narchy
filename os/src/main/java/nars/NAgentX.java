@@ -169,7 +169,7 @@ abstract public class NAgentX extends NAgent {
     */
 
 
-        //Param.STRONG_COMPOSITION = true;
+//        Param.STRONG_COMPOSITION = true;
 //        Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
@@ -384,9 +384,12 @@ abstract public class NAgentX extends NAgent {
         //new STMLinkage(n, 1);
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF,
-                //(Task::isInput),
-                t->true,
-                8, 96);
+                Task::isInput,
+                //t->true,
+                8, 64);
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF,
+                t->!t.isInput(),
+                3, 8);
 //        {
 //
 //            SpaceGraph.window(

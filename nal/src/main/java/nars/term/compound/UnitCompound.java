@@ -114,6 +114,10 @@ public abstract class UnitCompound implements Compound {
         return this;
     }
 
+    @Override
+    public boolean hasXternal() {
+        return dt()==XTERNAL || sub().hasXternal();
+    }
 
     @Override
     public final Subterms subterms() {

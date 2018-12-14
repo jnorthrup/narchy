@@ -11,25 +11,21 @@ import nars.attention.AttNode;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.SelectorSensor;
-import nars.concept.sensor.Signal;
 import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
 import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
 import nars.gui.NARui;
-import nars.gui.sensor.VectorSensorView;
 import nars.sensor.PixelBag;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.video.AutoclassifiedBitmap;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.text.LabeledPane;
 
 import javax.swing.*;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static nars.agent.FrameTrigger.fps;
 import static nars.experiment.mario.level.Level.*;
@@ -96,28 +92,27 @@ public class NARio extends NAgentX {
 
 
         int nx = 4;
-        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.inh("cae", id), cc, nx, nx, (subX, subY) -> {
+        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap(id/*$.inh("cae", id)*/, cc, nx, nx, (subX, subY) -> {
             return new float[]{/*cc.X, cc.Y, */cc.Z};
         }, 12, this);
 
         camAE.alpha(0.03f);
         camAE.noise.set(0.05f);
 
-        SpaceGraph.window(camAE.newChart(), 500, 500);
 
-        {
-
-
-
-            List<SelectorSensor> tileSensors = List.of(
-                    tileSwitch($.the("left"), -1, 0),
-                    tileSwitch($.the("right"), +1, 0),
-                    tileSwitch($.the("up"), 0, -1),
-                    tileSwitch($.the("down"), 0, +1),
-                    tileSwitch(Op.SETi.the($.the("left"), $.the("up")), -1, -1),
-                    tileSwitch(Op.SETi.the($.the("right"), $.the("up")), +1, -1),
-                    tileSwitch(Op.SETi.the($.the("left"), $.the("down")), -1, +1),
-                    tileSwitch(Op.SETi.the($.the("right"), $.the("down")), +1, +1)
+        Atomic LEFT = $.the("left");
+        Atomic RIGHT = $.the("right");
+        Atomic UP = $.the("up");
+        Atomic DOWN = $.the("down");
+        List<SelectorSensor> tileSensors = List.of(
+                    tileSwitch(LEFT, -1, 0),
+                    tileSwitch(RIGHT, +1, 0),
+                    tileSwitch(UP, 0, -1),
+                    tileSwitch(DOWN, 0, +1),
+                    tileSwitch(Op.SECTi.the(LEFT, UP), -1, -1),
+                    tileSwitch(Op.SECTi.the(RIGHT, UP), +1, -1),
+                    tileSwitch(Op.SECTi.the(LEFT, DOWN), -1, +1),
+                    tileSwitch(Op.SECTi.the(RIGHT, DOWN), +1, +1)
             );
 
             AttNode tileAttnGroup = new AttNode(tileSensors);
@@ -125,10 +120,13 @@ public class NARio extends NAgentX {
             for (SelectorSensor s : tileSensors)
                 s.attn.reparent(tileAttnGroup);
 
-            SpaceGraph.window(new LabeledPane("Tile types",
-                    new Gridding(tileSensors.stream().map(z -> new VectorSensorView(z, nar).withControls()).collect(toList()))), 100, 100);
 
-        }
+        SpaceGraph.window(camAE.newChart(), 500, 500);
+
+//        SpaceGraph.window(new LabeledPane("Tile types",
+//                new Gridding(tileSensors.stream().map(z -> new VectorSensorView(z, nar).withControls()).collect(toList()))), 100, 100);
+
+
 
 
 
@@ -159,8 +157,8 @@ public class NARio extends NAgentX {
         //initBipolar();
 
 
-        Signal dvx = senseNumberDifference($$("vx(nario)"), () -> theMario!=null ? theMario.x : 0).resolution(0.02f);
-        Signal dvy = senseNumberDifference($$("vy(nario)"), () -> theMario!=null ? theMario.y : 0).resolution(0.02f);
+        senseNumberDifferenceBi($$("vx"), () -> theMario!=null ? theMario.x : 0).resolution(0.02f);
+        senseNumberDifferenceBi($$("vy"), () -> theMario!=null ? theMario.y : 0).resolution(0.02f);
 
 
         Reward right = rewardNormalized("goRight", -1, +1, () -> {

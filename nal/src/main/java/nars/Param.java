@@ -170,11 +170,12 @@ public abstract class Param {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-        //Util::and;
+        //(t,b)->Util.unitize(t+b);
+        Util::and;
         //Util::or;
         //Math::max;
         //Util::mean;
-        (t,b)->Util.unitize(t+b);
+
 
 
     public static final PriMerge taskMerge = PriMerge.max;
@@ -292,14 +293,14 @@ public abstract class Param {
      * cost of a repeat (of another within the premise's batch) task derivation
      */
     @Range(min = 0, max = 64)
-    public static final int TTL_DERIVE_TASK_REPEAT = 3;
+    public static final int TTL_DERIVE_TASK_REPEAT = 2;
 
 
     /**
      * cost of a task derived, but too similar to one of its parents
      */
     @Range(min = 0, max = 64)
-    public static final int TTL_DERIVE_TASK_SAME = 3;
+    public static final int TTL_DERIVE_TASK_SAME = 2;
 
 
     /**
@@ -315,7 +316,7 @@ public abstract class Param {
      * estimate
      */
     @Deprecated
-    public static final int TTL_MIN =
+    private static final int TTL_MIN =
             (Param.TTL_UNIFY * 2) +
                     (Param.TTL_BRANCH * 1) + Param.TTL_DERIVE_TASK_SUCCESS;
 

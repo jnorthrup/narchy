@@ -1079,7 +1079,7 @@ public class NAL6Test extends NALTest {
         test
                 .believe("(S ==> M)", 0.6f, 0.9f)
                 .believe("((X && S) ==> M)", 0.7f, 0.9f)
-                .mustBelieve(cycles, "(X ==> M)", .65f, 0.45f) //some freq and conf, dunno
+                .mustBelieve(cycles, "(X ==> M)", .65f, 0.66f) //some freq and conf, dunno
         ;
     }
     @Test void testDecomposeNegativeImplicationCommonConjunctionSubterm() {

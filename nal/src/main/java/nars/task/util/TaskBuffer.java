@@ -212,9 +212,6 @@ abstract public class TaskBuffer implements Consumer<Task> {
 
         private transient long prev = Long.MIN_VALUE;
 
-        float commitDurs = 4;
-
-        float durRemain = commitDurs;
 
         /**
          * @capacity size of buffer for tasks that have been input (and are being de-duplicated) but not yet input.
@@ -258,11 +255,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
 
                 float dDur = (float) (((double) dt) / dur);
 
-                durRemain -= dDur;
-                if (durRemain < 0) {
-                    commitDur();
-                    durRemain = Math.max(0, (durRemain + commitDurs));
-                }
+//                tasks.commit(null);
 
                 if (!tasks.isEmpty()) {
                     int n = batchSize(dDur);
@@ -288,9 +281,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
 
         }
 
-        protected void commitDur() {
-            tasks.commit(null /* no forget */);
-        }
+
 
         /**  TODO abstract */
         protected int batchSize(float dtDurs) {
@@ -307,13 +298,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
         private final TaskBuffer[] ALL;
 
         public BagPuncTasksBuffer(int capacity, float rate) {
-            belief = new BagTasksBuffer(capacity, rate) {
-                @Override
-                protected void commitDur() {
-                    //valve.set(...)
-                    super.commitDur();
-                }
-            };
+            belief = new BagTasksBuffer(capacity, rate);
             goal = new BagTasksBuffer(capacity, rate);
             question = new BagTasksBuffer(capacity, rate);
             quest = new BagTasksBuffer(capacity, rate);

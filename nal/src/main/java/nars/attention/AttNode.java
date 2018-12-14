@@ -37,28 +37,32 @@ public class AttNode extends AtomicTreeNode<AttNode> {
     public void update(NAR nar) {
 
         float myDemand = myDemand(nar);
-        float demand = myDemand + childDemand(nar);
-        float demandNet = Math.max(0, demand - supply.pri());
+        float childrenDemand = childDemand(nar);
+        float totalDemand = myDemand + childrenDemand;
+        float demandNet = Math.max(0, totalDemand - supply.pri());
         this.demand.set(demandNet);
 
 
-        float totalSupply = supply.pri();
-        childrenStream().forEach(c -> {
-            float cd = c.demand.floatValue();
-            if (cd > 0) {
-                float demandFraction = cd / demand;
-                float dSub = Math.min(cd, demandFraction * totalSupply);
-                if (dSub > ScalarValue.EPSILON) {
-                    float givenToChild = c.supply.take(this.supply, dSub, true, false);
+        if (childrenDemand > ScalarValue.EPSILON) {
+            float totalSupply = supply.pri();
+            float childrenSupply = totalSupply * (totalDemand > ScalarValue.EPSILON ? childrenDemand / totalDemand : 0);
+            childrenStream().forEach(c -> {
+                float cd = c.demand.floatValue();
+                if (cd > ScalarValue.EPSILON) {
+                    float dFrac = cd / (childrenDemand);
+                    float dSub = Math.min(cd, dFrac * childrenSupply);
+                    if (dSub > ScalarValue.EPSILON) {
+                        float givenToChild = c.supply.take(this.supply, dSub, true, false);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     protected float childDemand(NAR nar) {
         return Math.max(0, (float)childrenStream().mapToDouble(c->{
             c.update( nar );
-            return Math.max(c.demand.floatValue(), 0);
+            return Math.max(c.demand.floatValue() - c.supply.pri(), 0);
         }).sum());
     }
 
@@ -84,5 +88,12 @@ public class AttNode extends AtomicTreeNode<AttNode> {
 
     public void taken(float p) {
         supply.priSub(p);
+    }
+
+    public void supply(float income, float maxCapacity) {
+        //TODO fully atomic
+        supply.priAdd(income);
+        if (supply.pri() > maxCapacity)
+            supply.pri(maxCapacity);
     }
 }

@@ -8,11 +8,10 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.agent.Reward;
-import nars.concept.Concept;
 import nars.concept.action.BiPolarAction;
+import nars.concept.sensor.DigitizedScalar;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,8 +31,8 @@ import static nars.agent.FrameTrigger.fps;
 public class PoleCart extends NAgentX {
 
 
-    private final Concept xVel;
-    private final Concept x;
+    private final DigitizedScalar xVel;
+    private final DigitizedScalar x;
     private final AtomicBoolean drawFinished = new AtomicBoolean(true);
 
 
@@ -107,10 +106,10 @@ public class PoleCart extends NAgentX {
     static final double fourthirds = 4. / 3.;
 
 
-    @NotNull Concept angX;
-    @NotNull Concept angY;
+    DigitizedScalar angX;
+    DigitizedScalar angY;
 
-    Concept angVel;
+    DigitizedScalar angVel;
 
 
     double action;
@@ -135,9 +134,9 @@ public class PoleCart extends NAgentX {
          */
 
 
-        this.x = senseNumber($.inh("x", id),
+        this.x = senseNumberBi($.inh("x", id),
                 new FloatNormalized(() -> (float) pos, posMin, posMax));
-        this.xVel = senseNumber($.inh("dx", id),
+        this.xVel = senseNumberBi($.inh("dx", id),
                 new FloatNormalized(() -> (float) posDot)
         );
 
@@ -154,13 +153,13 @@ public class PoleCart extends NAgentX {
 //
 //        angX.resolution(0.02f);
 //        angY.resolution(0.02f);
-        this.angX = senseNumber($.inh("angX",id),
+        this.angX = senseNumberBi($.inh("angX",id),
                 () -> (float) (0.5f + 0.5f * (Math.sin(angle))));
-        this.angY = senseNumber($.inh("angY",id),
+        this.angY = senseNumberBi($.inh("angY",id),
                 () -> (float) (0.5f + 0.5f * (Math.cos(angle))));
 
 
-        this.angVel = senseNumber($.inh("angVel",id),
+        this.angVel = senseNumberBi($.inh("angVel",id),
 
                 new FloatNormalized(() -> (float) angleDot)
         );

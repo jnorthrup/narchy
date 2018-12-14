@@ -163,26 +163,26 @@ public class Occurrify extends TimeGraph {
 
         boolean taskEte = taskStart == ETERNAL;
         boolean beliefEte = beliefStart == ETERNAL;
-//        if (taskEte && !beliefEte && beliefStart != TIMELESS) {
-//            taskStart = beliefStart; //use belief time for eternal task
-//            taskEnd = beliefEnd;
-//        } else if (beliefEte && !taskEte && taskStart != TIMELESS) {
-//            beliefStart = taskStart; //use task time for eternal belief
-//            beliefEnd = taskEnd;
-//        }
+        //        if (taskEte && !beliefEte && beliefStart != TIMELESS) {
+        //            taskStart = beliefStart; //use belief time for eternal task
+        //            taskEnd = beliefEnd;
+        //        } else if (beliefEte && !taskEte && taskStart != TIMELESS) {
+        //            beliefStart = taskStart; //use task time for eternal belief
+        //            beliefEnd = taskEnd;
+        //        }
         if (taskEte && beliefEte) {
             //both eternal ok
-        } else if (taskEte) {
-//            if (d.taskPunc == BELIEF || d.taskPunc == GOAL) {
-//                taskStart = d.time;
-//                taskEnd = taskStart + (beliefEnd - beliefStart);
-//            } else {
-                taskStart = beliefStart;
-                taskEnd = beliefEnd;
-//            }
-        } else if (beliefEte) {
-//            beliefStart = d.time;
-//            beliefEnd = beliefStart + (taskStart - taskEnd);
+        } else if (taskEte && !beliefNoOcc) {
+            //            if (d.taskPunc == BELIEF || d.taskPunc == GOAL) {
+            //                taskStart = d.time;
+            //                taskEnd = taskStart + (beliefEnd - beliefStart);
+            //            } else {
+            taskStart = beliefStart;
+            taskEnd = beliefEnd;
+            //            }
+        } else if (beliefEte && taskOccurrence) {
+            //            beliefStart = d.time;
+            //            beliefEnd = beliefStart + (taskStart - taskEnd);
             beliefStart = taskStart;
             beliefEnd = taskEnd;
         }
@@ -832,27 +832,34 @@ public class Occurrify extends TimeGraph {
         BeliefAtTask() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-
-                return immediate(solveDT(d, x, false, false, false), d);
+                Pair<Term, long[]> p = solveDT(d, x, false, false, false);
+                if (p!=null) {
+                    apply(d, p.getTwo());
+                }
+                return p;
             }
 
             @Override
             long[] occurrence(Derivation d) {
-                long[] o = new long[2];
+                return new long[] { TIMELESS, TIMELESS };
+            }
+
+            private void apply(Derivation d, long[] o) {
                 if (d.occ.validEternal()) {
                     o[0] = o[1] = ETERNAL;
                 } else if (d.beliefStart == ETERNAL) {
                     o[0] = d.taskStart;
                     o[1] = d.taskEnd;
-                } else if (d.taskStart != ETERNAL) {
-                    o[0] = d.taskStart;
-                    o[1] = d.taskStart + Math.min(d.taskEnd - d.taskStart, d.beliefEnd - d.beliefStart);
-                } else if (d.taskStart == ETERNAL) {
-                    o[0] = d.beliefStart;
-                    o[1] = d.beliefEnd;
-                } else
-                    throw new TODO();//happens?
-                return o;
+                } else {
+                    if (d.taskStart == ETERNAL) {
+                        o[0] = d.time; //now
+                        o[1] = o[0] + (d.beliefEnd - d.beliefStart);
+                    } else {
+                        long taskRange = d.taskEnd - d.taskStart;
+                        o[0] = d.taskStart;
+                        o[1] = o[0] + (d.beliefStart != ETERNAL ? Math.min(taskRange, d.beliefEnd - d.beliefStart) : taskRange);
+                    }
+                }
             }
 
         },
@@ -932,7 +939,7 @@ public class Occurrify extends TimeGraph {
 
 
         @Nullable
-        protected Pair<Term, long[]> immediate(Pair<Term, long[]> p, Derivation d) {
+        @Deprecated protected Pair<Term, long[]> immediate(Pair<Term, long[]> p, Derivation d) {
             //if (p != null && (d.taskPunc == GOAL || d.taskPunc == QUEST) && (d.concPunc==QUEST || d.concPunc==GOAL)) {
             if (p != null && (d.concPunc==GOAL || d.concPunc == QUEST)) {
 //

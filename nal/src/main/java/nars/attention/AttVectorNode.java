@@ -2,7 +2,6 @@ package nars.attention;
 
 import com.google.common.collect.Streams;
 import jcog.Paper;
-import jcog.Util;
 import jcog.math.RecycledSummaryStatistics;
 import nars.NAR;
 import nars.concept.Concept;
@@ -48,8 +47,8 @@ public class AttVectorNode extends AttNode {
     }
 
     private float elementIdeal(int n) {
-        //return 1; //each component important as a top level concept
-        return 1f / Util.sqrt(n); //shared by sqrt of components
+        return 1; //each component important as a top level concept
+        //return 1f / Util.sqrt(n); //shared by sqrt of components
         //return 1f / n; //shared by all components
     }
 

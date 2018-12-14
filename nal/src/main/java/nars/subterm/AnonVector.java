@@ -134,13 +134,18 @@ public class AnonVector extends TermVector implements Subterms.SubtermsBytesCach
         }
     }
 
+    /** impossible for AnonVector to contain Xternal, or ANY temporal compound */
+    @Override public boolean hasXternal() {
+        return false;
+    }
+
     @Override
     public final Term sub(int i) {
-        return term(subterms[i]);
+        return term(subRaw(i));
     }
 
     public final short subRaw(int i) {
-        return (subterms[i]);
+        return subterms[i];
     }
 
     @Override
@@ -288,9 +293,10 @@ public class AnonVector extends TermVector implements Subterms.SubtermsBytesCach
 
         if (obj instanceof Subterms) {
 
-            if (this.hash != obj.hashCode()) return false;
-
             Subterms ss = (Subterms) obj;
+
+            if (this.hash != ss.hashCodeSubterms()) return false;
+
             int s = subterms.length;
             if (ss.subs() != s)
                 return false;

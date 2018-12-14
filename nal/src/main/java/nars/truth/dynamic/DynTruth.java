@@ -160,7 +160,7 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
 
         dyn.pri(
                 //pri(start, end)
-                reapply(DynTruth::pri, Param.DerivationPri)/size()
+                reapply(DynTruth::pri, Param.DerivationPri)
         );
 
         if (Param.DEBUG_EXTRA)
