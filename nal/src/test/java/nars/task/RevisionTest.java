@@ -11,6 +11,7 @@ import nars.table.eternal.EternalTable;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.util.Intermpolate;
 import nars.test.analyze.BeliefAnalysis;
 import nars.time.Tense;
 import nars.truth.Truth;
@@ -333,7 +334,7 @@ public class RevisionTest {
 
         int misses = 0;
         for (int i = 0; i < 10; i++) {
-            Term c = Revision.intermpolate(a, b, 0.5f, n);
+            Term c = Intermpolate.intermpolate(a, b, 0.5f, n);
             if (c != null) {
                 outcomes.add(c);
             } else
@@ -423,7 +424,7 @@ public class RevisionTest {
 
         int n = 10 * (a.volume() + b.volume());
         for (int i = 0; i < n; i++) {
-            Term ab = Revision.intermpolate(a, b, s.random().nextFloat(), s);
+            Term ab = Intermpolate.intermpolate(a, b, s.random().nextFloat(), s);
 
 
             ss.add(ab);

@@ -37,12 +37,12 @@ public interface NSense {
     Atomic MID = Atomic.the("mid");
     Atomic HIH = Atomic.the("hih");
 
-    
+
     static Term switchTerm(String a, String b) throws Narsese.NarseseException {
         return switchTerm($(a), $(b));
     }
 
-    
+
     static Term switchTerm(Term a, Term b) {
 
         return p(a, b);
@@ -51,7 +51,7 @@ public interface NSense {
 
     NAR nar();
 
-    
+
     default Signal sense(Term term, BooleanSupplier value) {
         return sense(term, () -> value.getAsBoolean() ? 1f : 0f);
     }
@@ -59,7 +59,7 @@ public interface NSense {
 
 
 
-    
+
     default Signal sense(Term term, FloatSupplier value) {
         Signal s = new Signal(term, value, nar());
         addSensor(s);
@@ -170,7 +170,7 @@ public interface NSense {
 
     }*/
 
-    
+
     default List<Signal> senseNumber(int from, int to, IntFunction<String> id, IntFunction<FloatSupplier> v) throws Narsese.NarseseException {
         List<Signal> l = newArrayList(to - from);
         for (int i = from; i < to; i++) {
@@ -181,15 +181,34 @@ public interface NSense {
 
 
     default Signal senseNumberDifference(Term id, FloatSupplier v) {
-        return senseNumber(id, new FloatNormalized(
-                new FloatFirstOrderDifference(nar()::time, v)));
+        return senseNumber(id,difference(v));
     }
 
     default DigitizedScalar senseNumberDifferenceBi(Term id, FloatSupplier v) {
-        FloatNormalized x = new FloatNormalized(
-                new FloatFirstOrderDifference(nar()::time, v));
+        return senseNumberBi(id, difference(v));
+    }
 
-        return senseNumber(x, DigitizedScalar.FuzzyNeedle, inh(id, LOW), inh(id, HIH));
+    default DigitizedScalar senseNumberDifferenceBi(Term id, float clampRange, FloatSupplier v) {
+        return senseNumberBi(id, difference(v, clampRange));
+    }
+
+    default FloatNormalized difference(FloatSupplier v) {
+        return new FloatNormalized(
+                new FloatFirstOrderDifference(nar()::time, v).nanIfZero(), -1, +1);
+    }
+
+    default FloatNormalized difference(FloatSupplier v, float clampRange) {
+        FloatFirstOrderDifference delta = new FloatFirstOrderDifference(nar()::time, v) {
+            @Override
+            public float asFloat() {
+                float x = super.asFloat();
+                if (x == x)
+                    return Util.clamp(x, -clampRange, clampRange);
+                return x;
+            }
+        };///.nanIfZero();
+
+        return new FloatNormalized(delta, -1, +1);
     }
 
     default Signal senseNumber(Term id, FloatSupplier v) {
@@ -198,7 +217,8 @@ public interface NSense {
         return c;
     }
 
-    
+
+
     default DigitizedScalar senseNumber(FloatSupplier v, DigitizedScalar.ScalarEncoder model, Term... states) {
 
         assert (states.length > 1);
@@ -238,18 +258,19 @@ public interface NSense {
         return ang;
     }
 
+    default Signal senseNumber(String id, FloatSupplier v) {
+        return senseNumber($$(id), v);
+    }
+
     default DigitizedScalar senseNumberBi(Term id, FloatSupplier v) {
         return senseNumber(v, DigitizedScalar.FuzzyNeedle, p(id, LOW), p(id, HIH));
     }
 
-    
     default DigitizedScalar senseNumberTri(Term id, FloatSupplier v) {
-        return senseNumber(v, DigitizedScalar.Needle, p(id, LOW), p(id, MID), p(id, HIH));
+        return senseNumber(v, DigitizedScalar.FuzzyNeedle, p(id, LOW), p(id, MID), p(id, HIH));
     }
 
-    default Signal senseNumber(String id, FloatSupplier v) {
-        return senseNumber($$(id), v);
-    }
+
 
     default BiPolarAction actionBipolar(Term s, FloatToFloatFunction update) {
         return actionBipolar(s, false, update);

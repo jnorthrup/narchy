@@ -5,6 +5,7 @@ import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthTable;
+import nars.term.util.Intermpolate;
 import nars.test.TestNAR;
 import nars.test.analyze.BeliefAnalysis;
 import nars.time.Tense;
@@ -39,7 +40,7 @@ class BeliefTableTest {
     }
 
     private static float dtDiff(String x, String y) {
-        return Revision.dtDiff($$(x), $$(y));
+        return Intermpolate.dtDiff($$(x), $$(y));
     }
 
     @Test

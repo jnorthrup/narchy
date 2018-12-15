@@ -2,7 +2,6 @@ package nars.term.util;
 
 import jcog.TODO;
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
@@ -249,6 +248,33 @@ public class Conj extends ByteAnonMap {
                 return (dt < 0) ? (earlyOrLate ? 1 : 0) : (earlyOrLate ? 0 : 1);
             }
         }
+    }
+
+    public static Term negateEvents(Term x) {
+        switch (x.op()) {
+            case NEG:
+                return negateEvents(x.unneg()).neg();
+            case CONJ: {
+                Conj c = Conj.from(x);
+                c.negateEvents();
+                return c.term();
+            }
+            default:
+                return x.neg();
+        }
+    }
+
+    private void negateEvents() {
+        event.forEachValue(x -> {
+            if (!(x instanceof byte[]))
+                throw new TODO();
+            byte[] bx  = (byte[])x;
+            for (int i = 0; i < bx.length; i++) {
+                byte b = bx[i];
+                if( b== 0) break; //null terminator
+                bx[i] = (byte) -b;
+            }
+        });
     }
 
     boolean addAuto(Term t) {
@@ -825,17 +851,22 @@ public class Conj extends ByteAnonMap {
 
             int dt = eternal ? DTERNAL : 0;
 
-            if (existingShortened.equals(incoming))
-                return Op.compound(CONJ, dt, existingUnneg, incoming);
+            //return Op.compound(CONJ, dt, existingShortened, incoming);
+            return CONJ.the(dt, existingShortened, incoming);
 
-            try {
-                return CONJ.the(existingShortened, dt, incoming);
-            } catch (StackOverflowError e) {
-                if(Param.DEBUG_EXTRA)
-                    throw new WTF("stack overflow:" + existingShortened + ' ' + dt + ' ' + incoming);
-                else
-                    throw new WTF();
-            }
+//            if (Param.DEBUG)
+//                throw new TODO(existingShortened.toString() + ' ' + dt + ' ' + incoming);
+//
+//            return Null;
+
+//            try {
+//                return CONJ.the(existingShortened, dt, incoming);
+//            } catch (StackOverflowError e) {
+//                //if(Param.DEBUG_EXTRA)
+//                    throw new WTF("stack overflow:" + existingShortened + ' ' + dt + ' ' + incoming);
+////                else
+////                    throw new WTF();
+//            }
         }
 
         return null; //no interaction
@@ -969,8 +1000,6 @@ public class Conj extends ByteAnonMap {
         Term incomingUnneg = incoming.unneg();
         if (!Term.commonStructure(existingUnneg, incomingUnneg))
             return null; //no potential for interaction
-        if (!incomingUnneg.hasAny(CONJ) && !existingUnneg.containsRecursively(incomingUnneg))
-            return null; //simple case
 
         boolean xConj = incomingUnneg.op() == CONJ;
         boolean eConj = existingUnneg.op() == CONJ;

@@ -6,6 +6,7 @@ import nars.table.BeliefTables;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.util.Intermpolate;
 import nars.time.Tense;
 import org.junit.jupiter.api.Test;
 
@@ -179,19 +180,25 @@ public class IntermpolationTest {
     }
 
     @Test
-    void testIntermpolation2() throws Narsese.NarseseException {
+    void testIntermpolationConjSeq() throws Narsese.NarseseException {
         Compound f = $.$("(a &&+1 b)");
         Compound g = $.$("(a &&-1 b)");
         RevisionTest.permuteChoose(f, g, "[(b &&+1 a), (a&|b), (a &&+1 b)]");
     }
-
     @Test
-    void testIntermpolation2b() throws Narsese.NarseseException {
-
+    void testIntermpolationConjSeq2() throws Narsese.NarseseException {
         Compound h = $.$("(a &&+1 b)");
         Compound i = $.$("(a &| b)");
-
         RevisionTest.permuteChoose(h, i, "[(a&|b), (a &&+1 b)]");
+
+    }
+    @Test
+    void testIntermpolationConjInImpl2b() throws Narsese.NarseseException {
+
+        Compound h = $.$("(x==>(a &&+1 b))");
+        Compound i = $.$("(x==>(a &| b))");
+
+        RevisionTest.permuteChoose(h, i, "[(x==>(a&|b)), (x==>(a &&+1 b))]");
     }
 
     @Test
@@ -208,22 +215,22 @@ public class IntermpolationTest {
         Term a0 = $$("(b ==>+6 c)");
         Term b0 = $$("(b ==>+10 c)");
 
-        Term c0 = Revision.intermpolate(a0, b0, 0.5f, nar);
+        Term c0 = Intermpolate.intermpolate(a0, b0, 0.5f, nar);
         assertEquals("(b ==>+8 c)", c0.toString());
 
 
         Term a = $$("(a, (b ==>+6 c))");
         Term b = $$("(a, (b ==>+10 c))");
 
-        Term c = Revision.intermpolate(a, b, 0.5f, nar);
+        Term c = Intermpolate.intermpolate(a, b, 0.5f, nar);
         assertEquals("(a,(b ==>+8 c))", c.toString());
 
         {
 
             assertEquals("(a,(b ==>+6 c))",
-                    Revision.intermpolate(a, b, 1f, nar).toString());
+                    Intermpolate.intermpolate(a, b, 1f, nar).toString());
             assertEquals("(a,(b ==>+10 c))",
-                    Revision.intermpolate(a, b, 0f, nar).toString());
+                    Intermpolate.intermpolate(a, b, 0f, nar).toString());
 
 
         }
@@ -238,13 +245,13 @@ public class IntermpolationTest {
             n.time.dur(8);
 
             //extreme example: too far distance, so results in DTERNAL
-            assertEquals(DTERNAL, Revision.chooseDT(1,100,0.5f,n));
+            assertEquals(DTERNAL, Intermpolate.chooseDT(1,100,0.5f,n));
 
             int a = 2;
             int b = 4;
             int ab = 3; //expected
 
-            assertEquals(ab, Revision.chooseDT(a,b,0.5f,n));
+            assertEquals(ab, Intermpolate.chooseDT(a,b,0.5f,n));
 
             n.believe("((a ==>+" + a + " b)-->[pill])", t, 1f, 0.9f);
             n.believe("((a ==>+" + b + " b)-->[pill])", t, 1f, 0.9f);

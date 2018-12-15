@@ -15,6 +15,7 @@ import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -123,11 +124,11 @@ public class SensorBeliefTables extends BeliefTables {
 
 
             double gapDurs = ((double)(nextStart - lastEnd)) / dur;
-            if (gapDurs <= series.series.stretchDurs()) {
-                double stretchDurs = ((double) (nextEnd - lastStart)) / dur;
-                boolean stretchable = (stretchDurs <= series.series.latchDur());
+            if (gapDurs <= series.series.latchDurs()) {
 
                 if (next!=null) {
+                    double stretchDurs = ((double) (nextEnd - lastStart)) / dur;
+                    boolean stretchable = (stretchDurs <= series.series.stretchDurs());
                     if (stretchable) {
                         Truth lastEnds = last.truth(lastEnd, 0);
                         if (lastEnds.equals(next)) {
@@ -139,22 +140,17 @@ public class SensorBeliefTables extends BeliefTables {
                 }
 
                 //form new task either because the value changed, or because the latch duration was exceeded
-                long midGap = Math.max(lastEnd, (lastEnd + nextStart)/2L);
+                long midGap = Tense.dither(Math.max(lastEnd, (lastEnd + nextStart)/2L), nar);
                 assert(midGap >= lastEnd): lastEnd + " " + midGap + ' ' + nextStart;
-                last.setEnd(midGap);
-
-
-                nextStart = midGap+1; //Tense.dither(midGap, nar);
-                //midGap+1; //start the new task directly after the midpoint between its start and the end of the last task
-                nextEnd = Math.max(nextStart, nextEnd);
-                stretchPrev = false;
+                last.setEnd(midGap-1);
 
                 if (next == null) {
-                    if (stretchable)
-                        return last;
-                    else
-                        return null;
+                    return last;
                 }
+
+                nextStart = midGap; //midGap+1; //start the new task directly after the midpoint between its start and the end of the last task
+                nextEnd = Math.max(nextStart, nextEnd);
+                stretchPrev = false;
 
             } else {
 

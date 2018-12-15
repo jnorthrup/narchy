@@ -15,6 +15,7 @@ import nars.task.NALTask;
 import nars.task.Revision;
 import nars.task.util.Answer;
 import nars.term.Term;
+import nars.term.util.Intermpolate;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -76,7 +77,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 //    }
 
     @Override
-    public final void match(Answer t) {
+    public void match(Answer t) {
         whileEach(t::tryAccept);
     }
 
@@ -286,7 +287,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
             float aProp = newBeliefWeight / (newBeliefWeight + oldBelief.evi());
             Term t =
-                    Revision.intermpolate(
+                    Intermpolate.intermpolate(
                             input.term(), oldBelief.term(),
                             aProp,
                             nar

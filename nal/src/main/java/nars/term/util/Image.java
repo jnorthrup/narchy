@@ -88,8 +88,14 @@ public enum Image {;
             return x;
 
         Op xo = x.op();
-        if (xo ==NEG)
-            throw new TODO();
+        if (xo ==NEG) {
+            Term u = x.unneg();
+            Term y = imageNormalize(u);
+            if (y==u)
+                return x; //unchanged
+            else
+                return y.neg();
+        }
 
         if (xo !=INH || !x.hasAll(ImageBits))
             return x;

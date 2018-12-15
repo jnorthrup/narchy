@@ -291,18 +291,28 @@ public interface NAct {
         NAR n = nar();
         GoalActionConcept LA = action(l, (b, g) -> {
             float ll = g != null ? (freqOrExp ? g.freq() : g.expectation()) : 0f;
+
+
+            float t = thresh.asFloat();
+            boolean x = (ll > t) && (ll - lr[1] > compareThresh);
+            boolean y = L.accept(x);
+            if (x && !y) ll = t;
             lr[0] = ll;
 
-            boolean x = (ll > thresh.asFloat()) && (ll - lr[1] > compareThresh);
-            return $.t(L.accept(x) ? 1 : 0, n.confDefault(BELIEF));
+            return $.t(y ? 1 : 0, n.confDefault(BELIEF));
 
         });
         GoalActionConcept RA = action(r, (b, g) -> {
             float rr = g != null ? (freqOrExp ? g.freq() : g.expectation()) : 0f;
+
+
+            float t = thresh.asFloat();
+            boolean x = (rr > t) && (rr - lr[0] > compareThresh);
+            boolean y = R.accept(x);
+            if (x && !y) rr = t;
             lr[1] = rr;
 
-            boolean x = (rr > thresh.asFloat()) && (rr - lr[0] > compareThresh);
-            return $.t(R.accept(x) ? 1 : 0, n.confDefault(BELIEF));
+            return $.t(y ? 1 : 0, n.confDefault(BELIEF));
         });
 
         for (GoalActionConcept x : new GoalActionConcept[]{LA, RA}) {
@@ -317,7 +327,7 @@ public interface NAct {
 //                    Remember.the(new NALTask(x.term(), BELIEF,
 //                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()), n), n);
 
-            //x.resolution(0.5f);
+            x.resolution(0.5f);
         }
 
         return new GoalActionConcept[]{LA, RA};

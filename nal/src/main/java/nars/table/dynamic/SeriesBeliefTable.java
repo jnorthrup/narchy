@@ -67,6 +67,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
         series.whileEach(t.time.start, t.time.end, false, t::tryAccept);
     }
 
+
     @Override
     public void clear() {
         series.clear();

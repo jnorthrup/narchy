@@ -1208,6 +1208,7 @@ public class NAL6Test extends NALTest {
                 .mustBelieve(cycles, "(a && b)", 0f, 0.81f)
         ;
     }
+
 //    @Test void testMutexSwapPos() {
 //        test.nar.termVolumeMax.set(14);
 //        test

@@ -9,6 +9,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.util.Image;
 
 import static nars.Op.VAR_DEP;
 import static nars.term.atom.Bool.Null;
@@ -87,7 +88,7 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
 //            return Null; //result not fully unified; though there may be a chance it could be eliminated here without even having an assigned value
 
         boolean strict = false;
-        int op = Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
+        int var = Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
         //@Nullable Op op = null;
 
 
@@ -99,7 +100,7 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
             else if (ai.equals(INDEP_VAR)) {
                 //HACK is this ignored?
             } else if (ai.equals(DEP_VAR)) {
-                op = VAR_DEP.bit;
+                var = VAR_DEP.bit;
             } else
                 throw new UnsupportedOperationException("unrecognized parameter: " + ai);
         }
@@ -108,10 +109,10 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
         Term c = a.sub(0);
 
 
-        Term x = /*Image.imageNormalize*/(a.sub(1));
+        Term x = a.sub(1);
 
 
-        Term y = /*Image.imageNormalize*/(a.sub(2));
+        Term y = a.sub(2);
 
 
         if (x.equals(y)) {
@@ -119,23 +120,25 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
         }
 
         Term output;
-        if (c.equals(x)) {
+//        if (c.equals(x)) {
+//
+//            output = y;
+//
+//        } else {
 
-            output = y;
+        boolean tryUnify = (x.hasAny(var) || y.hasAny(var));
 
+        if (tryUnify) {
+            int ttl = Math.max(1, parent.nar.subUnifyTTLMax.intValue() - 1);
+            x = Image.imageNormalize(x);
+            y = Image.imageNormalize(y);
+            output = u.reset(var, strict).tryMatch(c, x, y, ttl);
+            parent.use(1 + ttl - u.ttl);
         } else {
-
-            boolean tryUnify = (x.hasAny(op) || y.hasAny(op)) && (!strict || c.hasAny(op));
-
-            if (!tryUnify) {
-                output = null;
-            } else {
-                int ttl = Math.max(1, parent.nar.subUnifyTTLMax.intValue() - 1);
-                output = u.reset(op, strict).tryMatch(c, x, y, ttl);
-                parent.use(1 + ttl - u.ttl);
-            }
-
+            output = null;
         }
+
+//        }
 
         return (output == null || (strict && c.equals(output))) ? Null : output;
     }

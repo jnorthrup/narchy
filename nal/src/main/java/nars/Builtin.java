@@ -374,6 +374,11 @@ public class Builtin {
 
         }));
 
+        nar.on(new Functor.AbstractInlineFunctor1("negateEvents") {
+            @Override protected Term apply1(Term arg) {
+                return Conj.negateEvents(arg);
+            }
+        });
         nar.on(new Functor.AbstractInlineFunctor2("without") {
             @Override
             protected Term apply(Term container, Term content) {

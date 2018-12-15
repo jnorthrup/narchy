@@ -17,7 +17,8 @@ public class AutoencodedBitmap implements Bitmap2D {
     public final float[] input;
 
     final Autoencoder ae;
-    private final int ox, oy, sx, sy;
+    private final int sx;
+    private final int sy;
     private final int w;
     private final int h;
 
@@ -26,9 +27,7 @@ public class AutoencodedBitmap implements Bitmap2D {
 
         int w = b.width();
         int h = b.height();
-        this.ox = ox;
         this.sx = sx;
-        this.oy = oy;
         this.sy = sy;
 
 

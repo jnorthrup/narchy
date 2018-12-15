@@ -10,6 +10,7 @@ import nars.agent.Reward;
 import nars.attention.AttNode;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.GoalActionConcept;
+import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.SelectorSensor;
 import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
@@ -17,11 +18,13 @@ import nars.experiment.mario.Scene;
 import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
 import nars.gui.NARui;
+import nars.gui.sensor.VectorSensorView;
 import nars.sensor.PixelBag;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.video.AutoclassifiedBitmap;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.container.grid.Gridding;
 
 import javax.swing.*;
 import java.util.List;
@@ -95,9 +98,9 @@ public class NARio extends NAgentX {
         AutoclassifiedBitmap camAE = new AutoclassifiedBitmap(id/*$.inh("cae", id)*/, cc, nx, nx, (subX, subY) -> {
             return new float[]{/*cc.X, cc.Y, */cc.Z};
         }, 12, this);
-
+        camAE.resolution(0.1f);
         camAE.alpha(0.03f);
-        camAE.noise.set(0.05f);
+        camAE.noise.set(0.02f);
 
 
         Atomic LEFT = $.the("left");
@@ -157,8 +160,9 @@ public class NARio extends NAgentX {
         //initBipolar();
 
 
-        senseNumberDifferenceBi($$("vx"), () -> theMario!=null ? theMario.x : 0).resolution(0.02f);
-        senseNumberDifferenceBi($$("vy"), () -> theMario!=null ? theMario.y : 0).resolution(0.02f);
+        DigitizedScalar vx = senseNumberDifferenceBi($$("vx"), 8, () -> theMario != null ? theMario.x : 0).resolution(0.02f);
+        DigitizedScalar vy = senseNumberDifferenceBi($$("vy"), 8, () -> theMario != null ? theMario.y : 0).resolution(0.02f);
+        window(new Gridding(new VectorSensorView(vx, nar), new VectorSensorView(vy, nar)), 800, 800);
 
 
         Reward right = rewardNormalized("goRight", -1, +1, () -> {
@@ -177,7 +181,8 @@ public class NARio extends NAgentX {
 
             return reward;
         });
-        //right.setDefault($.t(0, 0.5f));
+        //right.setDefault($.t(0, 0.8f));
+
         Reward getCoins = rewardNormalized("getCoins", -1, +1, () -> {
             int coins = Mario.coins;
             int deltaCoin = coins - lastCoins;
@@ -189,7 +194,8 @@ public class NARio extends NAgentX {
             lastCoins = coins;
             return Math.max(0, reward);
         });
-        //getCoins.setDefault($.t(0, 0.5f));
+       // getCoins.setDefault($.t(0, 0.8f));
+
         Reward alive = rewardNormalized("alive", -1, +1, () -> {
 //            if (dead)
 //                return -1;
@@ -210,7 +216,7 @@ public class NARio extends NAgentX {
 //            }
             return t;
         });
-        //alive.setDefault($.t(1, 0.5f));
+//        //alive.setDefault($.t(1, 0.5f));
 
     }
 
@@ -247,8 +253,15 @@ public class NARio extends NAgentX {
         for (GoalActionConcept c : actionPushButtonMutex(
                 $$("(nario,left)"),
                 $$("(nario,right)"),
-                (boolean n) -> { game.scene.key(Mario.KEY_LEFT, n); return n; },
-                (boolean n) -> { game.scene.key(Mario.KEY_RIGHT, n); return n; })) {
+                (boolean n) -> {
+                    boolean was = game.scene.key(Mario.KEY_LEFT, n);
+                    return n;
+                },
+                (boolean n) -> {
+                    boolean was = game.scene.key(Mario.KEY_RIGHT, n);
+                    return n;
+                })) {
+//                (boolean n) -> { game.scene.key(Mario.KEY_RIGHT, n); return n; })) {
             //c.actionDur(1);
         }
 

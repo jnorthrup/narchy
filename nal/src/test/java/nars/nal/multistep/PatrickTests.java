@@ -38,8 +38,7 @@ public class PatrickTests extends NALTest {
 
         TestNAR tt = test;
         tt.nar.freqResolution.set(0.1f);
-//        tt.confTolerance(0.2f);
-        tt.nar.termVolumeMax.set(24);
+        tt.nar.termVolumeMax.set(22);
         tt
                 .believe("(( ($1-->(REPRESENT,/,$3)) && ($2-->(REPRESENT,/,$4))) ==> REPRESENT({$1,$2},{$3,$4}))")
                 .believe("(cat-->(REPRESENT,/,ANIMAL))")
@@ -52,7 +51,19 @@ public class PatrickTests extends NALTest {
                 .mustBelieve(200, "REPRESENT({cat,eats},{ANIMAL,EATING})", 0.9f, 1f, 0.15f, 0.99f);
 
     }
+    @Test
+    void testExample1_NoImages() throws Narsese.NarseseException {
 
+        TestNAR tt = test;
+        tt.nar.freqResolution.set(0.1f);
+        tt.nar.termVolumeMax.set(24);
+        tt
+                .believe("(( REPRESENT($1,$3) && REPRESENT($2, $4) ) ==> REPRESENT({$1,$2},{$3,$4}))")
+                .believe("REPRESENT(cat,ANIMAL)")
+                .believe("REPRESENT(eats,EATING)")
+                .ask( "REPRESENT({cat,eats},?1)")
+                .mustBelieve(200, "REPRESENT({cat,eats},{ANIMAL,EATING})", 1, 0.73f);
+    }
 
     @Test
     void testToothbrush() {
@@ -98,14 +109,14 @@ public class PatrickTests extends NALTest {
                 "(<$1 --> [hardened]> =|> <$1 --> [unscrews]>).",
 
 
-                "$1.0 (toothbrush --> [unscrews])! :|:"
+                "$1.0 (toothbrush --> [unscrews])! |"
 
         );
 
         tt.mustGoal(cycles, "lighter(I, toothbrush)", 1f,
                 0.2f,
 
-                t -> t >= 0
+                t -> t >= -30
         );
 
 
@@ -118,7 +129,7 @@ public class PatrickTests extends NALTest {
         TestNAR tt = test;
 
 
-        int cycles = 9000;
+        int cycles = 4000;
 
         tt.confTolerance(0.9f);
 

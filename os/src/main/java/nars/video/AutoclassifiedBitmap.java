@@ -109,6 +109,9 @@ public class AutoclassifiedBitmap extends VectorSensor {
         return this;
     }
 
+    public AutoclassifiedBitmap setResolution(float res) {
+        return setResolution(new FloatRange(res, 0, 1));
+    }
 
 
     public interface MetaBits {
@@ -208,10 +211,16 @@ public class AutoclassifiedBitmap extends VectorSensor {
                 }
             }
         }
+
         logger.info("{} pixels in={},{} ({}) x {},{} x features={} : encoded={}", this, pw, ph, (pw * ph), nw, nh, features, signals.size());
         agent.addSensor(this);
 
 
+    }
+
+    public AutoclassifiedBitmap setResolution(FloatRange res) {
+        signals.forEach(s->s.setResolution(res));
+        return this;
     }
 
     @Override
@@ -232,7 +241,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
      * @param f    feature
      */
     protected Term coord(@Nullable Term root, int x, int y, int f) {
-        return root!=null ? $.p(root, feature[f], $.p(x, y)) : $.p(feature[f], $.p(x, y));
+        return root!=null ? $.inh($.p(root, $.p(x, y)),feature[f]) : $.inh($.p(x, y), feature[f]);
         //return $.inh(component, feature[f]);
         //return $.inh($.p($.p($.the(x), $.the(y)), root), feature[f]);
         //return $.inh($.p(feature[f], $.p($.the(x), $.the(y))), root);
@@ -259,6 +268,8 @@ public class AutoclassifiedBitmap extends VectorSensor {
                 //1f - (1f / (states - 1));
                 1f - (1f / (states / 2f));
 
+
+        float confRes = nar.confResolution.floatValue();
 
         for (int i = 0; i < nw; ) {
             for (int j = 0; j < nh; ) {
@@ -297,7 +308,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
                         short[] features = ae.max(outputThresh);
                         if (features != null) {
 
-                            conf = w2cSafe(c2wSafe(baseConf * conf) / features.length);
+                            conf = Util.round(w2cSafe(c2wSafe(baseConf * conf) / features.length), confRes);
                             if ((pixConf[i][j] = (conf)) >= minConf) {
                                 po = features;
                             }

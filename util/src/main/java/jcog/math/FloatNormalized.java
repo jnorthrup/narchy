@@ -7,11 +7,11 @@ public class FloatNormalized implements FloatSupplier {
     private final FloatNormalizer normalizer;
 
     public FloatNormalized(FloatSupplier in) {
-        this(in, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY);
+        this(in, -1, +1);
     }
 
     public FloatNormalized(FloatSupplier in, float minStart, float maxStart) {
-        this(in, minStart, maxStart, false);
+        this(in, minStart, maxStart, Math.signum(minStart) != Math.signum(maxStart) );
     }
 
     public FloatNormalized(FloatSupplier in, float minStart, float maxStart, boolean polar) {

@@ -110,6 +110,7 @@ public class FZero extends NAgentX {
                     null /*$.p($.the("cae"), id)*/, vision, nx, nx, (subX, subY) -> {
                 return new float[]{/*cc.X, cc.Y*/};
             }, 8, this);
+            camAE.setResolution(0.25f);
             camAE.alpha(0.03f);
             camAE.noise.set(0.05f);
 
@@ -151,14 +152,14 @@ public class FZero extends NAgentX {
 
 
         float r = 0.05f;
-        senseNumber($.funcImageLast("vel", id, $$("x")), compose(() -> (float) fz.vehicleMetrics[0][7], new FloatAveraged(0.5f, false))).resolution(r);
-        senseNumber($.funcImageLast("vel", id, $$("y")), compose(() -> (float) fz.vehicleMetrics[0][8], new FloatAveraged(0.5f, false))).resolution(r);
+        senseNumberBi($.funcImageLast("vel", id, $$("x")), compose(() -> (float) fz.vehicleMetrics[0][7], new FloatAveraged(0.5f, false))).resolution(r);
+        senseNumberBi($.funcImageLast("vel", id, $$("y")), compose(() -> (float) fz.vehicleMetrics[0][8], new FloatAveraged(0.5f, false))).resolution(r);
 
-        Signal dAccel = senseNumberDifference($.inh($.the("delta"), $.the("vel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
+        senseNumberDifferenceBi($.inh($.the("delta"), $.the("vel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
 
         FloatSupplier playerAngle = compose(() -> (float) fz.playerAngle,
                 new FloatAveraged(0.5f, true));
-        Signal dAngVel = senseNumberDifference($.inh($.the("delta"), $.the("ang")), playerAngle).resolution(r);
+        senseNumberDifferenceBi($.inh($.the("delta"), $.the("ang")), playerAngle).resolution(r);
 
         int angles = 15;
         DigitizedScalar ang = senseAngle(()->(float)fz.playerAngle, angles, Atomic.the("ang"));

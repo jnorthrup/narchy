@@ -8,10 +8,10 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
-import nars.task.Revision;
 import nars.task.Tasked;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
+import nars.term.util.Intermpolate;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 
 import static java.lang.Float.NaN;
-import static nars.task.Revision.dtDiff;
+import static nars.term.util.Intermpolate.dtDiff;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -305,7 +305,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
                 });
 
                 //if there isnt more evidence for the primarily sought term, then just use those components
-                Term term = Revision.intermpolate(a,
+                Term term = Intermpolate.intermpolate(a,
                         firstStart != ETERNAL && secondStart != ETERNAL ? secondStart - firstStart : 0,
                         b, e1Evi[0] / (e1Evi[0] + e2Evi[0]), nar);
 

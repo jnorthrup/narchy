@@ -112,7 +112,7 @@ public class Tetris extends NAgentX {
                 (x, y) -> $.inh($.p(x, y), id),
                 grid, n);
         addSensor(c);
-        //pixels.resolution(0.25f);
+        pixels.resolution(0.25f);
 
         window(new VectorSensorView(pixels, this).withControls(), 400, 900);
 

@@ -1,5 +1,6 @@
 package spacegraph.util;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
@@ -103,8 +104,13 @@ public class MutableFloatRect<X> {
 
     /** keeps this rectangle within the given bounds */
     public void fence(RectFloat bounds) {
+        if ((x!=x) || (y!=y)) randomize(bounds);
         x = Util.clamp(x, bounds.left()+w/2, bounds.right()-w/2);
         y = Util.clamp(y, bounds.top()+h/2, bounds.bottom()-h/2);
+    }
+
+    public void randomize(RectFloat bounds) {
+        throw new TODO();
     }
 
     public void size(float w, float h) {

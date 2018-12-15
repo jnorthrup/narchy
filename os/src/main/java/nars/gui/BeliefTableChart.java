@@ -50,33 +50,61 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
      */
     public static void renderWaveLine(long minT, long maxT, GL2 gl, TruthWave wave, FloatFloatToFloatFunction y, Colorize colorize) {
 
-
-        gl.glLineWidth(1);
+        gl.glLineWidth(4);
         gl.glBegin(GL2.GL_LINE_STRIP);
 
         float dt = ((maxT - minT)/((float)wave.capacity()));
         int dMargin = Math.round(dt/8);
         wave.forEach((freq, conf, start, end) -> {
 
-            //if ((start >= minT) && (start <= maxT)) {
+            colorize.colorize(gl, freq, conf);
 
-//            } else {
-//                return;
-//            }
+            float Y = y.apply(freq, conf);
+            gl.glVertex2f(xTime(start+dMargin, minT, maxT), Y);
+
+            if (start != end) {
+                if ((end >= minT) && (end <= maxT)) {
+                    gl.glVertex2f(xTime(end - dMargin, minT, maxT), Y);
+                }
+            }
+
+        });
+
+        gl.glEnd();
+    }
+    public static void renderWaveArea(long minT, long maxT, GL2 gl, TruthWave wave, FloatFloatToFloatFunction y, Colorize colorize) {
+
+        gl.glBegin(GL2.GL_QUADS);
+
+        float midY = y.apply(0.5f, 0.5f);
+//
+//        gl.glVertex2f(xTime(minT, minT, maxT), midY);
+//        gl.glVertex2f(xTime(minT, minT, maxT), midY);
+
+        wave.forEach((freq, conf, start, end) -> {
+
+            if (start > maxT || end < minT)
+                return;
 
             colorize.colorize(gl, freq, conf);
 
             float Y = y.apply(freq, conf);
-            gl.glVertex2f(xTime(minT, maxT, start+dMargin), Y);
+
+            float x1 = xTime(start, minT, maxT);
+            gl.glVertex2f(x1, midY);
+            gl.glVertex2f(x1, Y);
 
             if (start == end)
-                return;
+                end = start+1;
 
-            if ((end >= minT) && (end <= maxT)) {
-                gl.glVertex2f(xTime(minT, maxT, end-dMargin), Y);
-            }
+            float x2 = xTime(end, minT, maxT);
+            gl.glVertex2f(x2, Y);
+            gl.glVertex2f(x2, midY);
 
         });
+
+//        gl.glVertex2f(xTime(maxT, minT, maxT), midY);
+//        gl.glVertex2f(xTime(maxT, minT, maxT), midY);
 
         gl.glEnd();
     }
@@ -102,12 +130,12 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
           this.beliefOrGoal = beliefOrGoal;
           this.colorize = beliefOrGoal ?
                             (gl, frq, cnf) -> {
-                                float a = 0.4f + 0.2f * cnf;
-                                gl.glColor4f(0.25f + 0.75f * cnf, 0.1f * (1f - cnf), 0, a);
+                                float a = 0.3f + 0.6f * cnf;
+                                gl.glColor4f(0.5f + 0.5f * cnf, 0, 0.1f, a);
                             } :
                             (gl, frq, cnf) -> {
-                                float a = 0.4f + 0.2f * cnf;
-                                gl.glColor4f(0, 0.25f + 0.75f * cnf, 0.1f * (1f - cnf), a);
+                                float a = 0.3f + 0.6f * cnf;
+                                gl.glColor4f(0, 0.5f + 0.5f * cnf, 0.1f, a);
                             };
         }
 
@@ -125,7 +153,13 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
 
             Draw.bounds(bounds, gl, ggl->{
 
-                renderWaveLine( /*hack*/ start, end, ggl, projected, (f, c)->f, colorize);
+                if (beliefOrGoal) {
+                    renderWaveLine
+                    /*renderWaveArea*/( start, end, ggl, projected, (f, c)->f, colorize);
+
+                } else {
+                    renderWaveLine( start, end, ggl, projected, (f, c)->f, colorize);
+                }
                 renderTasks(start, end, ggl, tasks, colorize);
             });
         }
@@ -153,21 +187,15 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
 //                        s = Math.max(minT, s);
 //                        e = Math.min(maxT, e);
 //                    }
-                    float start = xTime(minT, maxT, s);
-                float end = xTime(minT, maxT, e + 1);
+                    float start = xTime(s, minT, maxT);
+                float end = xTime(e + 1, minT, maxT);
                 if (start == end)
                     return; //squashed against the edge or out of bounds completely
 
-
-
-
                 colorize.colorize(gl, freq, conf);
 
-
                 float y = freq - ph / 2;
-                Draw.rect(start, y, Math.max(taskWidthMin,end-start), ph, gl
-                );
-
+                Draw.rect(start, y, Math.max(taskWidthMin,end-start), ph, gl);
 
             });
         }
@@ -175,7 +203,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
 
     }
 
-    private static float xTime(long minT, long maxT, long o) {
+    private static float xTime(long o, long minT, long maxT) {
         if (minT == maxT) return 0.5f;
         o = Util.clamp(o, minT, maxT);
         return ((float)(Math.min(maxT, Math.max(minT, o)) - minT)) / (maxT - minT);

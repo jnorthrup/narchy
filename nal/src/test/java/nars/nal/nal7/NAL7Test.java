@@ -1357,7 +1357,7 @@ public class NAL7Test extends NALTest {
     @Test
     void testDecomposeImplPred() {
 
-        test.nar.termVolumeMax.set(12);
+        test.nar.termVolumeMax.set(15);
         test
                 .believe("( (a,#1) =|> ( ( (x,#1) &| y) &| z ) )", Tense.Present, 1f, 0.9f)
                 .mustBelieve(cycles*2, "( (a,#1) =|> (x,#1) )", 1f, 0.73f, 0)

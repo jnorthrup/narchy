@@ -10,7 +10,6 @@ import jcog.util.Int2Function;
 import nars.agent.FrameTrigger;
 import nars.agent.MetaAgent;
 import nars.agent.NAgent;
-import nars.agent.Reward;
 import nars.agent.util.RLBooster;
 import nars.control.MetaGoal;
 import nars.derive.BeliefSource;
@@ -32,7 +31,6 @@ import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.time.clock.RealTime;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
@@ -44,11 +42,12 @@ import java.awt.image.BufferedImage;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import static java.util.stream.Stream.concat;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.derive.BeliefSource.ConceptTermLinker;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -169,7 +168,7 @@ abstract public class NAgentX extends NAgent {
     */
 
 
-        Param.STRONG_COMPOSITION = true;
+        //Param.STRONG_COMPOSITION = true;
 //        Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
@@ -216,8 +215,9 @@ abstract public class NAgentX extends NAgent {
 
                                 //192 * 1024,
                                 //128 * 1024,
-                                64 * 1024,
+                                //64 * 1024,
                                 //32 * 1024,
+                                16 * 1024,
                                 //8 * 1024,
                                 4)
 
@@ -233,15 +233,19 @@ abstract public class NAgentX extends NAgent {
     static void initPlugins2(NAR n, NAgent a) {
 
         PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8,
-                "motivation.nal"
+                "motivation.nal",
+                "induction.goal.nal"
                 //"nal3.nal",
         );
+
         ZipperDeriver sensorAction = BeliefSource.forConcepts(n, rules,
-                (a.rewards.stream().flatMap((Reward x) -> stream(x.spliterator(), false)).collect(Collectors.toList())),
-                Stream.concat(
+                concat(
+                        a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false)),
+                    concat(
                         a.actions.stream(),
                         a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false))
-                ).map(Termed::term).collect(Collectors.toList())
+                )).map(n::concept).collect(Collectors.toList()),
+                ConceptTermLinker
         );
         sensorAction.timing = new ActionTiming(n);
 
@@ -328,7 +332,7 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         //n.freqResolution.set(0.03f);
-        n.termVolumeMax.set(32);
+        n.termVolumeMax.set(30);
 
 
         n.beliefPriDefault.set(0.01f);

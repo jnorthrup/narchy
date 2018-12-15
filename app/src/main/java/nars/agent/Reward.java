@@ -11,13 +11,11 @@ import nars.concept.Concept;
 import nars.concept.sensor.Signal;
 import nars.control.channel.CauseChannel;
 import nars.op.mental.Inperience;
-import nars.table.BeliefTables;
-import nars.table.eternal.EternalTable;
+import nars.table.eternal.DefaultOnlyEternalTable;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
@@ -75,8 +73,8 @@ public abstract class Reward implements Termed, Iterable<Signal> {
     public void setDefault(PreciseTruth t) {
         for (Concept c : this) {
             //TODO assert that it has no eternal tables already
-            ((BeliefTables) c.beliefs()).tables.add(new EternalTable(1));
-            nar().believe(c.term(), Tense.Eternal, t.freq(), t.conf());
+            new DefaultOnlyEternalTable(c,t,nar());
+
         }
 
     }
@@ -108,4 +106,5 @@ public abstract class Reward implements Termed, Iterable<Signal> {
         };
         a.parent(attn);
     }
+
 }

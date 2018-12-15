@@ -65,16 +65,6 @@
 
 
 
-//            B, ((&&,C,A..+) ==> X), neq(B,C) |- subIfUnifiesAny(((&&,A..+) ==> X),C,B), (Belief:Deduction)
-//            B, ((&&,--C,A..+) ==> X), neq(B,C) |- subIfUnifiesAny(((&&,A..+) ==> X),C,B), (Belief:DeductionN)
-//                B, (--(&&,C,A..+) ==> X), neq(B,C), notImpl(B) |- (--,subIfUnifiesAny(((&&,A..+) ==> X),C,B)), (Belief:Deduction)
-//                B, (--(&&,--C,A..+) ==> X), neq(B,C), notImpl(B) |- (--,subIfUnifiesAny(((&&,A..+) ==> X),C,B)), (Belief:DeductionN)
-
-            //(Y --> P), ((&&,(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,(X-->P),A..+) ==> Z), X,Y,strict), (Belief:Deduction)
-              //  (Y --> P), ((&&,--(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,--(X-->P),A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
-            //(Y --> P), (Z ==> (&&,(X-->P),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==> (&&,(X-->P),A..+)), X,Y,strict), (Belief:Deduction)
-              //  (Y --> P), (Z ==> (&&,--(X-->P),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==> (&&,--(X-->P),A..+)), X,Y,strict), (Belief:DeductionN)
-
 //        //TODO question variations
         Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny(((&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction, Time:Immediate)
          //Y, ((&&,X,A..+) ==> Z) |- subIfUnifiesAny(((&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
@@ -226,10 +216,20 @@
 
 
 
-//    (X ==> C), M, eventOf(X,M)    |- (conjWithout(X,M) ==> C), (Belief:Deduction)
-//      (--X ==> C), M, eventOf(X,M)    |- (--conjWithout(X,M) ==> C), (Belief:Deduction)
-//    (X ==> C), M, eventOfNeg(X,M) |- (conjWithout(X,--M) ==> C), (Belief:DeductionPN)
-//      (--X ==> C), M, eventOfNeg(X,M) |- (--conjWithout(X,--M) ==> C), (Belief:DeductionPN)
+//    M, (X ==> C), eventOf(X,M)    |- (conjWithout(X,M) ==> C), (Belief:Deduction)
+//      M, (--X ==> C), eventOf(X,M)    |- (--conjWithout(X,M) ==> C), (Belief:Deduction)
+//    M, (X ==> C), eventOfNeg(X,M) |- (conjWithout(X,--M) ==> C), (Belief:DeductionN)
+//      M, (--X ==> C), eventOfNeg(X,M) |- (--conjWithout(X,--M) ==> C), (Belief:DeductionN)
+
+//            B, ((&&,C,A..+) ==> X), neq(B,C) |- subIfUnifiesAny(((&&,A..+) ==> X),C,B), (Belief:Deduction)
+//            B, ((&&,--C,A..+) ==> X), neq(B,C) |- subIfUnifiesAny(((&&,A..+) ==> X),C,B), (Belief:DeductionN)
+//                B, (--(&&,C,A..+) ==> X), neq(B,C), notImpl(B) |- (--,subIfUnifiesAny(((&&,A..+) ==> X),C,B)), (Belief:Deduction)
+//                B, (--(&&,--C,A..+) ==> X), neq(B,C), notImpl(B) |- (--,subIfUnifiesAny(((&&,A..+) ==> X),C,B)), (Belief:DeductionN)
+
+            //(Y --> P), ((&&,(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,(X-->P),A..+) ==> Z), X,Y,strict), (Belief:Deduction)
+              //  (Y --> P), ((&&,--(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,--(X-->P),A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
+            //(Y --> P), (Z ==> (&&,(X-->P),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==> (&&,(X-->P),A..+)), X,Y,strict), (Belief:Deduction)
+              //  (Y --> P), (Z ==> (&&,--(X-->P),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==> (&&,--(X-->P),A..+)), X,Y,strict), (Belief:DeductionN)
 
 
 
@@ -281,7 +281,7 @@
 //    Z, (&&,X,Y), in(Z,--X)          |- substitute(Z,--X,Y,strict), (Belief:AnalogyPN, Goal:AnalogyPN)
 
 //internal mutex chain:
-  (&&,--(X && Y),X,A..+), X, neq(X,Y)          |- (&&,--Y,A..+), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+//  (&&,--(X && Y),X,A..+), X, neq(X,Y)          |- (&&,--Y,A..+), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 
 

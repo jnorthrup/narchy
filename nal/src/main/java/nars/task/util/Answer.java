@@ -11,8 +11,8 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.table.TaskTable;
-import nars.task.Revision;
 import nars.term.Term;
+import nars.term.util.Intermpolate;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.dynamic.DynTruth;
@@ -153,7 +153,7 @@ public class Answer implements AutoCloseable {
                 float v1 = f.floatValueOf(t); //will be negative
                 if (v1 != v1) return Float.NaN;
 
-                return v1 * (1f + Revision.dtDiff(xt, ((Task) t).term()));
+                return v1 * (1f + Intermpolate.dtDiff(xt, ((Task) t).term()));
             };
         } else {
             return f;
@@ -168,7 +168,7 @@ public class Answer implements AutoCloseable {
             if (base < min)
                 return Float.NaN;
 
-            return base * (1 / (1+Revision.dtDiff(template, x.term())));
+            return base * (1 / (1+ Intermpolate.dtDiff(template, x.term())));
         };
     }
 
@@ -285,12 +285,20 @@ public class Answer implements AutoCloseable {
     @Nullable
     public Truth truth() {
         try {
-            TruthPolation p = truthpolation();
-            if (p!=null) {
-                TruthPolation tp = p.filtered();
-                if (tp!=null)
-                    return truth(tp);
+
+            //quick case: 1 item, and it's eternal => its truth
+            if (tasks.size()==1 && tasks.get(0).isEternal()) {
+                Truth trEte = tasks.get(0).truth();
+                return (trEte.evi() < eviMin()) ? null : trEte;
             }
+
+            TruthPolation p = truthpolation();
+            if (p == null)
+                return null;
+
+            TruthPolation tp = p.filtered();
+            if (tp!=null)
+                return truth(tp);
             return null;
         } finally {
             close();

@@ -120,17 +120,18 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
     }
 
     static boolean isEvent(Term container, Term x, boolean neg, boolean firstOrLast) {
-        if (container.op() != CONJ) {
+        if (container.op() != CONJ)
             return false;
-        }
+
+        if (container.impossibleSubTerm(x))
+            return false;
 
         if (x.op()==CONJ) {
             //compare sequence in sequence
             return isEventSequence(container, x, neg, firstOrLast);
         }
 
-        if (container.impossibleSubTerm(x))
-            return false;
+
 
         Term xx = x.negIf(neg);
 
