@@ -10,6 +10,8 @@ import java.util.Arrays;
  * <p>
  * for serious performance. implementations will not check index bounds
  * nor grow in capacity
+ *
+ * TODO methods from: http://hg.openjdk.java.net/jdk/jdk/file/2cc1ae79b303/src/java.xml/share/classes/com/sun/org/apache/xalan/internal/xsltc/dom/BitArray.java
  */
 abstract public class MetalBitSet {
 

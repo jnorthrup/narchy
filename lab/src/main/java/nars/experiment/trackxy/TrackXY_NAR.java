@@ -4,7 +4,9 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.learn.LivePredictor;
 import jcog.learn.ql.DQN2;
+import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
+import jcog.math.FloatSupplier;
 import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
@@ -54,11 +56,11 @@ public class TrackXY_NAR extends NAgentX {
     public static final int derivationStrength = 8;
     static int dur = 8;
     static float camResolution = 0.1f;
-    static int volMax = 7;
+    static int volMax = 11;
     final Bitmap2DSensor cam;
     private final TrackXY track;
 
-    private float rewardSum = 0;
+
     static int experimentTime = 30000;
 
 
@@ -134,12 +136,13 @@ public class TrackXY_NAR extends NAgentX {
 //                track.act();
 //            });
 //        } else {
-            rewardNormalized($.the("good"), -1, 1, () -> {
-                float r = track.act();
-                if (r == r)
-                    rewardSum += r;
-                return r;
-            });
+        onFrame(track::act);
+
+        FloatSupplier nearness = () -> 1f - (track.dist() / track.distMax());
+
+        rewardNormalized($.the("good"), 0, 1, nearness);
+        rewardNormalized($.the("better"), -0.1f,  +0.1f, new FloatFirstOrderDifference(nar::time, nearness) );
+
 //        }
 
         track.randomize();

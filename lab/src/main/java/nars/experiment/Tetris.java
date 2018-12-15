@@ -13,8 +13,6 @@ import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import org.eclipse.collections.api.block.function.primitive.BooleanToBooleanFunction;
-import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -114,7 +112,7 @@ public class Tetris extends NAgentX {
                 (x, y) -> $.inh($.p(x, y), id),
                 grid, n);
         addSensor(c);
-        pixels.resolution(0.25f);
+        //pixels.resolution(0.25f);
 
         window(new VectorSensorView(pixels, this).withControls(), 400, 900);
 
@@ -136,7 +134,7 @@ public class Tetris extends NAgentX {
 
 
         NAgentX.runRT(n -> {
-            n.freqResolution.set(0.02f);
+            //n.freqResolution.set(0.02f);
 
 //            new Arithmeticize.ArithmeticIntroduction(32, n);
 

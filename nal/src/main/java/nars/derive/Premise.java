@@ -95,31 +95,33 @@ public class Premise implements Comparable<Premise> {
         boolean beliefConceptCanAnswerTaskConcept = false;
 
         Term beliefTerm = this.beliefTerm;
-        if (taskTerm.op()==beliefTerm.op()) {
-            if (taskTerm.concept().equals(beliefTerm.concept())) {
-                beliefConceptCanAnswerTaskConcept = true;
-            } else {
-                //            if (taskTerm.op() == bo) {
-                //            } else {
+        if (task.isQuestionOrQuest()) {
+            if (taskTerm.op() == beliefTerm.op()) {
+                if (taskTerm.concept().equals(beliefTerm.concept())) {
+                    beliefConceptCanAnswerTaskConcept = true;
+                } else {
+                    //            if (taskTerm.op() == bo) {
+                    //            } else {
 
-                if (beliefTerm.hasAny(var) || taskTerm.hasAny(var)) {
+                    if (beliefTerm.hasAny(var) || taskTerm.hasAny(var) /* TODO temoral unification || (taskTerm.op().temporal)*/) {
 
 
-                    UnifyPremise u = d.unifyPremise;
+                        UnifyPremise u = d.unifyPremise;
 
-                    Term unifiedBeliefTerm = u.unified(taskTerm, beliefTerm, matchTTL);
+                        Term unifiedBeliefTerm = u.unified(taskTerm, beliefTerm, matchTTL);
 
-                    if (unifiedBeliefTerm != null) {
-                        if (!unifiedBeliefTerm.equals(beliefTerm)) {
-                            beliefTerm = unifiedBeliefTerm;
+                        if (unifiedBeliefTerm != null) {
+                            if (!unifiedBeliefTerm.equals(beliefTerm)) {
+                                beliefTerm = unifiedBeliefTerm;
+                            }
+                            beliefConceptCanAnswerTaskConcept = true;
+                        } else {
+                            beliefConceptCanAnswerTaskConcept = false;
                         }
-                        beliefConceptCanAnswerTaskConcept = true;
-                    } else {
-                        beliefConceptCanAnswerTaskConcept = false;
-                    }
 
+                    }
+                    //            }
                 }
-                //            }
             }
         }
 

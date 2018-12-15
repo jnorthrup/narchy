@@ -6,7 +6,6 @@ import jake2.client.Key;
 import jake2.game.EntHurtAdapter;
 import jake2.game.PlayerView;
 import jake2.game.edict_t;
-import jake2.sound.jsound.SND_DMA;
 import jake2.sound.jsound.SND_JAVA;
 import jake2.sys.IN;
 import jcog.math.FloatFirstOrderDifference;
@@ -24,6 +23,7 @@ import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
 import nars.video.AutoclassifiedBitmap;
+import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.meter.WaveView;
@@ -47,9 +47,14 @@ public class Jake2Agent extends NAgentX implements Runnable {
     static float timeScale = 0.5f;
 
     static float yawSpeed = 10;
+
+    private static final boolean lookPitch = false;
     static float pitchSpeed = 5;
+
     private final GLScreenShot rgb, depth;
     private final FreqVectorSensor hear;
+
+
 
 
     public class PlayerData {
@@ -165,7 +170,8 @@ public class Jake2Agent extends NAgentX implements Runnable {
 
         window(grid(rgbView, rgbAE.newChart(), depthView ), 500, 500);
 
-        hear = new FreqVectorSensor(new CircularFloatBuffer(8*1024), (f)->$.inh($.the(f), "hear"), 512,16, nar);
+        hear = new FreqVectorSensor(new CircularFloatBuffer(8*1024),
+                f->$.inh($.the(f), "hear"), 512,16, nar);
         addSensor(hear);
         WaveView hearView = new WaveView(hear.buf, 300, 64);
         onFrame(()->{
@@ -175,12 +181,11 @@ public class Jake2Agent extends NAgentX implements Runnable {
                 //spectrogram(hear.buf, 0.1f,512, 16),
                 new ObjectSurface(hear), hearView), 400, 400);
 
-//        senseFields("q", player);
 
         actionPushButtonMutex(
                 $.the("fore"), $.the("back"),
-                x -> CL_input.in_forward.state = x ? 1 : 0,
-                x -> CL_input.in_back.state = x ? 1 : 0
+                (BooleanProcedure) x -> CL_input.in_forward.state = x ? 1 : 0,
+                (BooleanProcedure) x -> CL_input.in_back.state = x ? 1 : 0
         );
 
 //        actionPushButtonMutex(
@@ -198,11 +203,13 @@ public class Jake2Agent extends NAgentX implements Runnable {
         actionToggle($("jump"), (x) -> CL_input.in_up.state = x ? 1 : 0);
         actionToggle($("fire"), (x) -> CL_input.in_attack.state = x ? 1 : 0);
 
-        actionPushButtonMutex(
-                $.the("lookUp"), $.the("lookDown"),
-                ()->cl.viewangles[Defines.PITCH] = Math.min(30, cl.viewangles[Defines.PITCH] + pitchSpeed),
-                ()->cl.viewangles[Defines.PITCH] = Math.max(-30, cl.viewangles[Defines.PITCH] - pitchSpeed)
-        );
+        if (lookPitch) {
+            actionPushButtonMutex(
+                    $.the("lookUp"), $.the("lookDown"),
+                    () -> cl.viewangles[Defines.PITCH] = Math.min(30, cl.viewangles[Defines.PITCH] + pitchSpeed),
+                    () -> cl.viewangles[Defines.PITCH] = Math.max(-30, cl.viewangles[Defines.PITCH] - pitchSpeed)
+            );
+        }
 
 
 
@@ -263,7 +270,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
                 rgb.update(g);
                 depth.update(g);
 
-                byte[] b = SND_DMA.dma.buffer;
+                byte[] b = SND_JAVA.dma.buffer;
                 if(b ==null)
                     return;
                 int samples = 1024;

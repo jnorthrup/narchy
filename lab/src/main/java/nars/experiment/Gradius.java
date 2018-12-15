@@ -9,6 +9,7 @@ import nars.NAgentX;
 import nars.concept.sensor.DigitizedScalar;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
+import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
 import spacegraph.space2d.container.grid.Gridding;
 
 import java.util.List;
@@ -156,12 +157,13 @@ public class Gradius extends NAgentX {
 
 
     void initToggle() {
+        //TODO boundary feedback
         actionPushButtonMutex($.inh("left", id), $.inh("right", id),
-                b -> g.keys[VK_LEFT] = b,
-                b -> g.keys[VK_RIGHT] = b);
+                (BooleanPredicate) b -> g.keys[VK_LEFT] = b,
+                (BooleanPredicate) b -> g.keys[VK_RIGHT] = b);
         actionPushButtonMutex($.inh("up", id), $.inh("down", id),
-                b -> g.keys[VK_UP] = b,
-                b -> g.keys[VK_DOWN] = b);
+                (BooleanPredicate) b -> g.keys[VK_UP] = b,
+                (BooleanPredicate) b -> g.keys[VK_DOWN] = b);
     }
 
     void initBipolar() {

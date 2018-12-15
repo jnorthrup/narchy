@@ -53,7 +53,7 @@ public class TrackXY  {
         }
     }
 
-    public float act() {
+    public void act() {
 
 
         mode.get().accept(this);
@@ -71,18 +71,15 @@ public class TrackXY  {
 
 
         });
+    }
 
-        float maxDist = (float) Math.sqrt(Util.sqr(W-1) + Util.sqr(H-1));
-        float distance = (float) Math.sqrt(Util.sqr(tx - cx) + Util.sqr(ty - cy));
+    public float distMax() {
+        return (float) Math.sqrt(Util.sqr(W-1) + Util.sqr(H-1));
+    }
 
-        assert(distance <= maxDist);
-
-        float exp =
-                1;
-                //2;
-                //3;
-        double r = 2 * (-0.5f + Math.pow( 1 - (distance / maxDist), exp));
-        return (float) r;
+    /** linear distance from current to target */
+    public float dist() {
+        return (float) Math.sqrt(Util.sqr(tx - cx) + Util.sqr(ty - cy));
     }
 
     public void control(float dcx, float dcy) {

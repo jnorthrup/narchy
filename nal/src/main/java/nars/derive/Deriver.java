@@ -133,10 +133,10 @@ abstract public class Deriver extends Causable {
     }
 
 
-//    @Override
-//    public boolean singleton() {
-//        return false;
-//    }
+    @Override
+    public boolean singleton() {
+        return false;
+    }
 
     @Override
     public float value() {

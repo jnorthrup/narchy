@@ -158,7 +158,7 @@ public class BiPolarAction extends AbstractSensor {
 
 
         this.feedback.input(
-                pos.feedback(Pb, now, next, 1, nar), neg.feedback(Nb, now, next, 1, nar)
+                pos.feedback(Pb, now, next, nar), neg.feedback(Nb, now, next, nar)
         );
     }
 

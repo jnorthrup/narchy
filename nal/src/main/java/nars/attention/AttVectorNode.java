@@ -55,7 +55,7 @@ public class AttVectorNode extends AttNode {
         return elementPri(nar) * i;
     }
 
-    protected float elementPri(NAR nar) {
+    public float elementPri(NAR nar) {
         return nar.priDefault(BELIEF);
     }
 

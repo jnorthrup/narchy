@@ -1,6 +1,5 @@
 package nars.derive.impl;
 
-import com.google.common.base.Joiner;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.math.IntRange;
@@ -42,7 +41,7 @@ public class BatchDeriver extends Deriver {
 //        }
 //    }
 
-    public final IntRange conceptsPerIteration = new IntRange(4, 1, 32);
+    public final IntRange conceptsPerIteration = new IntRange(3, 1, 32);
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count

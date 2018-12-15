@@ -245,14 +245,14 @@ public class NARio extends NAgentX {
     private void initButton() {
 
         for (GoalActionConcept c : actionPushButtonMutex(
-                $$("nario:left"),
-                $$("nario:right"),
+                $$("(nario,left)"),
+                $$("(nario,right)"),
                 (boolean n) -> { game.scene.key(Mario.KEY_LEFT, n); return n; },
                 (boolean n) -> { game.scene.key(Mario.KEY_RIGHT, n); return n; })) {
             //c.actionDur(1);
         }
 
-        GoalActionConcept j = actionPushButton($$("nario:jump"),
+        GoalActionConcept j = actionPushButton($$("(nario,jump)"),
                 n -> {
 
 //                    Scene s = game.scene;
@@ -286,10 +286,10 @@ public class NARio extends NAgentX {
         //j.actionDur(1);
 
 
-        actionPushButton($$("nario:down"),
-                n -> { game.scene.key(Mario.KEY_DOWN, n); return n; } );
+//        actionPushButton($$("(nario,down)"),
+//                n -> { game.scene.key(Mario.KEY_DOWN, n); return n; } );
 
-        actionPushButton($$("nario:speed"),
+        actionPushButton($$("(nario,speed)"),
                 n -> { game.scene.key(Mario.KEY_SPEED, n); return n; } );
         //s.actionDur(1);
 

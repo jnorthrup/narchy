@@ -16,6 +16,7 @@ import com.github.fge.grappa.transform.ParserTransformer;
 import com.github.fge.grappa.transform.base.ParserClassNode;
 import com.google.common.annotations.VisibleForTesting;
 import jcog.Util;
+import jcog.data.list.FasterList;
 import nars.task.CommandTask;
 import nars.task.NALTask;
 import nars.task.util.TaskException;
@@ -49,12 +50,9 @@ public class Narsese {
     private static final Class parser;
     private static final ThreadLocal<Narsese> parsers;
 
-
     static {
 
-
         try {
-
             ParserClassNode node = ParserTransformer.extendParserClass(NarseseParser.class);
             parser = node.getExtendedClass();
         } catch (Exception e) {
@@ -73,7 +71,7 @@ public class Narsese {
 
     private final MyParseRunner inputParser, termParser;
 
-    public Narsese(INarseseParser p) {
+    private Narsese(INarseseParser p) {
         this.inputParser = new MyParseRunner(p.Input());
         this.termParser = new MyParseRunner(p.Term());
     }
@@ -90,7 +88,7 @@ public class Narsese {
     }
 
     public static List<Task> tasks(String input, NAR m) throws NarseseException {
-        List<Task> result = $.newArrayList(1);
+        List<Task> result = new FasterList<>(1);
         tasks(input, result, m);
 
         return result;
@@ -107,11 +105,12 @@ public class Narsese {
         int parsedTasks = 0;
 
         ParsingResult r = p.inputParser.run(input);
+        ValueStack rv = r.getValueStack();
 
-        int size = r.getValueStack().size();
+        int size = rv.size();
 
         for (int i = size - 1; i >= 0; i--) {
-            Object o = r.getValueStack().peek(i);
+            Object o = rv.peek(i);
 
             Object[] y;
             if (o instanceof Task) {

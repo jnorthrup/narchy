@@ -5,7 +5,6 @@ import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
-import nars.attention.AttNode;
 import nars.attention.AttVectorNode;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
@@ -37,7 +36,7 @@ import static nars.Op.GOAL;
  */
 public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, FloatSupplier, PermanentConcept {
 
-    public final AttNode attn;
+    public final AttVectorNode attn;
 
     /**
      * update directly with next value
@@ -124,8 +123,9 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     @Override
     public void update(long prev, long now, long next, NAR nar) {
 
-        float pri = attn.supply.priElseZero();
-        SeriesBeliefTable.SeriesRemember t = update(prev, now, pri, (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), nar);
+        float pri = attn.elementPri(nar);
+        SeriesBeliefTable.SeriesRemember t = update(prev, now, pri,
+                (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), nar);
         if (t!=null) {
             attn.taken(t.input.priElseZero());
             in.input(t);

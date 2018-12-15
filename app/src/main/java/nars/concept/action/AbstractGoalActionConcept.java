@@ -228,13 +228,14 @@ public class AbstractGoalActionConcept extends ActionConcept {
         }
 
         SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd, evi);
-        attn.take(curiosity, 0.5f*attn.supply.priElseZero());
+        attn.take(curiosity, attn.elementPri(n));
         return curiosity;
     }
 
-    @Deprecated @Nullable public SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long now, long next, float pct, NAR nar) {
+    @Deprecated @Nullable public SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long now, long next, NAR nar) {
 
-        SeriesBeliefTable.SeriesRemember r = ((SensorBeliefTables) beliefs()).add(f, now, next, pct * attn.supply.priElseZero(), this, nar.dur(), nar);
+        SeriesBeliefTable.SeriesRemember r = ((SensorBeliefTables) beliefs()).add(f, now, next,
+                attn.elementPri(nar), this, nar.dur(), nar);
         if (r!=null) {
 
             float rPri = r.input.priElseZero();

@@ -1,7 +1,6 @@
 package nars.concept.sensor;
 
 import com.google.common.collect.Iterables;
-import jcog.pri.Pri;
 import nars.$;
 import nars.NAR;
 import nars.attention.AttVectorNode;
@@ -77,8 +76,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     }
 
     protected final Stream<SeriesBeliefTable.SeriesRemember> updateSensor(long last, long now, FloatFloatToObjectFunction<Truth> truther) {
-        Pri supply = attn.supply;
-        float pri = supply.priElseZero()/size();
+        float pri = attn.elementPri(nar);
         return StreamSupport.stream(spliterator(), false).map(s -> {
                     SeriesBeliefTable.SeriesRemember t = s.update(last, now, pri, truther, nar);
                     if (t!=null)

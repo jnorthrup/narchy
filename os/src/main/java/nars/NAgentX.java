@@ -169,7 +169,7 @@ abstract public class NAgentX extends NAgent {
     */
 
 
-//        Param.STRONG_COMPOSITION = true;
+        Param.STRONG_COMPOSITION = true;
 //        Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
@@ -233,7 +233,8 @@ abstract public class NAgentX extends NAgent {
     static void initPlugins2(NAR n, NAgent a) {
 
         PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8,
-                "nal3.nal", "motivation.nal"
+                "motivation.nal"
+                //"nal3.nal",
         );
         ZipperDeriver sensorAction = BeliefSource.forConcepts(n, rules,
                 (a.rewards.stream().flatMap((Reward x) -> stream(x.spliterator(), false)).collect(Collectors.toList())),
@@ -330,10 +331,10 @@ abstract public class NAgentX extends NAgent {
         n.termVolumeMax.set(32);
 
 
-        n.beliefPriDefault.set(0.5f);
-        n.goalPriDefault.set(0.5f);
-        n.questionPriDefault.set(0.4f);
-        n.questPriDefault.set(0.4f);
+        n.beliefPriDefault.set(0.01f);
+        n.goalPriDefault.set(0.02f);
+        n.questionPriDefault.set(0.05f);
+        n.questPriDefault.set(0.05f);
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
@@ -372,12 +373,13 @@ abstract public class NAgentX extends NAgent {
     public static void initPlugins(NAR n) {
 
 
-        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8
+        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
 
-                //"motivation.nal"
+                "motivation.nal"
                 //"equivalence.nal"
                 //  "induction.goal.nal"
         ));
+        //bd.timing = new ActionTiming(n);
         //bd.termLinksPerTaskLink.set(2);
         //bd.premisesPerConcept.set(4);
 
@@ -387,9 +389,9 @@ abstract public class NAgentX extends NAgent {
                 Task::isInput,
                 //t->true,
                 8, 64);
-//        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF,
-//                t->!t.isInput(),
-//                3, 8);
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF,
+                t->!t.isInput(),
+                3, 8);
 //        {
 //
 //            SpaceGraph.window(
@@ -404,13 +406,13 @@ abstract public class NAgentX extends NAgent {
 //                8, 96);
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(n,64);
-        Introduction factorizer = new Factorize.FactorIntroduction( n, 8);
+        Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
 
 //        {
-        new Inperience.Believe(n, 8);
-        new Inperience.Want(n, 8);
-        //new Inperience.Wonder(n, 4);
-        //new Inperience.Plan(n, 4);
+        new Inperience.Believe(n, 16);
+        new Inperience.Want(n, 16);
+        new Inperience.Wonder(n, 16);
+        new Inperience.Plan(n, 16);
 //        }
 
 

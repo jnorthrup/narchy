@@ -4,7 +4,6 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.attention.AttNode;
 import nars.attention.AttVectorNode;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
@@ -24,12 +23,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.BiFunction;
 
+import static nars.Op.GOAL;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 
 public abstract class ActionConcept extends TaskConcept implements Sensor, PermanentConcept {
 
-    public final AttNode attn;
+    public final AttVectorNode attn;
 
     protected ActionConcept(Term term, TermLinker linker, NAR n) {
         this(term,
@@ -49,13 +49,13 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
     protected ActionConcept(Term term, BeliefTable beliefs, BeliefTable goals, TermLinker l, NAR n) {
         super(term, beliefs, goals, l, n.conceptBuilder);
 
-        this.attn = new AttVectorNode(term, List.of(term));
+        this.attn = new AttVectorNode(term, List.of(term)) {
+            @Override
+            public float elementPri(NAR nar) {
+                return nar.priDefault(GOAL);
+            }
+        };
         ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(n.freqResolution));
-    }
-
-
-    protected void pri(Task c, float pct) {
-        attn.take(c, attn.supply.priElseZero() * pct);
     }
 
 
