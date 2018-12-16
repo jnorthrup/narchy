@@ -18,7 +18,7 @@ import java.util.function.Function;
  * <p>
  * TODO move active window to top of child stack
  */
-public class Wall<S extends Surface> extends MutableMapContainer<Surface, Windo> {
+@Deprecated public class Wall<S extends Surface> extends MutableMapContainer<Surface, Windo> {
 
     public Wall() {
         super();

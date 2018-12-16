@@ -82,10 +82,9 @@ public class Launcher {
 
 
         GraphEdit g = new GraphEdit<>(1000, 1000);
-        g.add(m).pos(0, 0, 200, 200);
-
         SpaceGraph.window(                 g, 800, 800        );
 
+        g.add(m).posRel(0.5f, 0.5f, 0.75f);
 
     }
 

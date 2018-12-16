@@ -6,8 +6,8 @@ public class FunctionChip<X,Y> extends AbstractFunctionChip<X,Y> {
 
     private final Function<X, Y> f;
 
-    public FunctionChip(Function<X,Y> f) {
-        super();
+    public FunctionChip(Class<? super X> cx, Class<? super Y> cy, Function<X,Y> f) {
+        super(cx, cy);
         this.f = f;
     }
 
@@ -15,8 +15,9 @@ public class FunctionChip<X,Y> extends AbstractFunctionChip<X,Y> {
         return f;
     }
 
+    /** TODO atomic */
     public FunctionChip<X,Y> buffered() {
-        return new FunctionChip<>(new Function<>() {
+        return new FunctionChip<>(this.in.type, this.out.type, new Function<>() {
             X last = null;
             Y lastY = null;
 

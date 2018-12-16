@@ -40,30 +40,24 @@ public class Windo extends MutableUnitContainer {
         if (finger == null) {
             dragMode = null;
             potentialDragMode = null;
-        }
-        else if (dragMode != null && dragMode.isStopped()) {
+        } else if (dragMode != null && dragMode.isStopped()) {
             dragMode = null;
         }
 
 
         Surface other = null;
         if (/*dragMode==null && */finger != null) {
-            Surface c = super.finger(finger);
-            other = c;
-
-
+            other = super.finger(finger);
         }
 
 
         if (other != null && other != this) {
-            this.dragMode = null;
-            this.potentialDragMode = null;
+            unfinger(finger);
             return other;
         } else if (finger == null || !fingeringBounds(finger)) {
 
 
-            this.dragMode = null;
-            this.potentialDragMode = null;
+            unfinger(finger);
             return null;
         } else {
 
@@ -73,62 +67,60 @@ public class Windo extends MutableUnitContainer {
             v2 hitPoint = windowHitPointRel(finger);
 
 
-
-            {
-
-                if (hitPoint.x >= 0.5f - resizeBorder / 2f && hitPoint.x <= 0.5f + resizeBorder / 2) {
-                    if (hitPoint.y <= resizeBorder) {
-                        potentialDragMode = DragEdit.RESIZE_S;
-                    }
-                    if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
-                        potentialDragMode = DragEdit.RESIZE_N;
-                    }
+            if (hitPoint.x >= 0.5f - resizeBorder / 2f && hitPoint.x <= 0.5f + resizeBorder / 2) {
+                if (hitPoint.y <= resizeBorder) {
+                    potentialDragMode = DragEdit.RESIZE_S;
                 }
-
-                if (potentialDragMode == null && hitPoint.y >= 0.5f - resizeBorder / 2f && hitPoint.y <= 0.5f + resizeBorder / 2) {
-                    if (hitPoint.x <= resizeBorder) {
-                        potentialDragMode = DragEdit.RESIZE_W;
-                    }
-                    if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
-                        potentialDragMode = DragEdit.RESIZE_E;
-                    }
+                if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
+                    potentialDragMode = DragEdit.RESIZE_N;
                 }
+            }
 
-                if (potentialDragMode == null && hitPoint.x <= resizeBorder) {
-                    if (hitPoint.y <= resizeBorder) {
-                        potentialDragMode = DragEdit.RESIZE_SW;
-                    }
-                    if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
-                        potentialDragMode = DragEdit.RESIZE_NW;
-                    }
+            if (potentialDragMode == null && hitPoint.y >= 0.5f - resizeBorder / 2f && hitPoint.y <= 0.5f + resizeBorder / 2) {
+                if (hitPoint.x <= resizeBorder) {
+                    potentialDragMode = DragEdit.RESIZE_W;
                 }
-
                 if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
-
-                    if (hitPoint.y <= resizeBorder) {
-                        potentialDragMode = DragEdit.RESIZE_SE;
-                    }
-                    if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
-                        potentialDragMode = DragEdit.RESIZE_NE;
-                    }
+                    potentialDragMode = DragEdit.RESIZE_E;
                 }
+            }
 
-
-                if (!fingerable(potentialDragMode))
-                    potentialDragMode = null;
-
-                if (potentialDragMode == null) {
-                    if (fingerable(MOVE))
-                        potentialDragMode = MOVE;
+            if (potentialDragMode == null && hitPoint.x <= resizeBorder) {
+                if (hitPoint.y <= resizeBorder) {
+                    potentialDragMode = DragEdit.RESIZE_SW;
                 }
+                if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
+                    potentialDragMode = DragEdit.RESIZE_NW;
+                }
+            }
+
+            if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
+
+                if (hitPoint.y <= resizeBorder) {
+                    potentialDragMode = DragEdit.RESIZE_SE;
+                }
+                if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
+                    potentialDragMode = DragEdit.RESIZE_NE;
+                }
+            }
+
+
+            if (!fingerable(potentialDragMode))
+                potentialDragMode = null;
+
+            if (potentialDragMode == null) {
+                if (fingerable(MOVE))
+                    potentialDragMode = MOVE;
             }
 
 
             this.potentialDragMode = potentialDragMode;
 
-            if (finger.pressing(ZoomOrtho.PAN_BUTTON)) {
 
-                FingerDragging d = potentialDragMode != null ? (FingerDragging) fingering(potentialDragMode) : null;
+            if (finger.pressing(ZoomOrtho.PAN_BUTTON)) {
+                FingerDragging d =
+                        potentialDragMode != null ? (FingerDragging) fingering(potentialDragMode) : null;
+
                 if (d != null && finger.tryFingering(d)) {
                     this.dragMode = d;
                     return null;
@@ -149,6 +141,12 @@ public class Windo extends MutableUnitContainer {
         }
 
 
+    }
+
+    public void unfinger(Finger finger) {
+        this.dragMode = null;
+        this.potentialDragMode = null;
+        finger.tryFingering(RenderWhileHovering.Reset);
     }
 
     protected boolean fingeringBounds(Finger finger) {
@@ -244,13 +242,19 @@ public class Windo extends MutableUnitContainer {
                             W, H / 2 + resizeBorder / 2,
                             W, H / 2 - resizeBorder / 2);
                     break;
+                case RESIZE_W:
+                    colorDragIndicator(gl);
+                    Draw.quad2d(gl, pmx, pmy, resizeBorder, H / 2,
+                            0, H / 2 + resizeBorder / 2,
+                            0, H / 2 - resizeBorder / 2);
+                    break;
                 case RESIZE_NE:
                     colorDragIndicator(gl);
                     Draw.quad2d(gl, pmx, pmy, W, H - resizeBorder, W, H, W - resizeBorder, H);
                     break;
                 case RESIZE_SE:
                     colorDragIndicator(gl);
-                    Draw.quad2d(gl, pmx, pmy, W, resizeBorder, W, 0, W - resizeBorder, 0);
+                    Draw.quad2d(gl, pmx, pmy, W, W-resizeBorder, W, 0, W - resizeBorder, 0);
                     break;
                 case RESIZE_SW:
                     colorDragIndicator(gl);
@@ -288,6 +292,23 @@ public class Windo extends MutableUnitContainer {
         }
     }
 
+    /** position relative to parent
+     *  0  .. (0.5,0.5) center ... +1
+     */
+    public final Windo posRel(float cx, float cy, float pct) {
+        return posRel(cx, cy, pct, pct);
+    }
+
+    public Windo posRel(float cx, float cy, float pctX, float pctY) {
+        GraphEdit p = parent(GraphEdit.class);
+        float pw = p.w(), ph = p.h();
+        float w = pw * pctX;
+        float h = ph * pctY;
+        posXYWH(cx * pw, cy * ph, w, h);
+        return this;
+    }
+
+
     public enum DragEdit {
         MOVE,
         RESIZE_N, RESIZE_E, RESIZE_S, RESIZE_W,
@@ -311,15 +332,9 @@ public class Windo extends MutableUnitContainer {
             cursor.put(DragEdit.RESIZE_W, new FingerRenderer.PolygonWithArrow(180));
             //cursor.put(DragEdit.MOVE, new FingerRenderer.PolygonCrosshairs().angle(45)); //TODO something special
 
-            cursor.forEach((k,v)-> {
-                hover.put(k, new RenderWhileHovering(v) {
-//                    @Override
-//                    protected boolean update(Finger f) {
-//                        return (f.touching() instanceof Windo);
-//                    }
-                });
-            });
+            cursor.forEach((k,v)-> hover.put(k, new RenderWhileHoveringOnWindow(v)));
         }
+
         @Nullable public FingerRenderer cursor() {
             return cursor.get(this);
         }
@@ -327,6 +342,17 @@ public class Windo extends MutableUnitContainer {
         @Nullable
         public RenderWhileHovering hover() {
             return hover.get(this);
+        }
+
+        private static class RenderWhileHoveringOnWindow extends RenderWhileHovering {
+            public RenderWhileHoveringOnWindow(FingerRenderer v) {
+                super(v);
+            }
+
+            @Override
+            protected boolean update(Finger f) {
+                return f.touching() instanceof Windo;
+            }
         }
     }
 

@@ -108,8 +108,9 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     public final Surface pos(float x1, float y1, float x2, float y2) {
         return pos(RectFloat.XYXY(x1, y1, x2, y2));
     }
-    public final Surface posXYWH(float x, float y, float w, float h) {
-        return pos(RectFloat.XYWH(x, y, w, h));
+
+    public final Surface posXYWH(float cx, float cy, float w, float h) {
+        return pos(RectFloat.XYWH(cx, cy, w, h));
     }
 
     public AspectAlign align(AspectAlign.Align align) {

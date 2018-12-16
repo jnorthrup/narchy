@@ -23,7 +23,7 @@ public class FloatRangePort extends FloatPort {
         super();
         this.f = f;
 
-        FloatSlider s = new FloatSlider(f).on((float ff)->FloatRangePort.this.set(ff));
+        FloatSlider s = new FloatSlider(f).on((float ff)->FloatRangePort.this.out(ff));
 
         set(new Gridding(0.25f, new EmptySurface(), s));
     }

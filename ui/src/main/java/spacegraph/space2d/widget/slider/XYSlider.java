@@ -10,7 +10,12 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerDragging;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.widget.port.FloatPort;
 import spacegraph.video.Draw;
+
+import static spacegraph.space2d.container.Bordering.E;
+import static spacegraph.space2d.container.Bordering.S;
 
 /**
  * Created by me on 6/26/16.
@@ -149,5 +154,20 @@ public class XYSlider extends Surface {
         if (knob.setIfChanged(x, y, ScalarValue.EPSILON))
             updated();
         return this;
+    }
+
+    public Surface chip() {
+        FloatPort px = new FloatPort();
+        FloatPort py = new FloatPort();
+        on((x,y)->{
+            px.out(x);
+            py.out(y);
+        });
+
+        Bordering b = new Bordering();
+        b.center(this);
+        b.set(S, px, 0.1f);
+        b.set(E, py, 0.1f);
+        return b;
     }
 }

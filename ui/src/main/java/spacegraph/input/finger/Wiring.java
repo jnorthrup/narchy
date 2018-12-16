@@ -22,7 +22,6 @@ public class Wiring extends FingerDragging {
 
     final static ExtendedCastGraph CAST = new ExtendedCastGraph();
     static {
-        CAST.set(float[].class, Tensor.class, (Function<float[],Tensor>)(ArrayTensor::new));
 
         CAST.set(Integer.class, Boolean.class, (Function<Integer, Boolean>) (i)->i >= 0);
         CAST.set(Short.class, Boolean.class, (Function<Short, Boolean>) (i)->i >= 0);
@@ -33,8 +32,9 @@ public class Wiring extends FingerDragging {
 
         CAST.set(Float.class, Double.class, (Function<Float,Double>)(Float::doubleValue)); //1-element
         CAST.set(Double.class, Float.class, (Function<Double,Float>)(Double::floatValue)); //1-element
-        CAST.set(Float.class, float[].class, (Function<Float,float[]>)(v -> new float[] { v })); //1-element
-        CAST.set(Float.class, Tensor.class, (Function<Float,Tensor>)((f) -> new ArrayTensor(new float[] { f} ))); //1-element
+        CAST.set(float[].class, Tensor.class, (Function<float[],Tensor>)(ArrayTensor::new));
+        CAST.set(Float.class, float[].class, (Function<Float,float[]>)(v -> v!=null ? new float[] { v } : new float[] { Float.NaN } )); //1-element
+//        CAST.set(Float.class, Tensor.class, (Function<Float,Tensor>)((f) -> new ArrayTensor(new float[] { f} ))); //1-element
         CAST.set(Tensor.class, ArrayTensor.class, (Function<Tensor,ArrayTensor>)(t -> {
             if (t instanceof ArrayTensor) {
                 return (ArrayTensor) t; //does this happen
@@ -65,8 +65,8 @@ public class Wiring extends FingerDragging {
 //        return end!=null ? end.parent(Windo.class) : null;
 //    }
 
-    public Wiring(Surface start) {
-        super(2);
+    public Wiring(int button, Surface start) {
+        super(button);
         this.start = start;
     }
 
@@ -89,10 +89,13 @@ public class Wiring extends FingerDragging {
     @Override
     protected boolean drag(Finger f) {
         if (path == null) {
-            path = new Path2D(64);
 
             GraphEdit g = graph();
-            g.addRaw(pathVis = new PathSurface(path));
+            if (g!=null)
+                g.addRaw(pathVis = new PathSurface(path = new Path2D(64)));
+            else
+                return false; //detached component no longer or never was in graph
+
         } else {
             updateEnd(f);
         }
@@ -108,14 +111,9 @@ public class Wiring extends FingerDragging {
 
     @Override
     public void stop(Finger finger) {
-        if (pathVis != null) {
-            graph().removeRaw(pathVis);
-            pathVis = null;
-        }
+
 
         if (end != null) {
-
-
             if (!tryWire())
                 return; //fail
         }
@@ -125,6 +123,11 @@ public class Wiring extends FingerDragging {
 
         if (this.end instanceof Wireable)
             ((Wireable) end).onWireIn(this, false);
+
+        if (pathVis != null) {
+            pathVis.remove();
+            pathVis = null;
+        }
 
     }
 

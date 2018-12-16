@@ -44,6 +44,11 @@ public class RenderWhileHovering extends Fingering {
         return true;
     }
 
+    @Override
+    public @Nullable FingerRenderer renderer() {
+        return cursor;
+    }
+
     public static final Fingering Reset = new RenderWhileHovering(null) {
         @Override
         protected boolean update(Finger f) {

@@ -68,7 +68,9 @@ public class ObjectSurface<X> extends MutableUnitContainer {
             if (c.isEmpty())
                 return null;
 
-            return new ObjectMetaFrame(obj, c.size() > 1 ? new Gridding(c) : c.get(0), context);
+            Surface y = c.size() > 1 ? new Gridding(c) : c.get(0);
+            return y;
+            //return new ObjectMetaFrame(obj, y, context);
         };
 
         builder = new AutoBuilder<>(maxDepth, building);
@@ -77,9 +79,9 @@ public class ObjectSurface<X> extends MutableUnitContainer {
     }
 
     private void initDefaults() {
-        builder.on(FloatRange.class, (x,relation)-> new MySlider((FloatRange) x, relationLabel(relation)));
-        builder.on(Runnable.class, (x,relation)-> new PushButton(relationLabel(relation), (Runnable) x));
-        builder.on(AtomicBoolean.class, (x,relation) -> new MyAtomicBooleanCheckBox(relationLabel(relation), (AtomicBoolean) x));
+        builder.on(FloatRange.class, (x,relation)-> new MySlider((FloatRange) x, objLabel(x,relation)));
+        builder.on(Runnable.class, (x,relation)-> new PushButton(objLabel(x, relation), (Runnable) x));
+        builder.on(AtomicBoolean.class, (x,relation) -> new MyAtomicBooleanCheckBox(objLabel(x,relation), (AtomicBoolean) x));
 
         builder.on(MutableEnum.class, (x, relation) -> EnumSwitch.newSwitch((MutableEnum) x, relationLabel(relation)));
         builder.on(IntRange.class,  (x, relation) -> !(x instanceof MutableEnum) ? new MyIntSlider((IntRange) x, relationLabel(relation)) : null);
@@ -102,7 +104,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
             if (yy.isEmpty())
                 return null;
 
-            Surface xx = new Gridding(yy);
+            Surface xx = yy.size() > 1 ? new Gridding(yy) : yy.get(0);
 
             String l = relationLabel(relation);
 
@@ -111,6 +113,10 @@ public class ObjectSurface<X> extends MutableUnitContainer {
             else
                 return xx;
         });
+    }
+
+    public String objLabel(Object x, Object relation) {
+        return relation==null ? x.toString() : relationLabel(relation);
     }
 
     public String relationLabel(@Nullable Object relation) {

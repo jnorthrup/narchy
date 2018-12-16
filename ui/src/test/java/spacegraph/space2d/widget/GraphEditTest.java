@@ -276,7 +276,8 @@ public class GraphEditTest {
                         add(inverter).pos(70, 70, 140, 140);
 
                         //add(new SwitchChip(4)).pos(170, 170, 240, 240);
-                        add(new FunctionSelectChip<Double, Double>(
+                        add(new FunctionSelectChip<>(
+                                Double.class, Double.class,
                                 Map.of("sin", Math::sin, "cos", Math::cos))).pos(170, 170, 240, 240);
                     }
 
@@ -295,7 +296,7 @@ public class GraphEditTest {
         public static void main(String[] args) {
             GraphEdit w = newWallWindow();
             w.add(new IntPort()).pos(100, 100, 400, 400);
-            w.add(new TypedPort<Tensor>(Tensor.class)).pos(100, 100, 400, 400);
+            w.add(new TypedPort<>(Tensor.class)).pos(100, 100, 400, 400);
         }
     }
 

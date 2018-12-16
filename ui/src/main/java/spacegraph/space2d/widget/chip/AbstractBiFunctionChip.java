@@ -1,35 +1,41 @@
 package spacegraph.space2d.widget.chip;
 
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.port.Port;
+import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.text.LabeledPane;
 
 import java.util.function.BiFunction;
 
 abstract public class AbstractBiFunctionChip<X, Y, Z> extends Gridding {
-    protected final Port xIn, yIn;
-    protected final Port out;
+    protected final TypedPort<X> xIn;
+    protected final TypedPort<Y> yIn;
+    protected final TypedPort<Z> out;
 
     //buffers
     volatile X x;
     volatile Y y;
 
-    protected AbstractBiFunctionChip() {
+    protected AbstractBiFunctionChip(Class<? super X> xClass, Class<? super Y> yClass, Class<? super Z> zClass) {
         super();
-        out = new Port();
-        xIn = new Port((Object a) -> {
-            AbstractBiFunctionChip.this.x = (X) a;
+        out = new TypedPort<>(zClass);
+        xIn = new TypedPort<>(xClass, (X a) -> {
+            AbstractBiFunctionChip.this.x = a;
             if (y != null)
                 commit(x, y);
         });
-        yIn = new Port((Object b) -> {
-            AbstractBiFunctionChip.this.y = (Y) b;
+        yIn = new TypedPort<>(yClass, (Y b) -> {
+            AbstractBiFunctionChip.this.y = b;
             if (x != null)
                 commit(x, y);
         });
 
-        set(new Gridding(new LabeledPane("x in", xIn), new LabeledPane("y in", yIn)),
-                new LabeledPane("f(x,y)", out));
+        set(new Gridding(
+                new Gridding(
+                    new LabeledPane(this.xIn.type + " x (in)", xIn),
+                    new LabeledPane(this.yIn.type + " y (in)", yIn)
+                ),
+                new LabeledPane(this.out.type + " out", out))
+        );
 
     }
 

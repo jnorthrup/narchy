@@ -16,8 +16,8 @@ public class FunctionSelectChip<X,Y> extends AbstractFunctionChip<X,Y> {
 
     private volatile Function<X, Y> f = (x) -> null;
 
-    public FunctionSelectChip(Map<String,Function<X,Y>> m) {
-        super();
+    public FunctionSelectChip(Class<? super X> x, Class<? super Y> y, Map<String,Function<X,Y>> m) {
+        super(x, y);
 
         ff.putAll(m);
 

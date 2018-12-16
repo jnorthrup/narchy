@@ -1,8 +1,13 @@
 package spacegraph.space2d.widget.port;
 
 import jcog.data.atomic.AtomicFloat;
+import jcog.math.FloatSupplier;
 
-public class FloatPort extends TypedPort<Float> {
+/** buffers the last sent value and compares with the current; transmits if inequal
+ * TODO also transmit if there are new downstream connections
+ * TODO abstract equality test method (ex: threshold, resolution, epsilon)
+ * */
+public class FloatPort extends TypedPort<Float> implements FloatSupplier {
 
     private AtomicFloat curValue = new AtomicFloat(Float.NaN);
 
@@ -10,15 +15,20 @@ public class FloatPort extends TypedPort<Float> {
         super(Float.class);
     }
 
-    public boolean set(float nextValue) {
+    public boolean out(Float nextValue) {
         if (curValue.getAndSet(nextValue)!=nextValue) {
-            out(nextValue);
-            return true;
+            return super.out(nextValue);
         }
         return false;
     }
 
+    /** retransmit */
     public final void out() {
-        out(curValue.get());
+        super.out(asFloat());
+    }
+
+    @Override
+    public float asFloat() {
+        return curValue.get();
     }
 }

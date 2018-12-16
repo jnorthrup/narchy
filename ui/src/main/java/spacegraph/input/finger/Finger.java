@@ -322,31 +322,31 @@ abstract public class Finger {
     /**
      * acquire an exclusive fingering state
      */
-    public final boolean tryFingering(Fingering f) {
+    public final boolean tryFingering(Fingering next) {
 
-        /*if (f != null) */
-        {
-            Fingering cf = this.fingering.get();
-            if (cf != f && cf.defer(this)) {
-                //System.out.println(cf + " -> " + f + " try");
-                if (f.start(this)) {
-                    //System.out.println(cf + " -> " + f + " start");
-                    if (this.fingering.compareAndSet(cf, f)) {
+        Fingering prev = this.fingering.get();
 
-                        //System.out.println(cf + " -> " + f + " acquire");
-                        cf.stop(this);
+        if (prev != next && prev.defer(this)) {
 
-                        @Nullable FingerRenderer r = f.renderer();
-                        if (r != null)
-                            renderer = r;
-                        else
-                            renderer = rendererDefault;
+            //System.out.println(cf + " -> " + f + " try");
 
-                        return true;
+            if (next.start(this)) {
 
-                    } else {
-                        f.stop(this);
-                    }
+                //System.out.println(cf + " -> " + f + " start");
+
+                if (this.fingering.compareAndSet(prev, next)) {
+
+                    //System.out.println(cf + " -> " + f + " acquire");
+
+                    prev.stop(this);
+
+                    @Nullable FingerRenderer r = next.renderer();
+                    renderer = (r != null) ? r : rendererDefault;
+
+                    return true;
+
+                } else {
+                    next.stop(this);
                 }
             }
         }

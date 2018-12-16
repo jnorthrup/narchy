@@ -66,8 +66,4 @@ public class SpaceGraphFlat extends JoglSpace {
 
     }
 
-
-    @Override
-    protected void init() {
-    }
 }

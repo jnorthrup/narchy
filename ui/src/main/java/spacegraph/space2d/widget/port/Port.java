@@ -18,28 +18,37 @@ import javax.annotation.Nullable;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-/** base class for a port implementation
+/**
+ * base class for a port implementation
+ *
  * @see http:
- * */
+ */
 public class Port<X> extends Widget implements Wiring.Wireable {
 
     private transient volatile Wiring beingWiredOut = null;
     private transient volatile Wiring beingWiredIn = null;
     private boolean enabled = true;
 
-    /** input handler */
+    /**
+     * input handler
+     */
     public In<? super X> in = null;
 
-    /** prototype (example) builder.  stipulates a protocol as specified by an example instance */
+    /**
+     * prototype (example) builder.  stipulates a protocol as specified by an example instance
+     */
     private Supplier specifyHow = null;
 
-    /** prototype (example) acceptor. accepts a protocol (on connect / re-connect) */
+    /**
+     * prototype (example) acceptor. accepts a protocol (on connect / re-connect)
+     */
     private Consumer obeyHow = null;
 
     private IntObjectProcedure<Port<X>> updater = null;
 
     private transient Node<spacegraph.space2d.Surface, Wire> node;
 
+    static final private int WIRING_BUTTON = 2;
 
 
     public Port() {
@@ -47,13 +56,14 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     }
 
 
-
     public Port(In<? super X> i) {
         this();
         on(i);
     }
 
-    /** for convenience */
+    /**
+     * for convenience
+     */
     public Port(Consumer<? super X> i) {
         this();
         on(i);
@@ -61,7 +71,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
 
 
     public Port<X> on(Consumer<? super X> i) {
-        return on((Wire w, X x)->i.accept(x));
+        return on((Wire w, X x) -> i.accept(x));
     }
 
     public Port<X> specify(Supplier<X> proto) {
@@ -74,18 +84,21 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         return this;
     }
 
-    /** set the input handler */
+    /**
+     * set the input handler
+     */
     public Port<X> on(@Nullable In<? super X> i) {
-        this.in = i; return this;
+        this.in = i;
+        return this;
     }
 
     public Port<X> update(@Nullable Runnable update) {
-        this.updater = (i,p)->update.run();
+        this.updater = (i, p) -> update.run();
         return this;
     }
 
     public Port<X> update(@Nullable Consumer<Port<X>> update) {
-        this.updater = (i,p)->update.accept(p);
+        this.updater = (i, p) -> update.accept(p);
         return this;
     }
 
@@ -95,26 +108,20 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     }
 
 
-
-
-
-
-
-
     public boolean enabled() {
         return enabled;
     }
 
     public boolean connected(Port other) {
-        if (other.specifyHow !=null) {
+        if (other.specifyHow != null) {
 
-            if (specifyHow!=null) {
-                
+            if (specifyHow != null) {
+
                 return specifyHow.get().equals(other.specifyHow.get());
             }
 
-            if (obeyHow!=null) {
-                
+            if (obeyHow != null) {
+
                 obeyHow.accept(other.specifyHow.get());
             }
         }
@@ -125,10 +132,11 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     @FunctionalInterface
     public interface In<T> {
 
-        /** TODO more informative backpressure-determining state
-         *  TODO pluggable receive procedure:
-         *          local buffers (ex: QueueLock), synch, threadpool, etc
-         * */
+        /**
+         * TODO more informative backpressure-determining state
+         * TODO pluggable receive procedure:
+         * local buffers (ex: QueueLock), synch, threadpool, etc
+         */
 
 //        /** test before typed wire connection */
 //        default boolean canAccept(T proto) {
@@ -138,71 +146,44 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         void accept(Wire from, T t);
 
 
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Override
     protected void paintWidget(RectFloat bounds, GL2 gl) {
 
-        if (beingWiredOut !=null) {
+        if (beingWiredOut != null) {
             gl.glColor4f(0.5f, 1, 0, 0.35f);
-            Draw.rect(bounds, gl);
-        }
-        if (beingWiredIn !=null) {
+        } else if (beingWiredIn != null) {
             gl.glColor4f(0, 0.5f, 1, 0.35f);
-            Draw.rect(bounds, gl);
+        } else {
+            gl.glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
         }
 
-
+        Draw.rect(bounds, gl);
     }
 
 
     @Override
     public Surface finger(Finger finger) {
 
-
-
-        if (finger!=null /*&& buttons!=null*/) {
-            Surface x = super.finger(finger);
-            if (x==null || x==this) {
-                if (finger.tryFingering(new Wiring(this)))
+        Surface x = super.finger(finger);
+        if (x == null || x == this) {
+            if (finger.pressedNow(WIRING_BUTTON)) {
+                if (finger.tryFingering(new Wiring(WIRING_BUTTON, this)))
                     return this;
-            }
 
-            return x;
+            } else {
+                return null;
+            }
         }
 
-        return super.finger(finger);
-
-
-
-
-
-
+        return x;
 
     }
 
 
-    private boolean acceptWiring(Wiring w) {
+    protected boolean acceptWiring(Wiring w) {
         return true;
     }
 
@@ -225,18 +206,19 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         }
     }
 
-    /** wiring complete */
+    /**
+     * wiring complete
+     */
     protected void onWired(Wiring w) {
 
     }
-
 
 
     @Override
     public boolean prePaint(SurfaceRender r) {
         if (super.prePaint(r)) {
             IntObjectProcedure<Port<X>> u = this.updater;
-            if (u !=null)
+            if (u != null)
                 u.value(r.dtMS, this);
 
             return true;
@@ -244,8 +226,8 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         return false;
     }
 
-    public void out(X x) {
-        out(this, x);
+    public boolean out(X x) {
+        return out(this, x);
     }
 
     @Override
@@ -254,7 +236,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
 
         this.node = parent(GraphEdit.class).links.addNode(this);
         IntObjectProcedure<Port<X>> u = this.updater;
-        if (u !=null)
+        if (u != null)
             u.value(0, this);
 
     }
@@ -263,7 +245,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     public boolean stop() {
         GraphEdit p = parent(GraphEdit.class);
         if (super.stop()) {
-            if (p!=null)
+            if (p != null)
                 p.links.removeNode(this);
             node = null;
             return true;
@@ -272,14 +254,21 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     }
 
 
-    /** TODO Supplier-called version of this */
-    protected void out(Port sender, X x) {
-        
+    /**
+     * TODO Supplier-called version of this
+     */
+    protected boolean out(Port sender, X x) {
+
         if (enabled) {
             Node<spacegraph.space2d.Surface, Wire> n = this.node;
-            if (n!=null)
-                n.edges(true, true).forEach(t -> { t.id().send(sender, x); } );
+            if (n != null) {
+                n.edges(true, true).forEach(t -> {
+                    t.id().send(sender, x);
+                });
+                return true;
+            }
         }
+        return false;
     }
 
     public boolean recv(Wire from, X s) {
@@ -288,18 +277,18 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         } else {
             In<? super X> in = this.in;
             if (in != null) {
-                 try {
-                     in.accept(from, s);
-                     return true;
-                 } catch (Throwable t) {
-                     SurfaceRoot r = root();
-                     if (r != null)
-                         r.error(this, 1f, t);
-                     else
-                         t.printStackTrace(); //TODO HACK
-                     return false;
-                 }
-             }
+                try {
+                    in.accept(from, s);
+                    return true;
+                } catch (Throwable t) {
+                    SurfaceRoot r = root();
+                    if (r != null)
+                        r.error(this, 1f, t);
+                    else
+                        t.printStackTrace(); //TODO HACK
+                    return false;
+                }
+            }
             return true;
         }
 
@@ -308,8 +297,9 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     public void enable(boolean b) {
         this.enabled = b;
     }
+
     public boolean active() {
-        return enabled && node!=null && node.edgeCount(true,true) > 0;
+        return enabled && node != null && node.edgeCount(true, true) > 0;
     }
 
 }

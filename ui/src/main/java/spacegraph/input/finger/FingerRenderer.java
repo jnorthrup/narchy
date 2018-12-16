@@ -10,6 +10,7 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
 
 /** cursor renderer */
 @FunctionalInterface public interface FingerRenderer {
+
     void paint(v2 posPixel, Finger finger, int dtMS, GL2 gl);
 
     FingerRenderer rendererCrossHairs1 = new FingerRenderer() {

@@ -56,6 +56,29 @@ public abstract class FingerResize extends FingerDragging {
                 resize(pmx - bw + tx, pmy - bh + ty, pmx, pmy);
                 break;
             }
+
+            case RESIZE_NE: {
+                float pmx = before.left();
+                float pmy = before.top();
+                float bw = before.w;
+                float bh = before.h;
+                float tx = (fx - posStart.x);
+                float ty = (fy - posStart.y);
+                resize( pmx, pmy,
+                        Math.max(pmx + aspectRatioRatioLimit * bw, bw + pmx + tx),
+                        Math.max(pmy + aspectRatioRatioLimit * bh, bh + pmy + ty));
+                break;
+            }
+            case RESIZE_SE: {
+                float pmx = before.left();
+                float pmy = before.bottom();
+                float bw = before.w;
+                float bh = before.h;
+                float tx = (fx - posStart.x);
+                float ty = (fy - posStart.y);
+                resize(pmx, pmy - bh + ty, Math.max(pmx + aspectRatioRatioLimit * bw, bw + pmx + tx), pmy);
+                break;
+            }
             case RESIZE_N: {
                 float top, bottom;
                 float bh = before.h;
@@ -76,19 +99,6 @@ public abstract class FingerResize extends FingerDragging {
                 break;
             }
 
-
-            case RESIZE_NE: {
-                float pmx = before.left();
-                float pmy = before.top();
-                float bw = before.w;
-                float bh = before.h;
-                float tx = (fx - posStart.x);
-                float ty = (fy - posStart.y);
-                resize( pmx, pmy,
-                        Math.max(pmx + aspectRatioRatioLimit * bw, bw + pmx + tx),
-                        Math.max(pmy + aspectRatioRatioLimit * bh, bh + pmy + ty));
-            }
-            break;
             case RESIZE_NW: {
                 float pmx = before.right();
                 float pmy = before.top();
@@ -99,8 +109,9 @@ public abstract class FingerResize extends FingerDragging {
                 resize( pmx -bw + tx, pmy,
                         pmx,
                         Math.max(pmy + aspectRatioRatioLimit * bh, bh + pmy + ty));
+                break;
             }
-            break;
+
 
             case RESIZE_E: {
                 float pmx = before.left();

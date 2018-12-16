@@ -320,7 +320,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 //            return this;
 
 
-        return s != null ? s : this;
+        return s != null ? s : null;
 
     }
 

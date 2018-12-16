@@ -31,19 +31,19 @@ abstract public class EditablePort<X> extends TypedPort<X> {
 //    }
 
     @Override
-    protected void out(Port sender, X _next) {
+    protected boolean out(Port sender, X _next) {
         X next = process(_next);
         if (next==null)
-            return;
+            return false;
 
         if (change(next)) {
 
             txt.text(toString(next));
             super.out(sender, next);
 
-            return /* true */;
+            return false;
         }
-        return /*false*/;
+        return false;
     }
 
     protected String toString(X next) {

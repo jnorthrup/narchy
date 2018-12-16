@@ -11,12 +11,12 @@ public class TypedPort<X> extends Port<X> {
         this.type = type;
     }
 
-    public TypedPort(Class<X> type, In<? super X> o) {
+    public TypedPort(Class<? super X> type, In<? super X> o) {
         super(o);
         this.type = type;
     }
 
-    public TypedPort(Class<X> type, Consumer<? super X> o) {
+    public TypedPort(Class<? super X> type, Consumer<? super X> o) {
         super(o);
         this.type = type;
     }

@@ -4,6 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.jogamp.opengl.GL2;
 import jcog.User;
+import jcog.exe.Exe;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.TensorChain;
@@ -22,9 +23,12 @@ import spacegraph.space2d.widget.chip.*;
 import spacegraph.space2d.widget.menu.TabMenu;
 import spacegraph.space2d.widget.menu.view.GridMenuView;
 import spacegraph.space2d.widget.port.*;
+import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
+import spacegraph.util.geo.IRL;
 import spacegraph.video.Draw;
+import spacegraph.video.OsmSpace;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,22 +68,26 @@ public class ProtoWidget extends Bordering {
         add("Mouse", TODO, "Input");
         add("Gamepad", TODO, "Input");
 
-        add("WebCam", () -> {
-            return new WebcamChip();
-        }, "Video");
+        add("WebCam", () -> new WebcamChip(), "Video");
         add("Microphone", AudioCaptureChip::new, "Audio");
 
+        add("java", IntPort::new, "Value"); //java expression evaluation
+        add("shell", IntPort::new, "Value"); //system shell command evaluation
         add("int", IntPort::new, "Value");
         add("float", FloatPort::new, "Value");
         add("text", TextPort::new, "Value");
         add("float[-1..1]", ()->new FloatRangePort(0.5f, -1, 1f), "Value");
         add("float[0..1]", ()->new FloatRangePort(0.5f, 0, 1f), "Value");
+        add("f(x)", TODO, "Value");
+        add("f(x,y)", TODO, "Value");
+        add("v2", ()->new XYSlider().chip(), "Value");
+        add("v3", TODO, "Value");
+        add("color", TODO, "Value");
 
 //        add("random float[0..1]", TODO, "Noise");
 //        add("random float[-1..+1]", TODO, "Noise");
 
 
-        add("ColorChoose", TODO, "Video");
         add("Recognizer", TODO, "Video");
         add("Tracker", TODO, "Video");
         add("Snapshotter", TODO, "Video");
@@ -87,10 +95,10 @@ public class ProtoWidget extends Bordering {
         add("ShapeDetect", TODO, "Video");
 
         add("split", TODO, "Tensor");
-        add("concat", ()->new BiFunctionChip<Tensor, Tensor,Tensor>((Tensor a, Tensor b) -> {
+        add("concat", ()-> new BiFunctionChip<>(Tensor.class, Tensor.class, Tensor.class, (Tensor a, Tensor b) -> {
             return TensorChain.get(a, b);
         }), "Tensor");
-        add("OneHotBit", ()-> new BiFunctionChip<>((Integer signal, Integer range) -> {
+        add("OneHotBit", ()-> new BiFunctionChip<>(Integer.class, Integer.class, Tensor.class, (Integer signal, Integer range) -> {
             //TODO optimize with a special Tensor impl
             if (signal >= 0 && signal < range) {
                 float[] x = new float[range];
@@ -100,10 +108,10 @@ public class ProtoWidget extends Bordering {
                 return null;
             }
         }), "Tensor");
-        add("HaarWavelet", ()->new FunctionChip<>((Tensor t)->{
+        add("HaarWavelet", ()->new FunctionChip<>(Tensor.class, HaarWaveletTensor.class, (Tensor t)->{
             return new HaarWaveletTensor(t, 64);
         }).buffered(), "Tensor");
-        add("SlidingDFT", ()->new FunctionChip<>((Tensor t)->{
+        add("SlidingDFT", ()->new FunctionChip<>(Tensor.class, SlidingDFTTensor.class, (Tensor t)->{
             return new SlidingDFTTensor(t, 64, true);
         }).buffered(), "Tensor");
 
@@ -123,10 +131,8 @@ public class ProtoWidget extends Bordering {
         add("Cluster2D", Cluster2DChip::new, "Meter");
 
 
+        add("Geo", () -> new OsmSpace(new IRL(User.the())).surface().go(-80.63f, 28.60f), "Reality");
 
-
-
-        add("Geo", TODO, "Reality");
         add("Weather", TODO, "Reality");
 
         add("File", TODO, "Data"); //and directory too
@@ -197,14 +203,16 @@ public class ProtoWidget extends Bordering {
             }
         }));
 
-        User u = new User();
-        library.byName.forEach((t,v)->{
-           u.put(t, t);
+        Exe.invokeLater(()->{
+            User u = new User();
+            library.byName.forEach((t,v)->{
+                u.put(t, t);
+            });
+
+            set(N, new OmniBox(new OmniBox.LuceneQueryModel(u) {
+
+            }));
         });
-
-        set(N, new OmniBox(new OmniBox.LuceneQueryModel(u) {
-
-        }));
 
     }
 

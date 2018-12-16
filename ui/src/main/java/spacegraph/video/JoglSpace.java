@@ -127,7 +127,6 @@ abstract public class JoglSpace {
 
     public void camera(v3 target, float radius) {
         v3 fwd = v();
-
         fwd.sub(target, camPos);
         fwd.normalize();
         camFwd.set(fwd);
@@ -153,8 +152,7 @@ abstract public class JoglSpace {
             GL2 gl = io.gl;
 
 
-            int w = io.window.getWidth();
-            int h = io.window.getHeight();
+            int w = io.window.getWidth(), h = io.window.getHeight();
             gl.glViewport(0, 0, w, h);
             gl.glMatrixMode(GL_PROJECTION);
             gl.glLoadIdentity();
@@ -171,8 +169,8 @@ abstract public class JoglSpace {
 
             rendering.restart(w, h, dtMS);
             for (Surface/*Root*/ l : layers) {
-                if (l instanceof Ortho) {
 
+                if (l instanceof Ortho) {
                     ((Ortho)l).compile(rendering);
                 }
 
@@ -245,16 +243,10 @@ abstract public class JoglSpace {
 
 
     private class MyJoglWindow extends JoglWindow {
+
         public MyJoglWindow() {
             super();
         }
-
-//        @Override
-//        public void windowDestroyed(WindowEvent windowEvent) {
-//            super.windowDestroyed(windowEvent);
-//            layers.clear();
-//            onUpdate.clear();
-//        }
 
         @Override
         protected void init(GL2 gl) {

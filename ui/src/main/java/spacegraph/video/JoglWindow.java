@@ -362,7 +362,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             gl.setSwapInterval(2); //lower framerate
         }
 
-
         renderer.add(window);
 
         HersheyFont.load(gl);
@@ -373,12 +372,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
     public void setFPS(float render) {
-
-        logger.info("fps render={}", render);
-        renderFPS = render;
+        renderer.loop.setFPS(renderFPS = render);
 //        updateFPS = update;
 //        if (updater.isRunning()) {
-//            renderer.loop.setFPS(renderFPS);
 //            updater.setFPS(updateFPS);
 //        }
 
