@@ -1,10 +1,7 @@
 package nars.link;
 
 import jcog.data.MutableFloat;
-import jcog.pri.OverflowDistributor;
-import jcog.pri.PLinkHashCached;
-import jcog.pri.PLinkUntilDeleted;
-import jcog.pri.UnitPrioritizable;
+import jcog.pri.*;
 import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Task;
@@ -21,7 +18,15 @@ import java.util.function.Function;
  * that can be used ot dynamically match a Task on demand.
  *
  * note: seems to be important for Tasklink to NOT implement Termed when use with common Map's with Termlinks */
-public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
+public interface TaskLink extends UnitPrioritizable, Function<NAR,Task>, Deleteable {
+
+    /** dont use .apply() directly; use this */
+    public static Task task(TaskLink x, NAR n) {
+        Task y = x.apply(n);
+        if(y == null)
+            x.delete();
+        return y;
+    }
 
     /** creates a copy, with a specific priority */
     @Nullable TaskLink clone(float pri);
@@ -103,7 +108,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 
         @Override
         public Task apply(NAR n) {
-            return get(); //includes deletion test
+            return get();
         }
 
         @Override
@@ -153,11 +158,7 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task> {
 
         @Override
         public Task apply(NAR n) {
-            Task t = id.get(n, this);
-            if (t == null) {
-                delete();
-            }
-            return t;
+            return id.get(n, this);
         }
     }
 

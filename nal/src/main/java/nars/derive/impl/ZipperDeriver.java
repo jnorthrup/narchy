@@ -75,7 +75,7 @@ public class ZipperDeriver extends Deriver {
                 fired.forEach(tasklink -> {
 
 
-                    Task task = tasklink.apply(nar);
+                    Task task = TaskLink.task(tasklink, nar);
                     if (task != null) {
 
                         d.firedTasks.add(task);

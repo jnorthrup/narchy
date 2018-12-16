@@ -58,10 +58,10 @@ public class DQN2 extends Agent {
         this.actions = actions;
 
         //LSTM
-        //valuePredict = new LivePredictor.LSTMPredictor(0.04f, 4);
+        valuePredict = new LivePredictor.LSTMPredictor(0.04f, 4);
 
         //MLP
-        valuePredict = new LivePredictor.MLPPredictor(0.05f, new XoRoShiRo128PlusRandom(1));
+        //valuePredict = new LivePredictor.MLPPredictor(0.05f, new XoRoShiRo128PlusRandom(1));
 
         valuePredict.learn(new double[inputs], new double[actions]); /** HACK initialize */
 

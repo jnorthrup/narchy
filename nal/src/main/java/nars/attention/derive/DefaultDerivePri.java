@@ -7,6 +7,7 @@ import nars.Task;
 import nars.attention.DerivePri;
 import nars.derive.Derivation;
 import nars.truth.Truth;
+import nars.truth.polation.TruthIntegration;
 
 import static nars.truth.TruthFunctions.w2cSafe;
 
@@ -24,13 +25,13 @@ public class DefaultDerivePri implements DerivePri {
      * how important is it to retain conf (evidence).
      * leniency towards uncertain derivations
      */
-    public final FloatRange eviRetention = new FloatRange(1f, 0f, 1f);
+    public final FloatRange eviRetention = new FloatRange(0.5f, 0f, 1f);
+
+    /** occam's razor - increase this discriminate more heavily against more complex derivations */
+    public final FloatRange simplicityImportance = new FloatRange(0.5f, 0f, 8f);
 
     /** importance of frequency polarity in result (distance from freq=0.5) */
     public final FloatRange polarityImportance = new FloatRange(0.01f, 0f, 1f);
-
-    /** increase this discriminate more heavily against more complex derivations */
-    public final FloatRange relGrowthExponent = new FloatRange(2f, 0f, 8f);
 
     @Override
     public float pri(Task t, float f, float e, Derivation d) {
@@ -42,7 +43,7 @@ public class DefaultDerivePri implements DerivePri {
 
         if (f==f) {
             //belief or goal:
-            factor *= factorEvi(e, d);
+            factor *= factorEvi(TruthIntegration.evi(t), d);
             factor *= factorPolarity(f);
         } else {
             factor *= factor; //re-apply for single-premise case
@@ -63,15 +64,14 @@ public class DefaultDerivePri implements DerivePri {
         float weight = Math.min(1, t.voluplexity() / max);
         float parentWeight = Math.min(1, ((d.parentVoluplexitySum / 2)/*avg*/) / max);
         float f = (1f - Util.lerp(parentWeight,weight,parentWeight * weight));
-        //float f = (1f - weight);
-        return (float) Math.pow(f, relGrowthExponent.floatValue());
+        return Util.lerp(simplicityImportance.floatValue(), 1f, f);
     }
 
     float factorComplexityRelative2(Task t, Derivation d) {
         float inc = (t.voluplexity() - d.parentVoluplexitySum /2 /* avg */);
         if (inc <= 0) return 1f;
         float f = 1f / (1f + inc);
-        return (float) Math.pow(f, relGrowthExponent.floatValue());
+        return Util.lerp(simplicityImportance.floatValue(), 1f, f);
     }
 
     float factorComplexityRelative(Task t, Derivation d) {
@@ -84,7 +84,7 @@ public class DefaultDerivePri implements DerivePri {
                 //1f-Util.unitize((dCompl - pCompl) / pCompl );
 
 
-        return (float) Math.pow(f, relGrowthExponent.floatValue());
+        return Util.lerp(simplicityImportance.floatValue(), 1f, f);
     }
 
     float factorPolarity(float freq) {
@@ -100,9 +100,9 @@ public class DefaultDerivePri implements DerivePri {
 
             float pConf = w2cSafe(pEvi);
             float dConf = w2cSafe(dEvi);
-            float eviLossFactor = 1f-Util.unitize((pConf - dConf) / pConf);
+            float lossFactor = Util.unitize((pConf - dConf) / pConf);
 
-            return Util.lerp(eviLossFactor, 1f- eviRetention.floatValue(), 1);
+            return Util.lerp(eviRetention.floatValue(), 1f , lossFactor);
         }
 
         //throw new RuntimeException("spontaneous belief/goal evidence generated from only question parent task");

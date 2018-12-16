@@ -171,7 +171,7 @@ public class BatchDeriver extends Deriver {
 
         tasklinks.sample(rng, Math.min(_tasklinks, nTaskLinks), tasklink -> {
 
-            Task task = tasklink.apply(nar);
+            Task task = TaskLink.task(tasklink, nar);
             if (task != null) {
 
                 int[] premisesPerTaskLink = { _termlinksPerTasklink };

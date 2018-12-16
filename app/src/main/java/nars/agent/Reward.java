@@ -100,7 +100,7 @@ public abstract class Reward implements Termed, Iterable<Signal> {
             @Override
             public void update(NAR nar) {
                 super.update(nar);
-                take(t, elementPri(nar));
+                take(t, Math.max(0, elementPri(nar) - t.priElseZero()));
                 in.input(t);
             }
         };

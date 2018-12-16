@@ -18,6 +18,7 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.var.Img;
+import nars.time.Tense;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +30,6 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static nars.Op.CONJ;
-import static nars.time.Tense.XTERNAL;
 
 /**
  * default general-purpose termlink template impl. for compound terms
@@ -42,10 +42,7 @@ import static nars.time.Tense.XTERNAL;
 public final class TemplateTermLinker extends FasterList<Termed> implements TermLinker {
 
 
-    /** whether to decompose conjunction sequences to each event, regardless of a conjunction's sub-conjunction structure */
-    private static final boolean decomposeConjEvents = true;
-
-//    /**
+    //    /**
 //     * how fast activation spreads from source concept to template target concepts
 //     */
 //    static final float activationRate =
@@ -176,7 +173,7 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
         Subterms bb = x.subterms();
         int nextDepth = depth, nextMaxDepth = maxDepth;
 
-        if (decomposeConjEvents && xo == CONJ && bb.hasAny(CONJ) && x.dt() != XTERNAL) {
+        if (Param.TEMPLATE_LINKER_DECOMPOSE_CONJ_SEQ_EVENTS && xo == CONJ && bb.hasAny(CONJ) && !Tense.dtSpecial(x.dt())) {
 
             x.eventsWhile((when, what) -> {
                 add(what.unneg(), tc, nextDepth, root, nextMaxDepth);

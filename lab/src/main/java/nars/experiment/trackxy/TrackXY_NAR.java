@@ -2,9 +2,7 @@ package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.learn.LivePredictor;
-import jcog.learn.ql.DQN2;
-import jcog.math.FloatFirstOrderDifference;
+import jcog.learn.ql.HaiQ;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
 import jcog.test.control.TrackXY;
@@ -16,7 +14,6 @@ import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.exe.UniExec;
-import nars.gui.LSTMView;
 import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorView;
 import nars.index.concept.CaffeineIndex;
@@ -44,7 +41,7 @@ import static spacegraph.SpaceGraph.window;
 public class TrackXY_NAR extends NAgentX {
 
     static boolean
-            nars = true, rl = !nars,
+            nars = true, rl = false,
             sourceNumerics = true,
             targetNumerics = false,
             targetCam = true,
@@ -141,7 +138,7 @@ public class TrackXY_NAR extends NAgentX {
         FloatSupplier nearness = () -> 1f - (track.dist() / track.distMax());
 
         rewardNormalized($.the("good"), 0, 1, nearness);
-        rewardNormalized($.the("better"), -0.1f,  +0.1f, new FloatFirstOrderDifference(nar::time, nearness) );
+        //rewardNormalized($.the("better"), -0.1f,  +0.1f, new FloatFirstOrderDifference(nar::time, nearness) );
 
 //        }
 
@@ -228,18 +225,18 @@ public class TrackXY_NAR extends NAgentX {
         if (rl) {
             RLBooster rlb = new RLBooster(a,
 
-                    DQN2::new,
+                    //DQN2::new,
                     //HaiQae::new,
-                    //HaiQ::new,
+                    HaiQ::new,
 
                     true);
             a.curiosity.enable.set(false);
 
-            window(
-                    new LSTMView(
-                            ((LivePredictor.LSTMPredictor) ((DQN2) rlb.agent).valuePredict).lstm.agent
-                    ), 800, 800
-            );
+//            window(
+//                    new LSTMView(
+//                            ((LivePredictor.LSTMPredictor) ((DQN2) rlb.agent).valuePredict).lstm.agent
+//                    ), 800, 800
+//            );
 
 //            window(new Gridding(
 //                Stream.of(((DQN2) (rlb.agent)).valuePredict.layers).map(

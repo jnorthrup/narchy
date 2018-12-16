@@ -130,12 +130,12 @@ public class BeliefTableChart extends DurSurface<Stacking> implements MetaFrame.
           this.beliefOrGoal = beliefOrGoal;
           this.colorize = beliefOrGoal ?
                             (gl, frq, cnf) -> {
-                                float a = 0.3f + 0.6f * cnf;
-                                gl.glColor4f(0.5f + 0.5f * cnf, 0, 0.1f, a);
+
+                                gl.glColor3f(0.75f * cnf + 0.25f, 0, 0);
                             } :
                             (gl, frq, cnf) -> {
-                                float a = 0.3f + 0.6f * cnf;
-                                gl.glColor4f(0, 0.5f + 0.5f * cnf, 0.1f, a);
+
+                                gl.glColor3f(0, 0.75f * cnf + 0.25f, 0);
                             };
         }
 

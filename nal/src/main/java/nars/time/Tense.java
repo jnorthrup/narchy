@@ -177,7 +177,7 @@ public enum Tense {
                 return true;
 
             default:
-                return false;
+                return false; //sequence
         }
     }
 

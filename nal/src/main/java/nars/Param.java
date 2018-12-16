@@ -23,6 +23,7 @@ import static nars.Op.*;
  */
 public abstract class Param {
 
+
     static {
         Op.terms =
                 //HeapTermBuilder.the;
@@ -262,7 +263,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(6, 1, 32);
 
@@ -274,7 +275,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 1;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 2;
 
 
     /**
@@ -311,6 +312,9 @@ public abstract class Param {
     @Range(min = 0, max = 64)
     public static final int TTL_DERIVE_TASK_SAME = 2;
 
+
+    /** whether to decompose conjunction sequences to each event, regardless of a conjunction's sub-conjunction structure */
+    public static final boolean TEMPLATE_LINKER_DECOMPOSE_CONJ_SEQ_EVENTS = true;
 
     /**
      * cost of a failed/aborted task derivation
@@ -561,7 +565,6 @@ public abstract class Param {
 
     public final FloatRange beliefConfDefault = new FloatRange(0.9f, Param.TRUTH_EPSILON, 1f - Param.TRUTH_EPSILON);
     public final FloatRange goalConfDefault = new FloatRange(0.9f, Param.TRUTH_EPSILON, 1f - Param.TRUTH_EPSILON);
-
 
 
 

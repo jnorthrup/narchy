@@ -1,6 +1,5 @@
 package nars.derive.op;
 
-import jcog.TODO;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.graph.FromTo;
@@ -21,7 +20,6 @@ import nars.time.Event;
 import nars.time.Tense;
 import nars.time.TimeGraph;
 import nars.time.TimeSpan;
-import nars.truth.func.NALTruth;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
@@ -137,28 +135,26 @@ public class Occurrify extends TimeGraph {
 
 
     private Occurrify reset(Term pattern) {
-        return reset(pattern, true);
-    }
-
-    private Occurrify reset(boolean taskOccurrence, boolean beliefOccurrence, Term pattern) {
-        boolean decomposeEvents = d.truthFunction != NALTruth.Identity;
-        return reset(taskOccurrence, beliefOccurrence, pattern, decomposeEvents);
-    }
-
-    private Occurrify reset(Term pattern, boolean decomposeEvents) {
-        return reset(true, true, pattern, decomposeEvents);
+        return reset(true, true, pattern, true);
     }
 
     private Occurrify reset(boolean taskOccurrence, boolean beliefOccurrence, Term pattern, boolean decomposeEvents) {
 
+        if (d.concSingle)
+            beliefOccurrence = false;
+
+        if (beliefOccurrence && d.taskPunc == GOAL && d.taskStart != ETERNAL && (d.beliefTerm.op().temporal || d.beliefTerm.op().statement))
+            beliefOccurrence = false;
+
         clear();
 
-        boolean beliefNoOcc = !beliefOccurrence || (d.concSingle); // && (d.taskPunc!=QUESTION && d.taskPunc!=QUEST));
+
+
 
         long taskStart = taskOccurrence ? d.taskStart : TIMELESS,
-                taskEnd = taskOccurrence ? d.taskEnd : TIMELESS,
-                beliefStart = beliefNoOcc ? TIMELESS : d.beliefStart,
-                beliefEnd = beliefNoOcc ? TIMELESS : d.beliefEnd;
+             taskEnd = taskOccurrence ? d.taskEnd : TIMELESS,
+             beliefStart = beliefOccurrence ? d.beliefStart : TIMELESS,
+             beliefEnd = beliefOccurrence ? d.beliefEnd : TIMELESS;
 
 
         boolean taskEte = taskStart == ETERNAL;
@@ -172,7 +168,7 @@ public class Occurrify extends TimeGraph {
         //        }
         if (taskEte && beliefEte) {
             //both eternal ok
-        } else if (taskEte && !beliefNoOcc) {
+        } else if (taskEte && beliefOccurrence) {
             //            if (d.taskPunc == BELIEF || d.taskPunc == GOAL) {
             //                taskStart = d.time;
             //                taskEnd = taskStart + (beliefEnd - beliefStart);
@@ -190,8 +186,10 @@ public class Occurrify extends TimeGraph {
         this.decomposeEvents = decomposeEvents;
 
         final Term taskTerm = d.taskTerm, beliefTerm = d.beliefTerm;
-        if (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG)) {
+        if (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.unneg().hasAny(NEG)) {
             setAutoNeg(pattern, taskTerm, beliefTerm);
+        } else if (pattern.op()==NEG) {
+            link(shadow(pattern.unneg()), 0, shadow(pattern));
         }
 
         Event taskEvent = (taskStart != TIMELESS) ?
@@ -832,7 +830,7 @@ public class Occurrify extends TimeGraph {
         BeliefAtTask() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                Pair<Term, long[]> p = solveDT(d, x, false, false, false);
+                Pair<Term, long[]> p = solveDT(d, x, false, false, true);
                 if (p!=null) {
                     apply(d, p.getTwo());
                 }

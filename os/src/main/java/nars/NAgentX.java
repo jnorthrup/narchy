@@ -45,7 +45,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.stream.Stream.concat;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
@@ -170,7 +169,7 @@ abstract public class NAgentX extends NAgent {
     */
 
 
-        //Param.STRONG_COMPOSITION = true;
+        Param.STRONG_COMPOSITION = true;
 //        Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
@@ -242,7 +241,7 @@ abstract public class NAgentX extends NAgent {
 
         java.util.List<Concept> actionConcepts = Stream.concat(
                 a.rewards.stream().flatMap(x -> stream(x.spliterator(), false)),
-                concat(
+                Stream.concat(
                         a.actions.stream(),
                         a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false))
                 )).map(n::concept).filter(Objects::nonNull).collect(Collectors.toList());
@@ -251,7 +250,7 @@ abstract public class NAgentX extends NAgent {
                 ListTermLinker(actionConcepts)
                 //ConceptTermLinker
         );
-//        sensorAction.timing = new ActionTiming(n);
+        //sensorAction.timing = new ActionTiming(n);
 
 
 //        ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.files(n,
@@ -341,8 +340,8 @@ abstract public class NAgentX extends NAgent {
 
         n.beliefPriDefault.set(0.01f);
         n.goalPriDefault.set(0.02f);
-        n.questionPriDefault.set(0.05f);
-        n.questPriDefault.set(0.05f);
+        n.questionPriDefault.set(0.005f);
+        n.questPriDefault.set(0.005f);
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
@@ -381,9 +380,9 @@ abstract public class NAgentX extends NAgent {
     public static void initPlugins(NAR n) {
 
 
-        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
+        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8
                 //"nal6.to.nal1.nal"
-                "motivation.nal"
+                //"motivation.nal"
                 //"equivalence.nal"
                 //  "induction.goal.nal"
         ));
@@ -414,7 +413,7 @@ abstract public class NAgentX extends NAgent {
 //                8, 96);
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(n,64);
-        Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
+        Introduction factorizer = new Factorize.FactorIntroduction( n, 4);
 
 //        {
         new Inperience.Believe(n, 16);

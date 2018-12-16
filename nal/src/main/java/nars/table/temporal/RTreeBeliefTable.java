@@ -27,7 +27,7 @@ import static jcog.math.LongInterval.ETERNAL;
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
     private static final float PRESENT_AND_FUTURE_BOOST_BELIEF = 1.5f;
-    private static final float PRESENT_AND_FUTURE_BOOST_GOAL = 3f;
+    private static final float PRESENT_AND_FUTURE_BOOST_GOAL = 2f;
 
 
     private static final int MIN_TASKS_PER_LEAF = 2;
@@ -151,7 +151,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             else {
                 long e = x.end();
                 return (e >= futureThresh ? presentAndFutureBoost : 1f) *
-                        /*w2cSafe*/(x.evi(now, dur)) * (e-s+1)/*x.range()*/;
+                        x.evi(now, dur) * (1 + (e-s)/2f)/*x.range()*/;
+                        //x.evi(now, dur);
+                        ///*w2cSafe*/(x.evi(now, dur)) * (e-s+1)/*x.range()*/;
             }
 
             //(TruthIntegration.eviAvg(x, 0))/ (1 + x.maxTimeTo(now)/((float)dur));

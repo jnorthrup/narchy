@@ -5,7 +5,6 @@ import jcog.math.FloatSupplier;
 import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
-import nars.Param;
 import nars.agent.util.UnipolarMotor;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.GoalActionConcept;
@@ -19,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.IntConsumer;
 import java.util.function.IntPredicate;
 
-import static jcog.Util.sqr;
 import static nars.Op.BELIEF;
 
 /**
@@ -275,8 +273,8 @@ public interface NAct {
         boolean freqOrExp = false;
 
         float compareThresh =
-                //0;
-                sqr(Param.TRUTH_EPSILON);
+                0;
+                //sqr(Param.TRUTH_EPSILON);
         //0.5f;
         //0.5f + sqr(Param.TRUTH_EPSILON);
         //0.66f;
@@ -296,7 +294,7 @@ public interface NAct {
             float t = thresh.asFloat();
             boolean x = (ll > t) && (ll - lr[1] > compareThresh);
             boolean y = L.accept(x);
-            if (x && !y) ll = t;
+//            if (x && !y) ll = t;
             lr[0] = ll;
 
             return $.t(y ? 1 : 0, n.confDefault(BELIEF));
@@ -309,7 +307,7 @@ public interface NAct {
             float t = thresh.asFloat();
             boolean x = (rr > t) && (rr - lr[0] > compareThresh);
             boolean y = R.accept(x);
-            if (x && !y) rr = t;
+//            if (x && !y) rr = t;
             lr[1] = rr;
 
             return $.t(y ? 1 : 0, n.confDefault(BELIEF));
@@ -356,7 +354,7 @@ public interface NAct {
                     0;  //deliberate off
             //Float.NaN; //default off
         });
-        x.resolution(0.5f);
+        //x.resolution(0.5f);
         //{
         //resting state
         //NAR n = nar();

@@ -83,9 +83,15 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
 
     /** in cycles; controls https://en.wikipedia.org/wiki/Legato vs. https://en.wikipedia.org/wiki/Staccato */
-    int actionSustain =
+    float actionSustainDursDex =
             //0;
-            -1;
+            //0.5f;
+            1;
+
+    float actionSustainDursCuri =
+            //0;
+            0.5f;
+            //1f;
 
 //    public AbstractGoalActionConcept actionDur(int actionDur) {
 //        this.actionSustain = actionDur;
@@ -107,8 +113,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         int dur = n.dur();
         //long s = prev, e = now;
+        long s = prev, e = now + dur/2;
         //long s = now - dur, e = now;
-        long s = now - dur, e = now + dur;
+        //long s = now - dur/2, e = now + dur/2;
+        //long s = now - dur, e = now + dur;
         //long s = now, e = next;
         //long s = now - dur/2, e = next - dur/2;
         //long s = now - dur, e = next - dur;
@@ -117,17 +125,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
         //long s = now - agentDur/2, e = now + agentDur/2;
         //long s = now - dur/2, e = now + dur/2;
 
-        int actionDur = this.actionSustain;
-        if (actionDur < 0) {
-            actionDur =
-                    dur;
-                    //Tense.occToDT(agentDur);
-        }
+
 
 
         int limit = Answer.TASK_LIMIT_DEFAULT * 2;
-
-        BeliefTable table = goals();
 
 //        long recent =
 //                //now - dur*2;
@@ -148,7 +149,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
             if (eternalTable!=null)
                 a.match(eternalTable);
 
-            TruthPolation organic = a.truthpolation(actionDur);
+            TruthPolation organic = a.truthpolation(Math.round(actionSustainDursDex*dur));
 
             if (organic != null) {
                 actionDex = organic.filtered().truth();
@@ -165,6 +166,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         Curiosity.CuriosityInjection curiosityInject = null;
         if (actionCuri!=null) {
+            curiosityInject = Curiosity.CuriosityInjection.Override;
 
             Truth curiDithered = actionCuri.ditherFreq(resolution().floatValue()).dithered(n);
             if (curiDithered != null) {
@@ -183,16 +185,16 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
 
             }
-            curiosityInject = Curiosity.CuriosityInjection.Override;
         } else {
-            //use past curiosity
+            curiosityInject = curiosity.injection.get();
+
+            //use existing curiosity
             @Nullable CuriosityGoalTable curiTable = ((BeliefTables) goals()).tableFirst(CuriosityGoalTable.class);
             try (Answer a = Answer.
                     relevance(true, 1, s, e, term, null, n).match(curiTable)) {
-                TruthPolation curi = a.truthpolation(actionDur);
+                TruthPolation curi = a.truthpolation(Math.round(actionSustainDursCuri * dur));
                 if (curi != null) {
                     actionCuri = curi.filtered().truth();
-                    curiosityInject = curiosity.injection.get();
                 } else
                     actionCuri = null;
             }

@@ -115,11 +115,12 @@
       (S ==> M), (--M ==> P)  |- (S ==> P), (Belief:DeductionN)
        //(--M ==> P), (S ==> M) |- (S ==> P), (Belief:DeductionPNX)
 
-        (S ==> M), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
+        //(S ==> M), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
+            (S ==> M), (M ==> P), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
             //(S ==> M), (M ==> P), task("?") |- (S ==> P), (Punctuation:Question)
             //(S ==> M), (M ==> P), task("?") |- (P ==> S), (Punctuation:Question)
 
-            (S ==> M), (--M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
+            //(S ==> M), (--M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
                 //(S ==> M), (--M ==> P), task("?") |- (S ==> P), (Punctuation:Question)
                 //(S ==> M), (--M ==> P), task("?") |- (P ==> S), (Punctuation:Question)
 
@@ -135,20 +136,21 @@
     (M ==> P), (M ==> S) |- (S ==> P), (Belief:Induction)
         (M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN)
 
-
-                (M ==> S), (M ==> P), task("?") |- (S ==> P), (Punctuation:Question)
-                (M ==> S), (M ==> P), task("?") |- (P ==> S), (Punctuation:Question)
+                (M ==> S), (M ==> P), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
+                //(M ==> S), (M ==> P), task("?") |- (polarizeRandom(P) ==> S), (Punctuation:Question)
 
     (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionPB)
     (P ==> M), (S ==> M) |- (S ==> P), (Belief:AbductionPB)
 
-                (S ==> M), (P ==> M), task("?") |- (S ==> P), (Punctuation:Question)
-                (S ==> M), (P ==> M), task("?") |- (P ==> S), (Punctuation:Question)
+            (S ==> M), (P ==> M), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
+        //(S ==> M), (P ==> M), task("?") |- (polarizeRandom(P) ==> S), (Punctuation:Question)
 
-    (P ==> M), (M ==> S) |- (S ==> P), (Belief:Exemplification)
-        (P ==> M), (--M ==> S) |- (S ==> P), (Belief:ExemplificationN)
-    (M ==> S), (P ==> M)  |- (S ==> P), (Belief:Exemplification)
+    (M ==> S), (P ==> M)         |- (S ==> P), (Belief:Exemplification)
+        (M ==> S), (--P ==> M)   |- (S ==> P), (Belief:ExemplificationN)
+        (--M ==> S), (P ==> M)   |- (S ==> P), (Belief:ExemplificationPN)
+        (--M ==> S), (--P ==> M) |- (S ==> P), (Belief:ExemplificationNN)
 
+            (M ==> S), (P ==> M), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
 
     //the comparison rules here emulates what Comparison did in generating <=> which are modeled here as a pair of opposing ==>
     //untested

@@ -648,7 +648,7 @@ public class Derivation extends PreDerivation {
         if (beliefEvi!=beliefEvi) {
             this.beliefEvi = _belief != null ? TruthIntegration.evi(_belief) : 0;
         }
-        return concSingle ? taskEvi : Math.max(taskEvi, beliefEvi);
+        return concSingle ? taskEvi : (taskEvi + beliefEvi);
     }
 
     public final float parentPri() {
