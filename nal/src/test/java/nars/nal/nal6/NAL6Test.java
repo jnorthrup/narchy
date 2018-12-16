@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 600;
+    private static final int cycles = 1200;
 
     @BeforeEach
     void setup() {
@@ -1125,7 +1125,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void testDecomposeImplPred2() {
-        test.nar.termVolumeMax.set(16);
+        test.nar.termVolumeMax.set(12);
         test
                 .believe("( (a,#b) ==> (&&, (x,#b), y, z ) )")
                 .mustBelieve(cycles, "( (a,#b) ==> (x,#b) )", 1f, 0.73f)
@@ -1187,6 +1187,7 @@ public class NAL6Test extends NALTest {
         ;
     }
     @Test void testMutexConjImplBeliefInduction() {
+        test.nar.termVolumeMax.set(12);
         test
                 .believe("((x && --y) ==> z)")
                 .believe("((--x && y) ==> z)")

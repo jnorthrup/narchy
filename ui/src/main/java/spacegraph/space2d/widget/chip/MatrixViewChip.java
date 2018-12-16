@@ -3,10 +3,10 @@ package spacegraph.space2d.widget.chip;
 import jcog.Util;
 import jcog.signal.Tensor;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.port.TypedPort;
-import spacegraph.space2d.widget.text.LabeledPane;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
 public class MatrixViewChip extends Bordering {
@@ -17,7 +17,7 @@ public class MatrixViewChip extends Bordering {
 
     {
 
-        set(S, new Gridding(new LabeledPane("in", in)));
+        set(S, new Stacking(in, new VectorLabel("in")));
 
         in.on(x -> {
             synchronized (MatrixViewChip.this) {
@@ -44,8 +44,6 @@ public class MatrixViewChip extends Bordering {
                                            (cx, cy) -> Draw.rgbInt(Util.tanhFast(x.get(cx))/2+0.5f, 0, 0));
                }
                set(matrix);
-               layout();
-               matrix.update();
                matrix.update();
 //                       matrix.up
             }

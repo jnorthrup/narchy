@@ -44,6 +44,7 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
 
     /**
      * sets all edge sizes to a value
+     * TODO layout only if changed
      */
     protected Bordering borderSize(float size) {
         borderNorth = borderSouth = borderEast = borderWest = size;
@@ -53,6 +54,7 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
 
     /**
      * sets a specific edge size
+     * TODO layout only if changed
      */
     public Bordering borderSize(int direction, float size) {
         switch (direction) {

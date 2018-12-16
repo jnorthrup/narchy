@@ -46,10 +46,7 @@ public class NARio extends NAgentX {
         super("nario", fps(fps), nar);
 
 
-
-
         game = new MarioComponent(
-
                 640, 480
         );
         JFrame frame = new JFrame("Infinite NARio");
@@ -108,30 +105,26 @@ public class NARio extends NAgentX {
         Atomic UP = $.the("up");
         Atomic DOWN = $.the("down");
         List<SelectorSensor> tileSensors = List.of(
-                    tileSwitch(LEFT, -1, 0),
-                    tileSwitch(RIGHT, +1, 0),
-                    tileSwitch(UP, 0, -1),
-                    tileSwitch(DOWN, 0, +1),
-                    tileSwitch(Op.SECTi.the(LEFT, UP), -1, -1),
-                    tileSwitch(Op.SECTi.the(RIGHT, UP), +1, -1),
-                    tileSwitch(Op.SECTi.the(LEFT, DOWN), -1, +1),
-                    tileSwitch(Op.SECTi.the(RIGHT, DOWN), +1, +1)
-            );
+                tileSwitch(LEFT, -1, 0),
+                tileSwitch(RIGHT, +1, 0),
+                tileSwitch(UP, 0, -1),
+                tileSwitch(DOWN, 0, +1),
+                tileSwitch(Op.SECTi.the(LEFT, UP), -1, -1),
+                tileSwitch(Op.SECTi.the(RIGHT, UP), +1, -1),
+                tileSwitch(Op.SECTi.the(LEFT, DOWN), -1, +1),
+                tileSwitch(Op.SECTi.the(RIGHT, DOWN), +1, +1)
+        );
 
-            AttNode tileAttnGroup = new AttNode(tileSensors);
-            tileAttnGroup.parent(attn);
-            for (SelectorSensor s : tileSensors)
-                s.attn.reparent(tileAttnGroup);
+        AttNode tileAttnGroup = new AttNode(tileSensors);
+        tileAttnGroup.parent(attn);
+        for (SelectorSensor s : tileSensors)
+            s.attn.reparent(tileAttnGroup);
 
 
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
 //        SpaceGraph.window(new LabeledPane("Tile types",
 //                new Gridding(tileSensors.stream().map(z -> new VectorSensorView(z, nar).withControls()).collect(toList()))), 100, 100);
-
-
-
-
 
 
         onFrame((z) -> {
@@ -194,7 +187,7 @@ public class NARio extends NAgentX {
             lastCoins = coins;
             return Math.max(0, reward);
         });
-       // getCoins.setDefault($.t(0, 0.8f));
+        // getCoins.setDefault($.t(0, 0.8f));
 
         Reward alive = rewardNormalized("alive", -1, +1, () -> {
 //            if (dead)
@@ -222,6 +215,7 @@ public class NARio extends NAgentX {
 
 
     static final int tileTypes = 3; //0..4
+
     private SelectorSensor tileSwitch(Term label, int dx, int dy) {
         return senseSwitch(i -> $.inh(label, $.the("tile" + i)),
                 () -> tile(dx, dy), tileTypes);
@@ -303,7 +297,10 @@ public class NARio extends NAgentX {
 //                n -> { game.scene.key(Mario.KEY_DOWN, n); return n; } );
 
         actionPushButton($$("(nario,speed)"),
-                n -> { game.scene.key(Mario.KEY_SPEED, n); return n; } );
+                n -> {
+                    game.scene.key(Mario.KEY_SPEED, n);
+                    return n;
+                });
         //s.actionDur(1);
 
     }

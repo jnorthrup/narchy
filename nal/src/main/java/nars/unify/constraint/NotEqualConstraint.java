@@ -7,7 +7,7 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
-import nars.term.var.ImDep;
+import nars.term.var.Img;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
@@ -215,7 +215,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 
 
         private static boolean test(Term a, boolean recurse, boolean excludeVariables, Term b) {
-            if ((!excludeVariables || !(b instanceof Variable)) && !(b instanceof ImDep)) {
+            if ((!excludeVariables || !(b instanceof Variable)) && !(b instanceof Img)) {
                 return recurse ?
                         a.containsRecursively(b, true, limit) :
                         a.contains(b);

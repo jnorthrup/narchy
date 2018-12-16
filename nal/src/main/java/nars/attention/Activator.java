@@ -8,7 +8,7 @@ import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
 import nars.term.Termed;
-import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
+import org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -34,8 +34,8 @@ public class Activator  {
 
     /** pending concept activation collation */
     final Map<Concept, UnitPri> concepts =
-            //new ConcurrentHashMapUnsafe<>(1024);
-            new ConcurrentHashMap(1024);
+            new ConcurrentHashMapUnsafe<>(1024);
+            //new java.util.concurrent.ConcurrentHashMap(1024);
 
 //    /** pending termlinking collation */
 //    final ConcurrentHashMap<TermLinkage, TermLinkage> termlink = new ConcurrentHashMap(1024);
@@ -58,26 +58,28 @@ public class Activator  {
         return concepts.isEmpty(); /* && termlink.isEmpty();*/
     }
 
-    public Concept activate(Termed tgtTerm, float pri, NAR nar, @Nullable OverflowDistributor<Concept> overflow) {
-        if (pri!=pri)
-            return null;
+    public Concept activate(Termed x, float pri, NAR nar, @Nullable OverflowDistributor<Concept> overflow) {
+        assert(pri == pri); //        if (pri!=pri)     return null;
 
-        @Nullable Concept x = nar.concept(tgtTerm, true);
-        if (x == null)
+        @Nullable Concept y = x instanceof Concept ? (Concept)x : nar.concept(x, true);
+        if (y == null)
             return null;
-        return activateRaw(x, pri * conceptActivationRate.floatValue(), overflow);
+        return activate(y, pri, overflow);
     }
 
     public Concept activate(Concept x, float pri) {
-        return activateRaw(x, pri * conceptActivationRate.floatValue(), null);
+        return activate(x, pri, null);
     }
 
+    private Concept activate(Concept x, float pri, @Nullable OverflowDistributor<Concept> overflow) {
+        return activateRaw(x, pri * conceptActivationRate.floatValue(), overflow);
+    }
 
-    public final Concept activateRaw(Concept x, float pri) {
+    private Concept activateRaw(Concept x, float pri) {
         return activateRaw(x, pri, null);
     }
 
-    public Concept activateRaw(Concept x, float pri, @Nullable OverflowDistributor<Concept> overflow) {
+    private Concept activateRaw(Concept x, float pri, @Nullable OverflowDistributor<Concept> overflow) {
         if (pri!=pri)
             return null;
 

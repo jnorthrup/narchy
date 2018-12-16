@@ -10,12 +10,8 @@ import java.util.Random;
  * <p>
  * Created by jeff on 14/05/16.
  */
-public class StableBloomFilter<E> implements CountingLeakySet<E> {
+public class StableBloomFilter<E> extends MetalBloomFilter<E> implements CountingLeakySet<E> {
 
-    private final HashProvider<E> hashProvider;
-    private final byte[] cells;
-    private final int numberOfCells;
-    private final int numberOfHashes;
     private final Random rng;
 
     /**
@@ -32,10 +28,7 @@ public class StableBloomFilter<E> implements CountingLeakySet<E> {
                              float forget,
                              Random rng,
                              HashProvider<E> hashProvider) {
-        this.numberOfCells = numberOfCells;
-        this.numberOfHashes = numberOfHashes;
-        this.cells = new byte[numberOfCells];
-        this.hashProvider = hashProvider;
+        super(hashProvider, numberOfCells, numberOfHashes);
         this.forget = forget(forget);
         this.rng = rng;
     }
@@ -63,32 +56,6 @@ public class StableBloomFilter<E> implements CountingLeakySet<E> {
         return false;
     }
 
-    @Override
-    public void add(E element) {
-        add(hash(element));
-    }
-
-    @Override
-    public boolean contains(E element) {
-        return contains(hash(element));
-    }
-
-    public void add(int[] indices) {
-        for (int i = 0; i < numberOfHashes; i++) {
-            increment(indices[i]);
-        }
-    }
-
-
-    public boolean contains(int[] indices) {
-        boolean mightContain = true;
-        for (int i = 0; i < numberOfHashes; i++) {
-            mightContain &= cells[indices[i]] > 0;
-        }
-
-        return mightContain;
-    }
-
 
     @Override
     public void remove(E element) {
@@ -112,27 +79,9 @@ public class StableBloomFilter<E> implements CountingLeakySet<E> {
     }
 
 
-    public int[] hash(E element) {
-        int[] hashes = new int[numberOfHashes];
-
-        long h1 = hashProvider.hash1(element);
-        long h2 = hashProvider.hash2(element);
-        for (int i = 0; i < numberOfHashes; i++) {
-            hashes[i] = Math.abs((int) ((h1 + i * h2) % numberOfCells));
-        }
-
-        return hashes;
-    }
-
     private void decrement(int idx) {
         if (cells[idx] > 0) {
             cells[idx] -= 1;
-        }
-    }
-
-    private void increment(int idx) {
-        if (cells[idx] < Byte.MAX_VALUE) {
-            cells[idx] += 1;
         }
     }
 

@@ -25,9 +25,13 @@ public class Truthify extends AbstractPred<Derivation> {
     private final TruthFunc belief;
 
     /**
-     * cached fields from the truth function: +1=true, 0=false, -1=disabled
+     * mode:
+     *       +1 single premise
+     *        0 double premise
+     *       -1 disabled
      */
-    transient final byte beliefSingle, goalSingle, beliefOverlap, goalOverlap;
+    transient final byte beliefMode, goalMode;
+    boolean beliefOverlap, goalOverlap;
 
     private final TruthFunc goal;
     private final BeliefProjection beliefProjection;
@@ -48,17 +52,19 @@ public class Truthify extends AbstractPred<Derivation> {
         this.beliefProjection = time.beliefProjection();
         this.belief = belief;
         if (belief != null) {
-            beliefSingle = (byte) (belief.single() ? +1 : 0);
-            beliefOverlap = (byte) (belief.allowOverlap() ? +1 : 0);
+            beliefMode = (byte) (belief.single() ? +1 : 0);
+            beliefOverlap = (belief.allowOverlap());
         } else {
-            beliefSingle = beliefOverlap = -1;
+            beliefMode = -1;
+            beliefOverlap = false; //N/A
         }
         this.goal = goal;
         if (goal != null) {
-            goalSingle = (byte) (goal.single() ? +1 : 0);
-            goalOverlap = (byte) (goal.allowOverlap() ? +1 : 0);
+            goalMode = (byte) (goal.single() ? +1 : 0);
+            goalOverlap = goal.allowOverlap();
         } else {
-            goalSingle = goalOverlap = -1;
+            goalMode = -1;
+            goalOverlap = false; //N/A
         }
     }
 
@@ -103,37 +109,7 @@ public class Truthify extends AbstractPred<Derivation> {
         switch (punc) {
             case BELIEF:
             case GOAL:
-
-//                byte overlapIf;
-//                if (punc == BELIEF) {
-//                    switch (beliefSingle) {
-//                        case -1:
-//                            throw new WTF(); //return false; //actually this shouldnt reach here if culled properly in a prior stage
-//                        case 1:
-//                            single = true;
-//                            break;
-//                        default:
-//                            single = false;
-//                            break;
-//                    }
-//                    overlapIf = beliefOverlap;
-//                } else {
-//                    switch (goalSingle) {
-//                        case -1:
-//                            throw new WTF(); //return false; //actually this shouldnt reach here if culled properly in a prior stage
-//                        case 1:
-//                            single = true;
-//                            break;
-//                        default:
-//                            single = false;
-//                            break;
-//                    }
-//                    overlapIf = goalOverlap;
-//                }
-//                if (!(overlapIf == 1) && (single ? d.overlapSingle : d.overlapDouble))
-//                    return false;
-
-                single = (punc==BELIEF ? beliefSingle : goalSingle)==1;
+                single = (punc==BELIEF ? beliefMode : goalMode)==1;
                 TruthFunc f = punc == BELIEF ? belief : goal;
                 Truth beliefTruth;
                 if (single) {
@@ -204,14 +180,12 @@ public class Truthify extends AbstractPred<Derivation> {
      */
     public final byte preFilter(Derivation d) {
 
-
-        byte i = d.taskPunc;
-
         boolean single;
-        byte o = this.punc.valueOf(i);
+        byte o = this.punc.valueOf(d.taskPunc);
         switch (o) {
+            case GOAL:
             case BELIEF: {
-                switch (beliefSingle) {
+                switch (o == BELIEF ? beliefMode : goalMode) {
                     case -1:
                         return 0;
                     case 0: //double
@@ -221,28 +195,11 @@ public class Truthify extends AbstractPred<Derivation> {
                         single = true;
                         break;
                 }
-                //if belief does not allow overlap and there is overlap for given truth type, fail
-                if (beliefOverlap != 1 && ((single ? d.overlapSingle : d.overlapDouble)))
+                boolean overlapIf = (o == BELIEF) ? beliefOverlap : goalOverlap;
+                if (!overlapIf && ((single ? d.overlapSingle : d.overlapDouble)))
                     return 0;
                 break;
             }
-            case GOAL: {
-                switch (goalSingle) {
-                    case -1:
-                        return 0;
-                    case 0:
-                        single = false; //if task is not single and premise is, fail
-                        break;
-                    default:
-                        single = true;
-                        break;
-                }
-                //if goal does not allow overlap and there is overlap for given truth type, fail
-                if (goalOverlap != 1 && ((single ? d.overlapSingle : d.overlapDouble)))
-                    return 0;
-                break;
-            }
-
             case QUEST:
             case QUESTION:
                 if (d.overlapSingle)

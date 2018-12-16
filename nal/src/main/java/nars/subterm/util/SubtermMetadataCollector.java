@@ -5,7 +5,7 @@ import nars.Op;
 import nars.Param;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.var.ImDep;
+import nars.term.var.Img;
 
 import static nars.Op.*;
 
@@ -56,7 +56,7 @@ public final class SubtermMetadataCollector {
             collectNonVar(xo, hash);
 
             if (x instanceof nars.term.Variable) {
-                if (!(x instanceof ImDep))
+                if (!(x instanceof Img))
                     collectVar(xo);
             }
 

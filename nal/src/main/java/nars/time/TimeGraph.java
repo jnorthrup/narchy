@@ -1,7 +1,6 @@
 package nars.time;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import jcog.data.graph.FromTo;
@@ -1249,34 +1248,45 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     abstract protected class TimeSolver extends Search<Event, TimeSpan> {
 
 
-        @Nullable Iterator<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> dynamicLink(Node<Event, TimeSpan> n) {
-            Collection<Event> ee = byTerm.get(n.id().id);
-            if (ee.isEmpty())
-                return null;
-
-            Iterator<Event> x = ee.iterator();
-            return
-                    Iterators.transform(
-                            Iterators.filter(Iterators.transform(
-                                    x,
-                                    TimeGraph.this::node),
-                                    e -> e != null && e != n && !log.hasVisited(e)),
-                            that -> new ImmutableDirectedEdge<>(n, TS_ZERO, that));
-
-        }
-
-
     }
 
     abstract protected class CrossTimeSolver extends TimeSolver {
 
         @Override
         protected Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> next(Node<Event, TimeSpan> n) {
-            Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> e = n.edges(true, true);
 
-            Iterator<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> d = dynamicLink(n);
+            Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> exist = n.edges(true, true);
 
-            return (d != null) ? Iterables.concat(e, new FasterList<>(d)) : e;
+            return Iterables.concat(exist, () -> {
+                Collection<Event> ee = byTerm.get(n.id().id);
+                if (!ee.isEmpty()) {
+
+                    List<FromTo<Node<Event, TimeSpan>, TimeSpan>> dyn = null;
+
+                    for (Event x : ee) {
+                        Node<Event, TimeSpan> xx = node(x);
+                        if (xx != null && x != n && !log.hasVisited(xx)) {
+                            if (dyn == null)
+                                dyn = new FasterList<>(1);
+                            dyn.add(new ImmutableDirectedEdge<>(n, TS_ZERO, xx));
+                        }
+                    }
+                    if (dyn != null)
+                        return dyn.iterator();
+                }
+                return Collections.emptyIterator();
+            });
+
+
+//            Iterator<Event> x = ee.iterator();
+//            return
+//                    Iterators.transform(
+//                            Iterators.filter(Iterators.transform(
+//                                    x,
+//                                    TimeGraph.this::node),
+//                                    e -> e != null && e != n && !log.hasVisited(e)),
+//                            that -> new ImmutableDirectedEdge<>(n, TS_ZERO, that));
+
         }
     }
 

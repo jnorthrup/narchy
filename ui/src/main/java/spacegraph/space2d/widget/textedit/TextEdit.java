@@ -50,7 +50,7 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
 
     public static Appendable out() {
         TextEdit te = new TextEdit();
-        return new AppendableUnitContainer(te
+        return new AppendableUnitContainer<>(te
                 .viewMin(new v2(8,8))
                 .viewMax(new v2(32,32))
                 .view(8, 8)) {
@@ -109,7 +109,7 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
 
     }
 
-    private static class MyTextEditModel extends TextEditModel {
+    public static class MyTextEditModel extends TextEditModel {
         public BiConsumer<GL2,SurfaceRender> painter = null;
         @Override
         protected void paintIt(GL2 gl, SurfaceRender rr) {

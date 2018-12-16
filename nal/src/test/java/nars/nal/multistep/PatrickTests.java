@@ -57,12 +57,13 @@ public class PatrickTests extends NALTest {
         TestNAR tt = test;
         tt.nar.freqResolution.set(0.1f);
         tt.nar.termVolumeMax.set(24);
+        tt.confTolerance(0.8f);
         tt
                 .believe("(( REPRESENT($1,$3) && REPRESENT($2, $4) ) ==> REPRESENT({$1,$2},{$3,$4}))")
                 .believe("REPRESENT(cat,ANIMAL)")
                 .believe("REPRESENT(eats,EATING)")
                 .ask( "REPRESENT({cat,eats},?1)")
-                .mustBelieve(200, "REPRESENT({cat,eats},{ANIMAL,EATING})", 1, 0.73f);
+                .mustBelieve(200, "REPRESENT({cat,eats},{ANIMAL,EATING})", 1, 0.4f);
     }
 
     @Test
@@ -85,12 +86,13 @@ public class PatrickTests extends NALTest {
         TestNAR tt = test;
 
 
-        int cycles = 9000;
+        int cycles = 15000;
 
         tt.confTolerance(0.5f);
 
         tt.nar.freqResolution.set(0.1f);
         tt.nar.confResolution.set(0.02f);
+        tt.nar.confMin.set(0.1f);
 
 
         int dur = cycles / 4;

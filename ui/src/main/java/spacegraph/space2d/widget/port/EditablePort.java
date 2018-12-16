@@ -4,15 +4,16 @@ import spacegraph.space2d.widget.console.TextEdit0;
 
 abstract public class EditablePort<X> extends TypedPort<X> {
 
-    final TextEdit0 txt;
+    public final TextEdit0 edit;
 
     public EditablePort(X initialValue, Class<? super X> type) {
         super(type);
         process(initialValue);
 
-        txt = new TextEdit0(8, 1);
-        txt.on(z -> out(parse(z)));
-        set(txt);
+        edit = new TextEdit0(8, 1);
+        //TODO txt = new TextEdit(8, 1);
+        edit.on(z -> out(parse(z)));
+        set(edit);
     }
 
 
@@ -33,15 +34,12 @@ abstract public class EditablePort<X> extends TypedPort<X> {
     @Override
     protected boolean out(Port sender, X _next) {
         X next = process(_next);
-        if (next==null)
-            return false;
 
-        if (change(next)) {
-
-            txt.text(toString(next));
-            super.out(sender, next);
-
-            return false;
+        if (next!=null && change(next)) {
+            if (super.out(sender, next)) {
+                edit.text(toString(next));
+                return true;
+            }
         }
         return false;
     }

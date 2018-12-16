@@ -18,7 +18,7 @@ import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.var.ImDep;
+import nars.term.var.Img;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -59,7 +59,7 @@ public enum Image {;
 
             if (s.op() == PROD) {
 
-                ImDep target = intOrExt ? ImgInt : ImgExt;
+                Img target = intOrExt ? ImgInt : ImgExt;
 
                 Subterms ss = s.subterms();
                 if (!ss.hasAny(IMG) || (!ss.contains(ImgInt) && !ss.contains(ImgExt))) {

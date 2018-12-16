@@ -258,7 +258,6 @@ public class Port<X> extends Widget implements Wiring.Wireable {
      * TODO Supplier-called version of this
      */
     protected boolean out(Port sender, X x) {
-
         if (enabled) {
             Node<spacegraph.space2d.Surface, Wire> n = this.node;
             if (n != null) {

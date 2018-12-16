@@ -16,7 +16,7 @@ import nars.term.util.SetSectDiff;
 import nars.term.util.TermException;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
-import nars.term.var.ImDep;
+import nars.term.var.Img;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
 import org.apache.lucene.util.MathUtil;
@@ -277,8 +277,8 @@ public enum Op {
 
     public static final int AtomicConstant = Op.ATOM.bit | Op.INT.bit | Op.BOOL.bit;
 
-    public static final ImDep ImgInt = new ImDep((byte) '\\');
-    public static final ImDep ImgExt = new ImDep((byte) '/');
+    public static final Img ImgInt = new Img((byte) '\\');
+    public static final Img ImgExt = new Img((byte) '/');
     public static final int Sect = or(Op.SECTe, Op.SECTi);
     public static final int Set = or(Op.SETe, Op.SETi);
 

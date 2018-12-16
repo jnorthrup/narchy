@@ -220,10 +220,11 @@ public class OsmSpace  {
 
 //            gl.glPushMatrix();
 
-            int r = Math.min(2,Math.max(0,  (int) Math.floor(100f/mapScale)));
+//            int r = Math.min(2,Math.max(0,  (int) Math.floor(100f/mapScale)));
 //            System.out.println(r + " " + mapScale);
-            for (int x = -r; x < r; x++) {
-                for (int y = -r; y < r; y++) {
+            int r = 0;
+            for (int x = -r; x < (r+1); x++) {
+                for (int y = -r; y < (r+1); y++) {
                     render(translate.x + x * IRL.TILE_SIZE, translate.y + y * IRL.TILE_SIZE,
                             mapScale, gl);
                 }

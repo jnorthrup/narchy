@@ -18,10 +18,9 @@
     //G, Y, task("!") |-          (G ==> ?1), (Punctuation:Question)
     //result of non-goal
     //G, Y, task("!") |-        (--G ==> ?1), (Punctuation:Question)
-    //result of achieving goal and current belief
-    G, B, task("!") |-        ((G && polarize(B,belief)) ==> ?1), (Punctuation:Question, Time:Task)
-    //result of non-achieving goal and current  belief
-    G, B, task("!") |-        ((--G && polarize(B,belief)) ==> ?1), (Punctuation:Question, Time:Task)
+
+    //result of achieving/non-achieving goal and current belief
+    G, B, task("!") |-        ((polarizeRandom(G) && B) ==> ?1), (Punctuation:Question, Time:Task)
 
     //is what with goal
     //G, B, task("!") |-           (?1 && G), (Punctuation:Question)
@@ -29,17 +28,16 @@
     //G, B, task("!") |-         (?1 && --G), (Punctuation:Question)
 
     //should what with goal/non-goal
-      G, B, task("!"), neq(G,B), --is(B,"?") |-        (polarize(G,task) && B), (Punctuation:Quest)
+      G, B, task("!"), neq(G,B), --is(B,"?") |-        (polarizeTask(G) && B), (Punctuation:Quest)
 
     //bifurcate plan
-    G, B, task("@"), neq(G,B), --is(B,"?") |-        (  G && B), (Punctuation:Quest, Time:Task)
-    G, B, task("@"), neq(G,B), --is(B,"?") |-        (--G && B), (Punctuation:Quest, Time:Task)
+    G, B, task("@"), neq(G,B), --is(B,"?") |-        (polarizeRandom(G) && B), (Punctuation:Quest, Time:Task)
 
     //sequence possibility quest
     C, X, task("@"), eventOfPosOrNeg(C,X) |-  (conjWithoutPosOrNeg(C,X) && ?1), (Punctuation:Quest, Time:Task)
 
     //continue desire/non-desire?
-    X, X, task("!") |- polarize(((polarize(X,task) && #Y) ==> X),belief), (Punctuation:Question)
+    X, X, task("!") |- ((polarizeTask(X) && #Y) ==> X), (Punctuation:Question)
 
     //avoidance TODO
 //    G, C, task("!"), eventOf(C,G)    |- (--C ==> ?1), (Punctuation:Question)

@@ -9,14 +9,14 @@ import nars.unify.Unify;
 import java.io.IOException;
 
 /** the / and \ Image operators */
-public final class ImDep extends AnonID {
+public final class Img extends AnonID {
 
     private final String str;
     private final char symChar;
     private final int rank;
     private final byte[] bytes;
 
-    public ImDep(byte sym) {
+    public Img(byte sym) {
         super(Op.IMG, sym);
         this.str = String.valueOf((char) sym);
         this.symChar = (char) sym;

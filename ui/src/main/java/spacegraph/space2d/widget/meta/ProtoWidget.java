@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.meta;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.jogamp.common.util.IOUtil;
 import com.jogamp.opengl.GL2;
 import jcog.User;
 import jcog.exe.Exe;
@@ -30,6 +31,9 @@ import spacegraph.util.geo.IRL;
 import spacegraph.video.Draw;
 import spacegraph.video.OsmSpace;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -71,8 +75,32 @@ public class ProtoWidget extends Bordering {
         add("WebCam", () -> new WebcamChip(), "Video");
         add("Microphone", AudioCaptureChip::new, "Audio");
 
-        add("java", IntPort::new, "Value"); //java expression evaluation
-        add("shell", IntPort::new, "Value"); //system shell command evaluation
+        add("java", ()->new ReplChip((cmd,done)->{
+            done.accept("TODO");
+        }), "Value"); //java expression evaluation
+        add("shell", ()->new ReplChip((cmd,done)->{
+            try {
+                Process proc = new ProcessBuilder().command(cmd.split(" "))
+                        .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                        .redirectError(ProcessBuilder.Redirect.PIPE)
+                        .start();
+                InputStream is = proc.getInputStream();
+                proc.onExit().whenComplete((p,t)->{
+                    try {
+                        done.accept(new String(IOUtil.copyStream2ByteArray(is)));
+                    } catch (IOException e) {
+                        done.accept(e.toString() + Arrays.toString(e.getStackTrace()));
+                    }
+                });
+                proc.waitFor();
+
+
+            } catch (Throwable e) {
+                done.accept(e.toString() + Arrays.toString(e.getStackTrace()));
+            }
+
+        }), "Value"); //system shell command evaluation
+        add("bool", BoolPort::new, "Value"); //Generic Toggle Switch
         add("int", IntPort::new, "Value");
         add("float", FloatPort::new, "Value");
         add("text", TextPort::new, "Value");
@@ -80,7 +108,7 @@ public class ProtoWidget extends Bordering {
         add("float[0..1]", ()->new FloatRangePort(0.5f, 0, 1f), "Value");
         add("f(x)", TODO, "Value");
         add("f(x,y)", TODO, "Value");
-        add("v2", ()->new XYSlider().chip(), "Value");
+        add("v2", ()->new XYSlider().chip(), "Value"); //2D vector (0..1.0 x 0..1.0)
         add("v3", TODO, "Value");
         add("color", TODO, "Value");
 
@@ -126,13 +154,15 @@ public class ProtoWidget extends Bordering {
         add("PID", TODO, "Control");
 
         add("Text", LabeledPort::generic, "Meter");
-        add("Plot", PlotChip::new, "Meter");
+        add("Plot", PlotChip::new, "Meter"); //Line, Bar plots
+        add("Wave", PlotChip::new, "Meter"); //waveform view
+        add("Spectrogram", PlotChip::new, "Meter"); //frequency domain view
         add("MatrixView", ()-> new MatrixViewChip(), "Meter");
         add("Cluster2D", Cluster2DChip::new, "Meter");
+        add("Histogram", TODO, "Meter"); //accepts scalar and an integer # of bins
 
 
         add("Geo", () -> new OsmSpace(new IRL(User.the())).surface().go(-80.63f, 28.60f), "Reality");
-
         add("Weather", TODO, "Reality");
 
         add("File", TODO, "Data"); //and directory too
@@ -144,7 +174,7 @@ public class ProtoWidget extends Bordering {
         add("HTTP", TODO, "Data");
         add("FTP", TODO, "Data");
 
-        add("Shell", TODO, "Data");
+        add("CPU", TODO, "Data"); //cpu/memory/disk/network information
 
     }};
 

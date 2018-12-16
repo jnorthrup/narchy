@@ -11,7 +11,7 @@ import java.util.Random;
  * References:
  * [1] Phillip Bradford and Michael Katehakis. 2007. A probabilistic study on combinatorial expanders and hashing. DOI=http:
  */
-public class BloomFilterBuilder<E> {
+@Deprecated public class BloomFilterBuilder<E> {
 
     private int size = 1000;
     private int numberOfHashes = 3;

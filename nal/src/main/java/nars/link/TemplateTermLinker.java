@@ -17,8 +17,7 @@ import nars.derive.Derivation;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.atom.Bool;
-import nars.term.var.ImDep;
+import nars.term.var.Img;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,7 +43,7 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
 
 
     /** whether to decompose conjunction sequences to each event, regardless of a conjunction's sub-conjunction structure */
-    private static final boolean decomposeConjEvents = false;
+    private static final boolean decomposeConjEvents = true;
 
 //    /**
 //     * how fast activation spreads from source concept to template target concepts
@@ -156,28 +155,29 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
      */
     private static void add(Term x, Set<Term> tc, int depth, Term root, int maxDepth) {
 
-        if (x instanceof Bool || x instanceof ImDep)
+//        if (x.isAny( Op.IMG.bit))
+//            return;
+        if (x instanceof Img)
             return;
+
+        if (depth > 0)
+            tc.add(x);
 
         Op xo = x.op();
-        if (depth > 0) {
-            tc.add(x);
-        }
-
         boolean stopping = xo.atomic || !xo.conceptualizable;
-        if (!stopping)
-            maxDepth += deeper(depth, root, x);
-
-        if ((++depth >= maxDepth) || stopping)
+        if (stopping)
             return;
 
+        maxDepth += deeper(depth, root, x);
+        if (++depth >= maxDepth)
+            return;
+
+
         Subterms bb = x.subterms();
-        int nextDepth = depth;
-        int nextMaxDepth = maxDepth;
+        int nextDepth = depth, nextMaxDepth = maxDepth;
 
-        if (xo == CONJ && decomposeConjEvents && bb.hasAny(CONJ) && x.dt() != XTERNAL) {
+        if (decomposeConjEvents && xo == CONJ && bb.hasAny(CONJ) && x.dt() != XTERNAL) {
 
-//            int xdt = x.dt();
             x.eventsWhile((when, what) -> {
                 add(what.unneg(), tc, nextDepth, root, nextMaxDepth);
                 return true;

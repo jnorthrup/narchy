@@ -98,8 +98,11 @@ public final class MutableRoulette {
 
         int l = w.length;
         if (l > 1 && n > 1) {
-            this.direction = rng.nextBoolean();
-            this.i = rng.nextInt(l);
+            //this.direction = rng.nextBoolean();
+            //this.i = rng.nextInt(l);
+            int r = rng.nextInt(); //using only one RNG call
+            this.direction = r >= 0;
+            this.i = (r & 0b0111111111111111111111111111111) % l;
         } else {
             this.direction = true;
             this.i = 0;
@@ -127,6 +130,8 @@ public final class MutableRoulette {
                 break;
             }
 
+            //TODO optimized n=2 case
+
             default: {
                 MutableRoulette r = new MutableRoulette(weights, weightUpdate, rng);
                 while (r.next(choose)) {
@@ -143,7 +148,7 @@ public final class MutableRoulette {
 
     public int next() {
 
-        assert (remaining > 0);
+        //assert (remaining > 0);
 
         float[] w = this.w;
 
@@ -176,26 +181,17 @@ public final class MutableRoulette {
 
             do {
                 wi = w[i = Util.next(i, direction, count)];
-                distance = (distance - wi);//
+                distance -= wi;
 //                    if (idle++ == count + 1)
 //                        return -1; //emergency bailout: WTF
             } while (distance > 0 && wi < EPSILON);
 
-            assert(wi>EPSILON);
 
             float nextWeight = weightUpdate.valueOf(wi);
             if (nextWeight < EPSILON) {
                 w[i] = 0;
                 weightSum -= wi;
                 remaining--;
-//                {
-//                    int actuallyRemain = 0;
-//                    for (int r = 0; r < w.length; r++) {
-//                        if (w[r] >= EPSILON)
-//                            actuallyRemain++;
-//                    }
-//                    assert(actuallyRemain == remaining);
-//                }
             } else if (nextWeight != wi) {
                 w[i] = nextWeight;
                 weightSum += nextWeight - wi;

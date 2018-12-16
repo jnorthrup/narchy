@@ -190,8 +190,9 @@
                 //...Also:VarIntro)
 
 
-     (M ==> P), (M ==> S) |- (M ==> (polarize(P,task) && polarize(S,belief))), (Belief:IntersectionDepolarized, Also:VarIntro)
-        (M ==> P), (M ==> S), task("?") |- (M ==> (polarize(P,task) && polarize(S,belief))), (Punctuation:Question)
+     (M ==> P), (M ==> S) |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized, Also:VarIntro)
+        (M ==> P), (M ==> S), task("?") |- (M ==> (polarizeRandom(P) && polarizeRandom(S))), (Punctuation:Question)
+
      //(M ==> P), (M ==> S) |- (M ==> (polarize(P,task) || polarize(S,belief))), (Belief:UnionDepolarized, Also:VarIntro)
         //(M ==> P), (M ==> S), task("?") |- (M ==> (polarize(P,task) || polarize(S,belief))), (Punctuation:Question)
 

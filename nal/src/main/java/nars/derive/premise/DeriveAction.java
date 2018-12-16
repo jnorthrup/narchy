@@ -54,9 +54,7 @@ final class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
         if (puncFactor <= ScalarValue.EPSILON)
             return 0f; //entirely disabled by deriver
 
-        float causeValue =
-                cause.amp();
-        //tanhFast(cause.value());
+        float causeValue = cause.amp();
 
         return causeValue * puncFactor;
     }

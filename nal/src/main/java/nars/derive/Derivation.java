@@ -8,17 +8,18 @@ import jcog.data.set.MetalLongSet;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
 import jcog.sort.SortedList;
-import nars.*;
+import nars.NAR;
+import nars.Op;
+import nars.Param;
+import nars.Task;
 import nars.concept.Concept;
 import nars.control.CauseMerge;
 import nars.derive.op.Occurrify;
 import nars.derive.premise.PreDerivation;
 import nars.eval.Evaluation;
 import nars.link.TaskLink;
-import nars.op.Equal;
-import nars.op.SetFunc;
-import nars.op.UniSubst;
 import nars.op.Subst;
+import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.term.Variable;
 import nars.term.*;
@@ -27,23 +28,20 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.control.PREDICATE;
-import nars.term.util.Image;
 import nars.term.util.transform.Retemporalize;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
 import nars.truth.polation.TruthIntegration;
-import org.eclipse.collections.api.map.ImmutableMap;
-import org.eclipse.collections.impl.factory.Maps;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.Param.TTL_UNIFY;
@@ -73,9 +71,36 @@ public class Derivation extends PreDerivation {
 
     public final AnonWithVarShift anon;
 
+    protected final UniSubst myUniSubst = new UniSubst(this);
 
-    private final UniSubst myUniSubst = new UniSubst(this);
-    private final Functor polarizeFunc = new Functor.AbstractInlineFunctor2("polarize") {
+    protected final Functor polarizeTask = new Functor.AbstractInlineFunctor1("polarizeTask") {
+        @Override
+        protected Term apply1(Term arg) {
+            Truth t = Derivation.this.taskTruth;
+            if (t == null)
+                return Null;  //TODO WTF
+            return t.isPositive() ? arg : arg.neg();
+        }
+    };
+
+    protected final Functor polarizeRandom = new Functor.AbstractInlineFunctor1("polarizeRandom") {
+        @Override
+        protected Term apply1(Term arg) {
+            return random.nextBoolean() ? arg : arg.neg();
+        }
+    };
+
+    protected final Functor polarizeBelief = new Functor.AbstractInlineFunctor1("polarizeBelief") {
+        @Override
+        protected Term apply1(Term arg) {
+            Truth t = Derivation.this.beliefTruthRaw;
+            if (t == null)
+                return Null;  //TODO WTF
+            return t.isPositive() ? arg : arg.neg();
+        }
+    };
+
+    @Deprecated protected final Functor polarizeFunc = new Functor.AbstractInlineFunctor2("polarize") {
         @Override
         protected Term apply(Term subterm, Term whichTask) {
             if (subterm instanceof Bool)
@@ -93,6 +118,7 @@ public class Derivation extends PreDerivation {
             return compared.isPositive() ? subterm : subterm.neg();
         }
     };
+
     public NAR nar;
 
 
@@ -108,7 +134,7 @@ public class Derivation extends PreDerivation {
             return super.put(key, value);
         }
     };
-    private final Subst mySubst = new Subst("substitute") {
+    protected final Subst mySubst = new Subst("substitute") {
 
         @Override
         public @Nullable Term apply(Evaluation e, Subterms xx) {
@@ -175,7 +201,7 @@ public class Derivation extends PreDerivation {
     public final ArrayHashSet<Concept> firedConcepts = new ArrayHashSet<>(32);
 
 
-    private ImmutableMap<Term, Termed> derivationFunctors;
+    private Function<Atomic, Functor> derivationFunctors;
 
     /**
      * precise time that the task and belief truth are sampled
@@ -239,59 +265,11 @@ public class Derivation extends PreDerivation {
         this.nar = nar;
 
         this.random = nar.random();
-        unifyPremise.random(this.random);
+        this.unifyPremise.random(this.random);
 
         //this.random.setSeed(nar.random().nextLong());
 
-        {
-
-            Map<Term, Termed> m = new HashMap<>();
-
-            for (Termed s : Builtin.statik)
-                if (s instanceof Functor.InlineFunctor)
-                    m.put(s.term(), s);
-
-            Termed[] derivationFunctors = new Termed[]{
-                    myUniSubst,
-                    mySubst,
-                    polarizeFunc,
-//                    termlinkRandomProxy,
-                    Image.imageExt,
-                    Image.imageInt,
-                    Image.imageNormalize,
-                    SetFunc.union,
-                    SetFunc.unionSect,
-                    SetFunc.differ,
-                    SetFunc.intersect,
-                    Equal.the,
-                    nar.concept("unneg"),
-                    nar.concept("negateEvents"),
-                    nar.concept("conjWithout"),
-                    nar.concept("conjWithoutAll"),
-                    nar.concept("conjWithoutPosOrNeg"),
-                    nar.concept("conjDropIfEarliest"),
-                    nar.concept("conjDropIfLatest"),
-//                    nar.concept("dropAnySet"),
-                    nar.concept("dropAnyEvent"),
-                    nar.concept("without"),
-                    nar.concept("withoutPosOrNeg"),
-            };
-
-            for (Termed x : derivationFunctors) //override any statik's
-                m.put(x.term(), x);
-
-
-            this.derivationFunctors = Maps.immutable.ofMap(m);
-        }
-
-//        {
-//            Map<Term, Termed> n = new HashMap<>(Builtin.statik.length);
-//            for (Termed s : Builtin.statik) {
-//                if (s instanceof Functor.InlineFunctor)
-//                    n.put(s.term(), s);
-//            }
-//            this.staticFunctors = Maps.immutable.ofMap(n);
-//        }
+        this.derivationFunctors = DerivationFunctors.get(this);
 
     }
 
@@ -525,7 +503,7 @@ public class Derivation extends PreDerivation {
                 return beliefTerm;
             }
 
-            Termed f = derivationFunctors.get(atomic);
+            Termed f = derivationFunctors.apply(atomic);
             if (f != null)
                 return (Term) f;
         }

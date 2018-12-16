@@ -163,7 +163,7 @@ public class GraphEditTest {
         {
             //Audio.the().play(TinySpeech.say("eee", 60, 1 ), 1, 1, 0 );
 
-            GraphEdit<Surface> g = new GraphEdit<>(1000, 1000);
+            Wall g = newWallWindow();
 
             {
                 TextEdit0 e = new TextEdit0("a b c d e", true);
