@@ -424,8 +424,15 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
         NAR nar = d.nar;
         Activator linking = nar.attn.activating;
 
-        int j = n > 1 ? d.random.nextInt(n) : 0; //random starting position
-        boolean inc = n <= 1 || d.random.nextBoolean();
+        Random rng = d.random;
+        int j; boolean inc;
+        if (n > 1) {
+            j = rng.nextInt(n); //random starting position
+            inc = rng.nextBoolean();
+        } else {
+            j = 0;
+            inc = true;
+        }
 
         OverflowDistributor<Concept> overflow = n > 1 ? new OverflowDistributor<>() : null;
 
@@ -466,7 +473,7 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
         }
 
         if(overflow!=null)
-            linking.activate(overflow, d.random);
+            linking.activate(overflow, rng);
 
         return n;
     }

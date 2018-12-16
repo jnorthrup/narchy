@@ -60,8 +60,7 @@ public class Curiosity {
 
     /** injection mode */
     public final MutableEnum<CuriosityInjection> injection = new MutableEnum<>(
-            CuriosityInjection.Override
-            //CuriosityInjection.Revise
+        CuriosityInjection.Revise
     );
 
 

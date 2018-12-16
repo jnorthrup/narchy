@@ -239,16 +239,17 @@ public interface Compound extends Term, IPair, Subterms {
         int xs;
         if ((xs = xx.subs()) != yy.subs())
             return false;
+        if (!Subterms.possiblyUnifiable(xx, yy, u))
+            return false;
 
         boolean xSpecific = false, ySpecific = false;
         if (xs == 1) {
             return xx.sub(0).unify(yy.sub(0), u);
         } else {
 
-            if (!Subterms.possiblyUnifiable(xx, yy, u))
-                return false;
-
             Op o = op();
+
+
             int xdt, ydt;
             if (o.temporal) {
                 xdt = x.dt();

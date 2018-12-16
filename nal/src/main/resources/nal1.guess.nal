@@ -21,8 +21,8 @@
     //(Y --> X), Y, task("?"), --is(X,"?"), --is(Y,"?") |- (Y --> ?1),   (Punctuation:Question)
         //(Y --> X), Y, task("@"), --is(X,"?"), --is(Y,"?") |- (Y --> ?1),   (Punctuation:Quest)
 
-    //(A --> X), (B --> X), task("?"), neq(A,B) |- subIfUnifiesAny((A --> X), A, B, strict),   (Belief:BeliefStructuralReduction, Punctuation:Belief)
-    //(X --> A), (X --> B), task("?"), neq(A,B) |- subIfUnifiesAny((X --> A), A, B, strict),   (Belief:BeliefStructuralReduction, Punctuation:Belief)
+    //(A --> X), (B --> X), task("?"), neq(A,B) |- unisubst((A --> X), A, B, strict),   (Belief:BeliefStructuralReduction, Punctuation:Belief)
+    //(X --> A), (X --> B), task("?"), neq(A,B) |- unisubst((X --> A), A, B, strict),   (Belief:BeliefStructuralReduction, Punctuation:Belief)
 
     //(X --> Y), (Z --> W), subOf(Y,Z), task(".") |- (X --> W),   (Punctuation:Question)
 

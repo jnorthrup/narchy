@@ -23,21 +23,16 @@
       (--A ==> B), A, task("?")  |- B, (Punctuation:Question)
 
 
-//basic impl reduction
-    (X ==> C), X, task("?"), is(C,"&&")   |- (X ==> dropAnyEvent(C)), (Punctuation:Question)
-    (C ==> X), X, task("?"), is(C,"&&")   |- (dropAnyEvent(C) ==> X), (Punctuation:Question)
-      (--C ==> X), X, task("?"), is(C,"&&") |- (--dropAnyEvent(C) ==> X), (Punctuation:Question)
-
 //Hypothesize Subcondition Identity
 //      hypothesize that two subconditions which unify actually refer to the same term,
 //      eliminating the variable and simplifying the statement
 
 //      ex: ((f(x) && f($1)) ==> g($1))  |-   (f(x) ==> g(x))
 
-    ((&&,X,Y,A..*) ==> Z), X, neq(X,Y), --is(X,"#"), --is(Y,"#")    |- subIfUnifiesAny(((&&,Y,A..*) ==> Z),unneg(X),unneg(Y),strict), (Belief:StructuralReduction)
-    (Z ==> (&&,X,Y,A..*)), X, neq(X,Y), --is(X,"#"), --is(Y,"#")    |- subIfUnifiesAny((Z ==> (&&,Y,A..*)),unneg(X),unneg(Y),strict), (Belief:StructuralReduction)
+    ((&&,X,Y,A..*) ==> Z), X, neq(X,Y), --is(X,"#"), --is(Y,"#")    |- unisubst(((&&,Y,A..*) ==> Z),unneg(X),unneg(Y),strict), (Belief:StructuralReduction)
+    (Z ==> (&&,X,Y,A..*)), X, neq(X,Y), --is(X,"#"), --is(Y,"#")    |- unisubst((Z ==> (&&,Y,A..*)),unneg(X),unneg(Y),strict), (Belief:StructuralReduction)
 
-    (&&,X,Y,A..*), X, neq(X,Y), --is(X,"#"), --is(Y,"#")   |- subIfUnifiesAny((&&,Y,A..*),unneg(X),unneg(Y),strict), (Belief:StructuralDeduction)
+    (&&,X,Y,A..*), X, neq(X,Y), --is(X,"#"), --is(Y,"#")   |- unisubst((&&,Y,A..*),unneg(X),unneg(Y),strict), (Belief:StructuralDeduction)
 
 
 
@@ -90,4 +85,4 @@
 //    ((A&B) ==> X), X, task("?")  |- ((A~B) ==> X), (Punctuation:Question)
 //      (--(A&B) ==> X), X, task("?")  |- (--(A~B) ==> X), (Punctuation:Question)
 
-//    Z, (X==>Y), task("?"), neq(Y,Z) |- subIfUnifiesAny((X ==> Y), Y, Z, "$", strict), (Belief:BeliefStructuralReduction, Punctuation:Belief)
+//    Z, (X==>Y), task("?"), neq(Y,Z) |- unisubst((X ==> Y), Y, Z, "$", strict), (Belief:BeliefStructuralReduction, Punctuation:Belief)

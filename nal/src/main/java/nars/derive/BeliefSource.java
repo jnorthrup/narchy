@@ -11,6 +11,7 @@ import nars.link.Activate;
 import nars.link.TaskLink;
 import nars.task.Tasklike;
 import nars.term.Term;
+import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -97,9 +98,6 @@ public class BeliefSource {
         return forConcepts(n, rules, concepts, GlobalTermLinker);
     }
 
-    public static ZipperDeriver forConcepts(NAR n, PremiseDeriverRuleSet rules, List<Concept> concepts, List<Term> terms) {
-        return forConcepts(n, rules, concepts, ListTermLinker(terms));
-    }
 
     public static ZipperDeriver forConcepts(NAR n, PremiseDeriverRuleSet rules, List<Concept> concepts, BiFunction<Concept, Derivation, LinkModel> linker) {
         int cc = concepts.size();
@@ -128,7 +126,7 @@ public class BeliefSource {
         return new ZipperDeriver(forEach, rules, GlobalTermLinker);
     }
 
-    public static BiFunction<Concept, Derivation, LinkModel> ListTermLinker(List<Term> terms) {
+    public static BiFunction<Concept, Derivation, LinkModel> ListTermLinker(List<? extends Termed> terms) {
         return (c, d) -> new LinkModel() {
 
             final Random rng = d.random;
@@ -143,7 +141,7 @@ public class BeliefSource {
 
             @Override
             public Supplier<Term> beliefTerms() {
-                return () -> terms.get(rng.nextInt(terms.size()));
+                return () -> terms.get(rng.nextInt(terms.size())).term();
             }
         };
     }

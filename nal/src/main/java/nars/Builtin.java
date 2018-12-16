@@ -37,6 +37,7 @@ import static nars.Op.*;
 import static nars.term.Functor.f0;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.dtSpecial;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
@@ -444,23 +445,30 @@ public class Builtin {
         nar.on(Functor.f1Inline("unneg", Term::unneg));
 
         /** drops a random contained event, whether at first layer or below */
-        nar.on(Functor.f1Inline("dropAnyEvent", (Term t) -> {
-            Op oo = t.op();
+        nar.on(Functor.f1Inline("dropAnyEvent", (Term x) -> {
+            Op oo = x.op();
             boolean negated = (oo == NEG);
             if (negated) {
-                t = t.unneg();
-                oo = t.op();
+                x = x.unneg();
+                oo = x.op();
             }
             if (oo != CONJ)
                 return Null;
 
-            FasterList<LongObjectPair<Term>> ee = Conj.eventList(t);
-            ee.remove(nar.random().nextInt(ee.size()));
-            Term x = Conj.conj(ee);
-            if (x.equals(t))
-                return Null;
-            assert(x != null);
-            return x.negIf(negated);
+            Term y;
+            int dt = x.dt();
+            if (dtSpecial(dt)) {
+                Subterms xx = x.subterms();
+                y = CONJ.the(dt, xx.subsExcept(nar.random().nextInt(xx.subs())));
+            } else {
+                FasterList<LongObjectPair<Term>> ee = Conj.eventList(x);
+                ee.remove(nar.random().nextInt(ee.size()));
+                y = Conj.conj(ee);
+                if (y.equals(x))
+                    return Null;
+                assert (y != null);
+            }
+            return y.negIf(negated);
         }));
 
 

@@ -12,7 +12,7 @@ import nars.derive.filter.CommutativeConstantPreFilter;
 import nars.derive.filter.DoublePremiseRequired;
 import nars.derive.filter.UnifyPreFilter;
 import nars.derive.op.*;
-import nars.op.SubIfUnify;
+import nars.op.UniSubst;
 import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
 import nars.term.*;
@@ -22,6 +22,7 @@ import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.term.util.transform.DirectTermTransform;
+import nars.term.util.transform.TermTransform;
 import nars.term.var.VarPattern;
 import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
@@ -112,21 +113,8 @@ public class PremiseRuleSource extends ProxyTerm {
             throw new RuntimeException("belief term must contain no atoms: " + beliefPattern);
         }
 
-        Term originalConcPattern = PatternIndex.patternify(postcon[0]);
-        Term concPattern = originalConcPattern;
 
-        {
-            //direct substitution macros in conclusions
-
-            //if (!filteredConcPattern.equals(taskPattern))
-//            if (!taskPattern.op().temporal && !taskPattern.op().commutative)
-            if (!taskPattern.op().var)
-                concPattern = concPattern.replace(taskPattern, Derivation.TaskTerm);
-            //if (!filteredConcPattern.equals(beliefPattern))
-//            if (!beliefPattern.op().temporal && !beliefPattern.op().commutative)
-            if (!beliefPattern.op().var)
-                concPattern = concPattern.replace(beliefPattern, Derivation.BeliefTerm);
-        }
+        Term concPattern = ConcTransform.transform(PatternIndex.patternify(postcon[0]));
 
         ByteToByteFunction concPunc = null;
         boolean concBelief = false, concQuestion = false, concGoal = false, concQuest = false;
@@ -282,8 +270,14 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
                 case "is": {
-                    Op yy = Op.the($.unquote(Y));
-                    match(X, new TermMatch.Is(yy), !negated);
+                    match(X, new TermMatch.Is(Op.the($.unquote(Y))), !negated);
+                    if (negated)
+                        negationApplied = true;
+                    break;
+                }
+
+                case "isUnneg": {
+                    match(X, new TermMatch.IsUnneg(Op.the($.unquote(Y))), !negated);
                     if (negated)
                         negationApplied = true;
                     break;
@@ -447,18 +441,7 @@ public class PremiseRuleSource extends ProxyTerm {
             CommutativeConstantPreFilter.tryFilter(false, taskPattern, beliefPattern, pre);
         }
 
-        {
-            //subIfUnify prefilter
-            Term concFunc = Functor.func(originalConcPattern);
-            if (concFunc.equals(SubIfUnify.SubIfUnify)) {
 
-                Subterms a = Operator.args(originalConcPattern);
-                UnifyPreFilter.tryAdd(a.sub(1), a.sub(2),
-                        taskPattern, beliefPattern,
-                        a, pre);
-
-            }
-        }
 
 
 
@@ -984,6 +967,37 @@ public class PremiseRuleSource extends ProxyTerm {
                     d -> apply(d).sub(path);
         }
     }
+
+
+    private final TermTransform ConcTransform = new TermTransform() {
+        @Override
+        public Term transformCompound(Compound x) {
+            //subIfUnify prefilter
+            Term concFunc = Functor.func(x);
+            if (concFunc.equals(UniSubst.unisubst)) {
+
+                Subterms a = Operator.args(x);
+
+                int varBits = (a.contains(UniSubst.DEP_VAR)) ? VAR_DEP.bit : (VAR_INDEP.bit | VAR_DEP.bit);
+
+                boolean strict = a.contains(UniSubst.STRICT);
+
+                UnifyPreFilter.tryAdd(a.sub(1), a.sub(2),
+                        taskPattern, beliefPattern,
+                        varBits, strict, pre);
+
+                //TODO compile to 1-arg unisubst
+            }
+
+            //macro substitution
+            if (x.equals(taskPattern))
+                return Derivation.TaskTerm;
+            if (x.equals(beliefPattern))
+                return Derivation.BeliefTerm;
+
+            return x;
+        }
+    };
 }
 
 

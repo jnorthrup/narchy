@@ -76,9 +76,9 @@ public abstract class Param {
             //16;
             //12;
             //10;
-            8;
+            //8;
             //7;
-            //6;
+            6;
             //5;
             //2;
             //1;
@@ -113,7 +113,7 @@ public abstract class Param {
     public static final boolean INT_CONCEPTUALIZABLE = false;
 
 
-    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = false;
+    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = true;
 
 //    /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
 //    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
@@ -133,7 +133,6 @@ public abstract class Param {
     public static final float ANSWER_COMPLETENESS = 1f;
 
 
-//    public static final int EVALUATION_MAX_TERMUTATORS = 8;
 
 //    /**
 //     * warning: can interfere with expected test results
@@ -161,11 +160,12 @@ public abstract class Param {
 
     public static final PriMerge conceptMerge =
             PriMerge.plus;
+            //PriMerge.max;
 
 
     public static final PriMerge tasklinkMerge =
-            //PriMerge.max;
-            PriMerge.plus;
+            PriMerge.max;
+            //PriMerge.plus;
             //PriMerge.or;
             //PriMerge.avgGeoFast;
 

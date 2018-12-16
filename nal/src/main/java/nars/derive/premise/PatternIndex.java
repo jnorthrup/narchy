@@ -209,19 +209,7 @@ public class PatternIndex extends MapConceptIndex {
 
             @Override
             public final boolean unifySubterms(Term y, Unify u) {
-
-//                Ellipsis ellipsis = this.ellipsis;
-//                Term eResolved = u.resolve(ellipsis);
-//                if (eResolved != ellipsis)
-//                    return eResolved.unify(y, u);
-//                Term eResolved = u.xy(ellipsis);
-//                if (eResolved != null)
-//                    return false; //already assigned
-
-                if (!Subterms.possiblyUnifiable(subterms(), y.subterms(), u))
-                    return false;
-
-                return matchEllipsis(y, u);
+                return Subterms.possiblyUnifiable(subterms(), y.subterms(), u) && matchEllipsis(y, u);
             }
         }
 

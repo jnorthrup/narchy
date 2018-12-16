@@ -196,7 +196,7 @@ class PremiseRuleTest {
     void testSubIfUnifyPrefilter() {
 
         DeriverRules d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
-                "X,Y |- subIfUnifiesAny(what,X,Y), (Belief:Intersection)"));
+                "X,Y |- unisubst(what,X,Y), (Belief:Intersection)"));
 
         d.printRecursive();
         assertTrue(d.what.toString().contains("unifyPreFilter(")); //TODO this and other cases

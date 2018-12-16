@@ -11,13 +11,13 @@ import nars.agent.FrameTrigger;
 import nars.agent.MetaAgent;
 import nars.agent.NAgent;
 import nars.agent.util.RLBooster;
+import nars.concept.Concept;
 import nars.control.MetaGoal;
 import nars.derive.BeliefSource;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.derive.impl.ZipperDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
-import nars.derive.timing.ActionTiming;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
 import nars.gui.NARui;
@@ -39,15 +39,17 @@ import spacegraph.space2d.container.grid.Gridding;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Stream.concat;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.derive.BeliefSource.ConceptTermLinker;
+import static nars.derive.BeliefSource.ListTermLinker;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -216,8 +218,8 @@ abstract public class NAgentX extends NAgent {
                                 //192 * 1024,
                                 //128 * 1024,
                                 //64 * 1024,
-                                //32 * 1024,
-                                16 * 1024,
+                                32 * 1024,
+                                //16 * 1024,
                                 //8 * 1024,
                                 4)
 
@@ -233,21 +235,23 @@ abstract public class NAgentX extends NAgent {
     static void initPlugins2(NAR n, NAgent a) {
 
         PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8,
-                "motivation.nal",
-                "induction.goal.nal"
+                "motivation.nal"
+                //"induction.goal.nal"
                 //"nal3.nal",
         );
 
-        ZipperDeriver sensorAction = BeliefSource.forConcepts(n, rules,
+        java.util.List<Concept> actionConcepts = Stream.concat(
+                a.rewards.stream().flatMap(x -> stream(x.spliterator(), false)),
                 concat(
-                        a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false)),
-                    concat(
                         a.actions.stream(),
                         a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false))
-                )).map(n::concept).collect(Collectors.toList()),
-                ConceptTermLinker
+                )).map(n::concept).filter(Objects::nonNull).collect(Collectors.toList());
+        ZipperDeriver sensorAction = BeliefSource.forConcepts(n, rules,
+                actionConcepts,
+                ListTermLinker(actionConcepts)
+                //ConceptTermLinker
         );
-        sensorAction.timing = new ActionTiming(n);
+//        sensorAction.timing = new ActionTiming(n);
 
 
 //        ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.files(n,
@@ -378,7 +382,7 @@ abstract public class NAgentX extends NAgent {
 
 
         BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
-
+                //"nal6.to.nal1.nal"
                 "motivation.nal"
                 //"equivalence.nal"
                 //  "induction.goal.nal"
@@ -392,10 +396,10 @@ abstract public class NAgentX extends NAgent {
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF,
                 Task::isInput,
                 //t->true,
-                8, 64);
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF,
-                t->!t.isInput(),
-                3, 8);
+                8, 128);
+//        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF,
+//                t->!t.isInput(),
+//                3, 8);
 //        {
 //
 //            SpaceGraph.window(

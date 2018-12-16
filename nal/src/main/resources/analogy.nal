@@ -14,12 +14,12 @@
   //Z, (X <-> Y), task("."), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Punctuation:Question, Time:Task)
     //Z, (X <-> Y), task("!"), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Punctuation:Question, Time:Task)
         //  Belief:Analogy, Goal:DesireWeak)
-  Z, (X <-> Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, strict), (Belief:Analogy, Goal:DesireWeak, Time:Task)
-  Z, (--X <-> Y), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Y, X, Z, strict), (Belief:AnalogyN, Goal:DesireWeakN, Time:Task)
-      //Z, (X <-> Y), task("."), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, strict), (Punctuation:Question)
-        //  Z, (X <-> Y), task("!"), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, strict), (Punctuation:Quest)
-      //Z, (--X <-> Y), task("."), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Y, X, Z, strict), (Punctuation:Question)
-    //    Z, (--X <-> Y), task("!"), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Y, X, Z, strict), (Punctuation:Quest)
+  Z, (X <-> Y), neq(Z,X), neq(Z,Y)    |- unisubst(Y, X, Z, strict), (Belief:Analogy, Goal:DesireWeak, Time:Task)
+  Z, (--X <-> Y), neq(Z,X), neq(Z,Y)  |- unisubst(Y, X, Z, strict), (Belief:AnalogyN, Goal:DesireWeakN, Time:Task)
+      //Z, (X <-> Y), task("."), neq(Z,X), neq(Z,Y)    |- unisubst(Y, X, Z, strict), (Punctuation:Question)
+        //  Z, (X <-> Y), task("!"), neq(Z,X), neq(Z,Y)    |- unisubst(Y, X, Z, strict), (Punctuation:Quest)
+      //Z, (--X <-> Y), task("."), neq(Z,X), neq(Z,Y)  |- unisubst(Y, X, Z, strict), (Punctuation:Question)
+    //    Z, (--X <-> Y), task("!"), neq(Z,X), neq(Z,Y)  |- unisubst(Y, X, Z, strict), (Punctuation:Quest)
 
 
 
@@ -45,7 +45,7 @@
 
   //wantX and X similar Y then want Y
     //X, (X<->Y)                          |- Y, (Belief:Analogy, Goal:Desire)
-    //Z, (X<->Y), in(Z,X), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Z, X, Y, strict), (Belief:Analogy, Goal:Weak)
+    //Z, (X<->Y), in(Z,X), neq(Z,X), neq(Z,Y)  |- unisubst(Z, X, Y, strict), (Belief:Analogy, Goal:Weak)
 
   //notWantX and notX similar Y then want Y
 
@@ -54,8 +54,8 @@
     //X, (--X<->Y)                        |- --Y, (Goal:WeakNN)
 
 
-    //Z, (X<->Y), inNeg(Z,X)             |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:AnalogyN, Goal:WeakN)
-    //Z, (X<->Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, --X, Z, strict), (Belief:AnalogyN, Goal:WeakN)
+    //Z, (X<->Y), inNeg(Z,X)             |- unisubst(Z, X, Y, strict, force), (Belief:AnalogyN, Goal:WeakN)
+    //Z, (X<->Y), neq(Z,X), neq(Z,Y)    |- unisubst(Y, --X, Z, strict), (Belief:AnalogyN, Goal:WeakN)
       //X, (X<->Y)                 |- (--,Y), (Goal:WeakPN)
       //X, (--X<->Y)               |- (--,Y), (Goal:WeakNN)
       //(X-->A), (($1-->A)<->($1-->B)), neqRCom(X,B) |- (X-->B), (Belief:Analogy, Goal:Induction)
@@ -66,9 +66,9 @@
     //TODO (&&,(X<->Y),A..+), (&&,(Y<->Z),A..+), neq(X,Z) |- (&&,(X<->Z),A..+), (Belief:...
 
  //suspect:
-// Z, (X<->Y), eqOrIn(X,Z), belief(negative)   |- (--, subIfUnifiesAny(Z, X, Y, strict, force)), (Belief:AnalogyPN, Goal:WeakPN)
-//Z, (--X<->Y), eqOrIn(X,Z), belief(positive) |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:AnalogyN, Goal:WeakN)
- //Z, (--X<->Y), eqOrIn(X,Z), belief(negative) |- (--, subIfUnifiesAny(Z, X, Y, strict, force)), (Belief:AnalogyNN, Goal:WeakNN)
+// Z, (X<->Y), eqOrIn(X,Z), belief(negative)   |- (--, unisubst(Z, X, Y, strict, force)), (Belief:AnalogyPN, Goal:WeakPN)
+//Z, (--X<->Y), eqOrIn(X,Z), belief(positive) |- unisubst(Z, X, Y, strict, force), (Belief:AnalogyN, Goal:WeakN)
+ //Z, (--X<->Y), eqOrIn(X,Z), belief(negative) |- (--, unisubst(Z, X, Y, strict, force)), (Belief:AnalogyNN, Goal:WeakNN)
 
 //these old rules are replaced by the above rules:
         //If M is a special case of P and S and M are similar, then S is also a special case of P (strong)

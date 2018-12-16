@@ -15,23 +15,23 @@
 //    (K --> B), ((L --> $X) ==> (&&,(K --> #Y),A..+)) |- substitute(((L --> $X) ==> (&&,A..+)),#Y,B), (Belief:AnonymousAnalogy)
 //        (K --> B), ((L --> $X) ==> (&&,--(K --> #Y),A..+)) |- substitute(((L --> $X) ==> (&&,A..+)),#Y,B), (Belief:AnonymousAnalogyN)
 
-//    Y, (&&,X,A..+), neq(X,Y) |- subIfUnifiesAny((&&,A..+),X,Y), (Belief:Deduction)
-//        Y, (&&,--X,A..+), neq(X,Y) |- subIfUnifiesAny((&&,A..+), X,Y), (Belief:DeductionN)
+//    Y, (&&,X,A..+), neq(X,Y) |- unisubst((&&,A..+),X,Y), (Belief:Deduction)
+//        Y, (&&,--X,A..+), neq(X,Y) |- unisubst((&&,A..+), X,Y), (Belief:DeductionN)
 
-//    (Y --> P), (&&,(X-->P),A..+), neq(X,Y) |- subIfUnifiesAny((&&,A..+), X,Y,strict), (Belief:Deduction)
-//        (Y --> P), (&&,--(X-->P),A..+), neq(X,Y) |- subIfUnifiesAny((&&,A..+), X,Y,strict), (Belief:DeductionN)
+//    (Y --> P), (&&,(X-->P),A..+), neq(X,Y) |- unisubst((&&,A..+), X,Y,strict), (Belief:Deduction)
+//        (Y --> P), (&&,--(X-->P),A..+), neq(X,Y) |- unisubst((&&,A..+), X,Y,strict), (Belief:DeductionN)
 
 
-    //(Y --> P), (&&,(X-->P),A..+),neq(X,Y) |- subIfUnifiesAny((&&,(X-->P),A..+), X,Y,strict), (Belief:Deduction)
-        //(Y --> P), (&&,--(X-->P),A..+),neq(X,Y) |- subIfUnifiesAny((&&,--(X-->P),A..+), X,Y,strict), (Belief:DeductionN)
-      //(P --> Y), (&&,(P-->X),A..+),neq(X,Y) |- subIfUnifiesAny((&&,(P-->X),A..+), X,Y,strict), (Belief:Deduction)
-        //  (P --> Y), (&&,--(P-->X),A..+),neq(X,Y) |- subIfUnifiesAny((&&,--(P-->X),A..+), X,Y,strict), (Belief:DeductionN)
+    //(Y --> P), (&&,(X-->P),A..+),neq(X,Y) |- unisubst((&&,(X-->P),A..+), X,Y,strict), (Belief:Deduction)
+        //(Y --> P), (&&,--(X-->P),A..+),neq(X,Y) |- unisubst((&&,--(X-->P),A..+), X,Y,strict), (Belief:DeductionN)
+      //(P --> Y), (&&,(P-->X),A..+),neq(X,Y) |- unisubst((&&,(P-->X),A..+), X,Y,strict), (Belief:Deduction)
+        //  (P --> Y), (&&,--(P-->X),A..+),neq(X,Y) |- unisubst((&&,--(P-->X),A..+), X,Y,strict), (Belief:DeductionN)
 
-      //(P --> Y), ((&&,(P-->X),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,(P-->X),A..+) ==> Z), X,Y,strict), (Belief:Deduction)
-          //(P --> Y), ((&&,--(P-->X),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,--(P-->X),A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
+      //(P --> Y), ((&&,(P-->X),A..+) ==> Z),neq(X,Y) |- unisubst(((&&,(P-->X),A..+) ==> Z), X,Y,strict), (Belief:Deduction)
+          //(P --> Y), ((&&,--(P-->X),A..+) ==> Z),neq(X,Y) |- unisubst(((&&,--(P-->X),A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
 
-      //(P --> Y), (Z ==> (&&,(P-->X),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==> (&&,(P-->X),A..+)), X,Y,strict), (Belief:Deduction)
-        //(P --> Y), (Z ==> (&&,--(P-->X),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==> (&&,--(P-->X),A..+)), X,Y,strict), (Belief:DeductionN)
+      //(P --> Y), (Z ==> (&&,(P-->X),A..+)),neq(X,Y) |- unisubst((Z ==> (&&,(P-->X),A..+)), X,Y,strict), (Belief:Deduction)
+        //(P --> Y), (Z ==> (&&,--(P-->X),A..+)),neq(X,Y) |- unisubst((Z ==> (&&,--(P-->X),A..+)), X,Y,strict), (Belief:DeductionN)
 
 
 //conditional abduction by dependent variable

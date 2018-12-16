@@ -60,7 +60,7 @@ public class TaskLinkTask extends AbstractTask {
     }
 
     protected boolean generify() {
-        return false;
+        return true;
     }
 
     protected boolean eternalize() {

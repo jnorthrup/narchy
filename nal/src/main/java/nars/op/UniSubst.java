@@ -63,20 +63,20 @@ import static nars.term.atom.Bool.Null;
  * <patham9_> and require at least one dep-var to be unified in dep-var unification.
  * <patham9_> in principle the restriction to have at least one dep-var unified could be skipped, but the additional weaker result doesn't add any value to the system
  */
-public class SubIfUnify extends Functor implements Functor.InlineFunctor {
+public class UniSubst extends Functor implements Functor.InlineFunctor {
 
 
     public final static Term STRICT = Atomic.the("strict");
     public final static Term INDEP_VAR = $.quote("$");
     public final static Term DEP_VAR = $.quote("#");
-    public static final Atom SubIfUnify = (Atom) Atomic.the("subIfUnifiesAny");
+    public static final Atom unisubst = (Atom) Atomic.the("unisubst");
 
     public final MySubUnify u; //TODO find what state is being held that contaminated repeated use of this
 
     private final Derivation parent;
 
-    public SubIfUnify(Derivation parent) {
-        super(SubIfUnify);
+    public UniSubst(Derivation parent) {
+        super(unisubst);
         this.parent = parent;
         u = new MySubUnify();
     }

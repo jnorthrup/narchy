@@ -17,7 +17,7 @@ import nars.eval.Evaluation;
 import nars.link.TaskLink;
 import nars.op.Equal;
 import nars.op.SetFunc;
-import nars.op.SubIfUnify;
+import nars.op.UniSubst;
 import nars.op.Subst;
 import nars.subterm.Subterms;
 import nars.term.Variable;
@@ -74,7 +74,7 @@ public class Derivation extends PreDerivation {
     public final AnonWithVarShift anon;
 
 
-    private final SubIfUnify mySubIfUnify = new SubIfUnify(this);
+    private final UniSubst myUniSubst = new UniSubst(this);
     private final Functor polarizeFunc = new Functor.AbstractInlineFunctor2("polarize") {
         @Override
         protected Term apply(Term subterm, Term whichTask) {
@@ -252,7 +252,7 @@ public class Derivation extends PreDerivation {
                     m.put(s.term(), s);
 
             Termed[] derivationFunctors = new Termed[]{
-                    mySubIfUnify,
+                    myUniSubst,
                     mySubst,
                     polarizeFunc,
 //                    termlinkRandomProxy,
@@ -551,7 +551,7 @@ public class Derivation extends PreDerivation {
             this.dur = nar.dur();
             this.ditherTime = nar.dtDither();
 
-            mySubIfUnify.u.dtTolerance = unifyPremise.dtTolerance = this.dtTolerance =
+            myUniSubst.u.dtTolerance = unifyPremise.dtTolerance = this.dtTolerance =
                     Math.round(Param.UNIFY_DT_TOLERANCE_DUR_FACTOR * dur);
 
             this.eviMin = c2wSafe(this.confMin = nar.confMin.floatValue());

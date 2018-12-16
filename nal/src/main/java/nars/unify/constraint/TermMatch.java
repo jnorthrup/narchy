@@ -51,7 +51,7 @@ abstract public class TermMatch {
     /**
      * is the op one of the true bits of the provide vector ("is any")
      */
-    public final static class Is extends TermMatch {
+    public static class Is extends TermMatch {
 
         public final int struct;
 
@@ -74,15 +74,30 @@ abstract public class TermMatch {
         }
 
         @Override
-        public boolean test(Term term) {
-            return term.isAny(struct);
+        public boolean test(Term x) {
+            return x.isAny(struct);
         }
 
         @Override
-        public boolean testSuper(Term x) {
-            //return trueOrFalse == superTerm.hasAny(struct);
-            Subterms subs = x.subterms();
-            return subs.hasAny(struct);// && subs.OR(x -> x.hasAny(struct));
+        public boolean testSuper(Term sx) {
+            return sx.subterms().hasAny(struct);
+        }
+    }
+
+    public static class IsUnneg extends Is {
+
+        public IsUnneg(Op op) {
+            super(op);
+        }
+
+        @Override
+        public float cost() {
+            return 0.11f;
+        }
+
+        @Override
+        public boolean test(Term x) {
+            return super.test(x.unneg());
         }
     }
 

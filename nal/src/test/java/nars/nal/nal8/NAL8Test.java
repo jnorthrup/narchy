@@ -163,7 +163,7 @@ public class NAL8Test extends NALTest {
     @Test
     void testImplGoalDuration() {
         /* wrong time
-        $.30 x(intValue,(),3)! 5648⋈5696 %1.0;.13% {6874: 1;2;4;9;d;e;l;q} ((%1,(%2==>%3),notImpl(%1)),(subIfUnifiesAny(%2,%3,%1,"$"),((AbductionPB-->Belief),(DeciInduction-->Goal))))
+        $.30 x(intValue,(),3)! 5648⋈5696 %1.0;.13% {6874: 1;2;4;9;d;e;l;q} ((%1,(%2==>%3),notImpl(%1)),(unisubst(%2,%3,%1,"$"),((AbductionPB-->Belief),(DeciInduction-->Goal))))
             $1.0 x(intValue,(),3)! 5600 %1.0;.90% {5600: q}
             $.07 (x(intValue,(),3) ==>-48 x(intValue,(),3)). 3600 %1.0;.19% {5415: 1;2;4;9;d;e;l}
         */
@@ -573,9 +573,9 @@ public class NAL8Test extends NALTest {
     void testPredictiveImplicationTemporalTemporal() {
         /*
         wrong timing: should be (out)! @ 16
-        $.36;.02$ (out)! 13 %.35;.05% {13: 9;a;b;t;S;Ü} ((%1,(%2==>%3),belief(negative),time(decomposeBelief)),((--,subIfUnifiesAny(%2,%3,%1)),((AbductionPN-->Belief),(DeductionPN-->Goal))))
+        $.36;.02$ (out)! 13 %.35;.05% {13: 9;a;b;t;S;Ü} ((%1,(%2==>%3),belief(negative),time(decomposeBelief)),((--,unisubst(%2,%3,%1)),((AbductionPN-->Belief),(DeductionPN-->Goal))))
             $.50;.90$ (happy)! 13 %1.0;.90% {13: Ü}
-            $0.0;.02$ ((out) ==>-3 (happy)). 10 %.35;.05% {10: 9;a;b;t;S} ((%1,(%2==>((--,%3)&&%1073742340..+)),time(dtBeliefExact),notImpl(%1073742340..+)),(subIfUnifiesAny((%2 ==>+- (&&,%1073742340..+)),(--,%3),(--,%1)),((DeductionN-->Belief))))
+            $0.0;.02$ ((out) ==>-3 (happy)). 10 %.35;.05% {10: 9;a;b;t;S} ((%1,(%2==>((--,%3)&&%1073742340..+)),time(dtBeliefExact),notImpl(%1073742340..+)),(unisubst((%2 ==>+- (&&,%1073742340..+)),(--,%3),(--,%1)),((DeductionN-->Belief))))
         */
 
         test
@@ -968,7 +968,7 @@ public class NAL8Test extends NALTest {
     @Test
     void testSubIfWTF() {
         /*
-        $.57 good! 144⋈152 %.73;.13% {966: 1;Ð;Ô;Ø} B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:Post, Goal:PostStrong, Time:TaskMinusBeliefDT)
+        $.57 good! 144⋈152 %.73;.13% {966: 1;Ð;Ô;Ø} B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B), (Belief:Post, Goal:PostStrong, Time:TaskMinusBeliefDT)
             $1.0 good! %1.0;.90% {0: 1}
             $.48 (better ==>+8 better). 152⋈160 %.73;.20% {699: Ð;Ô;Ø} B, A, --is(A,"==>") |- polarize((polarize(A,belief) ==> B),task), (Belief:InductionDepolarized, Time:BeliefRelative, Also:VarIntro)
             */

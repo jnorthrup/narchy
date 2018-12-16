@@ -738,34 +738,27 @@ public interface Subterms extends Termlike, Iterable<Term> {
         int YSc = YS & (~varBits);
         if (YSc == 0)
             return true; //all vars in Y
+
         if (XSc == XS && YSc == YS) {
+            //no variables:
             //cheap constant case invariant tests
             if (XS!=YS || xx.volume() != yy.volume())
                 return false;
-        } //TODO else test invariants of specifically the constant subterms (volume, structure, ..)
 
-        if (XS==XSc && YS==YSc)
             return true; //done
+        } //TODO else test invariants of specifically the constant subterms (volume, structure, ..)
 
         //finer-grained sub-constant test
 
         int xs = xx.structureConstant(varBits);
-        if (xs == 0)
-            return true;
+//        if (xs == 0)
+//            return true;
 
         int ys = yy.structureConstant(varBits);
-        if (ys == 0)
-            return true;
-        //int xs = XS;//xx.structureSurface();
-//        int xxs = xs & (~varBits);
-//        if (xxs == 0)
-//            return true; //all var
-//        int ys = YS;//yy.structureSurface();
-//        int yys = ys & (~varBits);
-//        if (yys == 0)
-//            return true; //all var
-//
-        return (xs & ys) != 0; //any constant commonality
+//        if (ys == 0)
+//            return true;
+
+        return (xs & ys) != 0; //any constant subterm commonality
         //return true;
     }
 

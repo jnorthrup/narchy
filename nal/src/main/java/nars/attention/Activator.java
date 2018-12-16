@@ -8,7 +8,7 @@ import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
 import nars.term.Termed;
-import org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe;
+import org.eclipse.collections.impl.map.mutable.ConcurrentHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -34,8 +34,8 @@ public class Activator  {
 
     /** pending concept activation collation */
     final Map<Concept, UnitPri> concepts =
-            new ConcurrentHashMapUnsafe<>(1024);
-            //new ConcurrentHashMap(1024);
+            //new ConcurrentHashMapUnsafe<>(1024);
+            new ConcurrentHashMap(1024);
 
 //    /** pending termlinking collation */
 //    final ConcurrentHashMap<TermLinkage, TermLinkage> termlink = new ConcurrentHashMap(1024);

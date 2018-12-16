@@ -273,7 +273,7 @@ public class NAL5Test extends NALTest {
         tester.believe("(bird:robin ==> animal:robin)");
         tester.believe("((robin-->[flying]) ==> animal:robin)", 0.9f, 0.81f);
         tester.mustBelieve(cycles*2, " ((bird:robin && (robin-->[flying])) ==> animal:robin)", 0.9f, 0.73f);
-        tester.mustBelieve(cycles*2, " ((bird:robin || (robin-->[flying])) ==> animal:robin)", 1f, 0.73f);
+        //tester.mustBelieve(cycles*2, " ((bird:robin || (robin-->[flying])) ==> animal:robin)", 1f, 0.73f);
     }
 
     @Test
@@ -282,7 +282,7 @@ public class NAL5Test extends NALTest {
         tester.believe("--(bird:robin ==> animal:nonRobin)");
         tester.believe("--((robin-->[flying]) ==> animal:nonRobin)", 0.9f, 0.81f);
         tester.mustBelieve(cycles, " ((bird:robin && (robin-->[flying])) ==> animal:nonRobin)", 0.1f, 0.73f);
-        tester.mustBelieve(cycles, " ((bird:robin || (robin-->[flying])) ==> animal:nonRobin)", 0f, 0.73f);
+        //tester.mustBelieve(cycles, " ((bird:robin || (robin-->[flying])) ==> animal:nonRobin)", 0f, 0.73f);
     }
 
 

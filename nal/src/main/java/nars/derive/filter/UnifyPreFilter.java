@@ -4,7 +4,6 @@ import nars.$;
 import nars.Op;
 import nars.derive.premise.PreDerivation;
 import nars.derive.premise.PremiseRuleSource;
-import nars.op.SubIfUnify;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Terms;
@@ -12,8 +11,9 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
-import nars.term.util.Image;
 import org.eclipse.collections.api.set.MutableSet;
+
+import static nars.term.util.Image.imageNormalize;
 
 public class UnifyPreFilter extends AbstractPred<PreDerivation> {
 
@@ -33,7 +33,7 @@ public class UnifyPreFilter extends AbstractPred<PreDerivation> {
         this.isStrict = isStrict;
     }
 
-    public static void tryAdd(Term x, Term y, Term taskPattern, Term beliefPattern, Subterms a, MutableSet<PREDICATE<PreDerivation>> pre) {
+    public static void tryAdd(Term x, Term y, Term taskPattern, Term beliefPattern, int varBits, boolean strict, MutableSet<PREDICATE<PreDerivation>> pre) {
         //some structure exists that can be used to prefilter
         byte[] xpInT = Terms.pathConstant(taskPattern, x);
         byte[] xpInB = Terms.pathConstant(beliefPattern, x); //try the belief
@@ -41,13 +41,6 @@ public class UnifyPreFilter extends AbstractPred<PreDerivation> {
             byte[] ypInT = Terms.pathConstant(taskPattern, y);
             byte[] ypInB = Terms.pathConstant(beliefPattern, y); //try the belief
             if (ypInT != null || ypInB != null) {
-
-                //the unifying terms are deterministicaly extractable from the task or belief:
-
-                int varBits = (a.contains(SubIfUnify.DEP_VAR)) ? Op.VAR_DEP.bit : (Op.VAR_INDEP.bit | Op.VAR_DEP.bit);
-
-                boolean strict = a.contains(SubIfUnify.STRICT);
-
                 pre.add(new UnifyPreFilter(xpInT, xpInB, ypInT, ypInB, varBits, strict));
             }
         }
@@ -65,29 +58,29 @@ public class UnifyPreFilter extends AbstractPred<PreDerivation> {
         if (y == null)
             return false; //ex: seeking a negation but wasnt negated
 
-        return possibleUnification(x, y, varBits, 0);
+        return possibleUnification( imageNormalize(x), imageNormalize(y), varBits, 0);
     }
 
     public boolean possibleUnification(Term x, Term y, int varExcluded, int level) {
+
         boolean xEqY = x.equals(y);
         if (xEqY) {
             return level > 0 || !isStrict;
         }
 
-        Op xo = x.op();
+        Op xo = x.op(), yo = y.op();
+
         if ((xo.bit & ~varExcluded) == 0)
             return true; //unifies, allow
 
-        Op yo = y.op();
         if ((yo.bit & ~varExcluded) == 0)
             return true; //unifies, allow
 
         if (xo != yo)
             return false;
 
-
-        x = Image.imageNormalize(x);
-        y = Image.imageNormalize(y);
+//        x = Image.imageNormalize(x);
+//        y = Image.imageNormalize(y);
 
         Subterms xx = x.subterms(), yy = y.subterms();
         int xxs = xx.subs();
@@ -97,18 +90,15 @@ public class UnifyPreFilter extends AbstractPred<PreDerivation> {
         if (!Subterms.possiblyUnifiable(xx, yy, varExcluded))
             return false;
 
-        if (xo.commutative)
-            return true;
-
-        //if (mustUnify(xx) || mustUnify(yy)) {
-        //if (!xo.commutative) {
-
-        int nextLevel = level + 1;
-        for (int i = 0; i < xxs; i++) {
-            Term x0 = xx.sub(i), y0 = yy.sub(i);
-            if (!possibleUnification(x0, y0, varExcluded, nextLevel))
-                return false;
+        if (!xo.commutative) {
+            int nextLevel = level + 1;
+            for (int i = 0; i < xxs; i++) {
+                Term x0 = xx.sub(i), y0 = yy.sub(i);
+                if (!possibleUnification(x0, y0, varExcluded, nextLevel))
+                    return false;
+            }
         }
+
         return true;
     }
 

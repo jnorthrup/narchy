@@ -5,6 +5,7 @@ import jcog.math.IntRange;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
+import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
@@ -70,7 +71,7 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
 
 
         //nar.onCycle(this::updateConcepts);
-        DurService.on(nar, (n)->updateConcepts());
+        DurService.on(nar, n->updateConcepts());
 
     }
 
@@ -88,7 +89,10 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
                 return value.term();
             }
 
-
+            @Override
+            protected PriMerge merge() {
+                return Param.conceptMerge;
+            }
         };
     }
 

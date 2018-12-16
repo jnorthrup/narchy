@@ -26,15 +26,15 @@
 
  //// conditional syllogism ////////////////////////////////////////////////////////////////////////////////////
  //If after M, P usually happens, and M happens, it means P is expected to happen
-  B,     ((C==>A)&&(A==>C))   |- subIfUnifiesAny(C,A,B,"$"),   (Belief:Analogy, Goal:Desire)
-  B,     ((C==>A)&&(A==>C))   |- --subIfUnifiesAny(C,A,B,"$"), (Belief:AnalogyPN, Goal:Desire)
-  B,   (--(C==>A)&&(--A==>C)) |- subIfUnifiesAny(C,A,B,"$"),   (Belief:AnalogyN, Goal:Desire)
-  B,   (--(C==>A)&&(--A==>C)) |- --subIfUnifiesAny(C,A,B,"$"), (Belief:AnalogyNN, Goal:Desire)
+  B,     ((C==>A)&&(A==>C))   |- unisubst(C,A,B,"$"),   (Belief:Analogy, Goal:Desire)
+  B,     ((C==>A)&&(A==>C))   |- --unisubst(C,A,B,"$"), (Belief:AnalogyPN, Goal:Desire)
+  B,   (--(C==>A)&&(--A==>C)) |- unisubst(C,A,B,"$"),   (Belief:AnalogyN, Goal:Desire)
+  B,   (--(C==>A)&&(--A==>C)) |- --unisubst(C,A,B,"$"), (Belief:AnalogyNN, Goal:Desire)
 
 //  A,     ((C==>A)&&(A==>C))   |- C, (Belief:Analogy, Goal:Desire)
 //  A,     ((C==>A)&&(A==>C))   |- --C, (Belief:AnalogyPN, Goal:Desire)
 //  A,   (--(C==>A)&&(--A==>C)) |- C, (Belief:AnalogyN, Goal:Desire)
 //  A,   (--(C==>A)&&(--A==>C)) |- --C, (Belief:AnalogyNN, Goal:Desire)
 
-  //B, ((A==>C)&&(C==>A))  |- subIfUnifiesAny(C, A, B, "$"), (Belief:Deduction)
+  //B, ((A==>C)&&(C==>A))  |- unisubst(C, A, B, "$"), (Belief:Deduction)
        //TODO negatives

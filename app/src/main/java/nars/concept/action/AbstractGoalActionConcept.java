@@ -107,7 +107,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
         int dur = n.dur();
         //long s = prev, e = now;
-        long s = now - dur, e = now;
+        //long s = now - dur, e = now;
+        long s = now - dur, e = now + dur;
         //long s = now, e = next;
         //long s = now - dur/2, e = next - dur/2;
         //long s = now - dur, e = next - dur;
@@ -161,6 +162,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
 
         Truth actionCuri = curiosity.curiosity(this);
+
+        Curiosity.CuriosityInjection curiosityInject = null;
         if (actionCuri!=null) {
 
             Truth curiDithered = actionCuri.ditherFreq(resolution().floatValue()).dithered(n);
@@ -180,6 +183,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
 
             }
+            curiosityInject = Curiosity.CuriosityInjection.Override;
         } else {
             //use past curiosity
             @Nullable CuriosityGoalTable curiTable = ((BeliefTables) goals()).tableFirst(CuriosityGoalTable.class);
@@ -188,13 +192,15 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 TruthPolation curi = a.truthpolation(actionDur);
                 if (curi != null) {
                     actionCuri = curi.filtered().truth();
+                    curiosityInject = curiosity.injection.get();
                 } else
                     actionCuri = null;
             }
         }
 
         if (actionDex != null || actionCuri != null) {
-            actionTruth = curiosity.injection.get().inject(actionDex, actionCuri);
+
+            actionTruth = curiosityInject.inject(actionDex, actionCuri);
         } else {
             actionTruth = null;
         }

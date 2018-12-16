@@ -483,8 +483,8 @@ public class NAL6Test extends NALTest {
                 .believe("key:{key1}")
                 //.mustBelieve(cycles, "(key:{$1} ==> open({$1},{lock1}))", 1.00f, 0.45f)
                 .mustBelieve(cycles, "(key:$1 ==> open($1,{lock1}))", 1.00f, 0.42f)
-                //.mustBelieve(cycles, "(&&,open({#1},{lock1}),key:{#1})", 1.00f, 0.81f);
-                .mustBelieve(cycles, "(&&,open(#1,{lock1}),key:#1)", 1.00f, 0.81f);
+                .mustBelieve(cycles, "(&&,open({#1},{lock1}),key:{#1})", 1.00f, 0.81f);
+
 
     }
 
@@ -694,7 +694,7 @@ public class NAL6Test extends NALTest {
     void variable_elimination_deduction() {
 
         //$.42 ((open($1,lock1)&&(lock1-->lock))==>($1-->key)). %1.0;.81% {13: 1;2}
-        // ((%1,((%2 &&+- %3..+) ==>+- %4),neq(%2,%1),neq(%1,%4)),(subIfUnifiesAny(((%2 &&+- %3..+) ==>+- %4),%2,%1,strict),((Deduction-->Belief))))
+        // ((%1,((%2 &&+- %3..+) ==>+- %4),neq(%2,%1),neq(%1,%4)),(unisubst(((%2 &&+- %3..+) ==>+- %4),%2,%1,strict),((Deduction-->Belief))))
         test
                 .believe("((&&,(#1 --> lock),open($2,#1)) ==> ($2 --> key))", 1.00f, 0.90f)
                 .believe("(lock1 --> lock)", 1.00f, 0.90f)
