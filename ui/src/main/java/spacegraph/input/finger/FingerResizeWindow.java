@@ -3,7 +3,7 @@ package spacegraph.input.finger;
 import com.jogamp.newt.opengl.GLWindow;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
-import spacegraph.space2d.widget.windo.Windo;
+import spacegraph.space2d.widget.windo.util.DragEdit;
 import spacegraph.video.JoglSpace;
 
 public class FingerResizeWindow extends FingerResize {
@@ -13,7 +13,7 @@ public class FingerResizeWindow extends FingerResize {
 
     private final JoglSpace space;
 
-    public FingerResizeWindow(JoglSpace space, int button, Windo.DragEdit mode) {
+    public FingerResizeWindow(JoglSpace space, int button, DragEdit mode) {
         super(button, mode, false);
         this.space = space;
     }

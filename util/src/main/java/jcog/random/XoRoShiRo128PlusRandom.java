@@ -104,7 +104,8 @@ public class XoRoShiRo128PlusRandom extends AtomicRandom {
 
     @Override
     public int nextInt(final int n) {
-        //return (int) nextLong(n);
+//        return (int) nextLong(n);
+
         assert(n>0);
         return (((int)nextLong()) & 0b0111111111111111111111111111111) % n;
     }

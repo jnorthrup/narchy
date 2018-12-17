@@ -76,10 +76,10 @@ public abstract class Param {
             //32;
             //16;
             //12;
-            //10;
+            10;
             //8;
             //7;
-            6;
+            //6;
             //5;
             //2;
             //1;
@@ -165,8 +165,8 @@ public abstract class Param {
 
 
     public static final PriMerge tasklinkMerge =
-            PriMerge.max;
-            //PriMerge.plus;
+            //PriMerge.max;
+            PriMerge.plus;
             //PriMerge.or;
             //PriMerge.avgGeoFast;
 
@@ -474,8 +474,8 @@ public abstract class Param {
         assert(dur > 0);
 
         int falloffDurs =
-                //1;
-                2; //nyquist
+                1;
+                //2; //nyquist
                 //4;
                 //dur;
                 //8;

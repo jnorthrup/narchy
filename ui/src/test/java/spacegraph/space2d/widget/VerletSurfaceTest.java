@@ -190,7 +190,6 @@ class VerletSurfaceTest {
 
         {
             size(1200, 1200);
-            physics.pos(bounds);
 //            physics.physics.bounds(bounds);
 
 

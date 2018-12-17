@@ -400,11 +400,10 @@ public class Body2D extends Transform {
      * @param position the world position of the body's local origin.
      * @param angle    the world rotation in radians.
      */
-    protected final boolean setTransform(v2 position, float angle, float epsilon) {
+    public final boolean setTransform(v2 position, float angle, float epsilon) {
 
         if (getPosition().equals(position, epsilon) && Util.equals(angle, getAngle(), epsilon))
             return false;
-
 
         W.invoke(() -> {
 

@@ -1,5 +1,6 @@
 package nars.attention.derive;
 
+import jcog.Util;
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Task;
@@ -23,15 +24,15 @@ public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
         float questPri = nar.questPriDefault.floatValue();
 
         //normalize to 1.0, for postAmp usage
-        float max = Math.max(beliefPri, Math.max(goalPri, Math.max(questionPri, questPri)));
-        if (max < ScalarValue.EPSILON) {
+        float sum = Util.sum(beliefPri, goalPri, questionPri, questPri);
+        if (sum < ScalarValue.EPSILON) {
             //flat
             this.beliefPri = this.goalPri = this.questionPri = this.questPri = 1f;
         } else {
-            this.beliefPri = beliefPri / max;
-            this.goalPri = goalPri / max;
-            this.questionPri = questionPri / max;
-            this.questPri = questPri / max;
+            this.beliefPri = beliefPri / sum;
+            this.goalPri = goalPri / sum;
+            this.questionPri = questionPri / sum;
+            this.questPri = questPri / sum;
         }
 
     }

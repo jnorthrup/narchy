@@ -84,18 +84,10 @@ public class AttNode extends AtomicTreeNode<AttNode> {
         return childrenStream().map(x -> nar.concept(x.id)).filter(Objects::nonNull);
     }
 
-    public void take(Prioritizable c, float pri) {
-        c.take(supply, pri, true, false);
+    public void ensure(Prioritizable c, float pri) {
+        pri -= c.priElseZero();
+        if (pri > 0)
+            c.take(supply, pri, true, false);
     }
 
-    public void taken(float p) {
-        supply.priSub(p);
-    }
-
-    public void supply(float income, float maxCapacity) {
-        //TODO fully atomic
-        supply.priAdd(income);
-        if (supply.pri() > maxCapacity)
-            supply.pri(maxCapacity);
-    }
 }

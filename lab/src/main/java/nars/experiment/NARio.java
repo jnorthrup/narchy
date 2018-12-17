@@ -92,7 +92,7 @@ public class NARio extends NAgentX {
 
 
         int nx = 4;
-        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap(id/*$.inh("cae", id)*/, cc, nx, nx, (subX, subY) -> {
+        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap(null /*id*//*$.inh("cae", id)*/, cc, nx, nx, (subX, subY) -> {
             return new float[]{/*cc.X, cc.Y, */cc.Z};
         }, 12, this);
         camAE.resolution(0.1f);

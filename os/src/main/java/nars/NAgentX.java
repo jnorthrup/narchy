@@ -11,13 +11,9 @@ import nars.agent.FrameTrigger;
 import nars.agent.MetaAgent;
 import nars.agent.NAgent;
 import nars.agent.util.RLBooster;
-import nars.concept.Concept;
 import nars.control.MetaGoal;
-import nars.derive.BeliefSource;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
-import nars.derive.impl.ZipperDeriver;
-import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
 import nars.gui.NARui;
@@ -39,16 +35,11 @@ import spacegraph.space2d.container.grid.Gridding;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.derive.BeliefSource.ListTermLinker;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -233,23 +224,24 @@ abstract public class NAgentX extends NAgent {
 
     static void initPlugins2(NAR n, NAgent a) {
 
-        PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8,
-                "motivation.nal"
-                //"induction.goal.nal"
-                //"nal3.nal",
-        );
+//        PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8,
+//                "motivation.nal"
+//                //"induction.goal.nal"
+//                //"nal3.nal",
+//        );
 
-        java.util.List<Concept> actionConcepts = Stream.concat(
-                a.rewards.stream().flatMap(x -> stream(x.spliterator(), false)),
-                Stream.concat(
-                        a.actions.stream(),
-                        a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false))
-                )).map(n::concept).filter(Objects::nonNull).collect(Collectors.toList());
-        ZipperDeriver sensorAction = BeliefSource.forConcepts(n, rules,
-                actionConcepts,
-                ListTermLinker(actionConcepts)
-                //ConceptTermLinker
-        );
+//        java.util.List<Concept> actionConcepts = Stream.concat(
+//                a.rewards.stream().flatMap(x -> stream(x.spliterator(), false)),
+//                Stream.concat(
+//                        a.actions.stream(),
+//                        a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false))
+//                )).map(n::concept).filter(Objects::nonNull).collect(Collectors.toList());
+//        ZipperDeriver sensorAction = BeliefSource.forConcepts(n, rules,
+//                actionConcepts,
+//                ListTermLinker(actionConcepts)
+//                //ConceptTermLinker
+//        );
+
         //sensorAction.timing = new ActionTiming(n);
 
 
@@ -338,13 +330,13 @@ abstract public class NAgentX extends NAgent {
         n.termVolumeMax.set(30);
 
 
-        n.beliefPriDefault.set(0.01f);
-        n.goalPriDefault.set(0.02f);
-        n.questionPriDefault.set(0.005f);
-        n.questPriDefault.set(0.005f);
+        n.beliefPriDefault.set(0.05f);
+        n.goalPriDefault.set(0.1f);
+        n.questionPriDefault.set(0.01f);
+        n.questPriDefault.set(0.01f);
 
-        n.beliefConfDefault.set(0.9f);
-        n.goalConfDefault.set(0.9f);
+        n.beliefConfDefault.set(0.95f);
+        n.goalConfDefault.set(0.95f);
 
 //        n.attn.activating.conceptActivationRate.set(0.1f);
 
@@ -380,9 +372,9 @@ abstract public class NAgentX extends NAgent {
     public static void initPlugins(NAR n) {
 
 
-        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8
+        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
                 //"nal6.to.nal1.nal"
-                //"motivation.nal"
+                "motivation.nal"
                 //"equivalence.nal"
                 //  "induction.goal.nal"
         ));

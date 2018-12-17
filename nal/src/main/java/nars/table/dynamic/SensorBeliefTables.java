@@ -3,6 +3,7 @@ package nars.table.dynamic;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Param;
+import nars.Task;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.control.proto.Remember;
@@ -60,7 +61,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    public SeriesBeliefTable.SeriesRemember add(Truth value, long start, long end, float pri, TaskConcept c, float dur, NAR n) {
+    public SeriesBeliefTable.SeriesRemember add(Truth value, long start, long end, TaskConcept c, float dur, NAR n) {
 
 
         float fRes = Math.max(n.freqResolution.asFloat(), res.asFloat());
@@ -78,8 +79,6 @@ public class SensorBeliefTables extends BeliefTables {
         if (x!=null) {
             SeriesBeliefTable.SeriesRemember y = x.input(c);
             y.remember(new MyTaskLink(c));
-            y.input.pri(pri);
-            series.tasklink.pri(pri);
             return y;
         }
 
@@ -179,19 +178,19 @@ public class SensorBeliefTables extends BeliefTables {
 
 
     @Override
-    public void match(Answer r) {
-        if (series.series.contains(r.time)) {
+    public void match(Answer a) {
+        if (series.series.contains(a.time)) {
             //try to allow the series to be the only authority in reporting
-            series.match(r);
-            if (r.tasks.isEmpty()) {
+            series.match(a);
+            if (a.tasks.isEmpty()) {
                 //if nothing was found, then search other tables
                 tables.each(t -> {
                     if (t!=series)
-                        t.match(r);
+                        t.match(a);
                 });
             }
         } else {
-            super.match(r);
+            super.match(a);
         }
     }
 
@@ -207,14 +206,25 @@ public class SensorBeliefTables extends BeliefTables {
     private class MyTaskLink extends AbstractTask {
         private final TaskConcept c;
 
+        Task lastActivated = null;
         public MyTaskLink(TaskConcept c) {
             this.c = c;
         }
 
         @Override
         public ITask next(NAR n) {
-            TaskLink.link(series.tasklink, c);
-            n.activate(c, series.tasklink.pri());
+            Task lastTask = series.series.last();
+            if (lastTask!=null) {
+                float p = lastTask.pri();
+                if (p == p) {
+                    series.tasklink.pri(p);
+                    TaskLink.link(series.tasklink, c);
+                    if (lastActivated!=lastTask) {
+                        n.activate(c, p);
+                        lastActivated = lastTask;
+                    } //else: reactivate?
+                }
+            }
             return null;
         }
     }

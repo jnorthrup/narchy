@@ -50,7 +50,7 @@ public class DefaultDerivePri implements DerivePri {
         }
 
         float max = d.parentPri();
-        return Util.clamp( postAmp(t, max * factor), ScalarValue.EPSILON, 1f);
+        return Util.clampSafe( postAmp(t, max * factor), ScalarValue.EPSILON, 1f);
     }
 
     /** default impl: pass-thru */

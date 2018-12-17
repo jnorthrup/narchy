@@ -3,7 +3,7 @@ package spacegraph.input.finger;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.widget.windo.Windo;
+import spacegraph.space2d.widget.windo.util.DragEdit;
 
 /**
  * resizes a rectangular surface in one of the four cardinal or four diagonal directions
@@ -12,7 +12,7 @@ public class FingerResizeSurface extends FingerResize {
 
     private final Surface resizing;
 
-    public FingerResizeSurface(Surface target, Windo.DragEdit mode) {
+    public FingerResizeSurface(Surface target, DragEdit mode) {
         super(0, mode);
         this.resizing = target;
     }

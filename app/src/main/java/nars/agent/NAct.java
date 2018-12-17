@@ -272,8 +272,8 @@ public interface NAct {
 
         boolean freqOrExp = false;
 
-        float compareThresh =
-                0;
+//        float compareThresh =
+//                0;
                 //sqr(Param.TRUTH_EPSILON);
         //0.5f;
         //0.5f + sqr(Param.TRUTH_EPSILON);
@@ -292,7 +292,7 @@ public interface NAct {
 
 
             float t = thresh.asFloat();
-            boolean x = (ll > t) && (ll - lr[1] > compareThresh);
+            boolean x = (ll > t) && lr[1] < t; //(ll - lr[1] > compareThresh);
             boolean y = L.accept(x);
 //            if (x && !y) ll = t;
             lr[0] = ll;
@@ -305,7 +305,7 @@ public interface NAct {
 
 
             float t = thresh.asFloat();
-            boolean x = (rr > t) && (rr - lr[0] > compareThresh);
+            boolean x = (rr > t) && lr[0] < t;// (rr - lr[0] > compareThresh);
             boolean y = R.accept(x);
 //            if (x && !y) rr = t;
             lr[1] = rr;
@@ -325,7 +325,7 @@ public interface NAct {
 //                    Remember.the(new NALTask(x.term(), BELIEF,
 //                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()), n), n);
 
-            x.resolution(0.5f);
+            //x.resolution(0.5f);
         }
 
         return new GoalActionConcept[]{LA, RA};
@@ -336,6 +336,7 @@ public interface NAct {
     }
 
     default FloatSupplier midThresh() {
+        ///return () -> 0.5f + ScalarValue.EPSILON;
         //return () -> 0.5f + nar().freqResolution.get()/2f; ///<-ok for freq
         return () -> 0.5f; //<- for exp
     }

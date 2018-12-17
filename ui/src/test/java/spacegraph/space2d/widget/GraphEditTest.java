@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget;
 
-import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.exe.Loop;
 import jcog.signal.Tensor;
@@ -12,24 +11,22 @@ import spacegraph.audio.sample.SamplePlayer;
 import spacegraph.audio.sample.SoundSample;
 import spacegraph.audio.speech.TinySpeech;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.chip.*;
+import spacegraph.space2d.widget.chip.AudioOutPort;
+import spacegraph.space2d.widget.chip.StringSynthChip;
+import spacegraph.space2d.widget.chip.WaveViewChip;
 import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.meter.WaveView;
 import spacegraph.space2d.widget.port.*;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.windo.GraphEdit;
-import spacegraph.space2d.widget.windo.Wall;
-import spacegraph.space2d.widget.windo.Windo;
-import spacegraph.video.Draw;
 
-import java.util.Map;
+import spacegraph.space2d.widget.windo.Windo;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static java.lang.Boolean.TRUE;
 import static spacegraph.space2d.container.grid.Gridding.HORIZONTAL;
 import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
 
@@ -44,30 +41,30 @@ public class GraphEditTest {
         return w;
     }
 
-    static class TestWallDebugger1 {
-
-        public static void main(String[] args) {
-
-            Wall w = newWallWindow();
-
-
-            w.add(new PushButton("X")).pos(RectFloat.XYXY(10, 10, 20, 20));
-            w.add(new PushButton("Y")).pos(RectFloat.XYXY(50, 10, 200, 200));
-            w.add(new PushButton("Z")).pos(RectFloat.XYXY(100, 10, 200, 200));
-
-            //Windo ww = w.add(new PushButton("Y"), 200, 300f);
-            //System.out.println(ww);
-
-        }
-
-
-    }
+//    static class TestWallDebugger1 {
+//
+//        public static void main(String[] args) {
+//
+//            Wall w = newWallWindow();
+//
+//
+//            w.add(new PushButton("X")).pos(RectFloat.XYXY(10, 10, 20, 20));
+//            w.add(new PushButton("Y")).pos(RectFloat.XYXY(50, 10, 200, 200));
+//            w.add(new PushButton("Z")).pos(RectFloat.XYXY(100, 10, 200, 200));
+//
+//            //Windo ww = w.add(new PushButton("Y"), 200, 300f);
+//            //System.out.println(ww);
+//
+//        }
+//
+//
+//    }
 
     static class SwitchedSignal {
 
         public static void main(String[] args) {
 
-            Wall s = newWallWindow();
+            GraphEdit s = newWallWindow();
 
 
             Port A = new Port();
@@ -163,7 +160,7 @@ public class GraphEditTest {
         {
             //Audio.the().play(TinySpeech.say("eee", 60, 1 ), 1, 1, 0 );
 
-            Wall g = newWallWindow();
+            GraphEdit g = newWallWindow();
 
             {
                 TextEdit0 e = new TextEdit0("a b c d e", true);
@@ -234,68 +231,72 @@ public class GraphEditTest {
 
     }
 
-    public static class SproutTest {
-        public static void main(String[] args) {
-            GraphEdit<Surface> g = new GraphEdit<>(1000, 1000) {
-                @Override
-                protected void starting() {
-                    super.starting();
-
-                    FloatRangePort f = new FloatRangePort(50f, 1, 100);
-                    Windo x = add(new LabeledPane("ms", f));
-                    x.pos(100, 100, 400, 400);
-                    Windo xPlus = sprout(x, new PushButton("+").click(() -> f.f.add(0.1f)), 0.15f);
-                    Windo xMinus = sprout(x, new PushButton("-").click(() -> f.f.subtract(0.1f)), 0.15f);
-
-                    Gridding tick = new PulseChip();
-                    add(tick).pos(0, 0, 200, 200);
-
-                    {
-
-                        AtomicBoolean state = new AtomicBoolean(false);
-                        Port out = LabeledPort.generic();
-                        Port in = new Port((z) -> {
-                            if (z == TRUE) {
-                                out.out(state.getAndSet(!state.getOpaque())); //TODO really make atomic
-                            }
-                        });
-
-                        Gridding inverter = new Gridding(new LabeledPane("trigger", in), new LabeledPane("state", out)) {
-                            @Override
-                            protected void paintIt(GL2 gl, SurfaceRender r) {
-
-                                if (state.getOpaque()) {
-                                    gl.glColor4f(0, 0.5f, 0, 0.5f);
-                                } else {
-                                    gl.glColor4f(0.5f, 0f, 0, 0.5f);
-                                }
-
-                                Draw.rect(bounds, gl);
-                            }
-                        };
-                        add(inverter).pos(70, 70, 140, 140);
-
-                        //add(new SwitchChip(4)).pos(170, 170, 240, 240);
-                        add(new FunctionSelectChip<>(
-                                Double.class, Double.class,
-                                Map.of("sin", Math::sin, "cos", Math::cos))).pos(170, 170, 240, 240);
-                    }
-
-                    //add(LabeledPort.generic()).pos(10, 10, 50, 50);
-                }
-            };
-            SpaceGraph.window(g, 1000, 1000);
-
-
-        }
-
-    }
+//    public static class SproutTest {
+//        public static void main(String[] args) {
+//            GraphEdit<Surface> g = new GraphEdit<>(1000, 1000) {
+//                @Override
+//                protected void starting() {
+//                    super.starting();
+//
+//                    FloatRangePort f = new FloatRangePort(50f, 1, 100);
+//                    Windo x = add(new LabeledPane("ms", f));
+//                    x.pos(100, 100, 400, 400);
+//                    Windo xPlus = sprout(x, new PushButton("+").click(() -> f.f.add(0.1f)), 0.15f);
+//                    Windo xMinus = sprout(x, new PushButton("-").click(() -> f.f.subtract(0.1f)), 0.15f);
+//
+//                    Gridding tick = new PulseChip();
+//                    add(tick).pos(0, 0, 200, 200);
+//
+//                    {
+//
+//                        AtomicBoolean state = new AtomicBoolean(false);
+//                        Port out = LabeledPort.generic();
+//                        Port in = new Port((z) -> {
+//                            if (z == TRUE) {
+//                                out.out(state.getAndSet(!state.getOpaque())); //TODO really make atomic
+//                            }
+//                        });
+//
+//                        Gridding inverter = new Gridding(new LabeledPane("trigger", in), new LabeledPane("state", out)) {
+//                            @Override
+//                            protected void paintIt(GL2 gl, SurfaceRender r) {
+//
+//                                if (state.getOpaque()) {
+//                                    gl.glColor4f(0, 0.5f, 0, 0.5f);
+//                                } else {
+//                                    gl.glColor4f(0.5f, 0f, 0, 0.5f);
+//                                }
+//
+//                                Draw.rect(bounds, gl);
+//                            }
+//                        };
+//                        add(inverter).pos(70, 70, 140, 140);
+//
+//                        //add(new SwitchChip(4)).pos(170, 170, 240, 240);
+//                        add(new FunctionSelectChip<>(
+//                                Double.class, Double.class,
+//                                Map.of("sin", Math::sin, "cos", Math::cos))).pos(170, 170, 240, 240);
+//                    }
+//
+//                    //add(LabeledPort.generic()).pos(10, 10, 50, 50);
+//                }
+//            };
+//            SpaceGraph.window(g, 1000, 1000);
+//
+//
+//        }
+//
+//    }
 
     public static class AutoAdaptTest {
 
         public static void main(String[] args) {
             GraphEdit w = newWallWindow();
             w.add(new IntPort()).pos(100, 100, 400, 400);
+            w.add(new IntPort()).pos(100, 100, 400, 400);
+            w.add(new IntPort()).pos(100, 100, 400, 400);
+            w.add(new IntPort()).pos(100, 100, 400, 400);
+
             w.add(new TypedPort<>(Tensor.class)).pos(100, 100, 400, 400);
         }
     }

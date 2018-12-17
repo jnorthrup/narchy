@@ -1,5 +1,7 @@
 package spacegraph.space2d.widget.windo;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Iterables;
 import jcog.data.graph.*;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
@@ -7,28 +9,32 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.DoubleClicking;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.collection.MutableListContainer;
+import spacegraph.space2d.container.collection.MutableMapContainer;
+import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.unit.Animating;
 import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ProtoWidget;
 import spacegraph.space2d.widget.meta.WizardFrame;
 import spacegraph.space2d.widget.port.util.Wire;
-import spacegraph.space2d.widget.shape.VerletSurface;
-import toxi.geom.Vec2D;
-import toxi.physics2d.VerletParticle2D;
-import toxi.physics2d.behavior.AttractionBehavior2D;
-import toxi.physics2d.spring.VerletSpring2D;
+import spacegraph.space2d.widget.text.BitmapLabel;
+import spacegraph.space2d.widget.windo.util.Box2DGraphEditPhysics;
+import spacegraph.space2d.widget.windo.util.GraphEditPhysics;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * wall which organizes its sub-surfaces according to 2D phys dynamics
  */
-public class GraphEdit<S extends Surface> extends Wall<S> {
+public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, Windo> {
 
+    final GraphEditPhysics physics =
+            //new VerletGraphEditPhysics();
+            new Box2DGraphEditPhysics();
 
     public GraphEdit() {
         super();
@@ -42,7 +48,6 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     public GraphEdit(RectFloat bounds) {
         this();
         pos(bounds);
-        physics.pos(bounds);
     }
 
     /**
@@ -59,26 +64,21 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     /**
      * for links and other supporting geometry that is self-managed
      */
-    final MutableListContainer raw = new MutableListContainer(); /* {
+    public final MutableListContainer raw = new MutableListContainer(); /* {
         @Override
         protected boolean tangible() {
             return true;
         }
     };*/
 
-    protected final VerletSurface physics = new VerletSurface();
 
     private final DoubleClicking doubleClicking;
 
     @Override
     protected void starting() {
 
-        physics.physics.setDrag(0.25f);
 
-        physics.debugRender.set(false);
-
-        physics.start(this);
-        physics.pos(bounds);
+        physics.surface = physics.start(this);
 
         raw.start(this);
 
@@ -87,7 +87,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
     }
 
     public Windo add(Surface x) {
-        return add(x, (xx) -> new MyWindo(xx));
+        return add(x, (xx) -> new ManagedWindo(xx));
     }
 
     private void removingComponent(Surface s) {
@@ -96,13 +96,81 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
         }
     }
 
+
     @Override
     public void doLayout(int dtMS) {
-        physics.pos(bounds);
+        physics.surface.pos(bounds);
         raw.pos(bounds);
-        super.doLayout(dtMS);
+        //w.fence(bounds);
+        forEach(w -> {
+            if (w.parent==null)
+                w.start(GraphEdit.this);
+            w.layout();
+        });
+    }
+    public @Nullable Windo get(Surface t) {
+        return getValue(t);
     }
 
+    @Override
+    public Windo remove(Object key) {
+        Windo w = super.remove(key);
+        if (w!=null) {
+            w.stop();
+            return w;
+        }
+        return null;
+    }
+
+
+
+    /** uses put() semantics */
+    public final Windo add(Surface x, Function<Surface,Windo> windowize) {
+        Windo w = computeIfAbsent(x, (xx) -> {
+            Windo ww = windowize.apply(xx);
+            if (ww!=null && parent!=null) {
+                ww.start(this);
+            }
+            return ww;
+        }).value;
+        return w;
+    }
+
+    public final Windo add(S x, float w, float h) {
+        Windo y = add(x);
+        y.size(w, h);
+        return y;
+    }
+
+    class Debugger extends Gridding {
+
+        private final BitmapLabel boundsInfo, children;
+
+        {
+            add(boundsInfo = new BitmapLabel());
+            add(children = new BitmapLabel());
+
+        }
+
+        void update() {
+            boundsInfo.text(GraphEdit.this.bounds.toString());
+
+            children.text(Joiner.on("\n").join(Iterables.transform(
+                    GraphEdit.this.keySet(), t -> info(t, GraphEdit.this.get(t)))));
+        }
+
+        protected String info(Surface x, Windo w) {
+            return x + "\n  " + (w != null ? w.bounds : "?");
+        }
+
+    }
+
+
+
+    public Animating<Debugger> debugger() {
+        Debugger d = new Debugger();
+        return new Animating<>(d, d::update, 0.25f);
+    }
     @Override
     protected final void stopping() {
         physics.stop();
@@ -133,7 +201,7 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 
     @Override
     public void forEach(Consumer<Surface> each) {
-        each.accept(physics);
+        each.accept(physics.surface);
         each.accept(raw);
         super.forEach(each);
     }
@@ -346,26 +414,26 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
         z.root().zoom(z);
     }
 
-    public void removeRaw(Surface x) {
-        raw.remove(x);
-    }
+//    public void removeRaw(Surface x) {
+//        raw.remove(x);
+//    }
 
-    public Windo sprout(S from, S toAdd, float scale) {
-        Windo to = add(toAdd);
-        to.pos(RectFloat.XYWH(from.cx(), from.cy(), from.w() * scale, from.h() * scale));
-
-        VerletParticle2D toParticle = physics.bind(to, VerletSurface.VerletSurfaceBinding.Center, false);
-        toParticle.addBehaviorGlobal(new AttractionBehavior2D<>(toParticle, 100 /* TODO auto radius*/, -20));
-
-        VerletParticle2D fromParticle = physics.bind(from, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
-
-
-        physics.physics.addSpring(new VerletSpring2D(fromParticle, toParticle, 10, 0.5f));
-
-//        cable(from, fromParticle, to, toParticle);
-
-        return to;
-    }
+//    public Windo sprout(S from, S toAdd, float scale) {
+//        Windo to = add(toAdd);
+//        to.pos(RectFloat.XYWH(from.cx(), from.cy(), from.w() * scale, from.h() * scale));
+//
+//        VerletParticle2D toParticle = physics.bind(to, VerletSurface.VerletSurfaceBinding.Center, false);
+//        toParticle.addBehaviorGlobal(new AttractionBehavior2D<>(toParticle, 100 /* TODO auto radius*/, -20));
+//
+//        VerletParticle2D fromParticle = physics.bind(from, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
+//
+//
+//        physics.physics.addSpring(new VerletSpring2D(fromParticle, toParticle, 10, 0.5f));
+//
+////        cable(from, fromParticle, to, toParticle);
+//
+//        return to;
+//    }
 
 
     /**
@@ -379,30 +447,17 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
 
 
     private Link link(Wire w, Surface a, Surface b) {
-        VerletParticle2D ap = physics.bind(a, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
-        VerletParticle2D bp = physics.bind(b, VerletSurface.VerletSurfaceBinding.NearestSurfaceEdge);
-
-        return link(w, a, ap, b, bp);
-    }
-
-
-    private Link link(@Nullable Wire w, Surface a, VerletParticle2D ap, Surface b, VerletParticle2D bp) {
-
         if (w == null)
             w = new Wire(a, b);
-
-
-        Link l = new Link.DefaultLink(w, a, ap, b, bp, this);
-
-
-        return l;
+        return physics.link(w, a, b);
     }
 
 
     /**
      * undirected link
      */
-    @Nullable public Wire addWire(final Wire wire) {
+    @Nullable
+    public Wire addWire(final Wire wire) {
 
         Surface aa = wire.a, bb = wire.b;
 
@@ -429,9 +484,6 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
             if (!wire.connect()) {
                 return null;
             }
-
-
-
 
 
 //                W.invoke(() -> {
@@ -474,372 +526,38 @@ public class GraphEdit<S extends Surface> extends Wall<S> {
         }
     }
 
-    private class MyWindo extends Windo {
 
-        final Vec2D center;
-        private final Surface xx;
-        AttractionBehavior2D repel;
+    class ManagedWindo extends Windo {
 
-        public MyWindo(Surface xx) {
-            super(new Scale(new MetaFrame(xx), 0.98f));
-            this.xx = xx;
-            center = new Vec2D();
-            repel = new AttractionBehavior2D(center, 1, 0);
+        private final Surface content;
+
+
+        public ManagedWindo(Surface content) {
+            super(new Scale(new MetaFrame(content), 0.98f));
+            this.content = content;
         }
 
         @Override
         protected void starting() {
             super.starting();
-            physics.physics.addBehavior(repel);
-        }
-
-        @Override
-        protected boolean prePaint(SurfaceRender r) {
-            center.set(cx(), cy());
-            repel.setRadius(radius()*2);
-            repel.setStrength(-(float) (Math.sqrt(bounds.area())*0.1f));
-
-            return super.prePaint(r);
+            physics.add(this);
         }
 
         @Override
         protected void stopping() {
-            physics.physics.removeBehavior(repel);
+            physics.remove(this);
 
             //remove any associated links, recursively
-            if (xx instanceof Container) {
-                ((Container) xx).forEachRecursively(GraphEdit.this::removingComponent);
+            if (content instanceof Container) {
+                ((Container) content).forEachRecursively(GraphEdit.this::removingComponent);
             } else {
-                removingComponent(xx);
+                removingComponent(content);
             }
+
             super.stopping();
         }
     }
-
-//    @Deprecated public class PhyWindow extends Windo {
-//        //public final Body2D body;
-//        //private final PolygonShape shape;
-//
-//
-//        PhyWindow(RectFloat2D initialBounds, boolean collides) {
-//            super();
-//            pos(initialBounds);
-//
-//
-////            this.shape =
-////
-////                    PolygonShape.box(initialBounds.w / 2, initialBounds.h / 2);
-////
-////            FixtureDef fd = new FixtureDef(shape, 1f, 0.75f);
-////            if (!collides) {
-////                fd.filter.maskBits = 0;
-////            }
-////
-////            fd.setRestitution(0.1f);
-////
-////
-////            W.addBody(this.body = new WallBody(initialBounds.cx(), initialBounds.cy()), fd);
-////            body.setLinearDamping(linearDampening);
-////            if (!collides) {
-////                body.setGravityScale(0f);
-////            }
-//        }
-//
-////        void setCollidable(boolean c) {
-////            W.invoke(() -> {
-////                body.fixtures.filter.maskBits = (c ? 0xffff : 0);
-////                body.setGravityScale(c ? 1f : 0f);
-////                body.setAwake(true);
-////            });
-////        }
-//
-//        @Override
-//        public boolean fingerable(DragEdit d) {
-//            if (d == DragEdit.MOVE)
-//                return false;
-//
-//
-//            return super.fingerable(d);
-//        }
-//
-//        public void remove() {
-//            synchronized (links) {
-//                links.removeNode(this);
-//            }
-////            W.removeBody(this.body);
-//            //Dyn2DSurface.this.remove(this);
-//            throw new TODO();
-//        }
-//
-//
-//        public Pair<PhyWindow, Wire> sprout(Surface target, float scale) {
-//            return sprout(target, scale, 1f);
-//        }
-//
-//        /**
-//         * convenience method for essentially growing a separate window
-//         * of a proportional size with some content (ex: a port),
-//         * and linking it to this window via a constraint.
-//         */
-//        Pair<PhyWindow, Wire> sprout(Surface target, float scale, float targetAspect) {
-//            PhyWindow sprouted = spawn(target, scale, targetAspect);
-//
-//            return pair(sprouted, link(target));
-//        }
-//
-////        /**
-////         * spawns and attaches a new component to the boundary of this
-////         */
-////        public PhyWindow grow(Surface target, float scale, float targetAspect, Tuple2f normal) {
-////
-////            PhyWindow x = spawn(target, scale, targetAspect);
-////
-////            W.invoke(() -> {
-////                Tuple2f myWeldLocal, theirWeldLocal;
-////                RayCastInput input = new RayCastInput();
-////                RayCastOutput output = new RayCastOutput();
-////                {
-////                    input.p2.set(0, 0);
-////                    float r = radius() * 2;
-////                    input.p1.set(0 + normal.x * r, 0 + normal.y * r);
-////                    input.maxFraction = 1.0f;
-////
-////                    boolean hit = body.fixtures.raycast(output, input, 0);
-////                    assert (hit);
-////                    Tuple2f hitPoint = (input.p2.sub(input.p1)).scaled(output.fraction).added(input.p1);
-////                    myWeldLocal = hitPoint;
-////                }
-////                {
-////                    input.p2.set(0, 0);
-////                    float r = x.radius() * 2;
-////                    input.p1.set(0 - normal.x * r, 0 - normal.y * r);
-////                    input.maxFraction = 1.0f;
-////
-////                    boolean hit = x.body.fixtures.raycast(output, input, 0);
-////                    assert (hit);
-////                    Tuple2f hitPoint = (input.p2.sub(input.p1)).scaled(output.fraction).added(input.p1);
-////                    theirWeldLocal = hitPoint;
-////                }
-////
-////                WeldJoint j = weld(x, myWeldLocal, theirWeldLocal);
-////
-////            });
-////            return x;
-////        }
-//
-////        private WeldJoint weld(PhyWindow x, Tuple2f myLocal, Tuple2f theirLocal) {
-////            WeldJointDef jd = new WeldJointDef();
-////            jd.bodyA = this.body;
-////            jd.bodyB = x.body;
-////            jd.localAnchorA.set(myLocal.scaled(0.5f));
-////            jd.localAnchorB.set(theirLocal.scaled(0.5f));
-////            jd.referenceAngle = ((v2) myLocal).angle(theirLocal);
-////            jd.collideConnected = false;
-////            jd.dampingRatio = 0.5f;
-////            jd.frequencyHz = 0.25f;
-////
-////            WeldJoint j = new WeldJoint(W.pool, jd);
-////            W.addJoint(j);
-////            return j;
-////        }
-//
-//        PhyWindow spawn(Surface target, float scale, float targetAspect) {
-//            float W = w();
-//            float H = h();
-//            float sprouterRadius = radius();
-//            float w = W * scale;
-//            float h = H * scale;
-//
-//
-//            RectFloat2D sproutSize = RectFloat2D.XYWH(0, 0, w, h);
-//
-//
-//            float minRadius = sprouterRadius + sproutSize.radius();
-//
-//            float a = (float) (Math.random() * 2 * (float) Math.PI);
-//            float dx = cx() + (float) (minRadius * Math.cos(a));
-//            float dy = cy() + (float) (minRadius * Math.sin(a));
-//
-//            return put(target, sproutSize.move(dx, dy, Spatialization.EPSILONf));
-//        }
-//
-//
-//        /**
-//         * assumes the PhyWindow wraps *THE* source
-//         */
-//        Wire link(Surface target) {
-//            assert (children().length == 1);
-//            return link(get(0), target);
-//        }
-//
-//
-//
-//        /**
-//         * convenience method for creating a basic undirected link joint.
-//         * no endpoint is necessarily an owner of the other so
-//         * it should not matter who is the callee.
-//         * <p>
-//         * duplicate links are prevented.
-//         */
-//        public Wire link(Surface source, Surface target) {
-//            return link(new Wire(source, target));
-//        }
-//
-//        /**
-//         * undirected link
-//         */
-//        Wire link(Wire wire) {
-//
-//            Surface aa = wire.a;
-//            Surface bb = wire.b;
-//
-//            synchronized (links) {
-//
-//                NodeGraph.MutableNode<Surface, Wire> A = links.addNode(aa);
-//
-//                Iterable<FromTo<Node<spacegraph.space2d.Surface, spacegraph.space2d.widget.windo.Wire>, Wire>> edges = A.edges(false, true);
-//                if (edges != null) {
-//
-//                    for (FromTo<Node<spacegraph.space2d.Surface, spacegraph.space2d.widget.windo.Wire>, Wire> e : edges) {
-//                        Wire ee = e.id();
-//                        if (wire.equals(ee))
-//                            return ee;
-//                    }
-//                }
-//
-//                if (!wire.connect()) {
-//                    return null;
-//                }
-//
-//                NodeGraph.MutableNode<Surface, Wire> B = links.addNode(bb);
-//                links.addEdge(A, wire, B);
-//
-//
-////                W.invoke(() -> {
-////
-////
-////                    {
-////
-////
-////                        Snake s = snake(wire, () -> unlink(aa, bb));
-////
-////                    }
-////
-////
-////                });
-//            }
-//
-//            return wire;
-//
-//        }
-//
-//
-//        void sproutBranch(String label, float scale, float childScale, Iterable<Surface> children) {
-//            CheckBox toggle = new CheckBox(label);
-//            Pair<PhyWindow, Wire> toggleWindo = sprout(toggle, scale);
-////            List<PhyWindow> built = new FasterList(0);
-////            toggle.on((cb, enabled) -> W.invoke(() -> {
-////
-////                if (enabled) {
-////                    for (Surface x : children) {
-////                        built.add(toggleWindo.getOne().sprout(x, childScale).getOne());
-////                    }
-////                } else {
-////
-////                    built.forEach(PhyWindow::remove);
-////                    built.clear();
-////                }
-////
-////            }));
-//        }
-//
-//        public void sproutBranch(String label, float scale, float childScale, Supplier<Surface[]> children) {
-//            sproutBranch(label, scale, childScale, ArrayIterator.iterable(children.get()));
-//        }
-//
-//        @Override
-//        public boolean tangible() {
-//            return true;
-//        }
-//
-//    }
 }
-
-//private class WallBody extends Body2D {
-//
-//    RectFloat2D physBounds = null;
-//
-//    WallBody(float cx, float cy) {
-//        super(new BodyDef(BodyType.DYNAMIC, new v2(cx / scaling, cy / scaling)), Dyn2DSurface.this.W);
-//
-//        setData(this);
-//
-//        setFixedRotation(true);
-//        this.physBounds = bounds;
-//    }
-//
-//    @Override
-//    protected void onRemoval() {
-//
-//        Dyn2DSurface.PhyWindow.this.remove();
-//    }
-//
-//    @Override
-//    public boolean preUpdate() {
-//
-//        RectFloat2D r = bounds;
-//        if (r != physBounds) {
-//
-//            if (!Util.equals(r.w, physBounds.w, SHAPE_SIZE_EPSILON) ||
-//                    !Util.equals(r.h, physBounds.h, SHAPE_SIZE_EPSILON)) {
-//                updateFixtures((f) -> f.setShape(
-//                        shape.setAsBox(r.w / 2 / scaling, r.h / 2 / scaling)
-//
-//                ));
-//            }
-//
-//
-//            v2 target = new v2(r.cx() / scaling, r.cy() / scaling);
-//
-//            if (setTransform(target, 0, Spatialization.EPSILONf))
-//                setAwake(true);
-//        }
-//
-//        return true;
-//    }
-//
-//    @Override
-//    public void postUpdate() {
-//
-//
-//        Transform t = this;
-//        Tuple2f p = t.pos;
-//
-//
-//        float w = w(), h = h();
-//
-//        RectFloat2D r = RectFloat2D.XYWH(p.x * scaling, p.y * scaling, w, h);
-//        if (!r.equals(physBounds, Spatialization.EPSILONf)) {
-//            pos(physBounds = r);
-//        }
-//
-//    }
-//}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

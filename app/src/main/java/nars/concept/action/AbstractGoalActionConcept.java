@@ -236,22 +236,18 @@ public class AbstractGoalActionConcept extends ActionConcept {
         }
 
         SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd, evi);
-        attn.take(curiosity, attn.elementPri(n));
+        attn.ensure(curiosity, attn.elementPri(n));
         return curiosity;
     }
 
     @Deprecated @Nullable public SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long now, long next, NAR nar) {
 
         SeriesBeliefTable.SeriesRemember r = ((SensorBeliefTables) beliefs()).add(f, now, next,
-                attn.elementPri(nar), this, nar.dur(), nar);
-        if (r!=null) {
+                this, nar.dur(), nar);
 
-            float rPri = r.input.priElseZero();
-//            if (rPri < ScalarValue.EPSILON)
-//                throw new WTF();
+        if (r!=null)
+            attn.ensure(r.input, attn.elementPri(nar));
 
-            attn.taken(rPri);
-        }
         return r;
     }
 

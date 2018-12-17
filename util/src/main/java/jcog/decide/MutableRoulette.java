@@ -98,8 +98,9 @@ public final class MutableRoulette {
 
         int l = w.length;
         if (l > 1 && n > 1) {
-            //this.direction = rng.nextBoolean();
-            //this.i = rng.nextInt(l);
+//            this.direction = rng.nextBoolean();
+//            this.i = rng.nextInt(l);
+
             int r = rng.nextInt(); //using only one RNG call
             this.direction = r >= 0;
             this.i = (r & 0b0111111111111111111111111111111) % l;
@@ -184,7 +185,7 @@ public final class MutableRoulette {
                 distance -= wi;
 //                    if (idle++ == count + 1)
 //                        return -1; //emergency bailout: WTF
-            } while (distance > 0 && wi < EPSILON);
+            } while (distance > 0);
 
 
             float nextWeight = weightUpdate.valueOf(wi);

@@ -21,7 +21,7 @@ public class BeliefTables implements BeliefTable {
 
     public static final BeliefTables Empty = new BeliefTables(LimitedFasterList.Empty) {
         @Override
-        public void match(Answer r) {
+        public void match(Answer a) {
 
         }
 
@@ -54,14 +54,16 @@ public class BeliefTables implements BeliefTable {
     }
 
     @Override
-    public void match(Answer r) {
-        tables.allSatisfyWith((t,rr) -> {
-            if (rr.active()) {
-                t.match(rr);
+    public void match(Answer a) {
+        tables.allSatisfyWith((t,aa) -> {
+            if (aa.active()) {
+                int triesBefore = aa.triesRemain;
+                t.match(aa);
+                aa.triesRemain = triesBefore; //restore for next
                 return true;
             }
             return false;
-        }, r);
+        }, a);
     }
 
     @Override

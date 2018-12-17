@@ -153,7 +153,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 return (e >= futureThresh ? presentAndFutureBoost : 1f) *
                         x.evi(now, dur) * (1 + (e-s)/2f)/*x.range()*/;
                         //x.evi(now, dur);
-                        ///*w2cSafe*/(x.evi(now, dur)) * (e-s+1)/*x.range()*/;
+                        //x.evi(now, dur) * (e-s+1)/*x.range()*/;
             }
 
             //(TruthIntegration.eviAvg(x, 0))/ (1 + x.maxTimeTo(now)/((float)dur));
@@ -711,11 +711,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     private static float mergeScoreFactor(Task a, Task b) {
-//        float dFreq = Math.abs(a.freq() - b.freq());
+        float dFreq = Math.abs(a.freq() - b.freq());
 //        if (dFreq > 0.5f)
-//            return 1 / (1 + dFreq);
+            return 1 / (1 + dFreq);
 //        else
-            return 1;
+//            return 1;
     }
 
 

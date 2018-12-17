@@ -110,7 +110,7 @@ public class Tetris extends NAgentX {
         //                })
         final Atomic GRID = Atomic.the("grid");
         Bitmap2DSensor<Bitmap2D> c = pixels = new Bitmap2DSensor<>(
-                (x, y) -> $.inh($.p(x - (grid.width()/2) /* mirror */, y), GRID),
+                (x, y) -> $.inh($.p(x, y), GRID),
                 grid, n);
         addSensor(c);
         pixels.resolution(0.25f);

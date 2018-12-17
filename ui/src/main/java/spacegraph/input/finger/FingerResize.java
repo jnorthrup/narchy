@@ -3,21 +3,21 @@ package spacegraph.input.finger;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.space2d.widget.windo.Windo;
+import spacegraph.space2d.widget.windo.util.DragEdit;
 
 public abstract class FingerResize extends FingerDragging {
     private final static float aspectRatioRatioLimit = 0.1f;
-    private final Windo.DragEdit mode;
+    private final DragEdit mode;
     private final boolean invY;
     private RectFloat before;
 
     private v2 posStart;
 
-    FingerResize(int button, Windo.DragEdit mode) {
+    FingerResize(int button, DragEdit mode) {
         this(button, mode, false);
     }
 
-    FingerResize(int button, Windo.DragEdit mode, boolean invertY) {
+    FingerResize(int button, DragEdit mode, boolean invertY) {
         super(button);
         this.mode = mode;
         this.invY = invertY;
