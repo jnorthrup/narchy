@@ -47,6 +47,7 @@ public class PolygonShape extends Shape {
     public final v2 centroid = new v2();
 
     /**
+     * vertices in local coordinates.
      * The vertices of the shape. Note: use getVertexCount(), not m_vertices.length, to get number of
      * active vertices.
      */
@@ -63,11 +64,8 @@ public class PolygonShape extends Shape {
      */
     public int vertices;
 
-    
-    private final v2 pool1 = new v2();
-    private final v2 pool2 = new v2();
-    private final v2 pool3 = new v2();
-    private final v2 pool4 = new v2();
+
+
     private final Transform poolt1 = new Transform();
 
     public PolygonShape() {
@@ -91,13 +89,13 @@ public class PolygonShape extends Shape {
     }
 
     public PolygonShape(float... xy) {
-        this(xy.length/2);
-        v2[] t = new v2[xy.length/2];
+        this(xy.length / 2);
+        v2[] t = new v2[xy.length / 2];
         int j = 0;
-        for (int i = 0; i< xy.length; i+=2) {
+        for (int i = 0; i < xy.length; i += 2) {
             t[j++] = new v2(xy[i], xy[i + 1]);
         }
-        set(t, xy.length/2);
+        set(t, xy.length / 2);
     }
 
     public final Shape clone() {
@@ -124,10 +122,8 @@ public class PolygonShape extends Shape {
     public final PolygonShape set(final v2[] verts, final int num) {
         assert (3 <= num && num <= Settings.maxPolygonVertices);
 
-        
-        
+        v2 pool1 = new v2(), pool2 = new v2();
 
-        
         int i0 = 0;
         float x0 = verts[0].x;
         for (int i = 1; i < num; ++i) {
@@ -159,7 +155,7 @@ public class PolygonShape extends Shape {
                     ie = j;
                 }
 
-                
+
                 if (c == 0.0f && v.lengthSquared() > r.lengthSquared()) {
                     ie = j;
                 }
@@ -175,7 +171,7 @@ public class PolygonShape extends Shape {
 
         this.vertices = m;
 
-        
+
         for (int i = 0; i < vertices; ++i) {
             if (vertex[i] == null) {
                 vertex[i] = new v2();
@@ -194,7 +190,7 @@ public class PolygonShape extends Shape {
             normals[i].normalize();
         }
 
-        
+
         computeCentroidToOut(vertex, vertices, centroid);
 
         return this;
@@ -204,9 +200,11 @@ public class PolygonShape extends Shape {
 
         return new PolygonShape(4).setAsBox(hx, hy);
     }
+
     public static PolygonShape box(float x1, float y1, float x2, float y2) {
         return new PolygonShape(4).setAsBox(x1, y1, x2, y2);
     }
+
     /**
      * Build vertices to represent an axis-aligned box.
      *
@@ -228,23 +226,12 @@ public class PolygonShape extends Shape {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
     public static spacegraph.space2d.phys.collision.shapes.PolygonShape regular(int n, float r) {
         PolygonShape p = new PolygonShape(n);
         p.vertices = n;
         for (int i = 0; i < n; i++) {
             double theta = i / (float) n * 2 * Math.PI;
-            p.vertex[i].set( (float)(r * Math.cos(theta)), ((float)(r * Math.sin(theta))));
+            p.vertex[i].set((float) (r * Math.cos(theta)), ((float) (r * Math.sin(theta))));
         }
         p.centroid.setZero();
         p.set(p.vertex, n);
@@ -275,13 +262,14 @@ public class PolygonShape extends Shape {
         xf.pos.set(center);
         xf.set(angle);
 
-        
+
         for (int i = 0; i < vertices; ++i) {
             Transform.mulToOut(xf, vertex[i], vertex[i]);
             Rot.mulToOut(xf, normals[i], normals[i]);
         }
         return this;
     }
+
     private PolygonShape setAsBox(float x1, float y1, float x2, float y2) {
         vertices = 4;
         vertex[0].set(x1, y1);
@@ -300,13 +288,14 @@ public class PolygonShape extends Shape {
         xf.pos.set(center);
         xf.set(0);
 
-        
+
         for (int i = 0; i < vertices; ++i) {
             Transform.mulToOut(xf, vertex[i], vertex[i]);
             Rot.mulToOut(xf, normals[i], normals[i]);
         }
         return this;
     }
+
     public int getChildCount() {
         return 1;
     }
@@ -360,7 +349,7 @@ public class PolygonShape extends Shape {
 
         for (int i = 1; i < vertices; ++i) {
             v2 v2 = vertex[i];
-            
+
             float vx = (xfqc * v2.x - xfqs * v2.y) + xfpx;
             float vy = (xfqs * v2.x + xfqc * v2.y) + xfpy;
             lower.x = lower.x < vx ? lower.x : vx;
@@ -457,8 +446,8 @@ public class PolygonShape extends Shape {
         final float xfqs = xf.s;
         final v2 xfp = xf.pos;
         float tempx, tempy;
-        
-        
+
+
         tempx = input.p1.x - xfp.x;
         tempy = input.p1.y - xfp.y;
         final float p1x = xfqc * tempx + xfqs * tempy;
@@ -479,9 +468,8 @@ public class PolygonShape extends Shape {
         for (int i = 0; i < vertices; ++i) {
             v2 normal = normals[i];
             v2 vertex = this.vertex[i];
-            
-            
-            
+
+
             float tempxn = vertex.x - p1x;
             float tempyn = vertex.y - p1y;
             final float numerator = normal.x * tempxn + normal.y * tempyn;
@@ -492,19 +480,16 @@ public class PolygonShape extends Shape {
                     return false;
                 }
             } else {
-                
-                
-                
-                
-                
+
+
                 if (denominator < 0.0f && numerator < lower * denominator) {
-                    
-                    
+
+
                     lower = numerator / denominator;
                     index = i;
                 } else if (denominator > 0.0f && numerator < upper * denominator) {
-                    
-                    
+
+
                     upper = numerator / denominator;
                 }
             }
@@ -518,7 +503,7 @@ public class PolygonShape extends Shape {
 
         if (index >= 0) {
             output.fraction = lower;
-            
+
             v2 normal = normals[index];
             v2 out = output.normal;
             out.x = xfqc * normal.x - xfqs * normal.y;
@@ -534,8 +519,8 @@ public class PolygonShape extends Shape {
         out.set(0.0f, 0.0f);
         float area = 0.0f;
 
-        
-        
+        v2 pool1 = new v2(), pool2 = new v2(), pool3 = new v2();
+
         final v2 pRef = pool1;
         pRef.setZero();
 
@@ -545,7 +530,7 @@ public class PolygonShape extends Shape {
         final float inv3 = 1.0f / 3.0f;
 
         for (int i = 0; i < count; ++i) {
-            
+
             final v2 p1 = pRef;
             final v2 p2 = vs[i];
             final v2 p3 = i + 1 < count ? vs[i + 1] : vs[0];
@@ -558,40 +543,19 @@ public class PolygonShape extends Shape {
             final float triangleArea = 0.5f * D;
             area += triangleArea;
 
-            
+
             e1.set(p1).added(p2).added(p3).scaled(triangleArea * inv3);
             out.addLocal(e1);
         }
 
-        
+
         assert (area > Settings.EPSILON);
         out.scaled(1.0f / area);
     }
 
     public void computeMass(final MassData massData, float density) {
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
+        v2 pool1 = new v2(), pool2 = new v2(), pool3 = new v2(), pool4 = new v2();
 
         assert (vertices >= 3);
 
@@ -600,11 +564,10 @@ public class PolygonShape extends Shape {
         float area = 0.0f;
         float I = 0.0f;
 
-        
-        
+
         final v2 s = pool2;
         s.setZero();
-        
+
         for (int i = 0; i < vertices; ++i) {
             s.addLocal(vertex[i]);
         }
@@ -616,7 +579,7 @@ public class PolygonShape extends Shape {
         final v2 e2 = pool4;
 
         for (int i = 0; i < vertices; ++i) {
-            
+
             e1.set(vertex[i]).subbed(s);
             e2.set(s).negated().added(i + 1 < vertices ? vertex[i + 1] : vertex[0]);
 
@@ -625,7 +588,7 @@ public class PolygonShape extends Shape {
             final float triangleArea = 0.5f * D;
             area += triangleArea;
 
-            
+
             center.x += triangleArea * k_inv3 * (e1.x + e2.x);
             center.y += triangleArea * k_inv3 * (e1.y + e2.y);
 
@@ -638,22 +601,16 @@ public class PolygonShape extends Shape {
             I += (0.25f * k_inv3 * D) * (intx2 + inty2);
         }
 
-        
 
-
-        
+        area = Math.max(Settings.EPSILONsqr, area); //prevent div by zero
         massData.mass = density * area;
 
-        
-        assert (area > Settings.EPSILON);
+
         center.scaled(1.0f / area);
         massData.center.set(center).added(s);
 
-        
-        massData.I = I * density;
 
-        
-        massData.I += massData.mass * (v2.dot(massData.center, massData.center));
+        massData.I = I * density + (massData.mass * v2.dot(massData.center, massData.center));
     }
 
     /**
@@ -662,10 +619,14 @@ public class PolygonShape extends Shape {
      * @return
      */
     public boolean validate() {
+
+        v2 pool1 = new v2(), pool2 = new v2();
+
         for (int i = 0; i < vertices; ++i) {
             int i1 = i;
             int i2 = i < vertices - 1 ? i1 + 1 : 0;
             v2 p = vertex[i1];
+
             v2 e = pool1.set(vertex[i2]).subbed(p);
 
             for (int j = 0; j < vertices; ++j) {
@@ -673,29 +634,13 @@ public class PolygonShape extends Shape {
                     continue;
                 }
 
-                v2 v = pool2.set(vertex[j]).subbed(p);
-                float c = v2.cross(e, v);
-                if (c < 0.0f) {
+                if (v2.cross(e, pool2.set(vertex[j]).subbed(p)) < 0.0f) {
                     return false;
                 }
             }
         }
 
         return true;
-    }
-
-    /**
-     * Get the vertices in local coordinates.
-     */
-    public v2[] getVertex() {
-        return vertex;
-    }
-
-    /**
-     * Get the edge normal vectors. There is one for each vertex.
-     */
-    public v2[] getNormals() {
-        return normals;
     }
 
     /**

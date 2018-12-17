@@ -7,6 +7,7 @@ import jcog.data.graph.*;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.SpaceGraph;
 import spacegraph.input.finger.DoubleClicking;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
@@ -76,6 +77,12 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, W
 
 
     private final DoubleClicking doubleClicking;
+
+    public static <X extends Surface> GraphEdit<X> window(int w, int h) {
+        GraphEdit<X> g = new GraphEdit<X>();
+        SpaceGraph.window(g, w, h);
+        return g;
+    }
 
     @Override
     protected void starting() {

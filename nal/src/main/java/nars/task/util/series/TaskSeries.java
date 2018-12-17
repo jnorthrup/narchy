@@ -116,20 +116,6 @@ public interface TaskSeries<T extends Task> {
         });
     }
 
-//    default T firstContaining(long start, long end) {
-//        if (start == ETERNAL)
-//            return last();
-//
-//        final Task[] found = new Task[1];
-//        whileEach(start, end, true, (x)->{
-//            if (x.contains(start, end)) {
-//                found[0] = x;
-//                return false; //found
-//            }
-//            return true; //keep looking
-//        });
-//        return (T) found[0];
-//    }
 
     T first();
     T last();

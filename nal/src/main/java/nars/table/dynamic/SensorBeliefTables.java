@@ -141,13 +141,13 @@ public class SensorBeliefTables extends BeliefTables {
                 //form new task either because the value changed, or because the latch duration was exceeded
                 long midGap = Tense.dither(Math.max(lastEnd, (lastEnd + nextStart)/2L), nar);
                 assert(midGap >= lastEnd): lastEnd + " " + midGap + ' ' + nextStart;
-                last.setEnd(midGap-1);
+                last.setEnd(Math.max(last.end(), midGap-1));
 
                 if (next == null) {
                     return last;
                 }
 
-                nextStart = midGap; //midGap+1; //start the new task directly after the midpoint between its start and the end of the last task
+                nextStart = Math.min(last.end() + 1, nextStart);
                 nextEnd = Math.max(nextStart, nextEnd);
                 stretchPrev = false;
 

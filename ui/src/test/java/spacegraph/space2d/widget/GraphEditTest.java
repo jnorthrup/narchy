@@ -32,16 +32,7 @@ import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
 
 public class GraphEditTest {
 
-    public static GraphEdit newWallWindow() {
-        GraphEdit w = new GraphEdit(RectFloat.X0Y0WH(0, 0, 1000, 900));
-        SpaceGraph.window(
-                //new Bordering(w).borderSize(Bordering.S, 0.25f).south(w.debugger()),
-                w,
-                1000, 900);
-        return w;
-    }
-
-//    static class TestWallDebugger1 {
+    //    static class TestWallDebugger1 {
 //
 //        public static void main(String[] args) {
 //
@@ -64,7 +55,7 @@ public class GraphEditTest {
 
         public static void main(String[] args) {
 
-            GraphEdit s = newWallWindow();
+            GraphEdit s = GraphEdit.window(1000, 1000);
 
 
             Port A = new Port();
@@ -88,7 +79,7 @@ public class GraphEditTest {
         public static void main(String[] args) {
 
 
-            GraphEdit s = newWallWindow();
+            GraphEdit s = GraphEdit.window(1000, 1000);
 
             Surface mux = new Gridding(HORIZONTAL, new LabeledPane("->", new Gridding(VERTICAL,
                     new Port(),
@@ -159,7 +150,7 @@ public class GraphEditTest {
         {
             //Audio.the().play(TinySpeech.say("eee", 60, 1 ), 1, 1, 0 );
 
-            GraphEdit g = newWallWindow();
+            GraphEdit g = window(1000, 1000);
 
             {
                 TextEdit0 e = new TextEdit0("a b c d e", true);
@@ -290,7 +281,7 @@ public class GraphEditTest {
     public static class AutoAdaptTest {
 
         public static void main(String[] args) {
-            GraphEdit w = newWallWindow();
+            GraphEdit w = GraphEdit.window(1000, 1000);
             w.add(new IntPort()).pos(100, 100, 400, 400);
             w.add(new IntPort()).pos(100, 100, 400, 400);
             w.add(new IntPort()).pos(100, 100, 400, 400);

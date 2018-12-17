@@ -562,7 +562,7 @@ public class NAgent extends NARService implements NSense, NAct {
         }));
     }
 
-    protected final void frame() {
+    private void frame() {
         eventFrame.emit(nar);
     }
 

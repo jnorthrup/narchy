@@ -2,14 +2,12 @@ package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.learn.ql.HaiQ;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
 import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
 import nars.agent.FrameTrigger;
-import nars.agent.util.RLBooster;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
@@ -22,43 +20,39 @@ import nars.sensor.Bitmap2DSensor;
 import nars.task.DerivedTask;
 import nars.term.Term;
 import nars.time.clock.CycleTime;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.meta.ObjectSurface;
+import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.video.Draw;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.stream.Collectors.toList;
-import static jcog.Texts.n4;
 import static nars.Op.GOAL;
 import static nars.Op.IMPL;
-import static spacegraph.SpaceGraph.window;
 
 public class TrackXY_NAR extends NAgentX {
 
     static boolean
-            nars = true, rl = false,
             sourceNumerics = true,
             targetNumerics = false,
             targetCam = true,
             gui = true;
-    static int
-            W = 4, H = 4;
-            //W = 3, H = 1;
-            //W = 5, H = 1;
+
+    //W = 3, H = 1;
+    //W = 5, H = 1;
     public static final int derivationStrength = 8;
     static int dur = 8;
     static float camResolution = 0.1f;
-    static int volMax = 7;
+    static int volMax = 6;
     final Bitmap2DSensor cam;
     private final TrackXY track;
 
 
-    static int experimentTime = 30000;
+    static int experimentTime = 300000;
 
 
     final public AtomicBoolean trainer = new AtomicBoolean(false);
@@ -67,21 +61,23 @@ public class TrackXY_NAR extends NAgentX {
     //final public AtomicBoolean log = new AtomicBoolean(true);
 
 
-    protected TrackXY_NAR(NAR nar, int W, int H) {
+    protected TrackXY_NAR(NAR nar, TrackXY xy) {
         super("trackXY",
                 //FrameTrigger.cycles(W*H*2),
                 FrameTrigger.durs(1),
                 //FrameTrigger.fps(1),
                 nar);
 
+        int W = xy.W;
+        int H = xy.H;
         this.track = new TrackXY(W, H);
 
-        assert(sourceNumerics | targetNumerics | targetCam);
+        assert (sourceNumerics | targetNumerics | targetCam);
 
         if (sourceNumerics) {
-            senseNumberBi($.the("sx"), new FloatNormalized(() -> track.cx, 0, W-1));
+            senseNumberBi($.the("sx"), new FloatNormalized(() -> track.cx, 0, W - 1));
             if (H > 1)
-                senseNumberBi($.the("sy"), new FloatNormalized(() -> track.cy, 0, H-1));
+                senseNumberBi($.the("sy"), new FloatNormalized(() -> track.cy, 0, H - 1));
         }
 
 
@@ -155,33 +151,69 @@ public class TrackXY_NAR extends NAgentX {
 //        }, (t)->log.getOpaque() /*&& t instanceof Task && ((Task)t).isGoal()*/);
 
 
-        onFrame(()->{
-            long now = nar.time();
-           if (trainer.getOpaque()) {
+        onFrame(() -> {
+
+            if (trainer.getOpaque()) {
+                long now = nar.time();
                 if (track.ty < track.cy) {
-                    nar().want(0.1f, $.the("down"), now, now+dur, 1f, 0.02f);
+                    nar().want(0.1f, $.the("down"), now, now + dur, 1f, 0.02f);
                 } else if (track.ty > track.cy) {
-                    nar().want(0.1f, $.the("up"), now, now+dur, 1f, 0.02f);
+                    nar().want(0.1f, $.the("up"), now, now + dur, 1f, 0.02f);
                 }
-               if (track.tx < track.cx) {
-                   nar().want(0.1f, $.the("left"), now, now+dur, 1f, 0.02f);
-               } else if (track.tx > track.cx) {
-                   nar().want(0.1f, $.the("right"), now, now+dur, 1f, 0.02f);
-               }
-           }
+                if (track.tx < track.cx) {
+                    nar().want(0.1f, $.the("left"), now, now + dur, 1f, 0.02f);
+                } else if (track.tx > track.cx) {
+                    nar().want(0.1f, $.the("right"), now, now + dur, 1f, 0.02f);
+                }
+            }
         });
     }
 
 
     public static void main(String[] args) {
 
-//        boolean rl = false;
+        NAR n = newNAR();
+
+        TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(4, 4));
+
+        if (gui)
+            gui(n, a);
+
+        n.run(experimentTime);
 
 
+        //printGoals(n);
+        //printImpls(n);
 
-        //8;
-        //2 * (W * H) /* to allow pixels to be read at the rate of 1 pixel per cycle */;
+        //n.stats(System.out);
+        //n.conceptsActive().forEach(System.out::println);
 
+        //n.tasks().forEach(System.out::println);
+    }
+
+    public static void gui(NAR n, TrackXY_NAR a) {
+        n.runLater(() -> {
+
+            GraphEdit window = GraphEdit.window(800, 800);
+
+            window.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
+            window.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
+
+            if (a.cam != null) {
+                window.add(Splitting.column(new VectorSensorView(a.cam, n) {
+                    @Override
+                    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+                        super.paint(gl, surfaceRender);
+                        RectFloat at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
+                        gl.glColor4f(1, 0, 0, 0.9f);
+                        Draw.rect(at.move(x(), y(), 0.01f), gl);
+                    }
+                }.withControls(), 0.1f, new ObjectSurface<>(a.track))).posRel(0.5f, 0.5f, 0.3f, 0.3f);
+            }
+        });
+    }
+
+    static NAR newNAR() {
         NARS nb = new NARS.DefaultNAR(0, true)
                 .exe(new UniExec())
                 .time(new CycleTime().dur(dur))
@@ -215,51 +247,50 @@ public class TrackXY_NAR extends NAgentX {
 //        n.confResolution.set(0.05f);
 
 
-        TrackXY_NAR a = new TrackXY_NAR(n, W, H);
-
         //n.freqResolution.set(0.04f);
 
         n.termVolumeMax.set(volMax);
-        n.timeResolution.set(Math.max(1,dur/2));
+        n.timeResolution.set(Math.max(1, dur / 2));
 
-        if (rl) {
-            RLBooster rlb = new RLBooster(a,
-
-                    //DQN2::new,
-                    //HaiQae::new,
-                    HaiQ::new,
-
-                    true);
-            a.curiosity.enable.set(false);
-
-//            window(
-//                    new LSTMView(
-//                            ((LivePredictor.LSTMPredictor) ((DQN2) rlb.agent).valuePredict).lstm.agent
-//                    ), 800, 800
-//            );
-
-//            window(new Gridding(
-//                Stream.of(((DQN2) (rlb.agent)).valuePredict.layers).map(
-//                        l -> {
+//        if (rl) {
+//            RLBooster rlb = new RLBooster(a,
 //
-//                            BitmapMatrixView i = new BitmapMatrixView(l.input);
-//                            BitmapMatrixView w = new BitmapMatrixView(l.weights);
-//                            BitmapMatrixView o = new BitmapMatrixView(l.output);
+//                    //DQN2::new,
+//                    //HaiQae::new,
+//                    HaiQ::new,
 //
-//                            a.onFrame(i::update);
-//                            a.onFrame(w::update);
-//                            a.onFrame(o::update);
+//                    true);
+//            a.curiosity.enable.set(false);
 //
-//                            return new Gridding(i, w, o);
-//                        }
-//                ).collect(toList()))
-//            , 800, 800);
-        }
-        if (nars) {
+////            window(
+////                    new LSTMView(
+////                            ((LivePredictor.LSTMPredictor) ((DQN2) rlb.agent).valuePredict).lstm.agent
+////                    ), 800, 800
+////            );
+//
+////            window(new Gridding(
+////                Stream.of(((DQN2) (rlb.agent)).valuePredict.layers).map(
+////                        l -> {
+////
+////                            BitmapMatrixView i = new BitmapMatrixView(l.input);
+////                            BitmapMatrixView w = new BitmapMatrixView(l.weights);
+////                            BitmapMatrixView o = new BitmapMatrixView(l.output);
+////
+////                            a.onFrame(i::update);
+////                            a.onFrame(w::update);
+////                            a.onFrame(o::update);
+////
+////                            return new Gridding(i, w, o);
+////                        }
+////                ).collect(toList()))
+////            , 800, 800);
+//        }
+        {
 
 
             Deriver d = new BatchDeriver(Derivers.nal(n,
                     6, 8
+                    //"induction.goal.nal"
                     //1, 8
                     //2, 8
                     //, "motivation.nal"
@@ -274,7 +305,7 @@ public class TrackXY_NAR extends NAgentX {
             ((BatchDeriver) d).conceptsPerIteration.set(derivationStrength);
 
 
-            new STMLinkage(n, 1) {
+            new STMLinkage(n, 2) {
 //                @Override
 //                public boolean keep(Task newEvent) {
 //                    return newEvent.isGoal();
@@ -316,59 +347,7 @@ public class TrackXY_NAR extends NAgentX {
             }, GOAL);
 
         }
-
-
-        if (gui) {
-            n.runLater(() -> {
-                window(new Gridding(NARui.agent(a), NARui.top(n), new ObjectSurface(a.track)), 900, 950);
-
-//            NARui.agentWindow(t);
-                if (a.cam != null) {
-                    window(new VectorSensorView(a.cam, n) {
-                        @Override
-                        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-                            super.paint(gl, surfaceRender);
-                            RectFloat at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
-                            gl.glColor4f(1, 0, 0, 0.9f);
-                            Draw.rect(at.move(x(), y(), 0.01f), gl);
-                        }
-                    }.withControls(), 800, 800);
-                }
-            });
-        }
-
-//        a.onFrame(() -> {
-//            Util.sleepMS(10);
-//        });
-
-        int epoch = 200;
-        DescriptiveStatistics rh = new DescriptiveStatistics(epoch * 4);
-        a.onFrame(() -> {
-            float r = a.reward();
-            rh.addValue(r);
-            if (n.time() % epoch == 0) {
-                System.out.println(n4(rh.getMean()));
-            }
-
-//            long now = n.time();
-//            if (now % epoch == 0) {
-//                System.out.println(
-//                        //"reward mean: " +
-//                        a.rewardSum / epoch);
-//                a.rewardSum = 0;
-//            }
-        });
-
-        n.run(experimentTime);
-
-
-        //printGoals(n);
-        //printImpls(n);
-
-        //n.stats(System.out);
-        //n.conceptsActive().forEach(System.out::println);
-
-        n.tasks().forEach(System.out::println);
+        return n;
     }
 
 

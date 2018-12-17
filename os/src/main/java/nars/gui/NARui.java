@@ -40,10 +40,7 @@ import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.menu.Menu;
 import spacegraph.space2d.widget.menu.TabMenu;
 import spacegraph.space2d.widget.menu.view.GridMenuView;
-import spacegraph.space2d.widget.meta.MetaFrame;
-import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.meta.ServicesTable;
-import spacegraph.space2d.widget.meta.WindowToggleButton;
+import spacegraph.space2d.widget.meta.*;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.FloatGuage;
 import spacegraph.space2d.widget.slider.XYSlider;
@@ -367,7 +364,14 @@ public class NARui {
 
         Menu aa = new TabMenu(Map.of(
                 a.toString(), () -> new ObjectSurface<>(a, 4),
-                "emotion", () -> new EmotionPlot(512, a),
+
+                "dex", () -> new TriggeredSurface<>(
+                        new Plot2D(512, Plot2D.Line)
+                            .add("Dex+0", () -> a.dexterity()/*, 0f, 1f*/),
+                        a::onFrame, Plot2D::update),
+
+//                        .add("Dex+2", () -> a.dexterity(a.now() + 2 * a.nar().dur()))
+//                        .add("Dex+4", () -> a.dexterity(a.now() + 4 * a.nar().dur())), a),
                 "reward", () -> NARui.beliefCharts(rewards, a.nar()),
                 "actions", () -> NARui.beliefCharts(actions, a.nar())
         ));

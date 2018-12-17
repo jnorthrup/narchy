@@ -24,9 +24,9 @@ public class TrackXY  {
     /** current coordinates: to be moved by the experiment */
     public volatile float cx, cy;
 
-    public final FloatRange controlSpeed = new FloatRange(0.25f, 0, 4f);
+    public final FloatRange controlSpeed = new FloatRange(0.25f, 0, 0.5f);
 
-    public final FloatRange targetSpeed = new FloatRange(0.1f, 0, 2f);
+    public final FloatRange targetSpeed = new FloatRange(0.1f, 0, 0.5f);
 
     public final FloatRange visionContrast = new FloatRange(0.98f, 0, 1f);
 

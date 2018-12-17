@@ -17,6 +17,7 @@ import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 
 import java.util.List;
@@ -48,12 +49,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
         this.series = s;
 
         updateTaskLinkPtr(ETERNAL);
-        tasklink = new TaskLink.GeneralTaskLink(seed(term, punc(), ETERNAL), 0) {
-            @Override
-            public TaskLink clone(float pri) {
-                return new GeneralTaskLink(tasklinkPtr, pri);
-            }
-        };
+        tasklink = new SeriesTaskLink();
 
     }
 
@@ -157,7 +153,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
 
             series.push(nextT);
 
-            updateTaskLinkPtr(nextT.end() /* start, mid */);
+            //updateTaskLinkPtr(nextT.end() /* start, mid */);
         }
     }
 
@@ -251,4 +247,14 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
         }
     }
 
+    private class SeriesTaskLink extends TaskLink.GeneralTaskLink {
+        public SeriesTaskLink() {
+            super(seed(SeriesBeliefTable.this.term, SeriesBeliefTable.this.punc(), Tense.ETERNAL), 0);
+        }
+
+        @Override
+        public TaskLink clone(float pri) {
+            return new GeneralTaskLink(tasklinkPtr, pri);
+        }
+    }
 }

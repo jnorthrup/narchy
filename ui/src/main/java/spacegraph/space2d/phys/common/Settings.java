@@ -23,6 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.common;
 
+import static com.jogamp.opengl.math.FloatUtil.sqrt;
 import static jcog.Util.sqr;
 
 /**
@@ -35,8 +36,9 @@ public class Settings {
      * A "close to zero" float epsilon value for use
      */
     public static final float EPSILON =
-            
             1.1920928955078125E-7f;
+    public static final float EPSILONsqr = sqr(EPSILON);
+    public static final float EPSILONsqrt = sqrt(EPSILON);
 
     /**
      * Pi.
@@ -230,7 +232,7 @@ public class Settings {
      * The initial size of particle data buffers.
      */
     public static final int minParticleBufferCapacity = 1024;
-    public static final float EPSILONsqr = sqr(EPSILON);
+
 
 
     /**
