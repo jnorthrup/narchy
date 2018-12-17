@@ -11,9 +11,15 @@ import nars.agent.FrameTrigger;
 import nars.agent.MetaAgent;
 import nars.agent.NAgent;
 import nars.agent.util.RLBooster;
+import nars.concept.Concept;
+import nars.concept.action.curiosity.CuriosityTask;
 import nars.control.MetaGoal;
+import nars.derive.BeliefSource;
+import nars.derive.Derivation;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
+import nars.derive.impl.ZipperDeriver;
+import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
 import nars.gui.NARui;
@@ -27,6 +33,7 @@ import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.time.clock.RealTime;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
@@ -35,11 +42,17 @@ import spacegraph.space2d.container.grid.Gridding;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
+import static nars.derive.BeliefSource.ListTermLinker;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -206,9 +219,9 @@ abstract public class NAgentX extends NAgent {
                         new HijackConceptIndex(
 
                                 //192 * 1024,
-                                //128 * 1024,
+                                128 * 1024,
                                 //64 * 1024,
-                                32 * 1024,
+                                //32 * 1024,
                                 //16 * 1024,
                                 //8 * 1024,
                                 4)
@@ -224,23 +237,32 @@ abstract public class NAgentX extends NAgent {
 
     static void initPlugins2(NAR n, NAgent a) {
 
-//        PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8,
-//                "motivation.nal"
-//                //"induction.goal.nal"
-//                //"nal3.nal",
-//        );
 
-//        java.util.List<Concept> actionConcepts = Stream.concat(
-//                a.rewards.stream().flatMap(x -> stream(x.spliterator(), false)),
-//                Stream.concat(
-//                        a.actions.stream(),
-//                        a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false))
-//                )).map(n::concept).filter(Objects::nonNull).collect(Collectors.toList());
-//        ZipperDeriver sensorAction = BeliefSource.forConcepts(n, rules,
-//                actionConcepts,
-//                ListTermLinker(actionConcepts)
-//                //ConceptTermLinker
-//        );
+        PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8
+                //"motivation.nal"
+                //"induction.goal.nal"
+                //"nal3.nal",
+        );
+
+        List<Concept> rewardConcepts = a.rewards.stream().flatMap(x -> stream(x.spliterator(), false)).map(n::concept).collect(toList());
+        List<Termed> sensorConcepts = a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false)).collect(toList());
+        List<Concept> actionConcepts = a.actions.stream().flatMap(x -> stream(x.components().spliterator(), false)).map(n::concept).collect(toList());
+
+        // virtual tasklinks to sensors (sampler)
+        BiFunction<Concept, Derivation, BeliefSource.LinkModel> sensorLinker = ListTermLinker(sensorConcepts);
+
+        //  rewards -> sensors
+        //  actions -> sensors
+
+        ZipperDeriver senseReward = BeliefSource.forConcepts(n, rules,
+                rewardConcepts,
+                sensorLinker
+                //ConceptTermLinker
+        );
+        ZipperDeriver senseActions = BeliefSource.forConcepts(n, rules,
+                actionConcepts,
+                sensorLinker
+        );
 
         //sensorAction.timing = new ActionTiming(n);
 
@@ -329,17 +351,15 @@ abstract public class NAgentX extends NAgent {
         //n.freqResolution.set(0.03f);
         n.termVolumeMax.set(30);
 
+        n.attn.activating.conceptActivationRate.set(1f/1000f); //HACK TODO based on active bag capacity
 
-        n.beliefPriDefault.set(0.05f);
-        n.goalPriDefault.set(0.1f);
-        n.questionPriDefault.set(0.01f);
-        n.questPriDefault.set(0.01f);
+        n.beliefPriDefault.set(0.5f);
+        n.goalPriDefault.set(0.75f);
+        n.questionPriDefault.set(0.25f);
+        n.questPriDefault.set(0.25f);
 
         n.beliefConfDefault.set(0.95f);
         n.goalConfDefault.set(0.95f);
-
-//        n.attn.activating.conceptActivationRate.set(0.1f);
-
 //
 //        n.attn.forgetting = new Forgetting.AsyncForgetting() {
 //            @Override
@@ -401,11 +421,11 @@ abstract public class NAgentX extends NAgent {
 
         //ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 2, 32);
 
-//        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof CuriosityTask) ),
-//                8, 96);
+        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof CuriosityTask) ),
+                8, 96);
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(n,64);
-        Introduction factorizer = new Factorize.FactorIntroduction( n, 4);
+        Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
 
 //        {
         new Inperience.Believe(n, 16);

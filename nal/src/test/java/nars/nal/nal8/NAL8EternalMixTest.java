@@ -258,7 +258,7 @@ class NAL8EternalMixTest extends NALTest {
         test
                 .input("reachable(SELF,{t002}). | %1.0;0.7%")
                 .inputAt(3, "((reachable(SELF,{t002}) &&+5 pick({t002})) ==>+7 hold(SELF,{t002})).")
-                .mustBelieve(cycles, "(pick({t002}) ==>+7 hold(SELF,{t002}))", 1.0f, 0.81f, 5)
+                .mustBelieve(cycles, "(pick({t002}) ==>+7 hold(SELF,{t002}))", 1.0f, 0.81f, (t)->t>=3)
                 .mustBelieve(cycles, "(pick({t002}) ==>+7 hold(SELF,{t002}))", 1.0f, 0.81f, ETERNAL) //via structural reduction
 
         ;

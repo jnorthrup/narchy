@@ -2,14 +2,16 @@ package nars.derive.op;
 
 import nars.$;
 import nars.NAR;
+import nars.Param;
 import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
+import nars.term.util.transform.Retemporalize;
 import org.eclipse.collections.api.tuple.Pair;
 
 import java.util.Arrays;
 
-import static nars.Op.NEG;
+import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 
@@ -150,6 +152,18 @@ public final class Termify extends AbstractPred<Derivation> {
             d.concOcc = occ;
             d.concTerm = c2;
         } else {
+
+            byte punc = d.concPunc;
+            if ((punc == BELIEF || punc == GOAL) && c1.hasXternal()) { // && !d.taskTerm.hasXternal() && !d.beliefTerm.hasXternal()) {
+                //HACK this is for deficiencies in the temporal solver that can be fixed
+                c1 = Retemporalize.retemporalizeXTERNALToDTERNAL.transform(c1);
+                if (!Taskify.valid(c1, d.concPunc)) {
+                    d.nar.emotion.deriveFailTemporal.increment();
+                    Taskify.spam(d, Param.TTL_DERIVE_TASK_FAIL);
+                    return false;
+                }
+            }
+
             d.concTerm = c1;
             d.concOcc = null;
         }

@@ -9,7 +9,6 @@ import nars.unify.Unify;
 import nars.unify.ellipsis.EllipsisMatch;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.NEG;
 import static nars.Op.VAR_PATTERN;
 
 /**
@@ -52,31 +51,37 @@ public interface Variable extends Atomic {
         return true;
     }
 
-    /** average of complexity(=0) and volume(=1) */
-    @Override default float voluplexity() {
+    /**
+     * average of complexity(=0) and volume(=1)
+     */
+    @Override
+    default float voluplexity() {
         return 0.5f;
     }
 
     @Override
     @Paper
-    @Skill({"Prolog", "Unification_(computer_science)", "Negation", "Möbius_strip", "Total_order", "Recursion" })
+    @Skill({"Prolog", "Unification_(computer_science)", "Negation", "Möbius_strip", "Total_order", "Recursion"})
     default boolean unify(Term _y, Unify u) {
-
 
         if (equals(_y))
             return true;
 
-
         Op xOp = op();
 
-        boolean xMatches = u.matchType(xOp);
-        if (!xMatches)
+        if (!u.matchType(xOp))
             return false;
 
-        if (_y instanceof Variable) {
-            if (!(_y instanceof EllipsisMatch)) {
-                if (xOp == _y.op()) {
-                    Variable Y = (Variable) _y;
+        Term x = u.resolve(this);
+        Term y = u.resolveIfNeg(_y);
+        if (x != this) {
+            return x.unify(y, u);
+        }
+
+        if (y instanceof Variable) {
+            if (!(y instanceof EllipsisMatch)) {
+                if (xOp == y.op()) {
+                    Variable Y = (Variable) y;
                     Variable X = this;
 
                     //same op: common variable
@@ -89,97 +94,74 @@ public interface Variable extends Atomic {
 
 
 
-        Term x = u.resolve(this);
-        Term y = (_y instanceof Variable) ? u.resolve((Variable)_y) : _y;
-        if (x!=this || y != _y) {
-            return x.unify(y, u);
+        if (y instanceof EllipsisMatch && xOp != VAR_PATTERN)
+            return false;
+
+        boolean yMatches;
+
+
+        if (y instanceof Variable) {
+            Op yOp = y.op();
+
+            yMatches = ((xOp == yOp) || u.matchType(yOp));
+
+            if (yMatches) {
+                Variable X = (Variable) x;
+                Variable Y = (Variable) y;
+
+                //choose by id, establishing a deterministic chain of variable command
+                //return (xOp.id > yOp.id) ? u.putXY(X, Y) : u.putXY(Y, X);
+
+                //int before = u.size();
+                boolean ok = (xOp.id > yOp.id) ? u.putXY(X, Y) : u.putXY(Y, X);
+                if (ok) {
+                    return true;
+                } else {
+                    //u.revert(before);
+                    return (xOp.id < yOp.id) ? u.putXY(X, Y) : u.putXY(Y, X);
+                }
+
+            }
         }
 
-        //if (x instanceof Variable) {
 
-
-            if (y instanceof EllipsisMatch && xOp!=VAR_PATTERN)
-                return false;
-
-            boolean yMatches;
-
-
-            if (y instanceof Variable) {
-                Variable Y = (Variable) y;
-                Op yOp = y.op();
-                Variable X = (Variable) x;
-
-//                //same op: common variable
-//                if (yOp == xOp) {
-//
-//                    Supplier<Term> common = () -> X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
-//
-//                    //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
-//                    return u.xy.set(X, Y, common);
+//        //negation mobius strip
+//        //  check if negation is the only thing wrapping either's possible matching variable.
+//        //  and apply negation to both
+//        if (!yMatches) {
+//            if ((xOp != VAR_PATTERN)) {
+//                if (y.op() == NEG) {
+//                    Term yy = y.unneg();
+//                    Op yyo = yy.op();
+//                    if (yyo.id > xOp.id && u.matchType(yyo)) {
+//                        y = yy;
+//                        x = x.neg();
+//                        yMatches = true;
+//                    }
 //                }
-
-                yMatches = ((xMatches && xOp == yOp) || u.matchType(yOp));
-
-                if (xMatches && yMatches) {
-
-                    //choose by id, establishing a deterministic chain of variable command
-                    //return (xOp.id > yOp.id) ? u.putXY(X, Y) : u.putXY(Y, X);
-
-                    //int before = u.size();
-                    boolean ok = (xOp.id > yOp.id) ? u.putXY(X, Y) : u.putXY(Y, X);
-                    if (ok) {
-                        return true;
-                    } else {
-                        //u.revert(before);
-                        return (xOp.id < yOp.id) ? u.putXY(X, Y) : u.putXY(Y, X);
-                    }
-
-                }
-            } else {
-                yMatches = false;
-            }
+//            }
+//        }
 
 
-            //negation mobius strip
-            //  check if negation is the only thing wrapping either's possible matching variable.
-            //  and apply negation to both
-            if (!yMatches) {
-                if ((!xMatches) || (xMatches && xOp != VAR_PATTERN)) {
-                    if (y.op() == NEG) {
-                        Term yy = y.unneg();
-                        Op yyo = yy.op();
-                        if (yyo.id > xOp.id && u.matchType(yyo)) {
-                            y = yy;
-                            x = x.neg();
-                            xMatches = false;
-                            yMatches = true;
-                        } else if (!xMatches) {
-                            return false;
-                        }
-                    }
-                }
-            }
-
-
-            Variable a;
-            Term b;
-            if (xMatches) {
+        Variable a;
+        Term b;
+//            if (xMatches) {
 //                if (x.containsRecursively(y))
 //                    return false; //cycle
-                a = (nars.term.Variable) x;
-                b = y;
-            } else if (yMatches) {
-//                if (y.containsRecursively(x))
-//                    return false; //cycle
-                a = (Variable) y;
-                b = x;
-            } else {
-                return false;
-            }
+        a = (nars.term.Variable) x;
+        b = y;
+//            } else if (yMatches) {
+////                if (y.containsRecursively(x))
+////                    return false; //cycle
+//                a = (Variable) y;
+//                b = x;
+//            } else {
+//                return false;
+//            }
 
         //            Op ao = a.op();
-                    //if (ao !=VAR_PATTERN) {
-                    //TODO total ordering to prevent something like #1 = x(%1)
+        //if (ao !=VAR_PATTERN) {
+        //TODO total ordering to prevent something like #1 = x(%1)
         //                int mask;
         //                switch (ao) {
         //                    case VAR_DEP: mask = Op.or(VAR_PATTERN, VAR_QUERY, VAR_INDEP); break;
@@ -188,14 +170,14 @@ public interface Variable extends Atomic {
         //                    default:
         //                        throw new UnsupportedOperationException();
         //                }
-            if (b instanceof Compound) {
-                int mask = VAR_PATTERN.bit;
-                if (b.hasAny(mask))
-                    return false;
-            }
-                  //}
+//        if (b instanceof Compound) {
+//            int mask = VAR_PATTERN.bit;
+//            if (b.hasAny(mask))
+//                return false;
+//        }
+        //}
 
-            return u.putXY(a, b);
+        return u.putXY(a, b);
 //        } else {
 //            try {
 //                return x.unify(y, u);

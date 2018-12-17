@@ -446,8 +446,8 @@ public enum $ {
     /**
      * gets the atomic term of an integer, with specific radix (up to 36)
      */
-    public static Atom iRadix(int i, int radix) {
-        return (Atom) Atomic.the(Integer.toString(i, radix));
+    public static Atom intRadix(int i, int radix) {
+        return (Atom) $.quote(Integer.toString(i, radix));
     }
 
 
@@ -613,10 +613,12 @@ public enum $ {
     }
 
 
+
+
     /**
      * most significant digit first, least last. padded with zeros
      */
-    public static @NotNull Term[] radixArray(int x, int radix, int maxX) {
+    public static Term[] radixArray(int x, int radix, int maxX) {
         String xs = Integer.toString(x, radix);
         String xx = Integer.toString(maxX, radix);
         Term[] tt = new Term[xx.length()];

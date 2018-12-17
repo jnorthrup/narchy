@@ -13,7 +13,6 @@ import nars.concept.action.ActionConcept;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.SwitchAction;
 import nars.concept.sensor.DigitizedScalar;
-import nars.concept.sensor.Signal;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -152,8 +151,8 @@ public class FZero extends NAgentX {
 
 
         float r = 0.05f;
-        senseNumberBi($.funcImageLast("vel", id, $$("x")), compose(() -> (float) fz.vehicleMetrics[0][7], new FloatAveraged(0.5f, false))).resolution(r);
-        senseNumberBi($.funcImageLast("vel", id, $$("y")), compose(() -> (float) fz.vehicleMetrics[0][8], new FloatAveraged(0.5f, false))).resolution(r);
+        senseNumberBi($.funcImageLast("vel", $$("x")), compose(() -> (float) fz.vehicleMetrics[0][7], new FloatAveraged(0.5f, false))).resolution(r);
+        senseNumberBi($.funcImageLast("vel", $$("y")), compose(() -> (float) fz.vehicleMetrics[0][8], new FloatAveraged(0.5f, false))).resolution(r);
 
         senseNumberDifferenceBi($.inh($.the("delta"), $.the("vel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
 
@@ -161,7 +160,7 @@ public class FZero extends NAgentX {
                 new FloatAveraged(0.5f, true));
         senseNumberDifferenceBi($.inh($.the("delta"), $.the("ang")), playerAngle).resolution(r);
 
-        int angles = 15;
+        int angles = 16;
         DigitizedScalar ang = senseAngle(()->(float)fz.playerAngle, angles, Atomic.the("ang"));
         ang.resolution(r);
         window(
@@ -323,7 +322,7 @@ public class FZero extends NAgentX {
     private void initLeftRightPushButtonMutex() {
 
         this.actionPushButtonMutex(
-                $.inh($$("left"), id), $.inh($$("right"), id),
+                $$("left"), $$("right"),
                 ((BooleanProcedure) l -> fz.left = l), r -> fz.right = r
         );
     }
@@ -444,7 +443,7 @@ public class FZero extends NAgentX {
 //        final float[] _a = {0};
 //        final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
 
-        return actionUnipolar($.inh($.the("fwd"), id) /* $.func("vel", id, $.the("move"))*/, true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
+        return actionUnipolar($.the("fwd") /* $.func("vel", id, $.the("move"))*/, true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
             float a =
                     //_a[0] = (float) fwdFilter.out(_a[0], a0);
                     a0;

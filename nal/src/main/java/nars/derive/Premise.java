@@ -90,19 +90,18 @@ public class Premise implements Comparable<Premise> {
     private Task match(Derivation d, int matchTTL) {
 
 
-        Term taskTerm = task.term();
 
         boolean beliefConceptCanAnswerTaskConcept = false;
 
         Term beliefTerm = this.beliefTerm;
-        /*if (task.isQuestionOrQuest())*/ {
+        if (task.isQuestionOrQuest()) {
+            Term taskTerm = task.term();
             if (taskTerm.op() == beliefTerm.op()) {
-                if (taskTerm.concept().equals(beliefTerm.concept())) {
+                if (taskTerm.equals(beliefTerm)) {
                     beliefConceptCanAnswerTaskConcept = true;
                 } else {
 
                     if (beliefTerm.hasAny(var) || taskTerm.hasAny(var) || taskTerm.hasXternal() || beliefTerm.hasXternal()) {
-
 
                         Term unifiedBeliefTerm = d.unifyPremise.unified(taskTerm, beliefTerm, matchTTL);
 
@@ -114,7 +113,6 @@ public class Premise implements Comparable<Premise> {
                         }
 
                     }
-                    //            }
                 }
             }
         }

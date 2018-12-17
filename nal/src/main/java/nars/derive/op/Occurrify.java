@@ -200,13 +200,12 @@ public class Occurrify extends TimeGraph {
                 know(beliefTerm, beliefStart, beliefEnd) :
                 (!beliefTerm.equals(taskTerm)) ? know(beliefTerm) : taskEvent /* same term, reuse the same event */;
 
-
         retransform(taskEvent);
 
         if (!taskEvent.equals(beliefEvent))
             retransform(beliefEvent);
 
-        knowIfRetransforms(pattern);
+//        knowIfRetransforms(pattern);
 
 
         return this;

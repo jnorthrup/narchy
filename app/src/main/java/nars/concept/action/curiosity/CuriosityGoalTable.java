@@ -23,8 +23,7 @@ public final class CuriosityGoalTable extends SeriesBeliefTable {
 
         if (!(t instanceof CuriosityTask))
             return;
-        if (t.isEternal())
-            return;
+        assert(!(t.isEternal()));
 
         series.push(t);
         r.remember(t);

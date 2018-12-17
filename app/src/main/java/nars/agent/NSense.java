@@ -244,8 +244,14 @@ public interface NSense {
     }
 
     default DigitizedScalar senseAngle(FloatSupplier angleInRadians, int divisions, Term root) {
-        DigitizedScalar ang = senseNumber(angle ->
-                $.inh($.the(angle), root),
+        return senseAngle(angleInRadians, divisions, root,
+                //angle -> $.inh(the(angle), root)
+                angle -> $.inh($.pRadix(angle, 2, divisions-1), root)
+        );
+    }
+
+    default DigitizedScalar senseAngle(FloatSupplier angleInRadians, int divisions, Term root, IntFunction<Term> termizer) {
+        DigitizedScalar ang = senseNumber(termizer,
                 //$.inst($.the(angle), ANGLE),
                 //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
                 //$.funcImageLast("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,

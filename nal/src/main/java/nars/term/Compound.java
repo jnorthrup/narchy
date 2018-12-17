@@ -232,21 +232,20 @@ public interface Compound extends Term, IPair, Subterms {
 
     default boolean unifySubterms(Term y, Unify u) {
 
-        Op o = op();
-        if (o == CONJ) {
-            int xdt = dt(), ydt = y.dt();
-            if (xdt==XTERNAL && ydt!=XTERNAL) {
-                return unify(y.root(), u);
-            } else if (ydt==XTERNAL && xdt!=XTERNAL) {
-                return root().unify(y, u);
-            }
-        }
-
-
         Term x = this;
 
         Subterms xx = subterms();
         Subterms yy = y.subterms();
+
+        Op o = op();
+        if (o == CONJ) {
+            int xdt = dt(), ydt = y.dt();
+            if (xdt==XTERNAL && ydt!=XTERNAL) {
+                return xx.equals(yy) || unify(y.root(), u);
+            } else if (ydt==XTERNAL && xdt!=XTERNAL) {
+                return xx.equals(yy) || root().unify(y, u);
+            }
+        }
 
         int xs;
         if ((xs = xx.subs()) != yy.subs())

@@ -1,7 +1,7 @@
 package nars.attention;
 
 import nars.NAR;
-import nars.attention.derive.DefaultPuncWeightedDerivePri;
+import nars.attention.derive.DefaultDerivePri;
 import nars.control.DurService;
 
 /** abstract attention economy model */
@@ -14,8 +14,8 @@ public abstract class Attention extends DurService {
 
     /** default derivePri for derivers */
     public DerivePri derivePri =
-            //new DefaultDerivePri();
-            new DefaultPuncWeightedDerivePri();
+            new DefaultDerivePri();
+            //new DefaultPuncWeightedDerivePri();
 
 
     protected Attention(Activator activating, Forgetting forgetting) {

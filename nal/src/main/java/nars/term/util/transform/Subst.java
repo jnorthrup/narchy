@@ -5,12 +5,28 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.Op.NEG;
+
 
 public interface Subst extends TermTransform {
 
 
+    default Term resolveIfNeg(final Term x) {
+        boolean neg = x.op()==NEG;
+        Term x0 = neg ? x.unneg() : x;
+        Term y = resolve(x0);
+        if (neg) {
+            if (y!=x0)
+                return y.neg();
+            else
+                return x;
+        } else
+            return y;
+    }
+
     /** completely dereferences a term (usually a variable)*/
     default Term resolve(final Term x) {
+
         Term y, z = x;
         while ((y = xy(z))!=null) {
 

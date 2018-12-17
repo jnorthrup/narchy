@@ -216,7 +216,8 @@ public class ConjClustering extends Causable {
 
                     Term xt = t.term();
 
-                    long zs = Tense.dither(t.start(), ditherTime);
+                    long zs = t.start();
+
 
 
                     Truth tx = t.truth();
@@ -295,8 +296,11 @@ public class ConjClustering extends Causable {
                             ObjectBooleanPair<Term> cp = Task.tryContent(tt, punc, true);
                             if (cp != null) {
 
-
-                                NALTask m = new STMClusterTask(cp, t, start, start, Stamp.sample(Param.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
+                                long range = actualTasks.minValue((Task ttt) -> ttt.range()) - 1;
+                                long tEnd = start + range;
+                                NALTask m = new STMClusterTask(cp, t,
+                                        Tense.dither(start, ditherTime), Tense.dither(tEnd,ditherTime),
+                                        Stamp.sample(Param.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
                                 m.cause(CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(), uu));
 
 

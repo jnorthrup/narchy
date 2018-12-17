@@ -39,13 +39,15 @@ public class Taskify extends AbstractPred<Derivation> {
     }
 
     static boolean valid(Term x, byte punc) {
-        return x != null &&
-                x.unneg().op().taskable &&
-                !x.hasAny(Op.VAR_PATTERN) &&
-                ((punc != BELIEF && punc != GOAL) || (!x.hasVarQuery()));
+        if (x == null)
+            return false;
+        x = x.unneg();
+        return x.op().taskable &&
+               !x.hasAny(Op.VAR_PATTERN) &&
+               ((punc != BELIEF && punc != GOAL) || (!x.hasVarQuery()));
     }
 
-    private static boolean spam(Derivation d, int cost) {
+    protected static boolean spam(Derivation d, int cost) {
         d.use(cost);
         d.concTerm = null; //erase immediately
         return true;
@@ -63,14 +65,7 @@ public class Taskify extends AbstractPred<Derivation> {
             throw new RuntimeException("no punctuation assigned");
 
         Term x0 = d.concTerm;
-        if ((punc == BELIEF || punc == GOAL) && x0.hasXternal() && !d.taskTerm.hasXternal() && !d.beliefTerm.hasXternal()) {
-            //HACK this is for deficiencies in the temporal solver that can be fixed
-            x0 = Retemporalize.retemporalizeXTERNALToDTERNAL.transform(x0);
-            if (!Taskify.valid(x0, d.concPunc)) {
-                d.nar.emotion.deriveFailTemporal.increment();
-                return spam(d, Param.TTL_DERIVE_TASK_FAIL);
-            }
-        }
+
 
         Term x1 = d.anon.get(x0);
         if (x1 == null)

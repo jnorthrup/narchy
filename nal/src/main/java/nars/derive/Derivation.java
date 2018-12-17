@@ -292,6 +292,8 @@ public class Derivation extends PreDerivation {
             anon.clear();
 
             this.taskTerm = anon.put(nextTaskTerm);
+            if (!taskTerm.op().taskable)
+                throw new WTF(nextTaskTerm + " could not be anon, result: " + taskTerm);
             this.taskUniques = anon.uniques();
         }
 
@@ -618,8 +620,9 @@ public class Derivation extends PreDerivation {
     /** resolve a term (ex: task term or belief term) with the result of 2nd-layer substitutions */
     public Term retransform(Term t) {
         return
-                /*Image.imageNormalize*/
-                    (transform(t).replace(retransform));
+                    t.replace(retransform); //retransforms only
+                    //t.replace(xy).replace(retransform); //avoid functor eval
+                    //transform(t).replace(retransform);
                     //t.replace(retransform);
     }
 
