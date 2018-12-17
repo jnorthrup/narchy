@@ -305,7 +305,7 @@ public class TrackXY_NAR extends NAgentX {
             ((BatchDeriver) d).conceptsPerIteration.set(derivationStrength);
 
 
-            new STMLinkage(n, 2) {
+            new STMLinkage(n, 1) {
 //                @Override
 //                public boolean keep(Task newEvent) {
 //                    return newEvent.isGoal();

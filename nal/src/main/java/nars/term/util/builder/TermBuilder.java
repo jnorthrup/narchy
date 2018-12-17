@@ -15,6 +15,7 @@ import nars.term.util.Conj;
 import nars.term.util.TermException;
 import nars.term.util.transform.CompoundNormalization;
 import nars.term.util.transform.Retemporalize;
+import nars.time.Tense;
 import nars.unify.ellipsis.EllipsisMatch;
 import nars.unify.ellipsis.Ellipsislike;
 import org.eclipse.collections.api.set.MutableSet;
@@ -109,7 +110,23 @@ public abstract class TermBuilder {
             }
         }
     }
+    public final Term theSortedCompound(Op o, int dt, Collection<Term> u) {
+        assert(Tense.dtSpecial(dt));
+        Term[] s = sorted(u);
+        if (s.length == 1 && o == CONJ)
+            return s[0];
 
+        return theCompound(o, dt, s);
+    }
+
+    public final Term theSortedCompound(Op o, int dt, Term... u) {
+        assert(Tense.dtSpecial(dt));
+        Term[] s = sorted(u);
+        if (s.length == 1 && o == CONJ)
+            return s[0];
+
+        return theCompound(o, dt, s);
+    }
 
     public final Term theCompound(Op o, int dt, Term... u) {
         return theCompound(o, dt, u, null);

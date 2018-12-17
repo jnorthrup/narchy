@@ -245,18 +245,7 @@ public class Derivation extends PreDerivation {
         return true;
     }
 
-    //TEMPORARY
-    @Override public @Nullable Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
 
-        if (yy.hasAny(VAR_PATTERN)) {
-            if (Param.DEBUG)
-                throw new WTF();
-            else
-                return Null;
-        }
-
-        return super.transformedCompound(x, op, dt, xx, yy );
-    }
 
     private void init(NAR nar) {
 

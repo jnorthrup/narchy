@@ -10,6 +10,7 @@ import nars.Param;
 import nars.Task;
 import nars.bag.BagClustering;
 import nars.control.CauseMerge;
+import nars.control.DurService;
 import nars.control.channel.BufferedCauseChannel;
 import nars.exe.Causable;
 import nars.task.NALTask;
@@ -27,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -50,6 +52,8 @@ public class ConjClustering extends Causable {
     private int ditherTime;
     private boolean popConjoinedTasks = false;
     static final boolean priCopyOrTransfer = false;
+
+    final AtomicBoolean learn = new AtomicBoolean(true);
 
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
         this(nar, punc, (t) -> true, centroids, capacity);
@@ -113,6 +117,8 @@ public class ConjClustering extends Causable {
     @Override
     protected void starting(NAR nar) {
 
+        DurService.on(nar, ()-> learn.set(true));
+
         on(nar.onTask(t -> {
             if (!t.isEternal()
                     && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets) //TODO allow ImDep's
@@ -125,12 +131,14 @@ public class ConjClustering extends Causable {
 
     }
 
-    public float pri(Task t) {
+    protected float pri(Task t) {
         return t.priElseZero();
                 //* TruthIntegration.evi(t);
                 // * t.originality()l
 
     }
+
+
 
     @Override
     protected /*synchronized*/ void next(NAR nar, BooleanSupplier kontinue /* max tasks generated per centroid, >=1 */) {
@@ -143,8 +151,10 @@ public class ConjClustering extends Causable {
         this.confMin = nar.confMin.floatValue();
         this.volMaxSafe = Math.round((this.volMax = nar.termVolumeMax.intValue()) * termVolumeMaxFactor);
 
-        //TODO use real 'dt' timing
-        data.learn(forgetRate(), 1);
+        if (learn.compareAndSet(true,false)) {
+            //learn once per duration
+            data.learn(forgetRate(), 1);
+        }
 
         conjoiner.kontinue = kontinue;
         data.forEachCentroid(nar, nar.random(), conjoiner::conjoinCentroid);
@@ -154,7 +164,7 @@ public class ConjClustering extends Causable {
 
     protected float forgetRate() {
         //nar.forgetRate.floatValue()
-        return 0.5f;
+        return 1f;
     }
 
     @Override
@@ -275,7 +285,6 @@ public class ConjClustering extends Causable {
                 if (vs < 2)
                     continue;
 
-
                 Task[] uu = actualTasks.toArrayRecycled(Task[]::new);
 
 
@@ -289,7 +298,6 @@ public class ConjClustering extends Causable {
                             return false;
 
                         if (cj != null) {
-
 
                             Term tt = Task.forceNormalizeForBelief(cj);
 
@@ -320,7 +328,6 @@ public class ConjClustering extends Causable {
                                     for (Task aa : actualTasks)
                                         data.remove(aa);
                                 }
-
 
                                 in.input(m);
 
