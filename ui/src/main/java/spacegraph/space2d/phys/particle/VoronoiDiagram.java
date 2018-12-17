@@ -13,19 +13,12 @@ public class VoronoiDiagram {
 
 
 
-        /**
-         * Computes the dot product of the this vector and vector v1.
-         *
-         * @param v1 the other vector
-         */
-        private float dot(v2 v1) {
-            return (this.x * v1.x + this.y * v1.y);
-        }
 
     }
 
     static class VoronoiDiagramTask {
-        int m_x, m_y, m_i;
+        float m_x, m_y;
+        int m_i;
         Generator m_generator;
 
         VoronoiDiagramTask() {
@@ -38,7 +31,7 @@ public class VoronoiDiagram {
 
 
 
-        VoronoiDiagramTask set(int x, int y, int i, Generator g) {
+        VoronoiDiagramTask set(float x, float y, int i, Generator g) {
             m_x = x;
             m_y = y;
             m_i = i;
@@ -97,6 +90,7 @@ public class VoronoiDiagram {
 
     private final v2 lower = new v2();
     private final v2 upper = new v2();
+
     private final IDynamicStack<VoronoiDiagramTask> taskPool =
             new MutableStack<>(50) {
                 @Override
@@ -109,6 +103,7 @@ public class VoronoiDiagram {
                     return new VoronoiDiagramTask[size];
                 }
             };
+
     private final StackQueue<VoronoiDiagramTask> queue = new StackQueue<>();
 
     public void generate(float radius) {
@@ -131,14 +126,14 @@ public class VoronoiDiagram {
             Generator g = m_generatorBuffer[k];
             g.x = inverseRadius * (g.x - lower.x);
             g.y = inverseRadius * (g.y - lower.y);
-            int x = MathUtils.max(0, MathUtils.min((int) g.x, m_countX - 1));
-            int y = MathUtils.max(0, MathUtils.min((int) g.y, m_countY - 1));
+            int x = MathUtils.max(0, MathUtils.min((int)g.x, m_countX - 1));
+            int y = MathUtils.max(0, MathUtils.min((int)g.y, m_countY - 1));
             queue.push(taskPool.pop().set(x, y, x + y * m_countX, g));
         }
         while (!queue.empty()) {
             VoronoiDiagramTask front = queue.pop();
-            int x = front.m_x;
-            int y = front.m_y;
+            float x = front.m_x;
+            float y = front.m_y;
             int i = front.m_i;
             Generator g = front.m_generator;
             if (m_diagram[i] == null) {
@@ -185,8 +180,8 @@ public class VoronoiDiagram {
             boolean updated = false;
             while (!queue.empty()) {
                 VoronoiDiagramTask front = queue.pop();
-                int x = front.m_x;
-                int y = front.m_y;
+                float x = front.m_x;
+                float y = front.m_y;
                 int i = front.m_i;
                 Generator k = front.m_generator;
                 v2 a = m_diagram[i];

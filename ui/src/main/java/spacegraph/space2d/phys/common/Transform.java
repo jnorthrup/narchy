@@ -107,15 +107,15 @@ public class Transform extends Rot {
     }
 
     public static void mulToOutUnsafe(final Transform T, final v2 v, float scale, final GL2 gl) {
-        float vy = v.y * scale;
-        float vx = v.x * scale;
+        float vy = v.y;
+        float vx = v.x;
         Rot tq = T;
         v2 pos = T.pos;
         float tqs = tq.s;
         float tqc = tq.c;
         gl.glVertex2f(
-            (tqc * vx - tqs * vy) + pos.x,
-            (tqs * vx + tqc * vy) + pos.y
+                ((tqc * vx - tqs * vy) + pos.x)*scale,
+                ((tqs * vx + tqc * vy) + pos.y)*scale
         );
 
     }

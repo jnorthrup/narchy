@@ -83,12 +83,12 @@ public class Dynamics2D {
 
     private int jointCount;
 
-    private final v2 m_gravity = new v2();
-    private boolean m_allowSleep;
+    private final v2 gravity = new v2();
+    private boolean allowSleep;
 
 
-    private DestructionListener m_destructionListener;
-    private ParticleDestructionListener m_particleDestructionListener;
+    private DestructionListener destructionListener;
+    private ParticleDestructionListener particleDestructionListener;
 
 
     public final IWorldPool pool;
@@ -96,16 +96,16 @@ public class Dynamics2D {
     /**
      * This is used to compute the time step ratio to support a variable time step.
      */
-    private float m_inv_dt0;
+    private float inv_dt0;
 
 
-    private boolean m_warmStarting;
-    private boolean m_continuousPhysics;
-    private boolean m_subStepping;
+    private boolean warmStarting;
+    private boolean continuousPhysics;
+    private boolean subStepping;
 
-    private boolean m_stepComplete;
+    private boolean stepComplete;
 
-    private final Profile m_profile;
+    private final Profile profiler;
 
     public final ParticleSystem particles;
 
@@ -113,7 +113,7 @@ public class Dynamics2D {
     private final Smasher smasher = new Smasher();
 
 
-    private final MetalConcurrentQueue<Runnable> queue = new MetalConcurrentQueue<>(512);
+    private final MetalConcurrentQueue<Runnable> queue = new MetalConcurrentQueue<>(2048);
 
 
     private final Island toiIsland = new Island(smasher);
@@ -154,63 +154,63 @@ public class Dynamics2D {
 
         this.pool = pool;
 
-        m_destructionListener = null;
+        destructionListener = null;
 
         jointCount = 0;
 
-        m_warmStarting = true;
-        m_continuousPhysics = true;
-        m_subStepping = false;
-        m_stepComplete = true;
+        warmStarting = true;
+        continuousPhysics = true;
+        subStepping = false;
+        stepComplete = true;
 
-        m_allowSleep = true;
-        m_gravity.set(gravity);
+        allowSleep = true;
+        this.gravity.set(gravity);
 
         flags = CLEAR_FORCES;
 
-        m_inv_dt0 = 0f;
+        inv_dt0 = 0f;
 
         contactManager = new ContactManager(this, broadPhase);
-        m_profile = new Profile();
+        profiler = new Profile();
 
         particles = new ParticleSystem(this);
 
     }
 
     public void setAllowSleep(boolean flag) {
-        if (flag == m_allowSleep) {
+        if (flag == allowSleep) {
             return;
         }
 
-        m_allowSleep = flag;
-        if (!m_allowSleep) {
+        allowSleep = flag;
+        if (!allowSleep) {
             bodies(b -> b.setAwake(true));
         }
     }
 
     public void setSubStepping(boolean subStepping) {
-        this.m_subStepping = subStepping;
+        this.subStepping = subStepping;
     }
 
     public boolean isSubStepping() {
-        return m_subStepping;
+        return subStepping;
     }
 
     public boolean isAllowSleep() {
-        return m_allowSleep;
+        return allowSleep;
     }
 
 
     public DestructionListener getDestructionListener() {
-        return m_destructionListener;
+        return destructionListener;
     }
 
     public ParticleDestructionListener getParticleDestructionListener() {
-        return m_particleDestructionListener;
+        return particleDestructionListener;
     }
 
     public void setParticleDestructionListener(ParticleDestructionListener listener) {
-        m_particleDestructionListener = listener;
+        particleDestructionListener = listener;
     }
 
 
@@ -220,7 +220,7 @@ public class Dynamics2D {
      * @param listener
      */
     public void setDestructionListener(DestructionListener listener) {
-        m_destructionListener = listener;
+        destructionListener = listener;
     }
 
 
@@ -303,8 +303,8 @@ public class Dynamics2D {
                 while (je != null) {
                     JointEdge je0 = je;
                     je = je.next;
-                    if (m_destructionListener != null) {
-                        m_destructionListener.beforeDestruct(je0.joint);
+                    if (destructionListener != null) {
+                        destructionListener.beforeDestruct(je0.joint);
                     }
 
                     removeJoint(je0.joint);
@@ -327,8 +327,8 @@ public class Dynamics2D {
                     Fixture f0 = f;
                     f = f.next;
 
-                    if (m_destructionListener != null) {
-                        m_destructionListener.beforeDestruct(f0);
+                    if (destructionListener != null) {
+                        destructionListener.beforeDestruct(f0);
                     }
 
                     f0.destroyProxies(contactManager.broadPhase);
@@ -505,9 +505,6 @@ public class Dynamics2D {
 
         sync();
 
-        //invoke(() -> {
-
-
         stepTimer.reset();
         tempTimer.reset();
 
@@ -522,38 +519,38 @@ public class Dynamics2D {
         step.positionIterations = positionIterations;
         step.inv_dt = (dt > 0.0f) ? (1.0f / dt) : 0.0f;
 
-        step.dtRatio = m_inv_dt0 * dt;
+        step.dtRatio = inv_dt0 * dt;
 
-        step.warmStarting = m_warmStarting;
-        m_profile.stepInit.record(tempTimer::getMilliseconds);
+        step.warmStarting = warmStarting;
+        profiler.stepInit.record(tempTimer::getMilliseconds);
 
 
         tempTimer.reset();
         contactManager.collide();
-        m_profile.collide.record(tempTimer::getMilliseconds);
+        profiler.collide.record(tempTimer::getMilliseconds);
 
 
-        if (m_stepComplete && step.dt > 0.0f) {
+        if (stepComplete && step.dt > 0.0f) {
 
             tempTimer.reset();
             particles.solve(step);
-            m_profile.solveParticleSystem.record(tempTimer::getMilliseconds);
+            profiler.solveParticleSystem.record(tempTimer::getMilliseconds);
 
             tempTimer.reset();
             solve(step);
 
-            m_profile.solve.record(tempTimer::getMilliseconds);
+            profiler.solve.record(tempTimer::getMilliseconds);
         }
 
 
-        if (m_continuousPhysics && step.dt > 0.0f) {
+        if (continuousPhysics && step.dt > 0.0f) {
             tempTimer.reset();
             solveTOI(step);
-            m_profile.solveTOI.record(tempTimer::getMilliseconds);
+            profiler.solveTOI.record(tempTimer::getMilliseconds);
         }
 
         if (step.dt > 0.0f) {
-            m_inv_dt0 = step.inv_dt;
+            inv_dt0 = step.inv_dt;
         }
 
         if ((flags & CLEAR_FORCES) == CLEAR_FORCES) {
@@ -562,9 +559,7 @@ public class Dynamics2D {
 
         smasher.update(this, dt);
 
-        m_profile.step.record(stepTimer.getMilliseconds());
-
-        //});
+        profiler.step.record(stepTimer::getMilliseconds);
 
 
     }
@@ -706,7 +701,7 @@ public class Dynamics2D {
     }
 
     public boolean isSleepingAllowed() {
-        return m_allowSleep;
+        return allowSleep;
     }
 
 
@@ -716,11 +711,11 @@ public class Dynamics2D {
      * @param flag
      */
     public void setWarmStarting(boolean flag) {
-        m_warmStarting = flag;
+        warmStarting = flag;
     }
 
     public boolean isWarmStarting() {
-        return m_warmStarting;
+        return warmStarting;
     }
 
     /**
@@ -729,11 +724,11 @@ public class Dynamics2D {
      * @param flag
      */
     public void setContinuousPhysics(boolean flag) {
-        m_continuousPhysics = flag;
+        continuousPhysics = flag;
     }
 
     public boolean isContinuousPhysics() {
-        return m_continuousPhysics;
+        return continuousPhysics;
     }
 
 
@@ -806,7 +801,7 @@ public class Dynamics2D {
      * @param gravity
      */
     public void setGravity(v2 gravity) {
-        m_gravity.set(gravity);
+        this.gravity.set(gravity);
     }
 
     /**
@@ -815,7 +810,7 @@ public class Dynamics2D {
      * @return
      */
     public v2 getGravity() {
-        return m_gravity;
+        return gravity;
     }
 
 
@@ -851,7 +846,7 @@ public class Dynamics2D {
     }
 
     public Profile getProfile() {
-        return m_profile;
+        return profiler;
     }
 
     private final Island island = new Island(smasher);
@@ -859,9 +854,9 @@ public class Dynamics2D {
     private final Timer broadphaseTimer = new Timer();
 
     private void solve(TimeStep step) {
-        m_profile.solveInit.startAccum();
-        m_profile.solveVelocity.startAccum();
-        m_profile.solvePosition.startAccum();
+        profiler.solveInit.startAccum();
+        profiler.solveVelocity.startAccum();
+        profiler.solvePosition.startAccum();
 
         Collection<Body2D> preRemove = new FasterList(0);
         bodies(b -> {
@@ -991,7 +986,7 @@ public class Dynamics2D {
                     other.flags |= Body2D.e_islandFlag;
                 }
             }
-            island.solve(m_profile, step, m_gravity, m_allowSleep);
+            island.solve(profiler, step, gravity, allowSleep);
 
 
             for (int i = 0; i < island.m_bodyCount; ++i) {
@@ -1003,9 +998,9 @@ public class Dynamics2D {
             }
         });
 
-        m_profile.solveInit.endAccum();
-        m_profile.solveVelocity.endAccum();
-        m_profile.solvePosition.endAccum();
+        profiler.solveInit.endAccum();
+        profiler.solveVelocity.endAccum();
+        profiler.solvePosition.endAccum();
 
         broadphaseTimer.reset();
 
@@ -1020,7 +1015,7 @@ public class Dynamics2D {
 
 
         contactManager.findNewContacts();
-        m_profile.broadphase.record(broadphaseTimer.getMilliseconds());
+        profiler.broadphase.record(broadphaseTimer.getMilliseconds());
     }
 
 
@@ -1029,7 +1024,7 @@ public class Dynamics2D {
         final Island island = toiIsland;
         island.init(2 * Settings.maxTOIContacts, Settings.maxTOIContacts, 0,
                 contactManager.contactListener);
-        if (m_stepComplete) {
+        if (stepComplete) {
             bodies(b -> {
                 b.flags &= ~Body2D.e_islandFlag;
                 b.sweep.alpha0 = 0.0f;
@@ -1143,7 +1138,7 @@ public class Dynamics2D {
 
             if (minContact == null || 1.0f - 10.0f * Settings.EPSILON < minAlpha) {
 
-                m_stepComplete = true;
+                stepComplete = true;
                 break;
             }
 
@@ -1296,8 +1291,8 @@ public class Dynamics2D {
 
             contactManager.findNewContacts();
 
-            if (m_subStepping) {
-                m_stepComplete = false;
+            if (subStepping) {
+                stepComplete = false;
                 break;
             }
         }

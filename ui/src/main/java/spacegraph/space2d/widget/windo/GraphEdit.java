@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.windo;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
+import com.jogamp.opengl.GL2;
 import jcog.data.graph.*;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
@@ -9,6 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.DoubleClicking;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceBase;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.container.collection.MutableMapContainer;
@@ -439,17 +442,8 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, W
     /**
      * returns the grip window
      */
-    public Link link(Wire w) {
-        Surface a = w.a;
-        Surface b = w.b;
-        return link(w, a, b);
-    }
-
-
-    private Link link(Wire w, Surface a, Surface b) {
-        if (w == null)
-            w = new Wire(a, b);
-        return physics.link(w, a, b);
+    private Link link(Wire w) {
+        return physics.link(w);
     }
 
 
@@ -555,6 +549,57 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, W
             }
 
             super.stopping();
+        }
+    }
+
+    public static class VisibleLink extends Link {
+
+        public VisibleLink(Wire wire) {
+            super(wire);
+        }
+
+
+        public Surface b() {
+            return VisibleLink.this.id.b;
+        }
+
+        public Surface a() {
+            return VisibleLink.this.id.a;
+        }
+
+
+        abstract protected class VisibleLinkSurface extends Surface {
+
+            abstract protected void paintLink(GL2 gl, SurfaceRender surfaceRender);
+
+            @Override
+            protected final void paint(GL2 gl, SurfaceRender surfaceRender) {
+                SurfaceBase p = parent;
+                if (p instanceof Surface)
+                    pos(((Surface) p).bounds); //inherit bounds
+
+//                for (VerletParticle2D p : chain.getOne()) {
+//                    float t = 2 * p.mass();
+//                    Draw.rect(p.x - t / 2, p.y - t / 2, t, t, gl);
+//                }
+
+                paintLink(gl, surfaceRender);
+
+            }
+
+            @Override
+            public final boolean visible() {
+                if (a().parent == null || b().parent == null) {
+                    GraphEdit graphParent = parent(GraphEdit.class);
+                    if (graphParent!=null) {
+                        GraphEdit.VisibleLink.this.remove(graphParent);
+                        remove();
+                    }
+                    return false;
+                }
+
+                return super.visible();
+            }
         }
     }
 }
@@ -744,109 +789,6 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, W
 //    }
 //
 
-//    @Override
-//    protected void paintBelow(GL2 gl) {
-//        super.paintBelow(gl);
-//
-//        Dynamics2D w = this.W;
-//
-//        long now = System.currentTimeMillis();
-//
-//
-//        w.joints(j -> drawJoint(j, gl, now));
-//
-//        w.bodies(b -> drawBody(b, gl));
-//
-//        drawParticleSystem(gl, w.particles);
-//
-//
-//    }
-//
-//    private void drawParticleSystem(GL2 gl, ParticleSystem system) {
-//
-//        int particleCount = system.getParticleCount();
-//        if (particleCount != 0) {
-//            float particleRadius = system.getParticleRadius();
-//            Tuple2f[] positionBuffer = system.getParticlePositionBuffer();
-//            ParticleColor[] colorBuffer = null;
-//            if (system.m_colorBuffer.data != null) {
-//                colorBuffer = system.getParticleColorBuffer();
-//            }
-//
-//
-//            Draw.particles(gl, positionBuffer, particleRadius, 6, colorBuffer, particleCount);
-//
-//        }
-//    }
-//
-//    private void drawJoint(Joint joint, GL2 g, long now) {
-//        Object data = joint.data();
-//        if (data instanceof ObjectLongProcedure) {
-//            ((ObjLongConsumer) data).accept(g, now);
-//        } else {
-//
-//            Draw.colorHash(g, joint.getClass().hashCode(), 0.5f);
-//            g.glLineWidth(10f);
-//        }
-//        Tuple2f v1 = new v2(), v2 = new v2();
-//        switch (joint.getType()) {
-//            default:
-//                joint.getAnchorA(v1);
-//                joint.getAnchorB(v2);
-//                break;
-//        }
-//        Draw.line(g, v1.x * scaling, v1.y * scaling, v2.x * scaling, v2.y * scaling);
-//
-//    }
-//
-//    private void drawBody(Body2D body, GL2 gl) {
-//
-//
-////        if (body.data() instanceof PhyWindow.WallBody) {
-////            return;
-////        }
-//        if (body instanceof Consumer) {
-//            ((Consumer) body).accept(gl);
-//            return;
-//        }
-//
-//
-//        boolean awake = body.isAwake();
-//        gl.glColor4f(0.5f, 0.5f, 0.5f, awake ? 0.75f : 0.65f);
-//
-//
-//        for (Fixture f = body.fixtures; f != null; f = f.next) {
-//            PolygonFixture pg = f.polygon;
-//            if (pg != null) {
-//
-//            } else {
-//                Shape shape = f.shape();
-//                switch (shape.m_type) {
-//                    case POLYGON:
-//                        Draw.poly(body, gl, scaling, (PolygonShape) shape);
-//                        break;
-//                    case CIRCLE:
-//
-//                        CircleShape circle = (CircleShape) shape;
-//                        float r = circle.radius;
-//                        v2 v = new v2();
-//                        body.getWorldPointToOut(circle.center, v);
-//                        v.scale(scaling);
-//
-//
-//                        Draw.circle(gl, v, true, r * scaling, 9);
-//                        break;
-//                    case EDGE:
-//                        EdgeShape edge = (EdgeShape) shape;
-//                        Tuple2f p1 = edge.m_vertex1;
-//                        Tuple2f p2 = edge.m_vertex2;
-//                        gl.glLineWidth(4f);
-//                        Draw.line(gl, p1.x * scaling, p1.y * scaling, p2.x * scaling, p2.y * scaling);
-//                        break;
-//                }
-//            }
-//        }
-//
 //
 //    }
 //class StaticBox {

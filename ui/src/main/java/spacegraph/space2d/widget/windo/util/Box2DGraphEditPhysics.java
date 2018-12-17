@@ -1,20 +1,35 @@
 package spacegraph.space2d.widget.windo.util;
 
+import com.jogamp.opengl.GL2;
+import jcog.data.list.FasterList;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.event.Off;
 import jcog.math.v2;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.EmptySurface;
+import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.phys.collision.shapes.CircleShape;
+import spacegraph.space2d.phys.collision.shapes.EdgeShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
-import spacegraph.space2d.phys.dynamics.Body2D;
-import spacegraph.space2d.phys.dynamics.BodyType;
-import spacegraph.space2d.phys.dynamics.Dynamics2D;
+import spacegraph.space2d.phys.collision.shapes.Shape;
+import spacegraph.space2d.phys.dynamics.*;
+import spacegraph.space2d.phys.dynamics.joints.Joint;
+import spacegraph.space2d.phys.dynamics.joints.RevoluteJoint;
+import spacegraph.space2d.phys.dynamics.joints.RevoluteJointDef;
+import spacegraph.space2d.phys.fracture.PolygonFixture;
+import spacegraph.space2d.phys.particle.ParticleColor;
+import spacegraph.space2d.phys.particle.ParticleSystem;
 import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.space2d.widget.windo.Link;
 import spacegraph.space2d.widget.windo.Windo;
+import spacegraph.video.Draw;
+
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.ObjLongConsumer;
 
 /**
  * TODO
@@ -72,7 +87,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             window.pos(r);
             //if (!r.equals(physBounds, Spatialization.EPSILONf)) {
 
-                //pos(physBounds = r);
+            //pos(physBounds = r);
             //}
         }
 
@@ -103,7 +118,9 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     @Override
     public Surface starting(GraphEdit g) {
         loop = g.root().animate(this::update);
-        return new EmptySurface(); //TODO
+        return
+                new Dyn2DRenderer(true, true, true);
+                //new EmptySurface();
     }
 
     protected boolean update(float dt) {
@@ -120,65 +137,204 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     }
 
     @Override
-    public Link link(Wire w, Surface a, Surface b) {
-        //TODO
-        return new Link(w) {
-
-        };
+    public Link link(Wire w) {
+        return new Box2DVisibleLink(w);
     }
 
+    private WindowData phy(Windo x) {
+        return w.get(x);
+    }
 
-//private class WallBody extends Body2D {
-//
-//    RectFloat2D physBounds = null;
-//
-//    WallBody(float cx, float cy) {
-//        super(new BodyDef(BodyType.DYNAMIC, new v2(cx / scaling, cy / scaling)), Dyn2DSurface.this.W);
-//
-//        setData(this);
-//
-//        setFixedRotation(true);
-//        this.physBounds = bounds;
-//    }
-//
-//    @Override
-//    protected void onRemoval() {
-//
-//        Dyn2DSurface.PhyWindow.this.remove();
-//    }
-//
-//    @Override
-//    public boolean preUpdate() {
-//
-//        RectFloat2D r = bounds;
-//        if (r != physBounds) {
-//
-//            if (!Util.equals(r.w, physBounds.w, SHAPE_SIZE_EPSILON) ||
-//                    !Util.equals(r.h, physBounds.h, SHAPE_SIZE_EPSILON)) {
-//                updateFixtures((f) -> f.setShape(
-//                        shape.setAsBox(r.w / 2 / scaling, r.h / 2 / scaling)
-//
-//                ));
+    class Box2DVisibleLink extends GraphEdit.VisibleLink {
+
+        private final Snake snake;
+
+        public Box2DVisibleLink(Wire wire) {
+            super(wire);
+
+
+            Body2D sourceBody = phy(a().parent(Windo.class)).body;
+            Body2D targetBody = phy(b().parent(Windo.class)).body;
+
+            this.snake = new Snake(sourceBody, targetBody, 5, 10, 2f);
+            offs.add(snake::remove);
+
+//            Surface r = new Box2DVisibleLinkSurface();
+//            hold(r);
+//            graph.addRaw(r);
+
+        }
+
+//        private class Box2DVisibleLinkSurface extends VisibleLinkSurface {
+//            @Override
+//            protected void paintLink(GL2 gl, SurfaceRender surfaceRender) {
+//                Surface a = a();
+//                Surface b = b();
+//                gl.glColor4f(1, 1, 1, 0.5f);
+//                Draw.halfTriEdge2D(a.x(), a.y(), b.x(), b.y(), a.radius(), gl);
+//                gl.glColor4f(1, 1, 1, 0.5f);
+//                Draw.halfTriEdge2D(b.x(), b.y(), a.x(), a.y(), b.radius(), gl);
 //            }
-//
-//
-//            v2 target = new v2(r.cx() / scaling, r.cy() / scaling);
-//
-//            if (setTransform(target, 0, Spatialization.EPSILONf))
-//                setAwake(true);
 //        }
-//
-//        return true;
-//    }
-//
-//    @Override
-//    public void postUpdate() {
-//
-//
+    }
 
-//
-//    }
-//}
+    static class Snake {
+
+        private final List<Body2D> bodies;
+        private final List<Body2D> attachments;
+        final List<Joint> joints;
+        //        private final Surface source;
+//        private final Surface target;
+        private final Body2D sourceBody, targetBody;
+
+        public Snake(Body2D source, Body2D target, int num, float eleLen /* TODO parametric */, float thick) {
+
+//            this.source = source;
+//            this.target = target;
+            this.sourceBody = source;
+            this.targetBody = target;
+
+
+            bodies = new FasterList(num);
+            joints = new FasterList(num);
+            attachments = new FasterList(0);
+
+            Dynamics2D w = sourceBody.W;
+
+            FixtureDef segment = new FixtureDef(
+                    PolygonShape.box(eleLen / 2, thick / 2), 0.2f, 0f);
+            segment.restitution = (0f);
+            segment.filter.maskBits = 0;
+
+            final float y = 0f;
+
+            Body2D from = null;
+
+            for (int i = 0; i < num; ++i) {
+
+
+                if (from == null) {
+                    from = sourceBody;
+                } else {
+
+                    Body2D to;
+                    if (i == num - 1) {
+                        to = targetBody;
+                    } else {
+
+                        to = new Body2D(
+                                new BodyDef(BodyType.DYNAMIC,
+                                        new v2(i * eleLen, y)), w);
+                        bodies.add(to);
+                        to.addFixture(segment);
+                        to.setGravityScale(0);
+                        to.setLinearDamping(0);
+                    }
+
+                    RevoluteJointDef jd = new RevoluteJointDef();
+
+                    jd.collideConnected = false;
+
+                    jd.bodyA = from;
+                    if (from != sourceBody) {
+                        jd.localAnchorA.set(eleLen / 2, 0);
+                    } else {
+
+                        jd.localAnchorA.set(0, 0);
+                    }
+                    jd.bodyB = to;
+                    if (to != targetBody) {
+                        jd.localAnchorB.set(-eleLen / 2, 0);
+                    } else {
+
+                        jd.localAnchorB.set(0, 0);
+                    }
+                    jd.referenceAngle = 0;
+
+
+                    RevoluteJoint jj = new MyRevoluteJoint(w, jd, source, target);
+                    joints.add(jj);
+
+                    from = to;
+                }
+
+
+            }
+
+            w.invoke(() -> {
+                bodies.forEach(b -> w.addBody(b));
+                joints.forEach(w::addJoint);
+            });
+        }
+
+
+        /**
+         * attach a body to center of one of the segments
+         */
+        public void attach(Body2D b, int segment) {
+            Dynamics2D world = world();
+            world.invoke(() -> {
+                RevoluteJoint w = (RevoluteJoint) b.W.addJoint(new RevoluteJointDef(bodies.get(segment), b));
+                attachments.add(b);
+                joints.add(w);
+            });
+        }
+
+        private Dynamics2D world() {
+            return bodies.get(0).W;
+        }
+
+        public void remove() {
+
+            Dynamics2D world = world();
+            world.invoke(() -> {
+
+
+                attachments.forEach(Body2D::remove);
+                attachments.clear();
+
+                bodies.forEach(Body2D::remove);
+                bodies.clear();
+            });
+        }
+
+        private class MyRevoluteJoint extends RevoluteJoint {
+            private final Body2D from;
+            private final Body2D to;
+
+
+            MyRevoluteJoint(Dynamics2D w, RevoluteJointDef jd, Body2D from, Body2D to) {
+                super(w, jd);
+                this.from = from;
+                this.to = to;
+                this.positionFactor = 0.01f;
+            }
+
+            @Override
+            public boolean solvePositionConstraints(SolverData data) {
+
+                if (from == sourceBody) {
+//                    if (source.parent == null) {
+//                        remove();
+
+
+                    localAnchorA.set(from.pos.x, from.pos.y).subbed(
+                            sourceBody.pos
+                    );
+
+                } else if (to == targetBody) {
+//                    if (target.parent == null) {
+//                        remove();
+
+                    localAnchorB.set(from.pos.x, from.pos.y).subbed(
+                            targetBody.pos
+                    );
+
+                }
+                return super.solvePositionConstraints(data);
+            }
+        }
+    }
 
 
 //    @Deprecated public class PhyWindow extends Windo {
@@ -255,12 +411,12 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 ////        /**
 ////         * spawns and attaches a new component to the boundary of this
 ////         */
-////        public PhyWindow grow(Surface target, float scale, float targetAspect, Tuple2f normal) {
+////        public PhyWindow grow(Surface target, float scale, float targetAspect, v2 normal) {
 ////
 ////            PhyWindow x = spawn(target, scale, targetAspect);
 ////
 ////            W.invoke(() -> {
-////                Tuple2f myWeldLocal, theirWeldLocal;
+////                v2 myWeldLocal, theirWeldLocal;
 ////                RayCastInput input = new RayCastInput();
 ////                RayCastOutput output = new RayCastOutput();
 ////                {
@@ -271,7 +427,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 ////
 ////                    boolean hit = body.fixtures.raycast(output, input, 0);
 ////                    assert (hit);
-////                    Tuple2f hitPoint = (input.p2.sub(input.p1)).scaled(output.fraction).added(input.p1);
+////                    v2 hitPoint = (input.p2.sub(input.p1)).scaled(output.fraction).added(input.p1);
 ////                    myWeldLocal = hitPoint;
 ////                }
 ////                {
@@ -282,7 +438,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 ////
 ////                    boolean hit = x.body.fixtures.raycast(output, input, 0);
 ////                    assert (hit);
-////                    Tuple2f hitPoint = (input.p2.sub(input.p1)).scaled(output.fraction).added(input.p1);
+////                    v2 hitPoint = (input.p2.sub(input.p1)).scaled(output.fraction).added(input.p1);
 ////                    theirWeldLocal = hitPoint;
 ////                }
 ////
@@ -292,7 +448,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 ////            return x;
 ////        }
 //
-////        private WeldJoint weld(PhyWindow x, Tuple2f myLocal, Tuple2f theirLocal) {
+////        private WeldJoint weld(PhyWindow x, v2 myLocal, v2 theirLocal) {
 ////            WeldJointDef jd = new WeldJointDef();
 ////            jd.bodyA = this.body;
 ////            jd.bodyB = x.body;
@@ -429,5 +585,128 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 //
 //    }
 
+    private class Dyn2DRenderer extends Surface {
+        final boolean drawJoints, drawBodies, drawParticles;
+
+        public Dyn2DRenderer(boolean drawJoints, boolean drawBodies, boolean drawParticles) {
+            this.drawJoints = drawJoints;
+            this.drawBodies = drawBodies;
+            this.drawParticles = drawParticles;
+        }
+
+        @Override
+        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+
+            Dynamics2D w = physics;
+
+            if (drawJoints) {
+                long now = System.currentTimeMillis();
+                w.joints(j -> drawJoint(j, gl, now));
+            }
+
+            if (drawBodies) {
+                w.bodies(b -> drawBody(b, gl));
+            }
+
+            if (drawParticles) {
+                drawParticleSystem(gl, w.particles);
+            }
+
+        }
+
+        private void drawParticleSystem(GL2 gl, ParticleSystem system) {
+
+            int particleCount = system.getParticleCount();
+            if (particleCount != 0) {
+                float particleRadius = system.getParticleRadius();
+                v2[] positionBuffer = system.getParticlePositionBuffer();
+                ParticleColor[] colorBuffer = null;
+                if (system.m_colorBuffer.data != null) {
+                    colorBuffer = system.getParticleColorBuffer();
+                }
+
+
+                Draw.particles(gl, positionBuffer, particleRadius, 6, colorBuffer, particleCount);
+
+            }
+        }
+
+        private void drawJoint(Joint joint, GL2 g, long now) {
+            Object data = joint.data();
+            if (data instanceof ObjectLongProcedure) {
+                ((ObjLongConsumer) data).accept(g, now);
+            } else {
+
+                Draw.colorHash(g, joint.getClass().hashCode(), 0.5f);
+                g.glLineWidth(10f);
+            }
+            v2 v1 = new v2(), v2 = new v2();
+//            switch (joint.getType()) {
+//                default:
+                    joint.getAnchorA(v1);
+                    joint.getAnchorB(v2);
+//                    break;
+//            }
+            Draw.line( v1.x * scaling, v1.y * scaling, v2.x * scaling, v2.y * scaling, g);
+
+        }
+
+        private void drawBody(Body2D body, GL2 gl) {
+
+
+            //        if (body.data() instanceof PhyWindow.WallBody) {
+            //            return;
+            //        }
+            if (body instanceof Consumer) {
+                ((Consumer) body).accept(gl);
+                return;
+            }
+
+
+
+            boolean awake = body.isAwake();
+
+            gl.glColor4f(0.5f, 0.5f, 0.5f, awake ? 0.75f : 0.65f);
+
+            for (Fixture f = body.fixtures; f != null; f = f.next) {
+                PolygonFixture pg = f.polygon;
+                if (pg != null) {
+
+                } else {
+                    Shape shape = f.shape();
+
+
+                    switch (shape.m_type) {
+                        case POLYGON:
+
+                            Draw.poly(body, gl, scaling, (PolygonShape) shape);
+                            break;
+                        case CIRCLE:
+
+                            CircleShape circle = (CircleShape) shape;
+                            float r = circle.radius;
+                            v2 v = new v2();
+                            body.getWorldPointToOut(circle.center, v);
+                            v.scale(scaling);
+
+                            Draw.circle(gl, v, true, r * scaling, 9);
+                            break;
+                        case EDGE:
+                            EdgeShape edge = (EdgeShape) shape;
+                            v2 p1 = edge.m_vertex1;
+                            v2 p2 = edge.m_vertex2;
+                            gl.glLineWidth(4f);
+                            Draw.line( p1.x * scaling, p1.y * scaling, p2.x * scaling, p2.y * scaling, gl);
+                            break;
+                    }
+                }
+            }
+
+
+        }
+
+        ; //TODO
+    }
 
 }
+

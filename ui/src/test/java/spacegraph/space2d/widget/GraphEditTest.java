@@ -84,12 +84,11 @@ public class GraphEditTest {
 
     }
 
-    public static class Box2DTest_FloatMux {
 
         public static void main(String[] args) {
 
 
-            Wall s = newWallWindow();
+            GraphEdit s = newWallWindow();
 
             Surface mux = new Gridding(HORIZONTAL, new LabeledPane("->", new Gridding(VERTICAL,
                     new Port(),
@@ -107,7 +106,7 @@ public class GraphEditTest {
             s.add(Y).pos(RectFloat.Unit.transform(250, 750, 250));
 
         }
-    }
+
 
     //    public static class Box2DTest_ObjGraph {
 //        public static void main(String[] args) {

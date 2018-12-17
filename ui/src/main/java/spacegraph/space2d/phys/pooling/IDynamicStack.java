@@ -29,6 +29,8 @@ package spacegraph.space2d.phys.pooling;
  *
  * @param <E>
  * @author Daniel
+ *
+ * TODO replace with ArrayDequePool
  */
 public interface IDynamicStack<E> {
 
