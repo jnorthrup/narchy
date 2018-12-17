@@ -94,7 +94,8 @@ public class Premise implements Comparable<Premise> {
         boolean beliefConceptCanAnswerTaskConcept = false;
 
         Term beliefTerm = this.beliefTerm;
-        if (task.isQuestionOrQuest()) {
+//        if (task.isQuestionOrQuest())
+        {
             Term taskTerm = task.term();
             if (taskTerm.op() == beliefTerm.op()) {
                 if (taskTerm.equals(beliefTerm)) {

@@ -11,7 +11,7 @@ import static nars.Op.NEG;
 public interface Subst extends TermTransform {
 
 
-    default Term resolveIfNeg(final Term x) {
+    default Term resolvePosNeg(final Term x) {
         boolean neg = x.op()==NEG;
         Term x0 = neg ? x.unneg() : x;
         Term y = resolve(x0);

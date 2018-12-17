@@ -196,7 +196,7 @@ public abstract class TermBuilder {
 
 
     //TODO presorted flag
-    public Term conj(final int dt, Term[] u) {
+    public Term conj(final int dt, Term... u) {
 
         switch (dt) {
             case 0:

@@ -73,8 +73,8 @@ public interface Variable extends Atomic {
             return false;
 
         Term x = u.resolve(this);
-        Term y = u.resolveIfNeg(_y);
-        if (x != this) {
+        Term y = u.resolvePosNeg(_y);
+        if (x != this && !x.equals(this) /* if different instance of equal common variable? */) {
             return x.unify(y, u);
         }
 

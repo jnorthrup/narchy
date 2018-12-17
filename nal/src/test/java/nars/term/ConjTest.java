@@ -931,7 +931,9 @@ public class ConjTest {
 
     @Test
     public void testFactorDternalComponentIntoTemporals2() {
-        assertEq("((a&&x) &&+- (a&&y))", "((x &&+- y) && a)");
+        assertEq(//"((a&&x) &&+- (a&&y))",
+                "((x &&+- y)&&a)",
+                "((x &&+- y) && a)");
     }
 
     @Test
@@ -1775,6 +1777,28 @@ public class ConjTest {
                 $("(a &&+1 a)").dt(XTERNAL).toString());
         assertEquals("((--,a) &&+- a)",
                 $("(a &&+1 --a)").dt(XTERNAL).toString());
+
+    }
+    @Test void testDisjunctionInnerDTERNALConj() {
+
+
+        Term x = $$("(((_1-->_2) &&+670 (--,(_1-->_2)))&&(--,(_3-->_2)))");
+        Conj xc = Conj.from(x);
+        assertEq(x, xc.term());
+        {
+            assertTrue(xc.removeEventsByTerm($$("(_1-->_2)"), true,false));
+            assertEq("((--,(_1-->_2))&&(--,(_3-->_2)))", xc.term());
+        }
+
+        Term xn = x.neg();
+
+        assertEq(
+            $$("(_1-->_2)"),
+            CONJ.the(
+                    xn,
+                    $$("(_1-->_2)")
+            )
+        );
 
     }
 

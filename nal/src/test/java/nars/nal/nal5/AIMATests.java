@@ -44,16 +44,14 @@ class AIMATests {
     @Test
     void testWeaponsDomain() throws Narsese.NarseseException {
 
-//        n.freqResolution.set(0.1f);
+        n.freqResolution.set(0.25f);
 //        n.confResolution.set(0.05f);
-        //n.confMin.set(0.1f);
+        n.confMin.set(0.1f);
 
-        //n.activateConceptRate.set(0.5f);
-//        n.beliefPriDefault.set(0.3f);
 //        n.beliefPriDefault.set(0.25f);
-//        n.questionPriDefault.set(0.9f);
+//        n.questionPriDefault.set(0.5f);
 
-        n.termVolumeMax.set(21);
+        n.termVolumeMax.set(23);
         //n.log();
 
 
@@ -82,7 +80,7 @@ class AIMATests {
         //n.concept("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").print();
         //n.concept("Criminal").print();
 
-        n.run(9000);
+        n.run(15000);
 //        n.synch();
 
 //        Concept qc = n.concept(Q);

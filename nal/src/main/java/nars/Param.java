@@ -10,7 +10,9 @@ import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.task.util.TaskBuffer;
 import nars.term.atom.Atom;
+import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.MemoizingTermBuilder;
+import nars.term.util.builder.VerifyingTermBuilder;
 import nars.truth.polation.LinearTruthPolation;
 import nars.truth.polation.TruthPolation;
 
@@ -39,8 +41,7 @@ public abstract class Param {
 //                            ,
 //                            HeapTermBuilder.the
 //                    )
-//                )
-        ;
+//                );
     }
 
     public static final boolean FILTER_SIGNAL_TABLE_TEMPORAL_TASKS = true;
