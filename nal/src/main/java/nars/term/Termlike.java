@@ -5,6 +5,7 @@ import nars.term.atom.Bool;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.stream.IntStream;
@@ -259,7 +260,13 @@ public interface Termlike {
                 return false;
         return true;
     }
-
+    default <X> boolean ANDwith(/*@NotNull*/ BiPredicate<Term,X> p, X x) {
+        int s = subs();
+        for (int i = 0; i < s; i++)
+            if (!p.test(sub(i), x))
+                return false;
+        return true;
+    }
     /** supplies the current index as 2nd lambda argument */
     default boolean ORwith(/*@NotNull*/ ObjectIntPredicate<Term> p) {
         int s = subs();
@@ -380,13 +387,17 @@ public interface Termlike {
         }
     }
 
-    default Term[] arrayClone(Term[] x, int from, int to) {
+    default Term[] arrayClone(Term[] target) {
+        return arrayClone(target, 0, subs());
+    }
+
+    default Term[] arrayClone(Term[] target, int from, int to) {
 
 
         for (int i = from, j = 0; i < to; i++, j++)
-            x[j] = this.sub(i);
+            target[j] = this.sub(i);
 
-        return x;
+        return target;
     }
 
 

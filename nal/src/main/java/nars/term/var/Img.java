@@ -39,8 +39,6 @@ public final class Img extends AnonID {
         return rank;
     }
 
-
-
     @Override
     public boolean unify(Term y, Unify u) {
         return y == this;

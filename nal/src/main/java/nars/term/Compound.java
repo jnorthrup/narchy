@@ -77,7 +77,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     static boolean equalSubs(Compound a, Compound b) {
 
-        if (a instanceof UnitCompound || b instanceof UnitCompound)  {
+        if (a instanceof UnitCompound || b instanceof UnitCompound) {
             //avoid instantiating dummy subterms instance
             int as = a instanceof UnitCompound ? 1 : a.subs();
             int bs = b instanceof UnitCompound ? 1 : b.subs();
@@ -231,6 +231,18 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     default boolean unifySubterms(Term y, Unify u) {
+
+        Op o = op();
+        if (o == CONJ) {
+            int xdt = dt(), ydt = y.dt();
+            if (xdt==XTERNAL && ydt!=XTERNAL) {
+                return unify(y.root(), u);
+            } else if (ydt==XTERNAL && xdt!=XTERNAL) {
+                return root().unify(y, u);
+            }
+        }
+
+
         Term x = this;
 
         Subterms xx = subterms();
@@ -242,50 +254,47 @@ public interface Compound extends Term, IPair, Subterms {
         if (!Subterms.possiblyUnifiable(xx, yy, u))
             return false;
 
-        boolean xSpecific = false, ySpecific = false;
-        if (xs == 1) {
+        if (xs == 1)
             return xx.sub(0).unify(yy.sub(0), u);
+
+        boolean xSpecific = false, ySpecific = false;
+
+
+        int xdt, ydt;
+        if (o.temporal) {
+            xdt = x.dt();
+            ydt = y.dt();
+            if (xdt != ydt) {
+                xSpecific = (xdt != XTERNAL && xdt != DTERNAL);
+                ySpecific = (ydt != XTERNAL && ydt != DTERNAL);
+                if (xSpecific && ySpecific)
+                    if (!u.unifyDT(xdt, ydt))
+                        return false;
+            }
+
+            //compound equality would have been true if non-temporal
+            if (xx.equals(yy))
+                return true;
+
+
         } else {
-
-            Op o = op();
-
-
-            int xdt, ydt;
-            if (o.temporal) {
-                xdt = x.dt();
-                ydt = y.dt();
-                if (xdt!=ydt) {
-                    xSpecific = (xdt != XTERNAL && xdt != DTERNAL);
-                    ySpecific = (ydt != XTERNAL && ydt != DTERNAL);
-                    if (xSpecific && ySpecific)
-                        if (!u.unifyDT(xdt, ydt))
-                            return false;
-                }
-
-                //compound equality would have been true if non-temporal
-                if (xx.equals(yy))
-                    return true;
+            xdt = ydt = DTERNAL;
+        }
 
 
-
+        boolean result;
+        if (o.commutative /* subs>1 */) {
+            if (o == CONJ && !dtSpecial(xdt)) {
+                //assert(xs==2);
+                result = (xdt >= 0) == (ydt >= 0) ? xx.unifyLinear(yy, u) : xx.unifyLinear(yy.reversed(), u);
             } else {
-                xdt = ydt = DTERNAL;
+                result = xx.unifyCommute(yy, u);
             }
+        } else { //TODO if temporal, compare in the correct order
+            result = xx.unifyLinear(yy, u);
+        }
 
-
-            boolean result;
-            if (o.commutative /* subs>1 */) {
-                if (o == CONJ && !dtSpecial(xdt)) {
-                    //assert(xs==2);
-                    result = (xdt >= 0) == (ydt >= 0) ? xx.unifyLinear(yy, u) : xx.unifyLinear(yy.reversed(), u);
-                } else {
-                    result = xx.unifyCommute(yy, u);
-                }
-            } else { //TODO if temporal, compare in the correct order
-                result = xx.unifyLinear(yy, u);
-            }
-
-            return result;
+        return result;
 //            if (result) {
 //                if (xSpecific^ySpecific && u instanceof Derivation) {
 //                    //one is not specified.  specify via substitution
@@ -300,7 +309,7 @@ public interface Compound extends Term, IPair, Subterms {
 //                return true;
 //            }
 //            return false;
-        }
+
     }
 
 
@@ -426,12 +435,13 @@ public interface Compound extends Term, IPair, Subterms {
     default int[] subTimes(Term event) {
         return subTimes(event, Integer.MAX_VALUE);
     }
+
     /**
      * TODO return XTERNAL not DTERNAL on missing, it is more appropriate
      * expect the output array to be sorted
      */
     default int[] subTimes(Term event, int max) {
-        assert(max > 0);
+        assert (max > 0);
 
         if (equals(event))
             return new int[]{0};
@@ -453,7 +463,7 @@ public interface Compound extends Term, IPair, Subterms {
                     else if (!Arrays.equals(ss, tt)) {
                         int undupN = ss.length + tt.length;
                         tt = ArrayUtils.addAll(ss, tt);
-                        needDedup = tt.length!=undupN;
+                        needDedup = tt.length != undupN;
                         if (!needDedup && tt.length > max)
                             return null;
                     }
@@ -464,7 +474,7 @@ public interface Compound extends Term, IPair, Subterms {
                 if (tt.length > max)
                     return null;
             } else {
-                if (tt !=null) {
+                if (tt != null) {
                     if (tt.length > max)
                         return null;
                     if (tt.length > 1)
@@ -708,11 +718,11 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     default Term eventFirst() {
-        if (op()==CONJ) {
-            if (eventRange()==0)
+        if (op() == CONJ) {
+            if (eventRange() == 0)
                 return sub(0); //default to first subterm
             final Term[] first = new Term[1];
-            eventsWhile((when,what)->{
+            eventsWhile((when, what) -> {
                 first[0] = what;
                 return false; //done got first
             }, 0, true, true, false, 0);
@@ -721,13 +731,15 @@ public interface Compound extends Term, IPair, Subterms {
         return this;
     }
 
-    /** TODO optimize */
+    /**
+     * TODO optimize
+     */
     default Term eventLast() {
-        if (op()==CONJ) {
-            if (eventRange()==0)
+        if (op() == CONJ) {
+            if (eventRange() == 0)
                 return sub(0); //default to first subterm
             final Term[] last = new Term[1];
-            eventsWhile((when,what)->{
+            eventsWhile((when, what) -> {
                 last[0] = what;
                 return true; //HACK keep going to end
             }, 0, true, true, false, 0);

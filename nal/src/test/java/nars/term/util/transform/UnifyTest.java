@@ -517,6 +517,15 @@ public class UnifyTest {
     }
 
     @Test
+    void notUnifyingType1() {
+        test(Op.VAR_INDEP, "(x,$1)", "(x,y)", true);
+
+        test(Op.VAR_DEP, "(x,$1)", "(x,$1)", true);
+        test(Op.VAR_DEP, "(x,$1)", "(x,y)", false);
+        test(Op.VAR_DEP, "(x,y)", "(x,$1)", false);
+    }
+
+    @Test
     void posNegQuestion() {
 
 

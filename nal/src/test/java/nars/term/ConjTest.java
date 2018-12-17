@@ -6,6 +6,7 @@ import nars.$;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.op.SubUnify;
 import nars.term.atom.Bool;
 import nars.term.util.Conj;
 import nars.term.util.TermException;
@@ -63,7 +64,8 @@ public class ConjTest {
 
 
     @Test void testDternalize() {
-        assertEq("((a &&+3 b)&&c)", $$("((a &&+3 b) &&+3 c)").dt(DTERNAL));
+        assertEq("((a &&+3 b)&&c)"
+                /*"((a&|c) &&+3 (b&|c))"*/, $$("((a &&+3 b) &&+3 c)").dt(DTERNAL));
     }
 
     @Test
@@ -1883,6 +1885,35 @@ public class ConjTest {
                 "((%1..+ &&+- %1..+) &&+- (%2..+ &&+- %2..+))");
 
 
+    }
+
+    @Test void unifyXternalParallel() {
+        assertUnifies("(&&+-, x, y, z)", "(&|, x, y, z)", true);
+        assertUnifies("(&&+-, --x, y, z)", "(&|, --x, y, z)", true);
+        assertUnifies("(&&+-, --x, y, z)", "(&|, x, y, z)", false);
+        assertUnifies("(&&+-, x, y, z)", "(&|, --x, y, z)", false);
+    }
+    @Test void unifyXternalSequence2() {
+        assertUnifies("(x &&+- y)", "(x &&+1 y)", true);
+        assertUnifies("(x &&+- y)", "(x &&+1 --y)", false);
+        assertUnifies("(--x &&+- y)", "(--x &&+1 y)", true);
+    }
+    @Test void unifyXternalSequence2Repeating() {
+        assertUnifies("(x &&+- x)", "(x &&+1 x)", true);
+        assertUnifies("(x &&+- --x)", "(x &&+1 --x)", true);
+        assertUnifies("(x &&+- --x)", "(--x &&+1 x)", true);
+    }
+
+    @Test void unifyXternalSequence3() {
+        assertUnifies("(&&+-, x, y, z)", "(x &&+1 (y &&+1 z))", true);
+        assertUnifies("(&&+-, x, y, z)", "(z &&+1 (x &&+1 y))", true);
+        assertUnifies("(&&+-, x, --y, z)", "(x &&+1 (--y &&+1 z))", true);
+        assertUnifies("(&&+-, x, y, z)", "(x &&+1 (--y &&+1 z))", false);
+    }
+
+    static void assertUnifies(String x, String y, boolean unifies) {
+        Random rng = new XoRoShiRo128PlusRandom(1);
+        assertEquals(unifies, $$(x).unify($$(y), new SubUnify(rng)));
     }
 
     //TODO

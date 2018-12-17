@@ -10,7 +10,6 @@ import nars.Op;
 import nars.Param;
 import nars.subterm.Subterms;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.atom.Bool;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.time.Tense;
@@ -33,6 +32,8 @@ import java.util.function.IntPredicate;
 import static java.lang.System.arraycopy;
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
+import static nars.term.Terms.sorted;
+import static nars.term.atom.Bool.False;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -481,11 +482,11 @@ public class Conj extends ByteAnonMap {
 
         Term left = conjSeq(events, start, center + 1);
         if (left == Null) return Null;
-        if (left == Bool.False) return Bool.False;
+        if (left == False) return False;
 
         Term right = conjSeq(events, center + 1, end);
         if (right == Null) return Null;
-        if (right == Bool.False) return Bool.False;
+        if (right == False) return False;
 
         int dt = (int) (events.get(center + 1).getOne() - first.getOne() - left.eventRange());
 
@@ -499,8 +500,8 @@ public class Conj extends ByteAnonMap {
         if (right == Null) return Null;
 
 
-        if (left == Bool.False) return Bool.False;
-        if (right == Bool.False) return Bool.False;
+        if (left == False) return False;
+        if (right == False) return False;
 
         if (left == Bool.True) return right;
         if (right == Bool.True) return left;
@@ -624,7 +625,7 @@ public class Conj extends ByteAnonMap {
     private boolean added(boolean success) {
         if (!success) {
             if (term == null)
-                term = Bool.False;
+                term = False;
             return false;
         }
         return true;
@@ -675,8 +676,8 @@ public class Conj extends ByteAnonMap {
             //short circuits
             if (x == Bool.True)
                 return true;
-            else if (x == Bool.False) {
-                this.term = Bool.False;
+            else if (x == False) {
+                this.term = False;
                 return false;
             } else if (x == Null) {
                 this.term = Null;
@@ -722,7 +723,7 @@ public class Conj extends ByteAnonMap {
                     if (result != null) {
                         if (result == Bool.True)
                             return true; //absorbed input
-                        if (result == Bool.False || result == Null) {
+                        if (result == False || result == Null) {
                             this.term = result;
                             return false;
                         } else  {
@@ -825,7 +826,7 @@ public class Conj extends ByteAnonMap {
                     return false; //stop iterating
                 } else if (incoming.equals(what)) {
                     //contradict
-                    result[0] = Bool.False;
+                    result[0] = False;
                     return false;
                 }
             }
@@ -837,7 +838,7 @@ public class Conj extends ByteAnonMap {
             return incoming; //disjunction annihilated
         }
 
-        if (result[0] == Bool.False) {
+        if (result[0] == False) {
             //removing the matching subterm from the disjunction and reconstruct it
             //then merge the incoming term
 
@@ -900,11 +901,11 @@ public class Conj extends ByteAnonMap {
                         //reconstitute the two terms, glue them together as a new super-disjunction to replace the existing (and interrupt adding the incoming)
 
                         Term A = CONJ.the(adt, aa).neg();
-                        if (A == Bool.False || A == Null || aa.equals(bb))
+                        if (A == False || A == Null || aa.equals(bb))
                             return A;
 
                         Term B = CONJ.the(bdt, bb).neg();
-                        if (B == Bool.True || B == Bool.False || B == Null || A.equals(B))
+                        if (B == Bool.True || B == False || B == Null || A.equals(B))
                             return B;
 
                         return CONJ.the(eternal ? DTERNAL : 0, A, B);
@@ -921,46 +922,99 @@ public class Conj extends ByteAnonMap {
 
     private static Term conjoinify(Term conj, Term incoming, boolean eternal) {
         int cdt = conj.dt();
+
+        int ddt = eternal ? DTERNAL : 0;
+
+
         if (incoming.op() != CONJ) {
+
             Subterms cs = conj.subterms();
+
+            if (dtSpecial(cdt)) {
+                if (cs.containsNeg(incoming))
+                    return False; //contradiction
+                else if (cs.contains(incoming))
+                    return conj; //Bool.True; //present, ignore
+
+                if (cdt == ddt) {
+                    //commutive merge
+                    int n = cs.subs();
+                    Term[] x = cs.arrayClone(new Term[n + 1]);
+                    x[n] = incoming;
+                    return Op.terms.theCompound(CONJ, cdt, sorted(x));
+                }
+            }
+
             if (cdt == XTERNAL) {
                 Set<Term> x = new UnifiedSet(cs.subs());
-                //TODO early termination if invalid term constructed
-                cs.forEach(z -> x.add(CONJ.the(eternal ? DTERNAL : 0, z, incoming)));
-                return CONJ.the(XTERNAL, x);
+                if (cs.ANDwith((z,xx) -> xx.add(CONJ.the(ddt, z, incoming)),x)) {
+                    return Op.terms.theCompound(CONJ, XTERNAL, sorted(x));
+                    //return CONJ.the(XTERNAL, x);
+                } else
+                    return False;
+            }
 
-            } else if ((cdt == 0 && !eternal) || (eternal && cdt == DTERNAL)) {
-                //commutive merge
-                if (cs.containsNeg(incoming))
-                    return Bool.False; //contradiction
-                else if (cs.contains(incoming))
-                    return Bool.True;//present, ignore
+            //                } else if (cdt == DTERNAL) {
+//                    if (cs.containsNeg(incoming))
+//                        return Bool.False; //contradiction
+//                    else if (cs.contains(incoming))
+//                        return conj.dt(0); //present, promote to parallel
+//                }
 
-                return CONJ.the(cdt, cs.toSet().with(incoming));
-            } else {
-                if (cdt == 0) {
-                    if (cs.containsNeg(incoming))
-                        return Bool.False; //contradiction
-                    else if (cs.contains(incoming))
-                        return Bool.True; //present, ignore
-                } else if (cdt == DTERNAL) {
-                    if (cs.containsNeg(incoming))
-                        return Bool.False; //contradiction
-                    else if (cs.contains(incoming))
-                        return conj.dt(0); //present, promote to parallel
+//                if (eternal && !conj.containsRecursively(incoming)) {
+//                    return Op.terms.theCompound(CONJ, DTERNAL, sorted(conj, incoming));
+//                }
+
+            //sequence distribute (un-factor)
+
+
+
+            {
+                Conj c = new Conj();
+                final boolean[] intact = {true};
+                boolean ok = conj.eventsWhile((whn, wht) ->
+                        {
+                            Term ww = wht.equals(incoming) ? wht : Op.terms.theCompound(CONJ, ddt, sorted(wht, incoming));
+                            if (ww==False || ww==Null) {
+                                return false;
+                            } else if (!(ww.op() == CONJ && ww.contains(incoming))) {
+                                //something changed
+                                intact[0] = false;
+                            } return c.add(whn,
+                                    //CONJ.the(dtdt, wht, incoming)
+                                    ww
+                            );
+                        }, 0,
+                        true, false, true, 0);
+                if (!ok)
+                    return False;
+
+                if (intact[0]) {
+                    //all original subterms remain intact, return simplified factored version
+                    return Op.terms.theCompound(CONJ, ddt, sorted(conj, incoming));
                 }
 
-                //sequence distribute (un-factor)
-                Conj c = new Conj();
-                int dtdt = eternal ? DTERNAL : 0;
-
-
-                conj.eventsWhile((whn, wht) ->
-                                c.add(whn, CONJ.the(dtdt, wht, incoming)), 0,
-                        true, false, true, 0);
                 Term d = c.term();
-                if (d.equals(conj))
+                if (d!=conj && d.equals(conj))
                     return conj;  //no change but the incoming has been absorbed
+                else
+                    return d;
+            }
+            //else {
+//
+//                int result;
+//                conj.eventsWhile((whn, wht) -> {
+//                    if (wht.equals(incoming))
+//                }, 0, true, false, true, 0));
+//                switch (result) {
+//                    case -1:
+//                        return False;
+//                    case 0:
+//                        return conj; //absorbed
+//                    case 1:
+//                        return Op.terms.theCompound(CONJ, DTERNAL, sorted(conj, incoming)); //append
+//                }
+//            }
 
 //                if (d.op()!=BOOL) {
 //                    //still valid after un-factoring (distribution)
@@ -969,14 +1023,12 @@ public class Conj extends ByteAnonMap {
 //                    return d.volume() <= e.volume() ? d : e;
 //                }
 
-                return d;
-            }
         } else {
             //TODO conj conj merge
 
         }
         //TODO other cases
-        return null;
+        return Op.terms.theCompound(CONJ, ddt, sorted(conj, incoming));
     }
 
     /**
@@ -995,7 +1047,7 @@ public class Conj extends ByteAnonMap {
         if (existing.equals(incoming))
             return Bool.True; //exact same
         if (existing.equalsNeg(incoming))
-            return Bool.False; //contradiction
+            return False; //contradiction
 
         Term incomingUnneg = incoming.unneg();
         if (!Term.commonStructure(existingUnneg, incomingUnneg))
@@ -1246,8 +1298,8 @@ public class Conj extends ByteAnonMap {
 
                 if (wt == Bool.True) {
                     continue;
-                } else if (wt == Bool.False) {
-                    return this.term = Bool.False;
+                } else if (wt == False) {
+                    return this.term = False;
                 } else if (wt == Null) {
                     return this.term = Null;
                 }
@@ -1389,7 +1441,7 @@ public class Conj extends ByteAnonMap {
                 break;
             Term s = sub(x, negatives, validator);
             if (s instanceof Bool) {
-                if (s == Bool.False || s == Null)
+                if (s == False || s == Null)
                     return s;
                 else {
                     //ignore True case
@@ -1412,7 +1464,7 @@ public class Conj extends ByteAnonMap {
                     return CONJ.the(cdt, t);
                 } else {
                     //return Op.compound(CONJ, cdt, Terms.sorted(t));
-                    return HeapTermBuilder.the.compound(CONJ, cdt, Terms.sorted(t));
+                    return HeapTermBuilder.the.compound(CONJ, cdt, sorted(t));
                 }
 
             }
@@ -1442,7 +1494,7 @@ public class Conj extends ByteAnonMap {
         }
 
         if (validator != null && !validator.test(termIndex))
-            return Bool.False;
+            return False;
 
         Term c = idToTerm.get(termIndex - 1);
         if (neg) {

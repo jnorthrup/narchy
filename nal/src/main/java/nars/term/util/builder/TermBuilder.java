@@ -1,6 +1,5 @@
 package nars.term.util.builder;
 
-import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import nars.Op;
 import nars.subterm.*;
@@ -13,6 +12,7 @@ import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
 import nars.term.util.Conj;
+import nars.term.util.TermException;
 import nars.term.util.transform.CompoundNormalization;
 import nars.term.util.transform.Retemporalize;
 import nars.unify.ellipsis.EllipsisMatch;
@@ -369,7 +369,7 @@ public abstract class TermBuilder {
             default: {
                 if (u.length != 2) {
                     //if (Param.DEBUG_EXTRA)
-                    throw new WTF("temporal conjunction with n!=2 subterms");
+                    throw new TermException("temporal conjunction with n!=2 subterms");
                     //return Null;
                 }
 

@@ -139,10 +139,12 @@ public abstract class Unify extends Versioning implements Subst {
     public final Term resolve(final Variable x) {
         Term /*Variable*/ z = x, y;
 
-        while (z instanceof Variable && (y = xy.get(z)) != null) {
-            //assert(y!=z && y!=x);
+        do {
+            y = xy.get(z);
+            if (y==null)
+                break;
             z = y;
-        }
+        } while (z instanceof Variable);
         return z;
     }
 

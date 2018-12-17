@@ -29,10 +29,8 @@ public class UnifyPremise extends UnifySubst {
 
     @Override
     protected boolean each(Term y) {
-        if (y.op().conceptualizable) {
-            y = y.unneg();
-
-            if (!y.equals(beliefTerm)) {
+        if (!y.equals(beliefTerm)) {
+            if (y.op().conceptualizable) {
                 beliefTermUnified = y;
                 return false;  //done
             }

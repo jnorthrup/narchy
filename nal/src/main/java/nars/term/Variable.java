@@ -70,6 +70,8 @@ public interface Variable extends Atomic {
         Op xOp = op();
 
         boolean xMatches = u.matchType(xOp);
+        if (!xMatches)
+            return false;
 
         if (_y instanceof Variable) {
             if (!(_y instanceof EllipsisMatch)) {
