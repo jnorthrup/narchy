@@ -60,7 +60,7 @@ public enum TermTest { ;
         return assertEq(is,is);
     }
 
-    public static Term assertEq(Term y, Term x) {
+    public static Term assertEq(Term x, Term y) {
 
         //noinspection RedundantCast
         assertEq((Termlike)x, ((Termlike)y));

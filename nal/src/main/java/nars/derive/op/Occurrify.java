@@ -148,9 +148,6 @@ public class Occurrify extends TimeGraph {
 
         clear();
 
-
-
-
         long taskStart = taskOccurrence ? d.taskStart : TIMELESS,
              taskEnd = taskOccurrence ? d.taskEnd : TIMELESS,
              beliefStart = beliefOccurrence ? d.beliefStart : TIMELESS,
@@ -218,11 +215,11 @@ public class Occurrify extends TimeGraph {
             link(e, 0, know(u));
     }
 
-    private void knowIfRetransforms(Term t) {
-        Term u = d.retransform(t);
-        if (!t.equals(u) && termsEvent(u))
-            link(know(t), 0, know(u));
-    }
+//    private void knowIfRetransforms(Term t) {
+//        Term u = d.retransform(t);
+//        if (!t.equals(u) && termsEvent(u))
+//            link(know(t), 0, know(u));
+//    }
 
     final BiConsumer<Term, Compound> negRequire = (sub, sup) -> {
         Op so = sub.op();

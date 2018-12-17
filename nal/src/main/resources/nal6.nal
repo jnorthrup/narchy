@@ -180,8 +180,8 @@
     //Same as for inheritance
     //union/intersection assymmetry: union if subj, intersect if pred
 
-     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:Intersection, Also:VarIntro)
-       (P ==> M), (S ==> M) |- --((P && S) ==> M), (Belief:IntersectionNN, Also:VarIntro)
+     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:Intersection)
+       (P ==> M), (S ==> M) |- --((P && S) ==> M), (Belief:IntersectionNN)
      //(P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:Union)
         //(P ==> M), (S ==> M) |- --((P || S) ==> M), (Belief:UnionNN)
 //     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:IntersectionSym)
@@ -192,7 +192,7 @@
                 //...Also:VarIntro)
 
 
-     (M ==> P), (M ==> S) |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized, Also:VarIntro)
+     (M ==> P), (M ==> S) |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized)
         (M ==> P), (M ==> S), task("?") |- (M ==> (polarizeRandom(P) && polarizeRandom(S))), (Punctuation:Question)
 
      //(M ==> P), (M ==> S) |- (M ==> (polarize(P,task) || polarize(S,belief))), (Belief:UnionDepolarized, Also:VarIntro)

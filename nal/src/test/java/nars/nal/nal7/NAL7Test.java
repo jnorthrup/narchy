@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 100;
+    private final static int cycles = 150;
 
     @BeforeEach
     void setTolerance() {
@@ -1103,10 +1103,11 @@ public class NAL7Test extends NALTest {
     void preconImplyConjPostB() {
 
 
+        test.nar.termVolumeMax.set(10);
         test
-                .input("(a ==>+3 x). :|:")
-                .input("(a ==>+2 y). :|:")
-                .mustBelieve(cycles, "(a ==>+2 (x &&-1 y))", 1.00f, 0.81f, 0);
+                .input("(a ==>+3 x). |")
+                .input("(a ==>+2 y). |")
+                .mustBelieve(cycles, "(a ==>+2 (y &&+1 x))", 1.00f, 0.81f, 0);
     }
 
         @Test
@@ -1343,7 +1344,9 @@ public class NAL7Test extends NALTest {
          $.41;.81$ (($1-->[heated]) ==>+10 ($1-->[pliable])). %1.0;.81% {1: 3;4} ((%1,(%2<=>%3),neqCom(%1,%3),neq(%1,%2),time(beliefDTSimultaneous)),(substitute(%1,%2,%3,strict),((Intersection-->Belief),(Strong-->Goal))))
          */
 
+        test.nar.termVolumeMax.set(16);
         test
+
                 .input("((reshape(I,$1) &| ($1-->[pliable])) ==>+10 ($1-->[hardened])).")
                 .input("(($1-->[heated]) ==>+10 ($1-->[pliable])).")
 

@@ -64,7 +64,7 @@ public class PatrickTests extends NALTest {
                 .believe("REPRESENT(cat,ANIMAL)")
                 .believe("REPRESENT(eats,EATING)")
                 .ask( "REPRESENT({cat,eats},?1)")
-                .mustBelieve(200, "REPRESENT({cat,eats},{ANIMAL,EATING})", 1, 0.4f);
+                .mustBelieve(600, "REPRESENT({cat,eats},{ANIMAL,EATING})", 1, 0.4f);
     }
 
     @Test

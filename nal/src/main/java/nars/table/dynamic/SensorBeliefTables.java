@@ -7,7 +7,6 @@ import nars.Task;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.control.proto.Remember;
-import nars.link.TaskLink;
 import nars.table.BeliefTables;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.task.AbstractTask;
@@ -218,7 +217,10 @@ public class SensorBeliefTables extends BeliefTables {
                 float p = lastTask.pri();
                 if (p == p) {
                     series.tasklink.pri(p);
-                    TaskLink.link(series.tasklink, c);
+
+                    //SHOULDNT NEED TO LINK TO ITSELF. NO STRUCTURAL TRANSFORM REALLY SHOULD APPLY
+                    //TaskLink.link(series.tasklink, c);
+
                     if (lastActivated!=lastTask) {
                         n.activate(c, p);
                         lastActivated = lastTask;

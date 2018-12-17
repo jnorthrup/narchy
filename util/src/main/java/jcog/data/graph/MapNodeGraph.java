@@ -86,7 +86,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
     }
 
     public final boolean addNewNode(N key) {
-        return addNode(key, true) != null;
+        return addNode(key, false) != null;
     }
 
     @Override

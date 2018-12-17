@@ -268,6 +268,21 @@ class TimeGraphTest {
 
     }
 
+    @Test
+    void testImplConj() throws Narsese.NarseseException {
+        TimeGraph C = newTimeGraph(1);
+
+        int NA = 1; //Not/Applicable
+        C.know($("(x ==>+1 y)"), NA);
+        C.know($("(x ==>+2 z)"), NA);
+        C.print();
+
+        assertSolved("(x ==>+- (y &&+- z))", C,
+                "(x ==>+- (y &&+1 z))", //<- useless
+                "(x ==>+1 (y &&+1 z))");
+
+    }
+
 
 
     @Test

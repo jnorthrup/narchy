@@ -737,11 +737,11 @@ public class Conj extends ByteAnonMap {
                                 i--; //compactify
                             } else
                                 b[i] = 0; //erase disjunction, continue comparing. the result remains eligible for add
-                            if (result != null) {
-                                return addEvent(at, result);
-                                //merged.add(result);
-                                //continue
-                            }
+
+                            return addEvent(at, result);
+                            //merged.add(result);
+                            //continue
+
                         }
                     }
                 } else {
@@ -856,8 +856,12 @@ public class Conj extends ByteAnonMap {
 
             int dt = eternal ? DTERNAL : 0;
 
-            return HeapTermBuilder.the.theSortedCompound(CONJ, dt, existingShortened, incoming);
-            //return CONJ.the(dt, existingShortened, incoming);
+            if (existingShortened.equalsNeg(incoming)) //quick test
+                return False;
+            //also coudl test for && contains if dtspecial etc
+
+            //return HeapTermBuilder.the.theSortedCompound(CONJ, dt, existingShortened, incoming);
+            return CONJ.the(dt, existingShortened, incoming);
 
 //            if (Param.DEBUG)
 //                throw new TODO(existingShortened.toString() + ' ' + dt + ' ' + incoming);
@@ -933,7 +937,7 @@ public class Conj extends ByteAnonMap {
 
             Subterms cs = conj.subterms();
 
-            if (dtSpecial(cdt)) {
+            if (dtSpecial(cdt) && !conj.subterms().hasAny(Op.CONJ)) {
                 if (cs.containsNeg(incoming))
                     return False; //contradiction
                 else if (cs.contains(incoming))
@@ -978,16 +982,19 @@ public class Conj extends ByteAnonMap {
                     intact[0] = false;
                 }
                 return c.add(whn, ww);
-            }, 0,true, false, true, 0);
+            }, 0,true, true, true, 0);
             if (!ok)
                 return False;
+
+            Term d = c.term();
+            if (d == False || d== Null)
+                return d; //fail
 
             if (intact[0]) {
                 //all original subterms remain intact, return simplified factored version
                 return HeapTermBuilder.the.theSortedCompound(CONJ, ddt, conj, incoming);
             }
 
-            Term d = c.term();
             if (d != conj && d.equals(conj))
                 return conj;  //no change but the incoming has been absorbed
             else
