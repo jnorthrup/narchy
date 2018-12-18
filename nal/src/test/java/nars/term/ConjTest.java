@@ -1936,6 +1936,16 @@ public class ConjTest {
         assertUnifies("(&&+-, x, y, z)", "(x &&+1 (--y &&+1 z))", false);
     }
 
+    @Test void testConjEternalConjEternalConj() {
+
+        Term a = $$("((x &&+7130 --x)&&y)");
+        Term b = $$("z");
+        assertEq(
+            "(&&,(x &&+7130 (--,x)),y,z)", //NOT: "(((x &&+7130 --x)&&y)&&z)",
+            CONJ.the(DTERNAL, a, b)
+        );
+    }
+
     @Test void testConjEternalConj() {
         //"(&&,(((left-->g) &&+270 (--,(left-->g))) &&+1070 (right-->g)),(up-->g),(left-->g),(destroy-->g))"
 

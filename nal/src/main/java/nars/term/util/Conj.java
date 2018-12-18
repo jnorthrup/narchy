@@ -21,19 +21,19 @@ import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.ImmutableBitmapDataProvider;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
 import java.util.function.IntPredicate;
 
 import static java.lang.System.arraycopy;
-import static nars.Op.CONJ;
-import static nars.Op.NEG;
-import static nars.term.Terms.sorted;
+import static nars.Op.*;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -627,8 +627,18 @@ public class Conj extends ByteAnonMap {
         if (o == CONJ) {
             int cdt = x.dt();
 
-            if (at == ETERNAL && ((cdt != 0) && (cdt != DTERNAL))) {
-                //sequence or xternal embedded in eternity; add as self contained event
+            if (at == ETERNAL && (cdt != 0) && (cdt != DTERNAL)) {
+//                if (cdt == DTERNAL) {
+//                     //pre-decompose DTERNAL component broke
+////                    for (Term xx : x.subterms()) {
+////                        if (!add((xx.op()==CONJ && xx.dt()!=ETERNAL) ? 0 : at, xx))
+////                            return false;
+////                    }
+////                    return true;
+//                }
+//                else if ((cdt != 0) && (cdt != DTERNAL)) {
+//                    //sequence or xternal embedded in eternity; add as self contained event
+//                }
             } else {
 
 
@@ -948,42 +958,34 @@ public class Conj extends ByteAnonMap {
     }
 
     private static Term conjoinify(Term conj, Term incoming, boolean eternal) {
-        int cdt = conj.dt();
 
-        int ddt = eternal ? DTERNAL : 0;
+        int dtOuter = eternal ? DTERNAL : 0;
 
         if (incoming.op() != CONJ) {
 
+            int dtInner = conj.dt();
+
             Subterms cs = conj.subterms();
 
-            if (dtSpecial(cdt) && !conj.subterms().hasAny(Op.CONJ)) {
+            if (dtSpecial(dtInner) && !conj.subterms().hasAny(Op.CONJ)) {
                 if (cs.containsNeg(incoming))
                     return False; //contradiction
                 else if (cs.contains(incoming))
                     return True; //present, ignore
 
-                if (cdt == ddt) {
+                if (dtInner == dtOuter) {
                     //commutive merge
-                    int n = cs.subs();
-                    Term[] x = cs.arrayClone(new Term[n + 1]);
-                    x[n] = incoming;
-                    return HeapTermBuilder.the.theSortedCompound(CONJ, ddt, x);
+                    return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, subAppend(cs, incoming));
                 } else {
-                    return HeapTermBuilder.the.theSortedCompound(CONJ, ddt, conj, incoming);
+                    return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, conj, incoming);
                 }
             }
 
-            if (cdt == XTERNAL) {
-                Set<Term> x = new UnifiedSet(cs.subs());
-                if (cs.ANDwith((z, xx) -> xx.add(HeapTermBuilder.the.conj(ddt, z, incoming)), x)) {
-                    //return HeapTermBuilder.the.theSortedCompound(CONJ, XTERNAL, x);
-                    return HeapTermBuilder.the.conj(XTERNAL, sorted(x));
-                } else
-                    return False;
-            }
+
 
             Conj c = new Conj();
             final boolean[] intact = {true};
+            boolean incomingHasConj = incoming.hasAny(CONJ);
             boolean ok = conj.eventsWhile((whn, wht) -> {
                 Term ww;
                 if (wht.equals(incoming))
@@ -991,7 +993,11 @@ public class Conj extends ByteAnonMap {
                 else if (wht.equalsNeg(incoming))
                     return false;
                 else {
-                    ww = CONJ.the(ddt, wht, incoming);
+                    //quick test for impossible interference
+                    if (!Term.commonStructure(wht,incoming) || (!incomingHasConj && !wht.hasAny(CONJ)))
+                        return true;
+
+                    ww = HeapTermBuilder.the.conj(dtOuter, wht, incoming);
                     if (ww == False || ww == Null)
                         return false;
                     if (ww == True)
@@ -1016,7 +1022,7 @@ public class Conj extends ByteAnonMap {
 
             if (intact[0]) {
                 //all original subterms remain intact, return simplified factored version
-                return HeapTermBuilder.the.theSortedCompound(CONJ, ddt, conj, incoming);
+                return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, conj, incoming);
             } else {
                 return d;
             }
@@ -1024,11 +1030,18 @@ public class Conj extends ByteAnonMap {
         } else {
 //            //TODO conj conj merge
 //            if (conj.dt()!=ddt)
-                return HeapTermBuilder.the.theSortedCompound(CONJ, ddt, conj, incoming);
+                return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, conj, incoming);
 //            else
 //                return HeapTermBuilder.the.conj(ddt, conj, incoming);
         }
 
+    }
+
+    private static Term[] subAppend(Subterms subterms, Term x) {
+        int n = subterms.subs();
+        Term[] y = subterms.arrayClone(new Term[n + 1]);
+        y[n] = x;
+        return y;
     }
 
     /**
@@ -1256,11 +1269,24 @@ public class Conj extends ByteAnonMap {
 
         IntPredicate validator = null;
         Object eternalWhat = event.get(ETERNAL);
-        final Term eternal = eternalWhat != null ? term(ETERNAL, eternalWhat) : null;
+        Term eternal = eternalWhat != null ? term(ETERNAL, eternalWhat) : null;
         if (eternal != null) {
 
             if (eternal instanceof Bool)
                 return this.term = eternal;
+
+            //flatten inner conjunctions
+            if (eternal.op()==CONJ) {
+                Subterms es = eternal.subterms();
+                if (es.hasAny(CONJ) && es.OR(x -> x.op() == CONJ && x.dt() == DTERNAL)) {
+                    TreeSet<Term> ee = new TreeSet();
+                    for (Term ex : es) {
+                        flattenDternalInto(ee, ex);
+                    }
+                    if (ee.size()!=es.subs() || !es.toSet().equals(ee))
+                        eternal = HeapTermBuilder.the.conj(DTERNAL, ee.toArray(EmptyTermArray));
+                }
+            }
 
             if (numTimes > 1) {
 
@@ -1274,8 +1300,11 @@ public class Conj extends ByteAnonMap {
                         RoaringBitmap b = (RoaringBitmap) eternalWhat;
                         validator = (i) -> !b.contains(-i);
                     }
+
+
                 } else {
-                    validator = (t) -> !eternal.equalsNeg(idToTerm.get(Math.abs(t - 1)).negIf(t < 0));
+                    Term finalEternal = eternal;
+                    validator = (t) -> !finalEternal.equalsNeg(idToTerm.get(Math.abs(t - 1)).negIf(t < 0));
                 }
             }
         }
@@ -1380,6 +1409,15 @@ public class Conj extends ByteAnonMap {
             }
         }
         return ci;
+    }
+
+    private static void flattenDternalInto(TreeSet<Term> ee, Term ex) {
+        if (ex.op() == CONJ && ex.dt() == DTERNAL)
+            ex.subterms().forEach(eee ->{
+                flattenDternalInto(ee, eee);
+            });
+        else
+            ee.add(ex);
     }
 
     public long shift() {

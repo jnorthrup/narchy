@@ -110,8 +110,9 @@ public abstract class TermBuilder {
             }
         }
     }
+
     public final Term theSortedCompound(Op o, int dt, Collection<Term> u) {
-        assert(Tense.dtSpecial(dt));
+        assert (Tense.dtSpecial(dt));
         Term[] s = sorted(u);
         if (s.length == 1 && o == CONJ)
             return s[0];
@@ -120,7 +121,7 @@ public abstract class TermBuilder {
     }
 
     public final Term theSortedCompound(Op o, int dt, Term... u) {
-        assert(Tense.dtSpecial(dt));
+        assert (Tense.dtSpecial(dt));
         Term[] s = sorted(u);
         if (s.length == 1 && o == CONJ)
             return s[0];
@@ -194,7 +195,6 @@ public abstract class TermBuilder {
     }
 
 
-
     //TODO presorted flag
     public Term conj(final int dt, Term... u) {
 
@@ -207,7 +207,7 @@ public abstract class TermBuilder {
                 Term[] v = Terms.sorted(u);
                 if (v.length != 1) {
                     u = v; //only if not collapsed to one item in case of repeat
-                } else  {
+                } else {
                     if (/*!(v[0] instanceof Ellipsislike) || */(u.length > 1 && u[0].equals(u[1])))
                         u = new Term[]{v[0], v[0]};
                     else {
@@ -293,7 +293,7 @@ public abstract class TermBuilder {
                             return Bool.False;
                     }
 
-                    if (!a.hasAny(Op.CONJ.bit) && !b.hasAny(Op.CONJ.bit)) {
+                    if (!a.hasAny(Op.CONJ.bit | Op.NEG.bit) && !b.hasAny(Op.CONJ.bit | Op.NEG.bit)) {
                         //fast construct for simple case, verified above to not contradict itself
                         //return compound(CONJ, dt, sorted(u[0], u[1]));
                         return theCompound(CONJ, dt, /*sorted*/u[0], u[1]);
@@ -305,7 +305,8 @@ public abstract class TermBuilder {
                 assert u.length > 1;
                 Conj c = new Conj(u.length);
                 long sdt = dt == DTERNAL ? ETERNAL : 0;
-                for (Term x : u) {
+                for (int i = 0, uLength = u.length; i < uLength; i++) {
+                    Term x = u[i];
                     if (!c.add(sdt, x))
                         break;
                 }
