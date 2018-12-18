@@ -71,6 +71,10 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         /** allows the model to interrupt the wheel before it decides to sleep */
         abstract public boolean canExit();
+
+        public void restart(HashedWheelTimer h) {
+
+        }
     }
 
     private final WheelModel model;
@@ -154,8 +158,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         logger.info("{} restart {}", this, System.currentTimeMillis());
 
-        //long epochTime = wheels * resolution;
-
+        model.restart(this);
 
         int c, empties;
 

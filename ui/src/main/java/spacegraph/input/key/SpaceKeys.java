@@ -2,15 +2,16 @@ package spacegraph.input.key;
 
 import com.jogamp.newt.event.KeyAdapter;
 import com.jogamp.newt.event.KeyEvent;
+import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Off;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
-import org.eclipse.collections.api.map.primitive.MutableIntObjectMap;
-import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
+import org.eclipse.collections.api.map.primitive.MutableShortObjectMap;
+import org.eclipse.collections.impl.map.mutable.primitive.ShortObjectHashMap;
 import org.jetbrains.annotations.Nullable;
-import org.roaringbitmap.RoaringBitmap;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.JoglWindow;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 
@@ -18,13 +19,12 @@ abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
 
     final JoglSpace space;
 
-    
-    private RoaringBitmap queue = new RoaringBitmap();
+    private final ConcurrentLinkedQueue<Consumer<SpaceKeys>> pending = new ConcurrentLinkedQueue<>();
+    private final MetalConcurrentQueue<Short> queue = new MetalConcurrentQueue<>(64);
 
-    private final IntObjectHashMap<FloatProcedure> _keyPressed = new IntObjectHashMap<>();
-    private final MutableIntObjectMap<FloatProcedure> keyPressed = _keyPressed.asSynchronized();
-    private final IntObjectHashMap<FloatProcedure> _keyReleased = new IntObjectHashMap();
-    private final MutableIntObjectMap<FloatProcedure> keyReleased = _keyReleased.asSynchronized();
+
+    private final MutableShortObjectMap<FloatProcedure> keyPressed = new ShortObjectHashMap<>();
+    private final MutableShortObjectMap<FloatProcedure> keyReleased = new ShortObjectHashMap<>();
     private final Off on;
 
     SpaceKeys(JoglSpace g) {
@@ -36,16 +36,19 @@ abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
 
     @Override
     public void accept(JoglWindow j) {
+        if (!pending.isEmpty()) {
+            synchronized(this) {
+                pending.removeIf(x -> {
+                    x.accept(this);
+                    return true;
+                });
+            }
+        }
 
-        RoaringBitmap queue = this.queue;
         if (!queue.isEmpty()) {
             float dt = j.dtS;
-            synchronized (on) {
-                this.queue = new RoaringBitmap();
-            }
-            queue.forEach((int k) -> {
-                boolean s = k >= 0; 
-                FloatProcedure f = ((s) ? keyPressed : keyReleased).get(Math.abs(k));
+            queue.clear((Short k) -> {
+                FloatProcedure f = ((k >= 0) ? keyPressed : keyReleased).get((short) Math.abs(k));
                 if (f != null)
                     f.value(dt);
             });
@@ -53,12 +56,14 @@ abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
     }
 
     void watch(int keyCode, @Nullable FloatProcedure ifPressed, @Nullable FloatProcedure ifReleased) {
-        if (ifPressed != null) {
-            keyPressed.put(keyCode, ifPressed);
-        }
-        if (ifReleased != null) {
-            keyReleased.put(keyCode, ifReleased);
-        }
+        pending.add((k)->{
+            if (ifPressed != null) {
+                k.keyPressed.put((short) keyCode, ifPressed);
+            }
+            if (ifReleased != null) {
+                k.keyReleased.put((short) keyCode, ifReleased);
+            }
+        });
     }
 
     
@@ -82,12 +87,10 @@ abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
         }
     }
 
-    private boolean setKey(int c, boolean state) {
+    private boolean setKey(short c, boolean state) {
         if ((state ? keyPressed : keyReleased).containsKey(c)) {
-            synchronized (on) {
-                queue.add(state ? c : -c);
-                return true;
-            }
+            queue.push(state ? c : (short)-c);
+            return true;
         }
         return false;
     }

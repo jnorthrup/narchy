@@ -1,9 +1,10 @@
 package nars.gui;
 
+import jcog.event.Off;
 import nars.NAR;
 import nars.control.DurService;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.unit.UnitContainer;
+import spacegraph.space2d.widget.meta.AbstractTriggeredSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import java.util.function.Consumer;
@@ -13,7 +14,7 @@ import java.util.function.Consumer;
  * automatically attaches update handler on start (ex: added to graph) and
  * removes on stop (ex: removal from graph)
  */
-abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
+abstract public class DurSurface<S extends Surface> extends AbstractTriggeredSurface<S> {
     protected final NAR nar;
     DurService on;
 
@@ -22,33 +23,14 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
         this.nar = nar;
     }
 
-    abstract protected void update();
-
-    protected final void updateIfShowing() {
-        if (showing()) {
-            update();
-        }
+    @Override
+    public Off on() {
+        return on = DurService.on(nar, this::updateIfShowing);
     }
-
 
     public DurSurface durs(float durs) {
         on.durs(durs);
         return this;
-    }
-
-    @Override
-    protected void starting() {
-        super.starting();
-
-        assert(on == null);
-        on = DurService.on(nar, this::updateIfShowing);
-    }
-
-    @Override
-    protected void stopping() {
-        on.off();
-        on = null;
-        super.stopping();
     }
 
     public static DurSurface get(Surface x, NAR n, Runnable eachDur) {

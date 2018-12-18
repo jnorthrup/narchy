@@ -6,7 +6,7 @@ import jcog.math.v2;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
-import spacegraph.input.key.Keyboard;
+import spacegraph.input.key.impl.Keyboard;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.widget.Widget;

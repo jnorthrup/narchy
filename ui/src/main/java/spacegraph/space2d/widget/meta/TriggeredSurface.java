@@ -2,14 +2,13 @@ package spacegraph.space2d.widget.meta;
 
 import jcog.event.Off;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.unit.UnitContainer;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 
 /** abstract update triggered */
-public class TriggeredSurface<X extends Surface> extends UnitContainer<X> {
+public class TriggeredSurface<X extends Surface> extends AbstractTriggeredSurface<X> {
 
     private final Function<Runnable, Off> trigger;
     private final Consumer<X> update;
@@ -26,18 +25,11 @@ public class TriggeredSurface<X extends Surface> extends UnitContainer<X> {
     }
 
     @Override
-    protected void starting() {
-        super.starting();
-        on = trigger.apply(this::update);
+    public Off on() {
+        return trigger.apply(this::update);
     }
 
-    @Override
-    protected void stopping() {
-        on.off();
-        on = null;
-    }
-
-    private final void update() {
+    protected final void update() {
         update.accept(the);
     }
 

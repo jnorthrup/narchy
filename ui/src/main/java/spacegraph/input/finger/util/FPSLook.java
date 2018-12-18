@@ -1,4 +1,4 @@
-package spacegraph.input.finger;
+package spacegraph.input.finger.util;
 
 import com.jogamp.newt.event.MouseEvent;
 import spacegraph.space3d.SpaceGraphPhys3D;

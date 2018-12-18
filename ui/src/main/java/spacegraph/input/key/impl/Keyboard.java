@@ -1,4 +1,4 @@
-package spacegraph.input.key;
+package spacegraph.input.key.impl;
 
 
 public enum Keyboard { ;

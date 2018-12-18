@@ -1,18 +1,22 @@
-package spacegraph.input.finger;
+package spacegraph.input.finger.impl;
 
 import com.jogamp.newt.event.*;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.SpaceGraphFlat;
 import spacegraph.space2d.Surface;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.JoglWindow;
 
-public class NewtMouse extends Finger implements MouseListener, WindowListener {
+public class NewtMouseFinger extends MouseFinger implements MouseListener, WindowListener {
+
+    final static int MAX_BUTTONS = 5;
 
     private final JoglWindow win;
     private final JoglSpace space;
 
-    public NewtMouse(JoglSpace s) {
+    public NewtMouseFinger(JoglSpace s) {
+        super(MAX_BUTTONS);
         this.space = s;
         this.win = s.io;
 
@@ -35,10 +39,10 @@ public class NewtMouse extends Finger implements MouseListener, WindowListener {
         Fingering ff = this.fingering.get();
 
         ((SpaceGraphFlat)this.space).layers.reverseForEach(l -> {
-            on(l);
+            touch(l);
         });
 
-        @Nullable Surface touchPrev = touch(touchNext);
+        @Nullable Surface touchPrev = touching(touchNext);
         if (ff != Fingering.Null) {
             if (!ff.update(this)) {
                 ff.stop(this);

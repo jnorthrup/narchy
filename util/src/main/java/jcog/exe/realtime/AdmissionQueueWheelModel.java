@@ -6,12 +6,13 @@ import jcog.data.list.MetalConcurrentQueue;
 import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.function.Consumer;
 
 /**
  * uses central concurrent admission queue which is drained each cycle.
  * the wheel queues are (hopefully fast) ArrayDeque's safely accessed from one thread only
  */
-public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
+public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel implements Consumer<TimedFuture<?>> {
 
     /** capacity of incoming admission queue (not the entire wheel) */
     final static int ADMISSION_CAPACITY = 4096;
@@ -19,6 +20,8 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
     final MetalConcurrentQueue<TimedFuture<?>> incoming = new MetalConcurrentQueue<>(ADMISSION_CAPACITY);
 
     final Queue<TimedFuture<?>>[] wheel;
+    private transient int c;
+    private HashedWheelTimer timer;
 
 //    /** where incoming temporarily drains to */
 //    final TimedFuture[] coming = new TimedFuture[ADMISSION_CAPACITY];
@@ -33,8 +36,19 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
     }
 
     @Override
+    public void restart(HashedWheelTimer h) {
+        this.timer = h;
+    }
+
+    @Override
+    public final void accept(TimedFuture<?> x) {
+        schedule(x, c, timer);
+    }
+
+    @Override
     public int run(int c, HashedWheelTimer timer) {
-        if (incoming.clear(x -> schedule(x, c, timer)) > 0)
+        this.c = c;
+        if (incoming.clear(this) > 0)
             timer.assertRunning();
 
         Queue<TimedFuture<?>> q = wheel[c];

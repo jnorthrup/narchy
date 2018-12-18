@@ -10,7 +10,6 @@ import nars.task.DerivedTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
-import nars.term.util.transform.Retemporalize;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.polation.TruthIntegration;

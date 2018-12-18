@@ -120,7 +120,11 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
         super(capacity);
     }
 
-    public boolean push(X x, int retries) {
+    public final boolean push(X x) {
+        return push(x, 0);
+    }
+
+    public final boolean push(X x, int retries) {
         return push(x, Thread::onSpinWait, retries);
     }
 

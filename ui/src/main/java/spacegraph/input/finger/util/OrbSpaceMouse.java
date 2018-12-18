@@ -1,9 +1,10 @@
-package spacegraph.input.finger;
+package spacegraph.input.finger.util;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseEvent;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.input.finger.Finger;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.Spatial;
 import spacegraph.space3d.phys.Body3D;
@@ -20,39 +21,38 @@ import static spacegraph.util.math.v3.v;
 /**
  * Created by me on 11/20/16.
  */
-public class OrbMouse extends SpaceMouse implements KeyListener {
+public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
 
     private final ClosestRay rayCallback = new ClosestRay(((short) (1 << 7)));
-    
+
     private int mouseDragPrevX, mouseDragPrevY;
     private int mouseDragDX, mouseDragDY;
     private final v3 gOldPickingPos = v();
     private float gOldPickingDist;
 
     private TypedConstraint pickConstraint;
-    
+
     private Body3D pickedBody;
     private Spatial pickedSpatial;
     private Collidable picked;
     private v3 hitPoint;
     private final VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
-    private final Finger finger = new Finger() {
+    private final Finger finger;
 
-    };
-
-    public OrbMouse(SpaceGraphPhys3D g) {
+    public OrbSpaceMouse(SpaceGraphPhys3D g, Finger finger) {
 
         super(g);
 
+        this.finger = finger;
         g.io.addKeyListener(this);
     }
 
     @Override
     public void mouseWheelMoved(MouseEvent e) {
-        
+
         float y = e.getRotation()[1];
         if (y != 0) {
-            
+
         }
     }
 
@@ -63,42 +63,13 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
                 ClosestRay c = mousePick(x, y);
                 if (c.hasHit()) {
                     Collidable co = c.collidable;
-                    
 
-                    
 
-                    space.camera(co.transform, co.shape().getBoundingRadius()*2.5f);
+                    space.camera(co.transform, co.shape().getBoundingRadius() * 2.5f);
                     return true;
 
                 }
                 break;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         }
@@ -107,7 +78,6 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
 
     private void pickConstrain(int button, int state, int x, int y) {
 
-        
 
         switch (button) {
             case MouseEvent.BUTTON1:
@@ -136,19 +106,11 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
         }
 
 
-
-
-
-
-
-
-
-
     }
 
 
     private ClosestRay mouseGrabOn() {
-        
+
 
         if (pickConstraint == null && pickedBody != null) {
             pickedBody.setActivationState(Collidable.DISABLE_DEACTIVATION);
@@ -164,70 +126,24 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
             Point2PointConstraint p2p = new Point2PointConstraint(body, localPivot);
             p2p.impulseClamp = 3f;
 
-            
+
             gOldPickingPos.set(rayCallback.rayToWorld);
             v3 eyePos = new v3(space.camPos);
             v3 tmp = new v3();
             tmp.sub(pickPos, eyePos);
             gOldPickingDist = tmp.length();
-            
+
             p2p.tau = 0.1f;
 
             space.dyn.addConstraint(p2p);
             pickConstraint = p2p;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         }
 
         return rayCallback;
-        
+
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Deprecated /* TODO probably rewrite */ private boolean mouseMotionFunc(int px, int py, short[] buttons) {
@@ -249,12 +165,12 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
             if (t instanceof Spatial) {
                 pickedSpatial = ((Spatial) t);
                 if (pickedSpatial.onTouch(finger, picked, cray, buttons, space) != null) {
-                    
+
 
                     clearDrag();
 
                 } else {
-                    
+
                 }
 
 
@@ -262,127 +178,10 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
         }
 
 
-
-
-
-
-
-
-
-
-
-        
-
         if ((pickConstraint != null) /*|| (directDrag != null)*/) {
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         } else {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         }
@@ -402,7 +201,6 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
     private ClosestRay mousePick(int x, int y) {
 
 
-
         float tanFov = (space.top - space.bottom) * 0.5f / space.zNear;
         float fov = 2f * (float) Math.atan(tanFov);
 
@@ -411,14 +209,14 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
 
         rayForward.scale(space.zFar);
 
-        
+
         v3 vertical = new v3(space.camUp);
 
         v3 hor = new v3();
-        
+
         hor.cross(rayForward, vertical);
         hor.normalize();
-        
+
         vertical.cross(hor, rayForward);
         vertical.normalize();
 
@@ -474,55 +272,9 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public void mouseClicked(MouseEvent e) {
-        
+
     }
 
     @Override
@@ -530,12 +282,9 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
     }
 
 
-
-
-
     @Deprecated
     public void clearDrag() {
-        mouseDragDX = mouseDragDY = 0; 
+        mouseDragDX = mouseDragDY = 0;
         mouseDragPrevX = mouseDragPrevY = -1;
     }
 
@@ -551,7 +300,7 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
         int y = e.getY();
         if (!mouseMotionFunc(x, y, e.getButtonsDown())) {
             pickConstrain(e.getButton(), 1, x, y);
-            
+
         }
 
         e.setConsumed(true);
@@ -582,9 +331,6 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
     }
 
 
-    
-    
-    
     @Override
     public void mouseDragged(MouseEvent e) {
         if (e.isConsumed())

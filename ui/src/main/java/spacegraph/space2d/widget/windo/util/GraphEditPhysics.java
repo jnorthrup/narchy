@@ -1,8 +1,6 @@
 package spacegraph.space2d.widget.windo.util;
 
-import com.jogamp.opengl.GL2;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.space2d.widget.windo.GraphEdit;

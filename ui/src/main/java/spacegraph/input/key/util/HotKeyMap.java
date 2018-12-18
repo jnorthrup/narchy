@@ -1,12 +1,13 @@
-package spacegraph.input.key;
+package spacegraph.input.key.util;
 
 import com.jogamp.newt.event.KeyAdapter;
 import com.jogamp.newt.event.KeyEvent;
 import org.eclipse.collections.impl.map.mutable.primitive.ShortObjectHashMap;
+import spacegraph.input.key.impl.Keyboard;
 
 import java.io.PrintStream;
 
-class HotKeyMap extends KeyAdapter {
+public class HotKeyMap extends KeyAdapter {
 
     static final class Reaction {
         final String name;
@@ -28,7 +29,7 @@ class HotKeyMap extends KeyAdapter {
 
     private final ShortObjectHashMap<Reaction> onPressed = new ShortObjectHashMap<>();
 
-    void add(short code, String s, Runnable r) {
+    protected void add(short code, String s, Runnable r) {
         onPressed.put(code, new Reaction(code, s, r));
         onPressed.compact();
     }
@@ -42,7 +43,8 @@ class HotKeyMap extends KeyAdapter {
         }
     }
 
-    void print(PrintStream out) {
+    /** TODO use general multimedia logging facility */
+    @Deprecated public void print(PrintStream out) {
         onPressed.forEach(out::println);
     }
 

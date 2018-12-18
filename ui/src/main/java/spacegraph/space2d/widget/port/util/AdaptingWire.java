@@ -1,7 +1,6 @@
-package spacegraph.input.finger;
+package spacegraph.space2d.widget.port.util;
 
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.widget.port.util.Wire;
 
 import java.util.List;
 import java.util.function.Function;

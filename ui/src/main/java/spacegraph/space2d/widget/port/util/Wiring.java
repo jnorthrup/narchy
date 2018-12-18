@@ -1,12 +1,13 @@
-package spacegraph.input.finger;
+package spacegraph.space2d.widget.port.util;
 
 import jcog.Util;
 import jcog.reflect.ExtendedCastGraph;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
+import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.FingerDragging;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.port.TypedPort;
-import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.space2d.widget.shape.PathSurface;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.util.Path2D;

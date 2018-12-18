@@ -5,12 +5,12 @@ import jcog.data.graph.Node;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.IntObjectProcedure;
 import spacegraph.input.finger.Finger;
-import spacegraph.input.finger.Wiring;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.port.util.Wire;
+import spacegraph.space2d.widget.port.util.Wiring;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.video.Draw;
 

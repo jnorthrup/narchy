@@ -463,12 +463,20 @@ public class Plot2D extends Widget {
             final float[] maxValue = {Float.NEGATIVE_INFINITY};
             series.forEach((Series s) -> {
                 s.update();
-                minValue[0] = Math.min(minValue[0], s.minValue());
-                maxValue[0] = Math.max(maxValue[0], s.maxValue());
+                float min = s.minValue();
+                float max = s.maxValue();
+                if (min==min && max == max) {
+                    minValue[0] = Math.min(minValue[0], min);
+                    maxValue[0] = Math.max(maxValue[0], max);
+                }
             });
-            this.minValue = minValue[0]; this.maxValue = maxValue[0];
 
-            vis.update();
+            if (Float.isFinite(minValue[0]) && Float.isFinite(maxValue[0])) {
+                this.minValue = minValue[0];
+                this.maxValue = maxValue[0];
+                vis.update();
+            }
+
         }
     }
 

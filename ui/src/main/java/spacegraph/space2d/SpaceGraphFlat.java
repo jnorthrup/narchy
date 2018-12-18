@@ -2,7 +2,7 @@ package spacegraph.space2d;
 
 import com.jogamp.opengl.GL2;
 import spacegraph.input.finger.Finger;
-import spacegraph.input.finger.NewtMouse;
+import spacegraph.input.finger.impl.NewtMouseFinger;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.hud.NewtKeyboard;
 import spacegraph.space2d.hud.Ortho;
@@ -23,7 +23,7 @@ public class SpaceGraphFlat extends JoglSpace {
 
         keyboard = new NewtKeyboard(/*TODO this */);
 
-        finger = new NewtMouse(this);
+        finger = new NewtMouseFinger(this);
 
 
         onReady(() -> {

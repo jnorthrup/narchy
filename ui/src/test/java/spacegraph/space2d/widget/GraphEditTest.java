@@ -22,7 +22,6 @@ import spacegraph.space2d.widget.meter.WaveView;
 import spacegraph.space2d.widget.port.*;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.windo.GraphEdit;
-
 import spacegraph.space2d.widget.windo.Windo;
 
 import java.util.concurrent.atomic.AtomicBoolean;

@@ -1,7 +1,6 @@
 package spacegraph.space2d.widget.meta;
 
 import jcog.WTF;
-import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
@@ -25,18 +24,6 @@ public class MetaFrame extends Bordering {
         super(surface);
     }
 
-    private class SatelliteMetaFrame extends MetaFrame {
-
-        public SatelliteMetaFrame(Surface surface) {
-            super(null);
-            surface.reattach(this);
-        }
-
-        @Override
-        protected void click() {
-            MetaFrame.this.dock();
-        }
-    }
 
     /**
      * referent; by default - the surface
@@ -81,8 +68,7 @@ public class MetaFrame extends Bordering {
         if (expanded) {
             clipBounds = false;
 
-            RectFloat v = r.pixelVisible().scale(0.8f);
-            pos(v);
+            pos(r.pixelVisible().scale(0.8f));
             //pos(0, 0, r.pw, r.ph);
 
             //renderExpanded.set(r);
@@ -108,7 +94,7 @@ public class MetaFrame extends Bordering {
 
     @Override
     public boolean showing() {
-        return expanded ? true : super.showing(); //HACK
+        return expanded || super.showing(); //HACK
     }
 
     @Override
@@ -148,23 +134,7 @@ public class MetaFrame extends Bordering {
         else
             borderSouth=0;
 
-
-
-        n.click(() -> {
-
-            click();
-
-
-            //root().zoom(MetaFrame.this);
-//                if (borderWest == 0) {
-//                    set(W, newMetaMenu(), 0.1f);
-//                } else {
-//                    remove(W);
-//                    borderSize(W, 0);
-//                }
-
-        });
-
+        n.click(this::click);
 
     }
 
@@ -258,12 +228,22 @@ public class MetaFrame extends Bordering {
         return name();
     }
 
-//    public void close() {
-//
-//    }
-
 
     public interface Menu {
         Surface menu();
     }
+
+    private class SatelliteMetaFrame extends MetaFrame {
+
+        public SatelliteMetaFrame(Surface surface) {
+            super(null);
+            surface.reattach(this);
+        }
+
+        @Override
+        protected void click() {
+            MetaFrame.this.dock();
+        }
+    }
+
 }

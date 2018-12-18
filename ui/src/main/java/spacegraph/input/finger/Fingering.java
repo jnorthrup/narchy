@@ -15,7 +15,7 @@ abstract public class Fingering {
     protected abstract boolean start(Finger f);
 
     /** return false to finish */
-    protected abstract boolean update(Finger f);
+    public abstract boolean update(Finger f);
 
     public void stop(Finger finger) {
 
@@ -52,7 +52,7 @@ abstract public class Fingering {
         }
 
         @Override
-        protected boolean update(Finger f) {
+        public boolean update(Finger f) {
             return true;
         }
 

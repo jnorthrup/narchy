@@ -50,7 +50,7 @@ public enum DragEdit {
         }
 
         @Override
-        protected boolean update(Finger f) {
+        public boolean update(Finger f) {
             return f.touching() instanceof Windo;
         }
     }

@@ -4,7 +4,7 @@ import com.jcraft.jcterm.*;
 import com.jcraft.jsch.JSchException;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
-import spacegraph.input.key.Keyboard;
+import spacegraph.input.key.impl.Keyboard;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.widget.meta.MetaFrame;

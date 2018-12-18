@@ -1,4 +1,4 @@
-package spacegraph.input.key;
+package spacegraph.input.key.impl;
 
 
 import com.google.common.base.Splitter;

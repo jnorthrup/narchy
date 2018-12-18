@@ -26,9 +26,10 @@ import java.util.function.Predicate;
 abstract public class Finger {
 
 
-    private final static int MAX_BUTTONS = 5;
+    private final int buttons;
 
-    private final static float DRAG_THRESHOLD_PIXELS = 5f;
+    /** drag threshold (in screen pixels) */
+    float dragThresholdPx = 5f;
 
     public final v2 posPixel = new v2(), posScreen = new v2();
 
@@ -37,18 +38,12 @@ abstract public class Finger {
      * last local and global positions on press (downstroke).
      * TODO is it helpful to also track upstroke position?
      */
-    public final v2[] pressPosPixel = new v2[MAX_BUTTONS];
+    public final v2[] pressPosPixel;
 
 
     @Deprecated /* HACK */ /* TEMPORARY */ public final v2 posOrtho = new v2(0,0);
     @Nullable private transient Ortho ortho;
     protected Surface touchNext;
-
-    {
-        for (int i = 0; i < MAX_BUTTONS; i++) {
-            pressPosPixel[i] = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
-        }
-    }
 
     private final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
     public final AtomicMetalBitSet prevButtonDown = new AtomicMetalBitSet();
@@ -64,9 +59,16 @@ abstract public class Finger {
     public final AtomicReference<Surface> touching = new AtomicReference<>();
     protected final AtomicBoolean focused = new AtomicBoolean(false);
 
-    public Finger() {
 
+    protected Finger(int buttons) {
+        assert(buttons<32);
+        this.buttons = buttons;
+        pressPosPixel = new v2[this.buttons];
+        for (int i = 0; i < this.buttons; i++) {
+            pressPosPixel[i] = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+        }
     }
+
 
     public static Predicate<Finger> clicked(Surface what, int button, Runnable clicked) {
         return clicked(what, button, clicked, null, null, null);
@@ -189,9 +191,9 @@ abstract public class Finger {
     }
 
     /** called for each layer */
-    public void on(Surface layer) {
+    public void touch(Surface s) {
 
-        SurfaceRoot rootRoot = layer.root();
+        SurfaceRoot rootRoot = s.root();
         if (rootRoot instanceof Ortho) {
             this.ortho = (Ortho) rootRoot;
             this.posOrtho.set(ortho.cam.screenToWorld(posPixel));
@@ -208,7 +210,7 @@ abstract public class Finger {
 
         if (this.touchNext ==null) {
             if (ff == Fingering.Null || ff.escapes()) {
-                touchNext = layer.finger(this);
+                touchNext = s.finger(this);
             } else {
                 touchNext = touching.get();
             }
@@ -216,13 +218,9 @@ abstract public class Finger {
         }
 
 
-
-
-
-
     }
 
-    protected Surface touch(Surface next) {
+    protected Surface touching(Surface next) {
         Surface prev = touching.getAndSet(next);
         if (prev!=next) {
             if (prev!=null)
@@ -236,7 +234,7 @@ abstract public class Finger {
 
     private boolean _dragging(int button) {
         v2 g = pressPosPixel[button];
-        return (g.distanceSq(posPixel) > DRAG_THRESHOLD_PIXELS * DRAG_THRESHOLD_PIXELS);
+        return (g.distanceSq(posPixel) > dragThresholdPx * dragThresholdPx);
     }
 
     public boolean dragging(int button) {

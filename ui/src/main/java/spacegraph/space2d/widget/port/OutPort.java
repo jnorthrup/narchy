@@ -1,6 +1,6 @@
 package spacegraph.space2d.widget.port;
 
-import spacegraph.input.finger.Wiring;
+import spacegraph.space2d.widget.port.util.Wiring;
 
 import javax.annotation.Nullable;
 

@@ -74,8 +74,18 @@ public interface Variable extends Atomic {
 
         Term x = u.resolve(this);
         Term y = u.resolvePosNeg(_y);
-        if (x != this && !x.equals(this) /* if different instance of equal common variable? */) {
-            return x.unify(y, u);
+        if (y!=_y) {
+            if (x.equals(y))
+                return true;
+            if (x.equalsNeg(y))
+                return false;
+        }
+        if (x != this) {
+//            try {
+                return x.unify(y, u);
+//            } catch (StackOverflowError e) {
+//                throw new WTF("stack overflow unifying variable " + x + " -> " + y + " resolved from " + _y); //TEMPORARY
+//            }
         }
 
         if (y instanceof Variable) {

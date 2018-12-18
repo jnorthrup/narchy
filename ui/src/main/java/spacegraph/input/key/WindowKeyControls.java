@@ -2,6 +2,7 @@ package spacegraph.input.key;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.opengl.GLWindow;
+import spacegraph.input.key.util.HotKeyMap;
 import spacegraph.video.JoglSpace;
 
 /** standard JoglSpace keyboard window controls */
