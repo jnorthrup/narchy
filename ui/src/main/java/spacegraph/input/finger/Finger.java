@@ -234,9 +234,13 @@ abstract public class Finger {
         return prev;
     }
 
-    private boolean dragging(int button) {
+    private boolean _dragging(int button) {
         v2 g = pressPosPixel[button];
         return (g.distanceSq(posPixel) > DRAG_THRESHOLD_PIXELS * DRAG_THRESHOLD_PIXELS);
+    }
+
+    public boolean dragging(int button) {
+        return pressedNow(button) && !releasedNow(button) && _dragging(button);
     }
 
 
@@ -299,16 +303,16 @@ abstract public class Finger {
     /**
      * additionally tests for no dragging while pressed
      */
-    public boolean clickedNow(int button) {
-        return releasedNow(button) && !dragging(button);
+    public final boolean clickedNow(int button) {
+        return clickedNow(button, null);
     }
 
-    public boolean clickedNow(int button, Surface c) {
+    public boolean clickedNow(int button, @Nullable Surface c) {
 
 //        System.out.println(pressing(i) + "<-" + wasPressed(i));
 
-        if (clickedNow(button) && !dragging(button)) {
-            if (relative(posOrtho, c).inUnit()) {
+        if (releasedNow(button) && !_dragging(button)) {
+            if (c==null || relative(posOrtho, c).inUnit()) {
                 commitButton(button); //absorb the event
                 return true;
             }

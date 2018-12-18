@@ -130,13 +130,12 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
     @Override
     protected void paintIt(GL2 gl, SurfaceRender r) {
 
-        gl.glLoadIdentity();
+        //gl.glLoadIdentity();
 
         gl.glPushMatrix();
 
-        gl.glTranslatef(w() / 2f, h() / 2f, 0);
         gl.glScalef(scale.x, scale.y, 1);
-        gl.glTranslatef(-cam.x, -cam.y, 0);
+        gl.glTranslatef((w()/2)/scale.x - cam.x, (h()/2)/scale.y - cam.y, 0);
 
         r.render(gl);
 
@@ -228,8 +227,24 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void zoom(Surface su) {
+
+    /**
+     * delta in (-1..+1)
+     * POSITIVE = ?
+     * NEGATIVE = ?
+     */
+    public void zoomDelta(float delta) {
+        v2 xy = cam.screenToWorld(delta < 0 ?
+                finger.posPixel
+                :
+                //TODO fix this zoom-out calculation
+                new v2(finger.posPixel.x, finger.posPixel.y)
+                //new v2(w()-finger.posPixel.x, h()-finger.posPixel.y)
+        );
+        cam.set(xy.x, xy.y, cam.z * (1f + delta));
+    }
+
+    public void zoomNext(Surface su) {
 
         //TODO not right
         synchronized (zoomStack) {
@@ -287,6 +302,7 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
     public void zoom(RectFloat b) {
         zoom(b.cx(), b.cy(), b.w, b.h, zoomMargin);
     }
+
 
     private float targetDepth(float viewDiameter) {
         return (float) ((viewDiameter * sin(Math.PI / 2 - focusAngle / 2)) / sin(focusAngle / 2));
@@ -409,7 +425,8 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
 
     public class Camera extends AnimVector3f {
 
-        float CAM_RATE = 2f;
+        /** TODO atomic */
+        private float CAM_RATE = 3f;
 
         {
             setDirect(0, 0, 1); //(camZmin + camZmax) / 2);
@@ -499,6 +516,11 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
                     ((x- w() /2) /scale.x + cam.x) ,
                     ((y- h() /2) /scale.y + cam.y)
             );
+        }
+
+        /** immediately get to where its going */
+        public void complete() {
+            setDirect(target.x, target.y, target.z);
         }
     }
 

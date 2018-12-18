@@ -17,7 +17,9 @@ import static java.awt.event.KeyEvent.VK_SPACE;
 public abstract class AbstractButton extends Widget {
 
 
-    private final Predicate<Finger> pressable = Finger.clicked(this, 0, (f) -> {
+    final static int CLICK_BUTTON = 0;
+
+    private final Predicate<Finger> pressable = Finger.clicked(this, CLICK_BUTTON, (f) -> {
         dz = 0;
         onClick(f);
 //        Exe.invoke/*Later*/(() ->
@@ -38,8 +40,12 @@ public abstract class AbstractButton extends Widget {
         if (f == this) {
             if (pressable.test(finger))
                 return this;
-            else
+
+            if (finger.dragging(CLICK_BUTTON)) {
+                //allow pass-through for drag actions
                 return null;
+            }
+
         }
         return f;
     }

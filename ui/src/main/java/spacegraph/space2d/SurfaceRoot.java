@@ -14,7 +14,7 @@ public interface SurfaceRoot extends SurfaceBase, SpaceLogger {
         return this;
     }
 
-    default void zoom(Surface s) {
+    default void zoomNext(Surface s) {
 
     }
 
@@ -56,4 +56,5 @@ public interface SurfaceRoot extends SurfaceBase, SpaceLogger {
     default boolean keyFocus(Surface textEdit) {
         return false;
     }
+
 }

@@ -421,7 +421,7 @@ public class GraphEdit<S extends Surface> extends MutableMapContainer<Surface, W
                     }
                 });
         z.pos(RectFloat.XYWH(pos.x, pos.y, w, h));
-        z.root().zoom(z);
+        z.root().zoomNext(z);
     }
 
 //    public void removeRaw(Surface x) {

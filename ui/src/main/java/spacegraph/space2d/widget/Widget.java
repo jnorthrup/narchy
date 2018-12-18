@@ -155,20 +155,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
             if (!focused && finger.pressedNow(0) || finger.pressedNow(2))
                 focus();
 
-            if (finger.clickedNow(2 /*right button*/, this)) {
 
-
-                /** auto-zoom */
-                SurfaceRoot r = root();
-                if (r != null) {
-
-
-                    r.zoom(this);
-
-
-                }
-
-            }
             return this;
         }
         return s;

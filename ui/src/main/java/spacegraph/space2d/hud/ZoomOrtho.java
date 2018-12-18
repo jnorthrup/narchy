@@ -17,6 +17,8 @@ public class ZoomOrtho extends Ortho {
     private final static short MOVE_WINDOW_BUTTON = 1;
 
 
+    //final AtomicReference<v3> beforeMagnify = new AtomicReference<>(null);
+
     @Override
     public Surface finger(Finger finger) {
         Surface f = super.finger(finger);
@@ -27,14 +29,32 @@ public class ZoomOrtho extends Ortho {
 
         if (!(finger.touching() instanceof Finger.WheelAbsorb)) {
             float dy = finger.rotationY(true);
-            if (dy != 0) {
-                v2 xy = cam.screenToWorld(dy < 0 ?
-                        finger.posPixel :
-                        new v2(w()-finger.posPixel.x, h()-finger.posPixel.y)
-                );
-                cam.set(xy.x, xy.y, cam.z * (1f + (dy * zoomRate)));
-            }
+            if (dy != 0)
+                zoomDelta(dy * zoomRate);
         }
+
+
+        if (f!=null && finger.clickedNow(2 /*right button*/)) {
+            /** auto-zoom */
+            zoomNext(f);
+        }
+
+
+//        if (f!=null && finger.pressedNow(1)) {
+//            /** magnify zoom */
+//            if (beforeMagnify.get()==null && beforeMagnify.compareAndSet(null, cam.snapshot())) {
+//                zoom(f.bounds);
+//                cam.complete();
+//            }
+//
+//        } else if (!finger.releasedNow(1)) {
+//
+//            v3 b;
+//            if ((b = beforeMagnify.getAndSet(null))!=null) {
+//                //unmagnify zoom (restore)
+//                cam.setDirect(b);
+//            }
+//        }
 
         if (f!=null)
             return f;
@@ -121,10 +141,6 @@ public class ZoomOrtho extends Ortho {
     public boolean autosize() {
         return true;
     }
-
-
-
-
 
 
 }

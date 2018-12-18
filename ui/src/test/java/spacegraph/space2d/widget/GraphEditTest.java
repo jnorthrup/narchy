@@ -282,10 +282,10 @@ public class GraphEditTest {
 
         public static void main(String[] args) {
             GraphEdit w = GraphEdit.window(1000, 1000);
-            w.add(new IntPort()).pos(100, 100, 400, 400);
-            w.add(new IntPort()).pos(100, 100, 400, 400);
-            w.add(new IntPort()).pos(100, 100, 400, 400);
-            w.add(new IntPort()).pos(100, 100, 400, 400);
+            w.add(new IntPort()).posRel(0.5f,0.5f,0.05f,0.05f);
+            w.add(new IntPort()).posRel(0.5f,0.5f,0.05f,0.05f);
+            w.add(new IntPort()).posRel(0.5f,0.5f,0.05f,0.05f);
+            w.add(new IntPort()).posRel(0.5f,0.5f,0.05f,0.05f);
 
             w.add(new TypedPort<>(Tensor.class)).pos(100, 100, 400, 400);
         }

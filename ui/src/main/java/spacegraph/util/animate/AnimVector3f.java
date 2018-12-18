@@ -8,7 +8,7 @@ import spacegraph.util.math.v3;
 public class AnimVector3f extends v3 implements Animated {
 
     protected final v3 target = new v3();
-    protected final NumberX speed;
+    public final NumberX speed;
     private boolean running = true;
 
     enum InterpolationCurve {
@@ -140,7 +140,7 @@ public class AnimVector3f extends v3 implements Animated {
         target.add( dx,  dy,  0);
     }
 
-    protected final void setDirect(v3 v) {
+    public final void setDirect(v3 v) {
         setDirect(v.x, v.y, v.z);
     }
 
