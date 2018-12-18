@@ -224,22 +224,25 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     private boolean link(Event before, TimeSpan e, Event after) {
-        return addEdge(addNode(before), e, addNode(after));
+        MutableNode<Event, TimeSpan> x = addNode(before);
+        MutableNode<Event, TimeSpan> y = addNode(after);
+
+        if (e==TimeSpan.TS_ETERNAL)
+            return false; //skip eternal links
+
+        return addEdge(x, e, y);
     }
 
-    public void link(Event x, long dt, Event y) {
-
-        if (y == null)
-            return;
+    protected void link(Event x, long dt, Event y) {
 
         boolean parallel = dt == ETERNAL || dt == TIMELESS || dt == 0;
-        if (x.equals(y)) {
+        int vc = x.compareTo(y);
+        if (vc == 0) { //equal?
             if (parallel)
                 return; //no point
-            else if (dt < 0)
+            if (dt < 0)
                 dt = -dt; //use only positive dt values for self loops
         } else {
-            int vc = x.compareTo(y);
             if (vc > 0) {
                 if (!parallel) {
                     dt = -dt;
@@ -530,7 +533,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                             if (startTime != TIMELESS && startTime != ETERNAL && endTime != TIMELESS && endTime != ETERNAL) {
                                 dt = endTime - startTime;
                             } else {
-                                dt = pathTime(path, false);
+                                dt = pathTime(path);
                                 if (dt == TIMELESS)
                                     return true;
                             }
@@ -1090,18 +1093,11 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     startTime = ETERNAL;
                 } else {
 
-
-                    long pathDelta =
-                            pathTime(path, false);
-
-
-                    if (pathDelta == ETERNAL)
+                    long pathDelta = pathTime(path);
+                    if (pathDelta == TIMELESS)
                         return true;
-                    else {
 
-
-                        startTime = pathEndTime - (pathDelta);
-                    }
+                    startTime = pathEndTime - (pathDelta);
                 }
 
                 long endTime;
@@ -1317,22 +1313,19 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     /**
      * computes the length of time spanned from start to the end of the given path
      */
-    static long pathTime(List<BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>>> path, @Deprecated boolean eternalAsZero) {
+    static long pathTime(List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path) {
 
         long t = 0;
 
         for (BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> r : path) {
 
-
             FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan> event = r.getTwo();
 
             long spanDT = event.id().dt;
 
-            if (spanDT == ETERNAL) {
-
-                if (!eternalAsZero)
-                    return ETERNAL;
-
+            if (spanDT == ETERNAL || spanDT == TIMELESS) {
+//                return ETERNAL;
+                return TIMELESS;
 
             } else if (spanDT != 0) {
                 t += (spanDT) * (r.getOne() ? +1 : -1);

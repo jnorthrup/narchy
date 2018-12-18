@@ -11,8 +11,6 @@ public final class TimeSpan {
 
     private TimeSpan(long dt) {
         this.dt = dt;
-
-
     }
 
     public static TimeSpan the(long dt) {

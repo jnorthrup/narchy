@@ -997,7 +997,7 @@ public class Conj extends ByteAnonMap {
             Conj c = !innerXternal? new Conj() : null;
             FasterList<Term> cx = innerXternal ? new FasterList() : null;
             final boolean[] intact = {true};
-            boolean incomingHasConj = incoming.hasAny(CONJ);
+//            boolean incomingHasConj = incoming.hasAny(CONJ);
             boolean ok = conj.eventsWhile((whn, wht) -> {
                 Term ww;
                 if (wht.equals(incoming))
@@ -1012,11 +1012,6 @@ public class Conj extends ByteAnonMap {
                         return true;
                     if (ww!=wht && ww.equals(wht))
                         ww = wht; //use original if possible
-
-//                    if (ww.op() != CONJ || !ww.contains(incoming)) {
-//                        //something changed
-//                        intact[0] = false;
-//                    }
                 }
 
 
@@ -1042,12 +1037,12 @@ public class Conj extends ByteAnonMap {
 
             if (intact[0]) {
 
-                if (innerXternal)
-                    return d;
-                else {
+//                if (innerXternal)
+//                    return d;
+//                else {
                     //all original subterms remain intact, return simplified factored version
                     return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, conj, incoming);
-                }
+//                }
             } else {
                 return d;
             }
