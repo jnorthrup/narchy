@@ -64,7 +64,7 @@ public class TaskLinkTask extends AbstractTask {
     }
 
     protected boolean eternalize() {
-        return false;
+        return true;
     }
 
 

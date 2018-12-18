@@ -593,15 +593,15 @@ public class JHelpSceneRenderer
       }
 
       
-      BufferUtils.TEMPORARY_FLOAT_BUFFER.rewind();
-      gl.glReadPixels(x, this.height - y, 1, 1, GL2.GL_RGBA, GL2.GL_FLOAT, BufferUtils.TEMPORARY_FLOAT_BUFFER);
-      BufferUtils.TEMPORARY_FLOAT_BUFFER.rewind();
+      BufferUtils.TMP_FLOAT_BUFFER.rewind();
+      gl.glReadPixels(x, this.height - y, 1, 1, GL2.GL_RGBA, GL2.GL_FLOAT, BufferUtils.TMP_FLOAT_BUFFER);
+      BufferUtils.TMP_FLOAT_BUFFER.rewind();
 
       
-      final float red = BufferUtils.TEMPORARY_FLOAT_BUFFER.get();
-      final float green = BufferUtils.TEMPORARY_FLOAT_BUFFER.get();
-      final float blue = BufferUtils.TEMPORARY_FLOAT_BUFFER.get();
-      BufferUtils.TEMPORARY_FLOAT_BUFFER.rewind();
+      final float red = BufferUtils.TMP_FLOAT_BUFFER.get();
+      final float green = BufferUtils.TMP_FLOAT_BUFFER.get();
+      final float blue = BufferUtils.TMP_FLOAT_BUFFER.get();
+      BufferUtils.TMP_FLOAT_BUFFER.rewind();
 
       
       this.pickColor.set(red, green, blue);

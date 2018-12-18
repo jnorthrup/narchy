@@ -614,7 +614,7 @@ public class Conj extends ByteAnonMap {
                         //add any contained sequences first
                         return tt.AND((ttt) ->
                                 !(ttt.op() == CONJ && !Tense.dtSpecial(ttt.dt())) || add(0, ttt)
-                        ) &&   tt.AND((ttt) ->
+                        ) && tt.AND((ttt) ->
                                 (ttt.op() == CONJ && !Tense.dtSpecial(ttt.dt())) || add(ETERNAL, ttt)
                         );
                     }
@@ -653,6 +653,7 @@ public class Conj extends ByteAnonMap {
         }
 
         return added(addEvent(at, x));
+
     }
 
     private boolean added(boolean success) {
@@ -896,7 +897,7 @@ public class Conj extends ByteAnonMap {
             //also coudl test for && contains if dtspecial etc
 
 
-            if (existingShortenedUnneg.op()==CONJ && incoming.op()==CONJ) {
+            if (existingShortenedUnneg.op() == CONJ && incoming.op() == CONJ) {
                 return HeapTermBuilder.the.theSortedCompound(CONJ, dt, existingShortenedUnneg.neg(), incoming);
             } else {
                 return HeapTermBuilder.the.conj(dt, existingShortenedUnneg.neg(), incoming);
@@ -977,25 +978,27 @@ public class Conj extends ByteAnonMap {
 
             Subterms cs = conj.subterms();
 
-            if (dtSpecial(dtInner) && !conj.subterms().hasAny(Op.CONJ)) {
+            if (dtSpecial(dtInner)) {
                 if (cs.containsNeg(incoming))
                     return False; //contradiction
                 else if (cs.contains(incoming))
                     return True; //present, ignore
 
-                if (dtInner == dtOuter) {
-                    //commutive merge
-                    return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, subAppend(cs, incoming));
-                } else {
-                    return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, conj, incoming);
+                if (!conj.subterms().hasAny(Op.CONJ)) {
+                    if (dtInner == dtOuter) {
+                        //commutive merge
+                        return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, subAppend(cs, incoming));
+                    } else {
+                        return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, conj, incoming);
+                    }
                 }
             }
 
 
-            boolean innerXternal = dtInner == XTERNAL;
+            boolean innerCommute = Tense.dtSpecial(dtInner) && !conj.subterms().hasAny(Op.CONJ);
 
-            Conj c = !innerXternal? new Conj() : null;
-            FasterList<Term> cx = innerXternal ? new FasterList() : null;
+            Conj c = !innerCommute ? new Conj() : null;
+            FasterList<Term> cx = innerCommute ? new FasterList() : null;
             final boolean[] intact = {true};
 //            boolean incomingHasConj = incoming.hasAny(CONJ);
             boolean ok = conj.eventsWhile((whn, wht) -> {
@@ -1010,26 +1013,32 @@ public class Conj extends ByteAnonMap {
                         return false;
                     if (ww == True)
                         return true;
-                    if (ww!=wht && ww.equals(wht))
+                    if (ww != wht && ww.equals(wht))
                         ww = wht; //use original if possible
                 }
 
 
-                if (innerXternal) {
+                if (innerCommute) {
                     cx.add(ww);
                     return true;
                 } else {
                     return c.add(whn, ww);
                 }
 
-            }, 0,!innerXternal, !innerXternal, innerXternal, 0);
+            }, 0, dtInner == 0, dtInner ==DTERNAL, dtInner == XTERNAL, 0);
             if (!ok)
                 return False;
 
-            Term d = innerXternal ? HeapTermBuilder.the.conj(XTERNAL, cx.toArrayRecycled(Term[]::new))
-                    :
-                    c.term();
-            if (d == False || d== Null)
+            Term d;
+            try {
+                d = innerCommute ? HeapTermBuilder.the.conj(dtInner, cx.toArrayRecycled(Term[]::new))
+                        :
+                        c.term();
+            } catch (StackOverflowError e) {
+                throw new WTF("Conj.add: stack overflow adding " + incoming + " to " + conj); //TEMPORARY
+            }
+
+            if (d == False || d == Null)
                 return d; //fail
 
             if (d != conj && d.equals(conj))
@@ -1040,8 +1049,9 @@ public class Conj extends ByteAnonMap {
 //                if (innerXternal)
 //                    return d;
 //                else {
-                    //all original subterms remain intact, return simplified factored version
-                    return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, conj, incoming);
+                //all original subterms remain intact, return simplified factored version
+                Term e = HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, conj, incoming);
+                return e;
 //                }
             } else {
                 return d;
@@ -1050,7 +1060,7 @@ public class Conj extends ByteAnonMap {
         } else {
 //            //TODO conj conj merge
 //            if (conj.dt()!=ddt)
-                return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, conj, incoming);
+            return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, conj, incoming);
 //            else
 //                return HeapTermBuilder.the.conj(ddt, conj, incoming);
         }
@@ -1296,7 +1306,7 @@ public class Conj extends ByteAnonMap {
                 return this.term = eternal;
 
             //flatten inner conjunctions
-            if (eternal.op()==CONJ) {
+            if (eternal.op() == CONJ) {
                 Subterms es = eternal.subterms();
                 if (es.hasAny(CONJ)) {
                     eternal = flatten(eternal, es, DTERNAL);
@@ -1338,10 +1348,10 @@ public class Conj extends ByteAnonMap {
                 Term wt = term(when, next.getTwo(), validator);
 
                 //TODO merge this with validator
-                if (eternal!=null && !(wt instanceof Bool) && (
-                        Term.commonStructure(wt,eternal) && (
-                            eternal.equalsNeg(wt) || eternal.containsNeg(wt) ||
-                            wt.equalsNeg(eternal) || wt.containsNeg(eternal)
+                if (eternal != null && !(wt instanceof Bool) && (
+                        Term.commonStructure(wt, eternal) && (
+                                eternal.equalsNeg(wt) || eternal.containsNeg(wt) ||
+                                        wt.equalsNeg(eternal) || wt.containsNeg(eternal)
                         )
                 )) {
                     wt = False;
@@ -1389,7 +1399,7 @@ public class Conj extends ByteAnonMap {
                     ci = HeapTermBuilder.the.theSortedCompound(CONJ, etdt, temporal, eternal);
                 } else {
 
-                    if (eternal.op()==CONJ && (eternal.dt()==DTERNAL || eternal.dt()==etdt)) {
+                    if (eternal.op() == CONJ && (eternal.dt() == DTERNAL || eternal.dt() == etdt)) {
                         //flatten dternal subterms
                         ci = HeapTermBuilder.the.conj(etdt, subAppend(eternal.subterms(), temporal));
                     } else {
@@ -1549,7 +1559,7 @@ public class Conj extends ByteAnonMap {
 //                    for (Term ss : s.subterms())
 //                        flattenDternalInto(t, ss);
 //                } else {
-                    t.add(s);
+                t.add(s);
 //                }
             }
         }
@@ -1565,8 +1575,8 @@ public class Conj extends ByteAnonMap {
                 int cdt = when == ETERNAL ? DTERNAL : 0;
                 if (Util.or(z -> z.dt() == cdt && z.op() == CONJ, t)) {
                     //recurse: still flattening to do
-                        //sorta works:
-                        //return HeapTermBuilder.the.conj(cdt, t.toArray(EmptyTermArray));
+                    //sorta works:
+                    //return HeapTermBuilder.the.conj(cdt, t.toArray(EmptyTermArray));
 
                     //this stack overflows
                     //give up for now, too complex
@@ -1625,7 +1635,7 @@ public class Conj extends ByteAnonMap {
     }
 
     public boolean addDithered(Term term, long start, long end, int maxSamples, int minSegmentLength, NAR nar) {
-        if (start!=ETERNAL) {
+        if (start != ETERNAL) {
             int d = nar.timeResolution.intValue();
             if (d != 1) {
                 start = Tense.dither(start, d);
