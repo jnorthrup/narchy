@@ -71,7 +71,7 @@ public class UnnormalizedVariable extends AbstractAtomic implements Variable, Th
 
     /** produce a normalized version of this identified by the serial integer
      * @param serial*/
-    @Override public Variable normalize(byte serial) {
+    @Override public Variable normalizedVariable(byte serial) {
         return $.v(type, serial);
     }
 

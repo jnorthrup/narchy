@@ -1,6 +1,7 @@
 package nars.op.stm;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import jcog.pri.Prioritizable;
@@ -289,6 +290,8 @@ public class ConjClustering extends Causable {
 
 
                 float e = c2wSafe(conf);
+                if (e!=e)
+                    throw new WTF();
                 if (e > 0) {
                     final Truth t = Truth.theDithered(freq, e, nar);
                     if (t != null) {

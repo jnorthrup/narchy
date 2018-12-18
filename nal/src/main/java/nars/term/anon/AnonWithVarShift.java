@@ -51,7 +51,7 @@ public class AnonWithVarShift extends CachedAnon {
                 if (shift != 0) {
                     int newID = v.id + shift;
                     assert (newID < Byte.MAX_VALUE - 3); //to be safe
-                    x = v.normalize((byte) newID);
+                    x = v.normalizedVariable((byte) newID);
                 }
             }
         }

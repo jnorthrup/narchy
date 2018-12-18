@@ -41,7 +41,7 @@ public class BatchDeriver extends Deriver {
 //        }
 //    }
 
-    public final IntRange conceptsPerIteration = new IntRange(4, 1, 32);
+    public final IntRange conceptsPerIteration = new IntRange(3, 1, 32);
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count

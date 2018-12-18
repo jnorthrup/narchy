@@ -207,9 +207,15 @@ public abstract class TermBuilder {
 
     }
 
-
-    //TODO presorted flag
-    public Term conj(final int dt, Term... u) {
+    public Term conj(final int dt, Term... u) { //TODO presorted flag
+//        /** TEMPORARY */
+//        Term x = _conj(dt, u);
+//        if (u.length> 1  && !x.unneg().anon().op().taskable)
+//            throw new WTF();
+//        return x;
+//    }
+//
+//    public Term _conj(final int dt, Term... u) {
 
         switch (dt) {
             case 0:

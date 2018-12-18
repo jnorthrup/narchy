@@ -25,15 +25,6 @@ public interface Variable extends Atomic {
 //    }
 
 
-    @Override
-    @Nullable
-    default Term normalize() {
-        return this;
-    }
-
-    @Override
-    Variable normalize(byte offset);
-
 
     /**
      * The syntactic complexity of a variable is 0, because it does not refer to
@@ -199,4 +190,11 @@ public interface Variable extends Atomic {
 
     }
 
+
+    @Override
+    default Variable normalize(byte offset) {
+        return this;
+    }
+
+    Variable normalizedVariable(byte vid);
 }

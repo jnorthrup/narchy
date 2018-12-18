@@ -18,7 +18,7 @@ public class EllipsisZeroOrMore extends Ellipsis {
     }
 
     @Override
-    public @Nullable Variable normalize(byte vid) {
+    public @Nullable Variable normalizedVariable(byte vid) {
         if (vid == num) return this;
         return new EllipsisZeroOrMore($.v(op(), vid));
     }

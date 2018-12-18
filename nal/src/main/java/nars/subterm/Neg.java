@@ -5,8 +5,11 @@ import nars.Op;
 import nars.The;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.compound.UnitCompound;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 import static nars.Op.NEG;
 
@@ -40,6 +43,38 @@ public final class Neg extends UnitCompound implements The {
     }
 
     @Override
+    public Term replace(Term from, Term to) {
+        boolean fNeg = from.op()==NEG;
+        if (fNeg) {
+            if (this.equals(from))
+                return to;
+        } else {
+            Term x = sub();
+            if (x.equals(from))
+                return to.neg();
+            else {
+                Term y = x.replace(from, to);
+                if (y != x)
+                    return y.neg();
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public @Nullable Term replace(Map<? extends Term, Term> m) {
+        Term n = m.get(this);
+        if (n!=null)
+            return n;
+
+        Term x = sub();
+        Term y = x.replace(m);
+        if (y!=x)
+            return y.neg();
+        return this;
+    }
+
+    @Override
     public Term concept() {
         return unneg().concept();
     }
@@ -47,7 +82,7 @@ public final class Neg extends UnitCompound implements The {
     @Override
     public @Nullable Term normalize(byte varOffset) {
         Term x = unneg();
-        Term y = x.normalize(varOffset);
+        Term y = x instanceof Variable ? ((Variable)x).normalizedVariable((byte) (varOffset+1)) : x.normalize(varOffset);
         if (y!=x)
             return y.neg();
         return this;

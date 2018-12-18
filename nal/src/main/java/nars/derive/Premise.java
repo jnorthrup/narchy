@@ -87,9 +87,7 @@ public class Premise implements Comparable<Premise> {
      *
      * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
      */
-    private Task match(Derivation d, int matchTTL) {
-
-
+    private boolean match(Derivation d, int matchTTL) {
 
         boolean beliefConceptCanAnswerTaskConcept = false;
 
@@ -120,9 +118,12 @@ public class Premise implements Comparable<Premise> {
 
         Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept);
 
+        if (!d.budget(task, belief))
+            return false;
+
         d.reset(task, belief, belief != null ? belief.term() : beliefTerm.unneg());
 
-        return belief;
+        return true;
     }
 
     @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptCanAnswerTaskConcept) {
@@ -305,15 +306,18 @@ public class Premise implements Comparable<Premise> {
 
         Emotion e = d.nar.emotion;
 
-        match(d, matchTTL);
+        if (match(d, matchTTL)) {
 
-        if (d.deriver.rules.derivable(d)) {
+            if (d.deriver.rules.derivable(d)) {
 
-            d.derive(deriveTTL);
+                d.derive(deriveTTL);
 
-            result = e.premiseFire; //premiseFired(p, d);
+                result = e.premiseFire; //premiseFired(p, d);
+            } else {
+                result = e.premiseUnderivable; //premiseUnderivable(p, d);
+            }
         } else {
-            result = e.premiseUnderivable; //premiseUnderivable(p, d);
+            result = e.premiseUnbudgetable;
         }
 
 

@@ -12,7 +12,6 @@ import nars.agent.MetaAgent;
 import nars.agent.NAgent;
 import nars.agent.util.RLBooster;
 import nars.concept.Concept;
-import nars.concept.action.curiosity.CuriosityTask;
 import nars.control.MetaGoal;
 import nars.derive.BeliefSource;
 import nars.derive.Derivation;
@@ -20,6 +19,7 @@ import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.derive.impl.ZipperDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.derive.timing.ActionTiming;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
 import nars.gui.NARui;
@@ -51,7 +51,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static nars.derive.BeliefSource.ListTermLinker;
 import static spacegraph.SpaceGraph.window;
 
@@ -259,11 +258,13 @@ abstract public class NAgentX extends NAgent {
                 sensorLinker
                 //ConceptTermLinker
         );
+        senseReward.timing = new ActionTiming(n);
+
         ZipperDeriver senseActions = BeliefSource.forConcepts(n, rules,
                 actionConcepts,
                 sensorLinker
         );
-
+        senseActions.timing = new ActionTiming(n);
         //sensorAction.timing = new ActionTiming(n);
 
 
@@ -286,7 +287,7 @@ abstract public class NAgentX extends NAgent {
 
         MetaAgent meta = new MetaAgent(a);
 
-        window(AttentionUI.attentionGraph(n, a), 600, 600);
+        //window(AttentionUI.attentionGraph(n, a), 600, 600);
 
         window(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
 
@@ -421,11 +422,11 @@ abstract public class NAgentX extends NAgent {
 
         //ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 2, 32);
 
-        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof CuriosityTask) ),
-                8, 96);
+//        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof CuriosityTask) ),
+//                8, 96);
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(n,64);
-        Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
+        Introduction factorizer = new Factorize.FactorIntroduction( n, 8);
 
 
         new Inperience.Believe(n, 16);

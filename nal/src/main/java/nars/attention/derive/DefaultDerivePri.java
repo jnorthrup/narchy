@@ -49,8 +49,9 @@ public class DefaultDerivePri implements DerivePri {
             factor *= factor; //re-apply for single-premise case
         }
 
-        float max = d.parentPri();
-        return Util.clampSafe( postAmp(t, max * factor), ScalarValue.EPSILON, 1f);
+        float parent = d.parentPri();
+        float y = postAmp(t, parent * factor);
+        return Util.clampSafe(y, ScalarValue.EPSILON, parent);
     }
 
     /** default impl: pass-thru */

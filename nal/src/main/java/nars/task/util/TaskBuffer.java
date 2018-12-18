@@ -1,8 +1,10 @@
 package nars.task.util;
 
+import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
+import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.PriArrayBag;
@@ -68,6 +70,8 @@ abstract public class TaskBuffer implements Consumer<Task> {
 
     }
 
+    abstract public float priMin();
+
     /**
      * TODO this is trivial. just input directly to NAR on add
      */
@@ -111,6 +115,11 @@ abstract public class TaskBuffer implements Consumer<Task> {
         @Override
         public int size() {
             return tasks.size();
+        }
+
+        @Override
+        public float priMin() {
+            throw new TODO();
         }
 
         @Override
@@ -158,6 +167,12 @@ abstract public class TaskBuffer implements Consumer<Task> {
                 };
 
         //new HijackBag...
+
+
+        @Override
+        public float priMin() {
+            return tasks.isFull() ? tasks.priMin() : 0;
+        }
 
         @Override
         public void clear() {
@@ -306,6 +321,19 @@ abstract public class TaskBuffer implements Consumer<Task> {
             ALL = new TaskBuffer[] {belief, goal, question, quest};
 
             this.capacity.set(capacity);
+        }
+
+        @Override
+        public float priMin() {
+            float q = question.priMin();
+            if (q < ScalarValue.EPSILON) return 0;
+            float qq = quest.priMin();
+            if (qq < ScalarValue.EPSILON) return 0;
+            float b = belief.priMin();
+            if (b < ScalarValue.EPSILON) return 0;
+            float g = goal.priMin();
+            if (g < ScalarValue.EPSILON) return 0;
+            return Math.min(Math.min(Math.min(b, g), q), qq);
         }
 
         private TaskBuffer buffer(byte punc) {

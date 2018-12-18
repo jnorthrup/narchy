@@ -24,6 +24,8 @@ import static nars.Op.*;
 public abstract class Param {
 
 
+
+
     static {
         Op.terms =
                 //HeapTermBuilder.the;
@@ -220,9 +222,10 @@ public abstract class Param {
 
     public final TaskBuffer input =
             //new DerivedTasks.DerivedTasksMap(4096);
-            new TaskBuffer.BagTasksBuffer(512, 0.2f);
+            new TaskBuffer.BagTasksBuffer(256, 0.2f);
             //new TaskBuffer.BagPuncTasksBuffer(1024, 0.1f);
 
+    public static final boolean INPUT_BUFFER_PRI_BACKPRESSURE = true;
 
     /**
      * creates instance of the default truthpolation implementation
@@ -271,7 +274,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 4f;
+    public static final float TEST_TIME_MULTIPLIER = 3f;
 
 
     @Range(min = 1, max = 32)

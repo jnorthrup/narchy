@@ -217,7 +217,16 @@ public class Derivation extends PreDerivation {
     private transient int taskUniques;
     private final transient MetalLongSet taskStamp = new MetalLongSet(Param.STAMP_CAPACITY);
     public transient boolean overlapDouble, overlapSingle;
+
+
+    /** these represent the maximum possible priority of the derivation.
+     * the maximum constraint is a contract ensuring the range of priority
+     * can be predicted for deciding
+     *  whether to attempt before beginning,
+     *  or whether to continue deriving during the procedure. */
     public transient float priSingle, priDouble;
+
+
     public transient short[] parentCause;
     public transient boolean concSingle;
     public transient float parentVoluplexitySum;
@@ -363,6 +372,20 @@ public class Derivation extends PreDerivation {
     }
 
 
+    public boolean budget(Task task, Task belief) {
+        float taskPri = task.priElseZero();
+        float priSingle = taskPri;
+        float priDouble = belief == null ?
+                taskPri :
+                Param.DerivationPri.apply(taskPri, belief.priElseZero());
+
+        if (Param.INPUT_BUFFER_PRI_BACKPRESSURE && Math.max(priDouble,priSingle) < nar.input.priMin() /* TODO cache */)
+            return false;
+
+        this.priSingle = priSingle;
+        this.priDouble = priDouble;
+        return true;
+    }
 
     /**
      * called after protoderivation has returned some possible Try's
@@ -444,11 +467,6 @@ public class Derivation extends PreDerivation {
         if (parentCause.length >= causeCap)
             throw new WTF();
 
-        float taskPri = _task.priElseZero();
-        this.priSingle = taskPri;
-        this.priDouble = _belief == null ?
-            taskPri :
-            Param.DerivationPri.apply(taskPri, _belief.priElseZero());
 
 
 

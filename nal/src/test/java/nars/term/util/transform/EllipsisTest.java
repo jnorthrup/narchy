@@ -10,6 +10,7 @@ import nars.derive.premise.PremiseRuleProto;
 import nars.derive.premise.PremiseRuleSource;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.unify.Unify;
@@ -299,12 +300,12 @@ public class EllipsisTest {
     @Test
     void testEllipsisOneOrMore() throws Narsese.NarseseException {
         String s = "%prefix..+";
-        Term t = $(s);
+        Variable t = $(s);
         assertNotNull(t);
         assertEquals("%prefixU..+", t.toString());
 
 
-        assertEquals(EllipsisOneOrMore.class, t.normalize((byte) 1).getClass());
+        assertEquals(EllipsisOneOrMore.class, t.normalizedVariable((byte) 1).getClass());
 
         
     }
@@ -312,11 +313,11 @@ public class EllipsisTest {
     @Test
     void testEllipsisZeroOrMore() throws Narsese.NarseseException {
         String s = "%prefix..*";
-        Term t = $(s);
+        Variable t = $(s);
         assertNotNull(t);
         assertEquals("%prefixU..*", t.toString());
 
-        Term tn = t.normalize((byte) 1);
+        Term tn = t.normalizedVariable((byte) 1);
         assertEquals(EllipsisZeroOrMore.class, tn.getClass());
         assertEquals("%1..*", tn.toString());
         assertNotEquals($.varPattern(1), tn);

@@ -26,6 +26,7 @@ import static nars.term.TemporalTermTest.*;
 import static nars.term.TermTestMisc.assertValid;
 import static nars.term.TermTestMisc.assertValidTermValidConceptInvalidTaskContent;
 import static nars.term.atom.Bool.False;
+import static nars.term.atom.Bool.Null;
 import static nars.term.util.TermTest.*;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -459,7 +460,7 @@ public class ConjTest {
         for (int i : new int[]{XTERNAL, 0, DTERNAL}) {
             assertEquals("x", CONJ.the(i, new Term[]{$.the("x"), Bool.True}).toString());
             assertEquals(False, CONJ.the(i, new Term[]{$.the("x"), False}));
-            assertEquals(Bool.Null, CONJ.the(i, new Term[]{$.the("x"), Bool.Null}));
+            assertEquals(Null, CONJ.the(i, new Term[]{$.the("x"), Null}));
         }
     }
 
@@ -1377,9 +1378,9 @@ public class ConjTest {
         assertNotNull(x);
         assertThrows(TermException.class, ()->x.dt(-1));
         assertThrows(TermException.class, ()->x.dt(+1));
-        assertNotEquals(Bool.Null, x.dt(0));
-        assertNotEquals(Bool.Null, x.dt(DTERNAL));
-        assertNotEquals(Bool.Null, x.dt(XTERNAL));
+        assertNotEquals(Null, x.dt(0));
+        assertNotEquals(Null, x.dt(DTERNAL));
+        assertNotEquals(Null, x.dt(XTERNAL));
     }
 
     @Test
@@ -1967,6 +1968,29 @@ public class ConjTest {
 
     }
 
+    @Test void testConjEternalConj2Pre() {
+        //(not ((not y)and x) and x) == x and y
+        //https://www.wolframalpha.com/input/?i=(not+((not+y)and+x)+and+x)
+
+        //construction method 1:
+        Term a = $$("((--,((--,y)&|x))&&x)");
+        assertEq("(x&&y)", a);
+
+        {
+            //construction method 2:
+            Conj c = new Conj();
+            c.add(ETERNAL, $$("(--,((--,y)&|x))"));
+            c.add(ETERNAL, $$("x"));
+            assertEq("(x&&y)", c.term());
+        }
+    }
+
+//    @Test void testConjEternalConj2() {
+//        Term a = $$("(--,((--,((--,y)&|x))&&x))"); //<-- should not be constructed
+//        Term b = $$("(x &&+5480 (--,(z &&+5230 (--,x))))");
+//        Term ab = CONJ.the(a, b);
+//        assertTrue(ab.equals(Null) || ab.equals(False));
+//    }
 
     static void assertUnifies(String x, String y, boolean unifies) {
         Random rng = new XoRoShiRo128PlusRandom(1);

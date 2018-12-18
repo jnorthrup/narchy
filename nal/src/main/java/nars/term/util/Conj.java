@@ -1388,12 +1388,14 @@ public class Conj extends ByteAnonMap {
 
                 //int etdt = temporal.dt() == 0 ? 0 /* promote */ : DTERNAL;
                 int etdt = DTERNAL;
-                if (!eternal.hasAny(CONJ))
+                if (!eternal.hasAny(CONJ)) {
+                    if (temporal.equalsNeg(eternal))
+                        return False;
                     ci = HeapTermBuilder.the.theSortedCompound(CONJ, etdt, temporal, eternal);
-                else {
+                } else {
 
                     if (eternal.op()==CONJ && (eternal.dt()==DTERNAL || eternal.dt()==etdt)) {
-                        //merge dternal subterms
+                        //flatten dternal subterms
                         ci = HeapTermBuilder.the.conj(etdt, subAppend(eternal.subterms(), temporal));
                     } else {
 

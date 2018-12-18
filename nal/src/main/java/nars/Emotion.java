@@ -55,6 +55,7 @@ public class Emotion implements Meter {
     //public final Counter premiseBurstDuplicate = new FastCounter("premise burst duplicate");
 
     public final Counter premiseUnderivable = new FastCounter("premise underivable");
+    public final Counter premiseUnbudgetable = new FastCounter("premise unbudgetable");
 
     public final Counter deriveTask = new FastCounter("derive task");
     public final Counter deriveTermify = new FastCounter("derive termify");

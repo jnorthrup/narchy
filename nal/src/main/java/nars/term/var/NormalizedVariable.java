@@ -126,7 +126,8 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
     }
 
     public static AnonID the(/*@NotNull*/ byte op, byte id) {
-        if (id > 0 && id < Param.MAX_INTERNED_VARS) {
+        assert(id > 0);
+        if (id < Param.MAX_INTERNED_VARS) {
             return varCache[NormalizedVariable.opToVarIndex(op)][id];
         } else {
             return vNew(Op.ops[op], id);
@@ -142,8 +143,8 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
         return varType;
     }
 
-    @Override
-    public @Nullable NormalizedVariable normalize(byte vid) {
+
+    public @Nullable NormalizedVariable normalizedVariable(byte vid) {
         if (id == vid)
             return this;
         else

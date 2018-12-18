@@ -6,6 +6,8 @@ import nars.util.Timed;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
+import static nars.$.$$;
+import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -81,6 +83,20 @@ public class VariableTest {
         Compound e = $("<%2 <-> <%1 --> b>>");
         assertEquals(2,  e.varPattern() );
 
+    }
+
+    @Test void testNormalizeUnitCompound() {
+        assertEq("(#1)", $$("(#2)").normalize());
+        assertEq("(#1)", $$("(#1)").normalize());
+    }
+
+    @Test void testNormalizeNegs() {
+        assertEq("(--,#1)", $$("(--,#2)").normalize());
+        assertEq("a((--,#1))", $$("a((--,#2))").normalize());
+        assertEq("(--,#1)", $$("(--,#1)").normalize());
+        assertEq("(--,#1)", $$("(--,#x)").normalize());
+
+        assertEq("((--,#1)&&(--,#2))", $$("((--,#3) && (--,#2))").normalize());
     }
 
     /** tests term sort order consistency */

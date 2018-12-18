@@ -98,7 +98,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
         @Override
         public
         @Deprecated
-        Variable normalize(byte serial) {
+        Variable normalizedVariable(byte serial) {
             return make(serial, minArity);
         }
     }
