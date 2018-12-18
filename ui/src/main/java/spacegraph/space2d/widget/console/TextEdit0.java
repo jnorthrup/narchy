@@ -64,7 +64,7 @@ import java.util.function.Consumer;
     @Override
     public Surface finger(Finger finger) {
         /** middle mouse button paste */
-        Finger.clicked(2, ((TextEditUI) term)::paste);
+        //middleMouseClickPaste = Finger.clicked(2, ((TextEditUI) term)::paste);
         return super.finger(finger);
     }
 

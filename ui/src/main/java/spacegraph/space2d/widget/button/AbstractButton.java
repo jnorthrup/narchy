@@ -17,7 +17,7 @@ import static java.awt.event.KeyEvent.VK_SPACE;
 public abstract class AbstractButton extends Widget {
 
 
-    private final Predicate<Finger> pressable = Finger.clicked(0, (f) -> {
+    private final Predicate<Finger> pressable = Finger.clicked(this, 0, (f) -> {
         dz = 0;
         onClick(f);
 //        Exe.invoke/*Later*/(() ->
@@ -36,9 +36,10 @@ public abstract class AbstractButton extends Widget {
     public Surface finger(Finger finger) {
         Surface f = super.finger(finger);
         if (f == this) {
-
             if (pressable.test(finger))
                 return this;
+            else
+                return null;
         }
         return f;
     }

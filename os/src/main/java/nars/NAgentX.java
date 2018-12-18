@@ -349,12 +349,12 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         //n.freqResolution.set(0.03f);
-        n.termVolumeMax.set(30);
+        n.termVolumeMax.set(32);
 
         n.attn.activating.conceptActivationRate.set(1f/1000f); //HACK TODO based on active bag capacity
 
         n.beliefPriDefault.set(0.5f);
-        n.goalPriDefault.set(0.75f);
+        n.goalPriDefault.set(0.8f);
         n.questionPriDefault.set(0.25f);
         n.questPriDefault.set(0.25f);
 
@@ -427,12 +427,12 @@ abstract public class NAgentX extends NAgent {
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(n,64);
         Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
 
-//        {
+
         new Inperience.Believe(n, 16);
         new Inperience.Want(n, 16);
-        new Inperience.Wonder(n, 16);
-        new Inperience.Plan(n, 16);
-//        }
+        new Inperience.Wonder(n, 8);
+        new Inperience.Plan(n, 8);
+
 
 
 //        try {

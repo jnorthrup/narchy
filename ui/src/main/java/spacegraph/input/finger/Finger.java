@@ -68,34 +68,33 @@ abstract public class Finger {
 
     }
 
-    public static Predicate<Finger> clicked(int button, Runnable clicked) {
-        return clicked(button, clicked, null, null, null);
+    public static Predicate<Finger> clicked(Surface what, int button, Runnable clicked) {
+        return clicked(what, button, clicked, null, null, null);
     }
 
-    private static Predicate<Finger> clicked(int button, Runnable clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
-        return clicked(button, (f) -> clicked.run(), armed, hover, becameIdle);
+    private static Predicate<Finger> clicked(Surface what, int button, Runnable clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
+        return clicked(what, button, (f) -> clicked.run(), armed, hover, becameIdle);
     }
 
-    public static Predicate<Finger> clicked(int button, Consumer<Finger> clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
+    public static Predicate<Finger> clicked(Surface what, int button, Consumer<Finger> clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
 
         if (becameIdle != null)
             becameIdle.run();
 
         final AtomicBoolean idle = new AtomicBoolean(false);
 
-        return (finger) -> {
+        return f -> {
 
-            Surface what;
-            if (finger != null && (what = finger.touching()) != null) {
+            if (f != null /*&& (what = f.touching()) != null*/) {
 
                 idle.lazySet(false);
 
-                if (finger.clickedNow(button, what)) {
+                if (f.clickedNow(button, what)) {
 
                     if (clicked != null)
-                        clicked.accept(finger);
+                        clicked.accept(f);
 
-                } else if (finger.pressing(button) ) {
+                } else if (f.pressing(button) ) {
                     if (armed!=null)
                         armed.run();
 

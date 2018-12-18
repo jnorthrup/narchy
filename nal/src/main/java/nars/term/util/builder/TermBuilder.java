@@ -1,5 +1,7 @@
 package nars.term.util.builder;
 
+import jcog.TODO;
+import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import nars.Op;
 import nars.subterm.*;
@@ -121,10 +123,21 @@ public abstract class TermBuilder {
     }
 
     public final Term theSortedCompound(Op o, int dt, Term... u) {
-        assert (Tense.dtSpecial(dt));
-        Term[] s = sorted(u);
-        if (s.length == 1 && o == CONJ)
-            return s[0];
+
+        Term[] s;
+        if (o == CONJ) {
+            assert (Tense.dtSpecial(dt));
+            if (dt == XTERNAL) {
+                throw new WTF();
+//                Arrays.sort(u);
+//                s = u;
+            } else {
+                s = sorted(u);
+                if (s.length == 1)
+                    return s[0];
+            }
+        } else
+            throw new TODO();
 
         return theCompound(o, dt, s);
     }
@@ -229,7 +242,7 @@ public abstract class TermBuilder {
                 } else {
 
                     return only instanceof Ellipsislike ?
-                            theCompound(CONJ, dt, only)
+                            HeapTermBuilder.the.theCompound(CONJ, dt, only)
                             :
                             only;
                 }
@@ -293,10 +306,10 @@ public abstract class TermBuilder {
                             return Bool.False;
                     }
 
-                    if (!a.hasAny(Op.CONJ.bit | Op.NEG.bit) && !b.hasAny(Op.CONJ.bit | Op.NEG.bit)) {
+                    if (!a.hasAny(Op.CONJ.bit) && !b.hasAny(Op.CONJ.bit)) {
                         //fast construct for simple case, verified above to not contradict itself
                         //return compound(CONJ, dt, sorted(u[0], u[1]));
-                        return theCompound(CONJ, dt, /*sorted*/u[0], u[1]);
+                        return HeapTermBuilder.the.theCompound(CONJ, dt, /*sorted*/a, b);
                     }
 
                 }
@@ -326,26 +339,20 @@ public abstract class TermBuilder {
                         if (ul == 2) {
                             //special case: simple arity=2
                             if (!u[0].equals(u[1])) { // && !unfoldableInneralXternalConj(u[0]) && !unfoldableInneralXternalConj(u[1])) {
-                                return theCompound(CONJ, XTERNAL, sorted(u));
+                                return HeapTermBuilder.the.theCompound(CONJ, XTERNAL, sorted(u));
                             } else
-                                return theCompound(CONJ, XTERNAL, u[0], u[0]); //repeat
+                                return HeapTermBuilder.the.theCompound(CONJ, XTERNAL, u[0], u[0]); //repeat
                         } else {
 
                             MutableSet<Term> uux = new UnifiedSet(ul, 1f);
-                            for (Term uu : u) {
-//                            if (unfoldableInneralXternalConj(uu)) {
-//                                uu.subterms().forEach(uux::add);
-//                            } else {
+                            for (Term uu : u)
                                 uux.add(uu);
-//                            }
-                            }
-
 
                             if (uux.size() == 1) {
                                 Term only = uux.getOnly();
-                                return theCompound(CONJ, XTERNAL, only, only); //repeat
+                                return HeapTermBuilder.the.theCompound(CONJ, XTERNAL, only, only); //repeat
                             } else {
-                                return theCompound(CONJ, XTERNAL, sorted(uux));
+                                return HeapTermBuilder.the.theCompound(CONJ, XTERNAL, sorted(uux));
                             }
                         }
                     }
@@ -385,11 +392,8 @@ public abstract class TermBuilder {
 
 
             default: {
-                if (u.length != 2) {
-                    //if (Param.DEBUG_EXTRA)
+                if (u.length != 2)
                     throw new TermException("temporal conjunction with n!=2 subterms");
-                    //return Null;
-                }
 
                 return (dt >= 0) ?
                         Conj.the(u[0], 0, u[1], +dt + u[0].eventRange()) :
@@ -404,7 +408,6 @@ public abstract class TermBuilder {
 //    }
 
     public Term root(Compound x) {
-
         return x.temporalize(Retemporalize.root);
     }
 

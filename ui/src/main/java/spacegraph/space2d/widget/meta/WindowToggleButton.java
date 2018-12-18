@@ -52,7 +52,7 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
 
     @Override
     protected void onClick(@Nullable Finger f) {
-        if (!busy.compareAndSet(false, true))
+        if (!enabled() || !busy.compareAndSet(false, true))
             return;
 
         on(space == null);
