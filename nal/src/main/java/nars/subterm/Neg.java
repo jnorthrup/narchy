@@ -32,9 +32,10 @@ public final class Neg extends UnitCompound implements The {
 
     @Override
     public Term root() {
-        Term x = unneg().root();
-        if (x!=this)
-            return x.neg();
+        Term x = unneg();
+        Term y = x.root();
+        if (y!=x)
+            return y.neg();
         return this;
     }
 
@@ -43,20 +44,12 @@ public final class Neg extends UnitCompound implements The {
         return unneg().concept();
     }
 
-
-    @Override
-    public @Nullable Term normalize() {
-        Term x = unneg().normalize();
-        if (x!=this)
-            return x.neg();
-        return this;
-    }
-
     @Override
     public @Nullable Term normalize(byte varOffset) {
-        Term x = unneg().normalize(varOffset);
-        if (x!=this)
-            return x.neg();
+        Term x = unneg();
+        Term y = x.normalize(varOffset);
+        if (y!=x)
+            return y.neg();
         return this;
     }
 

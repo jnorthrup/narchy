@@ -87,8 +87,8 @@ public class ProxyTerm implements Compound {
     }
 
     @Override
-    public @Nullable Term normalize() {
-        return ifDifferentElseThis(ref.normalize());
+    public @Nullable Term normalize(byte varOffset) {
+        return ifDifferentElseThis(ref.normalize(varOffset));
     }
 
     @Override

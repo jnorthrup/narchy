@@ -101,11 +101,7 @@ public interface Atomic extends Term {
         return t.op() == NEG && equals(t.unneg());
     }
 
-    @Override
-    @Nullable
-    default Term normalize() {
-        return this;
-    }
+
 
     @Override
     default Term normalize(byte offset) {

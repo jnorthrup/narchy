@@ -615,10 +615,9 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
     @Nullable
-    default Term normalize() {
+    default /* final */ Term normalize() {
         return normalize((byte) 0);
     }
-
 
     @Nullable
     default Term replace(Map<? extends Term, Term> m) {
@@ -628,7 +627,6 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     Term replace(Term from, Term to);
 
     default Term neg() {
-        //return Neg.the(this);
         return NEG.the(this);
     }
 
@@ -640,11 +638,9 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     @Deprecated
     Term temporalize(Retemporalize r);
 
-
     default Term anon() {
         return Anom.the(1);
     }
-
 
     int structure();
 

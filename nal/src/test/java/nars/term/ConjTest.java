@@ -597,6 +597,7 @@ public class ConjTest {
         assertNotEquals($("x"), $("(x &&+1 x)"));
 
         assertInvalidTerms("((--,x) || x)");
+        assertInvalidTerms("(&|,(--,(score-->tetris)),(--,(height-->tetris)),(--,(density-->tetris)),(score-->tetris),(height-->tetris))");
 
     }
 
@@ -938,7 +939,10 @@ public class ConjTest {
 
     @Test
     public void testFactorDternalComponentIntoTemporals3() {
-        assertEquals("((x&&y) &&+- x)", $$("(((x && y) &&+- x)&&x)").toString());
+        assertEquals(
+                //"((x&&y) &&+- x)"
+                "(x&&y)"
+                , $$("(((x && y) &&+- x)&&x)").toString());
     }
 
     @Test

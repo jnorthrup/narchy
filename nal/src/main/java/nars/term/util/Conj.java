@@ -512,11 +512,6 @@ public class Conj extends ByteAnonMap {
         if (left == True) return right;
         if (right == True) return left;
 
-//        if (dt == 0 || dt == DTERNAL) {
-//            return CONJ.the(left, dt, right);
-//        }
-
-
         if (left.compareTo(right) > 0) {
 
             dt = -dt;
@@ -997,47 +992,62 @@ public class Conj extends ByteAnonMap {
             }
 
 
+            boolean innerXternal = dtInner == XTERNAL;
 
-            Conj c = new Conj();
+            Conj c = !innerXternal? new Conj() : null;
+            FasterList<Term> cx = innerXternal ? new FasterList() : null;
             final boolean[] intact = {true};
             boolean incomingHasConj = incoming.hasAny(CONJ);
             boolean ok = conj.eventsWhile((whn, wht) -> {
                 Term ww;
                 if (wht.equals(incoming))
-                    ww = incoming;
+                    ww = wht;
                 else if (wht.equalsNeg(incoming))
                     return false;
                 else {
-                    //quick test for impossible interference
-                    if (!Term.commonStructure(wht,incoming) || (!incomingHasConj && !wht.hasAny(CONJ)))
-                        return true;
-
                     ww = HeapTermBuilder.the.conj(dtOuter, wht, incoming);
                     if (ww == False || ww == Null)
                         return false;
                     if (ww == True)
                         return true;
+                    if (ww!=wht && ww.equals(wht))
+                        ww = wht; //use original if possible
+
+//                    if (ww.op() != CONJ || !ww.contains(incoming)) {
+//                        //something changed
+//                        intact[0] = false;
+//                    }
                 }
 
-                if (ww.op() != CONJ || !ww.contains(incoming)) {
-                    //something changed
-                    intact[0] = false;
+
+                if (innerXternal) {
+                    cx.add(ww);
+                    return true;
+                } else {
+                    return c.add(whn, ww);
                 }
-                return c.add(whn, ww);
-            }, 0,true, true, true, 0);
+
+            }, 0,!innerXternal, !innerXternal, innerXternal, 0);
             if (!ok)
                 return False;
 
-            Term d = c.term();
+            Term d = innerXternal ? HeapTermBuilder.the.conj(XTERNAL, cx.toArrayRecycled(Term[]::new))
+                    :
+                    c.term();
             if (d == False || d== Null)
                 return d; //fail
 
             if (d != conj && d.equals(conj))
-                return True;  //no change but the incoming has been absorbed
+                return conj;  //no change but the incoming has been absorbed
 
             if (intact[0]) {
-                //all original subterms remain intact, return simplified factored version
-                return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, conj, incoming);
+
+                if (innerXternal)
+                    return d;
+                else {
+                    //all original subterms remain intact, return simplified factored version
+                    return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, conj, incoming);
+                }
             } else {
                 return d;
             }
@@ -1295,7 +1305,7 @@ public class Conj extends ByteAnonMap {
                 Subterms es = eternal.subterms();
                 if (es.hasAny(CONJ)) {
                     eternal = flatten(eternal, es, DTERNAL);
-                    eternal = flatten(eternal, es, 0);
+//                    eternal = flatten(eternal, es, 0);
                 }
             }
 
@@ -1333,8 +1343,14 @@ public class Conj extends ByteAnonMap {
                 Term wt = term(when, next.getTwo(), validator);
 
                 //TODO merge this with validator
-                if (eternal!=null && !(wt instanceof Bool) && (eternal.equalsNeg(wt) || eternal.containsNeg(wt) || wt.containsNeg(eternal)))
+                if (eternal!=null && !(wt instanceof Bool) && (
+                        Term.commonStructure(wt,eternal) && (
+                            eternal.equalsNeg(wt) || eternal.containsNeg(wt) ||
+                            wt.equalsNeg(eternal) || wt.containsNeg(eternal)
+                        )
+                )) {
                     wt = False;
+                }
 
                 if (wt == True) {
                     continue;
@@ -1370,7 +1386,8 @@ public class Conj extends ByteAnonMap {
 
             if (eternal != null && temporal != null) {
 
-                int etdt = temporal.dt() == 0 ? 0 /* promote */ : DTERNAL;
+                //int etdt = temporal.dt() == 0 ? 0 /* promote */ : DTERNAL;
+                int etdt = DTERNAL;
                 if (!eternal.hasAny(CONJ))
                     ci = HeapTermBuilder.the.theSortedCompound(CONJ, etdt, temporal, eternal);
                 else {

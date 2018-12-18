@@ -36,7 +36,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     /** memory-saving */
     private static final boolean sortCanonically = true;
+    private boolean internNegs = false;
     private boolean cacheSubtermKeyBytes = false;
+
 
     private final boolean deep;
     protected final int volInternedMax;
@@ -65,7 +67,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
         for (int i = 0; i < ops.length; i++) {
             Op o = ops[i];
-            if (o.atomic || o == NEG) continue;
+            if (o.atomic || (!internNegs && o == NEG)) continue;
 
             int s = cacheSizePerOp;
             if (o == PROD)
@@ -118,10 +120,15 @@ public class InterningTermBuilder extends HeapTermBuilder {
     @Nullable
     private Term get(Term x) {
         Op xo = x.op();
-        boolean negate = xo == NEG;
-        if (negate) {
-            x = x.unneg();
-            xo = x.op();
+        boolean negate;
+        if (internNegs) {
+            negate = xo == NEG;
+            if (negate) {
+                x = x.unneg();
+                xo = x.op();
+            }
+        } else {
+            negate = false;
         }
         if (internableRoot(xo, x.dt())) {
             Term y = terms[xo.id].apply(InternedCompound.get(x));
@@ -211,8 +218,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return i;
     }
 
-    protected static boolean internableRoot(Op op, int dt) {
-        return !op.atomic && op != NEG
+    protected boolean internableRoot(Op op, int dt) {
+        return !op.atomic && (internNegs || op != NEG)
                 //&& Tense.dtSpecial(dt)
                 ;
     }

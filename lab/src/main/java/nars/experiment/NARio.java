@@ -18,13 +18,11 @@ import nars.experiment.mario.Scene;
 import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
 import nars.gui.NARui;
-import nars.gui.sensor.VectorSensorView;
 import nars.sensor.PixelBag;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.video.AutoclassifiedBitmap;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.grid.Gridding;
 
 import javax.swing.*;
 import java.util.List;
@@ -66,14 +64,19 @@ public class NARio extends NAgentX {
         game.start();
 
         PixelBag cc = new PixelBag(new MonoBufImgBitmap2D(() -> game.image), 32, 24) {
+            {
+                panRate = 1;
+                zoomRate = 1;
+            }
             @Override
             protected float missing() {
-                return 0.5f;
+                return 0f;
             }
         };
 
         cc.addActions(id, this, false, false, true);
         //addCamera(new Bitmap2DSensor(id, cc, nar));
+
         cc.actions.forEach(a -> a.resolution(0.5f));
 
 
@@ -155,7 +158,7 @@ public class NARio extends NAgentX {
 
         DigitizedScalar vx = senseNumberDifferenceBi($$("vx"), 8, () -> theMario != null ? theMario.x : 0).resolution(0.02f);
         DigitizedScalar vy = senseNumberDifferenceBi($$("vy"), 8, () -> theMario != null ? theMario.y : 0).resolution(0.02f);
-        window(new Gridding(new VectorSensorView(vx, nar), new VectorSensorView(vy, nar)), 800, 800);
+//        window(new Gridding(new VectorSensorView(vx, nar), new VectorSensorView(vy, nar)), 800, 800);
 
 
         Reward right = rewardNormalized("goRight", -1, +1, () -> {
@@ -245,8 +248,8 @@ public class NARio extends NAgentX {
     private void initButton() {
 
         for (GoalActionConcept c : actionPushButtonMutex(
-                $$("(nario,left)"),
-                $$("(nario,right)"),
+                $$("left"),
+                $$("right"),
                 (boolean n) -> {
                     boolean was = game.scene.key(Mario.KEY_LEFT, n);
                     return n;
@@ -259,7 +262,7 @@ public class NARio extends NAgentX {
             //c.actionDur(1);
         }
 
-        GoalActionConcept j = actionPushButton($$("(nario,jump)"),
+        GoalActionConcept j = actionPushButton($$("jump"),
                 n -> {
 
 //                    Scene s = game.scene;
@@ -293,10 +296,10 @@ public class NARio extends NAgentX {
         //j.actionDur(1);
 
 
-//        actionPushButton($$("(nario,down)"),
+//        actionPushButton($$("down"),
 //                n -> { game.scene.key(Mario.KEY_DOWN, n); return n; } );
 
-        actionPushButton($$("(nario,speed)"),
+        actionPushButton($$("speed"),
                 n -> {
                     game.scene.key(Mario.KEY_SPEED, n);
                     return n;

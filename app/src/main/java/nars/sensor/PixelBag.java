@@ -34,7 +34,7 @@ public class PixelBag implements Bitmap2D {
     public float Z = 1f, Znext = Z;
 
 
-    float panSpeed = 0.5f, zoomRate = 0.75f;
+    protected float panRate = 0.5f, zoomRate = 0.75f;
 
 
     public final float[][] pixels;
@@ -85,7 +85,7 @@ public class PixelBag implements Bitmap2D {
         int sw = sw(), sh = sh();
 
 
-        pos.move(posNext, panSpeed);
+        pos.move(posNext, panRate);
 
 
         //TODO zoom lerp
