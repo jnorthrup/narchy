@@ -10,9 +10,7 @@ import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.task.util.TaskBuffer;
 import nars.term.atom.Atom;
-import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.MemoizingTermBuilder;
-import nars.term.util.builder.VerifyingTermBuilder;
 import nars.truth.polation.LinearTruthPolation;
 import nars.truth.polation.TruthPolation;
 
@@ -277,7 +275,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 2;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 4;
 
 
     /**

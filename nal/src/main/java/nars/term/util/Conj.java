@@ -1333,7 +1333,7 @@ public class Conj extends ByteAnonMap {
                 Term wt = term(when, next.getTwo(), validator);
 
                 //TODO merge this with validator
-                if (eternal!=null && !(wt instanceof Bool) && (eternal.equalsNeg(wt) || eternal.containsNeg(wt)))
+                if (eternal!=null && !(wt instanceof Bool) && (eternal.equalsNeg(wt) || eternal.containsNeg(wt) || wt.containsNeg(eternal)))
                     wt = False;
 
                 if (wt == True) {

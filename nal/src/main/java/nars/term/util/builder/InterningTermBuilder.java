@@ -15,11 +15,13 @@ import nars.term.atom.Bool;
 import nars.term.util.InternedCompound;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * can intern subterms and compounds.
@@ -29,7 +31,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int DEFAULT_SIZE = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    protected static final int maxInternedVolumeDefault = 20;
+    protected static final int maxInternedVolumeDefault = 32;
     protected static boolean deepDefault = true;
 
     /** memory-saving */
@@ -186,15 +188,19 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     private void resolve(Term[] t) {
         for (int i = 0, tLength = t.length; i < tLength; i++) {
-            Term x = t[i];
-            if (x instanceof Atomic || x.volume() > volInternedMax || !internableSub(x))
-                continue;
-
-            Term y = get(x);
-
+            Term y = resolve(t[i]);
             if (y != null)
                 t[i] = y;
         }
+    }
+
+    @Nullable private Term resolve(Term x) {
+        Term y;
+        if (!(x instanceof Atomic || x.volume() > volInternedMax || !internableSub(x)))
+            y = get(x);
+        else
+            y = null;
+        return y;
     }
 
     protected boolean internableRoot(Op op, int dt, Term[] u) {
@@ -233,7 +239,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
     public Term statement(Op op, int dt, Term subject, Term predicate) {
 
 
-        if (!(subject instanceof Bool) && !(predicate instanceof Bool) && subject.the() && predicate.the() && (subject.volume() + predicate.volume() < volInternedMax)) {
+        if (!(subject instanceof Bool) && !(predicate instanceof Bool) &&
+                (subject.volume() + predicate.volume() < volInternedMax) &&
+                internableSub(subject) && internableSub(predicate) ) {
 
             boolean negate = false;
 
@@ -256,11 +264,19 @@ public class InterningTermBuilder extends HeapTermBuilder {
                         break;
                 }
 
+                if (deep) {
+                    Term sr = resolve(subject);
+                    if (sr != null) subject = sr;
+                    Term pr = resolve(predicate);
+                    if (pr != null) predicate = pr;
+                }
+
                 return this.terms[op.id].apply(InternedCompound.get(op, dt, subject, predicate)).negIf(negate);
             }
 
             //return statements.apply(InternedCompound.get(op, dt, subject, predicate));
         }
+
         return super.statement(op, dt, subject, predicate);
     }
 
@@ -271,7 +287,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     @Override
     public Term conj(int dt, Term[] u) {
-        if(dt==0 || dt==DTERNAL) u = Terms.sorted(u); //pre-sort
+
         //preFilter
 //        u = conjPrefilter(dt, u);
 //        boolean trues = false;
@@ -290,10 +306,23 @@ public class InterningTermBuilder extends HeapTermBuilder {
 //            u = ArrayUtils.removeNulls(u, Term[]::new);
 //        }
 
-        if (u.length > 1 && internableRoot(CONJ, dt, u))
-            return terms[CONJ.id].apply(InternedCompound.get(CONJ, dt, u));
-        else
-            return super.conj(dt, u);
+        if (u.length > 1 && internableRoot(CONJ, dt, u)) {
+
+            if (dt == 0 || dt == DTERNAL)
+                u = Terms.sorted(u); //pre-sort
+            else if (dt == XTERNAL) {
+                Arrays.sort(u = u.clone()); //TODO deduplicate down to at least 2x, no further
+            }
+
+            if (deep)
+                resolve(u);
+
+            if (u.length > 1) {
+                return terms[CONJ.id].apply(InternedCompound.get(CONJ, dt, u));
+            }
+        }
+
+        return super.conj(dt, u);
     }
 
 

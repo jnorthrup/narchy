@@ -109,14 +109,19 @@
     //nature of such a rule."
 
     //If after S M happens, and after M then P happens, so S then P happens
-    (S ==> M), (M ==> P)   |- (S ==> P), (Belief:Deduction)
+    (S ==> M),   (M ==> P)  |-   (S ==> P),   (Belief:Deduction)
+    (S ==> M),   (M ==> P)  |-   (S ==> --P), (Belief:DeductionPN)
+    (S ==> M), (--M ==> P)  |-   (S ==> P),   (Belief:DeductionNP)
+    (S ==> M), (--M ==> P)  |-   (S ==> --P), (Belief:DeductionNN)
+
      //(M ==> P), (S ==> M)  |- (S ==> P), (Belief:DeductionX)
       //if after S --M happens, and after --M then P happens, so S then P happens
-      (S ==> M), (--M ==> P)  |- (S ==> P), (Belief:DeductionN)
+
        //(--M ==> P), (S ==> M) |- (S ==> P), (Belief:DeductionPNX)
 
         //(S ==> M), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
-            (S ==> M), (M ==> P), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
+            (S ==> M), (  M ==> P), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
+            (S ==> M), (--M ==> P), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
             //(S ==> M), (M ==> P), task("?") |- (S ==> P), (Punctuation:Question)
             //(S ==> M), (M ==> P), task("?") |- (P ==> S), (Punctuation:Question)
 
@@ -124,9 +129,9 @@
                 //(S ==> M), (--M ==> P), task("?") |- (S ==> P), (Punctuation:Question)
                 //(S ==> M), (--M ==> P), task("?") |- (P ==> S), (Punctuation:Question)
 
-        //deduction with unification
-        (S ==> M), (N ==> P), neq(M,N) |- unisubst((S ==> P), M, N), (Belief:Deduction)
-            (S ==> M), (--N ==> P), neq(M,N) |- unisubst((S ==> P), M, N), (Belief:DeductionN)
+//        //deduction with unification
+//        (S ==> M), (N ==> P), neq(M,N) |- unisubst((S ==> P), M, N), (Belief:Deduction)
+//            (S ==> M), (--N ==> P), neq(M,N) |- unisubst((S ==> P), M, N), (Belief:DeductionN)
 
 
     //TODO reversals for Abduction, Induction, Exemplification
@@ -136,8 +141,9 @@
     (M ==> P), (M ==> S) |- (S ==> P), (Belief:Induction)
         (M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN)
 
-                (M ==> S), (M ==> P), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
-                //(M ==> S), (M ==> P), task("?") |- (polarizeRandom(P) ==> S), (Punctuation:Question)
+                (  M ==> S), (  M ==> P), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
+                (--M ==> S), (  M ==> P), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
+                (  M ==> S), (--M ==> P), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
 
     (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionPB)
     (P ==> M), (S ==> M) |- (S ==> P), (Belief:AbductionPB)
@@ -145,12 +151,15 @@
             (S ==> M), (P ==> M), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
         //(S ==> M), (P ==> M), task("?") |- (polarizeRandom(P) ==> S), (Punctuation:Question)
 
-    (M ==> S), (P ==> M)         |- (S ==> P), (Belief:Exemplification)
-        (M ==> S), (--P ==> M)   |- (S ==> P), (Belief:ExemplificationN)
-        (--M ==> S), (P ==> M)   |- (S ==> P), (Belief:ExemplificationPN)
-        (--M ==> S), (--P ==> M) |- (S ==> P), (Belief:ExemplificationNN)
+    (  M ==> S), (P ==> M)       |- (  S ==> P), (Belief:Exemplification)
+    (  M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationN)
+    (--M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPN)
+    (--M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNN)
 
-            (M ==> S), (P ==> M), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
+            (  M ==> S), (P ==> M), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
+            (--M ==> S), (P ==> M), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
+
+
 
     //the comparison rules here emulates what Comparison did in generating <=> which are modeled here as a pair of opposing ==>
     //untested
@@ -160,6 +169,8 @@
 ////        (P ==> M), (S ==> M) |- (P ==> S), (Belief:Comparison)
 ////    (M ==> P), (M ==> S) |- (S ==> P), (Belief:Comparison)
 ////        (M ==> P), (M ==> S) |- (P ==> S), (Belief:Comparison)
+
+
 
 // Contraposition (structural)
 //    a→b == ¬b→¬a		# contra positition [Lex contrapositionis]

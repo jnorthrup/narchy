@@ -37,16 +37,27 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 //            throw new WTF();
 //        boolean hasTemporal = op.temporal || subterms.hasAny(Op.Temporal);
 //        boolean isNormalized = subterms.isNormalized();
+
+        Compound c;
         if (!op.temporal && !subterms.hasAny(Op.Temporal) && subterms.isNormalized()) {
             assert (dt == DTERNAL);
 //            if (key!=null && subterms.volume() < Param.TERM_BYTE_KEY_CACHED_BELOW_VOLUME) {
 //                return new CachedCompound.SimpleCachedCompoundWithBytes(op, subterms, key);
 //            } else {
-            return new SimpleCachedCompound(op, subterms);
+            c = new SimpleCachedCompound(op, subterms);
 //            }
         } else {
-            return new TemporalCachedCompound(op, dt, subterms);
+            c = new TemporalCachedCompound(op, dt, subterms);
         }
+
+//        //TEMPORARY
+//        try {
+//            assert(c.anon()!=null);
+//        } catch (Throwable t) {
+//            throw new WTF(t);
+//        }
+
+        return c;
     }
 
     private static class SimpleCachedCompound extends CachedCompound {
