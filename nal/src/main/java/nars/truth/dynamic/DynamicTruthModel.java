@@ -15,7 +15,6 @@ import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthTable;
-import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -32,8 +31,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.term.atom.Bool.False;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
 /**
@@ -43,9 +41,9 @@ abstract public class DynamicTruthModel {
 
     abstract public Truth apply(DynTruth var1, NAR nar);
 
-    public final DynStampTruth eval(final Term superterm, boolean beliefOrGoal, long start, long end, Predicate<Task> superFilter, boolean forceProjection, NAR n) {
+    public final DynStampTruth eval(final Term superTerm, boolean beliefOrGoal, long start, long end, Predicate<Task> superFilter, boolean forceProjection, NAR n) {
 
-        assert (superterm.op() != NEG);
+        assert (superTerm.op() != NEG);
 
         DynStampTruth d = new DynStampTruth(0); //TODO pool?
 
@@ -56,7 +54,7 @@ abstract public class DynamicTruthModel {
 
         //TODO expand the callback interface allowing models more specific control over matching/answering/sampling subtasks
 
-        return components(superterm, start, end, (Term subTerm, long subStart, long subEnd) -> {
+        return components(superTerm, start, end, (Term subTerm, long subStart, long subEnd) -> {
 
             if (subTerm instanceof Bool)
                 return false;
@@ -75,6 +73,9 @@ abstract public class DynamicTruthModel {
             if (bt == null)
                 return false;
 
+            if (!acceptComponent(superTerm, subTerm, bt))
+                return false;
+
             /* project to a specific time, and apply negation if necessary */
             bt = Task.project(forceProjection, true, bt, subStart, subEnd, n, negated);
             if (bt == null)
@@ -91,6 +92,11 @@ abstract public class DynamicTruthModel {
      * used to reconstruct a dynamic term from some or all components
      */
     abstract public Term reconstruct(Term superterm, List<Task> c, NAR nar);
+
+    /** allow filtering of resolved Tasks */
+    public boolean acceptComponent(Term superTerm, Term componentTerm, Task componentTask) {
+        return true;
+    }
 
     public BeliefTable newTable(Term t, boolean beliefOrGoal, ConceptBuilder cb) {
         return new BeliefTables(
@@ -121,6 +127,10 @@ abstract public class DynamicTruthModel {
                 this.subjOrPred = subjOrPred;
             }
 
+            @Override
+            public boolean acceptComponent(Term superTerm, Term componentTerm, Task componentTask) {
+                return componentTask.op()==superTerm.op();
+            }
 
             @Override
             public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
@@ -263,7 +273,7 @@ abstract public class DynamicTruthModel {
                 return components(superterm, start, end, each, superterm.sub(0));
             }
 
-            protected boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term subj) {
+            private static boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term subj) {
                 return decomposeImplConj(superterm, start, end, each, superterm.sub(1), subj, IMPL, true, false);
             }
 
@@ -404,6 +414,8 @@ abstract public class DynamicTruthModel {
                         Term eventDistributed = CONJ.the(superDT, event, factor);
                         if (eventDistributed == False || eventDistributed == Null)
                             return false;
+                        if (eventDistributed == True)
+                            return true;
                         return each.accept(eventDistributed, whenStart, whenEnd);
                     });
                 }
@@ -748,6 +760,8 @@ abstract public class DynamicTruthModel {
                 break;
         }
         boolean startSpecial = (start == ETERNAL || start == XTERNAL);
+        //TODO use dynamic conjunction decompose which provides factoring
+        Op superOp = superterm.op();
         return decomposed.eventsWhile((offset, y) -> {
                     boolean ixTernal = startSpecial || offset == ETERNAL || offset == XTERNAL;
 
@@ -764,7 +778,7 @@ abstract public class DynamicTruthModel {
                     Term x = stmtDecompose(op, subjOrPred, y, common,
                             ixTernal ? DTERNAL : occ, negateComponents, false);
 
-                    if (x == Null)
+                    if (x == Null || x.unneg().op()!=superOp)
                         return false;
 
                     return each.accept(x, subStart, subEnd);

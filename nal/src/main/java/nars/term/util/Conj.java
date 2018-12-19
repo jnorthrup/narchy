@@ -1354,14 +1354,14 @@ public class Conj extends ByteAnonMap {
             if (eternal instanceof Bool)
                 return this.term = eternal;
 
-            //flatten inner conjunctions
-            if (eternal.op() == CONJ) {
-                Subterms es = eternal.subterms();
-                if (es.hasAny(CONJ)) {
-                    eternal = flatten(eternal, es, DTERNAL);
-//                    eternal = flatten(eternal, es, 0);
-                }
-            }
+//            //flatten inner conjunctions
+//            if (eternal.op() == CONJ) {
+//                Subterms es = eternal.subterms();
+//                if (es.hasAny(CONJ)) {
+//                    eternal = flatten(eternal, es, DTERNAL);
+////                    eternal = flatten(eternal, es, 0);
+//                }
+//            }
 
             if (numEvents > 1) {
 
@@ -1522,8 +1522,9 @@ public class Conj extends ByteAnonMap {
     private void factor() {
 
         RichIterable<LongObjectPair<Object>> events = event.keyValuesView();
+        int numTemporalEvents = events.count(l -> l.getOne()!=ETERNAL);
         int numTemporalCompoundEvents = events.count(l -> l.getOne()!=ETERNAL && eventCount(l.getTwo())>1);
-        if (numTemporalCompoundEvents <= 1)
+        if (numTemporalCompoundEvents <= 1 || numTemporalCompoundEvents!=numTemporalEvents)
             return;
 
 
@@ -1565,7 +1566,12 @@ public class Conj extends ByteAnonMap {
             if (when ==ETERNAL)
                 return true;
             Object what = whenWhat.getTwo();
-            eventTimes[e[0]++] = when;
+            try {
+                eventTimes[e[0]++] = when;
+            } catch (ArrayIndexOutOfBoundsException effff) {
+                throw new WTF(); //TEMPORAR
+            }
+
             if (what instanceof byte[]) {
                 if (eventsAND(((byte[])what), common::contains))
                     return true; //all would be eliminated at this time slot
