@@ -2,6 +2,7 @@ package jcog.tree.rtree.rect;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.math.v2;
 import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.point.Float2D;
@@ -84,6 +85,10 @@ public class RectFloat implements HyperRegion<Float2D>, Comparable<RectFloat> {
 
     public static RectFloat WH(float w, float h) {
         return X0Y0WH(0, 0, w, h);
+    }
+
+    public static RectFloat XYXY(v2 ul, v2 br) {
+        return RectFloat.XYXY(ul.x, ul.y, br.x, br.y);
     }
 
     public RectFloat move(double dx, double dy) {

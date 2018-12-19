@@ -156,8 +156,9 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             Body2D sourceBody = phy(a().parent(Windo.class)).body;
             Body2D targetBody = phy(b().parent(Windo.class)).body;
 
-            this.snake = new Snake(sourceBody, targetBody, 5, 10, 2f);
+            this.snake = new Snake(sourceBody, targetBody, 5);
             offs.add(snake::remove);
+
 
 //            Surface r = new Box2DVisibleLinkSurface();
 //            hold(r);
@@ -186,14 +187,30 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         //        private final Surface source;
 //        private final Surface target;
         private final Body2D sourceBody, targetBody;
+        private final int n;
 
-        public Snake(Body2D source, Body2D target, int num, float eleLen /* TODO parametric */, float thick) {
+        private transient float elementLength, elementThickness;
+
+        private void updateGeometry() {
+            elementLength = (distance() / n) * 0.9f;
+            elementThickness = 1f;
+                    //TODO get from surfaces Math.min( sourceBody.fixtures.shape.radius, targetBody.fixtures.shape.radius );
+
+
+        }
+
+        float distance() {
+            return sourceBody.pos.distance(targetBody.pos);
+        }
+
+        public Snake(Body2D source, Body2D target, int num) {
 
 //            this.source = source;
 //            this.target = target;
             this.sourceBody = source;
             this.targetBody = target;
 
+            this.n = num;
 
             bodies = new FasterList(num);
             joints = new FasterList(num);
@@ -201,12 +218,12 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
             Dynamics2D w = sourceBody.W;
 
+            updateGeometry();
+
             FixtureDef segment = new FixtureDef(
-                    PolygonShape.box(eleLen / 2, thick / 2), 0.2f, 0f);
+                    PolygonShape.box(1, 1), 0.01f, 0f);
             segment.restitution = (0f);
             segment.filter.maskBits = 0;
-
-            final float y = 0f;
 
             Body2D from = null;
 
@@ -216,44 +233,77 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                 if (from == null) {
                     from = sourceBody;
                 } else {
+                    RevoluteJointDef jd = new RevoluteJointDef();
 
-                    Body2D to;
+                    Body2D to = null;
                     if (i == num - 1) {
                         to = targetBody;
                     } else {
 
-                        to = new Body2D(
-                                new BodyDef(BodyType.DYNAMIC,
-                                        new v2(i * eleLen, y)), w);
-                        bodies.add(to);
+                        Body2D finalFrom = from;
+                        int finalI = i;
+                        to = new Body2D(new BodyDef(BodyType.DYNAMIC, new v2(0,0)), w) {
+
+                            float eleLen = Float.NaN, eleThick = Float.NaN;
+
+                            final Body2D thiss = this;
+                            final Consumer<Fixture> updater = (f)->{
+
+                                //float angle = angle();
+                                //f.setShape(new PolygonShape().setAsBox(eleLen, eleThick, new v2(), angle) );
+                                ((PolygonShape)f.shape).setAsBox(eleLen/2, eleThick);
+                                setAwake(true);
+
+                                RevoluteJoint rj = (RevoluteJoint)((Snake.this.joints).get(finalI-1));
+
+                                if (finalFrom != sourceBody) {
+                                    rj.getLocalAnchorA().set(eleLen / 2, 0);
+                                } else {
+                                    rj.getLocalAnchorA().set(0, 0);
+                                }
+                                if (thiss != targetBody) {
+                                    rj.getLocalAnchorB().set(-eleLen / 2, 0);
+                                } else {
+                                    rj.getLocalAnchorB().set(0, 0);
+                                }
+
+
+
+                            };
+
+                            @Override
+                            public void postUpdate() {
+                                if (finalI == 1 /* head */) {
+                                    updateGeometry();
+                                }
+
+                                if (eleLen!=elementLength || eleThick!=elementThickness) {
+                                    eleLen = elementLength;
+                                    eleThick = elementThickness;
+
+                                    updateFixtures(updater);
+                                }
+
+                            }
+                        };
+
                         to.addFixture(segment);
+
+                        bodies.add(to);
                         to.setGravityScale(0);
                         to.setLinearDamping(0);
+                        to.postUpdate();
                     }
-
-                    RevoluteJointDef jd = new RevoluteJointDef();
 
                     jd.collideConnected = false;
-
                     jd.bodyA = from;
-                    if (from != sourceBody) {
-                        jd.localAnchorA.set(eleLen / 2, 0);
-                    } else {
-
-                        jd.localAnchorA.set(0, 0);
-                    }
                     jd.bodyB = to;
-                    if (to != targetBody) {
-                        jd.localAnchorB.set(-eleLen / 2, 0);
-                    } else {
-
-                        jd.localAnchorB.set(0, 0);
-                    }
                     jd.referenceAngle = 0;
-
+                    jd.enableMotor = true;
 
                     RevoluteJoint jj = new MyRevoluteJoint(w, jd, source, target);
                     joints.add(jj);
+
 
                     from = to;
                 }
@@ -266,6 +316,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                 joints.forEach(w::addJoint);
             });
         }
+
+
 
 
         /**

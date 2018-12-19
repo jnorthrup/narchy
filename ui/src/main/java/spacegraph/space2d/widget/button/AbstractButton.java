@@ -22,8 +22,6 @@ public abstract class AbstractButton extends Widget {
     private final Predicate<Finger> pressable = Finger.clicked(this, CLICK_BUTTON, (f) -> {
         dz = 0;
         onClick(f);
-//        Exe.invoke/*Later*/(() ->
-//                onClick(f));
     }, () -> dz = 0.5f, () -> dz = 0f, () -> dz = 0f);
 
 
@@ -41,17 +39,17 @@ public abstract class AbstractButton extends Widget {
             if (pressable.test(finger))
                 return this;
 
-            if (finger.dragging(CLICK_BUTTON)) {
+            if (finger.dragging(CLICK_BUTTON) || finger.dragging(1 /* HACK */) || finger.dragging(0 /* HACK */)) {
                 //allow pass-through for drag actions
                 return null;
             }
 
         }
-        return f;
+        return this;
     }
 
     public final boolean enabled() {
-        return enabled.get();
+        return enabled.getOpaque();
     }
 
     public final <B extends AbstractButton> B enabled(boolean e) {

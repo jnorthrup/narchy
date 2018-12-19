@@ -522,6 +522,18 @@ public class Ortho<S extends Surface> extends Container implements SurfaceRoot, 
         public void complete() {
             setDirect(target.x, target.y, target.z);
         }
+
+        public final RectFloat worldToScreen(Surface t) {
+            return worldToScreen(t.bounds);
+        }
+
+
+        /** TODO optimize */
+        public RectFloat worldToScreen(RectFloat b) {
+            v2 ul = worldToScreen(new v2(b.left(), b.top()));
+            v2 br = worldToScreen(new v2(b.right(), b.bottom()));
+            return RectFloat.XYXY(ul, br);
+        }
     }
 
 }

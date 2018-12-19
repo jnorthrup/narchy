@@ -1,19 +1,23 @@
 package spacegraph.space2d.widget.meta;
 
 import jcog.WTF;
+import jcog.tree.rtree.rect.RectFloat;
+import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.collection.MutableListContainer;
+import spacegraph.space2d.hud.HudHover;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 /**
  * a dynamic frame for attaching to widgets providing access to context menus, controls, and display
  */
-public class MetaFrame extends Bordering {
+public class MetaFrame extends Bordering implements HudHover {
 
 
     private MetaFrame() {
@@ -28,7 +32,7 @@ public class MetaFrame extends Bordering {
     /**
      * referent; by default - the surface
      */
-    protected Surface the() {
+    protected final Surface the() {
         return get(0);
     }
 
@@ -146,12 +150,10 @@ public class MetaFrame extends Bordering {
 
             boolean e = expanded;
 
-            Ortho hud = (Ortho) parent(Ortho.class).space.layers.get(3);
-            MutableListContainer target = (MutableListContainer) hud.the();
             if (!e) {
                 //TODO unexpand any other MetaFrame popup that may be expanded.  check the root context's singleton map
 
-                undock(target);
+                undock();
             } else {
 
 
@@ -190,22 +192,26 @@ public class MetaFrame extends Bordering {
     }
 
 
-    private void undock(MutableListContainer target) {
-        if (target.isEmpty()) {
+    private void undock() {
+        MutableListContainer hud = hud();
+
+        /*if (hud.isEmpty())*/ {
 
             Surface content = the();
             if (content != null) {
                 SatelliteMetaFrame wrapper = new SatelliteMetaFrame(content);
-                {
-                    target.add(wrapper);
-                    wrapper.pos(target.bounds.scale(0.8f));
-                    expanded = true;
-                    satellite = wrapper;
-                }
+                hud.add(wrapper);
+                wrapper.pos(hud.bounds.scale(0.8f));
+                expanded = true;
+                satellite = wrapper;
             }
 
         }
 
+    }
+
+    private MutableListContainer hud() {
+        return (MutableListContainer) ((Ortho) parent(Ortho.class).space.layers.get(3)).the();
     }
 
 
@@ -220,12 +226,17 @@ public class MetaFrame extends Bordering {
 
 
     protected String name() {
-        return childrenCount() == 0 ? "" : get(0).toString();
+        return childrenCount() == 0 ? "" : the().toString();
     }
 
     @Override
     public String toString() {
         return name();
+    }
+
+    @Override
+    public Surface hover(RectFloat screenBounds, Finger f) {
+        return new BitmapLabel(screenBounds.toString()).pos(screenBounds.scale(1.5f));
     }
 
 

@@ -5,6 +5,8 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMovePixels;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.collection.MutableListContainer;
+import spacegraph.util.animate.Animated;
 import spacegraph.util.math.v3;
 import spacegraph.video.JoglSpace;
 
@@ -15,6 +17,54 @@ public class ZoomOrtho extends Ortho {
 
     public final static short PAN_BUTTON = 0;
     private final static short MOVE_WINDOW_BUTTON = 1;
+    private float wheelZoomRate = 0.5f;
+
+    public ZoomOrtho(JoglSpace space, Surface content, Finger finger, NewtKeyboard keyboard) {
+        super(space, content, finger, keyboard);
+
+        animate(new Animated() {
+
+            long lastTouchStart = Long.MIN_VALUE;
+            final static long hoverDelayMS = 100;
+            Surface prevTouch = null;
+            Surface hover = null;
+
+            @Override
+            public boolean animate(float w) {
+
+                Surface nextTouch = finger.touching();
+                if (nextTouch!=null)
+                    nextTouch = (Surface) nextTouch.parent(HudHover.class);
+
+                if (nextTouch != prevTouch) {
+
+                    if (hover!=null) {
+                        hover.remove();
+                        hover = null;
+                    }
+
+                    if (nextTouch instanceof HudHover) {
+                        this.lastTouchStart = System.currentTimeMillis();
+                        this.prevTouch = nextTouch;
+                    } else{
+                        this.prevTouch = null;
+                    }
+                }
+
+                Surface t = this.prevTouch;
+                if (t!=null && hover == null && System.currentTimeMillis() - lastTouchStart > hoverDelayMS) {
+                    hover = ((HudHover) t).hover(cam.worldToScreen(t), finger);
+                    if (hover == null)
+                        this.prevTouch = null;
+                    else {
+                        hud().add(hover);
+                    }
+                }
+
+                return true;
+            }
+        });
+    }
 
 
     //final AtomicReference<v3> beforeMagnify = new AtomicReference<>(null);
@@ -24,19 +74,20 @@ public class ZoomOrtho extends Ortho {
         Surface f = super.finger(finger);
 
 
-        //absorb remaining rotationY
-        float zoomRate = 0.5f;
-
-        if (!(finger.touching() instanceof Finger.WheelAbsorb)) {
+        if (!(f instanceof Finger.WheelAbsorb)) {
+            //wheel zoom: absorb remaining rotationY
             float dy = finger.rotationY(true);
             if (dy != 0)
-                zoomDelta(dy * zoomRate);
+                zoomDelta(dy * wheelZoomRate);
         }
 
+        if (f!=null) {
 
-        if (f!=null && finger.clickedNow(2 /*right button*/)) {
-            /** auto-zoom */
-            zoomNext(f);
+            if (f != null && finger.clickedNow(2 /*right button*/)) {
+                /** auto-zoom */
+                zoomNext(f);
+            }
+
         }
 
 
@@ -56,16 +107,19 @@ public class ZoomOrtho extends Ortho {
 //            }
 //        }
 
-        if (f!=null)
-            return f;
-
-        if (finger.touching() == null) {
-            if (finger.tryFingering(fingerWindowMove) || finger.tryFingering(fingerContentPan)) {
-                return this;
+        if (f==null) {
+            if (finger.touching() == null) {
+                if (finger.tryFingering(fingerWindowMove) || finger.tryFingering(fingerContentPan)) {
+                    return this;
+                }
             }
         }
 
-        return null;
+        return f;
+    }
+
+    private MutableListContainer hud() {
+        return (MutableListContainer) ((Ortho) space.layers.get(3)).the();
     }
 
     private final Fingering fingerContentPan = new FingerMovePixels(PAN_BUTTON) {
@@ -132,9 +186,7 @@ public class ZoomOrtho extends Ortho {
 
     };
 
-    public ZoomOrtho(JoglSpace space, Surface content, Finger finger, NewtKeyboard keyboard) {
-        super(space, content, finger, keyboard);
-    }
+
 
 
     @Override
