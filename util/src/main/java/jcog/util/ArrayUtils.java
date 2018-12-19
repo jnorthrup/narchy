@@ -1283,9 +1283,6 @@ public enum ArrayUtils {;
      * @param array the array to reverse, may be {@code null}
      */
     public static void reverse(final int[] array) {
-        if (array == null) {
-            return;
-        }
         reverse(array, 0, array.length);
     }
 
@@ -1537,7 +1534,7 @@ public enum ArrayUtils {;
      * @since 3.2
      */
     public static void reverse(final int[] array, final int startIndexInclusive, final int endIndexExclusive) {
-        if (array == null) {
+        if (array == null || array.length <= 1 || (endIndexExclusive - startIndexInclusive <= 1)) {
             return;
         }
         int i = startIndexInclusive < 0 ? 0 : startIndexInclusive;
@@ -1545,10 +1542,8 @@ public enum ArrayUtils {;
         int tmp;
         while (j > i) {
             tmp = array[j];
-            array[j] = array[i];
-            array[i] = tmp;
-            j--;
-            i++;
+            array[j--] = array[i];
+            array[i++] = tmp;
         }
     }
 

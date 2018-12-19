@@ -372,14 +372,6 @@
         (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- (--conjWithoutAll(B,A) ==> conjWithoutAll(A,B)), (Belief:AbductionPBN)
 
 
-// conditional deduction "An inverse inference has been implemented as a form of deduction" https://code.google.com/p/open-nars/issues/detail?id=40&can=1
-
-//    (U --> L), ((&&,(#X --> L),(#X --> R),A..*) ==> Z), neq(U,R) |- substitute((((&&,A..*) && (U --> R)) ==> Z),#X,U), (Belief:Deduction)
-//        (U --> L), ((&&,--(#X --> L),(#X --> R),A..*) ==> Z), neq(U,R) |- substitute((((&&,A..*) && (U --> R)) ==> Z),#X,U), (Belief:DeductionN)
-
-
-
-
 
 
 //// conjunction decompose AND dependent variable elimination - decomposition with elimination of a variable

@@ -392,7 +392,7 @@ class NAL8EternalMixTest extends NALTest {
         tester.inputAt(when, "hold:t2. :|:");
 
         String result = "((att1 &&+1 open:t1) ==>+1 opened:t1)";
-        tester.mustBelieve(cycles, result, 1.0f, 0.44f, when /* + 1*/);
+        tester.mustBelieve(cycles, result, 1.0f, 0.44f, t->t>=when );
 
     }
 

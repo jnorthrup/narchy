@@ -98,12 +98,12 @@
 
 //// implication-based decomposition ////////////////////////////////////////////////////////////////////////////////////
 
-(A ==> C), B, is(C,"&&")      |- unisubst((A ==> dropAnyEvent(C)), A, B), (Belief:StructuralReduction)
-(C ==> A), B, isUnneg(C,"&&") |- unisubst((dropAnyEvent(C) ==> A), A, B), (Belief:StructuralReduction)
+(A ==> C), B, is(C,"&&"), --is(B,"#")      |- unisubst((A ==> dropAnyEvent(C)), A, B), (Belief:StructuralReduction)
+(C ==> A), B, isUnneg(C,"&&"), --is(B,"#") |- unisubst((dropAnyEvent(C) ==> A), A, B), (Belief:StructuralReduction)
   //not needed: (--C ==>A) since dropAnyEvent handles --C
 
-  (A ==> C), B, task("?"), is(C,"&&")       |- unisubst((A ==> dropAnyEvent(C)), A, B), (Punctuation:Question)
-  (C ==> A), B, task("?"), isUnneg(C,"&&")  |- unisubst((dropAnyEvent(C) ==> A), A, B), (Punctuation:Question)
+  (A ==> C), B, task("?"), is(C,"&&"), --is(B,"#")       |- unisubst((A ==> dropAnyEvent(C)), A, B), (Punctuation:Question)
+  (C ==> A), B, task("?"), isUnneg(C,"&&"), --is(B,"#")  |- unisubst((dropAnyEvent(C) ==> A), A, B), (Punctuation:Question)
 
 //    (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNP)
 //    (--S ==> M), (C ==> M), eventOfNeg(C,S) |- (conjWithout(C,--S) ==> M), (Belief:DecomposeNegativePositivePositive)

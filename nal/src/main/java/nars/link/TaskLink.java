@@ -21,7 +21,7 @@ import java.util.function.Function;
 public interface TaskLink extends UnitPrioritizable, Function<NAR,Task>, Deleteable {
 
     /** dont use .apply() directly; use this */
-    public static Task task(TaskLink x, NAR n) {
+    static Task task(TaskLink x, NAR n) {
         Task y = x.apply(n);
         if(y == null)
             x.delete();

@@ -463,21 +463,22 @@ public class NAL5Test extends NALTest {
         tester.mustBelieve(cycles, " <(robin --> [withWings]) ==> a>", 1.00f, 0.81f);
 
     }
-//    @Test
-//    void conditional_deduction_unification() {
-//
-//        TestNAR tester = test;
-//        tester.confTolerance(Param.TRUTH_EPSILON);
-//
-//        tester.believe("<(&&,(#x --> [flying]),(#x --> [withWings])) ==> a>");
-//        tester.believe("(robin --> [flying])");
-//        tester.mustBelieve(cycles, " <(robin --> [withWings]) ==> a>", 1.00f, 0.81f);
-//
-//    }
+    @Test
+    void conditional_deduction_unification() {
+
+        TestNAR tester = test;
+        tester.nar.termVolumeMax.set(12);
+        tester.believe("<(&&,(#x --> [flying]),(#x --> [withWings])) ==> a>");
+        tester.believe("(robin --> [flying])");
+        tester.mustBelieve(cycles, " <(robin --> [withWings]) ==> a>", 1.00f, 0.81f);
+
+    }
+
     @Test
     void conditional_deduction_neg() {
 
         TestNAR tester = test;
+        tester.nar.termVolumeMax.set(10);
         tester.believe("((&&,--(robin-->[swimming]),(robin --> [withWings])) ==> a)");
         tester.believe("--(robin-->[swimming])");
         tester.mustBelieve(cycles, " ((robin --> [withWings]) ==> a)", 1.00f, 0.81f);

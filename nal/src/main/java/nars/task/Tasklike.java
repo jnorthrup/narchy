@@ -89,25 +89,28 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
 
     public Task get(NAR n, Prioritizable link) {
 
-
-//        long start, end;
-//        if (when == ETERNAL) start = end = ETERNAL;
-//        else {
-//            int dur = n.dur();
-//            start = Tense.dither(when - dur/2, n);
-//            end = Tense.dither(when + dur/2, n);
-//        }
-//
 //        long[] se = new long[] { start , end };
 
         Term t = term;//.unneg();
         Concept c =
-                n.conceptualizeDynamic(t);
+                n.concept(t);
+                //n.conceptualizeDynamic(t);
 
-        Task task;
         if (c != null) {
 
-            task = c.table(punc).sample(when, when, t, n);
+            long start, end;
+            if (when == ETERNAL) {
+                //start = end = ETERNAL;
+                start = end = n.time();
+            } else {
+//            int dur = n.dur();
+//            start = Tense.dither(when - dur/2, n);
+//            end = Tense.dither(when + dur/2, n);
+                start = end = when;
+            }
+
+            return c.table(punc).sample(start, end, t, n);
+
 //            if (task!=null) {
 //                    byte punc = task.punc();
 //                    //dynamic question answering
@@ -133,8 +136,8 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
 //                        }
 //                    }
 //            }
-
-        } else {
+        }
+//        } else {
 //            //TODO if term supports dynamic truth, then possibly conceptualize and then match as above?
 //
 //            //form a question/quest task for the missing concept
@@ -158,8 +161,8 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
 //            if (Param.DEBUG)
 //                task.log("Tasklinked");
 //            task.pri(link.priElseZero());
-            task = null;
-        }
+
+//        }
 
 
         //TEMPORARY
@@ -167,7 +170,7 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
 //            link.priMax(task.priElseZero()); //boost
 //        }
 
-        return task;
+        return null;
 
     }
 }

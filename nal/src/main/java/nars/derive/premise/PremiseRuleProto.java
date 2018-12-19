@@ -41,7 +41,6 @@ public class PremiseRuleProto extends PremiseRuleSource {
 
         final List<PREDICATE<Derivation>> post = new FasterList<>(4);
 
-        post.add(UnifyTerm.preUnify);
 
 
         PREDICATE<Derivation> conc = AND.the(
@@ -88,12 +87,13 @@ public class PremiseRuleProto extends PremiseRuleSource {
 
 
         PREDICATE<Derivation>[] postpost = new PREDICATE[
-                1 + constraintSet.size() + post.size()
+                2 + constraintSet.size() + post.size()
         ];
 
         int k = 0;
 
         postpost[k++] = this.truthify;
+        postpost[k++] = UnifyTerm.preUnify;
 
         for (PREDICATE p : constraintSet)
             postpost[k++] = p;

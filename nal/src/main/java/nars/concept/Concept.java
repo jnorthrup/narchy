@@ -103,19 +103,19 @@ public interface Concept extends Termed, MetaMap {
         }
     }
 
-    /** the belief table for the punctuation, or which anwers questions/quests for it */
-    default BeliefTable tableAnswering(byte punc) {
-        switch (punc) {
-            case BELIEF:
-            case QUESTION:
-                return beliefs();
-            case GOAL:
-            case QUEST:
-                return goals();
-            default:
-                throw new UnsupportedOperationException("what kind of punctuation is: '" + punc + '\'');
-        }
-    }
+//    /** the belief table for the punctuation, or which anwers questions/quests for it */
+//    default BeliefTable tableAnswering(byte punc) {
+//        switch (punc) {
+//            case BELIEF:
+//            case QUESTION:
+//                return beliefs();
+//            case GOAL:
+//            case QUEST:
+//                return goals();
+//            default:
+//                throw new UnsupportedOperationException("what kind of punctuation is: '" + punc + '\'');
+//        }
+//    }
 
     String printIndent = "  \t";
 

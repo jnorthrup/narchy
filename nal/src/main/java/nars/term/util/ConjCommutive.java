@@ -246,21 +246,28 @@ public enum ConjCommutive {;
                 return false;
             } else {
                 Set<Term> s;
-                boolean sPolarity;
+                boolean pn;
                 int size;
                 if (P <= N) {
-                    sPolarity = true;
+                    pn = true;
                     size = P;
                 } else {
-                    sPolarity = false;
+                    pn = false;
                     size = N;
                 }
                 s = new HashSet(size);
                 for (int i = 0; i < u.length; i++) {
-                    if (pos.get(i)==sPolarity) s.add(u[i]);
+                    if (pos.get(i)==pn) {
+                        Term ui = u[i];
+                        s.add(pn ? ui : ui.unneg());
+                    }
                 }
                 for (int i = 0; i < u.length; i++) {
-                    if (pos.get(i)!=sPolarity) if (s.contains(u[i])) return true;
+                    if (pos.get(i)!=pn) {
+                        Term ui = u[i];
+                        if (s.contains(pn ? ui.unneg() : ui))
+                            return true;
+                    }
                 }
                 return false;
             }

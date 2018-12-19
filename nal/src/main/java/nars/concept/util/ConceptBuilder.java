@@ -193,10 +193,10 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
                     return DynamicTruthModel.DynamicConjTruth.ConjIntersection;
                 break;
 
-            case SECTe:
-                if (validDynamicSubterms(t.subterms()))
-                    return DynamicTruthModel.DynamicSectTruth.SectRoot;
-                break;
+//            case SECTe:
+//                if (validDynamicSubterms(t.subterms()))
+//                    return DynamicTruthModel.DynamicSectTruth.SectRoot;
+//                break;
 
             case NEG:
                 throw new RuntimeException("negation terms can not be conceptualized as something separate from that which they negate");

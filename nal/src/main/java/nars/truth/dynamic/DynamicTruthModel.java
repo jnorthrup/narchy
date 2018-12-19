@@ -233,35 +233,35 @@ abstract public class DynamicTruthModel {
             public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
                 Term common = stmtCommon(subjOrPred, superterm);
                 Term decomposed = stmtCommon(!subjOrPred, superterm);
-                return decomposeImplConj(superterm, start, end, each, common, decomposed, IMPL, false, false);
+                return decomposeImplConj(superterm, start, end, each, common, decomposed, false, false);
             }
         };
 
 
-        public static final DynamicTruthModel SectRoot = new Intersection(false) {
-
-            @Override
-            public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-                assert (superterm.op() == SECTe);
-                return superterm.subterms().AND(s ->
-                        each.accept(s, start, end)
-                );
-            }
-
-            @Override
-            public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
-
-                //TODO test if the superterm will be equivalent to the component terms before reconstructing
-                Term[] t = new Term[components.size()];
-                for (int i = 0, componentsSize = components.size(); i < componentsSize; i++) {
-                    t[i] = components.get(i).term();
-                }
-
-
-                return Op.SECTi.the(t);
-            }
-
-        };
+//        public static final DynamicTruthModel SectRoot = new Intersection(false) {
+//
+//            @Override
+//            public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+//                assert (superterm.op() == SECTe);
+//                return superterm.subterms().AND(s ->
+//                        each.accept(s, start, end)
+//                );
+//            }
+//
+//            @Override
+//            public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
+//
+//                //TODO test if the superterm will be equivalent to the component terms before reconstructing
+//                Term[] t = new Term[components.size()];
+//                for (int i = 0, componentsSize = components.size(); i < componentsSize; i++) {
+//                    t[i] = components.get(i).term();
+//                }
+//
+//
+//                return Op.SECTi.the(t);
+//            }
+//
+//        };
 
         private static class SectImplSubj extends SectIntersection {
             public SectImplSubj() {
@@ -274,7 +274,7 @@ abstract public class DynamicTruthModel {
             }
 
             private static boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term subj) {
-                return decomposeImplConj(superterm, start, end, each, superterm.sub(1), subj, IMPL, true, false);
+                return decomposeImplConj(superterm, start, end, each, superterm.sub(1), subj, true, false);
             }
 
             @Override
@@ -293,7 +293,7 @@ abstract public class DynamicTruthModel {
             }
 
             protected boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term subj) {
-                return decomposeImplConj(superterm, start, end, each, superterm.sub(1), subj, IMPL, true, true);
+                return decomposeImplConj(superterm, start, end, each, superterm.sub(1), subj, true, true);
             }
 
             @Override
@@ -744,48 +744,75 @@ abstract public class DynamicTruthModel {
     }
 
 
-    static public boolean decomposeImplConj(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term common, Term decomposed, Op op, boolean subjOrPred, boolean negateComponents) {
-        int outerDT = superterm.dt();
-        int innerDT = decomposed.dt();
-        int decRange;
-        switch (outerDT) {
-            case DTERNAL:
-                decRange = 0;
-                break;
-            case XTERNAL:
-                decRange = XTERNAL;
-                break;
-            default:
-                decRange = decomposed.eventRange();
-                break;
+    static public boolean decomposeImplConj(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term common, Term decomposed, boolean subjOrPred, boolean negateComponents) {
+
+//        int outerDT = superterm.dt();
+        long is, ie;
+        if (start == ETERNAL) {
+            is = ie = ETERNAL;
+        } else {
+            is = start;
+            ie = end + decomposed.eventRange();// + outerDT;
         }
-        boolean startSpecial = (start == ETERNAL || start == XTERNAL);
-        //TODO use dynamic conjunction decompose which provides factoring
-        Op superOp = superterm.op();
-        return decomposed.eventsWhile((offset, y) -> {
-                    boolean ixTernal = startSpecial || offset == ETERNAL || offset == XTERNAL;
 
-                    long subStart = ixTernal ? start : start + offset;
-                    long subEnd = end;
-                    if (subEnd < subStart) {
-                        //swap
-                        long x = subStart;
-                        subStart = subEnd;
-                        subEnd = x;
-                    }
-
-                    int occ = (outerDT != DTERNAL && decRange != XTERNAL) ? occToDT(decRange - offset + outerDT) : XTERNAL;
-                    Term x = stmtDecompose(op, subjOrPred, y, common,
-                            ixTernal ? DTERNAL : occ, negateComponents, false);
-
-                    if (x == Null || x.unneg().op()!=superOp)
-                        return false;
-
-                    return each.accept(x, subStart, subEnd);
-                }
-                , outerDT == DTERNAL ? ETERNAL : 0, innerDT == 0,
-                innerDT == DTERNAL,
-                innerDT == XTERNAL, 0);
+        return DynamicConjTruth.ConjIntersection.components(decomposed, is, ie, (what,s,e)->{
+            //TODO fix
+            int innerDT = (s == ETERNAL) ?  DTERNAL : Tense.occToDT(
+                    //(e-s)-outerDT
+                    e-s
+            );
+            Term i;
+            if (subjOrPred) {
+                if (negateComponents)
+                    what = what.neg();
+                i = IMPL.the(what, innerDT, common);
+            } else {
+                i = IMPL.the(common, innerDT, what);
+                if (negateComponents)
+                    i = i.neg();
+            }
+            return each.accept(i, s, e);
+        });
+//        int innerDT = decomposed.dt();
+//        int decRange;
+//        switch (outerDT) {
+//            case DTERNAL:
+//                decRange = 0;
+//                break;
+//            case XTERNAL:
+//                decRange = XTERNAL;
+//                break;
+//            default:
+//                decRange = decomposed.eventRange();
+//                break;
+//        }
+//        boolean startSpecial = (start == ETERNAL || start == XTERNAL);
+//        //TODO use dynamic conjunction decompose which provides factoring
+//        Op superOp = superterm.op();
+//        return decomposed.eventsWhile((offset, y) -> {
+//                    boolean ixTernal = startSpecial || offset == ETERNAL || offset == XTERNAL;
+//
+//                    long subStart = ixTernal ? start : start + offset;
+//                    long subEnd = end;
+//                    if (subEnd < subStart) {
+//                        //swap
+//                        long x = subStart;
+//                        subStart = subEnd;
+//                        subEnd = x;
+//                    }
+//
+//                    int occ = (outerDT != DTERNAL && decRange != XTERNAL) ? occToDT(decRange - offset + outerDT) : XTERNAL;
+//                    Term x = stmtDecompose(op, subjOrPred, y, common,
+//                            ixTernal ? DTERNAL : occ, negateComponents, false);
+//
+//                    if (x == Null || x.unneg().op()!=superOp)
+//                        return false;
+//
+//                    return each.accept(x, subStart, subEnd);
+//                }
+//                , outerDT == DTERNAL ? ETERNAL : 0, innerDT == 0,
+//                innerDT == DTERNAL,
+//                innerDT == XTERNAL, 0);
     }
 
     public static final DynamicTruthModel ImageDynamicTruthModel = new DynamicTruthModel() {

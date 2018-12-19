@@ -1987,6 +1987,9 @@ public class ConjTest {
     @Test void testSequenceAutoFactor() {
         Term xyz = $$("((x &| y) &&+2 (x &| z))");
         assertEq("((y &&+2 z)&&x)", xyz);
+
+        assertEquals( $$("(y &&+2 z)").eventRange(), xyz.eventRange());
+        assertEquals(2, xyz.eventRange());
     }
 
 //    @Test void testConjEternalConj2() {

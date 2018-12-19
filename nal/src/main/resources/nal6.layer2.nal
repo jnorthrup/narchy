@@ -27,9 +27,11 @@
       //(P --> Y), (&&,(P-->X),A..+),neq(X,Y) |- unisubst((&&,(P-->X),A..+), X,Y,strict), (Belief:Deduction)
         //  (P --> Y), (&&,--(P-->X),A..+),neq(X,Y) |- unisubst((&&,--(P-->X),A..+), X,Y,strict), (Belief:DeductionN)
 
+//      Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- unisubst(((&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction)
       //(P --> Y), ((&&,(P-->X),A..+) ==> Z),neq(X,Y) |- unisubst(((&&,(P-->X),A..+) ==> Z), X,Y,strict), (Belief:Deduction)
           //(P --> Y), ((&&,--(P-->X),A..+) ==> Z),neq(X,Y) |- unisubst(((&&,--(P-->X),A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
 
+//      Y, (Z ==> (&&,X,A..+)),neq(X,Y) |- unisubst((Z ==> (&&,X,A..+)), X,Y,strict), (Belief:Deduction)
       //(P --> Y), (Z ==> (&&,(P-->X),A..+)),neq(X,Y) |- unisubst((Z ==> (&&,(P-->X),A..+)), X,Y,strict), (Belief:Deduction)
         //(P --> Y), (Z ==> (&&,--(P-->X),A..+)),neq(X,Y) |- unisubst((Z ==> (&&,--(P-->X),A..+)), X,Y,strict), (Belief:DeductionN)
 

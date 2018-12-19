@@ -320,8 +320,14 @@ public abstract class Unify extends Versioning implements Subst {
         @Override
         public Versioned<Term> set(Term next) {
             @Nullable Term existing = get();
-            if (existing!=null)
-                return existing.equals(next) ? this : null;
+            if (existing!=null) {
+                if
+                //(existing.equals(next)))
+                (existing==next || existing.unify(next, Unify.this))
+                    return this;
+                else
+                    return null;
+            }
             if (valid(next) && addWithoutResize(next)) {
                 if (context.add(this))
                     return this;
@@ -339,6 +345,7 @@ public abstract class Unify extends Versioning implements Subst {
         }
 
         boolean constrain(UnifyConstraint c) {
+            assert(size==0);
             constraint = c;
             return Unify.this.add(off);
         }

@@ -344,22 +344,38 @@ class DynamicConjTest {
             assertNotNull(t);
             assertEquals(1f, t.freq(), 0.05f);
             assertEquals(0.81f, t.conf(), 0.4f);
-            assertEq("(x && (y &&+2 z))", t.term());
+            assertEq("((y &&+2 z)&&x)", t.term());
         }
         {
             Term xyz = $("((x &| y) &&+2 (x &| z))");
-            assertEq("(x && (y &&+2 z))", xyz);
+            assertEq("((y &&+2 z)&&x)", xyz);
             Task t = xtable.answer(0, 0, xyz, n);
             assertEquals(1f, t.freq(), 0.05f);
-            assertEquals(0.81f, t.conf(), 0.15f);
+            assertEquals(0.81f, t.conf(), 0.4f);
         }
         {
             Task t = xtable.answer(0, 0, $("((x && y) &&+2 (x && z))"), n);
             assertEquals(1f, t.freq(), 0.05f);
-            assertEquals(0.81f, t.conf(), 0.15f);
+            assertEquals(0.81f, t.conf(), 0.4f);
         }
 
 
+    }
+
+
+    @Test
+    void testDynamicConjunctionFactoredInImpl() throws Narsese.NarseseException {
+        NAR n = NARS.shell();
+        n.believe($("(x==>a)"), ETERNAL);
+        n.believe($("(y ==>+2 a)"), 0);
+        n.believe($("(z =|> a)"), 2);
+        n.time.dur(8);
+
+        {
+            Term xyz = $("((x && (y &&+2 z))=|>a)");
+            Task t = n.answer(xyz, BELIEF, 0);
+            assertEquals(xyz, t.term());
+        }
     }
 
 //    @Test public void testDynamicIntersectionInvalidCommon() throws Narsese.NarseseException {
