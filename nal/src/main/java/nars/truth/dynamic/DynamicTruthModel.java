@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
+import static nars.term.atom.Bool.False;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
 
 /**
@@ -48,7 +50,9 @@ abstract public class DynamicTruthModel {
         DynStampTruth d = new DynStampTruth(0); //TODO pool?
 
 
-        Predicate<Task> filter = Answer.filter(superFilter, d::doesntOverlap);
+        Predicate<Task> filter =
+            superFilter;
+            //Answer.filter(superFilter, d::doesntOverlap);
 
         //TODO expand the callback interface allowing models more specific control over matching/answering/sampling subtasks
 
@@ -81,7 +85,7 @@ abstract public class DynamicTruthModel {
         }) ? d : null;
     }
 
-    protected abstract boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each);
+    public abstract boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each);
 
     /**
      * used to reconstruct a dynamic term from some or all components
@@ -101,7 +105,7 @@ abstract public class DynamicTruthModel {
     }
 
     @FunctionalInterface
-    interface ObjectLongLongPredicate<T> {
+    public interface ObjectLongLongPredicate<T> {
         boolean accept(T object, long start, long end);
     }
 
@@ -227,7 +231,7 @@ abstract public class DynamicTruthModel {
         public static final DynamicTruthModel SectRoot = new Intersection(false) {
 
             @Override
-            protected boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+            public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
                 assert (superterm.op() == SECTe);
                 return superterm.subterms().AND(s ->
                         each.accept(s, start, end)
@@ -388,13 +392,26 @@ abstract public class DynamicTruthModel {
             public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
                 int superDT = superterm.dt();
 
+                Subterms subterms = superterm.subterms();
 
-                boolean xternal = superDT == XTERNAL;
                 boolean dternal = superDT == DTERNAL;
+                boolean xternal = superDT == XTERNAL;
+                if ((dternal || xternal) && subterms.subs() == 2 && subterms.subs(x->x.eventRange() > 0)==1) {
+                    //distribute factored conjunction
+                    Term factor = subterms.subFirst(x->x.eventRange()==0);
+                    Term sequence = subterms.subFirst(x->x.eventRange()>0);
+                    return components(sequence, start, end, (event, whenStart, whenEnd)->{
+                        Term eventDistributed = CONJ.the(superDT, event, factor);
+                        if (eventDistributed == False || eventDistributed == Null)
+                            return false;
+                        return each.accept(eventDistributed, whenStart, whenEnd);
+                    });
+                }
+
                 boolean parallel = superDT == 0;
                 if (dternal || xternal || parallel) {
 
-                    Subterms subterms = superterm.subterms();
+
                     if (subterms.subs() == 2) {
 
                         Term a = subterms.sub(0), b = subterms.sub(1);
@@ -508,7 +525,7 @@ abstract public class DynamicTruthModel {
         }
 
         if (!y.op().conceptualizable)
-            return Bool.Null; //throw new WTF();
+            return Null; //throw new WTF();
 
         return y.negIf(outerNegate);
 
@@ -629,7 +646,7 @@ abstract public class DynamicTruthModel {
             }
 
             sect = c.term();
-            if (sect == Bool.Null)
+            if (sect == Null)
                 return null; //but allow other Bool's
 
             long cs = c.shift();
@@ -667,7 +684,7 @@ abstract public class DynamicTruthModel {
     }
 
 
-    abstract static class Intersection extends DynamicTruthModel {
+    abstract public static class Intersection extends DynamicTruthModel {
 
         /**
          * true = union, false = intersection
@@ -747,7 +764,7 @@ abstract public class DynamicTruthModel {
                     Term x = stmtDecompose(op, subjOrPred, y, common,
                             ixTernal ? DTERNAL : occ, negateComponents, false);
 
-                    if (x == Bool.Null)
+                    if (x == Null)
                         return false;
 
                     return each.accept(x, subStart, subEnd);
@@ -770,7 +787,7 @@ abstract public class DynamicTruthModel {
         }
 
         @Override
-        protected boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
             throw new UnsupportedOperationException();
         }
 

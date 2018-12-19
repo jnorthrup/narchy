@@ -83,12 +83,6 @@ public class Answer implements AutoCloseable {
     }
 
 
-    @Deprecated
-    public static Answer relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
-        return relevance(beliefOrQuestion,
-                beliefOrQuestion ? TASK_LIMIT_DEFAULT : 1, start, end, template, filter, nar);
-    }
-
     /**
      * for belief or goals (not questions / quests
      */

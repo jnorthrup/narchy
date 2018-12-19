@@ -1,5 +1,6 @@
 package nars.concept.dynamic;
 
+import jcog.data.list.FasterList;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -9,11 +10,15 @@ import nars.table.dynamic.DynamicTruthTable;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.Truth;
+import nars.truth.dynamic.DynamicTruthModel;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -215,8 +220,8 @@ class DynamicConjTest {
     @Test
     void testDynamicConjunction2Temporal() throws Narsese.NarseseException {
         NAR n = NARS.shell();
-        n.believe($("(x)"), (long) 0);
-        n.believe($("(y)"), (long) 4);
+        n.believe($("(x)"), 0);
+        n.believe($("(y)"), 4);
         n.time.dur(8);
         TaskConcept cc = (TaskConcept) n.conceptualize($("((x) && (y))"));
 
@@ -312,6 +317,48 @@ class DynamicConjTest {
             assertTrue(((BeliefTables)c.beliefs()).tableFirst(DynamicTruthTable.class)!=null);
             assertTrue(((BeliefTables)c.goals()).tableFirst(DynamicTruthTable.class)!=null);
         }
+
+    }
+
+    @Test
+    void testDynamicConjunctionFactored() throws Narsese.NarseseException {
+        NAR n = NARS.shell();
+        n.believe($("x"), ETERNAL);
+        n.believe($("y"), 0);
+        n.believe($("z"), 2);
+        n.time.dur(8);
+        TaskConcept cc = (TaskConcept) n.conceptualize($("(&&, x, y, z)"));
+
+        BeliefTable xtable = cc.beliefs();
+
+        {
+            Term xyz = $("(x && (y &&+2 z))");
+            List<String> components = new FasterList();
+            DynamicTruthModel.DynamicConjTruth.ConjIntersection.components(xyz,0, 0,
+                    (what,whenStart,whenEnd)->{
+                        components.add(what + " @ " + whenStart + ".." + whenEnd); return true;
+            });
+            assertEquals(2, components.size());
+
+            Task t = xtable.answer(0, 0, xyz, n);
+            assertNotNull(t);
+            assertEquals(1f, t.freq(), 0.05f);
+            assertEquals(0.81f, t.conf(), 0.4f);
+            assertEq("(x && (y &&+2 z))", t.term());
+        }
+        {
+            Term xyz = $("((x &| y) &&+2 (x &| z))");
+            assertEq("(x && (y &&+2 z))", xyz);
+            Task t = xtable.answer(0, 0, xyz, n);
+            assertEquals(1f, t.freq(), 0.05f);
+            assertEquals(0.81f, t.conf(), 0.15f);
+        }
+        {
+            Task t = xtable.answer(0, 0, $("((x && y) &&+2 (x && z))"), n);
+            assertEquals(1f, t.freq(), 0.05f);
+            assertEquals(0.81f, t.conf(), 0.15f);
+        }
+
 
     }
 

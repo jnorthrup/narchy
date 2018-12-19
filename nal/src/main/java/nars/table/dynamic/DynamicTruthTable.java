@@ -39,7 +39,7 @@ public final class DynamicTruthTable extends DynamicTaskTable {
             t.template(term);
 
         Task tt = taskDynamic(t);
-        if (tt!=null)
+        if (tt != null)
             t.tryAccept(tt);
     }
 
@@ -61,20 +61,19 @@ public final class DynamicTruthTable extends DynamicTaskTable {
         long s, e;
 
 
+        int eternals = yy.count(Task::isEternal);
+        if (eternals == yy.size()) {
+            s = ETERNAL;
+            e = ETERNAL;
+        } else {
+            if (eternals == 0) {
+                s = yy.minValue(Stamp::start);
+                e = yy.maxValue(Stamp::end);
 
-            int eternals = yy.count(Task::isEternal);
-            if (eternals == yy.size()) {
-                s = ETERNAL;
-                e = ETERNAL;
             } else {
-                if (eternals == 0) {
-                    s = yy.minValue(Stamp::start);
-                    e = yy.maxValue(Stamp::end);
-
-                } else {
-                    s = yy.minValue(t -> t.start() != ETERNAL ? t.start() : TIMELESS);
-                    e = yy.maxValue(Stamp::end);
-                }
+                s = yy.minValue(t -> t.start() != ETERNAL ? t.start() : TIMELESS);
+                e = yy.maxValue(Stamp::end);
+            }
 
 //                //trim
 //                if (a.time.start!=ETERNAL && Longerval.intersects(s, e, a.time.start, a.time.end)) {
@@ -83,12 +82,12 @@ public final class DynamicTruthTable extends DynamicTaskTable {
 //                        e = Math.min(a.time.end, e);
 //                }
 
-            }
+        }
 
         float eviFactor;
         if (model == ConjIntersection) {
-            if (s!=ETERNAL)
-                e = s + (yy.minValue(t -> t.isEternal() ? 1 : t.range())-1);
+            if (s != ETERNAL)
+                e = s + (yy.minValue(t -> t.isEternal() ? 1 : t.range()) - 1);
             eviFactor = 1;
         } else {
 
@@ -110,7 +109,7 @@ public final class DynamicTruthTable extends DynamicTaskTable {
         }
 
         Truth t = model.apply(yy, nar);
-        t = (t!=null && eviFactor!=1) ? PreciseTruth.byEvi(t.freq(), t.evi() * eviFactor) : t;
+        t = (t != null && eviFactor != 1) ? PreciseTruth.byEvi(t.freq(), t.evi() * eviFactor) : t;
         if (t == null)
             return null;
 
@@ -121,11 +120,11 @@ public final class DynamicTruthTable extends DynamicTaskTable {
                 throw new WTF("could not reconstruct: " + template + ' ' + yy);
             return null;
         }
-        if (reconstruct!=template && reconstruct.equals(template))
+        if (reconstruct != template && reconstruct.equals(template))
             reconstruct = template; //use original instance
 
         Task y = yy.task(reconstruct, t, yy::stamp, beliefOrGoal, s, e, nar);
-        if (y!=null) {
+        if (y != null && eviFactor != 1.0) {
             y.priMult(eviFactor);
         }
         return y;

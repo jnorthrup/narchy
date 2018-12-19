@@ -45,7 +45,8 @@ public class DynStampTruth extends DynTruth {
         return true;
     }
     public boolean doesntOverlap(Task t) {
-        return size ==0 || doesntOverlap(t.stamp());
+        return size ==0 ||
+                doesntOverlap(t.stamp());
     }
 
     public boolean doesntOverlap(long[] stamp) {

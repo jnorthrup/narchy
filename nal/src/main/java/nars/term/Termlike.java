@@ -4,6 +4,7 @@ import nars.Op;
 import nars.term.atom.Bool;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -102,6 +103,19 @@ public interface Termlike {
     default int subs(Predicate<Term> match) {
         return intifyShallow((c, sub) -> match.test(sub) ? c + 1 : c, 0);
     }
+
+    /** return the first subterm matching the predicate, or null if none match */
+    @Nullable
+    default Term subFirst(Predicate<Term> match) {
+        int s = subs();
+        for (int i = 0; i < s; i++) {
+            Term si = sub(i);
+            if (match.test(si))
+                return si;
+        }
+        return null;
+    }
+
     /**
      * counts subterms matching the supplied op
      */

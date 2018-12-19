@@ -15,12 +15,18 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.time.Tense;
+import org.eclipse.collections.api.RichIterable;
+import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
+import org.eclipse.collections.api.block.procedure.primitive.ByteProcedure;
 import org.eclipse.collections.api.iterator.LongIterator;
+import org.eclipse.collections.api.iterator.MutableByteIterator;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
+import org.eclipse.collections.impl.set.mutable.primitive.ByteHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.ImmutableBitmapDataProvider;
 import org.roaringbitmap.PeekableIntIterator;
@@ -51,7 +57,7 @@ public class Conj extends ByteAnonMap {
     public static final int ROARING_UPGRADE_THRESH = 8;
 
 
-    public final LongObjectHashMap event;
+    public final LongObjectHashMap<Object> event;
 
 
     /**
@@ -195,7 +201,7 @@ public class Conj extends ByteAnonMap {
         }
 
 
-        boolean removed = c.remove(event, targetTime);
+        boolean removed = c.remove(targetTime, event);
         if (!removed) {
             return false;
         }
@@ -407,7 +413,7 @@ public class Conj extends ByteAnonMap {
             boolean[] removed = new boolean[]{false};
             exclude.eventsWhile((when, what) -> {
                 //removed[0] |= x.remove(what, when);
-                removed[0] |= atExactTime ? x.remove(what, when) : x.removeAll(what);
+                removed[0] |= atExactTime ? x.remove(when, what) : x.removeAll(what);
                 return true;
             }, idt == DTERNAL ? ETERNAL : 0, true, exclude.dt() == DTERNAL, false, 0);
 
@@ -421,7 +427,7 @@ public class Conj extends ByteAnonMap {
             long[] events = event.keySet().toArray(); //create an array because removal will interrupt direct iteration of the keySet
             boolean removed = false;
             for (long e : events) {
-                removed |= remove(what, e);
+                removed |= remove(e, what);
             }
             return removed;
         }
@@ -609,28 +615,28 @@ public class Conj extends ByteAnonMap {
 
         if (x instanceof Compound && x.op() == CONJ) {
             int xdt = x.dt();
-//
-//            if (xdt == DTERNAL) {
-//                if (at == ETERNAL) {
-//                    Subterms tt = x.subterms();
-//                    if (tt.hasAny(CONJ)) {
-//                        //add any contained sequences first
-//                        return tt.AND((ttt) ->
-//                                !(ttt.op() == CONJ && !Tense.dtSpecial(ttt.dt())) || add(0, ttt)
-//                        ) && tt.AND((ttt) ->
-//                                (ttt.op() == CONJ && !Tense.dtSpecial(ttt.dt())) || add(ETERNAL, ttt)
-//                        );
-//                    }
-//
-//                    //flatten inner conjunctions
-//
-//                    MutableSet<Term> ee = new UnifiedSet(tt.subs());
-//                    for (Term ex : tt)
-//                        flattenInto(ee, ex, DTERNAL);
-//
-//                    return ee.allSatisfy((Term eee) -> add(ETERNAL, eee));
-//                }
-//            }
+
+            if (xdt == DTERNAL) {
+                if (at == ETERNAL) {
+                    Subterms tt = x.subterms();
+                    if (tt.hasAny(CONJ)) {
+                        //add any contained sequences first
+                        return tt.AND((ttt) ->
+                                !(ttt.op() == CONJ && !Tense.dtSpecial(ttt.dt())) || add(0, ttt)
+                        ) && tt.AND((ttt) ->
+                                (ttt.op() == CONJ && !Tense.dtSpecial(ttt.dt())) || add(ETERNAL, ttt)
+                        );
+                    }
+
+                    //flatten inner conjunctions
+
+                    MutableSet<Term> ee = new UnifiedSet(tt.subs());
+                    for (Term ex : tt)
+                        flattenInto(ee, ex, DTERNAL);
+
+                    return ee.allSatisfy((Term eee) -> add(ETERNAL, eee));
+                }
+            }
 
             if (at == ETERNAL && (xdt != 0) && (xdt != DTERNAL)) {
 //                if (cdt == DTERNAL) {
@@ -727,6 +733,7 @@ public class Conj extends ByteAnonMap {
         }
 
         byte id = add(polarity ? x : x.unneg());
+
         if (!polarity) id = (byte) -id;
 
         switch (addFilter(at, x, id)) {
@@ -738,6 +745,16 @@ public class Conj extends ByteAnonMap {
                 return false; //reject and fail
         }
 
+        return addEvent(at, id, x);
+    }
+
+    private boolean addEvent(long at, byte id) {
+        Term xx = unindex(id);
+        return addEvent(at, id, xx);
+    }
+
+
+    private boolean addEvent(long at, byte id, Term x) {
 
         if (at != ETERNAL) {
             //remove any existing eternals of this event for this time being added
@@ -1162,6 +1179,14 @@ public class Conj extends ByteAnonMap {
         return termToId.getIfAbsent(t.unneg(), (byte) -1);
     }
 
+    private Term unindex(byte id) {
+        Term x = idToTerm.get(Math.abs(id)-1);
+        if (x == null)
+            throw new NullPointerException();
+        return x.negIf(id < 0);
+    }
+
+
     private byte get(Term x) {
         boolean neg;
         if (neg = (x.op() == NEG))
@@ -1176,13 +1201,13 @@ public class Conj extends ByteAnonMap {
         return index;
     }
 
-    public boolean remove(Term t, long at) {
+    public boolean remove(long at, Term t) {
 
         byte i = get(t);
-        return remove(i, at);
+        return remove(at, i);
     }
 
-    public boolean remove(byte what, long at) {
+    public boolean remove(long at, byte what) {
         if (what == Byte.MIN_VALUE)
             return false;
 
@@ -1315,10 +1340,11 @@ public class Conj extends ByteAnonMap {
             return term;
 
 
-        int numTimes = event.size();
-        if (numTimes == 0)
+        int numEvents = event.size();
+        if (numEvents == 0)
             return True;
 
+        factor();
 
         IntPredicate validator = null;
         Object eternalWhat = event.get(ETERNAL);
@@ -1337,7 +1363,7 @@ public class Conj extends ByteAnonMap {
                 }
             }
 
-            if (numTimes > 1) {
+            if (numEvents > 1) {
 
 
                 if (eternal.op() == CONJ) {
@@ -1359,11 +1385,11 @@ public class Conj extends ByteAnonMap {
         }
 
         Term ci;
-        if (eternal != null && numTimes == 1) {
+        if (eternal != null && numEvents == 1) {
             ci = eternal;
         } else {
             FasterList<LongObjectPair<Term>> temporals = null;
-            for (LongObjectPair<Term> next : (Iterable<LongObjectPair<Term>>) event.keyValuesView()) {
+            for (LongObjectPair next : event.keyValuesView()) {
                 long when = next.getOne();
                 if (when == ETERNAL)
                     continue;
@@ -1492,6 +1518,108 @@ public class Conj extends ByteAnonMap {
         return ci;
     }
 
+    /** factor common temporal event components to an ETERNAL component */
+    private void factor() {
+
+        RichIterable<LongObjectPair<Object>> events = event.keyValuesView();
+        int numTemporalCompoundEvents = events.count(l -> l.getOne()!=ETERNAL && eventCount(l.getTwo())>1);
+        if (numTemporalCompoundEvents <= 1)
+            return;
+
+
+
+
+        ByteHashSet common = new ByteHashSet();
+        //TODO if this is iterated in order of least # of events at each time first, it is optimal
+        if (!events.allSatisfy((whenWhat)->{
+            long when = whenWhat.getOne();
+            if (when ==ETERNAL)
+                return true;
+            Object what = whenWhat.getTwo();
+            if (what instanceof byte[]) {
+                byte[] bWhat = (byte[])what;
+                if (common.isEmpty()) {
+                    //add the first set of events
+                    events(bWhat, common::add);
+                } else {
+                    if (common.removeIf(c -> !eventsContains(bWhat, c))) {
+                        if (common.isEmpty())
+                            return false; //done //need to keep iterator
+                    }
+                }
+
+                return true;
+            } else {
+                throw new TODO();
+            }
+        }))
+            return;
+
+        assert(!common.isEmpty());
+
+        long[] eventTimes = new long[numTemporalCompoundEvents];
+        final int[] e = {0};
+        final int[] maxSlotEvents = {0};
+        if (events.anySatisfy((whenWhat)->{
+            long when = whenWhat.getOne();
+            if (when ==ETERNAL)
+                return true;
+            Object what = whenWhat.getTwo();
+            eventTimes[e[0]++] = when;
+            if (what instanceof byte[]) {
+                if (eventsAND(((byte[])what), common::contains))
+                    return true; //all would be eliminated at this time slot
+            }
+            return false;
+        }))
+            return;
+
+        int commonCount = common.size();
+        switch (commonCount) {
+            case 0: //nothing in common
+                return;
+            default:
+                //verify that no event time is completely eliminated by the common terms
+                if (maxSlotEvents[0] == commonCount)
+                    return;
+
+                MutableByteIterator ii = common.byteIterator();
+                while (ii.hasNext()) {
+                    byte f = ii.next();
+                    if (addEvent(ETERNAL, f)) {
+                        for (long ee : eventTimes) {
+                            if (!remove(ee, f))
+                                throw new WTF();
+                        }
+                    } else
+                        throw new WTF();
+                }
+                break;
+        }
+    }
+
+    private static boolean eventsContains(byte[] events, byte b) {
+        return ArrayUtils.contains(events, b);
+    }
+
+    private static void events(byte[] events, ByteProcedure each) {
+        for (byte e : events) {
+            if (e!=0)
+                each.value(e);
+            else
+                break; //null-terminator
+        }
+    }
+    private static boolean eventsAND(byte[] events, BytePredicate each) {
+        for (byte e : events) {
+            if (e!=0)
+                if (!each.accept(e))
+                    return false;
+            else
+                break; //null-terminator
+        }
+        return true;
+    }
     private static Term flatten(Term eternal, Subterms es, int fdt) {
         if (es.OR(x -> x.op() == CONJ && x.dt() == fdt)) {
             TreeSet<Term> ee = new TreeSet();

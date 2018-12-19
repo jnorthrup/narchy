@@ -248,15 +248,15 @@ public class ConjTest {
 
     @Test
     void testConjComplexAddRemove() {
-        Term x = $$("(( ( ((_1-->_2),_3) &| (--,_4)) &| (_5 &| _6)) &&+8 ( (((_1-->_2),_3) &| (--,_4)) &| (_5 &|_6))))");
+        Term x = $$("(( ( (x,_3) &| (--,_4)) &| (_5 &| _6)) &&+8 ( ((x,_3) &| (--,_4)) &| (_5 &|_6))))");
         Conj c = Conj.from(x);
         assertEquals(x, c.term());
-        boolean removedLast = c.remove($$("((_1-->_2),_3)"), c.event.keysView().max());
+        boolean removedLast = c.remove(c.event.keysView().max(), $$("(x,_3)"));
         assertTrue(removedLast);
         assertEquals(
-                "((&|,((_1-->_2),_3),(--,_4),_5,_6) &&+8 (&|,(--,_4),_5,_6))",
+                "((&|,(x,_3),(--,_4),_5,_6) &&+8 (&|,(--,_4),_5,_6))",
                 c.term().toString());
-        boolean removedFirst = c.remove($$("((_1-->_2),_3)"), c.event.keysView().min());
+        boolean removedFirst = c.remove(c.event.keysView().min(), $$("(x,_3)"));
         assertTrue(removedFirst);
         assertEquals(
                 "((&|,(--,_4),_5,_6) &&+8 (&|,(--,_4),_5,_6))",
@@ -952,12 +952,12 @@ public class ConjTest {
         assertEquals("[0:a, 0:b]",
                 ab.eventList().toString());
 
-        Term abc = $.$("((a&|b) &&+5 (b&|c))");
-        assertEquals(
-
-
-                "[0:a, 0:b, 5:b, 5:c]",
-                abc.eventList().toString());
+//        Term abc = $.$("((a&|b) &&+5 (b&|c))");
+//        assertEquals(
+//
+//
+//                "[0:a, 0:b, 5:b, 5:c]",
+//                abc.eventList().toString());
 
     }
 
@@ -1982,6 +1982,11 @@ public class ConjTest {
             c.add(ETERNAL, $$("x"));
             assertEq("(x&&y)", c.term());
         }
+    }
+
+    @Test void testSequenceAutoFactor() {
+        Term xyz = $$("((x &| y) &&+2 (x &| z))");
+        assertEq("((y &&+2 z)&&x)", xyz);
     }
 
 //    @Test void testConjEternalConj2() {

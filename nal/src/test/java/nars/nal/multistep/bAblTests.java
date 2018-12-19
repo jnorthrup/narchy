@@ -57,7 +57,7 @@ class bAblTests extends NALTest {
                 .inputAt(2,"inside(football,?where)?")
                 .mustOutput( 400,
                         "inside(football,playground)", BELIEF,
-                        1f, 1f, 0.5f, 0.99f, 3);
+                        1f, 1f, 0.35f, 0.99f, 3);
 
     }
 
