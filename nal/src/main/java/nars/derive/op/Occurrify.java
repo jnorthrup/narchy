@@ -777,9 +777,9 @@ public class Occurrify extends TimeGraph {
                 Term y;
                 long earlyStart = Math.min(tTime, bTime);
                 if (tTime == earlyStart)
-                    y = Conj.the(tt, 0, bb, Tense.dither(bTime - tTime, d.nar));
+                    y = Conj.sequence(tt, 0, bb, Tense.dither(bTime - tTime, d.nar));
                 else
-                    y = Conj.the(bb, 0, tt, Tense.dither(tTime - bTime, d.nar));
+                    y = Conj.sequence(bb, 0, tt, Tense.dither(tTime - bTime, d.nar));
 
                 long range = Math.max(Math.min(d._task.range(), d._belief.range()) - 1, 0);
 

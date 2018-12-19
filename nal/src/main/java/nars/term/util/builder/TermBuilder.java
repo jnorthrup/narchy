@@ -374,8 +374,8 @@ public abstract class TermBuilder {
                     throw new TermException("temporal conjunction with n!=2 subterms");
 
                 return (dt >= 0) ?
-                        Conj.the(u[0], 0, u[1], +dt + u[0].eventRange()) :
-                        Conj.the(u[1], 0, u[0], -dt + u[1].eventRange());
+                        Conj.sequence(u[0], 0, u[1], +dt + u[0].eventRange()) :
+                        Conj.sequence(u[1], 0, u[0], -dt + u[1].eventRange());
             }
         }
 

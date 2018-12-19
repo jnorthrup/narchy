@@ -48,9 +48,10 @@ public class PatrickTests extends NALTest {
                 .ask( "REPRESENT({cat,eats},?1)")
 
                 //.mustBelieve(2000, "REPRESENT((eats,cat),(EATING,ANIMAL))", 0.9f, 1f, 0.15f, 0.99f);
-                .mustBelieve(200, "REPRESENT({cat,eats},{ANIMAL,EATING})", 0.9f, 1f, 0.15f, 0.99f);
+                .mustBelieve(400, "REPRESENT({cat,eats},{ANIMAL,EATING})", 0.9f, 1f, 0.15f, 0.99f);
 
     }
+
     @Test
     void testExample1_NoImages() throws Narsese.NarseseException {
 

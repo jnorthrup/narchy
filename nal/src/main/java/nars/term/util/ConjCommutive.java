@@ -171,9 +171,8 @@ public enum ConjCommutive {;
 
             Conj c = new Conj(u.length);
             long sdt = dt == DTERNAL ? ETERNAL : 0;
-            for (int i = 0, uLength = u.length; i < uLength; i++) {
-                Term x = u[i];
-                if (!c.add(sdt, x))
+            for (Term term : u) {
+                if (!c.add(sdt, term))
                     break;
             }
             return c.term();

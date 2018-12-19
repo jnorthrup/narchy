@@ -666,7 +666,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      */
     private boolean solveConj2DT(Predicate<Event> each, Event a, int dt, Event b) {
 
-        long ddt = dt(dt);
+        int ddt = dt(dt);
 
         if (ddt != DTERNAL && ddt != 0) {
             assert (ddt != XTERNAL);
@@ -679,10 +679,14 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             }
         }
 
-        Term c = Conj.the(a.id, 0, b.id, (ddt == DTERNAL ? ETERNAL /* HACK */ : ddt));
-        if (c.op() != CONJ && ((ddt == 0) && (dt != 0))) { //undo parallel-ization if the collapse caused an invalid term
-            c = Conj.the(a.id, 0, b.id, (dt == DTERNAL ? ETERNAL /* HACK */ : dt));
-        }
+        Term c =
+                (ddt==DTERNAL || ddt == 0) ?
+                    CONJ.the(ddt, a.id, b.id) :
+                    Conj.sequence(a.id, 0, b.id, (ddt == DTERNAL ? ETERNAL /* HACK */ : ddt));
+
+//        if (c.op() != CONJ && ((ddt == 0) && (dt != 0))) { //undo parallel-ization if the collapse caused an invalid term
+//            c = Conj.the(a.id, 0, b.id, (dt == DTERNAL ? ETERNAL /* HACK */ : dt));
+//        }
         if (termsEvent(c)) {
             return solveOccurrence(c, a.start(), durMerge(a, b), each);
         }
@@ -815,15 +819,15 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                         if (x0.equals(x1)) {
                             //order doesnt matter
-                            return Conj.the(x0, 0, x0, dt);
+                            return Conj.sequence(x0, 0, x0, dt);
                         }
 
                         Term pStart = pathStart(path).id().id;
                         //TODO verify pathEnd?
                         if (pStart.equals(x0)) {
-                            return Conj.the(x0, 0, x1, dt);
+                            return Conj.sequence(x0, 0, x1, dt);
                         } else if (pStart.equals(x1)) {
-                            return Conj.the(x1, 0, x0, -dt);
+                            return Conj.sequence(x1, 0, x0, -dt);
                         } else {
                             return Bool.Null; //TODO
                         }
@@ -840,7 +844,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     Term xEarly = x.sub(early);
                     Term xLate = x.sub(1 - early);
 
-                    return Conj.the(
+                    return Conj.sequence(
                             xEarly, 0,
                             xLate, dt);
                 }

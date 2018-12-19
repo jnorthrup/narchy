@@ -56,13 +56,13 @@ public class ConjTest {
         //assertEq("(x =|> (a &| b))","(x ==> (a &| b))");
         //assertEq("(x =|> (a &&+1 b))","(x ==> (a &&+1 b))");
     }
-
-    //WhenInXTERNAL?
-    @Test
-    void testParallelizeNegatedDTERNALWhenInSequence() {
-        assertEq("((--,(a&|b)) &&+1 c)", "(--(a&&b) &&+1 c)");
-        assertEq("(c &&+1 (--,(a&|b)))", "(c &&+1 --(a&&b))");
-    }
+//
+//    //WhenInXTERNAL?
+//    @Test
+//    void testParallelizeNegatedDTERNALWhenInSequence() {
+//        assertEq("((--,(a&|b)) &&+1 c)", "(--(a&&b) &&+1 c)");
+//        assertEq("(c &&+1 (--,(a&|b)))", "(c &&+1 --(a&&b))");
+//    }
 
 
     @Test void testDternalize() {
@@ -146,6 +146,7 @@ public class ConjTest {
         Conj c = new Conj();
         c.add(ETERNAL, $$("(&&,a,b,c,d,e,f,g,h)"));
         boolean added = c.add(1, a.neg());
+        assertFalse(added);
         assertEquals(False, c.term());
     }
 
@@ -171,6 +172,7 @@ public class ConjTest {
         Conj c = new Conj();
         c.add(ETERNAL, x);
         boolean added = c.add(1, x.neg());
+        assertFalse(added);
         assertEquals(False, c.term());
     }
 
@@ -515,7 +517,7 @@ public class ConjTest {
 
         assertEq("((--,(y&|z))&&x)", "(x&&--(y &| z))");
 
-        assertEq("((--,(y&|z))&|x)", "(x &| --(y && z))");
+        assertEq("((--,(y&&z))&|x)", "(x &| --(y && z))");
     }
 
     @Test
@@ -523,7 +525,7 @@ public class ConjTest {
 
         assertEq("((--,(y &&+1 z))&&x)", "(x&&--(y &&+1 z))");
 
-        assertEq("(x &&+1 (--,(y&|z)))", "(x &&+1 --(y && z))");
+        assertEq("(x &&+1 (--,(y&&z)))", "(x &&+1 --(y && z))");
     }
 
     @Test
@@ -1637,7 +1639,7 @@ public class ConjTest {
         */
         Term a = $.$("(a &&+5 (--,a))");
         Term b = $.$("((b &&+5 (--,b)) &&+5 (--,c))");
-        assertEq("((a &&+5 ((--,a)&|b)) &&+5 ((--,b) &&+5 (--,c)))", Conj.the(a, 0, b, 5));
+        assertEq("((a &&+5 ((--,a)&|b)) &&+5 ((--,b) &&+5 (--,c)))", Conj.sequence(a, 0, b, 5));
     }
 
     @Test

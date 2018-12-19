@@ -65,7 +65,7 @@ public class Statement {
                     if (dt==DTERNAL || dt == XTERNAL) {
                         newSubj = CONJ.the(subject, dt, inner);
                     } else {
-                        newSubj = Conj.the(subject, 0, inner, subject.eventRange() + dt);
+                        newSubj = Conj.sequence(subject, 0, inner, subject.eventRange() + dt);
                     }
                     return statement(IMPL, predicate.dt(), newSubj, predicate.sub(1)); //recurse
                 }

@@ -33,7 +33,7 @@ public class IntermpolationTest {
         Compound a = $.$("(a &&+3 (b &&+3 c))");
         Compound b = $.$("(a &&+1 (b &&+1 c))");
         RevisionTest.permuteChoose(a, b,
-                "[((a &&+1 b) &&+1 c), ((a &&+1 b) &&+5 c), ((a &&+3 b) &&+3 c), ((a &&+2 c) &&+1 b)]");
+                "[((a &&+1 b) &&+1 c), ((a &&+2 b) &&+2 c), ((a &&+3 b) &&+3 c)]");
     }
 
     @Test

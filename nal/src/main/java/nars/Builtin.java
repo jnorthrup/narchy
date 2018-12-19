@@ -2,7 +2,6 @@ package nars;
 
 import jcog.Texts;
 import jcog.User;
-import jcog.data.list.FasterList;
 import nars.op.*;
 import nars.op.data.flat;
 import nars.op.data.reflect;
@@ -21,7 +20,6 @@ import nars.time.Tense;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,8 +34,8 @@ import java.util.TreeSet;
 import static nars.Op.*;
 import static nars.term.Functor.f0;
 import static nars.term.atom.Bool.Null;
+import static nars.term.atom.Bool.True;
 import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.dtSpecial;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
@@ -238,7 +236,7 @@ public class Builtin {
 
 
             Functor.f2("ifThen", (condition, conseq) -> {
-                if (!condition.equals(Bool.True)) {
+                if (!condition.equals(True)) {
                     if (condition== Null)
                         return Null;
                     return null;
@@ -250,7 +248,7 @@ public class Builtin {
                 if (!(condition instanceof Bool))
                     return null;
                 else {
-                    if (condition == Bool.True)
+                    if (condition == True)
                         return ifTrue;
                     else if (condition == Bool.False)
                         return ifFalse;
@@ -262,7 +260,7 @@ public class Builtin {
             Functor.f3("ifOrElse", (condition, conseqTrue, conseqFalse) -> {
                 if (condition.hasVars()) return null;
                 else {
-                    if (condition.equals(Bool.True))
+                    if (condition.equals(True))
                         return conseqTrue;
                     else if (condition.equals(Bool.False))
                         return conseqFalse;
@@ -446,29 +444,7 @@ public class Builtin {
 
         /** drops a random contained event, whether at first layer or below */
         nar.on(Functor.f1Inline("dropAnyEvent", (Term x) -> {
-            Op oo = x.op();
-            boolean negated = (oo == NEG);
-            if (negated) {
-                x = x.unneg();
-                oo = x.op();
-            }
-            if (oo != CONJ)
-                return Null;
-
-            Term y;
-            int dt = x.dt();
-            if (dtSpecial(dt)) {
-                Subterms xx = x.subterms();
-                y = CONJ.the(dt, xx.subsExcept(nar.random().nextInt(xx.subs())));
-            } else {
-                FasterList<LongObjectPair<Term>> ee = Conj.eventList(x);
-                ee.remove(nar.random().nextInt(ee.size()));
-                y = Conj.conj(ee);
-                if (y.equals(x))
-                    return Null;
-                assert (y != null);
-            }
-            return y.negIf(negated);
+            return Conj.dropAnyEvent(x, nar);
         }));
 
 
@@ -607,7 +583,7 @@ public class Builtin {
 
         nar.onOp1("assertTrue", (x, nn) -> {
             if (!x.op().var)
-                assertSame(Bool.True, x);
+                assertSame(True, x);
         });
 
         nar.onOp2("assertEquals", (x, y, nn) -> {
