@@ -249,9 +249,6 @@
     ((&&,X,A..+) ==> Z), ((&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
       (--(&&,X,A..+) ==> Z), (--(&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
 
-    //Conditional Abduction via Multi-conditional Syllogism
-    (C ==> Y), (E ==> Y), eventsOf(C,E)          |-    conjWithoutAll(C,E), (Belief:AbductionPB)
-        (--C ==> Y), (D ==> Y), eventsOf(C,D)    |-  --conjWithoutAll(C,D), (Belief:AbductionPB)
 
     //Conj/Impl Chain Deduction (with swap)
     //TODO use conj ops
@@ -265,6 +262,10 @@
 
     (C ==> Z), (B ==> M), eventOf(C,B) |- ((conjWithout(C,B) && M) ==> Z), (Belief:Induction)
         (C ==> Z), (B ==> M), eventOf(C,B) |- ((conjWithout(C,B) && --M) ==> Z), (Belief:InductionPN)
+
+    //Conditional Abduction via Multi-conditional Syllogism
+    (C ==> Y), (E ==> Y), eventsOf(C,E)          |-    conjWithoutAll(C,E), (Belief:AbductionPB)
+        (--C ==> Y), (D ==> Y), eventsOf(C,D)    |-  --conjWithoutAll(C,D), (Belief:AbductionPB)
 
 
   (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,strict), (Belief:StructuralDeduction, Goal:StructuralDeduction)

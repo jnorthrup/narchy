@@ -3,7 +3,6 @@ package nars.subterm.util;
 import nars.term.Term;
 import nars.time.Tense;
 
-import java.util.Set;
 import java.util.function.BiPredicate;
 
 import static nars.Op.CONJ;
@@ -50,7 +49,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
     EventFirst() {
         @Override
         public final boolean test(Term container, Term x) {
-            return isEvent(container, x, false, true);
+            return isEventFirstOrLast(container, x, false, true);
         }
 
         public float cost() {
@@ -60,7 +59,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
     EventLast() {
         @Override
         public final boolean test(Term container, Term x) {
-            return isEvent(container, x, false, false);
+            return isEventFirstOrLast(container, x, false, false);
         }
 
         public float cost() {
@@ -69,29 +68,42 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
     },
 
     /**
-     * conj containment of another conj (events) or event
+     * conj containment of another event, or at least one event of another conj
      */
-    Events() {
+    EventsAny() {
         @Override
-        public boolean test(Term container, Term xx) {
-            if (container.op() != CONJ || container.volume() <= xx.volume() || !Term.commonStructure(container, xx))
+        public boolean test(Term container, Term x) {
+            if (container.op() != CONJ || container.volume() <= x.volume() || !Term.commonStructure(container, x))
                 return false;
 
-            boolean simpleEvent = xx.op() != CONJ;
-            if (simpleEvent) {
-                if (Tense.dtSpecial(container.dt())) { //simple case
-                    return container.contains(xx);
-                } else {
-                    return !container.eventsWhile((when, what) -> !what.equals(xx),
-                            0, true, true, true, 0);
-                }
-            } else {
-                Set<Term> xxe = xx.eventSet();
-                container.eventsWhile((when, what) ->
-                                !xxe.remove(what) || !xxe.isEmpty(),
-                        0, true, true, true, 0);
-                return xxe.isEmpty();
+            if (containsEvent(container, x))
+                return true;
+
+            if (x.op()==CONJ) {
+                return !x.eventsWhile((when,xx) ->
+                    !containsEvent(container, xx)
+                , 0, true, true, true, 0);
             }
+
+            return false;
+//            if (container.op() != CONJ || container.volume() <= xx.volume() || !Term.commonStructure(container, xx))
+//                return false;
+//
+//            boolean simpleEvent = xx.op() != CONJ;
+//            if (simpleEvent) {
+//                if (Tense.dtSpecial(container.dt())) { //simple case
+//                    return container.contains(xx);
+//                } else {
+//                    return !container.eventsWhile((when, what) -> !what.equals(xx),
+//                            0, true, true, true, 0);
+//                }
+//            } else {
+//                Set<Term> xxe = xx.eventSet();
+//                container.eventsWhile((when, what) ->
+//                                !xxe.remove(what) || !xxe.isEmpty(),
+//                        0, true, true, true, 0);
+//                return xxe.isEmpty();
+//            }
         }
 
         public float cost() {
@@ -108,14 +120,25 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
 
     static boolean containsEvent(Term container, Term x) {
         if (container.op() == CONJ && !container.impossibleSubTerm(x)) {
-            return !container.eventsWhile((when, what) -> !what.equals(x),
-                    0, true, true, true, 0);
+
+            if (container.contains(x))
+                return true;
+
+            if (!Tense.dtSpecial(container.dt()) || (container.subterms().structureSurface()&CONJ.bit) != 0){
+
+                boolean xNotConj = x.op() != CONJ;
+                boolean decompParallel = xNotConj || x.dt() != 0;
+                boolean decompEternal = xNotConj || x.dt() != DTERNAL;
+
+                return !container.eventsWhile((when, what) -> !what.equals(x),
+                        0, decompParallel, decompEternal, true, 0);
+            }
 
         }
         return false;
     }
 
-    static boolean isEvent(Term container, Term x, boolean neg, boolean firstOrLast) {
+    static boolean isEventFirstOrLast(Term container, Term x, boolean neg, boolean firstOrLast) {
         if (container.op() != CONJ)
             return false;
 
@@ -124,7 +147,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
         if (container.impossibleSubTerm(xx))
             return false;
 
-        if (Tense.dtSpecial(container.dt()) && !container.subterms().hasAny(CONJ)) {
+        if (Tense.dtSpecial(container.dt()) && (container.subterms().structureSurface()&CONJ.bit) == 0) {
             return container.contains(xx);
         } else {
 

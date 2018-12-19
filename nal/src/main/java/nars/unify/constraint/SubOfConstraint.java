@@ -55,4 +55,9 @@ public class SubOfConstraint extends RelationConstraint {
 
         return !containment.test(container, contentP, posAndNeg);
     }
+
+    public final boolean valid(Term x, Term y) {
+        return !invalid(x, y);
+    }
+
 }

@@ -130,27 +130,43 @@ public enum ConjCommutive {;
                 return False;
         } else {
 
-            if (u.length == 2 && (disj == null) && (conjOther!=null && conjOther.cardinality()==1)) {
-                //try simple cases
-                int coi = conjOther.first(true);
-                Term co = u[coi];
-                if ((dt==DTERNAL) || (dt == 0 && co.dt()==DTERNAL)) {
-                    Term x = u[1 - coi];
-                    assert(x.op()!=CONJ);
-                    if (!conflict(co, x)) {
-                        if (!absorb(co, x))
+            if ((conjOther!=null && conjOther.cardinality()==1)) {
+                if (disj==null) {
+
+                    //try simple cases
+                    int coi = conjOther.first(true);
+                    Term co = u[coi];
+
+                    if ((dt == DTERNAL) || (dt == 0 && co.dt() == DTERNAL)) {
+                        int indep = 0, elim = 0;
+                        for (int i = 0; i < u.length; i++) {
+                            if (i == coi) continue;
+                            Term x = u[i];
+                            assert (x.op() != CONJ);
+                            if (!conflict(co, x)) {
+                                if (!absorb(co, x)) {
+                                    indep++;
+                                } else if (absorbCompletelyByFirstLayer(co, x)) {
+                                    elim++;
+                                }
+                            }
+                        }
+
+                        if (indep == u.length-1)
+                            return conjDirect(dt, u); //all independent
+
+                        if (elim == u.length-1)
+                            return co; //all absorbed
+
+
+                    } else if (dt == 0) {
+                        if (co.dt() == XTERNAL) {
+                            //allow because there is no way to know what the correspondence of timing is
                             return conjDirect(dt, u);
-
-                        if (absorbCompletelyByFirstLayer(co, x))
-                            return co;
-                    }
-
-                } else if (dt == 0) {
-                    if (co.dt()==XTERNAL) {
-                        //allow because there is no way to know what the correspondence of timing is
-                        return conjDirect(dt, u);
+                        }
                     }
                 }
+
             }
 
             Conj c = new Conj(u.length);

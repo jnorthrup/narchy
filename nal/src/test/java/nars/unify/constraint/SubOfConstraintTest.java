@@ -6,11 +6,25 @@ import nars.term.util.Conj;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
+import static nars.subterm.util.SubtermCondition.Event;
 import static nars.subterm.util.SubtermCondition.EventLast;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SubOfConstraintTest {
+
+    @Test
+    void testEventOf_Commutive() {
+
+        SubOfConstraint c = new SubOfConstraint($.varPattern(1), $.varPattern(2), Event, +1);
+        assertTrue(c.valid($$("(x&&y)"), $$("x")));
+        assertTrue(!c.valid($$("(x&&y)"), $$("z")));
+
+        assertTrue(c.valid($$("(x &&+1 (y&|z))"), $$("(y&|z)")));
+        assertTrue(c.valid($$("(x &&+1 (y&|z))"), $$("x")));
+        assertTrue(c.valid($$("(x &&+1 (y&|z))"), $$("y")));
+
+    }
 
     @Test
     void testLastEventOf_Commutive() {

@@ -240,11 +240,12 @@ public class PremiseRuleSource extends ProxyTerm {
                     constraints.add(new SubOfConstraint(X, Y, Event, 0));
                     break;
 
+                /** one or more events contained */
                 case "eventsOf":
                     neq(constraints, X, Y);
                     match(X, new TermMatch.Is(CONJ));
 
-                    constraints.add(new SubOfConstraint(X, Y, Events, 1));
+                    constraints.add(new SubOfConstraint(X, Y, EventsAny, 1));
                     break;
 
                 case "eventCommon":
