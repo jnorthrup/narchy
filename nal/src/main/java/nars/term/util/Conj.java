@@ -21,11 +21,12 @@ import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.ImmutableBitmapDataProvider;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -599,6 +600,8 @@ public class Conj extends ByteAnonMap {
      * now corrupt and its result via .term() should be considered final
      */
     public boolean add(long at, Term x) {
+//        if (at == ETERNAL)
+//            throw new WTF();
 
         if (term != null)
             throw new RuntimeException("already concluded: " + term);
@@ -606,28 +609,28 @@ public class Conj extends ByteAnonMap {
 
         if (x instanceof Compound && x.op() == CONJ) {
             int xdt = x.dt();
-
-            if (xdt == DTERNAL) {
-                if (at == ETERNAL) {
-                    Subterms tt = x.subterms();
-                    if (tt.hasAny(CONJ)) {
-                        //add any contained sequences first
-                        return tt.AND((ttt) ->
-                                !(ttt.op() == CONJ && !Tense.dtSpecial(ttt.dt())) || add(0, ttt)
-                        ) && tt.AND((ttt) ->
-                                (ttt.op() == CONJ && !Tense.dtSpecial(ttt.dt())) || add(ETERNAL, ttt)
-                        );
-                    }
-
-                    //flatten inner conjunctions
-
-                    MutableSet<Term> ee = new UnifiedSet(tt.subs());
-                    for (Term ex : tt)
-                        flattenInto(ee, ex, DTERNAL);
-
-                    return ee.allSatisfy((Term eee) -> add(ETERNAL, eee));
-                }
-            }
+//
+//            if (xdt == DTERNAL) {
+//                if (at == ETERNAL) {
+//                    Subterms tt = x.subterms();
+//                    if (tt.hasAny(CONJ)) {
+//                        //add any contained sequences first
+//                        return tt.AND((ttt) ->
+//                                !(ttt.op() == CONJ && !Tense.dtSpecial(ttt.dt())) || add(0, ttt)
+//                        ) && tt.AND((ttt) ->
+//                                (ttt.op() == CONJ && !Tense.dtSpecial(ttt.dt())) || add(ETERNAL, ttt)
+//                        );
+//                    }
+//
+//                    //flatten inner conjunctions
+//
+//                    MutableSet<Term> ee = new UnifiedSet(tt.subs());
+//                    for (Term ex : tt)
+//                        flattenInto(ee, ex, DTERNAL);
+//
+//                    return ee.allSatisfy((Term eee) -> add(ETERNAL, eee));
+//                }
+//            }
 
             if (at == ETERNAL && (xdt != 0) && (xdt != DTERNAL)) {
 //                if (cdt == DTERNAL) {
@@ -968,9 +971,22 @@ public class Conj extends ByteAnonMap {
         }
     }
 
+    static final Logger logger = LoggerFactory.getLogger(Conj.class);
+
     private static Term conjoinify(Term conj, Term incoming, boolean eternal) {
 
         int dtOuter = eternal ? DTERNAL : 0;
+
+
+//        if (conj.dt()==XTERNAL) {
+//            if (conj.contains(incoming))
+//                return True;
+//            if (conj.containsNeg(incoming))
+//                return False;
+//            if (!conj.containsRecursively(incoming))
+//                return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, conj, incoming);
+//        }
+
 
         if (incoming.op() != CONJ) {
 
@@ -984,13 +1000,15 @@ public class Conj extends ByteAnonMap {
                 else if (cs.contains(incoming))
                     return True; //present, ignore
 
-                if (!conj.subterms().hasAny(Op.CONJ)) {
-                    if (dtInner == dtOuter) {
-                        //commutive merge
-                        return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, subAppend(cs, incoming));
-                    } else {
-                        return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, conj, incoming);
-                    }
+                if (!cs.hasAny(Op.CONJ)) {
+                    return HeapTermBuilder.the.conj(dtOuter, subAppend(cs, incoming));
+
+//                    if (dtInner == dtOuter) {
+//                        //commutive merge
+//                        return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, subAppend(cs, incoming));
+//                    } else {
+//                        return HeapTermBuilder.the.theSortedCompound(CONJ, dtOuter, conj, incoming);
+//                    }
                 }
             }
 
@@ -1008,7 +1026,12 @@ public class Conj extends ByteAnonMap {
                 else if (wht.equalsNeg(incoming))
                     return false;
                 else {
-                    ww = HeapTermBuilder.the.conj(dtOuter, wht, incoming);
+                    try {
+                        ww = HeapTermBuilder.the.conj(dtOuter, wht, incoming);
+                    } catch (StackOverflowError e) {
+                        logger.error("StackOverflow: conj({}, [ {}, {} ])",dtOuter,wht,incoming);
+                        return false;
+                    }
                     if (ww == False || ww == Null)
                         return false;
                     if (ww == True)

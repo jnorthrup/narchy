@@ -58,6 +58,12 @@ abstract public class MetalBitSet {
         return -1;
     }
 
+    public int first(boolean b) {
+        return next(b, 0, capacity());
+    }
+
+    abstract public int capacity();
+
 
     /** TODO implement better bulk set(start,end,v) impl */
     public static class LongArrayBitSet extends MetalBitSet {
@@ -80,6 +86,7 @@ abstract public class MetalBitSet {
         public int capacity() {
             return data.length * 64;
         }
+
         public void resize(long bits) {
 
 
@@ -214,6 +221,10 @@ abstract public class MetalBitSet {
     public static class IntBitSet extends MetalBitSet {
 
         private int x;
+
+        public int capacity() {
+            return 32;
+        }
 
         @Override
         public boolean isEmpty() {

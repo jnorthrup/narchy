@@ -872,9 +872,9 @@ public class ConjTest {
         Term x = $$(s);
         assertEquals(False, x.dt(0));
         assertEquals(False, x.dt(DTERNAL));
-        assertThrows(TermException.class, ()->
-            x.dt(1)
-        );
+//        assertThrows(TermException.class, ()->
+//            x.dt(1)
+//        );
 
     }
 
@@ -941,8 +941,7 @@ public class ConjTest {
     @Test
     public void testFactorDternalComponentIntoTemporals3() {
         assertEquals(
-                //"((x&&y) &&+- x)"
-                "(x&&y)"
+                "((x&&y) &&+- x)"
                 , $$("(((x && y) &&+- x)&&x)").toString());
     }
 

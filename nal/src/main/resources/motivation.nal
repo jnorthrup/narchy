@@ -53,6 +53,9 @@
     C, X, eventOf(C,X)     |- substitute(C,X,--X), (Punctuation:Ask, Time:Task)
     C, X, eventOfNeg(C,X)  |- substitute(C,--X,X), (Punctuation:Ask, Time:Task)
 
+    X, C, eventOf(C,X), task("!")     |- conjWithout(C,X),   (Punctuation:Quest)
+    X, C, eventOfNeg(C,X), task("!")  |- conjWithout(C,--X), (Punctuation:Quest)
+
 //inheritance to impl question/quest
     //(A-->P), (B-->P)  |- (polarize((A-->P),task) ==> (B-->P)), (Punctuation:Ask)
     //(S-->A), (S-->B)  |- (polarize((S-->A),task) ==> (S-->B)), (Punctuation:Ask)

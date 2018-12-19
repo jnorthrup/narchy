@@ -7268,6 +7268,30 @@ public enum ArrayUtils {;
         }
     }
 
+    public static <X> X[] removeAll(final X[] x, final MetalBitSet indices) {
+        int toRemove = indices.cardinality();
+        final int srcLength = x.length, remain = srcLength - toRemove;
+        if (toRemove == 0)
+            return x;
+        switch (remain) {
+            case 0:
+                return (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
+            case 1: {
+                X[] y = Arrays.copyOf(x, 1);
+                y[0] = x[indices.next(false, 0, srcLength)];
+                return y;
+            }
+            default: {
+                final X[] y = Arrays.copyOf(x, remain);
+                int j = 0;
+                for (int i = 0; i < srcLength; i++)
+                    if (!indices.get(i))
+                        y[j++] = x[i];
+                return y;
+            }
+        }
+    }
+
     public static int[] removeAll(final int[] x, final MetalBitSet indices) {
         int toRemove = indices.cardinality();
         final int srcLength = x.length, remain = srcLength - toRemove;

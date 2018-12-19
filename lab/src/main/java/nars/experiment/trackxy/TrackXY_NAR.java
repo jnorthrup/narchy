@@ -45,9 +45,9 @@ public class TrackXY_NAR extends NAgentX {
     //W = 3, H = 1;
     //W = 5, H = 1;
     public static final int derivationStrength = 8;
-    static int dur = 8;
+    static int dur = 32;
     static float camResolution = 0.1f;
-    static int volMax = 6;
+    static int volMax = 7;
     final Bitmap2DSensor cam;
     private final TrackXY track;
 
@@ -237,10 +237,10 @@ public class TrackXY_NAR extends NAgentX {
 //        n.goalConfDefault.set(0.5f);
 
 
-//        n.goalPriDefault.set(0.99f);
-//        n.beliefPriDefault.set(0.01f);
-//        n.questionPriDefault.set(0.01f);
-//        n.questPriDefault.set(0.01f);
+        n.goalPriDefault.set(0.5f);
+       n.beliefPriDefault.set(0.1f);
+        n.questionPriDefault.set(0.05f);
+        n.questPriDefault.set(0.05f);
 
 
 //        n.freqResolution.set(0.1f);
@@ -250,7 +250,7 @@ public class TrackXY_NAR extends NAgentX {
         //n.freqResolution.set(0.04f);
 
         n.termVolumeMax.set(volMax);
-        n.timeResolution.set(Math.max(1, dur / 2));
+        n.timeResolution.set(Math.max(1, dur ));
 
 //        if (rl) {
 //            RLBooster rlb = new RLBooster(a,
@@ -293,7 +293,7 @@ public class TrackXY_NAR extends NAgentX {
                     //"induction.goal.nal"
                     //1, 8
                     //2, 8
-                    //, "motivation.nal"
+                    , "motivation.nal"
             )) {
 //                    @Override
 //                    public float puncFactor(byte conclusion) {

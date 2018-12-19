@@ -3,6 +3,7 @@ package nars.subterm;
 import jcog.util.ArrayUtils;
 import nars.subterm.util.TermMetadata;
 import nars.term.Term;
+import nars.term.util.TermException;
 
 import java.util.Arrays;
 import java.util.function.Predicate;
@@ -15,8 +16,12 @@ abstract public class MappedSubterms extends ProxySubterms {
 
     public static MappedSubterms the(Term[] target, Subterms base) {
         byte[] m = new byte[target.length];
-        for (int i = 0, xLength = target.length; i < xLength; i++)
-            m[i] = (byte) base.indexOf(target[i]);
+        for (int i = 0, xLength = target.length; i < xLength; i++) {
+            int mi = base.indexOf(target[i]);
+            if (mi == -1)
+                throw new TermException(target[i] + "not found in " + base);
+            m[i] = (byte) mi;
+        }
         return new ArrayMappedSubterms(base, m);
     }
 

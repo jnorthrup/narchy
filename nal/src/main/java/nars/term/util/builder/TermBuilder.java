@@ -14,23 +14,24 @@ import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
 import nars.term.util.Conj;
+import nars.term.util.ConjCommutive;
 import nars.term.util.TermException;
 import nars.term.util.transform.CompoundNormalization;
 import nars.term.util.transform.Retemporalize;
 import nars.time.Tense;
 import nars.unify.ellipsis.EllipsisMatch;
 import nars.unify.ellipsis.Ellipsislike;
-import org.eclipse.collections.api.set.MutableSet;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.TreeSet;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
 import static nars.term.Terms.sorted;
-import static nars.time.Tense.*;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * interface for term and subterm builders
@@ -300,36 +301,7 @@ public abstract class TermBuilder {
         switch (dt) {
             case DTERNAL:
             case 0: {
-                if (u.length == 2) {
-
-
-                    //quick test
-                    Term a = u[0], b = u[1];
-                    if (Term.commonStructure(a, b)) {
-                        if (a.equals(b))
-                            return u[0];
-                        if (a.equalsNeg(b))
-                            return Bool.False;
-                    }
-
-                    if (!a.hasAny(Op.CONJ.bit) && !b.hasAny(Op.CONJ.bit)) {
-                        //fast construct for simple case, verified above to not contradict itself
-                        //return compound(CONJ, dt, sorted(u[0], u[1]));
-                        return HeapTermBuilder.the.theCompound(CONJ, dt, /*sorted*/a, b);
-                    }
-
-                }
-                //TODO fast 3-ary case
-
-                assert u.length > 1;
-                Conj c = new Conj(u.length);
-                long sdt = dt == DTERNAL ? ETERNAL : 0;
-                for (int i = 0, uLength = u.length; i < uLength; i++) {
-                    Term x = u[i];
-                    if (!c.add(sdt, x))
-                        break;
-                }
-                return c.term();
+                return ConjCommutive.theSorted(dt, u);
             }
 
             case XTERNAL:
@@ -350,12 +322,12 @@ public abstract class TermBuilder {
                                 return HeapTermBuilder.the.theCompound(CONJ, XTERNAL, u[0], u[0]); //repeat
                         } else {
 
-                            MutableSet<Term> uux = new UnifiedSet(ul, 1f);
+                            TreeSet<Term> uux = new TreeSet();
                             for (Term uu : u)
                                 uux.add(uu);
 
                             if (uux.size() == 1) {
-                                Term only = uux.getOnly();
+                                Term only = uux.first();
                                 return HeapTermBuilder.the.theCompound(CONJ, XTERNAL, only, only); //repeat
                             } else {
                                 return HeapTermBuilder.the.theCompound(CONJ, XTERNAL, sorted(uux));

@@ -83,7 +83,7 @@ public class NARui {
 
 
 
-        Plot2D budgetChart = new Plot2D(256, Plot2D.Line)
+        Plot2D budgetChart = new Plot2D(64, Plot2D.Line)
             .add("Mass", ()->bag.mass())
             .add("Pressure", ()->bag.pressure())
         ;
@@ -181,12 +181,11 @@ public class NARui {
     public static Surface activeConceptsView(NAR n) {
 
         AbstractConceptIndex cc = (AbstractConceptIndex) n.concepts;
-        return Splitting.row(bagView(
-                //(Iterable) () -> n.conceptsActive().iterator(),
-                cc.active,
-                16, n), 0.8f,
+        return Splitting.row(bagView(cc.active, 16, n), 0.8f,
             new Gridding(
-                new XYSlider(cc.conceptForgetRate, n.attn.activating.conceptActivationRate),
+                new XYSlider(cc.conceptForgetRate,
+                        n.attn.activating.conceptActivationRate.subRange(1/1000f, 1/50f)
+                ),
                 new PushButton("Print", () -> {
                     Appendable a = null;
                     try {

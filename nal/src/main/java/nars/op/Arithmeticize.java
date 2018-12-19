@@ -59,7 +59,7 @@ public class Arithmeticize {
             return
                     x.hasAny(Op.INT) &&
                             x.complexity() >= 3 &&
-                            nar.termVolumeMax.intValue() >= x.volume() + 5 /* for &&equals(x,y)) */;
+                            nar.termVolumeMax.intValue() >= x.volume() + 6 /* for && equals(x,y)) */;
         }
 
         @Override
@@ -67,10 +67,7 @@ public class Arithmeticize {
             float p = super.pri(t);
             Term tt = t.term();
             int numInts = tt.intifyRecurse((n, sub) -> sub.op() == INT ? n + 1 : n, 0);
-//        if (numInts == 0) {
-//            tt.intifyRecurse((n, sub) -> sub.op() == INT ? n + 1 : n, 0);
-//            throw new WTF();
-//        }
+
             assert (numInts > 0);
             if (numInts < 2)
                 return Float.NaN;
