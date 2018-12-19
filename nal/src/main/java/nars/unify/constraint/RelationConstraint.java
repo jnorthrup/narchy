@@ -4,6 +4,7 @@ import nars.$;
 import nars.derive.premise.PreDerivation;
 import nars.term.Term;
 import nars.term.Terms;
+import nars.term.Variable;
 import nars.term.control.PREDICATE;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
@@ -14,19 +15,18 @@ import static nars.Op.NEG;
 abstract public class RelationConstraint extends UnifyConstraint {
 
 
-    protected final Term y, yUnneg;
+    protected final Variable y;
     protected final boolean yNeg;
 
-    private RelationConstraint(Term id, Term x, Term y) {
+    private RelationConstraint(Term id, Variable x, Variable y) {
         super(id, x);
+        assert(!x.equals(y));
         this.y = y;
-        this.yUnneg = y.unneg();
         this.yNeg = y.op()==NEG;
     }
 
-    protected RelationConstraint(String func, Term x, Term y, Term... args) {
+    protected RelationConstraint(String func, Variable x, Variable y, Term... args) {
         this($.func(func, x, args.length > 0 ? $.pFast(y, $.pFast(args)) : y), x, y);
-        assert(!x.equals(y));
     }
 
     public final RelationConstraint mirror() {
@@ -34,7 +34,7 @@ abstract public class RelationConstraint extends UnifyConstraint {
     }
 
     /** provide the reversed (mirror) constraint */
-    abstract protected RelationConstraint newMirror(Term newX, Term newY);
+    abstract protected RelationConstraint newMirror(Variable newX, Variable newY);
 
     public RelationConstraint neg() {
         return new NegRelationConstraint(this);
@@ -73,8 +73,8 @@ abstract public class RelationConstraint extends UnifyConstraint {
 
     @Override
     public boolean invalid(Term xx, Unify f) {
-        Term yy = f.transform(yUnneg);
-        return yy != yUnneg
+        Term yy = f.transform(y);
+        return yy != y
                 &&
                invalid(xx, yy.negIf(yNeg));
     }
@@ -97,7 +97,7 @@ abstract public class RelationConstraint extends UnifyConstraint {
         }
 
         @Override
-        protected @Nullable RelationConstraint newMirror(Term newX, Term newY) {
+        protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
             return new NegRelationConstraint(r.mirror());
         }
 

@@ -1,6 +1,7 @@
 package nars.sensor;
 
 import jcog.data.iterator.Array2DIterable;
+import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.Bitmap2D;
@@ -8,14 +9,19 @@ import jcog.util.Int2Function;
 import nars.NAR;
 import nars.concept.sensor.Signal;
 import nars.control.channel.CauseChannel;
+import nars.link.TemplateTermLinker;
+import nars.link.TermLinker;
 import nars.task.ITask;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static nars.Op.EmptyTermArray;
 
 /**
  * rectangular region of pixels
@@ -27,6 +33,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     public final P src;
 
     public final Array2DIterable<Signal> iter;
+    private final Int2Function<Term> pixelTerm;
 
     protected Bitmap2DConcepts(P src, @Nullable Int2Function<Term> pixelTerm, FloatRange res, NAR n) {
 
@@ -39,6 +46,8 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
         this.matrix = new Signal[width][height];
 
+        this.pixelTerm = pixelTerm;
+
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
 
@@ -46,7 +55,8 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
                 FloatSupplier f = () -> src.brightness(xx, yy);
 
-                Signal sss = new Signal(pixelTerm.get(x, y), f, n) {
+
+                Signal sss = new Signal(pixelTerm.get(x, y), f, pixelLinker(xx, yy), n) {
                     @Override
                     protected CauseChannel<ITask> newChannel(NAR n) {
                         return null;
@@ -78,6 +88,22 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         }
 
         this.iter = new Array2DIterable<>(matrix);
+    }
+
+    private TermLinker pixelLinker(int xx, int yy) {
+        //n.conceptBuilder.termlinker(term)
+        Term center = pixelTerm.get(xx, yy);
+        List<Term> neighbors = new FasterList(4);
+        if (xx > 0)
+            neighbors.add(pixelTerm.get(xx-1, yy));
+        if (yy > 0)
+            neighbors.add(pixelTerm.get(xx, yy-1));
+        if (xx < width-1)
+            neighbors.add(pixelTerm.get(xx+1, yy));
+        if (yy < height-1)
+            neighbors.add(pixelTerm.get(xx, yy+1));
+
+        return TemplateTermLinker.of(center, neighbors.toArray(EmptyTermArray));
     }
 
     /**

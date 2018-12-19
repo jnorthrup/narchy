@@ -11,7 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.truth.func.TruthFunctions.c2wSafe;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

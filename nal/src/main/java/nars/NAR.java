@@ -74,7 +74,7 @@ import static nars.$.$;
 import static nars.Op.*;
 import static nars.term.Functor.f;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.c2w;
+import static nars.truth.func.TruthFunctions.c2w;
 import static org.fusesource.jansi.Ansi.ansi;
 
 

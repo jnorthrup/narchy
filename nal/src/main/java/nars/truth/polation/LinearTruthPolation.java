@@ -100,9 +100,9 @@ public class LinearTruthPolation extends TruthPolation {
         return PreciseTruth.byEvi(f, eAvg);
     }
 
-    public long range() {
-        return start == ETERNAL ? 1 : (end - start) + 1;
-    }
+//    public long range() {
+//        return start == ETERNAL ? 1 : (end - start) + 1;
+//    }
 
 }
 

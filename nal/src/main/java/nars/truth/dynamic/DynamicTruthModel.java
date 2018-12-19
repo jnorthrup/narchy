@@ -7,6 +7,7 @@ import jcog.data.list.FasterList;
 import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Op;
+import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -15,6 +16,7 @@ import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthTable;
+import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -22,7 +24,6 @@ import nars.term.util.Conj;
 import nars.term.util.Image;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.truth.Truthed;
 import nars.truth.func.NALTruth;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -49,8 +50,10 @@ abstract public class DynamicTruthModel {
 
 
         Predicate<Task> filter =
-            superFilter;
-            //Answer.filter(superFilter, d::doesntOverlap);
+                Param.DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER ?
+                        Answer.filter(superFilter, d::doesntOverlap) :
+                        superFilter;
+
 
         //TODO expand the callback interface allowing models more specific control over matching/answering/sampling subtasks
 
@@ -174,46 +177,6 @@ abstract public class DynamicTruthModel {
 
         }
 
-        /**
-         * polarity of calculated truth is chosen dynamically majority of component polarities
-         */
-        final static class SectIntersectionBipolar extends SectIntersection {
-
-            private SectIntersectionBipolar(boolean union, boolean subjOrPred) {
-                super(union, subjOrPred);
-            }
-
-            @Override
-            public Truth apply(DynTruth l, NAR nar) {
-                boolean negComponents = !decidePolarity(l);
-                Truth r = super.apply(l, nar, false, union);
-                if (negComponents && r != null)
-                    r = r.neg();
-                return r;
-            }
-
-            @Override
-            public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
-                Term t = super.reconstruct(superterm, components, nar);
-//                if (t!=null && !decidePolarity((FasterList)components))
-//                    t = t.neg();
-//
-                return t;
-            }
-
-            private boolean decidePolarity(FasterList<? extends Truthed> l) {
-                int posCount = l.count(Truthed::isPositive);
-
-                return posCount >= (l.size() - posCount);
-
-                //if (posCount == 0) return false;
-
-                //int s = l.size();
-                //if (posCount == s) return true;
-
-                //return nar.random().nextFloat() <= ((float)posCount)/ s;
-            }
-        }
 
         public static final DynamicTruthModel UnionSubj = new SectIntersection(true, true);
         public static final DynamicTruthModel SectSubj = new SectIntersection(false, true);
@@ -738,7 +701,7 @@ abstract public class DynamicTruthModel {
             }
 
 
-            return y != null ? y.negIf(negResult) : null;
+            return y.negIf(negResult);
         }
 
     }

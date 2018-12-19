@@ -21,7 +21,7 @@ import nars.term.util.Conj;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.truth.TruthFunctions;
+import nars.truth.func.TruthFunctions;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +34,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.truth.func.TruthFunctions.c2wSafe;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public class ConjClustering extends Causable {

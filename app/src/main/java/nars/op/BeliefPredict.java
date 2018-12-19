@@ -24,7 +24,7 @@ import java.util.List;
 
 import static jcog.Util.map;
 import static nars.Op.BELIEF;
-import static nars.truth.TruthFunctions.c2w;
+import static nars.truth.func.TruthFunctions.c2w;
 
 /**
  * numeric prediction support

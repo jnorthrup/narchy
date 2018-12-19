@@ -59,7 +59,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
-import static nars.truth.TruthFunctions.w2cSafe;
+import static nars.truth.func.TruthFunctions.w2cSafe;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 

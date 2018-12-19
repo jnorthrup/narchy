@@ -55,7 +55,10 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     private volatile float currentValue = Float.NaN;
 
     public Signal(Term term, FloatSupplier signal, NAR n) {
-        this(term, BELIEF, signal, n.conceptBuilder.termlinker(term), n);
+        this(term, signal, n.conceptBuilder.termlinker(term), n);
+    }
+    public Signal(Term term, FloatSupplier signal, TermLinker linker, NAR n) {
+        this(term, BELIEF, signal, linker, n);
     }
 
     private Signal(Term term, byte punc, FloatSupplier signal, TermLinker linker, NAR n) {

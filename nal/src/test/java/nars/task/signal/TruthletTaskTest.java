@@ -9,7 +9,7 @@ import nars.truth.Truth;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
-import static nars.truth.TruthFunctions.c2w;
+import static nars.truth.func.TruthFunctions.c2w;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TruthletTaskTest {

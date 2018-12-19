@@ -52,9 +52,7 @@ public enum Perceive { ;
                             answerPunc,
                             input.start(), input.end());
 
-                } else
-                {
-
+                } else {
                     return false;
                 }
             } else {

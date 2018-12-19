@@ -26,7 +26,7 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.truth.func.TruthFunctions.c2wSafe;
 
 /**
  * heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.

@@ -1,6 +1,7 @@
 package nars.unify.constraint;
 
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.util.Conj;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -16,12 +17,12 @@ import static nars.time.Tense.ETERNAL;
 
 public final class CommonSubEventConstraint extends RelationConstraint {
 
-    public CommonSubEventConstraint(Term x, Term y) {
+    public CommonSubEventConstraint(Variable x, Variable y) {
         super("eventCommon", x, y);
     }
 
     @Override
-    protected @Nullable RelationConstraint newMirror(Term newX, Term newY) {
+    protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
         return new CommonSubEventConstraint(newX, newY);
     }
 

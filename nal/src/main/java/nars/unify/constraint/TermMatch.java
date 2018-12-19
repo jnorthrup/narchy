@@ -4,6 +4,7 @@ import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.unify.Unify;
@@ -41,7 +42,7 @@ abstract public class TermMatch {
     @Nullable
     public abstract Term param();
 
-    public UnifyConstraint constraint(Term x, boolean trueOrFalse) {
+    public UnifyConstraint constraint(Variable x, boolean trueOrFalse) {
         return new MyUnifyConstraint(x, trueOrFalse);
     }
 
@@ -232,6 +233,35 @@ abstract public class TermMatch {
             return x.containsRecursively(this.x);
         }
     }
+    /** non-recursive containment */
+    public final static class Equals extends TermMatch {
+
+        public final Term x;
+
+        public Equals(Term x) {
+            this.x = x;
+        }
+
+        @Override
+        public Term param() {
+            return x;
+        }
+
+        @Override
+        public float cost() {
+            return 0.05f;
+        }
+
+        @Override
+        public boolean test(Term term) {
+            return term.equals(x);
+        }
+
+        @Override
+        public boolean testSuper(Term x) {
+            return x.containsRecursively(this.x);
+        }
+    }
 
     public final static class SubsMin extends TermMatch {
 
@@ -267,7 +297,7 @@ abstract public class TermMatch {
 
         private final boolean trueOrFalse;
 
-        MyUnifyConstraint(Term x, boolean trueOrFalse) {
+        MyUnifyConstraint(Variable x, boolean trueOrFalse) {
             super(x, TermMatch.this.getClass().getSimpleName(), $.p(TermMatch.this.param(), $.the(trueOrFalse)));
             this.trueOrFalse = trueOrFalse;
         }

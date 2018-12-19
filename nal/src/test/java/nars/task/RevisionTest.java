@@ -26,8 +26,8 @@ import java.util.TreeSet;
 
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.c2w;
-import static nars.truth.TruthFunctions.w2c;
+import static nars.truth.func.TruthFunctions.c2w;
+import static nars.truth.func.TruthFunctions.w2c;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

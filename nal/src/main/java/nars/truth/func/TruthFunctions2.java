@@ -1,12 +1,14 @@
-package nars.truth;
+package nars.truth.func;
 
+import jcog.Util;
 import nars.$;
+import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.and;
 import static nars.$.t;
-import static nars.truth.TruthFunctions.confCompose;
-import static nars.truth.TruthFunctions.w2cSafe;
+import static nars.truth.func.TruthFunctions.confCompose;
+import static nars.truth.func.TruthFunctions.w2cSafe;
 
 public enum TruthFunctions2 {
     ;
@@ -61,7 +63,7 @@ public enum TruthFunctions2 {
 
     @Nullable
     public static Truth analogyNew(/*@NotNull*/ Truth a, float bf, float bc, float minConf) {
-        float c = and(bf,
+        float c = Util.and(bf,
                 TruthFunctions.confCompose(a.conf(), bc)
                 //a.conf() * bc
         );

@@ -99,12 +99,12 @@ public class BeliefSource {
     }
 
 
-    public static ZipperDeriver forConcepts(NAR n, PremiseDeriverRuleSet rules, List<Concept> concepts, BiFunction<Concept, Derivation, LinkModel> linker) {
+    public static ZipperDeriver forConcepts(NAR n, PremiseDeriverRuleSet rules, List<? extends Termed> concepts, BiFunction<Concept, Derivation, LinkModel> linker) {
         int cc = concepts.size();
         assert(cc>0);
         Random rng = n.random();
         Consumer<Predicate<Activate>> forEach = x -> {
-            Concept c = concepts.get(rng.nextInt(cc));
+            Concept c = n.concept(concepts.get(rng.nextInt(cc)));
             if (c==null)
                 return;
             while (x.test(new Activate(c, 1f))) ;

@@ -8,6 +8,7 @@ import nars.Param;
 import nars.derive.Derivation;
 import nars.derive.premise.PreDerivation;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
@@ -48,14 +49,14 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
     }
 
     private final static Atomic UnifyIf = Atomic.the("unifyIf");
-    public final Term x;
+    public final Variable x;
 
-    UnifyConstraint(Term id, Term x) {
+    UnifyConstraint(Term id, Variable x) {
         super(id);
         this.x = x;
     }
 
-    protected UnifyConstraint(Term x, String func, @Nullable Term... args) {
+    protected UnifyConstraint(Variable x, String func, @Nullable Term... args) {
         this($.funcFast(UnifyIf, x, args!=null ? $.funcFast(func, args) : $.the(func)), x);
     }
 

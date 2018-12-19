@@ -7,14 +7,15 @@ import nars.NAR;
 import nars.NARS;
 import nars.Param;
 import nars.task.Revision;
+import nars.truth.func.TruthFunctions;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.t;
 import static nars.Param.TRUTH_EPSILON;
-import static nars.truth.TruthFunctions.w2c;
-import static nars.truth.TruthFunctions.w2cSafe;
+import static nars.truth.func.TruthFunctions.w2c;
+import static nars.truth.func.TruthFunctions.w2cSafe;
 import static org.junit.jupiter.api.Assertions.*;
 
 

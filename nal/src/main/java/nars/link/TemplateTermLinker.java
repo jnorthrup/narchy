@@ -451,7 +451,7 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
 
             if (tgt != null) {
 
-                if (!(tgtTerm instanceof Concept) || tgtTerm!=tgt)
+                if (!(tgtTerm instanceof Concept))
                     setFast(j, tgt); //cache concept for the entry
 
                 firedConcepts.add(tgt);

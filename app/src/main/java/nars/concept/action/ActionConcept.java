@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import static nars.Op.GOAL;
-import static nars.truth.TruthFunctions.w2cSafe;
+import static nars.truth.func.TruthFunctions.w2cSafe;
 
 
 public abstract class ActionConcept extends TaskConcept implements Sensor, PermanentConcept {

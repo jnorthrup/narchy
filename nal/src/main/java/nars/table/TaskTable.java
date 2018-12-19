@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.truth.func.TruthFunctions.c2wSafe;
 
 /**
  * holds a set of ranked question/quests tasks

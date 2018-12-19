@@ -15,6 +15,7 @@ import nars.derive.op.*;
 import nars.op.UniSubst;
 import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
+import nars.term.Variable;
 import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -23,7 +24,6 @@ import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.term.util.transform.DirectTermTransform;
 import nars.term.util.transform.TermTransform;
-import nars.term.var.VarPattern;
 import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
 import nars.unify.constraint.*;
@@ -34,6 +34,7 @@ import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -141,6 +142,8 @@ public class PremiseRuleSource extends ProxyTerm {
             Term X = an > 0 ? args.sub(0) : null;
             Term Y = an > 1 ? args.sub(1) : null;
 
+            Variable XX = X instanceof Variable ? (Variable) X : null;
+            Variable YY = Y instanceof Variable ? (Variable) Y : null;
 
 
         /*} else {
@@ -153,44 +156,43 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
                 case "neq":
-                    neq(constraints, X, Y);
+                    neq(constraints, XX, Y);
                     break;
                 case "neqRoot":
-                    neqRoot(constraints, X, Y);
+                    neqRoot(constraints, XX, YY);
                     break;
                 case "neqOrInhCommon":
-                    neqRoot(constraints, X, Y);
-                    constraints.add(new NotEqualConstraint.NoCommonInh(X, Y));
+                    neqRoot(constraints, XX, YY);
+                    constraints.add(new NotEqualConstraint.NoCommonInh(XX, YY));
                     break;
                 case "eqNeg":
-                    neq(constraints, X, Y);
-                    constraints.add(new NotEqualConstraint.EqualNegConstraint(X, Y));
+                    neq(constraints, XX, YY);
+                    constraints.add(new NotEqualConstraint.EqualNegConstraint(XX, YY));
                     break;
 
 
                 case "neqRCom":
-                    neqRoot(constraints, X, Y);
-                    constraints.add(new NotEqualConstraint.NeqRootAndNotRecursiveSubtermOf(X, Y));
+                    neqRoot(constraints, XX, YY);
+                    constraints.add(new NotEqualConstraint.NeqRootAndNotRecursiveSubtermOf(XX, YY));
                     break;
 
                 case "notSetsOrDifferentSets":
-                    constraints.add(new NotEqualConstraint.NotSetsOrDifferentSets(X, Y));
+                    constraints.add(new NotEqualConstraint.NotSetsOrDifferentSets(XX, YY));
                     break;
 
                 case "subOf": {
 
-                    if (!(Y.unneg() instanceof VarPattern)) {
-                        //constant
-                        match(X, new TermMatch.Contains(Y), !negated);
 
+                    if (!negated)
+                        neq(constraints, XX, Y);
+
+                    if (Y.unneg() instanceof Variable) {
+                        constraints.add(new SubOfConstraint(XX, ((Variable) (Y.unneg())),
+                                Subterm, Y.op() == NEG ? -1 : +1).negIf(negated));
                     } else {
-                        if (!negated)
-                            neq(constraints, X, Y);
-
-                        constraints.add(new SubOfConstraint(X, Y.unneg(), Subterm, Y.op() == NEG ? -1 : +1).negIf(negated));
-
-
+                        match(XX, new TermMatch.Contains(Y), true);
                     }
+
                     if (negated)
                         negationApplied = true;
                     break;
@@ -198,13 +200,13 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 case "subPosOrNeg":
                     //TODO handle negation
-                    neq(constraints, X, Y);
-                    constraints.add(new SubOfConstraint(X, Y, Subterm, 0));
+                    neq(constraints, XX, YY);
+                    constraints.add(new SubOfConstraint(XX, YY, Subterm, 0));
                     break;
 
                 case "in":
-                    neq(constraints, X, Y);
-                    constraints.add(new SubOfConstraint(X, Y.unneg(), Recursive, Y.op() == NEG ? -1 : +1));
+                    neq(constraints, XX, ((Variable) (Y.unneg())));
+                    constraints.add(new SubOfConstraint(XX, ((Variable) Y.unneg()), Recursive, Y.op() == NEG ? -1 : +1));
                     break;
 
                 case "conjParallel":
@@ -214,10 +216,10 @@ public class PremiseRuleSource extends ProxyTerm {
                 case "eventOf":
                 case "eventOfNeg":
                     if (!negated) {
-                        neq(constraints, X, Y);
+                        neq(constraints, XX, YY);
                         match(X, new TermMatch.Is(CONJ));
                     }
-                    constraints.add(new SubOfConstraint(X, Y, Event, pred.contains("Neg") ? -1 : +1).negIf(negated));
+                    constraints.add(new SubOfConstraint(XX, YY, Event, pred.contains("Neg") ? -1 : +1).negIf(negated));
                     if (negated) negationApplied = true;
                     break;
 
@@ -226,35 +228,35 @@ public class PremiseRuleSource extends ProxyTerm {
                 case "eventLastOf":
                 case "eventLastOfNeg":
                     if (!negated) {
-                        neq(constraints, X, Y);
+                        neq(constraints, XX, YY);
                         match(X, new TermMatch.Is(CONJ));
                     }
-                    constraints.add(new SubOfConstraint(X, Y, pred.contains("First") ? EventFirst : EventLast, pred.contains("Neg") ? -1 : +1).negIf(negated));
+                    constraints.add(new SubOfConstraint(XX, YY, pred.contains("First") ? EventFirst : EventLast, pred.contains("Neg") ? -1 : +1).negIf(negated));
                     if (negated) negationApplied = true;
                     break;
 
                 case "eventOfPosOrNeg":
-                    neq(constraints, X, Y);
+                    neq(constraints, XX, YY);
                     match(X, new TermMatch.Is(CONJ));
 
-                    constraints.add(new SubOfConstraint(X, Y, Event, 0));
+                    constraints.add(new SubOfConstraint(XX, YY, Event, 0));
                     break;
 
                 /** one or more events contained */
                 case "eventsOf":
-                    neq(constraints, X, Y);
+                    neq(constraints, XX, YY);
                     match(X, new TermMatch.Is(CONJ));
 
-                    constraints.add(new SubOfConstraint(X, Y, EventsAny, 1));
+                    constraints.add(new SubOfConstraint(XX, YY, EventsAny, 1));
                     break;
 
                 case "eventCommon":
 
 
-                    neq(constraints, X, Y);
+                    neq(constraints, XX, YY);
                     match(X, new TermMatch.Is(CONJ));
                     match(Y, new TermMatch.Is(CONJ));
-                    constraints.add(new CommonSubEventConstraint(X, Y));
+                    constraints.add(new CommonSubEventConstraint(XX, YY));
 
                     break;
 
@@ -423,9 +425,7 @@ public class PremiseRuleSource extends ProxyTerm {
         }
 
 
-
         Op bo = beliefPattern.op();
-
 
 
         TruthFunc beliefTruthOp = NALTruth.get(beliefTruth);
@@ -443,9 +443,6 @@ public class PremiseRuleSource extends ProxyTerm {
         }
 
 
-
-
-
         tryGuard(TaskTerm, taskPattern);
         tryGuard(BeliefTerm, beliefPattern);
 
@@ -459,7 +456,7 @@ public class PremiseRuleSource extends ProxyTerm {
                     concPunc = (p) -> BELIEF;
                 } else if (beliefTruth == null && goalTruth != null) {
                     concPunc = (p) -> GOAL;
-                } else if (beliefTruth != null && goalTruth != null){
+                } else if (beliefTruth != null && goalTruth != null) {
                     concPunc = (p) -> p == BELIEF ? BELIEF : GOAL;
                 }
             } else {
@@ -468,7 +465,7 @@ public class PremiseRuleSource extends ProxyTerm {
                 } else if (concQuest && !concQuestion) {
                     concPunc = (p) -> QUEST;
                 } else if (concQuestion && concQuest) {
-                    concPunc = (p) -> (p==QUESTION || p==BELIEF) ? QUESTION : QUEST;
+                    concPunc = (p) -> (p == QUESTION || p == BELIEF) ? QUESTION : QUEST;
                 }
             }
 
@@ -592,19 +589,18 @@ public class PremiseRuleSource extends ProxyTerm {
 
         byte[] pp = p.toByteArray();
         int depth = pp.length;
-        Term t = depth ==0 ? root : root.sub(pp);
+        Term t = depth == 0 ? root : root.sub(pp);
 
         Op to = t.op();
         if (to == Op.VAR_PATTERN)
             return;
 
 
-
         Function<PreDerivation, Term> rr = depth == 0 ? r : r.path(pp);
 //        int ts = t.structure() & (~Op.VAR_PATTERN.bit);
 //        pre.add(new TermMatchPred<>(new TermMatch.Is(to),  rr));
 //        pre.add(new TermMatchPred<>(new TermMatch.Has(ts, false /* all */, t.complexity()), rr));
-        pre.add(new TermMatchPred<>(TermMatch.IsHas.get(t, depth),  rr));
+        pre.add(new TermMatchPred<>(TermMatch.IsHas.get(t, depth), rr));
 
         int n = t.subs();
         if (!to.commutative || n == 1) {
@@ -782,7 +778,7 @@ public class PremiseRuleSource extends ProxyTerm {
                             matchSuper(false, m, trueOrFalse);
                     }
 
-                    constraints.add(m.constraint(x, trueOrFalse));
+                    constraints.add(m.constraint((Variable) x, trueOrFalse));
                 }
         );
     }
@@ -803,85 +799,24 @@ public class PremiseRuleSource extends ProxyTerm {
 //    }
 
 
-    private static void neq(Set<UnifyConstraint> constraints, Term x, Term y) {
-        constraints.add(new NotEqualConstraint(x, y));
+    private void neq(Set<UnifyConstraint> constraints, Variable x, Term y) {
+
+        if (y.op()==NEG && y.unneg() instanceof Variable) {
+            constraints.add(new NotEqualConstraint.EqualNegConstraint(x, (Variable) (y.unneg())).neg());
+        } else if (y instanceof Variable) {
+            constraints.add(new NotEqualConstraint(x, (Variable) y));
+        } else {
+            match(x, new TermMatch.Equals(y), false);
+        }
     }
 
-    private static void neqRoot(Set<UnifyConstraint> constraints, Term x, Term y) {
+    private static void neqRoot(Set<UnifyConstraint> constraints, Variable x, Variable y) {
         constraints.add(new NotEqualConstraint.NotEqualRootConstraint(x, y));
     }
 
-    public static Term pp(byte[] b) {
+    public static Term pp(@Nullable byte[] b) {
         return b == null ? Op.EmptyProduct : $.p(b);
     }
-
-//    static class MatchFilter extends AbstractPred<Derivation> {
-//
-//        private static final Atom MATCH_FILTER = (Atom) Atomic.the(MatchFilter.class.getSimpleName());
-//        private final Term pattern;
-//        private final boolean isTaskOrBelief;
-//
-//        protected MatchFilter(Term pattern, boolean isTaskOrBelief) {
-//            super($.func(MATCH_FILTER, pattern, isTaskOrBelief ? Task : Belief));
-//            this.isTaskOrBelief = isTaskOrBelief;
-//            this.pattern = pattern;
-//        }
-//
-//        @Override
-//        public boolean test(Derivation derivation) {
-//            return false;
-//        }
-//    }
-
-    //    static final class SubOf extends AbstractPred<Derivation> {
-//        private final Term y;
-//
-//        boolean task;
-//        boolean belief;
-//
-//        SubOf(Term y, Term taskPattern, Term x, Term beliefPattern) {
-//            super($.func("subOf", $.quote(y.toString())));
-//            this.y = y;
-//
-//            task = taskPattern.containsRecursively(x);
-//            belief = beliefPattern.containsRecursively(y);
-//            assert task || belief;
-//        }
-//
-//        @Override
-//        public boolean test(Derivation preDerivation) {
-//            if (task && !preDerivation.taskTerm.containsRecursively(y))
-//                return false;
-//            return !belief || preDerivation.beliefTerm.containsRecursively(y);
-//        }
-//
-//        @Override
-//        public float cost() {
-//            return 0.5f;
-//        }
-//    }
-
-//    static final class Imaged extends AbstractPred<Derivation> {
-//        private final byte[] pp;
-//        private final boolean isOrIsnt;
-//
-//        Imaged(Term x, boolean hasOrHasnt, byte[] pp) {
-//            super($.func("imaged", x));
-//            this.pp = pp;
-//            this.isOrIsnt = hasOrHasnt;
-//        }
-//
-//        @Override
-//        public float cost() {
-//            return 0.1f;
-//        }
-//
-//        @Override
-//        public boolean test(Derivation o) {
-//            Term prod = o.taskTerm.subPath(pp);
-//            return prod.op() == PROD && (isOrIsnt==Image.imaged(prod));
-//        }
-//    }
 
 
     private static RootTermAccessor TaskOrBelief(boolean taskOrBelief) {
@@ -900,7 +835,6 @@ public class PremiseRuleSource extends ProxyTerm {
             return d.beliefTerm;
         }
     };
-
 
 
     static class UppercaseAtomsToPatternVariables extends DirectTermTransform {
@@ -950,7 +884,7 @@ public class PremiseRuleSource extends ProxyTerm {
         }
     }
 
-    abstract static class RootTermAccessor implements Function<PreDerivation,Term> {
+    abstract static class RootTermAccessor implements Function<PreDerivation, Term> {
 
         final String id;
 
@@ -963,7 +897,7 @@ public class PremiseRuleSource extends ProxyTerm {
             return id;
         }
 
-        public Function<PreDerivation,Term> path(byte... path) {
+        public Function<PreDerivation, Term> path(byte... path) {
             return (path.length == 0) ? this :
                     d -> apply(d).sub(path);
         }

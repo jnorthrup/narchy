@@ -19,7 +19,6 @@ import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.derive.impl.ZipperDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
-import nars.derive.timing.ActionTiming;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
 import nars.gui.NARui;
@@ -249,6 +248,7 @@ abstract public class NAgentX extends NAgent {
 
         // virtual tasklinks to sensors (sampler)
         BiFunction<Concept, Derivation, BeliefSource.LinkModel> sensorLinker = ListTermLinker(sensorConcepts);
+        BiFunction<Concept, Derivation, BeliefSource.LinkModel> actionLinker = ListTermLinker(actionConcepts);
 
         //  rewards -> sensors
         //  actions -> sensors
@@ -258,14 +258,13 @@ abstract public class NAgentX extends NAgent {
                 sensorLinker
                 //ConceptTermLinker
         );
-        senseReward.timing = new ActionTiming(n);
+        //senseReward.timing = new ActionTiming(n);
 
         ZipperDeriver senseActions = BeliefSource.forConcepts(n, rules,
-                actionConcepts,
-                sensorLinker
+                sensorConcepts,
+                actionLinker
         );
-        senseActions.timing = new ActionTiming(n);
-        //sensorAction.timing = new ActionTiming(n);
+        //senseActions.timing = new ActionTiming(n);
 
 
 //        ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.files(n,
@@ -350,7 +349,7 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         //n.freqResolution.set(0.03f);
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(32);
 
         n.attn.activating.conceptActivationRate.set(1f/1000f); //HACK TODO based on active bag capacity
 
@@ -359,8 +358,8 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.25f);
         n.questPriDefault.set(0.25f);
 
-        n.beliefConfDefault.set(0.95f);
-        n.goalConfDefault.set(0.95f);
+        n.beliefConfDefault.set(0.90f);
+        n.goalConfDefault.set(0.90f);
 //
 //        n.attn.forgetting = new Forgetting.AsyncForgetting() {
 //            @Override

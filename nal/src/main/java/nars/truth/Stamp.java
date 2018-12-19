@@ -29,6 +29,7 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.task.Tasked;
+import nars.truth.func.TruthFunctions;
 import org.eclipse.collections.api.list.primitive.MutableLongList;
 import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;

@@ -5,7 +5,7 @@ import jcog.tree.rtree.HyperRegion;
 import jcog.util.ArrayUtils;
 import nars.Task;
 import nars.task.Tasked;
-import nars.truth.TruthFunctions;
+import nars.truth.func.TruthFunctions;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;

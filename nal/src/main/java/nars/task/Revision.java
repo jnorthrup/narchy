@@ -13,7 +13,7 @@ import nars.truth.Truthed;
 import nars.truth.polation.TruthPolation;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.truth.func.TruthFunctions.c2wSafe;
 
 /**
  * Truth/Task Revision & Projection (Revection)

@@ -68,16 +68,9 @@ public class AttNode extends AtomicTreeNode<AttNode> {
         }).sum());
     }
 
-
-//    /** take pri from parent supply */
-//    public void get(float request, Pri target) {
-//        target.take(parent().supply, request, true, false);
-//    }
-
-
     @Override
     public String toString() {
-        return id.toString() + " supply=" + supply + " demand=" + demand;
+        return id + " supply=" + supply + " demand=" + demand;
     }
 
     public Stream<Concept> concepts(NAR nar) {
@@ -86,8 +79,10 @@ public class AttNode extends AtomicTreeNode<AttNode> {
 
     public void ensure(Prioritizable c, float pri) {
         pri -= c.priElseZero();
-        if (pri > 0)
-            c.take(supply, pri, true, false);
+        if (pri > 0) {
+            //c.take(supply, pri, true, false); //RESTRICTED
+            c.priAdd(pri);
+        }
     }
 
 }

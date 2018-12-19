@@ -18,11 +18,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Open-NARS.  If not, see <http:
  */
-package nars.truth;
+package nars.truth.func;
 
 import jcog.Util;
 import nars.$;
 import nars.Param;
+import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.and;

@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
-import static nars.truth.TruthFunctions.w2cSafe;
+import static nars.truth.func.TruthFunctions.w2cSafe;
 
 public class TaskConcept extends NodeConcept  {
 

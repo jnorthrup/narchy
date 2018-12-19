@@ -33,8 +33,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import static nars.truth.TruthFunctions.c2wSafe;
-import static nars.truth.TruthFunctions.w2cSafe;
+import static nars.truth.func.TruthFunctions.c2wSafe;
+import static nars.truth.func.TruthFunctions.w2cSafe;
 
 
 /**
@@ -122,10 +122,6 @@ public interface Truth extends Truthed {
 
     }
 
-    static int compare(Truth a, Truth b) {
-        if (a == b) return 0;
-        return Integer.compare(b.hashCode(), a.hashCode());
-    }
 
     @Nullable
     static <T extends Truthed> T stronger(@Nullable T a, @Nullable T b) {

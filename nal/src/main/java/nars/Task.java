@@ -371,7 +371,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
         return y;
     }
 
-    static <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult) {
+    @Nullable static <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult) {
         return tryTask(t, punc, tr, withResult, !Param.DEBUG_EXTRA);
     }
 

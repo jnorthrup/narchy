@@ -8,6 +8,7 @@ import nars.term.Term;
 import nars.term.util.builder.HeapTermBuilder;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -169,13 +170,17 @@ public enum ConjCommutive {;
 
             }
 
-            Conj c = new Conj(u.length);
             long sdt = dt == DTERNAL ? ETERNAL : 0;
-            for (Term term : u) {
-                if (!c.add(sdt, term))
-                    break;
+            try {
+                Conj c = new Conj(u.length);
+                for (Term term : u) {
+                    if (!c.add(sdt, term))
+                        break;
+                }
+                return c.term();
+            } catch (StackOverflowError e) {
+                throw new WTF("StackOverflow: && " + sdt + " " + Arrays.toString(u)); //TEMPORARY
             }
-            return c.term();
         }
     }
 

@@ -50,7 +50,7 @@ import static nars.Param.TTL_UNIFY;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
-import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.truth.func.TruthFunctions.c2wSafe;
 
 
 /**

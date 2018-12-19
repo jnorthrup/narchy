@@ -2,7 +2,6 @@ package nars.unify;
 
 import jcog.TODO;
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.set.ArrayHashSet;
 import jcog.version.VersionMap;
 import jcog.version.Versioned;
@@ -109,18 +108,18 @@ public abstract class Unify extends Versioning implements Subst {
 
     public final boolean tryMutate(Termutator[] chain, int next) {
 
-        if (!use(Param.TTL_MUTATE))
-            return false;
-
         if (++next < chain.length) {
 
             chain[next].mutate(this, chain, next);
 
+            return true;
+
         } else {
             tryMatch();
+
+            return use(Param.TTL_MUTATE);
         }
 
-        return ttl>0;
     }
 
 
@@ -250,12 +249,8 @@ public abstract class Unify extends Versioning implements Subst {
 
 
     public boolean constrain(UnifyConstraint m) {
-        Term target = m.x;
-        if (target instanceof Variable) {
-            return ((ConstrainedVersionedTerm) xy.getOrCreateIfAbsent((Variable)target)).constrain(m);
-        } else {
-            throw new WTF();
-        }
+        Variable target = m.x;
+        return ((ConstrainedVersionedTerm) xy.getOrCreateIfAbsent(target)).constrain(m);
     }
 
 

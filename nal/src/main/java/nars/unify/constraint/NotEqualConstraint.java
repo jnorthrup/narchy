@@ -19,14 +19,12 @@ import static nars.Op.NEG;
 
 public final class NotEqualConstraint extends RelationConstraint {
 
-    public NotEqualConstraint(Term target, Term other) {
-        super("neq", target.unneg(), other.negIf(target.op() == NEG));
+    public NotEqualConstraint(Variable target, Variable other) {
+        super("neq", target, other);
     }
 
     @Override
-    protected @Nullable RelationConstraint newMirror(Term newX, Term newY) {
-        if (!(newX instanceof Variable))
-            return null;
+    protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
         return new NotEqualConstraint(newX, newY);
     }
 
@@ -49,12 +47,12 @@ public final class NotEqualConstraint extends RelationConstraint {
 
     public static final class NotEqualRootConstraint extends RelationConstraint {
 
-        public NotEqualRootConstraint(Term target, Term other) {
+        public NotEqualRootConstraint(Variable target, Variable other) {
             super("neqRoot", target, other);
         }
 
         @Override
-        protected @Nullable RelationConstraint newMirror(Term newX, Term newY) {
+        protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
             return new NotEqualRootConstraint(newX, newY);
         }
 
@@ -91,7 +89,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 
     public static final class EqualNegConstraint extends RelationConstraint {
 
-        public EqualNegConstraint(Term target, Term other) {
+        public EqualNegConstraint(Variable target, Variable other) {
             super("eqNeg", target, other);
         }
 
@@ -105,7 +103,7 @@ public final class NotEqualConstraint extends RelationConstraint {
         }
 
         @Override
-        protected @Nullable RelationConstraint newMirror(Term newX, Term newY) {
+        protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
             return new EqualNegConstraint(newX, newY);
         }
 
@@ -156,12 +154,12 @@ public final class NotEqualConstraint extends RelationConstraint {
      */
     public static final class NeqRootAndNotRecursiveSubtermOf extends RelationConstraint {
 
-        public NeqRootAndNotRecursiveSubtermOf(Term x, Term y) {
+        public NeqRootAndNotRecursiveSubtermOf(Variable x, Variable y) {
             super("neqRCom", x, y);
         }
 
         @Override
-        protected @Nullable RelationConstraint newMirror(Term newX, Term newY) {
+        protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
             return new NeqRootAndNotRecursiveSubtermOf(newX, newY);
         }
 
@@ -249,12 +247,12 @@ public final class NotEqualConstraint extends RelationConstraint {
      */
     public static final class NoCommonInh extends RelationConstraint {
 
-        public NoCommonInh(Term target, Term other) {
+        public NoCommonInh(Variable target, Variable other) {
             super("noCommonInh", target, other);
         }
 
         @Override
-        protected @Nullable RelationConstraint newMirror(Term newX, Term newY) {
+        protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
             return new NoCommonInh(newX, newY);
         }
 
@@ -271,12 +269,12 @@ public final class NotEqualConstraint extends RelationConstraint {
     }
 
     public static class NotSetsOrDifferentSets extends RelationConstraint {
-        public NotSetsOrDifferentSets(Term target, Term other) {
+        public NotSetsOrDifferentSets(Variable target, Variable other) {
             super("notSetsOrDifferentSets", target, other);
         }
 
         @Override
-        protected @Nullable RelationConstraint newMirror(Term newX, Term newY) {
+        protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
             return new NotSetsOrDifferentSets(newX, newY);
         }
 

@@ -12,7 +12,6 @@ import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
-import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -62,7 +61,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     @Override
     public void update(long last, long now, long next, NAR nar) {
 
-        in.input(updateSensor(last, now, nar).filter(Objects::nonNull));
+        in.input(updateSensor(last, now, nar));
     }
 
     public final Stream<SeriesBeliefTable.SeriesRemember> updateSensor(long last, long now, NAR nar) {

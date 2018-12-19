@@ -6,8 +6,6 @@ import nars.NAR;
 import nars.Param;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.truth.TruthFunctions;
-import nars.truth.TruthFunctions2;
 import nars.truth.func.annotation.AllowOverlap;
 import nars.truth.func.annotation.SinglePremise;
 import org.eclipse.collections.api.map.ImmutableMap;
@@ -18,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 
 import static nars.Op.BELIEF;
-import static nars.truth.TruthFunctions2.weak;
+import static nars.truth.func.TruthFunctions2.weak;
 
 /**
  * NAL Truth Functions

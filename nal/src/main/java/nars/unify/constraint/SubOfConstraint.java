@@ -2,6 +2,7 @@ package nars.unify.constraint;
 
 import nars.subterm.util.SubtermCondition;
 import nars.term.Term;
+import nars.term.Variable;
 import org.jetbrains.annotations.Nullable;
 
 public class SubOfConstraint extends RelationConstraint {
@@ -15,20 +16,20 @@ public class SubOfConstraint extends RelationConstraint {
      */
     private final int polarityCompare;
 
-    public SubOfConstraint(Term x, Term y, SubtermCondition contains) {
+    public SubOfConstraint(Variable x, Variable y, SubtermCondition contains) {
         this(x, y, contains, +1);
     }
 
-    public SubOfConstraint(Term x, Term y, SubtermCondition contains, int polarityCompare) {
+    public SubOfConstraint(Variable x, Variable y, SubtermCondition contains, int polarityCompare) {
         this(x, y, false, contains, polarityCompare);
     }
 
     @Override
-    protected @Nullable RelationConstraint newMirror(Term newX, Term newY) {
+    protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
         return new SubOfConstraint(newX, newY, true, containment, polarityCompare);
     }
 
-    private SubOfConstraint(Term x, Term y, /* HACK change to forward semantics */ boolean reverse, SubtermCondition contains, int polarityCompare) {
+    private SubOfConstraint(Variable x, Variable y, /* HACK change to forward semantics */ boolean reverse, SubtermCondition contains, int polarityCompare) {
         super(contains.name() +
                 (!reverse ? "->" : "<-") +
                 (polarityCompare != 0 ? (polarityCompare == -1 ? "(-)" : "(+)") : "(+|-)"), x, y

@@ -779,7 +779,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void strong_elimination() {
-        test.nar.termVolumeMax.set(20);
+        test.nar.termVolumeMax.set(18);
         TestNAR tester = test;
         tester.believe("((test($a,is,cat) && sentence($a,is,$b)) ==> ($a --> $b))");
         tester.believe("test(tim,is,cat)");

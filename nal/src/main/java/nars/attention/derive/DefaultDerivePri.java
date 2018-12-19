@@ -9,7 +9,7 @@ import nars.derive.Derivation;
 import nars.truth.Truth;
 import nars.truth.polation.TruthIntegration;
 
-import static nars.truth.TruthFunctions.w2cSafe;
+import static nars.truth.func.TruthFunctions.w2cSafe;
 
 /**
  * TODO parameterize, modularize, refactor etc

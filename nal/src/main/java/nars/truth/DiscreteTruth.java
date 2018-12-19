@@ -2,7 +2,7 @@ package nars.truth;
 
 import nars.Param;
 
-import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.truth.func.TruthFunctions.c2wSafe;
 
 
 /**

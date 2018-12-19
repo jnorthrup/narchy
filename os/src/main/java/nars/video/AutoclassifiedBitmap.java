@@ -32,8 +32,8 @@ import java.util.Iterator;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.truth.TruthFunctions.c2wSafe;
-import static nars.truth.TruthFunctions.w2cSafe;
+import static nars.truth.func.TruthFunctions.c2wSafe;
+import static nars.truth.func.TruthFunctions.w2cSafe;
 
 /**
  * similar to a convolutional autoencoder
