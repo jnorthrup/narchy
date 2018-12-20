@@ -173,9 +173,31 @@ public enum ConjCommutive {;
             long sdt = dt == DTERNAL ? ETERNAL : 0;
             try {
                 Conj c = new Conj(u.length);
-                for (Term term : u) {
-                    if (!c.add(sdt, term))
-                        break;
+
+                //iterate in reverse order to add the smaller (by volume) items first
+
+                if (conjOther!=null) {
+                    //add the non-conj terms at ETERNAL last.
+                    //then if the conjOther is a sequence, add it at zero
+                    for (int i = u.length-1; i >= 0; i--) {
+                        if (conjOther.get(i)) {
+                            Term t = u[i];
+                            if (!c.add(sdt, t))
+                                return c.term(); //fail
+                        }
+                    }
+                    for (int i = u.length-1; i >= 0; i--) {
+                        if (!conjOther.get(i))
+                            if (!c.add(sdt, u[i]))
+                                return c.term(); //fail
+                    }
+
+                } else {
+                    for (int i = u.length-1; i >= 0; i--) {
+                        Term term = u[i];
+                        if (!c.add(sdt, term))
+                            break;
+                    }
                 }
                 return c.term();
             } catch (StackOverflowError e) {

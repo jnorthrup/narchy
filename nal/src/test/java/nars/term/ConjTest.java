@@ -44,8 +44,6 @@ public class ConjTest {
         assertEq("((a&&b) &&+- c)", "((a&&b) &&+- c)"); //xternal: unaffected
         assertEq("((a&|b) &&+- c)", "((a&|b) &&+- c)"); //xternal: unaffected
         assertEq("(c &&+1 (a&|b))", "(c &&+1 (a&&b))");
-        assertEq("((a&|b)&&(c&|d))", "((a&|b)&&(c&|d))");
-        assertEq("(&|,a,b,c,d)", "((a&&b)&|(c&&d))");
     }
 
     @Test
@@ -762,6 +760,9 @@ public class ConjTest {
 
         assertEquals("(x&&y)", Conj.withoutAll(x, y).toString());
 
+        assertEq("((a&|b)&&(b&|c))", "((a&|b)&&(b&|c))");
+        assertEq("((a&|b)&&(c&|d))", "((a&|b)&&(c&|d))");
+        assertEq("(&|,a,b,c,d)", "((a&&b)&|(c&&d))");
     }
 
     @Test
@@ -935,10 +936,25 @@ public class ConjTest {
     }
 
     @Test
-    public void testFactorDternalComponentIntoTemporals2() {
+    public void testXternalInDternal() {
         assertEq(//"((a&&x) &&+- (a&&y))",
                 "((x &&+- y)&&a)",
                 "((x &&+- y) && a)");
+    }
+
+    @Test
+    public void testXternalInSequence() {
+        assertEq("((x &&+- y) &&+1 a)", "((x &&+- y) &&+1  a)");
+        assertEq("(a &&+1 (x &&+- y))", "(a &&+1 (x &&+- y))");
+        assertEq("((x &&+- y)&|a)", "((x &&+- y) &|  a)");
+
+        assertEquals(0, $$("(x &&+- y)").eventRange());
+        assertEquals(0, $$("((y &&+2 z) &&+- x)").eventRange());
+
+        assertEq("(((y &&+2 z) &&+- x) &&+1 a)", "((x &&+- (y &&+2 z)) &&+1  a)");
+        assertEq("(a &&+1 ((y &&+2 z) &&+- x))", "(a &&+1 ((y &&+2 z) &&+- x))");
+        assertEq("(((w&&x) &&+- (y &&+2 z)) &&+1 a)", "(((x&&w) &&+- (y &&+2 z)) &&+1 a)");
+
     }
 
     @Test
@@ -1095,10 +1111,6 @@ public class ConjTest {
         );
     }
 
-    @Test
-    void testConjEtePara() {
-        assertEq("((a&|b)&&(b&|c))", "((a&|b)&&(b&|c))");
-    }
 
     @Test
     void testCommutiveTemporalityConjEquiv() {
@@ -1471,13 +1483,13 @@ public class ConjTest {
         Term x = $("((--,(vy &&+- happy)) &&+- (happy &&+- vy))");
         assertTrue(x instanceof Compound);
 
-        Term y = assertEq(
-                "((--,(vy &&+84 happy))&&(vy&|happy))",
-                "((--,(vy &&+84 happy))&&(happy&|vy))");
-        assertEquals(
-
-                "( &&+- ,(--,(vy &&+- happy)),vy,happy)",
-                y.concept().toString());
+//        Term y = assertEq(
+//                "((--,(vy &&+84 happy))&&(vy&|happy))",
+//                "((--,(vy &&+84 happy))&&(happy&|vy))");
+//        assertEquals(
+//
+//                "( &&+- ,(--,(vy &&+- happy)),vy,happy)",
+//                y.concept().toString());
 
     }
 
@@ -1668,7 +1680,7 @@ public class ConjTest {
 
     @Test
     void testValidConjDoubleNegativeWTF() {
-        assertEquals("(x &&+1 x)", $.$$("((x &&+1 x) && x)").toString());
+        assertEq("(x &&+1 x)", "((x &&+1 x) && x)");
         assertEquals(False, $.$$("((x &&+1 x) && --x)"));
 
         assertEq("((--,x) &&+1 x)", "((--x &&+1 x) &| --x)"); //matches at zero

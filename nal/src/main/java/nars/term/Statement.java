@@ -91,13 +91,12 @@ public class Statement {
 //                    se.add(PrimitiveTuples.pair(w, t));
 //                    return true;
 //                }, 0, true, true, false, 0);
-                    Conj se = new Conj();
+
 
                     boolean subjNeg = subject.op()==NEG;
 
-                    se.add(subject.dt() != DTERNAL ? 0 : (dt != DTERNAL ? 0 : ETERNAL), subject.negIf(subjNeg));
+                    Conj se = new Conj(subject.dt() != DTERNAL ? 0 : (dt != DTERNAL ? 0 : ETERNAL), subject.negIf(subjNeg));
 
-                    final boolean[] subjChange = {false};
 
                     long po;
                     if (dt == DTERNAL) {
@@ -109,7 +108,6 @@ public class Statement {
                         po = subject.eventRange() + dt;
                     }
 
-                    //TODO extract this to a ConjConflict class
                     ConjEliminator pe = new ConjEliminator(se,
                             po,
                             predicate, subjNeg);
@@ -148,20 +146,27 @@ public class Statement {
 
                         predicate = newPred;
                     }
-                    if (subjChange[0]) {
-                        Term newSubj = se.term().negIf(subjNeg);
-                        if (newSubj instanceof Bool) {
-                            if (newSubj == True)
-                                return predicate;
-                        }
-                        if (dt != DTERNAL) {
-                            //TODO instead of dtRange, it should be calculated according to the time of the last event that matches the last event of the new subject
-                            //otherwise it is inaccurate for repeating terms like (x &&+1 x) where it will by default stretch the wrong direction
-                            int dr = newSubj.eventRange() - subject.eventRange();
-                            dt += dr;
-                        }
-                        subject = newSubj;
-                    }
+                    final boolean[] subjChange = {false};
+//                    if (subjChange[0]) {
+//                        Term newSubj = se.term().negIf(subjNeg);
+//                        if (newSubj.equals(subject))
+//                            subjChange[0] = false;
+//                        else {
+//                            if (newSubj instanceof Bool) {
+//                                if (newSubj == True)
+//                                    return predicate;
+//                            }
+//
+//                            if (dt != DTERNAL) {
+//                                //TODO instead of dtRange, it should be calculated according to the time of the last event that matches the last event of the new subject
+//                                //otherwise it is inaccurate for repeating terms like (x &&+1 x) where it will by default stretch the wrong direction
+//                                int dr = newSubj.eventRange() - subject.eventRange();
+//                                dt += dr;
+//                            }
+//
+//                            subject = newSubj;
+//                        }
+//                    }
 
 
 

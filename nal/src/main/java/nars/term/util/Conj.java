@@ -50,7 +50,9 @@ public class Conj extends ByteAnonMap {
 
     public static final int ROARING_UPGRADE_THRESH = 8;
 
-    /** TermBuilder to use internally */
+    /**
+     * TermBuilder to use internally
+     */
     private static final TermBuilder terms =
             //HeapTermBuilder.the;
             Op.terms;
@@ -86,9 +88,14 @@ public class Conj extends ByteAnonMap {
         event = new LongObjectHashMap<>(n);
     }
 
+    public Conj(long initialEventAt, Term initialEvent) {
+        this(1);
+        add(initialEventAt, initialEvent);
+    }
+
     public int eventCount(long when) {
         Object e = event.get(when);
-        return e!=null ? Conj.eventCount(e) : 0;
+        return e != null ? Conj.eventCount(e) : 0;
     }
 
     public static int eventCount(Object what) {
@@ -221,6 +228,7 @@ public class Conj extends ByteAnonMap {
     public static Conj from(Term t) {
         Conj c = new Conj();
         c.add(t.dt() == DTERNAL ? ETERNAL : 0, t);
+        c.factor();
         return c;
     }
 
@@ -298,7 +306,7 @@ public class Conj extends ByteAnonMap {
 
         Term y;
         int dt = x.dt();
-        if (x.eventRange()==0 || !(x.subterms().hasAny(CONJ))) {
+        if (x.eventRange() == 0 || !(x.subterms().hasAny(CONJ))) {
             Subterms xx = x.subterms();
             int ns = xx.subs();
             Random rng = nar.random();
@@ -322,13 +330,13 @@ public class Conj extends ByteAnonMap {
             Object event = c.event.get(eventAt);
             if (event instanceof byte[]) {
                 int events = eventCount(event);
-                byte b = ((byte[])event)[rng.nextInt(events)];
+                byte b = ((byte[]) event)[rng.nextInt(events)];
                 boolean removed = c.remove(eventAt, b);
-                assert(removed);
+                assert (removed);
             } else {
                 throw new TODO();
             }
-            y =c.term();
+            y = c.term();
 //                FasterList<LongObjectPair<Term>> ee = Conj.eventList(x);
 //                ee.remove(nar.random().nextInt(ee.size()));
 //                y = Conj.conj(ee);
@@ -339,9 +347,11 @@ public class Conj extends ByteAnonMap {
         return y.negIf(negated);
     }
 
-    /** whether the conjunction is a sequence (includes check for factored inner sequence) */
+    /**
+     * whether the conjunction is a sequence (includes check for factored inner sequence)
+     */
     public static boolean isSeq(Term conj) {
-        return !dtSpecial(conj.dt()) || (conj.subterms().structureSurface()&CONJ.bit) != 0;
+        return !dtSpecial(conj.dt()) || (conj.subterms().structureSurface() & CONJ.bit) != 0;
     }
 
     private void negateEvents() {
@@ -673,31 +683,38 @@ public class Conj extends ByteAnonMap {
         if (term != null)
             throw new RuntimeException("already concluded: " + term);
 
-        if (x instanceof Compound && x.op() == CONJ) {
-            int xdt = x.dt();
-            if (xdt == DTERNAL) {
-                if (at == ETERNAL) {
-                    Subterms tt = x.subterms();
-                    if (tt.hasAny(CONJ)) {
-                        //add any contained sequences first
-                        return tt.AND((ttt) ->
-                                !(ttt.op() == CONJ && !Tense.dtSpecial(ttt.dt())) || add(0, ttt)
-                        ) && tt.AND((ttt) ->
-                                (ttt.op() == CONJ && !Tense.dtSpecial(ttt.dt())) || add(ETERNAL, ttt)
-                        );
-                    }
-                }
-            }
+        return added(
+                (x instanceof Compound && x.op() == CONJ) ?
+                        addConjEvent(at, x)
+                        :
+                        addEvent(at, x)
+        );
+    }
 
-            if (at != ETERNAL || (xdt == 0) || (xdt == DTERNAL)) {
-                return added(x.eventsWhile(this::addEvent, at,
-                        at != ETERNAL, //unpack parallel except in DTERNAL root, allowing: ((a&|b) && (c&|d))
-                        true,
-                        false, 0));
+    private boolean addConjEvent(long at, Term x) {
+        int xdt = x.dt();
+        if (xdt == DTERNAL) {
+            if (at == ETERNAL) {
+                Subterms tt = x.subterms();
+                if (tt.hasAny(CONJ)) {
+                    //add any contained sequences first
+                    return tt.AND(ttt ->
+                            (ttt.op() != CONJ || Tense.dtSpecial(ttt.dt())) || add(0, ttt)
+                    ) && tt.AND(ttt ->
+                            (ttt.op() == CONJ && !Tense.dtSpecial(ttt.dt())) || add(ETERNAL, ttt)
+                    );
+                }
             }
         }
 
-        return added(addEvent(at, x));
+        if (at != ETERNAL || (xdt == 0) || (xdt == DTERNAL)) {
+            return x.eventsWhile(this::addEvent, at,
+                    at != ETERNAL, //unpack parallel except in DTERNAL root, allowing: ((a&|b) && (c&|d))
+                    true,
+                    false, 0);
+        } else {
+            return addEvent(at, x);
+        }
     }
 
     private boolean added(boolean success) {
@@ -769,8 +786,8 @@ public class Conj extends ByteAnonMap {
 
         //quick test for conflict with existing ETERNALs
         Object eternalEvents = event.get(ETERNAL);
-        if (eternalEvents!=null && eventCount(eternalEvents)>0) {
-            if (!eventsAND(eternalEvents, (b)->{
+        if (eternalEvents != null && eventCount(eternalEvents) > 0) {
+            if (!eventsAND(eternalEvents, (b) -> {
                 if (unindex(b).equalsNeg(x))
                     return false;
                 return true;
@@ -831,9 +848,6 @@ public class Conj extends ByteAnonMap {
                                 b[i] = 0; //erase disjunction, continue comparing. the result remains eligible for add
 
                             return addEvent(at, result);
-                            //merged.add(result);
-                            //continue
-
                         }
                     }
                 } else {
@@ -994,59 +1008,77 @@ public class Conj extends ByteAnonMap {
 
         int dtOuter = eternal ? DTERNAL : 0;
 
-        if (incoming.op() != CONJ) {
+        if (incoming.op() == CONJ) {
+            int incomingDT = incoming.dt();
+            if (incomingDT == dtOuter || conj.dt()==dtOuter) {
+                return terms.conj(dtOuter, conj, incoming);
+            } else if (incomingDT == conj.dt()) {
+                if (incomingDT == XTERNAL) {
 
-            int dtInner = conj.dt();
+                    return null; //two XTERNAL conjoined in DTetrnity
 
-            Subterms cs = conj.subterms();
+                    //return terms.conj(incomingDT, conj, incoming); //promote two xternal in DTernity to one xternal
 
-            if (dtSpecial(dtInner)) {
-                if (cs.containsNeg(incoming))
-                    return False; //contradiction
-                else if (cs.contains(incoming))
-                    return True; //present, ignore
-
-                if (!cs.hasAny(Op.CONJ)) {
-                    return terms.conj(dtOuter, subAppend(cs, incoming));
-
-//                    if (dtInner == dtOuter) {
-//                        //commutive merge
-//                        return terms.theSortedCompound(CONJ, dtOuter, subAppend(cs, incoming));
-//                    } else {
-//                        return terms.theSortedCompound(CONJ, dtOuter, conj, incoming);
-//                    }
+                } else if ((incomingDT == 0) || (incomingDT == DTERNAL)) {
+                    //promote two parallel to one parallel
+                    return terms.conj(incomingDT, conj, incoming);
                 }
             }
 
+            //two sequences, probly. maybe some preprocessing that can be applied here
+            //otherwise just add the new event
 
-            boolean innerCommute = Tense.dtSpecial(dtInner) && !conj.subterms().hasAny(Op.CONJ);
+            //return terms.theSortedCompound(CONJ, dtOuter, conj, incoming);
+            return null;
+
+        } else {
+
+            int dtInner = conj.dt();
+
+//            Subterms cs = conj.subterms();
+//            if (dtSpecial(dtInner)) {
+//                if (cs.containsNeg(incoming))
+//                    return False; //contradiction
+//                else if (cs.contains(incoming))
+//                    return True; //present, ignore
+//
+//                if (!cs.hasAny(Op.CONJ)) {
+//                    return terms.conj(dtOuter, subAppend(cs, incoming));
+//
+////                    if (dtInner == dtOuter) {
+////                        //commutive merge
+////                        return terms.theSortedCompound(CONJ, dtOuter, subAppend(cs, incoming));
+////                    } else {
+////                        return terms.theSortedCompound(CONJ, dtOuter, conj, incoming);
+////                    }
+//                }
+//            }
+
+
+            boolean innerCommute = Tense.dtSpecial(dtInner);// && !conj.subterms().hasAny(Op.CONJ);
 
             Conj c = !innerCommute ? new Conj() : null;
             FasterList<Term> cx = innerCommute ? new FasterList() : null;
 //            boolean incomingHasConj = incoming.hasAny(CONJ);
             boolean ok = conj.eventsWhile((whn, wht) -> {
                 Term ww;
-                if (wht.equals(incoming))
-                    ww = wht;
-                else if (wht.equalsNeg(incoming))
-                    return false;
-                else {
-                    ww = terms.conj(dtOuter, wht, incoming);
 
-                    if (ww == False || ww == Null)
-                        return false;
-                    if (ww == True)
-                        return true;
-                    if (ww != wht && ww.equals(wht))
-                        ww = wht; //use original if possible
-                }
+                ww = terms.conj(dtOuter, wht, incoming);
+
+                if (ww == False || ww == Null)
+                    return false;
+                if (ww == True)
+                    return true;
+                if (ww != wht && ww.equals(wht))
+                    ww = wht; //use original if possible
 
 
                 if (innerCommute) {
                     cx.add(ww);
                     return true;
                 } else {
-                    return c.add(whn, ww);
+                    //return c.add(whn, ww);
+                    return c.addEvent(whn,ww);//direct
                 }
 
             }, 0, dtInner == 0, dtInner == DTERNAL, dtInner == XTERNAL, 0);
@@ -1054,8 +1086,8 @@ public class Conj extends ByteAnonMap {
                 return False;
 
             Term d = innerCommute ? terms.conj(dtInner, cx.toArrayRecycled(Term[]::new))
-                        :
-                        c.term();
+                    :
+                    c.term();
 
             if (d == False || d == Null)
                 return d; //fail
@@ -1063,16 +1095,13 @@ public class Conj extends ByteAnonMap {
             if (d == conj || (d != conj && d.equals(conj)))
                 return True;  //no change since the incoming has been absorbed
 
-            //all original subterms remain intact, return simplified factored version
-            //return terms.theSortedCompound(CONJ, dtOuter, conj, incoming);
-            return d;
+            if (d.op()!=CONJ)
+                return d; //simplified/reduced event
 
-        } else {
-            if (incoming.dt() == dtOuter) {
-                return terms.conj(dtOuter, conj, incoming);
-            } else {
-                return terms.theSortedCompound(CONJ, dtOuter, conj, incoming);
-            }
+            //all original subterms remain intact, return simplified factored version
+//            //return terms.theSortedCompound(CONJ, dtOuter, conj, incoming);
+            return null; //add the new event
+
         }
 
     }
@@ -1150,7 +1179,7 @@ public class Conj extends ByteAnonMap {
     }
 
     private Term unindex(byte id) {
-        Term x = idToTerm.get(Math.abs(id)-1);
+        Term x = idToTerm.get(Math.abs(id) - 1);
         if (x == null)
             throw new NullPointerException();
         return x.negIf(id < 0);
@@ -1491,24 +1520,26 @@ public class Conj extends ByteAnonMap {
         return ci;
     }
 
-    /** factor common temporal event components to an ETERNAL component */
+    /**
+     * factor common temporal event components to an ETERNAL component
+     */
     private void factor() {
 
         RichIterable<LongObjectPair<Object>> events = event.keyValuesView();
-        int numTemporalEvents = events.count(l -> l.getOne()!=ETERNAL);
-        int numTemporalCompoundEvents = events.count(l -> l.getOne()!=ETERNAL && eventCount(l.getTwo())>1);
-        if (numTemporalCompoundEvents <= 1 || numTemporalCompoundEvents!=numTemporalEvents)
+        int numTemporalEvents = events.count(l -> l.getOne() != ETERNAL);
+        int numTemporalCompoundEvents = events.count(l -> l.getOne() != ETERNAL && eventCount(l.getTwo()) > 1);
+        if (numTemporalCompoundEvents <= 1 || numTemporalCompoundEvents != numTemporalEvents)
             return;
 
         ByteHashSet common = new ByteHashSet();
         //TODO if this is iterated in order of least # of events at each time first, it is optimal
-        if (!events.allSatisfy((whenWhat)->{
+        if (!events.allSatisfy((whenWhat) -> {
             long when = whenWhat.getOne();
-            if (when ==ETERNAL)
+            if (when == ETERNAL)
                 return true;
             Object what = whenWhat.getTwo();
             if (what instanceof byte[]) {
-                byte[] bWhat = (byte[])what;
+                byte[] bWhat = (byte[]) what;
                 if (common.isEmpty()) {
                     //add the first set of events
                     events(bWhat, common::add);
@@ -1526,20 +1557,20 @@ public class Conj extends ByteAnonMap {
         }))
             return;
 
-        assert(!common.isEmpty());
+        assert (!common.isEmpty());
 
         long[] eventTimes = new long[numTemporalCompoundEvents];
         final int[] e = {0};
         final int[] maxSlotEvents = {0};
-        if (events.anySatisfy((whenWhat)->{
+        if (events.anySatisfy((whenWhat) -> {
             long when = whenWhat.getOne();
-            if (when ==ETERNAL)
+            if (when == ETERNAL)
                 return false; //skip the eternal event
             Object what = whenWhat.getTwo();
             eventTimes[e[0]++] = when;
 
             if (what instanceof byte[]) {
-                if (eventsAND(((byte[])what), common::contains))
+                if (eventsAND(((byte[]) what), common::contains))
                     return true; //all would be eliminated at this time slot
             }
             return false;
@@ -1572,7 +1603,7 @@ public class Conj extends ByteAnonMap {
 
     private static void events(byte[] events, ByteProcedure each) {
         for (byte e : events) {
-            if (e!=0) {
+            if (e != 0) {
                 each.value(e);
             } else
                 break; //null-terminator
@@ -1581,14 +1612,14 @@ public class Conj extends ByteAnonMap {
 
     private static boolean eventsAND(Object events, BytePredicate each) {
         if (events instanceof byte[])
-            return eventsAND((byte[])events, each);
+            return eventsAND((byte[]) events, each);
         else
             throw new TODO();
     }
 
     private static boolean eventsAND(byte[] events, BytePredicate each) {
         for (byte e : events) {
-            if (e!=0) {
+            if (e != 0) {
                 if (!each.accept(e))
                     return false;
             } else

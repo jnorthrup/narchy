@@ -653,41 +653,39 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     default int eventRange() {
         Op o = op();
-        switch (o) {
+        if (o == CONJ) {
+            int dt = dt();
+            if (dt == XTERNAL)
+                return 0; //unknown actual range; logically must be considered as point-like event
 
-            case CONJ:
-                Subterms tt = subterms();
-                int l = tt.subs();
-                if (l == 2) {
-                    int dt = dt();
+            Subterms tt = subterms();
+            int l = tt.subs();
+            if (l == 2) {
 
-                    switch (dt) {
-                        case DTERNAL:
-                        case XTERNAL:
-                        case 0:
-                            dt = 0;
-                            break;
-                        default:
-                            dt = Math.abs(dt);
-                            break;
-                    }
-
-                    return tt.sub(0).eventRange() + (dt) + tt.sub(1).eventRange();
-
-                } else {
-                    int s = 0;
-
-
-                    for (int i = 0; i < l; i++) {
-                        s = Math.max(s, tt.sub(i).eventRange());
-                    }
-
-                    return s;
+                switch (dt) {
+                    case DTERNAL:
+                    case 0:
+                        dt = 0;
+                        break;
+                    default:
+                        dt = Math.abs(dt);
+                        break;
                 }
 
-            default:
-                return 0;
+                return tt.sub(0).eventRange() + (dt) + tt.sub(1).eventRange();
+
+            } else {
+                int s = 0;
+
+
+                for (int i = 0; i < l; i++) {
+                    s = Math.max(s, tt.sub(i).eventRange());
+                }
+
+                return s;
+            }
         }
+        return 0;
 
     }
 
