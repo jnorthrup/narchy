@@ -125,7 +125,7 @@ public class Conj extends ByteAnonMap {
 
         int cdt = conj.dt();
 
-        if (concurrent(cdt)) {
+        if (dtSpecial(cdt)) {
             Term[] csDropped = conj.subterms().subsExcept(event);
 
             if (csDropped != null) {
@@ -157,7 +157,7 @@ public class Conj extends ByteAnonMap {
     }
 
     @Nullable
-    static boolean dropEvent(Term event, boolean earlyOrLate, boolean filterContradiction, Conj c) {
+    static boolean dropEvent(final Term event, boolean earlyOrLate, boolean filterContradiction, Conj c) {
     /* check that event.neg doesnt occurr in the result.
         for use when deriving goals.
          since it would be absurd to goal the opposite just to reach the desired later

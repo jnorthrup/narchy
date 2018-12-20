@@ -52,10 +52,17 @@ public class ArrayHistogram extends ArrayTensor {
     /** TODO use the rng to generate one 64-bit or one 32-bit integer and use half of its bits for each random value needed */
     public float sample(/*FloatSupplier uniformRng*/ Random rng) {
 
-        float f = rng.nextFloat() * mass;
+
         int n = bins();
         int i; float ii;
-        if (rng.nextBoolean()) {
+
+        float f0 = rng.nextFloat();
+        float f = f0 * mass;
+        boolean direction = (Float.floatToRawIntBits(f0) & 1) != 0; //one RNG call
+
+        //boolean direction = rng.nextBoolean();
+
+        if (direction) {
             for (i = n - 1; (i >= 0); ) //downward
                 if ((f -= data[i--]) < 0)
                     break;

@@ -93,8 +93,8 @@ public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
 
         Term t = term;//.unneg();
         Concept c =
-                n.concept(t);
-                //n.conceptualizeDynamic(t);
+                //n.concept(t);
+                n.conceptualizeDynamic(t);
 
         if (c != null) {
 

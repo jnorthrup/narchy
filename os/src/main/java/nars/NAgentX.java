@@ -236,8 +236,8 @@ abstract public class NAgentX extends NAgent {
     static void initPlugins2(NAR n, NAgent a) {
 
 
-        PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8
-                //"motivation.nal"
+        PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8,
+                "motivation.nal"
                 //"induction.goal.nal"
                 //"nal3.nal",
         );
@@ -249,13 +249,14 @@ abstract public class NAgentX extends NAgent {
         // virtual tasklinks to sensors (sampler)
         BiFunction<Concept, Derivation, BeliefSource.LinkModel> sensorLinker = ListTermLinker(sensorConcepts);
         BiFunction<Concept, Derivation, BeliefSource.LinkModel> actionLinker = ListTermLinker(actionConcepts);
+        BiFunction<Concept, Derivation, BeliefSource.LinkModel> rewardLinker = ListTermLinker(rewardConcepts);
 
         //  rewards -> sensors
         //  actions -> sensors
 
         ZipperDeriver senseReward = BeliefSource.forConcepts(n, rules,
-                rewardConcepts,
-                sensorLinker
+                sensorConcepts,
+                rewardLinker
                 //ConceptTermLinker
         );
         //senseReward.timing = new ActionTiming(n);
