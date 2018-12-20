@@ -1,6 +1,7 @@
 package jcog.data.bit;
 
 import jcog.TODO;
+import jcog.data.array.IntComparator;
 import jcog.util.ArrayUtils;
 
 import java.util.Arrays;
@@ -63,6 +64,25 @@ abstract public class MetalBitSet {
     }
 
     abstract public int capacity();
+
+    public final IntComparator indexComparator() {
+        return (a,b) -> Boolean.compare(get(a), get(b));
+    }
+
+    public final IntComparator indexComparatorReverse() {
+        return (a,b) -> Boolean.compare(get(b), get(a));
+    }
+
+    public void swap(int a, int b) {
+        if (a!=b) {
+            boolean A = get(a);
+            boolean B = get(b);
+            if (A!=B) {
+                set(a, B);
+                set(b, A);
+            }
+        }
+    }
 
 
     /** TODO implement better bulk set(start,end,v) impl */

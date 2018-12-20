@@ -357,7 +357,7 @@ public class PatternIndex extends MapConceptIndex {
                 SortedSet<Term> yFree =
                         //uc==null ? y.toSetSorted() : y.toSetSorted(yy -> MatchConstraint.valid(yy, uc, u));
                         //y.toSetSorted();
-                        y.toSetSorted((Term z) -> u.tryResolve(z));
+                        y.toSetSorted(u::tryResolve);
 
                 Subterms xx = subterms();
                 int s = xx.subs(), x0s = s;

@@ -58,7 +58,7 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
 
         float scale = this.scale.floatValue();
 
-        bag.commit(bag.forget(1));
+        bag.commit();
 
         src.forEach(x -> {
             X xx = x.get();

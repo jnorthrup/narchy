@@ -44,7 +44,7 @@ import static nars.time.Tense.TIMELESS;
  * NARese, syntax and language for interacting with a NAR in NARS.
  * https:
  */
-public class Narsese {
+public final class Narsese {
 
     static final String NARSESE_TASK_TAG = "Narsese";
     private static final Class parser;

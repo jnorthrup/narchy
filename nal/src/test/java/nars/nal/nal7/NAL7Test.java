@@ -213,7 +213,7 @@ public class NAL7Test extends NALTest {
     @Test
     void testDropAnyEventSimple2a() {
         test
-                .inputAt(1, "((happy &&+4120 i) &&+1232 j). :|:")
+                .inputAt(1, "((happy &&+4120 i) &&+1232 j). |")
                 .mustBelieve(cycles, "(happy &&+4120 i)", 1f, 0.81f, 1)
                 .mustNotOutput(cycles, "(i&&happy)", BELIEF, 1)
         ;

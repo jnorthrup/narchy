@@ -311,26 +311,26 @@ public abstract class Unify extends Versioning implements Subst {
             super(Unify.this, new Term[1]);
         }
 
-        @Nullable
         @Override
-        public Versioned<Term> set(Term next) {
+        public boolean set(Term next) {
             @Nullable Term existing = get();
             if (existing!=null) {
-                if
-                //(existing.equals(next)))
-                (existing==next || existing.unify(next, Unify.this))
-                    return this;
-                else
-                    return null;
+                if (existing.equals(next))
+                    return true;
+//                if (existing.unify(next, Unify.this))
+//                    //TODO check whether, temporally, next is more specific than next. if so then replace
+//                    return true;
+
+                return false;
             }
             if (valid(next) && addWithoutResize(next)) {
                 if (context.add(this))
-                    return this;
+                    return true;
                 else
                     pop();
             }
 
-            return null;
+            return false;
         }
 
         private boolean valid(Term x) {

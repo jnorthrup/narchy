@@ -1,6 +1,7 @@
 package nars.subterm.util;
 
 import nars.term.Term;
+import nars.term.util.Conj;
 import nars.time.Tense;
 
 import java.util.function.BiPredicate;
@@ -49,7 +50,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
     EventFirst() {
         @Override
         public final boolean test(Term container, Term x) {
-            return isEventFirstOrLast(container, x, false, true);
+            return isEventFirstOrLast(container, x,  true);
         }
 
         public float cost() {
@@ -59,7 +60,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
     EventLast() {
         @Override
         public final boolean test(Term container, Term x) {
-            return isEventFirstOrLast(container, x, false, false);
+            return isEventFirstOrLast(container, x,false);
         }
 
         public float cost() {
@@ -123,8 +124,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
 
             if (container.contains(x))
                 return true;
-
-            if (!Tense.dtSpecial(container.dt()) || (container.subterms().structureSurface()&CONJ.bit) != 0){
+            if (Conj.isSeq(container)){
 
                 boolean xNotConj = x.op() != CONJ;
                 boolean decompParallel = xNotConj || x.dt() != 0;
@@ -134,22 +134,24 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
                         0, decompParallel, decompEternal, true, 0);
             }
 
+
         }
         return false;
     }
 
-    static boolean isEventFirstOrLast(Term container, Term x, boolean neg, boolean firstOrLast) {
+    static boolean isEventFirstOrLast(Term container, Term xx, boolean firstOrLast) {
         if (container.op() != CONJ)
             return false;
-
-        Term xx = x.negIf(neg);
 
         if (container.impossibleSubTerm(xx))
             return false;
 
-        if (Tense.dtSpecial(container.dt()) && (container.subterms().structureSurface()&CONJ.bit) == 0) {
-            return container.contains(xx);
-        } else {
+        boolean comm = Tense.dtSpecial(container.dt());
+        if (comm) {
+            if (container.contains(xx))
+                return true;
+        }
+        if (!comm || (container.subterms().structureSurface()&CONJ.bit) != 0) {
 
             final long[] last = {-1};
             final long[] found = {-1};
@@ -178,6 +180,8 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
 
             return firstOrLast ? found[0] == 0 : found[0] == last[0];
         }
+
+        return false;
     }
 
 //    private static boolean isEventSequence(Term container, Term subseq, boolean neg, boolean firstOrLast) {

@@ -38,7 +38,9 @@ abstract public class Exec implements Executor {
     public void execute(Object t) {
         executeNow(t);
     }
-
+    public void execute(ITask t) {
+        executeNow(t);
+    }
 
     /**
      * inline, synchronous

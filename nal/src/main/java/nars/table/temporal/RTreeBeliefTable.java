@@ -618,7 +618,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         W = //(weakest != null && weakest.the != null) ? weakest.the : A; //not valid due to mergeability heuristic not necessarily the same as weakness
             (weakest != null ? weakest.the : null);
-        assert(I == null || W == null || !I.equals(W));
+        //assert(I == null || W == null || !I.equals(W));
         if (W == null)
             return false;
 

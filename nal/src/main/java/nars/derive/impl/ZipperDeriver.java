@@ -76,13 +76,17 @@ public class ZipperDeriver extends Deriver {
 
 
                     Task task = TaskLink.task(tasklink, nar);
-                    if (task != null) {
 
-                        d.firedTasks.add(task);
+                    if (task != null) {
+                        int derived = 0;
                         for (int z = 0; z < termlinks; z++) {
                             Term b = beliefTerms.get();
-                            if (b != null)
+                            if (b != null) {
+                                if (derived == 0)
+                                    d.firedTasks.add(task);
                                 new Premise(task, b).derive(d, matchTTL, deriveTTL);
+                                derived++;
+                            }
                         }
 
                     }

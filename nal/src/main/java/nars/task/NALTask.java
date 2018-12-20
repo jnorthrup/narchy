@@ -125,7 +125,9 @@ public class NALTask extends UnitPri implements Task {
     }
 
     public Task causeMerge(short[] c, CauseMerge merge) {
-        this.cause = merge.merge(cause(), c, Param.causeCapacity.intValue());
+        synchronized (this) {
+            this.cause = merge.merge(cause(), c, Param.causeCapacity.intValue());
+        }
         return this;
     }
 

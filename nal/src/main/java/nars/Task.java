@@ -856,10 +856,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
     default ITask next(NAR n) {
 
-
-
-
-
         Term x = term();
 
         List<ITask> yy = new FasterList(1);

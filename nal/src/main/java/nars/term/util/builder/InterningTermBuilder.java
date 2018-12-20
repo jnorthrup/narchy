@@ -36,8 +36,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     /** memory-saving */
     private static final boolean sortCanonically = true;
-    private boolean internNegs = false;
-    private boolean cacheSubtermKeyBytes = false;
+    private final boolean internNegs = false;
+    private final boolean cacheSubtermKeyBytes = false;
 
 
     private final boolean deep;

@@ -38,10 +38,14 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
     public final AbstractTaskSeries<T> series;
 
 
-    /** current tasklink seed for newly cloned Tasklinks */
+    /**
+     * current tasklink seed for newly cloned Tasklinks
+     */
     Tasklike tasklinkPtr = null;
 
-    /** permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation */
+    /**
+     * permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation
+     */
     public final TaskLink.GeneralTaskLink tasklink;
 
     public SeriesBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<T> s) {
@@ -124,21 +128,24 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
     boolean absorbNonSignal(Task t, long seriesStart, long seriesEnd) {
 
         long tStart = t.start(), tEnd = t.end();
-        if (tStart!=ETERNAL)
-        if (seriesStart!=TIMELESS && seriesEnd != TIMELESS /* allow prediction 'suffix' */) {
-            if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
+        if (tStart != ETERNAL) {
+            if (seriesStart != TIMELESS && seriesEnd != TIMELESS /* allow prediction 'suffix' */) {
+                if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
 
                     //TODO actually absorb (transfer) the non-series task priority in proportion to the amount predicted, gradually until complete absorption
                     boolean seriesDefinedThere = !series.isEmpty(tStart, tEnd);
 
                     return seriesDefinedThere;
 
+                }
             }
         }
         return false;
     }
 
-    /** correct CONJ concepts for task generation */
+    /**
+     * correct CONJ concepts for task generation
+     */
     protected static Term taskTerm(Term x) {
         if (x.op() == CONJ) {
             return x.dt(0);
@@ -146,23 +153,20 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
         return x;
     }
 
-    public void add(T nextT) {
-        synchronized (this) {
+    public synchronized void add(T nextT) {
+        series.compress();
 
-            series.compress();
-
-            series.push(nextT);
-
-            //updateTaskLinkPtr(nextT.end() /* start, mid */);
-        }
+        series.push(nextT);
     }
 
     private void updateTaskLinkPtr(long when) {
         tasklinkPtr = seed(term, punc(), when);
     }
 
-    /** has special equality and hashcode convention allowing the end to stretch;
-     *  otherwise it would be seen as unique when tested after stretch */
+    /**
+     * has special equality and hashcode convention allowing the end to stretch;
+     * otherwise it would be seen as unique when tested after stretch
+     */
     public static final class SeriesTask extends SignalTask {
 
         /**
@@ -183,11 +187,12 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
             return Util.hashCombine(stamp()[0], start());
         }
 
-        @Override public boolean equals(Object x) {
+        @Override
+        public boolean equals(Object x) {
             if (this == x) return true;
             if (x instanceof SeriesTask) {
                 //TODO also involve Term?
-                if (stamp()[0] == ((Task)x).stamp()[0] && start() == ((Task)x).start())
+                if (stamp()[0] == ((Task) x).stamp()[0] && start() == ((Task) x).start())
                     return true;
             }
             return super.equals(x);
@@ -219,14 +224,10 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
     }
 
 
-
-
-
     public static final class SeriesRemember extends Remember {
 
 
-
-        private SeriesRemember(SeriesTask task,  TaskConcept concept) {
+        private SeriesRemember(SeriesTask task, TaskConcept concept) {
             super(task, concept);
             remember(task);
         }

@@ -54,7 +54,7 @@ public abstract class Param {
     public static final boolean ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME = false;
     public static final boolean INPUT_PREMISE_ANSWER_BELIEF = false;
 
-    public static final boolean DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER = true;
+    public static final boolean DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER = false;
 
 
     /** in Revision.dtDiff measurement */
@@ -78,10 +78,10 @@ public abstract class Param {
             //16;
             //12;
             //10;
-            8;
+            //8;
             //7;
             //6;
-            //5;
+            4;
             //2;
             //1;
 
@@ -115,7 +115,7 @@ public abstract class Param {
     public static final boolean INT_CONCEPTUALIZABLE = false;
 
 
-    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = true;
+    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = false;
 
 //    /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
 //    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
@@ -166,8 +166,8 @@ public abstract class Param {
 
 
     public static final PriMerge tasklinkMerge =
-            //PriMerge.max;
-            PriMerge.plus;
+            PriMerge.max;
+            //PriMerge.plus;
             //PriMerge.or;
             //PriMerge.avgGeoFast;
 
@@ -201,12 +201,12 @@ public abstract class Param {
     /**
      * maximum time (in durations) that a signal task can latch its last value before it becomes unknown
      */
-    public final static float SIGNAL_STRETCH_DUR = 256;
+    public final static float SIGNAL_STRETCH_DUR = 64;
 
     public final static float SIGNAL_LATCH_DUR =
             //0.5f;
             //1f;
-            2f;
+            1f;
 
 
     /**
@@ -266,8 +266,8 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(2 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
-    public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange subUnifyTTLMax = new IntRange( 3, 1, 32);
     public final IntRange matchTTL = new IntRange(6, 1, 32);
 
     /**
@@ -314,10 +314,6 @@ public abstract class Param {
      */
     @Range(min = 0, max = 64)
     public static final int TTL_DERIVE_TASK_SAME = 2;
-
-
-    /** whether to decompose conjunction sequences to each event, regardless of a conjunction's sub-conjunction structure */
-    public static final boolean TEMPLATE_LINKER_DECOMPOSE_CONJ_SEQ_EVENTS = true;
 
     /**
      * cost of a failed/aborted task derivation

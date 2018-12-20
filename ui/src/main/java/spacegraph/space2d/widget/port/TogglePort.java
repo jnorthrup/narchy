@@ -29,9 +29,9 @@ public class TogglePort extends Stacking {
             @Override
             protected void paintIt(GL2 gl, SurfaceRender r) {
                 if (toggle.on()) {
-                    gl.glColor4f(0,0.75f,0,0.75f);
+                    gl.glColor4f(0f,0.75f,0.1f,0.8f);
                 } else {
-                    gl.glColor4f(0.75f,0,0,0.75f);
+                    gl.glColor4f(0.75f,0.25f,0f,0.7f);
                 }
                 Draw.rect(bounds, gl);
             }

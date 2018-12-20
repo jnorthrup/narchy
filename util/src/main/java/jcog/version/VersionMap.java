@@ -113,7 +113,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
     }
 
     public boolean set(X key, Y value) {
-        return getOrCreateIfAbsent(key).set(value) != null;
+        return getOrCreateIfAbsent(key).set(value);
     }
 
 
@@ -187,7 +187,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
             if (next!=null) {
                 if (v == null)
                     v = newEntry(k);
-                result[0] = v.set(next)!=null;
+                result[0] = v.set(next);
             } else {
                 result[0] = false;
             }

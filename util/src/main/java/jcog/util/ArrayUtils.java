@@ -18,9 +18,9 @@ package jcog.util;
 
 
 import jcog.data.array.IntComparator;
-import jcog.data.array.Swapper;
 import jcog.data.bit.MetalBitSet;
 import org.eclipse.collections.api.block.function.primitive.*;
+import org.eclipse.collections.api.block.procedure.primitive.IntIntProcedure;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -8416,11 +8416,11 @@ public enum ArrayUtils {;
      * <code>[first, last)</code>. Elements in the first input range will precede equal elements in
      * the second.
      */
-    private static void inPlaceMerge(int from, int mid, int to, IntComparator comp, Swapper swapper) {
+    private static void inPlaceMerge(int from, int mid, int to, IntComparator comp, IntIntProcedure swapper) {
         if (from >= mid || mid >= to) return;
         if (to - from == 2) {
             if (comp.compare(mid, from) < 0) {
-                swapper.swap(from, mid);
+                swapper.value(from, mid);
             }
             return;
         }
@@ -8441,15 +8441,15 @@ public enum ArrayUtils {;
             int first1 = first2;
             int last1 = middle2;
             while (first1 < --last1)
-                swapper.swap(first1++, last1);
+                swapper.value(first1++, last1);
             first1 = middle2;
             last1 = last2;
             while (first1 < --last1)
-                swapper.swap(first1++, last1);
+                swapper.value(first1++, last1);
             first1 = first2;
             last1 = last2;
             while (first1 < --last1)
-                swapper.swap(first1++, last1);
+                swapper.value(first1++, last1);
         }
 
         mid = firstCut + (secondCut - mid);
@@ -8510,7 +8510,7 @@ public enum ArrayUtils {;
      * @param c       the comparator to determine the order of the generic data (arguments are positions).
      * @param swapper an object that knows how to swap the elements at any two positions.
      */
-    public static void mergeSort(int from, int to, IntComparator c, Swapper swapper) {
+    public static void mergeSort(int from, int to, IntComparator c, IntIntProcedure swapper) {
         /*
          * We retain the same method signature as quickSort. Given only a comparator and swapper we
          * do not know how to copy and move elements from/to temporary arrays. Hence, in contrast to
@@ -8524,7 +8524,7 @@ public enum ArrayUtils {;
         if (length < SMALL) {
             for (int i = from; i < to; i++) {
                 for (int j = i; j > from && (c.compare(j - 1, j) > 0); j--) {
-                    swapper.swap(j, j - 1);
+                    swapper.value(j, j - 1);
                 }
             }
             return;
@@ -8555,13 +8555,13 @@ public enum ArrayUtils {;
      * @param comp    the comparator to determine the order of the generic data.
      * @param swapper an object that knows how to swap the elements at any two positions.
      */
-    public static void quickSort(int from, int to, IntComparator comp, Swapper swapper) {
+    public static void quickSort(int from, int to, IntComparator comp, IntIntProcedure swapper) {
         int len = to - from;
 
         if (len < SMALL) {
             for (int i = from; i < to; i++)
                 for (int j = i; j > from && (comp.compare(j - 1, j) > 0); j--) {
-                    swapper.swap(j, j - 1);
+                    swapper.value(j, j - 1);
                 }
             return;
         }
@@ -8592,7 +8592,7 @@ public enum ArrayUtils {;
                 if (comparison == 0) {
                     if (a == m) m = b;
                     else if (b == m) m = a;
-                    swapper.swap(a++, b);
+                    swapper.value(a++, b);
                 }
                 b++;
             }
@@ -8600,14 +8600,14 @@ public enum ArrayUtils {;
                 if (comparison == 0) {
                     if (c == m) m = d;
                     else if (d == m) m = c;
-                    swapper.swap(c, d--);
+                    swapper.value(c, d--);
                 }
                 c--;
             }
             if (b > c) break;
             if (b == m) m = d;
             else if (c == m) m = c;
-            swapper.swap(b++, c--);
+            swapper.value(b++, c--);
         }
 
 
@@ -8654,8 +8654,8 @@ public enum ArrayUtils {;
     /**
      * Swaps x[a .. (a+n-1)] with x[b .. (b+n-1)].
      */
-    private static void vecSwap(Swapper swapper, int from, int l, int s) {
-        for (int i = 0; i < s; i++, from++, l++) swapper.swap(from, l);
+    private static void vecSwap(IntIntProcedure swapper, int from, int l, int s) {
+        for (int i = 0; i < s; i++, from++, l++) swapper.value(from, l);
     }
 
     public static void shuffle(int[] array, Random random) {

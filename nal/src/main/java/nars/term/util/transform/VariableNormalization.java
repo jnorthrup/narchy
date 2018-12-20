@@ -4,7 +4,6 @@ import nars.Op;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
-import nars.term.var.NormalizedVariable;
 
 import java.util.HashMap;
 import java.util.Map;

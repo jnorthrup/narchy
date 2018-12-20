@@ -254,6 +254,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
     static int histogramBins(int s) {
         //TODO refine
+        if (s < 4)
+            return 2;
              if (s < 8)
             return 4;
         else if (s < 16)
@@ -309,7 +311,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
             }
 
-            return;
+
         //}
 
     }

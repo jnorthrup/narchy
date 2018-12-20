@@ -62,7 +62,7 @@ public class CheckBox extends ToggleButton {
 
 
     protected String label(String text, boolean on) {
-        return (on ? "[X] " : "[ ] ") + text;
+        return text.isEmpty() ? (on ? "[+]" : "[ ]") : ((on ? "[+] " : "[ ] ") + text);
     }
 
     public void setText(String s) {

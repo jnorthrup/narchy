@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.TreeSet;
 
 import static nars.Op.CONJ;
@@ -64,7 +65,7 @@ public abstract class TermBuilder {
         return subterms(s.toArray(Op.EmptyTermArray));
     }
 
-    public Subterms theSubterms(boolean tryAnon, Term... t) {
+    public static Subterms theSubterms(boolean tryAnon, Term... t) {
         final int tLength = t.length;
         if (tLength == 0)
             return Op.EmptySubterms;
@@ -323,8 +324,7 @@ public abstract class TermBuilder {
                         } else {
 
                             TreeSet<Term> uux = new TreeSet();
-                            for (Term uu : u)
-                                uux.add(uu);
+                            Collections.addAll(uux, u);
 
                             if (uux.size() == 1) {
                                 Term only = uux.first();

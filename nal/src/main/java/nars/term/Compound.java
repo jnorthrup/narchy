@@ -504,9 +504,9 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-    /* iterates contained events within a conjunction*/
+    /** iterates contained events within a conjunction*/
     @Override
-    default boolean eventsWhile(LongObjectPredicate<Term> events, long offset, boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal, int level) {
+    default boolean eventsWhile(LongObjectPredicate<Term> each, long offset, boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal, int depth) {
 
         Op o = op();
 
@@ -519,8 +519,55 @@ public interface Compound extends Term, IPair, Subterms {
                     decompose = decomposeConjParallel;
                     break;
                 case DTERNAL:
-                    if (decompose = decomposeConjDTernal)
+                    Subterms ss = subterms();
+                    if ((ss.structureSurface() & CONJ.bit) != 0) {
+                        //distribute the factored inner sequence
+                        int seqIndex = ss.subIndexFirst(x -> x.op()==CONJ);
+                        assert(seqIndex!=-1);
+                        Term seq = ss.sub(seqIndex);
+                        boolean unfactor;
+                        int sdt = seq.dt();
+                        switch (sdt) {
+                            case 0:
+                                unfactor = decomposeConjParallel;
+                                break;
+                            case XTERNAL:
+                                unfactor = decomposeXternal;
+                                break;
+                            default://non-special sequence
+                                unfactor = true;
+                                break;
+                        }
+                        if (unfactor) {
+                            Term factor = (ss.subs() == 1) ? ss.sub(1 - seqIndex) : CONJ.the(ss.subsExcept(seqIndex));
+                            assert (!(factor instanceof Bool));
+
+                            boolean b = seq.eventsWhile((when, what) -> {
+                                Term distributed = CONJ.the(what, factor);
+                                assert (!(distributed instanceof Bool));
+                                return each.accept(when, distributed);
+                            }, offset, decomposeConjParallel, decomposeConjDTernal, decomposeXternal, depth + 1);
+                            if (!b)
+                                return false; //done
+
+                            if (decomposeConjDTernal) {
+                                //the factor component itself
+                                if (factor.op()==CONJ) {
+                                    return factor.eventsWhile(each, offset, decomposeConjParallel, decomposeConjDTernal, decomposeXternal, depth + 1);
+                                } else {
+                                    return each.accept(offset, factor);
+                                }
+                            } else {
+                                return each.accept(offset, this);
+                            }
+                        }
+
+                    }
+
+                    if (decompose = decomposeConjDTernal) {
                         dt = 0;
+                    }
+
                     break;
                 case XTERNAL:
                     if (decompose = decomposeXternal)
@@ -532,14 +579,15 @@ public interface Compound extends Term, IPair, Subterms {
             }
 
             if (decompose) {
+                depth++;
 
                 Subterms tt = subterms();
                 int s = tt.subs();
+
                 long t = offset;
 
                 boolean changeDT = t != ETERNAL && t != TIMELESS && dt != 0 /* motionless in time */;
 
-                level++;
 
                 boolean fwd;
                 if (changeDT) {
@@ -552,9 +600,9 @@ public interface Compound extends Term, IPair, Subterms {
 
                 for (int i = 0; i < s; i++) {
                     Term st = tt.sub(fwd ? i : (s - 1) - i);
-                    if (!st.eventsWhile(events, t,
+                    if (!st.eventsWhile(each, t,
                             decomposeConjParallel, decomposeConjDTernal, decomposeXternal,
-                            level))
+                            depth))
                         return false;
 
                     if (changeDT && i < s - 1)
@@ -567,7 +615,7 @@ public interface Compound extends Term, IPair, Subterms {
 
         }
 
-        return events.accept(offset, this);
+        return each.accept(offset, this);
     }
 
 

@@ -56,17 +56,17 @@ public class Versioned<X> extends FasterList<X> {
      * sets thens commits
      * returns null if the capacity was hit, or some other error
      */
-    @Nullable
-    public Versioned<X> set(X nextValue) {
-        if (size > 0 && get().equals(nextValue))
-            return this;
+    public boolean set(X nextValue) {
+        X existing = get();
+        if (existing!=null) { return existing.equals(nextValue); }
+
         if (addWithoutResize(nextValue)) {
             if (context.add(this))
-                return this;
+                return true;
             else
                 pop();
         }
-        return null;
+        return false;
     }
 
 

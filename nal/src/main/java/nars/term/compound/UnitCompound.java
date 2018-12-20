@@ -180,8 +180,8 @@ public abstract class UnitCompound implements Compound {
 
 
     @Override
-    public boolean eventsWhile(LongObjectPredicate<Term> events, long dt, boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal, int level) {
-        return events.accept(dt, this);
+    public boolean eventsWhile(LongObjectPredicate<Term> each, long dt, boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal, int depth) {
+        return each.accept(dt, this);
     }
 
     @Override

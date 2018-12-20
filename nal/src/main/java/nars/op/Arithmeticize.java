@@ -44,7 +44,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 @Paper
 public class Arithmeticize {
 
-    private static int minInts = 2;
+    private static final int minInts = 2;
 
     final static Variable V = $.varDep("A_");
 

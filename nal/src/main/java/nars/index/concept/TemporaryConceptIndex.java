@@ -15,7 +15,7 @@ import java.util.stream.Stream;
  * */
 public class TemporaryConceptIndex extends AbstractConceptIndex {
 
-    final Map<Term, Termed> permanent = new ConcurrentHashMap<>();
+    final Map<Term, Termed> permanent = new ConcurrentHashMap<>(128);
 
     @Override
     public @Nullable Termed get(Term key, boolean createIfMissing) {

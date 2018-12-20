@@ -182,6 +182,7 @@ public abstract class AbstractTask implements ITask, Prioritizable {
 
     /** execute the given tasks */
     public final static class TasksArray extends AbstractTask {
+
         private final ITask[] tasks;
 
         private TasksArray(ITask[] x, boolean anyOrder) {

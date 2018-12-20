@@ -129,7 +129,7 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
 
         /** taskterm, beliefterm -> extracted */
         final BiFunction<Term,Term,Term> extractX, extractY;
-        private float cost;
+        private final float cost;
 
         ConstraintAsPredicate(RelationConstraint m, byte[] xInTask, byte[] xInBelief, byte[] yInTask, byte[] yInBelief) {
             super($.p(m.ref /*term()*/, $.p(pp(xInTask), pp(xInBelief), pp(yInTask), pp(yInBelief))));

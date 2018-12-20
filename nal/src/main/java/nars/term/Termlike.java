@@ -104,16 +104,21 @@ public interface Termlike {
         return intifyShallow((c, sub) -> match.test(sub) ? c + 1 : c, 0);
     }
 
-    /** return the first subterm matching the predicate, or null if none match */
-    @Nullable
-    default Term subFirst(Predicate<Term> match) {
+    /** return the index of the first subterm matching the predicate, or -1 if none match */
+    default int subIndexFirst(Predicate<Term> match) {
         int s = subs();
         for (int i = 0; i < s; i++) {
             Term si = sub(i);
             if (match.test(si))
-                return si;
+                return i;
         }
-        return null;
+        return -1;
+    }
+    /** return the first subterm matching the predicate, or null if none match */
+    @Nullable
+    default Term subFirst(Predicate<Term> match) {
+        int i = subIndexFirst(match);
+        return i!=-1 ? sub(i) : null;
     }
 
     /**

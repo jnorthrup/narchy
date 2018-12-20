@@ -145,6 +145,7 @@ public class ConjTest {
     void testEventContradictionAmongNonContradictionsRoaring() {
         Conj c = new Conj();
         c.add(ETERNAL, $$("(&&,a,b,c,d,e,f,g,h)"));
+        assertEquals(8, c.eventCount(ETERNAL));
         boolean added = c.add(1, a.neg());
         assertFalse(added);
         assertEquals(False, c.term());
@@ -1785,24 +1786,32 @@ public class ConjTest {
                 $("(a &&+1 --a)").dt(XTERNAL).toString());
 
     }
+
     @Test void testDisjunctionInnerDTERNALConj() {
 
 
-        Term x = $$("(((_1-->_2) &&+670 (--,(_1-->_2)))&&(--,(_3-->_2)))");
+        Term x = $$("((x &&+1 --x) && --y)");
         Conj xc = Conj.from(x);
         assertEq(x, xc.term());
+
+        assertEquals(1, xc.eventCount(0));
+        assertEquals(1, xc.eventCount(1));
+        assertEquals(1, xc.eventCount(ETERNAL));
+
+
         {
-            assertTrue(xc.removeEventsByTerm($$("(_1-->_2)"), true,false));
-            assertEq("((--,(_1-->_2))&&(--,(_3-->_2)))", xc.term());
+            assertTrue(xc.removeEventsByTerm($$("x"), true,false));
+            assertEq("((--,x)&&(--,y))", xc.term());
         }
 
         Term xn = x.neg();
+        assertEq("(||,(--,(x &&+1 (--,x))),y)", xn);
 
         assertEq(
-            $$("(_1-->_2)"),
+            "((||,(--,(x &&+1 (--,x))),y)&&x)",
             CONJ.the(
                     xn,
-                    $$("(_1-->_2)")
+                    $$("x")
             )
         );
 

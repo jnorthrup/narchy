@@ -31,7 +31,7 @@ import static nars.truth.func.TruthFunctions.c2wSafe;
 /**
  * heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
  */
-public class Answer implements AutoCloseable {
+public final class Answer implements AutoCloseable {
 
     public final static int TASK_LIMIT_DEFAULT =
             Param.STAMP_CAPACITY - 1;
@@ -110,7 +110,7 @@ public class Answer implements AutoCloseable {
                         FloatRank.the(beliefStrength(start, end)) : questionStrength(start, end);
 
         FloatRank<Task> r;
-        if (template == null || !template.hasAny(Temporal)) {
+        if (template == null || !template.hasAny(Temporal) || template.equals(template.concept()) /* <- means it will match anything */ ) {
             r = FloatRank.the(strength);
         } else {
             r = complexTaskStrength(strength, template);
@@ -143,26 +143,37 @@ public class Answer implements AutoCloseable {
         Term xt = x.term();
         if (xt.hasAny(Op.Temporal)) {
 
+            int xtv = xt.volume();
             return (t) -> {
+                Term tt = ((Task) t).term();
+                if (xtv != tt.volume())
+                    return Float.NaN;
+
                 float v1 = f.floatValueOf(t); //will be negative
                 if (v1 != v1) return Float.NaN;
 
-                return v1 * (1f + Intermpolate.dtDiff(xt, ((Task) t).term()));
+                return v1 * (1f + Intermpolate.dtDiff(xt, tt));
             };
         } else {
             return f;
         }
     }
 
-    public static FloatRank<Task> complexTaskStrength(FloatRank<Task> strength, @Nullable Term template) {
+    public static FloatRank<Task> complexTaskStrength(FloatRank<Task> strength, Term template) {
         return (x, min) -> {
-            float base = strength.rank(x, min);
-            if (base != base)
-                return Float.NaN;
-            if (base < min)
+
+            float dtDiff = Intermpolate.dtDiff(template, x.term());
+            if (!Float.isFinite(dtDiff))
                 return Float.NaN;
 
-            return base * (1 / (1+ Intermpolate.dtDiff(template, x.term())));
+            float r = strength.rank(x, min);
+            if (r!=r)
+                return Float.NaN;
+            float s = r * (1 / (1+ dtDiff));
+            if (s < min)
+                return Float.NaN;
+
+            return s;
         };
     }
 

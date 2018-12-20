@@ -14,7 +14,7 @@ import static nars.time.Tense.ETERNAL;
 /**
  * Tasklike productions
  */
-public class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
+public final class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
     public final Term term;
 
     public final byte punc;

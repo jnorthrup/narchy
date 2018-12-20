@@ -21,14 +21,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 100;
+    public static final int cycles = 50;
 
     @BeforeEach
     void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.confResolution.set(0.04f); //coarse
-        test.nar.freqResolution.set(0.01f); //coarse
-        test.nar.termVolumeMax.set(24);
+//        test.nar.freqResolution.set(0.02f); //coarse
+        test.nar.termVolumeMax.set(20);
     }
 
     @Test
@@ -256,7 +256,7 @@ public class NAL8Test extends NALTest {
                 .believe("(x &&+3 y)", Tense.Present, 1f, 0.9f)
                 .mustBelieve(cycles, "x", 1f, 0.81f, 0)
                 .mustBelieve(cycles, "y", 1f, 0.81f, 3)
-                .mustGoal(cycles, "x", 1f, 0.81f, t -> t >= 0);
+                .mustGoal(cycles, "x", 1f, 0.81f, t -> t == -3);
     }
 
     @Test
@@ -325,7 +325,7 @@ public class NAL8Test extends NALTest {
         test
                 .goal("(x || y)", Tense.Present, 1f, 0.9f)
                 .inputAt(2, "--x. |")
-                .mustGoal(cycles, "y", 1f, 0.81f, 2)
+                .mustGoal(cycles, "y", 1f, 0.67f, 2)
         ;
     }
 
@@ -934,10 +934,11 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(0, "(--x &&+2 --x).")
                 .inputAt(2, "x! |")
-                .mustNotOutput(cycles, "x", GOAL, 0, 1, 0, 0.85f, t -> true)
+                .mustNotOutput(cycles, "x", GOAL, 0.5f, 1, 0, 0.85f, t -> true)
         ;
 
     }
+
 
     @Test
     void testConjSequenceOutcome() {
@@ -946,7 +947,7 @@ public class NAL8Test extends NALTest {
 
                 .inputAt(0, "(x &&+1 y)! |")
                 .inputAt(0, "(z &&+1 (x &&+1 y)).")
-                .mustGoal(cycles, "z", 1, 0.81f, t -> true)
+                .mustGoal(cycles, "z", 1, 0.66f, t -> true)
         ;
     }
 

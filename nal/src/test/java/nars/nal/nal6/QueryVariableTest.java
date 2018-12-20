@@ -55,14 +55,14 @@ class QueryVariableTest {
     }
 
     @Test
+    void testQuery1() throws Narsese.NarseseException {
+        testQueryAnswered(2, 64);
+    }
+    @Test
     void testQuery2() throws Narsese.NarseseException {
-        testQueryAnswered(4, 16);
+        testQueryAnswered(4, 64);
     }
 
-    @Test
-    void testQuery1() throws Narsese.NarseseException {
-        testQueryAnswered(2, 8);
-    }
 
     private void testQuestionAnswer(String question, String belief) throws Narsese.NarseseException {
 
@@ -105,7 +105,7 @@ class QueryVariableTest {
 
 
         
-        NAR n = NARS.tmp(5);
+        NAR n = NARS.tmp(1);
 
 
 

@@ -167,8 +167,6 @@ public class BatchDeriver extends Deriver {
 
         FasterList<Premise> premises = d.premiseBuffer;
 
-//        int[] tasklinksPerConcept = { nTaskLinks };
-
         tasklinks.sample(rng, Math.min(_tasklinks, nTaskLinks), tasklink -> {
 
             Task task = TaskLink.task(tasklink, nar);
@@ -176,19 +174,21 @@ public class BatchDeriver extends Deriver {
 
                 int[] premisesPerTaskLink = { _termlinksPerTasklink };
 
-                tasksFired.add(task);
 
                 do {
                     Term b = beliefSrc.get();
                     if (b!=null) {
-                        if (premises.add(new Premise(task, b)))
+                        if (premises.add(new Premise(task, b))) {
+                            if (premisesPerTaskLink[0]==_termlinksPerTasklink) //only add on the first
+                                tasksFired.add(task);
+
                             if (premises.size() >= premisesMax)
                                 return false;
+                        }
                     }
                 } while (premisesPerTaskLink[0]-- > 0);
             }
 
-            //return (premisesPerConcept[0]-- > 0);
             return true;
         });
 

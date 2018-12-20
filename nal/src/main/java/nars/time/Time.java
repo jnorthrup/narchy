@@ -30,7 +30,7 @@ public abstract class Time implements Clock, Serializable {
     /**
      * busy mutex
      */
-    private AtomicBoolean scheduling = new AtomicBoolean(false);
+    private final AtomicBoolean scheduling = new AtomicBoolean(false);
 
 
     public void clear(NAR n) {

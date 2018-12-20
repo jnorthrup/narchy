@@ -219,7 +219,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
         private final Joint joint;
 
-        final float margin = 0.1f;
+        final float margin = 0.05f;
 
         public GlueLink(Wire wire) {
             super(wire);

@@ -986,11 +986,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                     while (permutations[0]-- > 0) {
                         Map<Term, Term> m = new UnifiedMap(ns);
-                        for (int i = 0; i < ns; i++) {
-                            Pair<Term, Term[]> si = substs.get(i);
+                        for (Pair<Term, Term[]> si : substs) {
                             Term[] ssi = si.getTwo();
                             Term sssi = ssi[ssi.length > 1 ? rng.nextInt(ssi.length) : 0];
-
                             m.put(si.getOne(), sssi);
                         }
                         Term z = x.replace(m);
@@ -1261,7 +1259,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      * floating, but potentially related to one or more absolute event
      */
 
-    abstract protected class TimeSolver extends Search<Event, TimeSpan> {
+    abstract protected static class TimeSolver extends Search<Event, TimeSpan> {
 
 
     }

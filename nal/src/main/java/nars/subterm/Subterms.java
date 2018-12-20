@@ -216,7 +216,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return true;
     }
 
-    public static boolean isSorted(Term[] s) {
+    static boolean isSorted(Term[] s) {
         if (s.length < 2) return true;
         for (int i = 1; i < s.length; i++)
             if (s[(i - 1)].compareTo(s[i]) >= 0)
@@ -718,7 +718,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     /**
      * xs and ys must have variable bits masked before calling, and xs!=0 and ys!=0
      */
-    public static boolean possiblyUnifiable(int xs, int ys, int varBits) {
+    static boolean possiblyUnifiable(int xs, int ys, int varBits) {
         int xxs = xs & (~varBits);
         if (xxs == 0)
             return true; //all var

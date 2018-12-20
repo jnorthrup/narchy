@@ -33,7 +33,7 @@ public abstract class TermVector extends TermMetadata implements Subterms, The, 
         the = isThe(terms);
     }
 
-    private boolean isThe(Term[] terms) {
+    private static boolean isThe(Term[] terms) {
         return Util.and(terms, Term::the);
     }
 

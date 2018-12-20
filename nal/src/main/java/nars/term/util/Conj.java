@@ -86,9 +86,16 @@ public class Conj extends ByteAnonMap {
         event = new LongObjectHashMap<>(n);
     }
 
+    public int eventCount(long when) {
+        Object e = event.get(when);
+        return e!=null ? Conj.eventCount(e) : 0;
+    }
+
     public static int eventCount(Object what) {
         if (what instanceof byte[]) {
-            return indexOfZeroTerminated((byte[]) what, (byte) 0);
+            byte[] b = (byte[]) what;
+            int i = indexOfZeroTerminated(b, (byte) 0);
+            return i == -1 ? b.length : i;
         } else {
             return ((ImmutableBitmapDataProvider) what).getCardinality();
         }
@@ -330,6 +337,11 @@ public class Conj extends ByteAnonMap {
 //                assert (y != null);
         }
         return y.negIf(negated);
+    }
+
+    /** whether the conjunction is a sequence (includes check for factored inner sequence) */
+    public static boolean isSeq(Term conj) {
+        return !dtSpecial(conj.dt()) || (conj.subterms().structureSurface()&CONJ.bit) != 0;
     }
 
     private void negateEvents() {
@@ -663,7 +675,6 @@ public class Conj extends ByteAnonMap {
 
         if (x instanceof Compound && x.op() == CONJ) {
             int xdt = x.dt();
-
             if (xdt == DTERNAL) {
                 if (at == ETERNAL) {
                     Subterms tt = x.subterms();
@@ -1057,8 +1068,11 @@ public class Conj extends ByteAnonMap {
             return d;
 
         } else {
-            assert(incoming.dt()!=dtOuter);
-            return terms.theSortedCompound(CONJ, dtOuter, conj, incoming);
+            if (incoming.dt() == dtOuter) {
+                return terms.conj(dtOuter, conj, incoming);
+            } else {
+                return terms.theSortedCompound(CONJ, dtOuter, conj, incoming);
+            }
         }
 
     }

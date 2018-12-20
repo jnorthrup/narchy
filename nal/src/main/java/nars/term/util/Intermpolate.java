@@ -153,12 +153,7 @@ public enum Intermpolate { ;
      * a is left aligned, dt is any temporal shift between where the terms exist in the callee's context
      */
     public static Term intermpolate(/*@NotNull*/ Term a, long dt, /*@NotNull*/ Term b, float aProp, NAR nar) {
-        Term term = intermpolate(a, dt, b, aProp, 1, nar);
-
-        if (term.volume() > nar.termVolumeMax.intValue())
-            return Null;
-
-        return term;
+        return intermpolate(a, dt, b, aProp, 1, nar);
     }
 
     /**
@@ -171,9 +166,19 @@ public enum Intermpolate { ;
      * XTERNAL matches anything
      */
     public static float dtDiff(Term a, Term b) {
+//        if (a.volume()!=b.volume())
+//            return Float.POSITIVE_INFINITY;
+//        else
         float d = dtDiff(a, b, 1);
-        //return Util.assertUnitized(d);
+        if (d == 0)
+            return 0;
+
+        if (!Float.isFinite(d))
+            d = 1;
+        d = Math.min(1, d);
         return d;
+
+
     }
 
     private static float dtDiff(Term a, Term b, int depth) {

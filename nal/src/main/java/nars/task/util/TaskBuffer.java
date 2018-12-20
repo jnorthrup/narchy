@@ -54,7 +54,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
     //final AtomicLong in = new AtomicLong(), out = new AtomicLong(), drop = new AtomicLong(), merge = new AtomicLong();
 
 
-    public final float merge(Task pp, Task tt) {
+    public static float merge(Task pp, Task tt) {
         if (pp == tt)
             return 0;
 
@@ -162,7 +162,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
                 ) {
                     @Override
                     protected float merge(Task existing, Task incoming) {
-                        return BagTasksBuffer.this.merge(existing, incoming);
+                        return TaskBuffer.merge(existing, incoming);
                     }
                 };
 

@@ -131,9 +131,9 @@ public class Premise implements Comparable<Premise> {
         NAR n = d.nar;
 
         Concept beliefConcept = beliefTerm.op().conceptualizable ?
-                n.concept(beliefTerm)
+                n.conceptualizeDynamic(beliefTerm)
+                //n.concept(beliefTerm)
                 //n.conceptualize(beliefTerm)
-                //n.conceptualizeDynamic(beliefTerm)
                 :
                 null;
 
@@ -300,7 +300,7 @@ public class Premise implements Comparable<Premise> {
     }
 
 
-    public final void derive(Derivation d, int matchTTL, int deriveTTL) {
+    public final boolean derive(Derivation d, int matchTTL, int deriveTTL) {
 
         Counter result;
 
@@ -313,6 +313,9 @@ public class Premise implements Comparable<Premise> {
                 d.derive(deriveTTL);
 
                 result = e.premiseFire; //premiseFired(p, d);
+
+                return true;
+
             } else {
                 result = e.premiseUnderivable; //premiseUnderivable(p, d);
             }
@@ -323,6 +326,7 @@ public class Premise implements Comparable<Premise> {
 
         result.increment();
 
+        return false;
 
     }
 

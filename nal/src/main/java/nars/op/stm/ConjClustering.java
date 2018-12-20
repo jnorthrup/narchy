@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
+import jcog.math.LongInterval;
 import jcog.pri.Prioritizable;
 import jcog.pri.VLink;
 import nars.NAR;
@@ -51,7 +52,7 @@ public class ConjClustering extends Causable {
     private float confMin;
     private int volMax, volMaxSafe;
     private int ditherTime;
-    private boolean popConjoinedTasks = false;
+    private final boolean popConjoinedTasks = false;
     static final boolean priCopyOrTransfer = false;
 
     final AtomicBoolean learn = new AtomicBoolean(true);
@@ -307,7 +308,7 @@ public class ConjClustering extends Causable {
                             ObjectBooleanPair<Term> cp = Task.tryContent(tt, punc, true);
                             if (cp != null) {
 
-                                long range = actualTasks.minValue((Task ttt) -> ttt.range()) - 1;
+                                long range = actualTasks.minValue(LongInterval::range) - 1;
                                 long tEnd = start + range;
                                 NALTask m = new STMClusterTask(cp, t,
                                         Tense.dither(start, ditherTime), Tense.dither(tEnd,ditherTime),

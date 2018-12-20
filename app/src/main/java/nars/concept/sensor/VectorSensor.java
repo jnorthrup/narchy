@@ -12,9 +12,6 @@ import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import static nars.Op.BELIEF;
 
 /**
@@ -57,31 +54,25 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     }
 
 
-
     @Override
     public void update(long last, long now, long next, NAR nar) {
 
-        in.input(updateSensor(last, now, nar));
-    }
-
-    public final Stream<SeriesBeliefTable.SeriesRemember> updateSensor(long last, long now, NAR nar) {
         float confDefault = nar.confDefault(BELIEF);
         float min = nar.confMin.floatValue();
-
-        return updateSensor(last, now, (p, n) -> {
+        FloatFloatToObjectFunction<Truth> truther = (p, n) -> {
             float c = confDefault;// * Math.abs(n - 0.5f) * 2f;
             return c > min ? $.t(n, c) : null;
-        });
-    }
+        };
 
-    protected final Stream<SeriesBeliefTable.SeriesRemember> updateSensor(long last, long now, FloatFloatToObjectFunction<Truth> truther) {
-        return StreamSupport.stream(spliterator(), false).map(s -> {
-            SeriesBeliefTable.SeriesRemember r = s.update(last, now, truther, nar);
-            if (r!=null) {
-                attn.ensure(r.input, attn.elementPri(nar));
+        for (Signal s : this) {
+
+            SeriesBeliefTable.SeriesRemember r = s.update(last, now, truther, this.nar);
+
+            if (r != null) {
+                attn.ensure(r.input, attn.elementPri(this.nar));
+                in.input(r);
             }
-            return r;
-        });
+        }
     }
 
 }

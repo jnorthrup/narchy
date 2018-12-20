@@ -150,8 +150,7 @@ public class Remember extends AbstractTask {
     private void commit(NAR n) {
         Term conceptTerm = concept!=null ? concept.term() : null;
 
-        for (int i = 0, rememberedSize = remembered.size(); i < rememberedSize; i++) {
-            ITask r = remembered.get(i);
+        for (ITask r : remembered) {
             if (r instanceof Task) {
                 commit(n, conceptTerm, (Task) r);
             } else {

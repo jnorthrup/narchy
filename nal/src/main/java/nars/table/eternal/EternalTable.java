@@ -238,6 +238,10 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         Task oldBelief = null;
         Truth conclusion = null;
 
+        Term newTerm = null;
+        Term inputTerm = input.term();
+        float aProp = Float.NaN;
+
         for (Object aList : list) {
             if (aList == null)
                 break;
@@ -252,63 +256,62 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
                     conclusion = $.t((x.freq() + input.freq()) / 2, xconf).dithered(nar);
 
-                } else {
-
-                    continue;
                 }
 
             } else {
 
-
                 Truth xt = x.truth();
+
+                final float newBeliefWeight = input.evi();
+
+                aProp = newBeliefWeight / (newBeliefWeight + x.evi());
+
+                Term nt =
+                        Intermpolate.intermpolate(
+                                inputTerm, x.term(),
+                                aProp,
+                                nar
+                        );
+
+                if (!nt.concept().equals(inputTerm.concept()))
+                    continue;
 
                 Truth newBeliefTruth = input.truth();
 
-                Truth yt = Revision.revise(newBeliefTruth, xt, 1f, conclusion == null ? 0 : conclusion.evi());
+                Truth yt = Revision.revise(newBeliefTruth, xt);
                 if (yt == null)
                     continue;
 
                 yt = yt.dithered(nar);
-                if (yt == null || yt.equalsIn(xt, nar) || yt.equalsIn(newBeliefTruth, nar))
+                if (yt == null || (nt.equals(inputTerm) && ((yt.equalsIn(xt, nar) || yt.equalsIn(newBeliefTruth, nar)))))
                     continue;
 
+                newTerm = nt;
                 conclusion = yt;
+                oldBelief = x;
             }
-
-            oldBelief = x;
 
         }
 
         NALTask revised;
         if (oldBelief != null && conclusion != null) {
 
-            final float newBeliefWeight = input.evi();
 
-
-            float aProp = newBeliefWeight / (newBeliefWeight + oldBelief.evi());
-            Term t =
-                    Intermpolate.intermpolate(
-                            input.term(), oldBelief.term(),
-                            aProp,
-                            nar
-                    );
-
-
-            Task prevBelief = oldBelief;
-            revised = Task.tryTask(t, input.punc(), conclusion, (term, revisionTruth) ->
+            Task finalOldBelief = oldBelief;
+            float finalAProp = aProp;
+            revised = Task.tryTask(newTerm, input.punc(), conclusion, (term, revisionTruth) ->
                     new NALTask(term,
                             input.punc(),
                             revisionTruth,
                             nar.time() /* creation time */,
                             ETERNAL, ETERNAL,
-                            Stamp.merge(input.stamp(), prevBelief.stamp(), aProp, nar.random())
+                            Stamp.merge(input.stamp(), finalOldBelief.stamp(), finalAProp, nar.random())
                     )
             );
             if (revised != null) {
                 //TODO maybe based on relative evidence
-                revised.pri(Prioritizable.fund(Math.max(prevBelief.priElseZero(), input.priElseZero()), false, prevBelief, input));
-                revised.cause(CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(), input, prevBelief));
-
+                revised.pri(Prioritizable.fund(Math.max(finalOldBelief.priElseZero(), input.priElseZero()), false, finalOldBelief, input));
+                revised.cause(CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(), input, finalOldBelief));
 
 
                 if (Param.DEBUG)
@@ -334,6 +337,9 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     }
 
     public boolean contains(Remember r) {
+        if (size == 0)
+            return false;
+
         //scan list for existing equal task
         Object[] list = this.items;
 
@@ -341,24 +347,23 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         Task existing = null;
 
 
+        synchronized (this) {
+            for (Object aList : list) {
+                if (aList == null)
+                    break;
 
-        //synchronized (this) {
-        for (Object aList : list) {
-            if (aList == null)
-                break;
-
-            Task x = (Task) aList;
-            if (x.equals(input)) {
-                existing = x;
-                break;
+                Task x = (Task) aList;
+                if (x.equals(input)) {
+                    existing = x;
+                    break;
+                }
             }
         }
-        //}
+
         if (existing != null) {
             r.merge(existing);
             return true;
         }
-
 
         int cap = capacity();
         if (cap == 0) {

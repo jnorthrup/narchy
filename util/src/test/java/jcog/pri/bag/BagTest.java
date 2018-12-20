@@ -192,7 +192,7 @@ class BagTest {
         if (bag.size() < 3)
             return; //histogram tests wont apply
 
-        int bins = (int) Math.min(10, Math.max(3, cap/2));
+        int bins = Math.min(8, Math.max(3, cap/2));
         Tensor f1 = samplingPriDist(bag, batches, batchSize, bins);
 
         String h = "cap=" + cap + " total=" + (batches * batchSize);

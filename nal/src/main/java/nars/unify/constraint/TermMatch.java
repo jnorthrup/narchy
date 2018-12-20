@@ -71,7 +71,7 @@ abstract public class TermMatch {
 
         @Override
         public float cost() {
-            return 0.1f;
+            return 0.03f;
         }
 
         @Override
@@ -309,7 +309,7 @@ abstract public class TermMatch {
 
         @Override
         public boolean invalid(Term y, Unify f) {
-            return (TermMatch.this.test(y) != trueOrFalse);
+            return TermMatch.this.test(y) != trueOrFalse;
         }
     }
 }

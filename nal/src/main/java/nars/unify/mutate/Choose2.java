@@ -74,8 +74,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
         boolean phase = true;
 
         int start = f.size();
-        ShuffledSubterms yy = new ShuffledSubterms(yFree, u.random  /*new ArrayTermVector(yFree)*/);;
-
+        ShuffledSubterms yy = new ShuffledSubterms(yFree, u.random  /*new ArrayTermVector(yFree)*/);
 
 
         Ellipsis xEllipsis = this.xEllipsis;

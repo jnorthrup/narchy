@@ -341,7 +341,7 @@ abstract public class MultiExec extends UniExec {
             b.forEach(this::executeNow);
         } else {
 
-            float granularity = 1 * (concurrency/2);
+            float granularity = 1 * (concurrency/2f);
             int chunkSize = Math.max(1, (int) Math.min(concurrency, b.size() / (granularity)));
 
             (((FasterList<?>) b).chunkView(chunkSize))
@@ -551,7 +551,7 @@ abstract public class MultiExec extends UniExec {
                     int available = in.size(); //in.capacity();
                     float granularity =
                             //concurrency() - 1;
-                            concurrency() / 2;
+                            concurrency() / 2f;
                             //1;
                     int batchSize =
                             Util.lerp(nar.loop.throttle.floatValue(),
