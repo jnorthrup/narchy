@@ -37,7 +37,7 @@ import spacegraph.space2d.phys.common.Transform;
 public abstract class Shape {
 
     public final ShapeType m_type;
-    public float radius;
+    public float skinRadius;
 
     Shape(ShapeType type) {
         this.m_type = type;
@@ -58,18 +58,19 @@ public abstract class Shape {
      *
      * @return
      */
-    float getRadius() {
-        return radius;
+    float getSkinRadius() {
+        return skinRadius;
     }
+
 
     /**
      * Sets the radius of the underlying shape. This can refer to different things depending on the
      * implementation
      *
-     * @param radius
+     * @param skinRadius
      */
-    void setRadius(float radius) {
-        this.radius = radius;
+    void setSkinRadius(float skinRadius) {
+        this.skinRadius = skinRadius;
     }
 
     /**

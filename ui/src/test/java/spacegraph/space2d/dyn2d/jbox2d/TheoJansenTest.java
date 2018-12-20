@@ -92,7 +92,7 @@ public class TheoJansenTest implements Consumer<Dynamics2D> {
         
         for (int i = 0; i < 40; ++i) {
             CircleShape shape = new CircleShape();
-            shape.radius = 0.25f;
+            shape.skinRadius = 0.25f;
 
             BodyDef bd = new BodyDef();
             bd.type = BodyType.DYNAMIC;
@@ -120,7 +120,7 @@ public class TheoJansenTest implements Consumer<Dynamics2D> {
 
         {
             CircleShape shape = new CircleShape();
-            shape.radius = 1.6f;
+            shape.skinRadius = 1.6f;
 
             FixtureDef sd = new FixtureDef();
             sd.density = 1.0f;

@@ -501,13 +501,13 @@ public class Distance {
                     final CircleShape circle = (CircleShape) shape;
                     m_vertices[0].set(circle.center);
                     m_count = 1;
-                    m_radius = circle.radius;
+                    m_radius = circle.skinRadius;
 
                     break;
                 case POLYGON:
                     final PolygonShape poly = (PolygonShape) shape;
                     m_count = poly.vertices;
-                    m_radius = poly.radius;
+                    m_radius = poly.skinRadius;
                     for (int i = 0; i < m_count; i++) {
                         m_vertices[i].set(poly.vertex[i]);
                     }
@@ -526,14 +526,14 @@ public class Distance {
                     m_vertices[0].set(m_buffer[0]);
                     m_vertices[1].set(m_buffer[1]);
                     m_count = 2;
-                    m_radius = chain.radius;
+                    m_radius = chain.skinRadius;
                     break;
                 case EDGE:
                     EdgeShape edge = (EdgeShape) shape;
                     m_vertices[0].set(edge.m_vertex1);
                     m_vertices[1].set(edge.m_vertex2);
                     m_count = 2;
-                    m_radius = edge.radius;
+                    m_radius = edge.skinRadius;
                     break;
                 default:
                     assert (false);

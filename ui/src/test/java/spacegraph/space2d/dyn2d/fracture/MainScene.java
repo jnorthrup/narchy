@@ -39,7 +39,7 @@ public class MainScene implements Consumer<Dynamics2D> {
             ball.linearVelocity = new v2(100.0f, 0.0f);
             Body2D ballBody = w.addBody(ball);
             CircleShape circleShape = new CircleShape();
-            circleShape.radius = 1.0f;
+            circleShape.skinRadius = 1.0f;
             Fixture fb = ballBody.addFixture(circleShape, 5.0f);
             fb.friction = 0.4f; 
             fb.restitution = 0.1f; 

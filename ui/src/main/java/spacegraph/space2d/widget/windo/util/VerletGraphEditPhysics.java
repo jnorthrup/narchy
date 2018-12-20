@@ -9,7 +9,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.MetaFrame;
-import spacegraph.space2d.widget.port.util.Wire;
+import spacegraph.space2d.widget.port.Wire;
 import spacegraph.space2d.widget.shape.VerletSurface;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.space2d.widget.windo.Link;
@@ -104,7 +104,7 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
                     chainLen, 0f /* some minimal # */, 0.5f);
 
             List<VerletSpring2D> springs = chain.getTwo();
-            offs.add(() -> {
+            on(() -> {
                 //destroy the chain springs on destruction
                 springs.forEach(physics.physics::removeSpringAndItsParticles);
             });
@@ -134,14 +134,14 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
 
             /** link rendering */
             Surface r = renderer(chain);
-            hold(r);
+            on(r);
 
             graph.addRaw(r);
         }
 
         void bind(Surface gripWindow, VerletParticle2D particle, boolean surfaceOverrides, VerletSurface.VerletSurfaceBinding where, GraphEdit g) {
             physics.bind(gripWindow, particle, surfaceOverrides, where);
-            hold(gripWindow);
+            on(gripWindow);
         }
 
         private Surface renderer(Pair<List<VerletParticle2D>, List<VerletSpring2D>> chain) {

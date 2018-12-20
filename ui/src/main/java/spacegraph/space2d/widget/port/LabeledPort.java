@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.port;
 
-import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.function.Function;

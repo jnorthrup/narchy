@@ -24,7 +24,7 @@ public class Circle implements Consumer<Dynamics2D> {
             bodyDef2.angularVelocity = 0.0f; 
             Body2D newBody = w.addBody(bodyDef2);
             CircleShape shape2 = new CircleShape();
-            shape2.radius = 2.5f;
+            shape2.skinRadius = 2.5f;
             Fixture f = newBody.addFixture(shape2, 1.0f);
             f.friction = 0.5f; 
             f.restitution = 0.0f; 

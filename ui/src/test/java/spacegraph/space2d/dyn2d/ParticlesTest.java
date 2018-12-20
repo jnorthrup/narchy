@@ -49,7 +49,7 @@ public class ParticlesTest implements Consumer<Dynamics2D> {
         {
             CircleShape shape = new CircleShape();
             shape.center.set(0, 30);
-            shape.radius = 20;
+            shape.skinRadius = 20;
             ParticleGroupDef pd = new ParticleGroupDef();
             pd.flags = ParticleType.b2_waterParticle;
             pd.shape = shape;
@@ -62,7 +62,7 @@ public class ParticlesTest implements Consumer<Dynamics2D> {
             Body2D body = m_world.addBody(bd);
             CircleShape shape = new CircleShape();
             shape.center.set(0, 80);
-            shape.radius = 5;
+            shape.skinRadius = 5;
             body.addFixture(shape, 0.5f);
         }
 

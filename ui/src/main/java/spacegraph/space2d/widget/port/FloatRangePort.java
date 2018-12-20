@@ -3,7 +3,6 @@ package spacegraph.space2d.widget.port;
 import jcog.math.FloatRange;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.space2d.widget.port.util.Wiring;
 import spacegraph.space2d.widget.slider.FloatSlider;
 

@@ -20,6 +20,7 @@ import spacegraph.space2d.widget.chip.WaveViewChip;
 import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.meter.WaveView;
 import spacegraph.space2d.widget.port.*;
+import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.space2d.widget.windo.Windo;
@@ -286,7 +287,27 @@ public class GraphEditTest {
             w.add(new IntPort()).posRel(0.5f,0.5f,0.05f,0.05f);
             w.add(new IntPort()).posRel(0.5f,0.5f,0.05f,0.05f);
 
-            w.add(new TypedPort<>(Tensor.class)).pos(100, 100, 400, 400);
+            w.add(new TypedPort<>(Tensor.class)).posRel(0.5f,0.5f,0.05f,0.05f);
+        }
+    }
+
+    public static class SproutPortTest {
+
+        public static void main(String[] args) {
+            GraphEdit w = GraphEdit.window(1000, 1000);
+
+            Windo x = w.add(
+                    //new OKSurface("NOT OK")
+                    new XYSlider()
+            ).posRel(0.5f, 0.5f, 0.25f, 0.25f);
+
+            for (int i = 0; i < 10; i++) {
+                Windo y = w.addWeak(new TogglePort()).posRel(x, -0.5f, 0.5f, 0.05f, 0.05f);
+
+                w.addWire(new Wire(x.the(), y.the()));
+            }
+
+
         }
     }
 

@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.windo.util;
 
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.EmptySurface;
-import spacegraph.space2d.widget.port.util.Wire;
+import spacegraph.space2d.widget.port.Wire;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.space2d.widget.windo.Link;
 import spacegraph.space2d.widget.windo.Windo;

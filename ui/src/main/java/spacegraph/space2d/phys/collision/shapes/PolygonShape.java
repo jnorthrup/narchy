@@ -64,8 +64,6 @@ public class PolygonShape extends Shape {
      */
     public int vertices;
 
-
-
     private final Transform poolt1 = new Transform();
 
     public PolygonShape() {
@@ -84,7 +82,7 @@ public class PolygonShape extends Shape {
         for (int i = 0; i < normals.length; i++) {
             normals[i] = new v2(0, 0);
         }
-        setRadius(Settings.polygonRadius);
+        setSkinRadius(Settings.polygonRadius);
         centroid.setZero();
     }
 
@@ -105,7 +103,7 @@ public class PolygonShape extends Shape {
             shape.normals[i].set(normals[i]);
             shape.vertex[i].set(vertex[i]);
         }
-        shape.setRadius(this.getRadius());
+        shape.setSkinRadius(this.getSkinRadius());
         shape.vertices = this.vertices;
         return shape;
     }
@@ -173,9 +171,8 @@ public class PolygonShape extends Shape {
 
 
         for (int i = 0; i < vertices; ++i) {
-            if (vertex[i] == null) {
+            if (vertex[i] == null)
                 vertex[i] = new v2();
-            }
             vertex[i].set(verts[hull[i]]);
         }
 
@@ -185,7 +182,7 @@ public class PolygonShape extends Shape {
             final int i2 = i + 1 < vertices ? i + 1 : 0;
             edge.set(vertex[i2]).subbed(vertex[i1]);
 
-            assert (edge.lengthSquared() > Settings.EPSILON * Settings.EPSILON);
+            //assert (edge.lengthSquared() > Settings.EPSILONsqr);
             v2.crossToOutUnsafe(edge, 1f, normals[i]);
             normals[i].normalize();
         }
@@ -358,10 +355,10 @@ public class PolygonShape extends Shape {
             upper.y = upper.y > vy ? upper.y : vy;
         }
 
-        lower.x -= radius;
-        lower.y -= radius;
-        upper.x += radius;
-        upper.y += radius;
+        lower.x -= skinRadius;
+        lower.y -= skinRadius;
+        upper.x += skinRadius;
+        upper.y += skinRadius;
     }
 
     /**

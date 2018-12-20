@@ -40,13 +40,13 @@ public class AbstractGoalActionConcept extends ActionConcept {
     private final CuriosityGoalTable curiosityTable;
 
     /** current calculated goalTask */
-    protected volatile @Nullable Truth actionTruth;
+    protected @Nullable Truth actionTruth;
 
     /** truth calculated (in attempt to) excluding curiosity */
-    protected volatile @Nullable Truth actionDex;
+    protected @Nullable Truth actionDex;
 
     /** latches the last non-null actionDex, used for echo/sustain */
-    public volatile @Nullable Truth lastActionDex;
+    public @Nullable Truth lastActionDex;
 
     protected final CauseChannel<ITask> in;
 

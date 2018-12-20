@@ -1,8 +1,8 @@
-package spacegraph.space2d.widget.port.util;
+package spacegraph.space2d.widget.port;
 
 import jcog.Util;
+import jcog.event.Offs;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.widget.port.Port;
 
 import java.lang.reflect.Array;
 
@@ -13,11 +13,12 @@ public class Wire {
 
     private final int hash;
 
-
     private volatile long aLastActive = Long.MIN_VALUE, bLastActive = Long.MIN_VALUE;
     private volatile int aTypeHash = 0, bTypeHash = 0;
 
     public final Surface a, b;
+
+    public final Offs offs = new Offs();
 
     protected Wire(Wire copy) {
         this.a = copy.a;
@@ -113,11 +114,11 @@ public class Wire {
         return activity(true, now, window) + activity(false, now, window);
     }
 
-    public final boolean connect() {
-        if (a instanceof Port && b instanceof Port) {
-            synchronized (this) {
-                return ((Port) a).connected((Port) b) && ((Port) b).connected((Port) a);
-            }
+    public final boolean connectable() {
+        if (a instanceof Port && b instanceof Port) { //HACK
+            //synchronized (this) {
+                return ((Port) a).connectable((Port) b) && ((Port) b).connectable((Port) a);
+            //}
         }
 
         return true;
@@ -131,7 +132,15 @@ public class Wire {
             return x;
     }
 
-    public void remove() {
+    public final void remove() {
+        offs.off();
+    }
 
+    /** override in subclasses to implement behavior to be executed after wire connection has been established in the graph. */
+    public void connected() {
+        if (a instanceof Port && b instanceof Port) { //HACK
+            ((Port) a).connected((Port) b);
+            ((Port) b).connected((Port) a);
+        }
     }
 }

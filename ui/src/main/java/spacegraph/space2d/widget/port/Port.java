@@ -9,7 +9,6 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.widget.Widget;
-import spacegraph.space2d.widget.port.util.Wire;
 import spacegraph.space2d.widget.port.util.Wiring;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.video.Draw;
@@ -112,7 +111,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         return enabled;
     }
 
-    public boolean connected(Port other) {
+    final boolean connectable(Port other) {
         if (other.specifyHow != null) {
 
             if (specifyHow != null) {
@@ -127,6 +126,11 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         }
 
         return true;
+    }
+
+    /* override in subclasses to implement behavior to be executed after wire connection has been established in the graph. */
+    void connected(Port a) {
+
     }
 
     @FunctionalInterface
@@ -245,9 +249,9 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     public boolean stop() {
         GraphEdit p = parent(GraphEdit.class);
         if (super.stop()) {
+            node = null;
             if (p != null)
                 p.links.removeNode(this);
-            node = null;
             return true;
         }
         return false;

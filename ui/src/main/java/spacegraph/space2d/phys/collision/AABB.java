@@ -109,14 +109,10 @@ public class AABB {
      *
      * @return
      */
-    public final v2 getCenter() {
-        final v2 center = new v2(lowerBound);
-        center.addLocal(upperBound);
-        center.scaled(.5f);
-        return center;
+    public final v2 center() {
+        return new v2(0.5f * (upperBound.x + lowerBound.x), 0.5f * (upperBound.y + lowerBound.y));
     }
-
-    public final void getCenterToOut(final v2 out) {
+    public final void centerToOut(final v2 out) {
         out.x = (lowerBound.x + upperBound.x) * .5f;
         out.y = (lowerBound.y + upperBound.y) * .5f;
     }
@@ -126,19 +122,16 @@ public class AABB {
      *
      * @return
      */
-    public final v2 getExtents() {
-        final v2 center = new v2(upperBound);
-        center.subbed(lowerBound);
-        center.scaled(.5f);
-        return center;
+    public final v2 extents() {
+        return new v2(0.5f * (upperBound.x - lowerBound.x), 0.5f * (upperBound.y - lowerBound.y));
     }
 
-    public final void getExtentsToOut(final v2 out) {
+    public final void extentsToOut(final v2 out) {
         out.x = (upperBound.x - lowerBound.x) * .5f;
         out.y = (upperBound.y - lowerBound.y) * .5f; 
     }
 
-    public final void getVertices(v2[] argRay) {
+    public final void vertices(v2[] argRay) {
         argRay[0].set(lowerBound);
         argRay[1].set(lowerBound);
         argRay[1].x += upperBound.x - lowerBound.x;

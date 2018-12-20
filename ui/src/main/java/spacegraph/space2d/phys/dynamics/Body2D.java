@@ -117,6 +117,8 @@ public class Body2D extends Transform {
 
     private Object data;
 
+    private final MassData pmd = new MassData();
+
     public final static AtomicInteger serial = new AtomicInteger();
     private final int id = serial.incrementAndGet();
 
@@ -706,7 +708,7 @@ public class Body2D extends Transform {
             m_invI = 1.0f / m_I;
         }
 
-        final v2 oldCenter = W.pool.popVec2();
+        final v2 oldCenter = new v2();
 
         oldCenter.set(sweep.c);
         sweep.localCenter.set(massData.center);
@@ -715,7 +717,7 @@ public class Body2D extends Transform {
         sweep.c.set(sweep.c0);
 
 
-        final v2 temp = W.pool.popVec2();
+        final v2 temp = new v2();
         temp.set(sweep.c).subbed(oldCenter);
         v2.crossToOut(velAngular, temp, temp);
         vel.added(temp);
@@ -723,7 +725,6 @@ public class Body2D extends Transform {
         W.pool.pushVec2(2);
     }
 
-    private final MassData pmd = new MassData();
 
     /**
      * This resets the mass properties to the sum of the mass properties of the fixtures. This
@@ -759,9 +760,9 @@ public class Body2D extends Transform {
         assert (type == DYNAMIC);
 
 
-        final v2 localCenter = W.pool.popVec2();
+        final v2 localCenter = new v2();
         localCenter.set(0, 0);
-        final v2 temp = W.pool.popVec2();
+        final v2 temp = new v2();
         for (Fixture f = fixtures; f != null; f = f.next) {
             if (f.density == 0.0f) {
                 continue;
@@ -794,7 +795,7 @@ public class Body2D extends Transform {
             m_invI = 0.0f;
         }
 
-        v2 oldCenter = W.pool.popVec2();
+        v2 oldCenter = new v2();
 
         oldCenter.set(sweep.c);
         sweep.localCenter.set(localCenter);
@@ -809,7 +810,6 @@ public class Body2D extends Transform {
         v2.crossToOutUnsafe(velAngular, temp, temp2);
         vel.added(temp2);
 
-        W.pool.pushVec2(3);
     }
 
     /**
@@ -1192,14 +1192,14 @@ public class Body2D extends Transform {
     /**
      * Get the user data pointer that was provided in the body definition.
      */
-    public final Object data() {
-        return data;
+    public final <X> X data() {
+        return (X) data;
     }
 
     /**
      * Set the user data. Use this to store your application specific data.
      */
-    protected final void setData(Object data) {
+    public final void setData(Object data) {
         this.data = data;
     }
 

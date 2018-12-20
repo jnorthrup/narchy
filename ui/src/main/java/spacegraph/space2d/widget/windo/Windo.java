@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.windo;
 
 import com.jogamp.opengl.GL2;
 import jcog.math.v2;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.*;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
@@ -299,10 +300,15 @@ public class Windo extends MutableUnitContainer {
 
     public Windo posRel(float cx, float cy, float pctX, float pctY) {
         GraphEdit p = parent(GraphEdit.class);
-        float pw = p.w(), ph = p.h();
-        float w = pw * pctX;
-        float h = ph * pctY;
-        posXYWH(cx * pw, cy * ph, w, h);
+        return posRel(p, cx, cy, pctX, pctY);
+    }
+
+    public Windo posRel(Surface s, float cx, float cy, float pctX, float pctY) {
+        return posRel(s.bounds, cx, cy, pctX, pctY);
+    }
+
+    public Windo posRel(RectFloat bounds, float cx, float cy, float pctX, float pctY) {
+        pos(bounds.rel(cx, cy, pctX, pctY));
         return this;
     }
 

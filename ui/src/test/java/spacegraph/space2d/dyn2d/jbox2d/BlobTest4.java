@@ -54,7 +54,7 @@ public class BlobTest4 implements Consumer<Dynamics2D> {
 
       FixtureDef fd = new FixtureDef();
       CircleShape cd = new CircleShape();
-      cd.radius = bodyRadius;
+      cd.skinRadius = bodyRadius;
       fd.shape = cd;
       fd.density = 1.0f;
       body.addFixture(fd);

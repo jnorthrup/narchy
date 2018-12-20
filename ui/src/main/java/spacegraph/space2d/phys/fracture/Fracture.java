@@ -85,7 +85,7 @@ public final class Fracture {
                 case CIRCLE:
                     CircleShape cs = (CircleShape) s;
                     p = new Polygon(CIRCLEVERTICES);
-                    float radius = cs.radius;
+                    float radius = cs.skinRadius;
 
                     double u = Math.PI * 2 / CIRCLEVERTICES;
                     radius = (float) Math.sqrt(u / Math.sin(u)) * radius; 

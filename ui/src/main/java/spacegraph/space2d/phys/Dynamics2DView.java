@@ -77,7 +77,7 @@ public class Dynamics2DView extends Surface {
                     case CIRCLE:
 
                         CircleShape circle = (CircleShape) shape;
-                        float r = circle.radius;
+                        float r = circle.skinRadius;
                         v2 v = new v2();
                         body.getWorldPointToOut(circle.center, v);
                         renderer.drawCircle(v, r, new Color3f(0.25f,0.25f,0.5f));

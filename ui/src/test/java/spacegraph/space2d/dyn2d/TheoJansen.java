@@ -81,7 +81,7 @@ public class TheoJansen {
 
         {
             CircleShape shape = new CircleShape();
-            shape.radius = scale * 1.6f;
+            shape.skinRadius = scale * 1.6f;
 
             FixtureDef sd = new FixtureDef();
             sd.density = 1.0f;

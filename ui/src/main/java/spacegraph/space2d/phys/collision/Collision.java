@@ -220,7 +220,7 @@ public class Collision {
         float distSqr = dx * dx + dy * dy;
         
 
-        final float radius = circle1.radius + circle2.radius;
+        final float radius = circle1.skinRadius + circle2.skinRadius;
         if (distSqr > radius * radius) {
             return;
         }
@@ -271,7 +271,7 @@ public class Collision {
         
         int normalIndex = 0;
         float separation = -Float.MAX_VALUE;
-        final float radius = polygon.radius + circle.radius;
+        final float radius = polygon.skinRadius + circle.skinRadius;
         final int vertexCount = polygon.vertices;
         float s;
         final v2[] vertices = polygon.vertex;
@@ -564,7 +564,7 @@ public class Collision {
         
 
         manifold.pointCount = 0;
-        float totalRadius = polyA.radius + polyB.radius;
+        float totalRadius = polyA.skinRadius + polyB.skinRadius;
 
         findMaxSeparation(results1, polyA, xfA, polyB, xfB);
         if (results1.separation > totalRadius) {
@@ -724,7 +724,7 @@ public class Collision {
         float u = v2.dot(e, temp.set(B).subbed(Q));
         float v = v2.dot(e, temp.set(Q).subbed(A));
 
-        float radius = edgeA.radius + circleB.radius;
+        float radius = edgeA.skinRadius + circleB.skinRadius;
 
         
         cf.indexB = 0;

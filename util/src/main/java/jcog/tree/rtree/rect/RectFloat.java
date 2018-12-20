@@ -316,5 +316,8 @@ public class RectFloat implements HyperRegion<Float2D>, Comparable<RectFloat> {
     }
 
 
-
+    public RectFloat rel(float cx, float cy, float pctX, float pctY) {
+        float ww = this.w, hh = this.h;
+        return XYWH( x + cx * ww, y + cy * hh, ww * pctX, hh * pctY);
+    }
 }

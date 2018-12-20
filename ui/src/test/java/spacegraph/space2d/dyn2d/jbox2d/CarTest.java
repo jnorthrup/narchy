@@ -242,7 +242,7 @@ public class CarTest implements Consumer<Dynamics2D> {
       chassis.set(vertices, 6);
 
       CircleShape circle = new CircleShape();
-      circle.radius = 0.4f;
+      circle.skinRadius = 0.4f;
 
       BodyDef bd = new BodyDef();
       bd.type = BodyType.DYNAMIC;

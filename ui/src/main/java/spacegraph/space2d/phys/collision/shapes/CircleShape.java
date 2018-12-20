@@ -41,12 +41,12 @@ public class CircleShape extends Shape {
     public CircleShape() {
         super(ShapeType.CIRCLE);
         center = new v2();
-        radius = 0;
+        skinRadius = 0;
     }
 
     public CircleShape(float radius) {
         this();
-        this.radius = radius;
+        this.skinRadius = radius;
 
     }
 
@@ -54,7 +54,7 @@ public class CircleShape extends Shape {
         CircleShape shape = new CircleShape();
         shape.center.x = center.x;
         shape.center.y = center.y;
-        shape.radius = radius;
+        shape.skinRadius = skinRadius;
         return shape;
     }
 
@@ -114,7 +114,7 @@ public class CircleShape extends Shape {
         float centerx = -(q.c * center.x - q.s * center.y + tp.x - p.x);
         float centery = -(q.s * center.x + q.c * center.y + tp.y - p.y);
 
-        return centerx * centerx + centery * centery <= radius * radius;
+        return centerx * centerx + centery * centery <= skinRadius * skinRadius;
     }
 
     @Override
@@ -127,7 +127,7 @@ public class CircleShape extends Shape {
         float d1 = (float) Math.sqrt(dx * dx + dy * dy);
         normalOut.x = dx * 1 / d1;
         normalOut.y = dy * 1 / d1;
-        return d1 - radius;
+        return d1 - skinRadius;
     }
 
     
@@ -151,7 +151,7 @@ public class CircleShape extends Shape {
         final float sx = inputp1.x - positionx;
         final float sy = inputp1.y - positiony;
         
-        final float b = sx * sx + sy * sy - radius * radius;
+        final float b = sx * sx + sy * sy - skinRadius * skinRadius;
 
         
         final float rx = inputp2.x - inputp1.x;
@@ -190,20 +190,20 @@ public class CircleShape extends Shape {
         final float px = tq.c * center.x - tq.s * center.y + tp.x;
         final float py = tq.s * center.x + tq.c * center.y + tp.y;
 
-        aabb.lowerBound.x = px - radius;
-        aabb.lowerBound.y = py - radius;
-        aabb.upperBound.x = px + radius;
-        aabb.upperBound.y = py + radius;
+        aabb.lowerBound.x = px - skinRadius;
+        aabb.lowerBound.y = py - skinRadius;
+        aabb.upperBound.x = px + skinRadius;
+        aabb.upperBound.y = py + skinRadius;
     }
 
     @Override
     public final void computeMass(final MassData massData, final float density) {
-        massData.mass = density * Settings.PI * radius * radius;
+        massData.mass = density * Settings.PI * skinRadius * skinRadius;
         massData.center.x = center.x;
         massData.center.y = center.y;
 
         
         
-        massData.I = massData.mass * (0.5f * radius * radius + (center.x * center.x + center.y * center.y));
+        massData.I = massData.mass * (0.5f * skinRadius * skinRadius + (center.x * center.x + center.y * center.y));
     }
 }

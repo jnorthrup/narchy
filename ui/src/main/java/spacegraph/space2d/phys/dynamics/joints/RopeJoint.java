@@ -21,7 +21,7 @@ public class RopeJoint extends Joint {
     
     private final v2 localAnchorA = new v2();
     private final v2 localAnchorB = new v2();
-    private float targetLength;
+    protected float targetLength;
     private float length;
     private float m_impulse;
 
@@ -95,9 +95,9 @@ public class RopeJoint extends Joint {
         length = m_u.length();
 
         float C = length - targetLength();
-        float ca = Math.abs(C);
+//        float ca = Math.abs(C);
 
-        if (length > Settings.linearSlop) {
+        if (C > Settings.linearSlop) {
 
             m_u.scaled(1.0f / length);
 

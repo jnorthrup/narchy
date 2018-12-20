@@ -21,6 +21,7 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.IntSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
 import java.lang.reflect.Field;
@@ -85,6 +86,8 @@ public class ObjectSurface<X> extends MutableUnitContainer {
 
         builder.on(MutableEnum.class, (x, relation) -> EnumSwitch.newSwitch((MutableEnum) x, relationLabel(relation)));
         builder.on(IntRange.class,  (x, relation) -> !(x instanceof MutableEnum) ? new MyIntSlider((IntRange) x, relationLabel(relation)) : null);
+
+        builder.on(String.class, (x, relation) -> new VectorLabel((String)x)); //TODO support multi-line word wrap etc
 
         builder.on(Collection.class, (x, relation) -> {
             Collection cx = (Collection) x;

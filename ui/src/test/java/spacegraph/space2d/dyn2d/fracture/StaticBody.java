@@ -52,7 +52,7 @@ public class StaticBody implements Consumer<Dynamics2D> {
             Body2D bodyBullet = w.addBody(bodyDefBullet);
 
             CircleShape circleShape = new CircleShape();
-            circleShape.radius = 1.0f;
+            circleShape.skinRadius = 1.0f;
             Fixture fixtureBullet = bodyBullet.addFixture(circleShape, 2.0f);
             fixtureBullet.friction = 0.4f; 
             fixtureBullet.restitution = 0.1f; 

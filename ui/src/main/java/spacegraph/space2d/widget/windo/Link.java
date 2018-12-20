@@ -1,33 +1,29 @@
 package spacegraph.space2d.widget.windo;
 
-import jcog.event.Offs;
+import jcog.event.Off;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.widget.port.util.Wire;
+import spacegraph.space2d.widget.port.Wire;
 
 abstract public class Link {
 
     public final Wire id;
-
-    public final Offs offs = new Offs();
 
     public Link(Wire wire) {
         super();
         this.id = wire;
     }
 
-    public Link hold(Surface hostage) {
-        this.offs.add(hostage::remove);
+    public Link on(Off r) {
+        id.offs.add(r);
         return this;
     }
 
-    public void remove(GraphEdit g) {
+    public Link on(Surface hostage) {
+        return on((Off)hostage::remove);
+    }
 
-
-        g.removeWire(id.a, id.b);
-
-        offs.off();
-
-
+    public final void remove(GraphEdit g) {
+        g.removeWire(id); //id.a, id.b);
     }
 
 

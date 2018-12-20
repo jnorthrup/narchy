@@ -34,6 +34,9 @@ import java.util.stream.Stream;
 
 /**
  * 2D directed/undirected graph widget
+ * designed for high-performance realtime animated visualization of many graph nodes and edges
+ * that can appear, disappear, and re-appear between frames
+ *
  * TODO generify for use in Dynamics3D
  */
 public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {

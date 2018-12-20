@@ -14,17 +14,11 @@ public class ConstantPort<X> extends Port {
         out(this.value = value);
     }
 
-    @Override
-    public boolean connected(Port other) {
 
-        if (super.connected(other)) {
-            if (outOnConnect) {
-                other.in.accept(null, value);
-            }
-            return true;
+    @Override public void connected(Port other) {
+        if (outOnConnect) {
+            other.in.accept(null, value);
         }
-
-        return false;
     }
 
     public final void out() {

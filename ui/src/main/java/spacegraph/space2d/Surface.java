@@ -7,6 +7,8 @@ import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.collection.AbstractMutableContainer;
 import spacegraph.space2d.container.unit.AspectAlign;
+import spacegraph.space2d.widget.meta.WeakSurface;
+import spacegraph.space2d.widget.windo.Windo;
 
 import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -276,11 +278,20 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     }
 
 
-    /** detach from parent, if possible */
+    /** detach from parent, if possible
+     * TODO common remove(x) interface
+     * */
     public boolean remove() {
         SurfaceBase p = this.parent;
+
         if (p instanceof AbstractMutableContainer) {
             return ((AbstractMutableContainer) p).remove(this);
+        }
+        if(p instanceof WeakSurface) {
+            return ((WeakSurface) p).remove();
+        }
+        if (p instanceof Windo) {
+            return ((Windo)p).remove();
         }
         return false;
     }

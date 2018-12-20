@@ -8,6 +8,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerDragging;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.port.TypedPort;
+import spacegraph.space2d.widget.port.Wire;
 import spacegraph.space2d.widget.shape.PathSurface;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.util.Path2D;
@@ -24,16 +25,17 @@ public class Wiring extends FingerDragging {
     final static ExtendedCastGraph CAST = new ExtendedCastGraph();
     static {
 
+        CAST.set(Boolean.class, Integer.class, (Function<Boolean, Integer>) (i)->i ? 1 : 0);
+        CAST.set(Integer.class, Float.class, (Function<Integer, Float>) Integer::floatValue);
         CAST.set(Integer.class, Boolean.class, (Function<Integer, Boolean>) (i)->i >= 0);
         CAST.set(Short.class, Boolean.class, (Function<Short, Boolean>) (i)->i >= 0);
         CAST.set(Byte.class, Boolean.class, (Function<Byte, Boolean>) (i)->i >= 0);
-
-        CAST.set(float[].class, double[].class, (Function<float[], double[]>) Util::toDouble);
-        CAST.set(double[].class, float[].class, (Function<double[], float[]>)Util::toFloat);
-
         CAST.set(Float.class, Double.class, (Function<Float,Double>)(Float::doubleValue)); //1-element
         CAST.set(Double.class, Float.class, (Function<Double,Float>)(Double::floatValue)); //1-element
+
+        CAST.set(float[].class, double[].class, (Function<float[], double[]>) Util::toDouble);
         CAST.set(float[].class, Tensor.class, (Function<float[],Tensor>)(ArrayTensor::new));
+        CAST.set(double[].class, float[].class, (Function<double[], float[]>)Util::toFloat);
         CAST.set(Float.class, float[].class, (Function<Float,float[]>)(v -> v!=null ? new float[] { v } : new float[] { Float.NaN } )); //1-element
 //        CAST.set(Float.class, Tensor.class, (Function<Float,Tensor>)((f) -> new ArrayTensor(new float[] { f} ))); //1-element
         CAST.set(Tensor.class, ArrayTensor.class, (Function<Tensor,ArrayTensor>)(t -> {
@@ -163,12 +165,17 @@ public class Wiring extends FingerDragging {
 
     protected boolean tryWire() {
         GraphEdit wall = graph();
-        Wire y = typeAdapt(new Wire(start, end), wall);
-        if (y == wall.addWire(y)) {
 
+        Wire wire = typeAdapt(new Wire(start, end), wall);
+        if (!wire.connectable())
+            return false;
+
+        if (wire == wall.addWire(wire)) {
+
+            wire.connected();
 
             start.root().debug(start, 1, () -> "wire(" + wall + ",(" + start + ',' + end + "))");
-            //wire(start, end, y, wall);
+
             return true;
         }
 

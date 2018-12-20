@@ -1,6 +1,8 @@
 package spacegraph.space2d.widget.windo.util;
 
 import com.jogamp.opengl.GL2;
+import jcog.TODO;
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.event.Off;
@@ -8,20 +10,22 @@ import jcog.math.v2;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.EdgeShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.collision.shapes.Shape;
+import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.dynamics.*;
-import spacegraph.space2d.phys.dynamics.joints.Joint;
-import spacegraph.space2d.phys.dynamics.joints.RevoluteJoint;
-import spacegraph.space2d.phys.dynamics.joints.RevoluteJointDef;
+import spacegraph.space2d.phys.dynamics.joints.*;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
 import spacegraph.space2d.phys.particle.ParticleColor;
 import spacegraph.space2d.phys.particle.ParticleSystem;
-import spacegraph.space2d.widget.port.util.Wire;
+import spacegraph.space2d.widget.meta.WeakSurface;
+import spacegraph.space2d.widget.port.Wire;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.space2d.widget.windo.Link;
 import spacegraph.space2d.widget.windo.Windo;
@@ -58,6 +62,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             this.shape = PolygonShape.box(Math.max(minDimension, window.w() / 2), Math.max(minDimension, window.h() / 2));
             body.setFixedRotation(true);
             body.addFixture(shape, 1f);
+            body.setData(window);
         }
 
         void pre(Dynamics2D physics) {
@@ -138,26 +143,137 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
     @Override
     public Link link(Wire w) {
-        return new Box2DVisibleLink(w);
+        if((w.a instanceof WeakSurface) ^ (w.b instanceof WeakSurface)) {
+            //one is a dependent of the other
+            return new GlueLink(w);
+        } else {
+            return new SnakeLink(w);
+        }
     }
 
     private WindowData phy(Windo x) {
         return w.get(x);
     }
 
-    class Box2DVisibleLink extends GraphEdit.VisibleLink {
+    abstract class Box2DLink extends GraphEdit.VisibleLink {
+
+        public Box2DLink(Wire wire) {
+            super(wire);
+        }
+
+        @Nullable
+        protected Dynamics2D world() {
+            Body2D b = sourceBody();
+            if (b!=null)
+                return b.W;
+            Body2D c = targetBody();
+            if (c!=null)
+                return c.W;
+            return null;
+        }
+
+        protected Body2D body(Surface x) {
+            return phy(x.parent(Windo.class)).body;
+        }
+
+        public Body2D sourceBody() {
+            Surface x = a();
+            return body(x);
+        }
+
+        public Body2D targetBody() {
+            return body(b());
+        }
+
+
+        protected float targetRadius() {
+            return targetBounds().extents().length();
+        }
+
+        protected float sourceRadius() {
+            return sourceBounds().extents().length();
+        }
+
+        protected AABB sourceBounds() {
+            return physicsBounds(sourceBody());
+        }
+        protected AABB targetBounds() {
+            return physicsBounds(this.targetBody());
+        }
+
+
+        protected AABB physicsBounds(Body2D x) {
+            Fixture f = x.fixtures();
+            if (f != null) {
+                return f.getAABB(0);
+            } else {
+                return new AABB(); //empty
+            }
+
+        }
+
+    }
+
+    /** lightweight elastic attachment/binder */
+    class GlueLink extends Box2DLink {
+
+        private final Joint joint;
+
+        final float margin = 0.1f;
+
+        public GlueLink(Wire wire) {
+            super(wire);
+
+            Dynamics2D w = world();
+            if (w==null) {
+                throw new TODO();
+                //wire.remove();
+            }
+
+            RopeJointDef jd = new RopeJointDef(sourceBody(), targetBody());
+            //WeldJointDef jd = new WeldJointDef();
+            jd.maxLength = targetLength();
+            jd.collideConnected = true;
+
+//            jd.bodyA = sourceBody();
+//            jd.bodyB = targetBody();
+
+
+            //joint = new WeldJoint(w, jd);
+            joint = new RopeJoint(w.pool, jd) {
+                @Override
+                public void initVelocityConstraints(SolverData data) {
+                    setPositionFactor(0.01f);
+                    this.targetLength = targetLength();
+                    super.initVelocityConstraints(data);
+                }
+            };
+
+            w.addJoint(joint);
+
+            on(()->{
+                Dynamics2D ww = world();
+                if (ww!=null)
+                    ww.removeJoint(joint);
+            });
+        }
+
+        public float targetLength() {
+            //TODO sourceBody().fixtures.shape.computeDistanceToOut()
+            return (sourceRadius() + targetRadius()) * (1f + margin);
+        }
+    }
+
+    /** represents a cable that transmits data from port to port */
+    class SnakeLink extends Box2DLink {
 
         private final Snake snake;
 
-        public Box2DVisibleLink(Wire wire) {
+        public SnakeLink(Wire wire) {
             super(wire);
 
-
-            Body2D sourceBody = phy(a().parent(Windo.class)).body;
-            Body2D targetBody = phy(b().parent(Windo.class)).body;
-
-            this.snake = new Snake(sourceBody, targetBody, 5);
-            offs.add(snake::remove);
+            this.snake = new Snake(sourceBody(), targetBody(), 7);
+            on(snake::remove);
 
 
 //            Surface r = new Box2DVisibleLinkSurface();
@@ -191,16 +307,30 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
         private transient float elementLength, elementThickness;
 
-        private void updateGeometry() {
-            elementLength = (distance() / n) * 0.9f;
-            elementThickness = 1f;
-                    //TODO get from surfaces Math.min( sourceBody.fixtures.shape.radius, targetBody.fixtures.shape.radius );
-
-
+        protected v2 sourceCenterWorld() {
+            return sourceBody.pos;
+        }
+        protected v2 targetCenterWorld() {
+            return targetBody.pos;
+        }
+        protected float distance() {
+            return sourceBody.pos.distance(targetBody.pos);
         }
 
-        float distance() {
-            return sourceBody.pos.distance(targetBody.pos);
+        private void updateGeometry() {
+            elementLength = (distance() / n) * 0.75f;
+
+            float sourceRadius = sourceRadius(); //((Surface)sourceBody.data()).radius();
+            float targetRadius = targetRadius();  //((Surface)targetBody.data()).radius();
+            elementThickness = Math.max(Settings.EPSILONsqrt, Math.min(sourceRadius, targetRadius) / 8f);
+                    //TODO get from surfaces Math.min( sourceBody.fixtures.shape.radius, targetBody.fixtures.shape.radius );
+        }
+        protected float targetRadius() {
+            return targetBody.fixtures.getAABB(0).extents().length();
+        }
+
+        protected float sourceRadius() {
+            return sourceBody.fixtures.getAABB(0).extents().length();
         }
 
         public Snake(Body2D source, Body2D target, int num) {
@@ -220,74 +350,35 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
             updateGeometry();
 
-            FixtureDef segment = new FixtureDef(
-                    PolygonShape.box(1, 1), 0.01f, 0f);
-            segment.restitution = (0f);
+            FixtureDef segment = new FixtureDef(PolygonShape.box(1, 1), 0.01f, 0f);
+            segment.restitution = 0f;
             segment.filter.maskBits = 0;
+
+            FixtureDef segmentCollidable = new FixtureDef(PolygonShape.box(1, 1), 0.01f, 0f);
+            segmentCollidable.restitution = 0f;
 
             Body2D from = null;
 
+            v2 center = sourceCenterWorld().add(targetCenterWorld()).scale(0.5f);
+
+            int mid = num/2;
             for (int i = 0; i < num; ++i) {
 
 
                 if (from == null) {
                     from = sourceBody;
                 } else {
-                    RevoluteJointDef jd = new RevoluteJointDef();
+
 
                     Body2D to = null;
                     if (i == num - 1) {
                         to = targetBody;
                     } else {
 
-                        Body2D finalFrom = from;
                         int finalI = i;
-                        to = new Body2D(new BodyDef(BodyType.DYNAMIC, new v2(0,0)), w) {
+                        to = new SnakeElementBody(center, w, finalI);
 
-                            float eleLen = Float.NaN, eleThick = Float.NaN;
-
-                            final Body2D thiss = this;
-                            final Consumer<Fixture> updater = (f)->{
-
-                                //float angle = angle();
-                                //f.setShape(new PolygonShape().setAsBox(eleLen, eleThick, new v2(), angle) );
-                                ((PolygonShape)f.shape).setAsBox(eleLen/2, eleThick);
-                                setAwake(true);
-
-                                RevoluteJoint rj = (RevoluteJoint)((Snake.this.joints).get(finalI-1));
-
-                                if (finalFrom != sourceBody) {
-                                    rj.getLocalAnchorA().set(eleLen / 2, 0);
-                                } else {
-                                    rj.getLocalAnchorA().set(0, 0);
-                                }
-                                if (thiss != targetBody) {
-                                    rj.getLocalAnchorB().set(-eleLen / 2, 0);
-                                } else {
-                                    rj.getLocalAnchorB().set(0, 0);
-                                }
-
-
-
-                            };
-
-                            @Override
-                            public void postUpdate() {
-                                if (finalI == 1 /* head */) {
-                                    updateGeometry();
-                                }
-
-                                if (eleLen!=elementLength || eleThick!=elementThickness) {
-                                    eleLen = elementLength;
-                                    eleThick = elementThickness;
-
-                                    updateFixtures(updater);
-                                }
-
-                            }
-                        };
-
-                        to.addFixture(segment);
+                        to.addFixture(i == mid ? segmentCollidable : segment);
 
                         bodies.add(to);
                         to.setGravityScale(0);
@@ -295,13 +386,15 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                         to.postUpdate();
                     }
 
+                    RevoluteJointDef jd = new RevoluteJointDef();
                     jd.collideConnected = false;
                     jd.bodyA = from;
                     jd.bodyB = to;
                     jd.referenceAngle = 0;
-                    jd.enableMotor = true;
+                    jd.enableMotor = false;
+                    //jd.motorSpeed = 100;
 
-                    RevoluteJoint jj = new MyRevoluteJoint(w, jd, source, target);
+                    RevoluteJoint jj = new MyRevoluteJoint(w, jd, 0.05f);
                     joints.add(jj);
 
 
@@ -350,41 +443,67 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             });
         }
 
-        private class MyRevoluteJoint extends RevoluteJoint {
-            private final Body2D from;
-            private final Body2D to;
+        private static class MyRevoluteJoint extends RevoluteJoint {
 
 
-            MyRevoluteJoint(Dynamics2D w, RevoluteJointDef jd, Body2D from, Body2D to) {
+            MyRevoluteJoint(Dynamics2D w, RevoluteJointDef jd, float power) {
                 super(w, jd);
-                this.from = from;
-                this.to = to;
-                this.positionFactor = 0.01f;
+                this.positionFactor = power;
+            }
+
+        }
+
+        private class SnakeElementBody extends Body2D {
+
+            private final int finalI;
+            float eleLen, eleThick;
+
+            public SnakeElementBody(v2 center, Dynamics2D w, int finalI) {
+                super(new BodyDef(BodyType.DYNAMIC, center), w);
+                this.finalI = finalI;
+                eleLen = Float.NaN;
+                eleThick = Float.NaN;
             }
 
             @Override
-            public boolean solvePositionConstraints(SolverData data) {
-
-                if (from == sourceBody) {
-//                    if (source.parent == null) {
-//                        remove();
+            public void postUpdate() {
 
 
-                    localAnchorA.set(from.pos.x, from.pos.y).subbed(
-                            sourceBody.pos
-                    );
-
-                } else if (to == targetBody) {
-//                    if (target.parent == null) {
-//                        remove();
-
-                    localAnchorB.set(from.pos.x, from.pos.y).subbed(
-                            targetBody.pos
-                    );
-
+                if (finalI == 1 /* head */ && (sourceBody.isActive() || targetBody.isActive()) ) {
+                    updateGeometry();
                 }
-                return super.solvePositionConstraints(data);
+
+                if (!Util.equals(eleLen,elementLength,Settings.EPSILONsqrt) || !Util.equals(eleThick,elementThickness,Settings.EPSILONsqrt)) {
+                    eleLen = elementLength;
+                    eleThick = elementThickness;
+
+                    updateFixtures(this::updateFixtures);
+                }
+
             }
+
+            private void updateFixtures(Fixture f /* the only one */) {
+                ((PolygonShape) f.shape).setAsBox(eleLen, eleThick);
+
+                RevoluteJoint rj = (RevoluteJoint) ((Snake.this.joints).get(finalI - 1));
+                if (rj!=null) {
+                    if (finalI != 0) {
+                        rj.getLocalAnchorB().set(+eleLen, 0);
+                    } else {
+                        rj.getLocalAnchorB().set(0, 0);
+                    }
+                }
+
+                RevoluteJoint rk = (RevoluteJoint) ((Snake.this.joints).get(finalI));
+                if (rk!=null) {
+                    if (finalI != n - 1) {
+                        rk.getLocalAnchorA().set(-eleLen, 0);
+                    } else {
+                        rk.getLocalAnchorA().set(0, 0);
+                    }
+                }
+            }
+
         }
     }
 
@@ -736,7 +855,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                         case CIRCLE:
 
                             CircleShape circle = (CircleShape) shape;
-                            float r = circle.radius;
+                            float r = circle.skinRadius;
                             v2 v = new v2();
                             body.getWorldPointToOut(circle.center, v);
                             v.scale(scaling);
@@ -759,6 +878,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
         ; //TODO
     }
+
 
 }
 

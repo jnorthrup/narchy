@@ -382,7 +382,7 @@ public class Box2DTests extends JComponent implements Runnable {
                         break;
                     case CIRCLE:
                         CircleShape circle = (CircleShape) shape;
-                        float r = circle.radius;
+                        float r = circle.skinRadius;
                         body.getWorldPointToOut(circle.center, v);
                         Point p = getPoint(v);
                         int wr = (int) (r * zoom);

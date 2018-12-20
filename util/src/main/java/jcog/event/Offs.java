@@ -20,10 +20,15 @@ public class Offs extends jcog.data.list.FastCoWList<Off> implements Off {
             add(o);
     }
 
+    public final void add(Runnable r) {
+        add((Off)(r::run));
+    }
 
-    public void off() {
-        forEach(Off::off);
-        clear();
+    public final void off() {
+        removeIf(o -> {
+            o.off();
+            return true;
+        });
     }
 
 }

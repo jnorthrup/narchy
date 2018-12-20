@@ -71,7 +71,7 @@ public class Fluid implements Consumer<Dynamics2D> {
             bodyDefBullet.bullet = true;
             Body2D bodyBullet = w.addBody(bodyDefBullet);
             CircleShape circleShape = new CircleShape();
-            circleShape.radius = 0.5f;
+            circleShape.skinRadius = 0.5f;
             Fixture fixtureBullet = bodyBullet.addFixture(circleShape, 10.0f);
             fixtureBullet.friction = 0.4f; 
             fixtureBullet.restitution = 0.1f; 
