@@ -440,7 +440,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
             start = Tense.dither(start, n);
             end = Tense.dither(end, n);
-        }
+        } else
+            return t;
+
         Truth tt;
         if (t.isBeliefOrGoal()) {
             tt = t.truth(start, end, n.dur());
@@ -578,7 +580,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
             if (dist == 0) {
                 return evi();
             } else {
-                return (dur == 0) ? 0 : Param.evi(evi(), dist, dur);
+                float ee = evi();
+                float e = (dur == 0) ? 0 : Param.evi(ee, dist, dur);
+                return e;
+                //return Math.max(e, TruthFunctions.eternalize(ee));
             }
 
         }

@@ -345,6 +345,12 @@ public final class Answer implements AutoCloseable {
         }
 
 
+        long s = tp.start;
+        long e = tp.end;
+        if (d.allSatisfy(Task::isEternal)) {
+            s = e = ETERNAL;
+        }
+
         Task dyn = d.task(tp.term, tt, (rng) -> {
 
             @Nullable MetalLongSet stampSet = Stamp.toSet(Param.STAMP_CAPACITY, tp.size(), tp); //calculate stamp after filtering and after intermpolation filtering
@@ -354,7 +360,7 @@ public final class Answer implements AutoCloseable {
                 return stampSet.toSortedArray();
             }
 
-        }, root.isBelief(), tp.start, tp.end, nar);
+        }, root.isBelief(), s, e, nar);
 
         if (dyn == null)
             return root;

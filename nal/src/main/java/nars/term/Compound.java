@@ -520,9 +520,9 @@ public interface Compound extends Term, IPair, Subterms {
                     break;
                 case DTERNAL:
                     Subterms ss = subterms();
-                    if ((ss.structureSurface() & CONJ.bit) != 0) {
+                    if ((ss.structureSurface() & CONJ.bit) != 0 && ss.subs(x->x.op()==CONJ && x.dt()!=DTERNAL)==1 /* TOOD merge with below subIndexFirst call */) {
                         //distribute the factored inner sequence
-                        int seqIndex = ss.subIndexFirst(x -> x.op()==CONJ);
+                        int seqIndex = ss.subIndexFirst(x -> x.op()==CONJ && x.dt()!=DTERNAL);
                         assert(seqIndex!=-1);
                         Term seq = ss.sub(seqIndex);
                         boolean unfactor;

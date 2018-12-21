@@ -206,22 +206,22 @@ public interface NAct {
 
     }
 
-    default GoalActionConcept actionPushReleaseButton(Term t, BooleanProcedure on) {
-
-        float thresh = 0.1f;
-        return action(t, (b, g) -> {
-            float G = g != null ? g.expectation() : 0.0f;
-            boolean positive;
-            if (G > 0.5f) {
-                float f = G - (b != null ? b.expectation() : 0.5f);
-                positive = f >= thresh;
-            } else {
-                positive = false;
-            }
-            on.value(positive);
-            return $.t(positive ? 1 : 0, nar().confDefault(BELIEF));
-        });
-    }
+//    default GoalActionConcept actionPushReleaseButton(Term t, BooleanProcedure on) {
+//
+//        float thresh = 0.1f;
+//        return action(t, (b, g) -> {
+//            float G = g != null ? g.expectation() : 0.0f;
+//            boolean positive;
+//            if (G > 0.5f) {
+//                float f = G - (b != null ? b.expectation() : 0.5f);
+//                positive = f >= thresh;
+//            } else {
+//                positive = false;
+//            }
+//            on.value(positive);
+//            return $.t(positive ? 1 : 0, nar().confDefault(BELIEF));
+//        });
+//    }
 
     default GoalActionConcept actionPushButton(Term t, BooleanProcedure on) {
         return actionPushButton(t, on, midThresh());
@@ -270,7 +270,7 @@ public interface NAct {
      */
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanPredicate L, BooleanPredicate R, FloatSupplier thresh) {
 
-        boolean freqOrExp = false;
+        boolean freqOrExp = true;
 
 //        float compareThresh =
 //                0;

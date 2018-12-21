@@ -96,7 +96,13 @@ public class Occurrify extends TimeGraph {
      * if there is any temporal terms with non-DTERNAL dt()
      */
     public static boolean temporal(Term x) {
-        return x.ORrecurse(z -> z instanceof Compound && z.dt() != DTERNAL);
+        return x.ORrecurse(z -> {
+            if (z instanceof Compound) {
+                int dt = z.dt();
+                return (dt != DTERNAL && dt != XTERNAL);
+            }
+            return false;
+        });
     }
 
     @Override

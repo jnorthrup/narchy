@@ -176,9 +176,6 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
         DynamicTruthTask(Term c, boolean beliefOrGoal, Truth tr, Timed n, long start, long end, long[] stamp) throws TaskException {
             super(c, beliefOrGoal ? Op.BELIEF : Op.GOAL, tr, n.time(), start, end, stamp);
 
-//            if (end-start > Integer.MAX_VALUE)
-//                throw new WTF("bad DT"); //TEMPORARY
-
             if (c.op() == NEG)
                 throw new UnsupportedOperationException(c + " has invalid task content op (NEG)");
         }

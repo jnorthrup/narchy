@@ -101,7 +101,7 @@ public abstract class Param {
     public static final boolean VOLMAX_RESTRICTS_EVAL = true;
 
 
-    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
+    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
 
     /** if ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION is true, then this is tested: */
     public static final Predicate<Op> eternalizeInDerivation = (o) -> {

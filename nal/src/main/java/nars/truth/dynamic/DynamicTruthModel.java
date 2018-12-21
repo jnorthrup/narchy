@@ -354,9 +354,18 @@ abstract public class DynamicTruthModel {
 
                 Conj c = new Conj(components.size());
 
-                for (TaskRegion t : components)
-                    if (!c.addDithered(((Task) t).term(), t.start(), t.end(), 1, 1, nar))
+                for (TaskRegion t : components) {
+                    Task tt = (Task) t;
+                    Term ttt = tt.term();
+                    boolean added;
+                    if (tt.isEternal()) {
+                        added = c.add(ETERNAL, ttt);
+                    } else {
+                        added = c.addDithered(ttt, t.start(), t.end(), 1, 1, nar);
+                    }
+                    if (!added)
                         break;
+                }
 
                 return c.term();
             }

@@ -30,7 +30,6 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.control.PREDICATE;
-import nars.term.util.transform.Retemporalize;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -440,17 +439,17 @@ public class Derivation extends PreDerivation {
 
 
         boolean eternalComplete = (taskStart == ETERNAL) && (_belief == null || beliefStart==ETERNAL);
-        this.temporal = !eternalComplete || Occurrify.temporal(taskTerm);
-        if ((_belief == null) && (!temporal)) {
-            if (Occurrify.temporal(beliefTerm)) {
-                Term beliefTermEternal = Retemporalize.retemporalizeXTERNALToDTERNAL.transform(beliefTerm); //HACK
-                if (Occurrify.temporal(beliefTermEternal)) {
-                    temporal = true;
-                } else {
-                    beliefTerm = beliefTermEternal;
-                }
-            }
-        }
+        this.temporal = !eternalComplete || Occurrify.temporal(taskTerm) || Occurrify.temporal(beliefTerm);
+//        if ((_belief == null) && (!temporal)) {
+//            if (Occurrify.temporal(beliefTerm)) {
+//                Term beliefTermEternal = Retemporalize.retemporalizeXTERNALToDTERNAL.transform(beliefTerm); //HACK
+//                if (Occurrify.temporal(beliefTermEternal)) {
+//                    temporal = true;
+//                } else {
+//                    beliefTerm = beliefTermEternal;
+//                }
+//            }
+//        }
 
         int causeCap = Param.causeCapacity.intValue();
         this.parentCause =

@@ -767,12 +767,13 @@ public class Conj extends ByteAnonMap {
             case +1:
                 return true; //ignore and continue
             case 0:
-                break; //continue
+                return addEvent(at, id, x); //continue
             case -1:
                 return false; //reject and fail
+            default:
+                throw new UnsupportedOperationException();
         }
 
-        return addEvent(at, id, x);
     }
 
     private boolean addEvent(long at, byte id) {
@@ -1131,7 +1132,9 @@ public class Conj extends ByteAnonMap {
      * @return non-zero byte value
      */
     private byte add(Term t) {
-        assert(t!=null && eventable(t)); //eventable
+        if (!(t!=null && eventable(t))) //eventable
+            throw new WTF(t + " is not valid event in " + Conj.class);
+
         return termToId.getIfAbsentPutWithKey(t, tt -> {
             int s = idToTerm.addAndGetSize(tt);
             assert (s < Byte.MAX_VALUE);
@@ -1518,8 +1521,8 @@ public class Conj extends ByteAnonMap {
                     events(bWhat, common::add);
                 } else {
                     if (common.removeIf(c -> !eventsContains(bWhat, c))) {
-                        if (common.isEmpty())
-                            return false; //done //need to keep iterator
+                        //done //need to keep iterator
+                        return !common.isEmpty();
                     }
                 }
 
@@ -1543,8 +1546,8 @@ public class Conj extends ByteAnonMap {
             eventTimes[e[0]++] = when;
 
             if (what instanceof byte[]) {
-                if (eventsAND(((byte[]) what), common::contains))
-                    return true; //all would be eliminated at this time slot
+                //all would be eliminated at this time slot
+                return eventsAND(((byte[]) what), common::contains);
             }
             return false;
         }))
