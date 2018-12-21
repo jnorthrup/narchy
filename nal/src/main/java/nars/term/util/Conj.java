@@ -93,6 +93,13 @@ public class Conj extends ByteAnonMap {
         add(initialEventAt, initialEvent);
     }
 
+    public static Conj from(Term t) {
+        Conj c = new Conj();
+        c.add(t.dt() == DTERNAL ? ETERNAL : 0, t);
+        c.factor();
+        return c;
+    }
+
     public int eventCount(long when) {
         Object e = event.get(when);
         return e != null ? Conj.eventCount(e) : 0;
@@ -133,64 +140,49 @@ public class Conj extends ByteAnonMap {
      * returns null if wasnt contained, Null if nothing remains after removal
      */
     @Nullable
-    public static Term conjDrop(Term conj, Term event, boolean earlyOrLate, boolean filterContradiction) {
+    public static Term drop(Term conj, Term event, boolean earlyOrLate, boolean filterContradiction) {
+        if (conj.op()==NEG) return drop(conj, event, earlyOrLate, filterContradiction).neg();
+
         if (conj.op() != CONJ || conj.impossibleSubTerm(event))
             return Null;
 
-        int cdt = conj.dt();
-
-        if (dtSpecial(cdt)) {
-            Term[] csDropped = conj.subterms().subsExcept(event);
-
-            if (csDropped != null) {
-                if (csDropped.length == 1)
-                    return csDropped[0];
-                else
-                    return terms.conj(cdt, csDropped);
-            }
-
-            return conj; //no change
-
-        } else {
-
+        if (isSeq(conj)) {
             Conj c = Conj.from(conj);
+            return c.dropEvent(event, earlyOrLate, filterContradiction) ? c.term() : Null;
+        }
 
-//            if (event.op()!=CONJ) {
-            return dropEvent(event, earlyOrLate, filterContradiction, c) ? c.term() : Null;
-//            } else {
-//                //TODO drop in correct sequence order
-//                for (Term x : event.subterms()) {
-//                    if (!dropEvent(x, earlyOrLate, filterContradiction, c))
-//                        return Null; //could not drop
-//                }
-//                return c.term();
-//            }
+        Term[] csDropped = conj.subterms().subsExcept(event);
+
+        if (csDropped != null) {
+            return (csDropped.length == 1) ? csDropped[0] : terms.conj(conj.dt(), csDropped);
+        } else {
+            return conj; //no change
         }
 
 
     }
 
-    @Nullable
-    static boolean dropEvent(final Term event, boolean earlyOrLate, boolean filterContradiction, Conj c) {
+
+    private boolean dropEvent(final Term event, boolean earlyOrLate, boolean filterContradiction) {
     /* check that event.neg doesnt occurr in the result.
         for use when deriving goals.
          since it would be absurd to goal the opposite just to reach the desired later
          */
-        byte id = c.get(event);
+        byte id = get(event);
         if (id == Byte.MIN_VALUE)
             return false; //not found
 
 
         long targetTime;
-        if (c.event.size() == 1) {
+        if (this.event.size() == 1) {
 
-            targetTime = c.event.keysView().longIterator().next();
+            targetTime = this.event.keysView().longIterator().next();
         } else if (earlyOrLate) {
-            Object eternalTemporarilyRemoved = c.event.remove(ETERNAL); //HACK
-            targetTime = c.event.keysView().min();
-            if (eternalTemporarilyRemoved != null) c.event.put(ETERNAL, eternalTemporarilyRemoved); //UNDO HACK
+            Object eternalTemporarilyRemoved = this.event.remove(ETERNAL); //HACK
+            targetTime = this.event.keysView().min();
+            if (eternalTemporarilyRemoved != null) this.event.put(ETERNAL, eternalTemporarilyRemoved); //UNDO HACK
         } else {
-            targetTime = c.event.keysView().max();
+            targetTime = this.event.keysView().max();
         }
         assert (targetTime != XTERNAL);
 
@@ -200,7 +192,7 @@ public class Conj extends ByteAnonMap {
             byte idNeg = (byte) -id;
 
             final boolean[] contradiction = {false};
-            c.event.forEachKeyValue((w, wh) -> {
+            this.event.forEachKeyValue((w, wh) -> {
                 if (w == targetTime || contradiction[0])
                     return; //HACK should return early via predicate method
 
@@ -213,24 +205,10 @@ public class Conj extends ByteAnonMap {
                 return false;
         }
 
-
-        boolean removed = c.remove(targetTime, event);
-        if (!removed) {
-            return false;
-        }
-        return true;
+        return this.remove(targetTime, event);
     }
 
-//    public static FasterList<LongObjectPair<Term>> eventList(Term t) {
-//        return t.eventList(t.dt() == DTERNAL ? ETERNAL : 0, 1, true, true);
-//    }
 
-    public static Conj from(Term t) {
-        Conj c = new Conj();
-        c.add(t.dt() == DTERNAL ? ETERNAL : 0, t);
-        c.factor();
-        return c;
-    }
 
     /**
      * means that the internal represntation of the term is concurrent
@@ -422,8 +400,17 @@ public class Conj extends ByteAnonMap {
 
         Subterms s = include.subterms();
         int dt = include.dt();
-        if (dtSpecial(dt) && !s.hasAny(Op.CONJ)) {
 
+        if (Conj.isSeq(include)) {
+
+            Conj xx = Conj.from(include);
+            if (xx.removeEventsByTerm(exclude, true, excludeNeg)) {
+                return xx.term();
+            } else {
+                return include;
+            }
+
+        } else {
             //try positive first
             Term[] ss = s.subsExcept(exclude);
             if (ss != null) {
@@ -440,15 +427,8 @@ public class Conj extends ByteAnonMap {
                 return include; //not found
             }
 
-        } else {
-
-            Conj xx = Conj.from(include);
-            if (xx.removeEventsByTerm(exclude, true, excludeNeg)) {
-                return xx.term();
-            } else {
-                return include;
-            }
         }
+
     }
 
     public static Term withoutAll(Term include, Term exclude) {
@@ -895,23 +875,22 @@ public class Conj extends ByteAnonMap {
         if (incoming.op() == NEG && incomingUnneg.op() == CONJ) {
             return disjunctionVsDisjunction(existingUnneg, incomingUnneg, eternal);
         } else {
-            return disjunctionVsNonDisjunction(incoming, eternal, existingUnneg);
+            return disjunctionVsNonDisjunction(existingUnneg, incoming, eternal);
         }
     }
 
-    @Nullable
-    private static Term disjunctionVsNonDisjunction(Term incoming, boolean eternal, Term existingUnneg) {
+    private static Term disjunctionVsNonDisjunction(Term conjUnneg, Term incoming, boolean eternal) {
         final Term[] result = new Term[1];
-        existingUnneg.eventsWhile((when, what) -> {
+        conjUnneg.eventsWhile((when, what) -> {
             if (eternal || when == 0) {
                 if (incoming.equalsNeg(what)) {
-                    //overlap with the option so annihilate the disj
+                    //overlap with the option so annihilate the entire disj
                     result[0] = True;
                     return false; //stop iterating
                 } else if (incoming.equals(what)) {
-                    //contradict
+                    //contradiction
                     result[0] = False;
-                    return false;
+                    //keep iterating, because possible total annihilation may follow.
                 }
             }
             return eternal || when <= 0;
@@ -919,37 +898,36 @@ public class Conj extends ByteAnonMap {
 
 
         if (result[0] == True) {
-            return incoming; //disjunction annihilated
+            return incoming; //disjunction totally annihilated by the incoming condition
         }
 
         if (result[0] == False) {
             //removing the matching subterm from the disjunction and reconstruct it
             //then merge the incoming term
 
-            Term existingShortenedUnneg;
+            Term newConj;
             if (eternal) {
-                existingShortenedUnneg = Conj.without(existingUnneg, incoming, false);
+                newConj = Conj.without(conjUnneg, incoming, false);
             } else {
                 //carefully remove the contradicting first event
-                existingShortenedUnneg = Conj.conjDrop(existingUnneg, incoming, true, false);
-
+                newConj = Conj.drop(conjUnneg, incoming, true, false);
             }
 
             int dt = eternal ? DTERNAL : 0;
 
-            if (existingShortenedUnneg.equals(incoming)) //quick test
+            if (newConj.equals(incoming)) //quick test
                 return False;
-            if (existingShortenedUnneg.equals(existingUnneg))
+            if (newConj.equals(conjUnneg))
                 return True; //unaffected
 
             //also coudl test for && contains if dtspecial etc
 
 
-            if (existingShortenedUnneg.op() == CONJ && incoming.op() == CONJ) {
-                return terms.theSortedCompound(CONJ, dt, existingShortenedUnneg.neg(), incoming);
-            } else {
-                return terms.conj(dt, existingShortenedUnneg.neg(), incoming);
-            }
+//            if (newConj.op() == CONJ && incoming.op() == CONJ) {
+//                return terms.theSortedCompound(CONJ, dt, newConj.neg(), incoming);
+//            } else {
+                return terms.conj(dt, newConj.neg(), incoming);
+//            }
 
         }
 
@@ -966,33 +944,31 @@ public class Conj extends ByteAnonMap {
         int adt = a.dt(), bdt = b.dt();
         boolean bothCommute = (adt == 0 || adt == DTERNAL) && (bdt == 0 || bdt == DTERNAL);
         if (bothCommute) {
-            {
-                if ((adt == bdt || adt == DTERNAL || bdt == DTERNAL)) {
-                    //factor out contradicting subterms
-                    MutableSet<Term> aa = a.subterms().toSet();
-                    MutableSet<Term> bb = b.subterms().toSet();
-                    Iterator<Term> bbb = bb.iterator();
-                    boolean change = false;
-                    while (bbb.hasNext()) {
-                        Term bn = bbb.next();
-                        if (aa.remove(bn.neg())) {
-                            bbb.remove(); //both cases allowed; annihilate both
-                            change = true;
-                        }
+            if ((adt == bdt || adt == DTERNAL || bdt == DTERNAL)) {
+                //factor out contradicting subterms
+                MutableSet<Term> aa = a.subterms().toSet();
+                MutableSet<Term> bb = b.subterms().toSet();
+                Iterator<Term> bbb = bb.iterator();
+                boolean change = false;
+                while (bbb.hasNext()) {
+                    Term bn = bbb.next();
+                    if (aa.remove(bn.neg())) {
+                        bbb.remove(); //both cases allowed; annihilate both
+                        change = true;
                     }
-                    if (change) {
-                        //reconstitute the two terms, glue them together as a new super-disjunction to replace the existing (and interrupt adding the incoming)
+                }
+                if (change) {
+                    //reconstitute the two terms, glue them together as a new super-disjunction to replace the existing (and interrupt adding the incoming)
 
-                        Term A = terms.conj(adt, sorted(aa)).neg();
-                        if (A == False || A == Null || aa.equals(bb))
-                            return A;
+                    Term A = terms.conj(adt, sorted(aa)).neg();
+                    if (A == False || A == Null || aa.equals(bb))
+                        return A;
 
-                        Term B = terms.conj(bdt, sorted(bb)).neg();
-                        if (B == True || B == False || B == Null || A.equals(B))
-                            return B;
+                    Term B = terms.conj(bdt, sorted(bb)).neg();
+                    if (B == True || B == False || B == Null || A.equals(B))
+                        return B;
 
-                        return terms.conj(eternal ? DTERNAL : 0, A, B);
-                    }
+                    return terms.conj(eternal ? DTERNAL : 0, A, B);
                 }
             }
             return null; //no change
@@ -1106,12 +1082,12 @@ public class Conj extends ByteAnonMap {
 
     }
 
-    private static Term[] subAppend(Subterms subterms, Term x) {
-        int n = subterms.subs();
-        Term[] y = subterms.arrayClone(new Term[n + 1]);
-        y[n] = x;
-        return y;
-    }
+//    private static Term[] subAppend(Subterms subterms, Term x) {
+//        int n = subterms.subs();
+//        Term[] y = subterms.arrayClone(new Term[n + 1]);
+//        y[n] = x;
+//        return y;
+//    }
 
     /**
      * @param existingId
@@ -1147,10 +1123,12 @@ public class Conj extends ByteAnonMap {
             boolean incomingPolarity = incoming.op() != NEG;
             result = merge(incoming, incomingPolarity, existing, eternal);
         } else {
-            return null; //neither a conj/disj
+            return null; //neither a conj/disj.  OK
         }
-        if (result != null && result.equals(existing))
-            return True;
+
+        if (result != null && !(result instanceof Bool) && result.equals(existing))
+            return True; //absorbed
+
         return result;
     }
 
@@ -1338,7 +1316,6 @@ public class Conj extends ByteAnonMap {
         if (term != null)
             return term;
 
-
         int numEvents = event.size();
         if (numEvents == 0)
             return True;
@@ -1523,7 +1500,10 @@ public class Conj extends ByteAnonMap {
     /**
      * factor common temporal event components to an ETERNAL component
      */
-    private void factor() {
+    public void factor() {
+
+        if (event.size() <= 1)
+            return;
 
         RichIterable<LongObjectPair<Object>> events = event.keyValuesView();
         int numTemporalEvents = events.count(l -> l.getOne() != ETERNAL);

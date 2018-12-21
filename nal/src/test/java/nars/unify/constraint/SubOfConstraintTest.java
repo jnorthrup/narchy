@@ -67,7 +67,7 @@ class SubOfConstraintTest {
         {
             Term a = $$("(x &&+1 (y&&z))");
             Term b = $$("y");
-            assertEq("(x &&+1 z)", Conj.conjDrop(a, b, false, false));
+            assertEq("(x &&+1 z)", Conj.drop(a, b, false, false));
             assertTrue(!c.invalid(
                     a,
                     b));

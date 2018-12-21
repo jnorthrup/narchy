@@ -466,7 +466,7 @@ public class Builtin {
             @Override
             protected Term apply(Term conj, Term event) {
                 boolean filterContradiction = false;
-                Term x = Conj.conjDrop(conj, event, false, filterContradiction);
+                Term x = Conj.drop(conj, event, false, filterContradiction);
                 if (conj.equals(x))
                     return Null;
                 return x;
@@ -476,7 +476,7 @@ public class Builtin {
         nar.on(new Functor.AbstractInlineFunctor2("conjDropIfEarliest") {
             @Override
             protected Term apply(Term conj, Term event) {
-                Term x = Conj.conjDrop(conj, event, true, false);
+                Term x = Conj.drop(conj, event, true, false);
                 if (conj.equals(x))
                     return Null;
                 return x;

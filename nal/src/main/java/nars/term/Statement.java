@@ -13,7 +13,9 @@ import static nars.Op.*;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
-/** statements include: inheritance -->, similarity <->, and implication ==> */
+/**
+ * statements include: inheritance -->, similarity <->, and implication ==>
+ */
 public class Statement {
 
     public static Term statement(Op op, int dt, Term subject, Term predicate) {
@@ -38,8 +40,6 @@ public class Statement {
         }
 
 
-
-
         if (op == IMPL) {
 
 
@@ -62,7 +62,7 @@ public class Statement {
                     return statement(IMPL, dt, subject, predicate.unneg()).neg();//recurse
                 case IMPL: {
                     Term newSubj, inner = predicate.sub(0);
-                    if (dt==DTERNAL || dt == XTERNAL) {
+                    if (dt == DTERNAL || dt == XTERNAL) {
                         newSubj = CONJ.the(subject, dt, inner);
                     } else {
                         newSubj = Conj.sequence(subject, 0, inner, subject.eventRange() + dt);
@@ -73,8 +73,6 @@ public class Statement {
 
             if (subject.hasAny(IMPL))
                 return Null;
-
-
 
 
             if (dt != XTERNAL && subject.dt() != XTERNAL && predicate.dt() != XTERNAL) {
@@ -93,14 +91,14 @@ public class Statement {
 //                }, 0, true, true, false, 0);
 
 
-                    boolean subjNeg = subject.op()==NEG;
+                    boolean subjNeg = subject.op() == NEG;
 
-                    Conj se = new Conj(subject.dt() != DTERNAL ? 0 : (dt != DTERNAL ? 0 : ETERNAL), subject.negIf(subjNeg));
+
 
 
                     long po;
                     if (dt == DTERNAL) {
-                        if (predicate.dt()==DTERNAL) {
+                        if (predicate.dt() == DTERNAL) {
                             po = ETERNAL;
                         } else
                             po = 0;
@@ -108,10 +106,11 @@ public class Statement {
                         po = subject.eventRange() + dt;
                     }
 
-                    ConjEliminator pe = new ConjEliminator(se,
+                    Conj se = new Conj(subject.dt() != DTERNAL ? 0 : (dt != DTERNAL ? 0 : ETERNAL), subject.negIf(subjNeg));
+                    se.factor();
+                    Term newPred = new ConjEliminator(se,
                             po,
-                            predicate, subjNeg);
-                    Term newPred = pe.result;
+                            predicate, subjNeg).term();
 
                     boolean predChange = !predicate.equals(newPred);
                     if (predChange) {
@@ -120,16 +119,17 @@ public class Statement {
                             return newPred;
                         }
 
+
                         if (dt != DTERNAL) {
                             int shift;
                             if (newPred.op() != CONJ) {
                                 shift = predicate.subTimeFirst(newPred);
                             } else {
-                                int[] s = new int[] { DTERNAL };
+                                int[] s = new int[]{DTERNAL};
                                 Term finalPredicate = predicate;
                                 newPred.eventsWhile((when, what) -> {
                                     int wshift = finalPredicate.subTimeFirst(what);
-                                    if (wshift!=DTERNAL) {
+                                    if (wshift != DTERNAL) {
                                         s[0] = Tense.occToDT(wshift - when);
                                         return false;
                                     }
@@ -137,40 +137,19 @@ public class Statement {
                                 }, 0, true, true, false, 0);
                                 shift = s[0];
                             }
-                            if (shift == DTERNAL)
+                            if (shift == DTERNAL || shift == XTERNAL)
                                 throw new WTF();
+                            //return Null; //??
 
-                                //return Null; //??
                             dt += shift;
+
                         }
 
                         predicate = newPred;
                     }
-                    final boolean[] subjChange = {false};
-//                    if (subjChange[0]) {
-//                        Term newSubj = se.term().negIf(subjNeg);
-//                        if (newSubj.equals(subject))
-//                            subjChange[0] = false;
-//                        else {
-//                            if (newSubj instanceof Bool) {
-//                                if (newSubj == True)
-//                                    return predicate;
-//                            }
-//
-//                            if (dt != DTERNAL) {
-//                                //TODO instead of dtRange, it should be calculated according to the time of the last event that matches the last event of the new subject
-//                                //otherwise it is inaccurate for repeating terms like (x &&+1 x) where it will by default stretch the wrong direction
-//                                int dr = newSubj.eventRange() - subject.eventRange();
-//                                dt += dr;
-//                            }
-//
-//                            subject = newSubj;
-//                        }
-//                    }
 
 
-
-                    if (subjChange[0] || predChange) {
+                    if (predChange) {
                         return statement(IMPL, dt, subject, predicate); //recurse
                     }
                 }
@@ -222,7 +201,6 @@ public class Statement {
 
     private static class ConjEliminator extends Conj {
         private final Conj se;
-        private final Term result;
         private final boolean invert;
         private final long[] seEvents;
 
@@ -233,17 +211,16 @@ public class Statement {
             this.seEvents = se.event.keySet().toArray();
             this.invert = invert;
             add(offset, subtractWith);
-            this.result = term();
         }
 
         @Override
         protected int addFilter(long at, Term x, byte id) {
             if (at == ETERNAL) {
-               for (long see : seEvents) {
-                   int f = test(see, id);
-                   if (f == -1) return -1;
-                   if (f == +1) return +1; //ignore this term (dont repeat in the predicate)
-               }
+                for (long see : seEvents) {
+                    int f = test(see, id);
+                    if (f == -1) return -1;
+                    if (f == +1) return +1; //ignore this term (dont repeat in the predicate)
+                }
             } else {
                 int f = test(at, id);
                 int f2 = (at == ETERNAL || f == -1) ? f : test(ETERNAL, id);
