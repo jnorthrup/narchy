@@ -63,7 +63,7 @@ public class Statement {
                 case IMPL: {
                     Term newSubj, inner = predicate.sub(0);
                     if (dt == DTERNAL || dt == XTERNAL) {
-                        newSubj = CONJ.the(subject, dt, inner);
+                        newSubj = HeapTermBuilder.the.conj(dt, subject, inner);
                     } else {
                         newSubj = Conj.sequence(subject, 0, inner, subject.eventRange() + dt);
                     }
@@ -75,26 +75,14 @@ public class Statement {
                 return Null;
 
 
-            if (dt != XTERNAL && subject.dt() != XTERNAL && predicate.dt() != XTERNAL) {
+            int subjDT = subject.dt();
+            if (dt != XTERNAL && subjDT != XTERNAL && predicate.dt() != XTERNAL) {
 
-//                if (dt==DTERNAL && subject.dt()!=DTERNAL) {
-//                    //parallelize the impl if the subject is a sequence
-//                    dt = 0;
-//                }
                 //TODO simple case when no CONJ or IMPL are present
 
                 if (Term.commonStructure(subject, predicate)) {
-//                ArrayHashSet<LongObjectPair<Term>> se = new ArrayHashSet<>(4);
-//                subject.eventsWhile((w, t) -> {
-//                    se.add(PrimitiveTuples.pair(w, t));
-//                    return true;
-//                }, 0, true, true, false, 0);
-
 
                     boolean subjNeg = subject.op() == NEG;
-
-
-
 
                     long po;
                     if (dt == DTERNAL) {
@@ -106,7 +94,7 @@ public class Statement {
                         po = subject.eventRange() + dt;
                     }
 
-                    Conj se = new Conj(subject.dt() != DTERNAL ? 0 : (dt != DTERNAL ? 0 : ETERNAL), subject.negIf(subjNeg));
+                    Conj se = new Conj(subjDT != DTERNAL ? 0 : (dt != DTERNAL ? 0 : ETERNAL), subject.negIf(subjNeg));
                     se.factor();
                     Term newPred = new ConjEliminator(se,
                             po,
@@ -118,7 +106,6 @@ public class Statement {
                         if (newPred instanceof Bool) {
                             return newPred;
                         }
-
 
                         if (dt != DTERNAL) {
                             int shift;
@@ -145,12 +132,7 @@ public class Statement {
 
                         }
 
-                        predicate = newPred;
-                    }
-
-
-                    if (predChange) {
-                        return statement(IMPL, dt, subject, predicate); //recurse
+                        return statement(IMPL, dt, subject, newPred); //recurse
                     }
                 }
 

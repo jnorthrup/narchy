@@ -80,8 +80,7 @@ class VersioningTest {
     private void initTestSequence1(boolean print) {
 
         if (print) System.out.println(v);
-        Versioned z = a.set("a0");
-        assertNotNull(z);
+        assertTrue(a.set("a0"));
         if (print) System.out.println(v);      a.set("a1");
         if (print) System.out.println(v);      b.set("b0");
         if (print) System.out.println(v);      a.set("a2");

@@ -57,8 +57,13 @@ public class Versioned<X> extends FasterList<X> {
      * returns null if the capacity was hit, or some other error
      */
     public boolean set(X nextValue) {
-        X existing = get();
-        if (existing!=null) { return existing.equals(nextValue); }
+
+        //unique value mode only:
+//        X existing = get();
+//        if (existing!=null) { return existing.equals(nextValue); }
+
+        if (size > 0 && get().equals(nextValue))
+            return true;
 
         if (addWithoutResize(nextValue)) {
             if (context.add(this))

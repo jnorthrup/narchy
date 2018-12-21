@@ -86,8 +86,8 @@
 //    Y, ((&&,--X,A..+) ==> B) |- unisubst((--X ==> B),X,Y), (Belief:DeductionN)
 
     //general implication induction
-    (A ==> B), X, neq(A,X)                  |- ((A && X) ==> B), (Belief:Induction)
-    (A ==> B), X, neq(A,X)                  |- ((A && --X) ==> B), (Belief:InductionPN)
+    (A ==> B), X, neq(A,X), neq(A,--X), --is(X,"==>")   |- ((A && X) ==> B), (Belief:Induction)
+    (A ==> B), X, neq(A,X), neq(A,--X), --is(X,"==>")   |- ((A && --X) ==> B), (Belief:InductionPN)
 
         ((&&,M,X,A..*) ==> C), (Y ==> C) |- unisubst((M ==> C),X,Y), (Belief:AbductionPB)
         ((&&,M,A..+) ==> X), ((&&,A..+) ==> Y) |- unisubst((M ==> X),X,Y,"$"), (Belief:AbductionPB)
