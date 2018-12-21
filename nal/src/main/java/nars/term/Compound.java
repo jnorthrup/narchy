@@ -543,23 +543,25 @@ public interface Compound extends Term, IPair, Subterms {
                             assert (!(factor instanceof Bool));
 
                             boolean b = seq.eventsWhile((when, what) -> {
-                                Term distributed = CONJ.the(what, factor);
+                                Term distributed = CONJ.the(when==ETERNAL ? DTERNAL : 0, what, factor);
                                 assert (!(distributed instanceof Bool));
                                 return each.accept(when, distributed);
                             }, offset, decomposeConjParallel, decomposeConjDTernal, decomposeXternal, depth + 1);
-                            if (!b)
-                                return false; //done
 
-                            if (decomposeConjDTernal) {
-                                //the factor component itself
-                                if (factor.op()==CONJ) {
-                                    return factor.eventsWhile(each, offset, decomposeConjParallel, decomposeConjDTernal, decomposeXternal, depth + 1);
-                                } else {
-                                    return each.accept(offset, factor);
-                                }
-                            } else {
-                                return each.accept(offset, this);
-                            }
+                            return b;
+//                            if (!b)
+//                                return false; //done
+
+//                            if (decomposeConjDTernal) {
+//                                //the factor component itself
+//                                if (factor.op()==CONJ) {
+//                                    return factor.eventsWhile(each, offset, decomposeConjParallel, decomposeConjDTernal, decomposeXternal, depth + 1);
+//                                } else {
+//                                    return each.accept(offset, factor);
+//                                }
+//                            } else {
+//                                return each.accept(offset, this);
+//                            }
                         }
 
                     }
