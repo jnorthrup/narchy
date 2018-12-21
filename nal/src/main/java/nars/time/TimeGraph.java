@@ -1,8 +1,6 @@
 package nars.time;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.graph.FromTo;
@@ -60,10 +58,18 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     /**
      * index by term
      */
-    public final Multimap<Term, Event> byTerm = MultimapBuilder
-            .hashKeys()
-            .linkedHashSetValues()
-            .build();
+//    public final Multimap<Term, Event> byTerm = MultimapBuilder
+//            .hashKeys()
+//            .linkedHashSetValues()
+//            .build();
+
+    public final Map<Term, Collection<Event>> byTerm = new HashMap<>() {
+        @Override
+        public Collection<Event> get(Object key) {
+            Collection<Event> x = super.get(key);
+            return x == null ? List.of() : x;
+        }
+    };
 
 //    public final UnifiedSetMultimap<Term, Event> byTerm = new UnifiedSetMultimap<>();
 
@@ -266,12 +272,14 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
 
         Collection<Event> ee = byTerm.get(eventTerm);
-        if (ee.isEmpty())
+        if (ee.isEmpty()) {
+            byTerm.put(eventTerm, new UnifiedSet(2).with(event));
             onNewTerm(eventTerm);
-
-        if (!ee.add(event))
-            //if (!byTerm.put(eventTerm, event))
-            return; //already present
+        } else {
+            if (!ee.add(event))
+                //if (!byTerm.put(eventTerm, event))
+                return; //already present
+        }
 
         if (decomposeAddedEvent(event)) {
             int edt = eventTerm.dt();
@@ -1290,7 +1298,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                     for (Event x : ee) {
                         Node<Event, TimeSpan> xx = node(x);
-                        if (xx != null && x != n && !log.hasVisited(xx)) {
+                        if (xx != null && xx != n && !log.hasVisited(xx)) {
                             if (dyn == null)
                                 dyn = new FasterList<>(1);
                             dyn.add(new ImmutableDirectedEdge<>(n, TS_ZERO, xx));

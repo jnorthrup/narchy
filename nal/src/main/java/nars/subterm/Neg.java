@@ -113,10 +113,15 @@ public final class Neg extends UnitCompound implements The {
     @Override
     public boolean equals(@Nullable Object that) {
         if (this == that) return true;
-        if (that instanceof Neg) {
-            return sub.equals(((Neg)that).sub);
-        } else {
-            return Compound.equals(this, that);
+        if (that instanceof Compound) {
+            Compound c = (Compound)that;
+            return c.op()==NEG && sub.equals(c.sub(0));
         }
+        return false;
+//        if (that instanceof Neg) {
+//            return sub.equals(((Neg)that).sub);
+//        } else {
+//            return Compound.equals(this, that);
+//        }
     }
 }

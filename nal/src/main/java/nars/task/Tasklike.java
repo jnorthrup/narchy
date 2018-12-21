@@ -79,7 +79,7 @@ public final class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
         if (this == o) return true;
         if (!(o instanceof Tasklike)) return false;
         Tasklike oo = (Tasklike) o;
-        return /*(hash == oo.hash) && */(punc == oo.punc) && (when == oo.when) && (term.equals(oo.term));
+        return /*(hash == oo.hash) && */(term.equals(oo.term)) && (punc == oo.punc) && (when == oo.when);
     }
 
     @Override
