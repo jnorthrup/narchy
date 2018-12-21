@@ -392,10 +392,10 @@
 
 //Anonymous Analogy (NAL5)
     //originally this only unified depvar (dep var elimination)
-    (&&,X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#",strict), (Belief:AnonymousAnalogy, Goal:AnonymousAnalogy)
+    (&&,X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#",strict), (Belief:AnonymousAnalogy)
       //accelerated version requiring no second-level unification and allows the general case unisubst to be 'strict'
       //C, X, eventOf(C,X)    |- conjWithout(C,X), (Belief:AnonymousAnalogy)
-    (&&,--X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#",strict), (Belief:AnonymousAnalogyPN, Goal:AnonymousAnalogyPN)
+    (&&,--X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#",strict), (Belief:AnonymousAnalogyPN)
       //accelerated version requiring no second-level unification and allows the general case unisubst to be 'strict'
       //C, X, eventOfNeg(C,X) |- conjWithout(C,--X), (Belief:AnonymousAnalogyPN)
 

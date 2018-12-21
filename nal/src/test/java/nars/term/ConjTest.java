@@ -2015,6 +2015,17 @@ public class ConjTest {
         assertEquals(2, xyz.eventRange());
     }
 
+    @Test void testSubtimeFirst_of_Sequence() {
+        Term subEvent = $$("(((--,_3(_1,_2))&|_3(_4,_5)) &&+830 (--,_3(_8,_9)))").eventFirst();
+        assertEq("((--,_3(_1,_2))&|_3(_4,_5))", subEvent);
+        assertEquals(
+                20,
+                $$("((_3(_6,_7) &&+20 ((--,_3(_1,_2))&|_3(_4,_5))) &&+830 (--,_3(_8,_9)))").
+                        subTimeFirst(subEvent)
+        );
+
+    }
+
 //    @Test void testConjEternalConj2() {
 //        Term a = $$("(--,((--,((--,y)&|x))&&x))"); //<-- should not be constructed
 //        Term b = $$("(x &&+5480 (--,(z &&+5230 (--,x))))");

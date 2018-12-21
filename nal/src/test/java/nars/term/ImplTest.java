@@ -202,6 +202,14 @@ public class ImplTest {
         assertEq("((--,#1)==>x)", "(((--,#1)&&(--,#1))==>x)");
     }
 
+    @Test void testImplicit_DTERNAL_to_Parallel() {
+        assertEq("((x&&y)==>z)", "((x&&y)==>z)"); //unchanged
+        assertEq("((x&&y) ==>+- z)", "((x&&y) ==>+- z)"); //unchanged
+
+        assertEq("((x&|y)=|>z)", "((x&&y)=|>z)");  //temporal now
+        assertEq("((x&|y) ==>+1 z)", "((x&&y) ==>+1 z)");
+        assertEq("(z=|>(x&|y))", "(z=|>(x&&y))");
+    }
 
 
 

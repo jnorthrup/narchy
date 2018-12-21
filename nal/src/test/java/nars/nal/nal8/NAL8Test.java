@@ -325,7 +325,7 @@ public class NAL8Test extends NALTest {
         test
                 .goal("(x || y)", Tense.Present, 1f, 0.9f)
                 .inputAt(2, "--x. |")
-                .mustGoal(cycles, "y", 1f, 0.67f, 2)
+                .mustGoal(cycles, "y", 1f, 0.67f, 0)
         ;
     }
 

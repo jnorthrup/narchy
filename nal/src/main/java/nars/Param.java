@@ -225,7 +225,9 @@ public abstract class Param {
             new TaskBuffer.BagTasksBuffer(256, 0.2f);
             //new TaskBuffer.BagPuncTasksBuffer(1024, 0.1f);
 
-    public static final boolean INPUT_BUFFER_PRI_BACKPRESSURE = true;
+    /** (unsafe) true should theoreticaly be faster,
+     * at the risk of budgeting inaccuracies and unfairly neglected lost derivations */
+    public static final boolean INPUT_BUFFER_PRI_BACKPRESSURE = false;
 
     /**
      * creates instance of the default truthpolation implementation
@@ -266,7 +268,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(5 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 3, 1, 32);
     public final IntRange matchTTL = new IntRange(6, 1, 32);
 
@@ -278,7 +280,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 2;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 6;
 
 
     /**

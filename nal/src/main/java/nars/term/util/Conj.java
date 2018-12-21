@@ -328,7 +328,20 @@ public class Conj extends ByteAnonMap {
      * whether the conjunction is a sequence (includes check for factored inner sequence)
      */
     public static boolean isSeq(Term conj) {
-        return !dtSpecial(conj.dt()) || (conj.subterms().structureSurface() & CONJ.bit) != 0;
+        assert(conj.op()==CONJ);
+        int dt = conj.dt();
+
+        if (!dtSpecial(dt))
+            return true; //basic sequence
+
+        if (dt == DTERNAL) {
+            Subterms x = conj.subterms();
+            //if ((x.structureSurface() & CONJ.bit) != 0)
+                if (x.subs(xx -> xx.op() == CONJ && xx.dt() != DTERNAL) == 1)
+                    return true;/* TOOD merge with below subIndexFirst call */
+        }
+
+        return false;
     }
 
     private void negateEvents() {

@@ -34,6 +34,7 @@ import nars.term.anon.AnonID;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
+import nars.term.util.Conj;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
 import nars.time.Tense;
@@ -124,7 +125,9 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return opX(o, (short) subOp);
     }
 
-    /** true if there is at least some type of structure in common */
+    /**
+     * true if there is at least some type of structure in common
+     */
     static boolean commonStructure(Termlike x, Termlike y) {
         int xStruct = x.structure();
         int yStruct = y.structure();
@@ -157,22 +160,31 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
 
-    /** whileTrue = BiPredicate<SubTerm,SuperTerm> */
-    default boolean recurseTerms(Predicate<Compound> descendFilter, BiPredicate<Term,Compound> whileTrue, @Nullable Compound superterm) {
+    /**
+     * whileTrue = BiPredicate<SubTerm,SuperTerm>
+     */
+    default boolean recurseTerms(Predicate<Compound> descendFilter, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm) {
         return whileTrue.test(this, superterm);
     }
 
-    /** convenience, do not override */
-    default void recurseTerms(BiConsumer<Term,Compound> each) {
-        recurseTerms(x -> true, (sub,sup)-> {
-            each.accept(sub,sup);
+    /**
+     * convenience, do not override
+     */
+    default void recurseTerms(BiConsumer<Term, Compound> each) {
+        recurseTerms(x -> true, (sub, sup) -> {
+            each.accept(sub, sup);
             return true;
         }, null);
     }
 
-    /** do not override */
+    /**
+     * do not override
+     */
     default void recurseTerms(Consumer<Term> each) {
-        recurseTerms(a -> true, (sub)-> { each.accept(sub); return true; }, null);
+        recurseTerms(a -> true, (sub) -> {
+            each.accept(sub);
+            return true;
+        }, null);
     }
 
     default boolean hasXternal() {
@@ -206,7 +218,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         int n = css.subs();
 
         byte which = path.get(depth);
-        assert(which < n);
+        assert (which < n);
 
         Term x = css.sub(which);
         Term y = x.replaceAt(path, depth + 1, replacement);
@@ -220,7 +232,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
     default boolean pathsTo(Predicate<Term> selector, Predicate<Term> descendIf, BiPredicate<ByteList, Term> receiver) {
-        return pathsTo((Function<Term,Term>)(Term x) -> selector.test(x) ? x : null, descendIf, receiver);
+        return pathsTo((Function<Term, Term>) (Term x) -> selector.test(x) ? x : null, descendIf, receiver);
     }
 
 
@@ -239,7 +251,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         assert (subpathsSize > 1);
 
         int shortest = Integer.MAX_VALUE;
-        for (ByteList subpath: subpaths) {
+        for (ByteList subpath : subpaths) {
             shortest = Math.min(shortest, subpath.size());
         }
 
@@ -352,61 +364,81 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * computes the occurrence times of an event within a compound.
      * if equals or is the first event only, it will be [0]
      * null if not contained or indeterminate (ex: XTERNAL)
-    */
+     */
     @Nullable
     default int[] subTimes(Term x) {
         int t = subTimeOnly(x);
         return t == DTERNAL ? null : new int[]{t};
     }
 
-    /** returns the unique sub-event time of the given term,
-     * or DTERNAL if not present or there is not one unique time. */
+    /**
+     * returns the unique sub-event time of the given term,
+     * or DTERNAL if not present or there is not one unique time.
+     */
     default int subTimeOnly(Term x) {
         return equals(x) ? 0 : DTERNAL;
     }
 
-    /** returns DTERNAL if not found */
+    /**
+     * returns DTERNAL if not found
+     */
     default int subTimeFirst(Term x) {
-        final int[] time = new int[1];
-        if (subTimesWhile(x, (w)->{
+        final int[] time = new int[] { DTERNAL };
+        subTimesWhile(x, (w) -> {
             time[0] = w; //got it
             return false; //stop
-        }) > 0) {
-            return time[0];
-        } else
-            return DTERNAL;
+        });
+        return time[0];
     }
-    /** returns DTERNAL if not found
-     * TODO optimize traversal
-     * */
-    default int subTimeLast(Term x) {
-        final int[] time = new int[1];
-        if (subTimesWhile(x, (w)->{
-            time[0] = w; //got it
-            return true; //keep going
-        }) > 0) {
-            return time[0];
-        } else
-            return DTERNAL;
-    }
+
     /**
-     *
-     * TODO make generic Predicate<Term> selector
-     * TODO move down to Compound, provide streamlined Atomic impl */
-    default int subTimesWhile(Term match, IntPredicate kontinue) {
-        final int[] hits = {0};
-        eventsWhile((when, what)->{
-            if (what.equals(match)) {
-                hits[0]++;
-                //assert(when >= 0 && when < Integer.MAX_VALUE);
-                return kontinue.test((int)when);
-            }
-            return true;
-        }, 0, true, true, false, 0);
-        return hits[0];
+     * returns DTERNAL if not found
+     * TODO optimize traversal
+     */
+    default int subTimeLast(Term x) {
+        final int[] time = new int[] { DTERNAL };
+        subTimesWhile(x, (w) -> {
+            time[0] = Math.max(time[0], w); //got it
+            return true; //keep going
+        });
+        return time[0];
     }
 
+    /**
+     * TODO make generic Predicate<Term> selector
+     * TODO move down to Compound, provide streamlined Atomic impl
+     */
+    default boolean subTimesWhile(Term match, IntPredicate each) {
+        if (equals(match)) {
+            return each.test(0);
+        }
 
+        if (op() == CONJ) {
+            if (Conj.isSeq(this)) {
+                final int[] hits = {0};
+                eventsWhile((when, what) -> {
+                    if (what.equals(match)) {
+                        hits[0]++;
+                        return each.test(Tense.occToDT(when));
+                    } else {
+                        if (Term.this != what && what.op() == CONJ) { //HACK unwrap this better to avoid unnecessary recursion
+                            int subWhen = what.subTimeFirst(match);
+                            if (subWhen != DTERNAL) {
+                                hits[0]++;
+                                return each.test(Tense.occToDT(when + subWhen));
+                            }
+                        }
+                    }
+                    return true;
+                }, 0, false, false, false, 0);
+                return true;
+            } else {
+                if (contains(match))
+                    return each.test(0);
+            }
+        }
+        return true;
+    }
 
 
     /**
@@ -463,10 +495,10 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
             return oc;
 
         if (volume == 1) {
-            assert(this instanceof Atomic);
+            assert (this instanceof Atomic);
 
             if (this instanceof Int && t instanceof Int) {
-                return Integer.compare(((Int)this).id, ((Int)t).id); //avoids zig-zag encoding inconsistency
+                return Integer.compare(((Int) this).id, ((Int) t).id); //avoids zig-zag encoding inconsistency
             }
             if (this instanceof AnonID && t instanceof AnonID) {
                 return Integer.compare(hashCode(), t.hashCode()); //same op, same hashcode
@@ -496,11 +528,11 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
 
-    @Deprecated default Term eval(NAR nar) {
+    @Deprecated
+    default Term eval(NAR nar) {
         Term y = Evaluation.solveFirst(this, nar);
         return y == null ? this : y;
     }
-
 
 
     default FasterList<LongObjectPair<Term>> eventList(long offset, int dtDither) {
@@ -530,7 +562,8 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * sorted by time; decomposes inner parallel conj
      */
     /* final */
-    @Deprecated default FasterList<LongObjectPair<Term>> eventList() {
+    @Deprecated
+    default FasterList<LongObjectPair<Term>> eventList() {
         return eventList(0, 1);
     }
 
@@ -673,10 +706,10 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
 //    }
 
     default MutableSet<Term> eventSet() {
-        assert(op()==CONJ);
+        assert (op() == CONJ);
         MutableSet<Term> s = new UnifiedSet<>();
-        eventsWhile((when, what)->{
-            if (what!=Term.this)
+        eventsWhile((when, what) -> {
+            if (what != Term.this)
                 s.add(what);
             return true;
         }, 0, true, true, true, 0);
@@ -687,6 +720,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     default Term eventFirst() {
         return this;
     }
+
     default Term eventLast() {
         return this;
     }

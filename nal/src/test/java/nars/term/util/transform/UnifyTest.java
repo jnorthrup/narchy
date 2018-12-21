@@ -82,10 +82,9 @@ public class UnifyTest {
             assertNotNull(t2);
 
 
-            Set<Term> t1u = ((Compound) t1).recurseSubtermsToSet(type);
-
-
-            int n1 = t1u.size();
+            Set<Term> vars = ((Compound) t1).recurseSubtermsToSet(type);
+            vars.addAll( ( (Compound) t2).recurseSubtermsToSet(type) );
+            int n1 = vars.size();
 
 
             final boolean[] termuted = {false};

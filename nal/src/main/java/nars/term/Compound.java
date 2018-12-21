@@ -34,6 +34,7 @@ import nars.subterm.TermList;
 import nars.term.anon.Anon;
 import nars.term.atom.Bool;
 import nars.term.compound.UnitCompound;
+import nars.term.util.Conj;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
@@ -240,9 +241,9 @@ public interface Compound extends Term, IPair, Subterms {
         Op o = op();
         if (o == CONJ) {
             int xdt = dt(), ydt = y.dt();
-            if (xdt==XTERNAL && ydt!=XTERNAL) {
+            if (xdt == XTERNAL && ydt != XTERNAL) {
                 return xx.equals(yy) || unify(y.root(), u);
-            } else if (ydt==XTERNAL && xdt!=XTERNAL) {
+            } else if (ydt == XTERNAL && xdt != XTERNAL) {
                 return xx.equals(yy) || root().unify(y, u);
             }
         }
@@ -449,7 +450,7 @@ public interface Compound extends Term, IPair, Subterms {
             return null;
 
         int dt = dt();
-        if (dt == DTERNAL || dt == 0) {
+        if (!Conj.isSeq(this)) {
             int[] tt = null;
             boolean needDedup = false;
             for (Term x : subterms()) {
@@ -481,20 +482,17 @@ public interface Compound extends Term, IPair, Subterms {
                 }
             }
             return tt;
+        } else {
+
+
+            int[][] found = new int[1][];
+            subTimesWhile(event, (when) -> {
+                found[0] = found[0] == null ? new int[]{when} : ArrayUtils.add(found[0], when);
+                return true;
+            });
+
+            return found[0];
         }
-
-        if (dt == XTERNAL)
-            return null;
-
-
-        int[][] found = new int[1][];
-        if ((subTimesWhile(event, (when) -> {
-            found[0] = found[0] == null ? new int[]{when} : ArrayUtils.add(found[0], when);
-            return true;
-        })) == 0)
-            return null;
-
-        return found[0];
     }
 
 
@@ -504,7 +502,9 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-    /** iterates contained events within a conjunction*/
+    /**
+     * iterates contained events within a conjunction
+     */
     @Override
     default boolean eventsWhile(LongObjectPredicate<Term> each, long offset, boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal, int depth) {
 
@@ -520,10 +520,11 @@ public interface Compound extends Term, IPair, Subterms {
                     break;
                 case DTERNAL:
                     Subterms ss = subterms();
-                    if ((ss.structureSurface() & CONJ.bit) != 0 && ss.subs(x->x.op()==CONJ && x.dt()!=DTERNAL)==1 /* TOOD merge with below subIndexFirst call */) {
+                    //see: Conj.isSeq(x)
+                    if ((ss.structureSurface() & CONJ.bit) != 0 && ss.subs(x -> x.op() == CONJ && x.dt() != DTERNAL) == 1 /* TOOD merge with below subIndexFirst call */) {
                         //distribute the factored inner sequence
-                        int seqIndex = ss.subIndexFirst(x -> x.op()==CONJ && x.dt()!=DTERNAL);
-                        assert(seqIndex!=-1);
+                        int seqIndex = ss.subIndexFirst(x -> x.op() == CONJ && x.dt() != DTERNAL);
+                        assert (seqIndex != -1);
                         Term seq = ss.sub(seqIndex);
                         boolean unfactor;
                         int sdt = seq.dt();
@@ -543,7 +544,7 @@ public interface Compound extends Term, IPair, Subterms {
                             assert (!(factor instanceof Bool));
 
                             boolean b = seq.eventsWhile((when, what) -> {
-                                Term distributed = CONJ.the(when==ETERNAL ? DTERNAL : 0, what, factor);
+                                Term distributed = CONJ.the(when == ETERNAL ? DTERNAL : 0, what, factor);
                                 assert (!(distributed instanceof Bool));
                                 return each.accept(when, distributed);
                             }, offset, decomposeConjParallel, decomposeConjDTernal, decomposeXternal, depth + 1);
@@ -766,13 +767,11 @@ public interface Compound extends Term, IPair, Subterms {
 
     default Term eventFirst() {
         if (op() == CONJ) {
-            if (eventRange() == 0)
-                return sub(0); //default to first subterm
             final Term[] first = new Term[1];
             eventsWhile((when, what) -> {
                 first[0] = what;
                 return false; //done got first
-            }, 0, true, true, false, 0);
+            }, 0, false, false, false, 0);
             return first[0];
         }
         return this;
@@ -783,13 +782,11 @@ public interface Compound extends Term, IPair, Subterms {
      */
     default Term eventLast() {
         if (op() == CONJ) {
-            if (eventRange() == 0)
-                return sub(0); //default to first subterm
             final Term[] last = new Term[1];
             eventsWhile((when, what) -> {
                 last[0] = what;
                 return true; //HACK keep going to end
-            }, 0, true, true, false, 0);
+            }, 0, false, false, false, 0);
             return last[0];
         }
         return this;

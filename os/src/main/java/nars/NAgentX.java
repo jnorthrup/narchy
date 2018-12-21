@@ -21,6 +21,7 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
 import nars.gui.NARui;
+import nars.index.concept.AbstractConceptIndex;
 import nars.index.concept.HijackConceptIndex;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
@@ -351,7 +352,8 @@ abstract public class NAgentX extends NAgent {
         //n.freqResolution.set(0.03f);
         n.termVolumeMax.set(32);
 
-        n.attn.activating.conceptActivationRate.set(1f/1000f); //HACK TODO based on active bag capacity
+        ((AbstractConceptIndex)n.concepts).activeCapacity.set(1024);
+        n.attn.activating.conceptActivationRate.set(1f/1024f); //HACK TODO based on active bag capacity
 
         n.beliefPriDefault.set(0.5f);
         n.goalPriDefault.set(0.8f);
@@ -360,6 +362,8 @@ abstract public class NAgentX extends NAgent {
 
         n.beliefConfDefault.set(0.90f);
         n.goalConfDefault.set(0.90f);
+
+
 //
 //        n.attn.forgetting = new Forgetting.AsyncForgetting() {
 //            @Override
@@ -428,9 +432,9 @@ abstract public class NAgentX extends NAgent {
         Introduction factorizer = new Factorize.FactorIntroduction( n, 8);
 
 
-        new Inperience.Believe(n, 16);
+        new Inperience.Believe(n);
         new Inperience.Want(n, 16);
-        new Inperience.Wonder(n, 8);
+        new Inperience.Wonder(n);
         new Inperience.Plan(n, 8);
 
 

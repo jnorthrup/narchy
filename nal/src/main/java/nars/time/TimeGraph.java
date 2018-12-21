@@ -351,7 +351,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                     if (edt == DTERNAL) {
 
-                        link(se, ETERNAL, pe);
+                        //link(se, ETERNAL, pe);
 
 //                        //link first two events of each
 //                        if (subj.hasAny(Op.CONJ)) {
@@ -370,24 +370,25 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                     } else {
 
-                        int st = subj.eventRange();
-                        link(se, (edt + st), pe);
+                        if (!(subj.op()==CONJ && subj.dt()==XTERNAL)) {
+                            int st = subj.eventRange();
+                            link(se, (edt + st), pe);
 
 
-                        if (subj.op() == Op.CONJ && subj.dt() == DTERNAL) { //HACK to decompose ordinarily non-decomposed &&
-                            subj.eventsWhile((w, y) -> {
-                                link(know(y), edt + st - w, pe);
-                                return true;
-                            }, 0, false, true, false, 0);
+                            if (subj.op() == Op.CONJ && subj.dt() == DTERNAL) { //HACK to decompose ordinarily non-decomposed &&
+                                subj.eventsWhile((w, y) -> {
+                                    link(know(y), edt + st - w, pe);
+                                    return true;
+                                }, 0, false, true, false, 0);
+                            }
+
+                            if (pred.op() == Op.CONJ && pred.dt() == DTERNAL) { //HACK to decompose ordinarily non-decomposed &&
+                                pred.eventsWhile((w, y) -> {
+                                    link(se, edt + st + w, know(y));
+                                    return true;
+                                }, 0, false, true, false, 0);
+                            }
                         }
-
-                        if (pred.op() == Op.CONJ && pred.dt() == DTERNAL) { //HACK to decompose ordinarily non-decomposed &&
-                            pred.eventsWhile((w, y) -> {
-                                link(se, edt + st + w, know(y));
-                                return true;
-                            }, 0, false, true, false, 0);
-                        }
-
                     }
 
                     break;
@@ -405,17 +406,16 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                                 know(sub);
                             break;
 
-                        case DTERNAL:
-                        case 0:
 
+                        case 0:
                             Subterms es = eventTerm.subterms();
                             int esn = es.subs();
-                            long d = edt == 0 ? 0 : ETERNAL;
                             for (int i = 0; i < esn; i++)
-                                link(event, d, know(es.sub(i), eventStart, eventEnd));
+                                link(event, 0, know(es.sub(i), eventStart, eventEnd));
 
                             break;
 
+                        case DTERNAL:
                         default:
 
                             if (eventStart != ETERNAL && eventStart != TIMELESS) {
@@ -431,11 +431,13 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                                 final Event[] prev = {event};
                                 final long[] prevDT = {0};
                                 eventTerm.eventsWhile((w, y) -> {
-                                    Event next = know(y);
+                                    if (!y.equals(eventTerm)) {
+                                        Event next = know(y);
 
-                                    link(prev[0], w - prevDT[0], next);
-                                    prevDT[0] = w;
-                                    prev[0] = next;
+                                        link(prev[0], w - prevDT[0], next);
+                                        prevDT[0] = w;
+                                        prev[0] = next;
+                                    }
                                     return true;
                                 }, 0, false, false, false, 0);
                             }

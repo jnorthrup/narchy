@@ -133,11 +133,11 @@ abstract public class Inperience extends TaskLeakTransform {
 
     public static class Believe extends Inperience {
 
-        public Believe(NAR n, int capacity) {
-            this(n, BELIEF, capacity);
+        public Believe(NAR n) {
+            this(n, BELIEF);
         }
 
-        Believe(NAR n, byte punc, int capacity) {
+        Believe(NAR n, byte punc) {
             super(n, punc);
         }
 
@@ -207,18 +207,18 @@ abstract public class Inperience extends TaskLeakTransform {
     public static class Want extends Believe {
 
         public Want(NAR n, int capacity) {
-            super(n, GOAL, capacity);
+            super(n, GOAL);
         }
 
     }
 
     public static class Wonder extends Inperience {
 
-        public Wonder(NAR n, int capacity) {
-            this(n, QUESTION, capacity);
+        public Wonder(NAR n) {
+            this(n, QUESTION);
         }
 
-        protected Wonder(NAR n, byte punc, int capacity) {
+        protected Wonder(NAR n, byte punc) {
             super(n, punc);
         }
 
@@ -247,7 +247,7 @@ abstract public class Inperience extends TaskLeakTransform {
     public static class Plan extends Wonder {
 
         public Plan(NAR n, int capacity) {
-            super(n, QUEST, capacity);
+            super(n, QUEST);
         }
 
     }

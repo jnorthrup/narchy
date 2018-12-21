@@ -1,11 +1,12 @@
 package nars.term;
 
-import jcog.WTF;
+import jcog.TODO;
 import nars.Op;
+import nars.Param;
 import nars.term.atom.Bool;
 import nars.term.util.Conj;
 import nars.term.util.builder.HeapTermBuilder;
-import nars.time.Tense;
+import nars.unify.ellipsis.Ellipsis;
 
 import java.util.function.Predicate;
 
@@ -42,11 +43,13 @@ public class Statement {
 
         if (op == IMPL) {
 
-
             if (subject == True)
                 return predicate;
             if (subject == False)
                 return Null;
+            if (subject.hasAny(IMPL))
+                return Null;
+
             //test this after all of the recursions because they may have logically eliminated an IMPL that was in the input
             //TODO valid cases where subj has impl?
 
@@ -71,12 +74,9 @@ public class Statement {
                 }
             }
 
-            if (subject.hasAny(IMPL))
-                return Null;
-
 
             int subjDT = subject.dt();
-            if (dt != XTERNAL && subjDT != XTERNAL && predicate.dt() != XTERNAL) {
+            if (dt != XTERNAL && subjDT != XTERNAL && predicate.dt() != XTERNAL && !subject.OR(x->x instanceof Ellipsis) && !predicate.OR(x->x instanceof Ellipsis) ) {
 
                 //TODO simple case when no CONJ or IMPL are present
 
@@ -86,19 +86,14 @@ public class Statement {
 
                     long po;
                     if (dt == DTERNAL) {
-                        if (predicate.dt() == DTERNAL) {
-                            po = ETERNAL;
-                        } else
-                            po = 0;
+                        po = predicate.dt() == DTERNAL ? ETERNAL : 0;
                     } else {
                         po = subject.eventRange() + dt;
                     }
 
                     Conj se = new Conj(subjDT != DTERNAL ? 0 : (dt != DTERNAL ? 0 : ETERNAL), subject.negIf(subjNeg));
                     se.factor();
-                    Term newPred = new ConjEliminator(se,
-                            po,
-                            predicate, subjNeg).term();
+                    Term newPred = new ConjEliminator(se, po, predicate, subjNeg).term();
 
                     boolean predChange = !predicate.equals(newPred);
                     if (predChange) {
@@ -109,25 +104,37 @@ public class Statement {
 
 
                         if (dt != DTERNAL) {
-                            int shift;
-                            if (newPred.op() != CONJ) {
-                                shift = predicate.subTimeFirst(newPred);
-                            } else {
-                                int[] s = new int[]{DTERNAL};
-                                Term finalPredicate = predicate;
-                                newPred.eventsWhile((when, what) -> {
-                                    int wshift = finalPredicate.subTimeFirst(what);
-                                    if (wshift != DTERNAL) {
-                                        s[0] = Tense.occToDT(wshift - when);
-                                        return false;
-                                    }
-                                    return true; //keep going
-                                }, 0, true, true, false, 0);
-                                shift = s[0];
+                            int shift = predicate.subTimeFirst(newPred.eventFirst());
+
+                            if (shift == DTERNAL && predicate.subterms().equals(newPred.subterms()) && predicate.dt() == DTERNAL && newPred.dt() == 0) {
+                                shift = 0; //HACK handle dternal -> to zero implicit conversion
                             }
-                            if (shift == DTERNAL || shift == XTERNAL)
-                                throw new WTF();
-                            //return Null; //??
+//                            if (shift == DTERNAL && Tense.dtSpecial(predicate.dt()) && Tense.dtSpecial(newPred.dt()) && newPred.AND(predicate::contains)) {
+//                                shift = 0; //sub-condition of parallel
+//                            }
+
+                            //int shift;
+                            //if (newPred.op() != CONJ) {
+                            //    shift = predicate.subTimeFirst(newPred);
+                            //} else {
+//                                int[] s = new int[]{DTERNAL};
+//                                Term finalPredicate = predicate;
+//                                newPred.eventsWhile((when, what) -> {
+//                                    int wshift = finalPredicate.subTimeFirst(what);
+//                                    if (wshift != DTERNAL) {
+//                                        s[0] = Tense.occToDT(wshift - when);
+//                                        return false;
+//                                    }
+//                                    return true; //keep going
+//                                }, 0, true, true, false, 0);
+                                //shift = s[0];
+                            //}
+                            if (shift == DTERNAL || shift == XTERNAL) {
+                                if (Param.DEBUG)
+                                    throw new TODO();
+                                else
+                                    return Null; //??
+                            }
 
                             dt += shift;
 
@@ -140,6 +147,15 @@ public class Statement {
                 }
 
             }
+
+            //implicit dternal to parallel promotion in temporal implication
+            if (dt!=XTERNAL && dt!=DTERNAL) {
+                if (subject.op()==CONJ && subject.dt()==DTERNAL && !Conj.isSeq(subject))
+                    subject = subject.dt(0);
+                if (predicate.op()==CONJ && predicate.dt()==DTERNAL && !Conj.isSeq(predicate))
+                    predicate = predicate.dt(0);
+            }
+
 
 
         } else if (op == SIM) {

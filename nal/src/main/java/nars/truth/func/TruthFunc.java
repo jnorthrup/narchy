@@ -25,11 +25,13 @@ public interface TruthFunc {
             table.put(Atomic.the(t + "NP"), negatedTask);
             table.put(Atomic.the(t.toString() + 'N'), negatedTask); //@Deprecated, prefer NP variant
 
-            table.put(Atomic.the(t + "PN"), new NegatedBeliefTruth(t));
-            table.put(Atomic.the(t + "PNX"), new NegatedBeliefTruth(swapped)); //HACK
+            if (!t.single()) {
+                table.put(Atomic.the(t + "PN"), new NegatedBeliefTruth(t));
+                table.put(Atomic.the(t + "PNX"), new NegatedBeliefTruth(swapped)); //HACK
 
-            table.put(Atomic.the(t + "NN"), new NegatedTruths(t));
-            table.put(Atomic.the(t + "NX"), new NegatedTaskTruth(swapped));
+                table.put(Atomic.the(t + "NN"), new NegatedTruths(t));
+                table.put(Atomic.the(t + "NX"), new NegatedTaskTruth(swapped));
+            }
 
             table.put(Atomic.the(t + "Depolarized"), new DepolarizedTruth(t));
 
