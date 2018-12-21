@@ -134,7 +134,8 @@ public class Statement {
                         }
 
                         predicate = newPred;
-                        //return statement(IMPL, dt, subject, newPred); //recurse
+                        if (predicate.op()==NEG)
+                            return statement(IMPL, dt, subject, predicate.unneg()).neg();//recurse
                     }
                 }
 

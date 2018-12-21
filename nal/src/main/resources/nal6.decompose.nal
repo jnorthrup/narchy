@@ -49,12 +49,12 @@
     X, C, eventLastOf(C,X), --eventOfNeg(C,X)       |-   conjDropIfLatest(C,X),     (Goal:Desire,Time:TaskLastInBeliefPos)
     //TODO test:
       //X, C, eventLastOfNeg(C,X),--eventOf(C,X)      |-   --negateEvents(conjDropIfLatest(C,--X)), (Goal:DesireWeak,Time:TaskLastInBeliefNeg)
-      X, C, eventLastOfNeg(C,X)                     |- --conjDropIfLatest(C,--X), (Goal:DesireWeak,Time:TaskLastInBeliefNeg)
+      X, C, eventLastOfNeg(C,X),--eventOf(C,X)      |- --conjDropIfLatest(C,--X), (Goal:DesireWeak,Time:TaskLastInBeliefNeg)
 
     X, C, eventLastOfNeg(C,X), --eventOf(C,X)       |-   conjDropIfLatest(C,--X),   (Goal:DesireN,Time:TaskLastInBeliefNeg)
     //TODO test:
       //X, C, eventLastOf(C,X), --eventOfNeg(C,X)     |-   --negateEvents(conjDropIfLatest(C,X)), (Goal:DesireWeak, Time:TaskLastInBeliefNeg)
-      X, C, eventLastOf(C,X)                        |- --conjDropIfLatest(C,X),   (Goal:DesireWeakN,Time:TaskLastInBeliefNeg)
+      X, C, eventLastOf(C,X),--eventOfNeg(C,X)      |- --conjDropIfLatest(C,X),   (Goal:DesireWeakN,Time:TaskLastInBeliefNeg)
 
 
     //negate events of anti-conj goal
@@ -69,17 +69,17 @@
 
     //TODO conjunction sequence prefix
 
-    C, X, eventFirstOf(C,X)    |- conjDropIfEarliest(C,  X), (Belief:Deduction,Goal:Deduction,Time:AfterBeliefInTask)
+    C, X, eventFirstOf(C,X),--eventOfNeg(C,X)    |- conjDropIfEarliest(C,  X), (Belief:Deduction,Goal:Deduction,Time:AfterBeliefInTask)
       C, X, eventFirstOf(C,X)    |- X, (Goal:StructuralDeduction)
         //C, X, eventFirstOf(C,X)    |- --X, (Goal:StructuralDeductionN)
-    C, X, eventFirstOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DeductionPN,Time:AfterBeliefInTask)
+    C, X, eventFirstOfNeg(C,X),--eventOf(C,X)    |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DeductionPN,Time:AfterBeliefInTask)
       C, X, eventFirstOfNeg(C,X) |- --X, (Goal:StructuralDeduction)
         //C, X, eventFirstOfNeg(C,X) |- X, (Goal:StructuralDeductionN)
 
 
     //conditional disjunction decompose
-    D, X, eventOfNeg(D,X) |- --conjWithout(D,--X), (Goal:DeductionNN,Time:TaskSubEvent)
-    D, X, eventOf(D,X)    |- --conjWithout(D,  X), (Goal:DeductionNP,Time:TaskSubEvent)
+    D, X, eventOfNeg(D,X),--eventOf(D,X)   |- --conjWithout(D,--X), (Goal:DeductionNN,Time:TaskSubEvent)
+    D, X, eventOf(D,X),--eventOfNeg(D,X)   |- --conjWithout(D,  X), (Goal:DeductionNP,Time:TaskSubEvent)
 
 
 

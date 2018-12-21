@@ -222,6 +222,9 @@ public class BitmapMatrixView extends Surface {
             this.pix = ((DataBufferInt) buf.getRaster().getDataBuffer()).getData();
         }
 
+        if (!showing())
+            return false;
+
         view.update(buf, pix);
 
         return bmp.update(buf);

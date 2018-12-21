@@ -92,7 +92,7 @@ public class Premise implements Comparable<Premise> {
         boolean beliefConceptCanAnswerTaskConcept = false;
 
         Term beliefTerm = this.beliefTerm;
-//        if (task.isQuestionOrQuest())
+        if (task.isQuestionOrQuest())
         {
             Term taskTerm = task.term();
             if (taskTerm.op() == beliefTerm.op()) {
@@ -105,6 +105,10 @@ public class Premise implements Comparable<Premise> {
                         Term unifiedBeliefTerm = d.unifyPremise.unified(taskTerm, beliefTerm, matchTTL);
 
                         if (unifiedBeliefTerm != null) {
+
+                            if (!unifiedBeliefTerm.isNormalized() && d.random.nextBoolean())
+                                unifiedBeliefTerm = unifiedBeliefTerm.normalize();
+
                             beliefTerm = unifiedBeliefTerm;
                             beliefConceptCanAnswerTaskConcept = true;
                         } else {

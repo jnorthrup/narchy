@@ -88,27 +88,32 @@ public class UnifyTest {
             int n1 = t1u.size();
 
 
+            final boolean[] termuted = {false};
             AtomicBoolean subbed = new AtomicBoolean(false);
 
-            Unify sub = new Unify(type,
-                    new XorShift128PlusRandom(1),
-                    Param.UnificationStackMax) {
+            Unify sub = new Unify(type, new XorShift128PlusRandom(1), Param.UnificationStackMax) {
 
+                @Override
+                protected void tryMatches() {
+                    if (!termutes.isEmpty())
+                        termuted[0] = true;
+                    super.tryMatches();
+                }
 
                 @Override
                 public void tryMatch() {
 
                     if (shouldSub) {
-
-
+                        final int[] matched = {0};
                         this.xy.forEachVersioned((k, v) -> {
-                            if (matchType(k.op()))
+                            if (matchType(k.op())) {
                                 assertNotNull(v);
+                                matched[0]++;
+                            }
                             return true;
                         });
 
-                        if (/*((n2) <= (yx.size())*/
-                                (n1) <= (xy.size())) {
+                        if (matched[0] == n1) {
                             subbed.set(true);
 
                         } /*else {
@@ -127,9 +132,9 @@ public class UnifyTest {
 
 
             sub.setTTL(INITIAL_TTL);
-            sub.unify(t1, t2);
-
-            sub.revert(0);
+            boolean u = sub.unify(t1, t2);
+            if (!termuted[0])
+                assertEquals(shouldSub, u);
 
             assertEquals(shouldSub, subbed.get());
 

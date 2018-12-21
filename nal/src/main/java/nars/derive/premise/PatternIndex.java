@@ -384,9 +384,8 @@ public class PatternIndex extends MapConceptIndex {
                         boolean xConst = u.constant(x);
                         if (xConst) {
 
-                            if (!yFree.remove(x)) {
+                            if (!yFree.remove(x))
                                 return false;
-                            }
                             //else: eliminated
 
                         } else {
@@ -431,8 +430,20 @@ public class PatternIndex extends MapConceptIndex {
                 if (xs >= 1 && ys > 0) {
                     //test matches against the one constant term
                     for (int ixs = 0; ixs < xs; ixs++) {
-                        int ixsStruct = xFixed.get(ixs).structure();
+                        Term ix = xFixed.get(ixs);
+                        int ixsStruct = ix.structure();
                         int varBits = u.varBits;
+
+                        //TODO requires more work
+//                        if ((ixsStruct & varBits)!=0) {
+//                            Unify.ConstrainedVersionedTerm cx = ((Unify.ConstrainedVersionedTerm) (u.xy.map.get(ix)));
+//                            if (cx!=null && cx.get()==null && cx.constraint!=null) {
+//                                if (yFree.removeIf(yy -> cx.constraint.invalid(yy, u)))
+//                                    if (yFree.isEmpty())
+//                                        return false; //all eliminated
+//                            }
+//                        }
+
                         if ((ixsStruct & ~varBits) != 0) {
 //                            List<Term> yMatchableWithX = null;
                             boolean canMatch = false;
@@ -485,14 +496,14 @@ public class PatternIndex extends MapConceptIndex {
                                     return x0.unify(bb, u) && ellipsis.unify(aa, u);
                                 } //else: continue below
                                 break;
+//                            default:
+//                                throw new TODO();
                         }
                         return u.termutes.add(new Choose1(ellipsis, x0, yFree));
                     }
 
                     case 2:
-                        Term[] xFixedSorted = eMatch==null ? xFixed.toArray(EmptyTermArray) /* sorted */
-                                                :
-                                              Terms.sorted(xFixed);
+                        Term[] xFixedSorted = Terms.sorted(xFixed);
                         return u.termutes.add(new Choose2(ellipsis, u, xFixedSorted, yFree));
 
                     default:
@@ -525,7 +536,8 @@ public class PatternIndex extends MapConceptIndex {
 
             Term xx;
             boolean neg = x.op() == NEG;
-            if (neg) xx = x.unneg();
+            if (neg)
+                xx = x.unneg();
             else xx = x;
 
             @Nullable Ellipsislike e = firstEllipsis(xx.subterms());

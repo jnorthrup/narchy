@@ -649,18 +649,19 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     /**
      * first layer operator scan
-     *
+     * TODO check for obvious constant term mismatch
      * @return 0: must unify, -1: impossible, +1: unified already
      */
-    private static int possiblyUnifiableWhileEliminatingEqual(TermList xx, TermList yy, Unify u) {
+    private static int possiblyUnifiableWhileEliminatingEqualAndConstants(TermList xx, TermList yy, Unify u) {
         int xs = 0, ys = 0;
 
-        int xn = xx.size();
-        for (int i = 0; i < xn; ) {
+        int n = xx.size();
+
+        for (int i = 0; i < n; ) {
             Term xi = xx.get(i);
             if (yy.removeFirst(xi)) {
                 xx.removeFast(i);
-                xn--;
+                n--;
             } else {
                 xs |= xi.opBit();
                 ys |= yy.get(i).opBit();
@@ -668,16 +669,45 @@ public interface Subterms extends Termlike, Iterable<Term> {
             }
         }
 
-        assert (xx.size() == yy.size());
-
-        int xxs = xx.size();
+        int xxs = xx.size(); assert (xxs == yy.size());
         if (xxs == 0)
             return +1; //all eliminated
 
-        else if (!possiblyUnifiable(xs, ys, u.varBits))
+
+        if (possiblyUnifiable(xs, ys, u.varBits)) {
+//            if (xxs == 1)
+//                return 0; //one subterm remaining, direct match will be tested by callee
+//            Set<Term> xConst = null;
+//            for (int i = 0; i < xxs; i++) {
+//                Term xxx = xx.get(i);
+//                if (u.constant(xxx)) {
+//                    if (xConst == null) xConst = new UnifiedSet(xxs-i);
+//                    xConst.add(xxx);
+//                }
+//            }
+//            if (xConst!=null) {
+//                Set<Term> yConst = null;
+//                for (int i = 0; i < xxs; i++) {
+//                    Term yyy = yy.get(i);
+//                    if (u.constant(yyy)) {
+//                        if (yConst == null) yConst = new UnifiedSet(xxs-i);
+//                        yConst.add(yyy);
+//                    }
+//                }
+//                if (yConst!=null) {
+//                    if (xConst.size() == yConst.size()) {
+//                        if (!xConst.equals(yConst))
+//                            return -1; //constant mismatch
+//                    } else {
+//                        //can this be tested
+//                    }
+//                }
+//            }
+
+            return 0;
+        } else
             return -1; //first layer has no non-variable commonality, no way to unify
 
-        else return 0;
     }
     /**
      * assume equality, structure commonality, and equal subterm count have been tested
@@ -686,7 +716,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         TermList xx = toList(), yy = y.toList();
 
-        int i = possiblyUnifiableWhileEliminatingEqual(xx, yy, u);
+        int i = possiblyUnifiableWhileEliminatingEqualAndConstants(xx, yy, u);
         switch (i) {
             case -1:
                 return false;

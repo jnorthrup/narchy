@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import jcog.WTF;
+import jcog.data.bit.MetalBitSet;
 import jcog.data.graph.FromTo;
 import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.MapNodeGraph;
@@ -107,11 +108,12 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      * creates an event for a hypothetical term which may not actually be an event;
      * but if it is there or becomes there, it will connect what it needs to
      */
-    public Event shadow(Term v) {
-        return event(v, TIMELESS, false);
+    public final Event shadow(Term v) {
+        //return event(v, TIMELESS, false);
+        return new Relative(v);
     }
 
-    public Event know(Term v) {
+    public final Event know(Term v) {
         return event(v, TIMELESS, true);
     }
 
@@ -119,11 +121,11 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         return event(t, start, start, true);
     }
 
-    public Event know(Term t, long start, long end) {
+    public final Event know(Term t, long start, long end) {
         return event(t, start, end, true);
     }
 
-    public Event event(Term t, long when, boolean add) {
+    public final Event event(Term t, long when, boolean add) {
         return event(t, when, when, add);
     }
 
@@ -133,6 +135,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         Event event;
         if (start == TIMELESS) {
+            assert(add): "use shadow(t) if not adding";
             event = new Relative(t);
         } else {
 
@@ -1022,7 +1025,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      */
     protected final boolean solveOccurrence(Term t, Predicate<Event> each) {
 
-        return solveOccurrence(event(t, TIMELESS, false), each);
+        return solveOccurrence(shadow(t), each);
 
     }
 
@@ -1033,14 +1036,17 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     boolean bfsPush(Collection<Event> roots, Search<Event, TimeSpan> tv) {
 
 
-        List<Event> created = null;
-
-        //maybe should not stretch the timegraph , so temporarily disable potential stretching during adds here?  otherwise this seems to work well
-        for (Event r : roots) {
-            if (addNewNode(r)) {
-                if (created == null)
-                    created = new FasterList(4);
-                created.add(r);
+        MetalBitSet created = null;
+        {
+            int n = 0;
+            for (Event r : roots) {
+                if (addNewNode(r)) {
+                    if (created == null) {
+                        created = MetalBitSet.bits(roots.size());
+                    }
+                    created.set(n);
+                }
+                n++;
             }
         }
 
@@ -1068,8 +1074,13 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         boolean result = bfs(roots, q, tv);
 
-        if (created != null && result /* tail call optimization  - dont bother removing if we're done anyway */)
-            created.forEach(this::removeNode);
+        if (created != null && result /* tail call optimization  - dont bother removing if we're done anyway */) {
+            int m = 0;
+            for (Event x : roots) {
+                if (created.get(m++))
+                    removeNode(x);
+            }
+        }
 
         return result;
     }

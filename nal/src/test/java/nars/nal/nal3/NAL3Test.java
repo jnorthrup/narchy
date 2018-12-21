@@ -100,10 +100,11 @@ public class NAL3Test extends NALTest {
             test.mustBelieve(cycles, unknown, freq, freq, 0, 0.81f); //up to 0.81 conf
         }
 
+        float confThresh = 0.15f;
         if (freq > 0)
-            test.mustNotOutput(cycles, known, BELIEF, 0, freq - Param.TRUTH_EPSILON, 0, 1, ETERNAL);
+            test.mustNotOutput(cycles, known, BELIEF, 0, freq - Param.TRUTH_EPSILON, confThresh, 1, ETERNAL);
         if (freq < 1)
-            test.mustNotOutput(cycles, known, BELIEF, freq + Param.TRUTH_EPSILON, 1, 0, 1, ETERNAL);
+            test.mustNotOutput(cycles, known, BELIEF, freq + Param.TRUTH_EPSILON, 1, confThresh, 1, ETERNAL);
         return test;
     }
 

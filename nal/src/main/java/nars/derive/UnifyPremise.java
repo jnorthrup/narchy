@@ -21,14 +21,13 @@ public class UnifyPremise extends UnifySubst {
 
         this.beliefTermUnified = this.beliefTerm = beliefTerm;
 
-        if (!transform(beliefTerm, beliefTerm, taskTerm, ttl))
-            return null;
+        return !transform(beliefTerm, beliefTerm, taskTerm, ttl) ? null : beliefTermUnified;
 
-        return beliefTermUnified;
     }
 
     @Override
     protected boolean each(Term y) {
+        y = y.unneg();
         if (!y.equals(beliefTerm)) {
             if (y.op().conceptualizable) {
                 beliefTermUnified = y;

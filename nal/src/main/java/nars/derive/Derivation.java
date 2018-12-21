@@ -168,6 +168,7 @@ public class Derivation extends PreDerivation {
      * current MatchTerm to receive matches at the end of the Termute chain; set prior to a complete match by the matchee
      */
     public PREDICATE<Derivation> forEachMatch;
+
     /**
      * current NAR time, set at beginning of derivation
      */
@@ -176,20 +177,13 @@ public class Derivation extends PreDerivation {
     public transient int termVolMax;
 
 
-    /**
-     * the base priority determined by the task and/or belief (tasks) of the premise.
-     * note: this is not the same as the premise priority, which is determined by the links
-     * and has already affected the selection of those links to create derived premises.
-     * instead, the derived tasks are budgeted according to the priorities of the
-     * parent task(s) NOT the links.  this allows the different budget 'currencies' to remain
-     * separate.
-     */
     public final Occurrify occ = new Occurrify(this);
+
     /**
      * whether either the task or belief are events and thus need to be considered with respect to time
      */
+    public transient boolean temporal;
 
-    @Deprecated public transient boolean temporal;
     public transient TruthFunc truthFunction;
     public transient int ditherTime;
 
@@ -210,7 +204,7 @@ public class Derivation extends PreDerivation {
      */
     public transient long taskStart, taskEnd, beliefStart, beliefEnd; //TODO taskEnd, beliefEnd
 
-    public long[] taskBeliefTimeIntersects = new long[2];
+    public final long[] taskBeliefTimeIntersects = new long[2];
 
     private transient Term _beliefTerm;
     private transient long[] evidenceDouble, evidenceSingle;

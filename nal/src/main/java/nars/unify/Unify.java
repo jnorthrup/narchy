@@ -80,7 +80,7 @@ public abstract class Unify extends Versioning implements Subst {
         super(stackMax);
 
         this.random = random;
-        this.varBits = varBits;
+        this.varBits = varBits | Op.Temporal;
 
         this.xy = new ConstrainedVersionMap(this, termMap);
     }
@@ -177,7 +177,7 @@ public abstract class Unify extends Versioning implements Subst {
     }
 
 
-    private void tryMatches() {
+    protected void tryMatches() {
         int ts = termutes.size();
         if (ts > 0) {
 
@@ -241,10 +241,10 @@ public abstract class Unify extends Versioning implements Subst {
      * whether is constant with respect to the current matched variable type
      */
     public final boolean constant(Termlike x) {
-        return !x.hasAny(varBits);// || (x instanceof ImDep);
+        return !x.hasAny(varBits);
     }
     public final boolean constant(int structure) {
-        return !Op.hasAny(structure, varBits);// || (x instanceof ImDep);
+        return !Op.hasAny(structure, varBits);
     }
 
 
@@ -270,7 +270,7 @@ public abstract class Unify extends Versioning implements Subst {
         } else
             xx = x;
 
-        if (matchType(o)) {
+        if (o.var && matchType(o)) {
             Term y = resolve((Variable) xx);
             if (y != xx) {
                 if (neg)
@@ -300,12 +300,12 @@ public abstract class Unify extends Versioning implements Subst {
 
     }
 
-    final class ConstrainedVersionedTerm extends Versioned<Term> {
+    public final class ConstrainedVersionedTerm extends Versioned<Term> {
 
         /**
          * lazily constructed
          */
-        UnifyConstraint constraint;
+        public UnifyConstraint constraint;
 
         ConstrainedVersionedTerm() {
             super(Unify.this, new Term[1]);
