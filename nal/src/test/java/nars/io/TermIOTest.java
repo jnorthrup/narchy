@@ -244,18 +244,18 @@ class TermIOTest {
         assertEqualTask("(a-->(b,c))!");
         assertEqualTask("(a-->(b==>c))?");
         assertEqualTask("$0.1 (b-->c)! %1.0;0.8%");
-        assertEqualTask("$0.1 (b-->c)! :|: %1.0;0.8%");
-        assertEqualTask("$0.1 (a ==>+4 (b-->c)). :|: %1.0;0.8%");
-        assertEqualTask("$0.1 (1 ==>+4 (2-->3)). :|: %1.0;0.8%");
+        assertEqualTask("$0.1 (b-->c)! | %1.0;0.8%");
+        assertEqualTask("$0.1 (a ==>+4 (b-->c)). | %1.0;0.8%");
+        assertEqualTask("$0.1 ((x,1) ==>+4 ((y,2)-->z)). | %1.0;0.8%");
 
         assertEqualTask("(x ==>+- y)?");
-        assertEqualTask("(x ==>+- y)? :|:");
+        assertEqualTask("(x ==>+- y)? |");
         assertEqualTask("(x ==>+- x)?");
-        assertEqualTask("(x ==>+- x)? :|:");
+        assertEqualTask("(x ==>+- x)? |");
         assertEqualTask("(x &&+- y)?");
-        assertEqualTask("(x &&+- y)? :|:");
+        assertEqualTask("(x &&+- y)? |");
         assertEqualTask("(x &&+- x)?");
-        assertEqualTask("(x &&+- x)? :|:");
+        assertEqualTask("(x &&+- x)? |");
 
         assertEqualTask("(x &&+- x)@");
         assertEqualTask("(x &&+- x)@ :|:");

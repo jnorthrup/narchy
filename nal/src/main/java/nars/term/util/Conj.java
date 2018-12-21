@@ -1,7 +1,6 @@
 package nars.term.util;
 
 import jcog.TODO;
-import jcog.Util;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
@@ -140,8 +139,8 @@ public class Conj extends ByteAnonMap {
      * returns null if wasnt contained, Null if nothing remains after removal
      */
     @Nullable
-    public static Term drop(Term conj, Term event, boolean earlyOrLate, boolean filterContradiction) {
-        if (conj.op()==NEG) return drop(conj, event, earlyOrLate, filterContradiction).neg();
+    public static Term withoutEarlyOrLate(Term conj, Term event, boolean earlyOrLate, boolean filterContradiction) {
+        if (conj.op()==NEG) return withoutEarlyOrLate(conj, event, earlyOrLate, filterContradiction).neg();
 
         if (conj.op() != CONJ || conj.impossibleSubTerm(event))
             return Null;
@@ -747,36 +746,19 @@ public class Conj extends ByteAnonMap {
             }
         }
 
-        //test this first
-        boolean polarity;
-        if (x.op() == NEG) {
-            polarity = false;
 
-//            //&& DTERNAL -> parallel in sequence event
-//            Term ux = x.unneg();
-//            if (ux.op() == CONJ && ux.dt() == DTERNAL && at != ETERNAL)
-//                x = ux.dt(0).neg();
-        } else {
-            polarity = true;
-
-//            //&& DTERNAL -> parallel in sequence event
-//            if (x.op() == CONJ && x.dt() == DTERNAL && at != ETERNAL)
-//                x = x.dt(0);
-        }
 
         //quick test for conflict with existing ETERNALs
         Object eternalEvents = event.get(ETERNAL);
         if (eternalEvents != null && eventCount(eternalEvents) > 0) {
-            if (!eventsAND(eternalEvents, (b) -> {
-                if (unindex(b).equalsNeg(x))
-                    return false;
-                return true;
-            })) {
+            if (!eventsAND(eternalEvents, b -> !unindex(b).equalsNeg(x))) {
                 this.term = False;
                 return false;
             }
         }
 
+        //test this first
+        boolean polarity = x.op() != NEG;
         byte id = add(polarity ? x : x.unneg());
 
         if (!polarity) id = (byte) -id;
@@ -910,7 +892,7 @@ public class Conj extends ByteAnonMap {
                 newConj = Conj.without(conjUnneg, incoming, false);
             } else {
                 //carefully remove the contradicting first event
-                newConj = Conj.drop(conjUnneg, incoming, true, false);
+                newConj = Conj.withoutEarlyOrLate(conjUnneg, incoming, true, false);
             }
 
             int dt = eternal ? DTERNAL : 0;
@@ -975,7 +957,8 @@ public class Conj extends ByteAnonMap {
         } else {
             //TODO sequence conditions
             //throw new TODO(a + " vs " + b);
-            return Null; //disallow for now. the complexity might be excessive
+            //return Null; //disallow for now. the complexity might be excessive
+            return null; //OK
         }
     }
 
@@ -991,7 +974,7 @@ public class Conj extends ByteAnonMap {
             } else if (incomingDT == conj.dt()) {
                 if (incomingDT == XTERNAL) {
 
-                    return null; //two XTERNAL conjoined in DTetrnity
+                    return null; //two XTERNAL conjoined in DTetrnity, OK
 
                     //return terms.conj(incomingDT, conj, incoming); //promote two xternal in DTernity to one xternal
 
@@ -1005,7 +988,7 @@ public class Conj extends ByteAnonMap {
             //otherwise just add the new event
 
             //return terms.theSortedCompound(CONJ, dtOuter, conj, incoming);
-            return null;
+            return null; //OK
 
         } else {
 
@@ -1076,7 +1059,7 @@ public class Conj extends ByteAnonMap {
 
             //all original subterms remain intact, return simplified factored version
 //            //return terms.theSortedCompound(CONJ, dtOuter, conj, incoming);
-            return null; //add the new event
+            return null; //OK
 
         }
 
@@ -1101,29 +1084,37 @@ public class Conj extends ByteAnonMap {
     private Term merge(byte existingId, Term incoming, boolean eternal) {
         boolean existingPolarity = existingId > 0;
         Term existingUnneg = idToTerm.get((existingPolarity ? existingId : -existingId) - 1);
-        Term existing = existingUnneg.negIf(!existingPolarity);
+        Term existing = existingPolarity ? existingUnneg : existingUnneg.neg();
         if (existing.equals(incoming))
             return True; //exact same
         if (existing.equalsNeg(incoming))
             return False; //contradiction
 
-        Term incomingUnneg = incoming.unneg();
-        if (!Term.commonStructure(existingUnneg, incomingUnneg))
-            return null; //no potential for interaction
-
+        boolean incomingPolarity = incoming.op() != NEG;
+        Term incomingUnneg = incomingPolarity ? incoming : incoming.unneg();
         boolean xConj = incomingUnneg.op() == CONJ;
         boolean eConj = existingUnneg.op() == CONJ;
+
+        if (!eConj && !xConj)
+            return null;  //OK neither a conj/disj
+
+        if (!Term.commonStructure(existingUnneg, incomingUnneg))
+            return null; //OK no potential for interaction
+
         Term result;
         if (eConj && xConj) {
-            //TODO decide which is larger
+            //decide which is larger, swap for efficiency
+            boolean swap = ((existingPolarity == incomingPolarity) && incoming.volume() > existing.volume());
+            if (swap) {
+                Term x = incoming;
+                incoming = existing;
+                existing = x;
+            }
             result = merge(existing, existingPolarity, incoming, eternal);
-        } else if (eConj) {
+        } else if (eConj && !xConj) {
             result = merge(existing, existingPolarity, incoming, eternal);
-        } else if (xConj) {
-            boolean incomingPolarity = incoming.op() != NEG;
+        } else /*if (xConj && !eConj)*/ {
             result = merge(incoming, incomingPolarity, existing, eternal);
-        } else {
-            return null; //neither a conj/disj.  OK
         }
 
         if (result != null && !(result instanceof Bool) && result.equals(existing))
@@ -1140,13 +1131,16 @@ public class Conj extends ByteAnonMap {
      * @return non-zero byte value
      */
     private byte add(Term t) {
-        assert (t != null && !(t instanceof Bool));
-        return termToId.getIfAbsentPutWithKey(t.unneg(), tt -> {
-            //int s = termToId.size();
+        assert(t!=null && eventable(t)); //eventable
+        return termToId.getIfAbsentPutWithKey(t, tt -> {
             int s = idToTerm.addAndGetSize(tt);
             assert (s < Byte.MAX_VALUE);
             return (byte) s;
         });
+    }
+
+    static boolean eventable(Term t) {
+        return !t.op().isAny(BOOL.bit | INT.bit | IMG.bit | NEG.bit);
     }
 
     /**
@@ -1354,8 +1348,7 @@ public class Conj extends ByteAnonMap {
 
 
                 } else {
-                    Term finalEternal = eternal;
-                    validator = (t) -> !finalEternal.equalsNeg(idToTerm.get(Math.abs(t - 1)).negIf(t < 0));
+                    validator = (t) -> !eternal.equalsNeg(idToTerm.get(Math.abs(t - 1)).negIf(t < 0));
                 }
             }
         }
@@ -1677,7 +1670,6 @@ public class Conj extends ByteAnonMap {
 
                 if (t == null)
                     t = new TreeSet();
-
 //                if (s.op() == CONJ && Tense.dtSpecial(s.dt()) && (s.dt() == when)) {
 //                    for (Term ss : s.subterms())
 //                        flattenDternalInto(t, ss);
@@ -1696,33 +1688,27 @@ public class Conj extends ByteAnonMap {
                 return t.first();
             default: {
                 int cdt = when == ETERNAL ? DTERNAL : 0;
-                if (Util.or(z -> z.dt() == cdt && z.op() == CONJ, t)) {
-                    //recurse: still flattening to do
-                    //sorta works:
-                    //return terms.conj(cdt, t.toArray(EmptyTermArray));
-
-                    //this stack overflows
-                    //give up for now, too complex
-
-                    return todoComplicated();
-
-                } else {
+//                if (Util.or(z -> z.dt() == cdt && z.op() == CONJ, t)) {
+//                    //recurse: still flattening to do
+//                    //sorta works:
+//                    //return terms.conj(cdt, t.toArray(EmptyTermArray));
+//
+//                    //this stack overflows
+//                    //give up for now, too complex
+//
+//                    return todoComplicated();
+//
+//                } else {
                     return terms.theSortedCompound(CONJ, cdt, t);
                     //return terms.conj(cdt, t.toArray(Op.EmptyTermArray));
                     //return Op.compound(CONJ, cdt, Terms.sorted(t));
-                }
+//                }
 
             }
 
         }
     }
 
-
-    private static Term todoComplicated() {
-        if (Param.DEBUG_EXTRA)
-            throw new WTF();
-        return Null;
-    }
 
     private static Term todoOrNull() {
         if (Param.DEBUG)

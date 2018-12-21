@@ -107,6 +107,7 @@ public class Statement {
                             return newPred;
                         }
 
+
                         if (dt != DTERNAL) {
                             int shift;
                             if (newPred.op() != CONJ) {
@@ -132,7 +133,8 @@ public class Statement {
 
                         }
 
-                        return statement(IMPL, dt, subject, newPred); //recurse
+                        predicate = newPred;
+                        //return statement(IMPL, dt, subject, newPred); //recurse
                     }
                 }
 
