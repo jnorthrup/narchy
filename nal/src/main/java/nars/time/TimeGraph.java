@@ -369,26 +369,27 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     } else if (edt == XTERNAL) {
 
                     } else {
+                        link(se, edt + subj.eventRange(), pe);
 
-                        if (!(subj.op()==CONJ && subj.dt()==XTERNAL)) {
-                            int st = subj.eventRange();
-                            link(se, (edt + st), pe);
-
-
-                            if (subj.op() == Op.CONJ && subj.dt() == DTERNAL) { //HACK to decompose ordinarily non-decomposed &&
-                                subj.eventsWhile((w, y) -> {
-                                    link(know(y), edt + st - w, pe);
-                                    return true;
-                                }, 0, false, true, false, 0);
-                            }
-
-                            if (pred.op() == Op.CONJ && pred.dt() == DTERNAL) { //HACK to decompose ordinarily non-decomposed &&
-                                pred.eventsWhile((w, y) -> {
-                                    link(se, edt + st + w, know(y));
-                                    return true;
-                                }, 0, false, true, false, 0);
-                            }
-                        }
+//                        if (!(subj.op()==CONJ && subj.dt()==XTERNAL)) {
+//                            int st = subj.eventRange();
+//                            link(se, (edt + st), pe);
+//
+//
+//                            if (subj.op() == Op.CONJ && subj.dt() == DTERNAL) { //HACK to decompose ordinarily non-decomposed &&
+//                                subj.eventsWhile((w, y) -> {
+//                                    link(know(y), edt + st - w, pe);
+//                                    return true;
+//                                }, 0, false, true, false, 0);
+//                            }
+//
+//                            if (pred.op() == Op.CONJ && pred.dt() == DTERNAL) { //HACK to decompose ordinarily non-decomposed &&
+//                                pred.eventsWhile((w, y) -> {
+//                                    link(se, edt + st + w, know(y));
+//                                    return true;
+//                                }, 0, false, true, false, 0);
+//                            }
+//                        }
                     }
 
                     break;
@@ -891,9 +892,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         return solveExact(f, each, x);
     }
 
-    private boolean solveExact(Term x, Predicate<Event> each) {
-        return solveExact(null, each, x);
-    }
+//    private boolean solveExact(Term x, Predicate<Event> each) {
+//        return solveExact(null, each, x);
+//    }
 
     private boolean solveExact(@Nullable Event f, Predicate<Event> each, Term x) {
         //try other absolute solutions
@@ -1024,9 +1025,20 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
     private boolean solveDtAndOcc(Term x, Predicate<Event> each) {
         /* occurrence, with or without any xternal remaining */
-        return (x.dt() != XTERNAL || solveDT(x, y -> solveOccurrence(y, each)))
-                &&
-                solveOccurrence(x, each);
+
+        final boolean[] dtSolved = {false};
+        if ((x.dt() != XTERNAL || solveDT(x, y -> {
+            dtSolved[0] = true;
+            return solveOccurrence(y, each);
+        }))) {
+            if (!dtSolved[0]) //dont solve if more specific dt solved further in previous solveDT call
+                return solveOccurrence(x, each);
+            else
+                return true;
+        } else
+            return false;
+
+
     }
 
 
@@ -1121,6 +1133,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         return true;
 
                     startTime = pathEndTime - (pathDelta);
+
                 }
 
                 long endTime;
@@ -1347,7 +1360,6 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             long spanDT = event.id().dt;
 
             if (spanDT == ETERNAL || spanDT == TIMELESS) {
-//                return ETERNAL;
                 return TIMELESS;
 
             } else if (spanDT != 0) {

@@ -248,8 +248,8 @@ public class NARio extends NAgentX {
     private void initButton() {
 
         for (GoalActionConcept c : actionPushButtonMutex(
-                $$("left"),
-                $$("right"),
+                $$("L"),
+                $$("R"),
                 (boolean n) -> {
                     boolean was = game.scene.key(Mario.KEY_LEFT, n);
                     return n;
