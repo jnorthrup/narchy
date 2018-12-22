@@ -67,13 +67,19 @@ public class AnonWithVarShift extends CachedAnon {
             base.recurseTerms(b-> b.hasAny(mask), s -> {
                 if (s instanceof NormalizedVariable) {
                     byte serial = ((NormalizedVariable) s).id;
-                    switch (s.op()) {
-                        case VAR_DEP: depShift = Math.max(depShift, serial); break;
-                        case VAR_INDEP: indepShift = Math.max(indepShift, serial); break;
-                        case VAR_QUERY: queryShift = Math.max(queryShift, serial); break;
-                        default:
-                            throw new UnsupportedOperationException();
-                    }
+                        switch (s.op()) {
+                            case VAR_DEP:
+                                depShift = Math.max(depShift, serial);
+                                break;
+                            case VAR_INDEP:
+                                indepShift = Math.max(indepShift, serial);
+                                break;
+                            case VAR_QUERY:
+                                queryShift = Math.max(queryShift, serial);
+                                break;
+                            default:
+                                throw new UnsupportedOperationException();
+                        }
                 }
                 return true;
             }, null);

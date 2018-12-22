@@ -8,10 +8,8 @@ import jcog.signal.wave2d.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.NAR;
 import nars.concept.sensor.Signal;
-import nars.control.channel.CauseChannel;
 import nars.link.TemplateTermLinker;
 import nars.link.TermLinker;
-import nars.task.ITask;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,33 +53,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
                 FloatSupplier f = () -> src.brightness(xx, yy);
 
-
-                Signal sss = new Signal(pixelTerm.get(x, y), f, pixelLinker(xx, yy), n) {
-                    @Override
-                    protected CauseChannel<ITask> newChannel(NAR n) {
-                        return null;
-                    }
-                    //                    @Override
-//                    protected TermlinkTemplates buildTemplates(Term term) {
-//                        TermlinkTemplates t = super.buildTemplates(term);
-//                        if (xx > 0)
-//                            t.add(pixelTerm.get(xx-1, yy));
-//                        if (yy > 0)
-//                            t.add(pixelTerm.get(xx, yy-1));
-//                        if (xx < width-1)
-//                            t.add(pixelTerm.get(xx+1, yy));
-//                        if (yy < height-1)
-//                            t.add(pixelTerm.get(xx, yy+1));
-//
-//                        return t;
-//                    }
-//
-//                    @Override
-//                    public TermlinkTemplates templates() {
-//                        return super.templates();
-//                    }
-                }.setResolution(res);
-
+                Signal sss = new Signal(pixelTerm.get(x, y), f, pixelLinker(xx, yy), n).setResolution(res);
 
                 matrix[x][y] = sss;
             }

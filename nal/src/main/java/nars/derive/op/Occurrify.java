@@ -199,13 +199,14 @@ public class Occurrify extends TimeGraph {
                 know(taskTerm, taskStart, taskEnd) :
                 know(taskTerm);
 
+        boolean equalBT = beliefTerm.equals(taskTerm);
         Event beliefEvent = (beliefStart != TIMELESS) ?
                 know(beliefTerm, beliefStart, beliefEnd) :
-                (!beliefTerm.equals(taskTerm)) ? know(beliefTerm) : taskEvent /* same term, reuse the same event */;
+                ((!equalBT) ? know(beliefTerm) : taskEvent) /* same term, reuse the same event */;
 
         retransform(taskEvent);
 
-        if (!taskEvent.equals(beliefEvent))
+        if (!equalBT)
             retransform(beliefEvent);
 
 //        knowIfRetransforms(pattern);
@@ -269,14 +270,16 @@ public class Occurrify extends TimeGraph {
 
         taskTerm.recurseTerms(negProvide);
 
-        if (!beliefTerm.equals(taskTerm) && !nextPos.isEmpty() || !nextNeg.isEmpty()) {
+        if (!beliefTerm.equals(taskTerm))
             beliefTerm.recurseTerms(negProvide);
 
+        if (!nextPos.isEmpty() || !nextNeg.isEmpty()) {
             nextPos.symmetricDifferenceInto(nextNeg, autoNeg /* should be clear */);
-
             nextPos.clear();
             nextNeg.clear();
         }
+
+
     }
 
 

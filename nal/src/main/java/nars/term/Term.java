@@ -155,7 +155,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * whileTrue must remain true after vistiing each subterm otherwise the entire
      * iteration terminates
      */
-    default boolean recurseTerms(Predicate<Term> descendFilter, Predicate<Term> whileTrue, @Nullable Term /* Compound? */superterm) {
+    default boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, @Nullable Term /* Compound? */superterm) {
         return whileTrue.test(this);
     }
 
@@ -163,7 +163,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     /**
      * whileTrue = BiPredicate<SubTerm,SuperTerm>
      */
-    default boolean recurseTerms(Predicate<Compound> descendFilter, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm) {
+    default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm) {
         return whileTrue.test(this, superterm);
     }
 

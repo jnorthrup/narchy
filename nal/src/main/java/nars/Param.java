@@ -206,7 +206,7 @@ public abstract class Param {
     public final static float SIGNAL_LATCH_DUR =
             //0.5f;
             //1f;
-            1f;
+            2f;
 
 
     /**
@@ -268,7 +268,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 3, 1, 32);
     public final IntRange matchTTL = new IntRange(6, 1, 32);
 
@@ -475,12 +475,15 @@ public abstract class Param {
         assert(dur > 0);
 
         int falloffDurs =
-                1;
-                //2; //nyquist
+                //1;
+                2; //nyquist
                 //4;
                 //dur;
                 //8;
         return evi / (1.0f + (((float)dt) / (falloffDurs * dur)));
+        //float ee = TruthFunctions.eternalize(evi); return ee +  (evi - ee) / (1.0f + (((float)dt) / (falloffDurs * dur)));
+
+
         //return evi / (1.0f +    Util.sqr(((float)dt) / (falloffDurs * dur)));
         //return evi / (1.0f +    Util.sqr(((float)dt) / dur)/falloffDurs);
 

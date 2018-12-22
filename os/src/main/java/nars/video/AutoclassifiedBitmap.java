@@ -14,9 +14,7 @@ import nars.agent.NAgent;
 import nars.concept.NodeConcept;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
-import nars.control.channel.CauseChannel;
 import nars.gui.sensor.VectorSensorView;
-import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
@@ -200,13 +198,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
                     int y = j;
                     int ff = f;
                     signals.add(
-                            new Signal(term, () -> encoded[x][y][ff], nar) {
-                                @Override
-                                protected CauseChannel<ITask> newChannel(NAR n) {
-                                    return null;
-                                }
-
-                            }
+                            new Signal(term, () -> encoded[x][y][ff], nar)
                     );
                 }
             }

@@ -457,10 +457,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     protected void onNewTerm(Term t) {
-        if (autoNeg != null) {
-            if (autoNeg.contains(t.unneg())) {
-                link(shadow(t), 0, shadow(t.neg()));
-            }
+        if (autoNeg != null && autoNeg.contains(t.unneg())) {
+            link(shadow(t), 0, shadow(t.neg()));
         }
     }
 

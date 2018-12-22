@@ -8,11 +8,9 @@ import nars.NAR;
 import nars.attention.AttVectorNode;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
-import nars.control.channel.CauseChannel;
 import nars.link.TermLinker;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.table.dynamic.SeriesBeliefTable;
-import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
@@ -50,7 +48,6 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
             ((prev, next) -> (next == next) ? ((prev == prev) ? $.t((next - prev) / 2f + 0.5f, conf.asFloat()) : $.t(0.5f, conf.asFloat())) : $.t(0.5f, conf.asFloat()));
 
     public final FloatSupplier source;
-    private final CauseChannel<ITask> in;
 
     private volatile float currentValue = Float.NaN;
 
@@ -70,17 +67,17 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
 
         this.source = signal;
 
-        this.attn = new AttVectorNode(term, List.of(this));
+        this.attn = newAttn(term);
 
         ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(n.freqResolution));
 
-        in = newChannel(n);
         n.on(this);
     }
 
-    protected CauseChannel<ITask> newChannel(NAR n) {
-        return n.newChannel(this);
+    protected AttVectorNode newAttn(Term term) {
+        return new AttVectorNode(term, List.of(this));
     }
+
 
     @Override
     public Iterable<Termed> components() {
@@ -125,7 +122,6 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     @Override
     public void update(long prev, long now, long next, NAR nar) {
 
-        float pri = attn.elementPri(nar);
         SeriesBeliefTable.SeriesRemember r = update(prev, now,
                 (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), nar);
         if (r!=null)

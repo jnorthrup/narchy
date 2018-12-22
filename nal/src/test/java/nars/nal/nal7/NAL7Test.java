@@ -633,7 +633,7 @@ public class NAL7Test extends NALTest {
 
     private void compositionTest(int t, int dt) {
 
-
+        test.nar.termVolumeMax.set(12);
         test.inputAt(t, "hold(John,key). |");
         test.inputAt(t, "(open(John,door) ==>+" + dt + " enter(John,room)).");
 
@@ -1049,6 +1049,8 @@ public class NAL7Test extends NALTest {
     void multiConditionSyllogismPost(String implSuffix) {
 
 
+        test.nar.termVolumeMax.set(14);
+
         long implTime = implSuffix.isEmpty() ? ETERNAL : 0;
         test
                 .input("hold(key). |")
@@ -1079,8 +1081,8 @@ public class NAL7Test extends NALTest {
         );
 
         test
-                .input("(x ==>+2 a). :|:")
-                .input("(y ==>+3 a). :|:")
+                .input("(x ==>+2 a). |")
+                .input("(y ==>+3 a). |")
                 .mustBelieve(cycles, "((y &&+1 x) ==>+2 a)", 1.00f, 0.81f, 0)
                 .mustNotOutput(cycles, "((x &&+1 y) ==>+2 a)", BELIEF, (t) -> t == 0 || t == ETERNAL)
                 .mustNotOutput(cycles, "((x && y) ==>+2 a)", BELIEF, (t) -> t == 0 || t == ETERNAL)
@@ -1092,8 +1094,8 @@ public class NAL7Test extends NALTest {
 
 
         test
-                .input("(a ==>+2 x). :|:")
-                .input("(a ==>+3 y). :|:")
+                .input("(a ==>+2 x). |")
+                .input("(a ==>+3 y). |")
                 .mustBelieve(cycles, "(a ==>+2 (x &&+1 y))", 1.00f, 0.81f, 0)
                 .mustNotOutput(cycles, "(a ==>+2 (y &&+1 x))", BELIEF, (t) -> t == 0 || t == ETERNAL)
                 .mustNotOutput(cycles, "(a ==>+2 (x && y))", BELIEF, (t) -> t == 0 || t == ETERNAL)
@@ -1114,8 +1116,8 @@ public class NAL7Test extends NALTest {
     void preconImplyConjPost2() {
 
         test
-                .input("(a ==>+2 x). :|:")
-                .input("(a ==>-3 y). :|:")
+                .input("(a ==>+2 x). |")
+                .input("(a ==>-3 y). |")
                 .mustBelieve(cycles, "(a ==>-3 (y &&+5 x))", 1.00f, 0.81f, 0)
         ;
     }
@@ -1166,6 +1168,7 @@ public class NAL7Test extends NALTest {
                 .mustNotOutput(cycles, "( (x &&+2 y) ==>+1 z)", BELIEF, ETERNAL)
         ;
     }
+
     @Test
     void testPreconditionCombineVaryingNeg() {
 

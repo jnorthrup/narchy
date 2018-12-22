@@ -30,17 +30,6 @@ import java.util.function.Supplier;
 /** buffers premises in batches*/
 public class BatchDeriver extends Deriver {
 
-//    /**
-//     * TODO forms matrices of premises of M tasklinks and N termlinks which
-//     * are evaluated after buffering some limited amount of these in a set
-//     */
-//    abstract static class MatrixDeriver extends Deriver {
-//        /* TODO */
-//        protected MatrixDeriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
-//            super(source, rules, nar);
-//        }
-//    }
-
     public final IntRange conceptsPerIteration = new IntRange(2, 1, 32);
 
     /**
@@ -196,5 +185,16 @@ public class BatchDeriver extends Deriver {
 
     }
 
+
+//    /**
+//     * TODO forms matrices of premises of M tasklinks and N termlinks which
+//     * are evaluated after buffering some limited amount of these in a set
+//     */
+//    abstract static class MatrixDeriver extends Deriver {
+//        /* TODO */
+//        protected MatrixDeriver(Consumer<Predicate<Activate>> source, Set<PremiseRuleProto> rules, NAR nar) {
+//            super(source, rules, nar);
+//        }
+//    }
 
 }

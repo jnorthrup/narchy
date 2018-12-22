@@ -240,7 +240,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
         return curiosity;
     }
 
-    @Deprecated @Nullable public SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long now, long next, NAR nar) {
+    @Nullable protected SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long now, long next, NAR nar) {
 
         SeriesBeliefTable.SeriesRemember r = ((SensorBeliefTables) beliefs()).add(f, now, next,
                 this, nar.dur(), nar);
