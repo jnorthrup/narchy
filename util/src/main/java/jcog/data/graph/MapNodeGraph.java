@@ -59,6 +59,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
     public boolean removeNode(N key) {
         Node<N,E> removed = nodes.remove(key);
+        //TODO remove edges: removed.edges(true, false).forEach()
         if (removed != null) {
             onRemoved(removed);
             return true;
@@ -132,9 +133,9 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
         nodes.values().forEach(n);
     }
 
-    public boolean edgeRemove(ImmutableDirectedEdge<N, E> e) {
-        if (((MutableNode) e.from).removeOut(e)) {
-            boolean removed = ((MutableNode) e.to).removeIn(e);
+    public boolean edgeRemove(FromTo<Node<N, E>,E> e) {
+        if (((MutableNode) e.from()).removeOut(e)) {
+            boolean removed = ((MutableNode) e.to()).removeIn(e);
             assert (removed);
             return true;
         }

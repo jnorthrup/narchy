@@ -924,6 +924,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      */
     public boolean solve(Term x, boolean filterTimeless, Predicate<Event> target) {
 
+        compact();
+
         this.filterTimeless = filterTimeless;
         this.target = target;
         this.solving = x;
@@ -1014,6 +1016,45 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         }
 
         return solveDtAndOcc(x, each);
+
+    }
+
+    /** collapse any relative nodes to unique absolute nodes,
+     *  possibly also map less-specific xternal-containing terms to more-specific unique variations
+     *  */
+    protected void compact() {
+        for (Collection<Event> e : byTerm.values()) {
+            if (e.size() == 2) {
+                Iterator<Event> ee = ((MutableSet<Event>) e).iterator();
+                Event a = ee.next();
+                Event r = ee.next();
+                if (a instanceof Absolute ^ r instanceof Absolute) {
+                    //System.out.println("BEFORE: "); print();
+
+                    if (r instanceof Absolute) {
+                        //swap
+                        Event x = a;
+                        a = r;
+                        r = x;
+                    }
+                    e.remove(r);
+                    Node<Event, TimeSpan> rr = nodes.get(r);
+                    MutableNode<Event, TimeSpan> rrr = (MutableNode<Event, TimeSpan>) rr;
+                    Event A = a;
+                    rrr.edges(true, false).forEach(inEdge -> {
+                        edgeRemove(inEdge);
+                        link(inEdge.from().id(), inEdge.id(), A);
+                    });
+                    rrr.edges(false, true).forEach(outEdge -> {
+                        edgeRemove(outEdge);
+                        link(A, outEdge.id(), outEdge.to().id());
+                    });
+                    removeNode(r);
+
+                    //System.out.println("AFTER: "); print(); System.out.println();
+                }
+            }
+        }
 
     }
 
