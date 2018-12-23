@@ -160,6 +160,9 @@ public class ProtoWidget extends Bordering {
         add("MatrixView", ()-> new MatrixViewChip(), "Meter");
         add("Cluster2D", Cluster2DChip::new, "Meter");
         add("Histogram", TODO, "Meter"); //accepts scalar and an integer # of bins
+        add("Count", TODO, "Meter"); //count of items passed through
+        add("Uniques", TODO, "Meter"); //bag of unique items passed through
+        add("Frequencies", TODO, "Meter"); //count of unique items passed through
 
 
         add("Geo", () -> new OsmSpace(new IRL(User.the())).surface().go(-80.63f, 28.60f), "Reality");

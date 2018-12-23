@@ -746,7 +746,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     @Override
     public void depressurize(float priAmount) {
-        PRESSURE.update(this, priAmount, (p, a) -> Math.max(0, p - a));
+        PRESSURE.update(this, (p, a) -> Math.max(0, p - a), priAmount);
     }
 
     @Override

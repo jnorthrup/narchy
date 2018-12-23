@@ -61,8 +61,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
         terms = new ByteHijackMemoize[ops.length];
 
 
-        subterms = newOpCache("subterms", x -> theSubterms(x.rawSubs.get()), cacheSizePerOp * 2);
-        anonSubterms = newOpCache("anonSubterms", x -> new AnonVector(x.rawSubs.get()), cacheSizePerOp);
+        subterms = newOpCache("subterms", x -> theSubterms(x.rawSubs), cacheSizePerOp * 2);
+        anonSubterms = newOpCache("anonSubterms", x -> new AnonVector(x.rawSubs), cacheSizePerOp);
         ByteHijackMemoize statements = newOpCache("statement", this::_statement, cacheSizePerOp * 3);
 
         for (int i = 0; i < ops.length; i++) {
@@ -77,11 +77,11 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
             ByteHijackMemoize c;
             if (o == CONJ) {
-                c = newOpCache("conj", j -> super.conj(j.dt, j.rawSubs.get()), cacheSizePerOp);
+                c = newOpCache("conj", j -> super.conj(j.dt, j.rawSubs), cacheSizePerOp);
             } else if (o.statement) {
                 c = statements;
             } else {
-                c = newOpCache(o.str, x -> theCompound(ops[x.op], x.dt, x.rawSubs.get(), x.key), s);
+                c = newOpCache(o.str, x -> theCompound(ops[x.op], x.dt, x.rawSubs, x.key), s);
             }
             terms[i] = c;
         }
@@ -288,7 +288,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private Term _statement(InternedCompound c) {
-        Term[] s = c.rawSubs.get();
+        Term[] s = c.rawSubs;
         return super.statement(Op.ops[c.op], c.dt, s[0], s[1]);
     }
 

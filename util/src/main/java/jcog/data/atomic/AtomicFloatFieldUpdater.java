@@ -63,6 +63,8 @@ public final class AtomicFloatFieldUpdater<X>  {
         return intBitsToFloat(INT.accumulateAndGet(x, Float.floatToIntBits(arg), yMustFloatizeBothInts));
     }
 
+
+
     private void update(X x, IntUnaryOperator y) {
         INT.updateAndGet(x, y);
     }
@@ -83,16 +85,30 @@ public final class AtomicFloatFieldUpdater<X>  {
         return updateGet(x, v -> floatToIntBits(f.valueOf(intBitsToFloat(v))));
     }
 
-    public float updateAndGet(X x, FloatFloatToFloatFunction f, float y) {
-        return updateGet(x, v -> floatToIntBits(f.apply(intBitsToFloat(v), y)));
-    }
     public float getAndUpdate(X x, FloatFloatToFloatFunction f, float y) {
         return getUpdate(x, v -> floatToIntBits(f.apply(intBitsToFloat(v), y)));
     }
 
+    public float updateAndGet(X x, FloatFloatToFloatFunction f, float y) {
+        //return updateGet(x, v -> floatToIntBits(f.apply(intBitsToFloat(v), y)));
 
-    public void update(X x, float y, FloatFloatToFloatFunction f) {
-        update(x, v -> floatToIntBits(f.apply(intBitsToFloat(v), y)));
+        int prev, next;
+        float nextFloat;
+        do {
+            prev = INT.get(x);
+            nextFloat = f.apply(intBitsToFloat(prev), y);
+            next = floatToIntBits(nextFloat);
+        } while(!INT.compareAndSet(x, prev, next));
+        return nextFloat;
+    }
+
+
+    public void update(X x, FloatFloatToFloatFunction f, float y) {
+        int prev, next;
+        do {
+            prev = INT.get(x);
+            next = floatToIntBits(f.apply(intBitsToFloat(prev), y));
+        } while(!INT.compareAndSet(x, prev, next));
     }
 
     public float getAndSet(X x, float value) {
@@ -152,7 +168,7 @@ public final class AtomicFloatFieldUpdater<X>  {
 
     /** unary + arg */
     public void update(X x, float arg, FloatFloatToFloatFunction update, FloatToFloatFunction post) {
-        update(x, arg, (xx, yy)-> post.valueOf(update.apply(xx,yy)));
+        update(x, (xx, yy)-> post.valueOf(update.apply(xx,yy)), arg);
     }
 
 

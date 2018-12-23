@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 import static nars.term.Terms.sorted;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -44,7 +45,8 @@ public enum Op {
 
     NEG("--", 1, Args.One) {
         public Term the(Term u) {
-            switch (u.op()) {
+            Op uo = u.op();
+            switch (uo) {
                 case ATOM:
                     if (u instanceof Anom) {
                         return u.neg();
@@ -54,7 +56,12 @@ public enum Op {
                     return u.neg();
                 case NEG:
                     return u.unneg();
+
+                case IMG:
+                    return u;
+                    //return Null;
             }
+
             return new Neg(u);
         }
 
@@ -403,6 +410,9 @@ public enum Op {
     }*/
     public final byte id;
 
+    /** whether the term of this op is valid, by tiself, as an event or condition */
+    public boolean eventable;
+
 
     Op(char c, int minLevel) {
         this(c, minLevel, Args.None);
@@ -470,6 +480,8 @@ public enum Op {
 
         beliefable = taskable;
         goalable = taskable && !isImpl;
+
+        this.eventable = (Param.INT_CONCEPTUALIZABLE || !isInt) && !isImg && !isBool && !isSect;
 
         indepVarParent = isImpl;
         depVarParent = isConj;
@@ -622,12 +634,12 @@ public enum Op {
 
         int i = cs.indexOf(filter, rand);
         if (i == -1)
-            return Bool.Null;
+            return Null;
 
 
         switch (cs.subs()) {
             case 1:
-                return Bool.Null;
+                return Null;
             case 2:
 
                 Term remain = cs.sub(1 - i);

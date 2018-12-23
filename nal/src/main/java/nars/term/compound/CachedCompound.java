@@ -1,6 +1,7 @@
 package nars.term.compound;
 
 import jcog.Util;
+import jcog.WTF;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
@@ -113,7 +114,6 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
         public TemporalCachedCompound(Op op, int dt, Subterms subterms) {
             super(op, dt, subterms);
             this.dt = dt;
-
         }
 
         @Override

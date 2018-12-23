@@ -55,7 +55,7 @@ public class ImplTest {
 
         for (String cp : new String[]{"&&", "&|", " &&+- "}) {
             String xternal = cp.equals(" &&+- ") ? cp : "&|";
-            assertEq("((x&&y) ==>+1 (y" + xternal + "z))", "((y&&x) ==>+1 (y" + cp + "z))");
+            assertEq("((x&|y) ==>+1 (y" + xternal + "z))", "((y&&x) ==>+1 (y" + cp + "z))");
             assertEq("(a ==>+1 (b &&+1 (y" + xternal + "z)))", "(a ==>+1 (b &&+1 (y" + cp + "z)))");
         }
 
@@ -212,6 +212,12 @@ public class ImplTest {
     }
 
 
+    @Test void testElimination1() {
+        assertEq(
+                "(--,((left &&+60 left) ==>+5080 left))",
+                $$("((left &&+60 left) ==>-60 (left &&+5140 (--,left)))")
+        );
+    }
 
 
 

@@ -568,22 +568,22 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
      */
     default float evi(long when, final long dur) {
 
+        float ee = evi();
+
         long s = start();
         if (s == ETERNAL) {
-            return evi();
+            return ee;
         } else if (when == ETERNAL) {
-            return eviEternalized();
+            //return eviEternalized();
+            throw new UnsupportedOperationException();
         } else {
 
 
             long dist = minTimeTo(when);
             if (dist == 0) {
-                return evi();
+                return ee;
             } else {
-                float ee = evi();
-                float e = (dur == 0) ? 0 : Param.evi(ee, dist, dur);
-                return e;
-                //return Math.max(e, TruthFunctions.eternalize(ee));
+                return (dur == 0) ? 0 : Param.evi(ee, dist, dur);
             }
 
         }

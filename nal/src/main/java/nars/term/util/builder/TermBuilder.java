@@ -31,6 +31,7 @@ import java.util.TreeSet;
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
 import static nars.term.Terms.sorted;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -298,6 +299,11 @@ public abstract class TermBuilder {
             }
         }
 
+
+        for (Term x : u) {
+            if (!x.op().eventable)
+                return Null;
+        }
 
         switch (dt) {
             case DTERNAL:

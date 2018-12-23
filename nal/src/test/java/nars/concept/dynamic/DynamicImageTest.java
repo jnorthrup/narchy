@@ -11,21 +11,30 @@ import org.junit.jupiter.api.Test;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DynamicImageTest extends AbstractDynamicTaskTest {
 
     @Test
-    void testImageExtIdentity() throws Narsese.NarseseException {
-        assertImageIdentity("((x,y)-->z)", "(y --> (z,x,/))", "(x --> (z,/,y))");
+    void testImageExtIdentityEternal() throws Narsese.NarseseException {
+        assertImageIdentity(ETERNAL, "((x,y)-->z)", "(y --> (z,x,/))", "(x --> (z,/,y))");
     }
     @Test
-    void testImageIntIdentity() throws Narsese.NarseseException {
-        assertImageIdentity("(z-->(x,y))", "((z,x,\\)-->y)", "((z,\\,y)-->x)");
+    void testImageExtIdentityTemporal() throws Narsese.NarseseException {
+        assertImageIdentity(0, "((x,y)-->z)", "(y --> (z,x,/))", "(x --> (z,/,y))");
+    }
+    @Test
+    void testImageIntIdentityEternal() throws Narsese.NarseseException {
+        assertImageIdentity(ETERNAL, "(z-->(x,y))", "((z,x,\\)-->y)", "((z,\\,y)-->x)");
+    }
+    @Test
+    void testImageIntIdentityTemporal() throws Narsese.NarseseException {
+        assertImageIdentity(0,"(z-->(x,y))", "((z,x,\\)-->y)", "((z,\\,y)-->x)");
     }
 
-    private void assertImageIdentity(String x, String x1, String x2) throws Narsese.NarseseException {
+    private void assertImageIdentity(long when, String x, String x1, String x2) throws Narsese.NarseseException {
         Term t = $$(x);
 
         Term i1 = $(x1);
@@ -33,18 +42,18 @@ class DynamicImageTest extends AbstractDynamicTaskTest {
         Term i2 = $(x2);
         assertEquals(t, Image.imageNormalize(i2));
 
-        n.believe(x, 0.75f, 0.50f);
+        n.believe($$(x), when,0.75f, 0.50f);
 
 
-        long when = n.time();
         assertEquals(
                 "%.75;.50%", n.beliefTruth(i1, when).toString()
         );
+        String tStr = when != ETERNAL ? " " + when : "";
         assertEquals(
-                i1 + ". " + when + " %.75;.50%", n.answer(i1, BELIEF, when).toStringWithoutBudget()
+                i1 + "." + tStr + " %.75;.50%", n.answer(i1, BELIEF, when).toStringWithoutBudget()
         );
         assertEquals(
-                i2 + ". " + when + " %.75;.50%", n.answer(i2, BELIEF, when).toStringWithoutBudget()
+                i2 + "." + tStr + " %.75;.50%", n.answer(i2, BELIEF, when).toStringWithoutBudget()
         );
     }
 

@@ -16,9 +16,7 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.atom.Int;
 import nars.term.util.Conj;
-import nars.term.var.Img;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
@@ -141,7 +139,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     public Event event(Term t, long start, long end, boolean add) {
-        if (t instanceof Int || t instanceof Bool || t instanceof Img)
+        if (!t.op().eventable)
             throw new WTF();
 
         Event event;
@@ -638,7 +636,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     UnifiedSet<Event> be = new UnifiedSet(2);
                     //solveExact(b, bx -> { //less exhaustive
                     solveOccurrence(b, bx -> {
-                        if (bx instanceof Absolute) be.add(bx);
+                        if ((bx instanceof Absolute) && (!ae.contains(bx)))
+                            be.add(bx);
                         return true;
                     });
 
@@ -697,7 +696,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             }
         }
 
-        Term c = Conj.sequence(a.id, ddt==DTERNAL ? ddt : 0, b.id, ddt);
+        Term c = Conj.sequence(a.id, ddt==DTERNAL ? ETERNAL : 0, b.id, ddt == DTERNAL ? ETERNAL : ddt);
 
         if (termsEvent(c)) {
             return solveOccurrence(c, a.start(), durMerge(a, b), each);
@@ -784,8 +783,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     public static boolean termsEvent(Term e) {
-        Op eo = e.op();
-        return eo.conceptualizable || eo.var;
+        //Op eo = e.op();
+        //return eo.conceptualizable || eo.var;
+        return e.op().eventable;
     }
 
     private boolean solveOccurrence(Term y, long start, long dur, Predicate<Event> each) {

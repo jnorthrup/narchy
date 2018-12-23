@@ -8,6 +8,8 @@ import nars.test.TestNAR;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static nars.$.$$;
+
 public class NAL4MultistepTest extends NALTest {
     @Override
     protected NAR nar() {
@@ -20,12 +22,15 @@ public class NAL4MultistepTest extends NALTest {
 
     @Test
     void nal4_everyday_reasoning() {
-        int time = 1000;
+        int time = 3000;
 
 
         TestNAR tester = test;
 
-//        tester.nar.freqResolution.set(0.05f);
+        tester.nar.termVolumeMax.set($$("(likes(cat,[blue]) <-> likes({tom},[blue]))").volume());
+
+        //tester.nar.freqResolution.set(0.05f);
+        tester.nar.questPriDefault.set(0.5f);
         tester.confTolerance(0.4f);
 
         tester.input("({sky} --> [blue]).");

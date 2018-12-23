@@ -10,10 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static nars.$.$$;
 import static nars.time.Tense.ETERNAL;
 import static nars.truth.func.TruthFunctions.c2wSafe;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AIMATests {
 
@@ -44,14 +44,16 @@ class AIMATests {
     @Test
     void testWeaponsDomain() throws Narsese.NarseseException {
 
-        n.freqResolution.set(0.1f);
+        n.freqResolution.set(0.25f);
         n.confResolution.set(0.05f);
         n.confMin.set(0.1f);
 
 //        n.beliefPriDefault.set(0.25f);
 //        n.questionPriDefault.set(0.5f);
 
-        n.termVolumeMax.set(23);
+        assertEquals(20, $$("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").volume());
+
+        n.termVolumeMax.set(20);
         //n.log();
 
 

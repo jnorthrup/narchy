@@ -221,7 +221,8 @@ public class FZero extends NAgentX {
         rewardNormalized("safety", 0, 1, ()->{
             float damage = (float) (FZeroGame.FULL_POWER - fz.power) / FZeroGame.FULL_POWER;
             fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
-            return Util.equals(damage, 0, 0.01f) ? Float.NaN : 0; //Math.max(0, 1 - damage);
+            //return Util.equals(damage, 0, 0.01f) ? Float.NaN : 0; //Math.max(0, 1 - damage);
+            return Util.equals(damage, 0, 0.01f) ? 1 : 0;
         });
         rewardNormalized("race", 0, +1, (() -> {
 

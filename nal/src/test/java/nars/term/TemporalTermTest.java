@@ -31,7 +31,7 @@ public class TemporalTermTest {
     public static Term ceptualStable(String s) throws Narsese.NarseseException {
         Term c = $(s);
         Term c1 = c.concept();
-        
+
         Term c2 = c1.concept();
         assertEquals(c1, c2, () -> "unstable: irst " + c1 + "\n\t, then " + c2);
         return c1;
@@ -41,7 +41,8 @@ public class TemporalTermTest {
         assertEq(cexp, $(c).concept().toString());
     }
 
-    @Test public void testSortingTemporalImpl() {
+    @Test
+    public void testSortingTemporalImpl() {
         assertEquals(-1, $$("(x ==>+1 y)").compareTo($$("(x ==>+10 y)")));
         assertEquals(+1, $$("(x ==>+1 y)").compareTo($$("(x ==>-1 y)")));
         assertEquals(-1, $$("(x ==>-1 y)").compareTo($$("(x ==>+1 y)")));
@@ -63,20 +64,18 @@ public class TemporalTermTest {
 
     @Test
     void testInvalidInheritanceOfEternalTemporalNegated() throws Narsese.NarseseException {
-        assertEquals( 
+        assertEquals(
                 //"((--,(a &&+1 b))-->(a&&b))",
                 Null,
                 $("(--(a &&+1 b)-->(a && b))")
         );
-        assertEquals( 
+        assertEquals(
                 //"((a &&+1 b)-->(--,(a&&b)))",
                 Null,
                 $("((a &&+1 b) --> --(a && b))")//.toString()
         );
 
     }
-
-
 
 
     @Test
@@ -101,7 +100,7 @@ public class TemporalTermTest {
 
     @Test
     void testAtemporalization4() throws Narsese.NarseseException {
-        
+
 
         assertEquals("((x &&+- $1) ==>+- (y &&+- $1))",
                 $("((x&&$1) ==>+- (y&&$1))").root().toString());
@@ -118,14 +117,13 @@ public class TemporalTermTest {
                     c.root().toString());
 
 
-
         }
     }
 
     @Test
     void testAtemporalization6() throws Narsese.NarseseException {
         Compound x0 = $("(($1&&x) ==>+1 ((--,y) &&+2 $1)))");
-        assertEquals("((x&&$1) ==>+1 ((--,y) &&+2 $1))", x0.toString());
+        assertEquals("((x&|$1) ==>+1 ((--,y) &&+2 $1))", x0.toString());
 
     }
 
@@ -164,7 +162,6 @@ public class TemporalTermTest {
 
         assertEquals("((do(that) &&+- (a)) ==>+- (b))", n.conceptualize(nn).toString());
 
-        
 
     }
 
@@ -201,7 +198,7 @@ public class TemporalTermTest {
 
     @Test
     void parseTemporalRelation() throws Narsese.NarseseException {
-        
+
         assertEquals("(x ==>+5 y)", $("(x ==>+5 y)").toString());
         assertEquals("(x &&+5 y)", $("(x &&+5 y)").toString());
 
@@ -247,15 +244,14 @@ public class TemporalTermTest {
         int indexSize = n.concepts.size();
         n.concepts.print(System.out);
 
-        n.input("(x ==>+1 y). :|:"); 
+        n.input("(x ==>+1 y). :|:");
         n.run();
 
-        
 
         assertEquals(4, xImplY.beliefs().size());
 
         n.concepts.print(System.out);
-        assertEquals(indexSize, n.concepts.size()); 
+        assertEquals(indexSize, n.concepts.size());
 
         //n.conceptualize("(x==>y)").print();
     }
@@ -270,7 +266,7 @@ public class TemporalTermTest {
     @Test
     void testEmbeddedChangedRootVariations() throws Narsese.NarseseException {
         {
-            
+
             Term x = $("(a ==> (b &&+1 (c && d)))");
             assertEquals("(a==>(b &&+1 (c&|d)))", x.toString());
             assertEquals("(a ==>+- ( &&+- ,b,c,d))", x.root().toString());
@@ -332,7 +328,7 @@ public class TemporalTermTest {
         TreeSet d = new TreeSet(Comparator.comparing(Object::toString));
         n.conceptsActive().forEach(x -> d.add(x.get()));
 
-        
+
         assertTrue(d.contains($("(x ==>+- y)")));
         assertTrue(d.contains($("(y ==>+- x)")));
     }
@@ -361,39 +357,26 @@ public class TemporalTermTest {
 
     }
 
+    @Test void testInvalidIntEventTerms() {
 
+        assertEq(Null, "(1 && x)");
+        assertEq(Null, "(/ && x)");
+        assertEq(Null, "(1 &&+1 x)");
+        assertEq(Null, "(1 ==> x)");
+        assertEq(Null, "(x ==> 1)");
 
-
-
-
+//        assertEq(Null, "(--,1)");
+//        assertEq(Null, "((--,1) && x)");
+    }
 
 
     @Disabled
     @Test
     void testEqualsAnonymous3() throws Narsese.NarseseException {
-        
-
-
-
-
-
-
-        
-        
-
-
-
-
-
 
 
         assertEquals($.<Compound>$("(x && (y ==> z))").temporalize(Retemporalize.retemporalizeAllToXTERNAL),
                 $.<Compound>$("(x &&+1 (y ==>+1 z))").temporalize(Retemporalize.retemporalizeAllToXTERNAL));
-        
-
-
-
-
 
 
         assertEquals("((x &&+1 z) ==>+1 w)",
@@ -404,67 +387,32 @@ public class TemporalTermTest {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Test
     void testValidTaskTerm() {
         String s = "believe(x,(believe(x,(--,(cam(9,$1) ==>-78990 (ang,$1))))&|(cam(9,$1) ==>+570 (ang,$1))))";
         Term ss = $$(s);
-        assertTrue(Task.validTaskCompound((Compound)ss, true));
+        assertTrue(Task.validTaskCompound((Compound) ss, true));
         assertTrue(Task.taskConceptTerm(ss));
     }
 
-    @Test void testSubtimeInDTERNAL() {
-        assertArrayEquals(new int[] { 0 },
+    @Test
+    void testSubtimeInDTERNAL() {
+        assertArrayEquals(new int[]{0},
                 $$("(x && y)").subTimes($$("x"))
-                );
+        );
         assertNull(
                 $$("(x && y)").subTimes($$("a"))
         );
-        assertArrayEquals(new int[] { 0 },
-                $$("((x &| y) && z)").subTimes($$("x"))
-        );
-        assertArrayEquals(new int[] { 0 },
+//        assertArrayEquals(new int[] { 0 },
+//                $$("((x &| y) && z)").subTimes($$("x"))
+//        );
+        assertArrayEquals(new int[]{0},
                 $$("((x &| y) && (w &| z))").subTimes($$("x"))
         );
-        assertArrayEquals(new int[] { 0 },
+        assertArrayEquals(new int[]{0},
                 $$("(((--,(_2(_1)&|_3(_1)))&|(--,(_3(_1)&|_4(_1)))) &&+125 _6(_1,_5))").subTimes($$("(_3(_1)&|_4(_1))").neg())
         );
-        assertArrayEquals(new int[] { 125 },
+        assertArrayEquals(new int[]{125},
                 $$("(z &&+125 ((--,(_2(_1)&|_3(_1)))&|(--,(_3(_1)&|_4(_1)))))").subTimes($$("(_3(_1)&|_4(_1))").neg())
         );
 

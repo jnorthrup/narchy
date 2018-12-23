@@ -2036,11 +2036,15 @@ public class ConjTest {
     }
 
     @Test void testAnotherComplexInvalidConj2() {
+        //TODO check what this actually means
         String a0 = "((--,((--,_3) &&+190 (--,_3)))&|((_1,_2)&|_3))";
         Term a = $$(a0);
         assertEq(False, a);
     }
 
+    @Test void testDTChange() {
+        assertEq("((a &&+3 b) &&+2 c)", $$("((a &&+3 b) &&+3 c)").dt(2));
+    }
 
 //    @Test void testConjEternalConj2() {
 //        Term a = $$("(--,((--,((--,y)&|x))&&x))"); //<-- should not be constructed

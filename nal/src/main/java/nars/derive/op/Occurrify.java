@@ -149,8 +149,8 @@ public class Occurrify extends TimeGraph {
         if (d.concSingle)
             beliefOccurrence = false;
 
-        if (beliefOccurrence && d.taskPunc == GOAL && d.taskStart != ETERNAL && (d.beliefTerm.op().temporal || d.beliefTerm.op().statement))
-            beliefOccurrence = false;
+//        if (beliefOccurrence && d.taskPunc == GOAL && d.taskStart != ETERNAL && (d.beliefTerm.op().temporal || d.beliefTerm.op().statement))
+//            beliefOccurrence = false;
 
         clear();
 

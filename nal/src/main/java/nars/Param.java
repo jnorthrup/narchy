@@ -81,7 +81,8 @@ public abstract class Param {
             //8;
             //7;
             //6;
-            4;
+            //4;
+            3;
             //2;
             //1;
 
@@ -268,19 +269,19 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
-    public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(2 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange subUnifyTTLMax = new IntRange( 3, 1, 32);
     public final IntRange matchTTL = new IntRange(6, 1, 32);
 
     /**
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 3f;
+    public static final float TEST_TIME_MULTIPLIER = 1f;
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 3;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 4;
 
 
     /**

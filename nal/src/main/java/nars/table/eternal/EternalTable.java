@@ -266,15 +266,21 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
                 aProp = newBeliefWeight / (newBeliefWeight + x.evi());
 
-                Term nt =
-                        Intermpolate.intermpolate(
-                                inputTerm, x.term(),
-                                aProp,
-                                nar
-                        );
+                Term xTerm = x.term();
+                Term nt;
+                if (inputTerm.equals(xTerm)) {
+                    nt = inputTerm;
+                } else {
+                    nt =
+                            Intermpolate.intermpolate(
+                                    inputTerm, xTerm,
+                                    aProp,
+                                    nar
+                            );
 
-                if (!nt.concept().equals(inputTerm.concept()))
-                    continue;
+                    if (!nt.concept().equals(inputTerm.concept()))
+                        continue;
+                }
 
                 Truth newBeliefTruth = input.truth();
 

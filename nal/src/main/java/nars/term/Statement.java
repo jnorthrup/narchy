@@ -56,11 +56,12 @@ public class Statement {
             switch (predicate.op()) {
                 case BOOL:
                     //reduce to the subject as a general condition for the superclass to utilize
-                    if (predicate == True)
-                        return subject;
-                    if (predicate == False)
-                        return subject.neg();
-                    return Null;
+//                    if (predicate == True)
+//                        return subject;
+//                    if (predicate == False)
+//                        return subject.neg();
+//                    return Null;
+                    return predicate;
                 case NEG:
                     return statement(IMPL, dt, subject, predicate.unneg()).neg();//recurse
                 case IMPL: {
@@ -74,6 +75,8 @@ public class Statement {
                 }
             }
 
+            if (!subject.op().eventable || !predicate.op().eventable)
+                return Null;
 
             int subjDT = subject.dt();
             if (dt != XTERNAL && subjDT != XTERNAL && predicate.dt() != XTERNAL && !subject.OR(x->x instanceof Ellipsis) && !predicate.OR(x->x instanceof Ellipsis) ) {

@@ -11,8 +11,6 @@ import nars.term.Term;
 import nars.term.compound.LighterCompound;
 import nars.term.compound.UnitCompound;
 
-import java.util.function.Supplier;
-
 import static nars.term.util.builder.InterningTermBuilder.tmpKey;
 import static nars.time.Tense.DTERNAL;
 
@@ -20,9 +18,10 @@ public final class InternedCompound extends ByteKey.ByteKeyExternal  {
 
     public final byte op;
     public final int dt;
-    public transient Supplier<Term[]> rawSubs;
 
-    private InternedCompound(DynBytes key, Op o, int dt, Supplier<Term[]> rawSubs) {
+    public transient Term[] rawSubs;
+
+    private InternedCompound(DynBytes key, Op o, int dt, Term[] rawSubs) {
         super(key);
         this.op = o.id; this.dt = dt; this.rawSubs = rawSubs;
     }
@@ -31,7 +30,7 @@ public final class InternedCompound extends ByteKey.ByteKeyExternal  {
     }
 
     public Term sub0() {
-        return rawSubs.get()[0];
+        return rawSubs[0];
     }
 
     //TODO conslidate the following two highly similar procedures
@@ -67,7 +66,7 @@ public final class InternedCompound extends ByteKey.ByteKeyExternal  {
             IntCoding.writeZigZagInt(dt, out);
         //else assert(dt == DTERNAL);
 
-        return new InternedCompound((DynBytes) out, o, dt, x::arrayShared);
+        return new InternedCompound((DynBytes) out, o, dt, x.arrayShared());
     }
 
 
@@ -88,9 +87,9 @@ public final class InternedCompound extends ByteKey.ByteKeyExternal  {
             IntCoding.writeZigZagInt(dt, out);
         //else assert(dt==DTERNAL): "can not store temporal dt on " + o;
 
-        Supplier<Term[]> rawSubs = ()->subs;
 
-        return new InternedCompound(out, o, dt, rawSubs);
+
+        return new InternedCompound(out, o, dt, subs);
     }
 
 

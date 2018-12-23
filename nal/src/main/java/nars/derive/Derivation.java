@@ -285,7 +285,7 @@ public class Derivation extends PreDerivation {
             anon.clear();
 
             this.taskTerm = anon.put(nextTaskTerm);
-            if (!taskTerm.op().taskable)
+            if (taskTerm.op()!=nextTaskTerm.op()) //(!taskTerm.op().taskable)
                 throw new WTF(nextTaskTerm + " could not be anon, result: " + taskTerm);
             this.taskUniques = anon.uniques();
         }

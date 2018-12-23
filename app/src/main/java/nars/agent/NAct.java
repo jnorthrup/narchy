@@ -270,7 +270,7 @@ public interface NAct {
      */
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanPredicate L, BooleanPredicate R, FloatSupplier thresh) {
 
-        boolean freqOrExp = true;
+        boolean freqOrExp = false;
 
 //        float compareThresh =
 //                0;

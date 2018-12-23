@@ -501,10 +501,18 @@ public class Conj extends ByteAnonMap {
 
     static public Term sequence(Term a, long aStart, Term b, long bStart) {
 
+        if (bStart == ETERNAL && aStart!=ETERNAL)
+            throw new WTF();
+        if (aStart == TIMELESS || bStart == TIMELESS)
+            throw new WTF();
+//        if (aStart == DTERNAL || bStart == DTERNAL || aStart == XTERNAL || bStart == XTERNAL)
+//            throw new WTF("probably meant ETERNAL"); //TEMPORARY
+
         boolean simple = (a.unneg().op() != CONJ) && (b.unneg().op() != CONJ);
 
         if (simple) {
-            return conjSeqFinal(aStart == ETERNAL ? DTERNAL : Tense.occToDT(bStart - aStart), a, b);
+            int dt = aStart == ETERNAL ? DTERNAL : occToDT(bStart - aStart);
+            return conjSeqFinal(dt, a, b);
         } else {
             Conj c = new Conj();
             if (c.add(aStart, a))
@@ -580,8 +588,19 @@ public class Conj extends ByteAnonMap {
         if (left == True) return right;
         if (right == True) return left;
 
+        if (!left.op().eventable || !right.op().eventable)
+            return Null;
+
+        if (dt == 0 || dt == DTERNAL) {
+            if (left.equals(right))
+                return left;
+            else if (left.equalsNeg(right))
+                return False;
+        }
+
         if (left.compareTo(right) > 0) {
-            dt = -dt;
+            if (dt!=DTERNAL)
+                dt = -dt;
             Term t = right;
             right = left;
             left = t;

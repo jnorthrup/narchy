@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 1600;
+    private static final int cycles = 1000;
 
     @BeforeEach
     void setup() {
@@ -99,7 +99,20 @@ public class NAL6Test extends NALTest {
         );
 
     }
+    @Test
+    void variable_unification5_neg() {
 
+
+        TestNAR tester = test;
+        tester.nar.termVolumeMax.set(16);
+        tester.believe("<(&&,($x --> flyer),($x --> [chirping])) ==> --($x --> nonBird)>");
+        tester.believe("<($y --> [withWings]) ==> ($y --> flyer)>");
+        tester.mustBelieve(cycles, "((($1 --> [chirping]) && ($1 --> [withWings])) ==> --($1 --> nonBird))",
+                1.00f,
+                0.81f
+        );
+
+    }
 
     @Test
     void variable_unification6() {
@@ -275,18 +288,30 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination5() {
-        test.nar.termVolumeMax.set(18d);
+        test.nar.termVolumeMax.set(18);
 
         TestNAR tester = test;
         tester.believe("({Tweety} --> [withWings])");
-        tester.believe("((($x --> [chirping]) && <$x --> [withWings]>) ==> ($x --> bird))");
-        tester.mustBelieve(cycles, "<<{Tweety} --> [chirping]> ==> <{Tweety} --> bird>>",
+        tester.believe("((($x --> [chirping]) && ($x --> [withWings])) ==> ($x --> bird))");
+        tester.mustBelieve(cycles, "(({Tweety} --> [chirping]) ==> ({Tweety} --> bird))",
                 1.00f,
                 0.73f
         );
 
     }
+    @Test
+    void variable_elimination5_neg() {
+        test.nar.termVolumeMax.set(18);
 
+        TestNAR tester = test;
+        tester.believe("({Tweety} --> [withWings])");
+        tester.believe("((($x --> [chirping]) && ($x --> [withWings])) ==> --($x --> nonBird))");
+        tester.mustBelieve(cycles, "(({Tweety} --> [chirping]) ==> --({Tweety} --> nonBird))",
+                1.00f,
+                0.73f
+        );
+
+    }
 
     @Test
     void variable_elimination6_easier() {
@@ -540,7 +565,7 @@ public class NAL6Test extends NALTest {
 
         TestNAR tester = test;
         tester.believe("((<#1 --> lock>&&<$2 --> key>) ==> open(#1,$2))", 1.00f, 0.90f);
-        tester.believe("<{key1} --> key>", 1.00f, 0.90f);
+        tester.believe("({key1} --> key)", 1.00f, 0.90f);
         tester.mustBelieve(cycles, "((#1-->lock)==>open(#1,{key1}))", 1.00f,
                 0.73f
                 /*0.81f*/);
@@ -571,11 +596,11 @@ public class NAL6Test extends NALTest {
         test.nar.termVolumeMax.set(15);
 
         TestNAR tester = test;
-        tester.believe("<<$1 --> lock> ==> (&&,<#2 --> key>,open(#2,$1))>", 1.00f, 0.90f);
-        tester.believe("<{key1} --> key>", 1.00f, 0.90f);
-        tester.mustBelieve(cycles, "<<$1 --> lock> ==> open({key1},$1)>", 1.00f,
-                0.81f
-                //0.4f
+        tester.believe("<($1 --> lock) ==> (&&,<#2 --> key>,open(#2,$1))>", 1.00f, 0.90f);
+        tester.believe("({key1} --> key)", 1.00f, 0.90f);
+        tester.mustBelieve(cycles, "<($1 --> lock) ==> open({key1},$1)>", 1.00f,
+                //0.81f
+                0.4f
         );
         //0.73f
         //0.43f);
@@ -613,7 +638,13 @@ public class NAL6Test extends NALTest {
                 .believe("x(a)", 1.00f, 0.90f)
                 .mustBelieve(cycles, "y(a)", 1.00f, 0.81f);
     }
-
+    @Test
+    void deductionBeliefWithVariableNeg() {
+        test
+                .believe("--(x($1)==>y($1))", 1.00f, 0.90f)
+                .believe("x(a)", 1.00f, 0.90f)
+                .mustBelieve(cycles, "--y(a)", 1.00f, 0.81f);
+    }
 //    @Test
 //    void deductionBeliefWeakPositiveButNotNegative() {
 //        test
@@ -681,6 +712,13 @@ public class NAL6Test extends NALTest {
                 .believe("(x($1)==>y($1))", 1.00f, 0.90f)
                 .goal("x(a)", Tense.Eternal, 1.00f, 0.90f)
                 .mustGoal(cycles, "y(a)", 1.00f, 0.45f);
+    }
+    @Test
+    void GoalMatchSubjOfImplWithVariableNeg() {
+        test
+                .believe("--(x($1)==>y($1))", 1.00f, 0.90f)
+                .goal("x(a)", Tense.Eternal, 1.00f, 0.90f)
+                .mustGoal(cycles, "--y(a)", 1.00f, 0.45f);
     }
 
     @Test

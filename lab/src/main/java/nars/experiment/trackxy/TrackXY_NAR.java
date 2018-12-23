@@ -8,6 +8,7 @@ import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
 import nars.agent.FrameTrigger;
+import nars.concept.action.ActionConcept;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
@@ -39,15 +40,15 @@ public class TrackXY_NAR extends NAgentX {
     static boolean
             sourceNumerics = true,
             targetNumerics = false,
-            targetCam = true,
+            targetCam = !targetNumerics,
             gui = true;
 
     //W = 3, H = 1;
     //W = 5, H = 1;
     public static final int derivationStrength = 8;
-    static int dur = 32;
+    static int dur = 2;
     static float camResolution = 0.1f;
-    static int volMax = 7;
+    static int volMax = 6;
     final Bitmap2DSensor cam;
     private final TrackXY track;
 
@@ -328,7 +329,7 @@ public class TrackXY_NAR extends NAgentX {
 
             Param.DEBUG = true;
             n.onTask(tt -> {
-                if (tt instanceof DerivedTask && tt.isGoal()) {
+                if (tt instanceof DerivedTask && tt.isGoal() && n.concept(tt) instanceof ActionConcept) {
                     System.out.println(tt.proof());
 //                    Term ttt = tt.term();
 //                    if (tt.expectation() > 0.5f && tt.start() > n.time()-n.dur() && tt.start() < n.time() + n.dur()) {

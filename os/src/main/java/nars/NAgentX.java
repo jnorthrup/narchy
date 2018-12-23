@@ -217,8 +217,8 @@ abstract public class NAgentX extends NAgent {
                         new HijackConceptIndex(
 
                                 //192 * 1024,
-                                128 * 1024,
-                                //64 * 1024,
+                                //128 * 1024,
+                                64 * 1024,
                                 //32 * 1024,
                                 //16 * 1024,
                                 //8 * 1024,
@@ -350,7 +350,7 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         //n.freqResolution.set(0.03f);
-        n.termVolumeMax.set(32);
+        n.termVolumeMax.set(26);
 
         ((AbstractConceptIndex)n.concepts).activeCapacity.set(1024);
         n.attn.activating.conceptActivationRate.set(1f/1024f); //HACK TODO based on active bag capacity

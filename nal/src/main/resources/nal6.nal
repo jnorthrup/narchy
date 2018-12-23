@@ -79,11 +79,8 @@
         Y, (Z ==> (&&,--X,A..+)), neq(X,Y),neq(Y,Z) |- unisubst((Z ==> (&&,--X,A..+)), X,Y,strict), (Belief:AbductionN, Time:Immediate)
          //Y, (Z ==> (&&,--X,A..+)) |- unisubst((Z ==> (&&,--X,--Y,A..+)), X,Y), (Belief:AbductionN)
 
-    Y, (B ==> (&&,X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:Deduction, Time:Immediate)
-    Y, (B ==> (&&,--X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:DeductionN, Time:Immediate)
-
-//    Y, ((&&,X,A..+) ==> B) |- unisubst((X ==> B),X,Y), (Belief:Deduction)
-//    Y, ((&&,--X,A..+) ==> B) |- unisubst((--X ==> B),X,Y), (Belief:DeductionN)
+//    Y, (B ==> (&&,X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:Deduction, Time:Immediate)
+//    Y, (B ==> (&&,--X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:DeductionN, Time:Immediate)
 
     //general implication induction
     (A ==> B), X, neq(A,X), neq(A,--X), --is(X,"==>")   |- ((A && X) ==> B), (Belief:Induction)
