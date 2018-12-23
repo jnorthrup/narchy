@@ -140,7 +140,7 @@ public class Conj extends ByteAnonMap {
      */
     @Nullable
     public static Term withoutEarlyOrLate(Term conj, Term event, boolean earlyOrLate, boolean filterContradiction) {
-        if (conj.op()==NEG) return withoutEarlyOrLate(conj, event, earlyOrLate, filterContradiction).neg();
+        if (conj.op() == NEG) return withoutEarlyOrLate(conj, event, earlyOrLate, filterContradiction).neg();
 
         if (conj.op() != CONJ || conj.impossibleSubTerm(event))
             return Null;
@@ -206,7 +206,6 @@ public class Conj extends ByteAnonMap {
 
         return this.remove(targetTime, event);
     }
-
 
 
     /**
@@ -328,7 +327,7 @@ public class Conj extends ByteAnonMap {
      * whether the conjunction is a sequence (includes check for factored inner sequence)
      */
     public static boolean isSeq(Term conj) {
-        assert(conj.op()==CONJ);
+        assert (conj.op() == CONJ);
         int dt = conj.dt();
 
         if (!dtSpecial(dt))
@@ -337,8 +336,8 @@ public class Conj extends ByteAnonMap {
         if (dt == DTERNAL) {
             Subterms x = conj.subterms();
             //if ((x.structureSurface() & CONJ.bit) != 0)
-                if (x.subs(xx -> xx.op() == CONJ && xx.dt() != DTERNAL) == 1)
-                    return true;/* TOOD merge with below subIndexFirst call */
+            if (x.subs(xx -> xx.op() == CONJ && xx.dt() != DTERNAL) == 1)
+                return true;/* TOOD merge with below subIndexFirst call */
         }
 
         return false;
@@ -502,20 +501,17 @@ public class Conj extends ByteAnonMap {
 
     static public Term sequence(Term a, long aStart, Term b, long bStart) {
 
-//        if (aStart == 0 && a.eventRange() == 0)
-//            return CONJ.the(a, Tense.occToDT(bStart), b); //HACK use an optimized internable construction route
+        boolean simple = (a.unneg().op() != CONJ) && (b.unneg().op() != CONJ);
 
-        Conj c = new Conj();
-//        if (aStart == bStart) {
-//            if (c.addAuto(a)) {
-//                c.addAuto(b);
-//            }
-//        } else {
-        if (c.add(aStart, a)) {
-            c.add(bStart, b);
+        if (simple) {
+            return conjSeqFinal(aStart == ETERNAL ? DTERNAL : Tense.occToDT(bStart - aStart), a, b);
+        } else {
+            Conj c = new Conj();
+            if (c.add(aStart, a))
+                c.add(bStart, b);
+            return c.term();
         }
-//        }
-        return c.term();
+
     }
 
     private static int indexOfZeroTerminated(byte[] b, byte val) {
@@ -578,7 +574,6 @@ public class Conj extends ByteAnonMap {
         if (left == Null) return Null;
         if (right == Null) return Null;
 
-
         if (left == False) return False;
         if (right == False) return False;
 
@@ -586,27 +581,33 @@ public class Conj extends ByteAnonMap {
         if (right == True) return left;
 
         if (left.compareTo(right) > 0) {
-
             dt = -dt;
             Term t = right;
             right = left;
             left = t;
         }
 
-        if (left.op() == CONJ && right.op() == CONJ) {
-            int ldt = left.dt(), rdt = right.dt();
-            if (ldt != XTERNAL && !concurrent(ldt) && rdt != XTERNAL && !concurrent(rdt)) {
-                int ls = left.subs(), rs = right.subs();
-                if ((ls > 1 + rs) || (rs > ls)) {
+//        if (left.op() == CONJ && right.op() == CONJ) {
+//            int ldt = left.dt(), rdt = right.dt();
+//            if (ldt != XTERNAL && !concurrent(ldt) && rdt != XTERNAL && !concurrent(rdt)) {
+//                int ls = left.subs(), rs = right.subs();
+//                if ((ls > 1 + rs) || (rs > ls)) {
+//
+//                    return terms.conj(dt, left, right);
+//                }
+//            }
+//        }
 
-                    return terms.conj(dt, left, right);
-                }
-            }
+        Term t = terms.theCompound(CONJ, dt, left, right);
+
+        //HACK sometimes this seems to happen
+        if (t.hasAny(BOOL)) {
+            if (t.contains(False))
+                return False;
+            if (t.contains(Null))
+                return Null;
         }
-
-
-        //return Op.compound(CONJ, dt, left, right);
-        return terms.theCompound(CONJ, dt, left, right);
+        return t;
     }
 
 //    /**
@@ -758,7 +759,6 @@ public class Conj extends ByteAnonMap {
                 return false;
             }
         }
-
 
 
         //quick test for conflict with existing ETERNALs
@@ -922,7 +922,7 @@ public class Conj extends ByteAnonMap {
 //            if (newConj.op() == CONJ && incoming.op() == CONJ) {
 //                return terms.theSortedCompound(CONJ, dt, newConj.neg(), incoming);
 //            } else {
-                return terms.conj(dt, newConj.neg(), incoming);
+            return terms.conj(dt, newConj.neg(), incoming);
 //            }
 
         }
@@ -983,7 +983,7 @@ public class Conj extends ByteAnonMap {
 
         if (incoming.op() == CONJ) {
             int incomingDT = incoming.dt();
-            if (incomingDT == dtOuter || conj.dt()==dtOuter) {
+            if (incomingDT == dtOuter || conj.dt() == dtOuter) {
                 return terms.conj(dtOuter, conj, incoming);
             } else if (incomingDT == conj.dt()) {
                 if (incomingDT == XTERNAL) {
@@ -1051,7 +1051,7 @@ public class Conj extends ByteAnonMap {
                     return true;
                 } else {
                     //return c.add(whn, ww);
-                    return c.addEvent(whn,ww);//direct
+                    return c.addEvent(whn, ww);//direct
                 }
 
             }, 0, dtInner == 0, dtInner == DTERNAL, dtInner == XTERNAL, 0);
@@ -1068,7 +1068,7 @@ public class Conj extends ByteAnonMap {
             if (d == conj || (d != conj && d.equals(conj)))
                 return True;  //no change since the incoming has been absorbed
 
-            if (d.op()!=CONJ)
+            if (d.op() != CONJ)
                 return d; //simplified/reduced event
 
             //all original subterms remain intact, return simplified factored version
@@ -1145,7 +1145,7 @@ public class Conj extends ByteAnonMap {
      * @return non-zero byte value
      */
     private byte add(Term t) {
-        if (!(t!=null && eventable(t))) //eventable
+        if (!(t != null && eventable(t))) //eventable
             throw new WTF(t + " is not valid event in " + Conj.class);
 
         return termToId.getIfAbsentPutWithKey(t, tt -> {
@@ -1424,6 +1424,8 @@ public class Conj extends ByteAnonMap {
                 temporal = null;
 
             if (eternal != null && temporal != null) {
+                if (temporal.equals(eternal))
+                    return eternal;
                 if (temporal.equalsNeg(eternal))
                     return False;
                 ci = terms.conj(DTERNAL, temporal, eternal);
@@ -1686,12 +1688,14 @@ public class Conj extends ByteAnonMap {
 
                 if (t == null)
                     t = new TreeSet();
-//                if (s.op() == CONJ && Tense.dtSpecial(s.dt()) && (s.dt() == when)) {
-//                    for (Term ss : s.subterms())
-//                        flattenDternalInto(t, ss);
-//                } else {
-                t.add(s);
-//                }
+
+                if (n>1 && s.op() == CONJ && (when==ETERNAL && s.dt()==DTERNAL) || (when!=ETERNAL && s.dt()==0)) {
+                    //flatten contained eternal/parallel conjunction, if appropriate for the target time
+                    for (Term ss : s.subterms())
+                        t.add(ss);
+                } else {
+                    t.add(s);
+                }
             }
         }
 
@@ -1715,9 +1719,9 @@ public class Conj extends ByteAnonMap {
 //                    return todoComplicated();
 //
 //                } else {
-                    return terms.theSortedCompound(CONJ, cdt, t);
-                    //return terms.conj(cdt, t.toArray(Op.EmptyTermArray));
-                    //return Op.compound(CONJ, cdt, Terms.sorted(t));
+                return terms.theSortedCompound(CONJ, cdt, t);
+                //return terms.conj(cdt, t.toArray(Op.EmptyTermArray));
+                //return Op.compound(CONJ, cdt, Terms.sorted(t));
 //                }
 
             }

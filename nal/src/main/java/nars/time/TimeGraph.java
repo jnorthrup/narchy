@@ -120,7 +120,12 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     public final Event know(Term v) {
-        return event(v, TIMELESS, true);
+        //include the temporal information contained in a temporal-containing term;
+        // otherwise it contributes no helpful information
+        if (v.hasAny(Op.Temporal))
+            return event(v, TIMELESS, true);
+        else
+            return shadow(v);
     }
 
     public final Event know(Term t, long start) {
@@ -641,8 +646,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     if (!be.isEmpty()) {
                         for (Event ax : eventArray(ae)) {
                             for (Event bx : eventArray(be)) {
-                                if (!solvePairDT(x, ax, bx, each))
-                                    return false;
+                                if (ax!=bx)
+                                    if (!solvePairDT(x, ax, bx, each))
+                                        return false;
                             }
                         }
 
@@ -691,14 +697,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             }
         }
 
-        Term c =
-                (ddt==DTERNAL || ddt == 0) ?
-                    CONJ.the(ddt, a.id, b.id) :
-                    Conj.sequence(a.id, 0, b.id, (ddt == DTERNAL ? ETERNAL /* HACK */ : ddt));
+        Term c = Conj.sequence(a.id, ddt==DTERNAL ? ddt : 0, b.id, ddt);
 
-//        if (c.op() != CONJ && ((ddt == 0) && (dt != 0))) { //undo parallel-ization if the collapse caused an invalid term
-//            c = Conj.the(a.id, 0, b.id, (dt == DTERNAL ? ETERNAL /* HACK */ : dt));
-//        }
         if (termsEvent(c)) {
             return solveOccurrence(c, a.start(), durMerge(a, b), each);
         }
@@ -723,26 +723,33 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      * which would cause incorrect results if interpreted literally
      * this prevents separate instances of events from being welded together or arranged in the incorrect temporal order
      * across time when there should be some non-zero dt
+     *
+     * a volume ideally should be less than b's
      */
     boolean commonSubEventsWithMultipleOccurrences(Term a, Term b) {
-        UnifiedSet<Term> eventTerms = new UnifiedSet(2);
-        a.eventsWhile((w, aa) -> {
-            eventTerms.add(aa);
-            return true;
-        }, 0, true, true, true, 0);
-
-        final boolean[] ambiguous = {false};
-        b.eventsWhile((w, bb) -> {
-            if (eventTerms.remove(bb)) {
-                if (absoluteCount(bb) > 1) {
-                    ambiguous[0] = true;
-                    return false;
-                }
+        if (a.op()==CONJ && b.op() == CONJ) {
+            if (a.volume() > b.volume()) {
+                Term c = a; //swap
+                a = b;
+                b = c;
             }
-            return true;
-        }, 0, true, true, true, 0);
 
-        return ambiguous[0];
+            UnifiedSet<Term> eventTerms = new UnifiedSet(2);
+            a.eventsWhile((w, aa) -> {
+                if (absoluteCount(aa) > 1) {
+                    eventTerms.add(aa);
+                }
+                return true;
+            }, 0, true, false, true, 0);
+
+            if (eventTerms.isEmpty())
+                return false;
+
+            return !b.eventsWhile((w, bb) -> {
+                return !eventTerms.remove(bb);
+            }, 0, true, false, true, 0);
+        }
+        return false; //TODO test conj -> nonConj common subevent?
     }
 
     /**
@@ -1025,7 +1032,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     protected void compact() {
         for (Collection<Event> e : byTerm.values()) {
             if (e.size() == 2) {
-                Iterator<Event> ee = ((MutableSet<Event>) e).iterator();
+                Iterator<Event> ee = e.iterator();
                 Event a = ee.next();
                 Event r = ee.next();
                 if (a instanceof Absolute ^ r instanceof Absolute) {
@@ -1037,19 +1044,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         a = r;
                         r = x;
                     }
+                    mergeNodes(r, a);
                     e.remove(r);
-                    Node<Event, TimeSpan> rr = nodes.get(r);
-                    MutableNode<Event, TimeSpan> rrr = (MutableNode<Event, TimeSpan>) rr;
-                    Event A = a;
-                    rrr.edges(true, false).forEach(inEdge -> {
-                        edgeRemove(inEdge);
-                        link(inEdge.from().id(), inEdge.id(), A);
-                    });
-                    rrr.edges(false, true).forEach(outEdge -> {
-                        edgeRemove(outEdge);
-                        link(A, outEdge.id(), outEdge.to().id());
-                    });
-                    removeNode(r);
 
                     //System.out.println("AFTER: "); print(); System.out.println();
                 }

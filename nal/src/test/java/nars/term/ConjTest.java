@@ -2026,6 +2026,22 @@ public class ConjTest {
 
     }
 
+    @Test void testAnotherComplexInvalidConj() {
+        String a0 = "(((--,((--,_2(_1)) &&+710 (--,_2(_1))))&|(_3-->_1)) &&+710 _2(_1))";
+        Term a = $$(a0);
+        assertEq(a0, a);
+        Term b = $$("(--,(_2(_1)&|(_3-->_1)))");
+        assertEq(False, CONJ.the(0, a, b));
+
+    }
+
+    @Test void testAnotherComplexInvalidConj2() {
+        String a0 = "((--,((--,_3) &&+190 (--,_3)))&|((_1,_2)&|_3))";
+        Term a = $$(a0);
+        assertEq(False, a);
+    }
+
+
 //    @Test void testConjEternalConj2() {
 //        Term a = $$("(--,((--,((--,y)&|x))&&x))"); //<-- should not be constructed
 //        Term b = $$("(x &&+5480 (--,(z &&+5230 (--,x))))");

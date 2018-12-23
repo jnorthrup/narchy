@@ -269,18 +269,18 @@ public abstract class Param {
      * TTL = 'time to live'
      */
     public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
-    public final IntRange subUnifyTTLMax = new IntRange( 3, 1, 32);
+    public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(6, 1, 32);
 
     /**
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 4f;
+    public static final float TEST_TIME_MULTIPLIER = 3f;
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 6;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 3;
 
 
     /**
@@ -471,16 +471,18 @@ public abstract class Param {
      */
     public static float evi(float evi, long dt, long dur) {
 
-
         assert(dur > 0);
 
+        //inverse linear decay
         int falloffDurs =
-                //1;
-                2; //nyquist
+                1;
+                //2; //nyquist
                 //4;
                 //dur;
                 //8;
         return evi / (1.0f + (((float)dt) / (falloffDurs * dur)));
+
+        //eternal noise floor
         //float ee = TruthFunctions.eternalize(evi); return ee +  (evi - ee) / (1.0f + (((float)dt) / (falloffDurs * dur)));
 
 

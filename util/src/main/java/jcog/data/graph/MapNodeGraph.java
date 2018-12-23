@@ -1,6 +1,7 @@
 package jcog.data.graph;
 
 import com.google.common.graph.SuccessorsFunction;
+import jcog.data.list.FasterList;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -20,7 +21,7 @@ import java.util.stream.Stream;
  */
 public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
-    protected final Map<N, Node<N,E>> nodes;
+    protected final Map<N, Node<N, E>> nodes;
 
     public MapNodeGraph() {
         this(new LinkedHashMap<>());
@@ -58,9 +59,10 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
     }
 
     public boolean removeNode(N key) {
-        Node<N,E> removed = nodes.remove(key);
-        //TODO remove edges: removed.edges(true, false).forEach()
+        Node<N, E> removed = nodes.remove(key);
         if (removed != null) {
+            removed.edges(true, false).forEach(this::edgeRemoveOut);
+            removed.edges(false, true).forEach(this::edgeRemoveIn);
             onRemoved(removed);
             return true;
         }
@@ -71,7 +73,8 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
     public final MutableNode<N, E> addNode(N key) {
         return addNode(key, true);
     }
-    private MutableNode<N,E> addNode(N key, boolean returnNodeIfExisted) {
+
+    private MutableNode<N, E> addNode(N key, boolean returnNodeIfExisted) {
         final boolean[] created = {false};
         MutableNode<N, E> r = (MutableNode<N, E>) nodes.computeIfAbsent(key, (x) -> {
             created[0] = true;
@@ -91,7 +94,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
     }
 
     @Override
-    protected Node<N,E> newNode(N data) {
+    protected Node<N, E> newNode(N data) {
         return new MutableNode(data);
     }
 
@@ -104,13 +107,13 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
     }
 
     public boolean addEdge(N from, E data, N to) {
-        Node<N,E> f = node(from);
-        Node<N,E> t = node(to);
+        Node<N, E> f = node(from);
+        Node<N, E> t = node(to);
         return addEdge((MutableNode) f, data, (MutableNode) t);
     }
 
     public final boolean addEdge(MutableNode<N, E> from, E data, MutableNode<N, E> to) {
-        FromTo<Node<N,E>,E> ee = new ImmutableDirectedEdge<>(from, data, to);
+        FromTo<Node<N, E>, E> ee = new ImmutableDirectedEdge<>(from, data, to);
         if (from.addOut(ee)) {
             boolean a = to.addIn(ee);
             assert (a);
@@ -124,26 +127,34 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
         return nodes.get(key);
     }
 
-    public Collection<Node<N,E>> nodes() {
+    public Collection<Node<N, E>> nodes() {
         return nodes.values();
     }
 
     @Override
-    public void forEachNode(Consumer<Node<N,E>> n) {
+    public void forEachNode(Consumer<Node<N, E>> n) {
         nodes.values().forEach(n);
     }
 
-    public boolean edgeRemove(FromTo<Node<N, E>,E> e) {
-        if (((MutableNode) e.from()).removeOut(e)) {
-            boolean removed = ((MutableNode) e.to()).removeIn(e);
+    public boolean edgeRemove(FromTo<Node<N, E>, E> e) {
+        if (edgeRemoveOut(e)) {
+            boolean removed = edgeRemoveIn(e);
             assert (removed);
             return true;
         }
         return false;
     }
 
+    protected boolean edgeRemoveIn(FromTo<Node<N, E>, E> e) {
+        return ((MutableNode) e.to()).removeIn(e);
+    }
 
-    public Stream<FromTo<Node<N,E>,E>> edges() {
+    protected boolean edgeRemoveOut(FromTo<Node<N, E>, E> e) {
+        return ((MutableNode) e.from()).removeOut(e);
+    }
+
+
+    public Stream<FromTo<Node<N, E>, E>> edges() {
         return nodes().stream().flatMap(Node::streamOut);
     }
 
@@ -152,7 +163,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
         StringBuilder s = new StringBuilder();
         s.append("Nodes: ");
-        for (Node<N,E> n : nodes()) {
+        for (Node<N, E> n : nodes()) {
             s.append(n).append('\n');
         }
 
@@ -170,5 +181,38 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
     }
 
 
+    /**
+     * relinks all edges in 'from' to 'to' before removing 'from'
+     */
+    public boolean mergeNodes(N from, N to) {
+        MutableNode<N, E> fromNode = (MutableNode<N, E>) nodes.get(from);
+        MutableNode<N, E> toNode = (MutableNode<N, E>) nodes.get(to);
+        if (fromNode != null && toNode != null) {
+            if (fromNode != toNode) {
+
+                int e = fromNode.ins() + fromNode.outs();
+                if (e > 0) {
+                    List<FromTo> removed = new FasterList(e);
+                    fromNode.edges(true, false).forEach(inEdge -> {
+                        removed.add(inEdge);
+                        MutableNode x = (MutableNode) (inEdge.from());
+                        if (x != fromNode)
+                            addEdge(x, inEdge.id(), toNode);
+                    });
+                    fromNode.edges(false, true).forEach(outEdge -> {
+                        removed.add(outEdge);
+                        MutableNode x = (MutableNode) (outEdge.to());
+                        if (x != fromNode)
+                            addEdge(toNode, outEdge.id(), x);
+                    });
+                    removed.forEach(this::edgeRemove);
+                    //assert (fromNode.ins() == 0 && fromNode.outs() == 0);
+                }
+            }
+            removeNode(from);
+            return true;
+        }
+        return false;
+    }
 
 }

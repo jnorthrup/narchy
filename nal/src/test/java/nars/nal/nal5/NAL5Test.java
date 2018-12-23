@@ -207,12 +207,20 @@ public class NAL5Test extends NALTest {
 
     @Test
     void anonymous_analogy1_depvar() {
+        test.nar.termVolumeMax.set(8);
         test
                 .believe("(a:#1 && y)")
                 .believe("a:x", 0.80f, 0.9f)
                 .mustBelieve(cycles, "y", 0.80f, 0.42f);
     }
-
+    @Test
+    void anonymous_analogy1_depvar_neg() {
+        test.nar.termVolumeMax.set(8);
+        test
+                .believe("(--(#1-->a) && y)")
+                .believe("(x-->a)", 0.20f, 0.9f)
+                .mustBelieve(cycles, "y", 0.80f, 0.42f);
+    }
     @Test
     void anonymous_analogy1_pos2() {
         test
