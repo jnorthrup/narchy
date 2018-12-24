@@ -31,13 +31,13 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int DEFAULT_SIZE = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    protected static final int maxInternedVolumeDefault = 32;
+    protected static final int maxInternedVolumeDefault = 20;
     protected static boolean deepDefault = true;
 
     /** memory-saving */
     private static final boolean sortCanonically = true;
-    private final boolean internNegs = false;
-    private final boolean cacheSubtermKeyBytes = false;
+    private final static boolean internNegs = false;
+    private final static boolean cacheSubtermKeyBytes = false;
 
 
     private final boolean deep;
