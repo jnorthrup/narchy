@@ -1,6 +1,7 @@
 package nars.term.util;
 
 import jcog.Util;
+import jcog.WTF;
 import nars.NAR;
 import nars.Op;
 import nars.subterm.Subterms;
@@ -246,7 +247,8 @@ public enum Intermpolate { ;
                         range = Math.max(1, Math.abs(ad ? b.dt() : a.dt()));
                         delta = 0.5f; //one is dternal the other is not, record at least some difference (half time unit)
                     }
-                    assert(delta > 0 && range > 0);
+                    if (!(delta > 0 && range > 0))
+                        throw new WTF();
                     d += delta / range;
                 }
             }

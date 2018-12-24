@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 
 import static nars.Op.BELIEF;
+import static nars.truth.func.TruthFunctions.confCompose;
 import static nars.truth.func.TruthFunctions2.weak;
 
 /**
@@ -97,7 +98,8 @@ public enum NALTruth implements TruthFunc {
     @SinglePremise @AllowOverlap StructuralReduction() {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, NAR m, float minConf) {
-            float c = T.conf() * NALTruth.confDefault(m);
+            float c = confCompose(T.conf(), NALTruth.confDefault(m));
+            //c = weak(c);
             return c >= minConf ? $.t(T.freq(), c) : null;
         }
     },

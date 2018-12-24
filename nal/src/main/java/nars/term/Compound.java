@@ -771,7 +771,7 @@ public interface Compound extends Term, IPair, Subterms {
             eventsWhile((when, what) -> {
                 first[0] = what;
                 return false; //done got first
-            }, 0, false, false, false, 0);
+            }, 0, true, false, false, 0);
             return first[0];
         }
         return this;
@@ -786,7 +786,7 @@ public interface Compound extends Term, IPair, Subterms {
             eventsWhile((when, what) -> {
                 last[0] = what;
                 return true; //HACK keep going to end
-            }, 0, false, false, false, 0);
+            }, 0, true, false, false, 0);
             return last[0];
         }
         return this;
