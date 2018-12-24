@@ -9,6 +9,7 @@ import static nars.$.$$;
 import static nars.subterm.util.SubtermCondition.Event;
 import static nars.subterm.util.SubtermCondition.EventLast;
 import static nars.term.util.TermTest.assertEq;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SubOfConstraintTest {
@@ -68,6 +69,7 @@ class SubOfConstraintTest {
             Term a = $$("(x &&+1 (y&&z))");
             Term b = $$("y");
             assertEq("(x &&+1 z)", Conj.withoutEarlyOrLate(a, b, false, false));
+            assertNull( Conj.withoutEarlyOrLate(b, a, false, false));
             assertTrue(!c.invalid(
                     a,
                     b));

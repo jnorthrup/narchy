@@ -2,12 +2,10 @@ package nars.subterm.util;
 
 import nars.term.Term;
 import nars.term.util.Conj;
-import nars.time.Tense;
 
 import java.util.function.BiPredicate;
 
 import static nars.Op.CONJ;
-import static nars.time.Tense.DTERNAL;
 
 /**
  * tests various potential relations between a containing term and a subterm
@@ -40,7 +38,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
     Event() {
         @Override
         public final boolean test(Term container, Term x) {
-            return containsEvent(container, x);
+            return Conj.containsEvent(container, x);
         }
 
         public float cost() {
@@ -50,7 +48,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
     EventFirst() {
         @Override
         public final boolean test(Term container, Term x) {
-            return isEventFirstOrLast(container, x,  true);
+            return Conj.isEventFirstOrLast(container, x,  true);
         }
 
         public float cost() {
@@ -60,7 +58,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
     EventLast() {
         @Override
         public final boolean test(Term container, Term x) {
-            return isEventFirstOrLast(container, x,false);
+            return Conj.isEventFirstOrLast(container, x,false);
         }
 
         public float cost() {
@@ -77,12 +75,12 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
             if (container.op() != CONJ || container.volume() <= x.volume() || !Term.commonStructure(container, x))
                 return false;
 
-            if (containsEvent(container, x))
+            if (Conj.containsEvent(container, x))
                 return true;
 
             if (x.op()==CONJ) {
                 return !x.eventsWhile((when,xx) ->
-                    !containsEvent(container, xx)
+                    !Conj.containsEvent(container, xx)
                 , 0, true, true, true, 0);
             }
 
@@ -114,124 +112,8 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
 
     abstract public float cost();
 
-    public final boolean test(Term container, Term contentP, boolean testNegAlso) {
-        return test(container, contentP) ||
-                (testNegAlso && test(container, contentP.neg()));
+    public final boolean test(Term container, Term x, boolean testNegAlso) {
+        return test(container, x) || (testNegAlso && test(container, x.neg()));
     }
 
-    static boolean containsEvent(Term container, Term x) {
-        if (container.op() == CONJ && !container.impossibleSubTerm(x)) {
-
-            if (container.contains(x))
-                return true;
-            if (Conj.isSeq(container)){
-
-                boolean xNotConj = x.op() != CONJ;
-                boolean decompParallel = xNotConj || x.dt() != 0;
-                boolean decompEternal = xNotConj || x.dt() != DTERNAL;
-
-                return !container.eventsWhile((when, what) -> !what.equals(x),
-                        0, decompParallel, decompEternal, true, 0);
-            }
-
-
-        }
-        return false;
-    }
-
-    static boolean isEventFirstOrLast(Term container, Term xx, boolean firstOrLast) {
-        if (container.op() != CONJ)
-            return false;
-
-        if (container.impossibleSubTerm(xx))
-            return false;
-
-        boolean comm = Tense.dtSpecial(container.dt());
-        if (comm) {
-            if (container.contains(xx))
-                return true;
-        }
-        if (!comm || (container.subterms().structureSurface()&CONJ.bit) != 0) {
-
-            final long[] last = {-1};
-            final long[] found = {-1};
-
-            boolean xNotConj = xx.op() != CONJ;
-            boolean decompParallel = xNotConj || xx.dt()!=0;
-            boolean decompEternal = xNotConj || xx.dt()!=DTERNAL;
-
-            container.eventsWhile((when, what) -> {
-
-                if (what.equals(xx)) {
-
-                    if (!firstOrLast || when == 0) {
-                        found[0] = when; //a later event was found
-
-                        if (firstOrLast) {
-                            assert (when == 0);
-                            return false; //done
-                        }
-                    }
-
-                }
-                last[0] = when;
-                return true; //continue looking for last event
-            }, 0, decompParallel, decompEternal, false, 0);
-
-            return firstOrLast ? found[0] == 0 : found[0] == last[0];
-        }
-
-        return false;
-    }
-
-//    private static boolean isEventSequence(Term container, Term subseq, boolean neg, boolean firstOrLast) {
-//        if (neg)
-//            throw new TODO(); //may not even make sense
-//
-//        for (Term s : subseq.subterms())
-//            if (!container.containsRecursively(s))
-//                return false;
-//
-//        int containerDT = container.dt();
-//        if (containerDT ==0 || containerDT ==DTERNAL || containerDT ==XTERNAL)
-//            return true; //already met requirements since the container is unordered
-//
-//
-//        //compare the correct order and whether it appears in prefix or suffix as appropriate
-////        int range = container.eventRange();
-//        long elimStart = Long.MAX_VALUE, elimEnd = Long.MIN_VALUE;
-//        FasterList<LongObjectPair<Term>> events = container.eventList();
-//        elimNext: for (Term s : subseq.subterms()) {
-//            int n = events.size();
-//            int start = firstOrLast ? 0 : n-1, inc = firstOrLast ? +1 : -1;
-//            int k = start;
-//            for (int i = 0; i < n; i++) {
-//                LongObjectPair<Term> e = events.get(k);
-//                if (e.getTwo().equals(s)) {
-//                    long ew = e.getOne();
-//                    elimStart = Math.min(elimStart, ew);
-//                    elimEnd = Math.max(elimEnd, ew);
-//                    events.remove(k);
-//                    continue elimNext;
-//                }
-//                k += inc;
-//            }
-//            return false; //event not found
-//        }
-//
-//        if (events.isEmpty()) {
-//            //fully eliminated
-//            return false;
-//        }
-//
-//        for (LongObjectPair<Term> remain : events) {
-//            long w = remain.getOne();
-//            if (firstOrLast && w < elimStart)
-//                return false;//there is a prior event
-//            else if (!firstOrLast && w > elimEnd)
-//                return false;//there is a later event
-//        }
-//
-//        return true;
-//    }
 }

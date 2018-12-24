@@ -222,8 +222,9 @@
       (--(&&,Y,A..+) ==> X), (--(&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#") |- --(--(&&,A..+) ==> X), (Belief:IntersectionNN)
     (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- (X ==> (&&,A..+)), (Belief:Intersection)
         (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- --(X ==> (&&,A..+)), (Belief:IntersectionNN)
-      (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:Intersection)
-          (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- --(#1 ==> X), (Belief:IntersectionNN)
+
+//      (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:Intersection)
+//          (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- --(#1 ==> X), (Belief:IntersectionNN)
 
 
 //            B, ((&&,C,A..+) ==> X), neq(B,C) |- unisubst(((&&,A..+) ==> X),C,B), (Belief:Deduction)
@@ -403,11 +404,7 @@
 //        Y, (&&,X,A..+), task("@")       |- unisubst((&&,  X,A..+),X,Y,"#",strict), (Punctuation:Quest)
 //        Y, (&&,--X,A..+), task("@")     |- unisubst((&&,--X,A..+),X,Y,"#",strict), (Punctuation:Quest)
 
-//Anonymous Deduction and Abduction
-    (V ==> X), X, is(V,"#"), --is(X,"#")      |- X, (Belief:StructuralReduction)
-    (--V ==> X), X, is(V,"#"), --is(X,"#")    |- X, (Belief:StructuralReduction)
-    (X ==> V), X, is(V,"#"), --is(X,"#")      |- X,   (Belief:StructuralAbduction)
-    (--X ==> V), X, is(V,"#"), --is(X,"#")    |- --X, (Belief:StructuralAbduction)
+
 
 
 

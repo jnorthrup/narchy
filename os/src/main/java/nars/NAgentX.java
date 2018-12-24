@@ -171,7 +171,7 @@ abstract public class NAgentX extends NAgent {
     */
 
 
-//        Param.STRONG_COMPOSITION = true;
+  //      Param.STRONG_COMPOSITION = true;
 //        Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
 
 
@@ -350,7 +350,7 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         //n.freqResolution.set(0.03f);
-        n.termVolumeMax.set(26);
+        n.termVolumeMax.set(40);
 
         ((AbstractConceptIndex)n.concepts).activeCapacity.set(1024);
         n.attn.activating.conceptActivationRate.set(1f/1024f); //HACK TODO based on active bag capacity

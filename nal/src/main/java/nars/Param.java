@@ -218,6 +218,8 @@ public abstract class Param {
     public final static float HAPPINESS_RE_SENSITIZATION_RATE_FAST = 0.0004f;
 
 
+    public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = true;
+    public static final boolean TIMEGRAPH_STRETCH_INTERSECTING_EVENT = true;
 
 
 
@@ -277,7 +279,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 1f;
+    public static final float TEST_TIME_MULTIPLIER = 2f;
 
 
     @Range(min = 1, max = 32)

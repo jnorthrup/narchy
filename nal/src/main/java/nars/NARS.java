@@ -241,7 +241,7 @@ public class NARS {
 
         d.rng = ()->new XoRoShiRo128PlusRandom(System.nanoTime());
 
-         return d.get();
+        return d.get();
     }
 
 

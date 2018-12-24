@@ -140,13 +140,13 @@ public class BoolTest {
 //                    Bool.True,
 //                    "((--,x)" + diff + "x)");
 
-
-            assertEq("(false-->y)", "((x" + diff + "x)-->y)");
-            assertEq("(true-->y)", "(--(x" + diff + "x)-->y)");
-
-
-            assertEq("(y-->false)", "(y --> (x" + diff + "x))");
-            assertEq("(y-->true)", "(y --> --(x" + diff + "x))");
+//
+//            assertEq("(false-->y)", "((x" + diff + "x)-->y)");
+//            assertEq("(true-->y)", "(--(x" + diff + "x)-->y)");
+//
+//
+//            assertEq("(y-->false)", "(y --> (x" + diff + "x))");
+//            assertEq("(y-->true)", "(y --> --(x" + diff + "x))");
 
 
 //            assertEquals(Bool.False, $.diff(x, x));

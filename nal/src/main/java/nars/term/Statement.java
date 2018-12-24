@@ -56,12 +56,11 @@ public class Statement {
             switch (predicate.op()) {
                 case BOOL:
                     //reduce to the subject as a general condition for the superclass to utilize
-//                    if (predicate == True)
-//                        return subject;
-//                    if (predicate == False)
-//                        return subject.neg();
-//                    return Null;
-                    return predicate;
+                    if (predicate == True)
+                        return subject;
+                    if (predicate == False)
+                        return subject.neg();
+                    return Null;
                 case NEG:
                     return statement(IMPL, dt, subject, predicate.unneg()).neg();//recurse
                 case IMPL: {

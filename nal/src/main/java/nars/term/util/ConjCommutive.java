@@ -1,6 +1,5 @@
 package nars.term.util;
 
-import jcog.TODO;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.util.ArrayUtils;
@@ -19,8 +18,8 @@ import static nars.time.Tense.*;
 
 public enum ConjCommutive {;
 
-    public static Term the(int dt, Term[] u) {
-        throw new TODO();
+    public static Term the(int dt, Term... u) {
+        return theSorted(dt, sorted(u));
     }
 
     /** assumes u is sorted */

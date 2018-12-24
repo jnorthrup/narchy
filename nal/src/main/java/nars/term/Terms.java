@@ -357,7 +357,14 @@ public enum Terms {
             return x;
         return new TermList(Terms.sorted(x.arrayShared()));
     }
-}
+
+    public static boolean isSorted(Term[] s) {
+        if (s.length < 2) return true;
+        for (int i = 1; i < s.length; i++)
+            if (s[(i - 1)].compareTo(s[i]) >= 0)
+                return false;
+        return true;
+    }}
 
 
 

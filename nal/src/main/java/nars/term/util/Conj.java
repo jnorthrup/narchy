@@ -2,7 +2,6 @@ package nars.term.util;
 
 import jcog.TODO;
 import jcog.WTF;
-import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
 import nars.NAR;
@@ -27,7 +26,6 @@ import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.ByteHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.ImmutableBitmapDataProvider;
-import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
@@ -99,6 +97,110 @@ public class Conj extends ByteAnonMap {
         return c;
     }
 
+    public static boolean containsEvent(Term container, Term x) {
+        if (container.equals(x))
+            return true;
+        if (container.op() != CONJ || container.impossibleSubTerm(x))
+            return false;
+
+        if (container.contains(x))
+            return true;
+        if (isSeq(container)) {
+            int xdt = x.dt();
+            return !container.eventsWhile((when, subEvent) -> !containsEvent(subEvent, x), //recurse
+                    0, xdt!=0, xdt!=DTERNAL, true, 0);
+        }
+
+        return false;
+    }
+
+    public static boolean isEventFirstOrLast(Term container, Term x, boolean firstOrLast) {
+        if (container.op() != CONJ || container.impossibleSubTerm(x))
+            return false;
+
+        boolean seq = isSeq(container);
+        if (!seq) {
+            return container.contains(x);
+        } else {
+
+            final long[] last = {-1}, found = {-1};
+
+            int xdt = x.dt();
+            container.eventsWhile((when, subEvent) -> {
+
+                if (containsEvent(subEvent, x)) { //recurse
+
+                    if (!firstOrLast || when == 0) {
+                        found[0] = when; //a later event was found
+
+                        if (firstOrLast) {
+                            assert (when == 0);
+                            return false; //done
+                        }
+                    }
+
+                }
+                last[0] = when;
+                return true; //continue looking for last event
+            }, 0, xdt!=0, xdt!=DTERNAL, false, 0);
+
+            return firstOrLast ? found[0] == 0 : found[0] == last[0];
+        }
+
+    }
+
+    //    private static boolean isEventSequence(Term container, Term subseq, boolean neg, boolean firstOrLast) {
+//        if (neg)
+//            throw new TODO(); //may not even make sense
+//
+//        for (Term s : subseq.subterms())
+//            if (!container.containsRecursively(s))
+//                return false;
+//
+//        int containerDT = container.dt();
+//        if (containerDT ==0 || containerDT ==DTERNAL || containerDT ==XTERNAL)
+//            return true; //already met requirements since the container is unordered
+//
+//
+//        //compare the correct order and whether it appears in prefix or suffix as appropriate
+////        int range = container.eventRange();
+//        long elimStart = Long.MAX_VALUE, elimEnd = Long.MIN_VALUE;
+//        FasterList<LongObjectPair<Term>> events = container.eventList();
+//        elimNext: for (Term s : subseq.subterms()) {
+//            int n = events.size();
+//            int start = firstOrLast ? 0 : n-1, inc = firstOrLast ? +1 : -1;
+//            int k = start;
+//            for (int i = 0; i < n; i++) {
+//                LongObjectPair<Term> e = events.get(k);
+//                if (e.getTwo().equals(s)) {
+//                    long ew = e.getOne();
+//                    elimStart = Math.min(elimStart, ew);
+//                    elimEnd = Math.max(elimEnd, ew);
+//                    events.remove(k);
+//                    continue elimNext;
+//                }
+//                k += inc;
+//            }
+//            return false; //event not found
+//        }
+//
+//        if (events.isEmpty()) {
+//            //fully eliminated
+//            return false;
+//        }
+//
+//        for (LongObjectPair<Term> remain : events) {
+//            long w = remain.getOne();
+//            if (firstOrLast && w < elimStart)
+//                return false;//there is a prior event
+//            else if (!firstOrLast && w > elimEnd)
+//                return false;//there is a later event
+//        }
+//
+//        return true;
+//    }
+
+
     public int eventCount(long when) {
         Object e = event.get(when);
         return e != null ? Conj.eventCount(e) : 0;
@@ -136,28 +238,30 @@ public class Conj extends ByteAnonMap {
 //    }
 
     /**
-     * returns null if wasnt contained, Null if nothing remains after removal
+     * returns null if wasnt contained, True if nothing remains after removal
      */
     @Nullable
     public static Term withoutEarlyOrLate(Term conj, Term event, boolean earlyOrLate, boolean filterContradiction) {
-        if (conj.op() == NEG) return withoutEarlyOrLate(conj, event, earlyOrLate, filterContradiction).neg();
 
-        if (conj.op() != CONJ || conj.impossibleSubTerm(event))
-            return Null;
-
-        if (isSeq(conj)) {
-            Conj c = Conj.from(conj);
-            return c.dropEvent(event, earlyOrLate, filterContradiction) ? c.term() : Null;
+        Op o = conj.op();
+        if (o == NEG) {
+            Term n = withoutEarlyOrLate(conj, event, earlyOrLate, filterContradiction);
+            return n!=null ? n.neg() : null;
         }
 
-        Term[] csDropped = conj.subterms().subsExcept(event);
-
-        if (csDropped != null) {
-            return (csDropped.length == 1) ? csDropped[0] : terms.conj(conj.dt(), csDropped);
-        } else {
-            return conj; //no change
+        if (o == CONJ && !conj.impossibleSubTerm(event)) {
+            if (isSeq(conj)) {
+                Conj c = Conj.from(conj);
+                if (c.dropEvent(event, earlyOrLate, filterContradiction))
+                    return c.term();
+            } else {
+                Term[] csDropped = conj.subterms().subsExcept(event);
+                if (csDropped != null)
+                    return (csDropped.length == 1) ? csDropped[0] : terms.conj(conj.dt(), csDropped);
+            }
         }
 
+        return null; //no change
 
     }
 
@@ -327,7 +431,9 @@ public class Conj extends ByteAnonMap {
      * whether the conjunction is a sequence (includes check for factored inner sequence)
      */
     public static boolean isSeq(Term conj) {
-        assert (conj.op() == CONJ);
+        if (conj.op() != CONJ)
+            return false;
+
         int dt = conj.dt();
 
         if (!dtSpecial(dt))
@@ -335,9 +441,7 @@ public class Conj extends ByteAnonMap {
 
         if (dt == DTERNAL) {
             Subterms x = conj.subterms();
-            //if ((x.structureSurface() & CONJ.bit) != 0)
-            if (x.subs(xx -> xx.op() == CONJ && xx.dt() != DTERNAL) == 1)
-                return true;/* TOOD merge with below subIndexFirst call */
+            return x.hasAny(CONJ) && x.subs(xx -> xx.op() == CONJ && xx.dt() != DTERNAL) == 1;
         }
 
         return false;
@@ -425,7 +529,7 @@ public class Conj extends ByteAnonMap {
             //try positive first
             Term[] ss = s.subsExcept(exclude);
             if (ss != null) {
-                return terms.conj(dt, ss);
+                return ss.length > 1 ? terms.conj(dt, ss) : ss[0];
             } else {
                 //try negative next
                 if (excludeNeg) {
@@ -908,7 +1012,7 @@ public class Conj extends ByteAnonMap {
                     //keep iterating, because possible total annihilation may follow.
                 }
             }
-            return eternal || when <= 0;
+            return eternal || when == 0;
         }, 0, true, true, false, 0);
 
 
@@ -916,33 +1020,47 @@ public class Conj extends ByteAnonMap {
             return incoming; //disjunction totally annihilated by the incoming condition
         }
 
+        int dt = eternal ? DTERNAL : 0;
+
         if (result[0] == False) {
             //removing the matching subterm from the disjunction and reconstruct it
             //then merge the incoming term
 
-            Term newConj;
-            if (eternal) {
-                newConj = Conj.without(conjUnneg, incoming, false);
+
+            if (!isSeq(conjUnneg)) {
+                Term newConj = Conj.without(conjUnneg, incoming, false);
+                if (newConj.equals(conjUnneg))
+                    return True; //no change
+
+                if (newConj.equals(incoming)) //quick test
+                    return False;
+
+                return terms.conj(dt, newConj.neg(), incoming);
+
             } else {
-                //carefully remove the contradicting first event
-                newConj = Conj.withoutEarlyOrLate(conjUnneg, incoming, true, false);
+                Conj c = Conj.from(conjUnneg);
+                if (!eternal) {
+                    boolean removed = c.remove(dt, incoming);
+                    if (!removed)
+                        return True; //likely absorbed in a factored eternal component TODO check if this is always the case
+                } else {
+                    c.removeAll(incoming);
+                }
+                Term newConjUnneg = c.term();
+                int shift = Tense.occToDT(c.shift());
+
+                Conj d = new Conj();
+                d.add(dt, incoming);
+                d.add(shift, newConjUnneg.neg());
+                return d.term();
+
+                //return terms.conj(dt, newConjUnneg.neg(), incoming);
+//                //carefully remove the contradicting first event
+//                newConj = Conj.withoutEarlyOrLate(conjUnneg, incoming, true, false);
+//                if (newConj == null)
+//                    return True; //no change
             }
 
-            int dt = eternal ? DTERNAL : 0;
-
-            if (newConj.equals(incoming)) //quick test
-                return False;
-            if (newConj.equals(conjUnneg))
-                return True; //unaffected
-
-            //also coudl test for && contains if dtspecial etc
-
-
-//            if (newConj.op() == CONJ && incoming.op() == CONJ) {
-//                return terms.theSortedCompound(CONJ, dt, newConj.neg(), incoming);
-//            } else {
-            return terms.conj(dt, newConj.neg(), incoming);
-//            }
 
         }
 
@@ -1356,59 +1474,26 @@ public class Conj extends ByteAnonMap {
         Term eternal = eternalWhat != null ? term(ETERNAL, eternalWhat) : null;
         if (eternal != null) {
 
-            if (eternal instanceof Bool)
+            if (eternal == False || eternal == Null)
                 return this.term = eternal;
 
-//            //flatten inner conjunctions
-//            if (eternal.op() == CONJ) {
-//                Subterms es = eternal.subterms();
-//                if (es.hasAny(CONJ)) {
-//                    eternal = flatten(eternal, es, DTERNAL);
-////                    eternal = flatten(eternal, es, 0);
-//                }
-//            }
-
-            if (numEvents > 1) {
-
-
-                if (eternal.op() == CONJ) {
-
-                    if (eternalWhat instanceof byte[]) {
-                        byte[] b = (byte[]) eternalWhat;
-                        validator = (i) -> indexOfZeroTerminated(b, (byte) -i) == -1;
-                    } else {
-                        RoaringBitmap b = (RoaringBitmap) eternalWhat;
-                        validator = (i) -> !b.contains(-i);
-                    }
-
-
-                } else {
-                    validator = (t) -> !eternal.equalsNeg(idToTerm.get(Math.abs(t - 1)).negIf(t < 0));
-                }
-            }
         }
 
         Term ci;
         if (eternal != null && numEvents == 1) {
             ci = eternal;
         } else {
+            if (eternal == True)
+                eternal = null;
+
             FasterList<LongObjectPair<Term>> temporals = null;
             for (LongObjectPair next : event.keyValuesView()) {
                 long when = next.getOne();
                 if (when == ETERNAL)
                     continue;
 
-                Term wt = term(when, next.getTwo(), validator);
 
-                //TODO merge this with validator
-                if (eternal != null && !(wt instanceof Bool) && (
-                        Term.commonStructure(wt, eternal) && (
-                                eternal.equalsNeg(wt) || eternal.containsNeg(wt) ||
-                                        wt.equalsNeg(eternal) || wt.containsNeg(eternal)
-                        )
-                )) {
-                    wt = False;
-                }
+                Term wt = term(when, next.getTwo(), validator);
 
                 if (wt == True) {
                     continue;
@@ -1419,7 +1504,7 @@ public class Conj extends ByteAnonMap {
                 }
 
                 if (temporals == null)
-                    temporals = new FasterList<>(4);
+                    temporals = new FasterList<>(numEvents + 1);
 
                 temporals.add(pair(when, wt));
             }
@@ -1447,28 +1532,8 @@ public class Conj extends ByteAnonMap {
                     return eternal;
                 if (temporal.equalsNeg(eternal))
                     return False;
-                ci = terms.conj(DTERNAL, temporal, eternal);
-
-//                //int etdt = temporal.dt() == 0 ? 0 /* promote */ : DTERNAL;
-//                if (!eternal.hasAny(CONJ)) {
-//                    if (temporal.equalsNeg(eternal))
-//                        return False;
-//                    //ci = terms.theSortedCompound(CONJ, DTERNAL, temporal, eternal);
-//                    ci = terms.conj(DTERNAL, temporal, eternal);
-//                } else {
-//
-////                    if (eternal.op() == CONJ && (eternal.dt() == DTERNAL)) {
-////                        //flatten dternal subterms
-////                        ci = terms.conj(DTERNAL, subAppend(eternal.subterms(), temporal));
-////                    } else {
-////
-////                        try {
-//                            ci = terms.conj(DTERNAL, temporal, eternal);
-////                        } catch (StackOverflowError e) {
-////                            throw new WTF("stack overflow constructing: (" + temporal + " && " + eternal + ")"); //TEMPORARY
-////                        }
-////                    }
-//                }
+                //ci = terms.conj(DTERNAL, temporal, eternal);
+                ci = ConjCommutive.the(DTERNAL, temporal, eternal);
 
 
             } else if (eternal == null) {
@@ -1481,49 +1546,6 @@ public class Conj extends ByteAnonMap {
         if (ci == null)
             return True;
 
-        if (ci.op() == CONJ && ci.hasAny(NEG)) {
-            Subterms cci;
-            if ((cci = ci.subterms()).hasAny(CONJ)) {
-                int ciDT = ci.dt();
-                if (ciDT == 0 || ciDT == DTERNAL) {
-                    int s = cci.subs();
-                    RoaringBitmap ni = null, nc = null;
-                    for (int i = 0; i < s; i++) {
-                        Term cii = cci.sub(i);
-                        if (cii.op() == NEG) {
-                            Term cInner = cii.unneg();
-                            if (cInner.op() == CONJ && cInner.dt() == ciDT /* same DT */) {
-                                if (nc == null) nc = new RoaringBitmap();
-                                nc.add(i);
-                            } else {
-                                if (ni == null) ni = new RoaringBitmap();
-                                ni.add(i);
-                            }
-                        }
-                    }
-                    if (nc != null && ni != null) {
-                        int[] bb = ni.toArray();
-                        MetalBitSet toRemove = MetalBitSet.bits(bb.length);
-                        PeekableIntIterator ncc = nc.getIntIterator();
-                        while (ncc.hasNext()) {
-                            int nccc = ncc.next();
-                            for (int aBb : bb) {
-                                Term NC = cci.sub(nccc).unneg();
-                                Term NX = cci.sub(aBb).unneg();
-                                if (NC.contains(NX)) {
-                                    toRemove.set(nccc);
-                                }
-                            }
-                        }
-                        if (toRemove.cardinality() > 0) {
-                            return terms.conj(ciDT, cci.subsExcept(toRemove));
-                        }
-                    }
-
-
-                }
-            }
-        }
         return ci;
     }
 
@@ -1738,7 +1760,12 @@ public class Conj extends ByteAnonMap {
 //                    return todoComplicated();
 //
 //                } else {
-                return terms.theSortedCompound(CONJ, cdt, t);
+                Term x = terms.theSortedCompound(CONJ, cdt, t);
+//                if (x.anon().volume()!=x.volume()) {  //TEMPORARY
+//                    System.err.println("caught conj"); }
+                return x;
+
+                //return terms.theSortedCompound(CONJ, cdt, t);
                 //return terms.conj(cdt, t.toArray(Op.EmptyTermArray));
                 //return Op.compound(CONJ, cdt, Terms.sorted(t));
 //                }

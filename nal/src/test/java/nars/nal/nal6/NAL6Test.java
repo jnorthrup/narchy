@@ -819,6 +819,7 @@ public class NAL6Test extends NALTest {
     @Test
     void strong_elimination() {
         test.nar.termVolumeMax.set(18);
+        test.nar.confMin.set(0.25f);
         TestNAR tester = test;
         tester.believe("((test($a,is,cat) && sentence($a,is,$b)) ==> ($a --> $b))");
         tester.believe("test(tim,is,cat)");
@@ -1246,6 +1247,38 @@ public class NAL6Test extends NALTest {
                 .believe("(&&, x, --y, a)")
                 .believe("(&&, --x, y, b)")
                 .mustBelieve(cycles, "(a && b)", 0f, 0.81f)
+        ;
+    }
+
+    @Test void testImplPredQuestion() throws Narsese.NarseseException {
+        test
+                .believe("((x&&y)==>z)")
+                .ask("z")
+                .mustQuestion(cycles, "(x&&y)")
+        ;
+    }
+    @Test void testImplPredQuest() throws Narsese.NarseseException {
+        test
+                .believe("((x&&y)==>z)")
+                .quest("z")
+                .mustQuest(cycles, "(x&&y)")
+        ;
+    }
+    @Test void testImplConjPredQuestion() throws Narsese.NarseseException {
+        test
+                .believe("((x&&y)==>z)")
+                .ask("z")
+                .mustQuestion(cycles, "x")
+                .mustQuestion(cycles, "y")
+        ;
+    }
+
+    @Test void testImplQuestionUnification() throws Narsese.NarseseException {
+        test
+                .believe("((&&,Sells($1,#2,#3),z)==>Criminal($1))")
+                .ask("Criminal(?x)")
+                //.ask("(?1-->Criminal)")
+                .mustQuestion(cycles, "(&&,Sells(?1,#2,#3),z)")
         ;
     }
 

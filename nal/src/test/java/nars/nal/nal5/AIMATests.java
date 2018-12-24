@@ -17,11 +17,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AIMATests {
 
-    final NAR n = NARS.tmp(6);
 
     @ParameterizedTest
     @ValueSource(doubles = {0.01, 0.05, 0.1, 0.25, 0.5})
     void testAIMAExample(double truthRes) throws Narsese.NarseseException {
+        final NAR n = NARS.tmp(6);
+        n.random().setSeed(1);
 
         n.termVolumeMax.set(5);
         n.freqResolution.set((float) truthRes);
@@ -44,18 +45,20 @@ class AIMATests {
     @Test
     void testWeaponsDomain() throws Narsese.NarseseException {
 
-        n.freqResolution.set(0.25f);
-        n.confResolution.set(0.05f);
+        final NAR n = NARS.tmp(6);
+        n.random().setSeed(1);
+
+        n.freqResolution.set(0.1f);
+//        n.confResolution.set(0.05f);
         n.confMin.set(0.1f);
 
-//        n.beliefPriDefault.set(0.25f);
-//        n.questionPriDefault.set(0.5f);
+        n.beliefPriDefault.set(0.25f);
+        n.questionPriDefault.set(0.75f);
 
         assertEquals(20, $$("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").volume());
 
         n.termVolumeMax.set(20);
-        //n.log();
-
+//        n.log();
 
         n.believe(
 
@@ -71,8 +74,8 @@ class AIMATests {
 
 
         @Nullable Task Q = n.question($.$(
-                "Criminal:?x"
-                //"Criminal(?x)"
+                //"Criminal:?x"
+                "Criminal(?x)"
 
         ), ETERNAL, (q, a) -> {
             System.out.println(a);
@@ -82,7 +85,7 @@ class AIMATests {
         //n.concept("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").print();
         //n.concept("Criminal").print();
 
-        n.run(10000);
+        n.run(8000);
 //        n.synch();
 
 //        Concept qc = n.concept(Q);

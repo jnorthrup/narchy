@@ -2039,11 +2039,33 @@ public class ConjTest {
         //TODO check what this actually means
         String a0 = "((--,((--,_3) &&+190 (--,_3)))&|((_1,_2)&|_3))";
         Term a = $$(a0);
-        assertEq(False, a);
+        assertEq("((_1,_2)&|_3)", a);
     }
 
     @Test void testDTChange() {
         assertEq("((a &&+3 b) &&+2 c)", $$("((a &&+3 b) &&+3 c)").dt(2));
+    }
+
+    @Test void testParallelDisjunctionAbsorb() {
+        assertEq("((--,y)&|x)", CONJ.the(0, $$("--(x&&y)"), $$("x")));
+    }
+    @Test void testParallelDisjunctionInert() {
+        assertEq("((--,(x&&y))&|z)", CONJ.the(0, $$("--(x&&y)"), $$("z")));
+    }
+
+    @Test void testSequentialDisjunctionAbsorb() {
+        Term t = CONJ.the(0,
+                $$("(--,((--,R) &&+600 jump))"),
+                $$("(--,L)"),
+                $$("(--,R)"));
+        assertEq("(((--,R) &&+600 (--,jump))&|(--,L))", t);
+    }
+    @Test void testSequentialDisjunctionContradict() {
+        Term u = CONJ.the(0,
+                $$("(--,((--,R) &&+600 jump))"),
+                $$("(--,L)"),
+                $$("R"));
+        assertEq("((--,L)&|R)", u);
     }
 
 //    @Test void testConjEternalConj2() {

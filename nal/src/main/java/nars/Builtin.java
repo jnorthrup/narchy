@@ -467,7 +467,7 @@ public class Builtin {
             protected Term apply(Term conj, Term event) {
                 boolean filterContradiction = false;
                 Term x = Conj.withoutEarlyOrLate(conj, event, false, filterContradiction);
-                if (conj.equals(x))
+                if (x==null)
                     return Null;
                 return x;
             }
@@ -477,7 +477,7 @@ public class Builtin {
             @Override
             protected Term apply(Term conj, Term event) {
                 Term x = Conj.withoutEarlyOrLate(conj, event, true, false);
-                if (conj.equals(x))
+                if (x == null)
                     return Null;
                 return x;
             }

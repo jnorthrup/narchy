@@ -13,6 +13,7 @@ import jcog.data.set.ArrayHashSet;
 import jcog.math.Longerval;
 import jcog.util.ArrayUtils;
 import nars.Op;
+import nars.Param;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -171,35 +172,44 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         if (as == ETERNAL)
                             continue;
 
-                        if (af.containsOrEquals(start, end)) {
-                            //add = false;
-                            //break; //dont affect the stored graph, but return the smaller interval that was input
+                        if (Param.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
+                            if (af.containsOrEquals(start, end)) {
+                                //add = false;
+                                //break; //dont affect the stored graph, but return the smaller interval that was input
 
-                            return af; //return the absorbing event
+                                return af; //return the absorbing event
+                            }
+                        } else {
+                            if (af.start == start && af.end() == end)
+                                return af;
                         }
 
 
                         if (add && af.containedIn(start, end)) {
-                            //absorb existing
-                            removeNode(f);
-                            ff.remove();
-                            nte--;
+                            if (Param.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
+                                //absorb existing
+                                removeNode(f);
+                                ff.remove();
+                                nte--;
+                            }
                         } else {
-                            long[] merged;
-                            if ((merged = af.unionIfIntersects(start, end)) != null) {
+                            if (Param.TIMEGRAPH_STRETCH_INTERSECTING_EVENT) {
+                                long[] merged;
+                                if ((merged = af.unionIfIntersects(start, end)) != null) {
 
-                                //stretch
-                                start = merged[0];
-                                end = merged[1];
+                                    //stretch
+                                    start = merged[0];
+                                    end = merged[1];
 
-                                if (add) {
-                                    removeNode(f);
-                                    ff.remove();
-                                    nte--;
-                                    stable &= nte <= 1; //try again if other nodes, because it may connect with other ranges further in the iteration
+                                    if (add) {
+                                        removeNode(f);
+                                        ff.remove();
+                                        nte--;
+                                        stable &= nte <= 1; //try again if other nodes, because it may connect with other ranges further in the iteration
+                                    }
+
+                                    break;
                                 }
-
-                                break;
                             }
                         }
 
@@ -216,7 +226,6 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         if (add) {
             return addNode(event).id;
         } else {
-            //return event(event);
             return event;
         }
     }
@@ -429,7 +438,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                                     link(event, w - eventStart, know(y, w, w + range));
                                     return true;
-                                }, eventStart, false, false, false, 0);
+                                }, eventStart, false, true, false, 0);
                             } else {
                                 //chain the events together relatively
                                 final Event[] prev = {event};

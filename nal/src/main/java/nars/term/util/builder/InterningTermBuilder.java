@@ -318,7 +318,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
             if (dt == 0 || dt == DTERNAL)
                 u = Terms.sorted(u); //pre-sort
             else if (dt == XTERNAL) {
-                Arrays.sort(u = u.clone()); //TODO deduplicate down to at least 2x, no further
+                if (!Terms.isSorted(u))
+                    Arrays.sort(u = u.clone()); //TODO deduplicate down to at least 2x, no further
             }
 
             if (deep)

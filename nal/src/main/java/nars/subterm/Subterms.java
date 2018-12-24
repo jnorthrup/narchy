@@ -216,15 +216,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return true;
     }
 
-    static boolean isSorted(Term[] s) {
-        if (s.length < 2) return true;
-        for (int i = 1; i < s.length; i++)
-            if (s[(i - 1)].compareTo(s[i]) >= 0)
-                return false;
-        return true;
-    }
-
-//    /**
+    //    /**
 //     * a and b must be instances of input, and output must be of size input.length-2
 //     */
 //    /*@NotNull*/
