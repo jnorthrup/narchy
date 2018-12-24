@@ -481,10 +481,13 @@ public abstract class Param {
                 //4;
                 //dur;
                 //8;
+
         return evi / (1.0f + (((float)dt) / (falloffDurs * dur)));
 
         //eternal noise floor
-        //float ee = TruthFunctions.eternalize(evi); return ee +  (evi - ee) / (1.0f + (((float)dt) / (falloffDurs * dur)));
+//        float ee = TruthFunctions.eternalize(evi)
+//                        /STAMP_CAPACITY;
+//        return ee +  (evi - ee) / (1.0f + (((float)dt) / (falloffDurs * dur)));
 
 
         //return evi / (1.0f +    Util.sqr(((float)dt) / (falloffDurs * dur)));

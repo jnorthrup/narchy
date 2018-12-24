@@ -522,10 +522,10 @@ public enum Op {
                     }
                 }
 
-                if (!baseConcurrent) {
-                    //fast transform non-concurrent -> non-concurrent
-                    return Op.compound(CONJ, nextDT, xx);
-                }
+//                if (!baseConcurrent) {
+//                    //fast transform non-concurrent -> non-concurrent
+//                    return Op.compound(CONJ, nextDT, xx);
+//                }
             } else {
 
                 if (baseConcurrent) {

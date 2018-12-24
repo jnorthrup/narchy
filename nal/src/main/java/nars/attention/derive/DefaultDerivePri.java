@@ -25,10 +25,10 @@ public class DefaultDerivePri implements DerivePri {
      * how important is it to retain conf (evidence).
      * leniency towards uncertain derivations
      */
-    public final FloatRange eviRetention = new FloatRange(0.5f, 0f, 1f);
+    public final FloatRange eviImportance = new FloatRange(0.5f, 0f, 1f);
 
     /** occam's razor - increase this discriminate more heavily against more complex derivations */
-    public final FloatRange simplicityImportance = new FloatRange(0.5f, 0f, 8f);
+    public final FloatRange simplicityImportance = new FloatRange(0.75f, 0f, 8f);
 
     /** importance of frequency polarity in result (distance from freq=0.5) */
     public final FloatRange polarityImportance = new FloatRange(0.01f, 0f, 1f);
@@ -103,7 +103,7 @@ public class DefaultDerivePri implements DerivePri {
             float dConf = w2cSafe(dEvi);
             float lossFactor = Util.unitize((pConf - dConf) / pConf);
 
-            return Util.lerp(eviRetention.floatValue(), 1f , lossFactor);
+            return Util.lerp(eviImportance.floatValue(), 1f , lossFactor);
         }
 
         //throw new RuntimeException("spontaneous belief/goal evidence generated from only question parent task");
