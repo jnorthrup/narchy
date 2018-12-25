@@ -21,10 +21,8 @@ import nars.link.TaskLink;
 import nars.op.Subst;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
-import nars.term.Functor;
-import nars.term.Term;
-import nars.term.Termed;
 import nars.term.Variable;
+import nars.term.*;
 import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -285,7 +283,7 @@ public class Derivation extends PreDerivation {
             anon.clear();
 
             this.taskTerm = anon.put(nextTaskTerm);
-            if (taskTerm.op()!=nextTaskTerm.op()) //(!taskTerm.op().taskable)
+            if ((taskTerm instanceof Compound && nextTaskTerm instanceof Compound) && taskTerm.op()!=nextTaskTerm.op()) //(!taskTerm.op().taskable)
                 throw new WTF(nextTaskTerm + " could not be anon, result: " + taskTerm);
             this.taskUniques = anon.uniques();
         }
@@ -358,8 +356,11 @@ public class Derivation extends PreDerivation {
             this.beliefEvi = 0;
         }
 
+        if ((beliefTerm instanceof Compound && _beliefTerm instanceof Compound) && (beliefTerm.op()!=_beliefTerm.op()))
+            throw new WTF(nextTaskTerm + " could not be anon, result: " + taskTerm);
 
         assert (beliefTerm != null) : (nextBeliefTerm + " could not be anonymized");
+        assert (!(beliefTerm instanceof Bool));
         assert (beliefTerm.op() != NEG) : nextBelief + " , " + nextBeliefTerm + " -> " + beliefTerm + " is invalid NEG op";
 
     }

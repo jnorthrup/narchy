@@ -103,7 +103,7 @@ public class NAL5Test extends NALTest {
          OUT: <(robin --> [flying]) ==> a>. %0.80;0.45%
          */
         TestNAR tester = test;
-        tester.nar.termVolumeMax.set(10);
+        tester.nar.termVolumeMax.set(7);
         tester.believe("<a ==> b>",1f,0.9f);
         tester.believe("<(robin --> [flying]) ==> b>", 0.8f, 0.9f);
         tester.mustBelieve(cycles, "<a ==> (robin --> [flying])>", 1.00f, 0.39f);

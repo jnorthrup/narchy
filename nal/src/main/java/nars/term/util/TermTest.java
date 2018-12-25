@@ -108,7 +108,7 @@ public enum TermTest { ;
         try {
             Term z = y.anon();
         } catch (Throwable e) {
-            fail(()->e.toString());
+            fail(e::toString);
         }
 
         return x;

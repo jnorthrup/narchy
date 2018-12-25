@@ -98,6 +98,8 @@ public class Conj extends ByteAnonMap {
     }
 
     public static boolean containsEvent(Term container, Term x) {
+        if (!x.op().eventable)
+            return false;
         if (container.equals(x))
             return true;
         if (container.op() != CONJ || container.impossibleSubTerm(x))
@@ -115,6 +117,8 @@ public class Conj extends ByteAnonMap {
     }
 
     public static boolean isEventFirstOrLast(Term container, Term x, boolean firstOrLast) {
+        if (!x.op().eventable)
+            return false;
         if (container.op() != CONJ || container.impossibleSubTerm(x))
             return false;
 
@@ -590,6 +594,11 @@ public class Conj extends ByteAnonMap {
         }
     }
 
+    /** note this doesnt remove the terms which only appeared in the target time being removed */
+    public boolean removeAll(long when) {
+        return event.remove(when)!=null;
+    }
+
     public boolean removeAll(Term what) {
         byte id = get(what);
         if (id != Byte.MIN_VALUE) {
@@ -761,11 +770,11 @@ public class Conj extends ByteAnonMap {
         term = null;
     }
 
-    public int conflictOrSame(long at, byte what) {
+    protected int conflictOrSame(long at, byte what) {
         return conflictOrSame(event.get(at), what);
     }
 
-    static int conflictOrSame(Object e, byte id) {
+    protected static int conflictOrSame(Object e, byte id) {
         if (e == null) {
 
         } else if (e instanceof RoaringBitmap) {
@@ -776,11 +785,16 @@ public class Conj extends ByteAnonMap {
                 return +1;
             }
         } else if (e instanceof byte[]) {
-            byte[] r = (byte[]) e;
-            if (indexOfZeroTerminated(r, (byte) -id) != -1)
-                return -1;
-            else if (indexOfZeroTerminated(r, id) != -1)
-                return +1;
+            byte[] b = (byte[]) e;
+            for (int i = 0; i < b.length; i++) {
+                int bi = b[i];
+                if (bi == -id)
+                    return -1;
+                else if (bi == id)
+                    return +1;
+                else if (bi == 0)
+                    break; //null terminator
+            }
         }
         return 0;
     }
@@ -807,23 +821,39 @@ public class Conj extends ByteAnonMap {
         );
     }
 
-    private boolean addConjEvent(long at, Term x) {
+    protected boolean addConjEvent(long at, Term x) {
+
         int xdt = x.dt();
         if (xdt == DTERNAL) {
             if (at == ETERNAL) {
-                Subterms tt = x.subterms();
-                if (tt.hasAny(CONJ)) {
-                    //add any contained sequences first
-                    return tt.AND(ttt ->
-                            (ttt.op() != CONJ || Tense.dtSpecial(ttt.dt())) || add(0, ttt)
-                    ) && tt.AND(ttt ->
-                            (ttt.op() == CONJ && !Tense.dtSpecial(ttt.dt())) || add(ETERNAL, ttt)
-                    );
+                if (addConjEventFactored()) {
+                    Subterms tt = x.subterms();
+                    if (tt.hasAny(CONJ)) {
+                        //add any contained sequences first
+                        return tt.AND(ttt ->
+                                (ttt.op() != CONJ || Tense.dtSpecial(ttt.dt())) || add(0, ttt)
+                        ) && tt.AND(ttt ->
+                                (ttt.op() == CONJ && !Tense.dtSpecial(ttt.dt())) || add(ETERNAL, ttt)
+                        );
+                    }
                 }
             }
         }
 
+//        if (seq && at == ETERNAL && addConjEventFactored()) {
+//            Subterms tt = x.subterms();
+//            //add any contained sequences first
+//            return tt.AND(ttt ->
+//                    (ttt.op() != CONJ || Tense.dtSpecial(ttt.dt())) || add(0, ttt)
+//            ) && tt.AND(ttt ->
+//                    (ttt.op() == CONJ && !Tense.dtSpecial(ttt.dt())) || add(ETERNAL, ttt)
+//            );
+//        }
+
         if (at != ETERNAL || (xdt == 0) || (xdt == DTERNAL)) {
+
+            if (at == ETERNAL && Conj.isSeq(x))
+                at = 0;
             return x.eventsWhile(this::addEvent, at,
                     at != ETERNAL, //unpack parallel except in DTERNAL root, allowing: ((a&|b) && (c&|d))
                     true,
@@ -831,6 +861,11 @@ public class Conj extends ByteAnonMap {
         } else {
             return addEvent(at, x);
         }
+    }
+
+    /** return false to force distribute sequence add */
+    protected boolean addConjEventFactored() {
+        return true;
     }
 
     private boolean added(boolean success) {
@@ -1163,7 +1198,8 @@ public class Conj extends ByteAnonMap {
 ////                    }
 //                }
 //            }
-
+            if (dtInner == 0 || dtInner == DTERNAL && conj.contains(incoming))
+                return True; //quick test for absorption
 
             boolean innerCommute = Tense.dtSpecial(dtInner);// && !conj.subterms().hasAny(Op.CONJ);
 
@@ -1470,13 +1506,10 @@ public class Conj extends ByteAnonMap {
         factor();
 
         IntPredicate validator = null;
-        Object eternalWhat = event.get(ETERNAL);
-        Term eternal = eternalWhat != null ? term(ETERNAL, eternalWhat) : null;
+        Term eternal = term(ETERNAL);
         if (eternal != null) {
-
             if (eternal == False || eternal == Null)
                 return this.term = eternal;
-
         }
 
         Term ci;
@@ -1558,9 +1591,11 @@ public class Conj extends ByteAnonMap {
             return;
 
         RichIterable<LongObjectPair<Object>> events = event.keyValuesView();
-        int numTemporalEvents = events.count(l -> l.getOne() != ETERNAL);
         int numTemporalCompoundEvents = events.count(l -> l.getOne() != ETERNAL && eventCount(l.getTwo()) > 1);
-        if (numTemporalCompoundEvents <= 1 || numTemporalCompoundEvents != numTemporalEvents)
+        if (numTemporalCompoundEvents <= 1)
+            return;
+        int numTemporalEvents = events.count(l -> l.getOne() != ETERNAL);
+        if (numTemporalCompoundEvents != numTemporalEvents)
             return;
 
         ByteHashSet common = new ByteHashSet();
@@ -1689,7 +1724,9 @@ public class Conj extends ByteAnonMap {
         return term(when, what, null);
     }
 
-    private Term term(long when, Object what, IntPredicate validator) {
+    @Nullable private Term term(long when, Object what, IntPredicate validator) {
+        if (what == null)
+            return null;
 
         final byte[] b;
         int n = eventCount(what);
@@ -1699,7 +1736,6 @@ public class Conj extends ByteAnonMap {
         if (what instanceof byte[]) {
             //rb = null;
             b = (byte[]) what;
-            indexOfZeroTerminated(b, (byte) 0); //TODO cardinality(byte[] b)
         } else {
             return todoOrNull();
 //            b = null;
@@ -1819,6 +1855,31 @@ public class Conj extends ByteAnonMap {
             }
         }
         return add(term, start, end, maxSamples, minSegmentLength);
+    }
+
+    /** opposite of factor; 'multiplies' all temporal components with any eternal components */
+    protected void distribute() {
+
+        Term ete = term(ETERNAL);
+        if (ete == null) return; //no effect
+
+
+        removeAll(ETERNAL);
+
+        //replace all terms (except the eternal components removed) with the distributed forms
+
+        this.idToTerm.replaceAll((x)->{
+            if (!x.equals(ete)) {
+                Term y = CONJ.the(x, ete);
+                if (!y.equals(x)) {
+                    byte id = termToId.get(x);
+                    termToId.remove(x);
+                    termToId.put(y, id);
+                    return y;
+                }
+            }
+            return x;
+        });
     }
 
 //    /**

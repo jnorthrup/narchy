@@ -19,7 +19,7 @@ public final class InternedCompound extends ByteKey.ByteKeyExternal  {
     public final byte op;
     public final int dt;
 
-    public transient Term[] rawSubs;
+    public final transient Term[] rawSubs;
 
     private InternedCompound(DynBytes key, Op o, int dt, Term[] rawSubs) {
         super(key);

@@ -13,16 +13,20 @@ import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-/** tests specific to implication compounds TODO */
+/**
+ * tests specific to implication compounds TODO
+ */
 public class ImplTest {
     @Test
     public void testInvalidImpl1() {
         assertEq(Bool.False, "(--y =|> y)");
     }
+
     @Test
     public void testInvalidImpl2() {
         assertEq(Bool.False, "(--(x &| y) =|> y)");
     }
+
     @Test
     public void testInvalidImpl3() {
         assertEq(Bool.False, "(--(--x &| y) =|> y)");
@@ -33,12 +37,16 @@ public class ImplTest {
         assertEq("((x&|y)=|>z)", "((x &| y) =|> (y &| z))");
         assertEq("((x&|y)==>z)", "((x &| y) ==> (y &| z))");
     }
-    @Test void toomuchReduction() {
+
+    @Test
+    void toomuchReduction() {
         /** this took some thought but it really is consistent with the system */
         assertEq("((b &&+60000 c)=|>(#1 &&+60000 (b&|#1)))",
                 "((b &&+60000 c)=|>((#1 &&+60000 b)&&(c &&+60000 #1)))");
     }
-    @Test void conceptualizability() {
+
+    @Test
+    void conceptualizability() {
         assertEq("(( &&+- ,b,c,d) ==>+- b)", $$("((c &&+5 (b&|d)) ==>-10 b)").concept());
     }
 
@@ -163,8 +171,6 @@ public class ImplTest {
     }
 
 
-
-
     @Disabled
     @Test
     void testReducedAndInvalidImplications5() {
@@ -202,7 +208,8 @@ public class ImplTest {
         assertEq("((--,#1)==>x)", "(((--,#1)&&(--,#1))==>x)");
     }
 
-    @Test void testImplicit_DTERNAL_to_Parallel() {
+    @Test
+    void testImplicit_DTERNAL_to_Parallel() {
         assertEq("((x&&y)==>z)", "((x&&y)==>z)"); //unchanged
         assertEq("((x&&y) ==>+- z)", "((x&&y) ==>+- z)"); //unchanged
 
@@ -212,14 +219,30 @@ public class ImplTest {
     }
 
 
-    @Test void testElimination1() {
+    @Test
+    void testElimination1() {
         assertEq(
                 "(--,((left &&+60 left) ==>+5080 left))",
                 $$("((left &&+60 left) ==>-60 (left &&+5140 (--,left)))")
         );
     }
 
+    @Test void testFactoredElimination() {
+        //TODO
+        //test that the eternal component is not eliminated while its dependent temporal component remains
+        //may need Conj.distribute() method for exhaustive, unfactored comparison
+        //test that implication construction returns the same result whether conj-containing input is factored or not
 
+        assertEq("((c &&+1 d)&&x)","((x&|c) &&+1 (x&|d))"); //sanity pre-test
+        assertEquals($$("((c &&+1 d),x)").volume()+2,$$("((x&|c),(x&|d))").volume()); //factored form results in 2 volume savings
+
+        assertEq("(((a &&+1 b)&&x)==>((c &&+1 d)&&x))",
+                "((x&&(a &&+1 b)) ==> (x&&(c &&+1 d)))"); //same
+
+
+        assertEq("(((a &&+1 b)&&x)==>((c &&+1 d)&&x))",
+                "((x&&(a &&+1 b)) ==> ((x&|c) &&+1 (x&|d)))"); //same
+    }
 
 
 

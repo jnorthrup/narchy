@@ -22,6 +22,7 @@ package nars.term;
 
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.byt.util.IntCoding;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
@@ -544,9 +545,20 @@ public interface Compound extends Term, IPair, Subterms {
                             assert (!(factor instanceof Bool));
 
                             boolean b = seq.eventsWhile((when, what) -> {
-                                Term distributed = CONJ.the(when == ETERNAL ? DTERNAL : 0, what, factor);
-                                assert (!(distributed instanceof Bool));
-                                return each.accept(when, distributed);
+
+                                int w = when == ETERNAL ? DTERNAL : 0;
+                                if ((w == DTERNAL && !decomposeConjDTernal) || (w != DTERNAL && !decomposeConjParallel)) {
+                                    //combine the component with the eternal factor
+                                    Term distributed = CONJ.the(w, what, factor);
+                                    if (distributed instanceof Bool)
+                                        throw new WTF();
+//                                    assert (!(distributed instanceof Bool));
+                                    return each.accept(when, distributed);
+                                } else {
+                                    //provide the component and the eternal separately, at the appropriate time
+                                    return each.accept(when, what) && each.accept(when, factor);
+                                }
+
                             }, offset, decomposeConjParallel, decomposeConjDTernal, decomposeXternal, depth + 1);
 
                             return b;

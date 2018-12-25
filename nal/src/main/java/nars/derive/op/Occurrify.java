@@ -152,6 +152,7 @@ public class Occurrify extends TimeGraph {
 //        if (beliefOccurrence && d.taskPunc == GOAL && d.taskStart != ETERNAL && (d.beliefTerm.op().temporal || d.beliefTerm.op().statement))
 //            beliefOccurrence = false;
 
+
         clear();
 
         long taskStart = taskOccurrence ? d.taskStart : TIMELESS,
@@ -176,14 +177,25 @@ public class Occurrify extends TimeGraph {
             //                taskStart = d.time;
             //                taskEnd = taskStart + (beliefEnd - beliefStart);
             //            } else {
-            taskStart = beliefStart;
-            taskEnd = beliefEnd;
+            if (d.taskPunc==GOAL) {
+                long beliefRange = beliefEnd - beliefStart;
+//                taskStart = d.time - beliefRange/2;
+//                taskEnd = d.time + beliefRange/2;
+                taskStart = d.time;
+                taskEnd = taskStart + beliefRange;
+                //TODO apply appropriate projection evidence discount
+            } else {
+                taskStart = beliefStart;
+                taskEnd = beliefEnd;
+                //TODO apply appropriate projection evidence discount
+            }
             //            }
         } else if (beliefEte && taskOccurrence) {
             //            beliefStart = d.time;
             //            beliefEnd = beliefStart + (taskStart - taskEnd);
             beliefStart = taskStart;
             beliefEnd = taskEnd;
+            //TODO apply appropriate projection evidence discount
         }
 
         this.decomposeEvents = decomposeEvents;
