@@ -20,7 +20,7 @@
     //G, Y, task("!") |-        (--G ==> ?1), (Punctuation:Question)
 
     //result of achieving/non-achieving goal and current belief
-    G, B, task("!") |-        ((polarizeRandom(G) && B) ==> ?1), (Punctuation:Question, Time:Task)
+    G, B, task("!"), hasBelief() |-        ((polarizeRandom(G) && B) ==> ?1), (Punctuation:Question, Time:Task)
 
     //is what with goal
     //G, B, task("!") |-           (?1 && G), (Punctuation:Question)
@@ -28,10 +28,10 @@
     //G, B, task("!") |-         (?1 && --G), (Punctuation:Question)
 
     //should what with goal/non-goal
-      G, B, task("!"), neq(G,B), --is(B,"?") |-        (polarizeTask(G) && B), (Punctuation:Quest)
+      G, B, task("!"), neq(G,B), --is(B,"?"), hasBelief() |-        (polarizeTask(G) && B), (Punctuation:Quest)
 
     //bifurcate plan
-    G, B, task("@"), neq(G,B), --is(B,"?") |-        (polarizeRandom(G) && B), (Punctuation:Quest, Time:Task)
+    G, B, task("@"), neq(G,B), --is(B,"?"), hasBelief() |-        (polarizeRandom(G) && B), (Punctuation:Quest, Time:Task)
 
     //sequence possibility quest
     C, X, task("@"), eventOfPosOrNeg(C,X) |-  (conjWithoutPosOrNeg(C,X) && ?1), (Punctuation:Quest, Time:Task)

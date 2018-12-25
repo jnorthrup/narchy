@@ -138,8 +138,9 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      * returns snapshot of the belief state of the concepts
      */
     public Truth[] belief(long when, NAR n) {
-        Truth[] f = new Truth[sensors.size()];
-        for (int i = 0; i < sensors.size(); i++)
+        int s = sensors.size();
+        Truth[] f = new Truth[s];
+        for (int i = 0; i < s; i++)
             f[i] = n.beliefTruth(sensors.get(i), when);
         return f;
     }

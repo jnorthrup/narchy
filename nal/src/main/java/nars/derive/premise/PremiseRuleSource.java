@@ -278,6 +278,12 @@ public class PremiseRuleSource extends ProxyTerm {
                         negationApplied = true;
                     break;
                 }
+                case "isVar": {
+                    match(X, new TermMatch.Is(Op.Variable), !negated);
+                    if (negated)
+                        negationApplied = true;
+                    break;
+                }
 
                 case "isUnneg": {
                     match(X, new TermMatch.IsUnneg(Op.the($.unquote(Y))), !negated);
@@ -335,6 +341,9 @@ public class PremiseRuleSource extends ProxyTerm {
                     }
                     break;
 
+                case "hasBelief":
+                    pre.add(new DoublePremiseRequired(true,true,true));
+                    break;
 
                 default:
                     throw new RuntimeException("unhandled postcondition: " + pred + " in " + this);

@@ -466,6 +466,8 @@ public class Builtin {
            protected Term apply(Term conj, Term event) {
 
                //choose a likely unifiable candiate sub-event.  do not choose an equal match
+               if (conj.op()==NEG)
+                   conj = conj.unneg();
 
                if (event instanceof Variable )
                    return Null; //impossible

@@ -2067,6 +2067,39 @@ public class ConjTest {
                 $$("R"));
         assertEq("((--,L)&|R)", u);
     }
+    @Test void testDisjunctionParallelReduction() {
+        assertEq("((--,y)&&x)",
+                $$("(&&,(--,(y&&x)),x)")
+        );
+        assertEq("((--,y)&&x)", //<- maybe --y &| x
+                $$("(&&,(--,(y&|x)),x)")
+        );
+        assertEq("((--,y)&|x)",
+                $$("(&|,(--,(y&&x)),x)")
+        );
+        assertEq("((--,y)&|x)",
+                $$("(&|,(--,(y&|x)),x)")
+        );
+
+        assertEq("(&&,(--,y),x,z)",
+                $$("(&&,(--,(y&&x)),z,x)")
+        );
+
+        Term skdfjlsdfk = $$("(&|,(--,(y&|x)),z,x)");
+        assertEq("(&|,(--,y),x,z)",
+                skdfjlsdfk
+        );
+
+        assertEq("(&|,(--,curi(tetris)),(--,(height-->tetris)),(density-->tetris))",
+            $$("(&|,(--,((height-->tetris)&|(density-->tetris))),(--,curi(tetris)),(density-->tetris))")
+        );
+    }
+    @Test void testDisjunctionParallelReduction2() {
+
+        assertEq(False,
+            $$("( &|, (--, (g, (1, 1),(18, 0))),(--, ((--, (right--> g))&|(down--> g))),(--, (right--> g)),(down--> g))")
+        );
+    }
 
 //    @Test void testConjEternalConj2() {
 //        Term a = $$("(--,((--,((--,y)&|x))&&x))"); //<-- should not be constructed

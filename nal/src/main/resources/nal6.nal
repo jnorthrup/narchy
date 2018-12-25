@@ -66,18 +66,23 @@
 
 
 //        //TODO question variations
-        Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- unisubst(((&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction, Time:Immediate)
-         //Y, ((&&,X,A..+) ==> Z) |- unisubst(((&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
-        Y, ((&&,--X,A..+) ==> Z), neq(X,Y) |- unisubst(((&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN, Time:Immediate)
-         //Y, ((&&,--X,A..+) ==> Z) |- unisubst(((&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
-                Y, (--(&&,X,A..+) ==> Z), neq(X,Y) |- unisubst((--(&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction, Time:Immediate)
+        Y, (C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,Y),Y,strict), (Belief:Deduction, Time:Immediate)
+          //Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- unisubst(((&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction, Time:Immediate)
+           //Y, ((&&,X,A..+) ==> Z) |- unisubst(((&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
+        Y, (C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:DeductionN, Time:Immediate)
+          //Y, ((&&,--X,A..+) ==> Z), neq(X,Y) |- unisubst(((&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN, Time:Immediate)
+           //Y, ((&&,--X,A..+) ==> Z) |- unisubst(((&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
+                //Y, (--(&&,X,A..+) ==> Z), neq(X,Y) |- unisubst((--(&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction, Time:Immediate)
                  //Y, (--(&&,X,A..+) ==> Z) |- unisubst((--(&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
-                Y, (--(&&,--X,A..+) ==> Z), neq(X,Y) |- unisubst((--(&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN, Time:Immediate)
+                //Y, (--(&&,--X,A..+) ==> Z), neq(X,Y) |- unisubst((--(&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN, Time:Immediate)
                  //Y, (--(&&,--X,A..+) ==> Z) |- unisubst((--(&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
-        Y, (Z ==> (&&,X,A..+)), neq(X,Y),neq(Y,Z) |- unisubst((Z ==> (&&,X,A..+)), X,Y,strict), (Belief:Abduction, Time:Immediate)
-         //Y, (Z ==> (&&,X,A..+)) |- unisubst((Z ==> (&&,X,Y,A..+)), X,Y), (Belief:Abduction)
-        Y, (Z ==> (&&,--X,A..+)), neq(X,Y),neq(Y,Z) |- unisubst((Z ==> (&&,--X,A..+)), X,Y,strict), (Belief:AbductionN, Time:Immediate)
-         //Y, (Z ==> (&&,--X,A..+)) |- unisubst((Z ==> (&&,--X,--Y,A..+)), X,Y), (Belief:AbductionN)
+
+        Y, (Z ==> C), is(C,"&&") |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,Y),Y,strict), (Belief:Abduction, Time:Immediate)
+          //Y, (Z ==> (&&,X,A..+)), neq(X,Y),neq(Y,Z) |- unisubst((Z ==> (&&,X,A..+)), X,Y,strict), (Belief:Abduction, Time:Immediate)
+            //Y, (Z ==> (&&,X,A..+)) |- unisubst((Z ==> (&&,X,Y,A..+)), X,Y), (Belief:Abduction)
+        Y, (Z ==> C), is(C,"&&") |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:AbductionN, Time:Immediate)
+          //Y, (Z ==> (&&,--X,A..+)), neq(X,Y),neq(Y,Z) |- unisubst((Z ==> (&&,--X,A..+)), X,Y,strict), (Belief:AbductionN, Time:Immediate)
+            //Y, (Z ==> (&&,--X,A..+)) |- unisubst((Z ==> (&&,--X,--Y,A..+)), X,Y), (Belief:AbductionN)
 
 //    Y, (B ==> (&&,X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:Deduction, Time:Immediate)
 //    Y, (B ==> (&&,--X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:DeductionN, Time:Immediate)
@@ -386,29 +391,6 @@
 
 
 
-
-
-//Sub-event Unification (experimental) TODO this can be accelerated with special eventUnifies predicates
-//(&&,X,A..+), Y, neq(X,Y)   |- unisubst((&&,X,A..+),X,Y,strict), (Belief:Analogy,Goal:Analogy)
-//(&&,--X,A..+), Y, neq(X,Y) |- unisubst((&&,--X,A..+),X,Y,strict), (Belief:AnalogyPN,Goal:AnalogyPN)
-C, Y, is(C,"&&"), --is(Y,"?"), --is(Y,"#"), --is(Y,"$")  |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,strict), (Belief:Analogy,Goal:Analogy)
-C, Y, is(C,"&&"), --is(Y,"?"), --is(Y,"#"), --is(Y,"$")  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:AnalogyPN,Goal:AnalogyPN)
-
-//Anonymous Analogy (NAL5)
-    //originally this only unified depvar (dep var elimination)
-    (&&,X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
-      //accelerated version requiring no second-level unification and allows the general case unisubst to be 'strict'
-      //C, X, eventOf(C,X)    |- conjWithout(C,X), (Belief:AnonymousAnalogy)
-    (&&,--X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
-      //accelerated version requiring no second-level unification and allows the general case unisubst to be 'strict'
-      //C, X, eventOfNeg(C,X) |- conjWithout(C,--X), (Belief:AnonymousAnalogyPN)
-
-//    Y, (&&,X,A..+)                  |- unisubst((&&,  X,A..+),X,Y,"#",strict), (Belief:Deduction)
-//    Y, (&&,--X,A..+)                |- unisubst((&&,--X,A..+),X,Y,"#",strict), (Belief:DeductionN)
-//        Y, (&&,X,A..+), task("?")       |- unisubst((&&,  X,A..+),X,Y,"#",strict), (Punctuation:Question)
-//        Y, (&&,--X,A..+), task("?")     |- unisubst((&&,--X,A..+),X,Y,"#",strict), (Punctuation:Question)
-//        Y, (&&,X,A..+), task("@")       |- unisubst((&&,  X,A..+),X,Y,"#",strict), (Punctuation:Quest)
-//        Y, (&&,--X,A..+), task("@")     |- unisubst((&&,--X,A..+),X,Y,"#",strict), (Punctuation:Quest)
 
 
 

@@ -33,7 +33,6 @@ import java.util.function.IntPredicate;
 
 import static java.lang.System.arraycopy;
 import static nars.Op.*;
-import static nars.term.Terms.sorted;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -1141,12 +1140,12 @@ public class Conj extends ByteAnonMap {
                 if (change) {
                     //reconstitute the two terms, glue them together as a new super-disjunction to replace the existing (and interrupt adding the incoming)
 
-                    Term A = terms.conj(adt, sorted(aa)).neg();
-                    if (A == False || A == Null || aa.equals(bb))
+                    Term A = terms.conj(adt, aa.toArray(EmptyTermArray)).neg();
+                    if (A == False || A == Null || (adt==bdt && aa.equals(bb)))
                         return A;
 
-                    Term B = terms.conj(bdt, sorted(bb)).neg();
-                    if (B == True || B == False || B == Null || A.equals(B))
+                    Term B = terms.conj(bdt, bb.toArray(EmptyTermArray)).neg();
+                    if (B == False || B == Null || A.equals(B))
                         return B;
 
                     return terms.conj(eternal ? DTERNAL : 0, A, B);
@@ -1156,8 +1155,8 @@ public class Conj extends ByteAnonMap {
         } else {
             //TODO sequence conditions
             //throw new TODO(a + " vs " + b);
-            //return Null; //disallow for now. the complexity might be excessive
-            return null; //OK
+            return Null; //disallow for now. the complexity might be excessive
+            //return null; //OK
         }
     }
 
@@ -1211,7 +1210,7 @@ public class Conj extends ByteAnonMap {
 ////                    }
 //                }
 //            }
-            if (dtInner == 0 || dtInner == DTERNAL && conj.contains(incoming))
+            if ((dtInner == 0 || dtInner == DTERNAL) && conj.contains(incoming))
                 return True; //quick test for absorption
 
             boolean innerCommute = Tense.dtSpecial(dtInner);// && !conj.subterms().hasAny(Op.CONJ);

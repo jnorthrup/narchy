@@ -92,20 +92,20 @@
 
 
 //Anonymous Deduction and Abduction
-    (V ==> X), X, is(V,"#"), --is(X,"#")      |- X, (Belief:StructuralReduction)
-    (--V ==> X), X, is(V,"#"), --is(X,"#")    |- X, (Belief:StructuralReduction)
-    (X ==> V), X, is(V,"#"), --is(X,"#")      |- X,   (Belief:StructuralAbduction)
-    (--X ==> V), X, is(V,"#"), --is(X,"#")    |- --X, (Belief:StructuralAbduction)
+    (V ==> X), X, is(V,"#"), --isVar(X)      |- X, (Belief:StructuralReduction)
+    (--V ==> X), X, is(V,"#"), --isVar(X)    |- X, (Belief:StructuralReduction)
+    (X ==> V), X, is(V,"#"), --isVar(X)      |- X,   (Belief:StructuralAbduction)
+    (--X ==> V), X, is(V,"#"), --isVar(X)    |- --X, (Belief:StructuralAbduction)
 
 
 //// implication-based decomposition ////////////////////////////////////////////////////////////////////////////////////
 
-(A ==> C), B, is(C,"&&"), --is(B,"#")      |- unisubst((A ==> dropAnyEvent(C)), A, B), (Belief:StructuralReduction)
-(C ==> A), B, isUnneg(C,"&&"), --is(B,"#") |- unisubst((dropAnyEvent(C) ==> A), A, B), (Belief:StructuralReduction)
+(A ==> C), B, is(C,"&&"), --isVar(A), --isVar(B)      |- unisubst((A ==> dropAnyEvent(C)), A, B), (Belief:StructuralReduction)
+(C ==> A), B, isUnneg(C,"&&"), --isVar(A), --isVar(B) |- unisubst((dropAnyEvent(C) ==> A), A, B), (Belief:StructuralReduction)
   //not needed: (--C ==>A) since dropAnyEvent handles --C
 
-  (A ==> C), B, task("?"), is(C,"&&"), --is(B,"#")       |- unisubst((A ==> dropAnyEvent(C)), A, B), (Punctuation:Question)
-  (C ==> A), B, task("?"), isUnneg(C,"&&"), --is(B,"#")  |- unisubst((dropAnyEvent(C) ==> A), A, B), (Punctuation:Question)
+  (A ==> C), B, task("?"), is(C,"&&"), --isVar(A), --isVar(B)       |- unisubst((A ==> dropAnyEvent(C)), A, B), (Punctuation:Question)
+  (C ==> A), B, task("?"), isUnneg(C,"&&"), --isVar(A), --isVar(B)  |- unisubst((dropAnyEvent(C) ==> A), A, B), (Punctuation:Question)
 
 //    (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNP)
 //    (--S ==> M), (C ==> M), eventOfNeg(C,S) |- (conjWithout(C,--S) ==> M), (Belief:DecomposeNegativePositivePositive)
@@ -116,4 +116,25 @@
 //    (M ==> S), (M ==> C), eventOfNeg(C,S) |- --(M ==> conjWithout(C,--S)), (Belief:DecomposePositiveNegativeNegativeN)
 //        //(M ==> S), (M ==> (&&,(--,%S),A..+)) |- (M ==> (&&,A..+)), (Belief:DecomposePositiveNegativeNegativeN)
 //        //(M ==> S), (M ==> (||,S,A..+)) |- (M ==> (||,A..+)), (Belief:DecomposeNegativePositivePositive)
+
+
+
+C, Y, is(C,"&&"), neq(C,Y), --is(Y,"?"), --is(Y,"#"), --is(Y,"$")  |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,strict), (Belief:Analogy,Goal:Analogy)
+C, Y, is(C,"&&"), neq(C,Y), --is(Y,"?"), --is(Y,"#"), --is(Y,"$")  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:AnalogyPN,Goal:AnalogyPN)
+
+//Anonymous Analogy (NAL5)
+    //originally this only unified depvar (dep var elimination)
+    (&&,X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
+      //accelerated version requiring no second-level unification and allows the general case unisubst to be 'strict'
+      //C, X, eventOf(C,X)    |- conjWithout(C,X), (Belief:AnonymousAnalogy)
+    (&&,--X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
+      //accelerated version requiring no second-level unification and allows the general case unisubst to be 'strict'
+      //C, X, eventOfNeg(C,X) |- conjWithout(C,--X), (Belief:AnonymousAnalogyPN)
+
+//    Y, (&&,X,A..+)                  |- unisubst((&&,  X,A..+),X,Y,"#",strict), (Belief:Deduction)
+//    Y, (&&,--X,A..+)                |- unisubst((&&,--X,A..+),X,Y,"#",strict), (Belief:DeductionN)
+//        Y, (&&,X,A..+), task("?")       |- unisubst((&&,  X,A..+),X,Y,"#",strict), (Punctuation:Question)
+//        Y, (&&,--X,A..+), task("?")     |- unisubst((&&,--X,A..+),X,Y,"#",strict), (Punctuation:Question)
+//        Y, (&&,X,A..+), task("@")       |- unisubst((&&,  X,A..+),X,Y,"#",strict), (Punctuation:Quest)
+//        Y, (&&,--X,A..+), task("@")     |- unisubst((&&,--X,A..+),X,Y,"#",strict), (Punctuation:Quest)
 

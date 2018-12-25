@@ -1008,6 +1008,21 @@ public class NAL8Test extends NALTest {
                 .input("(--on({t002},#1) &&+0 at(SELF,#1))!")
                 .mustGoal(cycles, "at(SELF,{t003})", 1.0f, 0.81f, ETERNAL);
     }
+    @Test
+    void condition_belief_deduction_2_entire_variable() {
+        test
+                .input("x.")
+                .input("(#1 && g(#1)).")
+                .mustBelieve(cycles, "(x && g(x))", 1.0f, 0.81f, ETERNAL);
+    }
+
+//    @Test
+//    void condition_belief_deduction_temporal() {
+//        test
+//                .input("(x ==>+1 y)")
+//                .input("((x ==> y) && z).")
+//                .mustBelieve(cycles, "((x ==>+1 y) && z)", 1.0f, 0.81f, ETERNAL);
+//    }
 
     @Test
     void condition_goal_deduction_2_neg_conj() {
