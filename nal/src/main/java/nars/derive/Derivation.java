@@ -360,7 +360,7 @@ public class Derivation extends PreDerivation {
             throw new WTF(nextTaskTerm + " could not be anon, result: " + taskTerm);
 
         assert (beliefTerm != null) : (nextBeliefTerm + " could not be anonymized");
-        assert (!(beliefTerm instanceof Bool));
+        //assert (!(beliefTerm instanceof Bool));
         assert (beliefTerm.op() != NEG) : nextBelief + " , " + nextBeliefTerm + " -> " + beliefTerm + " is invalid NEG op";
 
     }

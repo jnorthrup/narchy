@@ -388,6 +388,12 @@
 
 
 
+//Sub-event Unification (experimental) TODO this can be accelerated with special eventUnifies predicates
+//(&&,X,A..+), Y, neq(X,Y)   |- unisubst((&&,X,A..+),X,Y,strict), (Belief:Analogy,Goal:Analogy)
+//(&&,--X,A..+), Y, neq(X,Y) |- unisubst((&&,--X,A..+),X,Y,strict), (Belief:AnalogyPN,Goal:AnalogyPN)
+C, Y, is(C,"&&"), --is(Y,"?"), --is(Y,"#"), --is(Y,"$")  |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,strict), (Belief:Analogy,Goal:Analogy)
+C, Y, is(C,"&&"), --is(Y,"?"), --is(Y,"#"), --is(Y,"$")  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:AnalogyPN,Goal:AnalogyPN)
+
 //Anonymous Analogy (NAL5)
     //originally this only unified depvar (dep var elimination)
     (&&,X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)

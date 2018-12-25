@@ -60,8 +60,9 @@ abstract public class AND<X> extends AbstractPred<X> {
         /*@Stable*/
         public final PREDICATE<X> a, b;
 
-        protected AND2(PREDICATE<X> a, PREDICATE<X> b) {
+        private AND2(PREDICATE<X> a, PREDICATE<X> b) {
             super(a, b);
+            assert(!(a instanceof AND) && !(b instanceof AND));
             this.a = a; this.b = b;
         }
 

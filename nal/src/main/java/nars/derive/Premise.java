@@ -5,11 +5,13 @@
 package nars.derive;
 
 import com.netflix.servo.monitor.Counter;
+import jcog.math.Longerval;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
+import nars.task.proxy.SpecialOccurrenceTask;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.time.Tense;
@@ -122,8 +124,33 @@ public class Premise implements Comparable<Premise> {
 
         Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept);
 
+
         if (!d.budget(task, belief))
             return false;
+
+        Task task = this.task;
+        if (belief!=null) {
+            boolean te = task.isEternal(), be = belief.isEternal();
+            if (te ^ be) {
+                long now = d.time;
+                if (te) {
+
+                    //proxy task to now
+                    long[] nowOrBelief =
+                            (task.isGoal() || task.isQuest()) ?
+                                new long[] { now, now + belief.range() - 1 } //immediate
+                            :
+                                Longerval.unionArray(belief.start(), belief.end(), now, now + belief.range() - 1);
+
+                    task = new SpecialOccurrenceTask(task, nowOrBelief);
+
+                } else {
+                    //proxy belief to now
+                    long[] nowOrTask = Longerval.unionArray(task.start(), task.end(), now, now + task.range() - 1);
+                    belief = new SpecialOccurrenceTask(belief, nowOrTask);
+                }
+            }
+        }
 
         d.reset(task, belief, belief != null ? belief.term() : beliefTerm.unneg());
 

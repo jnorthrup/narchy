@@ -364,6 +364,46 @@ public enum Terms {
             if (s[(i - 1)].compareTo(s[i]) >= 0)
                 return false;
         return true;
+    }
+
+    public static boolean possiblyUnifiable(Term x, Term y, boolean strict, int varExcluded) {
+
+        boolean xEqY = x.equals(y);
+        if (xEqY) {
+            return !strict;
+        }
+
+        Op xo = x.op(), yo = y.op();
+
+        if ((xo.bit & ~varExcluded) == 0)
+            return true; //unifies, allow
+
+        if ((yo.bit & ~varExcluded) == 0)
+            return true; //unifies, allow
+
+        if (xo != yo)
+            return false;
+
+//        x = Image.imageNormalize(x);
+//        y = Image.imageNormalize(y);
+
+        Subterms xx = x.subterms(), yy = y.subterms();
+        int xxs = xx.subs();
+        if (xxs != yy.subs())
+            return false;
+
+        if (!Subterms.possiblyUnifiable(xx, yy, varExcluded))
+            return false;
+
+        if (!xo.commutative) {
+            for (int i = 0; i < xxs; i++) {
+                Term x0 = xx.sub(i), y0 = yy.sub(i);
+                if (!possiblyUnifiable(x0, y0, false, varExcluded))
+                    return false;
+            }
+        }
+
+        return true;
     }}
 
 

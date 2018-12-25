@@ -192,10 +192,20 @@ public enum ConjCommutive {;
                     }
 
                 } else {
-                    for (int i = u.length-1; i >= 0; i--) {
-                        Term term = u[i];
-                        if (!c.add(sdt, term))
-                            break;
+                    switch (u.length) {
+                        case 0:
+                            return True;
+                        case 1:
+                            return u[0];
+                        case 2:
+                            return Conj.conjoin(u[0], u[1], dt == DTERNAL);
+                        default: {
+                            for (int i = u.length-1; i >= 0; i--) {
+                                Term term = u[i];
+                                if (!c.add(sdt, term))
+                                    break;
+                            }
+                        }
                     }
                 }
                 return c.term();

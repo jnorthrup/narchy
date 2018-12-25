@@ -149,54 +149,12 @@ public class Occurrify extends TimeGraph {
         if (d.concSingle)
             beliefOccurrence = false;
 
-//        if (beliefOccurrence && d.taskPunc == GOAL && d.taskStart != ETERNAL && (d.beliefTerm.op().temporal || d.beliefTerm.op().statement))
-//            beliefOccurrence = false;
-
-
         clear();
 
         long taskStart = taskOccurrence ? d.taskStart : TIMELESS,
              taskEnd = taskOccurrence ? d.taskEnd : TIMELESS,
              beliefStart = beliefOccurrence ? d.beliefStart : TIMELESS,
              beliefEnd = beliefOccurrence ? d.beliefEnd : TIMELESS;
-
-
-        boolean taskEte = taskStart == ETERNAL;
-        boolean beliefEte = beliefStart == ETERNAL;
-        //        if (taskEte && !beliefEte && beliefStart != TIMELESS) {
-        //            taskStart = beliefStart; //use belief time for eternal task
-        //            taskEnd = beliefEnd;
-        //        } else if (beliefEte && !taskEte && taskStart != TIMELESS) {
-        //            beliefStart = taskStart; //use task time for eternal belief
-        //            beliefEnd = taskEnd;
-        //        }
-        if (taskEte && beliefEte) {
-            //both eternal ok
-        } else if (taskEte && beliefOccurrence) {
-            //            if (d.taskPunc == BELIEF || d.taskPunc == GOAL) {
-            //                taskStart = d.time;
-            //                taskEnd = taskStart + (beliefEnd - beliefStart);
-            //            } else {
-            if (d.taskPunc==GOAL) {
-                long beliefRange = beliefEnd - beliefStart;
-//                taskStart = d.time - beliefRange/2;
-//                taskEnd = d.time + beliefRange/2;
-                taskStart = d.time;
-                taskEnd = taskStart + beliefRange;
-                //TODO apply appropriate projection evidence discount
-            } else {
-                taskStart = beliefStart;
-                taskEnd = beliefEnd;
-                //TODO apply appropriate projection evidence discount
-            }
-            //            }
-        } else if (beliefEte && taskOccurrence) {
-            //            beliefStart = d.time;
-            //            beliefEnd = beliefStart + (taskStart - taskEnd);
-            beliefStart = taskStart;
-            beliefEnd = taskEnd;
-            //TODO apply appropriate projection evidence discount
-        }
 
         this.decomposeEvents = decomposeEvents;
 

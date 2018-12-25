@@ -1,10 +1,8 @@
 package nars.derive.filter;
 
 import nars.$;
-import nars.Op;
 import nars.derive.premise.PreDerivation;
 import nars.derive.premise.PremiseRuleSource;
-import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Atomic;
@@ -58,48 +56,7 @@ public class UnifyPreFilter extends AbstractPred<PreDerivation> {
         if (y == null)
             return false; //ex: seeking a negation but wasnt negated
 
-        return possibleUnification( imageNormalize(x), imageNormalize(y), varBits, 0);
-    }
-
-    public boolean possibleUnification(Term x, Term y, int varExcluded, int level) {
-
-        boolean xEqY = x.equals(y);
-        if (xEqY) {
-            return level > 0 || !isStrict;
-        }
-
-        Op xo = x.op(), yo = y.op();
-
-        if ((xo.bit & ~varExcluded) == 0)
-            return true; //unifies, allow
-
-        if ((yo.bit & ~varExcluded) == 0)
-            return true; //unifies, allow
-
-        if (xo != yo)
-            return false;
-
-//        x = Image.imageNormalize(x);
-//        y = Image.imageNormalize(y);
-
-        Subterms xx = x.subterms(), yy = y.subterms();
-        int xxs = xx.subs();
-        if (xxs != yy.subs())
-            return false;
-
-        if (!Subterms.possiblyUnifiable(xx, yy, varExcluded))
-            return false;
-
-        if (!xo.commutative) {
-            int nextLevel = level + 1;
-            for (int i = 0; i < xxs; i++) {
-                Term x0 = xx.sub(i), y0 = yy.sub(i);
-                if (!possibleUnification(x0, y0, varExcluded, nextLevel))
-                    return false;
-            }
-        }
-
-        return true;
+        return Terms.possiblyUnifiable( imageNormalize(x), imageNormalize(y), isStrict, varBits);
     }
 
 

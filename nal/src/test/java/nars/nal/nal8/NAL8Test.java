@@ -993,4 +993,51 @@ public class NAL8Test extends NALTest {
             .input("(better ==>+1 better). |")
             .mustNotOutput(cycles, "good", GOAL, 0, 1, 0, 1, t->true);
     }
+
+
+
+
+    @Test
+    void condition_goal_deduction_2_ete_belief() {
+        conditionalGoalDeduction(true);
+    }
+    @Test
+    void condition_goal_deduction_2_neg_event() {
+        test
+                .input("--on({t002},{t003}).")
+                .input("(--on({t002},#1) &&+0 at(SELF,#1))!")
+                .mustGoal(cycles, "at(SELF,{t003})", 1.0f, 0.81f, ETERNAL);
+    }
+
+    @Test
+    void condition_goal_deduction_2_neg_conj() {
+        test
+                .input("on({t002},{t003}).")
+                .input("--(on({t002},#1) &&+0 at(SELF,#1))!")
+                .mustGoal(cycles, "(on({t002},{t003}) &&+0 at(SELF,{t003}))", 0.0f, 0.81f, ETERNAL);
+    }
+
+    @Test
+    void condition_goal_deduction_2_temporal_belief() {
+        conditionalGoalDeduction(false);
+    }
+
+    private void conditionalGoalDeduction(boolean eteBelief) {
+        test
+                .input("on({t002},{t003})." + (eteBelief ? "" :" |"))
+                .input("(on({t002},#1) &&+0 at(SELF,#1))!")
+                .mustGoal(cycles, "at(SELF,{t003})", 1.0f, 0.81f, eteBelief ? ETERNAL : 0);
+    }
+
+    @Test
+    void condition_goal_deductionWithVariableEliminationOpposite() {
+
+        test
+
+                .input("goto({t003}). |")
+                .input("(goto(#1) &&+5 at(SELF,#1))!")
+                .mustGoal(2 * cycles, "at(SELF,{t003})", 1.0f, 0.81f, (t) -> t >= 5)
+        ;
+    }
+
 }

@@ -2,14 +2,14 @@ package nars;
 
 import jcog.Texts;
 import jcog.User;
+import jcog.data.list.FasterList;
 import nars.op.*;
 import nars.op.data.flat;
 import nars.op.data.reflect;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
-import nars.term.Functor;
-import nars.term.Term;
 import nars.term.Variable;
+import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
@@ -35,6 +35,7 @@ import static nars.Op.*;
 import static nars.term.Functor.f0;
 import static nars.term.atom.Bool.Null;
 import static nars.term.atom.Bool.True;
+import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -460,6 +461,37 @@ public class Builtin {
         });
 
 
+       nar.on(new Functor.AbstractInlineFunctor2("chooseUnifiableSubEvent") {
+           @Override
+           protected Term apply(Term conj, Term event) {
+
+               //choose a likely unifiable candiate sub-event.  do not choose an equal match
+
+               if (event instanceof Variable )
+                   return Null; //impossible
+
+               boolean requireVars = !event.hasVars();
+               if (requireVars && !conj.hasVars())
+                   return Null;
+
+               if (event instanceof Compound && (conj.structure() & event.op().bit) == 0)
+                   return Null;
+
+               boolean econj = event.op()==CONJ;
+               int edt = event.dt();
+               FasterList<Term> candidates = new FasterList(0);
+               conj.eventsWhile((when,what)->{
+                   if ((!requireVars || what.hasVars())
+                           && Terms.possiblyUnifiable(event, what, true, Op.Variable)) {
+                       candidates.add(what);
+                   }
+                   return true;
+               }, 0, (!econj || edt!=DTERNAL), (!econj || edt!=0), true, 0);
+               if (candidates.isEmpty())
+                   return Null;
+               return candidates.get(nar.random());
+           }
+       });
 
         /** filters contradiction */
         nar.on(new Functor.AbstractInlineFunctor2("conjDropIfLatest") {

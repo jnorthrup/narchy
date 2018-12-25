@@ -109,18 +109,6 @@ class NAL8EternalMixTest extends NALTest {
         tester.mustBelieve(cycles, "at(SELF,x)", 1.0f, 0.81f, 5);
     }
 
-
-    @Test
-    void condition_goal_deductionWithVariableEliminationOpposite() {
-
-        test
-
-                .input("goto({t003}). :|:")
-                .input("(goto(#1) &&+5 at(SELF,#1))!")
-                .mustGoal(2 * cycles, "at(SELF,{t003})", 1.0f, 0.81f, (t) -> t >= 5)
-        ;
-    }
-
     @Test
     void goal_deduction_impl() {
 
@@ -280,16 +268,6 @@ class NAL8EternalMixTest extends NALTest {
                         t -> t == 0);
     }
 
-    @Test
-    void condition_goal_deduction_2() {
-
-        test
-                .input("on({t002},{t003}). :|:")
-                .input("(on({t002},#1) &&+0 at(SELF,#1))!")
-                .mustGoal(cycles, "at(SELF,{t003})", 1.0f, 0.81f, 0);
-
-
-    }
 
     @Test
     void condition_belief_deduction_2() {
