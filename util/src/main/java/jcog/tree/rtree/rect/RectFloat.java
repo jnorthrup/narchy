@@ -320,4 +320,8 @@ public class RectFloat implements HyperRegion<Float2D>, Comparable<RectFloat> {
         float ww = this.w, hh = this.h;
         return XYWH( x + cx * ww, y + cy * hh, ww * pctX, hh * pctY);
     }
+
+    public v2 midPoint(RectFloat o) {
+        return new v2((cx()+o.cx())/2 , (cy()+o.cy())/2);
+    }
 }

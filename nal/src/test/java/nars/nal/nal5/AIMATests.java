@@ -48,12 +48,12 @@ class AIMATests {
         final NAR n = NARS.tmp(6);
         n.random().setSeed(1);
 
-        n.freqResolution.set(0.1f);
+        n.freqResolution.set(0.05f);
 //        n.confResolution.set(0.05f);
-        n.confMin.set(0.1f);
+        n.confMin.set(0.05f);
 
         n.beliefPriDefault.set(0.25f);
-        n.questionPriDefault.set(0.75f);
+        n.questionPriDefault.set(0.5f);
 
         assertEquals(20, $$("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").volume());
 
@@ -74,8 +74,8 @@ class AIMATests {
 
 
         @Nullable Task Q = n.question($.$(
-                //"Criminal:?x"
-                "Criminal(?x)"
+                "Criminal:?x"
+                //"Criminal(?x)"
 
         ), ETERNAL, (q, a) -> {
             System.out.println(a);

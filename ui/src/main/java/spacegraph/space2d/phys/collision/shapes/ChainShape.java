@@ -107,10 +107,10 @@ public class ChainShape extends Shape {
     }
 
     @Override
-    public float computeDistanceToOut(Transform xf, v2 p, int childIndex, v2 normalOut) {
+    public float distance(Transform xf, v2 p, int childIndex, v2 normalOut) {
         final EdgeShape edge = pool0;
         getChildEdge(edge, childIndex);
-        return edge.computeDistanceToOut(xf, p, 0, normalOut);
+        return edge.distance(xf, p, 0, normalOut);
     }
 
     @Override

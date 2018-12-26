@@ -127,7 +127,7 @@ public abstract class Shape {
      * @param normalOut returns the direction in which the distance increases.
      * @return distance returns the distance from the current shape.
      */
-    public abstract float computeDistanceToOut(Transform xf, v2 p, int childIndex, v2 normalOut);
+    public abstract float distance(Transform xf, v2 p, int childIndex, v2 normalOut);
 
     public abstract Shape clone();
 }

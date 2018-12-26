@@ -118,7 +118,7 @@ public class CircleShape extends Shape {
     }
 
     @Override
-    public float computeDistanceToOut(Transform xf, v2 p, int childIndex, v2 normalOut) {
+    public float distance(Transform xf, v2 p, int childIndex, v2 normalOut) {
         final Rot xfq = xf;
         float centerx = xfq.c * center.x - xfq.s * center.y + xf.pos.x;
         float centery = xfq.s * center.x + xfq.c * center.y + xf.pos.y;

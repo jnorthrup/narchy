@@ -26,7 +26,7 @@ public class Gridding extends MutableListContainer {
     public static final float VERTICAL = Float.POSITIVE_INFINITY;
 
     /** https://en.wikipedia.org/wiki/Golden_ratio */
-    private static final float PHI = 0.618f;
+    public static final float PHI = 0.618f;
 
     protected float margin = 0.04f;
 

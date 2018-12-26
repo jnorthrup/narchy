@@ -51,6 +51,10 @@ abstract public class Container extends Surface {
         });
     }
 
+    public final <S extends Surface> S pos(v2 p) {
+        pos(p.x, p.y);
+        return (S) this;
+    }
 
     @Override
     public final <S extends Surface> S pos(RectFloat r) {

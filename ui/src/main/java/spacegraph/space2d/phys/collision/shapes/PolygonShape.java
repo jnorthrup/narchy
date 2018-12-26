@@ -382,7 +382,7 @@ public class PolygonShape extends Shape {
     }
 
     @Override
-    public float computeDistanceToOut(Transform xf, v2 p, int childIndex, v2 normalOut) {
+    public float distance(Transform xf, v2 p, int childIndex, v2 normalOut) {
         float xfqc = xf.c;
         float xfqs = xf.s;
         float tx = p.x - xf.pos.x;

@@ -302,7 +302,7 @@ public class GraphEditTest {
             ).posRel(0.5f, 0.5f, 0.25f, 0.25f);
 
             for (int i = 0; i < 10; i++) {
-                Windo y = w.addWeak(new TogglePort()).posRel(x, -0.5f, 0.5f, 0.05f, 0.05f);
+                Windo y = w.addWeak(new TogglePort()).posRel(x, -0.5f, 0.5f, 0.08f, 0.08f);
 
                 w.addWire(new Wire(x.the(), y.the()));
             }

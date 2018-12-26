@@ -311,8 +311,8 @@ public class Fixture {
      * @param p a point in world coordinates.
      * @return distance
      */
-    public float computeDistance(v2 p, int childIndex, v2 normalOut) {
-        return shape.computeDistanceToOut(body, p, childIndex, normalOut);
+    public float distance(v2 p, int childIndex, v2 normalOut) {
+        return shape.distance(body, p, childIndex, normalOut);
     }
 
     

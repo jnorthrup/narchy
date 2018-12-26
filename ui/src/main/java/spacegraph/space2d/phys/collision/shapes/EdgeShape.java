@@ -84,7 +84,7 @@ public class EdgeShape extends Shape {
     private final v2 normal = new v2();
 
     @Override
-    public float computeDistanceToOut(Transform xf, v2 p, int childIndex, v2 normalOut) {
+    public float distance(Transform xf, v2 p, int childIndex, v2 normalOut) {
         float xfqc = xf.c;
         float xfqs = xf.s;
         float xfpx = xf.pos.x;
