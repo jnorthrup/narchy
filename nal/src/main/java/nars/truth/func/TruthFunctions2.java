@@ -179,8 +179,8 @@ public enum TruthFunctions2 {
 //        return cc >= minConf ? $.t(sim, cc) : null;
 //    }
     public static float weak(float c) {
-        //return w2cSafe(c);
-        return c * w2cSafe(1.0f);
+        return w2cSafe(c);
+        //return c * w2cSafe(1.0f);
     }
 
     @Deprecated public static Truth weak(Truth t) {
@@ -216,9 +216,11 @@ public enum TruthFunctions2 {
     public static Truth pre(Truth X, Truth XimplY, boolean weak, float minConf) {
         float c = confCompose(X, XimplY);
         if(c < minConf) return null;
-        float cc = c * X.freq(); //match amplitude
+        float cc = c *
+                X.freq(); //soft polarity match (inverse bleed through)
+                //Math.max(0, 2 * (X.freq()-0.5f)); //hard polarity match
         if (weak)
-            cc = w2cSafe(cc);
+            cc = weak(cc);
         if(cc < minConf) return null;
         return $.t(XimplY.freq(), cc);
     }
@@ -243,47 +245,46 @@ public enum TruthFunctions2 {
         c *= alignment;
         f = alignment;
 
-        float cc = strong ? c : w2cSafe(c );
-        if (cc < minConf) return null;
-        return $.t(f, cc);
+        float cc = strong ? c : weak(c);
+        return cc < minConf ? null : $.t(f, cc);
     }
 
-    @Nullable public static Truth intersectionSym(Truth t, Truth b, float minConf) {
-        float c = confCompose(t, b);
-        if (c < minConf) return null;
-
-        float f;
-        if (t.isPositive()!=b.isPositive()) {
-            //f = 0.5f;
-            return null;
-        } else {
-            f = intersectionSym(t.freq(), b.freq());
-        }
-        return $.t(f, c);
-
-//        if (T.isPositive() && B.isPositive()) {
-//            return Intersection.apply(T, B, m, minConf);
-//        } else if (T.isNegative() && B.isNegative()) {
-//            Truth C = Intersection.apply(T.neg(), B.neg(), m, minConf);
-//            return C != null ? C.neg() : null;
-//        } else {
+//    @Nullable public static Truth intersectionSym(Truth t, Truth b, float minConf) {
+//        float c = confCompose(t, b);
+//        if (c < minConf) return null;
+//
+//        float f;
+//        if (t.isPositive()!=b.isPositive()) {
+//            //f = 0.5f;
 //            return null;
+//        } else {
+//            f = intersectionSym(t.freq(), b.freq());
 //        }
-    }
-    public static Truth unionSym(Truth t, Truth b, float minConf) {
-        float c = confCompose(t, b);
-        if (c < minConf) return null;
-
-        float f;
-        boolean pos = t.isPositive();
-        if (pos !=b.isPositive()) {
-            //f = 0.5f;
-            return null;
-        } else {
-            f = unionSym(t.freq(), b.freq());
-        }
-        return $.t(f, c);
-    }
+//        return $.t(f, c);
+//
+////        if (T.isPositive() && B.isPositive()) {
+////            return Intersection.apply(T, B, m, minConf);
+////        } else if (T.isNegative() && B.isNegative()) {
+////            Truth C = Intersection.apply(T.neg(), B.neg(), m, minConf);
+////            return C != null ? C.neg() : null;
+////        } else {
+////            return null;
+////        }
+//    }
+//    public static Truth unionSym(Truth t, Truth b, float minConf) {
+//        float c = confCompose(t, b);
+//        if (c < minConf) return null;
+//
+//        float f;
+//        boolean pos = t.isPositive();
+//        if (pos !=b.isPositive()) {
+//            //f = 0.5f;
+//            return null;
+//        } else {
+//            f = unionSym(t.freq(), b.freq());
+//        }
+//        return $.t(f, c);
+//    }
     /** freq: a,b; assumes they are of the same polarity */
     static float intersectionSym(float a, float b) {
         if (a >= 0.5f) {

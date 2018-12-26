@@ -94,7 +94,7 @@ public class PrologCoreTest {
         n.input("(&&,a,b,c).");
         n.run(1);
 
-        //assertTrue(p.isTrue("','('_a','_b','_c')."));
+        assertTrue(p.isTrue("','('_a','_b','_c')."));
         assertTrue(p.isTrue("'_a','_b','_c'."));
         
     }

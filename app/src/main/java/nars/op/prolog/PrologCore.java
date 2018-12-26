@@ -8,6 +8,7 @@ import jcog.math.Range;
 import nars.*;
 import nars.control.channel.CauseChannel;
 import nars.index.concept.ConceptIndex;
+import nars.subterm.Subterms;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Compound;
@@ -38,23 +39,23 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
     final static Logger logger = LoggerFactory.getLogger(PrologCore.class);
 
-    public static final String AxiomTheory;
+    //    public static final String AxiomTheory;
     public static final alice.tuprolog.Term ONE = new NumberTerm.Int(1);
     public static final alice.tuprolog.Term ZERO = new NumberTerm.Int(0);
-
-    static {
-        String a;
-        try {
-            a = Util.inputToString(
-                    PrologCore.class.getClassLoader()
-                            .getResourceAsStream("nars/prolog/default.prolog")
-            );
-        } catch (Throwable e) {
-            logger.error("default.prolog {}", e.getMessage());
-            a = "";
-        }
-        AxiomTheory = a;
-    }
+//
+//    static {
+//        String a;
+//        try {
+//            a = Util.inputToString(
+//                    PrologCore.class.getClassLoader()
+//                            .getResourceAsStream("nars/prolog/default.prolog")
+//            );
+//        } catch (Throwable e) {
+//            logger.error("default.prolog {}", e.getMessage());
+//            a = "";
+//        }
+//        AxiomTheory = a;
+//    }
 
     private final NAR nar;
 
@@ -83,7 +84,6 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
     public final Number answerConf = new AtomicFloat(confThreshold.floatValue() * 0.9f);
 
 
-
     private final long timeoutMS = 50;
     private final CauseChannel<ITask> in;
 
@@ -94,7 +94,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
     };*/
 
     public PrologCore(NAR n) {
-        this(n, AxiomTheory);
+        this(n, "");
     }
 
     public static class MyClauseIndex extends MutableClauseIndex {
@@ -105,14 +105,10 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
         }
 
 
-
-
-
-
     }
 
     public PrologCore(NAR n, String theory) {
-        super(theory, new MyClauseIndex(n.concepts)); 
+        super(theory, new MyClauseIndex(n.concepts));
 
         if (Param.DEBUG)
             setSpy(true);
@@ -128,10 +124,10 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
     public void accept(Task task) {
 
         if (task.isBelief()) {
-            
-            if (task.isEternal()) { 
+
+            if (task.isEternal()) {
                 int dt = task.term().dt();
-                if (dt == 0 || dt == DTERNAL) { 
+                if (dt == 0 || dt == DTERNAL) {
                     float c = task.conf();
                     if (c >= confThreshold.floatValue()) {
                         float f = task.freq();
@@ -151,7 +147,6 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
         }
 
 
-        
     }
 
     protected void believe(Task t, boolean truth) {
@@ -161,21 +156,9 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
         Term ct = t.term();
 
         if (!ct.hasAny(Op.AtomicConstant))
-            return; 
+            return;
 
         beliefs.computeIfAbsent(ct, (pp) -> {
-
-
-
-
-
-
-
-
-
-
-
-
 
             Struct next = (Struct) pterm(t.term());
 
@@ -199,7 +182,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
     }
 
-    
+
     protected void question(Task question) {
         Term tt = question.term();
         /*if (t.op() == Op.NEGATE) {
@@ -208,17 +191,13 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
             truth = !truth;
         }*/
 
-        alice.tuprolog.Term questionTerm =
-                
-                pterm(tt);
-        
+        alice.tuprolog.Term questionTerm = pterm(tt);
 
-        
+
         logger.info("solve {}", questionTerm);
 
         solve(questionTerm, (answer) -> {
 
-            
 
             switch (answer.result()) {
                 case EngineRunner.TRUE:
@@ -229,14 +208,11 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
                     break;
                 case EngineRunner.FALSE:
-                    
-                    
-                    
 
-                    
+
                     break;
                 default:
-                    
+
                     break;
             }
         }, timeoutMS);
@@ -247,17 +223,16 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
         try {
             Term yt = nterm(answer.goal);
 
-            Task y = Task.tryTask(yt, BELIEF, $.t(1f, answerConf.floatValue()), (term, truth)->{
+            Task y = Task.tryTask(yt, BELIEF, $.t(1f, answerConf.floatValue()), (term, truth) -> {
                 Task t = new NALTask(term, BELIEF, truth,
                         nar.time(), ETERNAL, ETERNAL, nar.evidence())
-                            .pri(nar);
+                        .pri(nar);
                 t.log("Prolog Answer");
                 return t;
             });
 
 
-
-            if (y!=null) {
+            if (y != null) {
                 logger.info("answer {}\t{}", question, y);
                 in.input(y);
             }
@@ -280,12 +255,12 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
         Term[] n = new Term[len];
         for (int ni = 0; ni < len; ni++) {
             if ((n[ni] = nterm(s.subResolve(ni))) == null)
-                return null; 
+                return null;
         }
         return n;
     }
 
-    
+
     private static Term nterm(alice.tuprolog.Term t) {
         if (t instanceof alice.tuprolog.Term) {
             Struct s = (Struct) t;
@@ -300,8 +275,6 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
                     case "==>":
                         return theTwoArity(Op.IMPL, s);
-
-
 
 
                     case "[":
@@ -330,15 +303,15 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
             } else {
                 String n = s.name();
                 if (n.startsWith("'#")) {
-                    
+
                     return $.varDep(n.substring(2, n.length() - 1));
                 }
-                
+
                 return $.the(unwrapAtom(n));
             }
         } else if (t instanceof Var) {
             return $.varDep(((Var) t).name());
-            
+
         } else {
 
             throw new RuntimeException(t + " untranslated");
@@ -347,10 +320,11 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
 
     private static String unwrapAtom(String n) {
-        if (n.charAt(0)=='_')
+        if (n.charAt(0) == '_')
             n = n.substring(1);
         return n;
     }
+
     private static String wrapAtom(String n) {
         return "_" + n;
     }
@@ -369,37 +343,38 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
     }
 
     public static Struct negate(alice.tuprolog.Term p) {
-        return new Struct("--", p); 
+        return new Struct("--", p);
     }
 
-    public static alice.tuprolog.Term[] psubterms(final Compound subtermed) {
-        int l = subtermed.subs();
-        alice.tuprolog.Term[] p = new alice.tuprolog.Term[l];
-        for (int i = 0; i < l; i++) {
-            p[i] = pterm(subtermed.sub(i));
-        }
-        return p;
+    public static alice.tuprolog.Term[] psubterms(final Subterms s) {
+        return s.array(PrologCore::pterm, alice.tuprolog.Term[]::new);
     }
 
     public static alice.tuprolog.Term tterm(String punc, final alice.tuprolog.Term nalTerm, boolean isTrue) {
         return new Struct(punc, nalTerm, isTrue ? ONE : ZERO);
     }
 
-    
+
     public static alice.tuprolog.Term pterm(final Term term) {
         if (term instanceof Compound) {
             Op op = term.op();
-            alice.tuprolog.Term[] st = psubterms(((Compound) term));
+            alice.tuprolog.Term[] st = psubterms(term.subterms());
             switch (op) {
                 case IMPL:
                     return new Struct(":-", st[1], st[0] /* reversed */);
-                case CONJ:
-                    return new Struct(",", st);
-                case NEG:
+                case CONJ: {
+                    return new Struct(",", st); //TODO may need special depvar handling
+//                    int s = term.subs();
+//                    alice.tuprolog.Term t = pterm(term.sub(s - 1));
+//                    for (int i = s-2; i >= 0; i--) {
+//                        t = new Struct(",", t, pterm(term.sub(i)));
+//                    }
+//                    return t;
+                } case NEG:
                     //TODO detect disj
                     return new Struct(/*"\\="*/"not", st);
                 case PROD:
-                    return new Struct(st); 
+                    return new Struct(st);
                 case INH:
                     Term pred = term.sub(1);
                     if (pred.op() == ATOM) {
@@ -421,11 +396,11 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
             switch (term.op()) {
                 case VAR_QUERY:
                 case VAR_PATTERN:
-                case VAR_DEP: 
+                case VAR_DEP:
                 case VAR_INDEP:
                     return new Var("_" + (((NormalizedVariable) term).id));
 
-                
+
             }
         } else if (term instanceof Atomic) {
             return new Struct(wrapAtom(term.toString()));
@@ -434,765 +409,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
         throw new UnsupportedOperationException();
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
 
 }

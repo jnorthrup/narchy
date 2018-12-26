@@ -125,9 +125,9 @@ public class FZero extends NAgentX {
 
         ActionConcept F = initUnipolarLinear(5f);
 
-        initPushButtonTank();
+        //initPushButtonTank();
 
-        //initLeftRightPushButtonMutex();
+        initLeftRightPushButtonMutex();
         //initToggleLeftRight();
 
 
@@ -160,7 +160,7 @@ public class FZero extends NAgentX {
                 new FloatAveraged(0.5f, true));
         senseNumberDifferenceBi($.inh($.the("delta"), $.the("ang")), playerAngle).resolution(r);
 
-        int angles = 16;
+        int angles = 8;
         DigitizedScalar ang = senseAngle(()->(float)fz.playerAngle, angles, Atomic.the("ang"));
         ang.resolution(r);
         window(
@@ -214,16 +214,18 @@ public class FZero extends NAgentX {
 
 //        float r = (deltaDistance > 0) ? (float) (deltaDistance / (fps * 0.2)) : -1f;
 
-
-        });
-
-
-        rewardNormalized("safety", 0, 1, ()->{
             float damage = (float) (FZeroGame.FULL_POWER - fz.power) / FZeroGame.FULL_POWER;
             fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
-            //return Util.equals(damage, 0, 0.01f) ? Float.NaN : 0; //Math.max(0, 1 - damage);
-            return Util.equals(damage, 0, 0.01f) ? 1 : 0;
+
         });
+
+
+//        rewardNormalized("safety", 0, 1, ()->{
+//            float damage = (float) (FZeroGame.FULL_POWER - fz.power) / FZeroGame.FULL_POWER;
+//            fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
+//            //return Util.equals(damage, 0, 0.01f) ? Float.NaN : 0; //Math.max(0, 1 - damage);
+//            return Util.equals(damage, 0, 0.01f) ? 1 : 0;
+//        });
         rewardNormalized("race", 0, +1, (() -> {
 
 //            float bias =
@@ -232,7 +234,7 @@ public class FZero extends NAgentX {
 //                    0f;
 //            float R = progress - bias;
 
-            return Math.max(0, progress);
+            return Util.unitize(progress);
         }));
 //        rewardNormalized("efficient", 0, +1, (() -> {
 //

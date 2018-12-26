@@ -68,6 +68,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        }
     }
 
+    default <X> X[] array(Function<Term,X> map, IntFunction<X[]> arrayizer) {
+        int s = subs();
+        X[] xx = arrayizer.apply(s);
+        for (int i = 0; i < s; i++) {
+            xx[i] = map.apply(sub(i));
+        }
+        return xx;
+    }
 
     /** allows a Subterms implementation to accept the byte[] key that was used in constructing it,
      *  allowing it to cache it for fast serialization.  typically it will want to keep:

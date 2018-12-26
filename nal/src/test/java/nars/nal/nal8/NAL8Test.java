@@ -121,13 +121,49 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
+    void eternal_deduction_1_pos_belief_pos_conc() {
+        test.input("pick:t2.");
+        test.input("(pick:t2 ==> hold:t2).");
+        test.mustBelieve(cycles, "hold:t2", 1.0f, 0.81f, ETERNAL);
+    }
+    @Test
+    void eternal_deduction_1_pos_belief_neg_conc() {
+        test.input("pick:t2.");
+        test.input("--(pick:t2 ==> hold:t2).");
+        test.mustBelieve(cycles, "hold:t2", 0.0f, 0.81f, ETERNAL);
+    }
+    @Test
+    void eternal_deduction_1_pos_belief_maybe_conc() {
+        test.input("pick:t2.");
+        test.input("(pick:t2 ==> hold:t2). %0.50%");
+        test.mustBelieve(cycles, "hold:t2", 0.5f, 0.81f, ETERNAL);
+    }
+    @Test
+    void eternal_deduction_1_maybe_belief_maybe_conc() {
+        test.logDebug();
+        test.input("pick:t2. %0.50%");
+        test.input("(pick:t2 ==> hold:t2). %0.50%");
+        test.mustBelieve(cycles, "hold:t2", 0.5f, 0.4f, ETERNAL);
+    }
+    @Test
+    void eternal_deduction_1_neg_belief_pos_conc() {
+        test.input("--pick:t2.");
+        test.input("(--pick:t2 ==> hold:t2).");
+        test.mustBelieve(cycles, "hold:t2", 1.0f, 0.81f, ETERNAL);
+    }
+    @Test
+    void eternal_deduction_1_neg_belief_neg_conc() {
+        test.input("--pick:t2.");
+        test.input("--(--pick:t2 ==> hold:t2).");
+        test.mustBelieve(cycles, "hold:t2", 0.0f, 0.81f, ETERNAL);
+    }
+
+    @Test
     void temporal_deduction_1() {
 
-        TestNAR tester = test;
-
-        tester.input("pick:t2. |");
-        tester.inputAt(2, "(pick:t2 ==>+5 hold:t2).");
-        tester.mustBelieve(cycles, "hold:t2", 1.0f, 0.81f, 5);
+        test.input("pick:t2. |");
+        test.inputAt(2, "(pick:t2 ==>+5 hold:t2).");
+        test.mustBelieve(cycles, "hold:t2", 1.0f, 0.81f, 5);
 
     }
 

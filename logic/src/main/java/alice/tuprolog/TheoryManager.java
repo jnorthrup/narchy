@@ -100,7 +100,8 @@ public class TheoryManager {
             }
         } else
             staticDBase.add(key, d, false);
-        if (engine.isSpy()) engine.spy("INSERTZ: " + d.clause + '\n');
+        if (engine.isSpy())
+            engine.spy("INSERTZ: " + d.clause + '\n');
     }
 
     /**

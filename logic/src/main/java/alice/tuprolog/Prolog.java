@@ -48,8 +48,6 @@ public class Prolog {
     private boolean spy;
 
 
-
-
     /* listeners registrated for virtual machine output events */
     /*Castagna 06/2011*/
     /* exception activated ? */
@@ -60,7 +58,7 @@ public class Prolog {
     private final CopyOnWriteArrayList<SpyListener> spyListeners;
 
     /* listeners registrated for virtual machine state change events */
-    
+
     public final static Logger logger = LoggerFactory.getLogger(Prolog.class);
 
     /*Castagna 06/2011*/
@@ -165,13 +163,12 @@ public class Prolog {
         ops = new OperatorManager();
         prims = new PrimitiveManager();
         engine = new EngineManager(this);
-        
+
         theories = new TheoryManager(this, dynamics);
         libs.start(this);
         prims.start(this);
         engine.initialize();
     }
-
 
 
     /**
@@ -189,15 +186,6 @@ public class Prolog {
     }
 
 
-
-
-
-
-
-
-
-    
-
     /**
      * Sets a new theory
      *
@@ -205,7 +193,7 @@ public class Prolog {
      * @throws InvalidTheoryException if the new theory is not valid
      * @see Theory
      */
-    public Prolog setTheory(Theory th) throws InvalidTheoryException {    
+    public Prolog setTheory(Theory th) throws InvalidTheoryException {
         theories.clear();
         input(th);
         return this;
@@ -219,7 +207,7 @@ public class Prolog {
      * @throws InvalidTheoryException if the new theory is not valid
      * @see Theory
      */
-    public Prolog input(Theory th) throws InvalidTheoryException {    
+    public Prolog input(Theory th) throws InvalidTheoryException {
 
         Consumer<Theory> ifSuccessful;
         if (!theoryListeners.isEmpty()) {
@@ -248,7 +236,7 @@ public class Prolog {
      *
      * @return current(dynamic) theory
      */
-    public Theory getTheory() {    
+    public Theory getTheory() {
         try {
             return new Theory(theories.getTheory(true));
         } catch (Exception ex) {
@@ -257,22 +245,17 @@ public class Prolog {
     }
 
 
-
-
-
     /**
      * Clears current theory
      */
-    public void clearTheory() {    
+    public void clearTheory() {
         try {
             setTheory(Theory.Null);
         } catch (InvalidTheoryException e) {
-            
+
         }
     }
 
-
-    
 
     /**
      * Loads a library.
@@ -284,7 +267,7 @@ public class Prolog {
      * @return the reference to the Library just loaded
      * @throws InvalidLibraryException if name is not a valid library
      */
-    public Library addLibrary(String className) throws InvalidLibraryException {    
+    public Library addLibrary(String className) throws InvalidLibraryException {
         return libs.loadClass(className);
     }
 
@@ -299,7 +282,7 @@ public class Prolog {
      * @return the reference to the Library just loaded
      * @throws InvalidLibraryException if name is not a valid library
      */
-    public Library addLibrary(String className, String... paths) throws InvalidLibraryException {    
+    public Library addLibrary(String className, String... paths) throws InvalidLibraryException {
         return libs.loadClass(className, paths);
     }
 
@@ -313,7 +296,7 @@ public class Prolog {
      * @param lib the (Java class) name of the library to be loaded
      * @throws InvalidLibraryException if name is not a valid library
      */
-    public void addLibrary(Library lib) throws InvalidLibraryException {    
+    public void addLibrary(Library lib) throws InvalidLibraryException {
         libs.load(lib);
     }
 
@@ -324,7 +307,7 @@ public class Prolog {
      * @param name of the library to be unloaded
      * @throws InvalidLibraryException if name is not a valid loaded library
      */
-    public void removeLibrary(String name) throws InvalidLibraryException {        
+    public void removeLibrary(String name) throws InvalidLibraryException {
         libs.unload(name);
     }
 
@@ -336,34 +319,20 @@ public class Prolog {
      * @return the reference to the library loaded, null if the library is
      * not found
      */
-    public Library library(String name) {    
+    public Library library(String name) {
         return libs.getLibrary(name);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-    
 
     /**
      * Gets the list of the operators currently defined
      *
      * @return the list of the operators
      */
-    public Iterable<Operator> operators() {    
+    public Iterable<Operator> operators() {
         return ops.operators();
     }
 
-
-    
 
     /**
      * Solves a query
@@ -390,13 +359,13 @@ public class Prolog {
     }
 
     public Prolog solve(Term g, Consumer<Solution> eachSolution, long timeoutMS) {
-        
+
         Solution next = null;
         do {
             if (next == null) {
                 next = engine.solve(g);
                 if (next == null)
-                    break; 
+                    break;
             } else {
                 try {
                     next = engine.solveNext( /* TODO subdivide input time */);
@@ -458,7 +427,7 @@ public class Prolog {
     /**
      * Accepts current solution
      */
-    public void solveEnd() {    
+    public void solveEnd() {
         engine.solveEnd();
     }
 
@@ -469,7 +438,7 @@ public class Prolog {
      *
      * @return true if open alternatives are present
      */
-    public boolean hasOpenAlternatives() {        
+    public boolean hasOpenAlternatives() {
         return engine.hasOpenAlternatives();
     }
 
@@ -478,7 +447,7 @@ public class Prolog {
      *
      * @return true if the demonstration was stopped
      */
-    public boolean isHalted() {        
+    public boolean isHalted() {
         return engine.isHalted();
     }
 
@@ -489,7 +458,7 @@ public class Prolog {
      * @param t1 second term to be unified
      * @return true if the unification was successful
      */
-    public static boolean match(Term t0, Term t1) {    
+    public static boolean match(Term t0, Term t1) {
         return t0.unifiable(t1);
     }
 
@@ -500,7 +469,7 @@ public class Prolog {
      * @param t1 second term to be unified
      * @return true if the unification was successful
      */
-    public boolean unify(Term t0, Term t1) {    
+    public boolean unify(Term t0, Term t1) {
         return t0.unify(this, t1);
     }
 
@@ -513,7 +482,7 @@ public class Prolog {
      * @return the term parsed from the string
      * @throws InvalidTermException if the string does not represent a valid term
      */
-    public Term toTerm(String st) throws InvalidTermException {    
+    public Term toTerm(String st) throws InvalidTermException {
         return Parser.parseSingleTerm(st, ops);
     }
 
@@ -524,20 +493,10 @@ public class Prolog {
      * @param term the term to be represented as a string
      * @return the string representing the term
      */
-    public String toString(Term term) {        
+    public String toString(Term term) {
         return (term.toStringAsArgY(ops, OperatorManager.OP_HIGH));
     }
 
-
-
-
-
-
-
-
-
-
-    
 
     /**
      * Switches on/off the notification of spy information events
@@ -573,7 +532,7 @@ public class Prolog {
      * @param s TODO
      */
     protected void spy(State s, Engine e) {
-        
+
         if (spy && !spyListeners.isEmpty()) {
             ExecutionContext ctx = e.currentContext;
             if (ctx != null) {
@@ -650,7 +609,7 @@ public class Prolog {
 
         int outputListenersSize = outputListeners.size();
         if (outputListenersSize == 0)
-            return; 
+            return;
 
         OutputEvent e = new OutputEvent(this, m);
         synchronized (outputListeners) {
@@ -660,7 +619,6 @@ public class Prolog {
         }
     }
 
-    
 
     /**
      * Adds a listener to ouput events
@@ -835,64 +793,6 @@ public class Prolog {
     /**/
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * Notifies a spy information event
      *
@@ -920,7 +820,6 @@ public class Prolog {
     }
     /**/
 
-    
 
     /**
      * Notifies a library loaded event
@@ -958,8 +857,8 @@ public class Prolog {
                 queryListeners.get(i).accept(e);
             }
         }
-        
-        
+
+
     }
 
 
@@ -992,7 +891,7 @@ public class Prolog {
             Parser p = new Parser(st, ops);
             return p.nextTerm(true);
         } catch (InvalidTermException e) {
-            
+
             return Term.term("null");
         }
     }
@@ -1004,14 +903,6 @@ public class Prolog {
     public boolean isTrue(Term s) {
         Solution r = solve(s);
         return r.isSuccess();
-
-
-
-
-
-
-
-
     }
 
     public static void warn(String s) {

@@ -25,6 +25,7 @@ public abstract class Param {
 
 
 
+
     static {
         Op.terms =
                 //HeapTermBuilder.the;
@@ -133,7 +134,7 @@ public abstract class Param {
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
     /** can be > 1 */
-    public static final float ANSWER_COMPLETENESS = 1f;
+    public static final float ANSWER_COMPLETENESS = 2f;
 
 
 
@@ -145,6 +146,8 @@ public abstract class Param {
 
     public static boolean STRONG_COMPOSITION = false;
 
+    /** attempt to create a question/quest task from an invalid belief/goal (probably due to missing or unsolved temporal information */
+    public static final boolean INVALID_DERIVATION_TRY_QUESTION = true;
 
 
     public static final boolean FILTER_SIMILAR_DERIVATIONS = true;

@@ -191,12 +191,25 @@ public class Premise implements Comparable<Premise> {
                 if (!answerGoal)
                     return null; //no belief
             } else {
-                Task answer = tryAnswer(beliefTerm, answerTable, d);
+                Task answered = tryAnswer(beliefTerm, answerTable, d);
+                if (answered!=null) {
+
+
+//                    if (Param.INPUT_PREMISE_ANSWER_BELIEF || answered.isGoal()) // || (!(answered instanceof SignalTask) && !(answered instanceof DerivedTask)))
+//                        d.add(answered); //TODO inputting here is really only useful if revised or dynamic
+//                    else
+                        n.eventTask.emit(answered, answered.punc());
+
+//                        else //if (answered.isBelief())
+//                            return answered;
+
+
+                }
                 if (answerGoal) {
                     //goal, already added in tryAnswer
                 } else {
                     //belief
-                    return answer;
+                    return answered;
                 }
             }
         }
@@ -238,32 +251,25 @@ public class Premise implements Comparable<Premise> {
     private Task tryAnswer(Term beliefTerm, BeliefTable answerTable, Derivation d) {
 
 
-        if (!answerTable.isEmpty()) {
+        if (answerTable.isEmpty())
+            return null;
 
-            long qStart = task.start();
-            int limit = qStart == ETERNAL ? Answer.TASK_LIMIT_ETERNAL_QUESTION : Answer.TASK_LIMIT_DEFAULT;
-            Task match =
-                    Answer.relevance(true, limit,
-                            qStart, task.end(),
-                            beliefTerm, null /*beliefFilter*/, d.nar)
-                            .ditherTruth(true)
-                            .match(answerTable).task(true, true, true);
+        long qStart = task.start();
+        int limit = qStart == ETERNAL ? Answer.TASK_LIMIT_ETERNAL_QUESTION : Answer.TASK_LIMIT_DEFAULT;
+        Task match =
+                Answer.relevance(true, limit,
+                        qStart, task.end(),
+                        beliefTerm, null /*beliefFilter*/, d.nar)
+                        .ditherTruth(true)
+                        .match(answerTable).task(true, true, true);
 
-            if (match != null) {
-                //assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
+        if (match != null) {
+            //assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
-                @Nullable Task answered = task.onAnswered(match, d.nar);
-                if (answered != null) {
+            @Nullable Task answered = task.onAnswered(match, d.nar);
 
-                    if (Param.INPUT_PREMISE_ANSWER_BELIEF || answered.isGoal()) // || (!(answered instanceof SignalTask) && !(answered instanceof DerivedTask)))
-                        d.add(answered); //TODO inputting here is really only useful if revised or dynamic
+            return answered;
 
-                    else //if (answered.isBelief())
-                        return answered;
-
-                }
-
-            }
         }
 
         return null;

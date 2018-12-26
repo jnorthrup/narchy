@@ -141,11 +141,30 @@ public final class Termify extends AbstractPred<Derivation> {
 //            }
             
             if (!Taskify.valid(c2, d.concPunc)) {
-                Term c1e = c1;
-                d.nar.emotion.deriveFailTemporal.increment(/*() ->
+                boolean fail;
+
+                if (Param.INVALID_DERIVATION_TRY_QUESTION && d.concPunc == BELIEF || d.concPunc == GOAL) {
+                    //as a last resort, try forming a question from the remains
+                    byte qPunc = d.concPunc == BELIEF ? QUESTION : QUEST;
+                    if (!Taskify.valid(c2, qPunc)) {
+                        fail = true;
+                    } else {
+                        d.concPunc = qPunc;
+                        d.concTruth = null;
+                        fail = false;
+                    }
+                } else {
+                    fail = true;
+                }
+
+                if (fail) {
+                    Term c1e = c1;
+                    d.nar.emotion.deriveFailTemporal.increment(/*() ->
                         rule + "\n\t" + d + "\n\t -> " + c1e + "\t->\t" + c2
                 */);
-                return false;
+                    return false;
+                }
+
             }
 
 
