@@ -72,12 +72,7 @@ abstract public class MapSubst implements Subst {
             this.bx = b.getKey();
             this.by = b.getValue();
         }
-        @Override
-        public Term transform(Term t) {
-            if (t.impossibleSubTerm(ax) && t.impossibleSubTerm(bx))
-                return t;
-            return super.transform(t);
-        }
+
         /**
          * gets the substitute
          *

@@ -16,11 +16,11 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 1000;
+    private static final int cycles = 800;
 
     @BeforeEach
     void setup() {
-        test.confTolerance(0.2f);
+        test.confTolerance(0.3f);
     }
 
     @Override

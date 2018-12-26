@@ -6,7 +6,6 @@ import jcog.data.graph.FromTo;
 import jcog.data.graph.Node;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
-import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.derive.Derivation;
@@ -152,16 +151,16 @@ public class Occurrify extends TimeGraph {
         clear();
 
         long taskStart = taskOccurrence ? d.taskStart : TIMELESS,
-             taskEnd = taskOccurrence ? d.taskEnd : TIMELESS,
-             beliefStart = beliefOccurrence ? d.beliefStart : TIMELESS,
-             beliefEnd = beliefOccurrence ? d.beliefEnd : TIMELESS;
+                taskEnd = taskOccurrence ? d.taskEnd : TIMELESS,
+                beliefStart = beliefOccurrence ? d.beliefStart : TIMELESS,
+                beliefEnd = beliefOccurrence ? d.beliefEnd : TIMELESS;
 
         this.decomposeEvents = decomposeEvents;
 
         final Term taskTerm = d.taskTerm, beliefTerm = d.beliefTerm;
         if (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.unneg().hasAny(NEG)) {
             setAutoNeg(pattern, taskTerm, beliefTerm);
-        } else if (pattern.op()==NEG) {
+        } else if (pattern.op() == NEG) {
             link(shadow(pattern.unneg()), 0, shadow(pattern));
         }
 
@@ -198,53 +197,65 @@ public class Occurrify extends TimeGraph {
 //            link(know(t), 0, know(u));
 //    }
 
-    final BiConsumer<Term, Compound> negRequire = (sub, sup) -> {
-        Op so = sub.op();
-        if (so == NEG) nextNeg.add(sub.unneg());
-        else if (sup == null || (so == CONJ || sup.op() != NEG))
-            nextPos.add(sub); //dont add the inner positive unneg'd term of a negation unless conj (ie. disj)
-
-        if (so == IMPL) {
-            Term a = sub.sub(0);
-            if (a.op() == NEG) nextNeg.add(a);
-                //else if (i.op()==CONJ) { /*recurse? */ }
-            else nextPos.add(a);
-
-            Term b = sub.sub(1);
-            nextPos.add(b);
-        }
-    };
-
-    final BiConsumer<Term, Compound> negProvide = (sub, sup) -> {
-        Op so = sub.op();
-        if (so == NEG) nextNeg.remove(sub.unneg());
-        else if (sup == null || (so == CONJ || sup.op() != NEG))
-            nextPos.remove(sub); //dont add the inner positive unneg'd term of a negation unless conj (ie. disj)
-
-        if (so == IMPL) {
-            Term a = sub.sub(0);
-            if (a.op() == NEG) nextNeg.remove(a);
-                //else if (i.op()==CONJ) { /*recurse? */ }
-            else nextPos.remove(a);
-
-            Term b = sub.sub(1);
-            nextPos.remove(b);
-        }
+//    final BiConsumer<Term, Compound> negRequire = (sub, sup) -> {
+//        Op so = sub.op();
+//        if (so == NEG) nextNeg.add(sub.unneg());
+//        else if (sup == null || ((so == IMPL || so == CONJ)))
+//            nextPos.add(sub); //dont add the inner positive unneg'd term of a negation unless conj (ie. disj)
+//
+////        if (so == IMPL) {
+////            Term a = sub.sub(0);
+////            if (a.op() == NEG) nextNeg.add(a);
+////                //else if (i.op()==CONJ) { /*recurse? */ }
+////            else nextPos.add(a);
+////
+////            Term b = sub.sub(1);
+////            nextPos.add(b);
+////        }
+//    };
+//
+//    final BiConsumer<Term, Compound> negProvide = (sub, sup) -> {
+//        Op so = sub.op();
+//        if (so == NEG) nextNeg.remove(sub.unneg());
+//        else if (sup == null || ((so == IMPL || so == CONJ)))
+//            nextPos.remove(sub); //dont add the inner positive unneg'd term of a negation unless conj (ie. disj)
+////
+////        if (so == IMPL) {
+////            Term a = sub.sub(0);
+////            if (a.op() == NEG) nextNeg.remove(a);
+////                //else if (i.op()==CONJ) { /*recurse? */ }
+////            else nextPos.remove(a);
+////
+////            Term b = sub.sub(1);
+////            nextPos.remove(b);
+////        }
+//    };
+    final BiConsumer<Term, Compound> getPosNeg = (sub, sup) -> {
+        if (sup == null || (sup.op()==IMPL || sup.op()==CONJ))
+            ((sub.op()==NEG) ?  nextNeg : nextPos).add(sub.unneg());
     };
 
     private void setAutoNeg(Term pattern, Term taskTerm, Term beliefTerm) {
 
         assert (autoNeg.isEmpty());
 
-        pattern.recurseTerms(negRequire);
-
-        taskTerm.recurseTerms(negProvide);
-
+//        pattern.recurseTerms(negRequire);
+//        //pattern.recurseTerms(negProvide);
+//
+//        taskTerm.recurseTerms(negProvide);
+//        //taskTerm.recurseTerms(negRequire);
+//
+//        if (!beliefTerm.equals(taskTerm)) {
+//            beliefTerm.recurseTerms(negProvide);
+//            //beliefTerm.recurseTerms(negRequire);
+//        }
+        pattern.recurseTerms(getPosNeg);
+        taskTerm.recurseTerms(getPosNeg);
         if (!beliefTerm.equals(taskTerm))
-            beliefTerm.recurseTerms(negProvide);
-
+            beliefTerm.recurseTerms(getPosNeg);
         if (!nextPos.isEmpty() || !nextNeg.isEmpty()) {
-            nextPos.symmetricDifferenceInto(nextNeg, autoNeg /* should be clear */);
+            //nextPos.symmetricDifferenceInto(nextNeg, autoNeg /* should be clear */);
+            nextPos.intersectInto(nextNeg, autoNeg /* should be clear */);
             nextPos.clear();
             nextNeg.clear();
         }

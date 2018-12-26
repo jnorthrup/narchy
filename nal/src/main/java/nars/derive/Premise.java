@@ -5,10 +5,7 @@
 package nars.derive;
 
 import com.netflix.servo.monitor.Counter;
-import nars.Emotion;
-import nars.NAR;
-import nars.Op;
-import nars.Task;
+import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.op.mental.AliasConcept;
@@ -200,8 +197,10 @@ public class Premise implements Comparable<Premise> {
 
 
 //                    if (Param.INPUT_PREMISE_ANSWER_BELIEF || answered.isGoal()) // || (!(answered instanceof SignalTask) && !(answered instanceof DerivedTask)))
+                    if (answered.isGoal())
+                        n.input(answered);
 //                        d.add(answered); //TODO inputting here is really only useful if revised or dynamic
-//                    else
+                    else
                         n.eventTask.emit(answered, answered.punc());
 
 //                        else //if (answered.isBelief())

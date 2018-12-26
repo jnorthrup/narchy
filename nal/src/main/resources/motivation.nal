@@ -28,16 +28,16 @@
     //G, B, task("!") |-         (?1 && --G), (Punctuation:Question)
 
     //should what with goal/non-goal
-      G, B, task("!"), neq(G,B), --is(B,"?"), hasBelief() |-        (polarizeTask(G) && B), (Punctuation:Quest)
+      G, B, task("!"), neq(G,B), --is(B,"?"), hasBelief() |-        (&&,polarizeTask(G),polarizeBelief(B)), (Punctuation:Quest)
 
     //bifurcate plan
-    G, B, task("@"), neq(G,B), --is(B,"?"), hasBelief() |-        (polarizeRandom(G) && B), (Punctuation:Quest, Time:Task)
+    G, B, task("@"), neq(G,B), --is(B,"?"), hasBelief() |-        (&&,polarizeRandom(G),polarizeBelief(B)), (Punctuation:Quest, Time:Task)
 
-    //sequence possibility quest
-    C, X, task("@"), eventOfPosOrNeg(C,X) |-  (conjWithoutPosOrNeg(C,X) && ?1), (Punctuation:Quest, Time:Task)
+//    //sequence possibility quest
+//    C, X, task("@"), eventOfPosOrNeg(C,X) |-  (conjWithoutPosOrNeg(C,X) && ?1), (Punctuation:Quest, Time:Task)
 
     //continue desire/non-desire?
-    X, X, task("!") |- ((polarizeTask(X) && #Y) ==> X), (Punctuation:Question)
+    X, X, task("!") |- ((polarizeTask(X) && ?1) ==> X), (Punctuation:Question)
 
     //avoidance TODO
 //    G, C, task("!"), eventOf(C,G)    |- (--C ==> ?1), (Punctuation:Question)

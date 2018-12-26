@@ -53,7 +53,7 @@ public abstract class Param {
 
 
     public static final boolean ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME = false;
-    public static final boolean INPUT_PREMISE_ANSWER_BELIEF = false;
+//    public static final boolean INPUT_PREMISE_ANSWER_BELIEF = false;
 
     public static final boolean DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER = false;
 
@@ -81,8 +81,8 @@ public abstract class Param {
             //10;
             //8;
             //7;
-            //6;
-            4;
+            6;
+            //4;
             //3;
             //2;
             //1;
@@ -134,7 +134,7 @@ public abstract class Param {
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
     /** can be > 1 */
-    public static final float ANSWER_COMPLETENESS = 2f;
+    public static final float ANSWER_COMPLETENESS = 1f;
 
 
 
@@ -274,7 +274,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(2 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 3, 1, 32);
     public final IntRange matchTTL = new IntRange(6, 1, 32);
 
@@ -286,7 +286,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 4;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 3;
 
 
     /**

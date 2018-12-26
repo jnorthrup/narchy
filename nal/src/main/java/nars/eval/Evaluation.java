@@ -262,7 +262,6 @@ public class Evaluation {
                             y = y.replace(subst);
                         }
 
-                        //pendingRewrites.add(new Term[]{a, z});
                         Term finalA = a;
                         operations.list.replaceAll(o -> {
                             Term p, q;

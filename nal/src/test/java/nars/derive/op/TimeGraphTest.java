@@ -95,6 +95,32 @@ class TimeGraphTest {
         assertSolved("(one ==>+- three)", A,
                 "(one ==>+2 three)", "(one ==>+20 three)", "(one ==>-16 three)");
     }
+    @Test
+    void testSimpleImplWithOneKnownAbsoluteSubEvent2() {
+
+        TimeGraph cc1 = newTimeGraph(1);
+        cc1.know($$("(x ==>+1 y)"), 1);
+        cc1.know($$("x"), 1);
+        assertSolved("y", cc1, "y@2");
+    }
+    @Test
+    void testSimpleImplWithOneKnownAbsoluteSubEventNeg() {
+
+        TimeGraph cc1 = newTimeGraph(1);
+        cc1.autoNeg.add($$("x"));
+        cc1.know($$("(--x ==>+1 y)"), 1);
+        cc1.know($$("x"), 1);
+        assertSolved("y", cc1, "y@2");
+    }
+    @Test
+    void testSimpleImplWithOneKnownAbsoluteSubEventNegOpposite() {
+
+        TimeGraph cc1 = newTimeGraph(1);
+        cc1.autoNeg.add($$("x"));
+        cc1.know($$("(x ==>+1 y)"), 1);
+        cc1.know($$("--x"), 1);
+        assertSolved("y", cc1, "y@2");
+    }
 
     @Test
     void testImplChain1() {

@@ -355,7 +355,7 @@ public class NAgent extends NARService implements NSense, NAct {
      */
     protected Term rewardTerm(String reward) {
         //return $.func($$(reward), id);
-        return $.inh($$(reward), id);
+        return $.inh(id, $$(reward));
     }
 
     public Reward rewardNormalized(String reward, float min, float max, FloatSupplier rewardFunc) {
