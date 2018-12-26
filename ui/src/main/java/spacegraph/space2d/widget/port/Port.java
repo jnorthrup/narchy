@@ -261,12 +261,15 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     /**
      * TODO Supplier-called version of this
      */
-    protected boolean out(Port sender, X x) {
+    protected final boolean out(Port<?> sender, X x) {
         if (enabled) {
             Node<spacegraph.space2d.Surface, Wire> n = this.node;
             if (n != null) {
                 n.edges(true, true).forEach(t -> {
-                    t.id().send(sender, x);
+                    Wire wire = t.id();
+                    Port recv = ((Port) wire.other(Port.this));
+                    if (recv!=sender) //1-level cycle block
+                        wire.send(this, recv, x);
                 });
                 return true;
             }

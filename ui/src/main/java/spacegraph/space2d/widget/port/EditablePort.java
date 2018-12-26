@@ -32,11 +32,11 @@ abstract public class EditablePort<X> extends TypedPort<X> {
 //    }
 
     @Override
-    protected boolean out(Port sender, X _next) {
+    public boolean out(X _next) {
         X next = process(_next);
 
         if (next!=null && change(next)) {
-            if (super.out(sender, next)) {
+            if (super.out(next)) {
                 edit.text(toString(next));
                 return true;
             }

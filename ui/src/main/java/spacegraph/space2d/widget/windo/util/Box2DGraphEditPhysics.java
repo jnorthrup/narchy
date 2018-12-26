@@ -27,6 +27,7 @@ import spacegraph.space2d.phys.particle.ParticleColor;
 import spacegraph.space2d.phys.particle.ParticleSystem;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.WeakSurface;
+import spacegraph.space2d.widget.port.CopyPort;
 import spacegraph.space2d.widget.port.Port;
 import spacegraph.space2d.widget.port.Wire;
 import spacegraph.space2d.widget.windo.GraphEdit;
@@ -323,7 +324,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                     new PushButton("X").click((@Nullable Runnable) this::remove)
             );
             l.set(E, new PushButton("Tap").click(() -> {
-                splice(new Port());
+                splice(new CopyPort());
             })); //as in wire-tap, aka splice
             l.set(S, new PushButton("Split"));
 

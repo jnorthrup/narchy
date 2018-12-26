@@ -56,8 +56,8 @@ public class Wire {
     }
 
     /** sends to target */
-    public final boolean send(Surface sender, Object s) {
-        if (((Port)other(sender)).recv(this, transfer(sender, s))) {
+    public final boolean send(Surface sender, Port receiver, Object s) {
+        if (receiver.recv(this, transfer(sender, s))) {
             long now = System.nanoTime();
 
             Class<?> cl = s.getClass();
