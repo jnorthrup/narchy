@@ -695,7 +695,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
             case Op.DIFFe:
             case Op.DIFFi:
                 return subs.size() != 2 ? Bool.Null :
-                        (op.equals(DIFFe) ? Op.SECTe : Op.SECTi).the(subs.get(0), subs.get(1).neg());
+                        (op.equals(DIFFe) ? Op.SECTi : Op.SECTe).the(subs.get(0), subs.get(1).neg());
 
             default: {
                 Op o = Op.stringToOperator.get(op);

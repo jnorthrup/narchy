@@ -5,8 +5,10 @@ import jcog.Texts;
 import jcog.WTF;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
+import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.collection.AbstractMutableContainer;
 import spacegraph.space2d.container.unit.AspectAlign;
+import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.widget.meta.WeakSurface;
 import spacegraph.space2d.widget.windo.Windo;
 
@@ -284,6 +286,10 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     public boolean remove() {
         SurfaceBase p = this.parent;
 
+        if (p instanceof MutableUnitContainer) {
+            ((MutableUnitContainer)p).set(new EmptySurface());
+            return true;
+        }
         if (p instanceof AbstractMutableContainer) {
             return ((AbstractMutableContainer) p).remove(this);
         }

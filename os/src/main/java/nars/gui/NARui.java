@@ -135,6 +135,20 @@ public class NARui {
 
 
     public static Surface top(NAR n) {
+        HashMap<String, Supplier<Surface>> mm = menu(n);
+        return
+                new Bordering(
+                        new TabMenu(mm,
+                                new GridMenuView()
+                                //new WallMenuView()
+                        )
+                )
+                        .north(ExeCharts.runPanel(n))
+                //.south(new OmniBox(new NarseseJShellModel(n))) //+50mb heap
+                ;
+    }
+
+    public static HashMap<String, Supplier<Surface>> menu(NAR n) {
         Map<String, Supplier<Surface>> m = Map.of(
                 "inp", () -> ExeCharts.inputPanel(n),
                 //"shl", () -> new ConsoleTerminal(new TextUI(n).session(10f)),
@@ -165,16 +179,7 @@ public class NARui {
 //                n.memory.roots().collect(toList())
 //                )
 //        );
-        return
-                new Bordering(
-                        new TabMenu(mm,
-                                new GridMenuView()
-                                //new WallMenuView()
-                        )
-                )
-                        .north(ExeCharts.runPanel(n))
-                //.south(new OmniBox(new NarseseJShellModel(n))) //+50mb heap
-                ;
+        return mm;
     }
 
     @NotNull

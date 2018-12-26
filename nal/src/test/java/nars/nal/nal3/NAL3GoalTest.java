@@ -193,7 +193,7 @@ class NAL3GoalTest {
         @Test
         void testIntersectionConditionalDecomposeGoalPosNeg() {
             test
-                    .input("((b-a)-->g)!")
+                    .input("((b~a)-->g)!")
                     .input("--(a-->g).")
                     .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
         }
@@ -254,7 +254,7 @@ class NAL3GoalTest {
             test
                     .input("((a~b)-->g)! %0.50;0.90%")
                     .input("(a-->g). %1.00;0.90%")
-                    .mustGoal(cycles, "(b-->g)", 0.5f, 0.81f);
+                    .mustGoal(cycles, "(b-->g)", 0.5f, 0.4f);
         }
 
         @Test

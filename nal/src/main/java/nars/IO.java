@@ -594,7 +594,7 @@ public class IO {
                 if (subracted.op() == NEG && (from=cs.sub(1)).op()!=NEG) {
                     p.append('(');
                     from.appendTo(p);
-                    p.append(o == SECTe ? DIFFe : DIFFi);
+                    p.append(o == SECTe ? DIFFi : DIFFe);
                     subracted.unneg().appendTo(p);
                     p.append(')');
                     return;

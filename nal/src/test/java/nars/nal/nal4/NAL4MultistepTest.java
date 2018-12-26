@@ -5,7 +5,6 @@ import nars.NARS;
 import nars.Narsese;
 import nars.test.NALTest;
 import nars.test.TestNAR;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -22,12 +21,12 @@ public class NAL4MultistepTest extends NALTest {
 
     @Test
     void nal4_everyday_reasoning() {
-        int time = 3000;
+        int time = 6000;
 
 
         TestNAR tester = test;
 
-        tester.nar.termVolumeMax.set($$("(likes(cat,[blue]) <-> likes({tom},[blue]))").volume());
+        tester.nar.termVolumeMax.set($$("(likes(cat,[blue]) <-> likes({tom},[blue]))").volume()+2);
 
         //tester.nar.freqResolution.set(0.05f);
         tester.nar.questPriDefault.set(0.5f);
@@ -50,7 +49,7 @@ public class NAL4MultistepTest extends NALTest {
 
     }
 
-    @Disabled @Test
+    @Test
     void nal4_everyday_reasoning_easiest() throws Narsese.NarseseException {
 
 
@@ -61,20 +60,19 @@ public class NAL4MultistepTest extends NALTest {
 
     }
 
-    @Disabled
     @Test
-    void nal4_everyday_reasoning_easier() {
+    void nal4_everyday_reasoning_easier() throws Narsese.NarseseException {
         int time = 2550;
 
         test.confTolerance(0.2f);
-        test.nar.termVolumeMax.set(8);
-        test.nar.freqResolution.set(0.25f);
-        test.nar.confResolution.set(0.1f);
-        test.believe("blue:sky", 1.0f, 0.9f)
-                .believe("cat:tom", 1.0f, 0.9f)
-                .believe("likes(tom,sky)", 1.0f, 0.9f)
-                .input("$0.99 likes(cat,blue)?")
-                .mustBelieve(time, "likes(cat,blue)", 1.0f, 0.27f /*0.45f*/)
+        test.nar.termVolumeMax.set(12);
+//        test.nar.freqResolution.set(0.25f);
+//        test.nar.confResolution.set(0.1f);
+        test.believe("blue:sky")
+            .believe("cat:tom")
+            .believe("likes(tom,sky)")
+            .ask("likes(cat,blue)")
+            .mustBelieve(time, "likes(cat,blue)", 1.0f, 0.27f /*0.45f*/)
         ;
 
     }

@@ -5,11 +5,21 @@
 //  corresponds to extensional union, and extensional intersection corresponds
 //  to intensional union.
 
-    (P --> M), (S --> M), notSetsOrDifferentSets(S,P),neq(S,P) |- ((polarizeTask(P) | polarizeBelief(S)) --> M), (Belief:IntersectionDepolarized, Time:Intersect)
-    (P --> M), (S --> M), notSetsOrDifferentSets(S,P),neq(S,P) |- (unionSect(polarizeTask(P),polarizeBelief(S), "&") --> M), (Belief:UnionDepolarized, Time:Intersect)
+    (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neq(S,P) |- ((polarizeTask(P) | polarizeBelief(S)) --> M), (Belief:IntersectionDepolarized)
+     (P --> M), (S --> M), task("!"), notSetsOrDifferentSets(S,P), neq(S,P) |- ((polarizeTask(P) | polarizeRandom(S)) --> M), (Punctuation:Quest)
+      (P --> M), (S --> M), task("?@"), notSetsOrDifferentSets(S,P), neq(S,P) |- ((polarizeRandom(P) | polarizeRandom(S)) --> M)
+    (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neq(S,P) |- (unionSect(polarizeTask(P),polarizeBelief(S), "&") --> M), (Belief:UnionDepolarized)
 
-    (M --> P), (M --> S), notSetsOrDifferentSets(S,P),neq(S,P) |- (M --> (polarizeTask(P) & polarizeBelief(S))), (Belief:IntersectionDepolarized, Time:Intersect)
-    (M --> P), (M --> S), notSetsOrDifferentSets(S,P),neq(S,P) |- (M --> unionSect(polarizeTask(P),polarizeBelief(S), "|")), (Belief:UnionDepolarized, Time:Intersect)
+    (M --> P), (M --> S), notSetsOrDifferentSets(S,P), neq(S,P) |- (M --> (polarizeTask(P) & polarizeBelief(S))), (Belief:IntersectionDepolarized)
+     (M --> P), (M --> S), task("!"), notSetsOrDifferentSets(S,P), neq(S,P) |- (M --> (polarizeTask(P) & polarizeRandom(S))), (Punctuation:Quest)
+      (M --> P), (M --> S), task("?@"), notSetsOrDifferentSets(S,P), neq(S,P) |- (M --> (polarizeRandom(P) & polarizeRandom(S)))
+    (M --> P), (M --> S), notSetsOrDifferentSets(S,P), neq(S,P) |- (M --> unionSect(polarizeTask(P),polarizeBelief(S), "|")), (Belief:UnionDepolarized)
+
+//intesection question formation
+//    (W --> S), (W --> B), task("?@"), is(S,"|"), neqRCom(S,B) |- (W --> (S | B)), (Time:Intersect)
+//    (W --> S), (W --> B), task("?@"), is(S,"&"), neqRCom(S,B) |- (W --> (S & B)), (Time:Intersect)
+//    (S --> W), (B --> W), task("?@"), is(S,"&"), neqRCom(S,B) |- ((S & B) --> W), (Time:Intersect)
+//    (S --> W), (B --> W), task("?@"), is(S,"|"), neqRCom(S,B) |- ((S | B) --> W), (Time:Intersect)
 
 //    (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- ((P ~ S) --> M), (Belief:Difference, Time:Intersect)
 //    (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- ((S ~ P) --> M), (Belief:DifferenceReverse, Time:Intersect)
@@ -22,18 +32,20 @@
         //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((union(A,X),union(B,Y)) --> M), (Belief:Union)
 
 //NAL3 single premise decompose
-    (M --> S), X, is(S,"&"), subOf(S,X)   |-      (M --> X), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+    (M --> S), X, is(S,"&"), subOf(S,X)   |-          (M --> X), (Belief:StructuralDeduction,Goal:StructuralDeduction)
     (M --> S), X, is(S,"&"), subOf(S,--X)   |-      --(M --> X), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-        (M --> S), X, is(S,"&"), subOf(S,X)   |-     --(M --> X), (Goal:StructuralDeductionN)
+        (M --> S), X, is(S,"&"), subOf(S,X)   |-    --(M --> X), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
+        (M --> S), X, is(S,"&"), subOf(S,--X)   |-    (M --> X), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
       //(M --> S), X, is(S,"|"), subOf(S,X)   |-      --(M --> X), (Belief:StructuralDeductionNN)
       //(M --> S), X, is(S,"|"), subOf(S,--X)   |-      (M --> X), (Belief:StructuralDeductionNN)
       //(M --> S), X, is(S,"&"), subOf(S,X)   |-  --(M --> X), (Belief:StructuralDeductionNN)
     //(M --> S), X, is(S,"&"), subOf(S,--X) |-    --(M --> X), (Belief:StructuralDeduction)
       //(M --> S), X, is(S,"&"), subOf(S,--X) |-    (M --> X), (Belief:StructuralDeductionNN)
 
-    (S --> M), X, is(S,"|"), subOf(S,X)   |-     (X --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+    (S --> M), X, is(S,"|"), subOf(S,X)   |-         (X --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
     (S --> M), X, is(S,"|"), subOf(S,--X)   |-     --(X --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-        (S --> M), X, is(S,"|"), subOf(S,X)   |-     --(X --> M), (Goal:StructuralDeductionN)
+        (S --> M), X, is(S,"|"), subOf(S,X)   |-   --(X --> M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
+        (S --> M), X, is(S,"|"), subOf(S,--X)   |-   (X --> M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
 
       //(S --> M), X, is(S,"&"), subOf(S,X)   |-     --(X --> M), (Belief:StructuralDeductionNN)
       //(S --> M), X, is(S,"&"), subOf(S,--X)   |-     (X --> M), (Belief:StructuralDeductionNN)

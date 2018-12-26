@@ -24,6 +24,8 @@ import nars.time.clock.CycleTime;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.chip.HubMenuChip;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.video.Draw;
@@ -199,6 +201,9 @@ public class TrackXY_NAR extends NAgentX {
 
             window.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
             window.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
+
+            //window.add(new ExpandingChip("x", ()->NARui.top(n))).posRel(0.8f,0.8f,0.25f,0.25f);
+            window.add(new HubMenuChip(new PushButton("NAR"), NARui.menu(n))).posRel(0.8f,0.8f,0.25f,0.25f);
 
             if (a.cam != null) {
                 window.add(Splitting.column(new VectorSensorView(a.cam, n) {

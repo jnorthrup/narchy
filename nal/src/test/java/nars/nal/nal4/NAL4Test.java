@@ -334,9 +334,11 @@ public class NAL4Test extends NALTest {
         test.nar.termVolumeMax.set(9);
         test.believe("(bird-->animal)",1.0f,0.9f) //en("Bird is a type of animal.");
         .ask("((bird,plant) --> (animal,plant))")
-        .mustBelieve(CYCLES*6, "((bird,plant) --> (animal,plant))", 1.0f, 0.81f) //en("The relation between bird and plant is a type of relation between animal and plant.");
+        .mustBelieve(CYCLES, "((bird,plant) --> (animal,plant))", 1.0f, 0.81f) //en("The relation between bird and plant is a type of relation between animal and plant.");
         ;
     }
+
+
 }
 
 

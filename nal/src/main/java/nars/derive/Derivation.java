@@ -77,7 +77,7 @@ public class Derivation extends PreDerivation {
         protected Term apply1(Term arg) {
             Truth t = Derivation.this.taskTruth;
             if (t == null)
-                return Null;  //TODO WTF
+                throw new WTF("polarizeTask not applicable without taskTruth"); //return Null;  //TODO WTF
             return t.isPositive() ? arg : arg.neg();
         }
     };

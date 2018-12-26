@@ -147,7 +147,7 @@ abstract public class DynamicTruthModel {
             @Override
             public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
 
-                superterm = Image.imageNormalize(superterm);
+//                superterm = Image.imageNormalize(superterm);
 
                 Term common = stmtCommon(subjOrPred, superterm);
                 Term decomposed = stmtCommon(!subjOrPred, superterm);
@@ -158,7 +158,7 @@ abstract public class DynamicTruthModel {
                             y -> each.accept(stmtDecomposeStructural(op, subjOrPred, y, common), start, end)
                     );
                 }
-
+                assert(false);
 //                if (union) {
 //                    if (decomposed.op() == NEG) {
 //                        if (superterm.op() == IMPL) {

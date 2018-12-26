@@ -6,14 +6,18 @@ import nars.table.dynamic.DynamicTruthTable;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
+import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DynamicSectTest {
     @Test
     void testDynamicIntersection() throws Narsese.NarseseException {
+
+        assertEquals("|", $$("(x~y)").op().str);
+        assertEquals("&", $$("(x-y)").op().str);
+
         NAR n = NARS.shell();
         n.believe("a:x", 1f, 0.9f);
         n.believe("a:y", 1f, 0.9f);
@@ -26,10 +30,23 @@ class DynamicSectTest {
         n.run(2);
 
 
-        Task k = n.answer($("((x|y)-->a)"), BELIEF, 0);
-        assertEquals("((x|y)-->a)", k.term().toString());
-        assertEquals(1f, k.truth().freq());
+        {
+            Task k = n.answer($("((x|y)-->a)"), BELIEF, 0);
+            assertEquals("((x|y)-->a)", k.term().toString());
+            assertEquals(1f, k.truth().freq());
+        }
 
+        {
+            Task k = n.answer($("((x~y)-->a)"), BELIEF, 0);
+            assertEquals("((x~y)-->a)", k.term().toString());
+            assertEquals(0f, k.truth().freq());
+        }
+
+        {
+            Task k = n.answer($("((x-y)-->a)"), BELIEF, 0);
+            assertEquals("((x-y)-->a)", k.term().toString());
+            assertEquals(1f, k.truth().freq());
+        }
 
 
         for (long now: new long[]{0, n.time() /* 2 */, ETERNAL}) {

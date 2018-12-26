@@ -3,6 +3,7 @@ package nars.nal.nal3;
 
 import nars.NAR;
 import nars.NARS;
+import nars.Narsese;
 import nars.Param;
 import nars.test.NALTest;
 import nars.test.TestNAR;
@@ -15,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL3Test extends NALTest {
 
-    static final int cycles = 100;
+    static final int cycles = 300;
 
     @Override
     protected NAR nar() {
@@ -130,14 +131,14 @@ public class NAL3Test extends NALTest {
     void diff_compound_decomposition_single3() {
         TestNAR tester = test;
 
-        tester.believe("<(dinosaur - ant) --> [strong]>", 0.9f, 0.9f);
+        tester.believe("<(dinosaur ~ ant) --> [strong]>", 0.9f, 0.9f);
         tester.mustBelieve(cycles, "<dinosaur --> [strong]>", 0.90f, 0.73f);
         tester.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.73f);
     }
     @Test
     void diff_compound_decomposition_low_dynamic() {
         TestNAR tester = test;
-        tester.believe("<(ant - spider) --> [strong]>", 0.1f, 0.9f);
+        tester.believe("<(ant ~ spider) --> [strong]>", 0.1f, 0.9f);
         tester.mustBelieve(cycles, "<spider --> [strong]>", 0.90f, 0.08f);
         tester.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.08f);
     }
@@ -147,7 +148,7 @@ public class NAL3Test extends NALTest {
 
         TestNAR tester = test;
 
-        tester.believe("(robin --> (bird ~ swimmer))", 0.9f, 0.9f);
+        tester.believe("(robin --> (bird - swimmer))", 0.9f, 0.9f);
         tester.mustBelieve(cycles, "<robin --> bird>", 0.90f, 0.73f);
 
     }
@@ -253,7 +254,7 @@ public class NAL3Test extends NALTest {
     @Test
     void testDifferenceQuestion() {
         test
-                .believe("((x&y)-->a)")
+                .believe("((x|y)-->a)")
                 .mustQuestion(cycles, "((x~y)-->a)")
                 .mustQuestion(cycles, "((y~x)-->a)")
         ;
@@ -261,7 +262,7 @@ public class NAL3Test extends NALTest {
     @Test
     void testDifferenceQuest() {
         test
-                .goal("((x&y)-->a)")
+                .goal("((x|y)-->a)")
                 .mustQuest(cycles, "((x~y)-->a)")
                 .mustQuest(cycles, "((y~x)-->a)")
         ;
@@ -286,5 +287,17 @@ public class NAL3Test extends NALTest {
         ;
     }
 
+    @Test
+    public void questPropagation() throws Narsese.NarseseException {
+
+        test.nar.termVolumeMax.set(6);
+        test
+                .goal("x:a")
+                .goal("x:b")
+                .quest("x:a")
+                .mustQuest(cycles, "x:(a|b)")
+                .mustGoal(cycles, "x:(a|b)", 1f, 0.81f)
+        ;
+    }
 }
 
