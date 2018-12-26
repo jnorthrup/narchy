@@ -258,6 +258,7 @@ public class ImplTest {
 
 
 
+
         /*
             (&,(&,P,Q),R) = (&,P,Q,R)
             (&,(&,P,Q),(&,R,S)) = (&,P,Q,R,S)

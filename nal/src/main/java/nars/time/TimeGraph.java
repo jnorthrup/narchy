@@ -919,19 +919,19 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         return true;
     }
 
-    @Nullable
-    private Event onlyAbsolute(Term x) {
-        Event first = null;
-        for (Event e : byTerm.get(x)) {
-            if (e instanceof Absolute) {
-                if (first == null)
-                    first = e;
-                else
-                    return null; //more than one, ambiguous
-            }
-        }
-        return first;
-    }
+//    @Nullable
+//    private Event onlyAbsolute(Term x) {
+//        Event first = null;
+//        for (Event e : byTerm.get(x)) {
+//            if (e instanceof Absolute) {
+//                if (first == null)
+//                    first = e;
+//                else
+//                    return null; //more than one, ambiguous
+//            }
+//        }
+//        return first;
+//    }
 
     /**
      * main entry point to the solver
@@ -940,7 +940,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      */
     public boolean solve(Term x, boolean filterTimeless, Predicate<Event> target) {
 
-        compact();
+        //compact();
 
         this.filterTimeless = filterTimeless;
         this.target = target;

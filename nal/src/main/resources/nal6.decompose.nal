@@ -119,8 +119,8 @@
 
 
 
-C, Y, is(C,"&&"), neq(C,Y), --is(Y,"?"), --is(Y,"#"), --is(Y,"$")  |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,strict), (Belief:Analogy,Goal:Analogy)
-C, Y, is(C,"&&"), neq(C,Y), --is(Y,"?"), --is(Y,"#"), --is(Y,"$")  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:AnalogyPN,Goal:AnalogyPN)
+C, Y, is(C,"&&"), neq(C,Y), --isVar(Y)  |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,strict), (Belief:Analogy,Goal:Analogy)
+C, Y, is(C,"&&"), neq(C,Y), --isVar(Y)  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:AnalogyPN,Goal:AnalogyPN)
 
 //Anonymous Analogy (NAL5)
     //originally this only unified depvar (dep var elimination)

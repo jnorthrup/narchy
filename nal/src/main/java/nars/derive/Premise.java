@@ -5,8 +5,10 @@
 package nars.derive;
 
 import com.netflix.servo.monitor.Counter;
-import jcog.math.Longerval;
-import nars.*;
+import nars.Emotion;
+import nars.NAR;
+import nars.Op;
+import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.op.mental.AliasConcept;
@@ -140,13 +142,15 @@ public class Premise implements Comparable<Premise> {
                             (task.isGoal() || task.isQuest()) ?
                                 new long[] { now, now + belief.range() - 1 } //immediate
                             :
-                                Longerval.unionArray(belief.start(), belief.end(), now, now + belief.range() - 1);
-
+                                //Longerval.unionArray(belief.start(), belief.end(), now, now + belief.range() - 1);
+                                new long[] { belief.start(), belief.end() };
                     task = new SpecialOccurrenceTask(task, nowOrBelief);
 
                 } else {
                     //proxy belief to now
-                    long[] nowOrTask = Longerval.unionArray(task.start(), task.end(), now, now + task.range() - 1);
+                    long[] nowOrTask =
+                            new long[] { task.start(), task.end() };
+                            //Longerval.unionArray(task.start(), task.end(), now, now + task.range() - 1);
                     belief = new SpecialOccurrenceTask(belief, nowOrTask);
                 }
             }

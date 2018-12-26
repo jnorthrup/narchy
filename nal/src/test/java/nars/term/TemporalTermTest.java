@@ -418,5 +418,20 @@ public class TemporalTermTest {
 
 //        assertEquals(0, $$("((--,(_3(_1)&|_4(_1)))&&(_2(_1)&|_3(_1)))").subTimeFirst($$("")));
     }
-
+    @Test void testImplTransformMaintainsTiming() {
+        assertEq(
+                "((_2-->_1) ==>+3 (_1-->_3))",
+                $$("(($1-->_1) ==>-1 ((_2-->$1) &&+4 (_1-->_3)))").replace($.varIndep(1), $$("_2"))
+        );
+        assertEq(
+                "((_1-->_3) ==>+3 (_2-->_1))",
+                $$("(((_1-->_3) &&+4 (_2-->$1)) ==>-1 ($1-->_1))").replace($.varIndep(1), $$("_2"))
+        );
+    }
+    @Test void testConjTransformMaintainsTiming() {
+        assertEq(
+                "((x-->a) &&+3 (z-->a))",
+                $$("((x-->a) &&+1 ((y-->b) &&+2 (z -->a)))").replace($$("b"), $$("y"))
+        );
+    }
 }

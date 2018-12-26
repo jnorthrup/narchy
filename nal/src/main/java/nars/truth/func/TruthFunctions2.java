@@ -295,16 +295,16 @@ public enum TruthFunctions2 {
             return 0.5f - (a * b)/2;
         }
     }
-    /** freq: a,b; assumes they are of the same polarity */
-    static float unionSym(float a, float b) {
-        if (a >= 0.5f) {
-            a = 2 * (a - 0.5f); b = 2 * (b - 0.5f);
-            return 0.5f + (1-((1-a) * (1-b)))/2;
-        } else {
-            a = 2 * (0.5f - a); b = 2 * (0.5f - b);
-            return 0.5f - (1-((1-a) * (1-b)))/2;
-        }
-    }
+//    /** freq: a,b; assumes they are of the same polarity */
+//    static float unionSym(float a, float b) {
+//        if (a >= 0.5f) {
+//            a = 2 * (a - 0.5f); b = 2 * (b - 0.5f);
+//            return 0.5f + (1-((1-a) * (1-b)))/2;
+//        } else {
+//            a = 2 * (0.5f - a); b = 2 * (0.5f - b);
+//            return 0.5f - (1-((1-a) * (1-b)))/2;
+//        }
+//    }
 
 
 //    public static Truth maybeDuction(Truth a, float bC, float minConf) {

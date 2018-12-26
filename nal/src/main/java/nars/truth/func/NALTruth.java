@@ -72,13 +72,13 @@ public enum NALTruth implements TruthFunc {
             return TruthFunctions2.pre(T, B, true, minConf);
         }
     },
-    /** experimental */ Post() {
+    /** experimental */ PostWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions2.post(T, B, false, minConf);
         }
     },
-    /** experimental */ PostStrong() {
+    /** experimental */ Post() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions2.post(T, B, true, minConf);

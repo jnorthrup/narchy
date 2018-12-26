@@ -1153,6 +1153,15 @@ public class Conj extends ByteAnonMap {
             }
             return null; //no change
         } else {
+            //HACK if the set of components is disjoint, allow
+            if (!a.subterms().hasAny(CONJ) && !b.subterms().hasAny(CONJ)) {
+                Subterms bs = b.subterms();
+                if (!a.subterms().OR(aa -> bs.contains(aa) || bs.containsNeg(aa)))
+                    return null;//allow
+            }
+
+            //TODO finer grained disjoint event comparison
+
             //TODO sequence conditions
             //throw new TODO(a + " vs " + b);
             return Null; //disallow for now. the complexity might be excessive

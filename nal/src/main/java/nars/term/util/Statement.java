@@ -6,6 +6,7 @@ import nars.Param;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.builder.HeapTermBuilder;
+import nars.time.Tense;
 import nars.unify.ellipsis.Ellipsis;
 
 import java.util.function.Predicate;
@@ -77,12 +78,23 @@ public class Statement {
             if (!subject.op().eventable || !predicate.op().eventable)
                 return Null;
 
+            //implicit dternal to parallel promotion in temporal implication
+            if (dt!=XTERNAL && dt!=DTERNAL) {
+                if (subject.op()==CONJ && subject.dt()==DTERNAL && !Conj.isSeq(subject))
+                    subject = subject.dt(0);
+                if (predicate.op()==CONJ && predicate.dt()==DTERNAL && !Conj.isSeq(predicate))
+                    predicate = predicate.dt(0);
+            }
+
             int subjDT = subject.dt();
-            if (dt != XTERNAL && subjDT != XTERNAL && predicate.dt() != XTERNAL && !subject.OR(x->x instanceof Ellipsis) && !predicate.OR(x->x instanceof Ellipsis) ) {
+
+            if (Term.commonStructure(subject, predicate)) {
 
                 //TODO simple case when no CONJ or IMPL are present
 
-                if (Term.commonStructure(subject, predicate)) {
+                if (dt != XTERNAL && subjDT != XTERNAL && predicate.dt() != XTERNAL && !subject.OR(x->x instanceof Ellipsis) && !predicate.OR(x->x instanceof Ellipsis) ) {
+
+
 
                     boolean subjNeg = subject.op() == NEG;
 
@@ -106,11 +118,12 @@ public class Statement {
 
 
                         if (dt != DTERNAL) {
-                            int shift = predicate.subTimeFirst(newPred.eventFirst());
-
-                            if (shift == DTERNAL && predicate.subterms().equals(newPred.subterms()) && predicate.dt() == DTERNAL && newPred.dt() == 0) {
-                                shift = 0; //HACK handle dternal -> to zero implicit conversion
-                            }
+                            int shift = Tense.occToDT(newPredConj.shift());
+//                            int shift = predicate.subTimeFirst(newPred.eventFirst());
+//
+//                            if (shift == DTERNAL && predicate.subterms().equals(newPred.subterms()) && predicate.dt() == DTERNAL && newPred.dt() == 0) {
+//                                shift = 0; //HACK handle dternal -> to zero implicit conversion
+//                            }
 //                            if (shift == DTERNAL && Tense.dtSpecial(predicate.dt()) && Tense.dtSpecial(newPred.dt()) && newPred.AND(predicate::contains)) {
 //                                shift = 0; //sub-condition of parallel
 //                            }
@@ -150,13 +163,7 @@ public class Statement {
 
             }
 
-            //implicit dternal to parallel promotion in temporal implication
-            if (dt!=XTERNAL && dt!=DTERNAL) {
-                if (subject.op()==CONJ && subject.dt()==DTERNAL && !Conj.isSeq(subject))
-                    subject = subject.dt(0);
-                if (predicate.op()==CONJ && predicate.dt()==DTERNAL && !Conj.isSeq(predicate))
-                    predicate = predicate.dt(0);
-            }
+
 
 
 
@@ -227,20 +234,23 @@ public class Statement {
             //distribute();
         }
 
-        @Override
-        protected boolean addConjEventFactored() {
-            //disable adding in factored form
-            return false;
-        }
+//        @Override
+//        protected boolean addConjEventFactored() {
+//            //disable adding in factored form
+//            return false;
+//        }
 
         @Override
         protected int addFilter(long at, Term x, byte id) {
             if (at == ETERNAL) {
+                boolean hasAbsorb = false;
                 for (long see : seEvents) {
                     int f = test(see, id);
                     if (f == -1) return -1;
-                    if (f == +1) return +1; //ignore this term (dont repeat in the predicate)
+                    if (f == +1) hasAbsorb = true; //but keep checking for contradictions first
                 }
+                if (hasAbsorb)
+                    return +1; //ignore this term (dont repeat in the predicate)
             } else {
                 int f = test(at, id);
                 if (f == -1) return -1;

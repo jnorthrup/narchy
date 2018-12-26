@@ -575,6 +575,7 @@ public class NAL6Test extends NALTest {
     void second_level_variable_unification() {
 //        test.nar.termVolumeMax.set(10);
         TestNAR tester = test;
+        ////there is a lock which is opened by all keys
         tester.believe("(((#1 --> lock) && ($2 --> key)) ==> open($2, #1))", 1.00f, 0.90f);
         tester.believe("({key1} --> key)", 1.00f, 0.90f);
         tester.mustBelieve(cycles, "((#1 --> lock) && open({key1}, #1))", 1.00f, 0.81f);
@@ -585,9 +586,10 @@ public class NAL6Test extends NALTest {
 //        test.nar.termVolumeMax.set(10);
 
         TestNAR tester = test;
+        ////there is a lock which is opened by all non-keys
         tester.believe("(((#1 --> lock) && --($2 --> key)) ==> open($2, #1))");
-        tester.believe("--({key1} --> key)");
-        tester.mustBelieve(cycles, "((#1 --> lock) && open({key1}, #1))", 1.00f, 0.81f);
+        tester.believe("--({nonKey1} --> key)");
+        tester.mustBelieve(cycles, "((#1 --> lock) && open({nonKey1}, #1))", 1.00f, 0.81f);
     }
 
 

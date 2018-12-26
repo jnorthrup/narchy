@@ -17,75 +17,75 @@
 // Conditional syllogism && Independent Variable Elimination
 //      If after M, P usually happens, and M happens, it means P is expected to happen
 
-    A, (A ==> C), --is(A,"#"),--is(C,"#") |- C, (Belief:Pre, Goal:PreWeak, Time:TaskPlusBeliefDT)
-     B, (A ==> C),--is(A,"--"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,strict), (Belief:PreRecursive, Goal:PreWeak, Time:TaskPlusBeliefDT)
+    A, (A ==> C), --is(A,"#"),--is(C,"#") |- C, (Belief:Pre, Goal:PreWeak)
+     B, (A ==> C),--is(A,"--"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,strict), (Belief:PreRecursive, Goal:PreWeak)
+         B, (X ==> (&&,  C,A..+))       |- unisubst(  (&&,X,A..+),C,B), (Belief:Post, Goal:PostWeak)
+         B, (X ==> (&&,--C,A..+))       |- unisubst(  (&&,X,A..+),C,B), (Belief:PostN, Goal:PostWeakN)
+         B, (X ==> (&&,  C,A..+))       |- unisubst(--(&&,X,A..+),C,B), (Belief:PostPN, Goal:PostWeakPN)
+         B, (X ==> (&&,--C,A..+))       |- unisubst(--(&&,X,A..+),C,B), (Belief:PostNN, Goal:PostWeakNN)
 
         //antigoal:
         //B, (A ==> C), --is(A,"--"),--is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PreWeakN, Time:TaskPlusBeliefDT)
 
        //questions
         //B, (A ==> C), task("?"), --is(A,"--"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((A ==> C),A,B,strict), (Punctuation:Question, Time:TaskPlusBeliefDT)
-          B, (A ==> C), --is(A,"--"),task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B), (Time:TaskPlusBeliefDT)
+          B, (A ==> C), --is(A,"--"),task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B)
 
 
-    A, (--A ==> C), --is(A,"#"),--is(C,"#") |- C, (Belief:PreN, Goal:PreWeakN, Time:TaskPlusBeliefDT)
-     B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,strict), (Belief:PreRecursiveN, Goal:PreWeakN, Time:TaskPlusBeliefDT)
+    A, (--A ==> C), --is(A,"#"),--is(C,"#") |- C, (Belief:PreN, Goal:PreWeakN)
+     B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,strict), (Belief:PreRecursiveN, Goal:PreWeakN)
 
         //antigoal:
         //B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PreWeak, Time:TaskPlusBeliefDT)
 
         //questions
         //B, (--A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((--A ==> C),A,B,strict), (Punctuation:Question, Time:TaskPlusBeliefDT)
-          B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B), (Time:TaskPlusBeliefDT)
+          B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B))
 
-    B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B), (Belief:Post, Goal:PostStrong, Time:TaskMinusBeliefDT)
+    B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B), (Belief:Post, Goal:Post)
+       B, (  (&&,  C,A..+) ==> X)       |-   unisubst((&&,X,A..+),C,B), (Belief:Pre, Goal:Pre)
+       B, (  (&&,--C,A..+) ==> X)       |-   unisubst((&&,X,A..+),C,B), (Belief:PreN, Goal:PreN)
+       B, (--(&&,  C,A..+) ==> X)       |- --unisubst((&&,X,A..+),C,B), (Belief:Pre, Goal:Pre)
+       B, (--(&&,--C,A..+) ==> X)       |- --unisubst((&&,X,A..+),C,B), (Belief:PreN, Goal:PreN)
 
         //antigoal:
         //B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PostStrongPN, Time:TaskMinusBeliefDT)
 
         //questions
         //B, (C ==> A), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((C ==> A),A,B,strict), (Punctuation:Question, Time:TaskMinusBeliefDT)
-          B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B), (Time:TaskMinusBeliefDT)
+          B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B)
 
 
 
 
-        B, ((&&,C,A..+) ==> X)         |- unisubst((&&,X,A..+),C,B), (Belief:Pre, Goal:PreWeak, Time:Immediate)
-         B, (X ==> (&&,C,A..+))         |- unisubst((&&,X,A..+),C,B), (Belief:Post, Goal:PostStrong, Time:Immediate)
           //B, ((&&,C,A..+) ==> X)         |- unisubst((&&,--X,A..+),C,B), (Belief:DeductionPN, Goal:DesirePN)
-        B, ((&&,--C,A..+) ==> X)       |- unisubst((&&,X,A..+),C,B), (Belief:PreN, Goal:PreWeakN, Time:Immediate)
-         B, (X ==> (&&,--C,A..+))       |- unisubst((&&,X,A..+),C,B), (Belief:PostN, Goal:PostStrongN, Time:Immediate)
           //B, ((&&,--C,A..+) ==> X)       |- unisubst((&&,--X,A..+),C,B), (Belief:DeductionNN, Goal:DesireNN)
-            B, (--(&&,C,A..+) ==> X)   |- unisubst(--(&&,X,A..+),C,B), (Belief:Pre, Goal:PreWeak, Time:Immediate)
-             B, (X ==> (&&,C,A..+))   |- unisubst(--(&&,X,A..+),C,B), (Belief:PostPN, Goal:PostStrongPN, Time:Immediate)
               //B, (--(&&,C,A..+) ==> X)   |- unisubst(--(&&,--X,A..+),C,B), (Belief:DeductionPN, Goal:DesirePN)
-            B, (--(&&,--C,A..+) ==> X) |- unisubst(--(&&,X,A..+),C,B), (Belief:PreN, Goal:PreWeakN, Time:Immediate)
-             B, (X ==> (&&,--C,A..+)) |- unisubst(--(&&,X,A..+),C,B), (Belief:PostNN, Goal:PostStrongNN, Time:Immediate)
               //B, (--(&&,--C,A..+) ==> X) |- unisubst(--(&&,--X,A..+),C,B), (Belief:DeductionNN, Goal:DesireNN)
 
 
 
 //        //TODO question variations
-        Y, (C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,Y),Y,strict), (Belief:Deduction, Time:Immediate)
-          //Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- unisubst(((&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction, Time:Immediate)
+        Y, (C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,Y),Y,strict), (Belief:Deduction)
+          //Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- unisubst(((&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction)
            //Y, ((&&,X,A..+) ==> Z) |- unisubst(((&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
-        Y, (C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:DeductionN, Time:Immediate)
-          //Y, ((&&,--X,A..+) ==> Z), neq(X,Y) |- unisubst(((&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN, Time:Immediate)
+        Y, (C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:DeductionN)
+          //Y, ((&&,--X,A..+) ==> Z), neq(X,Y) |- unisubst(((&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
            //Y, ((&&,--X,A..+) ==> Z) |- unisubst(((&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
-                //Y, (--(&&,X,A..+) ==> Z), neq(X,Y) |- unisubst((--(&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction, Time:Immediate)
+                //Y, (--(&&,X,A..+) ==> Z), neq(X,Y) |- unisubst((--(&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction)
                  //Y, (--(&&,X,A..+) ==> Z) |- unisubst((--(&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
-                //Y, (--(&&,--X,A..+) ==> Z), neq(X,Y) |- unisubst((--(&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN, Time:Immediate)
+                //Y, (--(&&,--X,A..+) ==> Z), neq(X,Y) |- unisubst((--(&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
                  //Y, (--(&&,--X,A..+) ==> Z) |- unisubst((--(&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
 
-        Y, (Z ==> C), is(C,"&&") |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,Y),Y,strict), (Belief:Abduction, Time:Immediate)
-          //Y, (Z ==> (&&,X,A..+)), neq(X,Y),neq(Y,Z) |- unisubst((Z ==> (&&,X,A..+)), X,Y,strict), (Belief:Abduction, Time:Immediate)
+        Y, (Z ==> C), is(C,"&&") |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,Y),Y,strict), (Belief:Abduction)
+          //Y, (Z ==> (&&,X,A..+)), neq(X,Y),neq(Y,Z) |- unisubst((Z ==> (&&,X,A..+)), X,Y,strict), (Belief:Abduction)
             //Y, (Z ==> (&&,X,A..+)) |- unisubst((Z ==> (&&,X,Y,A..+)), X,Y), (Belief:Abduction)
-        Y, (Z ==> C), is(C,"&&") |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:AbductionN, Time:Immediate)
-          //Y, (Z ==> (&&,--X,A..+)), neq(X,Y),neq(Y,Z) |- unisubst((Z ==> (&&,--X,A..+)), X,Y,strict), (Belief:AbductionN, Time:Immediate)
+        Y, (Z ==> C), is(C,"&&") |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:AbductionN)
+          //Y, (Z ==> (&&,--X,A..+)), neq(X,Y),neq(Y,Z) |- unisubst((Z ==> (&&,--X,A..+)), X,Y,strict), (Belief:AbductionN)
             //Y, (Z ==> (&&,--X,A..+)) |- unisubst((Z ==> (&&,--X,--Y,A..+)), X,Y), (Belief:AbductionN)
 
-//    Y, (B ==> (&&,X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:Deduction, Time:Immediate)
-//    Y, (B ==> (&&,--X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:DeductionN, Time:Immediate)
+//    Y, (B ==> (&&,X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:Deduction)
+//    Y, (B ==> (&&,--X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:DeductionN)
 
     //general implication induction
     (A ==> B), X, neq(A,X), neq(A,--X), --is(X,"==>")   |- ((A && X) ==> B), (Belief:Induction)
@@ -199,17 +199,17 @@
         //(P ==> M), (S ==> M) |- --((P || S) ==> M), (Belief:UnionNN)
 //     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:IntersectionSym)
 //     (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:UnionSym)
-        (P ==> M), (S ==> M), task("?") |- ((P && S) ==> M), (Punctuation:Question)
+        (P ==> M), (S ==> M), task("?") |- (polarizeRandom((polarizeRandom(P) && polarizeRandom(S))) ==> M), (Punctuation:Question)
         //(P ==> M), (S ==> M), task("?") |- ((P || S) ==> M), (Punctuation:Question)
 
                 //...Also:VarIntro)
 
 
      (M ==> P), (M ==> S) |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized)
-        (M ==> P), (M ==> S), task("?") |- (M ==> (polarizeRandom(P) && polarizeRandom(S))), (Punctuation:Question)
-
      //(M ==> P), (M ==> S) |- (M ==> (polarize(P,task) || polarize(S,belief))), (Belief:UnionDepolarized, Also:VarIntro)
-        //(M ==> P), (M ==> S), task("?") |- (M ==> (polarize(P,task) || polarize(S,belief))), (Punctuation:Question)
+        (M ==> P), (M ==> S), task("?") |- (M ==> polarizeRandom((polarizeRandom(P) && polarizeRandom(S)))), (Punctuation:Question)
+
+        //(M ==> P), (M ==> S), task("?") |- (M ==> (polarizeRandom(P) || polarizeRandom(S))), (Punctuation:Question)
 
         //TODO question variations
         //((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P && S),A..+) ==> X), (Belief:IntersectionSym)

@@ -20,7 +20,9 @@ abstract public class MapSubst implements Subst {
                 return x;
             case 1: {
                 Map.Entry<? extends Term, Term> e = m.entrySet().iterator().next();
-                return x.replace(e.getKey(), e.getValue());
+                //return x.replace(e.getKey(), e.getValue());
+                //return new MapSubst1(e.getKey(), e.getValue()).transform(x);
+                return replace(e.getKey(), e.getValue()).transform(x);
             }
             case 2: {
                 Iterator<? extends Map.Entry<? extends Term, Term>> ii = m.entrySet().iterator();
@@ -33,6 +35,34 @@ abstract public class MapSubst implements Subst {
         }
 
     }
+//    private static final class MapSubst1 extends MapSubst {
+//        final Term x, y;
+//
+//        public MapSubst1(Term x, Term y) {
+//            this.x = x; this.y = y;
+//        }
+//
+//        @Override
+//        public Term transform(Term t) {
+//            if (t.impossibleSubTerm(x))
+//                return t;
+//            return super.transform(t);
+//        }
+//
+//        /**
+//         * gets the substitute
+//         *
+//         * @param t
+//         */
+//        @Nullable
+//        @Override
+//        public Term xy(Term t) {
+//            if (t.equals(x))
+//                return y;
+//            return null;
+//        }
+//    }
+
     private static final class MapSubst2 extends MapSubst {
         final Term ax, ay, bx, by;
 
@@ -42,7 +72,12 @@ abstract public class MapSubst implements Subst {
             this.bx = b.getKey();
             this.by = b.getValue();
         }
-
+        @Override
+        public Term transform(Term t) {
+            if (t.impossibleSubTerm(ax) && t.impossibleSubTerm(bx))
+                return t;
+            return super.transform(t);
+        }
         /**
          * gets the substitute
          *

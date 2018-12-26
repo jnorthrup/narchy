@@ -50,7 +50,7 @@ public class ClientBuilder {
             tea.setTargetDirectory(new File("/tmp/tea"));
             tea.setLog(LOG);
 
-            tea.setTargetType(TeaVMTargetType.JAVASCRIPT);
+            //tea.setTargetType(TeaVMTargetType.JAVASCRIPT);
             tea.setMinifying(false);
 
 

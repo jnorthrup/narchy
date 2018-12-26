@@ -1459,4 +1459,12 @@ public class NAL7Test extends NALTest {
         test.inputAt(2L,"y. |..+1"); //2..3
         test.mustBelieve(cycles,"(x ==>+1 y)", 1f, 0.45f, 1, 2); //(s,e)->(s==1 && e==2));
     }
+
+    @Test void testBeliefShiftTiming() {
+        test
+            .inputAt(1, "(a-->c). |")
+            .inputAt(2, "(($1-->c) =|> ((a-->$1) &&+4 (c-->d))). |")
+            .mustBelieve(cycles, "(c-->d)", 1f, 0.5f, t->t==5)
+            .mustNotOutput(cycles, "(c-->d)", BELIEF, 0f, 1f, 0f, 1f, t->t<2);
+    }
 }

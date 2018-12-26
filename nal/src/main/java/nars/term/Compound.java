@@ -31,11 +31,11 @@ import nars.IO;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
-import nars.subterm.TermList;
 import nars.term.anon.Anon;
 import nars.term.atom.Bool;
 import nars.term.compound.UnitCompound;
 import nars.term.util.Conj;
+import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
@@ -48,8 +48,7 @@ import java.util.Collection;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import static nars.Op.CONJ;
-import static nars.Op.NEG;
+import static nars.Op.*;
 import static nars.time.Tense.*;
 
 /**
@@ -405,26 +404,27 @@ public interface Compound extends Term, IPair, Subterms {
      * replaces the 'from' term with 'to', recursively
      */
     default Term replace(Term from, Term to) {
-        if (this.equals(from))
-            return to;
-
-        Subterms oldSubs = subterms();
-        Subterms newSubs = oldSubs.replaceSub(from, to, op());
-
-        if (newSubs == oldSubs)
-            return this;
-
-        if (newSubs == null)
-            return Bool.Null;
-
-        int dt = dt();
-        Op o = op();
-        if (newSubs instanceof TermList) {
-            return o.the(dt, ((TermList) newSubs).arrayKeep());
-        } else {
-            return o.the(dt, newSubs);
-        }
-
+        return MapSubst.replace(from,to).transform(this);
+//        if (this.equals(from))
+//            return to;
+//
+//        Subterms oldSubs = subterms();
+//        Subterms newSubs = oldSubs.replaceSub(from, to, op());
+//
+//        if (newSubs == oldSubs)
+//            return this;
+//
+//        if (newSubs == null)
+//            return Bool.Null;
+//
+//        int dt = dt();
+//        Op o = op();
+//        if (newSubs instanceof TermList) {
+//            return o.the(dt, ((TermList) newSubs).arrayKeep());
+//        } else {
+//            return o.the(dt, newSubs);
+//        }
+//
     }
 
     default int subTimeOnly(Term event) {
@@ -771,8 +771,28 @@ public interface Compound extends Term, IPair, Subterms {
                 return Bool.True;
         }
 
-        if (sameOpAndDT)
+        if (sameOpAndDT) {
             newDT = thisDT;
+
+            //apply any shifts caused by range changes
+            if (targetOp == CONJ) {
+                if (newDT!=DTERNAL && newDT!=XTERNAL && xx.subs()==2 && yy.subs()==2) {
+                    int subjRangeBefore = xx.sub(0).eventRange();
+                    int predRangeBefore = xx.sub(1).eventRange();
+                    int subjRangeAfter = yy.sub(0).eventRange();
+                    int predRangeAfter = yy.sub(1).eventRange();
+                    newDT += (subjRangeBefore - subjRangeAfter) + (predRangeBefore-predRangeAfter);
+                }
+            } else if (targetOp == IMPL) {
+                if (newDT!=DTERNAL && newDT!=XTERNAL) {
+                    int subjRangeBefore = xx.sub(0).eventRange();
+                    int predRangeBefore = xx.sub(1).eventRange();
+                    int subjRangeAfter = yy.sub(0).eventRange();
+                    int predRangeAfter = yy.sub(1).eventRange();
+                    newDT += (subjRangeBefore - subjRangeAfter) + (predRangeBefore-predRangeAfter);
+                }
+            }
+        }
 
         return f.transformedCompound(this, targetOp, newDT, xx, yy);
     }

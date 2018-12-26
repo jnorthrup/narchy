@@ -284,6 +284,12 @@ public class PremiseRuleSource extends ProxyTerm {
                         negationApplied = true;
                     break;
                 }
+                case "hasVar": {
+                    match(X, new TermMatch.Has(Op.Variable, true, 2), !negated);
+                    if (negated)
+                        negationApplied = true;
+                    break;
+                }
 
                 case "isUnneg": {
                     match(X, new TermMatch.IsUnneg(Op.the($.unquote(Y))), !negated);
