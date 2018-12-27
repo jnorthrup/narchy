@@ -472,6 +472,7 @@ public class TrackXY_NAR extends NAgentX {
     }
 
     private void actionPushButtonMutex() {
+
         if (track.grid.height() > 1) {
             actionPushButtonMutex($.the("up"), $.the("down"), (b) -> {
                 if (b) {

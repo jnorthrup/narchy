@@ -621,12 +621,16 @@ public class Derivation extends PreDerivation {
 
 
     /** resolve a term (ex: task term or belief term) with the result of 2nd-layer substitutions */
-    public Term retransform(Term t) {
-        return
-                    t.replace(retransform); //retransforms only
+    public Term retransform(Term x) {
+        Term y =
+                    x.replace(retransform); //retransforms only
                     //t.replace(xy).replace(retransform); //avoid functor eval
                     //transform(t).replace(retransform);
                     //t.replace(retransform);
+        if (y!=x && !y.op().eventable)
+            return x; //dont bother
+        else
+            return y;
     }
 
     public final Task add(Task t) {

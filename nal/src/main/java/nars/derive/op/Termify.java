@@ -66,11 +66,11 @@ public final class Termify extends AbstractPred<Derivation> {
             return false;
         }
 
-        if (c1.op() == NEG) {
-            c1 = c1.unneg();
-            if (d.concTruth != null)
-                d.concTruth = d.concTruth.neg();
-        }
+//        if (c1.op() == NEG) {
+//            c1 = c1.unneg();
+//            if (d.concTruth != null)
+//                d.concTruth = d.concTruth.neg();
+//        }
 
         if (c1.volume() - (c1.op()==NEG ? 1 : 0) > d.termVolMax) {
             d.nar.emotion.deriveFailVolLimit.increment();
@@ -114,6 +114,11 @@ public final class Termify extends AbstractPred<Derivation> {
                     (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
                 throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
 
+            if (d.concPunc == GOAL && occ[0]!=ETERNAL && occ[0] < d.taskStart) {
+                //immediate shift
+                long range = occ[1] - occ[0];
+                occ[0] = d.taskStart; occ[1] = occ[0] + range;
+            }
 
 //            if (d.concTruth!=null) {
 //                long start = occ[0], end = occ[1];

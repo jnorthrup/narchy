@@ -38,7 +38,9 @@ public class Pacman extends NAgentX {
                     camScale.filter(cm)
             );
 
-            gg.add(new VectorSensorView(c,this)/*.withControls()*/);
+            VectorSensorView v = new VectorSensorView(c, this);
+//            onFrame(v::update);
+            gg.add(v/*.withControls()*/);
             c.resolution(0.1f);
         }
         window(gg, 900, 300);

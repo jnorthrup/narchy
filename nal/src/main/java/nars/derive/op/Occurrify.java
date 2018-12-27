@@ -157,39 +157,40 @@ public class Occurrify extends TimeGraph {
 
         this.decomposeEvents = decomposeEvents;
 
-        final Term taskTerm = d.taskTerm, beliefTerm = d.beliefTerm;
-        if (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.unneg().hasAny(NEG)) {
-            setAutoNeg(pattern, taskTerm, beliefTerm);
-        } else if (pattern.op() == NEG) {
-            link(shadow(pattern.unneg()), 0, shadow(pattern));
-        }
-
+        final Term taskTerm = d.retransform(d.taskTerm);
         Event taskEvent = (taskStart != TIMELESS) ?
                 know(taskTerm, taskStart, taskEnd) :
                 know(taskTerm);
 
-        boolean equalBT = beliefTerm.equals(taskTerm);
-        Event beliefEvent = (beliefStart != TIMELESS) ?
-                know(beliefTerm, beliefStart, beliefEnd) :
-                ((!equalBT) ? know(beliefTerm) : taskEvent) /* same term, reuse the same event */;
+        Term beliefTerm;
+        if (d.beliefTerm.equals(d.taskTerm))
+            beliefTerm = taskTerm;
+        else
+            beliefTerm = d.retransform(d.beliefTerm);
 
-        retransform(taskEvent);
+        if (beliefTerm.op().eventable) {
 
-        if (!equalBT)
-            retransform(beliefEvent);
 
-//        knowIfRetransforms(pattern);
+            boolean equalBT = beliefTerm.equals(taskTerm);
+            Event beliefEvent = (beliefStart != TIMELESS) ?
+                    know(beliefTerm, beliefStart, beliefEnd) :
+                    ((!equalBT) ? know(beliefTerm) : taskEvent) /* same term, reuse the same event */;
+        }
 
+
+        if (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG)) {
+            setAutoNeg(pattern, taskTerm, beliefTerm);
+        }
 
         return this;
     }
 
-    private void retransform(Event e) {
-        Term t = e.id;
-        Term u = d.retransform(t);
-        if (!t.equals(u) && termsEvent(u))
-            link(e, 0, know(u));
-    }
+//    private void retransform(Event e) {
+//        Term t = e.id;
+//        Term u = d.retransform(t);
+//        if (!t.equals(u) && termsEvent(u))
+//            link(e, 0, know(u));
+//    }
 
 //    private void knowIfRetransforms(Term t) {
 //        Term u = d.retransform(t);
@@ -501,31 +502,31 @@ public class Occurrify extends TimeGraph {
 //        },
 
 
-        TaskPlusBeliefDT() {
-            @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return (solveShiftBeliefDT(d, solveDT(d, x, true, false, true), +1));
-            }
-
-
-            @Override
-            long[] occurrence(Derivation d) {
-                return rangeCombine(d, OccIntersect.Task);
-            }
-
-        },
-        TaskMinusBeliefDT() {
-            @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return (solveShiftBeliefDT(d, solveDT(d, x, true, false, true), -1));
-            }
-
-            @Override
-            long[] occurrence(Derivation d) {
-                return rangeCombine(d, OccIntersect.Task);
-            }
-
-        },
+//        TaskPlusBeliefDT() {
+//            @Override
+//            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+//                return (solveShiftBeliefDT(d, solveDT(d, x, true, false, true), +1));
+//            }
+//
+//
+//            @Override
+//            long[] occurrence(Derivation d) {
+//                return rangeCombine(d, OccIntersect.Task);
+//            }
+//
+//        },
+//        TaskMinusBeliefDT() {
+//            @Override
+//            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+//                return (solveShiftBeliefDT(d, solveDT(d, x, true, false, true), -1));
+//            }
+//
+//            @Override
+//            long[] occurrence(Derivation d) {
+//                return rangeCombine(d, OccIntersect.Task);
+//            }
+//
+//        },
 
 
         TaskInBeliefPos() {
@@ -969,30 +970,30 @@ public class Occurrify extends TimeGraph {
 //            return p;
 //        }
 
-        static Pair<Term, long[]> solveShiftBeliefDT(Derivation d, Pair<Term, long[]> p, int sign) {
-
-            long[] o = p.getTwo();
-            long s = o[0];
-            if (s != TIMELESS && s != ETERNAL) {
-
-                int bdt = d.beliefTerm.dt();
-                if (bdt != XTERNAL) {
-                    if (bdt == DTERNAL)
-                        bdt = 0;
-
-                    bdt *= sign;
-
-
-                    int subjDur = d.beliefTerm.sub(0).eventRange(); //impl subj dtRange
-                    bdt += sign * subjDur;
-
-                    o[0] += bdt;
-                    o[1] += bdt;
-
-                }
-            }
-            return p;
-        }
+//        static Pair<Term, long[]> solveShiftBeliefDT(Derivation d, Pair<Term, long[]> p, int sign) {
+//
+//            long[] o = p.getTwo();
+//            long s = o[0];
+//            if (s != TIMELESS && s != ETERNAL) {
+//
+//                int bdt = d.beliefTerm.dt();
+//                if (bdt != XTERNAL) {
+//                    if (bdt == DTERNAL)
+//                        bdt = 0;
+//
+//                    bdt *= sign;
+//
+//
+//                    int subjDur = d.beliefTerm.sub(0).eventRange(); //impl subj dtRange
+//                    bdt += sign * subjDur;
+//
+//                    o[0] += bdt;
+//                    o[1] += bdt;
+//
+//                }
+//            }
+//            return p;
+//        }
 
 
         /**

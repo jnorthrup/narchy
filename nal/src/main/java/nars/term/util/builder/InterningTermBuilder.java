@@ -31,7 +31,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int DEFAULT_SIZE = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    protected static final int maxInternedVolumeDefault = 10;
+    protected static final int maxInternedVolumeDefault = 30;
     protected static final boolean deepDefault = true;
 
     /** memory-saving */
@@ -70,8 +70,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
             if (o.atomic || (!internNegs && o == NEG)) continue;
 
             int s = cacheSizePerOp;
-            if (o == PROD)
-                s *= 2; //HACK since PROD also serves as subterm cache
 
             //TODO use multiple PROD slices to decrease contention
 

@@ -96,7 +96,9 @@ abstract public class DynamicTruthModel {
      */
     abstract public Term reconstruct(Term superterm, List<Task> c, NAR nar);
 
-    /** allow filtering of resolved Tasks */
+    /**
+     * allow filtering of resolved Tasks
+     */
     public boolean acceptComponent(Term superTerm, Term componentTerm, Task componentTask) {
         return true;
     }
@@ -132,7 +134,7 @@ abstract public class DynamicTruthModel {
 
             @Override
             public boolean acceptComponent(Term superTerm, Term componentTerm, Task componentTask) {
-                return componentTask.op()==superTerm.op();
+                return componentTask.op() == superTerm.op();
             }
 
             @Override
@@ -147,18 +149,25 @@ abstract public class DynamicTruthModel {
             @Override
             public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
 
-//                superterm = Image.imageNormalize(superterm);
 
-                Term common = stmtCommon(subjOrPred, superterm);
+
                 Term decomposed = stmtCommon(!subjOrPred, superterm);
-                Op op = superterm.op();
+                if (!decomposed.op().isAny(Op.Sect)) {
+                    //try Image normalizing
+                    superterm = Image.imageNormalize(superterm);
+                    decomposed = stmtCommon(!subjOrPred, superterm);
+                }
 
                 if (decomposed.op().isAny(Op.Sect)) {
+                    Term common = stmtCommon(subjOrPred, superterm);
+
+                    Op op = superterm.op();
+
                     return decomposed.subterms().AND(
                             y -> each.accept(stmtDecomposeStructural(op, subjOrPred, y, common), start, end)
                     );
                 }
-                assert(false);
+                assert (false);
 //                if (union) {
 //                    if (decomposed.op() == NEG) {
 //                        if (superterm.op() == IMPL) {
@@ -245,6 +254,7 @@ abstract public class DynamicTruthModel {
                 return reconstruct(superterm, components, true, false);
             }
         }
+
         private static class UnionImplSubj extends SectIntersection {
             public UnionImplSubj() {
                 super(false, true);
@@ -378,11 +388,11 @@ abstract public class DynamicTruthModel {
 
                 boolean dternal = superDT == DTERNAL;
                 boolean xternal = superDT == XTERNAL;
-                if ((dternal || xternal) && subterms.subs() == 2 && subterms.subs(x->x.eventRange() > 0)==1) {
+                if ((dternal || xternal) && subterms.subs() == 2 && subterms.subs(x -> x.eventRange() > 0) == 1) {
                     //distribute factored conjunction
-                    Term factor = subterms.subFirst(x->x.eventRange()==0);
-                    Term sequence = subterms.subFirst(x->x.eventRange()>0);
-                    return components(sequence, start, end, (event, whenStart, whenEnd)->{
+                    Term factor = subterms.subFirst(x -> x.eventRange() == 0);
+                    Term sequence = subterms.subFirst(x -> x.eventRange() > 0);
+                    return components(sequence, start, end, (event, whenStart, whenEnd) -> {
                         Term eventDistributed = CONJ.the(superDT, event, factor);
                         if (eventDistributed == False || eventDistributed == Null)
                             return false;
@@ -541,8 +551,8 @@ abstract public class DynamicTruthModel {
             return null; //differing passive component; TODO this can be detected earlier, before truth evaluation starts
 
         return Util.map(0, components.size(), Term[]::new, tr ->
-                        //components.get(tr).task().term().sub(subjOrPred ? 0 : 1)
-                        subSubjPredWithNegRewrap(!subjOrPred, components.get(tr))
+                //components.get(tr).task().term().sub(subjOrPred ? 0 : 1)
+                subSubjPredWithNegRewrap(!subjOrPred, components.get(tr))
         );
     }
 
@@ -727,11 +737,11 @@ abstract public class DynamicTruthModel {
             ie = end + decomposed.eventRange();// + outerDT;
         }
 
-        return DynamicConjTruth.ConjIntersection.components(decomposed, is, ie, (what,s,e)->{
+        return DynamicConjTruth.ConjIntersection.components(decomposed, is, ie, (what, s, e) -> {
             //TODO fix
-            int innerDT = (s == ETERNAL) ?  DTERNAL : Tense.occToDT(
+            int innerDT = (s == ETERNAL) ? DTERNAL : Tense.occToDT(
                     //(e-s)-outerDT
-                    e-s
+                    e - s
             );
             Term i;
             if (subjOrPred) {

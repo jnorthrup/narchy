@@ -116,6 +116,7 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
             public int height() {
                 return MonoBufImgBitmap2D.this.height();
             }
+
         }.mode(c);
     }
 

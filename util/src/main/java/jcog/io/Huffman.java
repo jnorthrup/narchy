@@ -134,7 +134,7 @@ public class Huffman {
         symbl2CodLstIdx = byteArrayToInt(in, 4);
         maxSymbolLength = byteArrayToInt(in, 8);
         altCodeIdx = byteArrayToInt(in, 12);
-        useAltOnly = in[16] == 1 ? true : false;
+        useAltOnly = in[16] == 1;
         highestLevel = byteArrayToInt(in, 17);
         altCodeBytes = byteArrayToInt(in, 21);
         codeIdx2Symbols = new byte[byteArrayToInt(in, 25)][][];
@@ -656,9 +656,7 @@ public class Huffman {
 
     private void buildHuffTree(boolean isAlt, boolean isFinal) {
         // remove the two trees with least frequency then put them into a new node and insert into the queue
-        Weight w1, w2;
-        HuffmanTree hn, hf1, hf2;
-        int longTreeId = 0;
+        int longTreeId;
         totalSymbols = trees.size();
         //System.out.println("total symbols=" + totalSymbols);
         int maxTreeDepth;
@@ -673,19 +671,10 @@ public class Huffman {
             longTreeId = 0;
             nodeId = 0;
             while (trees.size() > 1) {
-                w1 = trees.poll();
-                if (w1 instanceof TmpNode) {
-                    hf1 = new HuffmanLeaf(w1.getWeight(), ((TmpNode) w1).key);
-                } else {
-                    hf1 = (HuffmanTree) w1;
-                }
-                w2 = trees.poll();
-                if (w2 instanceof TmpNode) {
-                    hf2 = new HuffmanLeaf(w2.getWeight(), ((TmpNode) w2).key);
-                } else {
-                    hf2 = (HuffmanTree) w2;
-                }
-                hn = new HuffmanNode(hf1, hf2);
+                HuffmanTree hn, hf1, hf2;
+                hf1 = nextTree();
+                hf2 = nextTree();
+                hn = new HuffmanNode(hf1, hf2, nextNodeID());
                 trees.add(hn);
                 if (longTreeId == 0 || hf1.id == longTreeId || hf2.id == longTreeId) {
                     longTreeId = hn.id;
@@ -707,7 +696,7 @@ public class Huffman {
         symbl2CodLstIdx = symbol2Code.length - 1;
         populateLUTNCodes(((HuffmanNode) objectTree).left, new byte[]{1, 0});
         populateLUTNCodes(((HuffmanNode) objectTree).right, new byte[]{1, 1});
-        if (isAlt == false && isFinal == true || freqList == null) {
+        if (!isAlt && isFinal || freqList == null) {
             int symbolIdx = (aryHash(ArrayUtils.EMPTY_BYTE_ARRAY) & symbl2CodLstIdx) - 1;
             if (symbolIdx + 1 == symbol2Code.length) symbolIdx = -1;
             byte[] aKey;
@@ -718,6 +707,22 @@ public class Huffman {
                 }
             }
         }
+    }
+
+    private Huffman.HuffmanTree nextTree() {
+        Weight w1;
+        HuffmanTree hf1;
+        w1 = trees.poll();
+        if (w1 instanceof TmpNode) {
+            hf1 = new HuffmanLeaf(w1.getWeight(), ((TmpNode) w1).key, nextNodeID());
+        } else {
+            hf1 = (HuffmanTree) w1;
+        }
+        return hf1;
+    }
+
+    private int nextNodeID() {
+        return nodeId += 2;
     }
 
     private void findMaxDepth(HuffmanTree objectTree, int level) {
@@ -1058,13 +1063,13 @@ public class Huffman {
         }
     }
 
-    abstract class HuffmanTree implements Comparable<Weight>, Weight {
+    static abstract class HuffmanTree implements Comparable<Weight>, Weight {
         final long frequency;
         final int id;
 
-        HuffmanTree(long freq) {
+        HuffmanTree(long freq, int nodeID) {
             frequency = freq;
-            id = nodeId += 2;
+            id = nodeID;
         }
 
         public int compareTo(Weight w) {
@@ -1076,22 +1081,22 @@ public class Huffman {
         }
     }
 
-    class HuffmanLeaf extends HuffmanTree {
+    static class HuffmanLeaf extends HuffmanTree {
         final byte[] val;
 
-        HuffmanLeaf(long weight, byte[] dat) {
-            super(weight);
+        HuffmanLeaf(long weight, byte[] dat, int nodeID) {
+            super(weight, nodeID);
             val = dat;
         }
 
     }
 
-    class HuffmanNode extends HuffmanTree {
+    static class HuffmanNode extends HuffmanTree {
         final HuffmanTree left;
         final HuffmanTree right;
 
-        HuffmanNode(HuffmanTree lef, HuffmanTree rit) {
-            super(lef.frequency + rit.frequency);
+        HuffmanNode(HuffmanTree lef, HuffmanTree rit, int nodeID) {
+            super(lef.frequency + rit.frequency, nodeID);
             left = lef;
             right = rit;
         }
