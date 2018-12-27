@@ -3,8 +3,8 @@ package nars.task.util;
 import jcog.WTF;
 import jcog.data.pool.MetalPool;
 import jcog.data.set.MetalLongSet;
-import jcog.math.CachedFloatFunction;
 import jcog.sort.FloatRank;
+import jcog.sort.RankedTopN;
 import jcog.sort.TopN;
 import nars.NAR;
 import nars.Op;
@@ -43,6 +43,7 @@ public final class Answer implements AutoCloseable {
 
     public static final int BELIEF_SAMPLE_CAPACITY = Math.max(1, TASK_LIMIT_DEFAULT / 2);
     public static final int QUESTION_SAMPLE_CAPACITY = 1;
+    private final FloatRank<Task> rank;
 
 
     boolean ditherTruth = false;
@@ -52,9 +53,9 @@ public final class Answer implements AutoCloseable {
     public TimeRangeFilter time;
     public Term template = null;
 
-    public final static ThreadLocal<MetalPool<TopN<Task>>> topTasks = TopN.newPool(Task[]::new);
+    public final static ThreadLocal<MetalPool<RankedTopN>> topTasks = TopN.newRankedPool();
 
-    public TopN<Task> tasks;
+    public RankedTopN<Task> tasks;
     public final Predicate<Task> filter;
 
     private Answer(int capacity, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
@@ -64,7 +65,7 @@ public final class Answer implements AutoCloseable {
     /** TODO filter needs to be more clear if it refers to the finished task (if dynamic) or a component in creating one */
     private Answer(int capacity, int maxTries, FloatRank<Task> rank, @Nullable Predicate<Task> filter, NAR nar) {
         this.nar = nar;
-        this.tasks = TopN.pooled(topTasks, capacity, rank.filter(filter), Task[]::new);
+        this.tasks = TopN.pooled(topTasks, capacity, this.rank = rank.filter(filter));
         this.filter = filter;
         this.triesRemain = maxTries;
     }
@@ -79,7 +80,7 @@ public final class Answer implements AutoCloseable {
     }
 
     public FloatRank<Task> rank() {
-        return tasks.rank;
+        return rank;
     }
 
 
@@ -234,7 +235,7 @@ public final class Answer implements AutoCloseable {
                     t = null;
                     break;
                 case 1:
-                    t = tasks.get(0);
+                    t = tasks.get(0).x;
                     break;
                 default: {
                     @Nullable Task root = taskFirst(topOrSample);
@@ -292,8 +293,9 @@ public final class Answer implements AutoCloseable {
         try {
 
             //quick case: 1 item, and it's eternal => its truth
-            if (tasks.size()==1 && tasks.get(0).isEternal()) {
-                Truth trEte = tasks.get(0).truth();
+            Task zeroth;
+            if (tasks.size()==1 && (zeroth = tasks.get(0).x).isEternal()) {
+                Truth trEte = zeroth.truth();
                 return (trEte.evi() < eviMin()) ? null : trEte;
             }
 
@@ -315,11 +317,7 @@ public final class Answer implements AutoCloseable {
     }
 
     private Task taskFirst(boolean topOrSample) {
-        if (topOrSample) {
-            return tasks.get(0);
-        } else {
-            return tasks.get(nar.random());
-        }
+        return (topOrSample ? tasks.get(0) : tasks.get(nar.random())).x;
     }
 
     private Task taskMerge(@Nullable Task root) {
@@ -378,7 +376,7 @@ public final class Answer implements AutoCloseable {
         int s = tasks.size();
         if (s == 0)
             return null;
-        return new DynTruth(s, tasks.items);
+        return new DynTruth(s, tasks.itemsArray(Task[]::new));
     }
 
 
@@ -449,7 +447,7 @@ public final class Answer implements AutoCloseable {
     }
 
     @Nullable public Task any() {
-        return isEmpty() ? null : tasks.top();
+        return isEmpty() ? null : tasks.top().x;
     }
 
     /** consume a limited 'tries' iteration. also applies the filter.
@@ -470,10 +468,10 @@ public final class Answer implements AutoCloseable {
     private void accept(Task task) {
         assert(task!=null);
 
-        if (tasks.capacity() == 1 || !(((CachedFloatFunction)(tasks.rank)).containsKey(task))) {
+        //if (tasks.capacity() == 1 || !(((CachedFloatFunction)(tasks.rank)).containsKey(task))) {
             //if (time == null || time.accept(task.start(), task.end())) {
-            tasks.accept(task);
-        }
+            tasks.addRanked(task);
+        //}
     }
 
     public boolean active() {

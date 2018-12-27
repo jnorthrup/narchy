@@ -2,6 +2,7 @@ package nars.term.util;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.pri.Ranked;
 import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.Op;
@@ -230,9 +231,9 @@ public enum Image {;
             int results = m.tasks.size();
             if (results > 0) {
             //HACK apply this as an add-on transformation to a final result, not every intermediate possible result
-                Object[] tt = m.tasks.items;
+                Ranked<Task>[] tt = m.tasks.items;
                 for (int i = 0; i < results; i++) {
-                    tt[i] = new ImgTermTask(image, (Task) tt[i]);
+                    tt[i].set(new ImgTermTask(image, (tt[i].x)));
                 }
             }
         }

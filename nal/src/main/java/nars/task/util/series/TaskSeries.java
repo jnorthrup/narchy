@@ -1,5 +1,6 @@
 package nars.task.util.series;
 
+import jcog.sort.RankedTopN;
 import jcog.sort.TopN;
 import nars.Task;
 import nars.task.util.Answer;
@@ -28,23 +29,15 @@ public interface TaskSeries<T extends Task> {
 
         DynStampTruth d = new DynStampTruth(Math.min(size, limit));
 
-        TopN<Task> inner = TopN.pooled(Answer.topTasks, Math.min(size, limit), filter != null ?
-                (t) -> filter.test(t) ? -t.minTimeTo(start, end) : Float.NaN
+        RankedTopN<Task> inner = TopN.pooled(Answer.topTasks, Math.min(size, limit), filter != null ?
+                (Task t) -> filter.test(t) ? -t.minTimeTo(start, end) : Float.NaN
                 :
-                (t) -> -t.minTimeTo(start, end), Task[]::new);
+                (Task t) -> -t.minTimeTo(start, end));
 
         try {
 
-//        TopN<Task> inner = new TopN<>(new Task[Math.min(size, limit)],
-//                //this assumes they are all of the same evidence which is not true if the ranges differ
-//                filter!=null ?
-//                    (t, min) -> filter.test(t) ? -t.minTimeTo(start, end) : Float.NaN
-//                    :
-//                    (t, min) -> -t.minTimeTo(start, end)
-//                //TruthIntegration.eviInteg(t, start, end, 1) //TODO this may be better as a double value comparison, long -> float could be lossy
-//        );
 
-            forEach(start, end, true, inner::add);
+            forEach(start, end, true, inner::addRanked);
 
 
             int l = inner.size();

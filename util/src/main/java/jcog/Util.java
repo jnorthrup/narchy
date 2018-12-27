@@ -1198,7 +1198,11 @@ public enum Util {
      * TODO make a version of this which can return the input array if no modifications occurr either by .equals() or identity
      */
     public static <X, Y> Y[] map(Function<X, Y> f, Y[] target, X... src) {
-        return map(f, target, 0, src, 0, src.length);
+        return map(f, target, src.length, src);
+    }
+
+    public static <X, Y> Y[] map(Function<X, Y> f, Y[] target, int size, X... src) {
+        return map(f, target, 0, src, 0, size);
     }
 
     public static <X, Y> Y[] map(Function<X, Y> f, Y[] target, int targetOffset, X[] src, int srcFrom, int srcTo) {

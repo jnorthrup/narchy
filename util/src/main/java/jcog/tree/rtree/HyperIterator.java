@@ -1,5 +1,8 @@
 package jcog.tree.rtree;
 
+import jcog.data.pool.MetalPool;
+import jcog.pri.Ranked;
+import jcog.sort.RankedTopN;
 import jcog.sort.TopN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -14,6 +17,8 @@ import java.util.NoSuchElementException;
 public class HyperIterator<X> implements AutoCloseable {
 
 
+    private static final ThreadLocal<MetalPool<RankedTopN>> pool = TopN.newRankedPool();
+
     /**
      * next available item
      */
@@ -26,7 +31,7 @@ public class HyperIterator<X> implements AutoCloseable {
     /**
      * at each level, the plan is slowly popped from the end growing to the beginning (sorted in reverse)
      */
-    final TopN plan;
+    final RankedTopN plan;
 
 
     //                    new DequePool() {
@@ -42,16 +47,16 @@ public class HyperIterator<X> implements AutoCloseable {
     }
 
     public HyperIterator(Spatialization model, Node<X> start, FloatFunction<HyperRegion> rank) {
-        this.plan = TopN.pooled(64, r -> rank.floatValueOf(
+        this.plan = TopN.pooled(pool, 64, (FloatFunction)r -> rank.floatValueOf(
                 r instanceof Node ? ((Node) r).bounds() : model.bounds(r)
                 //model.bounds(r)
                 ));
 
-        plan.accept(start);
+        plan.addRanked(start);
     }
 
     @Override public final void close() {
-        TopN.unpool(plan);
+        TopN.unpool(pool, plan);
     }
 
 
@@ -64,6 +69,7 @@ public class HyperIterator<X> implements AutoCloseable {
 
         Object z;
         while ((z = plan.pop())!=null) {
+            z = ((Ranked)z).x;
             if (z instanceof Node) {
                 expand((Node<X>) z);
             } else {
@@ -102,7 +108,7 @@ public class HyperIterator<X> implements AutoCloseable {
                 addPlan(node, node);
 
             } else {
-                plan.accept(itemOrNode);
+                plan.addRanked(itemOrNode);
             }
         });
 
@@ -111,7 +117,7 @@ public class HyperIterator<X> implements AutoCloseable {
 
     private void addPlan(Node node, Object first) {
         if (nodeFilter == null || plan.isEmpty() || nodeFilter.tryVisit(node)) {
-            plan.accept(first);
+            plan.addRanked(first);
         }
     }
 
