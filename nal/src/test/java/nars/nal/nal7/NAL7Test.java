@@ -1032,9 +1032,10 @@ public class NAL7Test extends NALTest {
     void multiConditionSyllogismPre() {
 
 
+        test.nar.termVolumeMax.set(14);
         test
-                .input("hold(key). :|:")
-                .input("((hold(#x) &| open(door)) =|> enter(room)). :|:")
+                .input("hold(key). |")
+                .input("((hold(#x) &| open(door)) =|> enter(room)). |")
                 .mustBelieve(cycles, "(open(door) =|> enter(room))",
                         1.00f, 0.81f,
                         0)
