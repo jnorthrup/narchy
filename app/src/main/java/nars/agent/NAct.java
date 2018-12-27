@@ -270,14 +270,9 @@ public interface NAct {
      */
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanPredicate L, BooleanPredicate R, FloatSupplier thresh) {
 
-        boolean freqOrExp = false;
-
-//        float compareThresh =
-//                0;
-                //sqr(Param.TRUTH_EPSILON);
-        //0.5f;
-        //0.5f + sqr(Param.TRUTH_EPSILON);
-        //0.66f;
+        boolean freqOrExp =
+                true;
+                //false;
 
         float[] lr = new float[]{0f, 0f};
 
@@ -297,7 +292,10 @@ public interface NAct {
 //            if (x && !y) ll = t;
             lr[0] = ll;
 
-            return $.t(y ? 1 : 0, n.confDefault(BELIEF));
+            float feedback =
+                    y ? 1 : 0;
+                    //y ? 1 : Math.min(thresh.asFloat(),(g!=null ? g.freq() : 0));
+            return $.t(feedback, n.confDefault(BELIEF));
 
         });
         GoalActionConcept RA = action(r, (b, g) -> {
@@ -310,7 +308,10 @@ public interface NAct {
 //            if (x && !y) rr = t;
             lr[1] = rr;
 
-            return $.t(y ? 1 : 0, n.confDefault(BELIEF));
+            float feedback =
+                    y ? 1 : 0;
+                    //y ? 1 : Math.min(thresh.asFloat(),(g!=null ? g.freq() : 0));
+            return $.t(feedback, n.confDefault(BELIEF));
         });
 
         for (GoalActionConcept x : new GoalActionConcept[]{LA, RA}) {

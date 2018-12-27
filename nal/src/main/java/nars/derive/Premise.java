@@ -5,7 +5,10 @@
 package nars.derive;
 
 import com.netflix.servo.monitor.Counter;
-import nars.*;
+import nars.Emotion;
+import nars.NAR;
+import nars.Op;
+import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.op.mental.AliasConcept;

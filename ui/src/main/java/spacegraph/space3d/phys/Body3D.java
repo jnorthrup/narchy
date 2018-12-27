@@ -37,7 +37,6 @@ import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.Quat4f;
 import spacegraph.util.math.v3;
 
-import static jcog.Util.clamp;
 import static jcog.Util.unitize;
 import static spacegraph.util.math.v3.v;
 

@@ -9,7 +9,8 @@ import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DynamicSectTest {
     @Test

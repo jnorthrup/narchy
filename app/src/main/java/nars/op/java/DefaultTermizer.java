@@ -8,7 +8,6 @@ import nars.$;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

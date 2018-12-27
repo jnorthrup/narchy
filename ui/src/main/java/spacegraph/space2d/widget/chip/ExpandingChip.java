@@ -3,13 +3,8 @@ package spacegraph.space2d.widget.chip;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
-import spacegraph.space2d.container.unit.UnitContainer;
 import spacegraph.space2d.widget.button.CheckBox;
-import spacegraph.space2d.widget.port.Wire;
-import spacegraph.space2d.widget.windo.GraphEdit;
-import spacegraph.space2d.widget.windo.Windo;
 
-import java.util.Map;
 import java.util.function.Supplier;
 
 import static spacegraph.space2d.container.Bordering.S;
