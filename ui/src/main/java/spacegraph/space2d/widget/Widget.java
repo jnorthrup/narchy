@@ -191,7 +191,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     /** add temperature to this widget, affecting its display and possibly other behavior.  useful for indicating
      *  transient activity */
     public void pri(float inc) {
-        this.pri = Util.clamp(pri + inc, 0, 1f);
+        this.pri = Util.unitize(pri + inc);
     }
 
     public float pri() { return pri; }

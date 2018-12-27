@@ -16,6 +16,10 @@ import java.util.function.Predicate;
      */
     float rank(X x, float min);
 
+    default float rank(X x) {
+        return rank(x, Float.NEGATIVE_INFINITY);
+    }
+
     /** adapter which ignores the minimum */
     static <X> FloatRank<X> the(FloatFunction<X> f) {
         return (x, min) -> f.floatValueOf(x);

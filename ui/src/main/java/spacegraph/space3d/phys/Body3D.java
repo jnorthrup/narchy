@@ -38,6 +38,7 @@ import spacegraph.util.math.Quat4f;
 import spacegraph.util.math.v3;
 
 import static jcog.Util.clamp;
+import static jcog.Util.unitize;
 import static spacegraph.util.math.v3.v;
 
 
@@ -273,8 +274,8 @@ public class Body3D<X> extends Collidable<X> {
 	}
 
 	public void setDamping(float lin_damping, float ang_damping) {
-		linearDamping = clamp(lin_damping, 0f, 1f);
-		angularDamping = clamp(ang_damping, 0f, 1f);
+		linearDamping = unitize(lin_damping);
+		angularDamping = unitize(ang_damping);
 	}
 
 	public float getLinearDamping() {

@@ -78,7 +78,7 @@ public interface PriProxy<X, Y> extends UnitPrioritizable, Supplier<Y> {
         @Override
         public float pri(float p) {
             if (p == p) {
-                p = Util.clamp(p, 0, 1);
+                p = Util.unitize(p);
             }
             return this.pri = p;
         }

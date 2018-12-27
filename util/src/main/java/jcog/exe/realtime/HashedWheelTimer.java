@@ -168,7 +168,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
             empties = 0;
 
-            while ((c = cursor.getAndUpdate(cc -> cc >= 0 ? (cc + 1) % wheels : SHUTDOWN)) >= 0) {
+            while ((c = cursor.getAndAccumulate(wheels, (cc,w) -> (cc + 1) % w)) >= 0) {
 
                 if (model.run(c, this) == 0) {
                     if (empties++ >= wheels * SLEEP_EPOCHS) {
@@ -182,7 +182,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
                 deadline = await(deadline);
             }
         }
-        while (cursor.getOpaque()!= SHUTDOWN && !model.canExit() && !cursor.compareAndSet(c, -1));
+        while (cursor.getOpaque() >= 0 && !model.canExit() && !cursor.compareAndSet(c, -1));
 
         loop = null;
 

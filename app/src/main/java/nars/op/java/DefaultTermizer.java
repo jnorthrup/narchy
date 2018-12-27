@@ -32,6 +32,12 @@ public class DefaultTermizer implements Termizer {
 
 
     public static final Variable INSTANCE_VAR = $.varDep("instance");
+    static final Term TRUE_TERM =
+            Atomic.the("TRUE");
+            //Bool.True;
+    static final Term FALSE_TERM =
+            TRUE_TERM.neg();
+            //Bool.False;
 
 
     final Map<Term, Object> termToObj = new CustomConcurrentHashMap<>(STRONG, EQUALS, STRONG /*SOFT*/, IDENTITY, 64);
@@ -57,10 +63,10 @@ public class DefaultTermizer implements Termizer {
     );
 
     public DefaultTermizer() {
-        termToObj.put(Bool.True, true);
-        termToObj.put(Bool.False, false);
-        objToTerm.put(true, Bool.True);
-        objToTerm.put(false, Bool.False);
+        termToObj.put(TRUE_TERM, true);
+        termToObj.put(FALSE_TERM, false);
+        objToTerm.put(true, TRUE_TERM);
+        objToTerm.put(false, FALSE_TERM);
     }
 
     public void put(Term x, Object y) {
@@ -117,7 +123,7 @@ public class DefaultTermizer implements Termizer {
             return $.quote(o);
 
         if (o instanceof Boolean)
-            return ((Boolean) o) ? Bool.True : Bool.False;
+            return ((Boolean) o) ? TRUE_TERM : FALSE_TERM;
 
         if (o instanceof Character)
             return $.quote(String.valueOf(o));
@@ -291,7 +297,7 @@ public class DefaultTermizer implements Termizer {
     public Term term(@Nullable Object o) {
         if (o == null) return NULL;
         else if (o instanceof Boolean) {
-            return (Boolean) o ? Bool.True : Bool.False;
+            return (Boolean) o ? TRUE_TERM : FALSE_TERM;
         } else if (o instanceof Number) {
             if (o instanceof Byte || o instanceof Short || o instanceof Integer || (o instanceof Long && Math.abs((Long) o) < Integer.MAX_VALUE - 1)) {
                 return Int.the(((Number) o).intValue());

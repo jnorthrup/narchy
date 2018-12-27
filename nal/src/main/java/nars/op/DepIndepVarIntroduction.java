@@ -65,10 +65,12 @@ public class DepIndepVarIntroduction extends VarIntroduction {
         return select.apply(Terms.sorted(input));
     }
 
+    public static final int MEMOIZE_CAPACITY = 32 * 1024;
+
     private final static Function<Subterms,Term[]> select = Memoizers.the.memoize(
             DepIndepVarIntroduction.class.getSimpleName() + "_select",
             SubtermsKey::new,
-            DepIndepVarIntroduction::_select, 8*1024);
+            DepIndepVarIntroduction::_select, MEMOIZE_CAPACITY);
 
     static protected Term[] _select(SubtermsKey input) {
         return Terms.nextRepeat(input.subs, depIndepFilter, 2);

@@ -89,6 +89,7 @@ public final class AtomicFloatFieldUpdater<X>  {
         return getUpdate(x, v -> floatToIntBits(f.apply(intBitsToFloat(v), y)));
     }
 
+    /** @see AtomicInteger.accumulateAndGet */
     public float updateAndGet(X x, FloatFloatToFloatFunction f, float y) {
         //return updateGet(x, v -> floatToIntBits(f.apply(intBitsToFloat(v), y)));
 
@@ -98,7 +99,7 @@ public final class AtomicFloatFieldUpdater<X>  {
             prev = INT.get(x);
             nextFloat = f.apply(intBitsToFloat(prev), y);
             next = floatToIntBits(nextFloat);
-        } while(!INT.compareAndSet(x, prev, next));
+        } while(!INT.weakCompareAndSet(x, prev, next));
         return nextFloat;
     }
 

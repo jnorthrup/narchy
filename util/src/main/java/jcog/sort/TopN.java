@@ -49,11 +49,6 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     }
 
 
-    /** invert the SortedArray's order so this isnt necessary */
-    @Deprecated private float rankNeg(X x) {
-        return -rank.rank(x, min);
-    }
-
     public void clear(int newCapacity, IntFunction<X[]> newArray) {
         min = NEGATIVE_INFINITY;
         if (items == null || items.length != newCapacity) {
@@ -137,15 +132,12 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
 
     public float maxValue() {
         X f = first();
-        if (f != null)
-            return rankNeg(f);
-        else
-            return Float.NaN;
+        return f != null ? rank.rank(f) : Float.NaN;
     }
 
     public float minValue() {
         X f = last();
-        return f != null ? rank.rank(f, Float.NEGATIVE_INFINITY) : Float.NaN;
+        return f != null ? rank.rank(f) : Float.NaN;
     }
 
     private float _minValueIfFull() {
@@ -203,7 +195,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
 
     @Override
     public final float floatValueOf(X x) {
-        return rankNeg(x);
+        return -rank.rank(x, min);
     }
 
 

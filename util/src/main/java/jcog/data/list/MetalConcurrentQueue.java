@@ -433,7 +433,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
     }
 
     public float availablePct(int targetCapacity) {
-        return Util.clamp(1f - ((float) size()) / targetCapacity, 0, 1f);
+        return /*Util.unitize*/(1f - ((float) size()) / targetCapacity);
     }
 
 

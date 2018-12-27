@@ -195,14 +195,15 @@ public interface Compound extends Term, IPair, Subterms {
 
         Op o = op();
 
-        boolean temporal = o.temporal && dt() != DTERNAL;
+        int dt = 0;
+        boolean temporal = o.temporal && (dt=dt()) != DTERNAL;
 
         out.writeByte(o.id | (temporal ? IO.TEMPORAL_BIT : 0));
 
         appendSubtermsTo(out);
 
         if (temporal)
-            IntCoding.writeZigZagInt(dt(), out);
+            IntCoding.writeZigZagInt(dt, out);
 
     }
 

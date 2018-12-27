@@ -50,5 +50,6 @@ public class ByteHijackMemoize<X extends ByteKey,Y> extends HijackMemoize<X,Y> {
     @Override
     public float value(X x, Y y) {
         return 1f/(bag.reprobes * (1+x.length()));
+        //return 1f/(bag.reprobes * (1+ Util.sqr(x.length())));
     }
 }

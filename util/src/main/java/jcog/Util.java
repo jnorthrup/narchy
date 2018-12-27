@@ -675,14 +675,16 @@ public enum Util {
      * clamps a value to 0..1 range
      */
     public static double unitize(double x) {
-        return Util.clamp(x, 0.0, 1.0);
+        assertFinite(x);
+        return Util.clampSafe(x, 0.0, 1.0);
     }
 
     /**
      * clamps a value to 0..1 range
      */
     public static float unitize(float x) {
-        return Util.clamp(x, 0, 1f);
+        assertFinite(x);
+        return Util.clampSafe(x, 0, 1f);
     }
 
     @Contract("_ -> param1")
@@ -845,6 +847,7 @@ public enum Util {
     }
 
     public static int bin(float x, int bins) {
+//        assertFinite(x);
         return Util.clamp((int)(x * bins), 0, bins-1);
         //return (int) Math.floor(x * bins);
         //return (int) (x  * bins);
