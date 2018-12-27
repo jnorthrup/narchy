@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import static java.lang.Float.NEGATIVE_INFINITY;
 
 public class Top<T> implements Consumer<T> {
+    /** TODO use FloatRank */
     public final FloatFunction<T> rank;
     /* TODO private */ public T the;
     public float score;

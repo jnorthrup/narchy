@@ -425,8 +425,6 @@ public class RevisionTest {
         int n = 10 * (a.volume() + b.volume());
         for (int i = 0; i < n; i++) {
             Term ab = Intermpolate.intermpolate(a, b, s.random().nextFloat(), s);
-
-
             ss.add(ab);
         }
 

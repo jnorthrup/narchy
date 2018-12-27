@@ -8,6 +8,7 @@ public class RecycledDynBytes extends DynBytes {
         super(bufferSize);
     }
 
+    private transient MetalPool pool = null;
 
     static final int MAX_KEY_CAPACITY = 4096;
     //final static ThreadLocal<DequePool<byte[]>> bytesPool = DequePool.threadLocal(()->new byte[MAX_KEY_CAPACITY]);
@@ -15,15 +16,13 @@ public class RecycledDynBytes extends DynBytes {
             new RecycledDynBytes(MAX_KEY_CAPACITY));
 
     public static RecycledDynBytes get() {
-        RecycledDynBytes r = bytesPool.get().get();
+        MetalPool<RecycledDynBytes> pool = bytesPool.get();
+        RecycledDynBytes r = pool.get();
         r.clear();
+        r.pool = pool;
         return r;
     }
 
-//    @Override
-//    protected byte[] alloc(int bufferSize) {
-//        //return ArrayPool.bytes().getMin(bufferSize);
-//    }
 
     @Override
     public byte[] compact() {
@@ -32,23 +31,13 @@ public class RecycledDynBytes extends DynBytes {
 
     @Override
     protected byte[] realloc(byte[] x, int oldLen, int newLen) {
-//        byte[] y = ArrayPool.bytes().getMin(newLen);
-//        System.arraycopy(x, 0, y, 0, oldLen);
-//        free(x);
-//        return y;
-
         throw new UnsupportedOperationException();
-
     }
 
     @Override
     public void close() {
-//        if (bytes.length > 0) {
-//            free(bytes);
-//            bytes = ArrayUtils.EMPTY_BYTE_ARRAY;
-//        }
-
-        bytesPool.get().put(this);
+        pool.put(this);
+        pool = null;
     }
 
 

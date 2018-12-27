@@ -1,7 +1,6 @@
 package nars.term.util;
 
 import jcog.Util;
-import jcog.WTF;
 import nars.NAR;
 import nars.Op;
 import nars.subterm.Subterms;
@@ -14,8 +13,10 @@ import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
-/** temporal term intermpolation */
-public enum Intermpolate { ;
+/**
+ * temporal term intermpolation
+ */
+public enum Intermpolate {;
 
     private static Term intermpolate(/*@NotNull*/ Term a, long bOffset, /*@NotNull*/ Term b, float aProp, float curDepth, NAR nar) {
 
@@ -44,7 +45,7 @@ public enum Intermpolate { ;
 //            if (ao == CONJ && curDepth == 1) {
 //                return Conj.conjIntermpolate(a, b, aProp, bOffset); //root only: conj sequence merge
 //            } else  {
-                return dtMergeDirect(a, b, aProp, curDepth, nar);
+            return dtMergeDirect(a, b, aProp, curDepth, nar);
 //            }
         } else {
 
@@ -130,12 +131,13 @@ public enum Intermpolate { ;
      * merge delta
      */
     static int merge(int adt, int bdt, float aProp, NAR nar) {
-        /*if (adt >= 0 == bdt >= 0)*/ { //require same sign ?
+        /*if (adt >= 0 == bdt >= 0)*/
+        { //require same sign ?
 
             int range = //Math.max(Math.abs(adt), Math.abs(bdt));
-                        Math.abs(adt - bdt);
+                    Math.abs(adt - bdt);
             int ab = Util.lerp(aProp, bdt, adt);
-            int delta = Math.max(Math.abs(ab-adt), Math.abs(ab- bdt));
+            int delta = Math.max(Math.abs(ab - adt), Math.abs(ab - bdt));
             float ratio = ((float) delta) / range;
             if (ratio <= nar.intermpolationRangeLimit.floatValue()) {
                 return ab;
@@ -167,19 +169,7 @@ public enum Intermpolate { ;
      * XTERNAL matches anything
      */
     public static float dtDiff(Term a, Term b) {
-//        if (a.volume()!=b.volume())
-//            return Float.POSITIVE_INFINITY;
-//        else
-        float d = dtDiff(a, b, 1);
-        if (d == 0)
-            return 0;
-
-        if (!Float.isFinite(d))
-            d = 1;
-        d = Math.min(1, d);
-        return d;
-
-
+        return dtDiff(a, b, 1);
     }
 
     private static float dtDiff(Term a, Term b, int depth) {
@@ -191,85 +181,51 @@ public enum Intermpolate { ;
             return Float.POSITIVE_INFINITY;
 
         Subterms aa = a.subterms(), bb = b.subterms();
-//        int len = bb.subs();
 
-        float d = 0;
-
-        //        if (a.op() == CONJ && !aSubsEqualsBSubs) {
-//
-//            Conj c = new Conj();
-//            String as = Conj.sequenceString(a, c).toString();
-//            String bs = Conj.sequenceString(b, c).toString();
-//
-//            int levDist = Texts.levenshteinDistance(as, bs);
-//            float seqDiff = (float) levDist / Math.min(as.length(), bs.length());
-//
-//
-//            float rangeDiff = Math.max(1f, Math.abs(a.dtRange() - b.dtRange()));
-//
-//            d += (1f + rangeDiff) * (1f + seqDiff);
-//
-//            return Float.POSITIVE_INFINITY;
-//
-//        } else {
+        float dSubterms = 0;
         if (!aa.equals(bb)) {
 
-            if (aa.subs() != bb.subs())
+            int len = aa.subs();
+            if (len != bb.subs())
                 return Float.POSITIVE_INFINITY;
 
-            d = dtDiff(aa, bb, true, depth);
-
-//            if (!Float.isFinite(d) && len == 2 && ao.commutative && aa.hasAny(Op.Temporal) ) {
-//                //try reversing
-//                d = dtDiff(aa, bb, false, depth);
-//            }
-
-
-        } else {
-
-            int adt = a.dt(), bdt = b.dt();
-            if (adt != bdt) {
-                if (adt == XTERNAL || bdt == XTERNAL) {
-                    //zero, match
-                    int other = adt == XTERNAL ? b.dt() : a.dt();
-                    float range = other!=DTERNAL ? Math.max(1, Math.abs(other)) : 0.5f;
-                    d += 0.25f / range; //undercut the DT option
-                } else {
-
-                    boolean ad = adt == DTERNAL;
-                    boolean bd = bdt == DTERNAL;
-                    int range;
-                    float delta;
-                    if (!ad && !bd) {
-                        range = Math.max(Math.abs(adt), Math.abs(bdt));
-                        delta = Math.abs(Math.abs(adt - bdt));
-                    } else {
-                        range = Math.max(1, Math.abs(ad ? b.dt() : a.dt()));
-                        delta = 0.5f; //one is dternal the other is not, record at least some difference (half time unit)
-                    }
-                    if (!(delta > 0 && range > 0))
-                        throw new WTF();
-                    d += delta / range;
+            for (int i = 0; i < len; i++) {
+                Term ai = aa.sub(i);
+                float di = dtDiff(ai, bb.sub(i), depth + 1);
+                if (!Float.isFinite(di)) {
+                    return Float.POSITIVE_INFINITY;
                 }
+                dSubterms += di;
             }
 
+            dSubterms /= len;
         }
 
-        return d / depth;
-    }
 
-    private static float dtDiff(Subterms aa, Subterms bb, boolean parity, int depth) {
-        float d = 0;
-        int len = aa.subs();
-        for (int i = 0; i < len; i++) {
-            Term ai = aa.sub(i);
-            float dx = dtDiff(ai, bb.sub(parity ? i : (len-1)-i), depth + 1);
-            if (!Float.isFinite(dx)) {
-                return Float.POSITIVE_INFINITY;
+        float dDT;
+        int adt = a.dt(), bdt = b.dt();
+        if (adt != bdt) {
+            int range = Math.max(Math.abs(adt), Math.abs(bdt));
+            if (adt == XTERNAL || bdt == XTERNAL) {
+                dDT = 0.25f; //undercut the DTERNAL case
+            } else {
+
+                boolean ad = adt == DTERNAL, bd = bdt == DTERNAL;
+                if (!ad && !bd) {
+                    dDT = Math.abs(adt - bdt);
+                } else {
+                    dDT = 0.5f; //one is dternal the other is not, record at least some difference (half time unit)
+                }
+
             }
-            d += dx;
+
+            dDT /= range;
+        } else {
+            dDT = 0;
         }
-        return d;
-        //return d/len; // avg
+
+
+        return (dDT + dSubterms) * 0.5f;
     }
+
 }
