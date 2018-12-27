@@ -480,6 +480,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         Subterms xx = x.subterms();
 
+        assert(!xx.hasXternal()): "dont solveDTTrace if subterms have XTERNAL";
+
+
         int subs = xx.subs();
         if (subs == 2) {
             Term a = xx.sub(0), b = xx.sub(1);
@@ -489,6 +492,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
             if (!solveDTAbsolutePair(x, each, a, b, aEqB))
                 return false;
+
 
             return solveDTTrace(x, each, a, b, aEqB);
 
@@ -826,16 +830,14 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         assert (dt != XTERNAL);
 
-        if (dt == DTERNAL) {
+        if (dt == DTERNAL)
             return x.dt(DTERNAL);
-        }
 
+        assert(!x.subterms().hasXternal());
 
         Op xo = x.op();
         Term x0 = x.sub(0);
         if (xo == IMPL) {
-            if (x0.hasXternal() || x.sub(1).hasXternal())
-                return Null; //cant compute
             return x.dt(dt - x0.eventRange());
         } else if (xo == CONJ) {
             if (dt == 0) {
@@ -938,8 +940,6 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      */
     public boolean solve(Term x, boolean filterTimeless, Predicate<Event> target) {
 
-        compact();
-
         this.filterTimeless = filterTimeless;
         this.target = target;
         this.solving = x;
@@ -948,89 +948,91 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         Predicate<Event> each = this::solution;
 
         if (!x.hasXternal()) {
-            //if (!x.hasAny(Op.Temporal)) {
             return solveOccurrence(x, each);
+        } else if (x.subterms().hasXternal()) {
+            return solveDTAndOccRecursive(x, each);
+        } else {
+            return solveDtAndOcc(x, each);
         }
 
-        Subterms xx = x.subterms();
-        if (xx.hasXternal()) {
+    }
 
-            Map<Term, Set<Term>> subSolved = new HashMap(1);
+    private boolean solveDTAndOccRecursive(Term x, Predicate<Event> each) {
 
-            xx.recurseTerms(Term::hasXternal, y -> {
-                if (y.dt() == XTERNAL) {
-                    subSolved.computeIfAbsent(y, (yy) -> {
-                        Set<Term> s = new UnifiedSet(1);
-                        solveDT(yy, z -> {
-                            //TODO there could be multiple solutions for dt
-                            assert (z.id.dt() != XTERNAL);
-                            s.add(z.id);
-                            return true;
-                        });
-                        return s.isEmpty() ? java.util.Set.of() : s;
+        Map<Term, Set<Term>> subSolved = new UnifiedMap(4);
+
+        x.subterms().recurseTerms(Term::hasXternal, y -> {
+            if (y.dt() == XTERNAL && !y.subterms().hasXternal()) {
+
+                subSolved.computeIfAbsent(y, (yy) -> {
+
+                    Set<Term> s = new UnifiedSet(2);
+                    solveDT(yy, z -> {
+                        //TODO there could be multiple solutions for dt
+                        assert (z.id.dt() != XTERNAL);
+                        s.add(z.id);
+                        return true;
                     });
-                }
-                return true;
-            }, null);
+                    return s.isEmpty() ? java.util.Set.of() : s;
+                });
+            }
+            return true;
+        }, null);
 
-            subSolved.values().removeIf(java.util.Set::isEmpty);
+        subSolved.values().removeIf(java.util.Set::isEmpty);
 
-            int solvedTerms = subSolved.size();
-            switch (solvedTerms) {
-                case 0:
-                    //continue below
-                    break;
-                case 1:
-                    //randomize the entries
-                    Map.Entry<Term, Set<Term>> xy = subSolved.entrySet().iterator().next();
+        int solvedTerms = subSolved.size();
+        switch (solvedTerms) {
+            case 0:
+                //continue below
+                break;
+            case 1:
+                //randomize the entries
+                Map.Entry<Term, Set<Term>> xy = subSolved.entrySet().iterator().next();
 
-                    Set<Term> sy = xy.getValue();
-                    if (!sy.isEmpty()) {
-                        Term xyx = xy.getKey();
-                        Term[] two = sy.toArray(EmptyTermArray);
-                        if (two.length > 1) ArrayUtils.shuffle(two, random());
-                        for (Term sssi : two) {
-                            Term y = x.replace(xyx, sssi);
-                            if (!solveDtAndOccIfConceptualizable(x, y, each))
-                                return false;
-                        }
-                    }
-                    break;
-                default:
-                    //TODO cartesian product of terms. could be expensive
-                    //for now randomize and start with first entry
-                    List<Pair<Term, Term[]>> substs = new FasterList();
-                    final int[] permutations = {1};
-                    subSolved.forEach((h, w) -> {
-                        Term[] ww = w.toArray(EmptyTermArray);
-                        assert (ww.length > 0);
-                        permutations[0] *= ww.length;
-                        substs.add(pair(h, ww));
-                    });
-                    int ns = substs.size();
-                    assert (ns > 0);
-                    Random rng = random();
-
-
-                    while (permutations[0]-- > 0) {
-                        Map<Term, Term> m = new UnifiedMap(ns);
-                        for (Pair<Term, Term[]> si : substs) {
-                            Term[] ssi = si.getTwo();
-                            Term sssi = ssi[ssi.length > 1 ? rng.nextInt(ssi.length) : 0];
-                            m.put(si.getOne(), sssi);
-                        }
-                        Term z = x.replace(m);
-                        if (!solveDtAndOccIfConceptualizable(x, z, each))
+                Set<Term> sy = xy.getValue();
+                if (!sy.isEmpty()) {
+                    Term xyx = xy.getKey();
+                    Term[] two = sy.toArray(EmptyTermArray);
+                    if (two.length > 1) ArrayUtils.shuffle(two, random());
+                    for (Term sssi : two) {
+                        Term y = x.replace(xyx, sssi);
+                        if (!solveDtAndOccIfConceptualizable(x, y, each))
                             return false;
                     }
-                    //break;
-            }
+                }
+                break;
+            default:
+                //TODO cartesian product of terms. could be expensive
+                //for now randomize and start with first entry
+                List<Pair<Term, Term[]>> substs = new FasterList();
+                final int[] permutations = {1};
+                subSolved.forEach((h, w) -> {
+                    Term[] ww = w.toArray(EmptyTermArray);
+                    assert (ww.length > 0);
+                    permutations[0] *= ww.length;
+                    substs.add(pair(h, ww));
+                });
+                int ns = substs.size();
+                assert (ns > 0);
+                Random rng = random();
 
 
+                while (permutations[0]-- > 0) {
+                    Map<Term, Term> m = new UnifiedMap(ns);
+                    for (Pair<Term, Term[]> si : substs) {
+                        Term[] ssi = si.getTwo();
+                        Term sssi = ssi[ssi.length > 1 ? rng.nextInt(ssi.length) : 0];
+                        m.put(si.getOne(), sssi);
+                    }
+                    Term z = x.replace(m);
+                    if (!solveDtAndOccIfConceptualizable(x, z, each))
+                        return false;
+                }
+                //break;
         }
 
-        return solveDtAndOcc(x, each);
-
+        return true;
     }
 
     /** collapse any relative nodes to unique absolute nodes,
@@ -1062,25 +1064,22 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     private boolean solveDtAndOccIfConceptualizable(Term x, Term y, Predicate<Event> each) {
-        return y == null || !termsEvent(y) || y.equals(x) || solveDtAndOcc(y, each);
+        return y == null || !termsEvent(y) || y.equals(x) || y.subterms().hasXternal() ||
+                solveDtAndOcc(y, each);
     }
 
     private boolean solveDtAndOcc(Term x, Predicate<Event> each) {
         /* occurrence, with or without any xternal remaining */
 
         final boolean[] dtSolved = {false};
-        if ((x.dt() != XTERNAL || solveDT(x, y -> {
+        if (!((x.dt() != XTERNAL || solveDT(x, y -> {
             dtSolved[0] = true;
             return solveOccurrence(y, each);
-        }))) {
-            if (!dtSolved[0]) //dont solve if more specific dt solved further in previous solveDT call
-                return solveOccurrence(x, each);
-            else
-                return true;
-        } else
+        }))))
             return false;
 
-
+        //dont solve if more specific dt solved further in previous solveDT call
+        return dtSolved[0] || solveOccurrence(x, each);
     }
 
 

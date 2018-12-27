@@ -98,6 +98,7 @@ public class NARio extends NAgentX {
         AutoclassifiedBitmap camAE = new AutoclassifiedBitmap(null /*id*//*$.inh("cae", id)*/, cc, nx, nx, (subX, subY) -> {
             return new float[]{/*cc.X, cc.Y, */cc.Z};
         }, 12, this);
+        camAE.confResolution.set(0.1f);
         camAE.resolution(0.1f);
         camAE.alpha(0.03f);
         camAE.noise.set(0.02f);

@@ -496,7 +496,6 @@ public class Opjects extends DefaultTermizer {
                 Pair<Pair<Class, Term>, List<Class<?>>> key = pair(pair(c, methodName), types);
                 MethodHandle mh = methodCache.apply(key);
                 if (mh == null) {
-
                     return null;
                 }
 
@@ -603,13 +602,9 @@ public class Opjects extends DefaultTermizer {
     }
 
     private void reflect(Class<?> cl) {
-
         clCache.computeIfAbsent(cl, (clazz) -> {
-
-            for (Method m: clazz.getMethods()) {
+            for (Method m: clazz.getMethods())
                 reflect(m);
-            }
-
             return true;
         });
     }

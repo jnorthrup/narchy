@@ -75,6 +75,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
     private Bitmap2D src = null;
 
     public boolean learn = true;
+    public final FloatRange confResolution = new FloatRange(0, 0, 1);
 
 
     public Surface newChart() {
@@ -150,6 +151,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
                 b.width(), b.height(),
                 sw, sh, metabits, states, agent);
 
+        confResolution.set(nar.confResolution.floatValue());
         this.src = b;
     }
 
@@ -261,7 +263,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
                 1f - (1f / (states / 2f));
 
 
-        float confRes = nar.confResolution.floatValue();
+        float confRes = confResolution.floatValue();
 
         for (int i = 0; i < nw; ) {
             for (int j = 0; j < nh; ) {

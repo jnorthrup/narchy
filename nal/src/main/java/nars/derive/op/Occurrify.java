@@ -182,6 +182,8 @@ public class Occurrify extends TimeGraph {
             setAutoNeg(pattern, taskTerm, beliefTerm);
         }
 
+        compact();
+
         return this;
     }
 

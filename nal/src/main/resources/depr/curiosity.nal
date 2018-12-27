@@ -19,3 +19,7 @@ G, B, task("@")  |- (polarize(B,belief)==>G), (Belief:Curiosity, Punctuation:Goa
 //X, Y, task("!"), --has(X,"?"), --has(Y,"?") |- (X &| --Y),  (Goal:Curiosity, Punctuation:Goal, Time:TaskInstant)
 
 //X, X, task("!"), |- (X &| ?1),       (Punctuation:Quest)
+
+
+//self-fulfilling prophecy: should I?  i believe it is. then i want it to be. (weakly)
+    //G, G, task("@") |- G, (Goal:BeliefStructuralReduction, Punctuation:Goal)
