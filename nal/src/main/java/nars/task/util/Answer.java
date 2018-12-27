@@ -134,7 +134,8 @@ public final class Answer implements AutoCloseable {
 
         FloatFunction<TaskRegion> f = (TaskRegion t) -> {
 
-            if (t.equals(x)) // || Stamp.overlapsAny(xStamp, ((Task) t).stamp()))
+            if (t==x || (!Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME /* TODO: && !disjointTime(x,y) */
+                    && Stamp.overlapsAny(xStamp, ((Task) t).stamp())))
                 return Float.NaN;
 
             return

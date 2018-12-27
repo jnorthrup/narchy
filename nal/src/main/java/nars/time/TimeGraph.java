@@ -16,7 +16,6 @@ import nars.Op;
 import nars.Param;
 import nars.subterm.Subterms;
 import nars.term.Term;
-import nars.term.atom.Bool;
 import nars.term.util.Conj;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.set.MutableSet;
@@ -34,6 +33,7 @@ import java.util.function.Predicate;
 import static jcog.Util.hashCombine;
 import static jcog.data.graph.search.Search.pathStart;
 import static nars.Op.*;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
 import static nars.time.TimeSpan.TS_ZERO;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -834,6 +834,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         Op xo = x.op();
         Term x0 = x.sub(0);
         if (xo == IMPL) {
+            if (x0.hasXternal() || x.sub(1).hasXternal())
+                return Null; //cant compute
             return x.dt(dt - x0.eventRange());
         } else if (xo == CONJ) {
             if (dt == 0) {
@@ -857,10 +859,10 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         } else if (pStart.equals(x1)) {
                             return Conj.sequence(x1, 0, x0, -dt);
                         } else {
-                            return Bool.Null; //TODO
+                            return Null; //TODO
                         }
                     } else {
-                        return Bool.Null;
+                        return Null;
                     }
                 } else {
 

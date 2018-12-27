@@ -285,6 +285,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     public static void unpool(ThreadLocal<MetalPool<RankedTopN>> pool, RankedTopN t) {
         t.clear();
         t.rank = null;
+        t.r = null;
         pool.get().put(t);
     }
 

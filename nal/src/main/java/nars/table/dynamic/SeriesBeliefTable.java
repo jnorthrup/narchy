@@ -184,7 +184,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
         @Override
         protected int hashCalculate() {
             //TODO also involve Term?
-            return Util.hashCombine(stamp()[0], start());
+            return Util.hashCombine(term().hashCode(), Util.hashCombine(stamp()[0], start()));
         }
 
         @Override
@@ -192,10 +192,11 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
             if (this == x) return true;
             if (x instanceof SeriesTask) {
                 //TODO also involve Term?
-                if (stamp()[0] == ((Task) x).stamp()[0] && start() == ((Task) x).start())
+                Task xx = (Task) x;
+                if (stamp()[0] == xx.stamp()[0] && start() == xx.start() && term().equals(xx.term()))
                     return true;
             }
-            return super.equals(x);
+            return false; //return super.equals(x);
         }
 
         public void setEnd(long e) {
