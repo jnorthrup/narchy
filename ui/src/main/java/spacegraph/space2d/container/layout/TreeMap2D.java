@@ -56,11 +56,12 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> {
 
     float highestAspect(int start, int end, RectFloat bounds) {
 
-        layoutRow(start, end, bounds);
+        RectFloat b = layoutRow(start, end, bounds);
 
         float max = Float.NEGATIVE_INFINITY;
         for (int i = start; i <= end; i++) {
-            float r = this.nodes.get(i).aspectExtreme();
+            MutableFloatRect<X> ni = this.nodes.get(i);
+            float r = ni.aspectExtreme();
 
             if (r > max) {
                 max = r;
@@ -74,7 +75,7 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> {
 
         float rowSize = areaSum(start, end);
         float rowRatio = rowSize / total;
-        assert(rowRatio==rowRatio): start + ".." + end + ": " + rowSize + " " + total;
+       // assert(rowRatio==rowRatio): start + ".." + end + ": " + rowSize + " " + total;
         float offset = 0;
 
         for (int i = start; i <= end; i++) {
@@ -118,7 +119,7 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> {
     float areaSum(int start, int end) {
         float sum = 0;
         for (int i = start; i <= end; i++)
-            sum += nodes.get(i).node.pri; //getSize();
+            sum += nodes.get(i).node.pri;
         return sum;
     }
 

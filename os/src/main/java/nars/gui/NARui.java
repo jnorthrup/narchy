@@ -7,9 +7,6 @@ import jcog.event.Off;
 import jcog.exe.Exe;
 import jcog.math.Quantiler;
 import jcog.pri.PLinkHashCached;
-import jcog.pri.PriReference;
-import jcog.pri.Prioritized;
-import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
@@ -47,7 +44,6 @@ import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
-import spacegraph.util.math.Color3f;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,41 +72,6 @@ public class NARui {
 
     public static Surface beliefCharts(Iterable ii, NAR nar) {
         return new BeliefChartsGrid(ii, nar);
-    }
-
-
-    public static <X extends Prioritized> Surface bagView(Bag<?,X> bag, int bins, NAR n) {
-
-
-
-        Plot2D budgetChart = new Plot2D(64, Plot2D.Line)
-            .add("Mass", ()->bag.mass())
-            .add("Pressure", ()->bag.pressure())
-        ;
-
-
-        return new Gridding(DurSurface.get(budgetChart, n, budgetChart::update), bagHistogram(bag, bins, n));
-
-
-    }
-
-    @NotNull
-    public static <X extends Prioritized> Surface bagHistogram(Iterable<X> bag, int bins, NAR n) {
-        float[] d = new float[bins];
-        DurSurface hc = DurSurface.get(new HistogramChart(
-                        () -> d,
-                        new Color3f(0.25f, 0.5f, 0f), new Color3f(1f, 0.5f, 0.1f)),
-                n, () -> {
-                    PriReference.histogram(bag, d);
-                });
-
-        return Splitting.column(
-            hc, 0.1f, new Gridding(
-                    new WindowToggleButton("Sonify", ()->
-                        new HistogramSonification(d)
-                    )
-            )
-        );
     }
 
 
@@ -150,7 +111,7 @@ public class NARui {
 
     public static HashMap<String, Supplier<Surface>> menu(NAR n) {
         Map<String, Supplier<Surface>> m = Map.of(
-                "inp", () -> ExeCharts.inputPanel(n),
+                "inp", () -> ExeCharts.taskBufferPanel(n),
                 //"shl", () -> new ConsoleTerminal(new TextUI(n).session(10f)),
                 "nar", () -> new ObjectSurface<>(n),
                 "exe", () -> ExeCharts.exePanel(n),
@@ -186,7 +147,9 @@ public class NARui {
     public static Surface activeConceptsView(NAR n) {
 
         AbstractConceptIndex cc = (AbstractConceptIndex) n.concepts;
-        return Splitting.row(bagView(cc.active, 16, n), 0.8f,
+
+
+        return Splitting.row(new BagView(cc.active, n), 0.8f,
             new Gridding(
                 new XYSlider(cc.conceptForgetRate,
                         n.attn.activating.conceptActivationRate.subRange(1/1000f, 1/50f)

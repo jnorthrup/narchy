@@ -47,13 +47,18 @@ public class RankedTopN<X> extends TopN<Ranked<X>> {
     }
 
     public boolean addRanked(X task) {
-        Ranked x = r.get();
-        if (add(x.set(task))) {
-            return true;
-        } else {
-            r.put(x);
-            return false;
-        }
+        return add(r.get().set(task));
+
+    }
+
+    @Override
+    protected final void rejectExisting(Ranked<X> e) {
+        r.put(e);
+    }
+
+    @Override
+    protected final void rejectOnEntry(Ranked<X> e) {
+        r.put(e);
     }
 
     @Override

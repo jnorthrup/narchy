@@ -225,7 +225,7 @@ public abstract class Param {
 
     public final TaskBuffer input =
             //new DerivedTasks.DerivedTasksMap(4096);
-            new TaskBuffer.BagTasksBuffer(256, 0.2f);
+            new TaskBuffer.BagTaskBuffer(256, 0.2f);
             //new TaskBuffer.BagPuncTasksBuffer(1024, 0.1f);
 
     /** (unsafe) true should theoreticaly be faster,
@@ -279,7 +279,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 2f;
+    public static final float TEST_TIME_MULTIPLIER = 4f;
 
 
     @Range(min = 1, max = 32)

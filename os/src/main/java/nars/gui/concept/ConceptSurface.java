@@ -18,6 +18,7 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.menu.TabMenu;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.Plot2D;
+import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.HashMap;
@@ -57,7 +58,7 @@ public class ConceptSurface extends TabMenu {
                 },
                 "beliefs", () -> NARui.beliefCharts(n, n.concept(x)),
 //                        "termlinks", () -> new BagView("TermLinks", n.concept(id).termlinks(), n),
-                "tasklinks", () -> new BagView("TaskLinks", n.concept(x).tasklinks(), n),
+                "tasklinks", () -> new LabeledPane("TaskLinks", new BagView(n.concept(x).tasklinks(), n)),
                 "goal", () -> {
                     return new Gridding(
                             new PushButton("gOAL tRUE").click((b) -> {

@@ -149,7 +149,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
      * allowing multiple inputting threads to fill the bag, potentially deduplicating each's results,
      * while other thread(s) drain it in prioritized order as input to NAR.
      */
-    public static class BagTasksBuffer extends TaskBuffer {
+    public static class BagTaskBuffer extends TaskBuffer {
 
 
         /**
@@ -232,7 +232,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
          * @capacity size of buffer for tasks that have been input (and are being de-duplicated) but not yet input.
          * input may happen concurrently (draining the bag) while inputs are inserted from another thread.
          */
-        public BagTasksBuffer(int capacity, float rate) {
+        public BagTaskBuffer(int capacity, float rate) {
             this.capacity.set(capacity);
             this.valve.set(rate);
             this.tasks.setCapacity(capacity);
@@ -277,7 +277,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
                     if (n > 0) {
 
                         if (tasks instanceof ArrayBag) {
-                            FasterList<ITask> batch = BagTasksBuffer.batch.get();
+                            FasterList<ITask> batch = BagTaskBuffer.batch.get();
                             ((ArrayBag) tasks).popBatch(n, batch);
                             if (!batch.isEmpty()) {
                                 batch.forEach(target);
@@ -301,7 +301,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
         /**  TODO abstract */
         protected int batchSize(float dtDurs) {
             //rateControl.apply(tasks.size(), tasks.capacity());
-            return Math.max(1,Math.round(dtDurs * valve.floatValue() * tasks.capacity()));
+            return Math.max(0,Math.round(dtDurs * valve.floatValue() * tasks.capacity()));
         }
     }
 
@@ -313,10 +313,10 @@ abstract public class TaskBuffer implements Consumer<Task> {
         private final TaskBuffer[] ALL;
 
         public BagPuncTasksBuffer(int capacity, float rate) {
-            belief = new BagTasksBuffer(capacity, rate);
-            goal = new BagTasksBuffer(capacity, rate);
-            question = new BagTasksBuffer(capacity, rate);
-            quest = new BagTasksBuffer(capacity, rate);
+            belief = new BagTaskBuffer(capacity, rate);
+            goal = new BagTaskBuffer(capacity, rate);
+            question = new BagTaskBuffer(capacity, rate);
+            quest = new BagTaskBuffer(capacity, rate);
 
             ALL = new TaskBuffer[] {belief, goal, question, quest};
 
