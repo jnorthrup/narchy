@@ -52,11 +52,13 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     //    private float updateFPS = 32f;
     public float renderFPS = UI.FPS_default;
-    public float renderFPSUnfocused = renderFPS / 2;
-    public float renderFPSInvisible = 0;
 
-//    /** reduction throttle for update loop when unfoused */
-//    private float updateFPSUnfocusedMultiplier = 0.25f;
+    /** factor to decrease FPS of unfocused windows */
+    public float renderFPSUnfocusedRate = 0.5f;
+
+
+//    public float renderFPSInvisibleRate = 0;
+
 
     /**
      * render loop
@@ -225,7 +227,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     @Override
     public void windowLostFocus(WindowEvent windowEvent) {
-        renderer.loop.setFPS(renderFPSUnfocused);
+        renderer.loop.setFPS( renderFPSUnfocusedRate * renderFPS );
     }
 
     @Override

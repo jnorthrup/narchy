@@ -11,7 +11,7 @@ import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import org.eclipse.collections.api.set.MutableSet;
 
-import static nars.term.util.Image.imageNormalize;
+import java.util.Arrays;
 
 public class UnifyPreFilter extends AbstractPred<PreDerivation> {
 
@@ -39,6 +39,15 @@ public class UnifyPreFilter extends AbstractPred<PreDerivation> {
             byte[] ypInT = Terms.pathConstant(taskPattern, y);
             byte[] ypInB = Terms.pathConstant(beliefPattern, y); //try the belief
             if (ypInT != null || ypInB != null) {
+                if (xpInT!=null && xpInB!=null) {
+                    if (xpInB.length < xpInT.length)
+                        xpInT = null;
+                }
+                if (ypInT!=null && ypInB!=null) {
+                    if (ypInB.length < ypInT.length)
+                        ypInT = null;
+                }
+
                 pre.add(new UnifyPreFilter(xpInT, xpInB, ypInT, ypInB, varBits, strict));
             }
         }
@@ -52,11 +61,12 @@ public class UnifyPreFilter extends AbstractPred<PreDerivation> {
         if (x == null)
             return false; //ex: seeking a negation but wasnt negated
         Term y = ypInT != null ? d.taskTerm.sub(ypInT) : d.beliefTerm.sub(ypInB);
-        assert (y != Bool.Null) : (ypInT != null ? d.taskTerm : d.beliefTerm) + " does not resolve " + (ypInT != null ? ypInT : ypInB);
+        assert (y != Bool.Null) : (ypInT != null ? d.taskTerm : d.beliefTerm) + " does not resolve "
+                + Arrays.toString((ypInT != null ? ypInT : ypInB)) + " in " + d.taskTerm;
         if (y == null)
             return false; //ex: seeking a negation but wasnt negated
 
-        return Terms.possiblyUnifiable( imageNormalize(x), imageNormalize(y), isStrict, varBits);
+        return Terms.possiblyUnifiable( /*imageNormalize*/(x), /*imageNormalize*/(y), isStrict, varBits);
     }
 
 

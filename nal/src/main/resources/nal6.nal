@@ -19,10 +19,10 @@
 
     A, (A ==> C), --is(A,"#"),--is(C,"#") |- C, (Belief:Pre, Goal:PreWeak)
      B, (A ==> C),--is(A,"--"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,strict), (Belief:PreRecursive, Goal:PreWeak)
-         B, (X ==> (&&,  C,A..+))       |- unisubst(  (&&,X,A..+),C,B), (Belief:Post, Goal:Post)
-         B, (X ==> (&&,--C,A..+))       |- unisubst(  (&&,X,A..+),C,B), (Belief:PostN, Goal:PostN)
-         B, (X ==> (&&,  C,A..+))       |- unisubst(--(&&,X,A..+),C,B), (Belief:PostPN, Goal:PostPN)
-         B, (X ==> (&&,--C,A..+))       |- unisubst(--(&&,X,A..+),C,B), (Belief:PostNN, Goal:PostNN)
+         B, (X ==> (&&,  C,A..+))       |- unisubst(  (&&,X,A..+),C,B), (Belief:Deduction)
+         B, (X ==> (&&,--C,A..+))       |- unisubst(  (&&,X,A..+),C,B), (Belief:DeductionN)
+         B, (X ==> (&&,  C,A..+))       |- unisubst(--(&&,X,A..+),C,B), (Belief:DeductionPN)
+         B, (X ==> (&&,--C,A..+))       |- unisubst(--(&&,X,A..+),C,B), (Belief:DeductionNN)
 
         //antigoal:
         //B, (A ==> C), --is(A,"--"),--is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PreWeakN, Time:TaskPlusBeliefDT)
@@ -42,11 +42,11 @@
         //B, (--A ==> C), task("?"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((--A ==> C),A,B,strict), (Punctuation:Question, Time:TaskPlusBeliefDT)
           B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B))
 
-    B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B), (Belief:Post, Goal:Post)
-       B, (  (&&,  C,A..+) ==> X)       |-   unisubst((&&,X,A..+),C,B), (Belief:Pre, Goal:PreWeak)
-       B, (  (&&,--C,A..+) ==> X)       |-   unisubst((&&,X,A..+),C,B), (Belief:PreN, Goal:PreWeakN)
-       B, (--(&&,  C,A..+) ==> X)       |- --unisubst((&&,X,A..+),C,B), (Belief:Pre, Goal:PreWeak)
-       B, (--(&&,--C,A..+) ==> X)       |- --unisubst((&&,X,A..+),C,B), (Belief:PreN, Goal:PreWeakN)
+    B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B), (Belief:PostWeak, Goal:Post)
+       B, (  (&&,  C,A..+) ==> X)       |-   unisubst((&&,X,A..+),C,B), (Belief:Deduction)
+       B, (  (&&,--C,A..+) ==> X)       |-   unisubst((&&,X,A..+),C,B), (Belief:DeductionN)
+       B, (--(&&,  C,A..+) ==> X)       |- --unisubst((&&,X,A..+),C,B), (Belief:Deduction)
+       B, (--(&&,--C,A..+) ==> X)       |- --unisubst((&&,X,A..+),C,B), (Belief:DeductionN)
 
         //antigoal:
         //B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PostStrongPN, Time:TaskMinusBeliefDT)

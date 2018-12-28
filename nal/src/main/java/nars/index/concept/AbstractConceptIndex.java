@@ -2,6 +2,7 @@ package nars.index.concept;
 
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
+import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
@@ -26,6 +27,7 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
     /** short term memory, TODO abstract and remove */
     public Bag<Term, Activate> active = Bag.EMPTY;
 
+    public final FloatRange activationRate = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 2f);
 
     public final FloatRange conceptForgetRate = new FloatRange(0.5f, 0f, 1f /* 2f */);
 
@@ -124,7 +126,7 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
 
     @Override
     public void activate(Concept c, float pri) {
-        active.putAsync(new Activate(c, pri));
+        active.putAsync(new Activate(c, pri * activationRate.floatValue()));
     }
 
     @Override

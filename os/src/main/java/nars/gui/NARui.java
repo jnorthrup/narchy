@@ -10,6 +10,7 @@ import jcog.pri.PLinkHashCached;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
+import nars.Narsese;
 import nars.Task;
 import nars.agent.NAgent;
 import nars.concept.Concept;
@@ -50,10 +51,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
+import static jcog.Texts.n4;
 import static nars.$.$$;
 import static nars.truth.func.TruthFunctions.w2cSafe;
 import static spacegraph.SpaceGraph.window;
@@ -149,11 +152,15 @@ public class NARui {
         AbstractConceptIndex cc = (AbstractConceptIndex) n.concepts;
 
 
-        return Splitting.row(new BagView(cc.active, n), 0.8f,
+        return Splitting.row(new BagView<>(cc.active, n), 0.8f,
             new Gridding(
                 new XYSlider(cc.conceptForgetRate,
-                        n.attn.activating.conceptActivationRate.subRange(1/1000f, 1/50f)
-                ),
+                        ((AbstractConceptIndex)n.concepts).activationRate.subRange(1/1000f, 1/2f)
+                ) {
+                    @Override public String summaryX(float x) { return "forget=" + n4(x); }
+                    @Override public String summaryY(float y) { return "activate=" + n4(y); }
+                },
+
                 new PushButton("Print", () -> {
                     Appendable a = null;
                     try {
@@ -377,6 +384,23 @@ public class NARui {
         };
         List<ConceptColorIcon> d = c.stream().map(x -> new ConceptColorIcon(x.term(), nar, colorize)).collect(toList());
         return grid(d);
+    }
+
+    public static TextEdit0 newNarseseInput(NAR n, Consumer<Task> onTask, Consumer<Exception> onException) {
+        TextEdit0 input = new TextEdit0(16, 1);
+        input.onKey((k) -> {
+            if (k.getKeyType() == KeyType.Enter) {
+                String s = input.text();
+                input.text("");
+                try {
+                    List<Task> t = n.input(s);
+                    t.forEach(onTask);
+                } catch (Narsese.NarseseException e) {
+                    onException.accept(e);
+                }
+            }
+        });
+        return input;
     }
 
 //    @Deprecated public static void agentOld(NAgent a) {

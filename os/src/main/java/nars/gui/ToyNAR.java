@@ -1,6 +1,5 @@
 package nars.gui;
 
-import com.googlecode.lanterna.input.KeyType;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
@@ -10,7 +9,6 @@ import nars.index.concept.AbstractConceptIndex;
 import nars.index.concept.SimpleConceptIndex;
 import nars.task.util.TaskBuffer;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.meta.OKSurface;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.windo.GraphEdit;
@@ -32,21 +30,11 @@ public class ToyNAR {
         g.add(new BagView<>(((TaskBuffer.BagTaskBuffer)(n.input)).tasks, n)).posRel(0.5f, 0.5f, 0.25f, 0.15f);
 
 
-        {
-            TextEdit0 input = new TextEdit0(16, 1);
-            g.add(input).posRel(0.5f, 0.5f, 0.25f, 0.1f);
-            input.onKey((k) -> {
-                if (k.getKeyType() == KeyType.Enter) {
-                    String s = input.text();
-                    input.text("");
-                    try {
-                        n.input(s);
-                    } catch (Narsese.NarseseException e) {
-                        g.add(new OKSurface(e.toString())).posRel(0.5f, 0.5f, 0.25f, 0.25f);
-                    }
-                }
-            });
-        }
+
+        g.add(NARui.newNarseseInput(n,
+            t->{},
+            e->g.add(new OKSurface(e.toString())).posRel(0.5f, 0.5f, 0.25f, 0.25f)
+        )).posRel(0.5f, 0.5f, 0.25f, 0.1f);
 
         //temporaruy
         g.add(NARui.top(n)).posRel(0.5f,0.5f,0.4f,0.4f);
@@ -59,4 +47,5 @@ public class ToyNAR {
         //n.log(TextEdit.appendable);
         n.startFPS(1f);
     }
+
 }

@@ -126,6 +126,9 @@ public class Premise implements Comparable<Premise> {
 
         Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept);
 
+        Term nextBeliefTerm = belief != null ? belief.term() : beliefTerm.unneg();
+        if (nextBeliefTerm.volume() > d.termVolMax)
+            return false; //WTF
 
         if (!d.budget(task, belief))
             return false;
@@ -157,7 +160,8 @@ public class Premise implements Comparable<Premise> {
             }
         }
 
-        d.reset(task, belief, belief != null ? belief.term() : beliefTerm.unneg());
+
+        d.reset(task, belief, nextBeliefTerm);
 
         return true;
     }

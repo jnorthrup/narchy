@@ -53,6 +53,8 @@ public class Plot2D extends Widget {
 
         float[] color();
 
+        int capacity();
+
         int size();
 
         float get(int i);
@@ -146,6 +148,11 @@ public class Plot2D extends Widget {
             return name;
         }
 
+
+        @Override
+        public int capacity() {
+            return capacity;
+        }
 
         @Override
         public float maxValue() {
@@ -396,8 +403,10 @@ public class Plot2D extends Widget {
 
 
                 int histSize = s.size();
-                float x = 0;
-                float dx = (W / histSize);
+                int histCap = s.capacity();
+
+                float dx = (W / histCap);
+                float x = (histCap - histSize) * dx;
 
                 float[] color = s.color();
                 float r = color[0], g = color[1], b = color[2];

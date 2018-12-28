@@ -132,4 +132,8 @@ public class MutableFloatRect<X> {
     public float aspectExtreme() {
         return Math.max(w/h, h/w);
     }
+
+    public float aspect() {
+        return h/w;
+    }
 }

@@ -1,12 +1,12 @@
 //Similarity to Inheritance
-    (S --> P),     (S <-> P),   task("?") |- (S --> P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Intersect)
+    (S --> P),     (S <-> P),   hasBelief(), task("?") |- (S --> P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Intersect)
       //(S --> P), (--S <-> P),   task("?") |- (--S --> P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Intersect)
       //(S --> P),   (S <-> --P), task("?") |- (S --> --P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Intersect)
 
     //(S --> P), (S <-> P), task("@") |- (S --> P),   (Goal:BeliefStructuralDeduction, Punctuation:Goal)
 
 //Inheritance to Similarity
-    (S <-> P), (S --> P), task("?") |- (S <-> P),   (Belief:BeliefStructuralAbduction, Punctuation:Belief, Time:Intersect)
+    (S <-> P), (S --> P), task("?"), hasBelief() |- (S <-> P),   (Belief:BeliefStructuralAbduction, Punctuation:Belief, Time:Intersect)
 //    (S <-> P), (S --> P), task("?") |- (--,(S <-> P)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
 
 ////inheritance transform

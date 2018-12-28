@@ -45,7 +45,7 @@ public class ConjClustering extends Causable {
     private final BagClustering.Dimensionalize<Task> model;
     private final BufferedCauseChannel in;
     private final byte punc;
-    private final float termVolumeMaxFactor = 0.9f;
+    private final float termVolumeMaxFactor = 0.5f;
     private final Predicate<Task> filter;
     private long now;
     private int dur;

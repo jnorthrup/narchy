@@ -140,7 +140,7 @@ public class NAL8Test extends NALTest {
     }
     @Test
     void eternal_deduction_1_maybe_belief_maybe_conc() {
-        test.logDebug();
+
         test.input("pick:t2. %0.50%");
         test.input("(pick:t2 ==> hold:t2). %0.50%");
         test.mustBelieve(cycles, "hold:t2", 0.5f, 0.4f, ETERNAL);

@@ -1,8 +1,6 @@
 package nars.attention;
 
-import jcog.math.FloatRange;
 import jcog.pri.OverflowDistributor;
-import jcog.pri.ScalarValue;
 import jcog.pri.UnitPri;
 import nars.NAR;
 import nars.Param;
@@ -28,7 +26,6 @@ import java.util.Random;
  * */
 public class Activator  {
 
-    public final FloatRange conceptActivationRate = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 2f);
 
 
 
@@ -72,12 +69,9 @@ public class Activator  {
     }
 
     private Concept activate(Concept x, float pri, @Nullable OverflowDistributor<Concept> overflow) {
-        return activateRaw(x, pri * conceptActivationRate.floatValue(), overflow);
+        return activateRaw(x, pri, overflow);
     }
 
-    private Concept activateRaw(Concept x, float pri) {
-        return activateRaw(x, pri, null);
-    }
 
     private Concept activateRaw(Concept x, float pri, @Nullable OverflowDistributor<Concept> overflow) {
         if (pri!=pri)
@@ -123,7 +117,7 @@ public class Activator  {
     }
 
     public final void activate(OverflowDistributor<Concept> overflow, Random random) {
-        overflow.shuffle(random).redistribute(this::activateRaw);
+        overflow.shuffle(random).redistribute(this::activate);
     }
 
 //    private static final class TermLinkage extends UnitPri implements Comparable<TermLinkage> {

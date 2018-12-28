@@ -21,37 +21,52 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> {
     @Override
     protected void layout(Graph2D<X> g) {
         RectFloat b = g.bounds;
+        //sort descending
         nodes.sortThisByFloat((a)-> {
-            //a.w = a.h = 1;
             a.w = b.w;
             a.h = b.h;
-            return a.node.pri;
+            return -a.node.pri;
         });
         int end = nodes.size() - 1;
         total = areaSum(0, end);
-        layout(0, end, b);
+
+        RectFloat newBounds = layout(0, end, b);
+//
+//        //normalize
+//        float nw = b.w / newBounds.w;
+//        float nh = b.h / newBounds.h;
+//        nodes.forEach(n -> {
+//            n.x = b.x + (n.x - b.x) * nw;
+//            n.y = b.y + (n.y - b.y) * nh;
+//            n.w *= nw;
+//            n.h *= nh;
+//
+//        });
     }
 
 
     int mid;
     float total;
-    public void layout(int start, int end, RectFloat bounds) {
+    public RectFloat layout(int start, int end, RectFloat bounds) {
         if (start > end) {
-            return;
+            return bounds;
         }
         if (start == end) {
             nodes.get(start).set(bounds);
         }
 
+        RectFloat newBounds = bounds;
         this.mid = start;
         while (mid < end) {
             if (highestAspect(start, mid, bounds) > highestAspect(start, mid + 1, bounds)) {
                 mid++;
             } else {
-                RectFloat newBounds = layoutRow(start, mid, bounds);
-                layout(mid + 1, end, newBounds);
+                newBounds = layoutRow(start, mid, bounds);
+                newBounds = layout(mid + 1, end, newBounds);
             }
         }
+
+      return newBounds;
     }
 
     float highestAspect(int start, int end, RectFloat bounds) {
@@ -62,7 +77,6 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> {
         for (int i = start; i <= end; i++) {
             MutableFloatRect<X> ni = this.nodes.get(i);
             float r = ni.aspectExtreme();
-
             if (r > max) {
                 max = r;
             }
@@ -71,7 +85,7 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> {
     }
 
     RectFloat layoutRow(int start, int end, RectFloat bounds) {
-        boolean isHorizontal = bounds.w > bounds.h;
+        boolean isHorizontal = bounds.w < bounds.h;
 
         float rowSize = areaSum(start, end);
         float rowRatio = rowSize / total;
@@ -113,6 +127,7 @@ public class TreeMap2D<X> extends DynamicLayout2D<X, MutableFloatRect<X>> {
         } else {
             return RectFloat.X0Y0WH(bounds.x, bounds.y + bounds.h * rowRatio, bounds.w, bounds.h - bounds.h * rowRatio);
         }
+
     }
 
 

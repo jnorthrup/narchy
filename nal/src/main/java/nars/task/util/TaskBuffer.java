@@ -301,7 +301,10 @@ abstract public class TaskBuffer implements Consumer<Task> {
         /**  TODO abstract */
         protected int batchSize(float dtDurs) {
             //rateControl.apply(tasks.size(), tasks.capacity());
-            return Math.max(0,Math.round(dtDurs * valve.floatValue() * tasks.capacity()));
+            float v = valve.floatValue();
+            if (v < ScalarValue.EPSILON)
+                return 0;
+            return Math.max(1,Math.round(dtDurs * v * tasks.capacity()));
         }
     }
 

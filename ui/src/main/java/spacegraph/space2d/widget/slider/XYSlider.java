@@ -5,22 +5,26 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.v2;
 import jcog.pri.ScalarValue;
+import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerDragging;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.hud.HudHover;
 import spacegraph.space2d.widget.port.FloatPort;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
+import static jcog.Texts.n4;
 import static spacegraph.space2d.container.Bordering.E;
 import static spacegraph.space2d.container.Bordering.S;
 
 /**
  * Created by me on 6/26/16.
  */
-public class XYSlider extends Surface {
+public class XYSlider extends Surface implements HudHover  {
 
     private final v2 knob = new v2(0.5f, 0.5f);
 
@@ -48,6 +52,35 @@ public class XYSlider extends Surface {
         on((xx,yy)->{
            x.setProportionally(xx); y.setProportionally(yy);
         });
+    }
+
+    @Override
+    public Surface hover(RectFloat screenBounds, Finger f) {
+        return caption().pos(screenBounds.scale(0.75f));
+    }
+
+    /** creates a live-updating label */
+    public Surface caption() {
+        return new VectorLabel() {
+            @Override
+            protected boolean prePaint(SurfaceRender r) {
+                text(summary());
+                return super.prePaint(r);
+            }
+        };
+    }
+
+    /** TODO optional labels for x and y axes */
+    public String summary() {
+        return summaryX(knob.x) + ", " + summaryY(knob.y);
+    }
+
+    public String summaryX(float x) {
+        return n4(x);
+    }
+
+    public String summaryY(float y) {
+        return n4(y);
     }
 
     public XYSlider on(FloatFloatProcedure change) {
@@ -88,21 +121,6 @@ public class XYSlider extends Surface {
             });
         }
         return this;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
 

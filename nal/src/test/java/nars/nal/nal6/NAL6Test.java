@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 800;
+    private static final int cycles = 600;
 
     @BeforeEach
     void setup() {
@@ -204,7 +204,6 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination_impl_fwd_neg_pos() {
-        test.nar.termVolumeMax.set(3);
 
         test
                 .believe("(--($x --> --bird) ==> ($x --> animal))")
@@ -215,7 +214,6 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination_impl_rev() {
-        test.nar.termVolumeMax.set(3);
 
         TestNAR tester = test;
 
@@ -241,7 +239,6 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination_sim_subj() {
-        test.nar.termVolumeMax.set(3);
 
         TestNAR tester = test;
         tester.believe("(($x --> bird) <-> ($x --> swimmer))");
@@ -253,7 +250,6 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination_analogy_substIfUnify() {
-        test.nar.termVolumeMax.set(3);
 
         TestNAR tester = test;
         tester.believe("((bird --> $x) <-> (swimmer --> $x))");
@@ -266,7 +262,6 @@ public class NAL6Test extends NALTest {
     @Test
     void variable_elimination_analogy_substIfUnifyOther() {
         //same as variable_elimination_analogy_substIfUnify but with sanity test for commutive equivalence
-        test.nar.termVolumeMax.set(3);
         TestNAR tester = test;
         tester.believe("((bird --> $x) <-> (swimmer --> $x))");
         tester.believe("(swimmer --> swan)", 0.80f, 0.9f);
@@ -277,7 +272,6 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination_analogy_substIfUnify_Neg() {
-        test.nar.termVolumeMax.set(3);
         TestNAR tester = test;
         tester.believe("(--(x --> $1) <-> (z --> $1))");
         tester.believe("(x --> y)", 0.10f, 0.9f);
@@ -288,27 +282,28 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination5() {
-        test.nar.termVolumeMax.set(18);
+        test.nar.termVolumeMax.set(14);
 
         TestNAR tester = test;
         tester.believe("({Tweety} --> [withWings])");
         tester.believe("((($x --> [chirping]) && ($x --> [withWings])) ==> ($x --> bird))");
         tester.mustBelieve(cycles, "(({Tweety} --> [chirping]) ==> ({Tweety} --> bird))",
                 1.00f,
-                0.73f
+                0.81f
         );
 
     }
     @Test
     void variable_elimination5_neg() {
-        test.nar.termVolumeMax.set(18);
+        test.nar.termVolumeMax.set(14);
 
         TestNAR tester = test;
         tester.believe("({Tweety} --> [withWings])");
         tester.believe("((($x --> [chirping]) && ($x --> [withWings])) ==> --($x --> nonBird))");
         tester.mustBelieve(cycles, "(({Tweety} --> [chirping]) ==> --({Tweety} --> nonBird))",
                 1.00f,
-                0.73f
+                0.81f
+                //0.34f
         );
 
     }
@@ -734,6 +729,8 @@ public class NAL6Test extends NALTest {
     @Test
     void variable_elimination_deduction() {
 
+        test.nar.termVolumeMax.set(14);
+
         //$.42 ((open($1,lock1)&&(lock1-->lock))==>($1-->key)). %1.0;.81% {13: 1;2}
         // ((%1,((%2 &&+- %3..+) ==>+- %4),neq(%2,%1),neq(%1,%4)),(unisubst(((%2 &&+- %3..+) ==>+- %4),%2,%1,strict),((Deduction-->Belief))))
         test
@@ -1120,8 +1117,8 @@ public class NAL6Test extends NALTest {
         // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
         test
                 .believe("(S ==> M)", 0.6f, 0.9f)
-                .believe("((X && S) ==> M)", 0.7f, 0.9f)
-                .mustBelieve(cycles, "(X ==> M)", .65f, 0.66f) //some freq and conf, dunno
+                .believe("((X && S) ==> M)", 0.7f, 0.81f)
+                .mustBelieve(cycles, "(X ==> M)", .6f, 0.36f) //some freq and conf, dunno
         ;
     }
     @Test void testDecomposeNegativeImplicationCommonConjunctionSubterm() {

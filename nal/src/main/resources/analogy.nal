@@ -4,13 +4,15 @@
 //      https://cogsci.indiana.edu/
 
   X, (X <-> Y)                        |- Y, (Belief:Analogy, Goal:Desire, Time:Task)
+   X, (X <-> Y), task("?@")            |- Y
     X, (X <-> Y)                         |-  --Y, (Goal:DesireWeakPN, Time:Task)
   X, (--X <-> Y)                      |- Y, (Belief:AnalogyN, Goal:DesireN, Time:Task)
+   X, (--X <-> Y), task("?@")            |- Y
     X, (--X <-> Y)                       |-  --Y, (Goal:DesireWeakNN, Time:Task)
 
 
 
-  Z, (X <-> Y), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Belief:Analogy, Goal:Desire, Time:Task)
+  Z, (X <-> Y), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Belief:Analogy, Goal:DesireWeak, Time:Task)
   //Z, (X <-> Y), task("."), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Punctuation:Question, Time:Task)
     //Z, (X <-> Y), task("!"), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Punctuation:Question, Time:Task)
         //  Belief:Analogy, Goal:DesireWeak)

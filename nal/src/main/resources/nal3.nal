@@ -58,26 +58,26 @@
 //if (S --> M) is the case, and ((|,S,A..+) --> M) is not the case, then ((|,A..+) --> M) is not the case, hence Belief:DecomposePositiveNegativeNegative
 
 //(M --> S), (M --> (|,S,A_1..n)) |- (M --> (|,A_1..n)), (Truth:DecomposeNegativePositivePositive) = NP
-     (M --> X), (M --> S), is(S,"|"), subOf(S,X)    |- (M --> without(S,X)), (Belief:DecomposeNP,Time:Intersect)
+     (M --> X), (M --> S), is(S,"|"), subOf(S,X)    |- (M --> without(S,X)), (Belief:DecomposeNP)
 //       (M --> X), (M --> S), is(S,"|"), subOf(S,--X)  |-  (M --> without(S,--X)), (Belief:DecomposePN)
 //       (M --> X), (M --> S), is(S,"|"), subOf(S,X) |- --(M --> without(S,X)), (Belief:DecomposePP)
-       (M --> X), (M --> S), is(S,"|"), subOf(S,--X)  |-  --(M --> without(S,--X)), (Belief:DecomposeNN,Time:Intersect)
+       (M --> X), (M --> S), is(S,"|"), subOf(S,--X)  |-  --(M --> without(S,--X)), (Belief:DecomposeNN)
 
 //(M --> S), (M --> (&,S,A_1..n)) |- (M --> (&,A_1..n)), (Truth:DecomposePositiveNegativeNegative) = --PN
-     (M --> X), (M --> S), is(S,"&"), subOf(S,X)   |- --(M --> without(S,X)), (Belief:DecomposePN,Time:Intersect)
-       (M --> X), (M --> S), is(S,"&"), subOf(S,--X) |- --(M --> without(S,--X)), (Belief:DecomposeNN,Time:Intersect)
+     (M --> X), (M --> S), is(S,"&"), subOf(S,X)   |- --(M --> without(S,X)), (Belief:DecomposePN)
+       (M --> X), (M --> S), is(S,"&"), subOf(S,--X) |- --(M --> without(S,--X)), (Belief:DecomposeNN)
         //TODO
 
 //(S --> M), ((|,S,A_1..n) --> M) |- ((|,A_1..n) --> M), (Truth:DecomposePositiveNegativeNegative) = --PN
-     (X --> M), (S --> M), is(S,"|"), subOf(S,X)   |-   --(without(S,X) --> M), (Belief:DecomposePN,Time:Intersect)
-       (X --> M), (S --> M), is(S,"|"), subOf(S,--X) |- --(without(S,--X) --> M), (Belief:DecomposeNN,Time:Intersect)
+     (X --> M), (S --> M), is(S,"|"), subOf(S,X)   |-   --(without(S,X) --> M), (Belief:DecomposePN)
+       (X --> M), (S --> M), is(S,"|"), subOf(S,--X) |- --(without(S,--X) --> M), (Belief:DecomposeNN)
         //TODO
 
 //(S --> M), ((&,S,A_1..n) --> M) |- ((&,A_1..n) --> M), (Truth:DecomposeNegativePositivePositive) = NP
-     (X --> M), (S --> M), is(S,"&"), subOf(S,X)   |- (without(S,X) --> M), (Belief:DecomposeNP,Time:Intersect)
+     (X --> M), (S --> M), is(S,"&"), subOf(S,X)   |- (without(S,X) --> M), (Belief:DecomposeNP)
 //       (X --> M), (S --> M), is(S,"&"), subOf(S,--X) |- (without(S,--X) --> M), (Belief:DecomposePP)
 //      (X --> M), (S --> M), is(S,"&"), subOf(S,X)   |- --(without(S,X) --> M), (Belief:DecomposePP)
-      (X --> M), (S --> M), is(S,"&"), subOf(S,--X) |- --(without(S,--X) --> M), (Belief:DecomposeNN,Time:Intersect)
+      (X --> M), (S --> M), is(S,"&"), subOf(S,--X) |- --(without(S,--X) --> M), (Belief:DecomposeNN)
 
 
 
@@ -100,11 +100,11 @@
 
 //
      //similarity coercion (S==P)! (symmetric: DecomposeNegative....)
-     ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeDiff,Time:Intersect)
+     ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeDiff)
        //((&,--P,A..+) --> M), ((&,A..+) --> M) |- (P --> M), (Goal:DecomposeDiff,Time:Intersect) //not working yet
-     (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeDiff,Time:Intersect)
-        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposeDiff,Time:Intersect)
-        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposeDiff,Time:Intersect)
+     (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeDiff)
+        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposeDiff)
+        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposeDiff)
 //
 ////     //difference --(S==P)! (asymmetric: DecomposePositive... )
 //     ((S ~ P) --> M), (S --> M) |- --(P --> M), (Goal:DecomposePP,Time:Intersect)
@@ -115,14 +115,14 @@
 
 
 //     //intersection conditional goal decompose
-     (S --> M), (X --> M), is(S,"|"), subOf(S,X) |- (without(S, X) --> M), (Goal:DecomposePP,Time:Intersect)
-       (S --> M), (X --> M), is(S,"|"), subOf(S,--X) |- (without(S, --X) --> M), (Goal:DecomposePN,Time:Intersect)
-     (S --> M), (X --> M), is(S,"&"), subOf(S,X) |- (without(S, X) --> M), (Goal:DecomposePN,Time:Intersect)
-       (S --> M), (X --> M), is(S,"&"), subOf(S,--X) |- (without(S, --X) --> M), (Goal:DecomposePP,Time:Intersect)
-     (M --> S), (M --> X), is(S,"&"), subOf(S,X) |- (M --> without(S, X)), (Goal:DecomposePP,Time:Intersect)
-       (M --> S), (M --> X), is(S,"&"), subOf(S,--X) |- (M --> without(S, --X)), (Goal:DecomposePN,Time:Intersect)
-     (M --> S), (M --> X), is(S,"|"), subOf(S,X) |- (without(S, X) --> M), (Goal:DecomposePN,Time:Intersect)
-       (M --> S), (M --> X), is(S,"|"), subOf(S,--X) |- (without(S, --X) --> M), (Goal:DecomposePP,Time:Intersect)
+     (S --> M), (X --> M), is(S,"|"), subOf(S,X) |- (without(S, X) --> M), (Goal:DecomposePP)
+       (S --> M), (X --> M), is(S,"|"), subOf(S,--X) |- (without(S, --X) --> M), (Goal:DecomposePN)
+     (S --> M), (X --> M), is(S,"&"), subOf(S,X) |- (without(S, X) --> M), (Goal:DecomposePN)
+       (S --> M), (X --> M), is(S,"&"), subOf(S,--X) |- (without(S, --X) --> M), (Goal:DecomposePP)
+     (M --> S), (M --> X), is(S,"&"), subOf(S,X) |- (M --> without(S, X)), (Goal:DecomposePP)
+       (M --> S), (M --> X), is(S,"&"), subOf(S,--X) |- (M --> without(S, --X)), (Goal:DecomposePN)
+     (M --> S), (M --> X), is(S,"|"), subOf(S,X) |- (without(S, X) --> M), (Goal:DecomposePN)
+       (M --> S), (M --> X), is(S,"|"), subOf(S,--X) |- (without(S, --X) --> M), (Goal:DecomposePP)
 
 //     (M --> (&,P,S,A..*)), (M --> S) |- (M --> P), (Goal:DecomposePP,Time:Intersect)
 //     (M --> (|,P,S,A..*)), (M --> S) |- (M --> P), (Goal:DecomposePN,Time:Intersect)

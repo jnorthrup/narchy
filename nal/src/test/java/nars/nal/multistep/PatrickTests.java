@@ -88,18 +88,19 @@ public class PatrickTests extends NALTest {
         TestNAR tt = test;
 
 
-        int cycles = 15000;
+        int cycles = 1000;
 
         tt.confTolerance(0.5f);
 
-        tt.nar.freqResolution.set(0.1f);
-        tt.nar.confResolution.set(0.02f);
-        tt.nar.confMin.set(0.1f);
+//        tt.nar.freqResolution.set(0.25f);
+//        tt.nar.confResolution.set(0.02f);
+//        tt.nar.confMin.set(0.02f);
 
+//        tt.logDebug();
 
-        int dur = cycles / 4;
+        int dur = 100;
         tt.nar.time.dur(dur);
-        tt.nar.termVolumeMax.set(18);
+        tt.nar.termVolumeMax.set(23);
 
         tt.nar.timeResolution.set(10);
 
@@ -113,14 +114,14 @@ public class PatrickTests extends NALTest {
                 "(<$1 --> [hardened]> =|> <$1 --> [unscrews]>).",
 
 
-                "$1.0 (toothbrush --> [unscrews])! |"
+                "(toothbrush --> [unscrews])! |"
 
         );
 
         tt.mustGoal(cycles, "lighter(I, toothbrush)", 1f,
                 0.2f,
 
-                t -> t >= -30
+                t -> t >= 0
         );
 
 

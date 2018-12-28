@@ -135,7 +135,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
      * finds the most immediate parent matching the class
      */
     public <S> S parent(Class<S> s) {
-        return (S) parent(s::isInstance);
+        return (S)(s.isInstance(this) ? this : parent(s::isInstance));
     }
 
     /**

@@ -113,12 +113,8 @@ public class ExeCharts {
     }
 
     public static Surface taskBufferPanel(NAR n) {
-        Plot2D plot = new Plot2D(256, Plot2D.Line).add("load", () -> n.input.volume(), 0, 1);
-        return new DurSurface(new Gridding(new ObjectSurface(n.input), plot), n) {
-            @Override protected void update() {
-                plot.update();
-            }
-        };
+        Plot2D plot = new Plot2D(256, Plot2D.Line).add("load", n.input::volume, 0, 1);
+        return DurSurface.get(new Gridding(new ObjectSurface<>(n.input), plot), n, plot::update);
     }
 
     static class CausableWidget extends Widget {
