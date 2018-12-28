@@ -1,6 +1,7 @@
 package nars.task;
 
 import com.google.common.collect.Lists;
+import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import nars.*;
 import nars.concept.Concept;
@@ -400,22 +401,19 @@ public class RevisionTest {
         b.tasklinks().print();
     }
 
-    protected static void permuteChoose(Compound a, Compound b, int dur, String expected) {
-        assertEquals(expected, permuteIntermpolations(a, b, dur).toString());
-    }
-
     protected static void permuteChoose(Compound a, Compound b, String expected) {
-        permuteChoose(a, b, 1, expected);
+        assertEquals(expected, permuteIntermpolations(a, b).toString());
     }
 
     protected static Set<Term> permuteIntermpolations(Term a, Term b) {
-        return permuteIntermpolations(a, b, 1);
-    }
 
-    private static Set<Term> permuteIntermpolations(Term a, Term b, int dur) {
+        {
+            float ab = Intermpolate.dtDiff(a, b);
+            assertTrue(Float.isFinite(ab));
+            assertEquals(ab, Intermpolate.dtDiff(b, a), ScalarValue.EPSILON); //commutative
+        }
 
         NAR s = NARS.shell();
-        s.time.dur(dur);
 
         assertEquals(a.concept(), b.concept(), "concepts differ: " + a + " " + b);
 

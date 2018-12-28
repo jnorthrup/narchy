@@ -58,10 +58,7 @@ public abstract class Param {
     public static final boolean DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER = true;
 
 
-    /** in Revision.dtDiff measurement */
-    public static final float TRUTHPOLATION_INTERMPOLATION_THRESH =
-            //0.5f;
-            1f;
+
 
     /**
      * when merging dt's, ratio of the maximum difference in dt allowed

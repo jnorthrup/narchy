@@ -125,6 +125,7 @@ public final class Answer implements AutoCloseable {
     }
 
 
+    /** TODO FloatRank not FloatFunction */
     public static FloatFunction<TaskRegion> mergeability(Task x) {
         MetalLongSet xStamp = Stamp.toSet(x);
         xStamp.trim();
@@ -145,15 +146,11 @@ public final class Answer implements AutoCloseable {
         Term xt = x.term();
         if (xt.hasAny(Op.Temporal)) {
 
-            int xtv = xt.volume();
             return (t) -> {
-                Term tt = ((Task) t).term();
-                if (xtv != tt.volume())
-                    return Float.NaN;
-
                 float v1 = f.floatValueOf(t); //will be negative
                 if (v1 != v1) return Float.NaN;
 
+                Term tt = ((Task) t).term();
                 return v1 * (1f + Intermpolate.dtDiff(xt, tt));
             };
         } else {
@@ -453,17 +450,12 @@ public final class Answer implements AutoCloseable {
 
     /** consume a limited 'tries' iteration. also applies the filter.
      *  a false return value should signal a stop to any iteration supplying results */
-    public boolean tryAccept(Task t) {
-        if (triesRemain <= 0)
-            return false;
-
-        triesRemain--;
-
+    public final boolean tryAccept(Task t) {
         if (filter==null || filter.test(t)) {
             accept(t);
         }
 
-        return true;
+        return (--triesRemain > 0);
     }
 
     private void accept(Task task) {

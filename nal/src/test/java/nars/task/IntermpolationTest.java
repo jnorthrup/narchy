@@ -18,6 +18,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class IntermpolationTest {
 
+    @Test void testDTSimilarity() {
+        for (String o : new String[] { "==>", "&&"}) {
+            Term a = $$("(x " + o + "+0 y)");
+            Term b = $$("(x " + o + "+1 y)");
+            Term nb = $$("(x " + o + "-1 y)");
+            Term c = $$("(x " + o + "+2 y)");
+            assertTrue(
+                    Intermpolate.dtDiff(a, b) < Intermpolate.dtDiff(a, c)
+            );
+            assertTrue(
+                    Intermpolate.dtDiff(b, c) < Intermpolate.dtDiff(b, nb)
+            );
+        }
+    }
+
     @Test
     void testIntermpolation0() throws Narsese.NarseseException {
         Compound a = $.$("((a &&+3 b) &&+3 c)");
@@ -89,7 +104,7 @@ public class IntermpolationTest {
     @Test
     void testIntermpolationOrderMixDternalPost() throws Narsese.NarseseException {
         Term e = $$("(a && (b &&+1 c))");
-        assertEquals("((a&|b) &&+1 (a&|c))", e.toString());
+        assertEquals("((b &&+1 c)&&a)", e.toString());
 
         Compound a = $.$("(a &&+1 (b &&+1 c))");
         Compound b = $.$("(a && (b &&+1 c))");
@@ -140,10 +155,10 @@ public class IntermpolationTest {
         Compound a = $.$("(a &&+1 b)");
         Compound b = $.$("(b &&+1 a))");
         Compound c = $.$("(b &&+2 a))");
-        RevisionTest.permuteChoose(a, b, 1, "[(b &&+1 a), (a &&+1 b)]");
-        RevisionTest.permuteChoose(a, b, 2, "[(a&|b)]");
-        RevisionTest.permuteChoose(a, c, 1, "[(b &&+2 a), (a &&+1 b)]"); //not within dur
-        RevisionTest.permuteChoose(a, c, 4, "[(a&|b)]");
+        RevisionTest.permuteChoose(a, b, "[(b &&+1 a), (a&|b), (a &&+1 b)]");
+        RevisionTest.permuteChoose(a, b, "[(a&|b)]");
+        RevisionTest.permuteChoose(a, c, "[(b &&+2 a), (a &&+1 b)]"); //not within dur
+        RevisionTest.permuteChoose(a, c, "[(a&|b)]");
 
     }
 

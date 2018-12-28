@@ -281,8 +281,8 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
             Term a = first.term();
             Term b = second.term();
-            float dtDiff;
-            if ((dtDiff = dtDiff(a, b)) </*=*/ Param.TRUTHPOLATION_INTERMPOLATION_THRESH /*size >= 2 &&  || e2Evi[0] >= e1Evi[0]*/) {
+
+            if ((Float.isFinite(dtDiff(a, b)))) {
 
                 long firstStart = first.start();
                 long secondStart = second.start();
@@ -313,8 +313,8 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
                     this.term = term;
                     //return 1 - dtDiff * 0.5f; //half discounted
-                    return 1 - dtDiff;
-                    //return 1; //no discount for difference
+                    //return 1 - dtDiff;
+                    return 1; //no discount for difference
                 }
 
 

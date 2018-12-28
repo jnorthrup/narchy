@@ -1,14 +1,16 @@
 package nars.term.util;
 
 import jcog.Util;
+import jcog.pri.ScalarValue;
+import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
 import nars.time.Tense;
 
+import static nars.Op.CONJ;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -18,7 +20,7 @@ import static nars.time.Tense.XTERNAL;
  */
 public enum Intermpolate {;
 
-    private static Term intermpolate(/*@NotNull*/ Term a, long bOffset, /*@NotNull*/ Term b, float aProp, float curDepth, NAR nar) {
+    private static Term intermpolate(/*@NotNull*/ Term a, @Deprecated long bOffset, /*@NotNull*/ Term b, float aProp, float curDepth, NAR nar) {
 
         if (a.equals(b)/* && bOffset == 0*/)
             return a;
@@ -43,10 +45,15 @@ public enum Intermpolate {;
 
         if (ao.temporal) {
 //            if (ao == CONJ && curDepth == 1) {
-//                return Conj.conjIntermpolate(a, b, aProp, bOffset); //root only: conj sequence merge
-//            } else  {
-            return dtMergeDirect(a, b, aProp, curDepth, nar);
-//            }
+            if (a.subterms().equals(b.subterms())) {
+                return dtMergeTemporalDirect(a, b, aProp, curDepth, nar);
+            } else {
+                if (ao == CONJ && Conj.isSeq(a) || Conj.isSeq(b)) {
+                    return Conj.conjIntermpolate(a, b, aProp, bOffset); //root only: conj sequence merge
+                } else  {
+                    return Null;
+                }
+            }
         } else {
 
             Subterms aa = a.subterms(), bb = b.subterms();
@@ -59,7 +66,7 @@ public enum Intermpolate {;
                 Term ai = aa.sub(i), bi = bb.sub(i);
                 if (!ai.equals(bi)) {
                     Term y = intermpolate(ai, 0, bi, aProp, curDepth / 2f, nar);
-                    if (y instanceof Bool)
+                    if (y == Null)
                         return Null;
 
                     if (!ai.equals(y)) {
@@ -70,32 +77,37 @@ public enum Intermpolate {;
                 ab[i] = ai;
             }
 
-            return !change ? a : ao.the(chooseDT(a, b, aProp, nar), ab);
+            return !change ? a : ao.the(ab);
         }
 
     }
 
-    /*@NotNull*/
-    private static Term dtMergeDirect(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, float depth, NAR nar) {
+    /** for merging CONJ or IMPL of equal subterms, so only dt is different  */
+    private static Term dtMergeTemporalDirect(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, float depth, NAR nar) {
 
-
-        Term a0 = a.sub(0), a1 = a.sub(1), b0 = b.sub(0), b1 = b.sub(1);
 
         int dt = chooseDT(a, b, aProp, nar);
-        if (a0.equals(b0) && a1.equals(b1)) {
-            return a.dt(dt);
+        if (dt == DTERNAL) {
+            return $.disj(a, b); //OR
         } else {
-
-            depth /= 2f;
-
-            Term na = intermpolate(a0, 0, b0, aProp, depth, nar);
-            if (na == Null || na == Bool.False) return na;
-
-            Term nb = intermpolate(a1, 0, b1, aProp, depth, nar);
-            if (nb == Null || nb == Bool.False) return nb;
-
-            return a.op().the(dt, na, nb);
+            return a.dt(dt);
         }
+
+        //Term a0 = a.sub(0), a1 = a.sub(1), b0 = b.sub(0), b1 = b.sub(1);
+//        if (a0.equals(b0) && a1.equals(b1)) {
+//            return a.dt(dt);
+//        } else {
+//
+//            depth /= 2f;
+//
+//            Term na = intermpolate(a0, 0, b0, aProp, depth, nar);
+//            if (na == Null) return Null;
+//
+//            Term nb = intermpolate(a1, 0, b1, aProp, depth, nar);
+//            if (nb == Null) return Null;
+//
+//            return a.op().the(dt, na, nb);
+//        }
 
     }
 
@@ -131,7 +143,7 @@ public enum Intermpolate {;
      * merge delta
      */
     static int merge(int adt, int bdt, float aProp, NAR nar) {
-        /*if (adt >= 0 == bdt >= 0)*/
+        if (adt >= 0 == bdt >= 0)
         { //require same sign ?
 
             int range = //Math.max(Math.abs(adt), Math.abs(bdt));
@@ -142,6 +154,7 @@ public enum Intermpolate {;
             if (ratio <= nar.intermpolationRangeLimit.floatValue()) {
                 return ab;
             }
+            return ab;
         }
 
         //discard temporal information by resorting to eternity
@@ -177,13 +190,28 @@ public enum Intermpolate {;
             return 0f;
 
         Op ao = a.op(), bo = b.op();
-        if ((ao != bo) || (a.volume() != b.volume()) || (a.structure() != b.structure()))
+        if (ao != bo)
             return Float.POSITIVE_INFINITY;
-
         Subterms aa = a.subterms(), bb = b.subterms();
+        if ((((aa.structure() != bb.structure() || (a.volume() != b.volume())) && !(aa.hasAny(CONJ) || bb.hasAny(CONJ))))) {
+            return Float.POSITIVE_INFINITY;
+        }
+
+
 
         float dSubterms = 0;
         if (!aa.equals(bb)) {
+
+            if (ao == CONJ && (Conj.isSeq(a) || Conj.isSeq(b))) {
+                if (a.root().equals(b.root())) { //TODO refine
+                    //estimate difference
+                    int ar = a.eventRange(), br = b.eventRange();
+                    int av = a.volume(), bv = b.volume();
+                    return (1 + av+bv)/2 * (1+Math.abs(av- bv)) * ((1 + Math.abs(ar-br))); //heuristic
+                } else {
+                    return Float.POSITIVE_INFINITY;
+                }
+            }
 
             int len = aa.subs();
             if (len != bb.subs())
@@ -205,27 +233,29 @@ public enum Intermpolate {;
         float dDT;
         int adt = a.dt(), bdt = b.dt();
         if (adt != bdt) {
-            int range = Math.max(Math.abs(adt), Math.abs(bdt));
             if (adt == XTERNAL || bdt == XTERNAL) {
-                dDT = 0.25f; //undercut the DTERNAL case
+                //dDT = 0.25f; //undercut the DTERNAL case
+                dDT = ScalarValue.EPSILONsqrt;
             } else {
 
                 boolean ad = adt == DTERNAL, bd = bdt == DTERNAL;
                 if (!ad && !bd) {
-                    dDT = Math.abs(adt - bdt);
+                    float range = Math.min(1+Math.abs(adt), 1+Math.abs(bdt));
+                    assert(range > 0);
+                    dDT = Math.abs(adt - bdt)/(range);
                 } else {
-                    dDT = 0.5f; //one is dternal the other is not, record at least some difference (half time unit)
+                    //dDT = 0.5f; //one is dternal the other is not, record at least some difference (half time unit)
+                    dDT = ScalarValue.EPSILONsqrt * 2;
                 }
 
             }
 
-            dDT /= range;
         } else {
             dDT = 0;
         }
 
 
-        return (dDT + dSubterms) * 0.5f;
+        return dDT + dSubterms;
     }
 
 }

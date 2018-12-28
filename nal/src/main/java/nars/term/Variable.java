@@ -72,6 +72,7 @@ public interface Variable extends Atomic {
         }
         if (x != this) {
 //            try {
+            if (!x.equals(this)) //maybe common variable equality
                 return x.unify(y, u);
 //            } catch (StackOverflowError e) {
 //                throw new WTF("stack overflow unifying variable " + x + " -> " + y + " resolved from " + _y); //TEMPORARY

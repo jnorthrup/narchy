@@ -140,8 +140,8 @@ public class Premise implements Comparable<Premise> {
                     //proxy task to now
                     long[] nowOrBelief =
                             (task.isGoal() || task.isQuest()) ?
-                                //new long[] { now, now + belief.range() - 1 } //immediate
-                                new long[] { d.dur + now, d.dur + now + belief.range() - 1 } //next dur
+                                new long[] { now, now + belief.range() - 1 } //immediate
+                                //new long[] { d.dur + now, d.dur + now + belief.range() - 1 } //next dur
                             :
                                 //Longerval.unionArray(belief.start(), belief.end(), now, now + belief.range() - 1);
                                 new long[] { belief.start(), belief.end() };

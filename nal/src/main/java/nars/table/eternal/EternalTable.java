@@ -278,6 +278,8 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                                     nar
                             );
 
+                    if (!nt.op().taskable)
+                        continue;
                     if (!nt.concept().equals(inputTerm.concept()))
                         continue;
                 }

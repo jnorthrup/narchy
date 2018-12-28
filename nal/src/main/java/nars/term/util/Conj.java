@@ -91,9 +91,13 @@ public class Conj extends ByteAnonMap {
 
     public static Conj from(Term t) {
         Conj c = new Conj();
-        c.add(t.dt() == DTERNAL ? ETERNAL : 0, t);
+        c.addAuto(t);
         c.factor();
         return c;
+    }
+
+    public boolean addAuto(Term t) {
+        return add(t.dt() == DTERNAL ? ETERNAL : 0, t);
     }
 
     public static boolean containsEvent(Term container, Term x) {
@@ -741,27 +745,27 @@ public class Conj extends ByteAnonMap {
         return t;
     }
 
-//    /**
-//     * similar to conjMerge but interpolates events so the resulting
-//     * intermpolation is not considerably more complex than either of the inputs
-//     * assumes a and b are both conjunctions
-//     */
-//    public static Term conjIntermpolate(Term a, Term b, float aProp, long bOffset) {
-//
-////        if (bOffset == 0) {
-////            if (a.subterms().equals(b.subterms())) {
-////                //special case: equal subs
-////                Term ab = a;
-////                if (a.op() == CONJ && Conj.concurrent(a.dt()))
-////                    ab = b; //ab if conj must be non-concurrent as a seed for correctly ordering a result
-////                return ab.dt(Revision.chooseDT(a, b, aProp, nar));
-////            }
-////        }
-////return Bool.Null; //probably better not to bother
-//
-//        return new Conjterpolate(a, b, bOffset, aProp).term();
-//
-//    }
+    /**
+     * similar to conjMerge but interpolates events so the resulting
+     * intermpolation is not considerably more complex than either of the inputs
+     * assumes a and b are both conjunctions
+     */
+    public static Term conjIntermpolate(Term a, Term b, float aProp, long bOffset) {
+
+//        if (bOffset == 0) {
+//            if (a.subterms().equals(b.subterms())) {
+//                //special case: equal subs
+//                Term ab = a;
+//                if (a.op() == CONJ && Conj.concurrent(a.dt()))
+//                    ab = b; //ab if conj must be non-concurrent as a seed for correctly ordering a result
+//                return ab.dt(Revision.chooseDT(a, b, aProp, nar));
+//            }
+//        }
+//return Bool.Null; //probably better not to bother
+
+        return new Conjterpolate(a, b, bOffset, aProp).term();
+
+    }
 
     public void clear() {
         super.clear();
@@ -1153,6 +1157,34 @@ public class Conj extends ByteAnonMap {
             }
             return null; //no change
         } else {
+            //TODO factor out the common events, and rewrite the disjunction as an extra CONJ term with the two options (if they are compatible)
+            //HACK simple case
+            if (a.subs()==2 && b.subs()==2 && !a.subterms().hasAny(CONJ) && !b.subterms().hasAny(CONJ)){
+                Term common = a.sub(0);
+                if (common.equals(b.sub(0))) {
+                    Term ar = Conj.without(a, common, false);
+                    if (ar!=null) {
+                        int ac = a.subTimeFirst(common);
+                        if (ac!=DTERNAL) {
+                            int ao = a.subTimeFirst(ar);
+                            if (ao != DTERNAL) {
+                                Term br = Conj.without(b, common, false);
+                                if (br != null) {
+                                    int bc = b.subTimeFirst(common);
+                                    if (bc!=DTERNAL) {
+                                        int bo = b.subTimeFirst(br);
+                                        if (bo != DTERNAL) {
+                                            Term arOrBr = terms.conj((bo-bc) - (ao-ac), ar.neg(), br.neg()).neg();
+                                            return terms.conj(-ac, common, arOrBr).neg(); //why neg
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             //HACK if the set of components is disjoint, allow
             if (!a.subterms().hasAny(CONJ) && !b.subterms().hasAny(CONJ)) {
                 Subterms bs = b.subterms();
@@ -1702,7 +1734,7 @@ public class Conj extends ByteAnonMap {
         return ArrayUtils.contains(events, b);
     }
 
-    private static void events(byte[] events, ByteProcedure each) {
+    protected static void events(byte[] events, ByteProcedure each) {
         for (byte e : events) {
             if (e != 0) {
                 each.value(e);
@@ -1916,209 +1948,7 @@ public class Conj extends ByteAnonMap {
         });
     }
 
-//    /**
-//     * for each of b's events, find the nearest matching event in a while constructing a new Conj consisting of their mergers
-//     */
-//    static class Conjterpolate extends Conj {
-//
-////        private final Conj aa;
-////        private final Term b;
-////        private final NAR nar;
-//
-//        /**
-//         * proportion of a vs. b, ie: (a/(a+b))
-//         */
-//
-//        Conjterpolate(Term a, Term b, long bOffset, float aProp) {
-//
-////            this.b = b;
-////            this.nar = nar;
-//
-////            this.aa = Conj.from(a);
-////            this.idToTerm.addAll(aa.idToTerm);
-////            this.termToId.putAll(aa.termToId);
-//
-//
-//            if (addAuto(a)) {
-//
-//
-//                if (bOffset == 0)
-//                    addAuto(b);
-//                else
-//                    add(bOffset, b);
-//            }
-//
-////            compress(Math.max(a.volume(), b.volume()), Math.round(nar.intermpolationDurLimit.floatValue()*nar.dur()));
-//
-//
-////            //merge remaining events from 'a'
-////            final boolean[] err = {false};
-////            aa.event.forEachKeyValue((long when, Object wat) -> {
-////                if (err[0])
-////                    return; //HACK
-////                if (wat instanceof RoaringBitmap) {
-////                    RoaringBitmap r = (RoaringBitmap) wat;
-////                    r.forEach((int ri) -> {
-////                        boolean neg = (ri < 0);
-////                        if (neg) ri = -ri;
-////                        if (!add(when, idToTerm.get(ri-1).negIf(neg))) {
-////                            err[0] = true;
-////                        }
-////                    });
-////                } else {
-////                    byte[] ii = (byte[]) wat;
-////                    for (byte ri : ii) {
-////                        if (ri == 0)
-////                            break; //eol
-////                        boolean neg = (ri < 0);
-////                        if (neg) ri = (byte) -ri;
-////                        if (!add(when, idToTerm.get(ri-1).negIf(neg))) {
-////                            err[0] = true;
-////                        }
-////                    }
-////                }
-////            });
-//        }
-//
-//        protected void compress(int targetVol, int interpolationThresh /* time units */) {
-//            if (interpolationThresh < 1)
-//                return;
-//
-//            //find any two time points that differ by less than the interpolationThresh interval
-//            long[] times = this.event.keySet().toSortedArray();
-//            if (times.length < 2) return;
-//            for (int i = 1; i < times.length; i++) {
-//                if (times[i - 1] == DTERNAL)
-//                    continue;
-//                long dt = times[i] - times[i - 1];
-//                if (Math.abs(dt) < interpolationThresh) {
-//                    if (combine(times[i - 1], times[i])) {
-//                        i++; //skip past current pair
-//                    }
-//                }
-//            }
-//        }
-//
-//        boolean combine(long a, long b) {
-//            assert (a != b);
-//            assert (a != DTERNAL && b != DTERNAL && a != XTERNAL && b != XTERNAL);
-//            ByteHashSet common = new ByteHashSet();
-//            addAllTo(common, event.remove(a));
-//            addAllTo(common, event.remove(b));
-//            common.remove((byte) 0); //remove any '0' value from a byte[] array
-//
-//            //detect conflicting combination
-//            byte[] ca = common.toArray();
-//            boolean changed = false;
-//            for (byte cc : ca) {
-//                if (cc < 0 && common.contains((byte) -cc)) {
-//                    common.remove(cc);
-//                    common.remove((byte) -cc);
-//                    changed = true;
-//                }
-//            }
-//            if (changed) {
-//                ca = common.toArray();
-//            }
-//            if (ca.length > 0) {
-//                long mid = (a + b) / 2L; //TODO better choice
-//                event.put(mid, ca);
-//            }
-//            return true;
-//        }
-//
-////        @Override
-////        public boolean add(long bt, final Term what) {
-////            assert (bt != XTERNAL);
-////
-////            {
-////                boolean neg = what.op() == NEG;
-////
-////
-////                byte tid = termToId.getIfAbsent(neg ? what.unneg() : what, (byte) -1);
-////                if (tid == (byte) -1)
-////                    return super.add(bt, what);
-////
-////                byte tInA = (byte) (tid * (neg ? -1 : +1));
-////
-////
-////                LongArrayList whens = new LongArrayList(2);
-////
-////                aa.event.forEachKeyValue((long when, Object wat) -> {
-////                    if (wat instanceof RoaringBitmap) {
-////                        RoaringBitmap r = (RoaringBitmap) wat;
-////                        if (r.contains(tInA) && !r.contains(-tInA)) {
-////                            whens.add(when);
-////                        }
-////                    } else {
-////                        byte[] ii = (byte[]) wat;
-////                        if (ArrayUtils.indexOf(ii, tInA) != -1 && ArrayUtils.indexOf(ii, (byte) -tInA) == -1) {
-////                            whens.add(when);
-////                        }
-////                    }
-////                });
-////
-////
-////                int ws = whens.size();
-////                if (ws > 0) {
-////
-////                    if (whens.contains(bt))
-////                        return true;
-////
-////                    long at;
-////                    if (ws > 1) {
-////                        LongToLongFunction temporalDistance;
-////                        if (bt == ETERNAL) {
-////                            temporalDistance = (a) -> a == ETERNAL ? 0 : Long.MAX_VALUE;
-////                        } else {
-////                            temporalDistance = (a) -> a == ETERNAL ? Long.MAX_VALUE : Math.abs(bt - a);
-////                        }
-////                        long[] whensArray = whens.toArray();
-////                        ArrayUtils.sort(whensArray, temporalDistance);
-////
-////                        at = whensArray[whensArray.length - 1];
-////                    } else {
-////                        at = whens.get(0);
-////                    }
-////
-////                    long merged = merge(at, bt);
-////                    if (merged != at) {
-////
-////                        if ((merged == DTERNAL || merged == XTERNAL) && (at != DTERNAL && bt != DTERNAL && at != XTERNAL && bt != XTERNAL)) {
-////                            //add as unique event (below)
-////                        } else {
-//////                            boolean r = aa.remove(what, at); //remove original add the new merged
-//////                            if (!r) {
-//////                                assert (r);
-//////                            }
-////                            return super.add(merged, what);
-////                        }
-////
-////                    } else {
-////                        return true; //exact
-////                    }
-////                }
-////                return super.add(bt, what);
-////
-////            }
-////
-////        }
-//
-////        long merge(long a, long b) {
-////            if (a == b) return a;
-////            if (a == ETERNAL || b == ETERNAL)
-////                return ETERNAL;
-////            if (a == XTERNAL || b == XTERNAL)
-////                throw new RuntimeException("xternal in conjtermpolate");
-////
-////
-////            return Tense.dither(Revision.merge(a, b, aProp, nar), nar);
-////
-////        }
-//
-//    }
-
-//    private static void addAllTo(ByteHashSet common, Object o) {
+    //    private static void addAllTo(ByteHashSet common, Object o) {
 //        if (o instanceof byte[])
 //            common.addAll((byte[]) o);
 //        else {

@@ -505,6 +505,25 @@ public class ConjTest {
         assertEq(Bool.True, "(||,x,y,a:b,(--,a:b))");
 
     }
+    
+    @Test void testMergedDisjunction1() {
+        //simplest case: merge one of the sequence
+        Term a = $$("(x &&+1 y)");
+        Term b = $$("(x &| y)");
+        assertEq(
+                "((--,((--,y) &&+1 (--,y)))&|x)",
+                $.disj(a, b)
+        );
+    }
+    @Test void testMergedDisjunction2() {
+        //simplest case: merge one of the sequence
+        Term a = $$("(x &&+10 y)");
+        Term b = $$("(x &&-10 y)");
+        assertEq(
+                "((--,((--,y) &&+20 (--,y))) &&+10 x)",
+                $.disj(a, b)
+        );
+    }
 
     @Test
     void testConegatedConjunctionTerms1() throws Narsese.NarseseException {
