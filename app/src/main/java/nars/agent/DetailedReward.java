@@ -1,6 +1,7 @@
 package nars.agent;
 
 import com.google.common.collect.Iterators;
+import jcog.TODO;
 import jcog.math.FloatAveraged;
 import jcog.math.FloatNormalizer;
 import jcog.math.FloatPolarNormalizer;
@@ -11,15 +12,12 @@ import nars.Param;
 import nars.concept.sensor.FilteredScalar;
 import nars.concept.sensor.Signal;
 import nars.control.channel.CauseChannel;
-import nars.table.BeliefTables;
-import nars.table.eternal.EternalTable;
 import nars.task.ITask;
 import nars.term.Term;
 
 import java.util.Iterator;
 
 import static jcog.Util.compose;
-import static nars.Op.GOAL;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 public class DetailedReward extends Reward {
@@ -60,25 +58,26 @@ public class DetailedReward extends Reward {
         };
         concept.attn.parent(attn);
 
-        {
-             //TODO add these to On/Off
-            agent.//alwaysWant/*Eternally*/
-                    alwaysWantEternally
-                    (concept.components.get(0).term, nar.confDefault(GOAL) * 0.75f );
-            agent.//alwaysWant/*Eternally*/
-                    alwaysWantEternally(concept.components.get(1).term, nar.confDefault(GOAL));
-            agent.//alwaysWant/*Eternally*/
-                    alwaysWantEternally(concept.components.get(2).term, nar.confDefault(GOAL) * 0.5f); //acute
-            for (Signal x : concept.components) {
-                EternalTable ete = ((BeliefTables)x.beliefs()).tableFirst(EternalTable.class);
-                if (ete!=null)
-                    ete.setTaskCapacity(0); //HACK this should be an Empty table
-
-                //should normally be able to create these beliefs but if you want to filter more broadly:
-                //((DefaultBeliefTable)x.goals()).temporal.setCapacity(0); //HACK this should be an Empty table
-
-            }
-        }
+        throw new TODO();
+//        {
+//             //TODO add these to On/Off
+//            agent.//alwaysWant/*Eternally*/
+//                    alwaysWantEternally
+//                    (concept.components.get(0).term, nar.confDefault(GOAL) * 0.75f );
+//            agent.//alwaysWant/*Eternally*/
+//                    alwaysWantEternally(concept.components.get(1).term, nar.confDefault(GOAL));
+//            agent.//alwaysWant/*Eternally*/
+//                    alwaysWantEternally(concept.components.get(2).term, nar.confDefault(GOAL) * 0.5f); //acute
+//            for (Signal x : concept.components) {
+//                EternalTable ete = ((BeliefTables)x.beliefs()).tableFirst(EternalTable.class);
+//                if (ete!=null)
+//                    ete.setTaskCapacity(0); //HACK this should be an Empty table
+//
+//                //should normally be able to create these beliefs but if you want to filter more broadly:
+//                //((DefaultBeliefTable)x.goals()).temporal.setCapacity(0); //HACK this should be an Empty table
+//
+//            }
+//        }
 
     }
 
@@ -93,7 +92,7 @@ public class DetailedReward extends Reward {
     }
 
     @Override
-    protected void updateReward(long prev, long now, long next) {
+    protected void updateReward(long prev, long now) {
         concept.update(prev, now, nar());
     }
 }

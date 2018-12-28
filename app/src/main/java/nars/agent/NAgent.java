@@ -29,28 +29,22 @@ import nars.control.NARService;
 import nars.control.channel.CauseChannel;
 import nars.link.Activate;
 import nars.task.ITask;
-import nars.task.NALTask;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.time.Tense;
-import nars.truth.Stamp;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import static nars.$.$$;
-import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -92,7 +86,7 @@ public class NAgent extends NARService implements NSense, NAct {
         @Nullable Task get(long prev, long now, long next);
     }
 
-    @Deprecated private final FastCoWList<ReinforcedTask> always = new FastCoWList<>(ReinforcedTask[]::new);
+//    @Deprecated private final FastCoWList<ReinforcedTask> always = new FastCoWList<>(ReinforcedTask[]::new);
 
     @Deprecated
     private CauseChannel<ITask> in = null;
@@ -190,74 +184,73 @@ public class NAgent extends NARService implements NSense, NAct {
 ////        onFrame(bmp::input); //TODO support adaptive input mode
 ////        return bmp;
 //    }
-
-    @Deprecated public Task alwaysWantEternally(Termed x, float conf) {
-        Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), nar.time(),
-                ETERNAL, ETERNAL,
-                nar.evidence()
-                //Stamp.UNSTAMPED
-        );
-
-        always.add((prev, now, next) -> t);
-        return t;
-    }
-
-    public void alwaysWant(Termed x, float confFactor) {
-        //long[] evidenceShared = nar.evidence();
-
-        always.add((prev, now, next) ->
-
-                new NALTask(x.term(), GOAL, $.t(1f, confFactor * nar.confDefault(GOAL)), now,
-                        now, next,
-                        //evidenceShared
-                        nar.evidence()
-                        //Stamp.UNSTAMPED
-
-                )
-        );
-
-    }
-
-    public void alwaysQuestion(Termed x, boolean stamped) {
-        alwaysQuestionDynamic(() -> x, true, stamped);
-    }
-
-    public void alwaysQuest(Termed x, boolean stamped) {
-        alwaysQuestionDynamic(() -> x, false, stamped);
-    }
-
-    public void alwaysQuestionDynamic(Supplier<Termed> x, boolean questionOrQuest, boolean stamped) {
-
-        always.add((prev, now, next) -> {
-
-            long[] stamp = stamped ? nar.evidence() : Stamp.UNSTAMPED;
-
-            Termed tt = x.get();
-            if (tt == null) return null;
-
-            return new NALTask(tt.term(), questionOrQuest ? QUESTION : QUEST, null, now,
-                    now, next,
-                    stamp
-            )/* {
-                @Override
-                public boolean isInput() {
-                    return false;
-                }
-            }*/;
-        });
-
-    }
-
-    private void alwaysQuestionEternally(Termed x, boolean questionOrQuest, boolean stamped) {
-
-        NALTask etq = new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, nar.time(),
-                ETERNAL, ETERNAL,
-                //evidenceShared
-                stamped ? nar.evidence() : Stamp.UNSTAMPED
-
-        );
-        always.add((prev, now, next) -> etq);
-    }
+//
+//    @Deprecated public Task alwaysWantEternally(Termed x, float conf) {
+//        Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), nar.time(),
+//                ETERNAL, ETERNAL,
+//                nar.evidence()
+//                //Stamp.UNSTAMPED
+//        );
+//
+//        always.add((prev, now, next) -> t);
+//        return t;
+//    }
+//    public void alwaysWant(Termed x, float confFactor) {
+//        //long[] evidenceShared = nar.evidence();
+//
+//        always.add((prev, now, next) ->
+//
+//                new NALTask(x.term(), GOAL, $.t(1f, confFactor * nar.confDefault(GOAL)), now,
+//                        now, next,
+//                        //evidenceShared
+//                        nar.evidence()
+//                        //Stamp.UNSTAMPED
+//
+//                )
+//        );
+//
+//    }
+//
+//    public void alwaysQuestion(Termed x, boolean stamped) {
+//        alwaysQuestionDynamic(() -> x, true, stamped);
+//    }
+//
+//    public void alwaysQuest(Termed x, boolean stamped) {
+//        alwaysQuestionDynamic(() -> x, false, stamped);
+//    }
+//
+//    public void alwaysQuestionDynamic(Supplier<Termed> x, boolean questionOrQuest, boolean stamped) {
+//
+//        always.add((prev, now, next) -> {
+//
+//            long[] stamp = stamped ? nar.evidence() : Stamp.UNSTAMPED;
+//
+//            Termed tt = x.get();
+//            if (tt == null) return null;
+//
+//            return new NALTask(tt.term(), questionOrQuest ? QUESTION : QUEST, null, now,
+//                    now, next,
+//                    stamp
+//            )/* {
+//                @Override
+//                public boolean isInput() {
+//                    return false;
+//                }
+//            }*/;
+//        });
+//
+//    }
+//
+//    private void alwaysQuestionEternally(Termed x, boolean questionOrQuest, boolean stamped) {
+//
+//        NALTask etq = new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, nar.time(),
+//                ETERNAL, ETERNAL,
+//                //evidenceShared
+//                stamped ? nar.evidence() : Stamp.UNSTAMPED
+//
+//        );
+//        always.add((prev, now, next) -> etq);
+//    }
 
 
 //    /** creates a new loop to run this */
@@ -423,7 +416,7 @@ public class NAgent extends NARService implements NSense, NAct {
          * <p>
          * a.act(...) - reads/invokes goals and feedback
          */
-        void next(NAgent a, int iteration, long prev, long now, long next);
+        void next(NAgent a, int iteration, long prev, long now);
     }
 
     public enum Cycles implements NAgentCycle {
@@ -433,14 +426,14 @@ public class NAgent extends NARService implements NSense, NAct {
          */
         Interleaved() {
             @Override
-            public void next(NAgent a, int iteration, long prev, long now, long next) {
+            public void next(NAgent a, int iteration, long prev, long now) {
 
-                a.sense(prev, now, next);
+                a.sense(prev, now);
 
-                a.reinforce(prev, now, next);
+//                a.reinforce(prev, now, next);
 
                 //long adjustedPrev = Math.max(prev, now - (next-now)); //prevent stretching and evaluating too far in the past
-                a.act(prev, now, next);
+                a.act(prev, now);
 
                 a.frame();
             }
@@ -452,19 +445,19 @@ public class NAgent extends NARService implements NSense, NAct {
          */
         Biphasic() {
             @Override
-            public void next(NAgent a, int iteration, long prev, long now, long next) {
+            public void next(NAgent a, int iteration, long prev, long now) {
 
                 //System.out.println(a.nar.time() + ": " + (iteration%2) + " " + prev + " " + now + " " + next);
 
                 switch (iteration % 2) {
                     case 0:
                         //SENSE
-                        a.sense(prev, now, next);
+                        a.sense(prev, now);
                         break;
                     case 1:
                         //ACT
-                        a.reinforce(prev, now, next);
-                        a.act(prev, now, next);
+//                        a.reinforce(prev, now, next);
+                        a.act(prev, now);
                         a.frame();
                         break;
                 }
@@ -483,23 +476,25 @@ public class NAgent extends NARService implements NSense, NAct {
 
         try {
 
-            int d = nar.timeResolution.intValue();
-            long now = Tense.dither(nar.time(), d);
+            //int d = nar.timeResolution.intValue();
+            long now = //Tense.dither(nar.time(), d);
+                    nar.time();
             long prev = this.prev;
             if (prev == ETERNAL)
                 prev = now;
             else if (now <= prev)
                 return;
 
-            attn.supply.pri(pri.floatValue());
-            attn.update(nar);
-
-            long next = Tense.dither(Math.max(now, frameTrigger.next(now)), d);
+            long next = /*Tense.dither(*/Math.max(now, frameTrigger.next(now));//, d);
 
             this.now = now;
             this.next = next;
 
-            cycle.next(this, iteration.getAndIncrement(), prev, now, next);
+
+            attn.supply.pri(pri.floatValue());
+            attn.update(nar);
+
+            cycle.next(this, iteration.getAndIncrement(), prev, now);
 
             this.prev = now;
 
@@ -512,7 +507,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
     }
 
-    protected void act(long prev, long now, long next) {
+    protected void act(long prev, long now) {
         //ActionConcept[] aaa = actions.array();
         ActionConcept[] aaa = actions.array().clone(); ArrayUtils.shuffle(aaa, random()); //HACK shuffle cloned copy for thread safety
 
@@ -539,28 +534,27 @@ public class NAgent extends NARService implements NSense, NAct {
         for (ActionConcept a : aaa) {
 
             //HACK temporary
-            if (a instanceof AbstractGoalActionConcept) {
+            if (a instanceof AbstractGoalActionConcept)
                 ((AbstractGoalActionConcept) a).curiosity(curiosity);
-            }
 
             a.update(prev, now, nar);
         }
     }
 
-    protected void sense(long prev, long now, long next) {
+    protected void sense(long prev, long now) {
         sensors.forEach(s -> s.update(prev, now, nar));
-        rewards.forEach(r -> r.update(prev, now, next));
+        rewards.forEach(r -> r.update(prev, now));
     }
 
-    @Deprecated protected void reinforce(long prev, long now, long next) {
-
-        in.input(always.stream().map(x -> x.get(prev, now, next)).filter(Objects::nonNull).peek(x -> {
-            throw new UnsupportedOperationException();
-//            x.pri(
-//                    pri.floatValue() * nar.priDefault(x.punc())
-//            );
-        }));
-    }
+//    @Deprecated protected void reinforce(long prev, long now, long next) {
+//
+//        in.input(always.stream().map(x -> x.get(prev, now, next)).filter(Objects::nonNull).peek(x -> {
+//            throw new UnsupportedOperationException();
+////            x.pri(
+////                    pri.floatValue() * nar.priDefault(x.punc())
+////            );
+//        }));
+//    }
 
     private void frame() {
         eventFrame.emit(nar);

@@ -54,12 +54,12 @@ public abstract class Reward implements Termed, Iterable<Signal> {
 
     public final NAR nar() { return agent.nar(); }
 
-    public final void update(long prev, long now, long next) {
+    public final void update(long prev, long now) {
         reward = rewardFunc.asFloat();
-        updateReward(prev, now, next);
+        updateReward(prev, now);
     }
 
-    abstract protected void updateReward(long prev, long now, long next);
+    abstract protected void updateReward(long prev, long now);
 
     @Deprecated protected FloatFloatToObjectFunction<Truth> truther() {
         return (prev, next) -> (next == next) ?

@@ -61,7 +61,7 @@ public class SimpleReward extends Reward {
 
 
     @Override
-    protected void updateReward(long prev, long now, long next) {
+    protected void updateReward(long prev, long now) {
         concept.update(prev, now, nar());
     }
 }
