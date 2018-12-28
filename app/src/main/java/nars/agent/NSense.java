@@ -302,7 +302,7 @@ public interface NSense {
         pn.pos.attn.reparent(pn.attn);
         pn.neg.attn.reparent(pn.attn);
 
-        onFrame(x -> pn.update(a.prev, a.now, a.next, a.nar()));
+        onFrame(x -> pn.update(a.prev, a.now, a.nar()));
         return pn;
     }
 

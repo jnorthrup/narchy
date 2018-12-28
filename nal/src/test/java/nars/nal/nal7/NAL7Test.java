@@ -1032,6 +1032,7 @@ public class NAL7Test extends NALTest {
     void multiConditionSyllogismPre() {
 
 
+        test.nar.questionPriDefault.set(0.01f);
         test.nar.termVolumeMax.set(14);
         test
                 .input("hold(key). |")

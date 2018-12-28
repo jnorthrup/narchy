@@ -543,12 +543,12 @@ public class NAgent extends NARService implements NSense, NAct {
                 ((AbstractGoalActionConcept) a).curiosity(curiosity);
             }
 
-            a.update(prev, now, next, nar);
+            a.update(prev, now, nar);
         }
     }
 
     protected void sense(long prev, long now, long next) {
-        sensors.forEach(s -> s.update(prev, now, next, nar));
+        sensors.forEach(s -> s.update(prev, now, nar));
         rewards.forEach(r -> r.update(prev, now, next));
     }
 
@@ -613,7 +613,6 @@ public class NAgent extends NARService implements NSense, NAct {
     }
 
     public Off onFrame(Runnable each) {
-        //return DurService.on(nar, ()->{ if (enabled.get()) each.run(); });
         return eventFrame.on((x) -> each.run());
     }
 

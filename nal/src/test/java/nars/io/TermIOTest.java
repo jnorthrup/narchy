@@ -28,6 +28,7 @@ import static java.lang.System.out;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.*;
+import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -200,6 +201,28 @@ class TermIOTest {
 
         assertEqualSerialize($.p( Anom.the(1), Anom.the(2) ));
         assertEqualSerialize($.p( Anom.the(1), $.varDep(2) ));
+    }
+
+    @Test void testDepVarCombinations() throws IOException {
+        Term a = $$("(#1 &&+32 (#1 &&+24 #1))");
+        Term b = $$("#1");
+        Term c = $$("(--,#1)");
+        assertEqualSerialize(a);
+        assertEqualSerialize(b);
+        assertEqualSerialize(c);
+        assertEqualSerialize($.p(a,b));
+        assertEqualSerialize($.p(b,a));
+        assertEqualSerialize($.p(b,c));
+        assertEqualSerialize($.p(c,b));
+        assertEqualSerialize($.p(a,c));
+        assertEqualSerialize($.p(c,a));
+        assertEqualSerialize($.p(a,b,c));
+        assertEqualSerialize($.p(c,b,a));
+        assertEqualSerialize($.p(c,a,b));
+        assertEqualSerialize($.p(b,c,a));
+        assertEqualSerialize($.p(b,a,c));
+        assertEqualSerialize($.p(a,c,b));
+        assertEq("(((#1 &&+32 #1) &&+24 #1),#1,(--,#1))", $.p(a,b,c));
     }
 
     @Test

@@ -48,7 +48,7 @@ public class TrackXY_NAR extends NAgentX {
     //W = 3, H = 1;
     //W = 5, H = 1;
     public static final int derivationStrength = 8;
-    static int dur = 2;
+    static int dur = 16;
     static float camResolution = 0.1f;
     static int volMax = 9;
     final Bitmap2DSensor cam;

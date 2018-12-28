@@ -102,7 +102,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
     static final Predicate<Task> withoutCuriosity = t -> !(t instanceof CuriosityTask) && !t.isEternal();  /* filter curiosity tasks? */
 
     @Override
-    public void update(long prev, long now, long next, NAR n) {
+    public void update(long prev, long now, NAR n) {
 
 
 
@@ -240,9 +240,9 @@ public class AbstractGoalActionConcept extends ActionConcept {
         return curiosity;
     }
 
-    @Nullable protected SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long now, long next, NAR nar) {
+    @Nullable protected SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long last, long now, NAR nar) {
 
-        SeriesBeliefTable.SeriesRemember r = ((SensorBeliefTables) beliefs()).add(f, now, next,
+        SeriesBeliefTable.SeriesRemember r = ((SensorBeliefTables) beliefs()).add(f, last, now,
                 this, nar.dur(), nar);
 
         if (r!=null)

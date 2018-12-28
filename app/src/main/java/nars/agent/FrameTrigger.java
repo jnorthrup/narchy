@@ -4,6 +4,7 @@ import jcog.TODO;
 import jcog.event.Off;
 import jcog.exe.Loop;
 import nars.control.DurService;
+import nars.time.Tense;
 import nars.time.clock.RealTime;
 
 abstract public class FrameTrigger {
@@ -28,6 +29,9 @@ abstract public class FrameTrigger {
         }
     }
 
+    /** estimated cycles per frame. not necessarily equal to the NAR's dur() */
+    abstract int dur();
+
     /** estimate the time of the next cycle */
     abstract public long next(long now);
 
@@ -47,6 +51,15 @@ abstract public class FrameTrigger {
                     return true;
                 }
             };
+        }
+
+        @Override
+        int dur() {
+            RealTime t = (RealTime) agent.nar().time;
+            double unitsPerSec = 1/t.secondsPerUnit();
+            double secondsPerFrame = 1/loop.getFPS();
+            double unitsPerFrame = unitsPerSec * secondsPerFrame;
+            return Math.max(1, (int)Math.round(unitsPerFrame));
         }
 
         @Override
@@ -84,6 +97,11 @@ abstract public class FrameTrigger {
         }
 
         @Override
+        int dur() {
+            return Tense.occToDT(loop.durCycles());
+        }
+
+        @Override
         public long next(long now) {
             DurService l = this.loop;
             return l !=null ?  now + l.durCycles() : now;
@@ -106,6 +124,11 @@ abstract public class FrameTrigger {
             //loop.durs(initialCycs);
             loop = a.nar().eventCycle.on(a::next);
             return loop;
+        }
+
+        @Override
+        int dur() {
+            throw new TODO();
         }
 
         @Override

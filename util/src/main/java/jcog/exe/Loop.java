@@ -205,10 +205,7 @@ abstract public class Loop extends FixedRateTimedFuture {
         if (pms > 0 /* isRunning() */) {
             return 1000f / pms;
         } else {
-            if (pms == 0)
-                return Float.POSITIVE_INFINITY;
-            else
-                return 0;
+            return pms == 0 ? Float.POSITIVE_INFINITY : 0;
         }
     }
 

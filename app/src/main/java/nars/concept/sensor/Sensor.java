@@ -13,7 +13,7 @@ public interface Sensor extends Termed {
 
     FloatRange resolution();
 
-    void update(long last, long now, long next, NAR nar);
+    void update(long last, long now, NAR nar);
 
     /** the components of the sensor, of which there may be one or more concepts */
     Iterable<Termed> components();

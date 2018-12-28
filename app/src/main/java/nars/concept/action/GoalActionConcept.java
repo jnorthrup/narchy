@@ -22,9 +22,9 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
     }
 
     @Override
-    public void update(long prev, long now, long next, NAR n) {
+    public void update(long prev, long now, NAR n) {
 
-        super.update(prev, now, next, n);
+        super.update(prev, now, n);
 
         Truth goal = actionTruth;
 
@@ -34,7 +34,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
         );
 
         in.input(
-            feedback(fb, now, next, n)
+            feedback(fb, prev, now, n)
         );
 
     }

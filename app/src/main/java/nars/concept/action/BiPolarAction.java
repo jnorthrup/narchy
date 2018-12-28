@@ -78,7 +78,7 @@ public class BiPolarAction extends AbstractSensor {
     /** the pos and neg .update() method should have been called just prior to this since this is
      * invoked by the frame listeners at the end of the NAgent cycle
      */
-    @Override public void update(long prev, long now, long next, NAR nar) {
+    @Override public void update(long prev, long now, NAR nar) {
 
 
         Truth p, n;
@@ -158,7 +158,7 @@ public class BiPolarAction extends AbstractSensor {
 
 
         this.feedback.input(
-                pos.feedback(Pb, now, next, nar), neg.feedback(Nb, now, next, nar)
+                pos.feedback(Pb, prev, now, nar), neg.feedback(Nb, prev, now, nar)
         );
     }
 

@@ -218,9 +218,9 @@ public class AutoclassifiedBitmap extends VectorSensor {
     }
 
     @Override
-    public void update(long last, long now, long next, NAR nar) {
+    public void update(long last, long now, NAR nar) {
         this.update();
-        super.update(last, now, next, nar);
+        super.update(last, now, nar);
     }
 
     @Override

@@ -55,7 +55,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
 
 
     @Override
-    public void update(long last, long now, long next, NAR nar) {
+    public void update(long last, long now, NAR nar) {
 
         float confDefault = nar.confDefault(BELIEF);
         float min = nar.confMin.floatValue();

@@ -219,7 +219,7 @@ public abstract class Param {
 
 
     public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = true;
-    public static final boolean TIMEGRAPH_STRETCH_INTERSECTING_EVENT = true;
+    public static final boolean TIMEGRAPH_STRETCH_INTERSECTING_EVENT = false;
 
 
 

@@ -224,7 +224,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
                 hist.add(i, p);
 
                 m += p;
-                if (p - above >= ScalarValue.EPSILON)
+                if (p - above >= ScalarValue.EPSILON/2)
                     mustSortTo = i;
 
                 above = p;

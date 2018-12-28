@@ -120,7 +120,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     }
 
     @Override
-    public void update(long prev, long now, long next, NAR nar) {
+    public void update(long prev, long now, NAR nar) {
 
         SeriesBeliefTable.SeriesRemember r = update(prev, now,
                 (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), nar);

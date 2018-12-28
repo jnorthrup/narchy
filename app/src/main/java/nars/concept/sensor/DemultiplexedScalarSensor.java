@@ -23,12 +23,12 @@ abstract public class DemultiplexedScalarSensor extends VectorSensor implements 
         this.input = input;
     }
 
-    public void update(long prev, long now, long next, NAR n) {
+    public void update(long prev, long now, NAR n) {
 
         if (input!=null)
             value.set(input.asFloat());
 
-        super.update(prev, now, next, n);
+        super.update(prev, now, n);
     }
 
 
