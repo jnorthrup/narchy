@@ -11,9 +11,10 @@ import nars.term.Termed;
  *  */
 public interface Sensor extends Termed {
 
-    FloatRange resolution();
+    void sense(long last, long now, NAR nar);
 
-    void update(long last, long now, NAR nar);
+    /** numeric resolution of scalar signals */
+    FloatRange resolution();
 
     /** the components of the sensor, of which there may be one or more concepts */
     Iterable<Termed> components();

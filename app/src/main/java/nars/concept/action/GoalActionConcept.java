@@ -22,9 +22,9 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
     }
 
     @Override
-    public void update(long prev, long now, NAR n) {
+    public void sense(long prev, long now, NAR n) {
 
-        super.update(prev, now, n);
+        super.sense(prev, now, n);
 
         Truth goal = actionTruth;
 

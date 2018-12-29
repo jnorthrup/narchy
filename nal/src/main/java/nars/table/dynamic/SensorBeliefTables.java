@@ -61,7 +61,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    public SeriesBeliefTable.SeriesRemember add(Truth value, long start, long end, TaskConcept c, float dur, NAR n) {
+    public SeriesBeliefTable.SeriesRemember add(Truth value, long start, long end, TaskConcept c, NAR n) {
 
 
         float fRes = Math.max(n.freqResolution.asFloat(), res.asFloat());
@@ -70,7 +70,7 @@ public class SensorBeliefTables extends BeliefTables {
         }
 
         SeriesBeliefTable.SeriesTask x = add(value,
-                start, end, dur,
+                start, end,
                 series.term, series.punc(),
                 n);
 
@@ -111,7 +111,7 @@ public class SensorBeliefTables extends BeliefTables {
     }
 
 
-    private SeriesBeliefTable.SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, float dur, Term term, byte punc, NAR nar) {
+    private SeriesBeliefTable.SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, Term term, byte punc, NAR nar) {
 
         SeriesBeliefTable.SeriesTask nextT = null;
         SeriesBeliefTable.SeriesTask last = series.series.last();
@@ -121,6 +121,7 @@ public class SensorBeliefTables extends BeliefTables {
             if (lastEnd > nextStart)
                 return null;
 
+            long dur = nextEnd - nextStart;
 
             double gapDurs = ((double)(nextStart - lastEnd)) / dur;
             if (gapDurs <= series.series.latchDurs()) {

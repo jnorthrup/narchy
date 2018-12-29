@@ -93,6 +93,6 @@ public class DetailedReward extends Reward {
 
     @Override
     protected void updateReward(long prev, long now) {
-        concept.update(prev, now, nar());
+        concept.sense(prev, now, nar());
     }
 }

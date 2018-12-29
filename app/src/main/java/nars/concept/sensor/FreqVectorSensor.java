@@ -56,7 +56,7 @@ public class FreqVectorSensor extends VectorSensor {
 
     private float[] inBuf = null;
     @Override
-    public void update(long last, long now, NAR nar) {
+    public void sense(long last, long now, NAR nar) {
 
         //TODO only if buffer changed
         inBuf = buf.peekLast(inBuf, sampleWindow);
@@ -79,7 +79,7 @@ public class FreqVectorSensor extends VectorSensor {
         }
         Util.normalize(componentValue, 0, intensity = Util.max(componentValue));
 
-        super.update(last, now, nar);
+        super.sense(last, now, nar);
     }
 
     @Override

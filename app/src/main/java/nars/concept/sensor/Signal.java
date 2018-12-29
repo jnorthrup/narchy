@@ -91,7 +91,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
 
     @Override
     public float floatValueOf(Term anObject /* ? */) {
-        return this.currentValue = source.asFloat();
+        return this.currentValue;
     }
 
 
@@ -103,10 +103,14 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     @Nullable
     public SeriesBeliefTable.SeriesRemember update(long start, long end, FloatFloatToObjectFunction<Truth> truther, NAR n) {
 
-        float prevValue = currentValue, nextValue = floatValueOf(term);
+        float prevValue = currentValue;
 
-        return ((SensorBeliefTables) beliefs()).add(nextValue == nextValue ? truther.value(prevValue, nextValue) : null,
-                        start, end, this, n.dur(), n);
+        float nextValue = currentValue = source.asFloat();
+
+
+        return ((SensorBeliefTables) beliefs()).add(
+                nextValue == nextValue ? truther.value(prevValue, nextValue) : null,
+                        start, end, this,  n);
     }
 
 
@@ -120,7 +124,7 @@ public class Signal extends TaskConcept implements Sensor, FloatFunction<Term>, 
     }
 
     @Override
-    public void update(long prev, long now, NAR nar) {
+    public void sense(long prev, long now, NAR nar) {
 
         SeriesBeliefTable.SeriesRemember r = update(prev, now,
                 (tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), nar);

@@ -253,19 +253,20 @@ public class ExeCharts {
     static class NARLoopPanel extends LoopPanel {
 
         private final NAR nar;
-        final FloatRange dur = new FloatRange(1f, 0f, 8f);
+        final FloatRange durMS = new FloatRange(1f, 1f, 2000f);
         private final RealTime time;
 
         public NARLoopPanel(NARLoop loop) {
             super(loop);
             this.nar = loop.nar();
+            durMS.set(nar.dur());
             if (nar.time instanceof RealTime) {
                 time = ((RealTime) nar.time);
                 add(
-                        new FloatSlider("Dur*", dur),
+                        new FloatSlider("Dur(ms)", durMS)
+                                .on(durMS->nar.time.dur(Math.max((int)Math.round(durMS), 1))),
                         new FloatSlider("Throttle", loop.throttle)
                 );
-                //dur.set(time.durRatio(loop));
             } else {
 
                 time = null;
@@ -277,9 +278,6 @@ public class ExeCharts {
 
             super.update();
             if (loop.isRunning()) {
-//                if (time != null) {
-//                    time.durRatio(loop, dur.floatValue());
-//                }
             }
 
         }

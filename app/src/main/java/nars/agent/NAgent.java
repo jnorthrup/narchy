@@ -31,7 +31,6 @@ import nars.link.Activate;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -295,7 +294,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
         //Term id = (this.id == null) ? nar.self() : this.id;
 
-        this.prev = Tense.dither(nar.time(), nar);
+        this.prev = nar.time();
 
 
         this.in = nar.newChannel(this);
@@ -485,6 +484,8 @@ public class NAgent extends NARService implements NSense, NAct {
             else if (now <= prev)
                 return;
 
+            prev = Math.max(prev, now - frameTrigger.dur());
+
             long next = /*Tense.dither(*/Math.max(now, frameTrigger.next(now));//, d);
 
             this.now = now;
@@ -537,12 +538,12 @@ public class NAgent extends NARService implements NSense, NAct {
             if (a instanceof AbstractGoalActionConcept)
                 ((AbstractGoalActionConcept) a).curiosity(curiosity);
 
-            a.update(prev, now, nar);
+            a.sense(prev, now, nar);
         }
     }
 
     protected void sense(long prev, long now) {
-        sensors.forEach(s -> s.update(prev, now, nar));
+        sensors.forEach(s -> s.sense(prev, now, nar));
         rewards.forEach(r -> r.update(prev, now));
     }
 
