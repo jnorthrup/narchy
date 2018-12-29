@@ -356,7 +356,7 @@ public class Derivation extends PreDerivation {
             this.beliefEvi = 0;
         }
 
-        if ((beliefTerm instanceof Compound && _beliefTerm instanceof Compound) && (beliefTerm.op()!=_beliefTerm.op()))
+        if ((beliefTerm instanceof Bool) || ((beliefTerm instanceof Compound && _beliefTerm instanceof Compound) && (beliefTerm.op()!=_beliefTerm.op())))
             throw new WTF(_beliefTerm + " could not be anon, result: " + beliefTerm);
 
         assert (beliefTerm != null) : (nextBeliefTerm + " could not be anonymized");

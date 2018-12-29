@@ -31,6 +31,7 @@ import nars.link.Activate;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -475,9 +476,9 @@ public class NAgent extends NARService implements NSense, NAct {
 
         try {
 
-            //int d = nar.timeResolution.intValue();
-            long now = //Tense.dither(nar.time(), d);
-                    nar.time();
+            int d = nar.timeResolution.intValue();
+            long now = Tense.dither(nar.time(), d);
+                       //nar.time();
             long prev = this.prev;
             if (prev == ETERNAL)
                 prev = now;
@@ -486,7 +487,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
             prev = Math.max(prev, now - frameTrigger.dur());
 
-            long next = /*Tense.dither(*/Math.max(now, frameTrigger.next(now));//, d);
+            long next = Tense.dither(Math.max(now, frameTrigger.next(now)), d);
 
             this.now = now;
             this.next = next;

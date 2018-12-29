@@ -17,7 +17,9 @@ import nars.derive.BeliefSource;
 import nars.derive.Derivation;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
+import nars.derive.impl.ZipperDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.derive.timing.ActionTiming;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
 import nars.gui.NARui;
@@ -251,15 +253,13 @@ abstract public class NAgentX extends NAgent {
         BiFunction<Concept, Derivation, BeliefSource.LinkModel> actionLinker = ListTermLinker(actionConcepts);
         BiFunction<Concept, Derivation, BeliefSource.LinkModel> rewardLinker = ListTermLinker(rewardConcepts);
 
-//        //  rewards -> sensors
-//        //  actions -> sensors
-//
-//        ZipperDeriver senseReward = BeliefSource.forConcepts(n, rules,
-//                sensorConcepts,
-//                rewardLinker
-//                //ConceptTermLinker
-//        );
-//        //senseReward.timing = new ActionTiming(n);
+        ZipperDeriver senseReward = BeliefSource.forConcepts(n, rules,
+                actionConcepts,
+                //sensorConcepts,
+                rewardLinker
+                //ConceptTermLinker
+        );
+        senseReward.timing = new ActionTiming(n);
 //
 //        ZipperDeriver senseActions = BeliefSource.forConcepts(n, rules,
 //                sensorConcepts,

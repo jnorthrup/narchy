@@ -171,8 +171,8 @@ public class NARio extends NAgentX {
                         1;
             } else {
                 reward =
-                        //-1;
-                        Float.NaN;
+                        -1;
+                        //Float.NaN;
             }
             lastX = curX;
 

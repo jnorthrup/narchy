@@ -28,21 +28,21 @@ public abstract class Attention extends DurService {
     protected void starting(NAR nar) {
 
         super.starting(nar);
-//        on(
-//            nar.onCycle(this::cycle)
-//        );
+        on(
+            nar.onCycle(this::cycle)
+        );
     }
 
     @Override
     protected void run(NAR n, long dt) {
 
         forgetting.update(n);
-        activating.update(n);
         derivePri.update(n);
 
     }
 
-//    private void cycle(NAR n) {
-//
-//    }
+    private void cycle(NAR n) {
+        activating.update(n);
+
+    }
 }
