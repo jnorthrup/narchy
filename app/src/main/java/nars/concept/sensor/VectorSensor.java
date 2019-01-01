@@ -3,7 +3,7 @@ package nars.concept.sensor;
 import com.google.common.collect.Iterables;
 import nars.$;
 import nars.NAR;
-import nars.attention.AttVectorNode;
+import nars.attention.AttBranch;
 import nars.concept.NodeConcept;
 import nars.control.channel.CauseChannel;
 import nars.table.dynamic.SeriesBeliefTable;
@@ -22,7 +22,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
 
     public final CauseChannel<ITask> in;
 
-    public final AttVectorNode attn;
+    public final AttBranch attn;
 
 
     @Override
@@ -37,7 +37,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     protected VectorSensor(NAR nar) {
         super(nar);
 
-        attn = new AttVectorNode(this, this);
+        attn = new AttBranch(this, this);
 
         this.in = newChannel(nar);
     }
@@ -69,7 +69,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
             SeriesBeliefTable.SeriesRemember r = s.update(last, now, truther, this.nar);
 
             if (r != null) {
-                attn.ensure(r.input, attn.elementPri(this.nar));
+                attn.ensure(r.input, attn.elementPri());
                 in.input(r);
             }
         }

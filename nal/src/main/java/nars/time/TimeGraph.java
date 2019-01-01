@@ -386,8 +386,11 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 //                        if (!(subj.op()==CONJ && subj.dt()==XTERNAL)) {
 //                            int st = subj.eventRange();
 //                            link(se, (edt + st), pe);
-//
-//
+
+//                            Term sf = se.id.eventLast();
+//                            Term pl = se.id.eventFirst();
+
+
 //                            if (subj.op() == Op.CONJ && subj.dt() == DTERNAL) { //HACK to decompose ordinarily non-decomposed &&
 //                                subj.eventsWhile((w, y) -> {
 //                                    link(know(y), edt + st - w, pe);
@@ -424,7 +427,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                             Subterms es = eventTerm.subterms();
                             int esn = es.subs();
                             for (int i = 0; i < esn; i++)
-                                link(event, 0, know(es.sub(i), eventStart, eventEnd));
+                                link(event, 0, know(es.sub(i)));
 
                             break;
 

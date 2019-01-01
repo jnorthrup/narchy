@@ -36,7 +36,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     public Bitmap2DSensor(@Nullable Term root, P src, NAR n) {
         this(src.height() > 1 ?
                         /* 2D default */ RadixProduct(root, src.width(), src.height(), /*RADIX*/1) :
-                        /* 1D default */ (x, y) -> root != null ? $.inh($.the(x), root) : $.p(x) //y==1
+                        /* 1D default */ (x, y) -> root != null ? $.p(root,$.the(x)) : $.p(x) //y==1
                 , src, n);
     }
 
@@ -117,7 +117,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
     public static Int2Function<Term> XY(Term root, int radix, int width, int height) {
         return (x, y) ->
-
                 $.p(root, $.pRadix(x, radix, width), $.pRadix(y, radix, height));
     }
 
@@ -125,10 +124,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return (x, y) -> {
             Term coords = radix > 1 ?
                     $.p(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
-
-
                     $.p(x, y);
-            return root == null ? coords : $.inh(coords, root);
+            return root == null ? coords : $.p(root, coords);
         };
     }
 
@@ -137,7 +134,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
             Term coords = radix > 1 ?
                     $.pRecurse(true, zipCoords(coord(x, width, radix), coord(y, height, radix))) :
                     $.p(x, y);
-            return root == null ? coords : $.inh(coords, root);
+            return root == null ? coords : $.p(root,coords);
         };
     }
 
@@ -146,7 +143,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
             Term coords = radix > 1 ?
                     $.inhRecurse(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
                     $.p(x, y);
-            return root == null ? coords : $.inh(coords, root);
+            return root == null ? coords : $.p(root,coords);
         };
     }
 

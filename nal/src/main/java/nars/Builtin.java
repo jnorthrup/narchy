@@ -444,9 +444,7 @@ public class Builtin {
         nar.on(Functor.f1Inline("unneg", Term::unneg));
 
         /** drops a random contained event, whether at first layer or below */
-        nar.on(Functor.f1Inline("dropAnyEvent", (Term x) -> {
-            return Conj.dropAnyEvent(x, nar);
-        }));
+        nar.on(Functor.f1Inline("dropAnyEvent", (Term x) -> Conj.dropAnyEvent(x, nar)));
 
 
         /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive or negative of event */

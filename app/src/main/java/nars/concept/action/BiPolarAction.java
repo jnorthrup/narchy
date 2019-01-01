@@ -5,7 +5,7 @@ import nars.$;
 import nars.NAR;
 import nars.agent.NSense;
 import nars.attention.AttNode;
-import nars.attention.AttVectorNode;
+import nars.attention.AttBranch;
 import nars.concept.sensor.AbstractSensor;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
@@ -59,7 +59,7 @@ public class BiPolarAction extends AbstractSensor {
 
         feedback = nar.newChannel(id);
 
-        this.attn = new AttVectorNode(id, List.of(pos, neg));
+        this.attn = new AttBranch(id, List.of(pos, neg));
 
         this.pos = new MyAbstractGoalActionConcept(pos, nar);
         this.neg = new MyAbstractGoalActionConcept(neg, nar);

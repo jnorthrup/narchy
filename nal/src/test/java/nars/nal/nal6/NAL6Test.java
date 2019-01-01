@@ -302,8 +302,8 @@ public class NAL6Test extends NALTest {
         tester.believe("((($x --> [chirping]) && ($x --> [withWings])) ==> --($x --> nonBird))");
         tester.mustBelieve(cycles, "(({Tweety} --> [chirping]) ==> --({Tweety} --> nonBird))",
                 1.00f,
-                0.81f
-                //0.34f
+                //0.81f
+                0.34f
         );
 
     }

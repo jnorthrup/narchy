@@ -262,7 +262,35 @@ abstract public class TermMatch {
             return x.containsRecursively(this.x);
         }
     }
+    /** non-recursive containment */
+    public final static class EqualsRoot extends TermMatch {
 
+        public final Term x;
+
+        public EqualsRoot(Term x) {
+            this.x = x;
+        }
+
+        @Override
+        public Term param() {
+            return x;
+        }
+
+        @Override
+        public float cost() {
+            return 0.08f;
+        }
+
+        @Override
+        public boolean test(Term term) {
+            return term.equalsRoot(x);
+        }
+
+        @Override
+        public boolean testSuper(Term x) {
+            return !x.impossibleSubTerm(this.x);
+        }
+    }
     public final static class SubsMin extends TermMatch {
 
         final short subsMin;

@@ -78,7 +78,8 @@ public abstract class Param {
             //10;
             //8;
             //7;
-            6;
+            //6;
+            5;
             //4;
             //3;
             //2;
@@ -219,13 +220,13 @@ public abstract class Param {
 
 
     public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = true;
-    public static final boolean TIMEGRAPH_STRETCH_INTERSECTING_EVENT = false;
+    public static final boolean TIMEGRAPH_STRETCH_INTERSECTING_EVENT = true;
 
 
 
     public final TaskBuffer input =
             //new DerivedTasks.DerivedTasksMap(4096);
-            new TaskBuffer.BagTaskBuffer(256, 0.2f);
+            new TaskBuffer.BagTaskBuffer(2048, 0.2f);
             //new TaskBuffer.BagPuncTasksBuffer(1024, 0.1f);
 
     /** (unsafe) true should theoreticaly be faster,

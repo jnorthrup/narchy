@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 150;
+    private final static int cycles = 100;
 
     @BeforeEach
     void setTolerance() {
@@ -203,7 +203,7 @@ public class NAL7Test extends NALTest {
     void testShiftPlus() {
         test
                 .inputAt(1, "((x &&+1 y) ==>+1 z).")
-                .inputAt(3, "z. :|:")
+                .inputAt(3, "z. |")
                 .mustNotOutput(cycles, "x", BELIEF, (t) -> t != 1)
                 .mustNotOutput(cycles, "y", BELIEF, (t) -> t != 2)
                 .mustNotOutput(cycles, "z", BELIEF, (t) -> t != 3)
@@ -1373,14 +1373,24 @@ public class NAL7Test extends NALTest {
                 .mustNotOutput(cycles, "(($1-->[heated]) ==>-20 ($1-->[hardened]))", BELIEF,
                         (t -> t == ETERNAL || t == 10 || t == 20 || t == 0));
     }
+    @Test
+    void testDecomposeImplPredNoVar() {
 
+        test.nar.termVolumeMax.set(15);
+        test
+                .believe("( a =|> (&|, x, y, z ) )", Tense.Present, 1f, 0.9f)
+                .mustBelieve(cycles, "( a =|> x )", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "( a =|> y )", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "( a =|> z )", 1f, 0.73f, 0)
+        ;
+    }
 
     @Test
     void testDecomposeImplPred() {
 
         test.nar.termVolumeMax.set(15);
         test
-                .believe("( (a,#1) =|> ( ( (x,#1) &| y) &| z ) )", Tense.Present, 1f, 0.9f)
+                .believe("( (a,#1) =|> (&|, (x,#1), y, z ) )", Tense.Present, 1f, 0.9f)
                 .mustBelieve(cycles*2, "( (a,#1) =|> (x,#1) )", 1f, 0.73f, 0)
                 .mustBelieve(cycles*2, "( (a,#1) =|> y )", 1f, 0.73f, 0)
                 .mustBelieve(cycles*2, "( (a,#1) =|> z )", 1f, 0.73f, 0)
@@ -1389,10 +1399,10 @@ public class NAL7Test extends NALTest {
 
     @Test
     void testDecomposeImplPredSimpler() {
+        test.nar.termVolumeMax.set(11);
 
         test
-
-                .believe("( a =|> ( ( x &| y) &| z ) )", Tense.Present, 1f, 0.9f)
+                .believe("( a =|> (&|,x,y,z) )", Tense.Present, 1f, 0.9f)
                 .mustBelieve(cycles, "( a =|> x )", 1f, 0.73f, 0)
                 .mustBelieve(cycles, "( a =|> y )", 1f, 0.73f, 0)
                 .mustBelieve(cycles, "( a =|> z )", 1f, 0.73f, 0)

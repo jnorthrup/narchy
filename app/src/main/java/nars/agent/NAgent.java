@@ -492,9 +492,7 @@ public class NAgent extends NARService implements NSense, NAct {
             this.now = now;
             this.next = next;
 
-
-            attn.supply.pri(pri.floatValue());
-            attn.update(nar);
+            attn.update(pri.floatValue());
 
             cycle.next(this, iteration.getAndIncrement(), prev, now);
 

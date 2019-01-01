@@ -151,7 +151,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         on(this.attn);
 
-        onCycle(n-> input.commit(n.time(), n.dur(), this::input));
+        onCycle(n-> input.commit(n.time(), this::input));
 
         this.loop = new NARLoop(this);
         exe.start(this);

@@ -44,7 +44,7 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
 public class Jake2Agent extends NAgentX implements Runnable {
 
     static final int FPS = 24;
-    static float timeScale = 0.5f;
+    static float timeScale = 2.5f;
 
     static float yawSpeed = 10;
 
@@ -149,7 +149,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
         rgbVision.setZoom(0);
 
         Bitmap2DSensor depthVision = senseCamera("depth", new BrightnessNormalize(
-            new ImageFlip(false, true, new ScaledBitmap2D(depth, px / 2, py / 2)
+            new ImageFlip(false, true, new ScaledBitmap2D(depth, px / 4, py / 4)
         )));
 
 
@@ -174,9 +174,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
                 f->$.inh($.the(f), "hear"), 512,16, nar);
         addSensor(hear);
         WaveView hearView = new WaveView(hear.buf, 300, 64);
-        onFrame(()->{
-            hearView.updateLive();
-        });
+        onFrame((Runnable) hearView::updateLive);
         window(grid(new VectorSensorView(hear, nar).withControls(),
                 //spectrogram(hear.buf, 0.1f,512, 16),
                 new ObjectSurface(hear), hearView), 400, 400);
@@ -200,13 +198,13 @@ public class Jake2Agent extends NAgentX implements Runnable {
                 ()->cl.viewangles[Defines.YAW] -= yawSpeed
         );
 
-        actionToggle($("jump"), (x) -> CL_input.in_up.state = x ? 1 : 0);
-        actionToggle($("fire"), (x) -> CL_input.in_attack.state = x ? 1 : 0);
+        actionToggle($("jump"), x -> CL_input.in_up.state = x ? 1 : 0);
+        actionToggle($("fire"), x -> CL_input.in_attack.state = x ? 1 : 0);
 
         if (lookPitch) {
             actionPushButtonMutex(
                     $.the("lookUp"), $.the("lookDown"),
-                    () -> cl.viewangles[Defines.PITCH] = Math.min(30, cl.viewangles[Defines.PITCH] + pitchSpeed),
+                    () -> cl.viewangles[Defines.PITCH] = Math.min(+30, cl.viewangles[Defines.PITCH] + pitchSpeed),
                     () -> cl.viewangles[Defines.PITCH] = Math.max(-30, cl.viewangles[Defines.PITCH] - pitchSpeed)
             );
         }

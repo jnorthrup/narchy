@@ -31,7 +31,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
     /** returns the input task, or the existing task if a pending duplicate was present */
     public abstract Task add(Task x);
 
-    public abstract void commit(long now, int dur, Consumer<Task> target);
+    public abstract void commit(long now, Consumer<Task> target);
 
     public abstract void clear();
 
@@ -133,7 +133,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
         }
 
         /** TODO time-sensitive */
-        @Override public void commit(long now, int dur, Consumer<Task> target) {
+        @Override public void commit(long now, Consumer<Task> target) {
             Iterator<Task> ii = tasks.values().iterator();
             while (ii.hasNext()) {
                 target.accept(ii.next());
@@ -219,7 +219,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
          * input rate
          * proportional to # of capacities/durations of time
          */
-        public final FloatRange valve = new FloatRange(0.5f, 0, 1f);
+        public final FloatRange valve = new FloatRange(0.25f, 0, 1f);
 
         final AtomicBoolean busy = new AtomicBoolean(false);
 
@@ -227,6 +227,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
 
         private transient long prev = Long.MIN_VALUE;
 
+        public final AtomicBoolean fade = new AtomicBoolean(true);
 
         /**
          * @capacity size of buffer for tasks that have been input (and are being de-duplicated) but not yet input.
@@ -244,7 +245,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
         }
 
         @Override
-        public void commit(long now, int dur, Consumer<Task> target) {
+        public void commit(long now, Consumer<Task> target) {
 
             if (!busy.compareAndSet(false, true))
                 return; //an operation is in-progress
@@ -266,14 +267,14 @@ abstract public class TaskBuffer implements Consumer<Task> {
                 if (s == 0)
                     return;
 
+//                float dDur = (float) (((double) dt) / dur);
 
-
-                float dDur = (float) (((double) dt) / dur);
-
-//                tasks.commit(null);
+                if (fade.getOpaque())
+                    tasks.commit();
+                //tasks.commit(null);
 
                 if (!tasks.isEmpty()) {
-                    int n = batchSize(dDur);
+                    int n = batchSize(dt);
                     if (n > 0) {
 
                         if (tasks instanceof ArrayBag) {
@@ -299,12 +300,12 @@ abstract public class TaskBuffer implements Consumer<Task> {
 
 
         /**  TODO abstract */
-        protected int batchSize(float dtDurs) {
+        protected int batchSize(float dt) {
             //rateControl.apply(tasks.size(), tasks.capacity());
             float v = valve.floatValue();
             if (v < ScalarValue.EPSILON)
                 return 0;
-            return Math.max(1,Math.round(dtDurs * v * tasks.capacity()));
+            return Math.max(1,Math.round(dt * v * tasks.capacity()));
         }
     }
 
@@ -366,13 +367,13 @@ abstract public class TaskBuffer implements Consumer<Task> {
         }
 
         @Override
-        public void commit(long now, int dur, Consumer<Task> target) {
+        public void commit(long now, Consumer<Task> target) {
             //TODO parallelize
 
             int c = Math.max(1, capacity.intValue() / ALL.length);
             for (TaskBuffer x : ALL) {
                 x.capacity.set(c);
-                x.commit(now, dur, target);
+                x.commit(now, target);
             }
         }
 

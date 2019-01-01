@@ -2,11 +2,9 @@ package nars.term.util.transform;
 
 import jcog.random.XorShift128PlusRandom;
 import nars.$;
-import nars.NARS;
 import nars.Narsese;
 import nars.Param;
 import nars.derive.premise.PatternIndex;
-import nars.derive.premise.PremiseRuleProto;
 import nars.derive.premise.PremiseRuleSource;
 import nars.term.Compound;
 import nars.term.Term;
@@ -334,20 +332,20 @@ public class EllipsisTest {
 
     @Disabled @Test
     void testVarArg0() throws Narsese.NarseseException {
-        
+
         String rule = "(%S ==> %M), ((&&,%S,%A..+) ==> %M) |- ((&&,%A..+) ==> %M), (Belief:DecomposeNegativePositivePositive, Order:ForAllSame, SequenceIntervals:FromBelief)";
 
         Compound _x = $.$('<' + rule + '>');
         assertTrue(_x instanceof PremiseRuleSource, _x.toString());
         PremiseRuleSource x = (PremiseRuleSource) _x;
-        
-        x = new PremiseRuleProto(x, NARS.shell());
-        
 
-        assertEquals(
-                "(((%1==>%2),((%1&&%3..+)==>%2)),(((&&,%3..+)==>%2),((DecomposeNegativePositivePositive-->Belief),(ForAllSame-->Order),(FromBelief-->SequenceIntervals))))",
-                x.toString()
-        );
+//        x = new PremiseRuleProto(x, NARS.shell());
+//
+//
+//        assertEquals(
+//                "(((%1==>%2),((%1&&%3..+)==>%2)),(((&&,%3..+)==>%2),((DecomposeNegativePositivePositive-->Belief),(ForAllSame-->Order),(FromBelief-->SequenceIntervals))))",
+//                x.toString()
+//        );
 
     }
 

@@ -273,10 +273,7 @@ public abstract class Unify extends Versioning implements Subst {
         if (o.var && matchType(o)) {
             Term y = resolve((Variable) xx);
             if (y != xx) {
-                if (neg)
-                    y = y.neg();
-                return y;
-                //return y.negIf(neg);
+                return neg ? y.neg() : y;
             }
         }
 

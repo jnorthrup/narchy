@@ -98,15 +98,7 @@ public abstract class Time implements Clock, Serializable {
         if (scheduling.compareAndSet(false, true)) {
 
             try {
-                long now = now();
-                SchedTask p;
-                for (; (p = incoming.poll()) != null; ) {
-                    if (p.when <= now)
-                        each.accept(p);
-                    else
-                        scheduled.offer(p);
-                }
-
+                long now;
                 //..
 
                 now = now(); //udpate the time
@@ -123,6 +115,16 @@ public abstract class Time implements Clock, Serializable {
                     );
 
                 }
+
+                now = now(); //udpate the time
+                SchedTask p;
+                for (; (p = incoming.poll()) != null; ) {
+                    if (p.when <= now)
+                        each.accept(p);
+                    else
+                        scheduled.offer(p);
+                }
+
             } finally {
                 scheduling.set(false);
             }

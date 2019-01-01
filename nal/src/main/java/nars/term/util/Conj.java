@@ -383,20 +383,46 @@ public class Conj extends ByteAnonMap {
 
     public static Term dropAnyEvent(Term x, NAR nar) {
         Op oo = x.op();
+
         boolean negated = (oo == NEG);
         if (negated) {
             x = x.unneg();
             oo = x.op();
         }
+
+        if (oo == IMPL) {
+            boolean sNeg = x.sub(0).op()==NEG;
+            Term s = x.sub(0);
+            if (sNeg)
+                s = s.unneg();
+            Term ss = dropAnyEvent(s, nar);
+            Term p = x.sub(1);
+
+            if (ss instanceof Bool || s.equals(ss)) {
+                Term pp = dropAnyEvent(p, nar);
+                if (pp instanceof Bool || p.equals(pp))
+                    return x; //no change
+
+                //use Term.transform to shift any internal dt's appropriately
+                return x.replace(x.sub(1), pp).negIf(negated);
+            } else {
+                //use Term.transform to shift any internal dt's appropriately
+                return x.replace(x.sub(0), ss.negIf(sNeg)).negIf(negated);
+            }
+        }
+
         if (oo != CONJ)
             return Null;
 
+
+
+        Random rng = nar.random();
+
         Term y;
         int dt = x.dt();
-        if (x.eventRange() == 0 || !(x.subterms().hasAny(CONJ))) {
+        if (!Conj.isSeq(x)) {
             Subterms xx = x.subterms();
             int ns = xx.subs();
-            Random rng = nar.random();
             if (ns == 2) {
                 //choose which one will remain
                 y = xx.sub(rng.nextInt(ns));
@@ -405,8 +431,8 @@ public class Conj extends ByteAnonMap {
             }
         } else {
             Conj c = from(x);
+            c.distribute();
             long eventAt;
-            Random rng = nar.random();
             if (c.event.size() == 1) {
                 eventAt = c.event.keysView().longIterator().next();
             } else {

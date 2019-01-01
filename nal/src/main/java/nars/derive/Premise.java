@@ -14,14 +14,11 @@ import nars.concept.TaskConcept;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
 import nars.task.proxy.SpecialOccurrenceTask;
-import nars.task.util.Answer;
 import nars.term.Term;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
-
-import static nars.time.Tense.ETERNAL;
 
 /**
  * Defines the conditions used in an instance of a derivation
@@ -96,7 +93,7 @@ public class Premise implements Comparable<Premise> {
         boolean beliefConceptCanAnswerTaskConcept = false;
 
         Term beliefTerm = this.beliefTerm;
-        if (task.isQuestionOrQuest())
+        //if (task.isQuestionOrQuest())
         {
             Term taskTerm = task.term();
             if (taskTerm.op() == beliefTerm.op()) {
@@ -261,18 +258,18 @@ public class Premise implements Comparable<Premise> {
 
     private Task tryAnswer(Term beliefTerm, BeliefTable answerTable, Derivation d) {
 
+        Task match = answerTable.answer(task.start(), task.end(), beliefTerm, d.nar);
 
-        if (answerTable.isEmpty())
-            return null;
-
-        long qStart = task.start();
-        int limit = qStart == ETERNAL ? Answer.TASK_LIMIT_ETERNAL_QUESTION : Answer.TASK_LIMIT_DEFAULT;
-        Task match =
-                Answer.relevance(true, limit,
-                        qStart, task.end(),
-                        beliefTerm, null /*beliefFilter*/, d.nar)
-                        .ditherTruth(true)
-                        .match(answerTable).task(true, true, true);
+//        long qStart = task.start();
+//        //int limit = qStart == ETERNAL ? Answer.TASK_LIMIT_ETERNAL_QUESTION : Answer.TASK_LIMIT_DEFAULT;
+//        Task match =
+//                Answer.relevance(true, limit,
+//                        qStart, task.end(),
+//                        beliefTerm, null /*beliefFilter*/, d.nar)
+//                        //.ditherTruth(true)
+//                        .match(answerTable)
+//
+//                        .task(true, true, true);
 
         if (match != null) {
             //assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";

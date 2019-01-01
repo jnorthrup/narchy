@@ -20,14 +20,15 @@ public class ToyNAR {
         NAR n = new NARS().index(new SimpleConceptIndex(128))
                 .get();
 
-        ZipperDeriver d = new ZipperDeriver(Derivers.nal(n,1,1));
 
         g.add(new BagView<>(((AbstractConceptIndex)n.concepts).active, n)).posRel(0.5f, 0.5f, 0.25f, 0.15f);
 
-        g.add(new ObjectSurface<>(d,3)).posRel(0.5f, 0.5f, 0.25f, 0.15f);
-
         ((TaskBuffer.BagTaskBuffer)(n.input)).valve.set(0);
         g.add(new BagView<>(((TaskBuffer.BagTaskBuffer)(n.input)).tasks, n)).posRel(0.5f, 0.5f, 0.25f, 0.15f);
+
+
+        ZipperDeriver d = new ZipperDeriver(Derivers.nal(n,1,1));
+        g.add(new ObjectSurface<>(d,3)).posRel(0.5f, 0.5f, 0.25f, 0.15f);
 
 
 
@@ -36,7 +37,7 @@ public class ToyNAR {
             e->g.add(new OKSurface(e.toString())).posRel(0.5f, 0.5f, 0.25f, 0.25f)
         )).posRel(0.5f, 0.5f, 0.25f, 0.1f);
 
-        //temporaruy
+        //temporary
         g.add(NARui.top(n)).posRel(0.5f,0.5f,0.4f,0.4f);
 
 
@@ -45,7 +46,10 @@ public class ToyNAR {
         n.input("(c-->d).");
         n.input("(d-->e).");
         //n.log(TextEdit.appendable);
-        n.startFPS(1f);
+
+
+        n.startFPS(1f); //n.stop(); //HACK
+
     }
 
 }

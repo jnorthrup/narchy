@@ -17,14 +17,12 @@ import nars.derive.BeliefSource;
 import nars.derive.Derivation;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
-import nars.derive.impl.ZipperDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
-import nars.derive.timing.ActionTiming;
 import nars.exe.MultiExec;
 import nars.exe.Revaluator;
 import nars.gui.NARui;
 import nars.index.concept.AbstractConceptIndex;
-import nars.index.concept.CaffeineIndex;
+import nars.index.concept.HijackConceptIndex;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Factorize;
@@ -215,16 +213,16 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
-//                        new HijackConceptIndex(
-//
-//                                //192 * 1024,
-//                                128 * 1024,
-//                                //64 * 1024,
-//                                //32 * 1024,
-//                                //16 * 1024,
-//                                //8 * 1024,
-//                                4)
+//                        new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                        new HijackConceptIndex(
+
+                                //192 * 1024,
+                                128 * 1024,
+                                //64 * 1024,
+                                //32 * 1024,
+                                //16 * 1024,
+                                //8 * 1024,
+                                4)
 
 
                 )
@@ -253,13 +251,13 @@ abstract public class NAgentX extends NAgent {
         BiFunction<Concept, Derivation, BeliefSource.LinkModel> actionLinker = ListTermLinker(actionConcepts);
         BiFunction<Concept, Derivation, BeliefSource.LinkModel> rewardLinker = ListTermLinker(rewardConcepts);
 
-        ZipperDeriver senseReward = BeliefSource.forConcepts(n, rules,
-                actionConcepts,
-                //sensorConcepts,
-                rewardLinker
-                //ConceptTermLinker
-        );
-        senseReward.timing = new ActionTiming(n);
+//        ZipperDeriver senseReward = BeliefSource.forConcepts(n, rules,
+//                actionConcepts,
+//                //sensorConcepts,
+//                rewardLinker
+//                //ConceptTermLinker
+//        );
+//        senseReward.timing = new ActionTiming(n);
 //
 //        ZipperDeriver senseActions = BeliefSource.forConcepts(n, rules,
 //                sensorConcepts,
@@ -287,7 +285,7 @@ abstract public class NAgentX extends NAgent {
 
         MetaAgent meta = new MetaAgent(a);
 
-        //window(AttentionUI.attentionGraph(n, a), 600, 600);
+        window(AttentionUI.attentionGraph(n, a), 600, 600);
 
         window(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
 

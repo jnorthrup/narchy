@@ -6,7 +6,7 @@ import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.attention.AttNode;
-import nars.attention.AttVectorNode;
+import nars.attention.AttBranch;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
 import nars.control.channel.CauseChannel;
@@ -90,19 +90,19 @@ public abstract class Reward implements Termed, Iterable<Signal> {
         );
 
         Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
-        AttNode a = new AttVectorNode(at, List.of(t)) {
+        AttNode a = new AttBranch(at, List.of(t)) {
 
-            @Override
-            public float elementPri(NAR nar) {
-                return nar.priDefault(GOAL);
-            }
+//            @Override
+//            public float elementPri(NAR nar) {
+//                return nar.priDefault(GOAL);
+//            }
 
-            @Override
-            public void update(NAR nar) {
-                super.update(nar);
-                ensure(t, Math.max(0, elementPri(nar) - t.priElseZero()));
-                in.input(t);
-            }
+//            @Override
+//            public void update(NAR nar) {
+//                super.update(nar);
+//                ensure(t, Math.max(0, elementPri(nar) - t.priElseZero()));
+//                in.input(t);
+//            }
         };
         a.parent(attn);
     }

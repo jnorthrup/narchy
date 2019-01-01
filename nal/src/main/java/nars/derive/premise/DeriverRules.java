@@ -18,8 +18,6 @@ import java.util.stream.Stream;
  */
 public class DeriverRules {
 
-    static final int DERIVER_RULES_CAPACITY = 128 * 1024;
-
     public final PREDICATE<Derivation> what;
     /**
      * the causes that this is responsible for, ie. those that may be caused by this
@@ -47,8 +45,7 @@ public class DeriverRules {
 
         this.causes = Stream.of(actions).flatMap(b -> Stream.of(b.cause)).toArray(Cause[]::new);
 
-
-        this.whats = new ByteHijackMemoize<>(this::can, DERIVER_RULES_CAPACITY, 4, false);
+        this.whats = new ByteHijackMemoize<>(this::can, 64 * 1024, 4, false);
 
 //            @Override
 //            public float value(PremiseKey premiseKey, short[] shorts) {

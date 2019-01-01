@@ -16,6 +16,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static java4k.gradius4k.Gradius4K.*;
+import static nars.$.$$;
 import static nars.agent.FrameTrigger.fps;
 import static spacegraph.SpaceGraph.window;
 
@@ -108,20 +109,20 @@ public class Gradius extends NAgentX {
         float height = g.getHeight();
         int gpsDigits = 8;
         float gpsRes = 0.1f;
-        senseNumber(level -> $.inh($.the(level), $.p(id, $.the("y"))),
+        senseNumber(level -> $.p($.the(level), $.p(id, $.the("y"))),
                 () -> g.player[OBJ_Y] / height,
                 gpsDigits, DigitizedScalar.FuzzyNeedle
         ).resolution(gpsRes);
-        senseNumber(level -> $.inh($.the(level), $.p(id, $.the("x"))),
+        senseNumber(level -> $.p($.the(level), $.p(id, $.the("x"))),
                 () -> g.player[OBJ_X] / width,
                 gpsDigits, DigitizedScalar.FuzzyNeedle
         ).resolution(gpsRes);
 
 
-        actionToggle($.inh("fire", id), b -> g.keys[VK_SHOOT] = b);
+        actionToggle($$("fire"), b -> g.keys[VK_SHOOT] = b);
 
         if (canPause) {
-            actionToggle($.inh("pause", id),
+            actionToggle($$("pause"),
                     b -> g.paused = b);
         }
 
@@ -158,10 +159,10 @@ public class Gradius extends NAgentX {
 
     void initToggle() {
         //TODO boundary feedback
-        actionPushButtonMutex($.inh("left", id), $.inh("right", id),
+        actionPushButtonMutex($$("left"), $$("right"),
                 (BooleanPredicate) b -> g.keys[VK_LEFT] = b,
                 (BooleanPredicate) b -> g.keys[VK_RIGHT] = b);
-        actionPushButtonMutex($.inh("up", id), $.inh("down", id),
+        actionPushButtonMutex($$("up"), $$("down"),
                 (BooleanPredicate) b -> g.keys[VK_UP] = b,
                 (BooleanPredicate) b -> g.keys[VK_DOWN] = b);
     }
@@ -169,7 +170,7 @@ public class Gradius extends NAgentX {
     void initBipolar() {
 
         float thresh = 0.1f;
-        actionBipolar($.inh("y", id), dy -> {
+        actionBipolar($$("y"), dy -> {
             if (dy < -thresh) {
                 g.keys[VK_UP] = false;
                 g.keys[VK_DOWN] = true;
@@ -185,7 +186,7 @@ public class Gradius extends NAgentX {
             }
 
         });
-        actionBipolar($.inh("x", id), dx -> {
+        actionBipolar($$("x"), dx -> {
             if (dx < -thresh) {
                 g.keys[VK_LEFT] = false;
                 g.keys[VK_RIGHT] = true;

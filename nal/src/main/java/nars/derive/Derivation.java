@@ -283,7 +283,7 @@ public class Derivation extends PreDerivation {
             anon.clear();
 
             this.taskTerm = anon.put(nextTaskTerm);
-            if ((taskTerm instanceof Compound && nextTaskTerm instanceof Compound) && taskTerm.op()!=nextTaskTerm.op()) //(!taskTerm.op().taskable)
+            if (taskTerm instanceof Bool || ((taskTerm instanceof Compound && nextTaskTerm instanceof Compound) && taskTerm.op()!=nextTaskTerm.op())) //(!taskTerm.op().taskable)
                 throw new WTF(nextTaskTerm + " could not be anon, result: " + taskTerm);
             this.taskUniques = anon.uniques();
         }
@@ -624,9 +624,9 @@ public class Derivation extends PreDerivation {
     public Term retransform(Term x) {
         Term y =
                     x.replace(retransform); //retransforms only
-                    //t.replace(xy).replace(retransform); //avoid functor eval
-                    //transform(t).replace(retransform);
-                    //t.replace(retransform);
+                    //x.replace(xy).replace(retransform); //avoid functor eval
+                    //transform(x).replace(retransform);
+                    //x.replace(retransform);
         if (y!=x && !y.op().eventable)
             return x; //dont bother
         else

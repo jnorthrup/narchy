@@ -159,10 +159,13 @@ public class PremiseRuleSource extends ProxyTerm {
                     neq(constraints, XX, Y);
                     break;
                 case "neqRoot":
-                    neqRoot(constraints, XX, YY);
+                    neqRoot(XX, YY);
+                    break;
+                case "eqRoot":
+                    eqRoot(XX, YY);
                     break;
                 case "neqOrInhCommon":
-                    neqRoot(constraints, XX, YY);
+                    neqRoot(XX, YY);
                     constraints.add(new NotEqualConstraint.NoCommonInh(XX, YY));
                     break;
                 case "eqNeg":
@@ -172,7 +175,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
                 case "neqRCom":
-                    neqRoot(constraints, XX, YY);
+                    neqRoot(XX, YY);
                     constraints.add(new NotEqualConstraint.NeqRootAndNotRecursiveSubtermOf(XX, YY));
                     break;
 
@@ -205,7 +208,7 @@ public class PremiseRuleSource extends ProxyTerm {
                     break;
 
                 case "in":
-                    neq(constraints, XX, ((Variable) (Y.unneg())));
+                    neq(constraints, XX, Y.unneg());
                     constraints.add(new SubOfConstraint(XX, ((Variable) Y.unneg()), Recursive, Y.op() == NEG ? -1 : +1));
                     break;
 
@@ -266,10 +269,10 @@ public class PremiseRuleSource extends ProxyTerm {
                     break;
 
 
-                case "notSet":
-                    /** deprecated soon */
-                    matchNot(X, new TermMatch.Is(Op.Set));
-                    break;
+//                case "notSet":
+//                    /** deprecated soon */
+//                    matchNot(X, new TermMatch.Is(Op.Set));
+//                    break;
 
 
                 case "is": {
@@ -825,8 +828,14 @@ public class PremiseRuleSource extends ProxyTerm {
         }
     }
 
-    private static void neqRoot(Set<UnifyConstraint> constraints, Variable x, Variable y) {
-        constraints.add(new NotEqualConstraint.NotEqualRootConstraint(x, y));
+    private void neqRoot(Variable x, Variable y) {
+        match(x, new TermMatch.EqualsRoot(y), false);
+        //constraints.add(new NotEqualConstraint.NotEqualRootConstraint(x, y));
+    }
+
+    private void eqRoot(Variable x, Term y) {
+        match(x, new TermMatch.EqualsRoot(y), true);
+        //constraints.add(new NotEqualConstraint.NotEqualRootConstraint(x, y).neg());
     }
 
     public static Term pp(@Nullable byte[] b) {
@@ -944,8 +953,11 @@ public class PremiseRuleSource extends ProxyTerm {
                 return Derivation.TaskTerm;
             if (x.equals(beliefPattern))
                 return Derivation.BeliefTerm;
+            else
+                return x
+                        .replace(taskPattern, Derivation.TaskTerm)
+                        .replace(beliefPattern, Derivation.BeliefTerm);
 
-            return x;
         }
     };
 }

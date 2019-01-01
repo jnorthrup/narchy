@@ -101,14 +101,13 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
 
 
-        //TODO mine truthpolation .stamp()'s and .cause()'s for clues
 
 
 
 
         long agentDur = now - prev;
         long narDur = n.dur();
-        long dur = Math.min(narDur, agentDur);
+        long dur = narDur; //Math.min(narDur, agentDur);
         long s = now - dur/2, e = now + dur/2;
         //long s = prev, e = now;
         //long s = prev, e = now;
@@ -147,6 +146,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 a.match(eternalTable);
 
             TruthPolation organic = a.truthpolation(n.dur()); //Math.round(actionWindowDexDurs *dur));
+
+            //TODO mine truthpolation .stamp()'s and .cause()'s for clues
 
             if (organic != null) {
                 actionDex = organic.filtered().truth();
@@ -233,7 +234,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
         }
 
         SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd, evi);
-        attn.ensure(curiosity, attn.elementPri(n));
+        attn.ensure(curiosity, attn.elementPri());
         return curiosity;
     }
 
@@ -243,7 +244,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 this, nar);
 
         if (r!=null)
-            attn.ensure(r.input, attn.elementPri(nar));
+            attn.ensure(r.input, attn.elementPri());
 
         return r;
     }
