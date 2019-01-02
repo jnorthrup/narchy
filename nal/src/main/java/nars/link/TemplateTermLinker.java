@@ -1,6 +1,5 @@
 package nars.link;
 
-import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
@@ -340,7 +339,7 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
         if (d.firedTasks.isEmpty())
             return;
 
-        if (conceptualizeAndTermLink(d) > 0) {
+        if (conceptualizeAndTermLink(a, d) > 0) {
 
             List<Concept> firedConcepts = d.firedConcepts.list;
 
@@ -386,7 +385,7 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
     }
 
 
-    private int conceptualizeAndTermLink(Derivation d) {
+    private int conceptualizeAndTermLink(Activate concept, Derivation d) {
 
 
         int n = concepts;
@@ -400,11 +399,11 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
         n = Math.min(n, d.deriver.tasklinkSpread.intValue());
 
         float taskPriSum = Math.max(ScalarValue.EPSILON, (float) (((FasterList<Task>) (d.firedTasks.list))
-                .sumOfFloat(Prioritized::priElseZero)));
+                .sumOfFloat(Prioritized::priElseZero))* concept.priElseZero()) ;
 
         float conceptActivationEach =
                 //(activationRate * conceptSrc.priElseZero()) / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
-                taskPriSum / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
+                taskPriSum / Math.max(1, n); //TODO correct # of concepts fired in this batch
 
 
 //            float balance = nar.termlinkBalance.floatValue();

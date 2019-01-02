@@ -7,7 +7,6 @@ import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
 import nars.control.proto.Remember;
-import nars.link.TaskLink;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
@@ -16,7 +15,6 @@ import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.truth.Truth;
 
 import java.util.LinkedList;
@@ -43,17 +41,17 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
      */
     Tasklike tasklinkPtr = null;
 
-    /**
-     * permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation
-     */
-    public final TaskLink.GeneralTaskLink tasklink;
+//    /**
+//     * permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation
+//     */
+//    public final TaskLink.GeneralTaskLink tasklink;
 
     public SeriesBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<T> s) {
         super(c, beliefOrGoal);
         this.series = s;
 
-        updateTaskLinkPtr(ETERNAL);
-        tasklink = new SeriesTaskLink();
+        tasklinkPtr = seed(term, punc(), ETERNAL);
+
 
     }
 
@@ -161,9 +159,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
         series.push(nextT);
     }
 
-    private void updateTaskLinkPtr(long when) {
-        tasklinkPtr = seed(term, punc(), when);
-    }
+
 
     /**
      * has special equality and hashcode convention allowing the end to stretch;
@@ -237,7 +233,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
 
         @Override
         protected boolean tasklink() {
-            return false; //tasklink add procedure is added manually in SensorBeliefTables
+            return true; //tasklink add procedure is added manually in SensorBeliefTables
         }
 
 //        @Override
@@ -251,14 +247,14 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
         }
     }
 
-    private class SeriesTaskLink extends TaskLink.GeneralTaskLink {
-        public SeriesTaskLink() {
-            super(seed(SeriesBeliefTable.this.term, SeriesBeliefTable.this.punc(), Tense.ETERNAL), 0);
-        }
-
-        @Override
-        public TaskLink clone(float pri) {
-            return new GeneralTaskLink(tasklinkPtr, pri);
-        }
-    }
+//    private class SeriesTaskLink extends TaskLink.GeneralTaskLink {
+//        public SeriesTaskLink() {
+//            super(seed(SeriesBeliefTable.this.term, SeriesBeliefTable.this.punc(), Tense.ETERNAL), 0);
+//        }
+//
+//        @Override
+//        public TaskLink clone(float pri) {
+//            return new GeneralTaskLink(tasklinkPtr, pri);
+//        }
+//    }
 }

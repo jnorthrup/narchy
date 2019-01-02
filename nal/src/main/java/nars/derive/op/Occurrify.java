@@ -6,6 +6,7 @@ import jcog.data.graph.FromTo;
 import jcog.data.graph.Node;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
+import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.derive.Derivation;
@@ -200,7 +201,7 @@ public class Occurrify extends TimeGraph {
 //            link(know(t), 0, know(u));
 //    }
 
-//    final BiConsumer<Term, Compound> negRequire = (sub, sup) -> {
+    //    final BiConsumer<Term, Compound> negRequire = (sub, sup) -> {
 //        Op so = sub.op();
 //        if (so == NEG) nextNeg.add(sub.unneg());
 //        else if (sup == null || ((so == IMPL || so == CONJ)))
@@ -234,8 +235,9 @@ public class Occurrify extends TimeGraph {
 ////        }
 //    };
     final BiConsumer<Term, Compound> getPosNeg = (sub, sup) -> {
-        if (sup == null || (sup.op()==IMPL || sup.op()==CONJ))
-            ((sub.op()==NEG) ?  nextNeg : nextPos).add(sub.unneg());
+        Op so = sup != null ? sup.op() : null;
+        if (so == null || so == IMPL || so == CONJ)
+            ((sub.op() == NEG) ? nextNeg : nextPos).add(sub.unneg());
     };
 
     private void setAutoNeg(Term pattern, Term taskTerm, Term beliefTerm) {
@@ -609,7 +611,7 @@ public class Occurrify extends TimeGraph {
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
                 //return solveSubEvent(d, x, false);
                 Pair<Term, long[]> p = d.occ.solveOccDT(d.occ.reset(true, d.taskStart == ETERNAL, x, true).solutions(x)).get();
-                if (p!=null && p.getTwo()[0]==TIMELESS)
+                if (p != null && p.getTwo()[0] == TIMELESS)
                     return null; //HACK
 
                 return p;
@@ -670,7 +672,6 @@ public class Occurrify extends TimeGraph {
 //                return BeliefProjection.Raw; //N/A structuraldeduction
 //            }
 //        },
-
 
 
         /**
@@ -820,7 +821,7 @@ public class Occurrify extends TimeGraph {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
                 Pair<Term, long[]> p = solveDT(d, x, false, false, true);
-                if (p!=null) {
+                if (p != null) {
                     apply(d, p.getTwo());
                 }
                 return p;
@@ -828,7 +829,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return new long[] { TIMELESS, TIMELESS };
+                return new long[]{TIMELESS, TIMELESS};
             }
 
             private void apply(Derivation d, long[] o) {
@@ -1059,8 +1060,8 @@ public class Occurrify extends TimeGraph {
          */
         Pair<Term, long[]> solveAuto(Term x, Derivation d) {
 
-            if ((d.concPunc == BELIEF || d.concPunc == GOAL) && x.hasXternal())
-                return null;
+//            if ((d.concPunc == BELIEF || d.concPunc == GOAL) && x.hasXternal())
+//                return null;
             long[] u = occurrence(d);
             assert (u != null);
             return u != null ? pair(x, u) : null;
@@ -1145,7 +1146,7 @@ public class Occurrify extends TimeGraph {
 
         //TODO some cases: subTimeLast. also would help to specifically locate the pos/neg one
 
-        if (inner.op()==CONJ) {
+        if (inner.op() == CONJ) {
             inner = (firstOrLast) ? inner.eventFirst() : inner.eventLast();
         }
 

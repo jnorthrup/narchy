@@ -160,7 +160,7 @@ public class NAL1Test extends NALTest {
         tester.believe("<robin <-> swan>", 0.1f, 0.6f);
     }
 
-    @Test
+    @Disabled @Test
     void comparison() {
 
         TestNAR tester = test;
@@ -170,7 +170,7 @@ public class NAL1Test extends NALTest {
 
     }
 
-    @Test
+    @Disabled @Test
     void comparison2() {
 
         TestNAR tester = test;

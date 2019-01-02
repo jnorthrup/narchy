@@ -1181,7 +1181,8 @@ public class Conj extends ByteAnonMap {
                     return terms.conj(eternal ? DTERNAL : 0, A, B);
                 }
             }
-            return null; //no change
+            //return null; //no change
+            return Null;
         } else {
             //TODO factor out the common events, and rewrite the disjunction as an extra CONJ term with the two options (if they are compatible)
             //HACK simple case
@@ -1202,8 +1203,6 @@ public class Conj extends ByteAnonMap {
                                         if (bo != DTERNAL) {
                                             Term arOrBr = terms.conj((bo-bc) - (ao-ac), ar.neg(), br.neg()).neg();
                                             Term y = terms.conj(-ac, common, arOrBr).neg(); //why neg
-                                            if (y.anon() instanceof Bool) //HACK
-                                                return Null;
                                             return y;
                                         }
                                     }
@@ -1214,12 +1213,12 @@ public class Conj extends ByteAnonMap {
                 }
             }
 
-            //HACK if the set of components is disjoint, allow
-            if (!a.subterms().hasAny(CONJ) && !b.subterms().hasAny(CONJ)) {
-                Subterms bs = b.subterms();
-                if (!a.subterms().OR(aa -> bs.contains(aa) || bs.containsNeg(aa)))
-                    return null;//allow
-            }
+//            //HACK if the set of components is disjoint, allow
+//            if (!a.subterms().hasAny(CONJ) && !b.subterms().hasAny(CONJ)) {
+//                Subterms bs = b.subterms();
+//                if (!a.subterms().OR(aa -> bs.contains(aa) || bs.containsNeg(aa)))
+//                    return null;//allow
+//            }
 
             //TODO finer grained disjoint event comparison
 

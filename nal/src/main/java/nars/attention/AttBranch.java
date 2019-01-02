@@ -2,7 +2,6 @@ package nars.attention;
 
 import com.google.common.collect.Streams;
 import jcog.Paper;
-import jcog.Util;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.term.Termed;

@@ -3,15 +3,11 @@ package nars.table.dynamic;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Param;
-import nars.Task;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.control.proto.Remember;
-import nars.link.TaskLink;
 import nars.table.BeliefTables;
 import nars.table.temporal.TemporalBeliefTable;
-import nars.task.AbstractTask;
-import nars.task.ITask;
 import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.series.RingBufferTaskSeries;
@@ -78,7 +74,7 @@ public class SensorBeliefTables extends BeliefTables {
 
         if (x!=null) {
             SeriesBeliefTable.SeriesRemember y = x.input(c);
-            y.remember(new MyTaskLink(c));
+            //y.remember(new MyTaskLink(c));
             return y;
         }
 
@@ -204,31 +200,31 @@ public class SensorBeliefTables extends BeliefTables {
         this.res = res;
     }
 
-    private class MyTaskLink extends AbstractTask {
-        private final TaskConcept c;
-
-        Task lastActivated = null;
-        public MyTaskLink(TaskConcept c) {
-            this.c = c;
-        }
-
-        @Override
-        public ITask next(NAR n) {
-            Task lastTask = series.series.last();
-            if (lastTask!=null) {
-                float p = lastTask.pri();
-                if (p == p) {
-                    series.tasklink.pri(p);
-
-                    TaskLink.link(series.tasklink, c);
-
-                    if (lastActivated!=lastTask) {
-                        n.activate(c, p);
-                        lastActivated = lastTask;
-                    } //else: reactivate?
-                }
-            }
-            return null;
-        }
-    }
+//    private class MyTaskLink extends AbstractTask {
+//        private final TaskConcept c;
+//
+//        Task lastActivated = null;
+//        public MyTaskLink(TaskConcept c) {
+//            this.c = c;
+//        }
+//
+//        @Override
+//        public ITask next(NAR n) {
+//            Task lastTask = series.series.last();
+//            if (lastTask!=null) {
+//                float p = lastTask.pri();
+//                if (p == p) {
+//                    series.tasklink.pri(p);
+//
+//                    TaskLink.link(series.tasklink, c);
+//
+//                    if (lastActivated!=lastTask) {
+//                        n.activate(c, p);
+//                        lastActivated = lastTask;
+//                    } //else: reactivate?
+//                }
+//            }
+//            return null;
+//        }
+//    }
 }

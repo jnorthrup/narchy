@@ -5,10 +5,6 @@ import jcog.data.list.FasterList;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.term.AnonTest;
-import nars.term.BoolTest;
-import nars.term.ConjTest;
-import nars.term.VariableTest;
-import nars.term.util.TermTest;
 import org.pitest.classinfo.ClassInfo;
 import org.pitest.classpath.ClassloaderByteArraySource;
 import org.pitest.classpath.CodeSource;
@@ -59,17 +55,16 @@ public class PiTester {
                 t ->
                         t.equals(NAL1Test.class.getName())
                                 || t.equals(NAL1MultistepTest.class.getName())
-                                || t.equals(TermTest.class.getName())
-                                || t.equals(AnonTest.class.getName()) ||
-                                t.equals(BoolTest.class.getName()) ||
-                                t.equals(ConjTest.class.getName()) ||
-                                t.equals(VariableTest.class.getName()
-                                );
+                                || t.equals(AnonTest.class.getName())
+//                                t.equals(BoolTest.class.getName()) ||
+//                                t.equals(ConjTest.class.getName()) ||
+//                                t.equals(VariableTest.class.getName()
+                                ;
 
         run(
                 //CachedCompound.SimpleCachedCompound.class,
-                Set.of("*CachedCompound*", "*Conj"),
-
+                Set.of("*Compound*", "*Conj"),
+                //Set.of("nars.*"),
                 testFilter);
 
     }
@@ -190,6 +185,7 @@ public class PiTester {
 
             mae.run(builder.createMutationTestUnits(FCollection.map(code.getCode(),
                     ClassInfo.toClassName())));
+
 
 
             results.forEach(m -> {

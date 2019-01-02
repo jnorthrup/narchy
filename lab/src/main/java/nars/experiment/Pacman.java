@@ -29,6 +29,8 @@ public class Pacman extends NAgentX {
 
         Gridding gg = new Gridding();
         ScaledBitmap2D camScale = new ScaledBitmap2D(new SwingBitmap2D(g.view), 28, 28);
+        onFrame(camScale::update);
+
         for (MonoBufImgBitmap2D.ColorMode cm : new MonoBufImgBitmap2D.ColorMode[]{
                 MonoBufImgBitmap2D.ColorMode.R,
                 MonoBufImgBitmap2D.ColorMode.G,
@@ -89,7 +91,7 @@ public class Pacman extends NAgentX {
             lastScore = nextScore;
 
 
-            return 2f * (Util.sigmoid(r) - 0.5f);
+            return (Util.tanhFast(r) + 1)/2f;
         });
     }
 

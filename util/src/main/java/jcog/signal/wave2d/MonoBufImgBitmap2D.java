@@ -89,6 +89,7 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
     public void update() {
 
         Supplier<BufferedImage> src = this.source;
+
         BufferedImage nextImage = src != null ? src.get() : null;
 
         this.img = (nextImage != null ? nextImage : Empty);

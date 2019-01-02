@@ -16,7 +16,7 @@ public class PacmanGame {
     public static final float GHOST_SPEED = 0.2f;
     public static final int UPDATES = -25;
     public static int periodMS = 50;
-    private final float playerSpeed = GHOST_SPEED;
+    private final float playerSpeed = GHOST_SPEED*2;
 
     public void resetGhosts() {
 

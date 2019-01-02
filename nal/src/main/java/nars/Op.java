@@ -2,9 +2,9 @@ package nars;
 
 
 import nars.subterm.ArrayTermVector;
-import nars.term.Neg;
 import nars.subterm.Subterms;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.anon.Anom;

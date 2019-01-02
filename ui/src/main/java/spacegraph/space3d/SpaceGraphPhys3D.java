@@ -97,7 +97,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
 
                 new DbvtBroadphase();
 
-        dyn = new Dynamics3D<X>(dispatcher, broadphase, this);
+        dyn = new Dynamics3D<>(dispatcher, broadphase, this);
 
         io.onUpdate((dt) -> {
             update(Math.round(io.dtS * 1000.0));
