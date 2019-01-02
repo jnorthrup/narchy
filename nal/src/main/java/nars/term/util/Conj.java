@@ -1201,7 +1201,10 @@ public class Conj extends ByteAnonMap {
                                         int bo = b.subTimeFirst(br);
                                         if (bo != DTERNAL) {
                                             Term arOrBr = terms.conj((bo-bc) - (ao-ac), ar.neg(), br.neg()).neg();
-                                            return terms.conj(-ac, common, arOrBr).neg(); //why neg
+                                            Term y = terms.conj(-ac, common, arOrBr).neg(); //why neg
+                                            if (y.anon() instanceof Bool) //HACK
+                                                return Null;
+                                            return y;
                                         }
                                     }
                                 }

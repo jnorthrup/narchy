@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 600;
+    private static final int cycles = 900;
 
     @BeforeEach
     void setup() {
@@ -289,7 +289,8 @@ public class NAL6Test extends NALTest {
         tester.believe("((($x --> [chirping]) && ($x --> [withWings])) ==> ($x --> bird))");
         tester.mustBelieve(cycles, "(({Tweety} --> [chirping]) ==> ({Tweety} --> bird))",
                 1.00f,
-                0.81f
+                //0.81f
+                0.38f
         );
 
     }
@@ -348,8 +349,8 @@ public class NAL6Test extends NALTest {
                 .believe("flyer:Tweety")
                 .mustBelieve(cycles, "(bird:Tweety ==> (chirping:Tweety && food:worms))",
                         1.0f,
-                        //0.42f
-                        0.81f
+                        0.42f
+                        //0.81f
                 );
 
 

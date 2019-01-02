@@ -615,7 +615,7 @@ public class NAL7Test extends NALTest {
     }
 
 
-    @ValueSource(ints = {0, 1, 2, 3, 4})
+    @ValueSource(ints = {0, 1, 2, 3})
     @ParameterizedTest
     void induction_on_events_composition_post(int dt) {
         TestNAR tester = test;

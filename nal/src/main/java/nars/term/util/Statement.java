@@ -212,8 +212,9 @@ public class Statement {
         //test image normalization
         if (op==INH) {
             Term tt = Image.imageNormalize(t);
-            if (tt instanceof Bool)
-                return Null;
+            if (tt instanceof Bool) {
+                return tt;
+            }
         }
         //}
 
