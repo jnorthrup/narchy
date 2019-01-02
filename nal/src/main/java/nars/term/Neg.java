@@ -1,11 +1,8 @@
-package nars.subterm;
+package nars.term;
 
 import com.google.common.io.ByteArrayDataOutput;
 import nars.Op;
 import nars.The;
-import nars.term.Compound;
-import nars.term.Term;
-import nars.term.Variable;
 import nars.term.compound.UnitCompound;
 import org.jetbrains.annotations.Nullable;
 

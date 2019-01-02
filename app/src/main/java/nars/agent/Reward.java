@@ -47,6 +47,7 @@ public abstract class Reward implements Termed, Iterable<Signal> {
         this.rewardFunc = r;
 
         this.attn = new AttNode(this);
+        attn.reparent(a.attnReward);
 
         in = a.nar().newChannel(this);
 
@@ -92,17 +93,13 @@ public abstract class Reward implements Termed, Iterable<Signal> {
         Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
         AttNode a = new AttBranch(at, List.of(t)) {
 
-//            @Override
-//            public float elementPri(NAR nar) {
-//                return nar.priDefault(GOAL);
-//            }
+            @Override
+            public void update(float f) {
+                super.update(f);
+                ensure(t, elementPri());
+                in.input(t);
+            }
 
-//            @Override
-//            public void update(NAR nar) {
-//                super.update(nar);
-//                ensure(t, Math.max(0, elementPri(nar) - t.priElseZero()));
-//                in.input(t);
-//            }
         };
         a.parent(attn);
     }

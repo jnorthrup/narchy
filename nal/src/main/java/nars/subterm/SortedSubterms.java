@@ -1,11 +1,14 @@
 package nars.subterm;
 
+import jcog.Util;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Terms;
 
 import java.util.Arrays;
 import java.util.function.Function;
+
+import static nars.Op.NEG;
 
 public class SortedSubterms {
 
@@ -17,7 +20,7 @@ public class SortedSubterms {
         return the(x, b, false);
     }
 
-    public static Subterms the(Term[] x, Function<Term[],Subterms> b, boolean dedup) {
+    public static Subterms the(final Term[] x, Function<Term[],Subterms> b, boolean dedup) {
 
         switch (x.length) {
             case 1:
@@ -33,16 +36,24 @@ public class SortedSubterms {
                     return b.apply(new Term[]{ x[1], x[0] }).reversed();
 
             default: {
-                Term[] xx;
+
+                Term[] xx = x;
+                if (Util.or((Term xxx) -> xxx.op()==NEG, xx)) {
+                    xx = xx.clone(); //HACK TODO avoid double clones
+                    for (int j = 0; j < xx.length; j++)
+                        if (xx[j].op()==NEG)
+                            xx[j] = xx[j].unneg();
+                }
+
                 if (dedup)
-                    xx = Terms.sorted(x);
+                    xx = Terms.sorted(xx);
                 else {
-                    xx = x.clone();
+                    xx = x==xx ? x.clone() : xx;
                     Arrays.sort(xx);
                 }
                 if (Arrays.equals(xx, x)) {
                     //already sorted
-                    return b.apply(x);
+                    return b.apply(xx);
                 } else {
                     //TODO if (xx.length == 1) return RepeatedSubterms.the(xx[0],x.length);
                     return MappedSubterms.the(x, b.apply(xx));

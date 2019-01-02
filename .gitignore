@@ -45,3 +45,5 @@ narchy.iws
 log/
 gradle.properties
 dumps/
+.attach_*
+

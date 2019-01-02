@@ -639,6 +639,11 @@ public class SortedArray<X> extends AbstractList<X> {
 
     @SuppressWarnings("unchecked")
     public int indexOf(final X element, FloatFunction<X> cmp) {
+        return indexOf(element, cmp, false);
+    }
+
+    @SuppressWarnings("unchecked")
+    public int indexOf(final X element, FloatFunction<X> cmp, boolean eqByIdentity) {
 
 		/*if (element == null)
             return -1;*/
@@ -650,13 +655,16 @@ public class SortedArray<X> extends AbstractList<X> {
         if (size >= BINARY_SEARCH_THRESHOLD) {
 
             final int[] rightBorder = {0};
-            final int left = this.findInsertionIndex(cmp.floatValueOf(element), 0, size, rightBorder, cmp);
+            final int left = eqByIdentity ?
+                    this.findInsertionIndexByIdentity(cmp.floatValueOf(element), element, 0, size, rightBorder, cmp)
+                    :
+                    this.findInsertionIndex(cmp.floatValueOf(element), 0, size, rightBorder, cmp);
 
             X[] l = this.items;
             for (int index = left; index < rightBorder[0]; index++) {
-                if (element.equals(l[index])) {
+                X ll = l[index];
+                if (eqByIdentity ? (element== ll) : element.equals(ll))
                     return index;
-                }
             }
 
 
@@ -665,7 +673,7 @@ public class SortedArray<X> extends AbstractList<X> {
                 return -1;
         }
 
-        return indexOfInternal(element);
+        return indexOfInternal(element, eqByIdentity);
 
     }
 
@@ -675,11 +683,12 @@ public class SortedArray<X> extends AbstractList<X> {
     }
 
 
-    private int indexOfInternal(X e) {
+    private int indexOfInternal(X e, boolean eqByIdentity) {
         Object[] l = this.items;
         int s = this.size;
         for (int i = 0; i < s; i++) {
-            if (e.equals(l[i]))
+            Object ll = l[i];
+            if (eqByIdentity ? (e == ll) : e.equals(ll))
                 return i;
         }
         return -1;
@@ -733,7 +742,37 @@ public class SortedArray<X> extends AbstractList<X> {
         return findInsertionIndex(elementRank, nextLeft, nextRight, rightBorder, cmp);
 
     }
+    private int findInsertionIndexByIdentity(
+            float elementRank, X item, final int left, final int right,
+            final int[] rightBorder, FloatFunction<X> cmp) {
 
+        assert (right >= left);
+
+        if ((right - left) < BINARY_SEARCH_THRESHOLD) {
+            if (rightBorder!=null) rightBorder[0] = right;
+            return findFirstIndexByIdentity(item, left, right, cmp);
+        }
+
+        final int midle = left + (right - left) / 2;
+
+        X[] list = this.items;
+
+        final X midleE = list[midle];
+        if (midleE == item) {
+            int target = midle + 1;/* after existing element */
+            if(rightBorder!=null) rightBorder[0] = target;
+            return target;
+        }
+
+        boolean c = (0 < elementRank);
+
+
+        int nextLeft = c ? left : midle;
+        int nextRight = c ? midle : right;
+
+        return findInsertionIndexByIdentity(elementRank, item, nextLeft, nextRight, rightBorder, cmp);
+
+    }
 
     /**
      * searches for the first index found for given element
@@ -758,7 +797,21 @@ public class SortedArray<X> extends AbstractList<X> {
 
 
     }
+    private int findFirstIndexByIdentity(X item,
+                               final int left, final int right, FloatFunction<X> cmp) {
 
+
+        X[] ii = this.items;
+        for (int index = left; index < right; ) {
+            X x = ii[index++];
+            if (x == item) {
+                return index-1;
+            }
+        }
+        return right;
+
+
+    }
     /**
      * Returns the first (lowest) element currently in this list.
      */

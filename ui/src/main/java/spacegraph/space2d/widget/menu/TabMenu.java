@@ -12,6 +12,7 @@ import spacegraph.space2d.widget.menu.view.GridMenuView;
 import spacegraph.space2d.widget.meta.MetaHover;
 import spacegraph.space2d.widget.text.VectorLabel;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -25,6 +26,7 @@ public class TabMenu extends Menu {
     private final Function<String, ToggleButton> buttonBuilder;
 
     private static final float CONTENT_VISIBLE_SPLIT = 0.9f;
+    private Map<String,ToggleButton> items = new LinkedHashMap();
 
     public TabMenu(Map<String, Supplier<Surface>> options) {
         this(options, new GridMenuView());
@@ -40,8 +42,12 @@ public class TabMenu extends Menu {
 
 
         tabs.clear();
+        items.clear();
         options.entrySet().stream().map(x ->
-            toggle(buttonBuilder, x.getKey(), x.getValue())
+                {
+                    Surface y = toggle(buttonBuilder, x.getKey(), x.getValue());
+                    return y;
+                }
         ).forEach(tabs::add);
 
         wrap = new Splitting(tabs, content.view(),0);
@@ -51,6 +57,11 @@ public class TabMenu extends Menu {
 
     }
 
+    public final TabMenu set(String item, boolean enable) {
+        ToggleButton b = items.get(item);
+        b.on(enable);
+        return this;
+    }
 
     void toggle(Supplier<Surface> creator, boolean onOrOff, Surface[] created, boolean inside) {
         Surface cx;
@@ -96,9 +107,9 @@ public class TabMenu extends Menu {
     }
 
 
-    public void addToggle(String label, Supplier<Surface> creator) {
-        toggle(CheckBox::new, label, creator);
-    }
+//    public void addToggle(String label, Supplier<Surface> creator) {
+//        toggle(CheckBox::new, label, creator);
+//    }
 
     public Surface toggle(Function<String, ToggleButton> buttonBuilder, String label, Supplier<Surface> creator) {
         final Surface[] created = {null};
@@ -113,6 +124,7 @@ public class TabMenu extends Menu {
         };
 
         ToggleButton bb = buttonBuilder.apply(label).on(toggleInside);
+        items.put(label, bb);
         PushButton cc = PushButton.awesome("external-link").click(toggleOutside);
 
         //return Splitting.row(bb, 0.75f, new AspectAlign(cc, AspectAlign.Align.RightTop,1, 0.75f));

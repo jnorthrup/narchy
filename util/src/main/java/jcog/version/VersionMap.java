@@ -8,6 +8,7 @@ import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
@@ -35,6 +36,20 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         this.itemVersions = itemVersions;
     }
 
+    @Override
+    public void replaceAll(BiFunction<? super X, ? super Y, ? extends Y> function) {
+        map.forEach((v,val)->{
+           if (val!=null) {
+               Y x = val.get();
+               if (x!=null) {
+                   Y y = function.apply(v, x);
+                   if (x != y) {
+                       val.replaceLast(y);
+                   }
+               }
+           }
+        });
+    }
 
     @Nullable
     @Override

@@ -76,6 +76,8 @@ public class BagView<X extends Prioritized> extends TabMenu {
                             return b;
                         }
                 ));
+
+        set("histo", true);
     }
 
     public static <X extends Prioritized> Surface bagHistogram(Iterable<X> bag, int bins, NAR n) {

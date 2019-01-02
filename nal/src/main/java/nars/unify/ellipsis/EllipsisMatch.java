@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.SortedSet;
 
-import static nars.Op.VAR_PATTERN;
+import static nars.Op.PROD;
 
 /**
  * Holds results of an ellipsis match and
@@ -20,7 +20,7 @@ import static nars.Op.VAR_PATTERN;
 public final class EllipsisMatch extends LightCompound {
 
     /** what it's disguised as. must be VAR_PATTERN */
-    public static final Op EllipsisOp = VAR_PATTERN;
+    public static final Op EllipsisOp = PROD;
 
     public final static EllipsisMatch empty = new EllipsisMatch(Op.EmptyTermArray);
 

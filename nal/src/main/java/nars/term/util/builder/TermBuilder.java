@@ -6,6 +6,7 @@ import jcog.data.byt.DynBytes;
 import nars.Op;
 import nars.subterm.*;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.anon.AnonID;

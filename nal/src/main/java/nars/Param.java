@@ -48,7 +48,7 @@ public abstract class Param {
 
 
 
-    public static final boolean SHUFFLE_TERMUTES = false; //this may be dangerous
+    public static final boolean SHUFFLE_TERMUTES = true; //this may be dangerous
 
 
 
@@ -132,7 +132,7 @@ public abstract class Param {
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
     /** can be > 1 */
-    public static final float ANSWER_COMPLETENESS = 1f;
+    public static final float ANSWER_COMPLETENESS = 2f;
 
 
 
@@ -226,7 +226,7 @@ public abstract class Param {
 
     public final TaskBuffer input =
             //new DerivedTasks.DerivedTasksMap(4096);
-            new TaskBuffer.BagTaskBuffer(1024, 0.2f);
+            new TaskBuffer.BagTaskBuffer(512, 0.2f);
             //new TaskBuffer.BagPuncTasksBuffer(1024, 0.1f);
 
     /** (unsafe) true should theoreticaly be faster,
@@ -280,7 +280,7 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 3f;
+    public static final float TEST_TIME_MULTIPLIER = 4f;
 
 
     @Range(min = 1, max = 32)

@@ -19,17 +19,12 @@ public class SimpleReward extends Reward {
         concept = new Signal(id, () -> reward, nar) {
             @Override
             protected AttBranch newAttn(Term term) {
-                return new AttBranch(term, this.components()) {
-//
-//                    @Override
-//                    public float elementPri(NAR nar) {
-//                        return nar.priDefault(GOAL); /* feedback beliefs pri = goal NOT belief */
-//                    }
-                };
+                AttBranch b = new AttBranch(term, this.components());
+                return b;
             }
 
         };
-        //concept.attn.parent(attn);
+        concept.attn.parent(attn);
 
         alwaysWantEternally(concept.term);
 //        agent.//alwaysWant

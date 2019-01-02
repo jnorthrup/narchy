@@ -1,6 +1,7 @@
 package nars.subterm;
 
 import jcog.math.ShuffledPermutations;
+import nars.term.Term;
 
 import java.util.Random;
 
@@ -20,6 +21,11 @@ public final class ShuffledSubterms extends MappedSubterms {
     @Override
     protected int subMap(int i) {
         return shuffle.permute(i);
+    }
+
+    @Override
+    public Term sub(int i) {
+        return ref.sub(subMap(i)); //DIRECT
     }
 
     private void reset(Random rng) {

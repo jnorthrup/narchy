@@ -145,6 +145,8 @@ public class Premise implements Comparable<Premise> {
                             :
                                 //Longerval.unionArray(belief.start(), belief.end(), now, now + belief.range() - 1);
                                 new long[] { belief.start(), belief.end() };
+                    nowOrBelief[0] = Tense.dither(nowOrBelief[0], d.ditherTime);
+                    nowOrBelief[1] = Tense.dither(nowOrBelief[1], d.ditherTime);
                     task = new SpecialOccurrenceTask(task, nowOrBelief);
 
                 } else {
@@ -152,6 +154,9 @@ public class Premise implements Comparable<Premise> {
                     long[] nowOrTask =
                             new long[] { task.start(), task.end() };
                             //Longerval.unionArray(task.start(), task.end(), now, now + task.range() - 1);
+                    nowOrTask[0] = Tense.dither(nowOrTask[0], d.ditherTime);
+                    nowOrTask[1] = Tense.dither(nowOrTask[1], d.ditherTime);
+
                     belief = new SpecialOccurrenceTask(belief, nowOrTask);
                 }
             }
@@ -345,7 +350,7 @@ public class Premise implements Comparable<Premise> {
     }
 
 
-    public final boolean derive(Derivation d, int matchTTL, int deriveTTL) {
+    public final void derive(Derivation d, int matchTTL, int deriveTTL) {
 
         Counter result;
 
@@ -359,10 +364,8 @@ public class Premise implements Comparable<Premise> {
 
                 result = e.premiseFire; //premiseFired(p, d);
 
-                return true;
-
             } else {
-                result = e.premiseUnderivable; //premiseUnderivable(p, d);
+                result = e.premiseUnderivable;
             }
         } else {
             result = e.premiseUnbudgetable;
@@ -371,7 +374,7 @@ public class Premise implements Comparable<Premise> {
 
         result.increment();
 
-        return false;
+
 
     }
 

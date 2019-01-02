@@ -7,7 +7,6 @@ import nars.$;
 import nars.Narsese;
 import nars.Op;
 import nars.concept.Operator;
-import nars.derive.Derivation;
 import nars.derive.filter.CommutativeConstantPreFilter;
 import nars.derive.filter.DoublePremiseRequired;
 import nars.derive.filter.UnifyPreFilter;
@@ -604,11 +603,12 @@ public class PremiseRuleSource extends ProxyTerm {
 
         Term y;
         //macro substitution
-        if (px.equals(taskPattern))
-            y = Derivation.TaskTerm;
-        else if (px.equals(beliefPattern))
-            y = Derivation.BeliefTerm;
-        else {
+//        if (px.equals(taskPattern))
+//            y = Derivation.TaskTerm;
+//        else if (px.equals(beliefPattern))
+//            y = Derivation.BeliefTerm;
+//        else {
+        {
             y = ConcTransform.transform(px);
 //                    .replace(taskPattern, Derivation.TaskTerm)
 //                    .replace(beliefPattern, Derivation.BeliefTerm));

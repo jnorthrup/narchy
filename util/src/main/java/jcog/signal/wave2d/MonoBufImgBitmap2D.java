@@ -16,6 +16,7 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
     protected Supplier<BufferedImage> source;
     protected BufferedImage img;
     private boolean alpha;
+    private final int[] tmp4 = new int[4];
 
     public enum ColorMode {
         R, G, B, RGB
@@ -51,7 +52,7 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
                 if (sum < Float.MIN_NORMAL)
                     return 0;
 
-                int[] rgb = raster.getPixel(xx, yy, alpha ? new int[4] : new int[4]);
+                int[] rgb = raster.getPixel(xx, yy, tmp4);
                 float r, g, b;
                 if (alpha) {
                     //HACK handle either ARGB and RGBA intelligently

@@ -75,7 +75,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
 //                assertEquals($.t(0f, 0.81f), n.beliefTruth(pn, now));
 
                 Term pnn = $$("((x && --z) ==> a)");
-                assertEquals($.t(1 /*0.75f*/, 0.81f), n.beliefTruth(pnn, now));
+                assertEquals($.t(0.75f, 0.81f), n.beliefTruth(pnn, now));
 
 
                 assertEquals($.t(0f, 0.81f), n.beliefTruth($$("((z && w) ==> a)"), now));
@@ -112,6 +112,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
         }
 
     }
+
 
     @Test
     void testDynamicImplSubjTemporalExact() throws Narsese.NarseseException {
@@ -248,10 +249,8 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
                 assertEquals(truth, task.truth(), cccase);
 
                 boolean intersection;
-                boolean subjDecomposed = pt_p.sub(1).op().atomic;
-                if (subjDecomposed)
-                    intersection = !(mode > 0);
-                else
+//                boolean subjDecomposed = pt_p.sub(1).op().atomic;
+
                     intersection = mode>0; //else union
 
                 float fxy = intersection ? Util.and(xf, yf) : Util.or(xf, yf);
@@ -287,7 +286,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
         return (dt >= 0 ? "+" : "") + (dt);
     }
 
-    @Test public void testXternal() throws Narsese.NarseseException {
+    @Test public void testXternalSubj() throws Narsese.NarseseException {
 
         for (String s : new String[] {
                 "((a && b) ==>+- x)",
@@ -297,14 +296,33 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
             NAR n = NARS.shell();
             n.believe("(a ==> x)");
             n.believe("(b ==> x)");
-            assertDynamicTable($$(s));
-            @Nullable Task t = n.answer($$(s), BELIEF, ETERNAL);
-            assertEquals("((a&&b)==>x)", t.term().toString());
-            assertEquals(ETERNAL, t.start());
-            assertEquals(2, t.stamp().length);
-            assertEquals(1f, t.truth().freq());
-            assertEquals(0.81f, t.truth().conf(), 0.01f);
+            assertImplBeliefFromXternal(s, n, "((a&&b)==>x)");
         }
+    }
+
+
+    @Test public void testXternalPred() throws Narsese.NarseseException {
+
+        for (String s : new String[] {
+                "(x ==>+- (a && b))",
+                "(x ==>+- (a &&+- b))",
+                "(x ==>+- (a &&+- b))"
+        }) {
+            NAR n = NARS.shell();
+            n.believe("(x ==> a)");
+            n.believe("(x ==> b)");
+            assertImplBeliefFromXternal(s, n, "(x==>(a&&b))");
+        }
+    }
+
+    private void assertImplBeliefFromXternal(String s, NAR n, String c) {
+        assertDynamicTable($$(s));
+        @Nullable Task t = n.answer($$(s), BELIEF, ETERNAL);
+        assertEquals(c, t.term().toString());
+        assertEquals(ETERNAL, t.start());
+        assertEquals(2, t.stamp().length);
+        assertEquals(1f, t.truth().freq());
+        assertEquals(0.81f, t.truth().conf(), 0.01f);
     }
 
 

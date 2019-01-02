@@ -17,7 +17,6 @@ import nars.gui.sensor.VectorSensorView;
 import nars.index.concept.CaffeineIndex;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
-import nars.task.DerivedTask;
 import nars.term.Term;
 import nars.time.clock.RealTime;
 import org.eclipse.collections.impl.block.factory.Comparators;
@@ -183,6 +182,43 @@ public class TrackXY_NAR extends NAgentX {
 
         TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
 
+
+//        //if (rl) {
+//        {
+//            RLBooster rlb = new RLBooster(a,
+//
+//                    //DQN2::new,
+//                    //HaiQae::new,
+//                    HaiQ::new,
+//
+//                    true);
+//            a.curiosity.enable.set(false);
+////
+//////            window(
+//////                    new LSTMView(
+//////                            ((LivePredictor.LSTMPredictor) ((DQN2) rlb.agent).valuePredict).lstm.agent
+//////                    ), 800, 800
+//////            );
+////
+//////            window(new Gridding(
+//////                Stream.of(((DQN2) (rlb.agent)).valuePredict.layers).map(
+//////                        l -> {
+//////
+//////                            BitmapMatrixView i = new BitmapMatrixView(l.input);
+//////                            BitmapMatrixView w = new BitmapMatrixView(l.weights);
+//////                            BitmapMatrixView o = new BitmapMatrixView(l.output);
+//////
+//////                            a.onFrame(i::update);
+//////                            a.onFrame(w::update);
+//////                            a.onFrame(o::update);
+//////
+//////                            return new Gridding(i, w, o);
+//////                        }
+//////                ).collect(toList()))
+//////            , 800, 800);
+//        }
+
+
         if (gui)
             gui(n, a);
 
@@ -263,39 +299,6 @@ public class TrackXY_NAR extends NAgentX {
         n.termVolumeMax.set(volMax);
         n.timeResolution.set(Math.max(1, durMS));
 
-//        if (rl) {
-//            RLBooster rlb = new RLBooster(a,
-//
-//                    //DQN2::new,
-//                    //HaiQae::new,
-//                    HaiQ::new,
-//
-//                    true);
-//            a.curiosity.enable.set(false);
-//
-////            window(
-////                    new LSTMView(
-////                            ((LivePredictor.LSTMPredictor) ((DQN2) rlb.agent).valuePredict).lstm.agent
-////                    ), 800, 800
-////            );
-//
-////            window(new Gridding(
-////                Stream.of(((DQN2) (rlb.agent)).valuePredict.layers).map(
-////                        l -> {
-////
-////                            BitmapMatrixView i = new BitmapMatrixView(l.input);
-////                            BitmapMatrixView w = new BitmapMatrixView(l.weights);
-////                            BitmapMatrixView o = new BitmapMatrixView(l.output);
-////
-////                            a.onFrame(i::update);
-////                            a.onFrame(w::update);
-////                            a.onFrame(o::update);
-////
-////                            return new Gridding(i, w, o);
-////                        }
-////                ).collect(toList()))
-////            , 800, 800);
-//        }
         {
 
 
@@ -339,23 +342,23 @@ public class TrackXY_NAR extends NAgentX {
 
             Param.DEBUG = true;
             n.onTask(tt -> {
-                if (tt instanceof DerivedTask && tt.isGoal()) {
-                    //if (n.concept(tt) instanceof ActionConcept)
-                    System.out.println(tt.proof());
-//                    Term ttt = tt.term();
-//                    if (tt.expectation() > 0.5f && tt.start() > n.time()-n.dur() && tt.start() < n.time() + n.dur()) {
-//                        boolean l = ttt.toString().equals("left");
-//                        boolean r = ttt.toString().equals("right");
-//                        if (l || r) {
-//
-//                            float wantsDir = l ? -1 : +1;
-//                            float needsDir = a.track.tx - a.track.cx;
-//
-//                            String summary = (Math.signum(wantsDir)==Math.signum(needsDir)) ? "OK" : "WRONG";
-//                            System.err.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
-//                        }
-//                    }
-                }
+//                if (tt instanceof DerivedTask && tt.isGoal()) {
+//                    //if (n.concept(tt) instanceof ActionConcept)
+//                    System.out.println(tt.proof());
+////                    Term ttt = tt.term();
+////                    if (tt.expectation() > 0.5f && tt.start() > n.time()-n.dur() && tt.start() < n.time() + n.dur()) {
+////                        boolean l = ttt.toString().equals("left");
+////                        boolean r = ttt.toString().equals("right");
+////                        if (l || r) {
+////
+////                            float wantsDir = l ? -1 : +1;
+////                            float needsDir = a.track.tx - a.track.cx;
+////
+////                            String summary = (Math.signum(wantsDir)==Math.signum(needsDir)) ? "OK" : "WRONG";
+////                            System.err.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
+////                        }
+////                    }
+//                }
             }, GOAL);
 
         }

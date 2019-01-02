@@ -88,7 +88,19 @@ public interface Variable extends Atomic {
                     //same op: common variable
                     //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
                     Variable common = X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
-                    return u.putXY(X, common) && u.putXY(Y, common);
+                    if (u.putXY(X, common) && u.putXY(Y, common)) {
+                        //map any appearances of X or Y in already-assigned variables
+                        if (u.xy.size() > 2) {
+                            u.xy.replaceAll((var, val) -> {
+                                if (var.equals(X) || var.equals(Y) || !val.hasAny(xOp))
+                                    return val; //unchanged
+                                else
+                                    return val.replace(X, common).replace(Y, common);
+                            });
+                        }
+                        return true;
+                    }
+                    return false;
                 }
             }
         }

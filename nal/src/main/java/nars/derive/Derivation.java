@@ -28,6 +28,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.control.PREDICATE;
+import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -527,7 +528,7 @@ public class Derivation extends PreDerivation {
             time = TIMELESS;
         }
 
-        long now = nar.time();
+        long now = Tense.dither(nar.time(), nar);
         if (now != this.time) {
             this.time = now;
 

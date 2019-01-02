@@ -618,7 +618,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     private Y merge(Y existing, Y incoming, @Nullable NumberX overflow) {
 
 
-        int posBefore = items.indexOf(existing, this);
+        int posBefore = items.indexOf(existing, this, true);
         if (posBefore == -1) {
 //            //try harder: compare by keys, even if the value refuse to respond true to equals()
 //            X ki = key(incoming);

@@ -1,7 +1,6 @@
 package nars.table.dynamic;
 
 import jcog.Util;
-import jcog.data.list.FasterList;
 import jcog.math.Longerval;
 import nars.NAR;
 import nars.Param;
@@ -20,6 +19,7 @@ import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -99,11 +99,13 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
         if (!Param.FILTER_SIGNAL_TABLE_TEMPORAL_TASKS)
             return;
 
+        assert(beliefOrGoal);
+
         long sStart = series.start(), e;
         if (sStart != TIMELESS && (e = series.end()) != TIMELESS) {
             long sEnd = e;
 
-            List<Task> deleteAfter = new FasterList(4);
+            List<Task> deleteAfter = new LinkedList();
             for (TaskTable b : tables) {
                 if (!(b instanceof DynamicTaskTable) && !(b instanceof EternalTable)) {
                     b.forEachTask(sStart, sEnd, t -> {

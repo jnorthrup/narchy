@@ -3,14 +3,14 @@
     ([S] <-> [P]), [S] |- (S <-> P), (Belief:Identity)
 
 //Nothing is more specific than a instance, so its similar
-    ({P} <-> S),  {P}  |- (S --> {P}), (Belief:Identity)
+    ({P} <-> S),  S  |- (S --> {P}), (Belief:Identity)
 
 //nothing is more general than a property, so its similar
-    ([S] <-> P),  [S]  |- ([S] --> P), (Belief:Identity)
+    ([S] <-> P),  P  |- ([S] --> P), (Belief:Identity)
 
 //single element unwrap (decomposition)
-    ({E} --> X),  {E}  |- (E --> X), (Belief:StructuralDeduction)
-    (X --> [I]),  [I]  |- (X --> I), (Belief:StructuralDeduction)
+    ({E} --> X),  X  |- (E --> X), (Belief:StructuralDeduction)
+    (X --> [I]),  X  |- (X --> I), (Belief:StructuralDeduction)
 
 //Set Composition
 

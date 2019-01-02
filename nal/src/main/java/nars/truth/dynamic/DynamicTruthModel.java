@@ -143,7 +143,7 @@ abstract public class DynamicTruthModel {
             }
 
             protected static Term reconstruct(Term superterm, List<Task> components, boolean subjOrPred, boolean union) {
-                return stmtReconstruct(superterm, components, subjOrPred, union);
+                return stmtReconstruct(superterm, components, subjOrPred, union, false);
             }
 
             @Override
@@ -198,6 +198,19 @@ abstract public class DynamicTruthModel {
          * according to composition rules, the intersection term is computed with union truth, and vice versa
          */
         public static final DynamicTruthModel SectImplSubj = new SectImplSubj();
+//        public static final DynamicTruthModel SectImplSubjNeg = new SectImplSubj() {
+//            @Override
+//            public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+//                return components(superterm, start, end, each, superterm.sub(0).unneg());
+//            }
+//
+//            @Override
+//            public Term reconstruct(Term superterm, List<Task> components, NAR nar) {
+//                return stmtReconstruct(superterm, components, subjOrPred, union, true);
+//
+//            }
+//        };
+
         public static final DynamicTruthModel UnionImplSubj = new UnionImplSubj();
 
         public static final DynamicTruthModel SectImplPred = new SectIntersection(false, false) {
@@ -237,7 +250,7 @@ abstract public class DynamicTruthModel {
 
         private static class SectImplSubj extends SectIntersection {
             public SectImplSubj() {
-                super(true, true);
+                super(false, true);
             }
 
             @Override
@@ -245,7 +258,7 @@ abstract public class DynamicTruthModel {
                 return components(superterm, start, end, each, superterm.sub(0));
             }
 
-            private static boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term subj) {
+            protected static boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term subj) {
                 return decomposeImplConj(superterm, start, end, each, superterm.sub(1), subj, true, false);
             }
 
@@ -574,7 +587,7 @@ abstract public class DynamicTruthModel {
     }
 
     @Nullable
-    private static Term stmtReconstruct(Term superterm, List<Task> components, boolean subjOrPred, boolean union) {
+    private static Term stmtReconstruct(Term superterm, List<Task> components, boolean subjOrPred, boolean union, boolean subjNeg) {
         Term superSect = superterm.sub(subjOrPred ? 0 : 1);
         Op op = superterm.op();
         if (union) {
@@ -669,7 +682,7 @@ abstract public class DynamicTruthModel {
 
         Term common = superterm.sub(subjOrPred ? 1 : 0);
 
-        if (union) {
+        if (union || (subjOrPred && subjNeg)) {
             if (op == CONJ || op == IMPL /* but not Sect's */)
                 sect = sect.neg();
         }

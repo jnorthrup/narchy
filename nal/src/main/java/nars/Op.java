@@ -2,7 +2,7 @@ package nars;
 
 
 import nars.subterm.ArrayTermVector;
-import nars.subterm.Neg;
+import nars.term.Neg;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;

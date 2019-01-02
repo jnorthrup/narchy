@@ -8,8 +8,13 @@ import nars.term.util.TermException;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
+import static nars.Op.NEG;
+
 /** assumes that each items in the base subterm are utilized exactly once in the structure, containment, etc.
- * a relaxed variation of this can be created without this assumption */
+ * a relaxed variation of this can be created without this assumption
+ * TODO separate into 2 abstract subclasses: Direct and Negating
+ * ShuffledSubterms will inherit from Direct, otherwise generally use Negating
+ * */
 abstract public class MappedSubterms extends ProxySubterms {
 
     private boolean normalizedKnown = false, normalized = false;
@@ -17,10 +22,15 @@ abstract public class MappedSubterms extends ProxySubterms {
     public static MappedSubterms the(Term[] target, Subterms base) {
         byte[] m = new byte[target.length];
         for (int i = 0, xLength = target.length; i < xLength; i++) {
-            int mi = base.indexOf(target[i]);
+            Term xi = target[i];
+            boolean neg = (xi.op()==NEG);
+            if (neg) xi = xi.unneg();
+
+            int mi = base.indexOf(xi)+1;
             if (mi == -1)
-                throw new TermException(target[i] + "not found in " + base);
-            m[i] = (byte) mi;
+                throw new TermException(xi + "not found in " + base);
+
+            m[i] = (byte) (neg ? -mi : mi);
         }
         return new ArrayMappedSubterms(base, m);
     }
@@ -41,7 +51,7 @@ abstract public class MappedSubterms extends ProxySubterms {
 
         byte[] m = new byte[x.subs()];
         for (byte k = 0, i = (byte) (m.length - 1); i >= 0; i--, k++)
-            m[k] = i;
+            m[k] = (byte) (i+1);
         return new ArrayMappedSubterms(x, m);
     }
 
@@ -51,7 +61,7 @@ abstract public class MappedSubterms extends ProxySubterms {
 
         final int hash;
 
-        public ArrayMappedSubterms(Subterms base, byte[] map) {
+        private ArrayMappedSubterms(Subterms base, byte[] map) {
             super(base);
             assert(base.subs()==map.length);
             this.map = map;
@@ -144,7 +154,7 @@ abstract public class MappedSubterms extends ProxySubterms {
 
     @Override
     public int structure() {
-        return ref.structure();
+        return ref.structure() | (hasNegs() ? NEG.bit : 0);
     }
 
     @Override
@@ -166,19 +176,32 @@ abstract public class MappedSubterms extends ProxySubterms {
         this.normalizedKnown = this.normalized = true;
     }
 
-    @Override
-    public int structureSurface() {
-        return ref.structureSurface();
+    protected boolean hasNegs() {
+        int s = subs();
+        int n = 0;
+        for (int i = 0; i < s; i++)
+            if (subMap(i) < 0)
+                return true;
+        return false;
+    }
+
+    protected int negs() {
+        int s = subs();
+        int n = 0;
+        for (int i = 0; i < s; i++)
+            if (subMap(i) < 0)
+                n++;
+        return n;
     }
 
     @Override
     public int volume() {
-        return ref.volume();
+        return ref.volume() + negs();
     }
 
     @Override
     public int complexity() {
-        return ref.complexity();
+        return ref.complexity() + negs();
     }
 
 
@@ -192,8 +215,12 @@ abstract public class MappedSubterms extends ProxySubterms {
         return ref.subs();
     }
     @Override
-    public final Term sub(int i) {
-        return ref.sub(subMap(i));
+    public Term sub(int i) {
+        int xy = subMap(i);
+        boolean neg = (xy < 0);
+        if (neg) xy = -xy;
+        Term y  = ref.sub(xy-1);
+        return neg ? y.neg() : y;
     }
 
     protected abstract int subMap(int i);

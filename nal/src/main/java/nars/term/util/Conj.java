@@ -1413,8 +1413,8 @@ public class Conj extends ByteAnonMap {
      * @return non-zero byte value
      */
     private byte add(Term t) {
-        if (!(t != null && eventable(t))) //eventable
-            throw new WTF(t + " is not valid event in " + Conj.class);
+//        if (!(t != null && eventable(t))) //eventable
+//            throw new WTF(t + " is not valid event in " + Conj.class);
 
         return termToId.getIfAbsentPutWithKey(t, tt -> {
             int s = idToTerm.addAndGetSize(tt);
@@ -1423,9 +1423,9 @@ public class Conj extends ByteAnonMap {
         });
     }
 
-    static boolean eventable(Term t) {
-        return !t.op().isAny(BOOL.bit | INT.bit | IMG.bit | NEG.bit);
-    }
+//    static boolean eventable(Term t) {
+//        return !t.op().isAny(BOOL.bit | INT.bit | IMG.bit | NEG.bit);
+//    }
 
     /**
      * returns index of an item if it is present, or -1 if not

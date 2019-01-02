@@ -97,8 +97,8 @@ public enum Tense {
         if (dither > 1) {
             //if (Param.DEBUG) {
                 //HACK
-                if (t == DTERNAL || t==XTERNAL)
-                    throw new WTF("maybe you meant ETERNAL or TIMELESS");
+//                if (t == DTERNAL || t==XTERNAL)
+//                    throw new WTF("maybe you meant ETERNAL or TIMELESS");
             //}
             if (t == ETERNAL) return ETERNAL;
             else if (t == TIMELESS) return TIMELESS;

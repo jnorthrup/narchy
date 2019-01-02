@@ -74,6 +74,14 @@ class TermLinkTest {
                 "TODO"
         );
     }
+    @Test void testImplProd() {
+        testTemplates("((a,b) ==> c)",
+                "[(a,b), c]"
+        );
+        testTemplates("(--(a,b) ==> c)",
+                "[(a,b), c]"
+        );
+    }
 
     @Test
     void testFunction() {

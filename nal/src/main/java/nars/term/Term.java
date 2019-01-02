@@ -475,14 +475,11 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     default int compareTo(Termed _y) {
         if (this == _y) return 0;
 
-        return compareTo(_y.term().term());
+        return compareTo(_y.term());
     }
 
     default int compareTo(Term t) {
-
-        //if (this == y) return 0;
-        if (this.equals(t)) return 0;
-
+        if (this == t) return 0;
 
         int volume = t.volume();
         int vc = Integer.compare(volume, this.volume());
@@ -493,6 +490,8 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         int oc = Integer.compare(op.id, t.op().id);
         if (oc != 0)
             return oc;
+
+        if (this.equals(t)) return 0;
 
         if (volume == 1) {
             assert (this instanceof Atomic);

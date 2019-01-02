@@ -95,7 +95,7 @@ public class AttNode extends AtomicTreeNode<AttNode> {
         return elementPri() * i;
     }
 
-    public final void update(float pri) {
+    public void update(float pri) {
         this.pri.pri(pri);
         float priEach = pri * elementIdeal(size());
         //TODO local boost's

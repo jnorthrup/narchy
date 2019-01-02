@@ -100,12 +100,12 @@
 
 //// implication-based decomposition ////////////////////////////////////////////////////////////////////////////////////
 
-(A ==> C), A, is(C,"&&"), --isVar(A), --isVar(B)      |- (A ==> dropAnyEvent(C)), (Belief:StructuralReduction)
-(C ==> A), A, isUnneg(C,"&&"), --isVar(A), --isVar(B) |- (dropAnyEvent(C) ==> A), (Belief:StructuralReduction)
+(A ==> C), A, is(C,"&&"), --isVar(A)      |- (A ==> dropAnyEvent(C)), (Belief:StructuralReduction)
+(C ==> A), A, isUnneg(C,"&&"), --isVar(A) |- (dropAnyEvent(C) ==> A), (Belief:StructuralReduction)
   //not needed: (--C ==>A) since dropAnyEvent handles --C
 
-  (A ==> C), A, task("?"), is(C,"&&"), --isVar(A), --isVar(B)       |- (A ==> dropAnyEvent(C)), (Punctuation:Question)
-  (C ==> A), A, task("?"), isUnneg(C,"&&"), --isVar(A), --isVar(B)  |- (dropAnyEvent(C) ==> A), (Punctuation:Question)
+  (A ==> C), A, task("?"), is(C,"&&"), --isVar(A)       |- (A ==> dropAnyEvent(C)), (Punctuation:Question)
+  (C ==> A), A, task("?"), isUnneg(C,"&&"), --isVar(A)  |- (dropAnyEvent(C) ==> A), (Punctuation:Question)
 
 //    (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNP)
 //    (--S ==> M), (C ==> M), eventOfNeg(C,S) |- (conjWithout(C,--S) ==> M), (Belief:DecomposeNegativePositivePositive)

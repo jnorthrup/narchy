@@ -127,14 +127,14 @@ public class HaiQ extends Agent {
         return action;
     }
 
-    private void etScale(float s) {
-        for (int i = 0; i < inputs; i++) {
-            float[] eti = et[i];
-            for (int k = 0; k < actions; k++) {
-                eti[k] *= s;
-            }
-        }
-    }
+//    private void etScale(float s) {
+//        for (int i = 0; i < inputs; i++) {
+//            float[] eti = et[i];
+//            for (int k = 0; k < actions; k++) {
+//                eti[k] *= s;
+//            }
+//        }
+//    }
 
     protected int nextAction(int state) {
         return /*rng.nextFloat() < Epsilon ? randomAction() : */choose(state);

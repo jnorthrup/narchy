@@ -3,7 +3,7 @@ package nars.term.anon;
 import jcog.Util;
 import nars.IO;
 import nars.Op;
-import nars.subterm.Neg;
+import nars.term.Neg;
 import nars.term.Term;
 
 import static nars.Op.ATOM;

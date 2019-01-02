@@ -803,7 +803,9 @@ public class FasterList<X> extends FastList<X> {
         return false;
     }
 
-
+    public void replaceLast(X y) {
+        items[size-1] = y;
+    }
 
 
     /**

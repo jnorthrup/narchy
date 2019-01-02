@@ -1226,14 +1226,14 @@ public class NAL6Test extends NALTest {
                 .mustBelieve(cycles, "(--(x && y) && a)", 1f, 0.81f)
         ;
     }
-    @Test void testMutexConjImplBeliefInduction() {
-        test.nar.termVolumeMax.set(12);
-        test
-                .believe("((x && --y) ==> z)")
-                .believe("((--x && y) ==> z)")
-                .mustBelieve(cycles, "(--(x && y) ==> z)", 1f, 0.81f)
-        ;
-    }
+//    @Test void testMutexConjImplBeliefInduction() {
+//        test.nar.termVolumeMax.set(12);
+//        test
+//                .believe("((x && --y) ==> z)")
+//                .believe("((--x && y) ==> z)")
+//                .mustBelieve(cycles, "(--(x && y) ==> z)", 1f, 0.81f)
+//        ;
+//    }
 
     @Test void testMutexAbduction() {
         test

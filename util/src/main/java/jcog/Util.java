@@ -603,9 +603,7 @@ public enum Util {
      * targetFactor=0:   full current
      */
     public static float lerp(float x, float min, float max) {
-        return min + (max - min) *
-                //unitize(x);
-                clampSafe(x, 0, 1);
+        return min + (max - min) * unitize(x);
     }
 
     /**
@@ -1523,7 +1521,10 @@ public enum Util {
     }
 
     public static float clampSafe(float f, float min, float max) {
-        return Math.max(Math.min(f, max), min);
+        if (f > max) f = max;
+        if (f < min) f = min;
+        return f;
+        //return Math.max(Math.min(f, max), min);
     }
 
     public static double clamp(double f, double min, double max) {

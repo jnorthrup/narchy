@@ -178,6 +178,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
                 if (subjDyn) {
                     if (suo == NEG) {
                         return DynamicTruthModel.DynamicSectTruth.UnionImplSubj;
+//                        return DynamicTruthModel.DynamicSectTruth.SectImplSubjNeg;
                     } else {
                         return DynamicTruthModel.DynamicSectTruth.SectImplSubj;
                     }
