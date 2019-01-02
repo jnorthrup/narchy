@@ -312,11 +312,11 @@ public abstract class Unify extends Versioning implements Subst {
         public boolean set(Term next) {
             @Nullable Term existing = get();
             if (existing!=null) {
-                if (existing.equals(next))
-                    return true;
-//                if (existing.unify(next, Unify.this))
-//                    //TODO check whether, temporally, next is more specific than next. if so then replace
+//                if (existing.equals(next))
 //                    return true;
+                if (existing.unify(next, Unify.this))
+                    //TODO check whether, temporally, next is more specific than next. if so then replace
+                    return true;
 
                 return false;
             }

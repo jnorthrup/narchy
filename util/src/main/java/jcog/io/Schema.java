@@ -106,10 +106,7 @@ public class Schema extends Table {
         } else {
             throw new TODO();
         }
-//        addColumns(
-//        addColumn(new Column())
-//        attrTypes.put(name, type);
-//        attribute_names.add(name);
+
 
         return this;
     }
@@ -247,6 +244,9 @@ public class Schema extends Table {
 //        attribute_names.add(nominalAttribute);
 //        attrTypes.put(nominalAttribute, Nominal);
         String[] prev = nominalCats.put(nominalAttribute, categories);
+
+        addColumns(StringColumn.create(nominalAttribute));
+
         assert (prev == null);
         return this;
     }

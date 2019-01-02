@@ -206,7 +206,18 @@ public class Statement {
         }
 
         //return builder.compound(op, dt, subject, predicate);
-        return HeapTermBuilder.the.theCompound(op, dt, subject, predicate);
+        Term t = HeapTermBuilder.the.theCompound(op, dt, subject, predicate);
+
+        //if (Param.DEBUG) {
+        //test image normalization
+        if (op==INH) {
+            Term tt = Image.imageNormalize(t);
+            if (tt instanceof Bool)
+                return Null;
+        }
+        //}
+
+        return t;
     }
 
     private static class ConjDiff extends Conj {

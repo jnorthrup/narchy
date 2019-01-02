@@ -1,5 +1,6 @@
 package nars.gui;
 
+import jcog.pri.bag.util.Bagregate;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
@@ -25,6 +26,8 @@ public class ToyNAR {
 
         ((TaskBuffer.BagTaskBuffer)(n.input)).valve.set(0);
         g.add(new BagView<>(((TaskBuffer.BagTaskBuffer)(n.input)).tasks, n)).posRel(0.5f, 0.5f, 0.25f, 0.15f);
+
+        g.add(new BagView<>(new Bagregate(n.tasks(), 512, 0.1f).bag, n)).posRel(0.5f, 0.5f, 0.25f, 0.15f);
 
 
         ZipperDeriver d = new ZipperDeriver(Derivers.nal(n,1,1));

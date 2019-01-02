@@ -226,7 +226,7 @@ public abstract class Param {
 
     public final TaskBuffer input =
             //new DerivedTasks.DerivedTasksMap(4096);
-            new TaskBuffer.BagTaskBuffer(2048, 0.2f);
+            new TaskBuffer.BagTaskBuffer(1024, 0.2f);
             //new TaskBuffer.BagPuncTasksBuffer(1024, 0.1f);
 
     /** (unsafe) true should theoreticaly be faster,

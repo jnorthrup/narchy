@@ -304,6 +304,8 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
 
     private void parseData(int lineno, String line) throws ARFFParseError {
         int num_attributes = columnCount();
+
+
 //        if (line.charAt(0) == '{' && line.charAt(line.length() - 1) == '}') {
 //            throw new ARFFParseError(lineno, "Sparse data not supported (yet).");
 //        } else {
@@ -317,7 +319,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
             Object[] datum = new Object[num_attributes];
             for (int i = 0; i < num_attributes; i++) {
                 
-                String name = attrName(i);
+                //String name = attrName(i);
                 ColumnType t = column(i).type();
                 if (t == DoubleColumnType.INSTANCE) {
                     if (tokens[i] == null || tokens[i].equals("null"))

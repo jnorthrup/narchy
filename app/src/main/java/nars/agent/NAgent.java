@@ -45,6 +45,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static nars.$.$$;
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -76,6 +78,7 @@ public class NAgent extends NARService implements NSense, NAct {
     public final Curiosity curiosity = DefaultCuriosity.defaultCuriosity(this);
 
     public final AttNode attn;
+    public final AttNode attnReward, attnAction, attnSensor;
 
     public volatile long prev;
     protected volatile long now;
@@ -107,7 +110,22 @@ public class NAgent extends NARService implements NSense, NAct {
     public NAgent(Term id, FrameTrigger frameTrigger, NAR nar) {
         super(id);
         this.nar = nar;
+
         this.attn = new AttNode(id);
+        this.attnAction = new AttNode($.func("action", id) );
+        attnAction.parent(attn);
+        this.attnSensor = new AttNode($.func("sensor", id) );
+        attnSensor.parent(attn);
+        this.attnReward = new AttNode($.func("reward", id) );
+        attnReward.parent(attn);
+
+        //TEMPORARY assumptions
+        attnAction.boost.set(nar.priDefault(GOAL));
+        attnReward.boost.set(nar.priDefault(GOAL));
+        attnSensor.boost.set(nar.priDefault(BELIEF));
+
+
+
         this.frameTrigger = frameTrigger;
         this.prev = ETERNAL;
 //
@@ -135,7 +153,7 @@ public class NAgent extends NARService implements NSense, NAct {
         actions.add(c);
 
         nar().on(c);
-        addAttention(c);
+        addAttention(attnAction, c);
         return c;
     }
 
@@ -159,21 +177,21 @@ public class NAgent extends NARService implements NSense, NAct {
     public final <S extends Sensor> S addSensor(S s) {
         //TODO check for existing
         sensors.add(s);
-        addAttention(s);
+        addAttention(attnSensor, s);
         return s;
     }
 
-    protected void addAttention(Object s) {
+    static protected void addAttention(AttNode target, Object s) {
         if (s instanceof VectorSensor) {
-            ((VectorSensor)s).attn.parent(attn);
+            ((VectorSensor)s).attn.parent(target);
         } else if (s instanceof Signal) {
-            ((Signal)s).attn.parent(attn);
+            ((Signal)s).attn.parent(target);
         } else if (s instanceof Reward) {
-            ((Reward)s).attn.parent(attn);
+            ((Reward)s).attn.parent(target);
         } else if (s instanceof ActionConcept) {
-            ((ActionConcept)s).attn.parent(attn);
+            ((ActionConcept)s).attn.parent(target);
         } else if (s instanceof AttNode)
-            ((AttNode)s).parent(attn);
+            ((AttNode)s).parent(target);
         else
             throw new TODO();
     }
@@ -398,7 +416,7 @@ public class NAgent extends NARService implements NSense, NAct {
             throw new RuntimeException("reward exists with the ID: " + r.term());
 
         rewards.add(r);
-        addAttention(r);
+        addAttention(attnReward, r);
         return r;
     }
 

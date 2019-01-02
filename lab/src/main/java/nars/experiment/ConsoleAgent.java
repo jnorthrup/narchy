@@ -197,7 +197,7 @@ public class ConsoleAgent extends NAgentX {
 
 
             AttNode charAttn = new AttNode(this);
-            charAttn.parent(attn);
+            charAttn.parent(attnSensor);
 
             for (int x = 0; x < w; x++) {
                 for (int y = 0; y < h; y++) {

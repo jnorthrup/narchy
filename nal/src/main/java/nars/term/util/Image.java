@@ -2,6 +2,7 @@ package nars.term.util;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.WTF;
 import jcog.pri.Ranked;
 import jcog.util.ArrayUtils;
 import nars.NAR;
@@ -164,6 +165,9 @@ public enum Image {;
 
             }
 
+            if (u instanceof Bool)
+                return u; //WTF
+
 
             return Image.imageNormalize(u);//.negIf(negated);
         }
@@ -185,9 +189,15 @@ public enum Image {;
         @Nullable
         transient TaskConcept host = null;
 
-        public ImageBeliefTable(Term image, Term imageNormalized, boolean beliefOrGoal) {
-            this.image = image;
+        public ImageBeliefTable(Term image, boolean beliefOrGoal) {
+
+            Term imageNormalized = Image.imageNormalize(image);
             this.normal = imageNormalized;
+            if (normal instanceof Bool)
+                throw new WTF();
+
+            this.image = image;
+
             this.beliefOrGoal = beliefOrGoal;
         }
 

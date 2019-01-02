@@ -8,7 +8,6 @@ import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
 import nars.agent.FrameTrigger;
-import nars.concept.action.ActionConcept;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
@@ -20,12 +19,10 @@ import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.task.DerivedTask;
 import nars.term.Term;
-import nars.time.clock.CycleTime;
+import nars.time.clock.RealTime;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.chip.HubMenuChip;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.video.Draw;
@@ -48,9 +45,13 @@ public class TrackXY_NAR extends NAgentX {
     //W = 3, H = 1;
     //W = 5, H = 1;
     public static final int derivationStrength = 8;
-    static int dur = 16;
+
+    static float fps = 16;
+    static int durMS = Math.round(1000/(fps));
+
+
     static float camResolution = 0.1f;
-    static int volMax = 9;
+    static int volMax = 11;
     final Bitmap2DSensor cam;
     private final TrackXY track;
 
@@ -67,8 +68,8 @@ public class TrackXY_NAR extends NAgentX {
     protected TrackXY_NAR(NAR nar, TrackXY xy) {
         super("trackXY",
                 //FrameTrigger.cycles(W*H*2),
-                FrameTrigger.durs(1),
-                //FrameTrigger.fps(1),
+                //FrameTrigger.durs(1),
+                FrameTrigger.fps(fps),
                 nar);
 
         int W = xy.W;
@@ -159,14 +160,14 @@ public class TrackXY_NAR extends NAgentX {
             if (trainer.getOpaque()) {
                 long now = nar.time();
                 if (track.ty < track.cy) {
-                    nar().want(0.1f, $.the("down"), now, now + dur, 1f, 0.02f);
+                    nar().want(0.1f, $.the("down"), now, now + durMS, 1f, 0.02f);
                 } else if (track.ty > track.cy) {
-                    nar().want(0.1f, $.the("up"), now, now + dur, 1f, 0.02f);
+                    nar().want(0.1f, $.the("up"), now, now + durMS, 1f, 0.02f);
                 }
                 if (track.tx < track.cx) {
-                    nar().want(0.1f, $.the("left"), now, now + dur, 1f, 0.02f);
+                    nar().want(0.1f, $.the("left"), now, now + durMS, 1f, 0.02f);
                 } else if (track.tx > track.cx) {
-                    nar().want(0.1f, $.the("right"), now, now + dur, 1f, 0.02f);
+                    nar().want(0.1f, $.the("right"), now, now + durMS, 1f, 0.02f);
                 }
             }
         });
@@ -177,7 +178,10 @@ public class TrackXY_NAR extends NAgentX {
 
         NAR n = newNAR();
 
-        TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(4, 4));
+        //final int W = 3, H = 1;
+        final int W = 4, H = 4;
+
+        TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
 
         if (gui)
             gui(n, a);
@@ -203,7 +207,7 @@ public class TrackXY_NAR extends NAgentX {
             window.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.1f, 0.1f);
 
             //window.add(new ExpandingChip("x", ()->NARui.top(n))).posRel(0.8f,0.8f,0.25f,0.25f);
-            window.add(new HubMenuChip(new PushButton("NAR"), NARui.menu(n))).posRel(0.8f,0.8f,0.25f,0.25f);
+//            window.add(new HubMenuChip(new PushButton("NAR"), NARui.menu(n))).posRel(0.8f,0.8f,0.25f,0.25f);
 
             if (a.cam != null) {
                 window.add(Splitting.column(new VectorSensorView(a.cam, n) {
@@ -222,7 +226,8 @@ public class TrackXY_NAR extends NAgentX {
     static NAR newNAR() {
         NARS nb = new NARS.DefaultNAR(0, true)
                 .exe(new UniExec())
-                .time(new CycleTime().dur(dur))
+                .time(new RealTime.MS().dur(durMS))
+                //.time(new CycleTime().dur(dur))
                 .index(
                         new CaffeineIndex(4 * 1024 * 10)
                         //new HijackConceptIndex(4 * 1024, 4)
@@ -256,7 +261,7 @@ public class TrackXY_NAR extends NAgentX {
         //n.freqResolution.set(0.04f);
 
         n.termVolumeMax.set(volMax);
-        n.timeResolution.set(Math.max(1, dur ));
+        n.timeResolution.set(Math.max(1, durMS));
 
 //        if (rl) {
 //            RLBooster rlb = new RLBooster(a,
@@ -334,7 +339,8 @@ public class TrackXY_NAR extends NAgentX {
 
             Param.DEBUG = true;
             n.onTask(tt -> {
-                if (tt instanceof DerivedTask && tt.isGoal() && n.concept(tt) instanceof ActionConcept) {
+                if (tt instanceof DerivedTask && tt.isGoal()) {
+                    //if (n.concept(tt) instanceof ActionConcept)
                     System.out.println(tt.proof());
 //                    Term ttt = tt.term();
 //                    if (tt.expectation() > 0.5f && tt.start() > n.time()-n.dur() && tt.start() < n.time() + n.dur()) {

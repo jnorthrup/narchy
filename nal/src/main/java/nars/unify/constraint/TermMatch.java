@@ -84,6 +84,37 @@ abstract public class TermMatch {
             return sx.subterms().hasAny(struct);
         }
     }
+    /**
+     * is the op one of the true bits of the provide vector ("is any")
+     */
+    public static class Eventable extends TermMatch {
+
+
+        public static final Eventable the = new Eventable();
+
+        private Eventable() {
+            super();
+        }
+
+        @Override
+        public float cost() {
+            return 0.035f;
+        }
+
+        @Override
+        public boolean test(Term x) {
+            return x.unneg().op().eventable;
+        }
+
+        @Override
+        public boolean testSuper(Term sx) {
+            return true; ///TODO
+        }
+
+        @Nullable @Override public Term param() {
+            return null;
+        }
+    }
 
     public static class IsUnneg extends Is {
 
@@ -326,7 +357,8 @@ abstract public class TermMatch {
         private final boolean trueOrFalse;
 
         MyUnifyConstraint(Variable x, boolean trueOrFalse) {
-            super(x, TermMatch.this.getClass().getSimpleName(), $.p(TermMatch.this.param(), $.the(trueOrFalse)));
+            super(x, TermMatch.this.getClass().getSimpleName(),
+                    TermMatch.this.param()!=null ? $.p(TermMatch.this.param(), $.the(trueOrFalse)): $.the(trueOrFalse));
             this.trueOrFalse = trueOrFalse;
         }
 

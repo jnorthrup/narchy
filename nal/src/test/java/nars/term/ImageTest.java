@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.term.atom.Bool.Null;
+import static nars.term.atom.Bool.True;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -175,5 +176,11 @@ class ImageTest {
     @Test void testImageProductNormalized() throws Narsese.NarseseException {
         Term x = Narsese.term("(y,\\,x)", false);
         assertTrue(x.isNormalized());
+    }
+    @Test void testNormalizeWTF() {
+        Term x = $$("(ANIMAL-->((cat,ANIMAL),cat,/))");
+        Term y = Image.imageNormalize(x);
+        assertEquals(True, y);
+        assertEquals(True, x); //detect earlier
     }
 }

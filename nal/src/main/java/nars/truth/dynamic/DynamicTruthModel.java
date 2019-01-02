@@ -801,7 +801,7 @@ abstract public class DynamicTruthModel {
 
         @Override
         public BeliefTable newTable(Term t, boolean beliefOrGoal, ConceptBuilder cb) {
-            return new Image.ImageBeliefTable(t, Image.imageNormalize(t), beliefOrGoal);
+            return new Image.ImageBeliefTable(t, beliefOrGoal);
         }
 
         @Override
@@ -819,10 +819,5 @@ abstract public class DynamicTruthModel {
             throw new UnsupportedOperationException();
         }
 
-//        @Override
-//        public Bag newTaskLinkBag(Term t, ConceptBuilder b) {
-//
-//            return new ProxyBag(b);
-//        }
     };
 }

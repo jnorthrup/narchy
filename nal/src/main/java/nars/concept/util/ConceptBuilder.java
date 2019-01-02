@@ -16,6 +16,7 @@ import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.atom.Bool;
 import nars.term.util.Image;
 import nars.truth.dynamic.DynamicTruthModel;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -261,7 +262,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
         }
 
         Term it = Image.imageNormalize(t);
-        if (it != t)
+        if (it != t && !(it instanceof Bool))
             return DynamicTruthModel.ImageDynamicTruthModel;
 
         return null;

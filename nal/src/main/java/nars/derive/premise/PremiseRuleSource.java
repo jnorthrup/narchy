@@ -27,6 +27,7 @@ import nars.term.util.transform.TermTransform;
 import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
 import nars.unify.constraint.*;
+import nars.unify.ellipsis.Ellipsislike;
 import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 import org.eclipse.collections.api.set.ImmutableSet;
@@ -36,10 +37,8 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -115,7 +114,8 @@ public class PremiseRuleSource extends ProxyTerm {
         }
 
 
-        Term concPattern = ConcTransform.transform(PatternIndex.patternify(postcon[0]));
+
+        Term concPattern = transformConclusion(postcon[0]);
 
         ByteToByteFunction concPunc = null;
         boolean concBelief = false, concQuestion = false, concGoal = false, concQuest = false;
@@ -443,7 +443,6 @@ public class PremiseRuleSource extends ProxyTerm {
         }
 
 
-        Op bo = beliefPattern.op();
 
 
         TruthFunc beliefTruthOp = NALTruth.get(beliefTruth);
@@ -597,6 +596,41 @@ public class PremiseRuleSource extends ProxyTerm {
 
         this.constraintSet = CONSTRAINTS.toSet();
 
+    }
+
+    private Term transformConclusion(Term x) {
+
+        Term px = PatternIndex.patternify(x);
+
+        Term y;
+        //macro substitution
+        if (px.equals(taskPattern))
+            y = Derivation.TaskTerm;
+        else if (px.equals(beliefPattern))
+            y = Derivation.BeliefTerm;
+        else {
+            y = ConcTransform.transform(px);
+//                    .replace(taskPattern, Derivation.TaskTerm)
+//                    .replace(beliefPattern, Derivation.BeliefTerm));
+
+            if (y.hasVars()) {
+                Set<Term> eventables = new HashSet();
+                y.recurseTerms(Compound::hasVars, (sub, sper) -> {
+                    sub = sub.unneg();
+                    if (sper != null && sub instanceof Variable && !(sub instanceof Ellipsislike)) {
+                        Op spo = sper.op();
+                        if (spo == IMPL || spo == CONJ) {
+                            eventables.add(sub);
+                        }
+                    }
+                    return true;
+                }, null);
+                if (!eventables.isEmpty()) {
+                    eventables.forEach(e -> match(e, TermMatch.Eventable.the));
+                }
+            }
+        }
+        return y;
     }
 
     private void tryGuard(RootTermAccessor r, Term root) {
@@ -782,22 +816,22 @@ public class PremiseRuleSource extends ProxyTerm {
         match(x, (pathInTask, pathInBelief) -> {
 
 
-                    if (pathInTask != null)
-                        match(true, pathInTask, m, trueOrFalse);
-                    if (pathInBelief != null)
-                        match(false, pathInBelief, m, trueOrFalse);
+            if (pathInTask != null)
+                match(true, pathInTask, m, trueOrFalse);
+            if (pathInBelief != null)
+                match(false, pathInBelief, m, trueOrFalse);
 
-                }, (inTask, inBelief) -> {
+        }, (inTask, inBelief) -> {
 
-                    if (trueOrFalse /*|| m instanceof TermMatch.TermMatchEliminatesFalseSuper*/) { //positive only (absence of evidence / evidence of absence)
-                        if (inTask)
-                            matchSuper(true, m, trueOrFalse);
-                        if (inBelief)
-                            matchSuper(false, m, trueOrFalse);
-                    }
+            if (trueOrFalse /*|| m instanceof TermMatch.TermMatchEliminatesFalseSuper*/) { //positive only (absence of evidence / evidence of absence)
+                if (inTask)
+                    matchSuper(true, m, trueOrFalse);
+                if (inBelief)
+                    matchSuper(false, m, trueOrFalse);
+            }
 
-                    constraints.add(m.constraint((Variable) x, trueOrFalse));
-                }
+            constraints.add(m.constraint((Variable) x, trueOrFalse));
+        }
         );
     }
 
@@ -948,16 +982,8 @@ public class PremiseRuleSource extends ProxyTerm {
                 //TODO compile to 1-arg unisubst
             }
 
-            //macro substitution
-            if (x.equals(taskPattern))
-                return Derivation.TaskTerm;
-            if (x.equals(beliefPattern))
-                return Derivation.BeliefTerm;
-            else
-                return x
-                        .replace(taskPattern, Derivation.TaskTerm)
-                        .replace(beliefPattern, Derivation.BeliefTerm);
 
+            return TermTransform.super.transformCompound(x);
         }
     };
 }

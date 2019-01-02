@@ -105,9 +105,11 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
 
 
+        int narDur = n.dur();
+
         long agentDur = now - prev;
-        long narDur = n.dur();
-        long dur = narDur; //Math.min(narDur, agentDur);
+        long dur = agentDur;
+                //narDur; //Math.min(narDur, agentDur);
         long s = now - dur/2, e = now + dur/2;
         //long s = prev, e = now;
         //long s = prev, e = now;
@@ -139,13 +141,17 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
 
             @Nullable TemporalBeliefTable temporalTable = ((BeliefTables) goals()).tableFirst(TemporalBeliefTable.class);
-            if (temporalTable!=null)
-                a.match(temporalTable);
-            @Nullable EternalTable eternalTable = ((BeliefTables) goals()).tableFirst(EternalTable.class);
-            if (eternalTable!=null)
-                a.match(eternalTable);
+            if (temporalTable!=null) {
+                a.triesRemain = limit;  a.match(temporalTable);
+            }
 
-            TruthPolation organic = a.truthpolation(n.dur()); //Math.round(actionWindowDexDurs *dur));
+
+            @Nullable EternalTable eternalTable = ((BeliefTables) goals()).tableFirst(EternalTable.class);
+            if (eternalTable!=null) {
+                a.triesRemain = limit; a.match(eternalTable);
+            }
+
+            TruthPolation organic = a.truthpolation(narDur); //Math.round(actionWindowDexDurs *dur));
 
             //TODO mine truthpolation .stamp()'s and .cause()'s for clues
 
@@ -190,7 +196,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
             @Nullable CuriosityGoalTable curiTable = ((BeliefTables) goals()).tableFirst(CuriosityGoalTable.class);
             try (Answer a = Answer.
                     relevance(true, 1, s, e, term, null, n).match(curiTable)) {
-                TruthPolation curi = a.truthpolation(n.dur()); //Math.round(actionWindowCuriDurs * dur));
+                TruthPolation curi = a.truthpolation(narDur); //Math.round(actionWindowCuriDurs * dur));
                 if (curi != null) {
                     actionCuri = curi.filtered().truth();
                 } else

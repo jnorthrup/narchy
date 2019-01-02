@@ -227,7 +227,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
 
         private transient long prev = Long.MIN_VALUE;
 
-        public final AtomicBoolean fade = new AtomicBoolean(true);
+        public final AtomicBoolean fade = new AtomicBoolean(false);
 
         /**
          * @capacity size of buffer for tasks that have been input (and are being de-duplicated) but not yet input.
