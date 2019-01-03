@@ -107,6 +107,7 @@ public class Premise implements Comparable<Premise> {
 
                         if (unifiedBeliefTerm != null) {
 
+
                             if (!unifiedBeliefTerm.isNormalized() && d.random.nextBoolean())
                                 unifiedBeliefTerm = unifiedBeliefTerm.normalize();
 
@@ -120,6 +121,10 @@ public class Premise implements Comparable<Premise> {
                 }
             }
         }
+
+//        Term solved = Evaluation.solveFirst(beliefTerm, d.nar);
+//        if (solved!=null && solved!=beliefTerm)
+//            System.out.println(beliefTerm + " -> " + solved);
 
         Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept);
 

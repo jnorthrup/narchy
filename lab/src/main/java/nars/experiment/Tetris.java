@@ -1,5 +1,6 @@
 package nars.experiment;
 
+import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatRange;
 import jcog.signal.wave2d.AbstractBitmap2D;
 import jcog.signal.wave2d.Bitmap2D;
@@ -34,7 +35,7 @@ public class Tetris extends NAgentX {
 
     private final Bitmap2D grid;
 
-    private final boolean opjects = true;
+    private final boolean opjects = false;
 
     private boolean canFall = false;
 
@@ -82,9 +83,9 @@ public class Tetris extends NAgentX {
                 state::score
                 //new FloatFirstOrderDifference(n::time, state::score).nanIfZero()
         );
-        rewardNormalized("height", 0, 1, () ->
+        rewardNormalized("height", -1, 1, new FloatFirstOrderDifference(nar::time, () ->
                 1 - ((float) state.rowsFilled) / state.height
-        );
+        ));
         rewardNormalized("density", 0, 1, () -> {
 
             int filled = 0;
@@ -110,7 +111,8 @@ public class Tetris extends NAgentX {
         //                })
         final Atomic GRID = Atomic.the("grid");
         Bitmap2DSensor<Bitmap2D> c = pixels = new Bitmap2DSensor<>(
-                (x, y) -> $.inh($.p(x, y), GRID),
+                //(x, y) -> $.inh($.p(x, y), GRID),
+                (x, y) -> $.p(GRID,$.the(x), $.the(y)),
                 grid, n);
         addSensor(c);
         pixels.resolution(0.25f);

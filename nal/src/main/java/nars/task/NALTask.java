@@ -38,6 +38,10 @@ public class NALTask extends UnitPri implements Task {
 
     private volatile boolean cyclic;
 
+    public NALTask(Term c, Task parent, Truth t) throws TaskException {
+        this(c, parent.punc(), t, parent.creation(), parent.start(), parent.end(), parent.stamp());
+    }
+
     public NALTask(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws TaskException {
         super();
 

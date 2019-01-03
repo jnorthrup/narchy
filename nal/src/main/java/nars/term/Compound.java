@@ -451,7 +451,7 @@ public interface Compound extends Term, IPair, Subterms {
         if (op() != CONJ || impossibleSubTerm(event))
             return null;
 
-        int dt = dt();
+        //int dt = dt();
         if (!Conj.isSeq(this)) {
             int[] tt = null;
             boolean needDedup = false;

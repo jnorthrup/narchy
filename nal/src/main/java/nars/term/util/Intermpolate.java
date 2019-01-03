@@ -148,7 +148,7 @@ public enum Intermpolate {;
 
             int range = //Math.max(Math.abs(adt), Math.abs(bdt));
                     Math.abs(adt - bdt);
-            int ab = Util.lerp(aProp, bdt, adt);
+            int ab = Tense.dither(Util.lerp(aProp, bdt, adt), nar);
             int delta = Math.max(Math.abs(ab - adt), Math.abs(ab - bdt));
             float ratio = ((float) delta) / range;
             if (ratio <= nar.intermpolationRangeLimit.floatValue()) {

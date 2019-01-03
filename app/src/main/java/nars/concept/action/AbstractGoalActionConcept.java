@@ -110,8 +110,8 @@ public class AbstractGoalActionConcept extends ActionConcept {
         long agentDur = now - prev;
         long dur = agentDur;
                 //narDur; //Math.min(narDur, agentDur);
-        long s = now - dur/2, e = now + dur/2;
-        //long s = prev, e = now;
+        //long s = now - dur/2, e = now + dur/2;
+        long s = prev, e = now;
         //long s = prev, e = now;
         //long s = now - dur, e = now;
         //long s = now - dur, e = now + dur;

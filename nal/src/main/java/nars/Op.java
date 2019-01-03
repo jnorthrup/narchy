@@ -13,7 +13,6 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.Conj;
 import nars.term.util.SetSectDiff;
-import nars.term.util.TermException;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import nars.term.var.Img;
@@ -501,58 +500,58 @@ public enum Op {
 
         Term[] xx = x.arrayShared();
 
-        if (op == CONJ) {
-            boolean baseConcurrent = Conj.concurrentInternal(baseDT);
-            if (!Conj.concurrentInternal(nextDT)) {
-
-                boolean repeating = xx.length == 2 && xx[0].equals(xx[1]);
-
-                if (Param.DEBUG_EXTRA) {
-                    if (baseConcurrent) {
-                        if (!repeating)
-                            throw new TermException(CONJ, baseDT, xx, "ambiguous DT change from concurrent to non-concurrent and non-repeating");
-                    }
-                }
-
-                if (repeating) {
-                    nextDT = Math.abs(nextDT);
-                    if (nextDT == baseDT) {
-                        //can this be detected earlier, if it happens
-                        return x;
-                    }
-                }
-
-//                if (!baseConcurrent) {
-//                    //fast transform non-concurrent -> non-concurrent
+//        if (op == CONJ) {
+//            boolean baseConcurrent = Conj.concurrentInternal(baseDT);
+//            if (!Conj.concurrentInternal(nextDT)) {
+//
+//                boolean repeating = xx.length == 2 && xx[0].equals(xx[1]);
+//
+//                if (Param.DEBUG_EXTRA) {
+//                    if (baseConcurrent) {
+//                        if (!repeating)
+//                            throw new TermException(CONJ, baseDT, xx, "ambiguous DT change from concurrent to non-concurrent and non-repeating");
+//                    }
+//                }
+//
+//                if (repeating) {
+//                    nextDT = Math.abs(nextDT);
+//                    if (nextDT == baseDT) {
+//                        //can this be detected earlier, if it happens
+//                        return x;
+//                    }
+//                }
+//
+////                if (!baseConcurrent) {
+////                    //fast transform non-concurrent -> non-concurrent
+////                    return Op.compound(CONJ, nextDT, xx);
+////                }
+//            } else {
+//
+//                if (baseConcurrent) {
+//                    if (baseDT == XTERNAL) {
+//                        //changing to non-XTERNAL, check for repeats
+//                        if (xx.length < 2) {
+//
+//                        } else if (xx.length == 2) {
+//                            if (xx[0].equals(xx[1]))
+//                                return xx[0]; //collapse
+//                            else if (xx[0].equalsNeg(xx[1]))
+//                                return Bool.False; //contradict
+//                            else if (xx[0].hasAny(CONJ.bit | NEG.bit) || xx[1].hasAny(CONJ.bit | NEG.bit)) {
+//                                //need to thoroughly construct
+//                                return CONJ.the(nextDT, xx);
+//                            }
+//                        } else {
+//                            //need to thoroughly check for co-negations
+//                            return CONJ.the(nextDT, xx);
+//                        }
+//                    }
+//                    //fast transform concurrent -> concurrent, subs wont change
 //                    return Op.compound(CONJ, nextDT, xx);
 //                }
-            } else {
-
-                if (baseConcurrent) {
-                    if (baseDT == XTERNAL) {
-                        //changing to non-XTERNAL, check for repeats
-                        if (xx.length < 2) {
-
-                        } else if (xx.length == 2) {
-                            if (xx[0].equals(xx[1]))
-                                return xx[0]; //collapse
-                            else if (xx[0].equalsNeg(xx[1]))
-                                return Bool.False; //contradict
-                            else if (xx[0].hasAny(CONJ.bit | NEG.bit) || xx[1].hasAny(CONJ.bit | NEG.bit)) {
-                                //need to thoroughly construct
-                                return CONJ.the(nextDT, xx);
-                            }
-                        } else {
-                            //need to thoroughly check for co-negations
-                            return CONJ.the(nextDT, xx);
-                        }
-                    }
-                    //fast transform concurrent -> concurrent, subs wont change
-                    return Op.compound(CONJ, nextDT, xx);
-                }
-
-            }
-        }
+//
+//            }
+//        }
 
         return op.the(nextDT, xx);
     }
