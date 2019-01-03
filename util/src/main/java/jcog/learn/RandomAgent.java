@@ -18,7 +18,7 @@ public class RandomAgent extends Agent {
     }
 
     @Override
-    public int act(float reward, float[] nextObservation) {
+    public int act(float[] actionFeedback, float reward, float[] nextObservation) {
         return rng.nextInt(actions);
     }
 }

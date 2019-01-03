@@ -13,11 +13,15 @@ public abstract class Agent {
         this.actions = actions;
     }
 
-    
-        
-    
 
-    public abstract int act(float reward, float[] nextObservation);
+    /**
+     *
+     * @param actionFeedback actions actually acted in previous cycle
+     * @param reward reward associated with the previous cycle's actions
+     * @param nextObservation next sensory observation
+     * @return decision of which action to want for the next cycle
+     */
+    public abstract int act(float[] actionFeedback, float reward, float[] nextObservation);
 
 //    /** for reporting action vectors, when implementation supports. otherwise it will be a zero vector except one chosen entry
 //     * by the basic markov process act() method */

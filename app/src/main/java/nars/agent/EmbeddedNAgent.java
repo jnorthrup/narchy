@@ -60,7 +60,7 @@ public class EmbeddedNAgent extends Agent {
     }
 
     @Override
-    public int act(float reward, float[] nextObservation) {
+    public int act(float[] actionFeedback, float reward, float[] nextObservation) {
 
         this.nextReward = reward;
 

@@ -219,7 +219,10 @@ public class Conj extends ByteAnonMap {
             int i = indexOfZeroTerminated(b, (byte) 0);
             return i == -1 ? b.length : i;
         } else {
-            return ((ImmutableBitmapDataProvider) what).getCardinality();
+            if (what instanceof RoaringBitmap)
+                return ((ImmutableBitmapDataProvider) what).getCardinality();
+            else
+                return 0;
         }
     }
 
@@ -907,26 +910,26 @@ public class Conj extends ByteAnonMap {
         }
     }
 
-    public boolean add(Term t, long start, long end, int maxSamples, int minSegmentLength) {
-        if ((start == end) || start == ETERNAL) {
-            return add(start, t);
-        } else {
-            if (maxSamples == 1) {
-
-                return add((start + end) / 2L, t);
-            } else {
-
-                long dt = Math.max(minSegmentLength, (end - start) / maxSamples);
-                long x = start;
-                while (x < end) {
-                    if (!add(x, t))
-                        return false;
-                    x += dt;
-                }
-                return true;
-            }
-        }
-    }
+//    public boolean add(Term t, long start, long end, int maxSamples, int minSegmentLength) {
+//        if ((start == end) || start == ETERNAL) {
+//            return add(start, t);
+//        } else {
+//            if (maxSamples == 1) {
+//
+//                return add((start + end) / 2L, t);
+//            } else {
+//
+//                long dt = Math.max(minSegmentLength, (end - start) / maxSamples);
+//                long x = start;
+//                while (x < end) {
+//                    if (!add(x, t))
+//                        return false;
+//                    x += dt;
+//                }
+//                return true;
+//            }
+//        }
+//    }
 
     private boolean addEvent(long at, Term x) {
 //        if (Param.DEBUG) {
@@ -950,10 +953,13 @@ public class Conj extends ByteAnonMap {
 
         //quick test for conflict with existing ETERNALs
         Object eternalEvents = event.get(ETERNAL);
-        if (eternalEvents != null && eventCount(eternalEvents) > 0) {
+        if (eventCount(eternalEvents) > 0) {
             if (!eventsAND(eternalEvents, b -> !unindex(b).equalsNeg(x))) {
                 this.term = False;
                 return false;
+            }
+            if (eventsOR(eternalEvents, b->unindex(b).equals(x))) {
+                return true; //absorbed into existing eternal
             }
         }
 
@@ -1777,7 +1783,12 @@ public class Conj extends ByteAnonMap {
         else
             throw new TODO();
     }
-
+    private static boolean eventsOR(Object events, BytePredicate each) {
+        if (events instanceof byte[])
+            return eventsOR((byte[]) events, each);
+        else
+            throw new TODO();
+    }
     private static boolean eventsAND(byte[] events, BytePredicate each) {
         for (byte e : events) {
             if (e != 0) {
@@ -1788,7 +1799,16 @@ public class Conj extends ByteAnonMap {
         }
         return true;
     }
-
+    private static boolean eventsOR(byte[] events, BytePredicate each) {
+        for (byte e : events) {
+            if (e != 0) {
+                if (each.accept(e))
+                    return true;
+            } else
+                break; //null-terminator
+        }
+        return false;
+    }
 
 //    private static void flattenInto(Collection<Term> ee, Term ex, int dt) {
 //        if (ex.op() == CONJ && ex.dt() == dt)
@@ -1940,16 +1960,16 @@ public class Conj extends ByteAnonMap {
         return c;
     }
 
-    public boolean addDithered(Term term, long start, long end, int maxSamples, int minSegmentLength, NAR nar) {
-        if (start != ETERNAL) {
-            int d = nar.timeResolution.intValue();
-            if (d != 1) {
-                start = Tense.dither(start, d);
-                end = Tense.dither(end, d);
-            }
-        }
-        return add(term, start, end, maxSamples, minSegmentLength);
-    }
+//    public boolean addDithered(Term term, long start, long end, int maxSamples, int minSegmentLength, NAR nar) {
+//        if (start != ETERNAL) {
+//            int d = nar.timeResolution.intValue();
+//            if (d != 1) {
+//                start = Tense.dither(start, d);
+//                end = Tense.dither(end, d);
+//            }
+//        }
+//        return add(term, start, end, maxSamples, minSegmentLength);
+//    }
 
     /** opposite of factor; 'multiplies' all temporal components with any eternal components */
     protected void distribute() {

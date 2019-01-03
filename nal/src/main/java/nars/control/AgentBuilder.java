@@ -106,7 +106,7 @@ public class AgentBuilder {
 
         public void next() {
             input.accept(in);
-            act.accept(agent.act(reward.asFloat(), in));
+            act.accept(agent.act(null /* TODO */, reward.asFloat(), in));
         }
     }
 }

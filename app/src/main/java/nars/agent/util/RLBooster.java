@@ -33,7 +33,7 @@ public class RLBooster implements Consumer<NAR> {
 
     public final NAgent env;
     public final Agent agent;
-    public final FloatRange conf = new FloatRange(0.5f, 0f, 1f);
+    public final FloatRange conf = new FloatRange(0.26f, 0f, 1f);
     final float[] input;
     final int inD, outD;
     final ActionConcept[] actions;
@@ -100,7 +100,7 @@ public class RLBooster implements Consumer<NAR> {
         return outD;
     }
 
-    float[] input(long start, long end) {
+    private float[] input(long start, long end) {
 
         int i = 0;
         NAR n = env.nar();
@@ -112,6 +112,21 @@ public class RLBooster implements Consumer<NAR> {
 
 
         return input;
+    }
+
+    private float[] feedback(long prev, long now) {
+        int i = 0;
+        NAR n = env.nar();
+
+        float[] feedback = new float[actions()];
+        for (ActionConcept s : actions) {
+            Truth t = n.beliefTruth(s, prev, now);
+            feedback[i++] = t!=null ? t.freq() : 0.5f;
+        }
+
+        //Util.normalize...
+
+        return feedback;
     }
 
     @Override
@@ -132,7 +147,7 @@ public class RLBooster implements Consumer<NAR> {
 //        long start = now - dur/2;
 //        long end = now + dur/2;
 
-        int O = agent.act(reward, input(start, end));
+        int O = agent.act(feedback(env.prev, now), reward, input(start, end) );
 
         float OFFfreq =
                 0f;
@@ -163,6 +178,8 @@ public class RLBooster implements Consumer<NAR> {
         }
         in.input(e);
     }
+
+
 
 
 }

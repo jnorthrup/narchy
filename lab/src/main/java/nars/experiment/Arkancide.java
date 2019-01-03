@@ -31,8 +31,8 @@ public class Arkancide extends NAgentX {
     public final FloatRange ballSpeed = new FloatRange(1.75f, 0.04f, 6f);
 
 
-    final int visW = 48;
-    final int visH = 32;
+    //final int visW = 48, visH = 32;
+    final int visW = 24, visH = 16;
 
 
     static float paddleSpeed;

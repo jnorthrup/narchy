@@ -377,6 +377,8 @@ abstract public class DynamicTruthModel {
 
                 Conj c = new Conj(components.size());
 
+                int ditherDT = nar.dtDither();
+
                 for (TaskRegion t : components) {
                     Task tt = (Task) t;
                     Term ttt = tt.term();
@@ -384,7 +386,10 @@ abstract public class DynamicTruthModel {
                     if (tt.isEternal()) {
                         added = c.add(ETERNAL, ttt);
                     } else {
-                        added = c.addDithered(ttt, t.start(), t.end(), 1, 1, nar);
+                        //added = c.addDithered(ttt, t.start(), t.end(), 1, 1, nar);
+                        long ts = t.start();
+                        ts = Tense.dither(ts, ditherDT);
+                        added = c.add(ts, ttt);
                     }
                     if (!added)
                         break;

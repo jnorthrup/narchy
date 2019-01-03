@@ -80,16 +80,16 @@ public class HaiQae extends HaiQ {
         return decideState.applyAsInt(ae.y);
     }
     @Override
-    public int act(float reward, float[] input) {
-        return act(reward, input, perceptionError);
+    public int act(float[] actionFeedback, float reward, float[] input) {
+        return act(actionFeedback, reward, input, perceptionError);
     }
 
-    protected int act(float reward, float[] input, float pErr) {
+    protected int act(float[] actionFeedback, float reward, float[] input, float pErr) {
         
         float learningRate = 1f - (pErr); 
         if (learningRate > 0) {
             
-            int a = learn(perceive(input), reward, learningRate, true);
+            int a = learn(actionFeedback, perceive(input), reward, learningRate, true);
             return a;
         } else {
             perceive(input); 

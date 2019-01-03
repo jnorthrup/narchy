@@ -93,10 +93,11 @@ public class DQN2 extends Agent {
      * 1) using the NN to compute the per-action reward based on the current state
      * 2) picking the available action with the highest reward
      *
+     * @param actionFeedback
      * @param nextState
      * @return
      */
-    @Override public int act( float reward, float[] nextState ) {
+    @Override public int act(float[] actionFeedback, float reward, float[] nextState) {
 
         double[] rewardPrediction = valuePredict.predict(nextState);
 
