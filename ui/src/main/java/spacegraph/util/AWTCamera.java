@@ -111,12 +111,6 @@ public class AWTCamera {
                 graphicsDrawers.put(component, pair = pair(new AtomicBoolean(), g2d));
             }
 
-            
-
-
-            
-            
-
             if (!component.isOpaque()) {
                 g2d.setColor(component.getBackground());
                 g2d.fillRect(region.x, region.y, region.width, region.height);
@@ -127,7 +121,8 @@ public class AWTCamera {
 
             return image;
         } finally {
-            pair.getOne().set(false);
+            if (pair!=null)
+                pair.getOne().set(false);
         }
     }
 

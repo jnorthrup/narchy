@@ -125,7 +125,9 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
             Term coords = radix > 1 ?
                     $.p(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
                     $.p(x, y);
-            return root == null ? coords : $.p(root, coords);
+            return root == null ? coords :
+                    //$.p(root, coords);
+                    $.inh(coords, root);
         };
     }
 

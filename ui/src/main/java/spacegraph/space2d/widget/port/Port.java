@@ -78,10 +78,10 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         return this;
     }
 
-    public Port<X> obey(Consumer<? super X> withRecievedProto) {
-        this.obeyHow = withRecievedProto;
-        return this;
-    }
+//    public Port<X> obey(Consumer<? super X> withRecievedProto) {
+//        this.obeyHow = withRecievedProto;
+//        return this;
+//    }
 
     /**
      * set the input handler

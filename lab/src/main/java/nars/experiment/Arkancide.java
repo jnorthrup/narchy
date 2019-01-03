@@ -7,11 +7,11 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.atom.Atomic;
 import nars.video.SwingBitmap2D;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static spacegraph.SpaceGraph.window;
 
 public class Arkancide extends NAgentX {
 
@@ -64,15 +66,16 @@ public class Arkancide extends NAgentX {
         super("noid", nar);
 
 
-        noid = new Arkanoid(true);
+        noid = new Arkanoid();
 
 
         paddleSpeed = 90 * noid.BALL_VELOCITY;
 
 
+        //initUnipolar();
         //initBipolarDirect();
         //initBipolarRelative();
-        initToggle();
+        initPushButton();
 
         float resX = 0.01f;
         float resY = 0.01f;
@@ -86,17 +89,21 @@ public class Arkancide extends NAgentX {
 
 
             )/*.blur()*/);
-            cc.resolution(0.02f);
+            cc.resolution(0.05f);
+
+            VectorSensorView vsv = new VectorSensorView(cc, nar);
+//            onFrame(vsv::update);
+            window(vsv.withControls(), 500, 500);
 
 
         }
 
 
         if (numeric) {
-            senseNumberTri($.inh($.the("px"), id), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
-            senseNumberTri($.inh($.the("dx"), id), (() -> Math.abs(noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
-            senseNumberTri($.inh($.p("b", "x"), id), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
-            senseNumberTri($.inh($.p("b", "y"), id), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
+            senseNumberBi($.inh($.the("px"), id), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
+            senseNumberBi($.inh($.the("dx"), id), (() -> Math.abs(noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
+            senseNumberBi($.inh($.p("b", "x"), id), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
+            senseNumberBi($.inh($.p("b", "y"), id), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
 
 
         }
@@ -113,10 +120,11 @@ public class Arkancide extends NAgentX {
         rewardNormalized("score", -1, +1, ()->{
             noid.BALL_VELOCITY = ballSpeed.floatValue();
             float nextScore = noid.next();
-            float reward = Math.max(-1f, Math.min(1f, nextScore - prevScore));
+            float dReward = Math.max(-1f, Math.min(1f, nextScore - prevScore));
             this.prevScore = nextScore;
 
-            return reward != 0 ? reward : Float.NaN;
+            return dReward;
+            //return reward != 0 ? reward : Float.NaN;
         });
 
         /*actionTriState*/
@@ -142,14 +150,10 @@ public class Arkancide extends NAgentX {
         });
     }
 
-    private void initToggle() {
+    private void initPushButton() {
         actionPushButtonMutex(Atomic.the("L"), Atomic.the("R"),
-                (b) -> {
-                    if (b) noid.paddle.move(-paddleSpeed);
-                },
-                (b) -> {
-                    if (b) noid.paddle.move(+paddleSpeed);
-                }
+                (b) -> b && noid.paddle.move(-paddleSpeed),
+                (b) -> b && noid.paddle.move(+paddleSpeed)
         );
 
 
@@ -165,11 +169,10 @@ public class Arkancide extends NAgentX {
     /**
      * https:
      */
-    public static class Arkanoid extends Frame implements KeyListener {
+    public static class Arkanoid extends Canvas implements KeyListener {
 
         int score;
 
-        final static int FPS = 50;
 
         public static final int SCREEN_WIDTH = 360;
         public static final int SCREEN_HEIGHT = 250;
@@ -194,31 +197,32 @@ public class Arkancide extends NAgentX {
 
         /* GAME VARIABLES */
 
-        public Arkanoid(boolean visible) {
+        public Arkanoid() {
 
+            setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-            this.setUndecorated(false);
-            this.setResizable(false);
-
-
-            if (visible)
-                this.setVisible(true);
+//            this.setUndecorated(false);
+//            this.setResizable(false);
+//
+//
+//            if (visible)
+//                this.setVisible(true);
 
             paddle.x = SCREEN_WIDTH / 2;
 
 
-            setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-
-            new Timer(1000 / FPS, (e) -> {
-                repaint();
-            }).start();
+//            setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+//
+//            new Timer(1000 / FPS, (e) -> {
+//                repaint();
+//            }).start();
 
             reset();
         }
 
         @Override
         public void paint(Graphics g) {
-            super.paint(g);
+//            super.paint(g);
             g.setColor(Color.black);
             g.fillRect(0, 0, getWidth(), getHeight());
 
@@ -234,7 +238,7 @@ public class Arkancide extends NAgentX {
         public final Collection<Brick> bricks = Collections.newSetFromMap(new ConcurrentHashMap());
 
 
-        abstract class GameObject {
+        abstract static class GameObject {
             abstract float left();
 
             abstract float right();
@@ -244,7 +248,7 @@ public class Arkancide extends NAgentX {
             abstract float bottom();
         }
 
-        class Rectangle extends GameObject {
+        static class Rectangle extends GameObject {
 
             public float x, y;
             public float sizeX;

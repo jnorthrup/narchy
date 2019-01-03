@@ -1,13 +1,18 @@
 package spacegraph.space2d.widget.port;
 
-public class ConstantPort<X> extends Port {
+public class ConstantPort<X> extends TypedPort<X> {
 
     volatile X value = null;
 
-    boolean outOnConnect = false;
+    boolean outOnConnect = true;
+
+    public ConstantPort(X value, Class<? super X> klass) {
+        super(klass);
+        set(value);
+    }
 
     public ConstantPort(X value) {
-        set(value);
+        this(value, (Class<? super X>) value.getClass());
     }
 
     public void set(X value) {

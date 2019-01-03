@@ -89,6 +89,8 @@ public class AttNode extends AtomicTreeNode<AttNode> {
     }
     protected float elementIdeal(int n) {
         float i;
+        if (n == 0)
+            return 0;
         //i = 1; //each component important as a top level concept
         i = 1f / Util.sqrt(n); //shared by sqrt of components
         //i = 1f / n; //shared by all components
