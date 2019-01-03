@@ -44,15 +44,15 @@ public class MetaAgent {
     public MetaAgent(NAgent a, boolean allowPause) {
         this.agent = a;
         this.attn = new AttNode(this);
-        attn.parent(a.attn);
+        attn.parent(a.attnReward);
 
         NAR nar = a.nar();
         start = nar.time();
-        curiosityAction = a.actionUnipolar($.func(curiosity, a.id), (c)->{
+        curiosityAction = a.actionUnipolar($.inh(a.id,curiosity), (c)->{
             a.curiosity.rate.set(curiosity(c));
             return c;
         });
-        curiosityAction.resolution(0.1f);
+        curiosityAction.resolution(0.05f);
         curiosityAction.attn.reparent(attn);
 
 

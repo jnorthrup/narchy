@@ -165,6 +165,9 @@ public class ConjTest {
 
     }
 
+    @Test void testDisjConjElim() {
+        assertEq("(--,L)", "((||,R,(--,L))&&(--,L))");
+    }
 
     @Test
     void testEventContradictionWithEternal() {

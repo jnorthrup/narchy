@@ -7,6 +7,7 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.concept.sensor.AbstractSensor;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.atom.Atomic;
@@ -25,7 +26,7 @@ import static spacegraph.SpaceGraph.window;
 
 public class Arkancide extends NAgentX {
 
-    static boolean numeric = false;
+    static boolean numeric = true;
     static boolean cam = true;
 
     public final FloatRange ballSpeed = new FloatRange(1.75f, 0.04f, 6f);
@@ -77,8 +78,8 @@ public class Arkancide extends NAgentX {
         //initBipolarRelative();
         initPushButton();
 
-        float resX = 0.01f;
-        float resY = 0.01f;
+        float resX = 0.02f;
+        float resY = 0.02f;
 
         if (cam) {
 
@@ -100,11 +101,12 @@ public class Arkancide extends NAgentX {
 
 
         if (numeric) {
-            senseNumberBi($.inh($.the("px"), id), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
-            senseNumberBi($.inh($.the("dx"), id), (() -> Math.abs(noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
+            AbstractSensor px = senseNumberBi($.inh($.the("px"), id), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
+            AbstractSensor dx = senseNumberBi($.inh($.the("dx"), id), (() -> 0.5f + 0.5f * (noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
             senseNumberBi($.inh($.p("b", "x"), id), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
             senseNumberBi($.inh($.p("b", "y"), id), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
 
+//            window(NARui.beliefCharts(dx.components(), nar), 500, 500);
 
         }
 
@@ -123,12 +125,23 @@ public class Arkancide extends NAgentX {
             float dReward = Math.max(-1f, Math.min(1f, nextScore - prevScore));
             this.prevScore = nextScore;
 
-            return dReward;
-            //return reward != 0 ? reward : Float.NaN;
+            //return dReward;
+            return dReward != 0 ? dReward : Float.NaN;
         });
 
         /*actionTriState*/
 
+        nar.onTask(t->{
+           if (t.isGoal() && !t.isInput())
+               System.out.println(t);
+//           if (t.isQuest()) {
+//               nar.concepts.stream().filter(x -> x.op() == IMPL && x.sub(1).equals(t.term())).forEach(i -> {
+//                   //System.out.println(i);
+//                   //nar.que(i.sub(0), QUEST, t.start(), t.end());
+//                   nar.want(i.sub(0), Tense.Present,1f, 0.9f);
+//               });
+//           }
+        });
 
     }
 

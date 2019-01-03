@@ -115,7 +115,8 @@ public final class Termify extends AbstractPred<Derivation> {
                 throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
 
             if ((d.taskPunc==GOAL && d.concPunc == GOAL) && occ[0]!=ETERNAL && occ[0] < d.taskStart) {
-                if (d.taskTerm.op()!=CONJ && d.beliefTerm.op()==IMPL) {
+                //if (d.taskTerm.op()!=CONJ && d.beliefTerm.op()==IMPL) {
+                {
                     //immediate shift
                     long range = occ[1] - occ[0];
                     occ[0] = d.taskStart;

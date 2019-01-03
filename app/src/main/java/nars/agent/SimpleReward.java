@@ -16,7 +16,17 @@ public class SimpleReward extends Reward {
     public SimpleReward(Term id, FloatSupplier r, NAgent a) {
         super(a, r);
         NAR nar = nar();
-        concept = new Signal(id, () -> reward, nar) {
+//        TermLinker linker = new TemplateTermLinker((TemplateTermLinker) TemplateTermLinker.of(id)) {
+//            @Override
+//            public void sample(Random rng, Function<? super Term, SampleReaction> each) {
+//                if (rng.nextFloat() < 0.9f) {
+//                    if ((each.apply(a.actions.get(rng.nextInt(a.actions.size())).term())).stop)
+//                        return;
+//                }
+//                super.sample(rng, each);
+//            }
+//        };
+        concept = new Signal(id, () -> reward, /*linker, */nar) {
             @Override
             protected AttBranch newAttn(Term term) {
                 AttBranch b = new AttBranch(term, this.components());

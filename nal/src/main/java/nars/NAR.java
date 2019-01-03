@@ -555,13 +555,15 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * ¿qué?  que-stion or que-st
      */
     public Task que(Term term, byte punc, long when) {
+        return que(term, punc, when, when);
+    }
 
-
+    public Task que(Term term, byte punc, long start, long end) {
         assert ((punc == QUESTION) || (punc == QUEST));
 
         return inputTask(
                 new NALTask(term.unneg(), punc, null,
-                        time(), when, when,
+                        time(), start, end,
                         new long[]{time.nextStamp()}
                 ).budget(this)
         );

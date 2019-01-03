@@ -36,7 +36,7 @@ import java.util.stream.Stream;
  *
  * also caches Concept references until a concept becomes deleted
  */
-public final class TemplateTermLinker extends FasterList<Termed> implements TermLinker {
+public class TemplateTermLinker extends FasterList<Termed> implements TermLinker {
 
 
     //    /**
@@ -120,6 +120,11 @@ public final class TemplateTermLinker extends FasterList<Termed> implements Term
         }
 
         return NullLinker;
+    }
+
+    protected TemplateTermLinker(TemplateTermLinker base) {
+        super(base.items.length, base.items);
+        concepts = base.concepts;
     }
 
     private TemplateTermLinker(Termed[] terms) {

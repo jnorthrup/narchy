@@ -94,7 +94,7 @@ public class AttNode extends AtomicTreeNode<AttNode> {
         //i = 1; //each component important as a top level concept
         i = 1f / Util.sqrt(n); //shared by sqrt of components
         //i = 1f / n; //shared by all components
-        return elementPri() * i;
+        return i;
     }
 
     public void update(float pri) {

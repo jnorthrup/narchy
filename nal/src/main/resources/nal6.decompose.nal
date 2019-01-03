@@ -50,12 +50,13 @@
     //TODO test:
       //X, C, eventLastOfNeg(C,X),--eventOf(C,X)      |-   --negateEvents(conjDropIfLatest(C,--X)), (Goal:DesireWeak,Time:TaskLastInBeliefNeg)
       X, C, eventLastOfNeg(C,X)      |- --conjDropIfLatest(C,--X), (Goal:DesireWeak)
+      X, C, eventLastOfNeg(C,X)      |- --C, (Goal:DesireWeak)
 
     X, C, eventLastOfNeg(C,X), --eventOf(C,X)       |-   conjDropIfLatest(C,--X),   (Goal:DesireN)
     //TODO test:
       //X, C, eventLastOf(C,X), --eventOfNeg(C,X)     |-   --negateEvents(conjDropIfLatest(C,X)), (Goal:DesireWeak, Time:TaskLastInBeliefNeg)
       X, C, eventLastOf(C,X)      |- --conjDropIfLatest(C,X),   (Goal:DesireWeakN)
-
+      X, C, eventLastOf(C,X)      |- --C, (Goal:DesireWeakN)
 
     //negate events of anti-conj goal
     //C, X, eventOf(C,X) |- negateEvents(conjWithoutAll(C, X)), (Goal: StructuralDeductionN)
@@ -69,17 +70,18 @@
 
     //TODO conjunction sequence prefix
 
-    C, X, eventFirstOf(C,X)      |- conjDropIfEarliest(C,  X), (Belief:Deduction,Goal:Deduction)
+    C, X, eventFirstOf(C,X)      |- conjDropIfEarliest(C,  X), (Belief:Deduction,Goal:Desire)
       C, X, eventFirstOf(C,X)    |- X, (Goal:StructuralDeduction)
         //C, X, eventFirstOf(C,X)    |- --X, (Goal:StructuralDeductionN)
-    C, X, eventFirstOfNeg(C,X)   |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DeductionPN)
+    C, X, eventFirstOfNeg(C,X)   |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DesirePN)
       C, X, eventFirstOfNeg(C,X) |- --X, (Goal:StructuralDeduction)
         //C, X, eventFirstOfNeg(C,X) |- X, (Goal:StructuralDeductionN)
 
 
     //conditional disjunction decompose
-    D, X, eventOfNeg(D,X)   |- --conjWithout(D,--X), (Goal:DeductionNN)
-    D, X, eventOf(D,X)      |- --conjWithout(D,  X), (Goal:DeductionNP)
+//    D, X, eventOf(D,X)      |- --conjWithout(D,  X), (Goal:DesireNP)
+//    D, X, eventOfNeg(D,X)   |- --conjWithout(D,--X), (Goal:DesireNN)
+
 
 
 
