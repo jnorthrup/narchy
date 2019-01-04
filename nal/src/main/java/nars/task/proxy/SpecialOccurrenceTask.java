@@ -13,7 +13,7 @@ public class SpecialOccurrenceTask extends TaskProxy {
     }
 
     public SpecialOccurrenceTask(Task task, long start, long end) {
-        super(task);
+        super(task instanceof SpecialOccurrenceTask ? ((SpecialOccurrenceTask)task).task : task);
         this.start = start;
         this.end = end;
     }

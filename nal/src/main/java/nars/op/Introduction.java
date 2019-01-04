@@ -3,7 +3,7 @@ package nars.op;
 import nars.NAR;
 import nars.Task;
 import nars.bag.leak.TaskLeakTransform;
-import nars.task.NALTask;
+import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +31,7 @@ public abstract class Introduction extends TaskLeakTransform {
             Term x = xx.term();
             if (!y.equals(x) && y.op().conceptualizable) {
 
-                Task yy = Task.clone(xx, y, xx.truth(), xx.punc(), (c, t) -> new NALTask(c, xx, t));
+                Task yy = Task.clone(xx, y, xx.truth(), xx.punc(), (c, t) -> new UnevaluatedTask(c, xx, t));
 
                 if (yy != null) {
                     //discount pri by increase in term complexity

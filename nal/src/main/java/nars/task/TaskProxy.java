@@ -21,6 +21,10 @@ public class TaskProxy extends UnitPri implements Task {
     public TaskProxy(Task task) {
 
         this.task = task;
+//        if (task instanceof TaskProxy) {
+//            //System.out.println(task.getClass() + " may be unwrapped for " + getClass());
+//            throw new WTF(task.getClass() + " may be unwrapped for use as base of " + getClass());
+//        }
 
         float p = task.pri();
         if (p!=p)

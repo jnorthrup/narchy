@@ -29,7 +29,7 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
 
     public final FloatRange activationRate = new FloatRange(0.5f, ScalarValue.EPSILONsqrt, 2f);
 
-    public final FloatRange conceptForgetRate = new FloatRange(0.5f, 0f, 1f /* 2f */);
+    public final FloatRange conceptForgetRate = new FloatRange(0.9f, 0f, 1f /* 2f */);
 
     /**
      * TODO make dynamicalyl adjustable thru MutableInteger etc
