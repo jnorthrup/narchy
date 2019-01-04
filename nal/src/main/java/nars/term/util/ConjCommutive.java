@@ -42,6 +42,17 @@ public enum ConjCommutive {;
                     return False;
             }
 
+            if (u.length == 2) {
+                //HACK
+                if (dt == DTERNAL && u[0].op() == CONJ && u[0].dt() == 0 && u[1].op() != CONJ)
+                    dt = 0; //promote to parallel
+                if (dt == 0 && u[0].op() == CONJ && u[0].dt() == DTERNAL) {
+                    //promote dternal component to parallel
+                    u = u.clone();
+                    u[0] = u[0].dt(0);
+                }
+            }
+
             if (a.unneg().op() != CONJ && b.unneg().op()!=CONJ) {
                 //fast construct for simple case, verified above to not contradict itself
                 return HeapTermBuilder.the.theCompound(CONJ, dt, /*sorted*/a, b);
@@ -250,10 +261,10 @@ public enum ConjCommutive {;
 
     }
 
-    static void assertNot2(Term[] u) {
-        if (u.length == 2)
-            throw new WTF("why wasnt this simple case caught earlier");
-    }
+//    static void assertNot2(Term[] u) {
+//        if (u.length == 2)
+//            throw new WTF("why wasnt this simple case caught earlier");
+//    }
 
     static Term conjDirect(int dt, Term[] u) {
         return HeapTermBuilder.the.theCompound(CONJ, dt, u);

@@ -1,6 +1,8 @@
 package nars.subterm;
 
+import com.google.common.io.ByteArrayDataOutput;
 import jcog.util.ArrayUtils;
+import nars.Op;
 import nars.subterm.util.TermMetadata;
 import nars.term.Term;
 import nars.term.util.TermException;
@@ -66,6 +68,20 @@ abstract public class MappedSubterms extends ProxySubterms {
             assert(base.subs()==map.length);
             this.map = map;
             this.hash = Subterms.hash(this);
+        }
+
+        /** @see AnonVector.appendTo */
+        @Override
+        public void appendTo(ByteArrayDataOutput out) {
+            byte[] ss = map;
+            out.writeByte(ss.length);
+            for (byte s : ss) {
+                if (s < 0) {
+                    out.writeByte(Op.NEG.id);
+                    s = (byte) -s;
+                }
+                ref.sub(s-1).appendTo(out);
+            }
         }
 
         @Override
@@ -224,4 +240,6 @@ abstract public class MappedSubterms extends ProxySubterms {
     }
 
     protected abstract int subMap(int i);
+
+
 }

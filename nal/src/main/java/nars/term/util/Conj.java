@@ -441,7 +441,9 @@ public class Conj extends ByteAnonMap {
             } else {
                 //choose random event
                 long[] events = c.event.keySet().toArray();
-                eventAt = events[rng.nextInt(events.length)];
+                if (events.length == 0)
+                    throw new WTF();
+                eventAt = events.length == 1 ? events[0] : events[rng.nextInt(events.length)];
             }
             Object event = c.event.get(eventAt);
             if (event instanceof byte[]) {
@@ -1972,7 +1974,7 @@ public class Conj extends ByteAnonMap {
 //    }
 
     /** opposite of factor; 'multiplies' all temporal components with any eternal components */
-    protected void distribute() {
+    public void distribute() {
 
         Term ete = term(ETERNAL);
         if (ete == null) return; //no effect

@@ -131,6 +131,7 @@ public class Arkancide extends NAgentX {
 
         /*actionTriState*/
 
+
         nar.onTask(t->{
            if (t.isGoal() && !t.isInput())
                System.out.println(t);

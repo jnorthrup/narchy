@@ -80,9 +80,7 @@ public interface Compound extends Term, IPair, Subterms {
 
         if (a instanceof UnitCompound || b instanceof UnitCompound) {
             //avoid instantiating dummy subterms instance
-            int as = a instanceof UnitCompound ? 1 : a.subs();
-            int bs = b instanceof UnitCompound ? 1 : b.subs();
-            return as == bs && a.sub(0).equals(b.sub(0));
+            return a.subs()==1 && b.subs()==1 && a.sub(0).equals(b.sub(0));
         } else
             return a.subterms().equals(b.subterms());
     }

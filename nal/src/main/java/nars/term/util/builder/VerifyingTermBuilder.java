@@ -26,8 +26,9 @@ public class VerifyingTermBuilder extends TermBuilder {
         Term aa = a.compound(o, dt, u);
         Term bb = b.compound(o, dt, u);
         if (!equals(aa, bb)) {
-            Term aaa = a.compound(o, dt, u); //temporary for re-debugging
-            Term bbb = b.compound(o, dt, u); //temporary for re-debugging
+            equals(aa, bb); //temporary for re-debugging
+//            Term aaa = a.compound(o, dt, u); //temporary for re-debugging
+//            Term bbb = b.compound(o, dt, u); //temporary for re-debugging
             throw new WTF(o + " " + Arrays.toString(u) + " dt=" + dt + " inequal:\n" + aa + "\n" + bb);
         }
         return aa;

@@ -5,14 +5,12 @@ import jcog.data.iterator.ArrayIterator;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.atom.Bool;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 
 import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
 import static nars.term.atom.Bool.True;
-import static nars.time.Tense.DTERNAL;
 
 /** NAL2/NAL3 set, intersection and difference functions */
 public class SetSectDiff {
@@ -76,7 +74,7 @@ public class SetSectDiff {
                     y.keyValuesView().forEach(e ->
                             yyy[k[0]++] = e.getOne().negIf(e.getTwo()==-1)
                     );
-                    return Op.compound(o, DTERNAL, Terms.sorted(yyy));
+                    return Op.compound(o, yyy);
                 }
 
         }

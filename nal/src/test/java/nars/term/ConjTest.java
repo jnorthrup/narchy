@@ -2122,6 +2122,28 @@ public class ConjTest {
             $$("( &|, (--, (g, (1, 1),(18, 0))),(--, ((--, (right--> g))&|(down--> g))),(--, (right--> g)),(down--> g))")
         );
     }
+    @Test void testCollapseEteParallel1() {
+        Term x1 = $$("((&|,a,b)&&c)");
+        assertEq("(&|,a,b,c)", x1);
+        Term x3 = $$("((&|,a,b) && --(&|,c,d))");
+        assertEq("(&|,a,b,(--,&|,c,d))", x3);
+        Term x2 = $$("(&&,(&|,a,b),c,d)");
+        assertEq("(&|,a,b,c,d)", x2);
+
+    }
+
+    @Test void testConjDistributeEteParallel1(){
+        Term x = $$("((&|,_2(_1),_4(_3),_6(_5))&&(--,(_6(#1)&|_6(#2))))");
+        {
+            Conj c = Conj.from(x);
+            assertEq(x, c.term());
+        }
+        {
+            Conj c = Conj.from(x);
+            c.distribute();
+            assertEq(x, c.term());
+        }
+    }
 
 //    @Test void testConjEternalConj2() {
 //        Term a = $$("(--,((--,((--,y)&|x))&&x))"); //<-- should not be constructed

@@ -4,6 +4,8 @@ import nars.term.util.TermTest;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
+import static nars.Op.SECTi;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** intersection / diff terms */
 public class SectTest {
@@ -22,14 +24,14 @@ public class SectTest {
     }
 
     @Test void testSectDiffEquivAndReductions() {
-        TermTest.assertEquivalentTerm("(&,b,--a)", "(b ~ a)");
-        TermTest.assertEquivalentTerm("(|,b,--a)", "(b - a)");
+        TermTest.assertEquivalentTerm("(&,b,--a)", "(b - a)");
+        TermTest.assertEquivalentTerm("(|,b,--a)", "(b ~ a)");
 
-        TermTest.assertEquivalentTerm("(&,b,a)", "(b ~ --a)");
+        TermTest.assertEquivalentTerm("(&,b,a)", "(b - --a)");
 
         TermTest.assertEquivalentTerm("--(b~a)", "--(b~a)"); // 1 - (b * (1-a)) hyperbolic paraboloid
 
-        TermTest.assertEquivalentTerm("(&,c, --(b & --a))", "(c ~ (b~a))");
+        TermTest.assertEquivalentTerm("(&,c, --(b & --a))", "(c - (b-a))");
         TermTest.assertEquivalentTerm("(c ~ (b-a))", "(c ~ (b-a))"); //different types, unchanged
 
         TermTest.assertEquivalentTerm("((b ~ c) ~ (b ~ a))", "((b ~ c) ~ (b ~ a))"); // (b * (1-c)) * (1-(b * (1-a)))
@@ -60,4 +62,9 @@ public class SectTest {
 
         //TermTest.assertEq("((--,(c ==>+2 d))&(a ==>+1 b))", "((X &&+837 Y)~(--,(Y &&+1424 X)))");
     }
+    @Test void testSectDiff() {
+        Term t = SECTi.the($$("(--,(?2~(|,(--,(?2~?1)),?2,?3)))"), $$("?2"), $$("?3"));
+        assertEquals(t, t);
+    }
+
 }

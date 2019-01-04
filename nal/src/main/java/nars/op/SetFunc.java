@@ -14,10 +14,7 @@ import nars.term.atom.Atomic;
 import nars.term.util.SetSectDiff;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static nars.term.atom.Bool.Null;
@@ -80,11 +77,11 @@ public class SetFunc {
 
     };
 
-    static @Nullable SortedSet<Term> intersectSorted(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
+    static @Nullable Set<Term> intersect(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
         if ((a.structure() & b.structure()) != 0) {
 
             Predicate<Term> contains = a.subs() > 2 ? (a.toSet()::contains) : a::contains;
-            SortedSet<Term> ab = b.toSetSorted(contains);
+            Set<Term> ab = b.toSet(contains);
             if (ab != null)
                 return ab;
         }
@@ -95,16 +92,16 @@ public class SetFunc {
         if (a instanceof Term && a.equals(b))
             return (Term) a;
 
-        SortedSet<Term> cc = intersectSorted(b, a);
+        Set<Term> cc = intersect(b, a);
         if (cc == null)
             return Null;
 
         int ssi = cc.size();
         switch (ssi) {
             case 0: return Null;
-            case 1: return cc.first();
+            case 1: return cc.iterator().next();
             default:
-                return Op.compound(o, DTERNAL, cc.toArray(Op.EmptyTermArray));
+                return Op.compound(o, cc.toArray(Op.EmptyTermArray));
         }
 
 

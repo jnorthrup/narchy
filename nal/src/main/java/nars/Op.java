@@ -789,6 +789,9 @@ public enum Op {
     public static Term compound(Op o, int dt, Term... u) {
         return terms.compound(o, dt, u);
     }
+    public static Term compound(Op o, Term... u) {
+        return compound(o, DTERNAL, u);
+    }
 
 //    /**
 //     * true if matches any of the on bits of the vector

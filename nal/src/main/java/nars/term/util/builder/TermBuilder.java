@@ -29,8 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.TreeSet;
 
-import static nars.Op.CONJ;
-import static nars.Op.NEG;
+import static nars.Op.*;
 import static nars.term.Terms.sorted;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
@@ -262,10 +261,15 @@ public abstract class TermBuilder {
 
         int trues = 0;
         for (Term t : u) {
-            if (t == Bool.Null || t == Bool.False)
-                return t;
-            else if (t == Bool.True)
-                trues++;
+            Op to = t.op();
+            if (to == BOOL) {
+                if (t == Bool.Null || t == Bool.False)
+                    return t;
+                else if (t == Bool.True)
+                    trues++;
+            }
+            else if (!to.eventable)
+                return Null;
         }
 
         if (trues > 0) {
@@ -301,14 +305,10 @@ public abstract class TermBuilder {
         }
 
 
-        for (Term x : u) {
-            if (!x.op().eventable)
-                return Null;
-        }
-
         switch (dt) {
             case DTERNAL:
             case 0: {
+
                 return ConjCommutive.theSorted(dt, u);
             }
 
