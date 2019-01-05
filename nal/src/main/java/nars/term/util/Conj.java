@@ -19,7 +19,10 @@ import org.eclipse.collections.api.block.procedure.primitive.ByteProcedure;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.iterator.MutableByteIterator;
 import org.eclipse.collections.api.set.MutableSet;
+import org.eclipse.collections.api.set.primitive.ByteSet;
+import org.eclipse.collections.api.set.primitive.MutableLongSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
+import org.eclipse.collections.impl.factory.primitive.ByteSets;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
@@ -67,12 +70,12 @@ public class Conj extends ByteAnonMap {
     }
 
 
-//    /**
-//     * but events are unique
-//     */
-//    public static Conj shareSameTermMap(Conj x) {
-//        return new Conj(x.termToId, x.idToTerm);
-//    }
+    /**
+     * but events are unique
+     */
+    public static Conj newConjSharingTermMap(Conj x) {
+        return new Conj(x.termToId, x.idToTerm);
+    }
 
     public Conj(ObjectByteHashMap<Term> x, FasterList<Term> y) {
         super(x, y);
@@ -846,6 +849,8 @@ public class Conj extends ByteAnonMap {
     public boolean add(long at, Term x) {
         if (term != null)
             throw new RuntimeException("already concluded: " + term);
+        if (at == DTERNAL || at == XTERNAL)//TEMPORARY
+            throw new WTF("probably meant ETERNAL or TIMELESS");
 
         return added(
                 (x instanceof Compound && x.op() == CONJ) ?
@@ -1153,12 +1158,120 @@ public class Conj extends ByteAnonMap {
 
     }
 
+    private static Term disjunctionVsDisjunction(Term a, Term b, boolean eternal) {
+        Conj aa = new Conj();
+        if (eternal) aa.addAuto(a); else aa.add(0, a);
+        aa.factor();
+        //aa.distribute();
+
+        Conj bb = newConjSharingTermMap(aa);
+        if (eternal) bb.addAuto(b); else bb.add(0, b);
+        bb.factor();
+        //bb.distribute();
+
+        Conj cc = intersect(aa, bb);
+        if (cc == null) {
+            //perfectly disjoint; OK
+            return null;
+        } else {
+            Term A = aa.term();
+            if (a == Null)
+                return Null;
+            Term B = bb.term();
+            if (b == Null)
+                return Null;
+            long as = aa.shift();
+            long bs = bb.shift();
+            long abShift = Math.min(as, bs);
+            Conj dd = newConjSharingTermMap(cc);
+            if (eternal && as==0 && bs==0) {
+                as = bs = ETERNAL;
+            }
+            if (dd.add(as, A.neg()))
+                dd.add(bs, B.neg());
+
+            Term D = dd.term();
+            if (D == Null)
+                return Null;
+
+            if (cc.eventCount()==0)
+                return D.neg();
+            else {
+                cc.add((eternal && (cc.eventCount()==1 && cc.eventCount(ETERNAL)>0 && !Conj.isSeq(A) && !Conj.isSeq(B))) ?
+                        ETERNAL : (abShift), D.neg());
+                return cc.term().neg();
+            }
+        }
+    }
+
+    public int eventCount() {
+        return event.size();
+    }
+
+    /** produces a Conj instance containing the intersecting events.
+     * null if no events in common and x and y were not modified.
+     *  erases contradiction (both cases) between both so may modify X and Y.  probably should .distribute() x and y first  */
+    @Nullable public static Conj intersect(Conj x, Conj y) {
+
+        assert(x.termToId == y.termToId): "x and y should share term map";
+
+        MutableLongSet commonEvents = x.event.keySet().select(y.event::containsKey);
+        if (commonEvents.isEmpty())
+            return null;
+
+        Conj c = newConjSharingTermMap(x);
+        final boolean[] modified = {false};
+        commonEvents.forEach(e -> {
+            ByteSet xx = x.eventSet(e);
+            ByteSet yy = y.eventSet(e);
+            ByteSet common = xx.select(xxx -> yy.contains(xxx));
+            ByteSet contra = xx.select(xxx -> yy.contains((byte) -xxx));
+            if (!common.isEmpty()) {
+                common.forEach(cc -> {
+                    c.add(e, x.unindex(cc));
+                    boolean xr = x.remove(e, cc);
+                    boolean yr = y.remove(e, cc);
+                    assert(xr && yr);
+                    modified[0] = true;
+                });
+            }
+            if (!contra.isEmpty()) {
+                contra.forEach(cc -> {
+                    boolean xr = x.remove(e, cc, (byte) -cc);
+                    boolean yr = y.remove(e, cc, (byte) -cc);
+                    assert(xr && yr);
+                    modified[0] = true;
+                });
+            }
+        });
+        return (!modified[0] && c.event.isEmpty()) ? null : c;
+    }
+
+    public ByteSet eventSet(long e) {
+        Object ee = event.get(e);
+        if (ee == null)
+            return ByteSets.immutable.empty();
+        if (!(ee instanceof byte[]))
+            throw new TODO();
+        byte[] eee = (byte[])ee;
+        int ec = eventCount(eee);
+        assert(ec > 0);
+        if (ec == 1)
+            return ByteSets.immutable.of(eee[0]);
+        else if (ec == 2)
+            return ByteSets.immutable.of(eee[0], eee[1]);
+        else {
+            ByteHashSet b = new ByteHashSet(ec);
+            events(eee, b::add);
+            return b;
+        }
+    }
 
     /**
      * stage 2: a and b are both the inner conjunctions of disjunction terms being compared for contradiction or factorable commonalities.
      * a is the existing disjunction which can be rewritten.  b is the incoming
      */
-    private static Term disjunctionVsDisjunction(Term a, Term b, boolean eternal) {
+    private static Term OLD_disjunctionVsDisjunction(Term a, Term b, boolean eternal) {
         int adt = a.dt(), bdt = b.dt();
         boolean bothCommute = (adt == 0 || adt == DTERNAL) && (bdt == 0 || bdt == DTERNAL);
         if (bothCommute) {
@@ -1192,34 +1305,34 @@ public class Conj extends ByteAnonMap {
             //return null; //no change
             return Null;
         } else {
-            //TODO factor out the common events, and rewrite the disjunction as an extra CONJ term with the two options (if they are compatible)
-            //HACK simple case
-            if (a.subs()==2 && b.subs()==2 && !a.subterms().hasAny(CONJ) && !b.subterms().hasAny(CONJ)){
-                Term common = a.sub(0);
-                if (common.equals(b.sub(0))) {
-                    Term ar = Conj.without(a, common, false);
-                    if (ar!=null) {
-                        int ac = a.subTimeFirst(common);
-                        if (ac!=DTERNAL) {
-                            int ao = a.subTimeFirst(ar);
-                            if (ao != DTERNAL) {
-                                Term br = Conj.without(b, common, false);
-                                if (br != null) {
-                                    int bc = b.subTimeFirst(common);
-                                    if (bc!=DTERNAL) {
-                                        int bo = b.subTimeFirst(br);
-                                        if (bo != DTERNAL) {
-                                            Term arOrBr = terms.conj((bo-bc) - (ao-ac), ar.neg(), br.neg()).neg();
-                                            Term y = terms.conj(-ac, common, arOrBr).neg(); //why neg
-                                            return y;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+//            //TODO factor out the common events, and rewrite the disjunction as an extra CONJ term with the two options (if they are compatible)
+//            //HACK simple case
+//            if (a.subs()==2 && b.subs()==2 && !a.subterms().hasAny(CONJ) && !b.subterms().hasAny(CONJ)){
+//                Term common = a.sub(0);
+//                if (common.equals(b.sub(0))) {
+//                    Term ar = Conj.without(a, common, false);
+//                    if (ar!=null) {
+//                        int ac = a.subTimeFirst(common);
+//                        if (ac!=DTERNAL) {
+//                            int ao = a.subTimeFirst(ar);
+//                            if (ao != DTERNAL) {
+//                                Term br = Conj.without(b, common, false);
+//                                if (br != null) {
+//                                    int bc = b.subTimeFirst(common);
+//                                    if (bc!=DTERNAL) {
+//                                        int bo = b.subTimeFirst(br);
+//                                        if (bo != DTERNAL) {
+//                                            Term arOrBr = terms.conj((bo-bc) - (ao-ac), ar.neg(), br.neg()).neg();
+//                                            Term y = terms.conj(-ac, common, arOrBr).neg(); //why neg
+//                                            return y;
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
 
 //            //HACK if the set of components is disjoint, allow
 //            if (!a.subterms().hasAny(CONJ) && !b.subterms().hasAny(CONJ)) {
@@ -1402,6 +1515,15 @@ public class Conj extends ByteAnonMap {
 
     /** stateless/fast 2-ary conjunction in either eternity (dt=DTERNAL) or parallel(dt=0) modes */
     public static Term conjoin(Term x, Term y, boolean eternalOrParallel) {
+        if (x == Null) return Null;
+        if (y == Null) return Null;
+
+        if (x == False) return False;
+        if (y == False) return False;
+
+        if (x == True) return y;
+        if (y == True) return x;
+
         Term xy = merge(x, y, eternalOrParallel);
 
         //decode result term
@@ -1469,9 +1591,7 @@ public class Conj extends ByteAnonMap {
         return remove(at, i);
     }
 
-    public boolean remove(long at, byte what) {
-        if (what == Byte.MIN_VALUE)
-            return false;
+    public boolean remove(long at, byte... what) {
 
         Object o = event.get(at);
         if (o == null)
@@ -1492,7 +1612,7 @@ public class Conj extends ByteAnonMap {
      * +1 removed
      * +0 not removed
      */
-    private int removeFromEvent(long at, Object o, boolean autoRemoveIfEmpty, int... i) {
+    private int removeFromEvent(long at, Object o, boolean autoRemoveIfEmpty, byte... i) {
         if (o instanceof RoaringBitmap) {
             boolean b = false;
             RoaringBitmap oo = (RoaringBitmap) o;
@@ -1560,17 +1680,17 @@ public class Conj extends ByteAnonMap {
             negateInput = false;
         }
 
-        int i = get(t);
+        byte i = get(t);
         if (i == Byte.MIN_VALUE)
             return false;
 
-        int[] ii;
+        byte[] ii;
         if (pos && neg) {
-            ii = new int[]{i, -i};
+            ii = new byte[]{i, (byte) -i};
         } else if (pos) {
-            ii = new int[]{negateInput ? -i : i};
+            ii = new byte[]{negateInput ? (byte) -i : i};
         } else if (neg) {
-            ii = new int[]{negateInput ? i : -i};
+            ii = new byte[]{negateInput ? i : (byte) -i};
         } else {
             throw new UnsupportedOperationException();
         }
@@ -1824,12 +1944,12 @@ public class Conj extends ByteAnonMap {
         LongIterator ii = event.keysView().longIterator();
         while (ii.hasNext()) {
             long t = ii.next();
-            if (t != DTERNAL) {
+            if (t != ETERNAL) {
                 if (t < min)
                     min = t;
             }
         }
-        return min;
+        return min==Long.MAX_VALUE ? 0 : min;
     }
 
     public Term term(long when) {
@@ -1975,6 +2095,9 @@ public class Conj extends ByteAnonMap {
 
     /** opposite of factor; 'multiplies' all temporal components with any eternal components */
     public void distribute() {
+
+        if (event.size() <= 1)
+            return;
 
         Term ete = term(ETERNAL);
         if (ete == null) return; //no effect

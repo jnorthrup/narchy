@@ -210,6 +210,13 @@ public abstract class TermBuilder {
 
     }
 
+//    public Term conj(final int dt, Term... u) { //TEMPORARY for debug
+//        Term c = _conj(dt, u);
+//        if (c.op()==CONJ && c.anon().op()!=CONJ)
+//            throw new WTF();
+//        return c;
+//    }
+
     public Term conj(final int dt, Term... u) { //TODO presorted flag
 //        /** TEMPORARY */
 //        Term x = _conj(dt, u);

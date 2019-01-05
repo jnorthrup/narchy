@@ -50,7 +50,7 @@ public class ByteAnonMap {
         termToId.clear();
     }
 
-    public int size() {
+    public int termCount() {
         return idToTerm.size();
     }
 }

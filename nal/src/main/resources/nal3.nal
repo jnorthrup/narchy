@@ -34,8 +34,8 @@
 //NAL3 single premise decompose
     (M --> S), X, is(S,"&"), subOf(S,X)   |-          (M --> X), (Belief:StructuralDeduction,Goal:StructuralDeduction)
     (M --> S), X, is(S,"&"), subOf(S,--X)   |-      --(M --> X), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-        (M --> S), X, is(S,"&"), subOf(S,X)   |-    --(M --> X), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
-        (M --> S), X, is(S,"&"), subOf(S,--X)   |-    (M --> X), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
+//        (M --> S), X, is(S,"&"), subOf(S,X)   |-    --(M --> X), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
+//        (M --> S), X, is(S,"&"), subOf(S,--X)   |-    (M --> X), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
       //(M --> S), X, is(S,"|"), subOf(S,X)   |-      --(M --> X), (Belief:StructuralDeductionNN)
       //(M --> S), X, is(S,"|"), subOf(S,--X)   |-      (M --> X), (Belief:StructuralDeductionNN)
       //(M --> S), X, is(S,"&"), subOf(S,X)   |-  --(M --> X), (Belief:StructuralDeductionNN)
@@ -44,8 +44,8 @@
 
     (S --> M), X, is(S,"|"), subOf(S,X)   |-         (X --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
     (S --> M), X, is(S,"|"), subOf(S,--X)   |-     --(X --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-        (S --> M), X, is(S,"|"), subOf(S,X)   |-   --(X --> M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
-        (S --> M), X, is(S,"|"), subOf(S,--X)   |-   (X --> M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
+//        (S --> M), X, is(S,"|"), subOf(S,X)   |-   --(X --> M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
+//        (S --> M), X, is(S,"|"), subOf(S,--X)   |-   (X --> M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
 
       //(S --> M), X, is(S,"&"), subOf(S,X)   |-     --(X --> M), (Belief:StructuralDeductionNN)
       //(S --> M), X, is(S,"&"), subOf(S,--X)   |-     (X --> M), (Belief:StructuralDeductionNN)

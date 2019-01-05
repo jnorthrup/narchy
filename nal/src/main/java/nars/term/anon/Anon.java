@@ -47,7 +47,7 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
     }
 
     public int uniques() {
-        return map.size();
+        return map.termCount();
     }
 
     /**
@@ -104,7 +104,7 @@ public class Anon extends TermTransform.NegObliviousTermTransform {
 
     public final Term get(Term x) {
         if (x instanceof Compound) {
-            switch (map.size()) {
+            switch (map.termCount()) {
                 case 0:
                     return x;
                 case 1:

@@ -47,17 +47,19 @@ public class BiSubterm extends TermVector {
 
     @Override
     public boolean OR(Predicate<Term> p) {
-        return p.test(x) || (x==y || p.test(y));
+        return p.test(x) || (x!=y && p.test(y));
     }
+
+    @Override
+    public boolean ORrecurse(Predicate<Term> p) {
+        return x.ORrecurse(p) || (x!=y && y.ORrecurse(p));
+    }
+
     @Override
     public boolean AND(Predicate<Term> p) {
         return p.test(x) && (x==y || p.test(y));
     }
 
-    @Override
-    public boolean ORrecurse(Predicate<Term> p) {
-        return x.ORrecurse(p) || (x==y || y.ORrecurse(p));
-    }
     @Override
     public boolean ANDrecurse(Predicate<Term> p) {
         return x.ANDrecurse(p) && (x==y || y.ANDrecurse(p));

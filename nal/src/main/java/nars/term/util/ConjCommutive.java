@@ -42,16 +42,7 @@ public enum ConjCommutive {;
                     return False;
             }
 
-            if (u.length == 2) {
-                //HACK
-                if (dt == DTERNAL && u[0].op() == CONJ && u[0].dt() == 0 && u[1].op() != CONJ)
-                    dt = 0; //promote to parallel
-                if (dt == 0 && u[0].op() == CONJ && u[0].dt() == DTERNAL) {
-                    //promote dternal component to parallel
-                    u = u.clone();
-                    u[0] = u[0].dt(0);
-                }
-            }
+
 
             if (a.unneg().op() != CONJ && b.unneg().op()!=CONJ) {
                 //fast construct for simple case, verified above to not contradict itself
@@ -79,7 +70,8 @@ public enum ConjCommutive {;
                         if (x == True) conjMerge = set(conjMerge, i, uLength);
                         break;
                     case CONJ:
-                        if (x.dt() == dt) {
+                        int xdt = x.dt();
+                        if (xdt == dt || (dt == 0 && xdt ==DTERNAL) /* promote inner DTERNAL to parallel */) {
                             conjMerge = set(conjMerge, i, uLength);
                         } else {
                             //TODO handle promotion of &&/&| as conjMerge rather than conjOther

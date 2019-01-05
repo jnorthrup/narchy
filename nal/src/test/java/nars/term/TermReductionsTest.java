@@ -452,7 +452,10 @@ public class TermReductionsTest extends NarseseTest {
     void testConjInImplicationTautology() {
 
         assertEq(Bool.True, "((x &&+2 x) ==>-2 x)");
+    }
 
+    @Test
+    void testConjInImplicationTautology2() {
         assertEq(Bool.True, "((((_1,_2)&|(_1,_3)) &&+2 ((_1,_2)&|(_1,_3))) ==>-2 ((_1,_2)&|(_1,_3)))");
     }
 

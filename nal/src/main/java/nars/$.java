@@ -476,8 +476,9 @@ public enum $ {
     /**
      * negates each entry in the array
      */
-    public static void neg(Term[] array) {
+    public static Term[] neg(Term[] array) {
         Util.map(Term::neg, array, array);
+        return array;
     }
 
     public static Atomic theAtomic(byte[] string) {

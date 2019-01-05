@@ -19,12 +19,12 @@ import org.eclipse.collections.api.set.primitive.ByteSet;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.multimap.set.UnifiedSetMultimap;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.ListIterator;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Set;
 import java.util.function.Function;
 
 import static nars.Op.CONJ;
@@ -179,8 +179,9 @@ public class Factorize {
             if (s instanceof Compound) {
                 int ii = i;
                 s.pathsTo((Term v) -> true, v -> true, (path, what) -> {
-                    //dont remap variables
-                    if (!(what instanceof Variable)) {
+
+                    //if (what.unneg().volume() > 1) { //dont remap any atomics
+                    if (!(what instanceof Variable)) { //dont remap variables
                         if (path.size() >= pathMin) {
                             if (pp[0] == null)
                                 pp[0] = UnifiedSetMultimap.newMultimap();
@@ -205,7 +206,7 @@ public class Factorize {
 
         Pair<Term, RichIterable<ObjectBytePair<Term>>> rr = r.get(0);
         ByteSet masked = rr.getTwo().collectByte(ObjectBytePair::getTwo).toSet();
-        SortedSet<Term> t = new TreeSet<>();//n - masked.size() + 1);
+        Set<Term> t = new UnifiedSet<>();//n - masked.size() + 1);
         for (byte i = 0; i < n; i++)
             if (!masked.contains(i))
                 t.add(x[i]);
@@ -231,14 +232,14 @@ public class Factorize {
 
         @Override
         protected boolean filter(Term next) {
-            return next.op() == CONJ && Tense.dtSpecial(next.dt()) && next.term().subterms().subs(x -> x instanceof Compound) > 1;
+            return next.op() == CONJ && Tense.dtSpecial(next.dt()) && next.subs(x -> x instanceof Compound) > 1;
         }
 
 
         @Override
         protected @Nullable Term newTerm(Task x) {
             Term xx = x.term();
-            Term y = applyAndNormalize(xx);
+            Term y = applyAndNormalize(xx, volMax-1);
             return y != xx ? y : null;
         }
     }

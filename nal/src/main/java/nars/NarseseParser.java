@@ -676,11 +676,9 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 return CONJ.the(XTERNAL, subs);
 
             case DISJstr:
-                subs.replaceAll(Term::neg);
-                return CONJ.the(DTERNAL, subs).neg();
+                return CONJ.the(DTERNAL, $.neg(subs.toArray(EmptyTermArray))).neg();
             case "||+-":
-                subs.replaceAll(Term::neg);
-                return CONJ.the(XTERNAL, subs).neg();
+                return CONJ.the(XTERNAL, $.neg(subs.toArray(EmptyTermArray))).neg();
 
             case "=|>":
                 return IMPL.the(0, subs);
