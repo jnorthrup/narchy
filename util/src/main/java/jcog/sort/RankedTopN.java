@@ -41,6 +41,20 @@ public class RankedTopN<X> extends TopN<Ranked<X>> {
         });
     }
 
+    @Override
+    public Ranked<X> pop() {
+        throw new UnsupportedOperationException("Use popRanked()"); //HACK
+    }
+
+    public X popRanked() {
+        Ranked<X> p = super.pop();
+        if (p == null)
+            return null;
+        X x = p.x;
+        r.put(p);
+        return x;
+    }
+
     public X[] itemsArray(IntFunction<X[]> arrayBuilder) {
         int s = size();
         return Util.map(i->i.x, arrayBuilder.apply(s), s, items);

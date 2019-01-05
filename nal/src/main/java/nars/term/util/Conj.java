@@ -1085,6 +1085,9 @@ public class Conj extends ByteAnonMap {
     }
 
     private static Term disjunctionVsNonDisjunction(Term conjUnneg, Term incoming, boolean eternal) {
+//        if (incoming.op()==CONJ)
+//            throw new WTF(incoming + " should have been decomposed further");
+
         final Term[] result = new Term[1];
         conjUnneg.eventsWhile((when, what) -> {
             if (eternal || when == 0) {
@@ -1099,7 +1102,7 @@ public class Conj extends ByteAnonMap {
                 }
             }
             return eternal || when == 0;
-        }, 0, true, true, false, 0);
+        }, 0, true, true, eternal, 0);
 
 
         if (result[0] == True) {
@@ -1124,11 +1127,24 @@ public class Conj extends ByteAnonMap {
                 return terms.conj(dt, newConj.neg(), incoming);
 
             } else {
-                Conj c = Conj.from(conjUnneg);
+                Conj c = new Conj();
+                if (eternal) c.addAuto(conjUnneg); else c.add(0, conjUnneg);
+                c.factor();
                 if (!eternal) {
-                    boolean removed = c.remove(dt, incoming);
-                    if (!removed)
-                        return True; //likely absorbed in a factored eternal component TODO check if this is always the case
+                    boolean removed;
+                    if (!(removed = c.remove(dt, incoming))) {
+                        //possibly absorbed in a factored eternal component TODO check if this is always the case
+                        if (c.eventCount() > 1 && c.eventCount(ETERNAL) > 0) {
+                            //try again after distributing to be sure:
+                            c.distribute();
+                            if (!(removed = c.remove(dt, incoming))) {
+                                return Null; //return True;
+                            }
+                        } else {
+                            return Null; //return True;
+                        }
+
+                    }
                 } else {
                     c.removeAll(incoming);
                 }
@@ -2111,8 +2127,8 @@ public class Conj extends ByteAnonMap {
             if (!x.equals(ete)) {
                 Term y = CONJ.the(x, ete);
                 if (!y.equals(x)) {
-                    byte id = termToId.get(x);
-                    termToId.remove(x);
+                    byte id = termToId.removeKeyIfAbsent(x, Byte.MIN_VALUE);
+                    assert(id!=Byte.MIN_VALUE);
                     termToId.put(y, id);
                     return y;
                 }

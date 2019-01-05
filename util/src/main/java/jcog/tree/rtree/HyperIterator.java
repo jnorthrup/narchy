@@ -1,7 +1,6 @@
 package jcog.tree.rtree;
 
 import jcog.data.pool.MetalPool;
-import jcog.pri.Ranked;
 import jcog.sort.RankedTopN;
 import jcog.sort.TopN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -56,6 +55,7 @@ public class HyperIterator<X> implements AutoCloseable {
     }
 
     @Override public final void close() {
+
         TopN.unpool(pool, plan);
     }
 
@@ -68,8 +68,7 @@ public class HyperIterator<X> implements AutoCloseable {
     private X find() {
 
         Object z;
-        while ((z = plan.pop())!=null) {
-            z = ((Ranked)z).x;
+        while ((z = plan.popRanked())!=null) {
             if (z instanceof Node) {
                 expand((Node<X>) z);
             } else {

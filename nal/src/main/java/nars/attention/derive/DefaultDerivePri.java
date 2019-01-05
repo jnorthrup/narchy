@@ -25,7 +25,7 @@ public class DefaultDerivePri implements DerivePri {
      * how important is it to retain conf (evidence).
      * leniency towards uncertain derivations
      */
-    public final FloatRange eviImportance = new FloatRange(0.5f, 0f, 1f);
+    public final FloatRange eviImportance = new FloatRange(0.75f, 0f, 1f);
 
     /** occam's razor - increase this discriminate more heavily against more complex derivations */
     public final FloatRange simplicityImportance = new FloatRange(0.75f, 0f, 8f);
@@ -63,9 +63,10 @@ public class DefaultDerivePri implements DerivePri {
         int max = d.termVolMax + 1;
 
         float weight = Math.min(1, t.voluplexity() / max);
-        float parentWeight = Math.min(1, ((d.parentVoluplexitySum / 2)/*avg*/) / max);
-        float f = (1f - Util.lerp(parentWeight,weight,parentWeight * weight));
-        return Util.lerp(simplicityImportance.floatValue(), 1f, f);
+        //float parentWeight = Math.min(1, ((d.parentVoluplexitySum / 2)/*avg*/) / max);
+        //float f = (1f - Util.lerp(parentWeight,weight,parentWeight * weight));
+        //return Util.lerp(simplicityImportance.floatValue(), 1f, f);
+        return Util.lerp(simplicityImportance.floatValue(), 1f, 1-weight);
     }
 
     float factorComplexityRelative2(Task t, Derivation d) {

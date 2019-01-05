@@ -50,9 +50,14 @@ public interface Variable extends Atomic {
     }
 
     @Override
+    default boolean unify(Term y, Unify u) {
+        return unifyForward(y, u);
+    }
+
+    @Override
     @Paper
     @Skill({"Prolog", "Unification_(computer_science)", "Negation", "Möbius_strip", "Total_order", "Recursion"})
-    default boolean unify(Term _y, Unify u) {
+    default boolean unifyForward(Term _y, Unify u) {
 
         if (equals(_y))
             return true;
@@ -64,20 +69,11 @@ public interface Variable extends Atomic {
 
         Term x = u.resolve(this);
         Term y = u.resolvePosNeg(_y);
-        if (y!=_y) {
-            if (x.equals(y))
-                return true;
-            if (x.equalsNeg(y))
-                return false;
+        if (!x.equals(this)) {
+            return x.unifyForward(y, u);
         }
-        if (x != this) {
-//            try {
-            if (!x.equals(this)) //maybe common variable equality
-                return x.unify(y, u);
-//            } catch (StackOverflowError e) {
-//                throw new WTF("stack overflow unifying variable " + x + " -> " + y + " resolved from " + _y); //TEMPORARY
-//            }
-        }
+
+
 
         if (y instanceof Variable) {
             if (!(y instanceof EllipsisMatch)) {

@@ -96,6 +96,8 @@ public interface ScalarValue {
             return x + y;
     };
 
+    FloatFloatToFloatFunction priMulUpdateFunction = (x,y)-> (x == x) ? (x * y) : Float.NaN;
+
     /** doesnt return any value so implementations may be slightly faster than priAdd(x) */
     default void priAdd(float a) {
         priUpdate(priAddUpdateFunction, a);
@@ -112,17 +114,17 @@ public interface ScalarValue {
     }
 
     default float priMult(float _y) {
-        return pri((x,y)-> (x == x) ? (x * y) : Float.NaN, _y);
+        return pri(priMulUpdateFunction, _y);
     }
 
-    /** y should be in domain (0...1) - for decaying result */
-    default float priMult(float _y, float applyIfGreaterThan) {
-        return pri((x,y)-> (x == x) ?
-                ( x > applyIfGreaterThan ? Math.max(applyIfGreaterThan, (x * y)) : x)
-                :
-                Float.NaN,
-        _y);
-    }
+//    /** y should be in domain (0...1) - for decaying result */
+//    default float priMult(float _y, float applyIfGreaterThan) {
+//        return pri((x,y)-> (x == x) ?
+//                ( x > applyIfGreaterThan ? Math.max(applyIfGreaterThan, (x * y)) : x)
+//                :
+//                Float.NaN,
+//        _y);
+//    }
 
     default float priGetAndSetZero() {
         float p = pri();

@@ -65,11 +65,18 @@
 
 //(M --> S), (M --> (&,S,A_1..n)) |- (M --> (&,A_1..n)), (Truth:DecomposePositiveNegativeNegative) = --PN
      (M --> X), (M --> S), is(S,"&"), subOf(S,X)   |- --(M --> without(S,X)), (Belief:DecomposePN)
+          //experimental unify
+          (M --> X), (N --> S), is(S,"&"), subOf(S,X), has(N,"#"),neq(M,N)   |- --unisubst((N --> without(S,X)), N, M), (Belief:DecomposePN)
+
        (M --> X), (M --> S), is(S,"&"), subOf(S,--X) |- --(M --> without(S,--X)), (Belief:DecomposeNN)
         //TODO
 
+
 //(S --> M), ((|,S,A_1..n) --> M) |- ((|,A_1..n) --> M), (Truth:DecomposePositiveNegativeNegative) = --PN
      (X --> M), (S --> M), is(S,"|"), subOf(S,X)   |-   --(without(S,X) --> M), (Belief:DecomposePN)
+           //experimental unify
+           (X --> M), (S --> N), is(S,"|"), subOf(S,X), has(N,"#"),neq(M,N)   |- --unisubst((without(S,X) --> N), N, M), (Belief:DecomposePN)
+
        (X --> M), (S --> M), is(S,"|"), subOf(S,--X) |- --(without(S,--X) --> M), (Belief:DecomposeNN)
         //TODO
 

@@ -6,9 +6,8 @@
     C, X, eventOfNeg(C,X)                     |-   conjWithout(C,--X), (Belief:StructuralDeduction)
 //    C, X, eventOfNeg(C,X)                     |- --X, (Belief:StructuralDeduction, Time:TaskSubEvent)
 
-      //C, X, eventOf(C,X),    conjParallel(C), --is(X,"#")    |-   X, (  Goal:StructuralDeduction, Time:TaskSubEventPos)
-      //C, X, eventOfNeg(C,X), conjParallel(C), --is(X,"#")    |- --X, (  Goal:StructuralDeduction, Time:TaskSubEventNeg)
-        //^ use the eventFirstOf() version below
+      C, X, eventOf(C,X),    conjParallel(C), --has(X,"#")    |-   X, (  Goal:StructuralDeduction)
+      C, X, eventOfNeg(C,X), conjParallel(C), --has(X,"#")    |- --X, (  Goal:StructuralDeduction)
 
 
 

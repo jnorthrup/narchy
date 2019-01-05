@@ -31,7 +31,6 @@ import nars.link.Activate;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -119,10 +118,6 @@ public class NAgent extends NARService implements NSense, NAct {
         this.attnReward = new AttNode($.func("reward", id) );
         attnReward.parent(attn);
 
-        //TEMPORARY assumptions
-        attnAction.boost.set(nar.priDefault(GOAL));
-        attnReward.boost.set(nar.priDefault(GOAL));
-        attnSensor.boost.set(nar.priDefault(BELIEF));
 
 
 
@@ -495,21 +490,25 @@ public class NAgent extends NARService implements NSense, NAct {
         try {
 
             int d = nar.timeResolution.intValue();
-            long now = Tense.dither(nar.time(), d);
-                       //nar.time();
+            long now = //Tense.dither(nar.time(), d);
+                       nar.time();
             long prev = this.prev;
             if (prev == ETERNAL)
                 prev = now;
             else if (now <= prev)
                 return;
 
-            prev = Math.max(prev, now - frameTrigger.dur());
+            prev = Math.max(prev, now - frameTrigger.dur()) + 1;
 
-            long next = Tense.dither(Math.max(now, frameTrigger.next(now)), d);
+            long next = //Tense.dither(Math.max(now, frameTrigger.next(now)), d);
+                        Math.max(now, frameTrigger.next(now));
 
             this.now = now;
             this.next = next;
 
+            attnAction.boost.set(nar.priDefault(GOAL) * actions.size());
+            attnReward.boost.set(nar.priDefault(GOAL) * rewards.size());
+            attnSensor.boost.set(nar.priDefault(BELIEF) * sensors.size());
             attn.update(pri.floatValue());
 
             cycle.next(this, iteration.getAndIncrement(), prev, now);

@@ -841,7 +841,9 @@ public class SortedArray<X> extends AbstractList<X> {
 
     @Override
     public final void forEach(Consumer<? super X> action) {
-        forEach(-1, action);
+        int s = size;
+        for (int i = 0; i < s; i++)
+            action.accept(items[i]);
     }
 
     public final void forEach(int n, Consumer<? super X> action) {

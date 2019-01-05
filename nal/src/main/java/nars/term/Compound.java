@@ -219,13 +219,21 @@ public interface Compound extends Term, IPair, Subterms {
      */
     @Override
     default boolean unify(/*@NotNull*/ Term y, /*@NotNull*/ Unify u) {
+        boolean x = unifyForward(y, u);
+        if (x) return true;
+
+        if (y instanceof Variable)
+            return y.unify(this, u);
+
+        return false;
+    }
+
+    @Override
+    default boolean unifyForward(Term y, Unify u) {
         if (this == y) return true;
         if (y instanceof Compound) {
             return equals(y) || (op() == y.op() && unifySubterms(y, u));
         }
-
-        if (y instanceof Variable) return y.unify(this, u);
-
         return false;
     }
 

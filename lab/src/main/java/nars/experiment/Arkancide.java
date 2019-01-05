@@ -26,7 +26,7 @@ import static spacegraph.SpaceGraph.window;
 
 public class Arkancide extends NAgentX {
 
-    static boolean numeric = true;
+    static boolean numeric = false;
     static boolean cam = true;
 
     public final FloatRange ballSpeed = new FloatRange(1.75f, 0.04f, 6f);

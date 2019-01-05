@@ -260,10 +260,15 @@ public class Remember extends AbstractTask {
         }
 
 
-        if (input.isInput())
-            remember(existing); //link and emit
-        else {
-            //next(new TaskLinkTask(existing, concept)); //just link
+//        if (input.isInput())
+//            remember(existing); //link and emit
+//        else {
+//            //next(new TaskLinkTask(existing, concept)); //just link
+//        }
+
+        if (existing!=input) {
+            remember(new TaskLinkTask(existing, concept)); //just link TODO proportionally to pri difference?
+            //TODO emit?
         }
 
 

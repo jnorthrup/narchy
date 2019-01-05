@@ -389,12 +389,16 @@ public class Evaluation {
         return eval($$(s), n);
     }
 
+    public static Set<Term> eval(Term x, NAR n) {
+        return eval(x, n::functor);
+    }
     /**
      * gathers results from one truth set, ex: +1 (true)
+     * TODO add limit
      */
-    public static Set<Term> eval(Term x, NAR n) {
+    public static Set<Term> eval(Term x, Function<Atom, Functor> resolver) {
         final Set[] yy = {null};
-        Evaluation.eval(x, n, (y) -> {
+        Evaluation.eval(x, resolver, (y) -> {
             if (yy[0] == null) {
                 yy[0] = new UnifiedSet<>(1);
             }

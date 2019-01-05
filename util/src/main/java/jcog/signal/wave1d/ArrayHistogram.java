@@ -1,18 +1,18 @@
 package jcog.signal.wave1d;
 
 import jcog.Util;
-import jcog.signal.tensor.ArrayTensor;
+import jcog.signal.tensor.AtomicArrayTensor;
 
-import java.util.Arrays;
 import java.util.Random;
 
 /** dead-simple fixed range continuous histogram with fixed # and size of bins. supports PDF sampling */
-public class ArrayHistogram extends ArrayTensor {
+public class ArrayHistogram extends AtomicArrayTensor /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
-    public float rangeMin;
-    public float rangeMax;
+    public volatile float rangeMin;
+    public volatile float rangeMax;
 
-    public float mass = 0;
+    //TODO use field updater
+    public volatile float mass = 0;
 
     public ArrayHistogram(float min, float max, int bins) {
         super(bins);
@@ -39,14 +39,18 @@ public class ArrayHistogram extends ArrayTensor {
     }
 
     public void clear() {
-        Arrays.fill(data, 0);
+        fill(0);
         mass = 0;
     }
 
     public void add(float value, float weight) {
-        int bin = Util.bin((value-rangeMin)/(rangeMax-rangeMin), bins());
-        data[bin] += weight;
+        addWithoutSettingMass(value, weight);
         mass += weight;
+    }
+
+    public void addWithoutSettingMass(float value, float weight) {
+        int bin = Util.bin((value-rangeMin)/(rangeMax-rangeMin), bins());
+        add(weight, bin);
     }
 
     /** TODO use the rng to generate one 64-bit or one 32-bit integer and use half of its bits for each random value needed */
@@ -64,12 +68,12 @@ public class ArrayHistogram extends ArrayTensor {
 
         if (direction) {
             for (i = n - 1; (i >= 0); ) //downward
-                if ((f -= data[i--]) < 0)
+                if ((f -= getAt(i--)) < 0)
                     break;
             ii = i + 0.5f;
         } else {
             for (i = 0; i < n; ) //upward
-                if ((f -= data[i++]) < 0)
+                if ((f -= getAt(i++)) < 0)
                     break;
             ii = i - 0.5f;
         }

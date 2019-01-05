@@ -38,7 +38,7 @@ public class BagView<X extends Prioritized> extends TabMenu {
 
                             return DurSurface.get(budgetChart, nar, budgetChart::update);
                         },
-                        "histo", () -> bagHistogram(bag::iterator, 10, nar),
+                        "histo", () -> bagHistogram(bag::iterator, 20, nar),
                         "treechart", () -> {
                             BagChart<X> b = new BagChart<>(bag, (Graph2D.NodeVis<X> n) -> {
                                 Prioritized p = n.id;

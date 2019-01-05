@@ -92,6 +92,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return h;
     }
 
+    static int hash(Term[] term) {
+        return hash(term, term.length);
+    }
+
     static int hash(Term[] term, int n) {
         int h = 1;
         for (int i = 0; i < n; i++)

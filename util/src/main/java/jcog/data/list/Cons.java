@@ -16,7 +16,7 @@ public class Cons<T> extends AbstractList<T> {
     public final T tail;
 
     public static <T> List<T> the(List<T> f, T r) {
-        if (f.isEmpty()) return new FasterList(1).with(r);
+        if (f.isEmpty()) return List.of(r); //new FasterList(1).with(r);
         else return new Cons(f, r);
     }
 

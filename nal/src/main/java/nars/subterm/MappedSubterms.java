@@ -1,11 +1,11 @@
 package nars.subterm;
 
 import com.google.common.io.ByteArrayDataOutput;
+import jcog.WTF;
 import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.subterm.util.TermMetadata;
 import nars.term.Term;
-import nars.term.util.TermException;
 
 import java.util.Arrays;
 import java.util.function.Predicate;
@@ -29,12 +29,12 @@ abstract public class MappedSubterms extends ProxySubterms {
             if (neg) xi = xi.unneg();
 
             int mi = base.indexOf(xi)+1;
-            if (mi == -1)
-                throw new TermException(xi + "not found in " + base);
+            if (mi <= 0)
+                throw new WTF(xi + "not found in " + base);
 
             m[i] = (byte) (neg ? -mi : mi);
         }
-        return new ArrayMappedSubterms(base, m);
+        return new ArrayMappedSubterms(base, m, Subterms.hash(target));
     }
 
     /** make sure to calculate hash code in implementation's constructor */
@@ -42,19 +42,26 @@ abstract public class MappedSubterms extends ProxySubterms {
         super(base);
     }
 
-    public static MappedSubterms reverse(Subterms x) {
+    public static Subterms reverse(Subterms x) {
+        int n = x.subs();
+        if (n <= 1)
+            return x;
+
         if (x instanceof ArrayMappedSubterms) {
             ArrayMappedSubterms mx = ((ArrayMappedSubterms) x);
             //TODO test if the array is already perfectly reversed without cloning then just undo
             byte[] r = mx.map.clone();
             ArrayUtils.reverse(r);
-            return new ArrayMappedSubterms(mx.ref, r);
-        }
+            if (Arrays.equals(mx.map, r))
+                return x; //palindrome or repeats
 
-        byte[] m = new byte[x.subs()];
-        for (byte k = 0, i = (byte) (m.length - 1); i >= 0; i--, k++)
-            m[k] = (byte) (i+1);
-        return new ArrayMappedSubterms(x, m);
+            return new ArrayMappedSubterms(mx.ref, r);
+        } else {
+            byte[] m = new byte[n];
+            for (byte k = 0, i = (byte) (m.length - 1); i >= 0; i--, k++)
+                m[k] = (byte) (i + 1);
+            return new ArrayMappedSubterms(x, m);
+        }
     }
 
     private static final class ArrayMappedSubterms extends MappedSubterms {
@@ -64,10 +71,15 @@ abstract public class MappedSubterms extends ProxySubterms {
         final int hash;
 
         private ArrayMappedSubterms(Subterms base, byte[] map) {
-            super(base);
-            assert(base.subs()==map.length);
+            super(base); assert(base.subs()==map.length);
             this.map = map;
             this.hash = Subterms.hash(this);
+        }
+
+        private ArrayMappedSubterms(Subterms base, byte[] map, int hash) {
+            super(base); assert(base.subs()==map.length);
+            this.map = map;
+            this.hash = hash;
         }
 
         /** @see AnonVector.appendTo */
@@ -112,29 +124,21 @@ abstract public class MappedSubterms extends ProxySubterms {
             return ((Subterms)obj).equalTerms(this);
         }
 
-        @Override
-        public Subterms reversed() {
-            byte[] r = map.clone();
-            ArrayUtils.reverse(r);
-            if (Arrays.equals(r, map)) //palindrome?
-                return this;
-            return new ArrayMappedSubterms(ref, r);
-        }
     }
 
     @Override
     public boolean contains(Term t) {
-        return ref.contains(t);
+        return !hasNegs() ? ref.contains(t) : super.contains(t);
     }
 
     @Override
     public boolean containsRecursively(Term x, boolean root, Predicate<Term> subTermOf) {
-        return ref.containsRecursively(x, root, subTermOf);
+        return !hasNegs() ? ref.containsRecursively(x, root, subTermOf) : super.containsRecursively(x, root, subTermOf);
     }
 
     @Override
     public boolean has(int structuralVector, boolean anyOrAll) {
-        return ref.has(structuralVector,anyOrAll);
+        return !hasNegs() ? ref.has(structuralVector,anyOrAll) : super.has(structuralVector, anyOrAll);
     }
 
     @Override
@@ -174,6 +178,11 @@ abstract public class MappedSubterms extends ProxySubterms {
     }
 
     @Override
+    public int structureSurface() {
+        return !hasNegs() ? ref.structureSurface() : super.structureSurface();
+    }
+
+    @Override
     public boolean these() {
         return ref.these();
     }
@@ -194,7 +203,6 @@ abstract public class MappedSubterms extends ProxySubterms {
 
     protected boolean hasNegs() {
         int s = subs();
-        int n = 0;
         for (int i = 0; i < s; i++)
             if (subMap(i) < 0)
                 return true;

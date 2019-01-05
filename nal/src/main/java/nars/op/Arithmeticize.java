@@ -8,11 +8,14 @@ import jcog.decide.Roulette;
 import jcog.memoize.HijackMemoize;
 import jcog.memoize.Memoizers;
 import nars.*;
+import nars.eval.Evaluation;
+import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
+import nars.term.atom.Atom;
 import nars.term.atom.Int;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
@@ -23,7 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.function.Function;
 
 import static nars.Op.CONJ;
@@ -47,6 +52,12 @@ public class Arithmeticize {
     private static final int minInts = 2;
 
     final static Variable V = $.varDep("A_");
+
+    private static final Function<Atom, Functor> ArithFunctors = Map.of(
+        MathFunc.add.term, MathFunc.add,
+        MathFunc.mul.term, MathFunc.mul,
+        Equal.the, Equal.the
+    )::get;
 
     public static class ArithmeticIntroduction extends Introduction {
 
@@ -97,6 +108,30 @@ public class Arithmeticize {
         if (anon == null && !x.hasAny(INT))
             return x;
 
+        int cdt = eternal ? DTERNAL : 0;
+
+        //pre-evaluate using the arith operators; ignore other operators (unless they are already present, ex: member)
+        //Term xx = Evaluation.solveFirst(x, ArithFunctors);
+        Set<Term> xx = Evaluation.eval(x, ArithFunctors);
+        int xxs = xx.size();
+
+        if (xxs == 1) {
+            Term xxx = xx.iterator().next();
+            if (!xxx.hasAny(INT))
+                return x;
+            else
+                x = xxx;
+        } else if (xxs > 1) {
+            Term xxx = CONJ.the(cdt, xx);
+            if (!xxx.hasAny(INT))
+                return x;
+            else
+                x = xxx;
+        }
+//        if (!x.equals(xx))
+//            System.out.println("pre-eval");
+
+
 
         IntHashSet ints = new IntHashSet(4);
         x.recurseTerms(t->t.hasAny(Op.INT), t -> {
@@ -141,7 +176,7 @@ public class Arithmeticize {
                 //SIM.the(baseTerm, V);
                 $.func(Equal.the, Terms.sorted(baseTerm, V));
 
-        Term y = CONJ.the(equality, eternal ? DTERNAL : 0, yy);
+        Term y = CONJ.the(equality, cdt, yy);
         if (y.op()!=CONJ) return null;
         if (y.volume() > volMax) return null;
 

@@ -221,7 +221,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 //                min = Math.min(min, p);
 //                max = Math.max(max, p);
 
-                hist.add(i, p);
+                hist.addWithoutSettingMass(i,p);
 
                 m += p;
                 if (p - above >= ScalarValue.EPSILON/2)
@@ -238,7 +238,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         }
 
         this.hist = hist;
-        ArrayBag.MASS.set(this, m);
+        ArrayBag.MASS.set(this, hist.mass = m);
 
         while (s > c) {
             trash.add(this.items.removeLast());
@@ -324,10 +324,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         if (size == 1 || rng == null)
             return 0;
         else {
-            if (hist == null || hist.mass < Float.MIN_NORMAL)
+            ArrayHistogram h = this.hist;
+            if (h == null || h.mass < ScalarValue.EPSILON*size)
                 return rng.nextInt(size);
             else {
-                int index = (int)hist.sample(rng);
+                int index = (int) h.sample(rng);
                 if (index >= size)
                     index = size-1;
                 return index;
