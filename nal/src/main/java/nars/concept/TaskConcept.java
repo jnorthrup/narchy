@@ -7,7 +7,7 @@ import nars.Param;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
 import nars.control.MetaGoal;
-import nars.control.proto.Remember;
+import nars.control.op.Remember;
 import nars.link.TermLinker;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
-import static nars.truth.func.TruthFunctions.w2cSafe;
 
 public class TaskConcept extends NodeConcept  {
 
@@ -101,19 +100,21 @@ public class TaskConcept extends NodeConcept  {
     public void add(Remember t, NAR n) {
         Task ti = t.input;
         if (ti!=null) {
-            if (Param.DEBUG_EXTRA)
-                assert (ti.term().concept().equals(term));
+            assert !Param.DEBUG_EXTRA || (ti.term().concept().equals(term));
             table(ti.punc()).add(t, n);
         }
     }
 
     public void value(Task t, NAR n) {
+
+        n.emotion.perceive(t);
+
         byte punc = t.punc();
-        if (punc == BELIEF || punc == GOAL)
+        if (punc == BELIEF || punc == GOAL) {
+            long now = n.time();
             (punc == BELIEF ? MetaGoal.Believe : MetaGoal.Desire)
-                    .learn(t.cause(), w2cSafe(TruthIntegration.evi(t)), n.causes);
-
-
+                    .learn(t.cause(), TruthIntegration.value(t, now, n.dur()), n.causes);
+        }
     }
 
 

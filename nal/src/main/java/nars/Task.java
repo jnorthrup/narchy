@@ -6,7 +6,7 @@ import jcog.data.list.FasterList;
 import jcog.math.Longerval;
 import jcog.pri.UnitPrioritizable;
 import nars.control.Perceive;
-import nars.control.proto.Remember;
+import nars.control.op.Remember;
 import nars.eval.Evaluation;
 import nars.eval.Evaluator;
 import nars.subterm.Subterms;

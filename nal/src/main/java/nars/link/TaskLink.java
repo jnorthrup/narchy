@@ -28,6 +28,10 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task>, Deletea
         return y;
     }
 
+    static GeneralTaskLink the(Task task, boolean generify, boolean eternalize, float pri, NAR n) {
+        return new TaskLink.GeneralTaskLink(Tasklike.seed(task, generify, eternalize, n), pri);
+    }
+
     /** creates a copy, with a specific priority */
     @Nullable TaskLink clone(float pri);
 
@@ -79,10 +83,6 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task>, Deletea
 
                 overflow.overflow(b, o.floatValue(), headRoom);
             }
-//            if (yy != xx && yy != null) {
-//
-//
-//            }
         } else {
             b.putAsync(x);
         }

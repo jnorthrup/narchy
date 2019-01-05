@@ -9,7 +9,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.control.CauseMerge;
-import nars.control.proto.Remember;
+import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.task.NALTask;
 import nars.task.Revision;

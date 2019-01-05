@@ -7,7 +7,6 @@ import nars.Task;
 import nars.attention.DerivePri;
 import nars.derive.Derivation;
 import nars.truth.Truth;
-import nars.truth.polation.TruthIntegration;
 
 import static nars.truth.func.TruthFunctions.w2cSafe;
 
@@ -43,7 +42,7 @@ public class DefaultDerivePri implements DerivePri {
 
         if (f==f) {
             //belief or goal:
-            factor *= factorEvi(TruthIntegration.evi(t), d);
+            factor *= factorEvi(e, d);
             factor *= factorPolarity(f);
         } else {
             factor *= factor; //re-apply for single-premise case

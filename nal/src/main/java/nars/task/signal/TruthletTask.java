@@ -51,7 +51,7 @@ public class TruthletTask extends SignalTask {
     }
 
     private void update(Concept c, Consumer<TruthletTask> t) {
-        ((BeliefTables)c.table(punc)).tableFirst(TemporalBeliefTable.class).update(this, ()-> t.accept(TruthletTask.this));
+        ((BeliefTables)c.table(punc())).tableFirst(TemporalBeliefTable.class).update(this, ()-> t.accept(TruthletTask.this));
     }
 
 

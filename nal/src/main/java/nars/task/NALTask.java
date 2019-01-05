@@ -12,7 +12,6 @@ import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.truth.Truthed;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -30,19 +29,19 @@ public class NALTask extends UnitPri implements Task {
 
     private final Term term;
     private final Truth truth;
-    public final byte punc;
+    private final byte punc;
     private final int hash;
     private final long creation, start, end;
     /*@Stable*/ private final long[] stamp;
-    private volatile short[] cause = ArrayUtils.EMPTY_SHORT_ARRAY;
+    private /*volatile*/ short[] cause = ArrayUtils.EMPTY_SHORT_ARRAY;
 
     private volatile boolean cyclic;
 
-    public NALTask(Term c, Task parent, Truth t) throws TaskException {
-        this(c, parent.punc(), t, parent.creation(), parent.start(), parent.end(), parent.stamp());
+    public NALTask(Task parent, Term newContent, @Nullable Truth newTruth) throws TaskException {
+        this(newContent, parent.punc(), newTruth, parent.creation(), parent.start(), parent.end(), parent.stamp());
     }
 
-    public NALTask(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws TaskException {
+    public NALTask(Term term, byte punc, @Nullable Truth truth, long creation, long start, long end, long[] stamp) throws TaskException {
         super();
 
         if (!term.op().taskable)
@@ -51,33 +50,33 @@ public class NALTask extends UnitPri implements Task {
         if (truth == null ^ (!((punc == BELIEF) || (punc == GOAL))))
             throw new TaskException(term, "null truth");
 
-//        if (truth!=null && truth.conf() < Param.TRUTH_EPSILON)
-//            throw new Truth.TruthException("evidence underflow: conf=", truth.conf());
-
-        if (Param.DEBUG) {
-            if (!Stamp.validStamp(stamp))
-                throw new TaskException(term, "invalid stamp: " + Arrays.toString(stamp));
-        }
-
         if ((start == ETERNAL && end != ETERNAL) ||
                 (start > end) ||
                 (start == TIMELESS) || (end == TIMELESS)
-        )
+        ) {
             throw new RuntimeException("start=" + start + ", end=" + end + " is invalid task occurrence time");
+        }
 
-        if (Param.DEBUG_EXTRA)
+//        if (truth!=null && truth.conf() < Param.TRUTH_EPSILON)
+//            throw new Truth.TruthException("evidence underflow: conf=", truth.conf());
+
+        if (Param.DEBUG_EXTRA) {
+            if (!Stamp.validStamp(stamp))
+                throw new TaskException(term, "invalid stamp: " + Arrays.toString(stamp));
+
             Task.taskConceptTerm(term, punc, false);
+        }
+
 
         this.term = term;
-        this.truth = truth != null ? /*Truth.the*/(truth.truth()) : null;
+        this.truth = truth;
         this.punc = punc;
         this.start = start;
         this.end = end;
+        this.creation = creation;
         this.stamp = stamp;
 
         this.hash = hashCalculate();
-
-        this.creation = creation;
 
     }
 
@@ -124,9 +123,6 @@ public class NALTask extends UnitPri implements Task {
         return causeMerge(incoming.cause(), merge);
     }
 
-    public final Task priCauseMerge(Task incoming) {
-        return priCauseMerge(incoming, CauseMerge.Append);
-    }
 
     public Task causeMerge(short[] c, CauseMerge merge) {
         synchronized (this) {
@@ -229,7 +225,7 @@ public class NALTask extends UnitPri implements Task {
 
         private final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
 
-        NALTaskX(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws TaskException {
+        NALTaskX(Term term, byte punc, @Nullable Truth truth, long creation, long start, long end, long[] stamp) throws TaskException {
             super(term, punc, truth, creation, start, end, stamp);
         }
 

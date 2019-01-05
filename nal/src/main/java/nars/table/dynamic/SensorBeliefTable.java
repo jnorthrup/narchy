@@ -3,7 +3,7 @@ package nars.table.dynamic;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.control.proto.Remember;
+import nars.control.op.Remember;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.term.Term;
 

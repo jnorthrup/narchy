@@ -2,7 +2,7 @@ package nars.concept.action.curiosity;
 
 import nars.NAR;
 import nars.Task;
-import nars.control.proto.Remember;
+import nars.control.op.Remember;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;

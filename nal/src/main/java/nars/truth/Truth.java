@@ -133,13 +133,25 @@ public interface Truth extends Truthed {
             return a.evi() >= b.evi() ? a : b;
     }
     @Nullable
-    static Task stronger(@Nullable Task a, @Nullable Task b) {
+    static Task stronger(@Nullable Task a, @Nullable Task b, NAR nar) {
         if (a == null)
             return b;
         else if (b == null || a.equals(b))
             return a;
-        else
-            return TruthIntegration.evi(a) >= TruthIntegration.evi(b) ? a : b;
+        else {
+            boolean ae = a.isEternal();
+            boolean be = b.isEternal();
+            if (ae && be) {
+                return a.evi() >= b.evi() ? a : b;
+            } else if (ae || be) {
+                //compare eternal to temporal with respect to current time
+                long now = nar.time();
+                int dur = nar.dur();
+                return TruthIntegration.value(a, now, dur) >= TruthIntegration.value(a, now, dur) ? a : b;
+            } else {
+                return TruthIntegration.evi(a) >= TruthIntegration.evi(b) ? a : b;
+            }
+        }
     }
 
 //    static <T extends Truthed> T weaker(@Nullable T a, @Nullable T b) {

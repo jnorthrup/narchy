@@ -10,7 +10,7 @@ import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.control.proto.Remember;
+import nars.control.op.Remember;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.table.EmptyBeliefTable;

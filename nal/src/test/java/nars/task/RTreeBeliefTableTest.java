@@ -6,7 +6,7 @@ import jcog.signal.meter.event.CSVOutput;
 import jcog.tree.rtree.HyperIterator;
 import nars.*;
 import nars.concept.TaskConcept;
-import nars.control.proto.Remember;
+import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.eternal.EternalTable;

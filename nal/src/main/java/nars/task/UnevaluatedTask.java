@@ -19,7 +19,7 @@ public class UnevaluatedTask extends NALTask {
     }
 
     public UnevaluatedTask(Term c, Task parent, Truth t) throws TaskException {
-        super(c, parent, t);
+        super(parent, c, t);
     }
 
 //    @Override

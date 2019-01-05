@@ -5,7 +5,7 @@ import nars.NAR;
 import nars.Param;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
-import nars.control.proto.Remember;
+import nars.control.op.Remember;
 import nars.table.BeliefTables;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.task.util.Answer;

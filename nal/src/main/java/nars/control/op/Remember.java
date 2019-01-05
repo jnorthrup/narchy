@@ -1,6 +1,9 @@
-package nars.control.proto;
+package nars.control.op;
 
+import jcog.TODO;
 import jcog.data.list.FasterList;
+import jcog.pri.ScalarValue;
+import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -8,6 +11,7 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.CauseMerge;
+import nars.link.TaskLink;
 import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.NALTask;
@@ -192,8 +196,7 @@ public class Remember extends AbstractTask {
      * attempt to insert into the concept's belief table
      */
     protected void add(NAR n) {
-        //if (!(input instanceof DynTruth.DynamicTruthTask))
-            concept.add(this, n);
+       concept.add(this, n);
     }
 
 
@@ -256,9 +259,6 @@ public class Remember extends AbstractTask {
             if (existing instanceof NALTask)
                 ((NALTask) existing).priCauseMerge(input, CauseMerge.AppendUnique);
 
-            forget(input);
-        }
-
 
 //        if (input.isInput())
 //            remember(existing); //link and emit
@@ -266,18 +266,32 @@ public class Remember extends AbstractTask {
 //            //next(new TaskLinkTask(existing, concept)); //just link
 //        }
 
-        if (existing!=input) {
-            remember(new TaskLinkTask(existing, concept)); //just link TODO proportionally to pri difference?
-            //TODO emit?
+            //remember(new TaskLinkTask(existing, concept)); //just link TODO proportionally to pri difference?
+            //2. update tasklink
+            float pri;
+            if (Param.tasklinkMerge == PriMerge.max)
+                pri = Math.max(existing.priElseZero(), input.priElseZero());
+            else if (Param.tasklinkMerge == PriMerge.plus)
+                pri = input.priElseZero() - existing.priElseZero();
+            else
+                throw new TODO();
+            if (pri > ScalarValue.EPSILON) {
+                if (concept == null)
+                    throw new TODO();
+                TaskLink.link(
+                        TaskLink.the(existing, true, true,
+                                pri
+                                , null),
+                        concept);
+            }
+
+            forget(input);
+
         }
 
 
     }
 
-    public void next(ITask n) {
-        if (n != null)
-            remembered.add(n);
-    }
 
     public final void reject() {
         forget(input);
@@ -286,13 +300,12 @@ public class Remember extends AbstractTask {
 
     private static boolean add(ITask x, FasterList f) {
         if (x != null) {
-            //if (!f.isEmpty()) {
-                if (f.containsInstance(x))
-                    return false;
-            //}
-
-            f.add(x);
-            return true;
+            if (!f.containsInstance(x)) {
+                f.add(x);
+                return true;
+            } else {
+                return false;
+            }
         }
         return false;
     }

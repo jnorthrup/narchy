@@ -363,7 +363,7 @@ public final class Answer implements AutoCloseable {
         if (root.isDeleted())
             return dyn; //which could have occurred by now
 
-        return Truth.stronger(root, dyn);
+        return Truth.stronger(root, dyn, nar);
     }
 
     /**

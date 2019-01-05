@@ -1,6 +1,7 @@
 package nars.truth.polation;
 
 
+import jcog.WTF;
 import nars.Task;
 
 import static nars.time.Tense.ETERNAL;
@@ -36,7 +37,8 @@ public class TruthIntegration {
     public static float evi(Task t, long qStart, long qEnd, long dur) {
         if (qStart == qEnd) {
             if (qStart == ETERNAL) {
-                return t.isEternal() ? t.evi() : t.eviEternalized();
+                //return t.isEternal() ? t.evi() : t.eviEternalized();
+                throw new WTF();
             } else {
                 return t.evi(qStart, dur);
             }
@@ -93,6 +95,11 @@ public class TruthIntegration {
             return t.eviIntegTrapezoidal(dur, qStart, tEnd, qEnd);
         }
 
+    }
+
+    public static float value(Task t, long when, int dur) {
+        return evi(t, when, when, dur);
+                // * t.range(); <- wont work for eternal tasks
     }
 
 //    private static final class TempLongArrayList extends LongArrayList {

@@ -2,6 +2,7 @@ package nars.truth.polation;
 
 import jcog.Paper;
 import jcog.Skill;
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import nars.NAR;
@@ -80,13 +81,23 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
             Task task = tc.task;
 
-            if ((tc.evi = TruthIntegration.evi(task, start, end, dur)) >= eviMin) {
+            if ((tc.evi = evi(task)) >= eviMin) {
                 tc.freq = task.freq(start, end);
             } else
                 return null;
         }
 
         return tc.evi >= eviMin ? tc : null;
+    }
+
+    protected float evi(Task task) {
+        if (start == ETERNAL) {
+            if (!task.isEternal())
+                throw new WTF("eternal truthpolation requires eternal tasks");
+            return task.evi();
+        } else {
+            return TruthIntegration.evi(task, start, end, dur);
+        }
     }
 
     public final TruthPolation filtered() {

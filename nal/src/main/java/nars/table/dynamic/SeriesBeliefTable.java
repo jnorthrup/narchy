@@ -6,7 +6,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
-import nars.control.proto.Remember;
+import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;

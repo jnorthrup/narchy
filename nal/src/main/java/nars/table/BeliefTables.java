@@ -5,7 +5,7 @@ import jcog.data.list.LimitedFasterList;
 import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.Task;
-import nars.control.proto.Remember;
+import nars.control.op.Remember;
 import nars.task.util.Answer;
 import org.jetbrains.annotations.Nullable;
 

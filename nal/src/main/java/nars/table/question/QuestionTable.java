@@ -2,7 +2,7 @@ package nars.table.question;
 
 import nars.NAR;
 import nars.Task;
-import nars.control.proto.Remember;
+import nars.control.op.Remember;
 import nars.table.TaskTable;
 import nars.task.util.Answer;
 import nars.term.Term;

@@ -8,7 +8,7 @@ import jcog.tree.rtree.*;
 import jcog.tree.rtree.split.AxialSplitLeaf;
 import nars.NAR;
 import nars.Task;
-import nars.control.proto.Remember;
+import nars.control.op.Remember;
 import nars.task.Revision;
 import nars.task.TaskProxy;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;

@@ -29,7 +29,7 @@ import nars.control.Cause;
 import nars.control.MetaGoal;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
-import nars.control.proto.Remember;
+import nars.control.op.Remember;
 import nars.eval.Facts;
 import nars.exe.Exec;
 import nars.exe.NARLoop;

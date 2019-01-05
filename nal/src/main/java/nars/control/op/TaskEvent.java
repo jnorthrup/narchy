@@ -1,4 +1,4 @@
-package nars.control.proto;
+package nars.control.op;
 
 import nars.NAR;
 import nars.Task;

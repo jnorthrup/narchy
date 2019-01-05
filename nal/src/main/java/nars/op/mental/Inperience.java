@@ -6,6 +6,7 @@ import jcog.math.FloatRange;
 import nars.*;
 import nars.bag.leak.TaskLeakTransform;
 import nars.concept.Concept;
+import nars.control.CauseMerge;
 import nars.task.signal.SignalTask;
 import nars.term.Compound;
 import nars.term.Functor;
@@ -344,7 +345,7 @@ abstract public class Inperience extends TaskLeakTransform {
             );
         });
         if (y!=null) {
-            y.priCauseMerge(x);
+            y.priCauseMerge(x, CauseMerge.Append);
 
             if (Param.DEBUG)
                 y.log("Inperience");

@@ -6,7 +6,7 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.Operator;
-import nars.control.proto.TaskEvent;
+import nars.control.op.TaskEvent;
 import nars.task.ITask;
 import nars.term.Functor;
 import nars.term.Term;

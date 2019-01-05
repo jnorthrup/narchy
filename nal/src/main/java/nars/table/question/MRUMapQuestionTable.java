@@ -5,7 +5,7 @@ import jcog.data.iterator.ArrayIterator;
 import jcog.data.map.MRUMap;
 import nars.NAR;
 import nars.Task;
-import nars.control.proto.Remember;
+import nars.control.op.Remember;
 import nars.task.util.Answer;
 
 import java.util.function.Consumer;

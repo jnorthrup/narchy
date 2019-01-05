@@ -141,7 +141,7 @@ public class Taskify extends AbstractPred<Derivation> {
 
         float priority =
                 t.isBeliefOrGoal() ?
-                        d.deriver.pri.pri(t, tru.freq(), TruthIntegration.evi(t), d) :
+                        d.deriver.pri.pri(t, tru.freq(), TruthIntegration.value(t, d.time, d.dur), d) :
                         d.deriver.pri.pri(t, Float.NaN, Float.NaN, d);
 
         if (priority != priority) {

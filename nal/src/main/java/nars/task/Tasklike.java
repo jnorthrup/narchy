@@ -51,16 +51,13 @@ public final class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
 
     public static Tasklike seed(Task t, boolean conceptRoot, boolean eternalize, NAR n) {
 
-        long when = t.isEternal() ? ETERNAL : Tense.dither(
-                eternalize ? ETERNAL : t.mid()
-                , n);
+        long when = eternalize || t.isEternal() ? ETERNAL : Tense.dither(t.mid(), n);
 
-        Term u = conceptRoot ? t.term().concept() : t.term();
-
-
+        Term tt = t.term();
+        Term ttt = conceptRoot ? tt.concept() : tt;
 
         return seed(
-                u,
+                ttt,
 //                        .negIf(
 //                                polarizeBeliefsAndGoals && t.isBeliefOrGoal() && t.isNegative()
 //                        ),

@@ -193,9 +193,10 @@ public class NARS {
                         ),
                         //tasklinks
                         curve(Concept::volume,
-                                1, 64,
-                                24,24,
-                                48,8
+                                1, 128,
+                                2,64,
+                                16,32,
+                                32,8
                         ))
         );
 

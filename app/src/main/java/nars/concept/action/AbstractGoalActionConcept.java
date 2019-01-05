@@ -7,7 +7,7 @@ import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.CuriosityGoalTable;
 import nars.concept.action.curiosity.CuriosityTask;
 import nars.control.channel.CauseChannel;
-import nars.control.proto.Remember;
+import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;

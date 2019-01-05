@@ -222,7 +222,7 @@ public class Derivation extends PreDerivation {
     public transient short[] parentCause;
     public transient boolean concSingle;
     public transient float parentVoluplexitySum;
-    public transient float taskEvi, beliefEvi;
+
     public transient long[] concOcc;
     public transient Truth concTruth;
     public transient byte concPunc;
@@ -230,6 +230,8 @@ public class Derivation extends PreDerivation {
     public transient Task _task, _belief;
 
     public transient int dur;
+
+    private transient float taskEvi, beliefEvi;
 
     /**
      * if using this, must set: nar, index, random, DerivationBudgeting
@@ -654,10 +656,10 @@ public class Derivation extends PreDerivation {
     public float parentEvi() {
 
         if (taskEvi!=taskEvi) {
-            this.taskEvi = taskTruth != null ? TruthIntegration.evi(_task) : 0;
+            this.taskEvi = taskTruth != null ? TruthIntegration.value(_task, time, dur) : 0;
         }
         if (beliefEvi!=beliefEvi) {
-            this.beliefEvi = _belief != null ? TruthIntegration.evi(_belief) : 0;
+            this.beliefEvi = _belief != null ? TruthIntegration.value(_belief, time, dur) : 0;
         }
         return concSingle ? taskEvi : (taskEvi + beliefEvi);
     }
