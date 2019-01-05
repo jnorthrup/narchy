@@ -98,7 +98,7 @@ class DynamicConjTest {
             assertEquals(2, n.concept("(a:x && a:y)").beliefs().size());
 
             Task ttNow = n.matchBelief($("(a:x &| a:y)"), now);
-            assertTrue(ttNow.toString().contains("((x-->a)&|(y-->a)). 0 %.32;.93%"), ttNow.toString());
+            assertTrue(ttNow.toString().contains("((x-->a)&|(y-->a)). 0 %.19;.96%"), ttNow.toString());
         }
 
 
@@ -106,7 +106,7 @@ class DynamicConjTest {
         assertTrue($.t(0.32f, 0.82f).equalsIn(tAfter, n), () -> tAfter.toString());
 
         Truth tLater = n.beliefTruth($("(a:x &| a:y)"), now + 5);
-        assertTrue($.t(0.32f, 0.69f).equalsIn(tLater, n), () -> tLater.toString());
+        assertTrue($.t(0.19f, 0.79f).equalsIn(tLater, n), () -> tLater.toString());
     }
 
     @Test
@@ -376,6 +376,7 @@ class DynamicConjTest {
         {
             Term xyz = $("((x && (y &&+2 z))=|>a)");
             Task t = n.answer(xyz, BELIEF, 0);
+            assertNotNull(t);
             assertEquals(xyz, t.term());
         }
     }

@@ -32,7 +32,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     protected static final int DEFAULT_SIZE = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
     protected static final int maxInternedVolumeDefault = 18;
-    protected static final boolean deepDefault = true;
+    protected static final boolean deepDefault = false;
 
     /** memory-saving */
     private static final boolean sortCanonically = true;
@@ -172,16 +172,15 @@ public class InterningTermBuilder extends HeapTermBuilder {
             } else {
                 return subsInterned(subterms, t);
             }
+        } else {
+            return theSubterms(t);
         }
-
-
-        return theSubterms(t);
     }
 
 
     public Subterms theSubterms(Term... t) {
         if (deep)
-            resolve(t);
+            t = resolve(t); //HACK changing the array may disrupt expected sorted order
 
         return super.theSubterms(false, t);
     }
@@ -191,12 +190,13 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return RecycledDynBytes.get();
     }
 
-    private void resolve(Term[] t) {
+    private Term[] resolve(Term[] t) {
         for (int i = 0, tLength = t.length; i < tLength; i++) {
             Term y = resolve(t[i]);
             if (y != null)
                 t[i] = y;
         }
+        return t; //HACK
     }
 
     @Nullable private Term resolve(Term x) {
@@ -252,7 +252,14 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
             //quick preparations to reduce # of unique entries
 
-            if (!(((op==INH || op ==SIM) && (dt!=DTERNAL || subject.equals(predicate))))) {
+            if (!((op==INH || op ==SIM) && (dt!=DTERNAL || subject.equals(predicate)))) {
+                if (deep) {
+                    Term sr = resolve(subject);
+                    if (sr != null) subject = sr;
+                    Term pr = resolve(predicate);
+                    if (pr != null) predicate = pr;
+                }
+
                 switch (op) {
                     case SIM:
                         //pre-sort by swapping to avoid saving redundant mappings
@@ -269,12 +276,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
                         break;
                 }
 
-                if (deep) {
-                    Term sr = resolve(subject);
-                    if (sr != null) subject = sr;
-                    Term pr = resolve(predicate);
-                    if (pr != null) predicate = pr;
-                }
+
 
                 return this.terms[op.id].apply(InternedCompound.get(op, dt, subject, predicate)).negIf(negate);
             }
@@ -321,7 +323,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             }
 
             if (deep)
-                resolve(u);
+                u = resolve(u);
 
             if (u.length > 1) {
                 return terms[CONJ.id].apply(InternedCompound.get(CONJ, dt, u));

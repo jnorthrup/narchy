@@ -77,6 +77,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return xx;
     }
 
+    default boolean equalsRoot(Subterms y) {
+        return equals(y) ||
+                (y.hasAny(Op.Temporal) && y.subs() == subs() && y.structure()==structure() && ANDwith((x,i)-> x.equalsRoot(y.sub(i))));
+    }
+
     /** allows a Subterms implementation to accept the byte[] key that was used in constructing it,
      *  allowing it to cache it for fast serialization.  typically it will want to keep:
      *
@@ -623,7 +628,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (xi == yi)
                 continue;
 
-            boolean now = (i == s - 1) || (u.constant(xi) && u.constant(yi));
+            boolean now = (i == s - 1) || ((u.constant(xi) && u.constant(yi)) || u.matchType(xi.op()) || u.matchType(yi.op()));
 
             if (now) {
 
@@ -641,6 +646,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
         if (deferredPairs != null) {
+
+            //TODO sort deferredPairs so that smaller non-commutive subterms are tried first
 
             do {
                 if (!deferredPairs[--dynPairs].unify(deferredPairs[--dynPairs], u))

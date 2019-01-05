@@ -76,7 +76,7 @@ public class IntermpolationTest {
     void testIntermpolationImplSubjOppositeOrder2() throws Narsese.NarseseException {
         Compound a = $.$("((x &&+2 y) ==>+1 z)");
         Compound b = $.$("((y &&+2 x) ==>+1 z)");
-        RevisionTest.permuteChoose(a, b, "[((x&&y) ==>+1 z)]");
+        RevisionTest.permuteChoose(a, b, "[((x&|y) ==>+1 z)]");
     }
 
     @Test
@@ -123,7 +123,7 @@ public class IntermpolationTest {
     void testIntermpolationOrderMixDternal2() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+1 (b &&+1 (c &&+1 d)))");
         Compound b = $.$("(a &&+1 (b &&+1 (c&&d)))");
-        RevisionTest.permuteChoose(a, b, "[(((c&&d)&|a) &&+1 b), ((a &&+1 b) &&+1 (c&&d))]");
+        RevisionTest.permuteChoose(a, b, "[((a &&+1 b) &&+1 (c&|d)), ((a &&+1 b) &&+1 (c &&+1 d))]");
     }
 
     @Test

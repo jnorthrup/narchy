@@ -1570,6 +1570,11 @@ public class ConjTest {
 
 
     }
+    @Test void testDisjunctionStackOverflow()  {
+        //TODO
+        // && [(||,noid(3,14),(--,((--,L)&|(--,R)))), (--,L)]
+        // && [(||,noid(3,14),(--,((--,R)&|L))), L]
+    }
 
     @Test
     void testDisjunctEqual() {

@@ -67,9 +67,15 @@ public interface Variable extends Atomic {
         if (!u.matchType(xOp))
             return false;
 
-        Term x = u.resolve(this);
         Term y = u.resolvePosNeg(_y);
+        if (y!=_y && y.containsRecursively(this))
+            return false; //cycle caugh
+        Term x = u.resolve(this);
         if (!x.equals(this)) {
+
+//            if (x.containsRecursively(_y))
+//                return false; //cycle caught
+
             try {
                 return x.unifyForward(y, u);
             } catch (StackOverflowError e) {

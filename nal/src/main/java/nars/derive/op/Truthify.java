@@ -14,6 +14,8 @@ import nars.truth.func.TruthFunc;
 import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
 
 import static nars.Op.*;
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
 
 /**
  * Evaluates the (maximum possible) truth of a premise
@@ -151,6 +153,25 @@ public class Truthify extends AbstractPred<Derivation> {
         d.concPunc = punc;
         d.concSingle = single;
 
+        if (d._belief == null || d.concSingle) {
+
+            d.beliefStart = d.beliefEnd = TIMELESS;
+
+        } else {
+            switch (beliefProjection) {
+                case Raw:
+                    d.beliefStart = d._belief.start();
+                    d.beliefEnd = d._belief.end();
+                    break;
+                case Task:
+                    long range = (d.taskStart == ETERNAL || d._belief.start()==ETERNAL) ? 0 : d._belief.range() - 1;
+                    d.beliefStart = d.taskStart;
+                    d.beliefEnd = d.beliefStart + range;
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        }
 
         return true;
     }

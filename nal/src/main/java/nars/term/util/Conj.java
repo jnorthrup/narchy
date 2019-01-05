@@ -770,6 +770,14 @@ public class Conj extends ByteAnonMap {
 
         Term t = terms.theCompound(CONJ, dt, left, right);
 
+        if (t.op()==CONJ && t.OR(tt -> tt.op()==NEG && tt.unneg().op()==CONJ)) {
+            //HACK verify
+            Term u = t.anon();
+            if (u!=t && (u.op()!=CONJ || u.volume()!=t.volume())) {
+                t = terms.conj(dt, left, right);
+            }
+        }
+
         //HACK sometimes this seems to happen
         if (t.hasAny(BOOL)) {
             if (t.contains(False))
@@ -780,27 +788,6 @@ public class Conj extends ByteAnonMap {
         return t;
     }
 
-    /**
-     * similar to conjMerge but interpolates events so the resulting
-     * intermpolation is not considerably more complex than either of the inputs
-     * assumes a and b are both conjunctions
-     */
-    public static Term conjIntermpolate(Term a, Term b, float aProp, long bOffset) {
-
-//        if (bOffset == 0) {
-//            if (a.subterms().equals(b.subterms())) {
-//                //special case: equal subs
-//                Term ab = a;
-//                if (a.op() == CONJ && Conj.concurrent(a.dt()))
-//                    ab = b; //ab if conj must be non-concurrent as a seed for correctly ordering a result
-//                return ab.dt(Revision.chooseDT(a, b, aProp, nar));
-//            }
-//        }
-//return Bool.Null; //probably better not to bother
-
-        return new Conjterpolate(a, b, bOffset, aProp).term();
-
-    }
 
     public void clear() {
         super.clear();
@@ -1770,7 +1757,8 @@ public class Conj extends ByteAnonMap {
 
                 Term wt = term(when, next.getTwo(), validator, tmp);
 
-                if (wt == True) {
+
+                if (wt == null || wt == True) {
                     continue;
                 } else if (wt == False) {
                     return this.term = False;

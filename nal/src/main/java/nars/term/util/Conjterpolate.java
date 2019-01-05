@@ -3,23 +3,33 @@ package nars.term.util;
 import nars.term.Term;
 import org.eclipse.collections.impl.set.mutable.primitive.ByteHashSet;
 
+import java.util.Random;
+
 import static nars.time.Tense.*;
 
 /**
  * interpolate conjunction sequences
  * for each of b's events, find the nearest matching event in a while constructing a new Conj consisting of their mergers
+ *      * similar to conjMerge but interpolates events so the resulting
+ *      * intermpolation is not considerably more complex than either of the inputs
+ *      * assumes a and b are both conjunctions
+ *
+ *  UNTESTED
  */
 public class Conjterpolate extends Conj {
+    private final Random rng;
 
 //        private final Conj aa;
 //        private final Term b;
 //        private final NAR nar;
 
+    float addProb;
+
     /**
      * proportion of a vs. b, ie: (a/(a+b))
      */
 
-    public Conjterpolate(Term a, Term b, @Deprecated long bOffset, float aProp) {
+    public Conjterpolate(Term a, Term b, float aProp, Random rng) {
         super();
 //            this.b = b;
 //            this.nar = nar;
@@ -31,45 +41,49 @@ public class Conjterpolate extends Conj {
 
         //TODO time warping algorithm: find a shift that can be applied ot adding b that allows it to match a longer sub-sequence
         //for now this is a naive heuristic
-        int aShift, bShift;
-        if (a.eventFirst().equals(b.eventFirst())) {
-            aShift = bShift = 0;
-        } else if (a.eventLast().equals(b.eventLast())) {
-            bShift = a.eventRange() - b.eventRange();
-            aShift = 0;
-        } else {
-            //align center
-            int ae = a.eventRange();
-            int be = b.eventRange();
-            if (ae!=be) {
-                if (ae < be) {
-                    aShift = be/2 - ae/2;
-                    bShift = 0;
-                } else {
-                    aShift = 0;
-                    bShift = ae/2 - be/2;
-                }
-            } else {
-                aShift = bShift = 0;
+//        int aShift, bShift;
+//        if (a.eventFirst().equals(b.eventFirst())) {
+//            aShift = bShift = 0;
+//        } else if (a.eventLast().equals(b.eventLast())) {
+//            bShift = a.eventRange() - b.eventRange();
+//            aShift = 0;
+//        } else {
+//            //align center
+//            int ae = a.eventRange();
+//            int be = b.eventRange();
+//            if (ae!=be) {
+//                if (ae < be) {
+//                    aShift = be/2 - ae/2;
+//                    bShift = 0;
+//                } else {
+//                    aShift = 0;
+//                    bShift = ae/2 - be/2;
+//                }
+//            } else {
+//                aShift = bShift = 0;
+//            }
+//        }
+//
+//        if (bShift < 0) {
+//            aShift += -bShift;
+//            bShift = 0;
+//        } else if (aShift < 0) {
+//            bShift += -aShift;
+//            aShift = 0;
+//        }
+
+        this.rng = rng;
+
+        long dt = Conj.isSeq(a) || Conj.isSeq(b) || a.dt()==0 || b.dt()==0 ? 0 : ETERNAL;
+        addProb = aProp;
+        if (add(dt, a)) {
+            addProb = 1-aProp;
+            if (add(dt, b)) {
+//               compress(Math.max(a.volume(), b.volume()),
+//                       //Math.round(nar.intermpolationDurLimit.floatValue()*nar.dur())
+//                       Integer.MAX_VALUE
+//               );
             }
-        }
-
-        if (bShift < 0) {
-            aShift += -bShift;
-            bShift = 0;
-        } else if (aShift < 0) {
-            bShift += -aShift;
-            aShift = 0;
-        }
-
-        if (add(aShift, a)) {
-           if (add(bShift, b)) {
-               factor();
-               compress(Math.max(a.volume(), b.volume()),
-                       //Math.round(nar.intermpolationDurLimit.floatValue()*nar.dur())
-                       Integer.MAX_VALUE
-               );
-           }
         }
 
 
@@ -103,9 +117,21 @@ public class Conjterpolate extends Conj {
 //            });
     }
 
+    @Override
+    public boolean add(long at, Term x) {
+        if (rng.nextFloat() < addProb)
+            return super.add(at, x);
+        else
+            return true; //ignore
+    }
+
     protected void compress(int targetVol, int interpolationThresh /* time units */) {
+
         if (interpolationThresh < 1)
             return;
+
+        //factor();
+        distribute();
 
         //find any two time points that differ by less than the interpolationThresh interval
         long[] times = this.event.keySet().toSortedArray();

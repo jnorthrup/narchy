@@ -317,9 +317,10 @@ public class Derivation extends PreDerivation {
 
 
         if (nextBelief != null) {
-            this.beliefTruthRaw = nextBelief.truth();
             this.beliefStart = nextBelief.start();
             this.beliefEnd = nextBelief.end();
+
+            this.beliefTruthRaw = nextBelief.truth();
 
             this.beliefTruthProjectedToTask = taskStart!=ETERNAL ?
                     nextBelief.truth(taskStart, taskEnd, dur)
@@ -389,15 +390,15 @@ public class Derivation extends PreDerivation {
      */
     public void derive(int ttl) {
 
-        if (taskStart == ETERNAL && (_belief==null || beliefStart == ETERNAL)) {
+        if (taskStart == ETERNAL && (_belief == null || beliefStart == ETERNAL)) {
             this.taskBeliefTimeIntersects[0] = this.taskBeliefTimeIntersects[1] = ETERNAL;
-        } else  if ((_belief != null) && taskStart == ETERNAL) {
+        } else if ((_belief != null) && taskStart == ETERNAL) {
             this.taskBeliefTimeIntersects[0] = beliefStart;
             this.taskBeliefTimeIntersects[1] = beliefEnd;
-        } else if ((_belief==null) || beliefStart == ETERNAL) {
+        } else if ((_belief == null) || beliefStart == ETERNAL) {
             this.taskBeliefTimeIntersects[0] = taskStart;
             this.taskBeliefTimeIntersects[1] = taskEnd;
-        } else if (_belief!=null) {
+        } else if (_belief != null) {
             if (null == Longerval.intersectionArray(taskStart, taskEnd, beliefStart, beliefEnd, this.taskBeliefTimeIntersects)) {
                 this.taskBeliefTimeIntersects[0] = this.taskBeliefTimeIntersects[1] = TIMELESS; //no intersection
             }

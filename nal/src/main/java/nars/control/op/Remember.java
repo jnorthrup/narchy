@@ -1,9 +1,6 @@
 package nars.control.op;
 
-import jcog.TODO;
 import jcog.data.list.FasterList;
-import jcog.pri.ScalarValue;
-import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -11,7 +8,6 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.CauseMerge;
-import nars.link.TaskLink;
 import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.NALTask;
@@ -260,33 +256,40 @@ public class Remember extends AbstractTask {
                 ((NALTask) existing).priCauseMerge(input, CauseMerge.AppendUnique);
 
 
-//        if (input.isInput())
-//            remember(existing); //link and emit
-//        else {
-//            //next(new TaskLinkTask(existing, concept)); //just link
-//        }
+            remember(existing);
 
-            //remember(new TaskLinkTask(existing, concept)); //just link TODO proportionally to pri difference?
-            //2. update tasklink
-            float pri;
-            if (Param.tasklinkMerge == PriMerge.max)
-                pri = Math.max(existing.priElseZero(), input.priElseZero());
-            else if (Param.tasklinkMerge == PriMerge.plus)
-                pri = input.priElseZero() - existing.priElseZero();
-            else
-                throw new TODO();
-            if (pri > ScalarValue.EPSILON) {
-                if (concept == null)
-                    throw new TODO();
-                TaskLink.link(
-                        TaskLink.the(existing, true, true,
-                                pri
-                                , null),
-                        concept);
-            }
+////        if (input.isInput())
+////            remember(existing); //link and emit
+////        else {
+////            //next(new TaskLinkTask(existing, concept)); //just link
+////        }
+
+//            //remember(new TaskLinkTask(existing, concept)); //just link TODO proportionally to pri difference?
+//            //2. update tasklink
+//            float pri;
+//            if (Param.tasklinkMerge == PriMerge.max)
+//                pri = Math.max(existing.priElseZero(), input.priElseZero());
+//            else if (Param.tasklinkMerge == PriMerge.plus)
+//                pri = input.priElseZero() - existing.priElseZero();
+//            else
+//                throw new TODO();
+//            if (pri > ScalarValue.EPSILON) {
+//                if (concept == null)
+//                    throw new TODO();
+//
+//                TaskLink.link(
+//                        TaskLink.the(existing, true, true,
+//                                pri
+//                                , null),
+//                        concept);
+//            }
+//            remember(new TaskEvent(existing));
 
             forget(input);
 
+
+        } else {
+            input = null;
         }
 
 

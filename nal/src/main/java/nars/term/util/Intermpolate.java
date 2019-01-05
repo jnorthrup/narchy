@@ -2,7 +2,6 @@ package nars.term.util;
 
 import jcog.Util;
 import jcog.pri.ScalarValue;
-import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.subterm.Subterms;
@@ -42,73 +41,70 @@ public enum Intermpolate {;
 ////                throw new WTF();
 //        }
 
+        if (!a.equalsRoot(b))
+            return Null;
+
+        Subterms aa = a.subterms(), bb = b.subterms();
+
+//        if (!aa.equalsRoot(bb))
+//            return Null;
 
         if (ao.temporal) {
-//            if (ao == CONJ && curDepth == 1) {
-            if (a.subterms().equals(b.subterms())) {
-                return dtMergeTemporalDirect(a, b, aProp, curDepth, nar);
-            } else {
-                if (ao == CONJ && Conj.isSeq(a) || Conj.isSeq(b)) {
-                    return Conj.conjIntermpolate(a, b, aProp, bOffset); //root only: conj sequence merge
-                } else  {
-                    return Null;
+                if (ao == CONJ) {// && Conj.isSeq(a) || Conj.isSeq(b)) {
+                    return new Conjterpolate(a, b, aProp, nar.random()).term(); //root only: conj sequence merge
                 }
-            }
-        } else {
 
-            Subterms aa = a.subterms(), bb = b.subterms();
+            //            if (ao == CONJ && curDepth == 1) {
+
+            return dtMergeTemporalDirect(a, b, aProp, curDepth, nar);
+//            } else {
+//            }
+        }
+
+
 //            if (aa.equals(bb))
 //                return a;
 
-            Term[] ab = new Term[len];
-            boolean change = false;
-            for (int i = 0; i < len; i++) {
-                Term ai = aa.sub(i), bi = bb.sub(i);
-                if (!ai.equals(bi)) {
-                    Term y = intermpolate(ai, 0, bi, aProp, curDepth / 2f, nar);
-                    if (y == Null)
-                        return Null;
+        Term[] ab = new Term[len];
+        boolean change = false;
+        for (int i = 0; i < len; i++) {
+            Term ai = aa.sub(i), bi = bb.sub(i);
+            if (!ai.equals(bi)) {
+                Term y = intermpolate(ai, 0, bi, aProp, curDepth / 2f, nar);
+                if (y == Null)
+                    return Null;
 
-                    if (!ai.equals(y)) {
-                        change = true;
-                        ai = y;
-                    }
+                if (!ai.equals(y)) {
+                    change = true;
+                    ai = y;
                 }
-                ab[i] = ai;
             }
-
-            return !change ? a : ao.the(ab);
+            ab[i] = ai;
         }
 
+        return !change ? a : ao.the(ab);
     }
 
-    /** for merging CONJ or IMPL of equal subterms, so only dt is different  */
-    private static Term dtMergeTemporalDirect(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, float depth, NAR nar) {
-
-
+    /**
+     * for merging CONJ or IMPL of equal subterms, so only dt is different
+     */
+    private static Term dtMergeTemporalDirect(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp,
+                                                           float depth, NAR nar) {
         int dt = chooseDT(a, b, aProp, nar);
-        if (dt == DTERNAL) {
-            return $.disj(a, b); //OR
-        } else {
-            return a.dt(dt);
-        }
-
-        //Term a0 = a.sub(0), a1 = a.sub(1), b0 = b.sub(0), b1 = b.sub(1);
-//        if (a0.equals(b0) && a1.equals(b1)) {
-//            return a.dt(dt);
-//        } else {
-//
-//            depth /= 2f;
-//
-//            Term na = intermpolate(a0, 0, b0, aProp, depth, nar);
-//            if (na == Null) return Null;
-//
-//            Term nb = intermpolate(a1, 0, b1, aProp, depth, nar);
-//            if (nb == Null) return Null;
-//
-//            return a.op().the(dt, na, nb);
+//        if (dt == DTERNAL) {
+//            return $.disj(a, b); //OR
 //        }
 
+        Subterms aa = a.subterms(), bb = b.subterms();
+        if (aa.equals(bb))
+            return a.dt(dt);
+        else {
+            Term[] ab = Util.map(aa.subs(), Term[]::new, i -> {
+                return intermpolate(aa.sub(i), 0, bb.sub(i), aProp, depth / 2, nar);
+            });
+
+            return a.op().the(dt, ab);
+        }
     }
 
     public static int chooseDT(Term a, Term b, float aProp, NAR nar) {
@@ -143,8 +139,7 @@ public enum Intermpolate {;
      * merge delta
      */
     static int merge(int adt, int bdt, float aProp, NAR nar) {
-        if (adt >= 0 == bdt >= 0)
-        { //require same sign ?
+        if (adt >= 0 == bdt >= 0) { //require same sign ?
 
             int range = //Math.max(Math.abs(adt), Math.abs(bdt));
                     Math.abs(adt - bdt);
@@ -189,27 +184,33 @@ public enum Intermpolate {;
         if (a.equals(b))
             return 0f;
 
+        if (!a.equalsRoot(b))
+            return Float.POSITIVE_INFINITY;
+
         Op ao = a.op(), bo = b.op();
         if (ao != bo)
             return Float.POSITIVE_INFINITY;
-        Subterms aa = a.subterms(), bb = b.subterms();
-        if ((((aa.structure() != bb.structure() || (a.volume() != b.volume())) && !(aa.hasAny(CONJ) || bb.hasAny(CONJ))))) {
-            return Float.POSITIVE_INFINITY;
-        }
 
+        Subterms aa = a.subterms(), bb = b.subterms();
+//        if (!aa.equalsRoot(bb))
+//            return Float.POSITIVE_INFINITY;
+//        if ((((aa.structure() != bb.structure() || (a.volume() != b.volume())) && !(aa.hasAny(CONJ) || bb.hasAny(CONJ))))) {
+//            return Float.POSITIVE_INFINITY;
+//        }
 
 
         float dSubterms = 0;
         if (!aa.equals(bb)) {
 
-            if (ao == CONJ && (Conj.isSeq(a) || Conj.isSeq(b))) {
-                if (a.root().equals(b.root())) { //TODO refine
+            if (ao == CONJ) {
+                if (a.dt()==XTERNAL || b.dt()==XTERNAL)
+                    return 0;
+                if ((Conj.isSeq(a) || Conj.isSeq(b))) {
                     //estimate difference
                     int ar = a.eventRange(), br = b.eventRange();
                     int av = a.volume(), bv = b.volume();
-                    return (1 + av+bv)/2 * (1+Math.abs(av- bv)) * ((1 + Math.abs(ar-br))); //heuristic
-                } else {
-                    return Float.POSITIVE_INFINITY;
+                    return (1 + av + bv) / 2 * (1 + Math.abs(av - bv)) * ((1 + Math.abs(ar - br))); //heuristic
+
                 }
             }
 
@@ -240,9 +241,9 @@ public enum Intermpolate {;
 
                 boolean ad = adt == DTERNAL, bd = bdt == DTERNAL;
                 if (!ad && !bd) {
-                    float range = Math.min(1+Math.abs(adt), 1+Math.abs(bdt));
-                    assert(range > 0);
-                    dDT = Math.abs(adt - bdt)/(range);
+                    float range = Math.min(1 + Math.abs(adt), 1 + Math.abs(bdt));
+                    assert (range > 0);
+                    dDT = Math.abs(adt - bdt) / (range);
                 } else {
                     //dDT = 0.5f; //one is dternal the other is not, record at least some difference (half time unit)
                     dDT = ScalarValue.EPSILONsqrt * 2;

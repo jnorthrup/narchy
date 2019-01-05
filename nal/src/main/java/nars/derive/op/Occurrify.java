@@ -238,6 +238,8 @@ public class Occurrify extends TimeGraph {
         Op so = sup != null ? sup.op() : null;
         if (so == null || so == IMPL || so == CONJ)
             ((sub.op() == NEG) ? nextNeg : nextPos).add(sub.unneg());
+        if (so==NEG && sub.op()==IMPL)
+            nextNeg.add(sub.sub(1)); //negate predicate (virtual)
     };
 
     private void setAutoNeg(Term pattern, Term taskTerm, Term beliefTerm) {

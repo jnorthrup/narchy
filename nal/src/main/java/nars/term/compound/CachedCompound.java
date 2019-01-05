@@ -1,6 +1,7 @@
 package nars.term.compound;
 
 import jcog.Util;
+import jcog.WTF;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
@@ -8,6 +9,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
 
 
@@ -39,8 +41,8 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 //        boolean isNormalized = subterms.isNormalized();
 
         //HACK TEMPORARY
-//        if (op==CONJ && subterms.subs()==2 && subterms.sub(0).volume() < subterms.sub(1).volume())
-//            throw new WTF();
+        if (op==CONJ && subterms.subs()==2 && subterms.sub(0).volume() < subterms.sub(1).volume())
+            throw new WTF();
 
         Compound c;
         if (!op.temporal && !subterms.hasAny(Op.Temporal) && subterms.isNormalized()) {
