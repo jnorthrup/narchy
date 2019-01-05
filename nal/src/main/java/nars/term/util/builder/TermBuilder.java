@@ -152,6 +152,8 @@ public abstract class TermBuilder {
     protected Term theCompound(Op o, int dt, Term[] t, @Nullable DynBytes key) {
         assert (!o.atomic) : o + " is atomic, yet given subterms: " + Arrays.toString(t);
 
+//        String before = (Arrays.toString(t)); //HACK TEMPORARY
+
         boolean hasEllipsis = false;
 
         for (Term x : t) {
@@ -179,9 +181,16 @@ public abstract class TermBuilder {
             }
         }
 
+
         Subterms subs = subterms(o, t, dt, key);
 
-        return CachedCompound.newCompound(o, dt, subs);
+//        String after = (Arrays.toString(t)); //HACK TEMPORARY
+
+        Term y = CachedCompound.newCompound(o, dt, subs);
+
+//        if (!before.equals(after)) System.out.println("\t" + Arrays.toString(t)); //HACK TEMPORARY
+
+        return y;
     }
 
     protected Subterms subterms(Op o, Term[] t, int dt, @Nullable DynBytes key) {

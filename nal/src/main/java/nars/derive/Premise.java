@@ -209,19 +209,9 @@ public class Premise implements Comparable<Premise> {
             } else {
                 Task answered = tryAnswer(beliefTerm, answerTable, d);
                 if (answered!=null) {
-
-
-//                    if (Param.INPUT_PREMISE_ANSWER_BELIEF || answered.isGoal()) // || (!(answered instanceof SignalTask) && !(answered instanceof DerivedTask)))
-                    if (answered.isGoal()) {
-                        if (answered.conf() >= d.confMin)
-                            n.input(answered);
-////                        d.add(answered); //TODO inputting here is really only useful if revised or dynamic
-                    } else
-                        n.eventTask.emit(answered, answered.punc());
-//
-//                        else //if (answered.isBelief())
-//                            return answered;
-
+                    if (answered.conf() >= d.confMin)
+                        n.input(answered);
+////                    d.add(answered); //TODO inputting here is really only useful if revised or dynamic
 
                 }
                 if (answerGoal) {

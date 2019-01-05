@@ -133,8 +133,14 @@ public class Arkancide extends NAgentX {
 
 
         nar.onTask(t->{
-           if (t.isGoal() && !t.isInput())
-               System.out.println(t);
+            if (t.isGoal()) {
+                if (!t.isInput()) {
+                    if (t.isEternal())
+                        System.err.println(t);
+                    else
+                        System.out.println(t);
+                }
+            }
 //           if (t.isQuest()) {
 //               nar.concepts.stream().filter(x -> x.op() == IMPL && x.sub(1).equals(t.term())).forEach(i -> {
 //                   //System.out.println(i);

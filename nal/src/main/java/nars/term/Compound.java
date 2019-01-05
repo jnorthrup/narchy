@@ -810,7 +810,7 @@ public interface Compound extends Term, IPair, Subterms {
             eventsWhile((when, what) -> {
                 first[0] = what;
                 return false; //done got first
-            }, 0, true, false, false, 0);
+            }, 0, false, false, false, 0);
             return first[0];
         }
         return this;

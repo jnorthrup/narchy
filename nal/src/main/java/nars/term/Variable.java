@@ -70,7 +70,13 @@ public interface Variable extends Atomic {
         Term x = u.resolve(this);
         Term y = u.resolvePosNeg(_y);
         if (!x.equals(this)) {
-            return x.unifyForward(y, u);
+            try {
+                return x.unifyForward(y, u);
+            } catch (StackOverflowError e) {
+                //HACK
+                System.err.println("unify stack overflow: " + x + "->" + y + " in " + u.xy);
+                return false;
+            }
         }
 
 

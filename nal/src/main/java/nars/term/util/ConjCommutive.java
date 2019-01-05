@@ -23,7 +23,7 @@ public enum ConjCommutive {;
     }
 
     /** assumes u is sorted */
-    public static Term theSorted(int dt, Term[] u) {
+    public static Term theSorted(int dt, Term... u) {
         if (u.length == 0)
             return True;
         if (u.length == 1)
