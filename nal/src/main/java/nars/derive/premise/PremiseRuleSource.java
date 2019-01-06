@@ -69,7 +69,7 @@ public class PremiseRuleSource extends ProxyTerm {
     protected final ImmutableSet<UnifyConstraint> CONSTRAINTS;
     private final MutableSet<PREDICATE<PreDerivation>> pre;
     protected final PREDICATE[] PRE;
-    protected final Occurrify.TaskTimeMerge time;
+    protected final Occurrify.OccurrenceSolver time;
     protected final boolean varIntro;
 
 
@@ -363,7 +363,7 @@ public class PremiseRuleSource extends ProxyTerm {
         }
 
         Term beliefTruth = null, goalTruth = null;
-        Occurrify.TaskTimeMerge time = Occurrify.mergeDefault;
+        Occurrify.OccurrenceSolver time = Occurrify.mergeDefault;
 
         Term[] modifiers = postcon != null && postcon.length > 1 ? Terms.sorted(postcon[1].arrayShared()) : Op.EmptyTermArray;
         boolean varIntro = false;

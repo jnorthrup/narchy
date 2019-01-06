@@ -75,7 +75,6 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
             Y e = exists.get();
             if (e != null) {
                 exists.priAdd(CACHE_HIT_BOOST);
-                hit.getAndIncrement();
                 return e;
             }
         }
@@ -111,11 +110,13 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
                 if (output!=null) {
                     //result obtained before inserting ours, use that it is more likely to be shared
                     y = output.get();
-                    hit.getAndIncrement();
+                    miss.getAndIncrement(); //technically, this is a combination of a hit and a miss
                 } else {
                     reject.getAndIncrement();
                 }
             }
+        } else {
+            hit.getAndIncrement();
         }
         return y;
     }

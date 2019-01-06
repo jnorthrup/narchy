@@ -7,8 +7,8 @@ import nars.truth.Stamp;
 
 import java.util.Random;
 
-/** dynTruth which can track evidential overlap while being constructed, and provide the summation of evidence after*/
-public class DynStampTruth extends DynTruth {
+/** additionally tracks evidential overlap while being constructed, and provide the summation of evidence after*/
+public class DynStampEvi extends DynEvi {
 
 //    static final ThreadLocal<DequeCleaningPool<MetalLongSet>> eis = DequeCleaningPool.threadLocal(() -> new MetalLongSet(4), MetalLongSet::clear);
 
@@ -16,7 +16,7 @@ public class DynStampTruth extends DynTruth {
 
     private MetalLongSet evi = null;
 
-    public DynStampTruth(int initialCap) {
+    public DynStampEvi(int initialCap) {
         super(initialCap);
     }
 

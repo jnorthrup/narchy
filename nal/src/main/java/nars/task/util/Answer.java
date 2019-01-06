@@ -15,7 +15,7 @@ import nars.term.Term;
 import nars.term.util.Intermpolate;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.truth.dynamic.DynTruth;
+import nars.truth.dynamic.DynEvi;
 import nars.truth.polation.TruthIntegration;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -320,7 +320,7 @@ public final class Answer implements AutoCloseable {
 
     private Task taskMerge(@Nullable Task root) {
 
-        @Nullable DynTruth d = dynTruth();
+        @Nullable DynEvi d = dynTruth();
         if (d.size() <= 1)
             return root;
 
@@ -370,11 +370,11 @@ public final class Answer implements AutoCloseable {
      * TODO merge DynTruth and TruthPolation
      */
     @Nullable
-    protected DynTruth dynTruth() {
+    protected DynEvi dynTruth() {
         int s = tasks.size();
         if (s == 0)
             return null;
-        return new DynTruth(s, tasks.itemsArray(Task[]::new));
+        return new DynEvi(s, tasks.itemsArray(Task[]::new));
     }
 
 
@@ -384,14 +384,14 @@ public final class Answer implements AutoCloseable {
     }
 
     @Nullable public TruthPolation truthpolation(int dur) {
-        DynTruth d = dynTruth();
+        DynEvi d = dynTruth();
         return d == null ? null : truthpolation(d, dur);
     }
 
     /**
      * this does not filter cyclic; do that manually
      */
-    private TruthPolation truthpolation(DynTruth d, int dur) {
+    private TruthPolation truthpolation(DynEvi d, int dur) {
         TruthPolation tp = Param.truth(time.start, time.end, dur);
         tp.ensureCapacity(d.size());
         d.forEach(r -> tp.add(r.task()));

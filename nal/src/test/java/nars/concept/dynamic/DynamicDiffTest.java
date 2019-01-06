@@ -72,8 +72,8 @@ class DynamicDiffTest extends AbstractDynamicTaskTest {
         n.believe("c:y", 0.25f, 0.50f, 2, 2);
         n.believe("c:z", 0.25f, 0.50f, 4, 4);
 
-        Task a = n.matchBelief($$("c:(x~y)"), 0, 4);
-        Task b = n.matchBelief($$("c:(x~z)"), 0, 4);
+        Task a = n.answerBelief($$("c:(x~y)"), 0, 4);
+        Task b = n.answerBelief($$("c:(x~z)"), 0, 4);
         assertEquals(b.freq(), a.freq());
         assertTrue(b.conf() < a.conf());
         assertTrue(b.pri() < a.pri());

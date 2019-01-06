@@ -10,7 +10,7 @@ import nars.table.dynamic.DynamicTruthTable;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.truth.dynamic.DynamicTruthModel;
+import nars.truth.dynamic.DynamicConjTruth;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -80,7 +80,7 @@ class DynamicConjTest {
             n.believe($$("--(a:x && a:y)"), 0);
             assertEquals(1, n.concept("(a:x && a:y)").beliefs().size());
 
-            Task ttEte = n.matchBelief($("(a:x && a:y)"), now);
+            Task ttEte = n.answerBelief($("(a:x && a:y)"), now);
             assertEquals(1, ttEte.stamp().length);
 
             //truths dont get merged since the dynamic belief will compute for &| and this asked for &&
@@ -97,7 +97,7 @@ class DynamicConjTest {
             n.believe($$("--(a:x &| a:y)"), 0);
             assertEquals(2, n.concept("(a:x && a:y)").beliefs().size());
 
-            Task ttNow = n.matchBelief($("(a:x &| a:y)"), now);
+            Task ttNow = n.answerBelief($("(a:x &| a:y)"), now);
             assertTrue(ttNow.toString().contains("((x-->a)&|(y-->a)). 0 %.19;.96%"), ttNow.toString());
         }
 
@@ -329,25 +329,24 @@ class DynamicConjTest {
         n.believe($("y"), 0);
         n.believe($("z"), 2);
         n.time.dur(8);
-        TaskConcept cc = (TaskConcept) n.conceptualize($("(&&, x, y, z)"));
 
-        BeliefTable xtable = cc.beliefs();
 
         {
             Term xyz = $("(x && (y &&+2 z))");
-            List<String> components = new FasterList();
-            DynamicTruthModel.DynamicConjTruth.ConjIntersection.components(xyz,0, 0,
-                    (what,whenStart,whenEnd)->{
-                        components.add(what + " @ " + whenStart + ".." + whenEnd); return true;
-            });
-            assertEquals(2, components.size());
+            assertEquals("[x @ 0..2, y @ 0..0, z @ 2..2]",
+                    conjDynComponents(xyz, 0, 0).toString());
+            assertEquals("[x @ 0..4, y @ 0..2, z @ 2..4]",
+                    conjDynComponents(xyz, 0, 2).toString());
 
-            Task t = xtable.answer(0, 0, xyz, n);
+            Task t = n.answerBelief(xyz, 0);
             assertNotNull(t);
             assertEquals(1f, t.freq(), 0.05f);
             assertEquals(0.81f, t.conf(), 0.4f);
             assertEq("((y &&+2 z)&&x)", t.term());
         }
+
+        TaskConcept cc = (TaskConcept) n.conceptualize($("(&&, x, y, z)"));
+        BeliefTable xtable = cc.beliefs();
         {
             Term xyz = $("((x &| y) &&+2 (x &| z))");
             assertEq("((y &&+2 z)&&x)", xyz);
@@ -362,6 +361,34 @@ class DynamicConjTest {
         }
 
 
+    }
+
+    @Test
+    void testDynamicConjunctionFactoredWithAllTemporalEvidence() throws Narsese.NarseseException {
+        NAR n = NARS.shell();
+        n.believe($("x"), 0, 2);
+        n.believe($("y"), 0);
+        n.believe($("z"), 2);
+        n.time.dur(8);
+
+        {
+            Term xyz = $("(x && (y &&+2 z))");
+
+            Task t = n.answerBelief(xyz, 0);
+            assertNotNull(t);
+            assertEquals(1f, t.freq(), 0.05f);
+            assertEquals(0.81f, t.conf(), 0.4f);
+            assertEq("((y &&+2 z)&&x)", t.term());
+        }
+    }
+
+    private static List<String> conjDynComponents(Term xyz, long s, long e) {
+        List<String> components = new FasterList();
+        DynamicConjTruth.ConjIntersection.components(xyz,s, e,
+                (what,whenStart,whenEnd)->{
+                    components.add(what + " @ " + whenStart + ".." + whenEnd); return true;
+        });
+        return components;
     }
 
 

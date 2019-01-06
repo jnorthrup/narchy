@@ -18,7 +18,10 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.util.Image;
-import nars.truth.dynamic.DynamicTruthModel;
+import nars.truth.dynamic.DynamicConjTruth;
+import nars.truth.dynamic.DynamicImageTruth;
+import nars.truth.dynamic.DynamicStatementTruth;
+import nars.truth.dynamic.AbstractDynamicTruth;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +53,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
         BeliefTable B, G;
 
 
-        DynamicTruthModel dmt = ConceptBuilder.dynamicModel(t);
+        AbstractDynamicTruth dmt = ConceptBuilder.dynamicModel(t);
 
         Bag L;
         if (dmt != null) {
@@ -130,7 +133,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
      * returns the builder for the term, or null if the term is not dynamically truthable
      */
     @Nullable
-    public static DynamicTruthModel dynamicModel(Term t) {
+    public static AbstractDynamicTruth dynamicModel(Term t) {
 
         if (t.hasAny(Op.VAR_QUERY.bit))
             return null; //TODO maybe this can answer query questions by index query
@@ -177,14 +180,14 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
                 if (subjDyn) {
                     if (suo == NEG) {
-                        return DynamicTruthModel.DynamicSectTruth.UnionImplSubj;
+                        return DynamicStatementTruth.UnionImplSubj;
 //                        return DynamicTruthModel.DynamicSectTruth.SectImplSubjNeg;
                     } else {
-                        return DynamicTruthModel.DynamicSectTruth.SectImplSubj;
+                        return DynamicStatementTruth.SectImplSubj;
                     }
                 } else if (predDyn) {
                     //TODO infer union case if the subterms of the pred's conj are all negative
-                    return DynamicTruthModel.DynamicSectTruth.SectImplPred;
+                    return DynamicStatementTruth.SectImplPred;
                 }
 
                 break;
@@ -192,7 +195,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
             case CONJ:
                 if (validDynamicSubtermsAndNoSharedVars(t))
-                    return DynamicTruthModel.DynamicConjTruth.ConjIntersection;
+                    return DynamicConjTruth.ConjIntersection;
                 break;
 
 //            case SECTe:
@@ -206,7 +209,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
         return null;
     }
 
-    private static DynamicTruthModel dynamicInh(Term t) {
+    private static AbstractDynamicTruth dynamicInh(Term t) {
 
         //quick pre-test
         Subterms tt = t.subterms();
@@ -233,9 +236,9 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
                     switch (so) {
                         case SECTi:
-                            return DynamicTruthModel.DynamicSectTruth.SectSubj;
+                            return DynamicStatementTruth.SectSubj;
                         case SECTe:
-                            return DynamicTruthModel.DynamicSectTruth.UnionSubj;
+                            return DynamicStatementTruth.UnionSubj;
                     }
 
 
@@ -254,9 +257,9 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
                     switch (po) {
                         case SECTi:
-                            return DynamicTruthModel.DynamicSectTruth.UnionPred;
+                            return DynamicStatementTruth.UnionPred;
                         case SECTe:
-                            return DynamicTruthModel.DynamicSectTruth.SectPred;
+                            return DynamicStatementTruth.SectPred;
                     }
                 }
             }
@@ -264,7 +267,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
 
         Term it = Image.imageNormalize(t);
         if (it != t && !(it instanceof Bool))
-            return DynamicTruthModel.ImageDynamicTruthModel;
+            return DynamicImageTruth.ImageDynamicTruthModel;
 
         return null;
     }

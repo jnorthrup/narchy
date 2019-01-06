@@ -16,6 +16,7 @@ import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.term.util.Conj;
+import nars.term.util.transform.Retemporalize;
 import nars.time.Event;
 import nars.time.Tense;
 import nars.time.TimeGraph;
@@ -28,12 +29,14 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import static nars.Op.*;
+import static nars.derive.op.Occurrify.BeliefProjection.Raw;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -57,15 +60,154 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 public class Occurrify extends TimeGraph {
 
-    public static final TaskTimeMerge mergeDefault =
-            TaskTimeMerge.Default;
+    public static boolean occurrify(Term x, Truthify truth, OccurrenceSolver time, Derivation d) {
+        if (d.temporal) {
+            if (d._belief == null || d.concSingle) {
+
+                d.beliefStart = d.beliefEnd = TIMELESS;
+
+            } else {
+                boolean taskEternal = d.taskStart == ETERNAL;
+                if (truth.beliefProjection == Raw || taskEternal) {
+
+                    d.beliefStart = d._belief.start();
+                    d.beliefEnd = d._belief.end();
+                } else if (truth.beliefProjection == BeliefProjection.Task) {
+
+                    long range = (taskEternal || d._belief.start() == ETERNAL) ? 0 : d._belief.range() - 1;
+                    d.beliefStart = d.taskStart;
+                    d.beliefEnd = d.beliefStart + range;
+                } else {
+
+                    throw new UnsupportedOperationException();
+                }
+            }
+        }
+
+        if (d.temporalTerms || (d.taskStart!=ETERNAL) || (d.beliefStart!=ETERNAL && d.beliefStart!=TIMELESS)) {
+
+//            boolean unwrapNeg;
+//            if (c1.op()==NEG) {
+//                unwrapNeg = true;
+//                c1 = c1.unneg();
+//            } else {
+//                unwrapNeg = false;
+//            }
 
 
-    public static final ImmutableMap<Term, TaskTimeMerge> merge;
+
+            Pair<Term, long[]> timing = time.occurrence(d, x);
+            if (timing == null) {
+                d.nar.emotion.deriveFailTemporal.increment();
+                ///*temporary:*/ time.solve(d, c1);
+                return false;
+            }
+
+
+            Term c2 = timing.getOne();
+            long[] occ = timing.getTwo();
+            if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&
+                    (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
+                    (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
+                throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
+
+            if ((d.taskPunc==GOAL && d.concPunc == GOAL) && occ[0]!=ETERNAL && occ[0] < d.taskStart) {
+                //if (d.taskTerm.op()!=CONJ && d.beliefTerm.op()==IMPL) {
+                {
+                    //immediate shift
+                    long range = occ[1] - occ[0];
+                    occ[0] = d.taskStart;
+                    occ[1] = occ[0] + range;
+                }
+            }
+
+//            if (d.concTruth!=null) {
+//                long start = occ[0], end = occ[1];
+//                if (start != ETERNAL) {
+//                    if (d.taskStart!=ETERNAL && d.beliefStart!=ETERNAL) {
+//
+//                        long taskEvidenceRange = ((d.taskStart==ETERNAL || (d.taskPunc==QUESTION || d.taskPunc==QUEST)) ? 0 : d._task.range());
+//                        long beliefEviRange = ((!d.concSingle && d._belief != null && d.beliefStart!=ETERNAL) ? d._belief.range() : 0);
+//                        long commonRange = d._belief != null ? Longerval.intersectLength(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd) : 0;
+//
+//                        long inputRange = taskEvidenceRange + beliefEviRange - (commonRange/2);
+//                        //assert(inputRange > 0);
+//
+//                        long outputRange = (1 + (end - start));
+//                        long expanded = outputRange - inputRange;
+//                        if (expanded > nar.dtDither()) {
+//                            //dilute the conclusion truth in proportion to the extra space
+//                            double expansionFactor = ((double) expanded) / (expanded + inputRange);
+//                            if (Double.isFinite(expansionFactor))
+//                                d.concTruthEviMul((float) expansionFactor, false);
+//                            ////assert (expansionFactor < 1);
+//                        }
+//                    }
+//                }
+//            }
+
+            if (!Taskify.valid(c2, d.concPunc)) {
+                boolean fail;
+
+                if (Param.INVALID_DERIVATION_TRY_QUESTION && d.concPunc == BELIEF || d.concPunc == GOAL) {
+                    //as a last resort, try forming a question from the remains
+                    byte qPunc = d.concPunc == BELIEF ? QUESTION : QUEST;
+                    if (!Taskify.valid(c2, qPunc)) {
+                        fail = true;
+                    } else {
+                        d.concPunc = qPunc;
+                        d.concTruth = null;
+                        fail = false;
+                    }
+                } else {
+                    fail = true;
+                }
+
+                if (fail) {
+                    Term c1e = x;
+                    d.nar.emotion.deriveFailTemporal.increment(/*() ->
+                        rule + "\n\t" + d + "\n\t -> " + c1e + "\t->\t" + c2
+                */);
+                    return false;
+                }
+
+            }
+
+
+            d.concOcc = occ;
+            d.concTerm = c2;
+        } else {
+
+            byte punc = d.concPunc;
+            if ((punc == BELIEF || punc == GOAL) && x.hasXternal()) { // && !d.taskTerm.hasXternal() && !d.beliefTerm.hasXternal()) {
+                //HACK this is for deficiencies in the temporal solver that can be fixed
+                x = Retemporalize.retemporalizeXTERNALToDTERNAL.transform(x);
+                if (!Taskify.valid(x, d.concPunc)) {
+                    d.nar.emotion.deriveFailTemporal.increment();
+                    Taskify.spam(d, Param.TTL_DERIVE_TASK_FAIL);
+                    return false;
+                }
+            }
+
+            d.concTerm = x;
+            d.concOcc = null;
+        }
+
+        return true;
+
+    }
+
+
+
+    public static final OccurrenceSolver mergeDefault =
+            OccurrenceSolver.Default;
+
+
+    public static final ImmutableMap<Term, OccurrenceSolver> merge;
 
     static {
-        MutableMap<Term, TaskTimeMerge> tm = new UnifiedMap<>(8);
-        for (TaskTimeMerge m : TaskTimeMerge.values()) {
+        MutableMap<Term, OccurrenceSolver> tm = new UnifiedMap<>(8);
+        for (OccurrenceSolver m : OccurrenceSolver.values()) {
             tm.put(Atomic.the(m.name()), m);
         }
         merge = tm.toImmutable();
@@ -79,12 +221,9 @@ public class Occurrify extends TimeGraph {
             nextNeg = new UnifiedSet<>(8, 0.99f),
             nextPos = new UnifiedSet(8, 0.99f);
 
-
     private final Derivation d;
 
-
     private boolean decomposeEvents;
-
 
     public Occurrify(Derivation d) {
         this.d = d;
@@ -96,7 +235,7 @@ public class Occurrify extends TimeGraph {
      * if there is any temporal terms with non-DTERNAL dt()
      */
     public static boolean temporal(Term x) {
-        return x.ORrecurse(z -> {
+        return x.hasAny(Op.Temporal) && x.ORrecurse(z -> {
             if (z instanceof Compound) {
                 int dt = z.dt();
                 return (dt != DTERNAL && dt != XTERNAL);
@@ -104,6 +243,7 @@ public class Occurrify extends TimeGraph {
             return false;
         });
     }
+
 
     @Override
     public int dt(int dt) {
@@ -155,6 +295,10 @@ public class Occurrify extends TimeGraph {
                 taskEnd = taskOccurrence ? d.taskEnd : TIMELESS,
                 beliefStart = beliefOccurrence ? d.beliefStart : TIMELESS,
                 beliefEnd = beliefOccurrence ? d.beliefEnd : TIMELESS;
+
+        if (taskStart == ETERNAL && beliefStart!=ETERNAL) {
+            taskStart = beliefStart; taskEnd = beliefEnd;
+        }
 
         this.decomposeEvents = decomposeEvents;
 
@@ -416,7 +560,7 @@ public class Occurrify extends TimeGraph {
     }
 
 
-    public enum TaskTimeMerge {
+    public enum OccurrenceSolver {
 
 
         /**
@@ -923,7 +1067,7 @@ public class Occurrify extends TimeGraph {
 
         private final Term term;
 
-        TaskTimeMerge() {
+        OccurrenceSolver() {
             this.term = Atomic.the(name());
         }
 

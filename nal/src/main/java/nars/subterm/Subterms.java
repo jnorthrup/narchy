@@ -840,10 +840,21 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        return (t.length == 0) ? Op.EmptyTermArray : t;
 //    }
 
+    default Term[] subsExcept(Predicate<Term> exclude) {
+        int n = subs();
+        MetalBitSet m = MetalBitSet.bits(n);
+        return
+            ORwith((x,i)->{ if (exclude.test(x)) { m.set(i); return true; } else return false; }) ?
+                subsExcept(m) : arrayShared();
+    }
+
     default Term[] subsExcept(MetalBitSet toRemove) {
+
         int numRemoved = toRemove.cardinality();
-        assert (numRemoved > 0);
+        if (numRemoved == 0) return arrayShared();
         int size = subs();
+        if (numRemoved == size) return Op.EmptyTermArray;
+
         int newSize = size - numRemoved;
         Term[] t = new Term[newSize];
         int j = 0;
@@ -851,7 +862,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (!toRemove.get(i))
                 t[j++] = sub(i);
         }
-        return t.length == 0 ? Op.EmptyTermArray : t;
+        return t;
     }
 
     default Term[] subsExcept(Collection<Term> except) {

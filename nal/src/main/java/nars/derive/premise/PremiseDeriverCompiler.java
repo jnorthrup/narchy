@@ -8,6 +8,7 @@ import nars.Op;
 import nars.derive.Derivation;
 import nars.derive.op.Branchify;
 import nars.derive.op.UnifyTerm;
+import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.control.AND;
 import nars.term.control.FORK;
@@ -251,8 +252,9 @@ public enum PremiseDeriverCompiler {
                         xx.remove();
 
                         if (px instanceof AND) {
-                            if (((AND)px).subterms().contains(fx.p)) {
-                                px = AND.the((Term[])((AND)px).subterms().subsExcept(fx.p));
+                            Subterms pxSub = ((AND) px).subterms();
+                            if (pxSub.contains(fx.p)) {
+                                px = AND.the((Term[]) pxSub.subsExcept((Term)(fx.p)));
                             }
                             bundle.add(px);
                         } else {

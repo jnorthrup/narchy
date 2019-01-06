@@ -31,9 +31,13 @@ import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.ImmutableBitmapDataProvider;
 import org.roaringbitmap.RoaringBitmap;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.IntPredicate;
+import java.util.function.Predicate;
 
 import static java.lang.System.arraycopy;
 import static nars.Op.*;
@@ -99,6 +103,7 @@ public class Conj extends ByteAnonMap {
         c.factor();
         return c;
     }
+
 
     public boolean addAuto(Term t) {
         return add(t.dt() == DTERNAL ? ETERNAL : 0, t);
@@ -489,6 +494,27 @@ public class Conj extends ByteAnonMap {
         return false;
     }
 
+    public static boolean isFactoredSeq(Term conj) {
+        return conj.dt()==DTERNAL && isSeq(conj);
+    }
+
+    static final Predicate<Term> isTemporalComponent = x->x.op()==CONJ && x.dt()!=DTERNAL;
+
+    /** extracts the eternal components of a seq. assumes the conj actually has been determined to be a sequence */
+    public static Term seqEternal(Term seq) {
+        assert(seq.op()==CONJ && seq.dt()==DTERNAL);
+        Term e = CONJ.the(seq.subterms().subsExcept(isTemporalComponent));
+        assert(!(e instanceof Bool));
+        return e;
+    }
+
+    public static Term seqTemporal(Term seq) {
+        assert(seq.op()==CONJ && seq.dt()==DTERNAL);
+        Term t = seq.subterms().subFirst(isTemporalComponent);
+        assert(t.op()==CONJ);
+        return t;
+    }
+
     private void negateEvents() {
         event.forEachValue(x -> {
             if (!(x instanceof byte[]))
@@ -770,13 +796,13 @@ public class Conj extends ByteAnonMap {
 
         Term t = terms.theCompound(CONJ, dt, left, right);
 
-        if (t.op()==CONJ && t.OR(tt -> tt.op()==NEG && tt.unneg().op()==CONJ)) {
-            //HACK verify
-            Term u = t.anon();
-            if (u!=t && (u.op()!=CONJ || u.volume()!=t.volume())) {
-                t = terms.conj(dt, left, right);
-            }
-        }
+//        if (t.op()==CONJ && t.OR(tt -> tt.op()==NEG && tt.unneg().op()==CONJ)) {
+//            //HACK verify
+//            Term u = t.anon();
+//            if (u!=t && (u.op()!=CONJ || u.volume()!=t.volume())) {
+//                t = terms.conj(dt, left, right);
+//            }
+//        }
 
         //HACK sometimes this seems to happen
         if (t.hasAny(BOOL)) {
@@ -1732,77 +1758,109 @@ public class Conj extends ByteAnonMap {
         factor();
 
         int numOcc = eventOccurrences();
+        int numTmpOcc = numOcc;
 
-        IntPredicate validator = null;
+
         List<Term> tmp = new FasterList(2);
-        Term eternal = term(ETERNAL, tmp);
-        if (eternal != null) {
-            if (eternal == False || eternal == Null)
-                return this.term = eternal;
+        Term eternal;
+        if (event.containsKey(ETERNAL)) {
+            numTmpOcc--;
+            eternal = term(ETERNAL, tmp);
+            if (eternal != null) {
+                if (eternal == False || eternal == Null)
+                    return this.term = eternal;
+            }
+        } else {
+            eternal = null;
         }
 
+        Term temporal;
         Term ci;
-        if (eternal != null && numOcc == 1) {
-            ci = eternal;
-        } else {
-            if (eternal == True)
-                eternal = null;
-
-            FasterList<LongObjectPair<Term>> temporals = null;
-
-            for (LongObjectPair next : event.keyValuesView()) {
-                long when = next.getOne();
-                if (when == ETERNAL)
-                    continue;
-
-                Term wt = term(when, next.getTwo(), validator, tmp);
-
-
-                if (wt == null || wt == True) {
-                    continue;
-                } else if (wt == False) {
+        switch (numTmpOcc) {
+            case 0:
+                temporal = null;
+                break;
+            case 1:
+                //one other non-eternal time
+                LongObjectPair<Object> e = event.keyValuesView().select(x -> x.getOne() != ETERNAL).getFirst();
+                Term t = term(e.getOne(), e.getTwo(), tmp);
+                if (t == null || t == True) {
+                    t = null;
+                } else if (t == False) {
                     return this.term = False;
-                } else if (wt == Null) {
+                } else if (t == Null) {
                     return this.term = Null;
                 }
-
-                if (temporals == null) temporals = new FasterList<>(numOcc + 1);
-
-                temporals.add(pair(when, wt));
-            }
-            Term temporal;
-            if (temporals != null) {
-
-                int ee = temporals.size();
-                switch (ee) {
-                    case 0:
-                        temporal = null;
-                        break;
-                    case 1:
-                        temporal = temporals.get(0).getTwo();
-                        break;
-                    default:
-                        temporals.sortThisBy(LongObjectPair::getOne);
-                        temporal = conjSeq(temporals);
-                        break;
+                if (t!=null) {
+                    if (eternal != null && e.getOne() == 0) {
+                        boolean econj = eternal.op() != CONJ;
+                        if (econj || eternal.dt() == DTERNAL) {
+                            //promote eternal to parallel
+                            if (!econj) {
+                                return ConjCommutive.the(0, eternal, t);
+                            } else {
+                                List<Term> ecl = new FasterList(eternal.subs() + 1);
+                                eternal.subterms().addTo(ecl);
+                                ecl.add(t);
+                                return ConjCommutive.the(0, ecl);
+                            }
+                        }
+                    }
                 }
-            } else
-                temporal = null;
+                temporal = t;
+                break;
+            default:
+                FasterList<LongObjectPair<Term>> temporals = null;
 
-            if (eternal != null && temporal != null) {
-                if (temporal.equals(eternal))
-                    return eternal;
-                if (temporal.equalsNeg(eternal))
-                    return False;
-                //ci = terms.conj(DTERNAL, temporal, eternal);
-                ci = ConjCommutive.the(DTERNAL, temporal, eternal);
+                for (LongObjectPair next : event.keyValuesView()) {
+                    long when = next.getOne();
+                    if (when == ETERNAL)
+                        continue;
+
+                    Term wt = term(when, next.getTwo(), tmp);
+                    if (wt == null || wt == True) {
+                        continue;
+                    } else if (wt == False) {
+                        return this.term = False;
+                    } else if (wt == Null) {
+                        return this.term = Null;
+                    }
+
+                    if (temporals == null) temporals = new FasterList<>(numOcc + 1);
+
+                    temporals.add(pair(when, wt));
+                }
+                if (temporals != null) {
+
+                    int ee = temporals.size();
+                    switch (ee) {
+                        case 0:
+                            temporal = null;
+                            break;
+                        case 1:
+                            temporal = temporals.get(0).getTwo();
+                            break;
+                        default:
+                            temporals.sortThisBy(LongObjectPair::getOne);
+                            temporal = conjSeq(temporals);
+                            break;
+                    }
+                } else
+                    temporal = null;
+                break;
+        }
 
 
-            } else if (eternal == null) {
+
+        if (eternal != null && temporal != null) {
+            if (eternal == True)
                 ci = temporal;
-            } else /*if (temporal == null)*/ {
-                ci = eternal;
-            }
+            else
+                ci = ConjCommutive.the(DTERNAL, temporal, eternal);
+        } else if (eternal == null) {
+            ci = temporal;
+        } else /*if (temporal == null)*/ {
+            ci = eternal;
         }
 
         if (ci == null)
@@ -1942,12 +2000,12 @@ public class Conj extends ByteAnonMap {
         return false;
     }
 
-//    private static void flattenInto(Collection<Term> ee, Term ex, int dt) {
-//        if (ex.op() == CONJ && ex.dt() == dt)
-//            ex.subterms().forEach(eee -> flattenInto(ee, eee, dt));
-//        else
-//            ee.add(ex);
-//    }
+    private static void flattenInto(Collection<Term> ee, Term ex, int dt) {
+        if (ex.op() == CONJ && ex.dt() == dt)
+            ex.subterms().forEach(eee -> flattenInto(ee, eee, dt));
+        else
+            ee.add(ex);
+    }
 
     public long shift() {
         long min = Long.MAX_VALUE;
@@ -1967,7 +2025,10 @@ public class Conj extends ByteAnonMap {
     }
 
     public Term term(long when, List<Term> tmp) {
-        return term(when, event.get(when), null, tmp);
+        return term(when, event.get(when), tmp);
+    }
+    public Term term(long when, Object what, List<Term> tmp) {
+        return term(when, what, null, tmp);
     }
 
 //    private Term term(long when, Object what) {

@@ -1492,19 +1492,19 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return x;
     }
 
-    public final Task matchBelief(Term x, long when) {
-        return matchBelief(x, when, when);
+    public final Task answerBelief(Term x, long when) {
+        return answerBelief(x, when, when);
     }
 
-    public final Task matchBelief(Term x, long start, long end) {
+    public final Task answerBelief(Term x, long start, long end) {
         return answer(x, BELIEF, start, end);
     }
 
-    public final Task matchGoal(Term x, long when) {
-        return matchGoal(x, when, when);
+    public final Task answerGoal(Term x, long when) {
+        return answerGoal(x, when, when);
     }
 
-    public final Task matchGoal(Term x, long start, long end) {
+    public final Task answerGoal(Term x, long start, long end) {
         return answer(x, GOAL, start, end);
     }
 

@@ -14,8 +14,6 @@ import nars.truth.func.TruthFunc;
 import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
 
 import static nars.Op.*;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.TIMELESS;
 
 /**
  * Evaluates the (maximum possible) truth of a premise
@@ -28,15 +26,15 @@ public class Truthify extends AbstractPred<Derivation> {
 
     /**
      * mode:
-     *       +1 single premise
-     *        0 double premise
-     *       -1 disabled
+     * +1 single premise
+     * 0 double premise
+     * -1 disabled
      */
     transient final byte beliefMode, goalMode;
     boolean beliefOverlap, goalOverlap;
 
     private final TruthFunc goal;
-    private final BeliefProjection beliefProjection;
+    public final BeliefProjection beliefProjection;
 
     /**
      * punctuation transfer function
@@ -47,7 +45,7 @@ public class Truthify extends AbstractPred<Derivation> {
     private final PREDICATE<Derivation> timeFilter;
 
 
-    public Truthify(Term id, ByteToByteFunction punc, TruthFunc belief, TruthFunc goal, Occurrify.TaskTimeMerge time) {
+    public Truthify(Term id, ByteToByteFunction punc, TruthFunc belief, TruthFunc goal, Occurrify.OccurrenceSolver time) {
         super(id);
         this.punc = punc;
         this.timeFilter = time.filter();
@@ -72,7 +70,7 @@ public class Truthify extends AbstractPred<Derivation> {
 
     private static final Atomic TRUTH = Atomic.the("truth");
 
-    public static Truthify the(ByteToByteFunction punc, TruthFunc beliefTruthOp, TruthFunc goalTruthOp, Occurrify.TaskTimeMerge time) {
+    public static Truthify the(ByteToByteFunction punc, TruthFunc beliefTruthOp, TruthFunc goalTruthOp, Occurrify.OccurrenceSolver time) {
         Term truthMode;
 
         FasterList<Term> args = new FasterList(4);
@@ -111,13 +109,13 @@ public class Truthify extends AbstractPred<Derivation> {
         switch (punc) {
             case BELIEF:
             case GOAL:
-                single = (punc==BELIEF ? beliefMode : goalMode)==1;
+                single = (punc == BELIEF ? beliefMode : goalMode) == 1;
                 TruthFunc f = punc == BELIEF ? belief : goal;
                 Truth beliefTruth;
                 if (single) {
                     beliefTruth = null;
                 } else {
-                    if ((beliefTruth = beliefProjection(d))==null)
+                    if ((beliefTruth = beliefProjection(d)) == null)
                         return false;
                 }
 
@@ -153,25 +151,7 @@ public class Truthify extends AbstractPred<Derivation> {
         d.concPunc = punc;
         d.concSingle = single;
 
-        if (d._belief == null || d.concSingle) {
 
-            d.beliefStart = d.beliefEnd = TIMELESS;
-
-        } else {
-            switch (beliefProjection) {
-                case Raw:
-                    d.beliefStart = d._belief.start();
-                    d.beliefEnd = d._belief.end();
-                    break;
-                case Task:
-                    long range = (d.taskStart == ETERNAL || d._belief.start()==ETERNAL) ? 0 : d._belief.range() - 1;
-                    d.beliefStart = d.taskStart;
-                    d.beliefEnd = d.beliefStart + range;
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-            }
-        }
 
         return true;
     }
@@ -191,8 +171,6 @@ public class Truthify extends AbstractPred<Derivation> {
         }
 
     }
-
-
 
 
     /**

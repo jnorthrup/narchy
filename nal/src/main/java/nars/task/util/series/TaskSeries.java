@@ -4,7 +4,7 @@ import jcog.sort.RankedTopN;
 import jcog.sort.TopN;
 import nars.Task;
 import nars.task.util.Answer;
-import nars.truth.dynamic.DynStampTruth;
+import nars.truth.dynamic.DynStampEvi;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -19,7 +19,7 @@ public interface TaskSeries<T extends Task> {
 
 
     @Nullable
-    default DynStampTruth truth(long start, long end, Predicate<Task> filter) {
+    default DynStampEvi truth(long start, long end, Predicate<Task> filter) {
 
         int size = size();
         if (size == 0)
@@ -27,7 +27,7 @@ public interface TaskSeries<T extends Task> {
 
         int limit = Answer.TASK_LIMIT_DEFAULT;
 
-        DynStampTruth d = new DynStampTruth(Math.min(size, limit));
+        DynStampEvi d = new DynStampEvi(Math.min(size, limit));
 
         RankedTopN<Task> inner = TopN.pooled(Answer.topTasks, Math.min(size, limit), filter != null ?
                 (Task t) -> filter.test(t) ? -t.minTimeTo(start, end) : Float.NaN

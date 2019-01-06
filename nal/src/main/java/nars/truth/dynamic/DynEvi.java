@@ -26,16 +26,15 @@ import java.util.function.Function;
 import static nars.Op.*;
 
 /**
- * Created by me on 12/4/16.
+ * collection of evidence for dynamic truth calculation
  */
-public class DynTruth extends FasterList<Task> implements TaskRegion {
+public class DynEvi extends FasterList<Task> implements TaskRegion {
 
-
-    public DynTruth(int initialCap) {
+    public DynEvi(int initialCap) {
         super(initialCap);
     }
 
-    public DynTruth(int size, Task[] t) {
+    public DynEvi(int size, Task[] t) {
         super(size, t);
     }
 
@@ -160,7 +159,7 @@ public class DynTruth extends FasterList<Task> implements TaskRegion {
 
         dyn.pri(
                 //pri(start, end)
-                reapply(DynTruth::pri, Param.DerivationPri)
+                reapply(DynEvi::pri, Param.DerivationPri)
                         * dyn.originality()
         );
 

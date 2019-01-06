@@ -9,7 +9,6 @@ import nars.concept.TaskConcept;
 import nars.op.SubUnify;
 import nars.term.atom.Bool;
 import nars.term.util.Conj;
-import nars.term.util.ConjCommutive;
 import nars.term.util.TermException;
 import nars.term.util.transform.Retemporalize;
 import nars.unify.ellipsis.Ellipsis;
@@ -795,7 +794,7 @@ public class ConjTest {
 
         assertEquals("y", Conj.withoutAll(x, y).toString());
 
-        ConjCommutive.theSorted(DTERNAL, $$("(a&|b)"), $$("(b&|c)"));
+        //ConjCommutive.the(DTERNAL, $$("(a&|b)"), $$("(b&|c)"));
 
         assertEq("((a&|b)&&(b&|c))", "((a&|b)&&(b&|c))");
         assertEq("((a&|b)&&(c&|d))", "((a&|b)&&(c&|d))");
@@ -1570,7 +1569,27 @@ public class ConjTest {
 
 
     }
+
+    @Test void testPromoteEternalDisjunctionToParallel()  {
+
+        assertEq("(||,x,y,z)", "(||,(||,x,y),z)");
+        assertEq("(||,x,y,z)", "(||,--(--x && --y), z)");
+        assertEq("(--,(&|,(--,x),(--,y),(--,z)))", "(--,(((--,x)&|(--,y))&|(--,z)))");
+        assertEq("(--,(&|,(--,x),(--,y),(--,z)))", "(||,--(--x &| --y), z)"); //promoted
+
+    }
+
     @Test void testDisjunctionStackOverflow()  {
+        assertEq("(||,x,y,z)", "((x || y) || z)");
+        assertEq("((||,y,z)&&(--,x))", "((||,(x || y),z) && --x)");
+
+        assertEq("((--,((--,y)&|(--,z)))&&(--,x))", "(--(&|, --x, --y, --z) && --x)");
+
+
+
+        //must promote the outer || to ||+0
+        assertEq("((--,((--,y)&|(--,z)))&&(--,x))", "((||,(--,(--x &| --y)),z) && --x)");
+
         //TODO
         // && [(||,noid(3,14),(--,((--,L)&|(--,R)))), (--,L)]
         // && [(||,noid(3,14),(--,((--,R)&|L))), L]

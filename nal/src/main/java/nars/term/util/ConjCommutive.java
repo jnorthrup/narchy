@@ -8,6 +8,7 @@ import nars.term.util.builder.HeapTermBuilder;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,6 +20,9 @@ import static nars.time.Tense.*;
 public enum ConjCommutive {;
 
     public static Term the(int dt, Term... u) {
+        return theSorted(dt, sorted(u));
+    }
+    public static Term the(int dt, Collection<Term> u) {
         return theSorted(dt, sorted(u));
     }
 
@@ -140,7 +144,7 @@ public enum ConjCommutive {;
                     int coi = conjOther.first(true);
                     Term co = u[coi];
 
-                    if ((dt == DTERNAL) || (dt == 0 && co.dt() == DTERNAL)) {
+                    if ((dt == DTERNAL) || (co.dt() == DTERNAL)) {
                         int indep = 0, elim = 0;
                         for (int i = 0; i < u.length; i++) {
                             if (i == coi) continue;
@@ -155,8 +159,13 @@ public enum ConjCommutive {;
                             }
                         }
 
-                        if (indep == u.length-1)
+                        if (indep == u.length-1) {
+                            //promote dternal wrapped parallel disjunction to parallel
+                            if (dt == DTERNAL && co.dt()==0)
+                                return theSorted(0, u); //need to start over (recurse)
+
                             return conjDirect(dt, u); //all independent
+                        }
 
                         if (elim == u.length-1)
                             return co; //all absorbed

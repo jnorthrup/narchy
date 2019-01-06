@@ -180,7 +180,7 @@ public class Derivation extends PreDerivation {
     /**
      * whether either the task or belief are events and thus need to be considered with respect to time
      */
-    public transient boolean temporal;
+    public transient boolean temporal, temporalTerms;
 
     public transient TruthFunc truthFunction;
     public transient int ditherTime;
@@ -254,7 +254,7 @@ public class Derivation extends PreDerivation {
 
     private void init(NAR nar) {
 
-        this.clear();
+        this.reset();
 
         this.nar = nar;
 
@@ -444,7 +444,8 @@ public class Derivation extends PreDerivation {
 
 
         boolean eternalComplete = (taskStart == ETERNAL) && (_belief == null || beliefStart==ETERNAL);
-        this.temporal = !eternalComplete || Occurrify.temporal(taskTerm) || Occurrify.temporal(beliefTerm);
+        this.temporalTerms = Occurrify.temporal(taskTerm) || Occurrify.temporal(beliefTerm);
+        this.temporal = !eternalComplete || temporalTerms;
 //        if ((_belief == null) && (!temporal)) {
 //            if (Occurrify.temporal(beliefTerm)) {
 //                Term beliefTermEternal = Retemporalize.retemporalizeXTERNALToDTERNAL.transform(beliefTerm); //HACK
@@ -477,7 +478,7 @@ public class Derivation extends PreDerivation {
         try {
             deriver.rules.run(this);
         } catch (Exception e) {
-            clear();
+            reset();
             throw e;
         }
 
@@ -595,8 +596,8 @@ public class Derivation extends PreDerivation {
     /**
      * include any .clear() for data structures in case of emergency we can continue to assume they will be clear on next run()
      */
-    @Override
-    public Derivation clear() {
+
+    public Derivation reset() {
         anon.clear();
         time = ETERNAL;
         premiseBuffer.clear();
@@ -617,8 +618,10 @@ public class Derivation extends PreDerivation {
         ttl = 0;
         taskUniques = 0;
         time = TIMELESS;
+        temporal = temporalTerms = false;
+        taskBeliefTimeIntersects[0] = taskBeliefTimeIntersects[1] = TIMELESS;
 
-        super.clear();
+        clear();
 
         return this;
     }

@@ -9,13 +9,13 @@ import nars.term.Term;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.truth.dynamic.DynStampTruth;
-import nars.truth.dynamic.DynamicTruthModel;
+import nars.truth.dynamic.DynStampEvi;
+import nars.truth.dynamic.AbstractDynamicTruth;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
-import static nars.truth.dynamic.DynamicTruthModel.DynamicConjTruth.ConjIntersection;
+import static nars.truth.dynamic.DynamicConjTruth.ConjIntersection;
 
 
 /**
@@ -24,9 +24,9 @@ import static nars.truth.dynamic.DynamicTruthModel.DynamicConjTruth.ConjIntersec
  */
 public final class DynamicTruthTable extends DynamicTaskTable {
 
-    private final DynamicTruthModel model;
+    private final AbstractDynamicTruth model;
 
-    public DynamicTruthTable(Term c, DynamicTruthModel model, boolean beliefOrGoal) {
+    public DynamicTruthTable(Term c, AbstractDynamicTruth model, boolean beliefOrGoal) {
         super(c, beliefOrGoal);
         this.model = model;
     }
@@ -54,7 +54,7 @@ public final class DynamicTruthTable extends DynamicTaskTable {
         NAR nar = a.nar;
 
         //TODO allow use of time's specified intersect/contain mode
-        DynStampTruth yy = model.eval(template, beliefOrGoal, a.time.start, a.time.end, a.filter, false, nar);
+        DynStampEvi yy = model.eval(template, beliefOrGoal, a.time.start, a.time.end, a.filter, false, nar);
         if (yy == null)
             return null;
 
@@ -114,7 +114,7 @@ public final class DynamicTruthTable extends DynamicTaskTable {
             return null;
 
 
-        Term reconstruct = model.reconstruct(template, yy, nar);
+        Term reconstruct = model.reconstruct(template, yy, nar, s, e);
         if (reconstruct == null) {
             if (Param.DEBUG)
                 throw new WTF("could not reconstruct: " + template + ' ' + yy);
