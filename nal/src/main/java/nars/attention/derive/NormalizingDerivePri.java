@@ -51,8 +51,8 @@ public class NormalizingDerivePri implements DerivePri {
     }
 
     @Override
-    public float pri(Task t, float f, float e, Derivation d) {
+    public float pri(Task t, Derivation d) {
         batch.get().add(t);
-        return base.pri(t, f, e, d);
+        return base.pri(t, d);
     }
 }

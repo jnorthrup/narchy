@@ -16,7 +16,6 @@ import nars.table.temporal.RTreeBeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
-import nars.truth.polation.TruthIntegration;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -77,8 +76,7 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
             super.value(t, n);
 
             if (t.isGoal()) {
-                long now = n.time();
-                MetaGoal.Action.learn(t.cause(), TruthIntegration.value(t, now, n.dur()), n.causes);
+                MetaGoal.Action.learn(t.cause(), t.priElseZero(), n.causes);
             }
         }
     }

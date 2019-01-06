@@ -22,10 +22,10 @@ public class UnevaluatedTask extends NALTask {
         super(parent, c, t);
     }
 
-    @Override
-    public boolean isInput() {
-        return false;
-    }
+//    @Override
+//    public boolean isInput() {
+//        return false;
+//    }
 
     //    @Override
 //    public ITask next(NAR n) {

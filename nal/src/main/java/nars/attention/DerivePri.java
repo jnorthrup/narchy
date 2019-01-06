@@ -25,10 +25,7 @@ public interface DerivePri {
      * @param d the derivation context
      * @return priority, or NaN to filter (cancel) this derived result
      */
-    float pri(Task t, float derivedFreq, float derivedEvi, Derivation d);
-
-
-
+    float pri(Task t, Derivation d);
 
     /** result punctuation factor; allows weighting probabilty according to the determined derived task punctuations of each choice */
     default float preAmp(byte conclusion) {

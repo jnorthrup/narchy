@@ -33,7 +33,6 @@ import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
-import nars.truth.polation.TruthIntegration;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -231,7 +230,7 @@ public class Derivation extends PreDerivation {
 
     public transient int dur;
 
-    private transient float taskEvi, beliefEvi;
+
 
     /**
      * if using this, must set: nar, index, random, DerivationBudgeting
@@ -299,7 +298,6 @@ public class Derivation extends PreDerivation {
             assert (taskTerm != null) : (nextTask + " could not be anonymized: " + nextTaskTerm.anon() + " , " + taskTerm);
 
             this.taskStamp.clear(); //force (re-)compute in post-derivation stage
-            this.taskEvi = Float.NaN; //invalidate
 
             this.taskPunc = nextTask.punc();
             if ((taskPunc == BELIEF || taskPunc == GOAL)) {
@@ -347,7 +345,6 @@ public class Derivation extends PreDerivation {
 //            if (beliefTerm.op()==NEG)
 //                anon.putShift(this._beliefTerm = nextBelief.term(), taskTerm); //TEMPORARY
             //this.belief = new SpecialTermTask(beliefTerm, nextBelief);
-            this.beliefEvi = Float.NaN; //invalidate
         } else {
 
             this.beliefTerm =
@@ -357,7 +354,6 @@ public class Derivation extends PreDerivation {
 
             //this.belief = null;
             this.beliefTruthRaw = this.beliefTruthProjectedToTask = null;
-            this.beliefEvi = 0;
         }
 
         if ((beliefTerm instanceof Bool) || ((beliefTerm instanceof Compound && _beliefTerm instanceof Compound) && (beliefTerm.op()!=_beliefTerm.op())))
@@ -475,12 +471,12 @@ public class Derivation extends PreDerivation {
 
         deriver.pri.premise(this);
 
-        try {
-            deriver.rules.run(this);
-        } catch (Exception e) {
-            reset();
-            throw e;
-        }
+//        try {
+        deriver.rules.run(this);
+//        } catch (Exception e) {
+//            reset();
+//            throw e;
+//        }
 
     }
 
@@ -545,7 +541,6 @@ public class Derivation extends PreDerivation {
             this.eviMin = c2wSafe(this.confMin = nar.confMin.floatValue());
 
             this.termVolMax = nar.termVolumeMax.intValue();
-            this.beliefEvi = this.taskEvi = Float.NaN;
         }
 
 
@@ -657,16 +652,16 @@ public class Derivation extends PreDerivation {
         return e >= eviMin && (this.concTruth = PreciseTruth.byEvi(concTruth.freq(), e)) != null;
     }
 
-    public float parentEvi() {
-
-        if (taskEvi!=taskEvi) {
-            this.taskEvi = taskTruth != null ? TruthIntegration.value(_task, time, dur) : 0;
-        }
-        if (beliefEvi!=beliefEvi) {
-            this.beliefEvi = _belief != null ? TruthIntegration.value(_belief, time, dur) : 0;
-        }
-        return concSingle ? taskEvi : (taskEvi + beliefEvi);
-    }
+//    public float parentEvi() {
+//
+//        if (taskEvi!=taskEvi) {
+//            this.taskEvi = taskTruth != null ? TruthIntegration.evi(_task, time, dur) : 0;
+//        }
+//        if (beliefEvi!=beliefEvi) {
+//            this.beliefEvi = _belief != null ? TruthIntegration.value(_belief, time, dur) : 0;
+//        }
+//        return concSingle ? taskEvi : (taskEvi + beliefEvi);
+//    }
 
     public final float parentPri() {
         return (concSingle ? priSingle : priDouble);

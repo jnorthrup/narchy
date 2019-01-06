@@ -133,21 +133,22 @@ public interface Truth extends Truthed {
             return a.evi() >= b.evi() ? a : b;
     }
     @Nullable
-    static Task stronger(@Nullable Task a, @Nullable Task b, NAR nar) {
+    static Task stronger(@Nullable Task a, @Nullable Task b) {
         if (a == null)
             return b;
         else if (b == null || a.equals(b))
             return a;
         else {
-            boolean ae = a.isEternal();
-            boolean be = b.isEternal();
+            boolean ae = a.isEternal(), be = b.isEternal();
             if (ae && be) {
                 return a.evi() >= b.evi() ? a : b;
             } else if (ae || be) {
-                //compare eternal to temporal with respect to current time
-                long now = nar.time();
-                int dur = nar.dur();
-                return TruthIntegration.value(a, now, dur) >= TruthIntegration.value(a, now, dur) ? a : b;
+                if (be) {
+                    @Nullable Task x = a;
+                    a = b;
+                    b = x; //swap so that 'b' is temporal
+                }
+                return TruthIntegration.evi(a, b.start(), b.end(), 0) >= TruthIntegration.evi(b) ? a : b;
             } else {
                 return TruthIntegration.evi(a) >= TruthIntegration.evi(b) ? a : b;
             }

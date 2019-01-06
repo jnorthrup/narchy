@@ -7,6 +7,7 @@ import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
 import nars.control.op.Remember;
+import nars.link.TaskLink;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
@@ -41,17 +42,17 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
      */
     Tasklike tasklinkPtr = null;
 
-//    /**
-//     * permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation
-//     */
-//    public final TaskLink.GeneralTaskLink tasklink;
+    /**
+     * permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation
+     */
+    public final TaskLink.GeneralTaskLink tasklink;
 
     public SeriesBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<T> s) {
         super(c, beliefOrGoal);
         this.series = s;
 
         tasklinkPtr = seed(term, punc(), ETERNAL);
-
+        tasklink = new TaskLink.GeneralTaskLink(tasklinkPtr, 0);
 
     }
 
@@ -233,7 +234,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
 
         @Override
         protected boolean tasklink() {
-            return true; //tasklink add procedure is added manually in SensorBeliefTables
+            return false; //tasklink add procedure is added manually in SensorBeliefTables
         }
 
 //        @Override

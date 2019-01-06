@@ -97,10 +97,6 @@ public class TruthIntegration {
 
     }
 
-    public static float value(Task t, long when, int dur) {
-        return evi(t, when, when, dur);
-                // * t.range(); <- wont work for eternal tasks
-    }
 
 //    private static final class TempLongArrayList extends LongArrayList {
 //

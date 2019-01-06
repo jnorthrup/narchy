@@ -14,6 +14,7 @@ public abstract class Attention extends DurService {
 
     /** default derivePri for derivers */
     public DerivePri derivePri =
+            //new DirectDerivePri();
             new DefaultDerivePri();
             //new DefaultPuncWeightedDerivePri();
 

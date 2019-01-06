@@ -7,8 +7,9 @@ import nars.Task;
 import nars.attention.DerivePri;
 import nars.derive.Derivation;
 import nars.truth.Truth;
+import nars.truth.polation.TruthIntegration;
 
-import static nars.truth.func.TruthFunctions.w2cSafe;
+import static nars.time.Tense.ETERNAL;
 
 /**
  * TODO parameterize, modularize, refactor etc
@@ -33,17 +34,17 @@ public class DefaultDerivePri implements DerivePri {
     public final FloatRange polarityImportance = new FloatRange(0.01f, 0f, 1f);
 
     @Override
-    public float pri(Task t, float f, float e, Derivation d) {
+    public float pri(Task t, Derivation d) {
         float factor = this.gain.floatValue();
 
         factor *= factorComplexityAbsolute(t, d);
         //factor *= factorComplexityRelative(t, d);
         //factor *= factorComplexityRelative2(t, d);
 
-        if (f==f) {
+        if (t.isBeliefOrGoal()) {
             //belief or goal:
-            factor *= factorEvi(e, d);
-            factor *= factorPolarity(f);
+            factor *= factorEvi(t, d);
+            factor *= factorPolarity(t.freq());
         } else {
             factor *= factor; //re-apply for single-premise case
         }
@@ -93,21 +94,41 @@ public class DefaultDerivePri implements DerivePri {
         return Util.lerp(polarity, 1f - polarityImportance.floatValue(), 1f);
     }
 
-    float factorEvi(float dEvi, Derivation d) {
+    float factorEvi(Task t, Derivation d) {
 
-        float pEvi = d.parentEvi();
+        float ep, et;
+        if (t.isEternal()) {
+            et = t.evi();
+            assert(d.taskStart==ETERNAL);
+            ep = d._task.isBeliefOrGoal() ? d._task.evi() : 0;
+            if (!d.concSingle) {
+                assert(d.beliefStart==ETERNAL);
+                ep += d._belief.evi();
+            }
+        } else {
+            int dur = d.dur;
 
-        if (pEvi > dEvi) {
+            et = TruthIntegration.evi(t);
 
-            float pConf = w2cSafe(pEvi);
-            float dConf = w2cSafe(dEvi);
-            float lossFactor = Util.unitize((pConf - dConf) / pConf);
+            long ts = t.start(), te = t.end();
+            ep = d._task.isBeliefOrGoal() ?
+                    (d._task.isEternal() ? TruthIntegration.evi(d._task, ts, te, dur) : TruthIntegration.evi(d._task))
+                        : 0;
+            if (!d.concSingle) {
+                ep += d._belief.isEternal() ? TruthIntegration.evi(d._belief, ts, te, dur) : TruthIntegration.evi(d._belief);
+            }
 
-            return Util.lerp(eviImportance.floatValue(), 1f , lossFactor);
         }
 
-        //throw new RuntimeException("spontaneous belief/goal evidence generated from only question parent task");
-        return 1; //
+//        if (ep < et) {
+//            throw new WTF("spontaneous belief inflation"); //not actually
+//        }
+        if (ep < et)
+            return 1;
+        else {
+            float lossFactor = 1 - ((ep - et) / ep);
+            return Util.lerp(eviImportance.floatValue(), 1f, lossFactor);
+        }
     }
 
 
