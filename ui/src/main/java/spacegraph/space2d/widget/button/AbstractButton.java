@@ -53,7 +53,7 @@ public abstract class AbstractButton extends Widget {
     }
 
     public final <B extends AbstractButton> B enabled(boolean e) {
-        enabled.lazySet(e);
+        enabled.set(e);
         return (B)this;
     }
 

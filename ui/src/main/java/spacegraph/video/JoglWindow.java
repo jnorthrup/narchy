@@ -347,7 +347,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         }
 
         if (change) {
-            updateWindow.lazySet(true);
+            updateWindow.set(true);
         }
 
     }

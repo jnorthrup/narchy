@@ -47,6 +47,13 @@ public abstract class Unify extends Versioning implements Subst {
     public final Set<Termutator> termutes = new ArrayHashSet<>(4);
 
     public final VersionMap<Variable, Term> xy;
+
+    /** bits of the unifiable variables; variables not unifiable are tested for equality only */
+    public int varBits;
+
+    /** bits of the unifiable variables + the temporal compounds, indicating unification can not rely on equality for fast failure */
+    public int nonConstantBits;
+
     public Random random;
 
     /**
@@ -56,7 +63,6 @@ public abstract class Unify extends Versioning implements Subst {
 
     public int dtTolerance = 0;
 
-    public int varBits;
 
 
     /**
@@ -80,9 +86,14 @@ public abstract class Unify extends Versioning implements Subst {
         super(stackMax);
 
         this.random = random;
-        this.varBits = varBits | Op.Temporal;
+        setVarBits(varBits);
 
         this.xy = new ConstrainedVersionMap(this, termMap);
+    }
+
+    public void setVarBits(int varBits) {
+        this.varBits = varBits;
+        this.nonConstantBits = varBits | Op.Temporal;
     }
 
     /**
@@ -216,8 +227,8 @@ public abstract class Unify extends Versioning implements Subst {
     /**
      * whether the op is assignable
      */
-    public final boolean matchType(Op v) {
-        return ((this.varBits & v.bit) != 0);
+    public final boolean matchType(Op var) {
+        return ((this.varBits & var.bit) != 0);
     }
 
     @Override
@@ -241,10 +252,10 @@ public abstract class Unify extends Versioning implements Subst {
      * whether is constant with respect to the current matched variable type
      */
     public final boolean constant(Termlike x) {
-        return !x.hasAny(varBits);
+        return !x.hasAny(nonConstantBits);
     }
     public final boolean constant(int structure) {
-        return !Op.hasAny(structure, varBits);
+        return !Op.hasAny(structure, nonConstantBits);
     }
 
 

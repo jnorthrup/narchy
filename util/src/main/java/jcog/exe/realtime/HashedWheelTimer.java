@@ -297,14 +297,14 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     @Override
     public void shutdown() {
-        cursor.lazySet(Integer.MIN_VALUE);
+        cursor.set(Integer.MIN_VALUE);
         if (executor instanceof ExecutorService)
             ((ExecutorService) this.executor).shutdown();
     }
 
     @Override
     public List<Runnable> shutdownNow() {
-        cursor.lazySet(Integer.MIN_VALUE);
+        cursor.set(Integer.MIN_VALUE);
         if (executor instanceof ExecutorService)
             return ((ExecutorService) this.executor).shutdownNow();
         else

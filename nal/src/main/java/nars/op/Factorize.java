@@ -65,7 +65,7 @@ public class Factorize {
             return x; //unchanged
 
         Term[] y = factorize.apply(Terms.sorted(x.subterms()));
-        if (y == null)
+        if (y.length == 0)
             return x; //unchanged
 
         if (Util.sum(Term::volume, y) > volMax)
@@ -86,11 +86,16 @@ public class Factorize {
     private static Term[] _factorize(SubtermsKey x) {
         Subterms xx = x.subs;
 
-        Term[] xxx = distribute(xx);
-        if (xxx == null)
-            return null; //not worth changing
+        Term[] xxx = distribute(xx), yyy;
+        if (xxx != null)
+            yyy = applyConj(xxx, xx.hasVarDep() ? f : fIfNoDep);
+        else
+            yyy = null;
 
-        return applyConj(xxx, xx.hasVarDep() ? f : fIfNoDep);
+        if (yyy==null)
+            return Op.EmptyTermArray; //not worth changing
+        else
+            return yyy;
     }
 
     /** returns null if detects no reason to re-process */

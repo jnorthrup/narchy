@@ -151,10 +151,10 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
             super(null, Op.Variable);
         }
 
-        private MySubUnify reset(int op, boolean strict) {
+        private MySubUnify reset(int varBits, boolean strict) {
             this.random = parent.random;
             this.strict = strict;
-            this.varBits = op;
+            setVarBits(varBits);
             this.result = this.transformed = null;
             clear();
             return this;
@@ -173,6 +173,8 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
             return false;
         }
     }
+
+
 
 
 }

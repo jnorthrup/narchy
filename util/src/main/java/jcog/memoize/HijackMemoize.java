@@ -1,6 +1,7 @@
 package jcog.memoize;
 
 import jcog.Texts;
+import jcog.WTF;
 import jcog.data.NumberX;
 import jcog.pri.PriProxy;
 import jcog.pri.ScalarValue;
@@ -34,14 +35,10 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
         this.soft = soft;
         this.func = f;
 
-        bag = newBag(initialCapacity, reprobes);
+        bag = new MyHijackBag(initialCapacity, reprobes);
         bag.resize(initialCapacity);
     }
 
-
-    protected HijackMemoize<X, Y>.MyHijackBag newBag(int initialCapacity, int reprobes) {
-        return new MyHijackBag(initialCapacity, reprobes);
-    }
 
     @Override
     public final void clear() {
@@ -65,7 +62,6 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
      */
     public float value(X x, Y y) {
         return DEFAULT_VALUE;
-
     }
 
     @Nullable
@@ -76,7 +72,8 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
             if (e != null) {
                 exists.priAdd(CACHE_HIT_BOOST);
                 return e;
-            }
+            } else
+                throw new WTF();
         }
         return null;
     }
@@ -248,8 +245,8 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
         }
 
         @Override
-        protected boolean keyEquals(Object k, PriProxy<X, Y> p) {
-            return p.x().equals(k);
+        protected boolean keyEquals(Object k, int kHash, PriProxy<X, Y> p) {
+            return p.xEquals(k, kHash);
         }
 
         @Override

@@ -3,6 +3,7 @@ package nars.subterm;
 import jcog.data.list.FasterList;
 import nars.Op;
 import nars.term.Term;
+import org.eclipse.collections.impl.block.factory.Comparators;
 
 import java.util.Collection;
 
@@ -85,25 +86,14 @@ public class TermList extends FasterList<Term> implements Subterms {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         
-//        if ((obj instanceof TermList)) {
-//            return fastListEquals(((TermList)obj));
-//        } else {
-//            if (hashCode()!=obj.hashCode())
-//                return false;
-        return ((Subterms)obj).equalTerms(this);
-//        }
+        if ((obj instanceof TermList)) {
+            return nonNullEquals(((TermList)obj));
+        } else {
+            if (hashCode()!=obj.hashCode())
+                return false;
+            return ((Subterms)obj).equalTerms(this);
+        }
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     public void addAll(Subterms x, int xStart, int xEnd) {

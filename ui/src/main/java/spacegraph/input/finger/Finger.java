@@ -89,7 +89,7 @@ abstract public class Finger {
 
             if (f != null /*&& (what = f.touching()) != null*/) {
 
-                idle.lazySet(false);
+                idle.set(false);
 
                 if (f.clickedNow(button, what)) {
 
@@ -377,7 +377,7 @@ abstract public class Finger {
         for (int i = 0; i < next.length; i++) {
             float r = next[i];
             if (r != 0)
-                this.rotation[i].setLazy(r); //add(r);
+                this.rotation[i].set(r);
         }
     }
 

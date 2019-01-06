@@ -5,9 +5,10 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.TreeSet;
+import java.util.Set;
 
 import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
@@ -38,7 +39,7 @@ public abstract class Retemporalize extends TermTransform.NegObliviousTermTransf
                 Subterms yy = y.subterms();
                 if (yy.OR(yyy -> yyy.op()==CONJ)) {
                     //collapse any embedded CONJ which will inevitably have dt=XTERNAL
-                    TreeSet<Term> t = new TreeSet();
+                    UnifiedSet<Term> t = new UnifiedSet(yy.subs());
                     for (Term yyy : yy) {
                         if (yyy.op()==CONJ) {
                             yyy.subterms().forEach(t::add);
@@ -46,9 +47,11 @@ public abstract class Retemporalize extends TermTransform.NegObliviousTermTransf
                             t.add(yyy);
                         }
                     }
-                    return yy.subs()!=1 && t.size()==1 ?
-                            Op.terms.theCompound(CONJ, XTERNAL, t.first(), t.first()) :
-                            CONJ.the(XTERNAL, t);
+                    if (yy.subs() != 1 && t.size() == 1) {
+                        Term tf = t.getFirst();
+                        return Op.terms.theCompound(CONJ, XTERNAL, tf, tf);
+                    } else
+                        return CONJ.the(XTERNAL, t);
                 }
             }
             return y;

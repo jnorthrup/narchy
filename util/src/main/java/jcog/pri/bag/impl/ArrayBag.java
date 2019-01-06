@@ -67,7 +67,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
     @Override
     public float pressure() {
-        return PRESSURE.get(this);
+        return PRESSURE.getOpaque(this);
     }
 
     /**

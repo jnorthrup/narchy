@@ -71,7 +71,9 @@ public class FasterList<X> extends FastList<X> {
         this.size = size;
     }
 
-    /** use with caution */
+    /**
+     * use with caution
+     */
     public void setArray(X[] v) {
         items = v;
         size = v.length;
@@ -152,7 +154,9 @@ public class FasterList<X> extends FastList<X> {
         return x;
     }
 
-    /** removes last item or returns null if empty, similar to Queue.poll() */
+    /**
+     * removes last item or returns null if empty, similar to Queue.poll()
+     */
     public final X poll() {
         if (size == 0)
             return null;
@@ -258,12 +262,16 @@ public class FasterList<X> extends FastList<X> {
         return (float) (sumOfFloat(function) / size());
     }
 
-    /** reduce */
+    /**
+     * reduce
+     */
     public float reapply(FloatFunction<? super X> function, FloatFloatToFloatFunction combine) {
         int n = size;
         switch (n) {
-            case 0: return Float.NaN;
-            case 1: return function.floatValueOf(items[0]);
+            case 0:
+                return Float.NaN;
+            case 1:
+                return function.floatValueOf(items[0]);
             default:
                 float x = function.floatValueOf(items[0]);
                 for (int i = 1; i < n; i++) {
@@ -483,7 +491,7 @@ public class FasterList<X> extends FastList<X> {
 //        Object[] newItems = newArray(newCapacity);
 //        System.arraycopy(this.items, 0, newItems, 0, Math.min(this.size, newCapacity));
 //        return newItems;
-        return items!=null ? Arrays.copyOf(items, newCapacity) : newArray(newCapacity);
+        return items != null ? Arrays.copyOf(items, newCapacity) : newArray(newCapacity);
     }
 
     protected Object[] newArray(int newCapacity) {
@@ -599,6 +607,7 @@ public class FasterList<X> extends FastList<X> {
     public void addWithoutResizeCheck(X x) {
         this.items[this.size++] = x;
     }
+
     public boolean addWithoutResize(X x) {
         X[] i = this.items;
         if (this.size < i.length) {
@@ -607,6 +616,7 @@ public class FasterList<X> extends FastList<X> {
         }
         return false;
     }
+
     public boolean addWithoutResize(Supplier<X> x) {
         X[] i = this.items;
         if (this.size < i.length) {
@@ -652,7 +662,7 @@ public class FasterList<X> extends FastList<X> {
         }
     }
 
-    public <Y> void clearWith(BiConsumer<X,Y> each, Y y) {
+    public <Y> void clearWith(BiConsumer<X, Y> each, Y y) {
         int s = this.size;
         if (s > 0) {
             for (int i = 0; i < s; i++) {
@@ -774,7 +784,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public void swap(int a, int b) {
-        if (a!=b) {
+        if (a != b) {
             X x = get(a);
             X y = get(b);
             set(a, y);
@@ -803,8 +813,27 @@ public class FasterList<X> extends FastList<X> {
         return false;
     }
 
+    /**
+     * assumes all elements are non-null, eliding null checks
+     */
+    public boolean nonNullEquals(FasterList<X> x) {
+        if (this == x) return true;
+        int s = this.size;
+        if (s != x.size) {
+            return false;
+        }
+        X[] a = this.items;
+        X[] b = x.items;
+        for (int i = 0; i < s; i++) {
+            if (!a[i].equals(b[i]))
+                return false;
+        }
+        return true;
+    }
+
+
     public void replaceLast(X y) {
-        items[size-1] = y;
+        items[size - 1] = y;
     }
 
 

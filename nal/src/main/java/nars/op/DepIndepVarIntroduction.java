@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
@@ -73,7 +74,8 @@ public class DepIndepVarIntroduction extends VarIntroduction {
             DepIndepVarIntroduction::_select, MEMOIZE_CAPACITY);
 
     static protected Term[] _select(SubtermsKey input) {
-        return Terms.nextRepeat(input.subs, depIndepFilter, 2);
+        Term[] n = Terms.nextRepeat(input.subs, depIndepFilter, 2);
+        return Objects.requireNonNullElse(n, Op.EmptyTermArray);
     }
 
 

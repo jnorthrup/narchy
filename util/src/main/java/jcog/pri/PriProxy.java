@@ -14,6 +14,10 @@ public interface PriProxy<X, Y> extends UnitPrioritizable, Supplier<Y> {
      */
     X x();
 
+    default boolean xEquals(Object y, int kHash) {
+        return x().equals(y);
+    }
+
     /** equaity/hash on X, supplies Y */
     final class StrongProxy<X, Y> extends PLink<Y> implements PriProxy<X, Y> {
 
@@ -24,6 +28,11 @@ public interface PriProxy<X, Y> extends UnitPrioritizable, Supplier<Y> {
             super(y, pri);
             this.x = x;
             this.hash = x.hashCode();
+        }
+
+        @Override
+        public boolean xEquals(Object y, int kHash) {
+            return hash == kHash && x.equals(y);
         }
 
         @Override
@@ -57,6 +66,11 @@ public interface PriProxy<X, Y> extends UnitPrioritizable, Supplier<Y> {
             this.x = x;
             this.hash = x.hashCode();
             this.pri = pri;
+        }
+
+        @Override
+        public boolean xEquals(Object y, int kHash) {
+            return hash == kHash && x.equals(y);
         }
 
         @Override

@@ -332,7 +332,7 @@ public class IO {
         if (t instanceof Atomic) {
             return new DynBytes(((Atomic) t).bytes()); //dont recycle
         } else {
-            DynBytes d = RecycledDynBytes.get();
+            DynBytes d = new DynBytes(termBytesEstimate(t));
             t.appendTo((ByteArrayDataOutput) d);
             return d;
         }

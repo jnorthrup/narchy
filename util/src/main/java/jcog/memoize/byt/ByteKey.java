@@ -65,6 +65,11 @@ abstract public class ByteKey extends UnitPri {
         }
 
         @Override
+        public boolean xEquals(Object y, int kHash) {
+            return hash == kHash && super.equals(y);
+        }
+
+        @Override
         public ByteKey.ByteKeyInternal<Y> x() {
             return this;
         }

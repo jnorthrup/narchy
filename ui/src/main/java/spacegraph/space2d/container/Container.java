@@ -36,7 +36,7 @@ abstract public class Container extends Surface {
 
     @Override
     public final void layout() {
-        MUSTLAYOUT.lazySet(this, 1);
+        MUSTLAYOUT.set(this, 1);
     }
 
     abstract protected void doLayout(int dtMS);

@@ -19,6 +19,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
+import static nars.time.Tense.ETERNAL;
+
 /**
  * Defines the conditions used in an instance of a derivation
  * Contains the information necessary for generating derivation Tasks via reasoning rules.
@@ -242,7 +244,7 @@ public class Premise implements Comparable<Premise> {
     }
 
     private Task tryMatch(Term beliefTerm, BeliefTable bb, Derivation d) {
-        long[] focus = timeFocus(d, beliefTerm);
+        long[] focus = timeFocus(beliefTerm, d);
 
         NAR nar = d.nar;
         Tense.dither(focus, nar);
@@ -258,7 +260,16 @@ public class Premise implements Comparable<Premise> {
 
     private Task tryAnswer(Term beliefTerm, BeliefTable answerTable, Derivation d) {
 
-        Task match = answerTable.answer(task.start(), task.end(), beliefTerm, d.nar);
+        long ts = task.start(), te;
+        if (ts == ETERNAL) {
+            long[] f = timeFocus(beliefTerm, d);
+            ts = f[0];
+            te = f[1];
+            assert(ts!=ETERNAL);
+        } else {
+            te = task.end();
+        }
+        Task match = answerTable.answer(ts, te, beliefTerm, d.nar);
 
 //        long qStart = task.start();
 //        //int limit = qStart == ETERNAL ? Answer.TASK_LIMIT_ETERNAL_QUESTION : Answer.TASK_LIMIT_DEFAULT;
@@ -283,7 +294,7 @@ public class Premise implements Comparable<Premise> {
         return null;
     }
 
-    private long[] timeFocus(Derivation d, Term beliefTerm) {
+    private long[] timeFocus(Term beliefTerm, Derivation d) {
         return d.deriver.timing.apply(task, beliefTerm);
     }
 

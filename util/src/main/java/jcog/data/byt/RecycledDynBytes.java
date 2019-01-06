@@ -37,7 +37,7 @@ public class RecycledDynBytes extends DynBytes {
     @Override
     public void close() {
         pool.put(this);
-        pool = null;
+        //pool = null; //not necessary since threadlocal
     }
 
 

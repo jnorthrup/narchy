@@ -57,8 +57,10 @@ public abstract class MetalPool<X> implements Pool<X> {
 
 
         int c = this.capacity;
-        if (c == Integer.MAX_VALUE || data.size() < c)
-            data.add(i);
+        if (c == Integer.MAX_VALUE || data.size() < c) {
+            //data.add(i);
+            data.addWithoutResizeCheck(i);
+        }
 
     }
 

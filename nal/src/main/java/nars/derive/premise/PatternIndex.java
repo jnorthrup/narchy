@@ -432,7 +432,7 @@ public class PatternIndex extends MapConceptIndex {
                     for (int ixs = 0; ixs < xs; ixs++) {
                         Term ix = xFixed.get(ixs);
                         int ixsStruct = ix.structure();
-                        int varBits = u.varBits;
+                        int varBits = u.nonConstantBits;
 
                         //TODO requires more work
 //                        if ((ixsStruct & varBits)!=0) {

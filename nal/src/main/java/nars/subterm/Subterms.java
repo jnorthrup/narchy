@@ -789,18 +789,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
             return true; //done
         } //TODO else test invariants of specifically the constant subterms (volume, structure, ..)
 
+        return true;
+
         //finer-grained sub-constant test
 
-        int xs = xx.structureConstant(varBits);
-//        if (xs == 0)
-//            return true;
-
-        int ys = yy.structureConstant(varBits);
-//        if (ys == 0)
-//            return true;
-
-        return (xs & ys) != 0; //any constant subterm commonality
-        //return true;
+//        int xs = xx.structureConstant(varBits);
+//        int ys = yy.structureConstant(varBits);
+//        return (xs & ys) != 0; //any constant subterm commonality
     }
 
     default int structureConstant(int varBits) {

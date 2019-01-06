@@ -76,11 +76,11 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
             ByteHijackMemoize c;
             if (o == CONJ) {
-                c = newOpCache("conj", j -> super.conj(j.dt, j.rawSubs), cacheSizePerOp);
+                c = newOpCache("conj", j -> super.conj(j.dt, resolve(j.rawSubs)), cacheSizePerOp);
             } else if (o.statement) {
                 c = statements;
             } else {
-                c = newOpCache(o.str, x -> theCompound(ops[x.op], x.dt, x.rawSubs, x.key), s);
+                c = newOpCache(o.str, x -> theCompound(ops[x.op], x.dt, resolve(x.rawSubs), x.key), s);
             }
             terms[i] = c;
         }
@@ -159,10 +159,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     public Subterms theSubterms(Term... t) {
-        if (deep)
-            t = resolve(t); //HACK changing the array may disrupt expected sorted order
-
-        return super.theSubterms(false, t);
+        return super.theSubterms(false, resolve(t));
     }
 
 
@@ -171,6 +168,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private Term[] resolve(Term[] t) {
+        if (!deep)
+            return t;
         for (int i = 0, tLength = t.length; i < tLength; i++) {
             Term x = t[i];
             Term y = resolve(x);
@@ -258,12 +257,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
                         predicate = predicate.unneg();
                 }
 
-                if (deep) {
-                    Term sr = resolve(subject);
-                    if (sr != null) subject = sr;
-                    Term pr = resolve(predicate);
-                    if (pr != null) predicate = pr;
-                }
 
                 if (op == SIM) {
                     //commutive order: pre-sort by swapping to avoid saving redundant mappings
@@ -280,11 +273,18 @@ public class InterningTermBuilder extends HeapTermBuilder {
             //return statements.apply(InternedCompound.get(op, dt, subject, predicate));
         }
 
+//        if (deep) {
+//            Term sr = resolve(subject);
+//            if (sr != null) subject = sr;
+//            Term pr = resolve(predicate);
+//            if (pr != null) predicate = pr;
+//        }
+
         return super.statement(op, dt, subject, predicate);
     }
 
     private Term _statement(InternedCompound c) {
-        Term[] s = c.rawSubs;
+        Term[] s = resolve(c.rawSubs);
         return super.statement(Op.ops[c.op], c.dt, s[0], s[1]);
     }
 
@@ -318,12 +318,12 @@ public class InterningTermBuilder extends HeapTermBuilder {
                     Arrays.sort(u = u.clone()); //TODO deduplicate down to at least 2x, no further
             }
 
-            if (deep)
-                u = resolve(u);
-
             if (u.length > 1) {
                 return terms[CONJ.id].apply(InternedCompound.get(CONJ, dt, u));
             }
+        } else {
+//
+//                u = resolve(u);
         }
 
         return super.conj(dt, u);

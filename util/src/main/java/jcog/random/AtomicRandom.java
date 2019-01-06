@@ -40,7 +40,7 @@ abstract public class AtomicRandom extends Random {
     }
 
     private void exit() {
-        BUSY.lazySet(this,0);
+        BUSY.set(this,0);
         //BUSY.set(this, 0);
     }
 

@@ -110,18 +110,22 @@ abstract public class MappedSubterms extends ProxySubterms {
         public int hashCode() {
             return hash;
         }
-        @Override
-        public int subs() {
-            return map.length;
-        }
+
+
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
             if (obj instanceof ArrayMappedSubterms) {
                 ArrayMappedSubterms m = (ArrayMappedSubterms) obj;
                 return hash == m.hash && ref.equals(m.ref) && Arrays.equals(map, m.map);
+            } else {
+                return obj instanceof Subterms && hash == obj.hashCode() && ((Subterms) obj).equalTerms(this);
             }
-            return ((Subterms)obj).equalTerms(this);
+        }
+
+        @Override
+        public int subs() {
+            return map.length;
         }
 
     }
@@ -133,39 +137,21 @@ abstract public class MappedSubterms extends ProxySubterms {
 
     @Override
     public boolean containsRecursively(Term x, boolean root, Predicate<Term> subTermOf) {
-        return !hasNegs() ? ref.containsRecursively(x, root, subTermOf) : super.containsRecursively(x, root, subTermOf);
+        return (!hasNegs() || x.op()!=NEG) ? ref.containsRecursively(x, root, subTermOf) :
+                super.containsRecursively(x, root, subTermOf); //exhaustive
     }
 
     @Override
     public boolean has(int structuralVector, boolean anyOrAll) {
-        return !hasNegs() ? ref.has(structuralVector,anyOrAll) : super.has(structuralVector, anyOrAll);
+        return ((structuralVector & Op.NEG.bit) == 0 || !hasNegs()) ? ref.has(structuralVector,anyOrAll) :
+                super.has(structuralVector, anyOrAll);//exhaustive
     }
+
 
     @Override
-    public int vars() {
-        return ref.vars();
+    public int subs() {
+        return ref.subs();
     }
-
-    @Override
-    public int varDep() {
-        return ref.varDep();
-    }
-
-    @Override
-    public int varIndep() {
-        return ref.varIndep();
-    }
-
-    @Override
-    public int varPattern() {
-        return ref.varPattern();
-    }
-
-    @Override
-    public int varQuery() {
-        return ref.varQuery();
-    }
-
 
     @Override
     public boolean hasXternal() {
@@ -174,7 +160,9 @@ abstract public class MappedSubterms extends ProxySubterms {
 
     @Override
     public int structure() {
-        return ref.structure() | (hasNegs() ? NEG.bit : 0);
+        int s = ref.structure();
+        return ((s & Op.NEG.bit) != 0) ? s :
+                s | (hasNegs() ? NEG.bit : 0);
     }
 
     @Override
@@ -234,10 +222,7 @@ abstract public class MappedSubterms extends ProxySubterms {
         return Subterms.toString(this);
     }
 
-    @Override
-    public int subs() {
-        return ref.subs();
-    }
+
     @Override
     public Term sub(int i) {
         int xy = subMap(i);
@@ -249,5 +234,31 @@ abstract public class MappedSubterms extends ProxySubterms {
 
     protected abstract int subMap(int i);
 
+
+//TODO these are only valid if the map contains no repeats and uses all the subterms of ref
+//    @Override
+//    public int vars() {
+//        return ref.vars();
+//    }
+//
+//    @Override
+//    public int varDep() {
+//        return ref.varDep();
+//    }
+//
+//    @Override
+//    public int varIndep() {
+//        return ref.varIndep();
+//    }
+//
+//    @Override
+//    public int varPattern() {
+//        return ref.varPattern();
+//    }
+//
+//    @Override
+//    public int varQuery() {
+//        return ref.varQuery();
+//    }
 
 }

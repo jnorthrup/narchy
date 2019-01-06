@@ -113,7 +113,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     @Override
     public float pressure() {
-        return PRESSURE.get(this);
+        return PRESSURE.getOpaque(this);
     }
 
     @Override
@@ -187,8 +187,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     @Override
     public void clear() {
         AtomicReferenceArray<V> x = reset(reprobes);
-        PRESSURE.zeroLazy(this);
-        SIZE.lazySet(this, 0);
+        PRESSURE.zero(this);
+        SIZE.set(this, 0);
         mass = 0;
         if (x != null) {
             forEachActive(this, x, this::_onRemoved);
@@ -247,7 +247,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             return null;
 
 
-        final int hash = hash(k);
+        final int kHash = hash(k);
 
         float incomingPri;
         if (mode == Mode.PUT) {
@@ -262,12 +262,12 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         int mutexTicket = -1;
         V toAdd = null, toRemove = null, toReturn = null;
 
-        int start = (hash % c);
+        int start = (kHash % c);
         if (start < 0)
             start += c;
 
         if (mode != GET) {
-            mutexTicket = mutex.start(id, hash);
+            mutexTicket = mutex.start(id, kHash);
         }
 
         try {
@@ -276,10 +276,10 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             probing:
             for (int i = start, probe = reprobes; probe > 0; probe--) {
 
-                V p = //map.getOpaque(i);
-                        map.get(i);
+                V p = map.getOpaque(i);
+                      //  map.get(i);
 
-                if (p != null && keyEquals(k, p)) {
+                if (p != null && keyEquals(k, kHash, p)) {
                     switch (mode) {
 
                         case GET:
@@ -320,7 +320,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 int victim = -1, j = 0;
                 float victimPri = Float.POSITIVE_INFINITY;
                 for (int i = start; j < reprobes; j++) {
-                    V mi = map.get(i);
+                    V mi = //map.get(i);
+                            map.getOpaque(i);
+
                     float mp;
                     if (mi == null || ((mp = pri(mi)) != mp)) {
                         if (map.compareAndSet(i, mi, incoming)) {
@@ -341,7 +343,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 if (toReturn == null) {
                     assert (victim != -1);
 
-                    V existing = map.get(victim);
+                    V existing = map.getOpaque(victim); //map.get(victim);
                     if (existing == null) {
                         //acquired new empty cell
                         toReturn = toAdd = incoming;
@@ -393,14 +395,12 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         return toReturn;
     }
 
-    protected boolean keyEquals(Object k, V p) {
+    protected boolean keyEquals(Object k, int kHash, V p) {
         return k.equals(key(p));
     }
 
 
     private int hash(Object x) {
-
-
         return x.hashCode();
     }
 

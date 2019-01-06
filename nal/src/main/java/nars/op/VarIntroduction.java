@@ -19,7 +19,7 @@ abstract class VarIntroduction {
 
 
         Term[] uu = select(x.subterms());
-        if (uu == null || uu.length == 0)
+        if (uu.length == 0)
             return null;
 
         Term u = uu.length > 1 ? choose(uu, rng) : uu[0];

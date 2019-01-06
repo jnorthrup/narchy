@@ -34,7 +34,7 @@ public class Treadmill64 extends AtomicLongArray implements SpinMutex {
 
             for (int i = slots-1; i >= 0; i--) {
                 //long v = getOpaque(i);
-                long v = getAcquire(i);
+                long v = get(i);
                 if (v == hash) {
                     Thread.onSpinWait();
                     continue restart;  //collision

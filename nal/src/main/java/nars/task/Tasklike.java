@@ -1,6 +1,7 @@
 package nars.task;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.Task;
@@ -43,7 +44,8 @@ public final class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
 //            if (!t.equals(v))
 //                throw new WTF("what kind of task is " + t);
 
-        assert (t.op().conceptualizable && t.op() != NEG);
+        if (!(t.op().conceptualizable && t.op() != NEG))
+            throw new WTF();
         //assert(t.isNormalized());
 
         return new Tasklike(t, punc, when);

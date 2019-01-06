@@ -96,7 +96,7 @@ abstract public class Surface implements SurfaceBase, spacegraph.input.finger.Fi
     abstract protected void paint(GL2 gl, SurfaceRender surfaceRender);
 
     public <S extends Surface> S pos(RectFloat next) {
-        BOUNDS.lazySet(this, next);
+        BOUNDS.set(this, next);
 //        if (bounds.area() < ScalarValue.EPSILON)
 //            throw new WTF();
         return (S) this;
