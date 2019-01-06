@@ -300,12 +300,7 @@ class NarseseBaseTest extends NarseseTest {
         taskParses("break({t001},SELF)! %1.00;0.95%");
     }
 
-    @Test
-    void testWeirdParse() throws Narsese.NarseseException {
-        assertThrows(Narsese.NarseseException.class,()-> $.$("( &&-59 ,a, b, c)").toString());
-        assertEquals("(&&,a,b,c,-59)", $.$("(&&,a,b,c,-59)").toString());
-        assertEquals("(&&,a,b,c,-59)", $.$("(&&,-59,a,b,c)").toString());
-    }
+
 
     @Test
     void testCompoundTermOpenerCloserStatements() throws Narsese.NarseseException {

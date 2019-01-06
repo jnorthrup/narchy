@@ -628,7 +628,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (xi == yi)
                 continue;
 
-            boolean now = (i == s - 1) || ((u.constant(xi) && u.constant(yi)) || u.matchType(xi.op()) || u.matchType(yi.op()));
+            boolean now = (i == s - 1) || ((u.constant(xi) && u.constant(yi)));
 
             if (now) {
 

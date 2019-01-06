@@ -400,11 +400,12 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
         ArrayHashSet<Concept> firedConcepts = d.firedConcepts;
         firedConcepts.clear();
 
-
         n = Math.min(n, d.deriver.tasklinkSpread.intValue());
 
-        float taskPriSum = Math.max(ScalarValue.EPSILON, (float) (((FasterList<Task>) (d.firedTasks.list))
-                .sumOfFloat(Prioritized::priElseZero))* concept.priElseZero()) ;
+        float taskPriSum = (float) (((FasterList<Task>) (d.firedTasks.list)).sumOfFloat(Prioritized::priElseZero));
+
+        //taskPriSum *= concept.priElseZero();
+        taskPriSum = Math.max(taskPriSum, ScalarValue.EPSILON);
 
         float conceptActivationEach =
                 //(activationRate * conceptSrc.priElseZero()) / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch

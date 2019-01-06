@@ -13,7 +13,6 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
-import nars.task.proxy.SpecialOccurrenceTask;
 import nars.term.Term;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
@@ -136,36 +135,36 @@ public class Premise implements Comparable<Premise> {
             return false;
 
         Task task = this.task;
-        if (belief!=null) {
-            boolean te = task.isEternal(), be = belief.isEternal();
-            if (te ^ be) {
-                long now = d.time;
-                if (te) {
-
-                    //proxy task to now
-                    long[] nowOrBelief =
-                            (task.isGoal() || task.isQuest()) ?
-                                new long[] { now, now + belief.range() - 1 } //immediate
-                                //new long[] { d.dur + now, d.dur + now + belief.range() - 1 } //next dur
-                            :
-                                //Longerval.unionArray(belief.start(), belief.end(), now, now + belief.range() - 1);
-                                new long[] { belief.start(), belief.end() };
-                    nowOrBelief[0] = Tense.dither(nowOrBelief[0], d.ditherTime);
-                    nowOrBelief[1] = Tense.dither(nowOrBelief[1], d.ditherTime);
-                    task = new SpecialOccurrenceTask(task, nowOrBelief);
-
-                } else {
-                    //proxy belief to now
-                    long[] nowOrTask =
-                            new long[] { task.start(), task.end() };
-                            //Longerval.unionArray(task.start(), task.end(), now, now + task.range() - 1);
-                    nowOrTask[0] = Tense.dither(nowOrTask[0], d.ditherTime);
-                    nowOrTask[1] = Tense.dither(nowOrTask[1], d.ditherTime);
-
-                    belief = new SpecialOccurrenceTask(belief, nowOrTask);
-                }
-            }
-        }
+//        if (belief!=null) {
+//            boolean te = task.isEternal(), be = belief.isEternal();
+//            if (te ^ be) {
+//                long now = d.time;
+//                if (te) {
+//
+//                    //proxy task to now
+//                    long[] nowOrBelief =
+//                            (task.isGoal() || task.isQuest()) ?
+//                                new long[] { now, now + belief.range() - 1 } //immediate
+//                                //new long[] { d.dur + now, d.dur + now + belief.range() - 1 } //next dur
+//                            :
+//                                //Longerval.unionArray(belief.start(), belief.end(), now, now + belief.range() - 1);
+//                                new long[] { belief.start(), belief.end() };
+//                    nowOrBelief[0] = Tense.dither(nowOrBelief[0], d.ditherTime);
+//                    nowOrBelief[1] = Tense.dither(nowOrBelief[1], d.ditherTime);
+//                    task = new SpecialOccurrenceTask(task, nowOrBelief);
+//
+//                } else {
+//                    //proxy belief to now
+//                    long[] nowOrTask =
+//                            new long[] { task.start(), task.end() };
+//                            //Longerval.unionArray(task.start(), task.end(), now, now + task.range() - 1);
+//                    nowOrTask[0] = Tense.dither(nowOrTask[0], d.ditherTime);
+//                    nowOrTask[1] = Tense.dither(nowOrTask[1], d.ditherTime);
+//
+//                    belief = new SpecialOccurrenceTask(belief, nowOrTask);
+//                }
+//            }
+//        }
 
 
         d.reset(task, belief, nextBeliefTerm);
@@ -210,8 +209,8 @@ public class Premise implements Comparable<Premise> {
                 Task answered = tryAnswer(beliefTerm, answerTable, d);
                 if (answered!=null) {
                     if (answered.conf() >= d.confMin)
-                        n.input(answered);
-////                    d.add(answered); //TODO inputting here is really only useful if revised or dynamic
+                        d.add(answered); //TODO determine if inputting here is really only useful if revised or dynamic
+//                        n.input(answered);
 
                 }
                 if (answerGoal) {

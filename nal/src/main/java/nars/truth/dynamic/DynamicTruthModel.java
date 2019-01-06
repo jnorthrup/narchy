@@ -270,7 +270,7 @@ abstract public class DynamicTruthModel {
 
         private static class UnionImplSubj extends SectIntersection {
             public UnionImplSubj() {
-                super(false, true);
+                super(true, true);
             }
 
             @Override

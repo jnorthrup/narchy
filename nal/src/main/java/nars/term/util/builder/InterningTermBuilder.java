@@ -10,7 +10,6 @@ import nars.subterm.SortedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Terms;
-import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.InternedCompound;
 import org.jetbrains.annotations.Nullable;
@@ -32,9 +31,11 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     protected static final int DEFAULT_SIZE = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
     protected static final int maxInternedVolumeDefault = 18;
-    protected static final boolean deepDefault = false;
+    protected static final boolean deepDefault = true;
 
-    /** memory-saving */
+    /**
+     * memory-saving
+     */
     private static final boolean sortCanonically = true;
     private final static boolean internNegs = false;
     private final static boolean cacheSubtermKeyBytes = false;
@@ -111,29 +112,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return terms[x.op].apply(x);
     }
 
-    private Subterms subsInterned(ByteHijackMemoize<InternedCompound,Subterms> m, Term[] t) {
+    private Subterms subsInterned(ByteHijackMemoize<InternedCompound, Subterms> m, Term[] t) {
         return m.apply(InternedCompound.get(PROD, DTERNAL, t));
-    }
-
-    @Nullable
-    private Term get(Term x) {
-        Op xo = x.op();
-        boolean negate;
-        if (internNegs) {
-            negate = xo == NEG;
-            if (negate) {
-                x = x.unneg();
-                xo = x.op();
-            }
-        } else {
-            negate = false;
-        }
-        if (internableRoot(xo, x.dt())) {
-            Term y = terms[xo.id].apply(InternedCompound.get(x));
-            if (y != null)
-                return negate ? y.neg() : y;
-        }
-        return null;
     }
 
 
@@ -192,20 +172,38 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     private Term[] resolve(Term[] t) {
         for (int i = 0, tLength = t.length; i < tLength; i++) {
-            Term y = resolve(t[i]);
-            if (y != null)
+            Term x = t[i];
+            Term y = resolve(x);
+            if (y != null && y != x && y.equals(x))
                 t[i] = y;
         }
-        return t; //HACK
+        return t;
     }
 
-    @Nullable private Term resolve(Term x) {
-        Term y;
-        if (!(x instanceof Atomic || x.volume() > volInternedMax || !internableSub(x)))
-            y = get(x);
-        else
-            y = null;
-        return y;
+    @Nullable
+    private Term resolve(Term x) {
+        int v = x.volume();
+        if (v <= 1 || v > volInternedMax) {
+            return null;
+        } else {
+            Op xo = x.op();
+            boolean negate;
+            if (!internNegs) {
+                negate = xo == NEG;
+                if (negate) {
+                    x = x.unneg();
+                    xo = x.op();
+                }
+            } else {
+                negate = false;
+            }
+            if (x.the() && internableRoot(xo, x.dt())) {
+                Term y = terms[xo.id].apply(InternedCompound.get(x));
+                if (y != null)
+                    return negate ? y.neg() : y;
+            }
+            return null;
+        }
     }
 
     protected boolean internableRoot(Op op, int dt, Term[] u) {
@@ -246,13 +244,20 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
         if (!(subject instanceof Bool) && !(predicate instanceof Bool) &&
                 (subject.volume() + predicate.volume() < volInternedMax) &&
-                internableSub(subject) && internableSub(predicate) ) {
+                internableSub(subject) && internableSub(predicate)) {
 
             boolean negate = false;
 
             //quick preparations to reduce # of unique entries
 
-            if (!((op==INH || op ==SIM) && (dt!=DTERNAL || subject.equals(predicate)))) {
+            if (!((op == INH || op == SIM) && (dt != DTERNAL || subject.equals(predicate)))) {
+
+                if (op == IMPL) {
+                    negate = (predicate.op() == NEG);
+                    if (negate)
+                        predicate = predicate.unneg();
+                }
+
                 if (deep) {
                     Term sr = resolve(subject);
                     if (sr != null) subject = sr;
@@ -260,23 +265,14 @@ public class InterningTermBuilder extends HeapTermBuilder {
                     if (pr != null) predicate = pr;
                 }
 
-                switch (op) {
-                    case SIM:
-                        //pre-sort by swapping to avoid saving redundant mappings
-                        if (subject.compareTo(predicate) > 0) {
-                            Term x = predicate;
-                            predicate = subject;
-                            subject = x;
-                        }
-                        break;
-                    case IMPL:
-                        negate = (predicate.op() == NEG);
-                        if (negate)
-                            predicate = predicate.unneg();
-                        break;
+                if (op == SIM) {
+                    //commutive order: pre-sort by swapping to avoid saving redundant mappings
+                    if (subject.compareTo(predicate) > 0) {
+                        Term x = predicate;
+                        predicate = subject;
+                        subject = x;
+                    }
                 }
-
-
 
                 return this.terms[op.id].apply(InternedCompound.get(op, dt, subject, predicate)).negIf(negate);
             }

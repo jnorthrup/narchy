@@ -25,7 +25,6 @@ import static spacegraph.SpaceGraph.window;
  */
 public class Gradius extends NAgentX {
 
-
     private final Gradius4K g = new Gradius4K();
 
     private final boolean canPause = false;

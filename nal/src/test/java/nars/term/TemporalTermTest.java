@@ -123,7 +123,7 @@ public class TemporalTermTest {
     @Test
     void testAtemporalization6() throws Narsese.NarseseException {
         Compound x0 = $("(($1&&x) ==>+1 ((--,y) &&+2 $1)))");
-        assertEquals("((x&|$1) ==>+1 ((--,y) &&+2 $1))", x0.toString());
+        assertEquals("((x&&$1) ==>+1 ((--,y) &&+2 $1))", x0.toString());
 
     }
 

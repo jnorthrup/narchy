@@ -289,6 +289,9 @@ public class Remember extends AbstractTask {
 
 
         } else {
+            if (input.isInput()) {
+                remember(input);
+            }
             input = null;
         }
 

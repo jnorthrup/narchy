@@ -495,7 +495,7 @@ public class TermReductionsTest extends NarseseTest {
 
         assertEq(Bool.True, "((tetris(isRowClear,7,true)&&tetris(7,14))=|>tetris(7,14))");
 
-        assertEq("((tetris(isRowClear,7,true)&|tetris(7,14)) ==>+10 tetris(7,14))",
+        assertEq("((tetris(isRowClear,7,true)&&tetris(7,14)) ==>+10 tetris(7,14))",
                 "((tetris(isRowClear,7,true)&&tetris(7,14)) ==>+10 tetris(7,14))");
     }
 
@@ -609,7 +609,7 @@ public class TermReductionsTest extends NarseseTest {
 
 
         Term x = $("((hear(what)&&(hear(is)&&(hear(is)&&(hear(what)&&(hear(is)&&(hear(is)&&(hear(what)&&(hear(is)&&(hear(is)&&(hear(is)&&hear(what))))))))))) ==>+153 hear(is)).");
-        assertEq("((hear(is)&|hear(what)) ==>+153 hear(is))",
+        assertEq("((hear(is)&&hear(what)) ==>+153 hear(is))",
                 x.toString());
 
     }

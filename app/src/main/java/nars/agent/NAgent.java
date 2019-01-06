@@ -498,7 +498,8 @@ public class NAgent extends NARService implements NSense, NAct {
             else if (now <= prev)
                 return;
 
-            prev = Math.max(prev, now - frameTrigger.dur()) + 1;
+            prev = Math.max(prev, now - frameTrigger.dur());
+                    //+ 1
 
             long next = //Tense.dither(Math.max(now, frameTrigger.next(now)), d);
                         Math.max(now, frameTrigger.next(now));

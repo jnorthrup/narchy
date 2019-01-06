@@ -302,15 +302,16 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
 
 
     @Test public void testXternalPred() throws Narsese.NarseseException {
+        NAR n = NARS.shell();
+        n.believe("(x ==> a)");
+        n.believe("(x ==> b)");
 
         for (String s : new String[] {
                 "(x ==>+- (a && b))",
                 "(x ==>+- (a &&+- b))",
                 "(x ==>+- (a &&+- b))"
         }) {
-            NAR n = NARS.shell();
-            n.believe("(x ==> a)");
-            n.believe("(x ==> b)");
+
             assertImplBeliefFromXternal(s, n, "(x==>(a&&b))");
         }
     }

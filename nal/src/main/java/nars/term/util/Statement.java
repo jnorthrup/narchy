@@ -79,30 +79,30 @@ public class Statement {
                 return Null;
 
             //implicit dternal to parallel promotion in temporal implication
-            if (dt!=XTERNAL && dt!=DTERNAL) {
-                if (subject.op()==CONJ && subject.dt()==DTERNAL && !Conj.isSeq(subject))
-                    subject = subject.dt(0);
-                if (predicate.op()==CONJ && predicate.dt()==DTERNAL && !Conj.isSeq(predicate))
-                    predicate = predicate.dt(0);
-            }
+//            if (dt!=XTERNAL && dt!=DTERNAL) {
+//                if (subject.op()==CONJ && subject.dt()==DTERNAL && !Conj.isSeq(subject))
+//                    subject = subject.dt(0);
+//                if (predicate.op()==CONJ && predicate.dt()==DTERNAL && !Conj.isSeq(predicate))
+//                    predicate = predicate.dt(0);
+//            }
 
-            int subjDT = subject.dt();
 
-            if (Term.commonStructure(subject, predicate)) {
+            {
+                int subjDT = subject.dt();
 
                 //TODO simple case when no CONJ or IMPL are present
 
                 if (dt != XTERNAL && subjDT != XTERNAL && predicate.dt() != XTERNAL && !subject.OR(x->x instanceof Ellipsis) && !predicate.OR(x->x instanceof Ellipsis) ) {
 
 
-
+                    int subjRange = subject.eventRange();
                     boolean subjNeg = subject.op() == NEG;
 
                     long po;
                     if (dt == DTERNAL) {
                         po = predicate.dt() == DTERNAL ? ETERNAL : 0;
                     } else {
-                        po = subject.eventRange() + dt;
+                        po = subjRange + dt;
                     }
 
 
@@ -151,7 +151,7 @@ public class Statement {
                                     return Null; //??
                             }
 
-                            dt += shift;
+                            dt += shift - subjRange;
 
                         }
 
