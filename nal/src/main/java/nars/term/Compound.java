@@ -553,7 +553,8 @@ public interface Compound extends Term, IPair, Subterms {
 
                             boolean b = seq.eventsWhile((when, what) -> {
 
-                                int w = when == ETERNAL ? DTERNAL : 0;
+                                //int w = when == ETERNAL ? DTERNAL : 0;
+                                int w = DTERNAL;
                                 if ((w == DTERNAL && !decomposeConjDTernal) || (w != DTERNAL && !decomposeConjParallel)) {
                                     //combine the component with the eternal factor
                                     Term distributed = CONJ.the(w, what, factor);

@@ -63,7 +63,7 @@ public class ImplTest {
 
         for (String cp : new String[]{"&&", "&|", " &&+- "}) {
             String xternal = cp.equals(" &&+- ") ? cp : "&|";
-            assertEq("((x&|y) ==>+1 (y" + xternal + "z))", "((y&&x) ==>+1 (y" + cp + "z))");
+            assertEq("((x&&y) ==>+1 (y" + xternal + "z))", "((y&&x) ==>+1 (y" + cp + "z))");
             assertEq("(a ==>+1 (b &&+1 (y" + xternal + "z)))", "(a ==>+1 (b &&+1 (y" + cp + "z)))");
         }
 
@@ -213,9 +213,9 @@ public class ImplTest {
         assertEq("((x&&y)==>z)", "((x&&y)==>z)"); //unchanged
         assertEq("((x&&y) ==>+- z)", "((x&&y) ==>+- z)"); //unchanged
 
-        assertEq("((x&|y)=|>z)", "((x&&y)=|>z)");  //temporal now
-        assertEq("((x&|y) ==>+1 z)", "((x&&y) ==>+1 z)");
-        assertEq("(z=|>(x&|y))", "(z=|>(x&&y))");
+        assertEq("((x&&y)=|>z)", "((x&&y)=|>z)");  //temporal now
+        assertEq("((x&&y) ==>+1 z)", "((x&&y) ==>+1 z)");
+        assertEq("(z=|>(x&&y))", "(z=|>(x&&y))");
     }
 
 

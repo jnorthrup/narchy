@@ -151,7 +151,8 @@ public class Statement {
                                     return Null; //??
                             }
 
-                            dt += shift - subjRange;
+                            dt += shift;
+                                   // - subjRange;
 
                         }
 

@@ -402,64 +402,64 @@ abstract public class DynamicTruthModel {
             public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
                 int superDT = superterm.dt();
 
-                Subterms subterms = superterm.subterms();
+//                Subterms subterms = superterm.subterms();
 
-                boolean dternal = superDT == DTERNAL;
+                boolean dternal = superDT == DTERNAL && !Conj.isSeq(superterm);
                 boolean xternal = superDT == XTERNAL;
-                if ((dternal || xternal) && subterms.subs() == 2 && subterms.subs(x -> x.eventRange() > 0) == 1) {
-                    //distribute factored conjunction
-                    Term factor = subterms.subFirst(x -> x.eventRange() == 0);
-                    Term sequence = subterms.subFirst(x -> x.eventRange() > 0);
-                    return components(sequence, start, end, (event, whenStart, whenEnd) -> {
-                        Term eventDistributed = CONJ.the(superDT, event, factor);
-                        if (eventDistributed == False || eventDistributed == Null)
-                            return false;
-                        if (eventDistributed == True)
-                            return true;
-                        return each.accept(eventDistributed, whenStart, whenEnd);
-                    });
-                }
+//                if ((dternal || xternal) && subterms.subs() == 2 && subterms.subs(x -> x.eventRange() > 0) == 1) {
+//                    //distribute factored conjunction
+//                    Term factor = subterms.subFirst(x -> x.eventRange() == 0);
+//                    Term sequence = subterms.subFirst(x -> x.eventRange() > 0);
+//                    return components(sequence, start, end, (event, whenStart, whenEnd) -> {
+//                        Term eventDistributed = CONJ.the(superDT, event, factor);
+//                        if (eventDistributed == False || eventDistributed == Null)
+//                            return false;
+//                        if (eventDistributed == True)
+//                            return true;
+//                        return each.accept(eventDistributed, whenStart, whenEnd);
+//                    });
+//                }
 
                 boolean parallel = superDT == 0;
-                if (dternal || xternal || parallel) {
-
-
-                    if (subterms.subs() == 2) {
-
-                        Term a = subterms.sub(0), b = subterms.sub(1);
-                        if (a.equals(b)) {
-                            if (end == start)
-                                //return false; //repeat term sampled at same point, give up
-                                return each.accept(a, start, start); //just one component should work
-
-                            else {
-                                if (start == ETERNAL) //watch out for end==XTERNAL
-                                    return each.accept(a, ETERNAL, ETERNAL) && each.accept(b, ETERNAL, ETERNAL);
-                                else
-                                    return each.accept(a, start, start) && each.accept(b, end, end); //use the difference in time to create two distinct point samples
-                            }
-                        }
-
-                        if (a.equalsNeg(b))
-                            return false; //inversion would collapse. how to decide which subterm sampled where.  ThreadLocalRandom etc
-                    }
-//                        if (end - start > 0) {
-//                            randomly choose?
+//                if (dternal || xternal || parallel) {
+//
+//
+//                    if (subterms.subs() == 2) {
+//
+//                        Term a = subterms.sub(0), b = subterms.sub(1);
+//                        if (a.equals(b)) {
+//                            if (end == start)
+//                                //return false; //repeat term sampled at same point, give up
+//                                return each.accept(a, start, start); //just one component should work
+//
+//                            else {
+//                                if (start == ETERNAL) //watch out for end==XTERNAL
+//                                    return each.accept(a, ETERNAL, ETERNAL) && each.accept(b, ETERNAL, ETERNAL);
+//                                else
+//                                    return each.accept(a, start, start) && each.accept(b, end, end); //use the difference in time to create two distinct point samples
+//                            }
 //                        }
-//                        //a repeat or inverting pair of terms.
-//                        // ensure that each component is sampled from different time otherwise collapse occurrs
-//                        return each.accept(subterms.sub(0), start0, end0) &&
-//                                each.accept(subterms.sub(1), start1, end1);
-//                    } else {
-//                        /* simple case: */
-//                        return subterms.AND(event ->
-//                                each.accept(event, start, end)
-//                        );
+//
+//                        if (a.equalsNeg(b))
+//                            return false; //inversion would collapse. how to decide which subterm sampled where.  ThreadLocalRandom etc
 //                    }
-
-                    /* simple case granting freedom when to resolve the components */
-                    return subterms.AND(event -> each.accept(event, start, end));
-                }
+////                        if (end - start > 0) {
+////                            randomly choose?
+////                        }
+////                        //a repeat or inverting pair of terms.
+////                        // ensure that each component is sampled from different time otherwise collapse occurrs
+////                        return each.accept(subterms.sub(0), start0, end0) &&
+////                                each.accept(subterms.sub(1), start1, end1);
+////                    } else {
+////                        /* simple case: */
+////                        return subterms.AND(event ->
+////                                each.accept(event, start, end)
+////                        );
+////                    }
+//
+//                    /* simple case granting freedom when to resolve the components */
+//                    return subterms.AND(event -> each.accept(event, start, end));
+//                }
 
                 LongObjectPredicate<Term> sub;
                 if (xternal || dternal) {
@@ -471,21 +471,21 @@ abstract public class DynamicTruthModel {
                     sub = (when, event) -> each.accept(event, when, when + range);
                 }
 
-                if (superterm.hasAny(Op.VAR_DEP)) {
-                    //decompose by the term itself, not individual events which will fail when resolving a VAR_DEP sub-event
-                    Subterms ss = superterm.subterms();
-                    if (ss.subs() == 2) {
-                        Term a = ss.sub(0);
-                        Term b = ss.sub(1);
-                        if (superDT > 0) {
-                            return sub.accept(0, a) && sub.accept(superDT, b);
-                        } else {
-                            return sub.accept(0, b) && sub.accept(-superDT, a);
-                        }
-                    } else {
-                        throw new TODO(); //can this happen?
-                    }
-                } else {
+//                if (superterm.hasAny(Op.VAR_DEP)) {
+//                    //decompose by the term itself, not individual events which will fail when resolving a VAR_DEP sub-event
+//                    Subterms ss = superterm.subterms();
+//                    if (ss.subs() == 2) {
+//                        Term a = ss.sub(0);
+//                        Term b = ss.sub(1);
+//                        if (superDT > 0) {
+//                            return sub.accept(0, a) && sub.accept(superDT, b);
+//                        } else {
+//                            return sub.accept(0, b) && sub.accept(-superDT, a);
+//                        }
+//                    } else {
+//                        throw new TODO(); //can this happen?
+//                    }
+//                } else {
                     //if (event!=superterm)
                     //else
                     //return false;
@@ -493,7 +493,7 @@ abstract public class DynamicTruthModel {
                             parallel,
                             dternal,
                             xternal, 0);
-                }
+//                }
 
             }
         };
