@@ -122,8 +122,8 @@
 
 
 //quest to 'how' impl question
-    B, X, task("@"), --is(B,"==>") |- (polarizeRandom(B) ==> X), (Punctuation:Question)
-    B, X, task("@"), --is(B,"==>") |- (polarizeRandom(X) ==> B), (Punctuation:Question)
+    B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
+    B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(X) ==> B), (Punctuation:Question)
 
 //what else? impl question
     (A ==> Y), (B ==> Y), task("?") |- (?1 ==> Y), (Punctuation:Question)

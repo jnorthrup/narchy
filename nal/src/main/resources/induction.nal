@@ -8,9 +8,9 @@
     B, A, --is(B,"==>") |- polarizeBelief((polarizeTask(B) ==> A)), (Belief:AbductionDepolarized, Time:TaskRelative, Also:VarIntro)
         //B, A, --is(B,"==>") |- (--B ==> A), (Belief:AbductionN, Time:TaskRelative, Also:VarIntro)
 
-    B, A, --is(A,"==>"), --is(B,"==>")  |- (polarizeTask(B) && polarizeBelief(A)), (Belief:IntersectionDepolarized, Time:Relative, Also:VarIntro)
+    B, A, --is(A,"==>"), --is(B,"==>")  |- (polarizeTask(B) && polarizeBelief(A)), (Belief:IntersectionDepolarized, Time:Sequence, Also:VarIntro)
 
-    (A==>B), (C==>D)     |- ((A && C) ==> (polarizeTask(B) && polarizeBelief(D))), (Belief:IntersectionDepolarized, Also:VarIntro)
+    //(A==>B), (C==>D)     |- ((A && C) ==> (polarizeTask(B) && polarizeBelief(D))), (Belief:IntersectionDepolarized, Also:VarIntro)
 
       //B, A, --is(A,"==>"), --is(B,"==>"), --is(A,"&&"), --is(B,"&&")   |- (polarize(B,task) || polarize(A,belief)), (Belief:UnionDepolarized, Time:Relative, Also:VarIntro)
 

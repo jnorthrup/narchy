@@ -23,7 +23,7 @@ public final class ConjParallel extends TermMatch {
         Term u = t.unneg();
         if (u.op()==CONJ) {
             int i = u.dt();
-            return i == XTERNAL || i == 0 || (i == DTERNAL && !Conj.isSeq(t));
+            return i == XTERNAL || i == 0 || (i == DTERNAL && !Conj.isSeq(u));
         }
         return false;
     }

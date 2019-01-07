@@ -193,7 +193,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                                 nte--;
                             }
                         } else {
-                            if (Param.TIMEGRAPH_STRETCH_INTERSECTING_EVENT) {
+                            if (start!=ETERNAL && Param.TIMEGRAPH_STRETCH_INTERSECTING_EVENT) {
                                 long[] merged;
                                 if ((merged = af.unionIfIntersects(start, end)) != null) {
 

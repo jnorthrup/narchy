@@ -2324,6 +2324,7 @@ public class ConjTest {
     @Test void testConceptOfDisjunctionFckup() {
         assertEq("TODO", $$("((--,(&|,(--,(1-->ang)),ang,3))&&(--,(2-->ang)))").concept());
         //TODO ((grid,#1,13) &&+440 (--,((||,(--,(grid,#1,#1)),rotate)&&left))) .concept()
+        //TODO ((&|,(tetris-->curi),(--,left),(--,rotate))&&(--,((--,rotate) &&+819 (--,left))))
     }
 
 //    @Test void testConjEternalConj2() {

@@ -607,7 +607,7 @@ public class Conj extends ByteAnonMap {
         if (include.op() != CONJ || include.impossibleSubTerm(excludeNeg ? exclude.unneg() : exclude))
             return include;
 
-        Subterms s = include.subterms();
+
         int dt = include.dt();
 
         if (Conj.isSeq(include)) {
@@ -620,6 +620,7 @@ public class Conj extends ByteAnonMap {
             }
 
         } else {
+            Subterms s = include.subterms();
             //try positive first
             Term[] ss = s.subsExcluding(exclude);
             if (ss != null) {

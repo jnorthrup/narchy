@@ -7,7 +7,11 @@
 //    C, X, eventOfNeg(C,X)                     |- --X, (Belief:StructuralDeduction, Time:TaskSubEvent)
 
       C, X, eventOf(C,X),    conjParallel(C)    |-   X, (  Goal:StructuralDeduction)
+       D, X, eventOfNeg(C,X), conjParallel(D)   |-   --conjWithout(D,--X), (  Goal:StructuralDeduction)
+        C, X, eventLastOf(C,X)                  |-   conjDropIfLatest(C,X), (  Goal:StructuralDeduction)
       C, X, eventOfNeg(C,X), conjParallel(C)    |- --X, (  Goal:StructuralDeduction)
+       D, X, eventOf(C,X), conjParallel(D)      |-   --conjWithout(D,X), (  Goal:StructuralDeduction)
+        C, X, eventLastOfNeg(C,X)               |-   conjDropIfLatest(C,--X), (  Goal:StructuralDeduction)
 
 
 
@@ -17,9 +21,18 @@
     //CONJ
     S, C, eventOf(C,S), conjParallel(C)    |-   conjWithout(C,  S), (Belief:DecomposePP)
     S, C, eventOfNeg(C,S), conjParallel(C) |-   conjWithout(C,--S), (Belief:DecomposeNP)
+
     //DISJ
     S, D, eventOfNeg(D,S), conjParallel(D) |-   --conjWithout(D,--S), (Belief:DecomposeNN)
-    S, D, eventOf(D,S), conjParallel(D)      |-   --conjWithout(D,  S), (Belief:DecomposePN)
+    S, D, eventOf(D,S), conjParallel(D)    |-   --conjWithout(D,  S), (Belief:DecomposePN)
+
+    //conditional disjunction decompose (alternate suppress)
+    D, X, eventOf(D,X), conjParallel(D)      |- --conjWithout(D,  X), (Goal:DesireNP)
+    D, X, eventOfNeg(D,X), conjParallel(D)   |- --conjWithout(D,--X), (Goal:DesireNN)
+
+    //alternate suppress
+    G, D, eventOf(D,G), conjParallel(D)      |- --conjWithout(D,  G), (Goal:DesireWeakPN)
+    G, D, eventOfNeg(D,G), conjParallel(D)   |- --conjWithout(D,--G), (Goal:DesireWeakNN)
 
 
 
@@ -78,16 +91,7 @@
     //TODO conjunction sequence prefix
 
     C, X, eventFirstOf(C,X)      |- conjDropIfEarliest(C,  X), (Belief:Deduction,Goal:Deduction)
-      C, X, eventFirstOf(C,X)    |- X, (Goal:StructuralDeduction)
-        //C, X, eventFirstOf(C,X)    |- --X, (Goal:StructuralDeductionN)
     C, X, eventFirstOfNeg(C,X)   |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DeductionPN)
-      C, X, eventFirstOfNeg(C,X) |- --X, (Goal:StructuralDeduction)
-        //C, X, eventFirstOfNeg(C,X) |- X, (Goal:StructuralDeductionN)
-
-
-    //conditional disjunction decompose
-//    D, X, eventOf(D,X)      |- --conjWithout(D,  X), (Goal:DesireNP)
-//    D, X, eventOfNeg(D,X)   |- --conjWithout(D,--X), (Goal:DesireNN)
 
 
 

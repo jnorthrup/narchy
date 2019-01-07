@@ -87,7 +87,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             v2 target = new v2(r.cx() / scaling, r.cy() / scaling);
 
             if (body.setTransform(target, 0, Spatialization.EPSILONf)) {
-                //body.setAwake(true);
+                body.setAwake(true);
             }
 
         }

@@ -2,15 +2,12 @@ package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.learn.ql.HaiQ;
-import jcog.learn.ql.HaiQae;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
 import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
 import nars.agent.FrameTrigger;
-import nars.agent.util.RLBooster;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
@@ -25,20 +22,16 @@ import nars.time.clock.RealTime;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.windo.GraphEdit;
 import spacegraph.video.Draw;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static nars.Op.GOAL;
 import static nars.Op.IMPL;
-import static spacegraph.SpaceGraph.window;
 
 public class TrackXY_NAR extends NAgentX {
 
@@ -190,51 +183,51 @@ public class TrackXY_NAR extends NAgentX {
         TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
 
 
-        //if (rl) {
-        {
-            RLBooster rlb = new RLBooster(a,
-
-                    //DQN2::new,
-                    HaiQae::new,
-                    //HaiQ::new,
-
-                    false);
-            a.curiosity.enable.set(false);
-
-            window(new Gridding(
-                Stream.of(((HaiQ) (rlb.agent)).q,((HaiQ) (rlb.agent)).et).map(
-                        l -> {
-
-                            BitmapMatrixView i = new BitmapMatrixView(l);
-                            a.onFrame(i::update);
-                            return i;
-                        }
-                ).collect(toList()))
-            , 800, 800);
-
-//            window(
-//                    new LSTMView(
-//                            ((LivePredictor.LSTMPredictor) ((DQN2) rlb.agent).valuePredict).lstm.agent
-//                    ), 800, 800
-//            );
+//        //if (rl) {
+//        {
+//            RLBooster rlb = new RLBooster(a,
 //
-////            window(new Gridding(
-////                Stream.of(((DQN2) (rlb.agent)).valuePredict.layers).map(
-////                        l -> {
+//                    //DQN2::new,
+//                    HaiQae::new,
+//                    //HaiQ::new,
+//
+//                    false);
+//            a.curiosity.enable.set(false);
+//
+//            window(new Gridding(
+//                Stream.of(((HaiQ) (rlb.agent)).q,((HaiQ) (rlb.agent)).et).map(
+//                        l -> {
+//
+//                            BitmapMatrixView i = new BitmapMatrixView(l);
+//                            a.onFrame(i::update);
+//                            return i;
+//                        }
+//                ).collect(toList()))
+//            , 800, 800);
+//
+////            window(
+////                    new LSTMView(
+////                            ((LivePredictor.LSTMPredictor) ((DQN2) rlb.agent).valuePredict).lstm.agent
+////                    ), 800, 800
+////            );
 ////
-////                            BitmapMatrixView i = new BitmapMatrixView(l.input);
-////                            BitmapMatrixView w = new BitmapMatrixView(l.weights);
-////                            BitmapMatrixView o = new BitmapMatrixView(l.output);
-////
-////                            a.onFrame(i::update);
-////                            a.onFrame(w::update);
-////                            a.onFrame(o::update);
-////
-////                            return new Gridding(i, w, o);
-////                        }
-////                ).collect(toList()))
-////            , 800, 800);
-        }
+//////            window(new Gridding(
+//////                Stream.of(((DQN2) (rlb.agent)).valuePredict.layers).map(
+//////                        l -> {
+//////
+//////                            BitmapMatrixView i = new BitmapMatrixView(l.input);
+//////                            BitmapMatrixView w = new BitmapMatrixView(l.weights);
+//////                            BitmapMatrixView o = new BitmapMatrixView(l.output);
+//////
+//////                            a.onFrame(i::update);
+//////                            a.onFrame(w::update);
+//////                            a.onFrame(o::update);
+//////
+//////                            return new Gridding(i, w, o);
+//////                        }
+//////                ).collect(toList()))
+//////            , 800, 800);
+//        }
 
 
         if (gui)

@@ -74,14 +74,22 @@ public class Occurrify extends TimeGraph {
                     d.beliefEnd = d._belief.end();
                 } else if (truth.beliefProjection == BeliefProjection.Task) {
 
-                    long range = (taskEternal || d._belief.start() == ETERNAL) ? 0 : d._belief.range() - 1;
-                    d.beliefStart = d.taskStart;
-                    d.beliefEnd = d.beliefStart + range;
+                    if (d._belief.isEternal()) {
+                        d.beliefStart = d.beliefEnd = ETERNAL; //keep eternal
+                    } else {
+                        //the temporal belief has been shifted to task in the truth computation
+                        long range = (taskEternal || d._belief.start() == ETERNAL) ? 0 : d._belief.range() - 1;
+                        d.beliefStart = d.taskStart;
+                        d.beliefEnd = d.beliefStart + range;
+                    }
                 } else {
 
                     throw new UnsupportedOperationException();
                 }
             }
+        } else {
+            assert(d.taskStart == ETERNAL && d.taskEnd == ETERNAL);
+            assert((d.beliefStart == ETERNAL && d.beliefEnd == ETERNAL)||(d.beliefStart == TIMELESS && d.beliefEnd == TIMELESS));
         }
 
         if (d.temporalTerms || (d.taskStart!=ETERNAL) || (d.beliefStart!=ETERNAL && d.beliefStart!=TIMELESS)) {
@@ -297,8 +305,13 @@ public class Occurrify extends TimeGraph {
                 beliefEnd = beliefOccurrence ? d.beliefEnd : TIMELESS;
 
         if (taskStart == ETERNAL && beliefStart!=ETERNAL) {
-            taskStart = beliefStart; taskEnd = beliefEnd;
+            taskStart = taskEnd = TIMELESS;
+        } else if (beliefStart == ETERNAL && taskStart != ETERNAL) {
+            beliefStart = beliefEnd = TIMELESS;
         }
+//        if (taskStart == ETERNAL && beliefStart!=ETERNAL) {
+//            taskStart = beliefStart; taskEnd = beliefEnd;
+//        }
 
         this.decomposeEvents = decomposeEvents;
 
@@ -864,67 +877,60 @@ public class Occurrify extends TimeGraph {
 
         },
         /**
+         * specificially for conjunction induction
+         *
          * unprojected span, for sequence induction
          * events are not decomposed as this could confuse the solver unnecessarily.  automatic autoneg?
          */
-        Relative() {
+        Sequence() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
 
 
-                if (x.op() != CONJ || x.subs() != 2) {
-                    //degenerated to non-conjunction. use the full solver
-                    return solveOccDT(x, d.occ.reset(x));
-                }
+                Term tt = d.taskTerm.negIf(d.taskTruth.isNegative());
+                Term bb = d.beliefTerm.negIf(d.beliefTruthRaw.isNegative());
 
                 long tTime = d.taskStart, bTime = d.beliefStart;
 
                 if (tTime == ETERNAL && bTime == ETERNAL) {
-                    return pair(x.dt(DTERNAL), new long[]{ETERNAL, ETERNAL});
-                }
-                if (tTime == ETERNAL) {
-                    return pair(x.dt(0), new long[]{bTime, d.beliefEnd});
-                }
-                if (bTime == ETERNAL) {
-                    return pair(x.dt(0), new long[]{tTime, d.taskEnd});
+                    return pair(CONJ.the(DTERNAL, tt, bb), new long[]{ETERNAL, ETERNAL});
+                } else if (tTime == ETERNAL) {
+                    return pair(CONJ.the(DTERNAL, tt, bb), new long[]{bTime, d.beliefEnd});
+                }else  if (bTime == ETERNAL) {
+                    return pair(CONJ.the(DTERNAL, tt, bb), new long[]{tTime, d.taskEnd});
+                } else {
+                    Term y;
+                    long earlyStart = Math.min(tTime, bTime);
+                    if (tTime == earlyStart)
+                        y = Conj.sequence(tt, 0, bb, /*Tense.dither*/(bTime - tTime)/*, d.nar)*/);
+                    else
+                        y = Conj.sequence(bb, 0, tt, /*Tense.dither*/(tTime - bTime)/*, d.nar)*/);
+
+                    long range = Math.max(Math.min(d._task.range(), d._belief.range()) - 1, 0);
+                    return pair(y, new long[]{earlyStart, earlyStart + range});
                 }
 
 
-                Term i = x.sub(0), j = x.sub(1);
-                Term tt;
+//                Term i = x.sub(0), j = x.sub(1);
+//                Term tt;
 
                 //infer which component is earlier
-                Term taskTerm = d.taskTerm, beliefTerm = d.beliefTerm;
-                if (taskTerm.equals(i) || taskTerm.equals(beliefTerm))
-                    tt = i;
-                else if (taskTerm.equals(j))
-                    tt = j;
-                else if (taskTerm.equalsNeg(i) && !beliefTerm.equals(i.unneg()))
-                    tt = i;
-                else if (taskTerm.equalsNeg(j) && !beliefTerm.equals(j.unneg()))
-                    tt = j;
-//                else if (taskTerm.equalsRoot(i))
+//                Term taskTerm = d.taskTerm, beliefTerm = d.beliefTerm;
+//                if (taskTerm.equals(i) || taskTerm.equals(beliefTerm))
 //                    tt = i;
-//                else if (taskTerm.equalsRoot(j))
+//                else if (taskTerm.equals(j))
 //                    tt = j;
-                else
-                    return null; //TODO more cases
+//                else if (taskTerm.equalsNeg(i) && !beliefTerm.equals(i.unneg()))
+//                    tt = i;
+//                else if (taskTerm.equalsNeg(j) && !beliefTerm.equals(j.unneg()))
+//                    tt = j;
+//                else
+//                    return null; //TODO more cases
 
-                Term bb = (tt == i) ? j : i;
+//                Term bb = (tt == i) ? j : i;
 
 //                long firstStart = ((first == i) ? d.task : d.belief).start();
 //                long secondStart = (first == i  ? d.belief : d.task).start();
-                Term y;
-                long earlyStart = Math.min(tTime, bTime);
-                if (tTime == earlyStart)
-                    y = Conj.sequence(tt, 0, bb, Tense.dither(bTime - tTime, d.nar));
-                else
-                    y = Conj.sequence(bb, 0, tt, Tense.dither(tTime - bTime, d.nar));
-
-                long range = Math.max(Math.min(d._task.range(), d._belief.range()) - 1, 0);
-
-
-                return pair(y, new long[]{earlyStart, earlyStart + range});
 
             }
 

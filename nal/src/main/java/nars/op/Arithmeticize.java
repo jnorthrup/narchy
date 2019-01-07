@@ -9,7 +9,6 @@ import jcog.memoize.HijackMemoize;
 import jcog.memoize.Memoizers;
 import nars.*;
 import nars.eval.Evaluation;
-import nars.task.signal.SignalTask;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Terms;
@@ -76,8 +75,8 @@ public class Arithmeticize {
 
         @Override
         protected float pri(Task t) {
-            if (t instanceof SignalTask)
-                return Float.NaN; //dont apply to signal names directly
+//            if (t instanceof SignalTask)
+//                return Float.NaN; //dont apply to signal names directly
 
             float p = super.pri(t);
             Term tt = t.term();

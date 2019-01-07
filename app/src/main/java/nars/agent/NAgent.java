@@ -122,7 +122,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
 
         this.frameTrigger = frameTrigger;
-        this.prev = ETERNAL;
+        this.prev = this.now = ETERNAL;
 //
 //        actReward = new AttnDistributor(
 //                Iterables.concat(
@@ -489,16 +489,18 @@ public class NAgent extends NARService implements NSense, NAct {
 
         try {
 
-            int d = nar.timeResolution.intValue();
-            long now = //Tense.dither(nar.time(), d);
-                       nar.time();
+
+            int frameDur = frameTrigger.dur();
+
+            //int d = nar.timeResolution.intValue();
+            long now = nar.time();
             long prev = this.prev;
             if (prev == ETERNAL)
-                prev = now;
+                prev = now - frameDur;
             else if (now <= prev)
-                return;
+                now = prev; //what
 
-            prev = Math.max(prev, now - frameTrigger.dur());
+            prev = Math.max(prev, now - frameDur);
                     //+ 1
 
             long next = //Tense.dither(Math.max(now, frameTrigger.next(now)), d);
@@ -514,7 +516,7 @@ public class NAgent extends NARService implements NSense, NAct {
 
             cycle.next(this, iteration.getAndIncrement(), prev, now);
 
-            this.prev = now;
+            this.prev = this.now;
 
             if (trace.getOpaque())
                 logger.info(summary());
