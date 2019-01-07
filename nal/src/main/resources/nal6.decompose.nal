@@ -7,11 +7,11 @@
 //    C, X, eventOfNeg(C,X)                     |- --X, (Belief:StructuralDeduction, Time:TaskSubEvent)
 
       C, X, eventOf(C,X),    conjParallel(C)    |-   X, (  Goal:StructuralDeduction)
-       D, X, eventOfNeg(C,X), conjParallel(D)   |-   --conjWithout(D,--X), (  Goal:StructuralDeduction)
-        C, X, eventLastOf(C,X)                  |-   conjDropIfLatest(C,X), (  Goal:StructuralDeduction)
+       D, X, eventOfNeg(C,X), conjParallel(D)   |-   --conjWithout(D,--X), (  Goal:StructuralDeductionN)
+        C, X, eventOf(C,X)                  |-   conjWithout(C,X), (  Goal:StructuralDeduction)
       C, X, eventOfNeg(C,X), conjParallel(C)    |- --X, (  Goal:StructuralDeduction)
-       D, X, eventOf(C,X), conjParallel(D)      |-   --conjWithout(D,X), (  Goal:StructuralDeduction)
-        C, X, eventLastOfNeg(C,X)               |-   conjDropIfLatest(C,--X), (  Goal:StructuralDeduction)
+       D, X, eventOf(C,X), conjParallel(D)      |-   --conjWithout(D,X), (  Goal:StructuralDeductionN)
+        C, X, eventOfNeg(C,X)               |-   conjWithout(C,--X), (  Goal:StructuralDeduction)
 
 
 
@@ -26,11 +26,11 @@
     S, D, eventOfNeg(D,S), conjParallel(D) |-   --conjWithout(D,--S), (Belief:DecomposeNN)
     S, D, eventOf(D,S), conjParallel(D)    |-   --conjWithout(D,  S), (Belief:DecomposePN)
 
-    //conditional disjunction decompose (alternate suppress)
+    //conditional disjunction goal decompose (alternate suppress by belief)
     D, X, eventOf(D,X), conjParallel(D)      |- --conjWithout(D,  X), (Goal:DesireNP)
     D, X, eventOfNeg(D,X), conjParallel(D)   |- --conjWithout(D,--X), (Goal:DesireNN)
 
-    //alternate suppress
+    //conditional goal disjunction decompose (alternate suppress by goal)
     G, D, eventOf(D,G), conjParallel(D)      |- --conjWithout(D,  G), (Goal:DesireWeakPN)
     G, D, eventOfNeg(D,G), conjParallel(D)   |- --conjWithout(D,--G), (Goal:DesireWeakNN)
 
