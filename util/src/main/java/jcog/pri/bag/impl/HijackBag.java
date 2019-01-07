@@ -487,11 +487,11 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
         newPri = newPri * newPri * reprobes;
         oldPri = oldPri * oldPri * reprobes;
-        if (oldPri > 2 * Float.MIN_VALUE) {
+        if (oldPri > 2 * Float.MIN_NORMAL) {
             float thresh = 1.0f - (1.0f - (oldPri / (newPri + oldPri)));
             return random.nextFloat() > thresh;
         } else {
-            return (newPri >= Float.MIN_VALUE) || random.nextBoolean();
+            return (newPri >= Float.MIN_NORMAL) || random.nextBoolean();
 
         }
     }

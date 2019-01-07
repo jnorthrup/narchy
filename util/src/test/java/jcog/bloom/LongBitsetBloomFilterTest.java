@@ -265,10 +265,10 @@ class LongBitsetBloomFilterTest {
     @Test
     void testBloomFilterFloat() {
         LongBitsetBloomFilter bf = new LongBitsetBloomFilter(10000);
-        float val = Float.MIN_VALUE;
+        float val = Float.NEGATIVE_INFINITY;
         float val1 = 1.1f;
         float val2 = 2.2f;
-        float val3 = Float.MAX_VALUE;
+        float val3 = Float.POSITIVE_INFINITY;
 
         assertEquals(false, bf.testFloat(val));
         assertEquals(false, bf.testFloat(val1));

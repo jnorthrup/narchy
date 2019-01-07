@@ -411,7 +411,7 @@ class Island {
         report(contactSolver.m_velocityConstraints);
 
         if (allowSleep) {
-            float minSleepTime = Float.MAX_VALUE;
+            float minSleepTime = Float.POSITIVE_INFINITY;
 
             final float linTolSqr = Settings.linearSleepTolerance * Settings.linearSleepTolerance;
             final float angTolSqr = Settings.angularSleepTolerance * Settings.angularSleepTolerance;

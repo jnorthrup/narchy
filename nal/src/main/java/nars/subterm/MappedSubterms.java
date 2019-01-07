@@ -71,7 +71,7 @@ abstract public class MappedSubterms extends ProxySubterms {
         final byte[] map;
 
         final int hash;
-        boolean hasNegs;
+        final boolean hasNegs;
 
         private ArrayMappedSubterms(Subterms base, byte[] map) {
             super(base); assert(base.subs()==map.length);
@@ -83,6 +83,7 @@ abstract public class MappedSubterms extends ProxySubterms {
         private ArrayMappedSubterms(Subterms base, byte[] map, int hash) {
             super(base); assert(base.subs()==map.length);
             this.map = map;
+            this.hasNegs = super.hasNegs();
             this.hash = hash;
         }
 

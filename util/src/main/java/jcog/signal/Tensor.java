@@ -235,7 +235,7 @@ public interface Tensor  {
 
 
     default float maxValue() {
-        final float[] max = {Float.MIN_VALUE};
+        final float[] max = {Float.NEGATIVE_INFINITY};
         forEach((i, v) -> {
             if (max[0] < v)
                 max[0] = v;
@@ -244,7 +244,7 @@ public interface Tensor  {
     }
 
     default float minValue() {
-        final float[] min = {Float.MAX_VALUE};
+        final float[] min = {Float.POSITIVE_INFINITY};
         forEach((i, v) -> {
             if (min[0] > v)
                 min[0] = v;

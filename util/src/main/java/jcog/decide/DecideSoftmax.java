@@ -60,7 +60,7 @@ public class DecideSoftmax implements Deciding {
             }
 
             float sumMotivation = Util.sum(vector);
-            if (sumMotivation > Float.MIN_VALUE * actions) {
+            if (sumMotivation > Float.MIN_NORMAL * actions) {
 
 
                 if (normalize) {

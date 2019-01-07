@@ -175,7 +175,7 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
         double min = getMin();
         double max = getMax();
         double range = max - min;
-        if (range < Float.MIN_VALUE*64f /* estimate of an FP epsilon */)
+        if (range < Float.MIN_NORMAL*64f /* estimate of an FP epsilon */)
             return 0.5f;
         else
             return (float) ((n - min) / (range));

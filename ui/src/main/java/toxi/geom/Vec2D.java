@@ -69,22 +69,22 @@ public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
     /** Defines the zero vector. */
     public static final ReadonlyVec2D ZERO = new Vec2D();
 
-    /**
-     * Defines vector with both coords set to Float.MIN_VALUE. Useful for
-     * bounding box operations.
-     */
-    public static final ReadonlyVec2D MIN_VALUE = new Vec2D(Float.MIN_VALUE,
-            Float.MIN_VALUE);
-
-    /**
-     * Defines vector with both coords set to Float.MAX_VALUE. Useful for
-     * bounding box operations.
-     */
-    public static final ReadonlyVec2D MAX_VALUE = new Vec2D(Float.MAX_VALUE,
-            Float.MAX_VALUE);
-
-    public static final ReadonlyVec2D NEG_MAX_VALUE = new Vec2D(
-            -Float.MAX_VALUE, -Float.MAX_VALUE);
+//    /**
+//     * Defines vector with both coords set to Float.MIN_VALUE. Useful for
+//     * bounding box operations.
+//     */
+//    public static final ReadonlyVec2D MIN_VALUE = new Vec2D(Float.MIN_VALUE,
+//            Float.MIN_VALUE);
+//
+//    /**
+//     * Defines vector with both coords set to Float.MAX_VALUE. Useful for
+//     * bounding box operations.
+//     */
+//    public static final ReadonlyVec2D MAX_VALUE = new Vec2D(Float.MAX_VALUE,
+//            Float.MAX_VALUE);
+//
+//    public static final ReadonlyVec2D NEG_MAX_VALUE = new Vec2D(
+//            -Float.MAX_VALUE, -Float.MAX_VALUE);
 
     /**
      * Creates a new vector from the given angle in the XY plane.
@@ -293,7 +293,7 @@ public class Vec2D implements Comparable<ReadonlyVec2D>, ReadonlyVec2D {
      * @return itself
      */
     public Vec2D constrain(Polygon2D poly) {
-        float minD = Float.MAX_VALUE;
+        float minD = Float.POSITIVE_INFINITY;
         Vec2D q = null;
         for (Line2D l : poly.getEdges()) {
             Vec2D c = l.closestPointTo(this);

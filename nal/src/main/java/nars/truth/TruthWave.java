@@ -183,8 +183,8 @@ public class TruthWave {
      * returns 2 element array
      */
     public float[] range() {
-        final float[] min = {Float.MAX_VALUE};
-        final float[] max = {Float.MIN_VALUE};
+        final float[] min = {Float.POSITIVE_INFINITY};
+        final float[] max = {Float.NEGATIVE_INFINITY};
         forEach((f, c, start, end) -> {
             if (c > max[0]) max[0] = c;
             if (c < min[0]) min[0] = c;

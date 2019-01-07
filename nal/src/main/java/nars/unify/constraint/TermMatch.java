@@ -358,7 +358,7 @@ abstract public class TermMatch {
 
         MyUnifyConstraint(Variable x, boolean trueOrFalse) {
             super(x, TermMatch.this.getClass().getSimpleName(),
-                    TermMatch.this.param()!=null ? $.p(TermMatch.this.param(), $.the(trueOrFalse)): $.the(trueOrFalse));
+                    ($.p(TermMatch.this.param()!=null ? TermMatch.this.param() : Op.EmptyProduct).negIf(!trueOrFalse)));
             this.trueOrFalse = trueOrFalse;
         }
 

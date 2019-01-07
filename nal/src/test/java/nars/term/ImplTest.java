@@ -228,7 +228,7 @@ public class ImplTest {
     }
     @Test void testElimination2() {
         assertEq(
-                "(--,((left &&+60 left) ==>+5080 left))",
+                "TODO", //False?
                 "((--,(left &&+2518 left))==>left)"
         );
 

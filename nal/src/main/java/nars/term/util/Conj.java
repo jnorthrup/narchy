@@ -114,11 +114,13 @@ public class Conj extends ByteAnonMap {
         return add(t.dt() == DTERNAL ? ETERNAL : 0, t);
     }
 
+    public static boolean containsOrEqualsEvent(Term container, Term x) {
+        return container.equals(x) || containsEvent(container, x);
+    }
+
     public static boolean containsEvent(Term container, Term x) {
         if (!x.op().eventable)
             return false;
-        if (container.equals(x))
-            return true;
         if (container.op() != CONJ || container.impossibleSubTerm(x))
             return false;
 
@@ -126,7 +128,7 @@ public class Conj extends ByteAnonMap {
             return true;
         if (isSeq(container)) {
             int xdt = x.dt();
-            return !container.eventsWhile((when, subEvent) -> !containsEvent(subEvent, x), //recurse
+            return !container.eventsWhile((when, cc) -> cc==container || !containsOrEqualsEvent(cc, x), //recurse
                     0, xdt!=0, xdt!=DTERNAL, true, 0);
         }
 
@@ -141,31 +143,10 @@ public class Conj extends ByteAnonMap {
 
         boolean seq = isSeq(container);
         if (!seq) {
-            return container.contains(x);
+            return ConjCommutive.contains(container, x);
         } else {
 
-            final long[] last = {-1}, found = {-1};
-
-            int xdt = x.dt();
-            container.eventsWhile((when, subEvent) -> {
-
-                if (containsEvent(subEvent, x)) { //recurse
-
-                    if (!firstOrLast || when == 0) {
-                        found[0] = when; //a later event was found
-
-                        if (firstOrLast) {
-                            assert (when == 0);
-                            return false; //done
-                        }
-                    }
-
-                }
-                last[0] = when;
-                return true; //continue looking for last event
-            }, 0, xdt!=0, xdt!=DTERNAL, false, 0);
-
-            return firstOrLast ? found[0] == 0 : found[0] == last[0];
+            return ConjSeq.contains(container, x, firstOrLast);
         }
 
     }

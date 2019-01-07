@@ -455,17 +455,7 @@ public enum $ {
         return Int.the(v);
     }
 
-    public static Atomic the(float v) {
-        if (Util.equals((float) Math.floor(v), v, Float.MIN_VALUE * 2)) {
 
-            return the((int) v);
-        }
-
-
-        return quote(Float.toString(v));
-
-
-    }
 
 
     public static PreciseTruth t(float f, float c) {
@@ -503,11 +493,28 @@ public enum $ {
         return x;
     }
 
+    /** use with caution */
     public static Term the(boolean b) {
         return b ? Bool.True : Bool.False;
     }
 
+    public static Term the(float x) {
+        if (x!=x)
+            throw new TODO("NaN");
+
+        int rx = (int) Util.round(x, 1);
+        if (Util.equals(rx, x, Float.MIN_NORMAL)) {
+            return Int.the(rx);
+        } else {
+            return the(new Fraction(x));
+
+        }
+
+        //return quote(Float.toString(v));
+    }
     public static Term the(double x) {
+        if (x!=x)
+            throw new TODO("NaN");
         int rx = (int) Util.round(x, 1);
         if (Util.equals(rx, x, Double.MIN_NORMAL)) {
             return Int.the(rx);

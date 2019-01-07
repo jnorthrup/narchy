@@ -17,6 +17,7 @@ import static nars.term.Terms.sorted;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
+/** utilities for working with commutive conjunctions (DTERNAL, parallel, and XTERNAL) */
 public enum ConjCommutive {;
 
     public static Term the(int dt, Term... u) {
@@ -329,4 +330,12 @@ public enum ConjCommutive {;
     }
 
 
+    public static boolean contains(Term container, Term x) {
+        if (x.op()==CONJ && !Conj.isSeq(x)) {
+            //test for containment of all x's components
+            if (x.subterms().AND(xx -> container.contains(xx)))
+                return true;
+        }
+        return container.contains(x);
+    }
 }

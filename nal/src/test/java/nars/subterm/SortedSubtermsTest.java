@@ -33,7 +33,8 @@ public class SortedSubtermsTest {
     }
     @Test
     void test3aryNeg() {
-        Subterms remapped3Neg = assertEq(new Term[]{x.neg(), z, x}, new Term[]{x.neg(), z, x}); //repeats, unordered
+        Subterms remapped3Neg = assertEq(
+                new Term[]{x.neg(), z, x}, new Term[]{x.neg(), z, x}); //repeats, unordered
         assertTrue(remapped3Neg instanceof MappedSubterms);
     }
 

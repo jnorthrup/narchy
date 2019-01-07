@@ -72,7 +72,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
     EventsAny() {
         @Override
         public boolean test(Term container, Term x) {
-            if (container.op() != CONJ || container.volume() <= x.volume() || !Term.commonStructure(container, x))
+            if (container.op() != CONJ)
                 return false;
 
             if (Conj.containsEvent(container, x))
@@ -80,7 +80,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
 
             if (x.op()==CONJ) {
                 return !x.eventsWhile((when,xx) ->
-                    !Conj.containsEvent(container, xx)
+                    xx==x || !Conj.containsOrEqualsEvent(container, xx)
                 , 0, true, true, true, 0);
             }
 

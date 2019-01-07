@@ -75,11 +75,11 @@ public abstract class Param {
             //16;
             //12;
             //10;
-            8;
+            //8;
             //7;
             //6;
             //5;
-            //4;
+            4;
             //3;
             //2;
             //1;
@@ -280,11 +280,11 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 4f;
+    public static final float TEST_TIME_MULTIPLIER = 3f;
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 2;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 3;
 
 
     /**

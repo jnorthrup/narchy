@@ -144,8 +144,8 @@ public class VerletPhysics2D {
     }
 
     public Rect getCurrentBounds() {
-        Vec2D min = new Vec2D(Float.MAX_VALUE, Float.MAX_VALUE);
-        Vec2D max = new Vec2D(Float.MIN_VALUE, Float.MIN_VALUE);
+        Vec2D min = new Vec2D(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+        Vec2D max = new Vec2D(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
         for (VerletParticle2D p : particles) {
             min.minSelf(p);
             max.maxSelf(p);
