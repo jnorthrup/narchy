@@ -32,28 +32,6 @@ abstract public class FastCompound implements Compound /* The */ {
     private static final int MAX_LAYERS = 8;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public static class FastCompoundInstancedAtoms extends FastCompound {
         @NotNull
         private final Term[] atoms;
@@ -127,7 +105,6 @@ abstract public class FastCompound implements Compound /* The */ {
         ObjectByteHashMap<Term> atoms = new ObjectByteHashMap();
 
         DynBytes shadow = new DynBytes(256);
-        
 
 
         shadow.writeUnsignedByte(o.ordinal());
@@ -137,16 +114,17 @@ abstract public class FastCompound implements Compound /* The */ {
         int structure = o.bit, hashCode = 1;
         byte volume = 1;
 
-        for (Term x : subterms) { 
-            x.recurseTerms(child -> {
+        for (Term x : subterms) {
+            x.recurseTermsOrdered(child -> {
                 shadow.writeUnsignedByte((byte) child.op().ordinal());
                 if (child.op().atomic) {
                     int aid = atoms.getIfAbsentPut(child, nextUniqueAtom);
                     shadow.writeUnsignedByte((byte) aid);
                 } else {
                     shadow.writeUnsignedByte(child.subs());
-                    
+
                 }
+                return true;
             });
             structure |= x.structure();
             hashCode = Util.hashCombine(hashCode, x.hashCode());
@@ -155,17 +133,11 @@ abstract public class FastCompound implements Compound /* The */ {
 
         hashCode = Util.hashCombine(hashCode, o.id);
 
-        assert(volume < 127);
-        boolean normalized = false; 
+        assert (volume < 127);
+        boolean normalized = false;
 
-        
 
         FastCompound y;
-
-
-
-
-
 
 
         {
@@ -182,25 +154,14 @@ abstract public class FastCompound implements Compound /* The */ {
     public void print() {
 
 
-
-
-
-
-
-
-
-
-
         System.out.println();
     }
-
-    
 
 
     @Override
     public boolean containsRecursively(Term t) {
         if (t instanceof Atomic) {
-            return containsAtomic((Atomic)t);
+            return containsAtomic((Atomic) t);
         } else {
             return Compound.super.containsRecursively(t);
         }
@@ -224,57 +185,14 @@ abstract public class FastCompound implements Compound /* The */ {
     }
 
     @Override
-    @Deprecated public Subterms subterms() {
+    @Deprecated
+    public Subterms subterms() {
         return new SubtermView(this, 0);
     }
 
     public interface ByteIntPredicate {
         boolean test(byte a, int b);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public byte subtermCountAt(int at) {
@@ -286,7 +204,7 @@ abstract public class FastCompound implements Compound /* The */ {
      */
     public int subtermOffsetAt(int subterm, int at) {
         if (subterm == 0) {
-            
+
             return at + 2;
         }
 
@@ -298,7 +216,7 @@ abstract public class FastCompound implements Compound /* The */ {
             }
             return true;
         });
-        assert(o[0]!=0);
+        assert (o[0] != 0);
         return o[0];
     }
 
@@ -306,7 +224,7 @@ abstract public class FastCompound implements Compound /* The */ {
         byte[] shadow = this.shadow;
 
         assert (!ov[shadow[at]].atomic);
-        
+
         byte subterms = shadow[at + 1];
         if (subterms == 0)
             return;
@@ -315,27 +233,26 @@ abstract public class FastCompound implements Compound /* The */ {
         byte[] stack = new byte[MAX_LAYERS];
         stack[0] = subterms;
 
-        at += 2; 
+        at += 2;
 
         for (byte i = 0; i < subterms; ) {
             if (depth == 0) {
-                if (!each.test(i, at) || i == subterms-1) 
+                if (!each.test(i, at) || i == subterms - 1)
                     return;
             }
 
-            byte op = shadow[at++]; 
+            byte op = shadow[at++];
 
 
             if (ov[op].atomic) {
-                at++; 
+                at++;
             } else {
-                stack[++depth] = shadow[at++]; 
+                stack[++depth] = shadow[at++];
             }
 
 
-
             if (--stack[depth] == 0)
-                depth--; 
+                depth--;
             if (depth == 0)
                 i++;
         }
@@ -350,7 +267,7 @@ abstract public class FastCompound implements Compound /* The */ {
 
     @Override
     public int dt() {
-        return DTERNAL; 
+        return DTERNAL;
     }
 
     @NotNull
@@ -366,15 +283,15 @@ abstract public class FastCompound implements Compound /* The */ {
     public Term term(int offset) {
         Op opAtSub = ov[shadow[offset]];
         if (opAtSub.atomic) {
-            
+
             return atom(shadow[offset + 1]);
 
         } else {
-            
-            
+
+
             return TermBuilder.newCompound(opAtSub,
                     Op.terms.subterms(new SubtermView(this, offset))
-                    
+
             );
         }
     }
@@ -386,15 +303,6 @@ abstract public class FastCompound implements Compound /* The */ {
         return term(subtermOffsetAt(i, containerOffset));
 
     }
-
-
-
-
-
-
-
-
-
 
 
     @Override
@@ -410,7 +318,7 @@ abstract public class FastCompound implements Compound /* The */ {
             if (aa == f.atomCount()) {
                 if (Arrays.equals(shadow, f.shadow)) {
                     for (byte i = 0; i < aa; i++)
-                        if (!atom(i).equals(f.atom(i))) 
+                        if (!atom(i).equals(f.atom(i)))
                             return false;
                     return true;
                 }
@@ -431,7 +339,7 @@ abstract public class FastCompound implements Compound /* The */ {
 
         public SubtermView(FastCompound terms, int offset) {
             this.c = terms;
-            if (offset!=0)
+            if (offset != 0)
                 go(offset);
         }
 
@@ -455,9 +363,9 @@ abstract public class FastCompound implements Compound /* The */ {
         public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
             int o = offset;
             final int[] vv = {v};
-            c.subtermOffsets(o, (subterm, at)->{
+            c.subtermOffsets(o, (subterm, at) -> {
                 Term t = c.term(at);
-                
+
                 vv[0] = reduce.intValueOf(vv[0], t);
                 return true;
             });
@@ -466,7 +374,7 @@ abstract public class FastCompound implements Compound /* The */ {
 
         @Override
         public int hashCode() {
-            
+
             int h = _hash;
             if (h == 0) {
                 return _hash = intifyShallow((i, t) -> Util.hashCombine(i, t.hashCode()), 1);
@@ -507,23 +415,6 @@ abstract public class FastCompound implements Compound /* The */ {
             return subs();
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

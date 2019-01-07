@@ -24,6 +24,7 @@ import nars.unify.Unify;
 import nars.unify.ellipsis.EllipsisMatch;
 import nars.unify.mutate.CommutivePermutations;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
+import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.factory.Sets;
@@ -43,6 +44,14 @@ import static nars.Op.ATOM;
  * T = subterm type
  */
 public interface Subterms extends Termlike, Iterable<Term> {
+
+    @Override
+    default boolean hasXternal() {
+        return hasAny(Op.Temporal) && OR(Term::hasXternal);
+    }
+    default boolean contains(Term t) {
+        return !impossibleSubTerm(t) && OR(t::equals);
+    }
 
 
     @Nullable default Term subSub(byte[] path) {
@@ -138,26 +147,26 @@ public interface Subterms extends Termlike, Iterable<Term> {
             t.accept(sub(i), argConst);
     }
 
-    /**
-     * recursively
-     */
-    /*@NotNull*/
-    static boolean hasCommonSubtermsRecursive(/*@NotNull*/ Term a, /*@NotNull*/ Term b, boolean excludeVariables) {
-
-        Subterms aa = a.subterms();
-        Subterms bb = b.subterms();
-
-        int commonStructure = aa.structure() & bb.structure();
-        if (excludeVariables)
-            commonStructure = commonStructure & ~(Op.Variable);
-
-        if (commonStructure == 0)
-            return false;
-
-        Set<Term> scratch = new UnifiedSet<>(4);
-        aa.recurseSubtermsToSet(commonStructure, scratch, true);
-        return bb.recurseSubtermsToSet(commonStructure, scratch, false);
-    }
+//    /**
+//     * recursively
+//     */
+//    /*@NotNull*/
+//    static boolean hasCommonSubtermsRecursive(/*@NotNull*/ Term a, /*@NotNull*/ Term b, boolean excludeVariables) {
+//
+//        Subterms aa = a.subterms();
+//        Subterms bb = b.subterms();
+//
+//        int commonStructure = aa.structure() & bb.structure();
+//        if (excludeVariables)
+//            commonStructure = commonStructure & ~(Op.Variable);
+//
+//        if (commonStructure == 0)
+//            return false;
+//
+//        Set<Term> scratch = new UnifiedSet<>(4);
+//        aa.recurseSubtermsToSet(commonStructure, scratch, true);
+//        return bb.recurseSubtermsToSet(commonStructure, scratch, false);
+//    }
 
 //    /*@NotNull*/
 //    static boolean commonSubterms(/*@NotNull*/ Compound a, /*@NotNull*/ Compound b, boolean excludeVariables) {
@@ -899,10 +908,86 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     /**
+     * returns true if evaluates true for any terms
+     * implementations are allowed to skip repeating subterms and visit out-of-order
+     *
+     * @param p
+     */
+    default boolean OR(/*@NotNull*/ Predicate<Term> p) {
+        int s = subs();
+        for (int i = 0; i < s; i++)
+            if (p.test(sub(i)))
+                return true;
+        return false;
+    }
+
+    /**
+     * returns true if evaluates true for all terms
+     * implementations are allowed to skip repeating subterms and visit out-of-order
+     *
+     * @param p
+     */
+    default boolean AND(/*@NotNull*/ Predicate<Term> p) {
+        int s = subs();
+        for (int i = 0; i < s; i++)
+            if (!p.test(sub(i)))
+                return false;
+        return true;
+    }
+
+    /** supplies the current index as 2nd lambda argument */
+    default boolean ANDwith(/*@NotNull*/ ObjectIntPredicate<Term> p) {
+        int s = subs();
+        for (int i = 0; i < s; i++)
+            if (!p.accept(sub(i), i))
+                return false;
+        return true;
+    }
+
+    /** supplies the current index as 2nd lambda argument */
+    default boolean ORwith(/*@NotNull*/ ObjectIntPredicate<Term> p) {
+        int s = subs();
+        for (int i = 0; i < s; i++)
+            if (p.accept(sub(i), i))
+                return true;
+        return false;
+    }
+
+    /** implementations are allowed to skip repeating subterms and visit out of order */
+    default boolean ANDrecurse(/*@NotNull*/ Predicate<Term> p) {
+        int s = subs();
+        for (int i = 0; i < s; i++)
+            if (!sub(i).ANDrecurse(p))
+                return false;
+        return true;
+    }
+
+    /** implementations are allowed to skip repeating subterms and visit out of order */
+    default boolean ORrecurse(/*@NotNull*/ Predicate<Term> p) {
+        int s = subs();
+        for (int i = 0; i < s; i++)
+            if (sub(i).ORrecurse(p))
+                return true;
+        return false;
+    }
+
+
+
+
+    /**
      * must be overriden by any Compound subclasses
      */
-    default boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, Term parent) {
-        return AND(s -> s.recurseTerms(aSuperCompoundMust, whileTrue, parent));
+    default boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
+        return AND(s -> s.recurseTerms(inSuperCompound, whileTrue, parent));
+    }
+
+    default boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
+        int s = subs();
+        for (int i = 0; i < s; i++) {
+            if (!sub(i).recurseTermsOrdered(inSuperCompound, whileTrue, parent))
+                return false;
+        }
+        return true;
     }
 
     /**

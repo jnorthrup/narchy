@@ -64,7 +64,7 @@ public class AnonWithVarShift extends CachedAnon {
 
 
         if (base.hasAny(mask)) {
-            base.recurseTerms(b-> b.hasAny(mask), s -> {
+            base.recurseTermsOrdered(b-> b.hasAny(mask), s -> {
                 if (s instanceof NormalizedVariable) {
                     byte serial = ((NormalizedVariable) s).id;
                         switch (s.op()) {

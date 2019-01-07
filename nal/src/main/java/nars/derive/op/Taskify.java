@@ -12,7 +12,6 @@ import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.truth.polation.TruthIntegration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,12 +76,27 @@ public class Taskify extends AbstractPred<Derivation> {
 //        }
 
         Term x = Task.forceNormalizeForBelief(x1);
+
         Op xo = x.op();
-        if (!xo.conceptualizable)
+
+
+
+        boolean neg = xo == NEG;
+        if (neg) {
+            x = x.unneg();
+            xo = x.op();
+        }
+        if (!xo.taskable)
             return spam(d, Param.TTL_DERIVE_TASK_FAIL);
 
-        if (xo==NEG)
-            x = x.unneg();
+
+//        if (xo == INH && Param.DERIVE_AUTO_IMAGE_NORMALIZE && !d.concSingle) {
+//            Term y = Image.imageNormalize(x);
+//            if (y!=x) {
+//                x = y;
+//                //xo = x.op();
+//            }
+//        }
 
         Truth tru;
 
@@ -92,7 +106,7 @@ public class Taskify extends AbstractPred<Derivation> {
 
             //dither truth
             float f = tru.freq();
-            if (xo == NEG) {
+            if (neg) {
                 f = 1 - f;
             }
 

@@ -34,7 +34,7 @@ import java.util.Random;
  * @see Random
  * @see SplitMix64RandomGenerator
  */
-public class SplitMix64Random /*extends Random*/ {
+public class SplitMix64Random implements Rand {
     /**
      * 2<sup>64</sup> &middot; &phi;, &phi; = (&#x221A;5 &minus; 1)/2.
      */

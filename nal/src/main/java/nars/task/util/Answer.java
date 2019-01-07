@@ -166,12 +166,10 @@ public final class Answer implements AutoCloseable {
                 return Float.NaN;
 
             float r = strength.rank(x, min);
-            if (r!=r)
-                return Float.NaN;
-            float s = r * (1 / (1+ dtDiff));
-            if (s < min)
+            if (r!=r || r < min)
                 return Float.NaN;
 
+            float s = r * (1 / (1+ dtDiff));
             return s;
         };
     }
@@ -201,11 +199,12 @@ public final class Answer implements AutoCloseable {
 
 
     public static FloatFunction<Task> eternalTaskStrength() {
-        return x -> /*w2cSafe*/(x.isEternal() ? x.evi() : x.eviEternalized() * x.range());
+        return x -> (x.isEternal() ? x.evi() : x.eviEternalized() * x.range());
     }
 
     public static FloatFunction<Task> temporalTaskStrength(long start, long end) {
-        return x -> /*w2cSafe*/(TruthIntegration.evi(x, start, end, 1 /*0*/));
+        long dur = 1 + (end-start);
+        return x -> (TruthIntegration.evi(x, start, end, dur /*1*/ /*0*/));
     }
 
 
@@ -451,11 +450,14 @@ public final class Answer implements AutoCloseable {
     /** consume a limited 'tries' iteration. also applies the filter.
      *  a false return value should signal a stop to any iteration supplying results */
     public final boolean tryAccept(Task t) {
-        if (filter==null || filter.test(t)) {
-            accept(t);
+        int remain = --triesRemain;
+        if (remain >= 0) {
+            if (filter == null || filter.test(t)) {
+                accept(t);
+            }
         }
 
-        return (--triesRemain > 0);
+        return remain > 0;
     }
 
     private void accept(Task task) {

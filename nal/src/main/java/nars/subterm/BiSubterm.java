@@ -2,6 +2,7 @@ package nars.subterm;
 
 import jcog.data.iterator.ArrayIterator;
 import nars.term.Term;
+import nars.unify.Unify;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 
 import java.util.Iterator;
@@ -128,5 +129,62 @@ public class BiSubterm extends TermVector {
         action.accept(y);
     }
 
+    @Override
+    public boolean unifyLinear(Subterms s, Unify u) {
+        boolean cx = u.constant(x);
+        boolean cy = u.constant(y);
+        boolean forward;
+        if (cx == cy) {
+            forward = x.volume() <= y.volume();
+        } else {
+            forward = cx;
+        }
+        if (forward) {
+            return x.unify(s.sub(0), u) && y.unify(s.sub(1), u);
+        } else {
+            return y.unify(s.sub(1), u) && x.unify(s.sub(0), u);
+        }
+    }
 
+    final public static class BiRepeat extends BiSubterm {
+        public BiRepeat(Term x) {
+            super(x,x);
+        }
+
+        @Override
+        public Subterms reversed() {
+            return this;
+        }
+
+        @Override
+        public int sum(ToIntFunction<Term> value) {
+            return x.sum(value)*2;
+        }
+
+        @Override
+        public boolean AND(Predicate<Term> p) {
+            return x.AND(p);
+        }
+
+        @Override
+        public boolean OR(Predicate<Term> p) {
+            return x.OR(p);
+        }
+
+        @Override
+        public boolean ANDrecurse(Predicate<Term> p) {
+            return x.ANDrecurse(p);
+        }
+
+        @Override
+        public boolean ORrecurse(Predicate<Term> p) {
+            return x.ORrecurse(p);
+        }
+
+        @Override
+        public boolean containsRecursively(Term x, boolean root, Predicate<Term> subTermOf) {
+            return x.containsRecursively(x, root, subTermOf);
+        }
+
+    }
 }

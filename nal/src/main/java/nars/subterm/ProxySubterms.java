@@ -16,6 +16,16 @@ public class ProxySubterms<S extends Subterms> implements Subterms {
     }
 
     @Override
+    public boolean hasXternal() {
+        return ref.hasXternal();
+    }
+
+    @Override
+    public boolean contains(Term t) {
+        return ref.contains(t);
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         return ((Subterms)obj).equalTerms(this);

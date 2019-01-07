@@ -103,6 +103,9 @@ public abstract class TermBuilder {
             case 2: {
                 Term t1 = t[1];
 
+                if (t1.equals(t0))
+                    return new BiSubterm.BiRepeat(t0);
+
                 return
 //                    return (this instanceof InterningTermBuilder) ?
 //                            new BiSubterm.ReversibleBiSubterm(t[0], t[1]) :

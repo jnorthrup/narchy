@@ -130,6 +130,9 @@ public interface Revaluator {
 
             //System.out.println(this + "  " + err);
 
+//            for (int i= 0; i < val.length; i++) {
+//                next[i] += val[i]; //plus merge feedback
+//            }
             return next;
         }
 

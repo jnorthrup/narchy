@@ -15,6 +15,7 @@ import nars.term.Term;
 import nars.term.Termed;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 
@@ -143,6 +144,8 @@ public class NodeConcept implements Concept {
     public <X> X meta(String key) {
         return (X) meta.get(key);
     }
+
+
 
 
 }

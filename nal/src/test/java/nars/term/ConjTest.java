@@ -273,7 +273,8 @@ public class ConjTest {
 
     @Test
     void testPromoteEternalToParallel2() {
-        assertEq("((b&|c)&&a)"
+        assertEq(//"((b&|c)&&a)"
+                "(&|,a,b,c)"
                 , "(a&&(b&|c))");
     }
 
@@ -2318,6 +2319,11 @@ public class ConjTest {
         a.printRecursive();
         assertEquals(bs, a.toString());
         assertEquals(bs, b.toString());
+    }
+
+    @Test void testConceptOfDisjunctionFckup() {
+        assertEq("TODO", $$("((--,(&|,(--,(1-->ang)),ang,3))&&(--,(2-->ang)))").concept());
+        //TODO ((grid,#1,13) &&+440 (--,((||,(--,(grid,#1,#1)),rotate)&&left))) .concept()
     }
 
 //    @Test void testConjEternalConj2() {

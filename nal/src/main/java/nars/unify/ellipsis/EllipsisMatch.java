@@ -82,7 +82,7 @@ public final class EllipsisMatch extends LightCompound {
     }
 
     /** behave like a constant that only matches other EllipsisMatch */ @Override
-    public boolean unify(Term y, Unify u) {
+    public boolean unifyForward(Term y, Unify u) {
         return y instanceof EllipsisMatch && (
             equals(y) || (subs() == y.subs() && unifyLinear(y.subterms(), u))
         );

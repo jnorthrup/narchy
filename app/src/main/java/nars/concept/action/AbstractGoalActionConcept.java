@@ -61,7 +61,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 new BeliefTables(goals),
                 n);
 
-        ((BeliefTables)goals()).tables.add(curiosityTable = new CuriosityGoalTable(term, 64));
+        ((BeliefTables)goals()).tables.add(curiosityTable = new CuriosityGoalTable(term, Param.CURIOSITY_CAPACITY));
 
         in = newChannel(n);
     }

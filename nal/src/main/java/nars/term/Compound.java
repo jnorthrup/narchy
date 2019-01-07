@@ -57,6 +57,19 @@ import static nars.time.Tense.*;
  */
 public interface Compound extends Term, IPair, Subterms {
 
+    @Override
+    default boolean AND(Predicate<Term> p) {
+        return Subterms.super.AND(p);
+    }
+    @Override
+    default boolean OR(Predicate<Term> p) {
+        return Subterms.super.OR(p);
+    }
+
+    @Override
+    default boolean contains(Term t) {
+        return Subterms.super.contains(t);
+    }
 
     static boolean equals(/*@NotNull*/ Compound A, Object b) {
         if (A == b) return true;
@@ -166,9 +179,15 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     @Override
-    default boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, @Nullable Term superterm) {
-        return (!aSuperCompoundMust.test(this) ||
-                (whileTrue.test(this) && subterms().recurseTerms(aSuperCompoundMust, whileTrue, this)));
+    default boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound superterm) {
+        return (!inSuperCompound.test(this) ||
+                (whileTrue.test(this) && subterms().recurseTerms(inSuperCompound, whileTrue, this)));
+    }
+
+    @Override
+    default boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
+        return (!inSuperCompound.test(this) ||
+                (whileTrue.test(this) && subterms().recurseTermsOrdered(inSuperCompound, whileTrue, this)));
     }
 
     @Override
@@ -219,22 +238,15 @@ public interface Compound extends Term, IPair, Subterms {
      */
     @Override
     default boolean unify(/*@NotNull*/ Term y, /*@NotNull*/ Unify u) {
-        boolean x = unifyForward(y, u);
-        if (x) return true;
+        return (this == y) || unifyForward(y, u) || ((y instanceof Variable) && y.unify(this, u));
 
-        if (y instanceof Variable)
-            return y.unify(this, u);
-
-        return false;
     }
 
     @Override
     default boolean unifyForward(Term y, Unify u) {
-        if (this == y) return true;
-        if (y instanceof Compound) {
-            return equals(y) || (op() == y.op() && unifySubterms(y, u));
-        }
-        return false;
+        return
+            (y instanceof Compound &&
+                (equals(y) || (op() == y.op() && unifySubterms(y, u))));
     }
 
 
@@ -549,7 +561,9 @@ public interface Compound extends Term, IPair, Subterms {
                         }
                         if (unfactor) {
                             Term factor = (ss.subs() == 1) ? ss.sub(1 - seqIndex) : CONJ.the(ss.subsExcept(seqIndex));
-                            assert (!(factor instanceof Bool));
+                            if (factor instanceof Bool)
+                                throw new WTF();
+                            //assert (!(factor instanceof Bool));
 
                             boolean b = seq.eventsWhile((when, what) -> {
 

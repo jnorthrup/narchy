@@ -151,11 +151,12 @@ public enum ConjCommutive {;
                             Term x = u[i];
                             assert (x.op() != CONJ);
                             if (!conflict(co, x)) {
-                                if (!absorb(co, x)) {
-                                    indep++;
-                                } else if (absorbCompletelyByFirstLayer(co, x)) {
+                                if (absorbCompletelyByFirstLayer(co, x)) {
                                     elim++;
+                                } else if (!absorb(co, x)) {
+                                    indep++;
                                 }
+
                             }
                         }
 
@@ -252,8 +253,8 @@ public enum ConjCommutive {;
         if (x.equals(incoming))
             return true;
 
-        if (!x.containsRecursively(incoming))
-            return false;
+//        if (!x.containsRecursively(incoming))
+//            return false;
 
         if (x.op() == CONJ)
             return x.OR(cc -> absorb(cc, incoming));

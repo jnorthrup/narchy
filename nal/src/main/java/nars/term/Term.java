@@ -154,21 +154,40 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * but if descent filter isnt passed, it will continue to the next sibling:
      * whileTrue must remain true after vistiing each subterm otherwise the entire
      * iteration terminates
+     *
+     * implementations are not obligated to visit in any particular order, or to repeat visit a duplicate subterm
+     * for that, use recurseTermsOrdered(..)
      */
-    default boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, @Nullable Term /* Compound? */superterm) {
-        return whileTrue.test(this);
-    }
+    boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, @Nullable Compound /* Compound? */superterm);
 
+    boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent);
+
+    @Override
+    boolean contains(Term t);
+
+    /**
+     * convenience, do not override (except in Atomic)
+     */
+    default boolean recurseTermsOrdered(Predicate<Term> whileTrue) {
+        return recurseTermsOrdered(x->true, whileTrue, null);
+    }
 
     /**
      * whileTrue = BiPredicate<SubTerm,SuperTerm>
+     * implementations are not obligated to visit in any particular order, or to repeat visit a duplicate subterm
      */
-    default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm) {
-        return whileTrue.test(this, superterm);
-    }
+    boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm);
+
+    boolean OR(Predicate<Term> p);
+    boolean AND(Predicate<Term> p);
+    boolean ANDrecurse(/*@NotNull*/ Predicate<Term> p);
+    boolean ORrecurse(/*@NotNull*/ Predicate<Term> p);
+
+
+
 
     /**
-     * convenience, do not override
+     * convenience, do not override (except in Atomic)
      */
     default void recurseTerms(BiConsumer<Term, Compound> each) {
         recurseTerms(x -> true, (sub, sup) -> {
@@ -178,7 +197,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
     /**
-     * do not override
+     * convenience, do not override (except in Atomic)
      */
     default void recurseTerms(Consumer<Term> each) {
         recurseTerms(a -> true, (sub) -> {
@@ -187,9 +206,11 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         }, null);
     }
 
+
     default boolean hasXternal() {
-        return (dt() == XTERNAL) || Termed.super.hasXternal();
+        return (dt() == XTERNAL) || (hasAny(Op.Temporal) && OR(Term::hasXternal));
     }
+
 
     @Override
     Term sub(int i);
@@ -726,6 +747,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     default Term eventLast() {
         return this;
     }
+
 
 
 }

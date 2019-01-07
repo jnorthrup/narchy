@@ -223,8 +223,15 @@ public class ImplTest {
     void testElimination1() {
         assertEq(
                 "(--,((left &&+60 left) ==>+5080 left))",
-                $$("((left &&+60 left) ==>-60 (left &&+5140 (--,left)))")
+                "((left &&+60 left) ==>-60 (left &&+5140 (--,left)))"
         );
+    }
+    @Test void testElimination2() {
+        assertEq(
+                "(--,((left &&+60 left) ==>+5080 left))",
+                "((--,(left &&+2518 left))==>left)"
+        );
+
     }
 
     @Test void testFactoredElimination() {

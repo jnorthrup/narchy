@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static java.lang.Integer.MIN_VALUE;
@@ -26,18 +28,19 @@ import static nars.Op.NEG;
  */
 public interface Atomic extends Term {
 
-    @Override
-    default boolean OR(Predicate<Term> v) {
-        return v.test(this);
-    }
-
-    @Override
-    default boolean AND(Predicate<Term> v) {
-        return v.test(this);
-    }
 
     @Override
     default boolean containsRecursively(Term t) {
+        return false;
+    }
+
+    @Override
+    default boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
+        return false;
+    }
+
+    @Override
+    default boolean containsNeg(Term x) {
         return false;
     }
 
@@ -215,9 +218,33 @@ public interface Atomic extends Term {
         out.write(bytes());
     }
 
+    default boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, @Nullable Compound superterm) {
+        return whileTrue.test(this);
+    }
+
     @Override
-    default void recurseTerms(BiConsumer<Term, Compound> each) {
+    default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm) {
+        return whileTrue.test(this, superterm);
+    }
+
+    @Override
+    default boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
+        return whileTrue.test(this);
+    }
+
+    @Override
+    default boolean recurseTermsOrdered(Predicate<Term> whileTrue) {
+        return whileTrue.test(this);
+    }
+
+    /** convenience, do not override */
+    @Override default void recurseTerms(BiConsumer<Term, Compound> each) {
         each.accept(this, null);
+    }
+
+    /** convenience, do not override */
+    @Override default void recurseTerms(Consumer<Term> each) {
+        each.accept(this);
     }
 
     @Override
@@ -229,6 +256,17 @@ public interface Atomic extends Term {
     default boolean ORrecurse(Predicate<Term> v) {
         return v.test(this);
     }
+
+    @Override
+    default boolean OR(Predicate<Term> v) {
+        return v.test(this);
+    }
+
+    @Override
+    default boolean AND(Predicate<Term> v) {
+        return v.test(this);
+    }
+
 
     @Override
     default void appendTo(Appendable w) throws IOException {

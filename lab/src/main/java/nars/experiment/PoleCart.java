@@ -41,10 +41,11 @@ public class PoleCart extends NAgentX {
     public static void main(String[] arg) {
         //polecart(-1);
 
-        int instances = 2;
+        //int instances = 2; int threadsEach = 1;
+        int instances = 1; int threadsEach = 4;
         for (int i = 0; i < instances; i++)
             runRTNet((n)->new PoleCart($.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()), n),
-                    1, fps, fps, 8);
+                    threadsEach, fps, fps, 8);
     }
 
 

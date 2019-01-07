@@ -3,6 +3,7 @@ package nars;
 import jcog.Util;
 import jcog.exe.Loop;
 import jcog.learn.ql.HaiQae;
+import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
@@ -188,10 +189,10 @@ abstract public class NAgentX extends NAgent {
 
                 //.exe(new UniExec() {
                 .exe(new MultiExec.WorkerExec(
-                        new Revaluator.DefaultRevaluator(0.75f),
-                        //new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
+                        //new Revaluator.DefaultRevaluator(0.75f),
+                        new Revaluator.AERevaluator(new XoRoShiRo128PlusRandom()),
 
-                        threads <= 0 ? Util.concurrencyExcept(2) : threads, true/* affinity */))
+                        threads <= 0 ? Util.concurrencyExcept(2) : threads, false/* affinity */))
 
 //                .exe(MixMultiExec.get(
 //                            1024,

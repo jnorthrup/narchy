@@ -3,10 +3,8 @@ package nars.term;
 import nars.Op;
 import nars.term.atom.Bool;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
-import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.stream.IntStream;
@@ -77,10 +75,6 @@ public interface Termlike {
 
 
 
-    default boolean hasXternal() {
-        return hasAny(Op.Temporal) && OR(Term::hasXternal);
-    }
-
     /** recursive, visits only 1 layer deep, and not the current if compound */
     default int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
         int n = subs();
@@ -149,20 +143,20 @@ public interface Termlike {
      * if contained within; doesnt match this term (if it's a term);
      * false if term is atomic since it can contain nothing
      */
-    default boolean contains(Term t) {
-        return !impossibleSubTerm(t) && OR(t::equals);
-    }
+    boolean contains(Term t);
+
     default boolean containsNeg(Term x) {
         return contains(x.neg());
     }
 
-    /**
-     * shouldnt need overrridden
-     */
+    boolean hasXternal();
+
+    /** convenience dont override (except in Atomic) */
     default boolean containsRecursively(Term t) {
         return containsRecursively(t, (x) -> true);
     }
 
+    /** convenience dont override (except in Atomic) */
     default boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
         return !impossibleSubTerm(t) && containsRecursively(t, false, inSubtermsOf);
     }
@@ -243,75 +237,8 @@ public interface Termlike {
 //                (impossibleSubTermOrEqualityVolume(target.volume())));
 //    }
 
-    /**
-     * returns true if evaluates true for any terms
-     * implementations are allowed to skip repeating subterms
-     *
-     * @param p
-     */
-    default boolean OR(/*@NotNull*/ Predicate<Term> p) {
-        int s = subs();
-        for (int i = 0; i < s; i++)
-            if (p.test(sub(i)))
-                return true;
-        return false;
-    }
 
-    /**
-     * returns true if evaluates true for all terms
-     * implementations are allowed to skip repeating subterms
-     *
-     * @param p
-     */
-    default boolean AND(/*@NotNull*/ Predicate<Term> p) {
-        int s = subs();
-        for (int i = 0; i < s; i++)
-            if (!p.test(sub(i)))
-                return false;
-        return true;
-    }
 
-    /** supplies the current index as 2nd lambda argument */
-    default boolean ANDwith(/*@NotNull*/ ObjectIntPredicate<Term> p) {
-        int s = subs();
-        for (int i = 0; i < s; i++)
-            if (!p.accept(sub(i), i))
-                return false;
-        return true;
-    }
-    default <X> boolean ANDwith(/*@NotNull*/ BiPredicate<Term,X> p, X x) {
-        int s = subs();
-        for (int i = 0; i < s; i++)
-            if (!p.test(sub(i), x))
-                return false;
-        return true;
-    }
-    /** supplies the current index as 2nd lambda argument */
-    default boolean ORwith(/*@NotNull*/ ObjectIntPredicate<Term> p) {
-        int s = subs();
-        for (int i = 0; i < s; i++)
-            if (p.accept(sub(i), i))
-                return true;
-        return false;
-    }
-
-    /** implementations are allowed to skip repeating subterms */
-    default boolean ANDrecurse(/*@NotNull*/ Predicate<Term> p) {
-        int s = subs();
-        for (int i = 0; i < s; i++)
-            if (!sub(i).ANDrecurse(p))
-                return false;
-        return true;
-    }
-
-    /** implementations are allowed to skip repeating subterms */
-    default boolean ORrecurse(/*@NotNull*/ Predicate<Term> p) {
-        int s = subs();
-        for (int i = 0; i < s; i++)
-            if (sub(i).ORrecurse(p))
-                return true;
-        return false;
-    }
 
 
 

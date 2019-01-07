@@ -5,9 +5,11 @@ import jcog.WTF;
 import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.subterm.util.TermMetadata;
+import nars.term.Compound;
 import nars.term.Term;
 
 import java.util.Arrays;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import static nars.Op.NEG;
@@ -69,10 +71,12 @@ abstract public class MappedSubterms extends ProxySubterms {
         final byte[] map;
 
         final int hash;
+        boolean hasNegs;
 
         private ArrayMappedSubterms(Subterms base, byte[] map) {
             super(base); assert(base.subs()==map.length);
             this.map = map;
+            this.hasNegs = super.hasNegs();
             this.hash = Subterms.hash(this);
         }
 
@@ -80,6 +84,11 @@ abstract public class MappedSubterms extends ProxySubterms {
             super(base); assert(base.subs()==map.length);
             this.map = map;
             this.hash = hash;
+        }
+
+        @Override
+        protected boolean hasNegs() {
+            return hasNegs;
         }
 
         /** @see AnonVector.appendTo */
@@ -128,6 +137,22 @@ abstract public class MappedSubterms extends ProxySubterms {
             return map.length;
         }
 
+    }
+
+    @Override
+    public boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
+        return !hasNegs() ?
+                ref.recurseTerms(inSuperCompound, whileTrue, parent)
+                :
+                super.recurseTerms(inSuperCompound, whileTrue, parent);
+    }
+
+    @Override
+    public boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, Compound parent) {
+        return !hasNegs() ?
+                ref.recurseTerms(aSuperCompoundMust, whileTrue, parent)
+                :
+                super.recurseTerms(aSuperCompoundMust, whileTrue, parent);
     }
 
     @Override

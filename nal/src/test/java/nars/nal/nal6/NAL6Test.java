@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 300;
+    private static final int cycles = 200;
 
     @BeforeEach
     void setup() {
@@ -554,14 +554,24 @@ public class NAL6Test extends NALTest {
         //tester.mustBelieve(cycles, "(lock:$1 ==> (key:#2 && open(#2,$1)))", 1.00f, 0.45f);
 
     }
+    @Test
+    void second_level_variable_unificationNoImgAndAsPreconditionAllIndep() {
+        test.nar.termVolumeMax.set(15);
 
+        TestNAR tester = test;
+        tester.believe("((($1 --> lock)&&($2 --> key)) ==> open($1,$2))", 1.00f, 0.90f);
+        tester.believe("({key1} --> key)", 1.00f, 0.90f);
+        tester.mustBelieve(cycles, "(($1-->lock)==>open($1,{key1}))", 1.00f,
+                0.73f
+                /*0.81f*/);
+    }
 
     @Test
     void second_level_variable_unificationNoImgAndAsPrecondition() {
-        test.nar.termVolumeMax.set(16);
+        test.nar.termVolumeMax.set(15);
 
         TestNAR tester = test;
-        tester.believe("((<#1 --> lock>&&<$2 --> key>) ==> open(#1,$2))", 1.00f, 0.90f);
+        tester.believe("(((#1 --> lock)&&($2 --> key)) ==> open(#1,$2))", 1.00f, 0.90f);
         tester.believe("({key1} --> key)", 1.00f, 0.90f);
         tester.mustBelieve(cycles, "((#1-->lock)==>open(#1,{key1}))", 1.00f,
                 0.73f
@@ -1074,6 +1084,14 @@ public class NAL6Test extends NALTest {
         test
                 .believe("(&&,f(x),f(#1),g(#1))", 1f, 0.9f)
                 .mustBelieve(cycles, "(&&,f(x),g(x))", 1f, 0.81f)
+        ;
+    }
+    @Test
+    void testHypothesizeSubconditionNeg_Conj_ShortCircuit() {
+        test.nar.termVolumeMax.set(13);
+        test
+                .believe("(--(f(x) && --f(#1)) ==> a)", 1f, 0.9f)
+                .mustBelieve(cycles, "a", 1f, 0.43f)
         ;
     }
 

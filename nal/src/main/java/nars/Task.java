@@ -554,6 +554,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
         return conf();
     }
 
+    default float evi(long when, final long dur) {
+        return evi(when, dur, Float.NEGATIVE_INFINITY);
+    }
+
     /**
      * POINT EVIDENCE
      * <p>
@@ -564,11 +568,14 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
      * @param when time
      * @param dur  duration period across which evidence can decay before and after its defined start/stop time.
      *             if (dur <= 0) then no extrapolation is computed
+     * @param minEvi used to fast fail if the result will not exceed the value
      * @return value >= 0 indicating the evidence
      */
-    default float evi(long when, final long dur) {
+    default float evi(long when, final long dur, float minEvi) {
 
         float ee = evi();
+        if (ee < minEvi)
+            return 0;
 
         long s = start();
         if (s == ETERNAL) {
@@ -1024,6 +1031,5 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
      * computes the average frequency during the given interval
      */
     float freq(long start, long end);
-
 
 }

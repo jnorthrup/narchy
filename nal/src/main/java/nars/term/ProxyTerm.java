@@ -204,4 +204,14 @@ public class ProxyTerm implements Compound {
     }
 
 
+    @Override
+    public boolean AND(Predicate<Term> p) {
+        return ref.AND(p);
+    }
+
+    @Override
+    public boolean OR(Predicate<Term> p) {
+        return ref.OR(p);
+    }
+
 }

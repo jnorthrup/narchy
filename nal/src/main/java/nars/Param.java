@@ -75,11 +75,11 @@ public abstract class Param {
             //32;
             //16;
             //12;
-            //10;
+            10;
             //8;
             //7;
             //6;
-            5;
+            //5;
             //4;
             //3;
             //2;
@@ -89,7 +89,7 @@ public abstract class Param {
     //public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO
 
     public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 512;
-//    public static final int CURIOSITY_BELIEF_TABLE_SERIES_SIZE = 64;
+
 
 
 
@@ -132,8 +132,9 @@ public abstract class Param {
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
     /** can be > 1 */
-    public static final float ANSWER_COMPLETENESS = 2f;
+    public static final float ANSWER_COMPLETENESS = 1f;
 
+//    public static final boolean DERIVE_AUTO_IMAGE_NORMALIZE = true;
 
 
 //    /**
@@ -226,7 +227,7 @@ public abstract class Param {
 
     public final TaskBuffer input =
             //new DerivedTasks.DerivedTasksMap(4096);
-            new TaskBuffer.BagTaskBuffer(512, 0.2f);
+            new TaskBuffer.BagTaskBuffer(512, 0.04f);
             //new TaskBuffer.BagPuncTasksBuffer(1024, 0.1f);
 
     /** (unsafe) true should theoreticaly be faster,
@@ -284,7 +285,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 4;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 2;
 
 
     /**
@@ -421,6 +422,7 @@ public abstract class Param {
     public static final int CAUSE_MAX = 32;
     public static final IntRange causeCapacity = new IntRange(32, 1, CAUSE_MAX);
 
+    public static final int CURIOSITY_CAPACITY = STAMP_CAPACITY/2;
 
     public final static int UnificationStackMax = 128;
 

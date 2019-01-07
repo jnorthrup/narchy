@@ -25,6 +25,8 @@ public class CommandTask implements Task {
                 ArrayUtils.EMPTY_LONG_ARRAY);
     }
 
+
+
     @Override
     public int hashCode() {
         return hash;

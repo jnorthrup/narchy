@@ -69,7 +69,7 @@ abstract public class TermMetadata implements Termlike {
 
         final int[] minID = {0};
         final byte[] typeToMatch = {-1};
-        return x.recurseTerms(Termlike::hasVars, (v) -> {
+        return x.recurseTermsOrdered(Termlike::hasVars, (v) -> {
             if (v instanceof Variable) {
                 if (v instanceof NormalizedVariable) {
 

@@ -33,7 +33,8 @@ public class Arkancide extends NAgentX {
 
 
     //final int visW = 48, visH = 32;
-    final int visW = 24, visH = 16;
+    //final int visW = 24, visH = 16;
+    final int visW = 16, visH = 12;
 
 
     static float paddleSpeed;
@@ -70,7 +71,7 @@ public class Arkancide extends NAgentX {
         noid = new Arkanoid();
 
 
-        paddleSpeed = 90 * noid.BALL_VELOCITY;
+        paddleSpeed = 140 * noid.BALL_VELOCITY;
 
 
         initUnipolar();
@@ -132,23 +133,23 @@ public class Arkancide extends NAgentX {
         /*actionTriState*/
 
 
-        nar.onTask(t->{
-            if (t.isGoal()) {
-                if (!t.isInput()) {
-                    if (t.isEternal())
-                        System.err.println(t);
-                    else
-                        System.out.println(t);
-                }
-            }
-//           if (t.isQuest()) {
-//               nar.concepts.stream().filter(x -> x.op() == IMPL && x.sub(1).equals(t.term())).forEach(i -> {
-//                   //System.out.println(i);
-//                   //nar.que(i.sub(0), QUEST, t.start(), t.end());
-//                   nar.want(i.sub(0), Tense.Present,1f, 0.9f);
-//               });
-//           }
-        });
+//        nar.onTask(t->{
+//            if (t.isGoal()) {
+//                if (!t.isInput()) {
+//                    if (t.isEternal())
+//                        System.err.println(t);
+//                    else
+//                        System.out.println(t);
+//                }
+//            }
+////           if (t.isQuest()) {
+////               nar.concepts.stream().filter(x -> x.op() == IMPL && x.sub(1).equals(t.term())).forEach(i -> {
+////                   //System.out.println(i);
+////                   //nar.que(i.sub(0), QUEST, t.start(), t.end());
+////                   nar.want(i.sub(0), Tense.Present,1f, 0.9f);
+////               });
+////           }
+//        },GOAL);
 
     }
 
@@ -200,7 +201,7 @@ public class Arkancide extends NAgentX {
         public static final int BLOCK_LEFT_MARGIN = 10;
         public static final int BLOCK_TOP_MARGIN = 15;
 
-        public static final float BALL_RADIUS = 10.0f;
+        public static final float BALL_RADIUS = 15.0f;
         public float BALL_VELOCITY = 0.5f;
 
         public static final float PADDLE_WIDTH = 40.0f;

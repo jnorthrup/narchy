@@ -51,7 +51,7 @@ import java.util.concurrent.atomic.AtomicLongFieldUpdater;
  */
 
 @SuppressWarnings("javadoc")
-public class XoRoShiRo128PlusRandom extends AtomicRandom {
+public class XoRoShiRo128PlusRandom extends AtomicRandom implements Rand {
     private static final AtomicLongFieldUpdater<XoRoShiRo128PlusRandom> A =
             AtomicLongFieldUpdater.newUpdater(XoRoShiRo128PlusRandom.class, "a");
     private static final AtomicLongFieldUpdater<XoRoShiRo128PlusRandom> B =

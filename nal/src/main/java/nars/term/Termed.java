@@ -51,4 +51,15 @@ public interface Termed extends Termlike {
     default boolean impossibleSubStructure(int structure) {
         return term().impossibleSubStructure(structure);
     }
+
+    @Override
+    default boolean contains(Term t) {
+        return term().contains(t);
+    }
+
+    @Override
+    default boolean hasXternal() {
+        return term().hasXternal();
+    }
+
 }
