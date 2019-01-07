@@ -6,12 +6,12 @@
     C, X, eventOfNeg(C,X)                     |-   conjWithout(C,--X), (Belief:StructuralDeduction)
 //    C, X, eventOfNeg(C,X)                     |- --X, (Belief:StructuralDeduction, Time:TaskSubEvent)
 
-      C, X, eventOf(C,X),    conjParallel(C)    |-   X, (  Goal:StructuralDeduction)
+      C, X, eventFirstOf(C,X)    |-   X, (  Goal:StructuralDeduction)
        D, X, eventOfNeg(C,X), conjParallel(D)   |-   --conjWithout(D,--X), (  Goal:StructuralDeductionN)
-        C, X, eventOf(C,X)                  |-   conjWithout(C,X), (  Goal:StructuralDeduction)
-      C, X, eventOfNeg(C,X), conjParallel(C)    |- --X, (  Goal:StructuralDeduction)
+        //C, X, eventOf(C,X), conjParallel(C)                  |-   conjWithout(C,X), (  Goal:StructuralDeduction)
+      C, X, eventFirstOfNeg(C,X)    |- --X, (  Goal:StructuralDeduction)
        D, X, eventOf(C,X), conjParallel(D)      |-   --conjWithout(D,X), (  Goal:StructuralDeductionN)
-        C, X, eventOfNeg(C,X)               |-   conjWithout(C,--X), (  Goal:StructuralDeduction)
+        //C, X, eventOfNeg(C,X), conjParallel(C)               |-   conjWithout(C,--X), (  Goal:StructuralDeduction)
 
 
 
