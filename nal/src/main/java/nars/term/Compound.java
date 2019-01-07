@@ -23,6 +23,7 @@ package nars.term;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import jcog.WTF;
+import jcog.data.bit.MetalBitSet;
 import jcog.data.byt.util.IntCoding;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
@@ -245,6 +246,8 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     default boolean unifyForward(Term y, Unify u) {
         return
+            (this == y)
+            ||
             (y instanceof Compound &&
                 (equals(y) || (op() == y.op() && unifySubterms(y, u))));
     }
@@ -254,22 +257,25 @@ public interface Compound extends Term, IPair, Subterms {
 
         Term x = this;
 
-        Subterms xx = subterms();
-        Subterms yy = y.subterms();
+        Subterms xx = subterms(), yy = y.subterms();
 
         Op o = op();
+
         if (o == CONJ) {
             int xdt = dt(), ydt = y.dt();
             if (xdt == XTERNAL && ydt != XTERNAL) {
-                return xx.equals(yy) || unify(y.root(), u);
+                if (xx.equals(yy) || (x.equalsRoot(x) && y.equalsRoot(x)))
+                    return true;
             } else if (ydt == XTERNAL && xdt != XTERNAL) {
-                return xx.equals(yy) || root().unify(y, u);
+                if (xx.equals(yy) || (y.equalsRoot(y) && x.equalsRoot(y)))
+                    return true;
             }
         }
 
         int xs;
         if ((xs = xx.subs()) != yy.subs())
             return false;
+
         if (!Subterms.possiblyUnifiable(xx, yy, u))
             return false;
 
@@ -277,7 +283,6 @@ public interface Compound extends Term, IPair, Subterms {
             return xx.sub(0).unify(yy.sub(0), u);
 
         boolean xSpecific = false, ySpecific = false;
-
 
         int xdt, ydt;
         if (o.temporal) {
@@ -295,7 +300,6 @@ public interface Compound extends Term, IPair, Subterms {
             if (xx.equals(yy))
                 return true;
 
-
         } else {
             xdt = ydt = DTERNAL;
         }
@@ -303,12 +307,12 @@ public interface Compound extends Term, IPair, Subterms {
 
         boolean result;
         if (o.commutative /* subs>1 */) {
-            if (o == CONJ && !dtSpecial(xdt)) {
-                //assert(xs==2);
-                result = (xdt >= 0) == (ydt >= 0) ? xx.unifyLinear(yy, u) : xx.unifyLinear(yy.reversed(), u);
-            } else {
+//            if (o == CONJ && !dtSpecial(xdt)) {
+//                //assert(xs==2);
+//                result = (xdt >= 0) == (ydt >= 0) ? xx.unifyLinear(yy, u) : xx.unifyLinear(yy.reversed(), u);
+//            } else {
                 result = xx.unifyCommute(yy, u);
-            }
+//            }
         } else { //TODO if temporal, compare in the correct order
             result = xx.unifyLinear(yy, u);
         }
@@ -539,13 +543,12 @@ public interface Compound extends Term, IPair, Subterms {
                     decompose = decomposeConjParallel;
                     break;
                 case DTERNAL:
-                    Subterms ss = subterms();
-                    //see: Conj.isSeq(x)
-                    if ((ss.structureSurface() & CONJ.bit) != 0 && ss.subs(x -> x.op() == CONJ && x.dt() != DTERNAL) == 1 /* TOOD merge with below subIndexFirst call */) {
+                    if (Conj.isFactoredSeq(this)) {
+                        Subterms ss = subterms();
+
                         //distribute the factored inner sequence
-                        int seqIndex = ss.subIndexFirst(x -> x.op() == CONJ && x.dt() != DTERNAL);
-                        assert (seqIndex != -1);
-                        Term seq = ss.sub(seqIndex);
+                        MetalBitSet eteComponents = Conj.seqEternalComponents(ss);
+                        Term seq = Conj.seqTemporal(ss, eteComponents);
                         boolean unfactor;
                         int sdt = seq.dt();
                         switch (sdt) {
@@ -560,10 +563,7 @@ public interface Compound extends Term, IPair, Subterms {
                                 break;
                         }
                         if (unfactor) {
-                            Term factor = (ss.subs() == 1) ? ss.sub(1 - seqIndex) : CONJ.the(ss.subsExcept(seqIndex));
-                            if (factor instanceof Bool)
-                                throw new WTF();
-                            //assert (!(factor instanceof Bool));
+                            Term factor = Conj.seqEternal(ss, eteComponents);
 
                             boolean b = seq.eventsWhile((when, what) -> {
 
@@ -572,8 +572,7 @@ public interface Compound extends Term, IPair, Subterms {
                                 if ((w == DTERNAL && !decomposeConjDTernal) || (w != DTERNAL && !decomposeConjParallel)) {
                                     //combine the component with the eternal factor
                                     Term distributed = CONJ.the(w, what, factor);
-                                    if (distributed instanceof Bool)
-                                        throw new WTF();
+                                    if (distributed instanceof Bool) throw new WTF();
 //                                    assert (!(distributed instanceof Bool));
                                     return each.accept(when, distributed);
                                 } else {
@@ -584,19 +583,6 @@ public interface Compound extends Term, IPair, Subterms {
                             }, offset, decomposeConjParallel, decomposeConjDTernal, decomposeXternal, depth + 1);
 
                             return b;
-//                            if (!b)
-//                                return false; //done
-
-//                            if (decomposeConjDTernal) {
-//                                //the factor component itself
-//                                if (factor.op()==CONJ) {
-//                                    return factor.eventsWhile(each, offset, decomposeConjParallel, decomposeConjDTernal, decomposeXternal, depth + 1);
-//                                } else {
-//                                    return each.accept(offset, factor);
-//                                }
-//                            } else {
-//                                return each.accept(offset, this);
-//                            }
                         }
 
                     }

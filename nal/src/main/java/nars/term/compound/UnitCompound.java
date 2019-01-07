@@ -9,6 +9,7 @@ import nars.subterm.Subterms;
 import nars.subterm.UniSubterm;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.unify.Unify;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -253,5 +254,10 @@ public abstract class UnitCompound implements Compound {
     @Override
     public boolean recurseTermsOrdered(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, Compound superterm) {
         return !aSuperCompoundMust.test(this) || (whileTrue.test(this) && sub().recurseTermsOrdered(aSuperCompoundMust, whileTrue, this));
+    }
+
+    @Override
+    public boolean unifySubterms(Term y, Unify u) {
+        return y.subs()==1 && sub().unify(y.sub(0), u);
     }
 }

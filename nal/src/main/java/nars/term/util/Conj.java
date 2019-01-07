@@ -2,6 +2,7 @@ package nars.term.util;
 
 import jcog.TODO;
 import jcog.WTF;
+import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
 import nars.NAR;
@@ -102,6 +103,10 @@ public class Conj extends ByteAnonMap {
         c.addAuto(t);
         c.factor();
         return c;
+    }
+
+    public static MetalBitSet seqEternalComponents(Subterms x) {
+        return x.subsTrue(Conj.isEternalComponent);
     }
 
 
@@ -274,7 +279,7 @@ public class Conj extends ByteAnonMap {
                 if (c.dropEvent(event, earlyOrLate, filterContradiction))
                     return c.term();
             } else {
-                Term[] csDropped = conj.subterms().subsExcept(event);
+                Term[] csDropped = conj.subterms().subsExcluding(event);
                 if (csDropped != null)
                     return (csDropped.length == 1) ? csDropped[0] : terms.conj(conj.dt(), csDropped);
             }
@@ -439,7 +444,7 @@ public class Conj extends ByteAnonMap {
                 //choose which one will remain
                 y = xx.sub(rng.nextInt(ns));
             } else {
-                y = terms.conj(dt, xx.subsExcept(rng.nextInt(ns)));
+                y = terms.conj(dt, xx.subsExcluding(rng.nextInt(ns)));
             }
         } else {
             Conj c = from(x);
@@ -499,20 +504,41 @@ public class Conj extends ByteAnonMap {
     }
 
     static final Predicate<Term> isTemporalComponent = x->x.op()==CONJ && x.dt()!=DTERNAL;
+    public static final Predicate<Term> isEternalComponent = isTemporalComponent.negate();
 
     /** extracts the eternal components of a seq. assumes the conj actually has been determined to be a sequence */
     public static Term seqEternal(Term seq) {
         assert(seq.op()==CONJ && seq.dt()==DTERNAL);
-        Term e = CONJ.the(seq.subterms().subsExcept(isTemporalComponent));
-        assert(!(e instanceof Bool));
-        return e;
+        return seqEternal(seq.subterms());
+    }
+
+    public static Term seqEternal(Subterms ss) {
+        return seqEternal(ss, ss.subsTrue(isEternalComponent));
+    }
+
+    public static Term seqEternal(Subterms ss, MetalBitSet m) {
+        switch (m.cardinality()) {
+            case 0: throw new WTF();
+            case 1: return ss.sub(m.next(true, 0, Integer.MAX_VALUE));
+            default:
+                Term e = CONJ.the(ss.subsIncluding(m));
+                assert(!(e instanceof Bool));
+                return e;
+        }
     }
 
     public static Term seqTemporal(Term seq) {
         assert(seq.op()==CONJ && seq.dt()==DTERNAL);
-        Term t = seq.subterms().subFirst(isTemporalComponent);
+        return seqTemporal(seq.subterms());
+    }
+
+    public static Term seqTemporal(Subterms s) {
+        Term t = s.subFirst(isTemporalComponent);
         assert(t.op()==CONJ);
         return t;
+    }
+    public static Term seqTemporal(Subterms s, MetalBitSet eternalComponents) {
+        return s.sub(eternalComponents.next(false, 0, Integer.MAX_VALUE));
     }
 
     private void negateEvents() {
@@ -595,13 +621,13 @@ public class Conj extends ByteAnonMap {
 
         } else {
             //try positive first
-            Term[] ss = s.subsExcept(exclude);
+            Term[] ss = s.subsExcluding(exclude);
             if (ss != null) {
                 return ss.length > 1 ? terms.conj(dt, ss) : ss[0];
             } else {
                 //try negative next
                 if (excludeNeg) {
-                    ss = s.subsExcept(exclude.neg());
+                    ss = s.subsExcluding(exclude.neg());
                     if (ss != null) {
                         return terms.conj(dt, ss);
                     }

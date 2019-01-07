@@ -179,12 +179,9 @@ public class PatternIndex extends MapConceptIndex {
     @Deprecated
     abstract public static class PremisePatternCompound extends CachedCompound.TemporalCachedCompound {
 
-
         PremisePatternCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
             super(op, dt, subterms);
-
         }
-
 
         @Override
         public final boolean the() {
@@ -194,22 +191,17 @@ public class PatternIndex extends MapConceptIndex {
         public abstract static class PremisePatternCompoundWithEllipsis extends PremisePatternCompound {
 
             final Ellipsis ellipsis;
-//            private final int subtermStructure;
-
 
             PremisePatternCompoundWithEllipsis(/*@NotNull*/ Op seed, int dt, Ellipsis ellipsis, Subterms subterms) {
                 super(seed, dt, subterms);
-
-//                this.subtermStructure = subterms.structure();
                 this.ellipsis = ellipsis;
-
             }
 
             abstract protected boolean matchEllipsis(Term y, Unify subst);
 
             @Override
             public final boolean unifySubterms(Term y, Unify u) {
-                return Subterms.possiblyUnifiable(subterms(), y.subterms(), u) && matchEllipsis(y, u);
+                return matchEllipsis(y, u);
             }
         }
 
@@ -432,7 +424,6 @@ public class PatternIndex extends MapConceptIndex {
                     for (int ixs = 0; ixs < xs; ixs++) {
                         Term ix = xFixed.get(ixs);
                         int ixsStruct = ix.structure();
-                        int varBits = u.nonConstantBits;
 
                         //TODO requires more work
 //                        if ((ixsStruct & varBits)!=0) {
@@ -444,11 +435,11 @@ public class PatternIndex extends MapConceptIndex {
 //                            }
 //                        }
 
-                        if ((ixsStruct & ~varBits) != 0) {
+                        if ((ixsStruct & ~u.varBits) != 0) {
 //                            List<Term> yMatchableWithX = null;
                             boolean canMatch = false;
                             for (Term yy : yFree) {
-                                if (Subterms.possiblyUnifiable(ixsStruct, yy.structure(), varBits)) {
+                                if (Subterms.possiblyUnifiable(ixsStruct, yy.structure(), u.varBits)) {
 //                                    if (yMatchableWithX == null)
 //                                        yMatchableWithX = new FasterList(1);
 //                                    yMatchableWithX.add(yy);

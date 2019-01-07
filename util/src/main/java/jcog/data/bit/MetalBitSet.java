@@ -84,6 +84,20 @@ abstract public class MetalBitSet {
         }
     }
 
+    /** modifies this instance by inverting all the bit values
+     *  warning this may modify bits beyond the expected range, causing unexpected cardinality changes
+     * */
+    public MetalBitSet negate() {
+        throw new TODO();
+    }
+
+    /** returns a new instance with the values inverted
+     * warning this may modify bits beyond the expected range, causing unexpected cardinality changes
+     * */
+    public MetalBitSet negated() {
+        throw new TODO();
+    }
+
 
     /** TODO implement better bulk set(start,end,v) impl */
     public static class LongArrayBitSet extends MetalBitSet {
@@ -282,6 +296,17 @@ abstract public class MetalBitSet {
             return x == 0 ? 0 : Integer.bitCount(x);
         }
 
+
+        @Override public MetalBitSet negate() {
+            this.x = ~this.x;
+            return this;
+        }
+
+        @Override public MetalBitSet negated() {
+            IntBitSet i = new IntBitSet();
+            i.x = ~this.x;
+            return i;
+        }
     }
 
     public static MetalBitSet bits(int size) {

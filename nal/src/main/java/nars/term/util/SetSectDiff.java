@@ -351,7 +351,7 @@ public class SetSectDiff {
         } else if (retained == 0) {
             return Null;
         } else {
-            return o.the(aa.subsExcept(removals));
+            return o.the(aa.subsExcluding(removals));
         }
 
     }

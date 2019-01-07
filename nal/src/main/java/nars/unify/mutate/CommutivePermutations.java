@@ -27,8 +27,7 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
         this.y = Y;
 
         int xs = X.subs();
-        assert(xs > 1);
-        assert(xs == Y.subs());
+        assert(xs > 1 && xs == Y.subs());
 
     }
 

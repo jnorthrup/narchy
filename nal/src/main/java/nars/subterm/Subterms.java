@@ -630,18 +630,24 @@ public interface Subterms extends Termlike, Iterable<Term> {
             return sub(0).unify(s.sub(0), u);
         } else if (n == 2) {
             Term x = sub(0), y = sub(1);
-            boolean cx = u.constant(x), cy = u.constant(y);
+            Term a = s.sub(0), b = s.sub(1);
+            boolean cx = u.vars(x), cy = u.vars(y);
             boolean forward;
             if (cx == cy) {
-                forward = x.volume() <= y.volume();
+//                if (!cx) {
+//                    boolean dx = u.constant(a), dy = u.constant(b);
+//                    if (dx && dy)
+//                        forward = a.volume() <= b.volume();
+//                    else
+//                        forward = dx;
+//                } else
+                    forward = x.volume() <= y.volume();
             } else {
                 forward = cx;
             }
-            if (forward) {
-                return x.unify(s.sub(0), u) && y.unify(s.sub(1), u);
-            } else {
-                return y.unify(s.sub(1), u) && x.unify(s.sub(0), u);
-            }
+            return forward ?
+                    x.unify(a, u) && y.unify(b, u) :
+                    y.unify(b, u) && x.unify(a, u);
         }
 
 
@@ -654,7 +660,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (xi == yi)
                 continue;
 
-            boolean now = (i == n - 1) || ((u.constant(xi) && u.constant(yi)));
+            boolean now = (i == n - 1) || ((u.vars(xi) && u.vars(yi)));
 
             if (now) {
 
@@ -800,20 +806,29 @@ public interface Subterms extends Termlike, Iterable<Term> {
         int XS = xx.structure();
         int XSc = XS & (~varBits);
         if (XSc == 0)
-            return true; //all vars in X
+            return true; //X contains only vars
         int YS = yy.structure();
         int YSc = YS & (~varBits);
         if (YSc == 0)
-            return true; //all vars in Y
+            return true; //Y contains only vars
 
         if (XSc == XS && YSc == YS) {
             //no variables:
             //cheap constant case invariant tests
-            if (XS!=YS || xx.volume() != yy.volume())
+
+            //differing constant structure
+            if (XS!=YS)
+                return false;
+
+            //if volume differs (and no recursive conjunction subterms)
+            if ((xx.volume() != yy.volume()) &&
+                    (((XS & Op.CONJ.bit) == 0) || !xx.hasXternal()) &&
+                    (((YS & Op.CONJ.bit) == 0) || !yy.hasXternal())
+               )
                 return false;
 
             return true; //done
-        } //TODO else test invariants of specifically the constant subterms (volume, structure, ..)
+        }
 
         return true;
 
@@ -861,42 +876,54 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        return (t.length == 0) ? Op.EmptyTermArray : t;
 //    }
 
-    default Term[] subsExcept(Predicate<Term> exclude) {
+    /** TODO write negating version of this that negates only up to subs() bits */
+    default MetalBitSet subsTrue(Predicate<Term> match) {
         int n = subs();
         MetalBitSet m = MetalBitSet.bits(n);
-        return
-            ORwith((x,i)->{ if (exclude.test(x)) { m.set(i); return true; } else return false; }) ?
-                subsExcept(m) : arrayShared();
+        forEachWith((x,i)->{
+            if (match.test(x))
+                m.set(i);
+        });
+        return m;
     }
 
-    default Term[] subsExcept(MetalBitSet toRemove) {
 
-        int numRemoved = toRemove.cardinality();
-        if (numRemoved == 0) return arrayShared();
+    default Term[] subsIncluding(MetalBitSet toKeep) {
+        return subsIncExc(toKeep, true);
+    }
+    default Term[] subsExcluding(MetalBitSet toRemove) {
+        return subsIncExc(toRemove, false);
+    }
+    default Term[] subsIncExc(MetalBitSet s, boolean includeOrExclude) {
+
+        int c = s.cardinality();
+        if (includeOrExclude) {
+            if (c == 0) return Op.EmptyTermArray;
+            if (c == 1) return new Term[] { sub(s.next(true, 0, Integer.MAX_VALUE))};
+        } else {
+            if (c == 0) return arrayShared();
+            if (c == 1) return subsExcluding(s.next(true, 0, Integer.MAX_VALUE));
+        }
+
         int size = subs();
-        if (numRemoved == size) return Op.EmptyTermArray;
+        if (c == size) {
+            if (includeOrExclude) {
+                return arrayShared();
+            } else {
+                return Op.EmptyTermArray;
+            }
+        }
 
-        int newSize = size - numRemoved;
+        assert(c <= size): "bitset has extra bits set beyond the range of subterms";
+
+        int newSize = includeOrExclude ? c : size - c;
         Term[] t = new Term[newSize];
         int j = 0;
         for (int i = 0; i < size; i++) {
-            if (!toRemove.get(i))
+            if (s.get(i)==includeOrExclude)
                 t[j++] = sub(i);
         }
         return t;
-    }
-
-    default Term[] subsExcept(Collection<Term> except) {
-        assert (!except.isEmpty());
-        FasterList<Term> fxs = new FasterList<>(subs());
-        forEach(t -> {
-            if (!except.contains(t))
-                fxs.add(t);
-        });
-        if (fxs.isEmpty())
-            return arrayShared();
-        else
-            return fxs.toArrayRecycled(Term[]::new);
     }
 
 
@@ -1025,7 +1052,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     /**
      * removes first occurrence only
      */
-    default Term[] subsExcept(int index) {
+    default Term[] subsExcluding(int index) {
         int s = subs();
         Term[] x = new Term[s - 1];
         int k = 0;
@@ -1050,9 +1077,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * only removes the next found item. if this is for use in non-commutive term, you may need to call this repeatedly
      */
     @Nullable
-    default Term[] subsExcept(Term x) {
+    default Term[] subsExcluding(Term x) {
         int index = indexOf(x);
-        return (index == -1) ? null : subsExcept(index);
+        return (index == -1) ? null : subsExcluding(index);
     }
 
     default void appendTo(ByteArrayDataOutput out) {

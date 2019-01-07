@@ -254,7 +254,7 @@ public enum PremiseDeriverCompiler {
                         if (px instanceof AND) {
                             Subterms pxSub = ((AND) px).subterms();
                             if (pxSub.contains(fx.p)) {
-                                px = AND.the((Term[]) pxSub.subsExcept((Term)(fx.p)));
+                                px = AND.the((Term[]) pxSub.subsExcluding((Term)(fx.p)));
                             }
                             bundle.add(px);
                         } else {
