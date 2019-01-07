@@ -15,7 +15,6 @@ import nars.term.Term;
 import nars.term.Termed;
 
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 

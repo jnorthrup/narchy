@@ -624,20 +624,37 @@ public interface Subterms extends Termlike, Iterable<Term> {
     /**
      * const/variable phase version
      */
-    default boolean unifyLinear(Subterms Y, /*@NotNull*/ Unify u) {
-        int s = subs();
+    default boolean unifyLinear(Subterms s, /*@NotNull*/ Unify u) {
+        int n = subs();
+        if (n == 1) {
+            return sub(0).unify(s.sub(0), u);
+        } else if (n == 2) {
+            Term x = sub(0), y = sub(1);
+            boolean cx = u.constant(x), cy = u.constant(y);
+            boolean forward;
+            if (cx == cy) {
+                forward = x.volume() <= y.volume();
+            } else {
+                forward = cx;
+            }
+            if (forward) {
+                return x.unify(s.sub(0), u) && y.unify(s.sub(1), u);
+            } else {
+                return y.unify(s.sub(1), u) && x.unify(s.sub(0), u);
+            }
+        }
 
 
         Term[] deferredPairs = null;
         int dynPairs = 0;
-        for (int i = 0; i < s; i++) {
+        for (int i = 0; i < n; i++) {
             Term xi = sub(i);
-            Term yi = Y.sub(i);
+            Term yi = s.sub(i);
 
             if (xi == yi)
                 continue;
 
-            boolean now = (i == s - 1) || ((u.constant(xi) && u.constant(yi)));
+            boolean now = (i == n - 1) || ((u.constant(xi) && u.constant(yi)));
 
             if (now) {
 
@@ -645,7 +662,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                     return false;
             } else {
                 if (deferredPairs == null)
-                    deferredPairs = new Term[(s - i - 1) * 2];
+                    deferredPairs = new Term[(n - i - 1) * 2];
 
                 //backwards order
                 deferredPairs[dynPairs++] = yi;

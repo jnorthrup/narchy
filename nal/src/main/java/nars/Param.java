@@ -72,15 +72,14 @@ public abstract class Param {
 
 
     public static final int TaskLinkSpreadDefault =
-            //32;
             //16;
             //12;
-            10;
+            //10;
             //8;
             //7;
             //6;
             //5;
-            //4;
+            4;
             //3;
             //2;
             //1;
@@ -227,7 +226,7 @@ public abstract class Param {
 
     public final TaskBuffer input =
             //new DerivedTasks.DerivedTasksMap(4096);
-            new TaskBuffer.BagTaskBuffer(512, 0.04f);
+            new TaskBuffer.BagTaskBuffer(1024, 0.1f);
             //new TaskBuffer.BagPuncTasksBuffer(1024, 0.1f);
 
     /** (unsafe) true should theoreticaly be faster,

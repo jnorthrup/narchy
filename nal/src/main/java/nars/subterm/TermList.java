@@ -3,7 +3,6 @@ package nars.subterm;
 import jcog.data.list.FasterList;
 import nars.Op;
 import nars.term.Term;
-import org.eclipse.collections.impl.block.factory.Comparators;
 
 import java.util.Collection;
 

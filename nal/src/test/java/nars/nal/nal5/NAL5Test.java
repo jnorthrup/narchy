@@ -666,7 +666,7 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_induction0SimpleDepVar() {
         TestNAR tester = test;
-        tester.nar.termVolumeMax.set(4);
+        tester.nar.termVolumeMax.set(6);
         tester.believe("((&&,x1,#1) ==> c)");
         tester.believe("((&&,y1,#1) ==> c)");
         tester.mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f);
@@ -676,7 +676,7 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_induction0SimpleDepVar2() {
         TestNAR tester = test;
-        tester.nar.termVolumeMax.set(4);
+        tester.nar.termVolumeMax.set(6);
         tester.believe("((&&,x1,#1) ==> (a && #1))");
         tester.believe("((&&,y1,#1) ==> (a && #1))");
         tester.mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f);

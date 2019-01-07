@@ -9,8 +9,8 @@ import nars.term.Term;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.truth.dynamic.DynStampEvi;
 import nars.truth.dynamic.AbstractDynamicTruth;
+import nars.truth.dynamic.DynStampEvi;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.time.Tense.ETERNAL;

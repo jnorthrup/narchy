@@ -1,12 +1,14 @@
 package nars.derive.op;
 
 import nars.term.Term;
+import nars.term.util.Conj;
 import nars.unify.constraint.TermMatch;
 
 import javax.annotation.Nullable;
 
 import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 public final class ConjParallel extends TermMatch {
 
@@ -21,7 +23,7 @@ public final class ConjParallel extends TermMatch {
         Term u = t.unneg();
         if (u.op()==CONJ) {
             int i = u.dt();
-            return i == 0 || i == DTERNAL;
+            return i == XTERNAL || i == 0 || (i == DTERNAL && !Conj.isSeq(t));
         }
         return false;
     }

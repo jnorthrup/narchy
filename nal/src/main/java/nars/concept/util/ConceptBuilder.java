@@ -18,10 +18,10 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.util.Image;
+import nars.truth.dynamic.AbstractDynamicTruth;
 import nars.truth.dynamic.DynamicConjTruth;
 import nars.truth.dynamic.DynamicImageTruth;
 import nars.truth.dynamic.DynamicStatementTruth;
-import nars.truth.dynamic.AbstractDynamicTruth;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 

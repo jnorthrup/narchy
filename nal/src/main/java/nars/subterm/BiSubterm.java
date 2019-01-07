@@ -2,7 +2,6 @@ package nars.subterm;
 
 import jcog.data.iterator.ArrayIterator;
 import nars.term.Term;
-import nars.unify.Unify;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 
 import java.util.Iterator;
@@ -129,22 +128,6 @@ public class BiSubterm extends TermVector {
         action.accept(y);
     }
 
-    @Override
-    public boolean unifyLinear(Subterms s, Unify u) {
-        boolean cx = u.constant(x);
-        boolean cy = u.constant(y);
-        boolean forward;
-        if (cx == cy) {
-            forward = x.volume() <= y.volume();
-        } else {
-            forward = cx;
-        }
-        if (forward) {
-            return x.unify(s.sub(0), u) && y.unify(s.sub(1), u);
-        } else {
-            return y.unify(s.sub(1), u) && x.unify(s.sub(0), u);
-        }
-    }
 
     final public static class BiRepeat extends BiSubterm {
         public BiRepeat(Term x) {
