@@ -3,6 +3,7 @@ package nars.concept.action;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.attention.AttBranch;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.CuriosityGoalTable;
 import nars.concept.action.curiosity.CuriosityTask;
@@ -23,6 +24,7 @@ import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 import static nars.time.Tense.TIMELESS;
@@ -32,6 +34,7 @@ import static nars.time.Tense.TIMELESS;
  * ActionConcept which is driven by Goals that are interpreted into feedback Beliefs
  */
 public class AbstractGoalActionConcept extends ActionConcept {
+    private final AttBranch attnCuri;
 
 //    private static final Logger logger = LoggerFactory.getLogger(AbstractGoalActionConcept.class);
 
@@ -64,6 +67,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
         ((BeliefTables)goals()).tables.add(curiosityTable = new CuriosityGoalTable(term, Param.CURIOSITY_CAPACITY));
 
         in = newChannel(n);
+
+        this.attnCuri = new AttBranch(term, List.of(term));
+        attnCuri.parent(attn);
+        attnCuri.boost.set(0.5f);
     }
 
     protected CauseChannel<ITask> newChannel(NAR n) {
@@ -108,7 +115,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
         int narDur = n.dur();
 
         long agentDur = now - prev;
-        long dur = agentDur;
+//        long dur = agentDur;
                 //narDur; //Math.min(narDur, agentDur);
         //long s = now - dur/2, e = now + dur/2;
         long s = prev, e = now;
@@ -240,7 +247,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
         }
 
         SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd, evi);
-        attn.ensure(curiosity, attn.elementPri());
+        attnCuri.ensure(curiosity, attn.elementPri());
         return curiosity;
     }
 

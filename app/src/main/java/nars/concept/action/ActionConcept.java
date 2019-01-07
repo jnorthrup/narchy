@@ -44,12 +44,7 @@ public abstract class ActionConcept extends TaskConcept implements Sensor, Perma
     protected ActionConcept(Term term, BeliefTable beliefs, BeliefTable goals, TermLinker l, NAR n) {
         super(term, beliefs, goals, l, n.conceptBuilder);
 
-        this.attn = new AttBranch(term, List.of(term)) {
-//            @Override
-//            public float elementPri(NAR nar) {
-//                return nar.priDefault(GOAL);
-//            }
-        };
+        this.attn = new AttBranch(term, List.of(term));
         ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(n.freqResolution));
     }
 

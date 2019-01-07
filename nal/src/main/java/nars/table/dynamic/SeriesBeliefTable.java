@@ -154,7 +154,7 @@ abstract public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable
         return x;
     }
 
-    public synchronized void add(T nextT) {
+    public void add(T nextT) {
         series.compress();
 
         series.push(nextT);

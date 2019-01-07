@@ -53,7 +53,7 @@ public abstract class AbstractAtomic implements Atomic {
 
     @Override
     public boolean equals(Object u) {
-        return Atomic.equals(this, u);
+        return this == u || Atomic.equals(this, u);
     }
 
     @Override public String toString() {

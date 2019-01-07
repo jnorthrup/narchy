@@ -16,7 +16,6 @@ import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -113,18 +112,18 @@ public class SensorBeliefTables extends BeliefTables {
 
     private SeriesBeliefTable.SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, Term term, byte punc, NAR nar) {
 
-        SeriesBeliefTable.SeriesTask nextT = null;
-        SeriesBeliefTable.SeriesTask last = series.series.last();
-        boolean stretchPrev = false;
+        SeriesBeliefTable.SeriesTask nextT = null, last = series.series.last();
         if (last != null) {
             long lastStart = last.start(), lastEnd = last.end();
-            if (lastEnd > nextStart)
+            if (lastEnd >= nextStart)
                 return null;
 
             long dur = nextEnd - nextStart;
 
             double gapDurs = ((double)(nextStart - lastEnd)) / dur;
             if (gapDurs <= series.series.latchDurs()) {
+
+                //dead signal gap hasnt been exceeded
 
                 if (next!=null) {
                     double stretchDurs = ((double) (nextEnd - lastStart)) / dur;
@@ -140,33 +139,31 @@ public class SensorBeliefTables extends BeliefTables {
                 }
 
                 //form new task either because the value changed, or because the latch duration was exceeded
-                long midGap = Tense.dither(Math.max(lastEnd, (lastEnd + nextStart)/2L), nar);
-                //assert(midGap >= lastEnd): lastEnd + " " + midGap + ' ' + nextStart;
-                last.setEnd(Math.max(last.end(), midGap-1));
 
                 if (next == null) {
-                    return last;
+                    //guess that the signal stopped midway between (starting) now and the end of the last
+                    long midGap = Math.max(lastEnd, (lastEnd + nextStart)/2L);
+                    last.setEnd(midGap);
+                } else {
+                    //stretch the previous to the current starting point for the new task
+                    last.setEnd(Math.max(last.end(), nextStart-1));
                 }
-
-                nextStart = Math.min(last.end() + 1, nextStart);
-                nextEnd = Math.max(nextStart, nextEnd);
-                stretchPrev = false;
 
             } else {
 
-                stretchPrev = false;
-                nextStart = Math.max(nextStart, lastEnd/* +1 */);
-                nextEnd = Math.max(nextEnd, nextStart);
-
+                //dead signal gap has been exceeded
                 //form new task at the specified interval, regardless of the previous task since it was excessively long ago
-                //TODO maybe grow the previous task half a gap duration
+
+//                if (next!=null) {
+//                nextStart = Math.max(nextStart, lastEnd/* +1 */);
+//                nextEnd = Math.max(nextEnd, nextStart);
+//                }
+
             }
 
         }
 
-        //assert(nextStart <= nextEnd);
-
-        if (!stretchPrev && next != null) {
+        if (next != null) {
             nextT = newTask(term, punc, nextStart, nextEnd, next, nar);
             if (nextT != null)
                 series.add(nextT);

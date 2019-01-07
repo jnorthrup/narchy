@@ -89,6 +89,7 @@ abstract public class Deriver extends Causable {
         this.rules = rules;
         this.source = source;
         this.timing =
+                //new TaskOrPresentTiming(nar);
                 //new AdHocDeriverTiming(nar);
                 //new TaskOccurenceDeriverTiming();
                 new NonEternalTaskOccurenceOrPresentDeriverTiming(nar);

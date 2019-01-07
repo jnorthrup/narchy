@@ -51,7 +51,7 @@ public interface Variable extends Atomic {
 
     @Override
     default boolean unify(Term y, Unify u) {
-        return unifyForward(y, u);
+        return this == y || unifyForward(y, u);
     }
 
     @Override

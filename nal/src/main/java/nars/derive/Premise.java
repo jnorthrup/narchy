@@ -14,7 +14,6 @@ import nars.concept.TaskConcept;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
 import nars.term.Term;
-import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
@@ -247,7 +246,7 @@ public class Premise implements Comparable<Premise> {
         long[] focus = timeFocus(beliefTerm, d);
 
         NAR nar = d.nar;
-        Tense.dither(focus, nar);
+        //Tense.dither(focus, nar);
 
         Predicate<Task> beliefFilter =
                 beliefTerm.equalsRoot(task.term()) ?
@@ -255,6 +254,7 @@ public class Premise implements Comparable<Premise> {
                     null;
 
         return bb.sample(focus[0], focus[1], beliefTerm, beliefFilter, nar);
+                  //answer(focus[0], focus[1], beliefTerm, beliefFilter, nar);
     }
 
 
@@ -285,9 +285,7 @@ public class Premise implements Comparable<Premise> {
         if (match != null) {
             //assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
-            @Nullable Task answered = task.onAnswered(match, d.nar);
-
-            return answered;
+            return task.onAnswered(match, d.nar);
 
         }
 

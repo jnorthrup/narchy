@@ -7,6 +7,7 @@ import nars.term.Term;
 import java.util.Random;
 import java.util.function.BiFunction;
 
+import static nars.derive.timing.TaskOrPresentTiming.taskTime;
 import static nars.time.Tense.ETERNAL;
 
 /** naively applies a variety of methods for calculating time focus targets */
@@ -53,9 +54,6 @@ public class AdHocDeriverTiming implements BiFunction<Task, Term, long[]> {
         return new long[] { now - dur/2, now + dur/2 };
     }
 
-    private long[] taskTime(Task t) {
-        return new long[] {t.start(), t.end() };
-    }
 
     private long[] pastFutureRadius(Task t) {
         long now = nar.time.now();
