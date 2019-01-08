@@ -92,14 +92,16 @@ abstract public class Search<N, E> {
             }
 
 
-            Node<N,E> next = current.getTwo();
-            if (start != next) {
-                BooleanObjectPair<FromTo<Node<N,E>,E>> move =
-                        path instanceof Cons ? ((Cons<BooleanObjectPair<FromTo<Node<N,E>,E>>>) path).tail : path.get(path.size() - 1);
-                
-                if (!next(move, next))
-                    return false; 
+            if (!path.isEmpty()) {
+                Node<N, E> next = current.getTwo();
+                if (start != next) {
+                BooleanObjectPair<FromTo<Node<N, E>, E>> move =
+                        path instanceof Cons ? ((Cons<BooleanObjectPair<FromTo<Node<N, E>, E>>>) path).tail : path.get(path.size() - 1);
 
+                if (!next(move, next))
+                    return false;
+
+                }
             }
 
         }
@@ -107,6 +109,8 @@ abstract public class Search<N, E> {
 
         return true;
     }
+
+
 
     /** can be overridden to hijack the determined next destination */
     @Nullable

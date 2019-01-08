@@ -951,6 +951,7 @@ public class NAL8Test extends NALTest {
 
         test
 
+                .logDebug()
                 .inputAt(0, "(y &&+5 x)! |")
                 .inputAt(2, "y. |")
                 .mustGoal(cycles, "x", 1f, 0.1f, (t) -> t >= 7)

@@ -246,7 +246,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
     private boolean link(Event before, TimeSpan e, Event after) {
         MutableNode<Event, TimeSpan> x = addNode(before);
-        MutableNode<Event, TimeSpan> y = addNode(after);
+        MutableNode<Event, TimeSpan> y = before.equals(after) ? x : addNode(after);
 
         if (e==TimeSpan.TS_ETERNAL)
             return false; //skip eternal links
@@ -259,8 +259,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         boolean parallel = dt == ETERNAL || dt == TIMELESS || dt == 0;
         int vc = x.compareTo(y);
         if (vc == 0) { //equal?
-            if (parallel)
-                return; //no point
+            if (parallel) return; //no point
+            y = x; //use same instance, they could differ
             if (dt < 0)
                 dt = -dt; //use only positive dt values for self loops
         } else {
@@ -285,7 +285,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         Collection<Event> ee = byTerm.get(eventTerm);
         if (ee.isEmpty()) {
-            byTerm.put(eventTerm, new UnifiedSet(2).with(event));
+            byTerm.put(eventTerm, new UnifiedSet(2).with(event)); //TODO pool these Set's
             onNewTerm(eventTerm);
         } else {
             if (!ee.add(event))
@@ -483,7 +483,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         Subterms xx = x.subterms();
 
-        assert(!xx.hasXternal()): "dont solveDTTrace if subterms have XTERNAL";
+        //assert(!xx.hasXternal()): "dont solveDTTrace if subterms have XTERNAL";
 
 
         int subs = xx.subs();
@@ -1041,12 +1041,11 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     /** collapse any relative nodes to unique absolute nodes,
      *  possibly also map less-specific xternal-containing terms to more-specific unique variations
      *  */
-    protected void compact() {
+    public void compact() {
         for (Collection<Event> e : byTerm.values()) {
             if (e.size() == 2) {
                 Iterator<Event> ee = e.iterator();
-                Event a = ee.next();
-                Event r = ee.next();
+                Event a = ee.next(), r = ee.next();
                 if (a instanceof Absolute ^ r instanceof Absolute) {
                     //System.out.println("BEFORE: "); print();
 
@@ -1057,7 +1056,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         r = x;
                     }
                     mergeNodes(r, a);
-                    e.remove(r);
+                    ee.remove(); //e.remove(r);
 
                     //System.out.println("AFTER: "); print(); System.out.println();
                 }
@@ -1153,14 +1152,63 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
     private boolean solveOccurrence(Event x, Predicate<Event> each) {
 
-        return solveExact(x, each) && bfsPush(x, new CrossTimeSolver() {
+        return solveExact(x, each) &&
+               solveCrossTime(x, each) &&
+               solveSelfLoop(x, each) &&
+               solveLastResort(x, each);
+    }
+
+    /** check for any self-loops and propagate forward and/or reverse  */
+    private boolean solveSelfLoop(Event x, Predicate<Event> each) {
+        if (!solutions.isEmpty()) {
+            Term t = x.id;
+            /** clone the list because modifying solutions while iterating will cause infinite loop */
+            return new FasterList<>(solutions.list).allSatisfy((s) -> {
+                if (s instanceof Absolute && !(s.equals(x)) && s.id.equals(t)) {
+                    for (Event e : byTerm.get(t)) {
+                        {
+                            //TODO shuffle found self-loops, there could be sevreal
+                            Node<Event, TimeSpan> ne = node(e);
+                            if (ne!=null) {
+                                for (FromTo<Node<Event, TimeSpan>, TimeSpan> ee : ne.edges(false, true)) {
+                                    long dt = ee.id().dt;
+                                    if (dt != 0 && dt != ETERNAL && dt!=TIMELESS) {
+                                        if (ee.loop()) {
+//                                        if (random().nextBoolean())
+//                                            dt = -dt;
+                                            if (!each.test(((Absolute) s).shift(dt)))
+                                                return false;
+                                            if (!each.test(((Absolute) s).shift(-dt)))
+                                                return false;
+
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+                return true;
+            });
+        }
+        return true;
+    }
+
+    private boolean solveLastResort(Event x, Predicate<Event> each) {
+        return !(x instanceof Relative) || each.test(x);
+    }
+
+    private boolean solveCrossTime(Event x, Predicate<Event> each) {
+        return bfsPush(x, new CrossTimeSolver() {
 
             Set<Event> nexts = null;
 
             @Override
-            protected boolean next(BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> move, Node<Event, TimeSpan> n) {
+            protected boolean next(BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>> move, Node<Event, TimeSpan> n) {
 
                 Event nn = n.id();
+
                 if (!(nn instanceof Absolute))
                     return true;
 
@@ -1200,7 +1248,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 }
             }
 
-        }) && (!(x instanceof Relative) || each.test(x) /* last resort */); //absolute has already been tried first
+        });
     }
 
 
@@ -1284,6 +1332,15 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             return Longerval.intersectLength(start, end, thisStart, thisEnd) >= 0 ?
                     Longerval.unionArray(start, end, thisStart, thisEnd) :
                     null;
+        }
+
+        public Event shift(long dt) {
+            assert(dt!=0);
+            if (this instanceof AbsoluteRange) {
+                return new AbsoluteRange(id, start + dt, end() + dt);
+            } else {
+                return new Absolute(id, start + dt);
+            }
         }
     }
 

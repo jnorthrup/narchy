@@ -24,4 +24,8 @@ public interface FromTo<F, X> /* extends Triple<F,X,F> */ {
         else return null;
     }
 
+    default boolean loop() {
+        return from().equals(to());
+    }
+
 }

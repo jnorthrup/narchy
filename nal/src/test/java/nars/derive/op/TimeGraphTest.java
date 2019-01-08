@@ -104,6 +104,18 @@ class TimeGraphTest {
         assertSolved("y", cc1, "y@2");
     }
     @Test
+    void testSimpleSelfImplWithOneKnownAbsoluteSubEvent2() {
+
+        for (String rel : new String[] { "==>+1", "==>-1" }) {
+            TimeGraph cc1 = newTimeGraph(1);
+            cc1.know($$("(x " + rel + " x)"), ETERNAL);
+            cc1.know($$("x"), 1);
+
+            assertSolved("x", cc1, "x@1", "x@2", "x@0" /* .. */);
+        }
+    }
+
+    @Test
     void testSimpleImplWithOneKnownAbsoluteSubEventNeg() {
 
         TimeGraph cc1 = newTimeGraph(1);

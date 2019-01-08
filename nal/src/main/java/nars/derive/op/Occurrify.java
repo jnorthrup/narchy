@@ -62,6 +62,11 @@ public class Occurrify extends TimeGraph {
 
     public static boolean occurrify(Term x, Truthify truth, OccurrenceSolver time, Derivation d) {
         if (d.temporal) {
+
+            //HACK
+            d.taskStart = d._task.start();
+            d.taskEnd = d._task.end();
+
             if (d._belief == null || d.concSingle) {
 
                 d.beliefStart = d.beliefEnd = TIMELESS;
@@ -70,17 +75,28 @@ public class Occurrify extends TimeGraph {
                 boolean taskEternal = d.taskStart == ETERNAL;
                 if (truth.beliefProjection == Raw || taskEternal) {
 
-                    d.beliefStart = d._belief.start();
-                    d.beliefEnd = d._belief.end();
+                    d.beliefStart = d._belief.start();  d.beliefEnd = d._belief.end();
+
                 } else if (truth.beliefProjection == BeliefProjection.Task) {
 
-                    if (d._belief.isEternal()) {
-                        d.beliefStart = d.beliefEnd = ETERNAL; //keep eternal
+                    boolean bothNonEternal = d.taskStart != ETERNAL && d._belief.start() != ETERNAL;
+                    if (bothNonEternal && d.taskTerm.op().temporal && !d.beliefTerm.op().temporal) {
+
+                        //mask task's occurrence, focusing on belief's occ
+                        d.taskStart = d._belief.start();
+                        d.taskEnd = d.taskStart + (d._task.range()-1);
+                        d.beliefStart = d._belief.start();  d.beliefEnd = d._belief.end();
+
                     } else {
-                        //the temporal belief has been shifted to task in the truth computation
-                        long range = (taskEternal || d._belief.start() == ETERNAL) ? 0 : d._belief.range() - 1;
-                        d.beliefStart = d.taskStart;
-                        d.beliefEnd = d.beliefStart + range;
+
+                        if (d._belief.isEternal()) {
+                            d.beliefStart = d.beliefEnd = ETERNAL; //keep eternal
+                        } else {
+                            //the temporal belief has been shifted to task in the truth computation
+                            long range = (taskEternal || d._belief.start() == ETERNAL) ? 0 : d._belief.range() - 1;
+                            d.beliefStart = d.taskStart;
+                            d.beliefEnd = d.beliefStart + range;
+                        }
                     }
                 } else {
 
@@ -340,7 +356,7 @@ public class Occurrify extends TimeGraph {
             setAutoNeg(pattern, taskTerm, beliefTerm);
         }
 
-        compact();
+        //compact(); //TODO compaction removes self-loops which is bad, not sure if it does anything else either
 
         return this;
     }
