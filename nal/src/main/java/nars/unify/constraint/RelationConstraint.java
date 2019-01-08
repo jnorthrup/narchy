@@ -26,7 +26,7 @@ abstract public class RelationConstraint extends UnifyConstraint {
     }
 
     protected RelationConstraint(String func, Variable x, Variable y, Term... args) {
-        this($.func(func, x, args.length > 0 ? $.pFast(y, $.pFast(args)) : y), x, y);
+        this($.func(func, x, args.length > 0 ? $.p(y, $.p(args)) : y), x, y);
     }
 
     public final RelationConstraint mirror() {

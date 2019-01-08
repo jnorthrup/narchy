@@ -131,7 +131,7 @@ public abstract class Param {
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
     /** can be > 1 */
-    public static final float ANSWER_COMPLETENESS = 1f;
+    public static final float ANSWER_COMPLETENESS = 2f;
 
 //    public static final boolean DERIVE_AUTO_IMAGE_NORMALIZE = true;
 
@@ -276,7 +276,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(2 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 

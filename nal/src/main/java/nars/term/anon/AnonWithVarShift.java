@@ -92,9 +92,11 @@ public class AnonWithVarShift extends CachedAnon {
     }
 
     @Override
-    protected boolean cache(Compound x) {
-        //return (!hasShifted || !x.hasAny(mask));
-        return !putOrGet || (!hasShifted || !x.hasAny(mask));
+    protected boolean cache(Compound x, boolean putOrGet) {
+        return (!hasShifted || !x.hasAny(mask));
+        //return true;
+        //return false;
+        //return !putOrGet || (!hasShifted || !x.hasAny(mask));
     }
 
     public Term putShift(Term x, Term base) {

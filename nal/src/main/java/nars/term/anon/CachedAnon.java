@@ -42,12 +42,12 @@ public class CachedAnon extends Anon {
 
     @Override
     protected Term transformNonNegCompound(Compound x) {
-        if (!cache(x))
+        if (!cache(x,putOrGet))
             return super.transformNonNegCompound(x);
 
         return putOrGet ? putCache.computeIfAbsent(x, xx -> {
             Term y = super.transformNonNegCompound(xx);
-            if (y instanceof Compound)
+            if (y instanceof Compound && cache((Compound) y, false))
                 getCache.put((Compound) y, xx);
             return y;
         })
@@ -56,7 +56,7 @@ public class CachedAnon extends Anon {
     }
 
     /** whether a term is cacheable */
-    protected boolean cache(Compound x) {
+    protected boolean cache(Compound x, boolean putOrGet) {
         return true;
     }
 }

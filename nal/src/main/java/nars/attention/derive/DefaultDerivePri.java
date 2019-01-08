@@ -28,10 +28,10 @@ public class DefaultDerivePri implements DerivePri {
     public final FloatRange eviImportance = new FloatRange(1f, 0f, 1f);
 
     /** occam's razor - increase this discriminate more heavily against more complex derivations */
-    public final FloatRange simplicityImportance = new FloatRange(0.5f, 0f, 8f);
+    public final FloatRange simplicityImportance = new FloatRange(0.9f, 0f, 8f);
 
     /** importance of frequency polarity in result (distance from freq=0.5) */
-    public final FloatRange polarityImportance = new FloatRange(0.0f, 0f, 1f);
+    public final FloatRange polarityImportance = new FloatRange(0.01f, 0f, 1f);
 
     @Override
     public float pri(Task t, Derivation d) {
