@@ -416,7 +416,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
     /**
      * creates lazily computing proxy task which facades the task to the target time range
      */
-    static Task project(boolean force, boolean dither, @Nullable Task t, long subStart, long subEnd, NAR n, boolean negated) {
+    static Task project(@Nullable Task t, long subStart, long subEnd, boolean negated, boolean force, boolean dither, NAR n) {
         if (force) {
             return project(t, subStart, subEnd, n, dither, negated);
         } else {

@@ -333,7 +333,7 @@ public enum ConjCommutive {;
     public static boolean contains(Term container, Term x) {
         if (x.op()==CONJ && !Conj.isSeq(x)) {
             //test for containment of all x's components
-            if (x.subterms().AND(xx -> container.contains(xx)))
+            if (x.subterms().AND(container::contains))
                 return true;
         }
         return container.contains(x);

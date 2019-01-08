@@ -201,10 +201,14 @@ public abstract class Param {
 
 
     /**
-     * maximum time (in durations) that a signal task can latch its last value before it becomes unknown
+     * maximum time (in durations) that a signal task can stretch the same value
+     * until a new task (with new evidence) is created (seamlessly continuing it afterward)
      */
-    public final static float SIGNAL_STRETCH_DUR = 64;
+    public final static float SIGNAL_STRETCH_DUR = 32;
 
+    /** maximum time between signal updates to stretch an equivalently truthed data point across.
+     * stretches perception across some amount of lag
+     * */
     public final static float SIGNAL_LATCH_DUR =
             //0.5f;
             //1f;

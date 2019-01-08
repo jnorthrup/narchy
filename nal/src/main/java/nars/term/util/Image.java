@@ -256,18 +256,20 @@ public enum Image {;
                 r.forget(originalInput);
                 return;
             }
-            SpecialTermTask transformedInput = new SpecialTermTask(normal, originalInput);
 
+            SpecialTermTask transformedInput = new SpecialTermTask(normal, originalInput);
+            if (originalInput.isCyclic())
+                transformedInput.setCyclic(true);
 
             r.setInput(transformedInput, host);
+
             table.add(r, nar);
+
 
 //            if (r.forgotten.containsInstance(transformedInput))
 //                return; //wasnt added
 
 
-            if (originalInput.isCyclic())
-                transformedInput.setCyclic(true);
 //            if (rememberance.contains(transformedInput))
 //                rememberance.replaceAll((x)->x == transformedInput ? originalInput : x); //for TaskEvent emission
 //            else {
@@ -286,12 +288,12 @@ public enum Image {;
 //               return x;
 //            });
 
-            if (!transformedInput.isDeleted()) {
-                if (r.remembered != null) {
-                    r.remembered.remove(transformedInput); //if it's present, it may not
-                }
-                r.remember(originalInput);
-            }
+//            if (!transformedInput.isDeleted()) {
+//                if (r.remembered != null) {
+//                    r.remembered.remove(transformedInput); //if it's present, it may not
+//                }
+//                r.remember(originalInput);
+//            }
 //            }
         }
 

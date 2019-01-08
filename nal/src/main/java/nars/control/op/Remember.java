@@ -8,14 +8,18 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.CauseMerge;
+import nars.op.stm.ConjClustering;
 import nars.task.AbstractTask;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.TaskProxy;
+import nars.task.proxy.SpecialTermTask;
+import nars.task.signal.SignalTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
+import nars.truth.dynamic.DynEvi;
 import org.jetbrains.annotations.Nullable;
 
 import static jcog.WTF.WTF;
@@ -30,8 +34,7 @@ public class Remember extends AbstractTask {
     public Task input;
 
     public FasterList<ITask> remembered = null;
-    @Nullable
-    public FasterList<Task> forgotten = null;
+
     public TaskConcept concept;
 
 
@@ -138,9 +141,6 @@ public class Remember extends AbstractTask {
 
         add(n);
 
-        if (forgotten!=null)
-            forgotten.forEach(Task::delete);
-
         if (remembered!=null && !remembered.isEmpty())
             commit(n);
 
@@ -222,10 +222,8 @@ public class Remember extends AbstractTask {
             //TODO filter next tasks with any involving that task
         }
 
-        if (forgotten==null)
-            forgotten = new FasterList(1);
+        x.delete();
 
-        add(x, this.forgotten);
         if (input == x) {
             input = null; concept = null;
         }
@@ -256,46 +254,32 @@ public class Remember extends AbstractTask {
                 ((NALTask) existing).priCauseMerge(input, CauseMerge.AppendUnique);
 
 
-            remember(existing);
 
-////        if (input.isInput())
-////            remember(existing); //link and emit
-////        else {
-////            //next(new TaskLinkTask(existing, concept)); //just link
-////        }
-
-//            //remember(new TaskLinkTask(existing, concept)); //just link TODO proportionally to pri difference?
-//            //2. update tasklink
-//            float pri;
-//            if (Param.tasklinkMerge == PriMerge.max)
-//                pri = Math.max(existing.priElseZero(), input.priElseZero());
-//            else if (Param.tasklinkMerge == PriMerge.plus)
-//                pri = input.priElseZero() - existing.priElseZero();
-//            else
-//                throw new TODO();
-//            if (pri > ScalarValue.EPSILON) {
-//                if (concept == null)
-//                    throw new TODO();
-//
-//                TaskLink.link(
-//                        TaskLink.the(existing, true, true,
-//                                pri
-//                                , null),
-//                        concept);
-//            }
-//            remember(new TaskEvent(existing));
+            if (reactivate(existing, input))
+                remember(input instanceof SpecialTermTask ? ((SpecialTermTask)input).task : existing);
 
             forget(input);
 
-
         } else {
 //            if (input.isInput()) {
+            if (reactivate(input,input))
                 remember(input);
 //            }
-            input = null;
+
         }
 
+        this.input = null;
 
+    }
+
+    private boolean reactivate(Task existing, Task dup) {
+        if (dup instanceof DynEvi.DynamicTruthTask)
+            return false;
+        if (dup instanceof ConjClustering.STMClusterTask)
+            return false;
+        if (dup instanceof SignalTask)
+            return false; //TODO determine if this works
+        return true;
     }
 
 
@@ -317,12 +301,8 @@ public class Remember extends AbstractTask {
     }
 
 
-    public boolean forgotten(Task input) {
-        return forgotten!=null && forgotten.containsInstance(input);
-    }
-
     public final boolean done() {
-        return (remembered != null && remembered.containsInstance(input)) || input == null;
+        return input == null || (remembered != null && remembered.containsInstance(input));
     }
 
 }

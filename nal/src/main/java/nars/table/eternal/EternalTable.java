@@ -226,8 +226,9 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         if (!r.input.isEternal())
             return;
 
-        if (!contains(r))
+        if (!contains(r)) {
             reviseOrTryInsertion(r, nar);
+        }
     }
 
     private synchronized void reviseOrTryInsertion(Remember r, NAR nar) {
@@ -345,17 +346,17 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     }
 
     public boolean contains(Remember r) {
-        if (size == 0)
-            return false;
 
-        //scan list for existing equal task
-        Object[] list = this.items;
-
-        Task input = r.input;
-        Task existing = null;
-
+        Task input = r.input, existing = null;
 
         synchronized (this) {
+            if (size == 0)
+                return false;
+
+            //scan list for existing equal task
+            Object[] list = this.items;
+
+
             for (Object aList : list) {
                 if (aList == null)
                     break;

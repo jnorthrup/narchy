@@ -116,19 +116,16 @@ public class SensorBeliefTables extends BeliefTables {
         if (last != null) {
             long lastStart = last.start(), lastEnd = last.end();
             if (lastEnd >= nextStart)
-                return null;
+                return null; //too soon, does this happen?
 
-            long dur = nextEnd - nextStart;
+            int dur = nar.dur();
 
             double gapDurs = ((double)(nextStart - lastEnd)) / dur;
             if (gapDurs <= series.series.latchDurs()) {
 
-                //dead signal gap hasnt been exceeded
-
                 if (next!=null) {
                     double stretchDurs = ((double) (nextEnd - lastStart)) / dur;
-                    boolean stretchable = (stretchDurs <= series.series.stretchDurs());
-                    if (stretchable) {
+                    if ((stretchDurs <= series.series.stretchDurs())) {
                         Truth lastEnds = last.truth(lastEnd, 0);
                         if (lastEnds.equals(next)) {
                             //stretch
@@ -142,25 +139,14 @@ public class SensorBeliefTables extends BeliefTables {
 
                 if (next == null) {
                     //guess that the signal stopped midway between (starting) now and the end of the last
-                    long midGap = Math.max(lastEnd, (lastEnd + nextStart)/2L);
+                    long midGap = Math.min(nextStart-1, lastEnd + dur/2);
                     last.setEnd(midGap);
                 } else {
                     //stretch the previous to the current starting point for the new task
-                    last.setEnd(Math.max(last.end(), nextStart-1));
+                    last.setEnd(nextStart-1);
                 }
 
-            } else {
-
-                //dead signal gap has been exceeded
-                //form new task at the specified interval, regardless of the previous task since it was excessively long ago
-
-//                if (next!=null) {
-//                nextStart = Math.max(nextStart, lastEnd/* +1 */);
-//                nextEnd = Math.max(nextEnd, nextStart);
-//                }
-
             }
-
         }
 
         if (next != null) {

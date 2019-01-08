@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static nars.$.$$;
 import static nars.Op.*;
+import static nars.subterm.SortedSubtermsTest.assertEq;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -29,30 +30,11 @@ public class NAL4Test extends NALTest {
 
 
     @Test
-    void structural_transformationExt_forward() {
-
-        test
-                .believe("((acid,base) --> reaction)", 1.0f, 0.9f)
-                .mustBelieve(CYCLES, "(acid --> (reaction,/,base))", 1.0f, 0.9f)
-                .mustBelieve(CYCLES, "(base --> (reaction,acid,/))", 1.0f, 0.9f)
-                .mustNotOutput(CYCLES, "(reaction --> (acid,base))", BELIEF, ETERNAL)
-        ;
-    }
-    @Test
     void structural_transformation_dont() {
 
         test
                 .believe( "(acid --> (reaction,/,base))")
                 .mustNotOutput(CYCLES, "(reaction --> (acid,base))", BELIEF, ETERNAL)
-        ;
-    }
-    @Test
-    void structural_transformationExt_reverse1() {
-        test
-                .believe("(reaction --> (acid,base))", 1.0f, 0.9f)
-                .mustBelieve(CYCLES, "((reaction,\\,base) --> acid)", 1.0f, 0.9f)
-                .mustBelieve(CYCLES, "((reaction,acid,\\) --> base)", 1.0f, 0.9f)
-                .mustNotOutput(CYCLES, "((acid,base) --> reaction)", BELIEF, ETERNAL)
         ;
     }
 
@@ -100,6 +82,26 @@ public class NAL4Test extends NALTest {
                 .believe("(acid --> (reaction,/,base))", 1.0f, 0.9f)
                 .mustBelieve(CYCLES, "((acid,base) --> reaction)", 1.0f, 0.9f);
     }
+    @Test
+    void structural_transformationExt() {
+
+        test
+                .believe("((acid,base) --> reaction)", 1.0f, 0.9f)
+                .mustBelieve(CYCLES, "(acid --> (reaction,/,base))", 1.0f, 0.9f)
+                .mustBelieve(CYCLES, "(base --> (reaction,acid,/))", 1.0f, 0.9f)
+                .mustNotOutput(CYCLES, "(reaction --> (acid,base))", BELIEF, ETERNAL)
+        ;
+    }
+
+    @Test
+    void structural_transformationInt_0() {
+        test
+                .believe("(reaction --> (acid,base))", 1.0f, 0.9f)
+                .mustBelieve(CYCLES, "((reaction,\\,base) --> acid)", 1.0f, 0.9f)
+                .mustBelieve(CYCLES, "((reaction,acid,\\) --> base)", 1.0f, 0.9f)
+                .mustNotOutput(CYCLES, "((acid,base) --> reaction)", BELIEF, ETERNAL)
+        ;
+    }
 
     @Test
     void structural_transformationInt() {
@@ -112,6 +114,7 @@ public class NAL4Test extends NALTest {
 
     @Test
     void structural_transformationInt_reverse() {
+
 
         test
                 .believe("((neutralization,\\,base) --> acid)", 1.0f, 0.9f)
@@ -186,8 +189,8 @@ public class NAL4Test extends NALTest {
         test
                 .believe("f(x)", 1.0f, 0.9f)
                 .believe("f(y)", 1.0f, 0.9f)
-                .mustBelieve(CYCLES * 4, "f:((x)&(y))", 1.0f, 0.81f)
-                .mustBelieve(CYCLES * 4, "f:((x)|(y))", 1.0f, 0.81f)
+                .mustBelieve(CYCLES, "f:((x)&(y))", 1.0f, 0.81f)
+                .mustBelieve(CYCLES, "f:((x)|(y))", 1.0f, 0.81f)
         ;
     }
 
@@ -197,8 +200,11 @@ public class NAL4Test extends NALTest {
         test
                 .believe("f(x,z)", 1.0f, 0.9f)
                 .believe("f(y,z)", 1.0f, 0.9f)
-                .mustBelieve(CYCLES * 8, "f((x|y),z)", 1.0f, 0.81f)
-                .mustBelieve(CYCLES * 8, "f((x&y),z)", 1.0f, 0.81f)
+                .mustBelieve(CYCLES, "f((x|y),z)", 1.0f, 0.81f)
+                .mustBelieve(CYCLES, "f((x&y),z)", 1.0f, 0.81f)
+                .mustBelieve(CYCLES, "(((x,z)|(y,z))-->f)", 1.0f, 0.81f)
+                .mustBelieve(CYCLES, "(((x,z)&(y,z))-->f)", 1.0f, 0.81f)
+
 //                .mustBelieve(CYCLES*5 , "f((x,z)&(y,z))", 1.0f, 0.81f)
 //                .mustBelieve(CYCLES*5 , "f((x,z)|(y,z))", 1.0f, 0.81f)
         ;

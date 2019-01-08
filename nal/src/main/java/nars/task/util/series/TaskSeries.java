@@ -1,11 +1,6 @@
 package nars.task.util.series;
 
-import jcog.sort.RankedTopN;
-import jcog.sort.TopN;
 import nars.Task;
-import nars.task.util.Answer;
-import nars.truth.dynamic.DynStampEvi;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -18,44 +13,44 @@ public interface TaskSeries<T extends Task> {
 
 
 
-    @Nullable
-    default DynStampEvi truth(long start, long end, Predicate<Task> filter) {
-
-        int size = size();
-        if (size == 0)
-            return null;
-
-        int limit = Answer.TASK_LIMIT_DEFAULT;
-
-        DynStampEvi d = new DynStampEvi(Math.min(size, limit));
-
-        RankedTopN<Task> inner = TopN.pooled(Answer.topTasks, Math.min(size, limit), filter != null ?
-                (Task t) -> filter.test(t) ? -t.minTimeTo(start, end) : Float.NaN
-                :
-                (Task t) -> -t.minTimeTo(start, end));
-
-        try {
-
-
-            forEach(start, end, true, inner::addRanked);
-
-
-            int l = inner.size();
-            if (l > 0) {
-                Object[] ii = inner.items;
-                int i;
-                for (i = 0; i < l; i++)
-                    d.add((Task) ii[i]);
-
-                return d;
-            }
-
-            return null;
-        } finally {
-            TopN.unpool(Answer.topTasks, inner);
-        }
-
-    }
+//    @Nullable
+//    default DynStampEvi truth(long start, long end, Predicate<Task> filter) {
+//
+//        int size = size();
+//        if (size == 0)
+//            return null;
+//
+//        int limit = Answer.TASK_LIMIT_DEFAULT;
+//
+//        DynStampEvi d = new DynStampEvi(Math.min(size, limit));
+//
+//        RankedTopN<Task> inner = TopN.pooled(Answer.topTasks, Math.min(size, limit), filter != null ?
+//                (Task t) -> filter.test(t) ? -t.minTimeTo(start, end) : Float.NaN
+//                :
+//                (Task t) -> -t.minTimeTo(start, end));
+//
+//        try {
+//
+//
+//            forEach(start, end, true, inner::addRanked);
+//
+//
+//            int l = inner.size();
+//            if (l > 0) {
+//                Object[] ii = inner.items;
+//                int i;
+//                for (i = 0; i < l; i++)
+//                    d.add((Task) ii[i]);
+//
+//                return d;
+//            }
+//
+//            return null;
+//        } finally {
+//            TopN.unpool(Answer.topTasks, inner);
+//        }
+//
+//    }
 
     int size();
 

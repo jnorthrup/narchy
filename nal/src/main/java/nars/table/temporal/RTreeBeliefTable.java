@@ -12,7 +12,6 @@ import nars.Task;
 import nars.control.op.Remember;
 import nars.task.Revision;
 import nars.task.TaskProxy;
-import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.signal.SignalTask;
 import nars.task.util.*;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -460,12 +459,21 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
         Task input;
-        if (r.input instanceof SpecialTruthAndOccurrenceTask) {
-            //dont do this for SpecialTermTask coming from Image belief table
+        if (r.input instanceof TaskProxy) {
+            //dont store TaskProxy's
             input = ((TaskProxy) r.input).the();
         } else {
             input = r.input;
         }
+//        if (r.input instanceof SpecialTruthAndOccurrenceTask) {
+//            //dont do this for SpecialTermTask coming from Image belief table
+//            input = ((TaskProxy) r.input).the();
+//        } else if (r.input instanceof SpecialTermTask) {
+//            //ex: Image belief table proxy
+//            input = ((TaskProxy) r.input).the();
+//        } else {
+//            input = r.input;
+//        }
 
 
         /** inserted but not necessarily kept */
@@ -474,14 +482,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 ensureCapacity(treeRW, input, r, n);
             }
         });
+
         Task existing = RTreeBeliefModel.merged.get();
         if (existing != null && existing.equals(input)) {
-            //assert(!input.isDeleted());
-            RTreeBeliefModel.merged.remove();
             r.merge(existing);
-            //assert(existing==input || r.forgotten.containsInstance(input));
+            RTreeBeliefModel.merged.remove();
         } else {
-            if (!r.forgotten(input)) {
+            if (!input.isDeleted()) {
                 r.remember(input);
                 onRemember(input, n);
             } else {
@@ -835,7 +842,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         /**
          * HACK store merge notifications
          */
-        final static ThreadLocal<Task> merged = new ThreadLocal();
+        @Deprecated final static ThreadLocal<Task> merged = new ThreadLocal();
 
         @Override
         protected void merge(TaskRegion existing, TaskRegion incoming) {

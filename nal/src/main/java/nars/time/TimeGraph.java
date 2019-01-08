@@ -286,23 +286,12 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         byTerm.compute(eventTerm, (k, v)->{
            if (v == null) {
                newTerm[0] = newEvent[0] = true;
-               //return java.util.Set.of(event);
-               return Collections.singleton(event);
+               return new ArrayHashSet<Event>(2).with(event);
            } else {
-               if (v.contains(event)) {
-                   return v;
-               } else {
+               if (v.add(event)) {
                    newEvent[0] = true;
-                   if (v.size() == 1) {
-                       //upgrade to mutable set
-                       UnifiedSet<Event> w = new UnifiedSet<Event>(2);
-                       w.add(v.iterator().next());
-                       w.add(event);
-                       return w;
-                   }
-                   return v;
                }
-
+               return v;
            }
         });
         if (!newEvent[0])

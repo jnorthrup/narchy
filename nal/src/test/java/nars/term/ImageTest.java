@@ -20,15 +20,19 @@ class ImageTest {
 
     @Test
     void testNormlizeExt() {
-        assertEquals(
+        assertEq(
                 "reaction(acid,base)",
-                Image.imageNormalize($$("(acid --> (reaction,/,base))")).toString()
+                Image.imageNormalize($$("(acid --> (reaction,/,base))"))
         );
-        assertEquals(
-                "reaction(acid)",
-                Image.imageNormalize($$("(acid --> (reaction,/))")).toString()
+        assertEq(
+                "reaction(acid,base)",
+                Image.imageNormalize($$("(base --> (reaction,acid,/))"))
         );
 
+        assertEq(
+                "reaction(acid)",
+                Image.imageNormalize($$("(acid --> (reaction,/))"))
+        );
 
 
     }
@@ -37,34 +41,40 @@ class ImageTest {
 
     @Test
     void testNormlizeInt() {
-        assertEquals(
+
+        assertEq(
                 "(neutralization-->(acid,base))",
-                Image.imageNormalize($$("((neutralization,\\,base) --> acid)")).toString()
+                Image.imageNormalize($$("((neutralization,\\,base) --> acid)"))
         );
-        assertEquals(
+        assertEq(
+                "(neutralization-->(acid,base))",
+                Image.imageNormalize($$("((neutralization,acid,\\) --> base)"))
+        );
+        assertEq(
                 "(neutralization-->(acid))",
-                Image.imageNormalize($$("((neutralization,\\) --> acid)")).toString()
+                Image.imageNormalize($$("((neutralization,\\) --> acid)"))
         );
+
     }
 
     @Test
     void testCanNotNormlizeIntExt() {
-        assertEquals(
+        assertEq(
                 "((neutralization,\\,base)-->(reaction,/,base))",
-                Image.imageNormalize($$("((neutralization,\\,base) --> (reaction,/,base))")).toString()
+                Image.imageNormalize($$("((neutralization,\\,base) --> (reaction,/,base))"))
         );
     }
 
     @Test
     void testNormalizeSubtermsSIM() {
 
-        assertEquals(
+        assertEq(
                 "(reaction(acid,base)<->x)",
-                $$("(x <-> (acid --> (reaction,/,base)))").toString()
+                $$("(x <-> (acid --> (reaction,/,base)))")
         );
-        assertEquals(
+        assertEq(
                 "(reaction(acid)<->x)",
-                $$("(x <-> (acid --> (reaction,/)))").toString()
+                $$("(x <-> (acid --> (reaction,/)))")
         );
     }
 
@@ -73,17 +83,17 @@ class ImageTest {
         String x = "((0,1,0)-->bitmap)";
         Term xx = $$(x);
 
-        assertEquals("(0-->(bitmap,/,1,/))",
-                Image.imageExt(xx, Int.the(0)).toString());
-
-        assertEquals($$("(0-->(bitmap,/,1,/))"),
+        assertEq("(0-->(bitmap,/,1,/))",
                 Image.imageExt(xx, Int.the(0)));
 
-        assertEquals("(1-->(bitmap,0,/,0))",
-                Image.imageExt(xx, Int.the(1)).toString());
+        assertEq($$("(0-->(bitmap,/,1,/))"),
+                Image.imageExt(xx, Int.the(0)));
 
-        assertEquals(xx, Image.imageNormalize(Image.imageExt(xx, Int.the(1))));
-        assertEquals(xx, Image.imageNormalize(Image.imageExt(xx, Int.the(0))));
+        assertEq("(1-->(bitmap,0,/,0))",
+                Image.imageExt(xx, Int.the(1)));
+
+        assertEq(xx, Image.imageNormalize(Image.imageExt(xx, Int.the(1))));
+        assertEq(xx, Image.imageNormalize(Image.imageExt(xx, Int.the(0))));
 
     }
 

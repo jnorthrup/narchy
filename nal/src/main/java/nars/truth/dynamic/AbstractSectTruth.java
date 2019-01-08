@@ -19,7 +19,7 @@ abstract public class AbstractSectTruth extends AbstractDynamicTruth {
     }
 
     @Override
-    public final Truth apply(DynEvi l, NAR nar) {
+    public final Truth truth(DynEvi l, NAR nar) {
         return apply(l, nar, unionOrIntersection, unionOrIntersection);
     }
 

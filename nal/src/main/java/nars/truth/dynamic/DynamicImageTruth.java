@@ -20,7 +20,7 @@ public class DynamicImageTruth {
         }
 
         @Override
-        public Truth apply(DynEvi var1, NAR nar) {
+        public Truth truth(DynEvi var1, NAR nar) {
             throw new UnsupportedOperationException();
         }
 

@@ -56,43 +56,6 @@ import java.util.function.Consumer;
  */
 public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
-    public static ArrayHashSet EMPTY = new ArrayHashSet(0) {
-        @Override
-        public boolean add(Object element) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Object first() {
-            return null;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return true;
-        }
-
-        @Override
-        public int size() {
-            return 0;
-        }
-
-        @Override
-        public ListIterator listIterator() {
-            return Collections.emptyListIterator();
-        }
-
-        @Override
-        public ListIterator listIterator(int index) {
-            assert (index == 0);
-            return Collections.emptyListIterator();
-        }
-
-        @Override
-        public Iterator iterator() {
-            return Collections.emptyListIterator();
-        }
-    };
 
     public final List<X> list;
     protected Set<X> set = emptySet();
@@ -269,6 +232,11 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         Collections.shuffle(list, random);
     }
 
+    public final ArrayHashSet<X> with(X x) {
+        add(x);
+        return this;
+    }
+
     private final class ArrayHashSetIterator implements ListIterator<X> {
 
         private final ListIterator<X> arrayListIterator;
@@ -356,4 +324,43 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     static Set emptySet() {
         return Set.of();
     }
+
+
+    public static ArrayHashSet EMPTY = new ArrayHashSet(0) {
+        @Override
+        public boolean add(Object element) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Object first() {
+            return null;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public int size() {
+            return 0;
+        }
+
+        @Override
+        public ListIterator listIterator() {
+            return Collections.emptyListIterator();
+        }
+
+        @Override
+        public ListIterator listIterator(int index) {
+            assert (index == 0);
+            return Collections.emptyListIterator();
+        }
+
+        @Override
+        public Iterator iterator() {
+            return Collections.emptyListIterator();
+        }
+    };
 }
