@@ -12,7 +12,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static nars.$.$$;
 import static nars.Op.*;
-import static nars.subterm.SortedSubtermsTest.assertEq;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -103,14 +102,7 @@ public class NAL4Test extends NALTest {
         ;
     }
 
-    @Test
-    void structural_transformationInt() {
-        test
-                .believe("(neutralization --> (acid,base))", 1.0f, 0.9f)
-                .mustBelieve(CYCLES, "((neutralization,\\,base) --> acid)", 1.0f, 0.9f)
-                .mustBelieve(CYCLES, "((neutralization,acid,\\) --> base)", 1.0f, 0.9f)
-        ;
-    }
+
 
     @Test
     void structural_transformationInt_reverse() {
@@ -153,13 +145,21 @@ public class NAL4Test extends NALTest {
     }
 
     @Test
-    void concludeImageIntInheritImageExt() {
-        test.nar.termVolumeMax.set(9);
+    void structural_transformationInt() {
         test
                 .believe("(neutralization --> (acid,base))")
+                .mustBelieve(CYCLES, "((neutralization,\\,base) --> acid)", 1.0f, 0.9f)
+                .mustBelieve(CYCLES, "((neutralization,acid,\\) --> base)", 1.0f, 0.9f)
+        ;
+    }
+    @Test
+    void concludeImageIntInheritImageExt() {
+        test
+                .termVolMax(9)
+                .believe("(neutralization --> (acid,base))")
                 .believe("((acid,base) --> reaction)")
-                .mustBelieve(CYCLES * 4, "((neutralization,\\,base) --> (reaction,/,base))", 1.0f, 0.81f)
-                .mustBelieve(CYCLES * 4, "((neutralization,acid,\\) --> (reaction,acid,/))", 1.0f, 0.81f)
+                .mustBelieve(CYCLES*12, "((neutralization,\\,base) --> (reaction,/,base))", 1.0f, 0.81f)
+                .mustBelieve(CYCLES*12, "((neutralization,acid,\\) --> (reaction,acid,/))", 1.0f, 0.81f)
         ;
     }
 

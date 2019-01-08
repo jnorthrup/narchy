@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 100;
+    private final static int cycles = 200;
 
     @BeforeEach
     void setTolerance() {
@@ -1050,25 +1050,23 @@ public class NAL7Test extends NALTest {
     @ValueSource(strings = {"", " |"})
     void multiConditionSyllogismPost(String implSuffix) {
 
-
-        test.nar.termVolumeMax.set(14);
-
         long implTime = implSuffix.isEmpty() ? ETERNAL : 0;
+        String a = "(goto(door) =|> open(door))";
+        String b = "(goto(door) =|> hold(key))";
         test
+                .termVolMax(14)
                 .input("hold(key). |")
                 .input("(goto(door) =|> (hold(key) &| open(door))). " + implSuffix)
-//                .mustBelieve(cycles, "(goto(door) =|> open(door))",
-//                        1f, 1.00f, 0.81f, 0.4f,  //structural
-//                        implTime)
-                .mustBelieve(cycles, "(goto(door) =|> open(door))",
-                        1f, 1.00f, 0.4f, 0.4f,
-                        0)
-                .mustBelieve(cycles, "(goto(door) =|> hold(key))",
-                        1f, 1.00f, 0.81f, 0.4f,   //structural
-                        implTime)
-                .mustBelieve(cycles, "(goto(door) =|> hold(key))",
-                        1f, 1.00f, 0.4f, 0.4f,
-                        0);
+                //temporal via conditional (double premise)
+                .mustBelieve(cycles, a, 1f, 0.4f, 0)
+                //temporal via conditional (double premise)
+                .mustBelieve(cycles, b, 1f, 0.4f, 0)
+
+                //implication belief's time, via structural decomposition
+                .mustBelieve(cycles, a, 1f, 0.81f, implTime)
+                //implication belief's time, via structural decomposition
+                .mustBelieve(cycles, b, 1f, 0.81f, implTime)
+                ;
 
 
     }
@@ -1386,14 +1384,25 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    void testDecomposeImplPred() {
+    void testDecomposeImplPred_ParallelConj_with_InDepVar() {
 
-        test.nar.termVolumeMax.set(15);
+
         test
+                .termVolMax(12)
+                .believe("( (a,$1) =|> (&|, (x,$1), y, z ) )", Tense.Present, 1f, 0.9f)
+                .mustBelieve(cycles, "( (a,$1) =|> (x,$1) )", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "( (a,#1) =|> y )", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "( (a,#1) =|> z )", 1f, 0.73f, 0)
+        ;
+    }  @Test
+    void testDecomposeImplPred_ParallelConj_with_DepVar() {
+
+        test
+                .termVolMax(12)
                 .believe("( (a,#1) =|> (&|, (x,#1), y, z ) )", Tense.Present, 1f, 0.9f)
-                .mustBelieve(cycles*2, "( (a,#1) =|> (x,#1) )", 1f, 0.73f, 0)
-                .mustBelieve(cycles*2, "( (a,#1) =|> y )", 1f, 0.73f, 0)
-                .mustBelieve(cycles*2, "( (a,#1) =|> z )", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "( (a,#1) =|> (x,#1) )", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "( (a,#1) =|> y )", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "( (a,#1) =|> z )", 1f, 0.73f, 0)
         ;
     }
 

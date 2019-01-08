@@ -33,10 +33,6 @@ public final class DynamicTruthTable extends DynamicTaskTable {
             t.tryAccept(tt);
     }
 
-    @Override
-    public void sample(Answer m) {
-
-    }
 
     /**
      * generates a dynamic matching task

@@ -75,11 +75,11 @@ public class Remember extends AbstractTask {
                 }
                 if (Param.DEBUG_ENSURE_DITHERED_OCCURRENCE) {
                     long s = input.start();
-                    if (s!=ETERNAL) {
-                        if (Tense.dither(s, d)!=s)
+                    if (s != ETERNAL) {
+                        if (Tense.dither(s, d) != s)
                             throw WTF(input + " has non-dithered start occurrence");
                         long e = input.end();
-                        if (e!=s && Tense.dither(e, d)!=e)
+                        if (e != s && Tense.dither(e, d) != e)
                             throw WTF(input + " has non-dithered end occurrence");
                     }
                 }
@@ -95,15 +95,15 @@ public class Remember extends AbstractTask {
                     throw new TaskException(input, "term exceeds volume maximum: " + termVol + " > " + maxVol);
             }
 
-            if((!input.isInput() || input instanceof TaskProxy) && input.isBeliefOrGoal() && input.conf() < n.confMin.floatValue()) {
-                if(Param.DEBUG)
+            if ((!input.isInput() || input instanceof TaskProxy) && input.isBeliefOrGoal() && input.conf() < n.confMin.floatValue()) {
+                if (Param.DEBUG)
                     throw new TaskException(input, "insufficient evidence for non-input Task");
                 else
                     return null;
             }
 
             Concept c = n.conceptualize(input);
-            if (c!=null) {
+            if (c != null) {
                 if (!(c instanceof TaskConcept)) {
                     if (Param.DEBUG)
                         throw new TaskException(input, c + " is not a TaskConcept");
@@ -123,7 +123,9 @@ public class Remember extends AbstractTask {
     }
 
 
-    /** concept must correspond to the input task */
+    /**
+     * concept must correspond to the input task
+     */
     public void setInput(Task input, @Nullable TaskConcept c) {
         if (c != null) {
             this.input = input;
@@ -141,14 +143,14 @@ public class Remember extends AbstractTask {
 
         add(n);
 
-        if (remembered!=null && !remembered.isEmpty())
+        if (remembered != null && !remembered.isEmpty())
             commit(n);
 
         return null;
     }
 
     private void commit(NAR n) {
-        Term conceptTerm = concept!=null ? concept.term() : null;
+        Term conceptTerm = concept != null ? concept.term() : null;
 
         for (ITask r : remembered) {
             if (r instanceof Task) {
@@ -167,12 +169,12 @@ public class Remember extends AbstractTask {
         if (tasklink()) {
             Concept c = conceptTerm != null && conceptTerm.equals(rr.term().concept()) ? concept : null;
             TaskLinkTask t = tasklink(rr, c);
-            if (t!=null)
+            if (t != null)
                 t.next(n);
         }
 
         if (taskevent())
-           new TaskEvent(rr).next(n);
+            new TaskEvent(rr).next(n);
     }
 
 
@@ -192,7 +194,7 @@ public class Remember extends AbstractTask {
      * attempt to insert into the concept's belief table
      */
     protected void add(NAR n) {
-       concept.add(this, n);
+        concept.add(this, n);
     }
 
 
@@ -217,7 +219,7 @@ public class Remember extends AbstractTask {
 
 
     public void forget(Task x) {
-        if (remembered!=null && remembered.removeInstance(x)) {
+        if (remembered != null && remembered.removeInstance(x)) {
             //throw new TODO();
             //TODO filter next tasks with any involving that task
         }
@@ -225,7 +227,8 @@ public class Remember extends AbstractTask {
         x.delete();
 
         if (input == x) {
-            input = null; concept = null;
+            input = null;
+            concept = null;
         }
     }
 
@@ -239,47 +242,87 @@ public class Remember extends AbstractTask {
     }
 
 
-    public void merge(Task existing) {
+    /**
+     * called by belief tables when the input task is matched by an existing equal (or identical) task
+     */
+    public void merge(Task prev, NAR n) {
 
-        Task input = this.input;
+        Task next = this.input;
 
-        if (existing != input) {
+        boolean identity = prev == next;
+
+        /** pri(next) - pri(prev) */
+        float dPri;
+
+        if (!identity) {
 
             //assert (!input.isDeleted()); //dont delete just yet
 
             //TODO decide how much to re-activate
             //TODO consider forgetting rate
 
-            if (existing instanceof NALTask)
-                ((NALTask) existing).priCauseMerge(input, CauseMerge.AppendUnique);
+            dPri = next.priElseZero() - prev.priElseZero();
 
+            if (prev instanceof NALTask)
+                ((NALTask) prev).priCauseMerge(next, CauseMerge.AppendUnique);
 
-
-            if (reactivate(existing, input))
-                remember(input instanceof SpecialTermTask ? ((SpecialTermTask)input).task : existing);
-
-            forget(input);
 
         } else {
-//            if (input.isInput()) {
-            if (reactivate(input,input))
-                remember(input);
-//            }
-
+            dPri = 0;
         }
 
-        this.input = null;
+        @Nullable Task r = rememberMerged(prev, next);
+        if (r!=null) {
+            long dDurCycles = Math.max(0, next.creation() - prev.creation());
+            float dCreationDurs = dDurCycles == 0 ? 0 : (dDurCycles / ((float)n.dur()));
+            r = rememberFilter(prev, next, r, dPri, dCreationDurs);
+
+        }
+        if (r!=null)
+            remember(r);
+
+        if (!identity && r==null) {
+            forget(next);
+        } else {
+            //just disable further input
+            this.input = null;
+        }
 
     }
 
-    private boolean reactivate(Task existing, Task dup) {
-        if (dup instanceof DynEvi.DynamicTruthTask)
-            return false;
-        if (dup instanceof ConjClustering.STMClusterTask)
-            return false;
-        if (dup instanceof SignalTask)
-            return false; //TODO determine if this works
-        return true;
+    /** heuristic for determining repeat suppression
+     * @param dCreationDurs (creation(next) - creation(prev))/durCycles
+     * */
+    @Nullable protected Task rememberFilter(Task prev, Task next, Task remembered, float dPri, float dCreationDurs) {
+
+        if (dCreationDurs > Param.REMEMBER_REPEAT_THRESH_DURS) {
+            prev.setCreation(next.creation());
+            return remembered;
+        }
+
+        if (dPri >= Param.REMEMBER_REPEAT_PRI_THRESHOLD)
+            return remembered;
+
+        return null;
+    }
+
+    /** returns which task, if any, to remember on merge */
+    @Nullable protected Task rememberMerged(Task prev, Task next) {
+
+        if (next instanceof DynEvi.DynamicTruthTask)
+            return null;
+        if (next instanceof ConjClustering.STMClusterTask)
+            return null;
+        if (next instanceof SignalTask)
+            return null; //TODO determine if this works
+
+        if (next.isInput())
+            return prev;
+
+        if (next instanceof SpecialTermTask) //Image belief table
+            return ((SpecialTermTask) next).task;
+
+        return prev;
     }
 
 

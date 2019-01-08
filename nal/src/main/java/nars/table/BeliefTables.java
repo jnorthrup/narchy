@@ -73,13 +73,13 @@ public class BeliefTables implements BeliefTable {
             case 0:
                 break;
             case 1:
-                tables.get(0).match(a);
+                tables.get(0).sample(a);
                 break;
             case 2: {
                 int i = a.random().nextInt(2);
-                tables.get(i).match(a);
+                tables.get(i).sample(a); //match(a);
                 if (a.active())
-                    tables.get(1 - i).match(a);
+                    tables.get(1 - i).sample(a);
                 break;
             }
             case 3: {
@@ -119,11 +119,11 @@ public class BeliefTables implements BeliefTable {
                     default:
                         throw new UnsupportedOperationException();
                 }
-                tables.get(x).match(a);
+                tables.get(x).sample(a);
                 if (a.active()) {
-                    tables.get(y).match(a);
+                    tables.get(y).sample(a);
                     if (a.active()) {
-                        tables.get(z).match(a);
+                        tables.get(z).sample(a);
                     }
                 }
                 break;
@@ -134,7 +134,7 @@ public class BeliefTables implements BeliefTable {
                     order[i] = i;
                 ArrayUtils.shuffle(order, a.random());
                 for (int i = 0; i < n; i++) {
-                    tables.get(order[i]).match(a);
+                    tables.get(order[i]).sample(a);
                     if (!a.active())
                         break;
                 }

@@ -35,7 +35,7 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
         Task t = r.input;
         synchronized (this) {
             u = merge(t, t, (prev, next) -> {
-                r.merge(prev);
+                r.merge(prev, n);
                 return next;
             });
         }

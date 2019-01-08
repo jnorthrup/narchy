@@ -806,7 +806,7 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     default Term eventFirst() {
-        if (op() == CONJ) {
+        if (Conj.isSeq(this)) {
             final Term[] first = new Term[1];
             eventsWhile((when, what) -> {
                 first[0] = what;
@@ -821,12 +821,12 @@ public interface Compound extends Term, IPair, Subterms {
      * TODO optimize
      */
     default Term eventLast() {
-        if (op() == CONJ) {
+        if (Conj.isSeq(this)) {
             final Term[] last = new Term[1];
             eventsWhile((when, what) -> {
                 last[0] = what;
                 return true; //HACK keep going to end
-            }, 0, true, false, false, 0);
+            }, 0, false, false, false, 0);
             return last[0];
         }
         return this;

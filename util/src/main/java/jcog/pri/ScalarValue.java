@@ -13,7 +13,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction
  *
  * see: NumericUtils.java (lucene)
  * */
-public interface ScalarValue {
+public interface ScalarValue extends Prioritized {
 
     /**
      * global minimum difference necessary to indicate a significant modification in budget float number components

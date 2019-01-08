@@ -31,7 +31,9 @@ public class NALTask extends UnitPri implements Task {
     private final Truth truth;
     private final byte punc;
     private final int hash;
-    private final long creation, start, end;
+    private long creation;
+    private final long start;
+    private final long end;
     /*@Stable*/ private final long[] stamp;
     private /*volatile*/ short[] cause = ArrayUtils.EMPTY_SHORT_ARRAY;
 
@@ -125,9 +127,13 @@ public class NALTask extends UnitPri implements Task {
 
 
     public Task causeMerge(short[] c, CauseMerge merge) {
+
+        int causeCap = Param.causeCapacity.intValue();
+
         synchronized (this) {
-            this.cause = merge.merge(cause(), c, Param.causeCapacity.intValue());
+            this.cause = merge.merge(cause(), c, causeCap);
         }
+
         return this;
     }
 
@@ -160,6 +166,11 @@ public class NALTask extends UnitPri implements Task {
     @Override
     public long start() {
         return start;
+    }
+
+    @Override
+    public void setCreation(long nextCreation) {
+        creation = nextCreation;
     }
 
     @Override

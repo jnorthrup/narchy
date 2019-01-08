@@ -33,7 +33,7 @@ import static nars.truth.func.TruthFunctions.c2wSafe;
  */
 public final class Answer implements AutoCloseable {
 
-    public final static int TASK_LIMIT_DEFAULT =
+    public final static int BELIEF_MATCH_CAPACITY =
             Param.STAMP_CAPACITY - 1;
             //Param.STAMP_CAPACITY / 2;
 
@@ -41,7 +41,7 @@ public final class Answer implements AutoCloseable {
 //     *  prevents table from trying to answer with all the tasks that a non-specific time-range might cause */
 //    public static final int TASK_LIMIT_ETERNAL_QUESTION = Math.max(1, TASK_LIMIT_DEFAULT / 3);
 
-    public static final int BELIEF_SAMPLE_CAPACITY = Math.max(1, TASK_LIMIT_DEFAULT / 2);
+    public static final int BELIEF_SAMPLE_CAPACITY = Math.max(1, BELIEF_MATCH_CAPACITY / 2);
     public static final int QUESTION_SAMPLE_CAPACITY = 1;
     private final FloatRank<Task> rank;
 
@@ -314,7 +314,7 @@ public final class Answer implements AutoCloseable {
     }
 
     private Task taskFirst(boolean topOrSample) {
-        return (topOrSample ? tasks.get(0) : tasks.get(nar.random())).x;
+        return (topOrSample ? tasks.get(0) :  tasks.getRoulette(nar.random())).x;
     }
 
     private Task taskMerge(@Nullable Task root) {

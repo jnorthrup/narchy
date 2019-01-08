@@ -1,6 +1,7 @@
 package nars.time;
 
 import com.google.common.collect.Iterables;
+import jcog.TODO;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.graph.FromTo;
@@ -581,9 +582,10 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                             if (startTime != TIMELESS && startTime != ETERNAL && endTime != TIMELESS && endTime != ETERNAL) {
                                 dt = endTime - startTime;
                             } else {
-                                dt = pathTime(path);
-                                if (dt == TIMELESS)
-                                    return true;
+                                throw new TODO();
+//                                dt = pathTime(path);
+//                                if (dt == TIMELESS)
+//                                    return true;
                             }
 
                             if (dt == ETERNAL) {
@@ -740,10 +742,10 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     private static long durMerge(Event a, Event b) {
         if (a instanceof Absolute && b instanceof Absolute) {
             return Math.min(a.dur(), b.dur());
-//        else if (a instanceof Absolute && !(b instanceof Absolute)) {
-//            return a.dur();
-//        } else if (b instanceof Absolute && !(a instanceof Absolute)) {
-//            return b.dur();
+        } else if (a instanceof Absolute && !(b instanceof Absolute)) {
+            return a.dur();
+        } else if (b instanceof Absolute && !(a instanceof Absolute)) {
+            return b.dur();
         } else {
             return 0;
         }
@@ -1232,25 +1234,22 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 long pathEndTime = nn.start();
 
 
-                long startTime;
+                long startTime, endTime;
                 if (pathEndTime == ETERNAL) {
-                    startTime = ETERNAL;
+                    startTime = endTime = ETERNAL;
                 } else {
 
-                    long pathDelta = pathTime(path);
-                    if (pathDelta == TIMELESS)
+                    long[] pt = pathTime(path);
+                    if (pt == null)
                         return true;
 
-                    startTime = pathEndTime - (pathDelta);
+                    startTime = pathEndTime - (pt[0] /* pathDelta*/);
+                    assert(startTime!=TIMELESS);
+
+                    endTime = startTime + pt[1]; /* pathRange */
 
                 }
 
-                long endTime;
-                if (startTime != ETERNAL && startTime != XTERNAL/* && x.id.op() != CONJ*/) {
-                    endTime = startTime + durMerge(pathStart(path).id(), pathEnd(path).id());
-                } else {
-                    endTime = startTime;
-                }
 
                 Event next = event(x.id, startTime, endTime, false);
 
@@ -1465,28 +1464,49 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     /**
-     * computes the length of time spanned from start to the end of the given path
+     * computes the length of time spanned from start to the end of the given path [0],
+     * and the range [1]
      */
-    static long pathTime(List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path) {
+        @Nullable static long[] pathTime(List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path) {
 
-        long t = 0;
+        long t = 0, r = Long.MIN_VALUE;
 
-        for (BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> r : path) {
+        for (BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> span : path) {
 
-            FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan> event = r.getTwo();
+            FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan> event = span.getTwo();
 
             long spanDT = event.id().dt;
 
             if (spanDT == ETERNAL || spanDT == TIMELESS) {
-                return TIMELESS;
+                return null;
 
             } else if (spanDT != 0) {
-                t += (spanDT) * (r.getOne() ? +1 : -1);
+                t += (spanDT) * (span.getOne() ? +1 : -1);
+            }
+
+            Event from = event.from().id();
+            if (from instanceof Absolute) {
+                if (r == Long.MIN_VALUE) {
+                    r = from.dur();
+                }
+            }
+
+            Event to = event.to().id();
+            if (to instanceof Absolute) {
+                long rTo = to.dur();
+                if (r == Long.MIN_VALUE) {
+                    r = rTo;
+                } else {
+                    r = Math.min(r, rTo);
+                }
             }
 
         }
 
-        return t;
+        if (r == Long.MIN_VALUE)
+            r = 0; //point-like
+
+        return new long[] { t, r };
     }
 
 }

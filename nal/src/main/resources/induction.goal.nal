@@ -1,8 +1,8 @@
 
 //goal induction
 //  experimental
-G, B, task("!")  |- (polarizeTask(G) && polarizeBelief(B)), (Goal:IntersectionDepolarized, Punctuation:Goal, Time:Relative)
-G, B, task("@")  |- (polarizeBelief(B) ==> G), (Time:Relative, Punctuation:Question, Time:BeliefRelative)
+G, B, task("!")  |- (polarizeTask(G) && polarizeBelief(B)), (Goal:IntersectionDepolarized, Punctuation:Goal, Time:Sequence)
+G, B, task("@")  |- (polarizeBelief(B) ==> G), (Punctuation:Question)
     //,--eventOfNeg(S,G) //<- TODO verify this will work if S isnt even a conj
 
 //nal3 goal induction

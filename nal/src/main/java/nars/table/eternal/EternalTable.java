@@ -13,6 +13,7 @@ import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.task.NALTask;
 import nars.task.Revision;
+import nars.task.TaskProxy;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
@@ -152,7 +153,8 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
 
     @Nullable
-    private synchronized Task put(final Task incoming) {
+    private synchronized Task put(Task incoming) {
+
 
         Task displaced = null;
 
@@ -167,6 +169,11 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                     return incoming; //rejected
                 }
             }
+        }
+
+
+        if (incoming instanceof TaskProxy) {
+            incoming = ((TaskProxy)incoming).the();
         }
 
         int r = add(incoming, this);
@@ -226,7 +233,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         if (!r.input.isEternal())
             return;
 
-        if (!contains(r)) {
+        if (!contains(r, nar)) {
             reviseOrTryInsertion(r, nar);
         }
     }
@@ -345,7 +352,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         }
     }
 
-    public boolean contains(Remember r) {
+    public boolean contains(Remember r, NAR nar) {
 
         Task input = r.input, existing = null;
 
@@ -370,15 +377,15 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         }
 
         if (existing != null) {
-            r.merge(existing);
+            r.merge(existing, nar);
             return true;
         }
 
         int cap = capacity();
         if (cap == 0) {
+            if (input.isInput())
+                throw new RuntimeException("input task rejected by " + EternalTable.class +  " with 0 capacity): " + input);
             r.forget(input);
-            /*if (input.isInput())
-                throw new RuntimeException("input task rejected (0 capacity): " + input + " "+ this + " " + this.capacity());*/
             return true;
         }
 

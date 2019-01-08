@@ -609,6 +609,11 @@ public class TestNAR {
         return run(cycles);
     }
 
+    public TestNAR termVolMax(int i) {
+        nar.termVolumeMax.set(15);
+        return this;
+    }
+
     final class EarlyExit implements Consumer<NAR> {
 
         final int checkResolution;

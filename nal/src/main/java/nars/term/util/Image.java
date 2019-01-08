@@ -226,17 +226,23 @@ public enum Image {;
 
         @Override
         public void sample(Answer m) {
-            match(m); //HACK
+            match(m, false);
         }
 
         @Override
         public void match(Answer m) {
-            BeliefTable table = relink(m.nar, true);
+            match(m, true);
+        }
+
+        private void match(Answer m, boolean matchOrSample) {
+            BeliefTable table = relink(m.nar, false);
             if (table == null)
                 return;
 
-            //TODO rewrite matched entries?
-            table.match(m);
+            if (matchOrSample)
+                table.match(m);
+            else
+                table.sample(m);
 
             int results = m.tasks.size();
             if (results > 0) {
@@ -261,7 +267,7 @@ public enum Image {;
             if (originalInput.isCyclic())
                 transformedInput.setCyclic(true);
 
-            r.setInput(transformedInput, host);
+            r.setInput(transformedInput, (TaskConcept)nar.concept(image));
 
             table.add(r, nar);
 

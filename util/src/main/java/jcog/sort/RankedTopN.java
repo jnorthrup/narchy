@@ -30,7 +30,7 @@ public class RankedTopN<X> extends TopN<Ranked<X>> {
     }
 
     /** call this on start */
-    public TopN<Ranked<X>> ranking(FloatRank<X> rank) {
+    public TopN<Ranked<X>> ranking(FloatRank<X> rank, int capacity) {
         r = rr.get();
         return super.rank((Ranked<X> r, float min) -> {
             float p = r.pri;
@@ -38,7 +38,7 @@ public class RankedTopN<X> extends TopN<Ranked<X>> {
                 return p;
             else
                 return r.pri = rank.rank(r.x, min);
-        });
+        }, capacity);
     }
 
     @Override

@@ -47,7 +47,7 @@ public interface BeliefTable extends TaskTable {
     default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR n) {
         if (isEmpty())
             return null;
-        return Answer.relevance(true, Answer.TASK_LIMIT_DEFAULT, start, end, template, filter, n).
+        return Answer.relevance(true, Answer.BELIEF_MATCH_CAPACITY, start, end, template, filter, n).
                 match(this).truth();
     }
 

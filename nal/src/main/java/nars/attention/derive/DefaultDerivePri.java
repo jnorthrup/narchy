@@ -10,6 +10,7 @@ import nars.truth.Truth;
 import nars.truth.polation.TruthIntegration;
 
 import static nars.time.Tense.ETERNAL;
+import static nars.truth.func.TruthFunctions.w2cSafe;
 
 /**
  * TODO parameterize, modularize, refactor etc
@@ -96,37 +97,40 @@ public class DefaultDerivePri implements DerivePri {
 
     float factorEvi(Task t, Derivation d) {
 
-        float ep, et;
+        float eParentTask, eParentBelief, eDerived;
         if (t.isEternal()) {
-            et = t.evi();
+            eDerived = t.evi();
             assert(d.taskStart==ETERNAL);
-            ep = d._task.isBeliefOrGoal() ? d._task.evi() : 0;
+            eParentTask = d._task.isBeliefOrGoal() ? d._task.evi() : 0;
             if (!d.concSingle) {
                 assert(d.beliefStart==ETERNAL);
-                ep += d._belief.evi();
-            }
+                eParentBelief = d._belief.evi();
+            } else
+                eParentBelief = 0;
         } else {
             int dur = d.dur;
 
-            et = TruthIntegration.evi(t);
+            eDerived = TruthIntegration.evi(t);
 
             long ts = t.start(), te = t.end();
-            ep = d._task.isBeliefOrGoal() ?
+            eParentTask = d._task.isBeliefOrGoal() ?
                     (d._task.isEternal() ? TruthIntegration.evi(d._task, ts, te, dur) : TruthIntegration.evi(d._task))
                         : 0;
-            if (!d.concSingle) {
-                ep += d._belief.isEternal() ? TruthIntegration.evi(d._belief, ts, te, dur) : TruthIntegration.evi(d._belief);
-            }
+            if (!d.concSingle)
+                eParentBelief = d._belief.isEternal() ? TruthIntegration.evi(d._belief, ts, te, dur) : TruthIntegration.evi(d._belief);
+            else
+                eParentBelief = 0;
 
         }
 
-//        if (ep < et) {
+        float eParent = Math.max(eParentTask, eParentBelief);
+        float cDerived = w2cSafe(eDerived);
+        float cParent = w2cSafe(eParent);
+        if (cParent < cDerived)
 //            throw new WTF("spontaneous belief inflation"); //not actually
-//        }
-        if (ep < et)
             return 1;
         else {
-            float lossFactor = 1 - ((ep - et) / ep);
+            float lossFactor = 1 - ((cParent - cDerived) / cParent);
             return Util.lerp(eviImportance.floatValue(), 1f, lossFactor);
         }
     }

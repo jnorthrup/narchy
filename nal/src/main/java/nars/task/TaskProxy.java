@@ -67,6 +67,11 @@ public class TaskProxy extends UnitPri implements Task {
     }
 
     @Override
+    public void setCreation(long creation) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Term term() {
         return task.term();
     }

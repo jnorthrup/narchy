@@ -77,31 +77,31 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
             return 0;
         }
 
-        final float[] e = new float[1];
-        float ePriAfter = existing.pri((x, y) -> {
+        final float[] pBefore = new float[1];
+        float pAfter = existing.pri((x, y) -> {
 
             if (x != x) {
-                if (undelete())
-                    x = 0; //undelete
-                else
+                if (!undelete())
                     return Float.NaN;
+
+                x = 0; //undelete
             }
 
-            e[0] = x;
+            pBefore[0] = x;
 
             return merge(x, y);
         }, incoming);
 
 
         float z;
-        if (ePriAfter != ePriAfter) {
+        if (pAfter != pAfter) {
             //deleted
             if (incoming!=incoming)
                 z = 0;
             else
                 z = incoming;
         } else {
-            z = incoming - (ePriAfter - e[0]);
+            z = incoming - (pAfter - pBefore[0]);
         }
 
         assert(z==z);

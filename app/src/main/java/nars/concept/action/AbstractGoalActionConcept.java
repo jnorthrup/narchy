@@ -136,7 +136,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
 
 
-        int limit = Answer.TASK_LIMIT_DEFAULT * 2;
+        int limit = Answer.BELIEF_MATCH_CAPACITY * 2;
 
 //        long recent =
 //                //now - dur*2;

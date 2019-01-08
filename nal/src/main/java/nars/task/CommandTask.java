@@ -104,6 +104,11 @@ public class CommandTask implements Task {
     }
 
     @Override
+    public void setCreation(long creation) {
+        //ignored
+    }
+
+    @Override
     public long start() {
         return ETERNAL;
     }

@@ -23,6 +23,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
 
     public FloatRank<X> rank;
     private float min;
+    private int capacity;
 
     public TopN(X[] target) {
         this.items = target;
@@ -39,7 +40,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
 
     public TopN(X[] target, FloatRank<X> rank) {
         this(target);
-        rank(rank);
+        rank(rank, target.length);
     }
 
     @Override
@@ -48,9 +49,21 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         min = NEGATIVE_INFINITY;
     }
 
-    public TopN<X> rank(FloatRank<X> rank) {
+    public TopN<X> rank(FloatRank<X> rank, int capacity) {
         this.rank = rank;
+        this.capacity = capacity;
+
+        if (capacity <= 0)
+            throw new ArrayIndexOutOfBoundsException("capacity must be > 0");
+        if (!(items.length >= capacity))
+            throw new ArrayIndexOutOfBoundsException("insufficient item capcacity");
+
         return this;
+    }
+
+    @Override
+    public int capacity() {
+        return capacity;
     }
 
     @Override
@@ -79,7 +92,6 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     }
 
 
-    @Override
     public final boolean add(/*@NotNull */X e) {
         int r = add(e, this);
         if (r >= 0) {
@@ -192,7 +204,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
      * roulette select
      */
     @Nullable
-    public X get(Random rng) {
+    public X getRoulette(Random rng) {
         int n = size();
         switch (n) {
             case 0:
@@ -263,9 +275,9 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
 
     public static <X> RankedTopN<X> pooled(ThreadLocal<MetalPool<RankedTopN>> pool, int capacity, FloatRank<X> rank) {
         RankedTopN<X> t = pool.get().get();
-        t.ranking(rank);
         if (t.items.length < capacity)
             t.items = new Ranked[capacity];
+        t.ranking(rank, capacity);
         return t;
     }
 

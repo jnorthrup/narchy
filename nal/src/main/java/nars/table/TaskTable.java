@@ -103,7 +103,7 @@ public interface TaskTable {
     default Answer matching(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar) {
         boolean beliefOrQuestion = !(this instanceof QuestionTable);
         return Answer.relevance(beliefOrQuestion,
-                beliefOrQuestion ? Answer.TASK_LIMIT_DEFAULT : 1, start, end, template, filter, nar)
+                beliefOrQuestion ? Answer.BELIEF_MATCH_CAPACITY : 1, start, end, template, filter, nar)
                 .match(this);
     }
 

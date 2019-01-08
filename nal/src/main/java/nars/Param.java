@@ -25,7 +25,6 @@ public abstract class Param {
 
 
 
-
     static {
         Op.terms =
                 //HeapTermBuilder.the;
@@ -198,6 +197,12 @@ public abstract class Param {
 
     public static final PriMerge taskMerge = PriMerge.max;
 
+    /** perceptible priority increase that warrants automatic reactivation.
+     * used during Remember's merge repeat suppression filter */
+    public static final float REMEMBER_REPEAT_PRI_THRESHOLD = ScalarValue.EPSILONsqrt;
+
+    /** >=0; higher values decrease the rate at which repeated tasks can be reactivated */
+    public static final int REMEMBER_REPEAT_THRESH_DURS = 2;
 
 
     /**

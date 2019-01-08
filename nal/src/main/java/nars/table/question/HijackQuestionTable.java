@@ -55,14 +55,14 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
         Task x = put(r.input, null);
         if (x != r.input) {
             if (x != null) {
-                assert (x.equals(r.input));
-                r.merge(x); //existing
+                //assert (x.equals(r.input));
+                r.merge(x, n); //existing
             } else
                 r.reject();
         } else {
             r.remember(x);
 
-            commit(forget(1f/capacity()));
+            commit();
         }
 
 

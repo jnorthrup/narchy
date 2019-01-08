@@ -928,12 +928,18 @@ public class NAL8Test extends NALTest {
     @Test
     void testGoalBeliefDecomposeTimeRangingDiffer() {
         test
+                .logDebug()
                 .input("x! +0..+100")
                 .input("(y &&+5 x). +20..+30")
-                .mustGoal(cycles, "y", 1f, 0.1f, (a, b) -> (a == -5 && b == 5))
+                .mustGoal(cycles, "y", 1f, 0.1f, (a, b) ->
+                        //(a == -5 && b == 5)
+                        (a == 0 && b == 10)
+                )
+                .mustNotOutput(cycles, "y", GOAL, 0f, 1, 0f, 1f,
+                        (long s, long e) -> (s == e))
                 .mustNotOutput(cycles, "x", GOAL, (t) -> true /* shouldnt drop first event */)
-                .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0f, 1f, (long s, long e) -> (e - s > 10))
-                .mustNotOutput(cycles, "y", GOAL, 0f, 0.5f, 0f, 1f, (long s, long e) -> (e - s > 10));
+                .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0f, 1f, (long s, long e) -> (e - s != 10))
+        ;
 
 
     }
@@ -950,8 +956,6 @@ public class NAL8Test extends NALTest {
         test.nar.time.dur(16);
 
         test
-
-                .logDebug()
                 .inputAt(0, "(y &&+5 x)! |")
                 .inputAt(2, "y. |")
                 .mustGoal(cycles, "x", 1f, 0.1f, (t) -> t >= 7)

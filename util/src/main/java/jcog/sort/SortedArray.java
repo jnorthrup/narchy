@@ -53,7 +53,7 @@ import java.util.stream.Stream;
  * <p>
  * TODO extend FasterList as a base
  */
-public class SortedArray<X> extends AbstractList<X> {
+public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     public static final int BINARY_SEARCH_THRESHOLD = 3;
     private static final float GROWTH_RATE = 1.25f;
@@ -365,7 +365,6 @@ public class SortedArray<X> extends AbstractList<X> {
         return items;
     }
 
-    @Override
     public int size() {
         return size;
     }
@@ -417,7 +416,6 @@ public class SortedArray<X> extends AbstractList<X> {
         return i != -1 && remove(i) != null;
     }
 
-    @Override
     public void clear() {
         Arrays.fill(items, 0, SIZE.getAndSet(this, 0), null);
     }
@@ -474,7 +472,6 @@ public class SortedArray<X> extends AbstractList<X> {
         return addEnd(element);
     }
 
-    @Override
     public final boolean isEmpty() {
         return size == 0;
     }
@@ -839,7 +836,6 @@ public class SortedArray<X> extends AbstractList<X> {
 
     }
 
-    @Override
     public final void forEach(Consumer<? super X> action) {
         int s = size;
         for (int i = 0; i < s; i++)
@@ -911,7 +907,6 @@ public class SortedArray<X> extends AbstractList<X> {
         return s > 0 ? IntStream.range(0, Math.min(ii.length, s)).mapToObj(i -> ii[i]/*(X) ITEM.getOpaque(items, i)*/) : Stream.empty();
     }
 
-    @Override
     public Iterator<X> iterator() {
         return ArrayIterator.get(items, size());
     }

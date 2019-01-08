@@ -447,6 +447,9 @@ public interface Stamp {
 
     long creation();
 
+    /** for updating creation times */
+    void setCreation(long creation);
+
     long start();
 
     long end();

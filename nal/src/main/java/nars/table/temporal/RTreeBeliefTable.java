@@ -485,7 +485,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         Task existing = RTreeBeliefModel.merged.get();
         if (existing != null && existing.equals(input)) {
-            r.merge(existing);
+            r.merge(existing, n);
             RTreeBeliefModel.merged.remove();
         } else {
             if (!input.isDeleted()) {
