@@ -304,10 +304,6 @@ public class Occurrify extends TimeGraph {
     }
 
 
-    private Occurrify reset(Term pattern) {
-        return reset(true, true, pattern, true);
-    }
-
     private Occurrify reset(boolean taskOccurrence, boolean beliefOccurrence, Term pattern, boolean decomposeEvents) {
 
         if (d.concSingle)
@@ -629,7 +625,7 @@ public class Occurrify extends TimeGraph {
         Default() {
             @Override
             public Pair<Term, long[]> occurrence(Derivation d, Term x) {
-                return solveOccDT(x, d.occ.reset(x));
+                return solveOccDT(x, d.occ.reset(true, true, x, true));
             }
 
             @Override

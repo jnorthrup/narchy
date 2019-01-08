@@ -7,8 +7,6 @@ import nars.term.compound.UnitCompound;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-
 import static nars.Op.NEG;
 
 public final class Neg extends UnitCompound implements The {
@@ -59,18 +57,18 @@ public final class Neg extends UnitCompound implements The {
         return this;
     }
 
-    @Override
-    public @Nullable Term replace(Map<? extends Term, Term> m) {
-        Term n = m.get(this);
-        if (n!=null)
-            return n;
-
-        Term x = sub();
-        Term y = x.replace(m);
-        if (y!=x)
-            return y.neg();
-        return this;
-    }
+//    @Override
+//    public @Nullable Term replace(Map<? extends Term, Term> m) {
+//        Term n = m.get(this);
+//        if (n!=null)
+//            return n;
+//
+//        Term x = sub();
+//        Term y = x.replace(m);
+//        if (y!=x)
+//            return y.neg();
+//        return this;
+//    }
 
     @Override
     public Term concept() {
