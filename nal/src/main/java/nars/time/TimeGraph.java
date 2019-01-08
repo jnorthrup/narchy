@@ -282,16 +282,44 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         Event event = x.id();
         Term eventTerm = event.id;
 
+        final boolean[] newTerm = {false}, newEvent = { false };
+        byTerm.compute(eventTerm, (k, v)->{
+           if (v == null) {
+               newTerm[0] = newEvent[0] = true;
+               //return java.util.Set.of(event);
+               return Collections.singleton(event);
+           } else {
+               if (v.contains(event)) {
+                   return v;
+               } else {
+                   newEvent[0] = true;
+                   if (v.size() == 1) {
+                       //upgrade to mutable set
+                       UnifiedSet<Event> w = new UnifiedSet<Event>(2);
+                       w.add(v.iterator().next());
+                       w.add(event);
+                       return w;
+                   }
+                   return v;
+               }
 
-        Collection<Event> ee = byTerm.get(eventTerm);
-        if (ee.isEmpty()) {
-            byTerm.put(eventTerm, new UnifiedSet(2).with(event)); //TODO pool these Set's
+           }
+        });
+        if (!newEvent[0])
+            return;
+        if (newTerm[0])
             onNewTerm(eventTerm);
-        } else {
-            if (!ee.add(event))
-                //if (!byTerm.put(eventTerm, event))
-                return; //already present
-        }
+
+
+//        Collection<Event> ee = byTerm.get(eventTerm);
+//        if (ee.isEmpty()) {
+//            byTerm.put(eventTerm, new UnifiedSet(2).with(event)); //TODO pool these Set's
+//            onNewTerm(eventTerm);
+//        } else {
+//            if (!ee.add(event))
+//                //if (!byTerm.put(eventTerm, event))
+//                return; //already present
+//        }
 
         if (decomposeAddedEvent(event)) {
             int edt = eventTerm.dt();
