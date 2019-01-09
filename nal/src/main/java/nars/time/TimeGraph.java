@@ -31,7 +31,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 import static jcog.Util.hashCombine;
-import static jcog.data.graph.search.Search.pathStart;
 import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
@@ -502,6 +501,20 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         Subterms xx = x.subterms();
 
+        Op xop = x.op();
+        {
+            if (x.equals(x.root())) {
+                //try any absolute events which have different term ID but the same term root as these will be readily valid solutions
+                for (Map.Entry<Term, Collection<Event>> e : byTerm.entrySet()) {
+                    Term et = e.getKey();
+                    if (et.op() == xop && !et.equals(x) && et.root().equals(x)) {
+                        if (!((ArrayHashSet<Event>) e.getValue()).AND(z -> each.test(z)))
+                            return false;
+                    }
+                }
+            }
+        }
+
         //assert(!xx.hasXternal()): "dont solveDTTrace if subterms have XTERNAL";
 
         int subs = xx.subs();
@@ -514,6 +527,17 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         } else {
             //throw new TODO();
+            assert(xop ==CONJ);
+            //HACK try any two and then solve that with the 3rd
+            if (subs == 3) {
+                Term a = xx.sub(0), b = xx.sub(1), c = xx.sub(2);
+                //go in reverse complexity order
+                return solveDT(CONJ.the(XTERNAL, c, b), (bc)->{
+                   return solveDT(CONJ.the(XTERNAL, bc.id, a), each);
+                });
+            }
+
+
             return true;
         }
 

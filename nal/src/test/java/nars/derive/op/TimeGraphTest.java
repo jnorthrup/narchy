@@ -222,6 +222,15 @@ class TimeGraphTest {
     }
 
     @Test
+    void testConj3() throws Narsese.NarseseException {
+        TimeGraph C = newTimeGraph(1);
+        C.know($("a"), 1);
+        C.know($("b"), 2);
+        C.know($("c"), 3);
+        assertSolved("(&&+-, a,b,c)", C, "((a &&+1 b) &&+1 c)@1");
+    }
+
+    @Test
     void testImplWithTwoConjPredicates() throws Narsese.NarseseException {
 
 

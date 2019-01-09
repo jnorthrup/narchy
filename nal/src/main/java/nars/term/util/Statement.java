@@ -101,7 +101,10 @@ public class Statement {
                     long so, po; //subject and predicate occurrences
 
                     so = subjDT != DTERNAL ? 0 : (dt != DTERNAL ? 0 : ETERNAL);
-                    po = predicate.dt() != DTERNAL ? 0 : (dt != DTERNAL ? dt : ETERNAL);
+                    po = (subjDT!=DTERNAL || predicate.dt() != DTERNAL) ?
+                            (dt!=DTERNAL ? dt : 0)
+                            :
+                            (dt != DTERNAL ? dt : ETERNAL);
                     if (po!=ETERNAL)
                         po += subjRange;
 
