@@ -271,8 +271,8 @@ public interface NAct {
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanPredicate L, BooleanPredicate R, FloatSupplier thresh) {
 
         boolean freqOrExp =
-                //true;
-                false;
+                true;
+                //false;
 
         float[] lr = new float[]{0f, 0f};
 
@@ -295,7 +295,10 @@ public interface NAct {
             float feedback =
                     y ? 1 : 0;
                     //y ? 1 : Math.min(thresh.asFloat(),(g!=null ? g.freq() : 0));
-            return $.t(feedback, n.confDefault(BELIEF));
+            float c =
+                    //n.confDefault(BELIEF);
+                    Math.max(n.confMin.floatValue(), g!=null ? g.conf() : 0);
+            return $.t(feedback, c);
 
         });
         GoalActionConcept RA = action(r, (b, g) -> {
@@ -311,7 +314,10 @@ public interface NAct {
             float feedback =
                     y ? 1 : 0;
                     //y ? 1 : Math.min(thresh.asFloat(),(g!=null ? g.freq() : 0));
-            return $.t(feedback, n.confDefault(BELIEF));
+            float c =
+                    //n.confDefault(BELIEF);
+                    Math.max(n.confMin.floatValue(), g!=null ? g.conf() : 0);
+            return $.t(feedback, c);
         });
 
         for (GoalActionConcept x : new GoalActionConcept[]{LA, RA}) {
@@ -401,8 +407,12 @@ public interface NAct {
      */
     default GoalActionConcept actionUnipolar(Term s, boolean freqOrExp, FloatToFloatFunction ifGoalMissing, FloatToFloatFunction update) {
 
-        ActionConcept.MotorFunction motor = new UnipolarMotor(freqOrExp, ifGoalMissing, update, f ->
-                $.t(f, nar().confDefault(BELIEF))
+        ActionConcept.MotorFunction motor = new UnipolarMotor(freqOrExp, ifGoalMissing, update,
+            (feedbackFreq,goalConf) ->
+                $.t(feedbackFreq,
+                        Math.max(nar().confMin.floatValue(), goalConf)
+                        //nar().confDefault(BELIEF)
+                )
         );
 
         return addAction(new GoalActionConcept(s, nar(), motor));

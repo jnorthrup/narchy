@@ -40,18 +40,18 @@ public enum ConjCommutive {;
         if (u.length == 2) {
             //quick test
             Term a = u[0], b = u[1];
-            if (Term.commonStructure(a, b)) {
+            //if (Term.commonStructure(a, b)) {
                 if (a.equals(b))
                     return u[0];
                 if (a.equalsNeg(b))
                     return False;
-            }
+            //}
 
 
 
             if (a.unneg().op() != CONJ && b.unneg().op()!=CONJ) {
                 //fast construct for simple case, verified above to not contradict itself
-                return HeapTermBuilder.the.theCompound(CONJ, dt, /*sorted*/a, b);
+                return HeapTermBuilder.the.theCompound(CONJ, dt, /*sorted*/u);
             }
         }
 
@@ -60,10 +60,12 @@ public enum ConjCommutive {;
         MetalBitSet pos; //simple positive events
         MetalBitSet neg; //negative events
         MetalBitSet conjMerge; //mergeable conj compounds
-        MetalBitSet conjOther; //un-mergeable conj compounds
+        MetalBitSet seq; //un-mergeable conj compounds
         MetalBitSet disj; //disjunctions
+
+        Set<Term> flatten = null;
         do {
-            pos = neg = conjMerge = conjOther = disj = null;
+            pos = neg = conjMerge = seq = disj = null;
 
             for (int i = 0, uLength = u.length; i < uLength; i++) {
                 Term x = u[i];
@@ -80,7 +82,7 @@ public enum ConjCommutive {;
                             conjMerge = set(conjMerge, i, uLength);
                         } else {
                             //TODO handle promotion of &&/&| as conjMerge rather than conjOther
-                            conjOther = set(conjOther, i, uLength);
+                            seq = set(seq, i, uLength);
                         }
                         break;
                     case NEG:
@@ -97,7 +99,8 @@ public enum ConjCommutive {;
             }
 
             if (conjMerge != null) {
-                Set<Term> flatten = null;
+                if (flatten!=null)
+                    flatten.clear();
                 for (int i = 0, uLength = u.length; i < uLength; i++) {
                     if (conjMerge.get(i)) {
                         Term x = u[i];
@@ -117,115 +120,141 @@ public enum ConjCommutive {;
                     u = ArrayUtils.removeAll(u, conjMerge);
                     break;
                 }
+                if (u.length==1)
+                    return u[0];
 
             }
 
         } while (conjMerge!=null);
 
+        if (pos!=null && neg!=null) {
+            if (coNegate(pos, neg, u))
+                return False;
+        }
+
         if (pos!=null && pos.cardinality() == u.length) {
             //all pos
             //assertNot2(u);
             return conjDirect(dt, u);
-        } else if (neg!=null && neg.cardinality() == u.length) {
+        }
+
+        if (neg!=null && neg.cardinality() == u.length) {
             //assertNot2(u);
             return conjDirect(dt, u);
-        } else if (pos!=null && neg!=null && (pos.cardinality()+ neg.cardinality()) == u.length) {
-            //assertNot2(u);
+        }
+
+
+        if (pos!=null && neg!=null && (pos.cardinality() + neg.cardinality()) == u.length) {
+
             //mix of pos and negative, check for co-negation
-            if (!coNegate(pos, neg, u))
-                return conjDirect(dt, u);
+
+            return conjDirect(dt, u);
+        }
+
+        if ((seq!=null && seq.cardinality()==1)) {
+            if (disj==null) {
+
+                //try simple cases
+                int coi = seq.first(true);
+                Term co = u[coi];
+
+                if ((dt == DTERNAL) || (co.dt() == DTERNAL)) {
+                    int indep = 0, elim = 0;
+                    for (int i = 0; i < u.length; i++) {
+                        if (i == coi) continue;
+                        Term x = u[i];
+                        assert (x.op() != CONJ);
+                        if (!conflict(co, x)) {
+                            if (absorbCompletelyByFirstLayer(co, x)) {
+                                elim++;
+                            } else if (!absorb(co, x)) {
+                                indep++;
+                            }
+
+                        }
+                    }
+
+                    if (indep == u.length-1) {
+                        //promote dternal wrapped parallel disjunction to parallel
+                        if (dt == DTERNAL && co.dt()==0)
+                            return theSorted(0, u); //need to start over (recurse)
+
+                        return conjDirect(dt, u); //all independent
+                    }
+
+                    if (elim == u.length-1)
+                        return co; //all absorbed
+
+
+                } else if (dt == 0) {
+                    if (co.dt() == XTERNAL) {
+                        //allow because there is no way to know what the correspondence of timing is
+                        return conjDirect(dt, u);
+                    }
+                }
+            }
+
+        }
+        if (u.length == 2) {
+            //TODO exclude the case with disj and conjOther
+            int dd;
+            if (disj!=null && disj.cardinality()==1)
+                dd = disj.first(true);
+            else if (seq!=null && seq.cardinality()==1)
+                dd = seq.first(true);
             else
-                return False;
-        } else {
+                dd = -1;
 
-            if ((conjOther!=null && conjOther.cardinality()==1)) {
-                if (disj==null) {
+            if (dd!=-1) {
+                Term d = u[dd];
+                Term x = u[1 - dd];
+                return Conj.conjoin(d, x, dt == DTERNAL);
+            }
 
-                    //try simple cases
-                    int coi = conjOther.first(true);
-                    Term co = u[coi];
+        }
 
-                    if ((dt == DTERNAL) || (co.dt() == DTERNAL)) {
-                        int indep = 0, elim = 0;
-                        for (int i = 0; i < u.length; i++) {
-                            if (i == coi) continue;
-                            Term x = u[i];
-                            assert (x.op() != CONJ);
-                            if (!conflict(co, x)) {
-                                if (absorbCompletelyByFirstLayer(co, x)) {
-                                    elim++;
-                                } else if (!absorb(co, x)) {
-                                    indep++;
-                                }
+        long sdt = dt == DTERNAL ? ETERNAL : 0;
+        try {
+            Conj c = new Conj(u.length);
 
-                            }
-                        }
+            //iterate in reverse order to add the smaller (by volume) items first
 
-                        if (indep == u.length-1) {
-                            //promote dternal wrapped parallel disjunction to parallel
-                            if (dt == DTERNAL && co.dt()==0)
-                                return theSorted(0, u); //need to start over (recurse)
+            if (seq!=null) {
+                //add the non-conj terms at ETERNAL last.
+                //then if the conjOther is a sequence, add it at zero
+                for (int i = u.length-1; i >= 0; i--) {
+                    if (seq.get(i)) {
+                        Term t = u[i];
+                        if (!c.add(sdt, t))
+                            return c.term(); //fail
+                    }
+                }
+                for (int i = u.length-1; i >= 0; i--) {
+                    if (!seq.get(i))
+                        if (!c.add(sdt, u[i]))
+                            return c.term(); //fail
+                }
 
-                            return conjDirect(dt, u); //all independent
-                        }
-
-                        if (elim == u.length-1)
-                            return co; //all absorbed
-
-
-                    } else if (dt == 0) {
-                        if (co.dt() == XTERNAL) {
-                            //allow because there is no way to know what the correspondence of timing is
-                            return conjDirect(dt, u);
+            } else {
+                switch (u.length) {
+                    case 0:
+                        return True;
+                    case 1:
+                        return u[0];
+                    case 2:
+                        return Conj.conjoin(u[0], u[1], dt == DTERNAL);
+                    default: {
+                        for (int i = u.length-1; i >= 0; i--) {
+                            Term term = u[i];
+                            if (!c.add(sdt, term))
+                                break;
                         }
                     }
                 }
-
             }
-
-            long sdt = dt == DTERNAL ? ETERNAL : 0;
-            try {
-                Conj c = new Conj(u.length);
-
-                //iterate in reverse order to add the smaller (by volume) items first
-
-                if (conjOther!=null) {
-                    //add the non-conj terms at ETERNAL last.
-                    //then if the conjOther is a sequence, add it at zero
-                    for (int i = u.length-1; i >= 0; i--) {
-                        if (conjOther.get(i)) {
-                            Term t = u[i];
-                            if (!c.add(sdt, t))
-                                return c.term(); //fail
-                        }
-                    }
-                    for (int i = u.length-1; i >= 0; i--) {
-                        if (!conjOther.get(i))
-                            if (!c.add(sdt, u[i]))
-                                return c.term(); //fail
-                    }
-
-                } else {
-                    switch (u.length) {
-                        case 0:
-                            return True;
-                        case 1:
-                            return u[0];
-                        case 2:
-                            return Conj.conjoin(u[0], u[1], dt == DTERNAL);
-                        default: {
-                            for (int i = u.length-1; i >= 0; i--) {
-                                Term term = u[i];
-                                if (!c.add(sdt, term))
-                                    break;
-                            }
-                        }
-                    }
-                }
-                return c.term();
-            } catch (StackOverflowError e) {
-                throw new WTF("StackOverflow: && " + sdt + " " + Arrays.toString(u)); //TEMPORARY
-            }
+            return c.term();
+        } catch (StackOverflowError e) {
+            throw new WTF("StackOverflow: && " + sdt + " " + Arrays.toString(u)); //TEMPORARY
         }
     }
 

@@ -71,6 +71,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import static nars.$.$;
+import static nars.$.$$;
 import static nars.Op.*;
 import static nars.term.Functor.f;
 import static nars.time.Tense.ETERNAL;
@@ -369,9 +370,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /**
      * ask question
      */
-    public Task question(String termString) throws NarseseException {
+    public Task question(String termString) {
 
-        return question($(termString));
+        return question($$(termString));
     }
 
     /**
@@ -1007,7 +1008,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     @Nullable
     public final Concept concept(String term) {
-        return concept($.$$(term), false);
+        return concept($$(term), false);
     }
 
     /**

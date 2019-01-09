@@ -639,7 +639,7 @@ public class Conj extends ByteAnonMap {
             return without(include, exclude, false);
 
 
-        if (concurrent(include.dt()) && concurrent(exclude.dt())) {
+        if (!Conj.isSeq(include) && !Conj.isSeq(exclude)) {
 
             Subterms es = exclude.subterms();
             @Nullable MutableSet<Term> ii = include.subterms().toSet(i -> !es.contains(i));

@@ -17,6 +17,7 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.PreciseTruth;
+import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
@@ -37,6 +38,7 @@ public abstract class Reward implements Termed, Iterable<Signal> {
 
     protected final CauseChannel<ITask> in;
 
+    boolean goalUnstamped = true;
 
     final AttNode attn;
 
@@ -86,8 +88,7 @@ public abstract class Reward implements Termed, Iterable<Signal> {
     public void alwaysWantEternally(Term goal, float conf) {
         Task t = new NALTask(goal, GOAL, $.t(1f, conf), nar().time(),
                 ETERNAL, ETERNAL,
-                nar().evidence()
-                //Stamp.UNSTAMPED
+                goalUnstamped ? Stamp.UNSTAMPED : nar().evidence()
         );
 
         Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);

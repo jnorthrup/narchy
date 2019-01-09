@@ -554,7 +554,7 @@ public class TestNAR {
         return mustOutput(cyclesAhead, goalTerm, BELIEF, freq, freq, conf, conf, occ);
     }
 
-    public TestNAR ask(String termString) throws Narsese.NarseseException {
+    public TestNAR ask(String termString) {
         nar.question(termString);
         return this;
     }

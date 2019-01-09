@@ -1009,7 +1009,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             FasterList<Event> toTry = null; //buffer to avoid concurrent modification exception
             for (Map.Entry<Term, Collection<Event>> e : byTerm.entrySet()) {
                 Term et = e.getKey();
-                if (et.op() == xop && !et.equals(x) && et.root().equals(x)) {
+                if (et.op() == xop && !x.equals(et) && x.equals(et.root())) {
                     if (toTry == null) toTry = new FasterList(e.getValue());
                     else
                         toTry.addAll(e.getValue());

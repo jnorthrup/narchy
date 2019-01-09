@@ -1394,7 +1394,9 @@ public class NAL7Test extends NALTest {
                 .mustBelieve(cycles, "( (a,#1) =|> y )", 1f, 0.73f, 0)
                 .mustBelieve(cycles, "( (a,#1) =|> z )", 1f, 0.73f, 0)
         ;
-    }  @Test
+    }
+
+    @Test
     void testDecomposeImplPred_ParallelConj_with_DepVar() {
 
         test
@@ -1418,24 +1420,7 @@ public class NAL7Test extends NALTest {
         ;
     }
 
-    @Disabled
-    @Test
-    void testImplInductionAndConjReduction() {
-        /*
-        test for 2 things:
-            a) the inducted implication should not lose its temporal information in the result
-            b) the conjunction with implication can be reduced to an implication of a conjunction precondition
-        $.25 (inside(bob,office) &| (inside(john,playground)==>inside(bob,kitchen))). 0 %1.0;.50% {6: 2;3;5} ((%1,%2,task(positive),belief(positive),task("."),time(raw),time(dtEvents)),((%1 &&+- %2),((Intersection-->Belief))))
-          $.05 (inside(john,playground) ==>+0 inside(bob,kitchen)). 0 %1.0;.50% {1: 2;5} ((%1,%2,time(raw),belief(positive),task("."),time(dtEventsReverse),notImpl(%1),notImpl(%2)),((%2 ==>+- %1),((Abduction-->Belief))))
-            $.50 inside(bob,kitchen). 0 %1.0;.90% {0: 5}
-            $.50 inside(john,playground). 0 %1.0;.90% {0: 2}
-          $.50 inside(bob,office). 0 %1.0;.90% {0: 3}
 
-          instead the result should be:
-            ((inside(bob,office) &| inside(john,playground) ==>+0 inside(bob,kitchen))).
-          */
-
-    }
 
     @Test
     void nal5_conditional_induction0Simple() {

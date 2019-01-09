@@ -99,7 +99,7 @@ public enum NALTruth implements TruthFunc {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, NAR m, float minConf) {
             float c = confCompose(T.conf(), NALTruth.confDefault(m));
-            //c = weak(c);
+//            c = weak(c);
             return c >= minConf ? $.t(T.freq(), c) : null;
         }
     },

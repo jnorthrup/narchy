@@ -47,14 +47,12 @@ public class TaskLinkTest {
 
     @Test public void testEnsureFairQuestionSelection() {
         Frequency f = sampleLink((n)->{
-            try {
+
                 Task a = n.question("x");
                 a.pri(0.25f);
                 Task b = n.question("x");
                 b.pri(0.5f);
-            } catch (Narsese.NarseseException e) {
-                e.printStackTrace();
-            }
+
         },64);
 
         System.out.println(f);

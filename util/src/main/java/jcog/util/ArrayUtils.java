@@ -7265,9 +7265,9 @@ public enum ArrayUtils {;
 
     public static <X> X[] removeAll(final X[] x, final MetalBitSet indices) {
         int toRemove = indices.cardinality();
-        final int srcLength = x.length, remain = srcLength - toRemove;
         if (toRemove == 0)
             return x;
+        final int srcLength = x.length, remain = srcLength - toRemove;
         switch (remain) {
             case 0:
                 return (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;

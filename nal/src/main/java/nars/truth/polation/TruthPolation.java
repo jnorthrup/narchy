@@ -317,7 +317,6 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
                 //if there isnt more evidence for the primarily sought term, then just use those components
                 Term term = Intermpolate.intermpolate(a,
-                        firstStart != ETERNAL && secondStart != ETERNAL ? secondStart - firstStart : 0,
                         b, e1Evi[0] / (e1Evi[0] + e2Evi[0]), nar);
 
                 if (Task.taskConceptTerm(term)) {

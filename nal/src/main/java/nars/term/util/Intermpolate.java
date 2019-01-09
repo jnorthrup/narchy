@@ -6,7 +6,6 @@ import nars.NAR;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
-import nars.term.atom.Atomic;
 import nars.time.Tense;
 
 import static nars.Op.CONJ;
@@ -19,17 +18,16 @@ import static nars.time.Tense.XTERNAL;
  */
 public enum Intermpolate {;
 
-    private static Term intermpolate(/*@NotNull*/ Term a, @Deprecated long bOffset, /*@NotNull*/ Term b, float aProp, float curDepth, NAR nar) {
+    private static Term intermpolate(/*@NotNull*/ Term a,  /*@NotNull*/ Term b, float aProp, float curDepth, NAR nar) {
 
         if (a.equals(b)/* && bOffset == 0*/)
             return a;
 
-        if (a instanceof Atomic || b instanceof Atomic)
-            return Null; //atomics differ
-
-        Op ao = a.op(), bo = b.op();
-        if (ao != bo)
+        if (!a.equalsRoot(b))
             return Null;
+
+        Op ao = a.op();//, bo = b.op();
+//        if (ao != bo)         return Null; //checked in equalRoot
 
 
         int len = a.subs();
@@ -41,8 +39,6 @@ public enum Intermpolate {;
 ////                throw new WTF();
 //        }
 
-        if (!a.equalsRoot(b))
-            return Null;
 
         Subterms aa = a.subterms(), bb = b.subterms();
 
@@ -70,7 +66,7 @@ public enum Intermpolate {;
         for (int i = 0; i < len; i++) {
             Term ai = aa.sub(i), bi = bb.sub(i);
             if (!ai.equals(bi)) {
-                Term y = intermpolate(ai, 0, bi, aProp, curDepth / 2f, nar);
+                Term y = intermpolate(ai, bi, aProp, curDepth / 2f, nar);
                 if (y == Null)
                     return Null;
 
@@ -100,7 +96,7 @@ public enum Intermpolate {;
             return a.dt(dt);
         else {
             Term[] ab = Util.map(aa.subs(), Term[]::new, i -> {
-                return intermpolate(aa.sub(i), 0, bb.sub(i), aProp, depth / 2, nar);
+                return intermpolate(aa.sub(i), bb.sub(i), aProp, depth / 2, nar);
             });
 
             return a.op().the(dt, ab);
@@ -157,15 +153,10 @@ public enum Intermpolate {;
     }
 
     public static Term intermpolate(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, NAR nar) {
-        return intermpolate(a, 0, b, aProp, nar);
+        return intermpolate(a, b, aProp, 0, nar);
     }
 
-    /**
-     * a is left aligned, dt is any temporal shift between where the terms exist in the callee's context
-     */
-    public static Term intermpolate(/*@NotNull*/ Term a, long dt, /*@NotNull*/ Term b, float aProp, NAR nar) {
-        return intermpolate(a, dt, b, aProp, 1, nar);
-    }
+
 
     /**
      * heuristic representing the difference between the dt components

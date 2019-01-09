@@ -303,7 +303,7 @@ public class NAL3Test extends NALTest {
     @Test
     public void questPropagation() throws Narsese.NarseseException {
 
-        test.nar.termVolumeMax.set(6);
+        test.nar.termVolumeMax.set(5);
         test
                 .goal("x:a")
                 .goal("x:b")

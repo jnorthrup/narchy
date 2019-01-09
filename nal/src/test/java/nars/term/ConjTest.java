@@ -46,6 +46,19 @@ public class ConjTest {
         x.add(0, $$("a:y"));
         assertEq("((x-->a)&|(y-->a))", x.term());
     }
+    @Test
+    void conjWTFF2() {
+        assertEq(False,
+                $$("(&&, ((--,#1) &&+232 (--, (tetris --> curi))),(--, right),right)")
+        );
+    }
+    @Test
+    void conjDisjWTF() {
+        assertEq(False,
+                $$("( (||,(||+- ,((--,_3(_1,_2)) &&+- $1),_3(_4,_5)),_3(_1,_2)) &&  (--,_3(_4,_5)))")
+        );
+    }
+
 
     @Test
     void testParallelizeDTERNALWhenInSequence() {

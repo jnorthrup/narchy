@@ -728,18 +728,17 @@ public interface Compound extends Term, IPair, Subterms {
     default boolean equalsRoot(Term x) {
         if (this.equals(x))
             return true;
-        if (!x.hasAny(Op.Temporal))
+
+        Op o = op();
+        if (o != x.op())
             return false;
 
+        if (!o.temporal && !hasAny(Op.Temporal))
+            return false;
 
-        if (
-                op() == x.op()
-                        &&
-                        structure() == x.structure()
-        ) {
-
-            Term root = root();
-            return (root != this && root.equals(x)) || root.equals(x.root());
+        if (subterms().structure() == x.subterms().structure()) {
+            Term root = root(), xRoot;
+            return (root != this && root.equals(x)) || (((xRoot = x.root()))!=x && root.equals(xRoot));
         }
 
         return false;

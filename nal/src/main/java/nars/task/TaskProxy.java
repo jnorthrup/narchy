@@ -134,7 +134,7 @@ public class TaskProxy extends UnitPri implements Task {
     }
 
     /** produce a concrete non-proxy clone of this */
-    public NALTask the() {
+    @Nullable public NALTask the() {
         return Task.clone(this);
     }
 }

@@ -19,7 +19,7 @@ import static nars.term.anon.AnonID.termPos;
 /**
  * a vector which consists purely of AnonID terms
  */
-public class AnonVector extends TermVector implements Subterms.SubtermsBytesCached {
+public class AnonVector extends TermVector /*implements Subterms.SubtermsBytesCached*/ {
 
     /*@Stable*/
     private final short[] subterms;
@@ -315,7 +315,7 @@ public class AnonVector extends TermVector implements Subterms.SubtermsBytesCach
 
     @Override
     public void appendTo(ByteArrayDataOutput out) {
-        if (bytes==null) {
+//        if (bytes==null) {
             short[] ss = subterms;
             out.writeByte(ss.length);
             for (short s : ss) {
@@ -325,9 +325,9 @@ public class AnonVector extends TermVector implements Subterms.SubtermsBytesCach
                 }
                 termPos(s).appendTo(out);
             }
-        } else {
-            out.write(bytes);
-        }
+//        } else {
+//            out.write(bytes);
+//        }
     }
 
 //    @Override

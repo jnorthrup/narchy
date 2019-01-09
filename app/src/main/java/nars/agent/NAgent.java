@@ -541,8 +541,8 @@ public class NAgent extends NARService implements NSense, NAct {
                 //nar.confMin.floatValue() * 4;
                 //Util.lerp(1/8f, nar.confMin.floatValue(), Param.TRUTH_MAX_CONF);
                 //nar.confDefault(GOAL)/4;
-                //nar.confDefault(GOAL)/3;
-                nar.confDefault(GOAL)/2;
+                nar.confDefault(GOAL)/3;
+                //nar.confDefault(GOAL)/2;
                 //nar.confDefault(GOAL)/3;
                 //w2c(c2w(nar.confDefault(GOAL))/3);
                 //w2c(c2w(nar.confDefault(GOAL))/2);

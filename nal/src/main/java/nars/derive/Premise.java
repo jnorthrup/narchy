@@ -128,6 +128,13 @@ public class Premise implements Comparable<Premise> {
 
         Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept);
 
+        if (task.stamp().length== 0) {
+            //only allow unstamped tasks to apply with stamped beliefs.
+            //otherwise stampless tasks could loop forever in single premise or in interaction with another stampless task
+            if (belief==null || belief.stamp().length==0)
+                return false;
+        }
+
         Term nextBeliefTerm = belief != null ? belief.term() : beliefTerm.unneg();
         if (nextBeliefTerm.volume() > d.termVolMax)
             return false; //WTF

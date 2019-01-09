@@ -410,7 +410,7 @@ abstract public class NAgentX extends NAgent {
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF,
                 Task::isInput,
                 //t->true,
-                8, 128);
+                8, 512);
 //        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF,
 //                t->!t.isInput(),
 //                3, 8);
@@ -428,13 +428,13 @@ abstract public class NAgentX extends NAgent {
 //                8, 96);
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(n,64);
-        Introduction factorizer = new Factorize.FactorIntroduction( n, 8);
+        Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
 
 
-        new Inperience.Believe(n);
-        new Inperience.Want(n, 16);
-        new Inperience.Wonder(n);
-        new Inperience.Plan(n, 8);
+        new Inperience.Believe(16, n);
+        new Inperience.Want(16, n);
+        new Inperience.Wonder(8, n);
+        new Inperience.Plan(8, n);
 
 
 

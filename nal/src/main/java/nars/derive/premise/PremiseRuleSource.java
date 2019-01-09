@@ -252,6 +252,8 @@ public class PremiseRuleSource extends ProxyTerm {
                     constraints.add(new SubOfConstraint(XX, YY, EventsAny, 1));
                     break;
 
+                //case "eventsOfNeg":
+
                 case "eventCommon":
 
 

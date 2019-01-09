@@ -1,5 +1,6 @@
 package nars.subterm;
 
+import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.iterator.ArrayIterator;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
@@ -156,6 +157,15 @@ public class ArrayTermVector extends TermVector {
                 return false;
         }
         return true;
+    }
+
+    @Override
+    public void appendTo(ByteArrayDataOutput out) {
+        Term[] t = this.terms;
+        int n;
+        out.writeByte(n = t.length);
+        for (int i = 0; i < n; i++)
+            t[i].appendTo(out);
     }
 
 }

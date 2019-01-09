@@ -65,11 +65,17 @@
 
 
 
-//        //TODO question variations
-        Y, (C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,Y),Y,strict), (Belief:Deduction)
+        //TODO question variations
+        Y, (  C ==> Z), is(C,"&&"),eventsOf(C,Y)    |- (  conjWithoutAll(C,  Y) ==> Z), (Belief:Deduction)
+        Y, (--C ==> Z), is(C,"&&"),eventsOf(C,Y)    |- (--conjWithoutAll(C,  Y) ==> Z), (Belief:Deduction)
+        Y, (  C ==> Z), is(C,"&&"),eventOfNeg(C,Y)    |- (  conjWithout(C,--Y) ==> Z), (Belief:DeductionN)
+        Y, (--C ==> Z), is(C,"&&"),eventOfNeg(C,Y)    |- (--conjWithout(C,--Y) ==> Z), (Belief:DeductionN)
+                //TOD eventsOf
+        Y, (  C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,Y),Y,strict), (Belief:Deduction)
+        Y, (  C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:DeductionN)
           //Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- unisubst(((&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction)
            //Y, ((&&,X,A..+) ==> Z) |- unisubst(((&&,X,Y,A..+) ==> Z), X,Y), (Belief:Deduction)
-        Y, (C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:DeductionN)
+
           //Y, ((&&,--X,A..+) ==> Z), neq(X,Y) |- unisubst(((&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
            //Y, ((&&,--X,A..+) ==> Z) |- unisubst(((&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
                 //Y, (--(&&,X,A..+) ==> Z), neq(X,Y) |- unisubst((--(&&,X,A..+) ==> Z), X,Y,strict), (Belief:Deduction)
@@ -77,15 +83,18 @@
                 //Y, (--(&&,--X,A..+) ==> Z), neq(X,Y) |- unisubst((--(&&,--X,A..+) ==> Z), X,Y,strict), (Belief:DeductionN)
                  //Y, (--(&&,--X,A..+) ==> Z) |- unisubst((--(&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
 
+            //    Y, (B ==> (&&,X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:Deduction)
+            //    Y, (B ==> (&&,--X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:DeductionN)
+
+        Y, (Z ==> C), is(C,"&&"),eventsOf(C,Y)      |- (Z ==> conjWithoutAll(C,    Y)), (Belief:Abduction)
+        Y, (Z ==> C), is(C,"&&"),eventOfNeg(C,Y)    |- (Z ==> conjWithout(C,  --Y)), (Belief:AbductionN)
         Y, (Z ==> C), is(C,"&&") |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,Y),Y,strict), (Belief:Abduction)
+        Y, (Z ==> C), is(C,"&&") |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:AbductionN)
           //Y, (Z ==> (&&,X,A..+)), neq(X,Y),neq(Y,Z) |- unisubst((Z ==> (&&,X,A..+)), X,Y,strict), (Belief:Abduction)
             //Y, (Z ==> (&&,X,A..+)) |- unisubst((Z ==> (&&,X,Y,A..+)), X,Y), (Belief:Abduction)
-        Y, (Z ==> C), is(C,"&&") |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:AbductionN)
           //Y, (Z ==> (&&,--X,A..+)), neq(X,Y),neq(Y,Z) |- unisubst((Z ==> (&&,--X,A..+)), X,Y,strict), (Belief:AbductionN)
             //Y, (Z ==> (&&,--X,A..+)) |- unisubst((Z ==> (&&,--X,--Y,A..+)), X,Y), (Belief:AbductionN)
 
-//    Y, (B ==> (&&,X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:Deduction)
-//    Y, (B ==> (&&,--X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:DeductionN)
 
     //general implication induction
     //(A ==> B), X, neq(A,X), neq(A,--X), --is(X,"==>")   |- ((A && X) ==> B), (Belief:Induction)
@@ -263,8 +272,8 @@
 
 
 
-    (C ==> Z), (B ==> M), eventOf(C,B) |- ((conjWithout(C,B) && M) ==> Z), (Belief:Induction)
-        (C ==> Z), (B ==> M), eventOf(C,B) |- ((conjWithout(C,B) && --M) ==> Z), (Belief:InductionPN)
+    (C ==> Z), (B ==> M), eventsOf(C,B) |- ((conjWithoutAll(C,B) && M) ==> Z), (Belief:Induction)
+        (C ==> Z), (B ==> M), eventsOf(C,B) |- ((conjWithoutAll(C,B) && --M) ==> Z), (Belief:InductionPN)
 
     //Conditional Abduction via Multi-conditional Syllogism
     (C ==> Y), (E ==> Y), eventsOf(C,E)          |-    conjWithoutAll(C,E), (Belief:AbductionPB)

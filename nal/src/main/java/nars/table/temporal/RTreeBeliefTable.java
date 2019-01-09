@@ -1,6 +1,7 @@
 package nars.table.temporal;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.sort.FloatRank;
 import jcog.sort.Top;
@@ -462,9 +463,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (r.input instanceof TaskProxy) {
             //dont store TaskProxy's
             input = ((TaskProxy) r.input).the();
+            if (input == null)
+                throw new WTF();
         } else {
             input = r.input;
         }
+
 //        if (r.input instanceof SpecialTruthAndOccurrenceTask) {
 //            //dont do this for SpecialTermTask coming from Image belief table
 //            input = ((TaskProxy) r.input).the();
