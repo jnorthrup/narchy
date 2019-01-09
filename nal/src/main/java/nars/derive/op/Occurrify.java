@@ -276,11 +276,11 @@ public class Occurrify extends TimeGraph {
 
     @Override
     @Deprecated
-    protected Term dt(Term x, List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, int dt) {
+    protected Term dt(Term x, List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, boolean dir, int dt) {
         int ddt = dt(dt);
-        Term y = super.dt(x, path, ddt);
+        Term y = super.dt(x, path, dir, ddt);
         if (ddt != dt && Param.ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS && (y.op() != x.op())) {
-            y = super.dt(x, path, dt);
+            y = super.dt(x, path, dir, dt);
         }
         return y;
     }

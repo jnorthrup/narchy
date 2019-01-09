@@ -98,11 +98,9 @@ public class Statement {
                     int subjRange = subject.eventRange();
                     boolean subjNeg = subject.op() == NEG;
 
-                    long po;
-                    if (dt == DTERNAL) {
-                        po = predicate.dt() == DTERNAL ? ETERNAL : 0;
-                    } else {
-                        po = subjRange + dt;
+                    long po = dt==DTERNAL ? 0 : dt; //predicate occurrence
+                    if (po!=ETERNAL) {
+                        po += subjRange;
                     }
 
 
@@ -151,9 +149,12 @@ public class Statement {
                                     return Null; //??
                             }
 
-                            dt += shift;
-                                   // - subjRange;
+                            dt = shift - subjRange;
 
+                            if (newPred.dt()==0 && predicate.dt()==DTERNAL && predicate.subterms().equals(newPred.subterms())) {
+                                //HACK return to dternal
+                                newPred = newPred.dt(DTERNAL);
+                            }
                         }
 
                         predicate = newPred;

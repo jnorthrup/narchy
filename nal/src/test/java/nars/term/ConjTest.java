@@ -40,6 +40,14 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ConjTest {
 
     @Test
+    void conjWTFF() {
+        Conj x = new Conj();
+        x.add(ETERNAL, $$("a:x"));
+        x.add(0, $$("a:y"));
+        assertEq("((x-->a)&|(y-->a))", x.term());
+    }
+
+    @Test
     void testParallelizeDTERNALWhenInSequence() {
         assertEq("((a&|b) &&+1 c)", "((a&&b) &&+1 c)");
         assertEq("((a&&b) &&+- c)", "((a&&b) &&+- c)"); //xternal: unaffected

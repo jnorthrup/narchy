@@ -1801,8 +1801,8 @@ public class Conj extends ByteAnonMap {
                 }
                 if (t!=null) {
                     if (eternal != null && e.getOne() == 0) {
-                        boolean econj = eternal.op() != CONJ;
-                        if (econj || eternal.dt() == DTERNAL) {
+                        boolean econj = eternal.op() == CONJ;
+                        if (!econj || eternal.dt() == DTERNAL) {
                             //promote eternal to parallel
                             if (!econj) {
                                 return ConjCommutive.the(0, eternal, t);

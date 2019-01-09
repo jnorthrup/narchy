@@ -62,7 +62,7 @@ public class ImplTest {
     void testReducibleImplFactoredPredShouldRemainIntact() {
 
         for (String cp : new String[]{"&&", "&|", " &&+- "}) {
-            String xternal = cp.equals(" &&+- ") ? cp : "&|";
+            String xternal = cp; //cp.equals(" &&+- ") ? cp : "&|";
             assertEq("((x&&y) ==>+1 (y" + xternal + "z))", "((y&&x) ==>+1 (y" + cp + "z))");
             assertEq("(a ==>+1 (b &&+1 (y" + xternal + "z)))", "(a ==>+1 (b &&+1 (y" + cp + "z)))");
         }
@@ -256,8 +256,15 @@ public class ImplTest {
 
 
     @Test void testElimination3() {
-        assertEq("((a &&+5 b) ==>+5 c)", $$("((a &&+5 b) ==>+- (b &&+5 c))").dt(0));
-        assertEq("((a &&+5 b) ==>+5 c)", $$("((a &&+5 b) ==>+1 (b &&+5 c))").dt(0));
+        assertEq("(b ==>+1 (a&&x))", $$("(b ==>+1 (a&&x))"));
+
+        Term x1 = $$("((a &&+5 b) ==>+- (b &&+5 c))");
+        Term y1 = x1.dt(0);
+        assertEq("((a &&+5 b) ==>+5 c)", y1);
+
+        Term x2 = $$("((a &&+5 b) ==>+1 (b &&+5 c))");
+        Term y2 = x2.dt(0);
+        assertEq("((a &&+5 b) ==>+5 c)", y2);
     }
 
 

@@ -69,7 +69,7 @@ class TimeGraphTest {
     @Test
     void testSimpleConjWithOneKnownAbsoluteSubEvent2() {
         assertSolved("(one &&+- two)", A,
-                "(one &&+1 two)@1", "(one &&+19 two)@1", "(one &&+1 two)@19", "(two &&+17 one)@2");
+                "(one &&+1 two)@1", "(one &&+19 two)@1", "(one &&+1 two)@19", "(two &&+17 one)@2", "(one &&+1 two)@21");
 
     }
 
@@ -299,6 +299,7 @@ class TimeGraphTest {
         for (String inner : new String[]{" ==>+1 ", " ==>-1 ", "=|>" }) {
             TimeGraph C = newTimeGraph(1);
             C.know($("(b" + inner + "(a&&x))"), 1);
+            C.print();
             assertSolved("(b ==>+- a)", C, "(b" + inner + "a)");
         }
     }
