@@ -255,6 +255,10 @@ public class ImplTest {
 
 
 
+    @Test void testElimination3() {
+        assertEq("((a &&+5 b) ==>+5 c)", $$("((a &&+5 b) ==>+- (b &&+5 c))").dt(0));
+        assertEq("((a &&+5 b) ==>+5 c)", $$("((a &&+5 b) ==>+1 (b &&+5 c))").dt(0));
+    }
 
 
 

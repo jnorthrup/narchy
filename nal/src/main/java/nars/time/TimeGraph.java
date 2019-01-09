@@ -146,7 +146,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         Event event;
         if (start == TIMELESS) {
-            assert(add): "use shadow(t) if not adding";
+            assert (add) : "use shadow(t) if not adding";
             event = new Relative(t);
         } else {
 
@@ -194,7 +194,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                                 nte--;
                             }
                         } else {
-                            if (start!=ETERNAL && Param.TIMEGRAPH_STRETCH_INTERSECTING_EVENT) {
+                            if (start != ETERNAL && Param.TIMEGRAPH_STRETCH_INTERSECTING_EVENT) {
                                 long[] merged;
                                 if ((merged = af.unionIfIntersects(start, end)) != null) {
 
@@ -232,8 +232,13 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     protected int absoluteCount(Term t) {
+        Collection<Event> tt = byTerm.get(t);
+        return absoluteCount(tt);
+    }
+
+    private static int absoluteCount(Collection<Event> tt) {
         int c = 0;
-        for (Event tx : byTerm.get(t)) {
+        for (Event tx : tt) {
             if (tx instanceof Absolute)
                 c++;
         }
@@ -249,7 +254,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         MutableNode<Event, TimeSpan> x = addNode(before);
         MutableNode<Event, TimeSpan> y = before.equals(after) ? x : addNode(after);
 
-        if (e==TimeSpan.TS_ETERNAL)
+        if (e == TimeSpan.TS_ETERNAL)
             return false; //skip eternal links
 
         return addEdge(x, e, y);
@@ -283,17 +288,17 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         Event event = x.id();
         Term eventTerm = event.id;
 
-        final boolean[] newTerm = {false}, newEvent = { false };
-        byTerm.compute(eventTerm, (k, v)->{
-           if (v == null) {
-               newTerm[0] = newEvent[0] = true;
-               return new ArrayHashSet<Event>(2).with(event);
-           } else {
-               if (v.add(event)) {
-                   newEvent[0] = true;
-               }
-               return v;
-           }
+        final boolean[] newTerm = {false}, newEvent = {false};
+        byTerm.compute(eventTerm, (k, v) -> {
+            if (v == null) {
+                newTerm[0] = newEvent[0] = true;
+                return new ArrayHashSet<Event>(2).with(event);
+            } else {
+                if (v.add(event)) {
+                    newEvent[0] = true;
+                }
+                return v;
+            }
         });
         if (!newEvent[0])
             return;
@@ -503,145 +508,127 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
         //assert(!xx.hasXternal()): "dont solveDTTrace if subterms have XTERNAL";
 
-
         int subs = xx.subs();
         if (subs == 2) {
             Term a = xx.sub(0), b = xx.sub(1);
 
             boolean aEqB = a.equals(b);
-            //TODO case if aEqNegB
 
-            if (!solveDTAbsolutePair(x, each, a, b, aEqB))
-                return false;
-
-
-            return solveDTTrace(x, each, a, b, aEqB);
+            return solveDTTrace(x, each, a, b, aEqB) && solveDTAbsolutePair(x, each, a, b, aEqB);
 
         } else {
-            //TODO
+            throw new TODO();
+//        return true;
         }
 
-
-        return true;
 
     }
 
 
-    private boolean solveDTTrace(Term x, Predicate<Event> each, Term a, Term b, boolean aEqB) {
+    private boolean solveDTTrace(Term x, Predicate<Event> each, Term _a, Term _b, boolean aEqB) {
+
+        Term a = _a.eventLast();
+        Term b = _b.eventFirst();
+
+        Collection<Event> ab = null;
+
+        Collection<Event> aa = byTerm.get(a);
+        if (!aa.isEmpty())
+             ab = new FasterList(aa);
+        else
+            if (aEqB)
+                return true; //nothing
+
+        if (!aEqB) {
+            Collection<Event> bb = byTerm.get(b);
+            if (!bb.isEmpty()) {
+                if (ab!=null)
+                    ab.addAll(bb);
+                else
+                    ab = new FasterList(bb);
+            } else {
+                if (ab == null)
+                    return true; //nothing
+            }
+        }
 
 
-        FasterList<Event> rels = new FasterList<>(4);
-        rels.addAll(byTerm.get(a));
-        if (!aEqB)
-            rels.addAll(byTerm.get(b));
+        int s = ab.size();
+        assert(s > 0);
 
-        int relCount = rels.size();
-        if (relCount > 0) {
-            if (relCount > 1)
-                rels.shuffleThis(random());
+        if (s > 1) {
+            ((FasterList) ab).shuffleThis(random());
 
-            return bfsPush(rels, new CrossTimeSolver() {
-                @Override
-                protected boolean next(BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>> move, Node<Event, TimeSpan> next) {
+            //then sort the Absolute events to be tried first
+            ((FasterList<Event>) ab).sortThisByBoolean(e -> !(e instanceof Absolute));
+        }
 
-                    /**
-                     * assuming the path starts with one of the end-points (a and b),
-                     * if the path ends at either one of them
-                     * this computes the dt to the other one,
-                     * and (if available) the occurence startTime of the path
-                     * returns (startTime, dt) if solved, null if dt can not be calculated.
-                     */
+        return bfsPush(ab, new CrossTimeSolver() {
+            @Override
+            protected boolean next(BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>> move, Node<Event, TimeSpan> next) {
 
-                    long[] startDT;
-                    Event startEvent, endEvent;
-                    Term startTerm;
-                    Term endTerm = next.id().id;
-                    int adjEnd;
-                    boolean endA = ((adjEnd = choose(a.subTimes(endTerm))) == 0);
-                    boolean endB = !endA &&
-                            ((adjEnd = choose(b.subTimes(endTerm))) == 0);
+                Node<Event, TimeSpan> s = pathStart(path);
+                Node<Event, TimeSpan> e = pathEnd(path);
+                Event ss = s.id();
+                Term st = ss.id;
+                Event ee = e.id();
+                Term et = ee.id;
 
-                    if (adjEnd != DTERNAL && (endA || endB)) {
+                boolean dir;
+                if (at(a, st) && at(b, et)) dir = true;
+                else if (at(a, et) && at(b, st)) dir = false;
+                else
+                    return true; //not the target destination
 
-                        startEvent = pathStart(path).id();
+                long start;
 
-                        startTerm = startEvent.id;
+                long[] pt = pathTime(path);
+                if (pt == null)
+                    return true;
 
-                        boolean fwd = endB && (startTerm.equals(a) || choose(a.subTimes(startTerm)) == 0);
-                        boolean rev = !fwd && (
-                                endA && (startTerm.equals(b) || choose(b.subTimes(startTerm)) == 0));
-                        if (fwd || rev) {
+                long dt = pt[0];
 
-                            long startTime = startEvent.start();
-
-                            endEvent = Search.pathEnd(path).id();
-                            long endTime = endEvent.start();
-
-
-                            long dt;
-                            if (startTime != TIMELESS && startTime != ETERNAL && endTime != TIMELESS && endTime != ETERNAL) {
-                                dt = endTime - startTime;
-                            } else {
-                                throw new TODO();
-//                                dt = pathTime(path);
-//                                if (dt == TIMELESS)
-//                                    return true;
-                            }
-
-                            if (dt == ETERNAL) {
-                                long w;
-                                if (startTime == TIMELESS) {
-                                    w = endTime;
-                                } else {
-                                    if (startTime == ETERNAL)
-                                        w = endTime;
-                                    else {
-                                        w = startTime;
-                                    }
-                                }
-
-                                startDT = new long[]{w, ETERNAL};
-                            } else {
-
-                                if (a.equals(b))
-                                    rev = random().nextBoolean();
-
-                                if (rev) {
-                                    dt = -dt;
-                                    long s = startTime;
-                                    startTime = endTime;
-                                    endTime = s;
-                                }
-
-
-                                startDT = new long[]{
-                                        (startTime != TIMELESS || endTime == TIMELESS) ?
-                                                startTime :
-                                                (endTime != ETERNAL ? endTime - dt : ETERNAL)
-                                        , dt};
-                            }
-
+                if (!(ss instanceof Absolute) && !(ee instanceof Absolute)) {
+                    start = TIMELESS;
+                } else {
+                    if (dir) {
+                        if (ss instanceof Absolute) {
+                            start = ((Absolute) ss).start();
                         } else {
-                            return true;
+                            start = ((Absolute) ee).start() - dt - a.eventRange();
                         }
                     } else {
-                        return true;
+                        if (ee instanceof Absolute) {
+                            start = ((Absolute) ee).start();
+                        } else {
+                            start = ((Absolute) ss).start() - dt - b.eventRange();
+                        }
                     }
-
-
-                    long start = startDT[0];
-                    if (x.op() != CONJ)
-                        start = TIMELESS; //cant assume this start time corresponds to the impl term being solved
-                    long ddt = startDT[1];
-                    return TimeGraph.this.solveDT(x, start, ddt,
-                            (start != ETERNAL && start != XTERNAL) ?
-                                    durMerge(startEvent, endEvent) : 0
-                            , path, each);
                 }
-            });
 
-        }
-        return true;
+
+                assert (dt != TIMELESS && dt != ETERNAL);
+
+
+                if (!dir)
+                    dt = -dt;
+
+                long dur = pt[1];
+                switch (x.op()) {
+                    case IMPL:
+                        start = TIMELESS; //the start time does not mean the event occurrence time
+                        //dt -= _a.eventRange();
+                        break;
+                }
+                return solveDT(x, start, dt, dur, path, each);
+            }
+        });
+
+
+    }
+
+    static boolean at(Term subEvent, Term event) {
+        return subEvent.equals(event) || ((event.op()==CONJ && event.dt()==0 || event.dt()==DTERNAL) && event.contains(subEvent));
     }
 
     private boolean solveDTAbsolutePair(Term x, Predicate<Event> each, Term a, Term b, boolean aEqB) {
@@ -680,13 +667,12 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     if (!be.isEmpty()) {
                         for (Event ax : eventArray(ae)) {
                             for (Event bx : eventArray(be)) {
-                                if (ax!=bx)
+                                if (ax != bx)
                                     if (!solvePairDT(x, ax, bx, each))
                                         return false;
                             }
                         }
 
-                        return true; //continue
                     }
                 }
             }
@@ -706,7 +692,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         long dt = dt(a, b);
 
         if (x.op() == CONJ) {
-            return solveConj2DT(each, a, Tense.occToDT(dt), b);
+            return solveConj2DT(each, a, dt, b);
         } else {
             //for impl and other types cant assume occurrence corresponds with subject
             return solveDT(x, TIMELESS, dt, durMerge(a, b), null, each);
@@ -716,9 +702,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     /**
      * solution vector for 2-ary CONJ
      */
-    private boolean solveConj2DT(Predicate<Event> each, Event a, int dt, Event b) {
+    private boolean solveConj2DT(Predicate<Event> each, Event a, long dt, Event b) {
 
-        int ddt = dt(dt);
+        int ddt = dt(Tense.occToDT(dt));
 
         if (ddt != DTERNAL && ddt != 0) {
             assert (ddt != XTERNAL);
@@ -731,7 +717,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             }
         }
 
-        Term c = Conj.sequence(a.id, ddt==DTERNAL ? ETERNAL : 0, b.id, ddt == DTERNAL ? ETERNAL : ddt);
+        Term c = Conj.sequence(a.id, ddt == DTERNAL ? ETERNAL : 0, b.id, ddt == DTERNAL ? ETERNAL : ddt);
 
         if (termsEvent(c)) {
             return solveOccurrence(c, a.start(), durMerge(a, b), each);
@@ -757,11 +743,11 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      * which would cause incorrect results if interpreted literally
      * this prevents separate instances of events from being welded together or arranged in the incorrect temporal order
      * across time when there should be some non-zero dt
-     *
+     * <p>
      * a volume ideally should be less than b's
      */
     boolean commonSubEventsWithMultipleOccurrences(Term a, Term b) {
-        if (a.op()==CONJ && b.op() == CONJ) {
+        if (a.op() == CONJ && b.op() == CONJ) {
             if (a.volume() > b.volume()) {
                 Term c = a; //swap
                 a = b;
@@ -808,9 +794,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             return true;  //invalid term
 
 
-        if (start != ETERNAL && start != TIMELESS && dt != DTERNAL && dt < 0) {
-            start += dt;
-        }
+//        if (start != ETERNAL && start != TIMELESS && dt != DTERNAL && dt < 0) {
+//            start += dt;
+//        }
 
         return solveOccurrence(y, start, dur, each);
 
@@ -824,13 +810,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     private boolean solveOccurrence(Term y, long start, long dur, Predicate<Event> each) {
+
         return start != TIMELESS ?
-                each.test(
-                        event(y,
-                                start,
-                                start != ETERNAL && start != XTERNAL ? (start + dur) : start
-                                , false)
-                )
+                each.test(event(y, start, (start != ETERNAL) ? start + dur : start, false))
                 :
                 solveOccurrence(y, each);
     }
@@ -855,12 +837,12 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         if (dt == DTERNAL)
             return x.dt(DTERNAL);
 
-        assert(!x.subterms().hasXternal());
+        assert (!x.subterms().hasXternal());
 
         Op xo = x.op();
         Term x0 = x.sub(0);
         if (xo == IMPL) {
-            return x.dt(dt - x0.eventRange());
+            return x.dt(dt);
         } else if (xo == CONJ) {
             if (dt == 0) {
                 return x.dt(dt);
@@ -967,8 +949,11 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         this.solving = x;
         solutions.clear();
 
-        Predicate<Event> each = this::solution;
+        return solve(x, this::solution);
 
+    }
+
+    private boolean solve(Term x, Predicate<Event> each) {
         if (!x.hasXternal()) {
             return solveOccurrence(x, each);
         } else if (x.subterms().hasXternal()) {
@@ -976,7 +961,6 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         } else {
             return solveDtAndOcc(x, each);
         }
-
     }
 
     private boolean solveDTAndOccRecursive(Term x, Predicate<Event> each) {
@@ -1019,8 +1003,16 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     if (two.length > 1) ArrayUtils.shuffle(two, random());
                     for (Term sssi : two) {
                         Term y = x.replace(xyx, sssi);
-                        if (!solveDtAndOccIfConceptualizable(x, y, each))
-                            return false;
+
+                        if (y == null || !termsEvent(y))  continue;
+
+                        if (!x.equals(y) && y.hasXternal()) {
+                            if (!solve(y, each))
+                                return false;
+                        } else {
+                            if (!solveDtAndOccIfConceptualizable(x, y, each))
+                                return false;
+                        }
                     }
                 }
                 break;
@@ -1048,6 +1040,9 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         m.put(si.getOne(), sssi);
                     }
                     Term z = x.replace(m);
+
+                    if (z == null || !termsEvent(z))  continue;
+
                     if (!solveDtAndOccIfConceptualizable(x, z, each))
                         return false;
                 }
@@ -1057,9 +1052,10 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         return true;
     }
 
-    /** collapse any relative nodes to unique absolute nodes,
-     *  possibly also map less-specific xternal-containing terms to more-specific unique variations
-     *  */
+    /**
+     * collapse any relative nodes to unique absolute nodes,
+     * possibly also map less-specific xternal-containing terms to more-specific unique variations
+     */
     public void compact() {
         for (Collection<Event> e : byTerm.values()) {
             if (e.size() == 2) {
@@ -1085,22 +1081,21 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     private boolean solveDtAndOccIfConceptualizable(Term x, Term y, Predicate<Event> each) {
-        return y == null || !termsEvent(y) || y.equals(x) || y.subterms().hasXternal() ||
+        return y.equals(x) || y.subterms().hasXternal() ||
                 solveDtAndOcc(y, each);
     }
 
     private boolean solveDtAndOcc(Term x, Predicate<Event> each) {
         /* occurrence, with or without any xternal remaining */
 
-        final boolean[] dtSolved = {false};
-        if (!((x.dt() != XTERNAL || solveDT(x, y -> {
-            dtSolved[0] = true;
-            return solveOccurrence(y, each);
-        }))))
-            return false;
-
-        //dont solve if more specific dt solved further in previous solveDT call
-        return dtSolved[0] || solveOccurrence(x, each);
+        if (x.dt()==XTERNAL) {
+            return solveDT(x, y -> {
+                return solveOccurrence(y, each);
+            });
+        } else {
+            //dont solve if more specific dt solved further in previous solveDT call
+            return solveOccurrence(x, each);
+        }
     }
 
 
@@ -1170,14 +1165,18 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     private boolean solveOccurrence(Event x, Predicate<Event> each) {
+        if (x instanceof Absolute && !x.id.hasXternal())
+            return each.test(x);
 
         return solveExact(x, each) &&
-               solveCrossTime(x, each) &&
-               solveSelfLoop(x, each) &&
-               solveLastResort(x, each);
+                solveCrossTime(List.of(x), each) &&
+                solveSelfLoop(x, each) &&
+                solveLastResort(x, each);
     }
 
-    /** check for any self-loops and propagate forward and/or reverse  */
+    /**
+     * check for any self-loops and propagate forward and/or reverse
+     */
     private boolean solveSelfLoop(Event x, Predicate<Event> each) {
         if (!solutions.isEmpty()) {
             Term t = x.id;
@@ -1188,10 +1187,10 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         {
                             //TODO shuffle found self-loops, there could be sevreal
                             Node<Event, TimeSpan> ne = node(e);
-                            if (ne!=null) {
+                            if (ne != null) {
                                 for (FromTo<Node<Event, TimeSpan>, TimeSpan> ee : ne.edges(false, true)) {
                                     long dt = ee.id().dt;
-                                    if (dt != 0 && dt != ETERNAL && dt!=TIMELESS) {
+                                    if (dt != 0 && dt != ETERNAL && dt != TIMELESS) {
                                         if (ee.loop()) {
 //                                        if (random().nextBoolean())
 //                                            dt = -dt;
@@ -1218,25 +1217,25 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         return !(x instanceof Relative) || each.test(x);
     }
 
-    private boolean solveCrossTime(Event x, Predicate<Event> each) {
+    private boolean solveCrossTime(Collection<Event> x, Predicate<Event> each) {
         return bfsPush(x, new CrossTimeSolver() {
-
-            Set<Event> nexts = null;
 
             @Override
             protected boolean next(BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>> move, Node<Event, TimeSpan> n) {
 
-                Event nn = n.id();
+                Event end = n.id();
 
-                if (!(nn instanceof Absolute))
+                if (!(end instanceof Absolute))
                     return true;
 
-                long pathEndTime = nn.start();
+                long pathEndTime = end.start();
 
 
                 long startTime, endTime;
                 if (pathEndTime == ETERNAL) {
+
                     startTime = endTime = ETERNAL;
+
                 } else {
 
                     long[] pt = pathTime(path);
@@ -1244,24 +1243,14 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         return true;
 
                     startTime = pathEndTime - (pt[0] /* pathDelta*/);
-                    assert(startTime!=TIMELESS);
-
+                    assert (startTime != TIMELESS);
                     endTime = startTime + pt[1]; /* pathRange */
 
                 }
 
-
-                Event next = event(x.id, startTime, endTime, false);
-
-                if (nexts == null || nexts.add(next)) {
-                    if (nexts == null) {
-                        nexts = new UnifiedSet<>(1);
-                        nexts.add(next);
-                    }
-                    return each.test(next);
-                } else {
-                    return true;
-                }
+                return each.test(
+                        event(pathStart(path).id().id, startTime, endTime, false)
+                );
             }
 
         });
@@ -1351,7 +1340,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         }
 
         public Event shift(long dt) {
-            assert(dt!=0);
+            assert (dt != 0);
             if (this instanceof AbsoluteRange) {
                 return new AbsoluteRange(id, start + dt, end() + dt);
             } else {
@@ -1455,6 +1444,10 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         }
     }
 
+    /**
+     * TODO fair sampling
+     */
+    @Deprecated
     private int choose(int[] subTimes) {
         if (subTimes == null)
             return DTERNAL;
@@ -1464,10 +1457,11 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     /**
-     * computes the length of time spanned from start to the end of the given path [0],
+     * computes dt, the length of time spanned from start to the end of the given path [0],
      * and the range [1]
      */
-        @Nullable static long[] pathTime(List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path) {
+    @Nullable
+    static long[] pathTime(List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path) {
 
         long t = 0, r = Long.MIN_VALUE;
 
@@ -1506,7 +1500,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         if (r == Long.MIN_VALUE)
             r = 0; //point-like
 
-        return new long[] { t, r };
+        return new long[]{t, r};
     }
 
 }
