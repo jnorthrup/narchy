@@ -48,6 +48,12 @@ abstract public class MetalBitSet {
     }
 
 
+    /** use caution if capacity exceeds what you expect */
+    public int first(boolean what) {
+        return next(what, 0, capacity());
+    }
+
+
     /**
      * finds the next bit matching 'what' between from (inclusive) and to (exclusive), or -1 if nothing found
      */
@@ -59,9 +65,6 @@ abstract public class MetalBitSet {
         return -1;
     }
 
-    public int first(boolean b) {
-        return next(b, 0, capacity());
-    }
 
     abstract public int capacity();
 
@@ -75,8 +78,7 @@ abstract public class MetalBitSet {
 
     public void swap(int a, int b) {
         if (a!=b) {
-            boolean A = get(a);
-            boolean B = get(b);
+            boolean A = get(a), B = get(b);
             if (A!=B) {
                 set(a, B);
                 set(b, A);
@@ -256,6 +258,11 @@ abstract public class MetalBitSet {
 
         private int x;
 
+        @Override
+        public int first(boolean what) {
+            return Integer.numberOfTrailingZeros(what ? x :~x);
+        }
+
         public int capacity() {
             return 32;
         }
@@ -292,8 +299,7 @@ abstract public class MetalBitSet {
 
         @Override
         public int cardinality() {
-            int x = this.x;
-            return x == 0 ? 0 : Integer.bitCount(x);
+            return Integer.bitCount(x);
         }
 
 

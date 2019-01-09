@@ -9,6 +9,7 @@ import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.task.util.TaskBuffer;
+import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.util.builder.MemoizingTermBuilder;
 import nars.truth.polation.LinearTruthPolation;
@@ -22,6 +23,7 @@ import static nars.Op.*;
  * NAR Parameters
  */
 public abstract class Param {
+
 
 
 
@@ -75,10 +77,10 @@ public abstract class Param {
             //12;
             //10;
             //8;
-            //7;
+            7;
             //6;
             //5;
-            4;
+            //4;
             //3;
             //2;
             //1;
@@ -202,7 +204,7 @@ public abstract class Param {
     public static final float REMEMBER_REPEAT_PRI_THRESHOLD = ScalarValue.EPSILONsqrt;
 
     /** >=0; higher values decrease the rate at which repeated tasks can be reactivated */
-    public static final int REMEMBER_REPEAT_THRESH_DURS = 2;
+    public static final int REMEMBER_REPEAT_THRESH_DURS = 1;
 
 
     /**
@@ -229,7 +231,7 @@ public abstract class Param {
 
 
     public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = true;
-    public static final boolean TIMEGRAPH_STRETCH_INTERSECTING_EVENT = true;
+    public static final boolean TIMEGRAPH_STRETCH_INTERSECTING_EVENT = false;
 
 
 
@@ -281,7 +283,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(2 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
@@ -351,6 +353,71 @@ public abstract class Param {
 
 
     public final FloatRange taskLinkActivation = new FloatRange(1f, 0, 2f);
+
+    /** termlink template layers depth. TODO this will be abstracted to more flexible weighted activation heuristic */
+    @Deprecated public static final int TERMLINK_TEMPLATE_DEPTH = 2 /* 2..4 tested to work ok */;
+
+    /**
+     * includes the host as layer 0, so if this returns 1 it will only include the host
+     */
+    public static int termlinkTemplateLayers(Term root) {
+        return Param.TERMLINK_TEMPLATE_DEPTH;
+//        switch (x.op()) {
+//
+//            case PROD:
+//                return 2;
+//
+//            case SETe:
+//            case SETi:
+//                return 2;
+//
+//            case SECTi:
+//            case SECTe:
+//                return 2;
+//
+//            case DIFFe:
+//            case DIFFi:
+//                return 2;
+//
+//
+//            case SIM: {
+//
+//
+////                if (x.subterms().OR(xx -> xx.unneg().isAny(SetBits | Op.SectBits | Op.PROD.bit)))
+////                    return 3;
+////                else
+//                    return 2;
+//            }
+//
+//            case INH: {
+////                if (x.subterms().OR(xx -> xx.unneg().isAny(Op.SetBits | Op.SectBits
+////                        | Op.PROD.bit
+////                        )))
+////                    return 3;
+//
+//                return 2;
+//            }
+//
+//            case IMPL:
+////                if (x./*subterms().*/hasAny(Op.CONJ.bit))
+////                    return 3;
+////                else
+//                    return 2;
+////                }
+//
+//
+//            case CONJ:
+////                if (x.hasAny(Op.IMPL))
+////                    return 3;
+//                return 2;
+//
+//
+//            default:
+//                /** atomics,etc */
+//                return 0;
+//
+//        }
+    }
 
 
     /**

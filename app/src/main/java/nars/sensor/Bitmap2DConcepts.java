@@ -33,6 +33,9 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     public final Array2DIterable<Signal> iter;
     private final Int2Function<Term> pixelTerm;
 
+    /** TODO abstract pixel neighbor linking strategies */
+    @Deprecated private boolean linkNESW = false;
+
     protected Bitmap2DConcepts(P src, @Nullable Int2Function<Term> pixelTerm, FloatRange res, NAR n) {
 
         this.width = src.width();
@@ -64,18 +67,25 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
     private TermLinker pixelLinker(int xx, int yy) {
         //n.conceptBuilder.termlinker(term)
-        Term center = pixelTerm.get(xx, yy);
-        List<Term> neighbors = new FasterList(4);
-        if (xx > 0)
-            neighbors.add(pixelTerm.get(xx-1, yy));
-        if (yy > 0)
-            neighbors.add(pixelTerm.get(xx, yy-1));
-        if (xx < width-1)
-            neighbors.add(pixelTerm.get(xx+1, yy));
-        if (yy < height-1)
-            neighbors.add(pixelTerm.get(xx, yy+1));
 
-        return TemplateTermLinker.of(center, neighbors.toArray(EmptyTermArray));
+        Term[] nn;
+        Term center = pixelTerm.get(xx, yy);
+        if (linkNESW) {
+            List<Term> neighbors = new FasterList(4);
+            if (xx > 0)
+                neighbors.add(pixelTerm.get(xx - 1, yy));
+            if (yy > 0)
+                neighbors.add(pixelTerm.get(xx, yy - 1));
+            if (xx < width - 1)
+                neighbors.add(pixelTerm.get(xx + 1, yy));
+            if (yy < height - 1)
+                neighbors.add(pixelTerm.get(xx, yy + 1));
+
+            nn = neighbors.toArray(EmptyTermArray);
+        } else {
+            nn = EmptyTermArray;
+        }
+        return TemplateTermLinker.of(center, nn);
     }
 
     /**

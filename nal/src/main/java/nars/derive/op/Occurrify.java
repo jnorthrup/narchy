@@ -248,6 +248,7 @@ public class Occurrify extends TimeGraph {
     private final Derivation d;
 
     private boolean decomposeEvents;
+    int expectedVolume;
 
     public Occurrify(Derivation d) {
         this.d = d;
@@ -446,18 +447,31 @@ public class Occurrify extends TimeGraph {
                 es == TIMELESS ? new long[]{TIMELESS, TIMELESS} : new long[]{es, event.end()});
     }
 
-    private int triesRemain = 0;
+    private int ttl = 0;
 
+    /** called after solution.add */
     private boolean eachSolution(Event solution) {
         assert (solution != null);
-        return triesRemain-- > 0;
+        return true;
+    }
+
+    @Override protected boolean solution(Event y) {
+
+        if (ttl-- > 0) {
+            if (y.id.volume() < expectedVolume)
+                return true; //ignore
+
+            return super.solution(y);
+        }
+        return false;
     }
 
     private ArrayHashSet<Event> solutions(Term pattern) {
 
-        triesRemain = Param.TEMPORAL_SOLVER_ITERATIONS;
+        ttl = Param.TEMPORAL_SOLVER_ITERATIONS;
+        expectedVolume = pattern.volume();
 
-        solve(pattern, false /* take everything */, this::eachSolution);
+        solve(pattern,  /* take everything */ this::eachSolution);
 
         return solutions;
     }

@@ -417,8 +417,8 @@ class TimeGraphTest {
         }
 
         @Override
-        public boolean test(Event termEvent) {
-            add(termEvent.toString());
+        public boolean test(Event y) {
+            add(y.toString());
             return true;
         }
 
@@ -427,7 +427,7 @@ class TimeGraphTest {
         }
 
         void solve(Term x) {
-            time.solve(x, false, this);
+            time.solve(x, this);
         }
 
 
@@ -444,7 +444,7 @@ class TimeGraphTest {
 
                     IntHashSet d = dt[xx][yy] = new IntHashSet(2);
                     Term between = CONJ.the(x, XTERNAL, y);
-                    time.solve(between, false, (each) -> {
+                    time.solve(between, (each) -> {
                         if (each.id.equalsRoot(between)) {
                             int xydt = each.id.dt();
                             if (xydt != DTERNAL && xydt != XTERNAL) {
@@ -485,6 +485,8 @@ class TimeGraphTest {
             protected Random random() {
                 return rng;
             }
+
+
         };
     }
 

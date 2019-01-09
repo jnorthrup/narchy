@@ -29,7 +29,7 @@ public class TestTimeGraphVis extends SimpleGraph3D<Event> {
         A.know($.$$("((one &&+1 two) ==>+1 (three &&+1 four))"), ETERNAL);
         A.know($.$$("one"), 1);
         A.know($.$$("two"), 20);
-        A.solve($.$$("\"(one &&+- two)\""), false, (x)->true);
+        A.solve($.$$("\"(one &&+- two)\""), (x)->true);
         return A;
     }
     public static void main(String[] args) {

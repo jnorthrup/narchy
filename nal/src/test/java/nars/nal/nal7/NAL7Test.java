@@ -1450,7 +1450,7 @@ public class NAL7Test extends NALTest {
         test.inputAt(1, "(x &&+5 y). |");
         test.inputAt(1, "((x &&+5 y)=|>(b &&+5 c)). |");
         test.mustBelieve(cycles , "(b &&+5 c)", 1.00f, 0.45f, (t)->t==6);
-        test.mustNotOutput(cycles , "(b &&+5 c)", BELIEF, 0f, 1f, 0f, 1f,
+        test.mustNotOutput(cycles , "(b &&+5 c)", BELIEF, 0f, 1f, 0.5f, 1f,
                 (t) -> t!=6);
     }
     @Test public void occtestShiftWorkingRight2() {

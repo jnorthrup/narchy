@@ -6,6 +6,7 @@ import nars.Task;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.util.Conj;
+import nars.truth.Stamp;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class DynamicConjTruth {
             long range;
             if (start!=ETERNAL) {
                 //adjust end for the internal sequence range
-                end = ((FasterList<Task>) components).maxValue((Task t) -> t.end());
+                end = ((FasterList<Task>) components).maxValue(Stamp::end);
                 range = end - start;
             } else {
                 range = ETERNAL;
@@ -36,7 +37,7 @@ public class DynamicConjTruth {
             for (TaskRegion t : components) {
                 long s = t.start();
                 long when;
-                if ((range == ETERNAL && s == ETERNAL) || (range>0 && s <= start && t.end() >= end))
+                if ((s == ETERNAL) || ((range == ETERNAL && s == ETERNAL) || (range>0 && s <= start && t.end() >= end)))
                     when = ETERNAL; //the component spans the entire range, so consider it an eternal factor
                 else
                     when = s;

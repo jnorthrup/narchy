@@ -89,11 +89,11 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
     }
 
     public static TermLinker of(Term term) {
-        return of(term, layers(term));
+        return of(term, Param.termlinkTemplateLayers(term));
     }
 
     public static TermLinker of(Term term, Term... additional) {
-        return of(term, layers(term), additional);
+        return of(term, Param.termlinkTemplateLayers(term), additional);
     }
 
     /**
@@ -245,67 +245,6 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
     }
 
 
-    /**
-     * includes the host as layer 0, so if this returns 1 it will only include the host
-     */
-    private static int layers(Term x) {
-        return 2;
-//        switch (x.op()) {
-//
-//            case PROD:
-//                return 2;
-//
-//            case SETe:
-//            case SETi:
-//                return 2;
-//
-//            case SECTi:
-//            case SECTe:
-//                return 2;
-//
-//            case DIFFe:
-//            case DIFFi:
-//                return 2;
-//
-//
-//            case SIM: {
-//
-//
-////                if (x.subterms().OR(xx -> xx.unneg().isAny(SetBits | Op.SectBits | Op.PROD.bit)))
-////                    return 3;
-////                else
-//                    return 2;
-//            }
-//
-//            case INH: {
-////                if (x.subterms().OR(xx -> xx.unneg().isAny(Op.SetBits | Op.SectBits
-////                        | Op.PROD.bit
-////                        )))
-////                    return 3;
-//
-//                return 2;
-//            }
-//
-//            case IMPL:
-////                if (x./*subterms().*/hasAny(Op.CONJ.bit))
-////                    return 3;
-////                else
-//                    return 2;
-////                }
-//
-//
-//            case CONJ:
-////                if (x.hasAny(Op.IMPL))
-////                    return 3;
-//                return 2;
-//
-//
-//            default:
-//                /** atomics,etc */
-//                return 0;
-//
-//        }
-    }
 
     private static boolean conceptualizable(Termed x) {
         //return x.equals(x.normalize()) && x.op().conceptualizable;

@@ -32,10 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.ImmutableBitmapDataProvider;
 import org.roaringbitmap.RoaringBitmap;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
@@ -101,7 +98,7 @@ public class Conj extends ByteAnonMap {
     public static Conj from(Term t) {
         Conj c = new Conj();
         c.addAuto(t);
-        c.factor();
+        //c.factor();
         return c;
     }
 
@@ -500,10 +497,12 @@ public class Conj extends ByteAnonMap {
     public static Term seqEternal(Subterms ss, MetalBitSet m) {
         switch (m.cardinality()) {
             case 0: throw new WTF();
-            case 1: return ss.sub(m.next(true, 0, Integer.MAX_VALUE));
+            case 1: return ss.sub(m.first(true));
             default:
-                Term e = CONJ.the(ss.subsIncluding(m));
-                assert(!(e instanceof Bool));
+                Term[] cc = ss.subsIncluding(m);
+                Term e = CONJ.the(cc);
+                if (e instanceof Bool)
+                    throw new WTF("&&(" + Arrays.toString(cc) + ") => " + e);
                 return e;
         }
     }
@@ -519,7 +518,7 @@ public class Conj extends ByteAnonMap {
         return t;
     }
     public static Term seqTemporal(Subterms s, MetalBitSet eternalComponents) {
-        return s.sub(eternalComponents.next(false, 0, Integer.MAX_VALUE));
+        return s.sub(eternalComponents.next(false, 0, s.subs()));
     }
 
     private void negateEvents() {
@@ -1038,6 +1037,8 @@ public class Conj extends ByteAnonMap {
                 byte bi = b[i];
                 if (bi == 0) {
                     //empty slot, take
+                    if (ArrayUtils.indexOf(b, (byte)-id)!=-1)
+                        throw new WTF(); //basic verification test
                     b[i] = id;
                     return true;
                 } else {

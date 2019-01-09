@@ -899,10 +899,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
         int c = s.cardinality();
         if (includeOrExclude) {
             if (c == 0) return Op.EmptyTermArray;
-            if (c == 1) return new Term[] { sub(s.next(true, 0, Integer.MAX_VALUE))};
+            if (c == 1) return new Term[] { sub(s.first(true))};
         } else {
             if (c == 0) return arrayShared();
-            if (c == 1) return subsExcluding(s.next(true, 0, Integer.MAX_VALUE));
+            if (c == 1) return subsExcluding(s.first(true));
         }
 
         int size = subs();

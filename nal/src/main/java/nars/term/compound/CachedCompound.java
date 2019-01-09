@@ -51,15 +51,10 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
             c = new SimpleCachedCompound(op, subterms);
 //            }
         } else {
+            //if (op==IMPL && dt==XTERNAL && !subterms.sub(0).equals(subterms.sub(1))) dt = DTERNAL; //TEMPORARY
+
             c = new TemporalCachedCompound(op, dt, subterms);
         }
-
-//        //TEMPORARY
-//        try {
-//            assert(c.anon()!=null);
-//        } catch (Throwable t) {
-//            throw new WTF(t);
-//        }
 
         return c;
     }
@@ -116,7 +111,11 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
         public TemporalCachedCompound(Op op, int dt, Subterms subterms) {
             super(op, dt, subterms);
+
+
             this.dt = dt;
+
+
 //            if (dt!=XTERNAL && dt > 2147470000)//TEMPORARY
 //                throw new WTF();
         }
