@@ -928,7 +928,6 @@ public class NAL8Test extends NALTest {
     @Test
     void testGoalBeliefDecomposeTimeRangingDiffer() {
         test
-                .logDebug()
                 .input("x! +0..+100")
                 .input("(y &&+5 x). +20..+30")
                 .mustGoal(cycles, "y", 1f, 0.1f, (a, b) ->

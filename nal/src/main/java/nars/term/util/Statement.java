@@ -98,13 +98,17 @@ public class Statement {
                     int subjRange = subject.eventRange();
                     boolean subjNeg = subject.op() == NEG;
 
-                    long po = dt==DTERNAL ? 0 : dt; //predicate occurrence
-                    if (po!=ETERNAL) {
+                    long so, po; //subject and predicate occurrences
+
+                    so = subjDT != DTERNAL ? 0 : (dt != DTERNAL ? 0 : ETERNAL);
+                    po = predicate.dt() != DTERNAL ? 0 : (dt != DTERNAL ? dt : ETERNAL);
+                    if (po!=ETERNAL)
                         po += subjRange;
-                    }
 
 
-                    ConjDiff newPredConj = ConjDiff.the(subjDT != DTERNAL ? 0 : (dt != DTERNAL ? 0 : ETERNAL), subject.negIf(subjNeg), po, predicate, subjNeg);
+
+
+                    ConjDiff newPredConj = ConjDiff.the(so, subject.negIf(subjNeg), po, predicate, subjNeg);
                     Term newPred = newPredConj.term();
 
                     boolean predChange = !predicate.equals(newPred);

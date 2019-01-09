@@ -253,9 +253,6 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         MutableNode<Event, TimeSpan> x = addNode(before);
         MutableNode<Event, TimeSpan> y = before.equals(after) ? x : addNode(after);
 
-        if (e == TimeSpan.TS_ETERNAL)
-            return false; //skip eternal links
-
         return addEdge(x, e, y);
     }
 
@@ -389,16 +386,16 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
 //                        //link first two events of each
 //                        if (subj.hasAny(Op.CONJ)) {
-//                        subj.eventsWhile((w, y) -> {
-//                            link(know(y), ETERNAL, pe);
-//                            return true;
-//                        }, 0, false, true, true, 0);
-//                          }
+                        subj.eventsWhile((w, y) -> {
+                            link(know(y), ETERNAL, pe);
+                            return true;
+                        }, 0, false, true, true, 0);
+
 //
-//                        pred.eventsWhile((w, y) -> {
-//                            link(se, ETERNAL, know(y));
-//                            return true;
-//                        }, 0, false, true, true, 0);
+                        pred.eventsWhile((w, y) -> {
+                            link(se, ETERNAL, know(y));
+                            return true;
+                        }, 0, false, true, true, 0);
 
                     } else if (edt == XTERNAL) {
 
@@ -605,18 +602,15 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     }
                 }
 
-
-                assert (dt != TIMELESS && dt != ETERNAL);
-
-
-                if (!dir)
+                if (dt!=ETERNAL && !dir)
                     dt = -dt;
 
                 long dur = pt[1];
                 switch (x.op()) {
                     case IMPL:
                         start = TIMELESS; //the start time does not mean the event occurrence time
-                        dt -= _a.eventRange();
+                        if (dt!=ETERNAL)
+                            dt -= _a.eventRange();
                         break;
                 }
                 return solveDT(x, start, dt, dur, path, dir, each);
@@ -630,7 +624,15 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      * weather subEvent time occurrs at the start of the event
      */
     static boolean at(Term x, Term y) {
-        return y.equals(x) || atStart(x, y) || atStart(y, x);
+        if (y.equals(x))
+            return true;
+        int xv = x.volume(), yv = y.volume();
+        if (xv > yv)
+            return atStart(y,x);
+        else if (yv > xv)
+            return atStart(x,y);
+        else
+            return false;
     }
 
     private static boolean atStart(Term subEvent, Term event) {
@@ -666,7 +668,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     for (int i = 0; i < aa.length; i++) {
                         Event ii = aa[i];
                         for (int j = i + 1; j < aa.length; j++) {
-                            if (!solvePairDT(x, ii, aa[j], each))
+                            if (!solveDTAbsolutePair(x, ii, aa[j], each))
                                 return false;
                         }
                     }
@@ -686,7 +688,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         for (Event ax : eventArray(ae)) {
                             for (Event bx : eventArray(be)) {
                                 if (ax != bx) {
-                                    if (!solvePairDT(x, ax, bx, each))
+                                    if (!solveDTAbsolutePair(x, ax, bx, each))
                                         return false;
                                 }
                             }
@@ -707,7 +709,12 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         return aa;
     }
 
-    private boolean solvePairDT(Term x, Event a, Event b, Predicate<Event> each) {
+    private boolean solveDTAbsolutePair(Term x, Event a, Event b, Predicate<Event> each) {
+        assert(!(a.equals(b)));
+        if (a.start() == b.start() && at(a.id, b.id))
+            return true; //same event
+        //TODO additional checking
+
         long dt = dt(a, b);
 
         if (x.op() == CONJ) {
@@ -797,7 +804,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     @Deprecated
     private boolean solveDT(Term x, long start, long ddt, long dur,
                             @Nullable List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, boolean dir, Predicate<Event> each) {
-        assert (ddt != TIMELESS && ddt != XTERNAL);
+        assert (ddt != TIMELESS);
 
         int dt;
         if (ddt == ETERNAL)
@@ -1251,7 +1258,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 } else {
 
                     long[] pt = pathTime(path);
-                    if (pt == null)
+                    if (pt == null || pt[0] == ETERNAL)
                         return true;
 
                     startTime = pathEndTime - (pt[0] /* pathDelta*/);
@@ -1484,10 +1491,11 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
             long spanDT = event.id().dt;
 
-            if (spanDT == ETERNAL || spanDT == TIMELESS) {
-                return null;
+            assert(spanDT != TIMELESS);
 
-            } else if (spanDT != 0) {
+            if (spanDT == ETERNAL) {
+                t = ETERNAL; //lock in eternal mode for the duration of the path, but still accumulate duration
+            } else if (t!=ETERNAL && spanDT != 0) {
                 t += (spanDT) * (span.getOne() ? +1 : -1);
             }
 
