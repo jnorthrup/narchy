@@ -16,7 +16,6 @@ public abstract class Event implements LongObjectPair<Term> {
     Event(Term id, int hash) {
         this.id = id;
         this.hash = hash;
-
     }
 
 

@@ -316,7 +316,7 @@ public class ConeTwistConstraint extends TypedConstraint {
 				tmp.sub(pivotAInW, rbA.getCenterOfMassPosition(tmpVec));
 				rbA.impulse(impulse_vector, tmp);
 
-				tmp.negate(impulse_vector);
+				tmp.negated(impulse_vector);
 				tmp2.sub(pivotBInW, rbB.getCenterOfMassPosition(tmpVec));
 				rbB.impulse(tmp, tmp2);
 			}
@@ -342,7 +342,7 @@ public class ConeTwistConstraint extends TypedConstraint {
 
             rbA.torqueImpulse(impulse);
 
-            tmp.negate(impulse);
+            tmp.negated(impulse);
             rbB.torqueImpulse(tmp);
         }
 
@@ -362,7 +362,7 @@ public class ConeTwistConstraint extends TypedConstraint {
 
             rbA.torqueImpulse(impulse);
 
-            tmp.negate(impulse);
+            tmp.negated(impulse);
             rbB.torqueImpulse(tmp);
         }
     }

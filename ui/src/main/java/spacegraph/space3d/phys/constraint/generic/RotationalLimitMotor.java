@@ -191,7 +191,7 @@ public class RotationalLimitMotor {
 
 		body0.torqueImpulse(motorImp);
 		if (body1 != null) {
-			motorImp.negate();
+			motorImp.negated();
 			body1.torqueImpulse(motorImp);
 		}
 

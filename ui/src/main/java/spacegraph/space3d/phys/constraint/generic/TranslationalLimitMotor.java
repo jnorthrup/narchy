@@ -210,7 +210,7 @@ public class TranslationalLimitMotor {
 		impulse_vector.scale(normalImpulse, axis_normal_on_a);
 		body1.impulse(impulse_vector, rel_pos1);
 
-		tmp.negate(impulse_vector);
+		tmp.negated(impulse_vector);
 		body2.impulse(tmp, rel_pos2);
 		return normalImpulse;
 	}

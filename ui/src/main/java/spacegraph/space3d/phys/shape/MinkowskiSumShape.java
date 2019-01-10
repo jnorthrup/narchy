@@ -55,7 +55,7 @@ public class MinkowskiSumShape extends ConvexInternalShape {
 		v3 supVertexB = new v3();
 
 		
-		tmp.negate(vec);
+		tmp.negated(vec);
 		MatrixUtil.transposeTransform(tmp, tmp, transA.basis);
 		shapeA.localGetSupportingVertexWithoutMargin(tmp, supVertexA);
 		transA.transform(supVertexA);

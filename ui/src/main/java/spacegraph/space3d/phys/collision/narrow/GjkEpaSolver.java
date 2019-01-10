@@ -177,7 +177,7 @@ public class GjkEpaSolver {
 
 			v3 tmp = new v3();
 			tmp.set(d);
-			tmp.negate();
+			tmp.negated();
 			v3 tmp2 = LocalSupport(tmp, 1, new v3());
 
 			v.w.sub(tmp1, tmp2);
@@ -258,7 +258,7 @@ public class GjkEpaSolver {
 						ray.set(cabc);
 					}
 					else {
-						ray.negate(cabc);
+						ray.negated(cabc);
 
 						Mkv swapTmp = new Mkv();
 						swapTmp.set(simplex[0]);
@@ -335,7 +335,7 @@ public class GjkEpaSolver {
 			Arrays.fill(table, null);
 
 			FetchSupport();
-			ray.negate(simplex[0].w);
+			ray.negated(simplex[0].w);
 			for (; iterations < GJK_maxiterations; ++iterations) {
 				float rl = ray.length();
 				ray.scale(1f / (rl > 0f ? rl : 1f));
@@ -343,18 +343,18 @@ public class GjkEpaSolver {
 					boolean found = false;
 					switch (order) {
 						case 1:
-                            tmp1.negate(simplex[1].w);
+                            tmp1.negated(simplex[1].w);
                             tmp2.sub(simplex[0].w, simplex[1].w);
                             found = SolveSimplex2(tmp1, tmp2);
                             break;
                         case 2:
-                            tmp1.negate(simplex[2].w);
+                            tmp1.negated(simplex[2].w);
                             tmp2.sub(simplex[1].w, simplex[2].w);
                             tmp3.sub(simplex[0].w, simplex[2].w);
                             found = SolveSimplex3(tmp1, tmp2, tmp3);
                             break;
                         case 3:
-                            tmp1.negate(simplex[3].w);
+                            tmp1.negated(simplex[3].w);
                             tmp2.sub(simplex[2].w, simplex[3].w);
                             tmp3.sub(simplex[1].w, simplex[3].w);
                             tmp4.sub(simplex[0].w, simplex[3].w);
@@ -429,7 +429,7 @@ public class GjkEpaSolver {
 
                     Support(n, simplex[3]);
 
-                    tmp.negate(n);
+                    tmp.negated(n);
                     Support(tmp, simplex[4]);
                     order = 4;
                     return (true);
@@ -728,7 +728,7 @@ break;
             for (; iterations < EPA_maxiterations; ++iterations) {
                 Face bf = FindBest();
                 if (bf != null) {
-                    tmp.negate(bf.n);
+                    tmp.negated(bf.n);
                     Mkv w = Support(tmp);
                     float d = bf.n.dot(w.w) + bf.d;
                     bestface = bf;

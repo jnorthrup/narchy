@@ -1,14 +1,14 @@
 package spacegraph.util.geo.osm;
 
 import org.w3c.dom.Element;
-import spacegraph.space2d.phys.common.Vec3;
+import spacegraph.util.math.v3;
 
 import static java.lang.Double.parseDouble;
 
 /**
  * Created by unkei on 2017/04/25.
  */
-public class GeoVec3 extends Vec3 {
+public class GeoVec3 extends v3 {
 //    private final double latitude;
 //    private final double longitude;
 //    private final double altitude;

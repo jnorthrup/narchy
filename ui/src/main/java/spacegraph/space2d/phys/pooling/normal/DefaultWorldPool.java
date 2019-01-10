@@ -38,6 +38,7 @@ import spacegraph.space2d.phys.common.*;
 import spacegraph.space2d.phys.dynamics.contacts.*;
 import spacegraph.space2d.phys.pooling.IDynamicStack;
 import spacegraph.space2d.phys.pooling.IWorldPool;
+import spacegraph.util.math.v3;
 
 /**
  * Provides object pooling for all objects used in the engine. Objects retrieved from here should
@@ -48,7 +49,7 @@ import spacegraph.space2d.phys.pooling.IWorldPool;
 public class DefaultWorldPool implements IWorldPool {
 
     private final OrderedStack<v2> vecs;
-    private final OrderedStack<Vec3> vec3s;
+    private final OrderedStack<v3> vec3s;
     private final OrderedStack<Mat22> mats;
     private final OrderedStack<Mat33> mat33s;
     private final OrderedStack<AABB> aabbs;
@@ -148,7 +149,7 @@ public class DefaultWorldPool implements IWorldPool {
             }
         };
         vec3s = new OrderedStack<>(argSize, argContainerSize) {
-            protected Vec3 newInstance() {
+            protected v3 newInstance() {
                 return new Vec3();
             }
         };
@@ -222,11 +223,11 @@ public class DefaultWorldPool implements IWorldPool {
         vecs.push(argNum);
     }
 
-    public final Vec3 popVec3() {
+    public final v3 popVec3() {
         return vec3s.pop();
     }
 
-    public final Vec3[] popVec3(int argNum) {
+    public final v3[] popVec3(int argNum) {
         return vec3s.pop(argNum);
     }
 

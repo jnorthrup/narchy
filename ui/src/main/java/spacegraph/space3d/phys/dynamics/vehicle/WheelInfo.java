@@ -118,7 +118,7 @@ public class WheelInfo {
 			
             raycastInfo.suspensionLength = suspensionRestLength1;
 			suspensionRelativeVelocity = 0f;
-			raycastInfo.contactNormalWS.negate(raycastInfo.wheelDirectionWS);
+			raycastInfo.contactNormalWS.negated(raycastInfo.wheelDirectionWS);
 			clippedInvContactDotSuspension = 1f;
 		}
 	}

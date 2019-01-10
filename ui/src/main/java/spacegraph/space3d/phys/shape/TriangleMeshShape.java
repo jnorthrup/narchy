@@ -65,7 +65,7 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 
 		v3 aabbMax = new v3();
 		aabbMax.set(1e30f, 1e30f, 1e30f);
-		tmp.negate(aabbMax);
+		tmp.negated(aabbMax);
 
 		processAllTriangles(supportCallback, tmp, aabbMax);
 

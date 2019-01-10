@@ -73,7 +73,7 @@ public class JacobianEntry {
 		world2A.transform(aJ);
 
 		bJ.set(linearJointAxis);
-		bJ.negate();
+		bJ.negated();
 		bJ.cross(rel_pos2, bJ);
 		world2B.transform(bJ);
 
@@ -99,7 +99,7 @@ public class JacobianEntry {
 		world2A.transform(aJ);
 
 		bJ.set(jointAxis);
-		bJ.negate();
+		bJ.negated();
 		world2B.transform(bJ);
 
 		VectorUtil.mul(m_0MinvJt, inertiaInvA, aJ);
@@ -121,7 +121,7 @@ public class JacobianEntry {
 		aJ.set(axisInA);
 
 		bJ.set(axisInB);
-		bJ.negate();
+		bJ.negated();
 
 		VectorUtil.mul(m_0MinvJt, inertiaInvA, aJ);
 		VectorUtil.mul(m_1MinvJt, inertiaInvB, bJ);
@@ -146,7 +146,7 @@ public class JacobianEntry {
 		world2A.transform(aJ);
 
 		bJ.set(jointAxis);
-		bJ.negate();
+		bJ.negated();
 		bJ.cross(rel_pos2, bJ);
 		world2A.transform(bJ);
 

@@ -15,6 +15,10 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMove;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.Stacking;
+import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space3d.AbstractSpatial;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.util.geo.IRL;
@@ -22,6 +26,7 @@ import spacegraph.util.geo.osm.Osm;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * OSM Renderer context
@@ -168,7 +173,8 @@ public class OsmSpace  {
 
     public class OsmSurface extends Surface {
 
-        final FloatRange scale = new FloatRange(4f, 0.001f, 1000f);
+        final FloatRange scale = new FloatRange(16f, 0.001f, 1000f);
+        private v2 center = new v2();
         final v2 translate = new v2();
 
         final FingerMove pan = new FingerMove(0) {
@@ -186,12 +192,13 @@ public class OsmSpace  {
             public void move(float tx, float ty) {
 
 
-                float scale = viewScale();
 
-                translate.set((translateStart.x + tx / scale), (translateStart.y + ty / scale));
+
+                translate.set(translateStart.x + tx, translateStart.y + ty);
 
             }
         };
+
 
         @Override
         public Surface finger(Finger finger) {
@@ -208,30 +215,41 @@ public class OsmSpace  {
             return null;
         }
 
+        public Surface view() {
+            return new Stacking(
+                    this,
+                    new Bordering().south(
+                        Gridding.col(
+                            new AnimLabel(()->"translation: " + translate.toString()),
+                            new AnimLabel(()->"scale: " + scale.toString())
+                        )
+                    )
+            );
+        }
+
         @Override
         protected void paint(GL2 gl, SurfaceRender surfaceRender) {
 
-
-
             RectFloat view = bounds;
 
+            gl.glPushMatrix();
+
+            gl.glTranslatef(translate.x + bounds.x + bounds.w/2,
+                    translate.y + bounds.y + bounds.h/2, 0); //center in view
 
             float mapScale = this.scale.floatValue();
 
-//            gl.glPushMatrix();
+            int rx = 2, ry = 0;
+            float wx = center.x, wy = center.y;
 
-//            int r = Math.min(2,Math.max(0,  (int) Math.floor(100f/mapScale)));
-//            System.out.println(r + " " + mapScale);
-            int r = 0;
-            for (int x = -r; x < (r+1); x++) {
-                for (int y = -r; y < (r+1); y++) {
-                    render(translate.x + x * IRL.TILE_SIZE, translate.y + y * IRL.TILE_SIZE,
+            for (int x = -rx; x < (rx+1); x++) {
+                for (int y = -ry; y < (ry+1); y++) {
+                    render(wx + x * IRL.TILE_SIZE, wy + y * IRL.TILE_SIZE,
                             mapScale, gl);
                 }
             }
 
-
-//            gl.glPopMatrix();
+            gl.glPopMatrix();
         }
 
         private float viewScale() {
@@ -242,46 +260,58 @@ public class OsmSpace  {
         private void render(float cx, float cy, float mapScale, GL2 gl) {
 
             Osm tile = irl.tile(cx, cy);
-
             RectFloat b = tile.geoBounds;
-            if (b!=null) {
-                cx = b.cx(); //use the actual position
-                cy = b.cy(); //use the actual position
-            }
+            if(b==null)
+                return;
+
+            //System.out.println(cx + "," + cy + " x " + mapScale + ": "  + tile);
 
 //            System.out.println(tile.id + " at " + cx + " " + cy);
 
             gl.glPushMatrix();
 
-            gl.glTranslatef(bounds.x + bounds.w/2,
-                    bounds.y + bounds.h/2, 0); //center in view
 
-            float viewScale = Math.max(bounds.w, bounds.h) * mapScale;
+            float viewScale = mapScale * Math.max(bounds.w, bounds.h);
+
 
             gl.glScalef( viewScale, viewScale, 1);
 
-            gl.glTranslatef(((translate.x-cx)),
-                    ((translate.y-cy)), 0); //center in view
+            gl.glTranslatef(-(b.cx()),-(b.cy()),0);
 
 
 
 
 
-
-//            if (b!=null) {
-//                gl.glColor4f(0.5f, 0.5f, 0.5f, 0.25f);
-//                Draw.rectFrame(gl, 0, 0,
-//                        b.w, b.h, Math.max(b.w, b.h) * 0.05f);
-//            }
 
             tile.render(OsmSpace.this, gl).accept(gl);
+
+            {
+                gl.glColor4f(0.5f, 0.5f, 0.5f, 1f);
+                Draw.rectFrame(gl, b.cx(), b.cy(),
+                        b.w, b.h, 0.001f);
+
+            }
 
             gl.glPopMatrix();
         }
 
         public OsmSurface go(float lon, float lat) {
-            translate.set(lon, lat);
+            center.set(lon, lat);
             return this;
+        }
+
+        private class AnimLabel extends VectorLabel {
+            final Supplier<String> text;
+
+            public AnimLabel(Supplier<String> text) {
+                this.text = text;
+            }
+
+            @Override
+            protected boolean prePaint(SurfaceRender r) {
+                text(text.get());
+                return super.prePaint(r);
+            }
         }
     }
 

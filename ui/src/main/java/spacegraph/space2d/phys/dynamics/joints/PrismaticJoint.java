@@ -28,6 +28,7 @@ import spacegraph.space2d.phys.common.*;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
+import spacegraph.util.math.v3;
 
 
 /**
@@ -423,8 +424,8 @@ public class PrismaticJoint extends Joint {
         }
 
         if (data.step.warmStarting) {
-            
-            m_impulse.mulLocal(data.step.dtRatio);
+
+            m_impulse.scale(data.step.dtRatio);
             m_motorImpulse *= data.step.dtRatio;
 
             final v2 P = pool.popVec2();
@@ -444,7 +445,7 @@ public class PrismaticJoint extends Joint {
 
             pool.pushVec2(1);
         } else {
-            m_impulse.setZero();
+            m_impulse.zero();
             m_motorImpulse = 0.0f;
         }
 
@@ -507,14 +508,16 @@ public class PrismaticJoint extends Joint {
             temp.set(vB).subbed(vA);
             Cdot2 = v2.dot(m_axis, temp) + m_a2 * wB - m_a1 * wA;
 
-            final Vec3 Cdot = pool.popVec3();
+            final v3 Cdot = pool.popVec3();
             Cdot.set(Cdot1.x, Cdot1.y, Cdot2);
 
-            final Vec3 f1 = pool.popVec3();
-            final Vec3 df = pool.popVec3();
+            final v3 f1 = pool.popVec3();
+
+            final v3 df = pool.popVec3();
 
             f1.set(m_impulse);
-            m_K.solve33ToOut(Cdot.negateLocal(), df);
+            Cdot.negated();
+            m_K.solve33ToOut(Cdot, df);
             
             m_impulse.addLocal(df);
 
@@ -537,19 +540,21 @@ public class PrismaticJoint extends Joint {
             m_impulse.x = f2r.x;
             m_impulse.y = f2r.y;
 
-            df.set(m_impulse).subLocal(f1);
+
+            df.set(m_impulse);
+            df.sub(f1);
 
             final v2 P = pool.popVec2();
             temp.set(m_axis).scaled(df.z);
             P.set(m_perp).scaled(df.x).added(temp);
 
             float LA = df.x * m_s1 + df.y + df.z * m_a1;
-            float LB = df.x * m_s2 + df.y + df.z * m_a2;
 
             vA.x -= mA * P.x;
             vA.y -= mA * P.y;
             wA -= iA * LA;
 
+            float LB = df.x * m_s2 + df.y + df.z * m_a2;
             vB.x += mB * P.x;
             vB.y += mB * P.y;
             wB += iB * LB;
@@ -603,7 +608,7 @@ public class PrismaticJoint extends Joint {
         final v2 temp = pool.popVec2();
         final v2 C1 = pool.popVec2();
 
-        final Vec3 impulse = pool.popVec3();
+        final v3 impulse = pool.popVec3();
 
         v2 cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;
@@ -680,12 +685,13 @@ public class PrismaticJoint extends Joint {
             K.ey.set(k12, k22, k23);
             K.ez.set(k13, k23, k33);
 
-            final Vec3 C = pool.popVec3();
+            final v3 C = pool.popVec3();
             C.x = C1.x;
             C.y = C1.y;
             C.z = C2;
 
-            K.solve33ToOut(C.negateLocal(), impulse);
+            C.negated();
+            K.solve33ToOut(C, impulse);
             pool.pushVec3(1);
             pool.pushMat33(1);
         } else {

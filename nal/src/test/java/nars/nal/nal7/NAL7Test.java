@@ -186,17 +186,17 @@ public class NAL7Test extends NALTest {
         ;
     }
 
+
     @Test
     void testShiftPlusDontEraseDT() {
 
         test
-
-                .inputAt(1, "((x &&+1 y) ==>+1 z).")
-                .mustBelieve(cycles, "(x ==>+2 z)", 1f, 0.81f)
-                .mustBelieve(cycles, "(y ==>+1 z)", 1f, 0.81f)
-                .mustNotOutput(cycles, "(x&&y)", BELIEF, (t) -> true)
-                .mustNotOutput(cycles, "(y==>z)", BELIEF, (t) -> true)
-                .mustNotOutput(cycles, "(x==>z)", BELIEF, (t) -> true)
+                .inputAt(1, "(z ==>+1 (x &&+1 y)).")
+                .mustBelieve(cycles, "(z ==>+2 y)", 1f, 0.81f)
+                .mustBelieve(cycles, "(z ==>+1 x)", 1f, 0.81f)
+                .mustNotOutput(cycles, "(x&&y)", BELIEF)
+                .mustNotOutput(cycles, "(z==>y)", BELIEF)
+                .mustNotOutput(cycles, "(z==>x)", BELIEF)
         ;
     }
     @Test

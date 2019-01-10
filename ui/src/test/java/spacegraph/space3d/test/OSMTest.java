@@ -13,7 +13,10 @@ public class OSMTest {
         IRL i = new IRL(User.the());
 
 
-        window(new OsmSpace(i).surface().go(-80.63f, 28.60f), 800, 800);
+        window(new OsmSpace(i).surface().go(
+                //84.8568591f,45.6010982f
+                -73.993449f, 40.751029f
+        ).view(), 800, 800);
 
 
 //        i.load(-80.65, 28.58, -80.60, 28.63);

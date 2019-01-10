@@ -93,7 +93,7 @@ public class HingeConstraint extends TypedConstraint {
 
 		if (projection >= 1.0f - BulletGlobals.SIMD_EPSILON) {
 			centerOfMassA.basis.getColumn(2, rbAxisA1);
-			rbAxisA1.negate();
+			rbAxisA1.negated();
 			centerOfMassA.basis.getColumn(1, rbAxisA2);
 		} else if (projection <= -1.0f + BulletGlobals.SIMD_EPSILON) {
 			centerOfMassA.basis.getColumn(2, rbAxisA1);
@@ -155,7 +155,7 @@ public class HingeConstraint extends TypedConstraint {
 		rbAFrame.basis.setRow(2, rbAxisA1.z, rbAxisA2.z, axisInA.z);
 
 		v3 axisInB = new v3();
-		axisInB.negate(axisInA);
+		axisInB.negated(axisInA);
 		centerOfMassA.basis.transform(axisInB);
 
 		Quat4f rotationArc = QuaternionUtil.shortestArcQuat(axisInA, axisInB, new Quat4f());
@@ -403,7 +403,7 @@ public class HingeConstraint extends TypedConstraint {
 				tmp.sub(pivotAInW, rbA.getCenterOfMassPosition(tmpVec));
 				rbA.impulse(impulse_vector, tmp);
 
-				tmp.negate(impulse_vector);
+				tmp.negated(impulse_vector);
 				tmp2.sub(pivotBInW, rbB.getCenterOfMassPosition(tmpVec));
 				rbB.impulse(tmp, tmp2);
 			}
@@ -458,7 +458,7 @@ public class HingeConstraint extends TypedConstraint {
         
         v3 angularError = new v3();
         angularError.cross(axisA, axisB);
-        angularError.negate();
+        angularError.negated();
         angularError.scale(1f / timeStep);
         float len2 = angularError.length();
         if (len2 > 0.00001f) {
@@ -470,7 +470,7 @@ public class HingeConstraint extends TypedConstraint {
             angularError.scale((1f / denom2) * relaxation);
         }
 
-        tmp.negate(velrelOrthog);
+        tmp.negated(velrelOrthog);
         tmp.add(angularError);
         rbA.torqueImpulse(tmp);
 
@@ -494,7 +494,7 @@ public class HingeConstraint extends TypedConstraint {
 
             rbA.torqueImpulse(impulse);
 
-            tmp.negate(impulse);
+            tmp.negated(impulse);
             rbB.torqueImpulse(tmp);
         }
 
@@ -521,7 +521,7 @@ public class HingeConstraint extends TypedConstraint {
             tmp.add(motorImp, angularLimit);
             rbA.torqueImpulse(tmp);
 
-            tmp.negate(motorImp);
+            tmp.negated(motorImp);
             tmp.sub(angularLimit);
             rbB.torqueImpulse(tmp);
         }

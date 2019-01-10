@@ -1180,7 +1180,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
                 
                 body0.impulse(totalImpulse, rel_pos1);
 
-                tmpVec.negate(totalImpulse);
+                tmpVec.negated(totalImpulse);
                 body1.impulse(tmpVec, rel_pos2);
             }
 

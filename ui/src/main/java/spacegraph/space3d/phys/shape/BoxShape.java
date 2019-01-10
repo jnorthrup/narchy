@@ -163,7 +163,7 @@ public class BoxShape extends SimpleBoxShape {
 		getPlaneEquation(plane, i, tmp);
 		planeNormal.set(plane.x, plane.y, plane.z);
 
-		tmp.negate(planeNormal);
+		tmp.negated(planeNormal);
 		localGetSupportingVertex(tmp, planeSupport);
 	}
 

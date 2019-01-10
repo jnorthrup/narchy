@@ -106,7 +106,7 @@ public abstract class TriangleRaycastCallback extends TriangleCallback {
                         }
                         else {
                             v3 tmp = new v3();
-                            tmp.negate(triangleNormal);
+                            tmp.negated(triangleNormal);
                             hitFraction = reportHit(tmp, distance, partId, triangleIndex);
                         }
                     }

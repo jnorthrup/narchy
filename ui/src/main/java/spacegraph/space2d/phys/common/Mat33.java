@@ -24,6 +24,7 @@
 package spacegraph.space2d.phys.common;
 
 import jcog.math.v2;
+import spacegraph.util.math.v3;
 
 import java.io.Serializable;
 
@@ -33,12 +34,11 @@ import java.io.Serializable;
  * @author Daniel Murphy
  */
 public class Mat33 implements Serializable {
-    private static final long serialVersionUID = 2L;
 
     public static final Mat33 IDENTITY = new Mat33(new Vec3(1, 0, 0), new Vec3(0, 1, 0), new Vec3(0,
             0, 1));
 
-    public final Vec3 ex, ey, ez;
+    public final v3 ex, ey, ez;
 
     public Mat33() {
         ex = new Vec3();
@@ -53,16 +53,16 @@ public class Mat33 implements Serializable {
         ez = new Vec3(ezx, ezy, ezz);
     }
 
-    private Mat33(Vec3 argCol1, Vec3 argCol2, Vec3 argCol3) {
+    private Mat33(v3 argCol1, v3 argCol2, v3 argCol3) {
         ex = argCol1.clone();
         ey = argCol2.clone();
         ez = argCol3.clone();
     }
 
     public void setZero() {
-        ex.setZero();
-        ey.setZero();
-        ez.setZero();
+        ex.zero();
+        ey.zero();
+        ez.zero();
     }
 
     public void set(float exx, float exy, float exz, float eyx, float eyy, float eyz, float ezx,
@@ -73,21 +73,21 @@ public class Mat33 implements Serializable {
         ey.x = eyx;
         ey.y = eyy;
         ey.z = eyz;
-        ez.x = eyx;
-        ez.y = eyy;
-        ez.z = eyz;
+        ez.x = ezx;
+        ez.y = ezy;
+        ez.z = ezz;
     }
 
     public void set(Mat33 mat) {
-        Vec3 vec = mat.ex;
+        v3 vec = mat.ex;
         ex.x = vec.x;
         ex.y = vec.y;
         ex.z = vec.z;
-        Vec3 vec1 = mat.ey;
+        v3 vec1 = mat.ey;
         ey.x = vec1.x;
         ey.y = vec1.y;
         ey.z = vec1.z;
-        Vec3 vec2 = mat.ez;
+        v3 vec2 = mat.ez;
         ez.x = vec2.x;
         ez.y = vec2.y;
         ez.z = vec2.z;
@@ -106,7 +106,7 @@ public class Mat33 implements Serializable {
     }
 
     
-    public static Vec3 mul(Mat33 A, Vec3 v) {
+    public static v3 mul(Mat33 A, v3 v) {
         return new Vec3(v.x * A.ex.x + v.y * A.ey.x + v.z + A.ez.x, v.x * A.ex.y + v.y * A.ey.y + v.z
                 * A.ez.y, v.x * A.ex.z + v.y * A.ey.z + v.z * A.ez.z);
     }
@@ -127,7 +127,7 @@ public class Mat33 implements Serializable {
         out.x = A.ex.x * v.x + A.ey.x * v.y;
     }
 
-    public static void mulToOut(Mat33 A, Vec3 v, Vec3 out) {
+    public static void mulToOut(Mat33 A, v3 v, v3 out) {
         final float tempy = v.x * A.ex.y + v.y * A.ey.y + v.z * A.ez.y;
         final float tempz = v.x * A.ex.z + v.y * A.ey.z + v.z * A.ez.z;
         out.x = v.x * A.ex.x + v.y * A.ey.x + v.z * A.ez.x;
@@ -135,7 +135,7 @@ public class Mat33 implements Serializable {
         out.z = tempz;
     }
 
-    public static void mulToOutUnsafe(Mat33 A, Vec3 v, Vec3 out) {
+    public static void mulToOutUnsafe(Mat33 A, v3 v, v3 out) {
         assert (out != v);
         out.x = v.x * A.ex.x + v.y * A.ey.x + v.z * A.ez.x;
         out.y = v.x * A.ex.y + v.y * A.ey.y + v.z * A.ez.y;
@@ -165,7 +165,7 @@ public class Mat33 implements Serializable {
     public final void solve22ToOut(v2 b, v2 out) {
         final float a11 = ex.x, a12 = ey.x, a21 = ex.y, a22 = ey.y;
         float det = a11 * a22 - a12 * a21;
-        if (det != 0.0f) {
+        if (Math.abs(det) > Float.MIN_NORMAL) {
             det = 1.0f / det;
         }
         out.x = det * (a22 * b.x - a12 * b.y);
@@ -181,8 +181,8 @@ public class Mat33 implements Serializable {
      * @param b
      * @return
      */
-    public final Vec3 solve33(Vec3 b) {
-        Vec3 x = new Vec3();
+    public final v3 solve33(v3 b) {
+        v3 x = new Vec3();
         solve33ToOut(b, x);
         return x;
     }
@@ -194,28 +194,25 @@ public class Mat33 implements Serializable {
      * @param b
      * @param out the result
      */
-    public final void solve33ToOut(Vec3 b, Vec3 out) {
+    public final void solve33ToOut(v3 b, v3 out) {
         assert (b != out);
-        Vec3.crossToOutUnsafe(ey, ez, out);
-        float det = Vec3.dot(ex, out);
-        if (det != 0.0f) {
+        v3.crossToOutUnsafe(ey, ez, out);
+        float det = ex.dot(out);
+        if (Math.abs(det) > Float.MIN_NORMAL) {
             det = 1.0f / det;
         }
-        Vec3.crossToOutUnsafe(ey, ez, out);
-        final float x = det * Vec3.dot(b, out);
-        Vec3.crossToOutUnsafe(b, ez, out);
-        final float y = det * Vec3.dot(ex, out);
-        Vec3.crossToOutUnsafe(ey, b, out);
-        float z = det * Vec3.dot(ex, out);
-        out.x = x;
-        out.y = y;
-        out.z = z;
+        v3.crossToOutUnsafe(ey, ez, out);
+        final float x = det * b.dot(out);
+        v3.crossToOutUnsafe(b, ez, out);
+        final float y = det * ex.dot(out);
+        v3.crossToOutUnsafe(ey, b, out);
+        out.set(x, y, det * ex.dot(out));
     }
 
     public void getInverse22(Mat33 M) {
         float a = ex.x, b = ey.x, c = ex.y, d = ey.y;
         float det = a * d - b * c;
-        if (det != 0.0f) {
+        if (Math.abs(det) > Float.MIN_NORMAL) {
             det = 1.0f / det;
         }
 
@@ -236,7 +233,7 @@ public class Mat33 implements Serializable {
         float by = ey.z * ez.x - ey.x * ez.z;
         float bz = ey.x * ez.y - ey.y * ez.x;
         float det = ex.x * bx + ex.y * by + ex.z * bz;
-        if (det != 0.0f) {
+        if (Math.abs(det) > Float.MIN_NORMAL) {
             det = 1.0f / det;
         }
 

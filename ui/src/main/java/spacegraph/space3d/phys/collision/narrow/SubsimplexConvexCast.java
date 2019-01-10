@@ -84,7 +84,7 @@ public class SubsimplexConvexCast extends ConvexCast {
 		
 		v3 v = new v3();
 
-		tmp.negate(r);
+		tmp.negated(r);
 		MatrixUtil.transposeTransform(tmp, tmp, fromA.basis);
 		v3 supVertexA = convexA.localGetSupportingVertex(tmp, new v3());
 		fromA.transform(supVertexA);
@@ -114,7 +114,7 @@ public class SubsimplexConvexCast extends ConvexCast {
 		float VdotR;
 
 		while ((dist2 > epsilon) && (maxIter--) != 0) {
-			tmp.negate(v);
+			tmp.negated(v);
 			MatrixUtil.transposeTransform(tmp, tmp, interpolatedTransA.basis);
 			convexA.localGetSupportingVertex(tmp, supVertexA);
 			interpolatedTransA.transform(supVertexA);

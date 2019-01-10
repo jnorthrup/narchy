@@ -289,7 +289,7 @@ public abstract class Tuple3f implements java.io.Serializable, Cloneable {
      *
      * @param t1 the source tuple
      */
-    public final void negate(Tuple3f t1) {
+    public final void negated(Tuple3f t1) {
         set(-t1.x, -t1.y, -t1.z);
     }
 
@@ -297,7 +297,7 @@ public abstract class Tuple3f implements java.io.Serializable, Cloneable {
     /**
      * Negates the value of this tuple in place.
      */
-    public final void negate() {
+    public final void negated() {
         set(-x, -y, -z);
     }
 
@@ -403,11 +403,18 @@ public abstract class Tuple3f implements java.io.Serializable, Cloneable {
          * @param t1 the Object with which the comparison is made
          * @return true or false
          */
-    public boolean equals(Object t1) {
+    public boolean equals(Object obj) {
         
-        Tuple3f t2 = (Tuple3f) t1;
-        return equals(t2);
+//        Tuple3f t2 = (Tuple3f) t1;
+//        return equals(t2);
 
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        v3 other = (v3) obj;
+        if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x)) return false;
+        if (Float.floatToIntBits(y) != Float.floatToIntBits(other.y)) return false;
+        return Float.floatToIntBits(z) == Float.floatToIntBits(other.z);
 
 
 

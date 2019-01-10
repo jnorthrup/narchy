@@ -45,17 +45,14 @@ public class OsmWay extends OsmElement {
         return false;
     }
 
-    public boolean isClosed() {
+    public boolean isLoop() {
         
         int s;
         List<? extends OsmElement> c = this.children;
         if (c != null && (s = c.size()) > 3) {
-            OsmElement first = c.get(0);
-            OsmElement last = c.get(s - 1);
+            OsmElement first = c.get(0), last = c.get(s - 1);
             if (first != null && last != null) {
-                long firstId = first.id;
-                long lastId = last.id;
-                return firstId == lastId;
+                return first.id == last.id;
             }
         }
         return false;

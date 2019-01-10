@@ -180,7 +180,7 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
         v3 v = v(delta.x * s, delta.y * s, delta.z * s );
         ((Body3D) x).velAdd(v);
 
-        v.negate();
+        v.negated();
         ((Body3D) y).velAdd(v);
 
     }

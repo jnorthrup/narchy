@@ -140,7 +140,7 @@ public class BoxCollision {
 		 */
 		public void calc_from_full_invert(Transform trans0, Transform trans1) {
 			R1to0.invert(trans0.basis);
-			T1to0.negate(trans0);
+			T1to0.negated(trans0);
 			R1to0.transform(T1to0);
 
 			v3 tmp = new v3();

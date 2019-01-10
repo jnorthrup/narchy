@@ -185,7 +185,7 @@ public class Point2PointConstraint extends TypedConstraint {
 			impulse_vector.scale(impulse, normal);
 			tmp.sub(pivotAInW, centerOfMassA);
 			rbA.impulse(impulse_vector, tmp);
-			tmp.negate(impulse_vector);
+			tmp.negated(impulse_vector);
 			tmp2.sub(pivotBInW, centerOfMassB);
 			rbB.impulse(tmp, tmp2);
 

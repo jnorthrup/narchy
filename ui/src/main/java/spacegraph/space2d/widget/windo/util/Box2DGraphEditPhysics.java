@@ -182,7 +182,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         }
 
         protected Body2D body(Surface x) {
-            return phy(x instanceof Windo ? (Windo) x : x.parent(Windo.class)).body;
+            WindowData p = phy(x instanceof Windo ? (Windo) x : x.parent(Windo.class));
+            return p!=null ? p.body : null;
         }
 
         public Body2D sourceBody() {

@@ -2,8 +2,6 @@ package nars.derive.op;
 
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
-import jcog.data.graph.FromTo;
-import jcog.data.graph.Node;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import nars.Op;
@@ -20,17 +18,14 @@ import nars.term.util.transform.Retemporalize;
 import nars.time.Event;
 import nars.time.Tense;
 import nars.time.TimeGraph;
-import nars.time.TimeSpan;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -248,7 +243,7 @@ public class Occurrify extends TimeGraph {
     private final Derivation d;
 
     private boolean decomposeEvents;
-    int expectedVolume;
+    int patternVolume;
 
     public Occurrify(Derivation d) {
         this.d = d;
@@ -277,11 +272,11 @@ public class Occurrify extends TimeGraph {
 
     @Override
     @Deprecated
-    protected Term dt(Term x, List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, boolean dir, int dt) {
+    protected Term dt(Term x, boolean dir, int dt) {
         int ddt = dt(dt);
-        Term y = super.dt(x, path, dir, ddt);
+        Term y = super.dt(x, dir, ddt);
         if (ddt != dt && Param.ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS && (y.op() != x.op())) {
-            y = super.dt(x, path, dir, dt);
+            y = super.dt(x, dir, dt);
         }
         return y;
     }
@@ -456,20 +451,27 @@ public class Occurrify extends TimeGraph {
     }
 
     @Override protected boolean solution(Event y) {
-
         if (ttl-- > 0) {
-            if (y.id.volume() < expectedVolume)
-                return true; //ignore
-
             return super.solution(y);
         }
         return false;
     }
 
+    @Override protected boolean validPotentialSolution(Term y) {
+        return super.validPotentialSolution(y) &&
+                (
+                    !Param.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS
+                    ||
+                    y.volume() >=
+                            //patternVolume - 1 /* tolerance for only one less negation (ie. an outermost one) */
+                            patternVolume / 2 /* tolerate partial degeneracy*/
+                );
+    }
+
     private ArrayHashSet<Event> solutions(Term pattern) {
 
         ttl = Param.TEMPORAL_SOLVER_ITERATIONS;
-        expectedVolume = pattern.volume();
+        patternVolume = pattern.volume();
 
         solve(pattern,  /* take everything */ this::eachSolution);
 

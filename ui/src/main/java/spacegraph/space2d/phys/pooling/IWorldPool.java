@@ -33,6 +33,7 @@ import spacegraph.space2d.phys.common.Mat33;
 import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Vec3;
 import spacegraph.space2d.phys.dynamics.contacts.Contact;
+import spacegraph.util.math.v3;
 
 /**
  * World pool interface
@@ -61,9 +62,9 @@ public interface IWorldPool {
 
     void pushVec2(int num);
 
-    Vec3 popVec3();
+    v3 popVec3();
 
-    Vec3[] popVec3(int num);
+    v3[] popVec3(int num);
 
     void pushVec3(int num);
 

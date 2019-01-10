@@ -33,6 +33,7 @@ import spacegraph.space2d.phys.common.*;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
+import spacegraph.util.math.v3;
 
 
 /**
@@ -81,7 +82,7 @@ public class WeldJoint extends Joint {
         m_dampingRatio = def.dampingRatio;
 
         m_impulse = new Vec3();
-        m_impulse.setZero();
+        m_impulse.zero();
     }
 
     public float getReferenceAngle() {
@@ -222,8 +223,8 @@ public class WeldJoint extends Joint {
 
         if (data.step.warmStarting) {
             final v2 P = pool.popVec2();
-            
-            m_impulse.mulLocal(data.step.dtRatio);
+
+            m_impulse.scale(data.step.dtRatio);
 
             P.set(m_impulse.x, m_impulse.y);
 
@@ -236,7 +237,7 @@ public class WeldJoint extends Joint {
             wB += iB * (v2.cross(m_rB, P) + m_impulse.z);
             pool.pushVec2(1);
         } else {
-            m_impulse.setZero();
+            m_impulse.zero();
         }
 
 
@@ -295,12 +296,12 @@ public class WeldJoint extends Joint {
             Cdot1.added(vB).subbed(vA).subbed(temp);
             float Cdot2 = wB - wA;
 
-            final Vec3 Cdot = pool.popVec3();
+            final v3 Cdot = pool.popVec3();
             Cdot.set(Cdot1.x, Cdot1.y, Cdot2);
 
-            final Vec3 impulse = pool.popVec3();
+            final v3 impulse = pool.popVec3();
             Mat33.mulToOutUnsafe(m_mass, Cdot, impulse);
-            impulse.negateLocal();
+            impulse.negated();
             m_impulse.addLocal(impulse);
 
             P.set(impulse.x, impulse.y);
@@ -382,12 +383,12 @@ public class WeldJoint extends Joint {
             positionError = C1.length();
             angularError = Math.abs(C2);
 
-            final Vec3 C = pool.popVec3();
-            final Vec3 impulse = pool.popVec3();
+            final v3 C = pool.popVec3();
+            final v3 impulse = pool.popVec3();
             C.set(C1.x, C1.y, C2);
 
             K.solve33ToOut(C, impulse);
-            impulse.negateLocal();
+            impulse.negated();
             P.set(impulse.x, impulse.y);
 
             cA.x -= mA * P.x;

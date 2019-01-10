@@ -129,7 +129,7 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
 
         for (;;) 
         {
-            seperatingAxisInA.negate(cachedSeparatingAxis);
+            seperatingAxisInA.negated(cachedSeparatingAxis);
             MatrixUtil.transposeTransform(seperatingAxisInA, seperatingAxisInA, input.transformA.basis);
 
             seperatingAxisInB.set(cachedSeparatingAxis);

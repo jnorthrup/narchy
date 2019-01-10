@@ -29,6 +29,7 @@ import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
+import spacegraph.util.math.v3;
 
 
 /**
@@ -204,7 +205,7 @@ public class RevoluteJoint extends Joint {
             vB.y += mB * P.y;
             wB += iB * (v2.cross(m_rB, P) + m_motorImpulse + m_impulse.z);
         } else {
-            m_impulse.setZero();
+            m_impulse.zero();
             m_motorImpulse = 0.0f;
         }
         
@@ -246,7 +247,7 @@ public class RevoluteJoint extends Joint {
         if (m_enableLimit && m_limitState != LimitState.INACTIVE && !fixedRotation) {
 
             final v2 Cdot1 = new v2();
-            final Vec3 Cdot = new Vec3();
+            final v3 Cdot = new Vec3();
 
             
             v2.crossToOutUnsafe(wA, m_rA, temp);
@@ -257,7 +258,7 @@ public class RevoluteJoint extends Joint {
 
             Vec3 impulse = new Vec3();
             m_mass.solve33ToOut(Cdot, impulse);
-            impulse.negateLocal();
+            impulse.negated();
 
             switch (m_limitState) {
                 case EQUAL:

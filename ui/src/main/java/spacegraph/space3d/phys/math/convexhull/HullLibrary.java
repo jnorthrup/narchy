@@ -459,7 +459,7 @@ public class HullLibrary {
 		v3[] basis = { new v3(), new v3(), new v3() };
 		basis[0].set(0.01f, 0.02f, 1.0f);
 		int p0 = maxdirsterid(verts, verts_count, basis[0], allow);
-		tmp.negate(basis[0]);
+		tmp.negated(basis[0]);
 		int p1 = maxdirsterid(verts, verts_count, tmp, allow);
 		
 		
@@ -481,7 +481,7 @@ public class HullLibrary {
 		}
 		int p2 = maxdirsterid(verts, verts_count, basis[1], allow);
 		if (p2 == p0 || p2 == p1) {
-			tmp.negate(basis[1]);
+			tmp.negated(basis[1]);
 			p2 = maxdirsterid(verts, verts_count, tmp, allow);
 		}
 		if (p2 == p0 || p2 == p1) {
@@ -495,7 +495,7 @@ public class HullLibrary {
 		basis[2].normalize();
 		int p3 = maxdirsterid(verts, verts_count, basis[2], allow);
 		if (p3 == p0 || p3 == p1 || p3 == p2) {
-			tmp.negate(basis[2]);
+			tmp.negated(basis[2]);
 			p3 = maxdirsterid(verts, verts_count, tmp, allow);
 		}
 		if (p3 == p0 || p3 == p1 || p3 == p2) {

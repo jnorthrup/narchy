@@ -98,7 +98,7 @@ public class ConvexPlaneCollisionAlgorithm extends CollisionAlgorithm {
 		convexInPlaneTrans.mul(convexObj.getWorldTransform(tmpTrans));
 
 		v3 tmp = new v3();
-		tmp.negate(planeNormal);
+		tmp.negated(planeNormal);
 		planeInConvex.basis.transform(tmp);
 
 		v3 vtx = convexShape.localGetSupportingVertex(tmp, new v3());

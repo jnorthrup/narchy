@@ -171,7 +171,7 @@ public class Mat22 implements Serializable {
         final float a = ex.x, b = ey.x, c = ex.y, d = ey.y;
         final Mat22 B = new Mat22();
         float det = a * d - b * c;
-        if (det != 0) {
+        if (Math.abs(det) > Float.MIN_NORMAL) {
             det = 1.0f / det;
         }
         B.ex.x = det * d;
@@ -184,7 +184,7 @@ public class Mat22 implements Serializable {
     public final Mat22 invertLocal() {
         final float a = ex.x, b = ey.x, c = ex.y, d = ey.y;
         float det = a * d - b * c;
-        if (det != 0) {
+        if (Math.abs(det) > Float.MIN_NORMAL) {
             det = 1.0f / det;
         }
         ex.x = det * d;
@@ -419,7 +419,7 @@ public class Mat22 implements Serializable {
     public final v2 solve(final v2 b) {
         final float a11 = ex.x, a12 = ey.x, a21 = ex.y, a22 = ey.y;
         float det = a11 * a22 - a12 * a21;
-        if (det != 0.0f) {
+        if (Math.abs(det) > Float.MIN_NORMAL) {
             det = 1.0f / det;
         }
         final v2 x = new v2(det * (a22 * b.x - a12 * b.y), det * (a11 * b.y - a21 * b.x));
@@ -429,7 +429,7 @@ public class Mat22 implements Serializable {
     public final void solveToOut(final v2 b, final v2 out) {
         final float a11 = ex.x, a12 = ey.x, a21 = ex.y, a22 = ey.y;
         float det = a11 * a22 - a12 * a21;
-        if (det != 0.0f) {
+        if (Math.abs(det) > Float.MIN_NORMAL) {
             det = 1.0f / det;
         }
         final float tempy = det * (a11 * b.y - a21 * b.x);

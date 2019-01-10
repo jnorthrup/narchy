@@ -240,7 +240,7 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 		getPlaneEquation(plane, i, tmp);
 		planeNormal.set(plane.x, plane.y, plane.z);
 
-		tmp.negate(planeNormal);
+		tmp.negated(planeNormal);
 		localGetSupportingVertex(tmp, planeSupport);
 	}
 

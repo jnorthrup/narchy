@@ -70,6 +70,9 @@ public class v3 extends Tuple3f {
         super(v);
     }
 
+    public v3 clone() {
+        return new v3(x,y,z);
+    }
 
     /**
      * Constructs and initializes a Vector3f from the specified Vector3f.
@@ -143,6 +146,14 @@ public class v3 extends Tuple3f {
         return new v2(x, y);
     }
 
+    public static void crossToOutUnsafe(v3 a, v3 b, v3 out) {
+        assert (out != b);
+        assert (out != a);
+        out.x = a.y * b.z - a.z * b.y;
+        out.y = a.z * b.x - a.x * b.z;
+        out.z = a.x * b.y - a.y * b.x;
+    }
+
 
     /**
      * Returns the squared length of this vector.
@@ -186,6 +197,10 @@ public class v3 extends Tuple3f {
         return this;
 
     }
+
+//    public static v3 cross(v3 a, v3 b) {
+//        return new v3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+//    }
 
     public final v3 cross(v3 v2) {
         return cross(this, v2);

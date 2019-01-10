@@ -55,6 +55,11 @@ public class Osm {
         relations = new LongObjectHashMap();
     }
 
+    @Override
+    public String toString() {
+        return geoBounds + " (" + nodes.size() + " nodes, " + relations.size() + " relations, " + ways.size() + " ways";
+    }
+
     public void load(String filename) throws SAXException, IOException, ParserConfigurationException {
         InputStream fis = new FileInputStream(filename);
 
@@ -284,21 +289,19 @@ public class Osm {
             if (!"multipolygon".equals(type))
                 continue;
 
-            List<? extends OsmElement> oc = osmRelation.children();
-            int s = oc.size();
-            for (int i = 0; i < s; i++) {
+            List<? extends OsmElement> oc = osmRelation.children;
+            for (int i = 0, ocSize = oc.size(); i < ocSize; i++) {
                 OsmElement e1 = oc.get(i);
 
                 if (e1 == null || e1.getClass() != OsmWay.class)
-                    continue;
+                    return;
 
                 OsmWay w1 = (OsmWay) e1;
-                if (w1.isClosed())
-                    continue;
+                if (w1.isLoop())
+                    return;
 
-                repeat:
                 {
-                    ListIterator<? extends OsmElement> ii = oc.listIterator(i);
+                    ListIterator<? extends OsmElement> ii = osmRelation.children.listIterator(i);
                     while (ii.hasNext()) {
                         OsmElement e2 = ii.next();
                         if (e2 == null || e2.getClass() != OsmWay.class)
@@ -309,7 +312,6 @@ public class Osm {
                         if (w1.isFollowedBy(w2)) {
                             w1.addOsmWay(w2);
                             ii.remove();
-                            
                         }
                     }
                 }
@@ -385,7 +387,7 @@ public class Osm {
     private static void printOsmRelation(OsmRelation osmRelation, int indent) {
         printIndent(indent);
         System.out.printf("<relation id=%s>\n", osmRelation.id);
-        printOsmElements(osmRelation.children(), indent + 1);
+        printOsmElements(osmRelation.children, indent + 1);
         printTags(osmRelation.tags, indent + 1);
     }
 
@@ -482,7 +484,7 @@ public class Osm {
             }
 
             boolean isPolygon = false;
-            boolean isClosed = way.isClosed();
+            boolean isClosed = way.isLoop();
             float r, g, b, a;
             float lw;
             short ls;
@@ -671,8 +673,8 @@ public class Osm {
     private static void project(GeoVec3 global, double[] target, int offset, float boundsX, float boundsY) {
 
 
-        target[offset++] = (global.getLatitude());// - boundsY);
-        target[offset++] = (global.getLongitude());// - boundsX);
+        target[offset++] = (global.getLongitude());
+        target[offset++] = (global.getLatitude());
         target[offset/*++*/] = 0;
 
 
