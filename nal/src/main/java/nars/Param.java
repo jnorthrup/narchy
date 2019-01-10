@@ -204,7 +204,7 @@ public abstract class Param {
     public static final float REMEMBER_REPEAT_PRI_THRESHOLD = ScalarValue.EPSILONsqrt;
 
     /** >=0; higher values decrease the rate at which repeated tasks can be reactivated */
-    public static final int REMEMBER_REPEAT_THRESH_DURS = 1;
+    public static final int REMEMBER_REPEAT_THRESH_DURS = 2;
 
 
     /**

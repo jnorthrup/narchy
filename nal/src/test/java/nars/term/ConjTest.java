@@ -770,6 +770,11 @@ public class ConjTest {
                 $$("(&&,a,b,c)"),
                 $$("(&&,c,d,e)")).toString());
 
+        //unchanged because negative
+        assertEquals("(--,(&&,a,b,c))", Conj.withoutAll(
+                $$("--(&&,a,b,c)"),
+                $$("(&&,c,d,e)")).toString());
+
         assertEquals("(a&|b)", Conj.withoutAll(
                 $$("(&|,a,b,c)"),
                 $$("(&|,c,d,e)")).toString());
@@ -789,13 +794,13 @@ public class ConjTest {
 
     @Test
     void testConjWithoutAllSequence() {
-        assertEquals("z", Conj.withoutAll(
+        assertEq("z", Conj.withoutAll(
                 $$("((x &&+1 y) &&+1 z)"),
-                $$("(&&,x,y)")).toString());
+                $$("(&&,x,y)")));
 
-        assertEquals("z", Conj.withoutAll(
+        assertEq("(y &&+1 z)", Conj.withoutAll(
                 $$("((x &&+1 y) &&+1 z)"),
-                $$("(x &&+2 y)")).toString());
+                $$("(x &&+2 y)")));
     }
 
     @Test

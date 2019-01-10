@@ -200,7 +200,7 @@ public enum ConjCommutive {;
             int dd;
             if (disj!=null && disj.cardinality()==1)
                 dd = disj.first(true);
-            else if (seq!=null && seq.cardinality()==1)
+            else if (dt == DTERNAL && seq!=null && seq.cardinality()==1)
                 dd = seq.first(true);
             else
                 dd = -1;

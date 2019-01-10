@@ -135,6 +135,14 @@ public class BiSubterm extends TermVector {
     }
 
 
+    @Override
+    public boolean containsRecursively(Term t, boolean root, Predicate<Term> subTermOf) {
+        return ((root ? x.equalsRoot(t) : x.equals(t)) || ((x!=y) && (root ? y.equalsRoot(t) : y.equals(t))))
+                ||
+               (x.containsRecursively(t, root, subTermOf) || ((x!=y) && y.containsRecursively(t,root,subTermOf)));
+    }
+
+
     final public static class BiRepeat extends BiSubterm {
         public BiRepeat(Term x) {
             super(x,x);
@@ -147,33 +155,19 @@ public class BiSubterm extends TermVector {
 
         @Override
         public int sum(ToIntFunction<Term> value) {
-            return x.sum(value)*2;
+            return value.applyAsInt(x)*2;
         }
 
         @Override
         public boolean AND(Predicate<Term> p) {
-            return x.AND(p);
+            return p.test(x);
         }
 
         @Override
         public boolean OR(Predicate<Term> p) {
-            return x.OR(p);
+            return p.test(x);
         }
 
-        @Override
-        public boolean ANDrecurse(Predicate<Term> p) {
-            return x.ANDrecurse(p);
-        }
-
-        @Override
-        public boolean ORrecurse(Predicate<Term> p) {
-            return x.ORrecurse(p);
-        }
-
-        @Override
-        public boolean containsRecursively(Term x, boolean root, Predicate<Term> subTermOf) {
-            return x.containsRecursively(x, root, subTermOf);
-        }
 
     }
 }

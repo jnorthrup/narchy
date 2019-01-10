@@ -2,11 +2,13 @@ package nars.task;
 
 import nars.*;
 import nars.concept.Concept;
+import nars.concept.TaskConcept;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
+import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -178,5 +180,10 @@ class TaskTest {
     }
 
 
+    @Test void testValidIndepTaskConcept() {
+        NAR tt = NARS.shell();
+        Concept c = tt.conceptualize($$("(((sx,$1)&|good) ==>+2331 ((sx,$1)&&good))"));
+        assertTrue(c instanceof TaskConcept);
+    }
 
 }

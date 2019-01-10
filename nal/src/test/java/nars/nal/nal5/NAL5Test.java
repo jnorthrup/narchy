@@ -464,7 +464,6 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_deduction_simple() {
         TestNAR tester = test;
-        tester.logDebug();
         tester.believe("((x && y) ==> a)");
         tester.believe("x");
         tester.mustBelieve(cycles, "(a && y)", 1.00f, 0.81f);
@@ -473,7 +472,6 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_deduction_neg_simple() {
         TestNAR tester = test;
-        tester.logDebug();
         tester.believe("((--x && y) ==> a)");
         tester.believe("--x");
         tester.mustBelieve(cycles, "(a && y)", 1.00f, 0.81f);
@@ -482,20 +480,20 @@ public class NAL5Test extends NALTest {
 
     @Test
     void conditional_deduction() {
-        TestNAR tester = test;
-        tester.believe("<(&&,(robin --> [flying]),(robin --> [withWings])) ==> a>");
-        tester.believe("(robin --> [flying])");
-        tester.mustBelieve(cycles, " <(robin --> [withWings]) ==> a>", 1.00f, 0.81f);
+        test
+        .believe("<(&&,(robin --> [flying]),(robin --> [withWings])) ==> a>")
+        .believe("(robin --> [flying])")
+        .mustBelieve(cycles, " <(robin --> [withWings]) ==> a>", 1.00f, 0.81f);
     }
 
     @Test
     void conditional_deduction_unification() {
 
-        TestNAR tester = test;
-        tester.nar.termVolumeMax.set(12);
-        tester.believe("<(&&,(#x --> [flying]),(#x --> [withWings])) ==> a>");
-        tester.believe("(robin --> [flying])");
-        tester.mustBelieve(cycles, " <(robin --> [withWings]) ==> a>", 1.00f, 0.81f);
+        test
+        .termVolMax(12)
+        .believe("<(&&,(#x --> [flying]),(#x --> [withWings])) ==> a>")
+        .believe("(robin --> [flying])")
+        .mustBelieve(cycles, " (((robin-->[flying])&&(robin-->[withWings]))==>a)", 1.00f, 0.81f);
 
     }
 

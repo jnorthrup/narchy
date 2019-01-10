@@ -622,29 +622,28 @@ public class Conj extends ByteAnonMap {
     }
 
     public static Term withoutAll(Term include, Term exclude) {
-        return withoutAll(include, exclude, false);
-    }
+        if (exclude.op() != CONJ)
+            return without(include, exclude, false);
 
-    /**
-     * if same timing, does not allow relative shift
-     */
-    public static Term withoutAll(Term include, Term exclude, boolean atExactTime) {
         if (include.op() != CONJ)
             return include;
 
         if (include.equals(exclude))
             return True;
 
-        if (exclude.op() != CONJ)
-            return without(include, exclude, false);
 
-
-        if (!Conj.isSeq(include) && !Conj.isSeq(exclude)) {
+        boolean eSeq = Conj.isSeq(exclude);
+        if (!Conj.isSeq(include) && !eSeq) {
 
             Subterms es = exclude.subterms();
-            @Nullable MutableSet<Term> ii = include.subterms().toSet(i -> !es.contains(i));
-            if (ii != null && (ii.size() < include.subs())) {
-                return terms.conj(include.dt(), ii.toArray(EmptyTermArray));
+            Subterms is = include.subterms();
+            MetalBitSet ii = is.subsTrue(i -> !es.contains(i));
+            int in = ii.cardinality();
+            if (in < include.subs()) {
+                if (in == 1)
+                    return is.sub(in);
+                else
+                    return terms.conj(include.dt(), is.subsIncluding(ii));
             } else {
                 return include; //no change
             }
@@ -653,15 +652,19 @@ public class Conj extends ByteAnonMap {
 
 
             Conj x = Conj.from(include);
-            int idt = include.dt();
-            boolean[] removed = new boolean[]{false};
-            exclude.eventsWhile((when, what) -> {
-                //removed[0] |= x.remove(what, when);
-                removed[0] |= atExactTime ? x.remove(when, what) : x.removeAll(what);
-                return true;
-            }, idt == DTERNAL ? ETERNAL : 0, true, exclude.dt() == DTERNAL, false, 0);
+            boolean[] removedSomething = new boolean[]{false};
 
-            return removed[0] ? x.term() : include;
+            if (!eSeq) {
+                removedSomething[0] = exclude.subterms().subs(x::removeAll) > 0;
+            } else {
+
+                exclude.eventsWhile((when, what) -> {
+                    removedSomething[0] |= x.remove(when, what);
+                    return true;
+                }, 0, true,false, false,  0);
+            }
+
+            return removedSomething[0] ? x.term() : include;
         }
     }
 
@@ -670,13 +673,14 @@ public class Conj extends ByteAnonMap {
         return event.remove(when)!=null;
     }
 
+    /** TODO batch Term... variant */
     public boolean removeAll(Term what) {
         byte id = get(what);
         if (id != Byte.MIN_VALUE) {
             long[] events = event.keySet().toArray(); //create an array because removal will interrupt direct iteration of the keySet
             boolean removed = false;
             for (long e : events) {
-                removed |= remove(e, what);
+                removed |= remove(e, id);
             }
             return removed;
         }

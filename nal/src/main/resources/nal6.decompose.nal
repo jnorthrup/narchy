@@ -126,10 +126,11 @@
 
 //free implication belief decomposition
     //pred
-    (A ==> C), A, is(C,"&&"), --isVar(A)      |- (A ==> dropAnyEvent(C)), (Belief:StructuralReduction)
+    (A ==> C), X, eventOf(C,X), is(C,"&&"), --isVar(A)      |- (A ==> without(C,  X)), (Belief:StructuralReduction)
+    (A ==> C), X, eventOfNeg(C,X), is(C,"&&"), --isVar(A)   |- (A ==> without(C,--X)), (Belief:StructuralReduction)
 
     //disj subj ONLY:
-    (--C ==> A), A, is(C,"&&"), --isVar(A)    |- (--dropAnyEvent(C) ==> A), (Belief:StructuralReduction)
+    //(--C ==> A), A, is(C,"&&"), --isVar(A)    |- (--dropAnyEvent(C) ==> A), (Belief:StructuralReduction)
 
 //dangerous?
 //(C ==> A), A, isUnneg(C,"&&"), --isVar(A) |- (dropAnyEvent(C) ==> A), (Belief:StructuralReduction)

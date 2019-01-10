@@ -264,10 +264,10 @@ public interface Compound extends Term, IPair, Subterms {
         if (o == CONJ) {
             int xdt = dt(), ydt = y.dt();
             if (xdt == XTERNAL && ydt != XTERNAL) {
-                if (xx.equals(yy) || (x.equalsRoot(x) && y.equalsRoot(x)))
+                if (unifyXternal(y, x, xx, yy))
                     return true;
             } else if (ydt == XTERNAL && xdt != XTERNAL) {
-                if (xx.equals(yy) || (y.equalsRoot(y) && x.equalsRoot(y)))
+                if (unifyXternal(x, y, xx, yy))
                     return true;
             }
         }
@@ -333,6 +333,13 @@ public interface Compound extends Term, IPair, Subterms {
 //            }
 //            return false;
 
+    }
+
+    static boolean unifyXternal(Term y, Term x, Subterms xx, Subterms yy) {
+        if (xx.equals(yy)) return true;
+        Term xr = x.root();
+        if (x.equals(xr) && y.root().equals(xr)) return true;
+        return false;
     }
 
 
@@ -736,7 +743,7 @@ public interface Compound extends Term, IPair, Subterms {
         if (!o.temporal && !hasAny(Op.Temporal))
             return false;
 
-        if (subterms().structure() == x.subterms().structure()) {
+        if (structure() == x.structure()) {
             Term root = root(), xRoot;
             return (root != this && root.equals(x)) || (((xRoot = x.root()))!=x && root.equals(xRoot));
         }

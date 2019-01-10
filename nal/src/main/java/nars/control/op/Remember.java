@@ -106,7 +106,7 @@ public class Remember extends AbstractTask {
             if (c != null) {
                 if (!(c instanceof TaskConcept)) {
                     if (Param.DEBUG)
-                        throw new TaskException(input, c + " is not a TaskConcept");
+                        throw new TaskException(input, c + " is not a TaskConcept: " + c.getClass());
                     else
                         return null;
                 }
