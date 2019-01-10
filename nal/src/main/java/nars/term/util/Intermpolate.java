@@ -46,13 +46,20 @@ public enum Intermpolate {;
 //            return Null;
 
         if (ao.temporal) {
-                if (ao == CONJ) {// && Conj.isSeq(a) || Conj.isSeq(b)) {
+            if (aa.subs() == bb.subs() && aa.equals(bb)) {
+                return dtMergeTemporalDirect(a, b, aProp, curDepth, nar);
+            }
+
+            if (ao == CONJ) {
+//                if (Conj.isSeq(a) || Conj.isSeq(b)) {
                     return new Conjterpolate(a, b, aProp, nar.random()).term(); //root only: conj sequence merge
-                }
+//                } else {
+//                    throw new WTF();
+//                }
+            }
 
             //            if (ao == CONJ && curDepth == 1) {
 
-            return dtMergeTemporalDirect(a, b, aProp, curDepth, nar);
 //            } else {
 //            }
         }

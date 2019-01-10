@@ -166,7 +166,8 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
 
             if (!strict || (!result.equals(transformed) && !result.normalize().equals(transformed.normalize()))) { //dont actually normalize it ; could destroy common variables since they arent Anon and in the derivation's Anon map
 
-                this.xy.forEach(parent.retransform::put);
+                //this.xy.forEach(parent.retransform::put);
+                this.xy.forEach(parent.xy::set);
 
                 return true;
             }

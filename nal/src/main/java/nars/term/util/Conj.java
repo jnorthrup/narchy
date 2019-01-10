@@ -885,6 +885,17 @@ public class Conj extends ByteAnonMap {
         );
     }
 
+    public boolean addAll(Iterable<LongObjectPair<Term>> x) {
+        for (LongObjectPair<Term> xx : x) {
+            if (!add(xx))
+                return false;
+        }
+        return true;
+    }
+
+    public boolean add(LongObjectPair<Term> whenWhat) {
+        return add(whenWhat.getOne(), whenWhat.getTwo());
+    }
     protected boolean addConjEvent(long at, Term x) {
 
         int xdt = x.dt();

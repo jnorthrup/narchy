@@ -39,9 +39,23 @@ public class ArrayUnenforcedSet<X> extends FasterList<X> implements Set<X> {
         super((Iterable) c);
     }
 
+    public static <X> Set<X> wrap(FasterList<? extends X> c) {
+        switch (c.size()) {
+            case 0:
+                return Set.of();
+            case 1:
+                return Set.of(c.get(0));
+            default:
+                return new ArrayUnenforcedSet<X>(c.size(), c.array());
+        }
+    }
 
     public ArrayUnenforcedSet(X... x) {
-        super(x.length, x);
+        this(x.length, x);
+    }
+
+    protected ArrayUnenforcedSet(int len, X[] x) {
+        super(len, x);
     }
 
     @Override

@@ -53,6 +53,7 @@
     //C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
     //TODO X, C    |- conjDropIfLatestUnifies(C,  X), (Goal:Deduction,..
     X, C, eventLastOf(C,X), --eventOfNeg(C,X)       |-   conjDropIfLatest(C,X),     (Goal:Desire)
+    //G, C                                            |-   unify
 
       //even though it has the opposite goal earlier in the seq, but desire weakly:
       X, C, eventLastOf(C,X), eventOfNeg(C,X)       |-   conjDropIfLatest(C,X),     (Goal:DesireWeak)

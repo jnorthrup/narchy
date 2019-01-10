@@ -583,6 +583,16 @@ public class FasterList<X> extends FastList<X> {
     }
 
 
+    public boolean removeBelow(int index) {
+        if (index == 0)
+            return false;
+
+        //TODO optimize
+        for (int i = 0; i < index; i++)
+            remove(0);
+        return true;
+    }
+
     public boolean removeAbove(int index) {
         int s = this.size;
         if (index >= s)

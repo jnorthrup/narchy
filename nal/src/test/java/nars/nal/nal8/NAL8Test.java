@@ -1094,4 +1094,11 @@ public class NAL8Test extends NALTest {
         ;
     }
 
+    @Test void testUnifyGoalSequence() {
+        test
+                .believe("(f(#x) &&+1 g(#x))")
+                .goal("g(x)")
+                .mustGoal(cycles, "f(x)", 1f, 0.81f);
+    }
+
 }

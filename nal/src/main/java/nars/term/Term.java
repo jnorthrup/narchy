@@ -584,8 +584,6 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * event list, sorted by time
      * sorted by time; decomposes inner parallel conj
      */
-    /* final */
-    @Deprecated
     default FasterList<LongObjectPair<Term>> eventList() {
         return eventList(0, 1);
     }

@@ -415,7 +415,8 @@ public class RevisionTest {
 
         NAR s = NARS.shell();
 
-        assertEquals(a.concept(), b.concept(), "concepts differ: " + a + " " + b);
+        Term concept = a.concept();
+        assertEquals(concept, b.concept(), "concepts differ: " + a + " " + b);
 
 
         Set<Term> ss = new TreeSet();

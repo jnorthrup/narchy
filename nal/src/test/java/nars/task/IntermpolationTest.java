@@ -83,7 +83,7 @@ public class IntermpolationTest {
     void testIntermpolationImplSubjImbalance() throws Narsese.NarseseException {
         Compound a = $.$("((x &&+1 y) ==> z)");
         Compound b = $.$("(((x &&+1 y) &&+1 x) ==> z)");
-        RevisionTest.permuteChoose(a, b, "TODO");
+        RevisionTest.permuteChoose(a, b, "[(((x &&+1 y) &&+1 x)==>z), ((x &&+1 y)==>z)]");
     }
 
     @Test
