@@ -9,11 +9,8 @@ public class OsmNode extends OsmElement {
     public final GeoVec3 pos;
 
     public OsmNode(long id, GeoVec3 pos, Map<String, String> tags) {
-        super(id, null, tags);
+        super(id, tags);
         this.pos = pos;
     }
-
-    
-
 
 }

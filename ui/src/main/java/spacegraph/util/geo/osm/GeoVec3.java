@@ -37,15 +37,15 @@ public class GeoVec3 extends v3 {
         return alt == null || alt.isEmpty() ? otherwise : parseDouble(alt);
     }
 
-    public double getLatitude() {
+    public float getLatitude() {
         return y;
     }
 
-    public double getLongitude() {
+    public float getLongitude() {
         return x;
     }
 
-    public double getAltitude() {
+    public float getAltitude() {
         return z;
     }
 }

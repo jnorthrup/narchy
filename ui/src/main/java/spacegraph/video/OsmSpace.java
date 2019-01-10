@@ -71,6 +71,11 @@ public class OsmSpace  {
                 if (pointer.length == 6)
                     gl.glColor3dv(pointer, 3);
                 gl.glVertex3dv(pointer, 0);
+            } else if (vertexData instanceof float[]) {
+                float[] pointer = (float[]) vertexData;
+                if (pointer.length == 6)
+                    gl.glColor3fv(pointer, 3);
+                gl.glVertex3fv(pointer, 0);
             }
         }
 
@@ -87,20 +92,20 @@ public class OsmSpace  {
         @Override
         public void combine(double[] coords, Object[] data,
                             float[] weight, Object[] outData) {
-            double[] vertex = new double[6];
+            float[] vertex = new float[6];
 
-            vertex[0] = coords[0];
-            vertex[1] = coords[1];
-            vertex[2] = coords[2];
+            vertex[0] = (float) coords[0];
+            vertex[1] = (float) coords[1];
+            vertex[2] = (float) coords[2];
             for (int i = 3; i < 6/* 7OutOfBounds from C! */; i++) {
-                double v = 0;
+                float v = 0;
                 for (int j = 0; j < data.length; j++) {
-                    double[] d = (double[]) data[j];
+                    float[] d = (float[]) data[j];
                     if (d != null) {
                         v += weight[j] * d[i];
                     }
                 }
-                vertex[i] = v;
+                vertex[i] = v/data.length;
             }
             outData[0] = vertex;
         }
@@ -239,7 +244,7 @@ public class OsmSpace  {
 
             float mapScale = this.scale.floatValue();
 
-            int rx = 2, ry = 0;
+            int rx = 2, ry = 2;
             float wx = center.x, wy = center.y;
 
             for (int x = -rx; x < (rx+1); x++) {
@@ -260,9 +265,11 @@ public class OsmSpace  {
         private void render(float cx, float cy, float mapScale, GL2 gl) {
 
             Osm tile = irl.tile(cx, cy);
+            if (tile==null)
+                return;
             RectFloat b = tile.geoBounds;
             if(b==null)
-                return;
+                return; //not ready yet?
 
             //System.out.println(cx + "," + cy + " x " + mapScale + ": "  + tile);
 
@@ -276,19 +283,19 @@ public class OsmSpace  {
 
             gl.glScalef( viewScale, viewScale, 1);
 
-            gl.glTranslatef(-(b.cx()),-(b.cy()),0);
+            gl.glTranslatef(-(center.x),-(center.y),0);
 
 
 
 
 
 
-            tile.render(OsmSpace.this, gl).accept(gl);
+            tile.render(gl).accept(gl);
 
             {
                 gl.glColor4f(0.5f, 0.5f, 0.5f, 1f);
                 Draw.rectFrame(gl, b.cx(), b.cy(),
-                        b.w, b.h, 0.001f);
+                        b.w, b.h, 0.0001f);
 
             }
 

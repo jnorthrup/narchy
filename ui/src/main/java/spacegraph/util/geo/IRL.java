@@ -6,6 +6,7 @@ import jcog.exe.Exe;
 import jcog.memoize.CaffeineMemoize;
 import jcog.memoize.Memoize;
 import jcog.tree.rtree.rect.RectFloat;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.util.geo.osm.Osm;
@@ -32,13 +33,14 @@ public class IRL {
     }, 1024, false);
 
 
-    public static final float TILE_SIZE = 0.005f;
+    public static final float TILE_SIZE = 0.003f;
 
     /**
      * gets the Osm grid cell containing the specified coordinate, of our conventional size
      */
+    @Nullable
     public Osm tile(float lon, float lat) {
-        return cache.apply(
+        Osm o  = cache.apply(
                 RectFloat.XYXY(
                     Util.round(lon - TILE_SIZE/(2-Float.MIN_NORMAL), TILE_SIZE),
                     Util.round(lat - TILE_SIZE/(2-Float.MIN_NORMAL), TILE_SIZE),
@@ -46,6 +48,7 @@ public class IRL {
                     Util.round(lat + TILE_SIZE/(2-Float.MIN_NORMAL), TILE_SIZE)
                 )
         );
+        return o.isEmpty() ? null : o;
     }
 
     private Osm load(double lonMin, double latMin, double lonMax, double latMax) {
