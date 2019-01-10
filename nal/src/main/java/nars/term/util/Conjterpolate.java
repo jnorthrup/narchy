@@ -40,30 +40,34 @@ public class Conjterpolate extends Conj {
         int minLen = Math.min(na, nb);
         int prefixMatched = 0;
         for (; aa.get(prefixMatched).equals(bb.get(prefixMatched)) && ++prefixMatched < minLen; ) ;
-        int suffixMatched = 0;
-        for (; aa.get(na - 1 - suffixMatched).equals(bb.get(nb - 1 - suffixMatched)) && ++suffixMatched < minLen; ) ;
 
-        if (prefixMatched < suffixMatched) {
+//        int suffixMatched = 0;
+//        for (; aa.get(na - 1 - suffixMatched).equals(bb.get(nb - 1 - suffixMatched)) && ++suffixMatched < minLen; ) ;
+//
+//        if (prefixMatched < suffixMatched) {
             //add the suffixed matched segment
-            for (int i = 0; i < suffixMatched; i++) {
-                if (!add(aa.get(na - 1 - i)))
-                    throw new WTF();
-            }
-            aa.removeAbove(suffixMatched);
-            bb.removeAbove(suffixMatched);
-        } else if (prefixMatched > 0) {
+//            for (int i = 0; i < suffixMatched; i++) {
+//                if (!add(aa.get(na - 1 - i)))
+//                    throw new WTF();
+//            }
+//            aa.removeAbove(suffixMatched);
+//            bb.removeAbove(suffixMatched);
+//        } else if (prefixMatched > 0) {
+        if (prefixMatched > 0) {
             for (int i = 0; i < prefixMatched; i++) {
                 if (!add(aa.get(i)))
                     throw new WTF();
             }
             aa.removeBelow(prefixMatched);
             bb.removeBelow(prefixMatched);
+            na -= prefixMatched;
+            nb -= prefixMatched;
         }
+//        }
 
 
-        na = aa.size();
-        nb = bb.size();
-        int remainingEvents = Util.lerp(aProp, nb, na);
+
+        int remainingEvents = Util.lerp(aProp, na, nb);
         if (remainingEvents > 0) {
             if (nb == 0 ^ na == 0) {
                 addAll((aa.isEmpty() ? bb : aa)); //the remaining events

@@ -42,7 +42,7 @@ public interface TermTransform {
     /**
      * transform pathway for atomics
      */
-    default @Nullable Term transformAtomic(Atomic atomic) {
+    default Term transformAtomic(Atomic atomic) {
         return atomic;
     }
 

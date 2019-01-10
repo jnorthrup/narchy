@@ -493,22 +493,28 @@ public class Builtin {
            }
        });
 
-        /** filters contradiction */
         nar.on(new Functor.AbstractInlineFunctor2("conjDropIfLatest") {
             @Override
             protected Term apply(Term conj, Term event) {
-                boolean filterContradiction = false;
-                Term x = Conj.withoutEarlyOrLate(conj, event, false, filterContradiction);
+                Term x = Conj.withoutEarlyOrLate(conj, event, false);
                 if (x==null)
                     return Null;
                 return x;
             }
         });
-
+        nar.on(new Functor.AbstractInlineFunctor2("conjDropIfLatestUnifies") {
+            @Override
+            protected Term apply(Term conj, Term event) {
+                Term x = Conj.withoutEarlyOrLateUnifies(conj, event, false, true, nar.random(), 4);
+                if (x==null)
+                    return Null;
+                return x;
+            }
+        });
         nar.on(new Functor.AbstractInlineFunctor2("conjDropIfEarliest") {
             @Override
             protected Term apply(Term conj, Term event) {
-                Term x = Conj.withoutEarlyOrLate(conj, event, true, false);
+                Term x = Conj.withoutEarlyOrLate(conj, event, true);
                 if (x == null)
                     return Null;
                 return x;

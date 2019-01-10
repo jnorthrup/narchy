@@ -8,9 +8,11 @@ import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
+import nars.op.SubUnify;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
@@ -239,22 +241,60 @@ public class Conj extends ByteAnonMap {
 //        return sb;
 //    }
 
+    /** TODO improve, unify sub-sequences of events etc */
+    @Nullable public static Term withoutEarlyOrLateUnifies(Term conj, Term event, boolean earlyOrLate, boolean strict, Random rng, int ttl) {
+        int varBits = VAR_DEP.bit | VAR_INDEP.bit;
+
+        if (conj.op()!=CONJ || event.volume() > conj.volume())
+            return null;
+
+        boolean eventVars = event.hasAny(varBits);
+        if ((strict && (!conj.hasAny(varBits) && !eventVars /* TODO temporal subterms? */)))
+            return null;
+
+        if (!strict)
+            throw new TODO();
+
+        if (Conj.isSeq(conj)) {
+            Term match = earlyOrLate ? conj.eventFirst() : conj.eventLast(); //TODO look inside parallel conj event
+            if (strict && (match.equals(event) || (!eventVars && !match.hasAny(varBits) /* TODO temporal subterms? */)))
+                return null;
+
+            if (!Terms.possiblyUnifiable(match, event, strict, varBits))
+                return null;
+
+            SubUnify s = new SubUnify(rng);
+            s.ttl = ttl;
+            if (match.unify(event, s)) {
+                //TODO try diferent permutates tryMatch..
+                Term dropped = withoutEarlyOrLate(conj, match, earlyOrLate);
+                Term dropUnified = dropped.replace(s.xy);
+                if (!strict || !dropUnified.equals(dropped)) {
+                    return dropUnified;
+                }
+            }
+        } //else: parallel try sub-events
+
+        return null; //TODO
+    }
+
     /**
      * returns null if wasnt contained, True if nothing remains after removal
      */
     @Nullable
-    public static Term withoutEarlyOrLate(Term conj, Term event, boolean earlyOrLate, boolean filterContradiction) {
+    public static Term withoutEarlyOrLate(Term conj, Term event, boolean earlyOrLate) {
 
         Op o = conj.op();
         if (o == NEG) {
-            Term n = withoutEarlyOrLate(conj, event, earlyOrLate, filterContradiction);
+            Term n = withoutEarlyOrLate(conj, event, earlyOrLate);
             return n!=null ? n.neg() : null;
         }
 
         if (o == CONJ && !conj.impossibleSubTerm(event)) {
             if (isSeq(conj)) {
                 Conj c = Conj.from(conj);
-                if (c.dropEvent(event, earlyOrLate, filterContradiction))
+                //if (c.dropEvent(event, earlyOrLate, filterContradiction))
+                if (c.dropEvent(event, earlyOrLate, false))
                     return c.term();
             } else {
                 Term[] csDropped = conj.subterms().subsExcluding(event);

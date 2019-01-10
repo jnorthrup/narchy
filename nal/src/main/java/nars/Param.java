@@ -76,8 +76,8 @@ public abstract class Param {
             //16;
             //12;
             //10;
-            //8;
-            7;
+            8;
+            //7;
             //6;
             //5;
             //4;
@@ -355,7 +355,7 @@ public abstract class Param {
     public final FloatRange taskLinkActivation = new FloatRange(1f, 0, 2f);
 
     /** termlink template layers depth. TODO this will be abstracted to more flexible weighted activation heuristic */
-    @Deprecated public static final int TERMLINK_TEMPLATE_DEPTH = 2 /* 2..4 tested to work ok */;
+    @Deprecated public static final int TERMLINK_TEMPLATE_DEPTH = 3 /* 2..4 tested to work ok */;
 
     /**
      * includes the host as layer 0, so if this returns 1 it will only include the host

@@ -68,8 +68,8 @@ class SubOfConstraintTest {
         {
             Term a = $$("(x &&+1 (y&&z))");
             Term b = $$("y");
-            assertEq("(x &&+1 z)", Conj.withoutEarlyOrLate(a, b, false, false));
-            assertNull( Conj.withoutEarlyOrLate(b, a, false, false));
+            assertEq("(x &&+1 z)", Conj.withoutEarlyOrLate(a, b, false));
+            assertNull( Conj.withoutEarlyOrLate(b, a, false));
             assertTrue(!c.invalid(
                     a,
                     b));

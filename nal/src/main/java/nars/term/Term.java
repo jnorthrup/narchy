@@ -673,7 +673,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return normalize((byte) 0);
     }
 
-    @Nullable
+
     default Term replace(Map<? extends Term, Term> m) {
         return MapSubst.replace(this, m);
     }

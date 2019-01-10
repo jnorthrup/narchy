@@ -271,8 +271,8 @@ public interface NAct {
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanPredicate L, BooleanPredicate R, FloatSupplier thresh) {
 
         boolean freqOrExp =
-                true;
-                //false;
+                //true;
+                false;
 
         float[] lr = new float[]{0f, 0f};
 

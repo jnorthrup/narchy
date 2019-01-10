@@ -51,9 +51,8 @@
 
     //X is the desired event suffix (outcome).
     //C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
-    //TODO X, C    |- conjDropIfLatestUnifies(C,  X), (Goal:Deduction,..
-    X, C, eventLastOf(C,X), --eventOfNeg(C,X)       |-   conjDropIfLatest(C,X),     (Goal:Desire)
-    //G, C                                            |-   unify
+    G, C, eventLastOf(C,G), --eventOfNeg(C,G)       |-   conjDropIfLatest(C,G),     (Goal:Desire)
+    G, C, is(C,"&&")                                |-   conjDropIfLatestUnifies(C,G), (Goal:Desire)
 
       //even though it has the opposite goal earlier in the seq, but desire weakly:
       X, C, eventLastOf(C,X), eventOfNeg(C,X)       |-   conjDropIfLatest(C,X),     (Goal:DesireWeak)
@@ -63,7 +62,8 @@
 //      X, C, eventLastOfNeg(C,X),--eventOf(C,X)      |- --conjDropIfLatest(C,--X), (Goal:DesireWeak)
 //      X, C, eventLastOfNeg(C,X),--eventOf(C,X)      |- --C, (Goal:DesireWeak)
 
-    X, C, eventLastOfNeg(C,X), --eventOf(C,X)       |-   conjDropIfLatest(C,--X),   (Goal:DesireN)
+    G, C, eventLastOfNeg(C,G), --eventOf(C,G)       |-   conjDropIfLatest(C,--G),   (Goal:DesireN)
+    G, C, is(C,"&&")                                |-   conjDropIfLatestUnifies(C,--G), (Goal:DesireN)
 
       //even though it has the opposite goal earlier in the seq, but desire weakly:
       X, C, eventLastOfNeg(C,X), eventOf(C,X)       |-   conjDropIfLatest(C,--X),   (Goal:DesireWeakN)
