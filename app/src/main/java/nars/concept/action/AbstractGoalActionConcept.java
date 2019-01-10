@@ -182,7 +182,10 @@ public class AbstractGoalActionConcept extends ActionConcept {
         if (actionCuri!=null) {
             curiosityInject = Curiosity.CuriosityInjection.Override;
 
-            Truth curiDithered = actionCuri.ditherFreq(resolution().floatValue()).dithered(n);
+            Truth curiDithered = actionCuri.dither(
+                    Math.max(n.freqResolution.floatValue(),resolution().floatValue()),
+                    n.confResolution.floatValue()
+            );
             if (curiDithered != null) {
 
                 actionCuri = curiDithered;

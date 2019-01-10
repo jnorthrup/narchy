@@ -1,7 +1,8 @@
 package nars.truth;
 
-import static nars.truth.func.TruthFunctions.c2w;
-import static nars.truth.func.TruthFunctions.w2cSafe;
+import org.jetbrains.annotations.Nullable;
+
+import static nars.truth.func.TruthFunctions.*;
 
 /**
  * extends DiscreteTruth's raw hash representation with
@@ -21,7 +22,7 @@ public final class PreciseTruth extends DiscreteTruth {
 
 
     public static PreciseTruth byConf(float freq, float conf) {
-        return byFreqConfEvi(freq, conf, c2w(conf));
+        return byFreqConfEvi(freq, conf, c2wSafe(conf));
     }
 
     public static PreciseTruth byEvi(float freq, float evi) {
@@ -41,6 +42,7 @@ public final class PreciseTruth extends DiscreteTruth {
         this.f = freq;
     }
 
+    @Nullable
     static PreciseTruth theDithered(float f, float fRes, float evi, float cRes) {
 
         //keep evidence difference

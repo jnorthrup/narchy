@@ -87,6 +87,9 @@ public interface Truth extends Truthed {
             return (DiscreteTruth) truth;
     }
 
+
+
+
     class TruthException extends RuntimeException {
         public TruthException(String reason, float value) {
             super(new StringBuilder(64).append(reason).append(": ").append(value).toString());
@@ -168,7 +171,7 @@ public interface Truth extends Truthed {
     }
 
     static float conf(float c, float epsilon) {
-        assert (c >= Param.TRUTH_EPSILON) : "invalid conf: " + c;
+        //assert (c >= Param.TRUTH_EPSILON) : "invalid conf: " + c;
         return confSafe(c, epsilon);
     }
 
@@ -270,6 +273,12 @@ public interface Truth extends Truthed {
     @Nullable
     default Truth ditherFreq(float freqRes) {
         return freqRes != 0 ? PreciseTruth.byEvi(freq(freq(), freqRes), evi()) : this;
+    }
+    @Nullable default Truth dither(float freqRes, float confRes) {
+        if (freqRes < Param.TRUTH_EPSILON && confRes < Param.TRUTH_EPSILON)
+            return this;
+
+        return PreciseTruth.byConf(freq(freq(), freqRes), conf(conf(), confRes));
     }
 
 
