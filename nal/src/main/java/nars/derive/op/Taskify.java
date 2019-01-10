@@ -102,15 +102,8 @@ public class Taskify extends AbstractPred<Derivation> {
 
         if (punc == BELIEF || punc == GOAL) {
 
-            tru = d.concTruth;
-
             //dither truth
-            float f = tru.freq();
-            if (neg) {
-                f = 1 - f;
-            }
-
-            tru = Truth.theDithered(f, tru.evi(), d.eviMin, d.nar);
+            tru = d.concTruth.dither(d.nar.freqResolution.floatValue(), d.nar.confResolution.floatValue(), d.eviMin, neg);
             if (tru == null)
                 return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
 

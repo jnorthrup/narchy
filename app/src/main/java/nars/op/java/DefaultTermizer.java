@@ -3,6 +3,7 @@ package nars.op.java;
 import com.google.common.collect.ImmutableSet;
 import jcog.TODO;
 import jcog.Util;
+import jcog.data.list.FasterList;
 import jcog.data.map.CustomConcurrentHashMap;
 import nars.$;
 import nars.term.Term;
@@ -183,7 +184,7 @@ public class DefaultTermizer implements Termizer {
         } else if (o instanceof Map) {
 
             Map mapo = (Map) o;
-            Set<Term> components = $.newHashSet(mapo.size());
+            List<Term> components = new FasterList(mapo.size());
             mapo.forEach((k, v) -> {
 
                 Term tv = obj2term(v);

@@ -20,7 +20,7 @@ public class ArrayHistogram extends AtomicArrayTensor /*AtomicDoubleArrayTensor*
     }
 
     private void range(float min, float max) {
-        if (Util.equals(max, min, Float.MIN_NORMAL)) {
+        if (Util.equals(max, min)) {
             min -= Float.MIN_NORMAL;
             max += Float.MIN_NORMAL;
         }

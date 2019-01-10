@@ -457,9 +457,11 @@ class NarseseBaseTest extends NarseseTest {
         
         float f = 1.24f;
         String ff = Float.toString(f);
-        Atomic a = term(ff);
+        Term a = term(ff);
         assertNotNull(a);
-        assertEquals('"' + ff + '"', a.toString());
+        assertEquals(//'"' + ff + '"'
+                "div(31,25)"
+                , a.toString());
     }
 
     @Test

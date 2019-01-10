@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
@@ -43,7 +44,7 @@ public class EllipsisTest {
         Term getMatchable(int arity) throws Narsese.NarseseException;
 
         default Set<Term> test(int arity, int repeats) throws Narsese.NarseseException {
-            Set<Term> selectedFixed = $.newHashSet(arity);
+            Set<Term> selectedFixed = new HashSet(arity);
 
             PatternIndex index = new PatternIndex();
 
@@ -94,7 +95,7 @@ public class EllipsisTest {
                                 u = varArgs;
                             }
 
-                            Set<Term> varArgTerms = $.newHashSet(1);
+                            Set<Term> varArgTerms = new HashSet(1);
                             if (u instanceof EllipsisMatch) {
                                 EllipsisMatch m = (EllipsisMatch) u;
                                 m.forEach(varArgTerms::add);
@@ -410,7 +411,7 @@ public class EllipsisTest {
 
         for (int seed = 0; seed < expect*expect; seed++) {
 
-            Set<String> results = $.newHashSet(0);
+            Set<String> results = new HashSet(0);
 
             Random rng = new XorShift128PlusRandom(seed);
             Unify f = new Unify(VAR_PATTERN, rng, Param.UnificationStackMax, 128) {

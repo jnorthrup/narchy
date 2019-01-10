@@ -609,9 +609,9 @@ public enum Util {
     /**
      * no checking of x
      */
-    public static float lerpSafe(float x, float min, float max) {
-        return min + (max - min) * x;
-    }
+//    public static float lerpSafe(float x, float min, float max) {
+//        return min + (max - min) * unitizeSafe(x);
+//    }
 
     public static double lerp(double x, double min, double max) {
         return min + (max - min) * unitize(x);
@@ -682,6 +682,9 @@ public enum Util {
      */
     public static float unitize(float x) {
         assertFinite(x);
+        return unitizeSafe(x);
+    }
+    public static float unitizeSafe(float x) {
         return Util.clampSafe(x, 0, 1f);
     }
 
@@ -779,6 +782,10 @@ public enum Util {
             return Math.abs(a - b) < epsilon;
         else
             return (a != a) && (b != b); //both NaN
+    }
+
+    public static boolean equals(double a, double b) {
+        return equals(a, b, Double.MIN_NORMAL*2);
     }
 
     /**

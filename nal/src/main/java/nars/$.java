@@ -503,7 +503,7 @@ public enum $ {
             throw new TODO("NaN");
 
         int rx = (int) Util.round(x, 1);
-        if (Util.equals(rx, x, Float.MIN_NORMAL)) {
+        if (Util.equals(rx, x)) {
             return Int.the(rx);
         } else {
             return the(new Fraction(x));
@@ -582,14 +582,14 @@ public enum $ {
         } else if (n instanceof Float) {
             float d = n.floatValue();
             int id = (int) d;
-            if (d == d && Util.equals(d, id, Float.MIN_NORMAL))
+            if (d == d && Util.equals(d, id))
                 return Int.the(id);
 
             return Atomic.the(n.toString());
         } else {
             double d = n.doubleValue();
             int id = (int) d;
-            if (d == d && Util.equals(d, id, Double.MIN_NORMAL))
+            if (d == d && Util.equals(d, id))
                 return Int.the(id);
 
             return Atomic.the(n.toString());
@@ -605,15 +605,6 @@ public enum $ {
         return new FasterList(capacity);
 
     }
-
-    public static <X> Set<X> newHashSet(int capacity) {
-
-
-        return new HashSet(capacity);
-
-
-    }
-
 
     public static Term pRadix(int x, int radix, int maxX) {
         Term[] tt = radixArray(x, radix, maxX);

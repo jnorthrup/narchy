@@ -38,7 +38,7 @@ public final class MaxGenerationsWithoutImprovementTerminator implements Predica
     @Override
     public boolean test(Ranking t) {
         float best = t.top().pri();
-        if (Util.equals(best, currentBest, Float.MIN_NORMAL)) {
+        if (Util.equals(best, currentBest)) {
             return ++currentGenerationsWithoutImprovement >= maxGenerationsWithoutImprovement;
         } else {
             currentGenerationsWithoutImprovement = 0;

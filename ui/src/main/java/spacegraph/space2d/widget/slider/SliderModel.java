@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.slider;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.exe.Exe;
 import jcog.math.v2;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
@@ -86,7 +87,7 @@ public class SliderModel extends Surface {
         Util.assertFinite(pNext);
 
         float pPrev = this.p;
-        if (Util.equals(pPrev, pNext, Float.MIN_NORMAL))
+        if (Util.equals(pPrev, pNext))
             return;
 
         this.p = pNext;
@@ -96,7 +97,9 @@ public class SliderModel extends Surface {
 
     protected void onChanged() {
         if (change!=null) {
-            change.value(this, value());
+            Exe.invokeLater(()->{
+                change.value(this, value());
+            });
         }
     }
 

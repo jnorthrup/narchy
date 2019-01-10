@@ -359,7 +359,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
         float targetPercentile = rng.nextFloat();
 
         float indexNorm =
-                Util.lerpSafe((max - min), targetPercentile /* flat */, (targetPercentile * targetPercentile) /* curved */);
+                Util.lerp((max - min), targetPercentile /* flat */, (targetPercentile * targetPercentile) /* curved */);
 
         return Util.bin(indexNorm, size);
     }

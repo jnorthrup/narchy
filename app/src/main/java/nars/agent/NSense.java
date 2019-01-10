@@ -362,7 +362,7 @@ public interface NSense {
 
             act.accept(b);
 
-            return !Util.equals(a, b, Float.MIN_NORMAL);
+            return !Util.equals(a, b);
         });
 
 

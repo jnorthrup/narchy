@@ -126,8 +126,7 @@ public interface Truth extends Truthed {
     }
 
 
-    @Nullable
-    static <T extends Truthed> T stronger(@Nullable T a, @Nullable T b) {
+    @Nullable static <T extends Truthed> T stronger(@Nullable T a, @Nullable T b) {
         if (b == null)
             return a;
         else if (a == null)
@@ -135,8 +134,9 @@ public interface Truth extends Truthed {
         else
             return a.evi() >= b.evi() ? a : b;
     }
-    @Nullable
-    static Task stronger(@Nullable Task a, @Nullable Task b) {
+
+    /** TODO make int compare(a,b) */
+    @Nullable static Task stronger(@Nullable Task a, @Nullable Task b) {
         if (a == null)
             return b;
         else if (b == null || a.equals(b))
@@ -167,11 +167,11 @@ public interface Truth extends Truthed {
 //    }
 
     static float freq(float f, float epsilon) {
-        return Util.unitize(Util.round(f, epsilon));
+        return Util.unitizeSafe(Util.round(f, epsilon));
     }
 
     static float conf(float c, float epsilon) {
-        //assert (c >= Param.TRUTH_EPSILON) : "invalid conf: " + c;
+//        assert (c >= Param.TRUTH_EPSILON) : "invalid conf: " + c;
         return confSafe(c, epsilon);
     }
 
@@ -188,18 +188,15 @@ public interface Truth extends Truthed {
 
     @Nullable
     static PreciseTruth theDithered(float f, float e, NAR nar) {
-        return theDithered(f, e, c2wSafe(nar.confMin.floatValue()), nar);
-    }
-
-    @Nullable
-    static PreciseTruth theDithered(float f, float e, float eviMin, NAR nar) {
-        if (e < eviMin)
+        if (e < c2wSafe(nar.confMin.floatValue()))
             return null;
 
-        return PreciseTruth.theDithered(
-                f, nar.freqResolution.floatValue(),
-                e,
-                nar.confResolution.floatValue());
+        //keep evidence difference
+        return PreciseTruth.byFreqConfEvi(
+                Truth.freq(f, nar.freqResolution.floatValue()),
+                Truth.w2cDithered(e, nar.confResolution.floatValue()),
+                e);
+
     }
 
     static float w2cDithered(float evi, float confRes) {
@@ -270,17 +267,37 @@ public interface Truth extends Truthed {
         return theDithered(freq(), evi(), nar);
     }
 
-    @Nullable
-    default Truth ditherFreq(float freqRes) {
-        return freqRes != 0 ? PreciseTruth.byEvi(freq(freq(), freqRes), evi()) : this;
-    }
-    @Nullable default Truth dither(float freqRes, float confRes) {
+    default Truth dither(float freqRes, float confRes) {
         if (freqRes < Param.TRUTH_EPSILON && confRes < Param.TRUTH_EPSILON)
             return this;
 
-        return PreciseTruth.byConf(freq(freq(), freqRes), conf(conf(), confRes));
+        float f = freq();
+        float ff = freq(f, freqRes);
+        float c = conf();
+        float cc = conf(c, confRes);
+        if (Util.equals(f,ff) && Util.equals(c,cc))
+            return this;
+        else
+            return PreciseTruth.byConf(ff, cc);
     }
 
+    @Nullable default Truth dither(float freqRes, float confRes, float eviMin, boolean negate) {
+        float e = evi();
+        if (e < eviMin)
+            return null;
+
+        if (!negate && freqRes < Param.TRUTH_EPSILON && confRes < Param.TRUTH_EPSILON)
+            return this;
+
+        float f = freq();
+        float ff = freq(negate ? 1-f : f, freqRes);
+        float c0 = w2cSafe(e);
+        float cc = conf(c0, confRes);
+        if (Util.equals(f,ff) && Util.equals(c0,cc))
+            return this;
+        else
+            return PreciseTruth.byConf(ff, cc);
+    }
 
 
     default Truth eternalized(float factor, float eviMin, @Nullable NAR n) {
