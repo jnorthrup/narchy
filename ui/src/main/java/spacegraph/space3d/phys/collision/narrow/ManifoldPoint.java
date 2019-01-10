@@ -23,7 +23,7 @@
 
 package spacegraph.space3d.phys.collision.narrow;
 
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * ManifoldPoint collects and maintains persistent contactpoints. Used to improve

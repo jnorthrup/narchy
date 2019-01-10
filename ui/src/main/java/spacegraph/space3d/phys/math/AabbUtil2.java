@@ -25,9 +25,9 @@ package spacegraph.space3d.phys.math;
 
 
 import spacegraph.util.math.Matrix3f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
-import static spacegraph.util.math.v3.v;
+import static jcog.math.v3.v;
 
 /**
  * Utility functions for axis aligned bounding boxes (AABB).

@@ -20,6 +20,7 @@ public class FloatND implements HyperPoint, Serializable, Comparable<FloatND> {
         this(copy.coord.clone());
     }
 
+
     public FloatND(float... coord) {
         this.coord = coord;
         this.hash = Arrays.hashCode(coord);

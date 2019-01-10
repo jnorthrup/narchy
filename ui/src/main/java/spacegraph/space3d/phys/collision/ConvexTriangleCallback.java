@@ -33,7 +33,7 @@ import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.shape.CollisionShape;
 import spacegraph.space3d.phys.shape.TriangleCallback;
 import spacegraph.space3d.phys.shape.TriangleShape;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * For each triangle in the concave mesh that overlaps with the AABB of a convex

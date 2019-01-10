@@ -31,7 +31,7 @@ import spacegraph.space3d.phys.dynamics.gimpact.*;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.util.IntArrayList;
 import spacegraph.space3d.phys.util.OArrayList;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 import static spacegraph.space3d.phys.dynamics.gimpact.GImpactCollisionAlgorithm.ShapeType;
 import static spacegraph.space3d.phys.dynamics.gimpact.GImpactCollisionAlgorithm.ShapeType.TRIMESH_SHAPE;

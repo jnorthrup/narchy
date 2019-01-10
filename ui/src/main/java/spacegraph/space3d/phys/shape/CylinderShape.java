@@ -27,7 +27,7 @@ import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.collision.broad.BroadphaseNativeType;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.VectorUtil;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * CylinderShape class implements a cylinder shape primitive, centered around

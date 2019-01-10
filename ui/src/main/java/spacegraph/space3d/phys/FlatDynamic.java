@@ -3,7 +3,7 @@ package spacegraph.space3d.phys;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.shape.CollisionShape;
 
-import static spacegraph.util.math.v3.v;
+import static jcog.math.v3.v;
 
 /** dynamic which allows no z-movement or rotation */
 class FlatDynamic extends Body3D {

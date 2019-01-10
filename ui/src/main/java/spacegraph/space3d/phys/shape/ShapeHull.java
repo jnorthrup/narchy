@@ -33,7 +33,7 @@ import spacegraph.space3d.phys.math.convexhull.HullLibrary;
 import spacegraph.space3d.phys.math.convexhull.HullResult;
 import spacegraph.space3d.phys.util.IntArrayList;
 import spacegraph.space3d.phys.util.OArrayList;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * ShapeHull takes a {@link ConvexShape}, builds the convex hull using {@link HullLibrary}

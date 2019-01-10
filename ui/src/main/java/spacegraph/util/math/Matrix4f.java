@@ -32,6 +32,7 @@
 package spacegraph.util.math;
 
 import jcog.math.VecMathUtil;
+import jcog.math.v3;
 
 /**
  * A single precision floating point 4 by 4 matrix.

@@ -28,7 +28,7 @@ import spacegraph.space3d.phys.collision.ContactProcessedCallback;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.util.math.Vector4f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 
 /**

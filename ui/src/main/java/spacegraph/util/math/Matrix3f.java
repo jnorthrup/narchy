@@ -31,7 +31,9 @@
 
 package spacegraph.util.math;
 
+import jcog.math.Tuple3f;
 import jcog.math.VecMathUtil;
+import jcog.math.v3;
 
 /**
  * A single precision floating point 3 by 3 matrix.

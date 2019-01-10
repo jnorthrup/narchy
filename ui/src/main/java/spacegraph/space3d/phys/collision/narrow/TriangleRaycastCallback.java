@@ -25,7 +25,7 @@ package spacegraph.space3d.phys.collision.narrow;
 
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.shape.TriangleCallback;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  *

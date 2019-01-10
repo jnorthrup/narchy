@@ -25,7 +25,7 @@ package spacegraph.space3d.phys.math;
 
 import spacegraph.space3d.phys.Collisions;
 import spacegraph.space3d.phys.Dynamics3D;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * IDebugDraw interface class allows hooking up a debug renderer to visually debug

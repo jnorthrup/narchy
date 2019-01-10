@@ -1,9 +1,9 @@
 package spacegraph.input.key;
 
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 import spacegraph.video.JoglSpace;
 
-import static spacegraph.util.math.v3.v;
+import static jcog.math.v3.v;
 
 /** simple XYZ control using keys (ex: numeric keypad) */
 public class KeyXYZ extends KeyXY {

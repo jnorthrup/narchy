@@ -31,7 +31,7 @@ import spacegraph.space3d.phys.math.AabbUtil2;
 import spacegraph.space3d.phys.math.ScalarUtil;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.util.math.Vector4f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * BoxShape is a box primitive around the origin, its sides axis aligned with length

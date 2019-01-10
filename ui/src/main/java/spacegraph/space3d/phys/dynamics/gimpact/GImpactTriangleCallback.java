@@ -30,7 +30,7 @@ package spacegraph.space3d.phys.dynamics.gimpact;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.shape.GImpactShape;
 import spacegraph.space3d.phys.shape.TriangleCallback;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  *

@@ -29,7 +29,7 @@ import spacegraph.space3d.phys.collision.CollisionFlags;
 import spacegraph.space3d.phys.collision.broad.Broadphasing;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.shape.CollisionShape;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * CollisionObject can be used to manage collision detection objects.

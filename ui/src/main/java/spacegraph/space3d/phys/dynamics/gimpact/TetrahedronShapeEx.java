@@ -28,7 +28,7 @@
 package spacegraph.space3d.phys.dynamics.gimpact;
 
 import spacegraph.space3d.phys.shape.BU_Simplex1to4;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * Helper class for tetrahedrons.

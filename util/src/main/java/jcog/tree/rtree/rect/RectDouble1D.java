@@ -6,7 +6,7 @@ import jcog.tree.rtree.point.Double1D;
 /**
  * Created by me on 12/2/16.
  */
-public abstract class RectDouble1D implements HyperRegion<Double1D> {
+public abstract class RectDouble1D implements HyperRegion {
 
 
     abstract public double from();

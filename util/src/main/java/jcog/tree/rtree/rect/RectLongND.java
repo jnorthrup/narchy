@@ -13,7 +13,7 @@ import java.util.function.Function;
  * Created by jcovert on 6/15/15.
  */
 
-public class RectLongND implements HyperRegion<LongND>, Serializable, Comparable<RectLongND> {
+public class RectLongND implements HyperRegion, Serializable, Comparable<RectLongND> {
 
     public static final HyperRegion ALL_1 = RectLongND.all(1);
     public static final HyperRegion ALL_2 = RectLongND.all(2);

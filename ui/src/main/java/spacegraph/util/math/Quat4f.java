@@ -32,6 +32,7 @@
 package spacegraph.util.math;
 
 import jcog.Util;
+import jcog.math.v3;
 
 /**
  * A 4 element unit quaternion represented by single precision floating

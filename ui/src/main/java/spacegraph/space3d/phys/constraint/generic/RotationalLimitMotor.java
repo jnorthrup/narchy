@@ -32,7 +32,7 @@ package spacegraph.space3d.phys.constraint.generic;
 
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.BulletGlobals;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * Rotation limit structure for generic joints.

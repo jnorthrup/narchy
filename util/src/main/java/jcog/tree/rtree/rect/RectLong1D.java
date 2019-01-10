@@ -7,7 +7,7 @@ import jcog.tree.rtree.point.Long1D;
 /**
  * Created by me on 12/2/16.
  */
-public class RectLong1D implements HyperRegion<Long1D> {
+public class RectLong1D implements HyperRegion {
 
     public final long min, max;
 
@@ -27,7 +27,7 @@ public class RectLong1D implements HyperRegion<Long1D> {
     }
 
     @Override
-    public HyperRegion<Long1D> mbr(HyperRegion<Long1D>[] rect) {
+    public HyperRegion mbr(HyperRegion[] rect) {
         int n = rect.length;
         assert (n > 0);
         if (n == 1)
@@ -46,7 +46,7 @@ public class RectLong1D implements HyperRegion<Long1D> {
     }
 
     @Override
-    public HyperRegion<Long1D> mbr(HyperRegion<Long1D> r) {
+    public HyperRegion mbr(HyperRegion r) {
 
         RectLong1D s = (RectLong1D) r;
         long f = Math.min(min, s.min);
@@ -98,13 +98,13 @@ public class RectLong1D implements HyperRegion<Long1D> {
     }
 
     @Override
-    public boolean contains(HyperRegion<Long1D> r) {
+    public boolean contains(HyperRegion r) {
         RectLong1D inner = (RectLong1D) r;
         return inner.min >= min && inner.max <= max;
     }
 
     @Override
-    public boolean intersects(HyperRegion<Long1D> r) {
+    public boolean intersects(HyperRegion r) {
         RectLong1D rr = (RectLong1D) r;
         return (Math.max(min, rr.min) <= Math.min(max, rr.max));
     }

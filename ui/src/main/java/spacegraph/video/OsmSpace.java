@@ -5,55 +5,292 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUtessellator;
 import com.jogamp.opengl.glu.GLUtessellatorCallback;
+import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.math.FloatRange;
-import jcog.math.v2;
-import jcog.tree.rtree.rect.RectFloat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spacegraph.input.finger.Finger;
-import spacegraph.input.finger.FingerMove;
-import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.Stacking;
-import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.space3d.AbstractSpatial;
-import spacegraph.space3d.phys.Collidable;
-import spacegraph.util.geo.IRL;
-import spacegraph.util.geo.osm.Osm;
+import spacegraph.util.geo.osm.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
+
+import static com.jogamp.opengl.GL.GL_LINE_STRIP;
+import static com.jogamp.opengl.GL.GL_POINTS;
 
 /**
  * OSM Renderer context
  * Created by unkei on 2017/04/25.
  */
-public class OsmSpace  {
+public enum OsmSpace  { ;
 
     public static final Logger logger = LoggerFactory.getLogger(OsmSpace.class);
-    private final IRL irl;
 
+
+    public static abstract class LonLatProjection {
+
+        private boolean changed = false;
+
+        abstract public void project(float lon, float lat, float alt, float[] target, int offset);
+
+        public final float[] project(GeoVec3 global, float[] target) {
+            return project(global, target, 0);
+        }
+
+        public final float[] project(GeoVec3 global, float[] target, int offset) {
+            project(global.x /* lon */, global.y /* lat */, global.z /* alt */, target, offset);
+            return target;
+        }
+
+        /** notifies the renderer that points will need reprojected */
+        public final boolean changed() {
+            return changed;
+        }
+
+        public final void changeNoticed() {
+            changed = false;
+        }
+
+        /** this will be distorted, increasingly towards the poles (extreme latitudes) */
+        public static final LonLatProjection Raw = new LonLatProjection() {
+            @Override
+            public void project(float lon, float lat, float alt, float[] target, int offset) {
+                target[offset++] = lon;
+                target[offset++] = lat;
+                target[offset] = alt;
+            }
+        };
+    }
+
+    /** TODO */
+    abstract public static class ECEFProjection extends LonLatProjection {
+
+    }
 
     public static class OsmRenderer implements GLUtessellatorCallback, Consumer<GL2> {
         public final GLUtessellator tobj = GLU.gluNewTess();
+        private final LonLatProjection project;
 
         @Deprecated
         public transient GL2 gl;
         public List<Consumer<GL2>> draw = new FasterList();;
 
-        public OsmRenderer(GL2 gl) {
+        public OsmRenderer(GL2 gl, Osm osm, LonLatProjection project) {
             this.gl = gl;
+            this.project = project;
 
             GLU.gluTessCallback(tobj, GLU.GLU_TESS_VERTEX, this);
             GLU.gluTessCallback(tobj, GLU.GLU_TESS_BEGIN, this);
             GLU.gluTessCallback(tobj, GLU.GLU_TESS_END, this);
             GLU.gluTessCallback(tobj, GLU.GLU_TESS_ERROR, this);
             GLU.gluTessCallback(tobj, GLU.GLU_TESS_COMBINE, this);
+
+            boolean wireframe = false;
+
+            List<Consumer<GL2>> draw = this.draw;
+
+            for (OsmWay way : osm.ways) {
+
+                Map<String, String> tags = way.tags;
+
+
+                boolean isPolygon = false;
+                float r, g, b, a;
+                float lw;
+                short ls;
+
+                r = 0.5f;
+                g = 0.5f;
+                b = 0.5f;
+                a = 1f;
+                lw = 1f;
+                ls = (short) 0xFFFF;
+
+                if (!tags.isEmpty()) {
+
+                    for (Map.Entry<String, String> entry : tags.entrySet()) {
+                        String k = entry.getKey(), v = entry.getValue();
+                        switch (k) {
+                            case "building":
+                                r = 0f;
+                                g = 1f;
+                                b = 1f;
+                                a = 1f;
+                                lw = 1f;
+                                isPolygon = true;
+                                break;
+                            case "natural":
+                                switch (v) {
+                                    case "water":
+                                        r = 0f;
+                                        g = 0f;
+                                        b = 1f;
+                                        a = 1f;
+                                        lw = 1f;
+                                        isPolygon = true;
+                                        break;
+                                    case "wood":
+                                        r = 0f;
+                                        g = 1f;
+                                        b = 0f;
+                                        a = 1f;
+                                        lw = 1f;
+                                        isPolygon = true;
+                                        break;
+                                    default:
+                                        System.out.println("unstyled: " + k + " = " + v);
+                                        break;
+                                }
+                                break;
+//                        case "landuse":
+//                            switch (v) {
+//                                case "forest":
+//                                case "grass":
+//                                    r = 0.1f;
+//                                    g = 0.9f;
+//                                    b = 0f;
+//                                    a = 1f;
+//                                    lw = 1f;
+//                                    isPolygon = true;
+//                                    break;
+//                                case "industrial":
+//                                    break;
+//                                default:
+//                                    System.out.println("unstyled: " + k + " = " + v);
+//                                    break;
+//                            }
+//                            break;
+                            case "route":
+                                switch (v) {
+                                    case "road":
+                                        r = 1f;
+                                        g = 1f;
+                                        b = 1f;
+                                        a = 1f;
+                                        lw = 1f;
+                                        break;
+                                    case "train":
+                                        r = 1f;
+                                        g = 1f;
+                                        b = 1f;
+                                        a = 1f;
+                                        lw = 5f;
+                                        ls = (short) 0xF0F0;
+                                        break;
+                                    default:
+                                        System.out.println("unstyled: " + k + " = " + v);
+                                        break;
+                                }
+                                break;
+                            case "highway":
+                                switch (v) {
+                                    case "pedestrian":
+                                        r = 0f;
+                                        g = 0.5f;
+                                        b = 0f;
+                                        a = 1f;
+                                        lw = 2f;
+                                        break;
+                                    case "motorway":
+                                        r = 1f;
+                                        g = 0.5f;
+                                        b = 0f;
+                                        a = 1f;
+                                        lw = 5f;
+                                        break;
+                                    default:
+                                        r = 1f;
+                                        g = 1f;
+                                        b = 1f;
+                                        a = 0.5f;
+                                        lw = 3f;
+                                        break;
+                                }
+                                break;
+                        }
+                    }
+
+                }
+
+                isPolygon = isPolygon && way.isLoop();
+
+                if (isPolygon && !wireframe) {
+                    List nn = way.getOsmNodes();
+                    int s = nn.size();
+                    if (s > 0) {
+                        float[][] coord = new float[s][7];
+                        for (int i = 0; i < s; i++) {
+                            float[] ci = project.project(((OsmNode)nn.get(i)).pos, coord[i]);
+                            ci[3] = r;
+                            ci[4] = g;
+                            ci[5] = b;
+                            ci[6] = a;
+                        }
+
+                        draw.add(new OsmPolygonDraw(r, g, b, a, lw, ls, tobj, nn, coord));
+                    }
+
+
+                } else {
+
+                    List ways = way.getOsmNodes();
+                    int ws = ways.size();
+                    if (ws > 0) {
+                        float[] c3 = new float[3 * ws];
+                        for (int i = 0, waysSize = ws; i < waysSize; i++) {
+                            project.project(((OsmNode)ways.get(i)).pos, c3, i * 3);
+                        }
+
+                        draw.add(new OsmLineDraw(r, g, b, a, lw, ls, c3));
+                    }
+
+                }
+
+            }
+
+
+            for (OsmNode node : osm.nodes) {
+                Map<String, String> tags = node.tags;
+
+                if (tags.isEmpty()) continue;
+                String highway = tags.get("highway");
+                String natural = tags.get("natural");
+
+                float pointSize;
+                float r, g, b, a;
+                if ("bus_stop".equals(highway)) {
+
+                    pointSize = 3;
+                    r = g = b = 1f;
+                    a = 0.7f;
+                } else if ("traffic_signals".equals(highway)) {
+                    pointSize = 3;
+                    r = g = 1f;
+                    b = 0f;
+                    a = 0.7f;
+
+                } else if ("tree".equals(natural)) {
+                    pointSize = 3;
+                    g = 1f;
+                    r = b = 0f;
+                    a = 0.7f;
+
+                } else {
+                    pointSize = 3;
+                    r = 1f;
+                    g = b = 0f;
+                    a = 0.7f;
+                }
+
+                float[] c3 = new float[3];
+
+                project.project(node.pos, c3);
+
+                draw.add(new OsmDrawPoint(pointSize, r, g, b, a, c3));
+            }
+
         }
+
         @Override
         public void begin(int type) {
             gl.glBegin(type);
@@ -149,9 +386,9 @@ public class OsmSpace  {
         }
     }
 
-    public OsmSpace(IRL irl) {
-
-        this.irl = irl;
+//    public OsmSpace(IRL irl) {
+//
+//        this.irl = irl;
 
 
 
@@ -164,190 +401,129 @@ public class OsmSpace  {
 //        scaleLat = scaleLon = Math.max(scaleLat, scaleLon);
 //        center = new GeoVec3((maxLat + minLat) / 2, (maxLon + minLon) / 2);
 
-    }
+//    }
+//
+//    public OsmVolume volume() {
+//        return new OsmVolume();
+//    }
 
+//    public static class OsmVolume extends AbstractSpatial<Osm> {
+//
+//        OsmVolume() {
+//            super(null);
+//        }
+//
+//        @Override
+//        public void forEachBody(Consumer<Collidable> c) {
+//
+//        }
+//
+//        @Override
+//        public float radius() {
+//            return 0;
+//        }
+//
+//        @Override
+//        public void renderAbsolute(GL2 gl, int dtMS) {
+////            if (mapRender == null) {
+////                mapRender = compileMap(gl, osm);
+////            }
+////            mapRender.render(gl);
+//        }
+//
+//    }
 
+    private static class OsmPolygonDraw implements Consumer<GL2> {
+        private final float r,g,b,a;
+        private final float lw;
+        private final short ls;
+        private final GLUtessellator tobj;
+        private final List<OsmNode> nn;
+        private final float[][] coord;
 
-    public OsmSurface surface() {
-        return new OsmSurface();
-    }
-
-    public OsmVolume volume() {
-        return new OsmVolume();
-    }
-
-    public class OsmSurface extends Surface {
-
-        final FloatRange scale = new FloatRange(16f, 0.001f, 1000f);
-        private v2 center = new v2();
-        final v2 translate = new v2();
-
-        final FingerMove pan = new FingerMove(0) {
-
-
-            private v2 translateStart;
-
-            @Override
-            protected boolean startDrag(Finger f) {
-                translateStart = translate.clone();
-                return super.startDrag(f);
-            }
-
-            @Override
-            public void move(float tx, float ty) {
-
-
-
-
-                translate.set(translateStart.x + tx, translateStart.y + ty);
-
-            }
-        };
-
-
-        @Override
-        public Surface finger(Finger finger) {
-            float wheel;
-            if ((wheel = finger.rotationY(true)) != 0) {
-                scale.multiply((1f - wheel * 0.1f));
-                return this;
-            }
-
-            if (finger.tryFingering(pan)) {
-                return this;
-            }
-
-            return null;
-        }
-
-        public Surface view() {
-            return new Stacking(
-                    this,
-                    new Bordering().south(
-                        Gridding.col(
-                            new AnimLabel(()->"translation: " + translate.toString()),
-                            new AnimLabel(()->"scale: " + scale.toString())
-                        )
-                    )
-            );
+        OsmPolygonDraw(float r, float g, float b, float a, float lw, short ls, GLUtessellator tobj, List<OsmNode> nn, float[][] coord) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            this.a = a;
+            this.lw = lw;
+            this.ls = ls;
+            this.tobj = tobj;
+            this.nn = nn;
+            this.coord = coord;
         }
 
         @Override
-        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+        public void accept(GL2 gl) {
+            gl.glColor4f(r, g , b, a);
+            gl.glLineWidth(lw);
+            gl.glLineStipple(1, ls);
 
-            RectFloat view = bounds;
-
-            gl.glPushMatrix();
-
-            gl.glTranslatef(translate.x + bounds.x + bounds.w/2,
-                    translate.y + bounds.y + bounds.h/2, 0); //center in view
-
-            float mapScale = this.scale.floatValue();
-
-            int rx = 2, ry = 2;
-            float wx = center.x, wy = center.y;
-
-            for (int x = -rx; x < (rx+1); x++) {
-                for (int y = -ry; y < (ry+1); y++) {
-                    render(wx + x * IRL.TILE_SIZE, wy + y * IRL.TILE_SIZE,
-                            mapScale, gl);
-                }
+            GLU.gluTessBeginPolygon(tobj, null);
+            GLU.gluTessBeginContour(tobj);
+            for (int i = 0, nnSize = nn.size(); i < nnSize; i++) {
+                float[] ci = coord[i];
+                GLU.gluTessVertex(tobj, Util.toDouble(ci), 0, ci);
             }
+            GLU.gluTessEndContour(tobj);
+            GLU.gluTessEndPolygon(tobj);
 
-            gl.glPopMatrix();
-        }
-
-        private float viewScale() {
-            return Math.max(bounds.w, bounds.h) * this.scale.get();
-        }
-
-
-        private void render(float cx, float cy, float mapScale, GL2 gl) {
-
-            Osm tile = irl.tile(cx, cy);
-            if (tile==null)
-                return;
-            RectFloat b = tile.geoBounds;
-            if(b==null)
-                return; //not ready yet?
-
-            //System.out.println(cx + "," + cy + " x " + mapScale + ": "  + tile);
-
-//            System.out.println(tile.id + " at " + cx + " " + cy);
-
-            gl.glPushMatrix();
-
-
-            float viewScale = mapScale * Math.max(bounds.w, bounds.h);
-
-
-            gl.glScalef( viewScale, viewScale, 1);
-
-            gl.glTranslatef(-(center.x),-(center.y),0);
-
-
-
-
-
-
-            tile.render(gl).accept(gl);
-
-            {
-                gl.glColor4f(0.5f, 0.5f, 0.5f, 1f);
-                Draw.rectFrame(gl, b.cx(), b.cy(),
-                        b.w, b.h, 0.0001f);
-
-            }
-
-            gl.glPopMatrix();
-        }
-
-        public OsmSurface go(float lon, float lat) {
-            center.set(lon, lat);
-            return this;
-        }
-
-        private class AnimLabel extends VectorLabel {
-            final Supplier<String> text;
-
-            public AnimLabel(Supplier<String> text) {
-                this.text = text;
-            }
-
-            @Override
-            protected boolean prePaint(SurfaceRender r) {
-                text(text.get());
-                return super.prePaint(r);
-            }
         }
     }
 
-    public class OsmVolume extends AbstractSpatial<Osm> {
+    private static class OsmLineDraw implements Consumer<GL2> {
+        private final float r,g,b,a;
+        private final float lw;
+        private final short ls;
+        private final float[] c3;
 
-        OsmVolume() {
-            super(null);
+        public OsmLineDraw(float r, float g, float b, float a, float lw, short ls, float[] c3) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            this.a = a;
+            this.lw = lw;
+            this.ls = ls;
+            this.c3 = c3;
         }
 
         @Override
-        public void forEachBody(Consumer<Collidable> c) {
-
+        public void accept(GL2 gl) {
+            gl.glColor4f(r, g, b, a);
+            gl.glLineWidth(lw);
+            gl.glLineStipple(1, ls);
+            gl.glBegin(GL_LINE_STRIP);
+            for (int i = 0; i < c3.length / 3; i++) {
+                gl.glVertex3fv(c3, i * 3);
+            }
+            gl.glEnd();
         }
-
-        @Override
-        public float radius() {
-            return 0;
-        }
-
-        @Override
-        public void renderAbsolute(GL2 gl, int dtMS) {
-//            if (mapRender == null) {
-//                mapRender = compileMap(gl, osm);
-//            }
-//            mapRender.render(gl);
-        }
-
     }
 
+    private static class OsmDrawPoint implements Consumer<GL2> {
+        private final float pointSize;
+        private final float r, g, b, a;
+        private final float[] c3;
+
+        public OsmDrawPoint(float pointSize, float r, float g, float b, float a, float[] c3) {
+            this.pointSize = pointSize;
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            this.a = a;
+            this.c3 = c3;
+        }
+
+        @Override
+        public void accept(GL2 gl) {
+            gl.glPointSize(pointSize);
+            gl.glBegin(GL_POINTS);
+            gl.glColor4f(r, g, b, a);
+
+            gl.glVertex3f(c3[0], c3[1], c3[2]);
+            gl.glEnd();
+        }
+    }
 
 
 }

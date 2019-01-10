@@ -7,12 +7,9 @@ import java.util.function.Consumer;
 /**
  * Created by unkei on 2017/04/25.
  */
-public class OsmWay extends OsmElement {
+public class OsmWay extends OsmGroup {
 
-    /** TODO make immutable */
-    List<OsmNode> children;
-
-    public OsmWay(long id, List<OsmNode> children, Map<String, String> tags) {
+    public OsmWay(long id, List<OsmElement> children, Map<String, String> tags) {
         super(id, tags);
         this.children = children;
     }
@@ -23,7 +20,7 @@ public class OsmWay extends OsmElement {
             children.forEach(eachChild);
     }
 
-    public List<OsmNode> getOsmNodes() {
+    public List<OsmElement> getOsmNodes() {
         return this.children;
     }
 
@@ -31,7 +28,7 @@ public class OsmWay extends OsmElement {
 
         if (way == null || way.children == null) return;
 
-        List<OsmNode> newChildren = way.children;
+        List<OsmElement> newChildren = way.children;
         if (this.children == null) {
             this.children = newChildren;
         } else {

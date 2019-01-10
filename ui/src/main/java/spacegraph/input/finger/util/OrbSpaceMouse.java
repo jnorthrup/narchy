@@ -14,9 +14,9 @@ import spacegraph.space3d.phys.collision.narrow.VoronoiSimplexSolver;
 import spacegraph.space3d.phys.constraint.Point2PointConstraint;
 import spacegraph.space3d.phys.constraint.TypedConstraint;
 import spacegraph.space3d.phys.math.Transform;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
-import static spacegraph.util.math.v3.v;
+import static jcog.math.v3.v;
 
 /**
  * Created by me on 11/20/16.

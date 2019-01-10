@@ -39,7 +39,7 @@ import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.TransformUtil;
 import spacegraph.space3d.phys.util.IntArrayList;
 import spacegraph.util.math.Matrix3f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 import java.util.Collection;
 

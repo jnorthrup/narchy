@@ -24,7 +24,7 @@
 package spacegraph.space3d.phys.util;
 
 
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * Stack-based object pool for {@link v3}.

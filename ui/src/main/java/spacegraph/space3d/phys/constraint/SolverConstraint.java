@@ -23,7 +23,7 @@
 
 package spacegraph.space3d.phys.constraint;
 
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * 1D constraint along a normal axis between bodyA and bodyB. It can be combined

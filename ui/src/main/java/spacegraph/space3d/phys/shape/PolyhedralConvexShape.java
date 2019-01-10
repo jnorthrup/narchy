@@ -26,7 +26,7 @@ package spacegraph.space3d.phys.shape;
 import spacegraph.space3d.phys.math.AabbUtil2;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.VectorUtil;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * PolyhedralConvexShape is an internal interface class for polyhedral convex shapes.

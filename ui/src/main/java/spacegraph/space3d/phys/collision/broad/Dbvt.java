@@ -32,7 +32,7 @@ import spacegraph.space3d.phys.math.MiscUtil;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.util.IntArrayList;
 import spacegraph.space3d.phys.util.OArrayList;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 import java.util.Collection;
 import java.util.Collections;

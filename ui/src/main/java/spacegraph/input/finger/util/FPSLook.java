@@ -2,11 +2,11 @@ package spacegraph.input.finger.util;
 
 import com.jogamp.newt.event.MouseEvent;
 import spacegraph.space3d.SpaceGraphPhys3D;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 import static com.jogamp.opengl.math.FloatUtil.sin;
 import static java.lang.Math.cos;
-import static spacegraph.util.math.v3.v;
+import static jcog.math.v3.v;
 
 /**
  * Created by me on 11/20/16.

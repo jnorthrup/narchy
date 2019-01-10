@@ -29,11 +29,10 @@
  * $State$
  */
 
-package spacegraph.util.math;
+package jcog.math;
 
 import jcog.Util;
-import jcog.math.v2;
-import spacegraph.space3d.phys.BulletGlobals;
+
 
 import java.util.Random;
 
@@ -234,7 +233,7 @@ public class v3 extends Tuple3f {
     public final float normalize() {
 
         float norm = (float) Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
-        if (norm >= BulletGlobals.FLT_EPSILON) {
+        if (norm >= Float.MIN_NORMAL) {
 
             set(this.x / norm,
                     this.y / norm,
@@ -259,7 +258,7 @@ public class v3 extends Tuple3f {
      */
     public final float angle(v3 v1) {
         float div = this.length() * v1.length();
-        if (Util.equals(div, 0, BulletGlobals.FLT_EPSILON))
+        if (Util.equals(div, 0, Float.MIN_NORMAL))
             return Float.NaN;
 
         double vDot = this.dot(v1) / div;

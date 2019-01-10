@@ -23,7 +23,7 @@
 
 package spacegraph.space3d.phys.solve;
 
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * Stores some extra information to each contact point. It is not in the contact

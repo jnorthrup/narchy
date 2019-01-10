@@ -2,7 +2,7 @@ package spacegraph.space3d.test;
 
 import jcog.User;
 import spacegraph.util.geo.IRL;
-import spacegraph.video.OsmSpace;
+import spacegraph.video.OsmSurface;
 
 import static spacegraph.SpaceGraph.window;
 
@@ -13,12 +13,14 @@ public class OSMTest {
         IRL i = new IRL(User.the());
 
 
-        window(new OsmSpace(i).surface().go(
-                -80.65f, 28.58f
+        window(new OsmSurface().go(
+                i, -80.65f, 28.58f, 0.003f*4, 0.003f*4
+                //-80.65f, 28.58f
                 //-80.65, 28.58
                 //-73.993449f, 40.751029f
         ).view(), 800, 800);
 
+        System.out.println(i.index.stats());
 
 //        i.load(-80.65, 28.58, -80.60, 28.63);
 

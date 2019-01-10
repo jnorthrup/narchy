@@ -20,7 +20,7 @@ import static nars.gui.graph.DynamicConceptSpace.ConceptVis2.TASKLINK;
 import static nars.gui.graph.DynamicConceptSpace.ConceptVis2.TERMLINK;
 import static org.eclipse.collections.impl.tuple.Tuples.twin;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
-import static spacegraph.util.math.v3.v;
+import static jcog.math.v3.v;
 
 
 public class ConceptWidget extends SpaceWidget<Concept> {

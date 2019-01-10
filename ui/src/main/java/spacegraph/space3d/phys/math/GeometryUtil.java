@@ -25,7 +25,7 @@ package spacegraph.space3d.phys.math;
 
 import spacegraph.space3d.phys.util.OArrayList;
 import spacegraph.util.math.Vector4f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * GeometryUtil helper class provides a few methods to convert between plane

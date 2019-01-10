@@ -28,7 +28,7 @@
 package spacegraph.space3d.phys.dynamics.gimpact;
 
 import spacegraph.space3d.phys.math.VectorUtil;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  *

@@ -21,11 +21,14 @@ package jcog.tree.rtree.rect;
  */
 
 
+import jcog.math.v2;
+import jcog.math.v3;
 import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.point.FloatND;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.function.Function;
 
 import static java.lang.Float.NEGATIVE_INFINITY;
@@ -35,29 +38,50 @@ import static java.lang.Float.POSITIVE_INFINITY;
  * Created by jcovert on 6/15/15.
  */
 
-public class HyperRectFloat implements HyperRegion<FloatND>, Serializable, Comparable<HyperRectFloat> {
+public class HyperRectFloat implements HyperRegion, Serializable, Comparable<HyperRectFloat> {
 
     public static final HyperRegion ALL_1 = HyperRectFloat.all(1);
     public static final HyperRegion ALL_2 = HyperRectFloat.all(2);
     public static final HyperRegion ALL_3 = HyperRectFloat.all(3);
     public static final HyperRegion ALL_4 = HyperRectFloat.all(4);
-    public static final FloatND unbounded = new FloatND() {
+
+    public static final FloatND unbounded0 = new FloatND() {
         @Override
         public String toString() {
             return "*";
         }
     };
+
+    public static final HyperRectFloat unbounded1 = new HyperRectFloat(1);
+    public static final HyperRectFloat unbounded2 = new HyperRectFloat(2);
+    public static final HyperRectFloat unbounded3 = new HyperRectFloat(3);
+    public static final HyperRectFloat unbounded4 = new HyperRectFloat(4);
+    public static final HyperRectFloat unbounded5 = new HyperRectFloat(5);
+
+
     public final FloatND min;
     public final FloatND max;
 
-    public HyperRectFloat() {
-        min = unbounded;
-        max = unbounded;
+    private HyperRectFloat(int dimensionality) {
+        min = FloatND.fill(dimensionality, POSITIVE_INFINITY);
+        max = FloatND.fill(dimensionality, NEGATIVE_INFINITY);
     }
 
     public HyperRectFloat(final FloatND p) {
         min = p;
         max = p;
+    }
+
+    public HyperRectFloat(v2 v) {
+        this(v.x, v.y);
+    }
+
+    public HyperRectFloat(v3 v) {
+        this(v.x, v.y, v.z);
+    }
+
+    public HyperRectFloat(float... point) {
+        this(point, point);
     }
 
     public HyperRectFloat(float[] a, float[] b) {
@@ -88,27 +112,6 @@ public class HyperRectFloat implements HyperRegion<FloatND>, Serializable, Compa
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public double cost() {
         float sigma = 1f;
@@ -124,17 +127,25 @@ public class HyperRectFloat implements HyperRegion<FloatND>, Serializable, Compa
         if (this == r)
             return this;
 
-        final HyperRectFloat x = (HyperRectFloat) r;
-
-
         int dim = dim();
-        float[] newMin = new float[dim];
-        float[] newMax = new float[dim];
-        for (int i = 0; i < dim; i++) {
-            newMin[i] = Math.min(min.coord[i], x.min.coord[i]);
-            newMax[i] = Math.max(max.coord[i], x.max.coord[i]);
+        float[] newMin = new float[dim], newMax = new float[dim];
+        if (r instanceof HyperRectFloat) {
+            final HyperRectFloat x = (HyperRectFloat) r;
+            for (int i = 0; i < dim; i++) {
+                newMin[i] = Math.min(min.coord[i], x.min.coord[i]);
+                newMax[i] = Math.max(max.coord[i], x.max.coord[i]);
+            }
+        } else {
+
+            for (int i = 0; i < dim; i++) {
+                newMin[i] = Math.min(min.coord[i], (float) r.coord(i, false));
+                newMax[i] = Math.max(max.coord[i], (float) r.coord(i, true));
+            }
         }
-        return new HyperRectFloat(newMin, newMax);
+        if (Arrays.equals(newMin, newMax))
+            return new HyperRectFloat(newMin); //point
+        else
+            return new HyperRectFloat(newMin, newMax);
     }
 
 
@@ -226,7 +237,8 @@ public class HyperRectFloat implements HyperRegion<FloatND>, Serializable, Compa
     }
 
 
-    @Deprecated public final static class Builder<X extends HyperRectFloat> implements Function<X, HyperRegion> {
+    @Deprecated
+    public final static class Builder<X extends HyperRectFloat> implements Function<X, HyperRegion> {
 
         @Override
         public X apply(final X rect2D) {

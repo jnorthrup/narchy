@@ -24,6 +24,7 @@
 package spacegraph.space3d.phys.math;
 
 import com.jogamp.opengl.math.Quaternion;
+import jcog.math.v3;
 import spacegraph.util.math.*;
 
 

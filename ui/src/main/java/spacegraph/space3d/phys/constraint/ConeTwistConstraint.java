@@ -34,7 +34,7 @@ import spacegraph.space3d.phys.math.TransformUtil;
 import spacegraph.space3d.phys.solve.JacobianEntry;
 import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.Quat4f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * ConeTwistConstraint can be used to simulate ragdoll joints (upper arm, leg etc).

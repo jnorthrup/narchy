@@ -5,7 +5,7 @@ import spacegraph.space3d.SimpleSpatial;
 import spacegraph.space3d.SpaceTransform;
 import spacegraph.space3d.Spatial;
 import spacegraph.space3d.phys.Body3D;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 import java.util.function.Consumer;
 

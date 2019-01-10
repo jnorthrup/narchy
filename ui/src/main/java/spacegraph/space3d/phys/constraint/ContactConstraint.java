@@ -32,7 +32,7 @@ import spacegraph.space3d.phys.solve.ContactSolverFunc;
 import spacegraph.space3d.phys.solve.ContactSolverInfo;
 import spacegraph.space3d.phys.solve.JacobianEntry;
 import spacegraph.util.math.Matrix3f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * Functions for resolving contacts.

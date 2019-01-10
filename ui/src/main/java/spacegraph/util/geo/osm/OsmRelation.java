@@ -1,5 +1,7 @@
 package spacegraph.util.geo.osm;
 
+import jcog.tree.rtree.HyperRegion;
+
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -7,12 +9,7 @@ import java.util.function.Consumer;
 /**
  * Created by unkei on 2017/04/26.
  */
-class OsmRelation extends OsmElement {
-
-//    public boolean isMultipolygon;
-
-    /** TODO make immutable */
-    List<OsmElement> children;
+class OsmRelation extends OsmGroup {
 
     public OsmRelation(long id, List<OsmElement> children, Map<String, String> tags) {
         super(id, tags);
@@ -31,4 +28,6 @@ class OsmRelation extends OsmElement {
         if (children!=null)
             children.forEach(eachChild);
     }
+
+
 }

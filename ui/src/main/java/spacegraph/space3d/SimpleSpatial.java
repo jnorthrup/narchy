@@ -12,7 +12,7 @@ import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.shape.CollisionShape;
 import spacegraph.space3d.phys.shape.SimpleBoxShape;
 import spacegraph.space3d.phys.shape.SphereShape;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 import java.util.List;
 import java.util.function.Consumer;

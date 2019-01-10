@@ -33,11 +33,11 @@ import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.shape.*;
 import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.Quat4f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 import java.util.List;
 
-import static spacegraph.util.math.v3.v;
+import static jcog.math.v3.v;
 
 /**
  * CollisionWorld is interface and container for the collision detection.

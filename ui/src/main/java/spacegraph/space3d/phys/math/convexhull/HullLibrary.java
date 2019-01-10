@@ -31,7 +31,7 @@ import spacegraph.space3d.phys.math.MiscUtil;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.shape.ShapeHull;
 import spacegraph.space3d.phys.util.IntArrayList;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * HullLibrary class can create a convex hull from a collection of vertices, using

@@ -31,9 +31,8 @@ import spacegraph.space2d.phys.collision.TimeOfImpact;
 import spacegraph.space2d.phys.common.Mat22;
 import spacegraph.space2d.phys.common.Mat33;
 import spacegraph.space2d.phys.common.Rot;
-import spacegraph.space2d.phys.common.Vec3;
 import spacegraph.space2d.phys.dynamics.contacts.Contact;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * World pool interface

@@ -35,7 +35,7 @@ import static java.lang.Double.POSITIVE_INFINITY;
  * Created by jcovert on 6/15/15.
  */
 
-public class HyperRectDouble implements HyperRegion<DoubleND>, Serializable {
+public class HyperRectDouble implements HyperRegion, Serializable {
 
     public static final HyperRegion ALL_1 = HyperRectDouble.all(1);
     public static final HyperRegion ALL_2 = HyperRectDouble.all(2);

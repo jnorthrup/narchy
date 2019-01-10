@@ -4,11 +4,11 @@ import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.Dynamics3D;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.shape.*;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 import java.nio.ByteBuffer;
 
-import static spacegraph.util.math.v3.v;
+import static jcog.math.v3.v;
 
 /**
  * TODO extend CompoundSpatial

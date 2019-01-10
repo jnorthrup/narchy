@@ -23,8 +23,8 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.common;
 
-import spacegraph.util.math.Tuple3f;
-import spacegraph.util.math.v3;
+import jcog.math.Tuple3f;
+import jcog.math.v3;
 
 /**
  * @author Daniel Murphy

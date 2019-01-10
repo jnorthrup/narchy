@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Created by jcovert on 6/15/15.
  */
-public class RectDouble implements HyperRegion<Double2D>, Comparable<RectDouble> {
+public class RectDouble implements HyperRegion, Comparable<RectDouble> {
     public final Double2D min;
     public final Double2D max;
 
@@ -81,7 +81,7 @@ public class RectDouble implements HyperRegion<Double2D>, Comparable<RectDouble>
 
 
     @Override
-    public RectDouble mbr(final HyperRegion<Double2D> r) {
+    public RectDouble mbr(final HyperRegion r) {
         final RectDouble r2 = (RectDouble) r;
         final double minX = Math.min(min.x, r2.min.x);
         final double minY = Math.min(min.y, r2.min.y);

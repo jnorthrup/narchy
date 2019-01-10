@@ -59,7 +59,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
     }
 
 
-    protected HyperIterator0(Spatialization<X> model, Node<X> start, HyperRegion<X> target, Space.BoundsMatch mode, @Nullable byte[] gradient) {
+    protected HyperIterator0(Spatialization<X> model, Node<X> start, HyperRegion target, Space.BoundsMatch mode, @Nullable byte[] gradient) {
         this.model = model;
         this.start = this.at = start;
         this.target = target;
@@ -170,7 +170,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
     }
 
     private void tryItem(FasterList p, X item) {
-        HyperRegion<X> itemBounds = model.bounds(item);
+        HyperRegion itemBounds = model.bounds(item);
         if (mode.acceptItem(target, itemBounds))
             p.add(pair(item, itemBounds));
     }

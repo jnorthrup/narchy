@@ -29,7 +29,7 @@ import spacegraph.space3d.phys.math.MatrixUtil;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.util.math.Matrix3f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * CapsuleShape represents a capsule around the Y axis, there is also the

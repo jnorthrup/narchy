@@ -24,7 +24,7 @@
 package spacegraph.space3d.phys;
 
 import spacegraph.space3d.phys.math.Clock;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * Bullet statistics and profile support.

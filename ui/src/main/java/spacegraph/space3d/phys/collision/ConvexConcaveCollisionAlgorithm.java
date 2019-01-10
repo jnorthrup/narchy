@@ -38,7 +38,7 @@ import spacegraph.space3d.phys.shape.SphereShape;
 import spacegraph.space3d.phys.shape.TriangleCallback;
 import spacegraph.space3d.phys.shape.TriangleShape;
 import spacegraph.space3d.phys.util.OArrayList;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * ConvexConcaveCollisionAlgorithm supports collision between convex shapes

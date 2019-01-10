@@ -6,11 +6,11 @@ import spacegraph.space3d.Spatial;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.broad.Broadphase;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 import java.util.List;
 
-import static spacegraph.util.math.v3.v;
+import static jcog.math.v3.v;
 
 /**
  * Created by me on 8/24/16.

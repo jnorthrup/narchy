@@ -24,7 +24,7 @@
 package spacegraph.space3d.phys.shape;
 
 
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * Cylinder shape around the X axis.

@@ -27,7 +27,7 @@ import jcog.data.list.FasterList;
 import spacegraph.space3d.phys.math.AabbUtil2;
 import spacegraph.space3d.phys.math.MiscUtil;
 import spacegraph.space3d.phys.math.VectorUtil;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 import java.io.Serializable;
 

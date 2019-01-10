@@ -7,10 +7,10 @@ import spacegraph.space3d.phys.Collisions;
 import spacegraph.space3d.phys.Dynamics3D;
 import spacegraph.space3d.phys.collision.narrow.VoronoiSimplexSolver;
 import spacegraph.space3d.phys.math.Transform;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 import spacegraph.video.Draw;
 
-import static spacegraph.util.math.v3.v;
+import static jcog.math.v3.v;
 
 /**
  * one retina pixel

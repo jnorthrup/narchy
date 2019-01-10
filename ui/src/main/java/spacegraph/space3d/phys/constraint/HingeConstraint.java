@@ -34,7 +34,7 @@ import spacegraph.space3d.phys.math.TransformUtil;
 import spacegraph.space3d.phys.solve.JacobianEntry;
 import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.Quat4f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * Hinge constraint between two rigid bodies each with a pivot point that descibes

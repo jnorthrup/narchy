@@ -31,7 +31,7 @@ import spacegraph.space3d.phys.collision.broad.DispatcherInfo;
 import spacegraph.space3d.phys.collision.narrow.PersistentManifold;
 import spacegraph.space3d.phys.shape.SphereShape;
 import spacegraph.space3d.phys.util.OArrayList;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * Provides collision detection between two spheres.

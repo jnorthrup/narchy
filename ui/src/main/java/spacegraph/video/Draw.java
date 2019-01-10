@@ -48,14 +48,14 @@ import spacegraph.space3d.phys.shape.*;
 import spacegraph.space3d.phys.util.BulletStack;
 import spacegraph.space3d.widget.EDraw;
 import spacegraph.util.math.Quat4f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 import java.util.function.Consumer;
 
 import static com.jogamp.opengl.GL.*;
 import static jcog.Util.sqr;
 import static jcog.Util.unitize;
-import static spacegraph.util.math.v3.v;
+import static jcog.math.v3.v;
 
 /**
  * @author jezek2

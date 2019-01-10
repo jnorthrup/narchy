@@ -28,7 +28,7 @@ import spacegraph.space3d.phys.BulletStats;
 import spacegraph.space3d.phys.math.MatrixUtil;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.shape.ConvexShape;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * GjkPairDetector uses GJK to implement the {@link DiscreteCollisionDetectorInterface}.

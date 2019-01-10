@@ -26,9 +26,9 @@ package spacegraph.space3d.phys.shape;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.broad.BroadphaseNativeType;
 import spacegraph.space3d.phys.math.Transform;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
-import static spacegraph.util.math.v3.v;
+import static jcog.math.v3.v;
 
 /**
  * CollisionShape class provides an interface for collision shapes that can be

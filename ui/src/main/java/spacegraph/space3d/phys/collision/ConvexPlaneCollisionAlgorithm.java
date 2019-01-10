@@ -32,7 +32,7 @@ import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.shape.ConvexShape;
 import spacegraph.space3d.phys.shape.StaticPlaneShape;
 import spacegraph.space3d.phys.util.OArrayList;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * ConvexPlaneCollisionAlgorithm provides convex/plane collision detection.

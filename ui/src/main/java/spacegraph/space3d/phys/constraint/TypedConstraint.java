@@ -26,7 +26,7 @@ package spacegraph.space3d.phys.constraint;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.solve.ContactSolverInfo;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * TypedConstraint is the base class for Bullet constraints and vehicles.

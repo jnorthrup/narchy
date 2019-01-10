@@ -26,7 +26,7 @@
 
 package spacegraph.space3d.phys.collision.broad;
 
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * AxisSweep3_32 allows higher precision quantization and more objects compared

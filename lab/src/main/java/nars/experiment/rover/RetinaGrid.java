@@ -5,9 +5,9 @@ import spacegraph.space3d.SimpleSpatial;
 import spacegraph.space3d.phys.Dynamics3D;
 import spacegraph.space3d.phys.shape.CollisionShape;
 import spacegraph.space3d.phys.shape.SphereShape;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
-import static spacegraph.util.math.v3.v;
+import static jcog.math.v3.v;
 
 /**
  * Created by me on 9/13/16.

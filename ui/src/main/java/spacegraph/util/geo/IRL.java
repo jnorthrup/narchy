@@ -5,11 +5,15 @@ import jcog.Util;
 import jcog.exe.Exe;
 import jcog.memoize.CaffeineMemoize;
 import jcog.memoize.Memoize;
+import jcog.tree.rtree.RTree;
+import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
+import jcog.tree.rtree.split.AxialSplitLeaf;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.util.geo.osm.Osm;
+import spacegraph.util.geo.osm.OsmElement;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -21,34 +25,37 @@ import java.net.URL;
 public class IRL {
 
     private final User user;
+    private static final Logger logger = LoggerFactory.getLogger(IRL.class);
+
+
+    public final RTree<OsmElement> index =
+            new RTree<>(new Spatialization<>((OsmElement e) -> e, new AxialSplitLeaf<>(), 2, 8));
 
     public IRL(User u) {
         this.user = u;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(IRL.class);
 
-    final Memoize<RectFloat, Osm> cache = CaffeineMemoize.build(bounds -> {
+    final Memoize<RectFloat, Osm> reqCache = CaffeineMemoize.build(bounds -> {
         return load(bounds.left(), bounds.top(), bounds.right(), bounds.bottom());
     }, 1024, false);
 
 
-    public static final float TILE_SIZE = 0.003f;
-
     /**
      * gets the Osm grid cell containing the specified coordinate, of our conventional size
      */
-    @Nullable
-    public Osm tile(float lon, float lat) {
-        Osm o  = cache.apply(
+    @Nullable @Deprecated
+    public Osm request(float lon, float lat, float lonRange, float latRange) {
+        Osm o  = reqCache.apply(
                 RectFloat.XYXY(
-                    Util.round(lon - TILE_SIZE/(2-Float.MIN_NORMAL), TILE_SIZE),
-                    Util.round(lat - TILE_SIZE/(2-Float.MIN_NORMAL), TILE_SIZE),
-                    Util.round(lon + TILE_SIZE/(2-Float.MIN_NORMAL), TILE_SIZE),
-                    Util.round(lat + TILE_SIZE/(2-Float.MIN_NORMAL), TILE_SIZE)
+                    Util.round(lon - lonRange/(2-Float.MIN_NORMAL), lonRange),
+                    Util.round(lat - latRange/(2-Float.MIN_NORMAL), latRange),
+                    Util.round(lon + lonRange/(2-Float.MIN_NORMAL), lonRange),
+                    Util.round(lat + latRange/(2-Float.MIN_NORMAL), latRange)
                 )
         );
-        return o.isEmpty() ? null : o;
+
+        return o;
     }
 
     private Osm load(double lonMin, double latMin, double lonMax, double latMax) {
@@ -72,6 +79,9 @@ public class IRL {
                     logger.info("Loading {} ({} bytes)", u, data.length);
                     osm.load(new ByteArrayInputStream(data));
                     osm.ready = true;
+                    osm.nodes.forEachValue(n->{
+                        index.add(n);
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

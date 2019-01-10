@@ -26,7 +26,7 @@ package spacegraph.space3d.phys.math;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.Quat4f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * Utility functions for transforms.

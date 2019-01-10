@@ -23,7 +23,7 @@
 
 package spacegraph.space3d.phys.dynamics.vehicle;
 
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * 

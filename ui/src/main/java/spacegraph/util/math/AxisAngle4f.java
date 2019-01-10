@@ -33,6 +33,7 @@ package spacegraph.util.math;
 
 import com.jogamp.opengl.math.Quaternion;
 import jcog.math.VecMathUtil;
+import jcog.math.v3;
 
 /**
  * A four-element axis angle represented by single-precision floating point

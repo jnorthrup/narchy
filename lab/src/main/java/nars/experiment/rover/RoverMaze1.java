@@ -9,7 +9,7 @@ import spacegraph.space3d.phys.shape.BoxShape;
 import spacegraph.space3d.phys.shape.CollisionShape;
 import spacegraph.space3d.phys.shape.CylinderShape;
 
-import static spacegraph.util.math.v3.v;
+import static jcog.math.v3.v;
 
 /**
  * Created by me on 9/12/16.

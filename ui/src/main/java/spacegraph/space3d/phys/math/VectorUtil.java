@@ -24,7 +24,7 @@
 package spacegraph.space3d.phys.math;
 
 import spacegraph.util.math.Vector4f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * Utility functions for vectors.

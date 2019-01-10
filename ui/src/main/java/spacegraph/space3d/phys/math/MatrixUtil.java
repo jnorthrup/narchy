@@ -27,11 +27,11 @@ import com.jogamp.opengl.math.Quaternion;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.Quat4f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 import static spacegraph.space3d.phys.math.VectorUtil.coord;
 import static spacegraph.space3d.phys.math.VectorUtil.setCoord;
-import static spacegraph.util.math.v3.v;
+import static jcog.math.v3.v;
 
 /**
  * Utility functions for matrices.

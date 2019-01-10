@@ -24,7 +24,7 @@
 package spacegraph.space2d.phys.common;
 
 import jcog.math.v2;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 import java.io.Serializable;
 

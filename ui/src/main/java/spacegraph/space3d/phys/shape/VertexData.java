@@ -24,8 +24,8 @@
 package spacegraph.space3d.phys.shape;
 
 import spacegraph.space3d.phys.math.VectorUtil;
-import spacegraph.util.math.Tuple3f;
-import spacegraph.util.math.v3;
+import jcog.math.Tuple3f;
+import jcog.math.v3;
 
 /**
  * Allows accessing vertex data.

@@ -26,7 +26,7 @@
 
 package spacegraph.space3d.phys.collision.broad;
 
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * AxisSweep3 is an efficient implementation of the 3D axis sweep and prune broadphase.<p>

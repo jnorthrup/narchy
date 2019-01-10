@@ -28,7 +28,7 @@ import java.util.function.Function;
  * <p>
  * Created by jcairns on 4/30/15.
  */
-public interface HyperRegion<X> {
+public interface HyperRegion {
 
     /**
      * Calculate the resulting mbr when combining param HyperRect with this HyperRect
@@ -37,7 +37,7 @@ public interface HyperRegion<X> {
      * @param r - mbr to add
      * @return new HyperRect representing mbr of both HyperRects combined
      */
-    HyperRegion<X> mbr(HyperRegion<X> r);
+    HyperRegion mbr(HyperRegion r);
 
 
     static <X> HyperRegion mbr(Function<X, HyperRegion> builder, X[] rect, short size) {
@@ -54,10 +54,10 @@ public interface HyperRegion<X> {
     /**
      * warning, the array may contain nulls. in which case, break because these will be at the end
      */
-    default HyperRegion<X> mbr(HyperRegion<X>[] rect) {
-        HyperRegion<X> bounds = rect[0];
+    default HyperRegion mbr(HyperRegion[] rect) {
+        HyperRegion bounds = rect[0];
         for (int k = 1; k < rect.length; k++) {
-            HyperRegion<X> r = rect[k];
+            HyperRegion r = rect[k];
             bounds = bounds.mbr(r);
         }
         return bounds;
@@ -134,7 +134,7 @@ public interface HyperRegion<X> {
      * @param r - HyperRect to test
      * @return true if contains, false otherwise; a region contains itself
      */
-    default boolean contains(HyperRegion<X> x) {
+    default boolean contains(HyperRegion x) {
         if (this == x) return true;
         int d = dim();
         for (int i = 0; i < d; i++)
@@ -151,7 +151,7 @@ public interface HyperRegion<X> {
      * @param r - HyperRect to test
      * @return true if intersects, false otherwise
      */
-    default boolean intersects(HyperRegion<X> x) {
+    default boolean intersects(HyperRegion x) {
         if (this == x) return true;
         int d = dim();
 

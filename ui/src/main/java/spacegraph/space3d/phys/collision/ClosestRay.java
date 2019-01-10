@@ -3,7 +3,7 @@ package spacegraph.space3d.phys.collision;
 import spacegraph.space3d.phys.Collisions;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.VectorUtil;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * Created by me on 7/22/16.

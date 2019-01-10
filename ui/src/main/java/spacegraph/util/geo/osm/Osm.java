@@ -1,18 +1,11 @@
 package spacegraph.util.geo.osm;
 
-import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GLContext;
-import com.jogamp.opengl.glu.GLU;
-import com.jogamp.opengl.glu.GLUtessellator;
-import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
-import spacegraph.video.Draw;
-import spacegraph.video.OsmSpace;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,11 +19,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.zip.GZIPInputStream;
 
-import static com.jogamp.opengl.GL.GL_LINE_STRIP;
-import static com.jogamp.opengl.GL.GL_POINTS;
 import static java.lang.Double.parseDouble;
 import static jcog.Texts.l;
 import static jcog.Texts.n4;
@@ -157,7 +147,7 @@ public class Osm {
                     Element childElement = (Element) n;
                     long id = l(childElement.getAttribute("id"));
 
-                    List<OsmNode> refOsmNodes = new FasterList<>();
+                    List<OsmElement> refOsmNodes = new FasterList<>();
                     Map<String, String> osmTags = null;
 
                     NodeList wayChildren = n.getChildNodes();
@@ -217,16 +207,16 @@ public class Osm {
             OsmRelation osmRelation = osm.relations.get(id);
 
             Map<String, String> tags = osmRelation.tags;
-            String highway, natural, building, building_part, landuse;
-            if (tags.isEmpty()) {
-                highway = natural = building = building_part = landuse = null;
-            } else {
-                highway = tags.get("highway");
-                natural = tags.get("natural");
-                building = tags.get("building");
-                building_part = tags.get("building:part");
-                landuse = tags.get("landuse");
-            }
+//            String highway, natural, building, building_part, landuse;
+//            if (tags.isEmpty()) {
+//                highway = natural = building = building_part = landuse = null;
+//            } else {
+//                highway = tags.get("highway");
+//                natural = tags.get("natural");
+//                building = tags.get("building");
+//                building_part = tags.get("building:part");
+//                landuse = tags.get("landuse");
+//            }
 
             NodeList relationChildren = relationElement.getElementsByTagName("member"); 
             List<OsmElement> osmMembers = null;
@@ -246,23 +236,23 @@ public class Osm {
                             break;
                         case "way":
                             member = osm.ways.get(ref);
-                            if (member != null) {
-                                if (highway != null) {
-                                    member.tag("highway", highway);
-                                }
-                                if (natural != null) {
-                                    member.tag("natural", natural);
-                                }
-                                if (building != null) {
-                                    member.tag("building", building);
-                                }
-                                if (building_part != null) {
-                                    member.tag("building:part", building_part);
-                                }
-                                if (landuse != null) {
-                                    member.tag("landuse", landuse);
-                                }
-                            }
+//                            if (member != null) {
+//                                if (highway != null) {
+//                                    member.tag("highway", highway);
+//                                }
+//                                if (natural != null) {
+//                                    member.tag("natural", natural);
+//                                }
+//                                if (building != null) {
+//                                    member.tag("building", building);
+//                                }
+//                                if (building_part != null) {
+//                                    member.tag("building:part", building_part);
+//                                }
+//                                if (landuse != null) {
+//                                    member.tag("landuse", landuse);
+//                                }
+//                            }
                             break;
                         case "relation":
                             member = osm.relations.get(ref);
@@ -349,11 +339,11 @@ public class Osm {
         }
     }
 
-    private static void printOsmNodes(Iterable<OsmNode> osmNodes) {
+    private static void printOsmNodes(Iterable<? extends OsmElement> osmNodes) {
         printOsmNodes(osmNodes, 0);
     }
 
-    private static void printOsmNodes(Iterable<OsmNode> osmNodes, int indent) {
+    private static void printOsmNodes(Iterable<? extends OsmElement> osmNodes, int indent) {
         for (OsmElement osmNode : osmNodes) {
             printOsmNode((OsmNode) osmNode, indent);
         }
@@ -379,7 +369,7 @@ public class Osm {
     private static void printOsmWay(OsmWay osmWay, int indent) {
         printIndent(indent);
         System.out.printf("<way id=%s>\n", osmWay.id);
-        printOsmNodes(osmWay.getOsmNodes(), indent + 1);
+        printOsmNodes(osmWay.children, indent + 1);
         printTags(osmWay.tags, indent + 1);
     }
 
@@ -443,337 +433,8 @@ public class Osm {
     }
 
 
-    static final Consumer<GL2> loading = (gl)->{
-        gl.glColor3f(1, 0, 0);
-        Draw.rectFrame(gl, 0, 0, 1, 1, 0.1f);
-    };
-
-    public Consumer<GL2> render(GL2 gl) {
-
-        if (!ready)
-            return loading;
-        else {
-            GLContext ctx = gl.getContext();
-            Object c = ctx.getAttachedObject(id);
-            if (c == null) {
-                c = compile(gl, this);
-                ctx.attachObject(id, c);
-            }
-            return (Consumer<GL2>) c;
-        }
-    }
 
 
-    private OsmSpace.OsmRenderer compile(GL2 G, Osm osm) {
-
-        OsmSpace.OsmRenderer rr = new OsmSpace.OsmRenderer(G);
-
-        boolean wireframe = false;
-
-        List<Consumer<GL2>> draw = rr.draw;
-
-        for (OsmWay way : osm.ways) {
-
-            Map<String, String> tags = way.tags;
-
-            boolean isClosed = way.isLoop();
-            boolean isPolygon = false;
-            float r, g, b, a;
-            float lw;
-            short ls;
-
-            r = 0.5f;
-            g = 0.5f;
-            b = 0.5f;
-            a = 1f;
-            lw = 1f;
-            ls = (short) 0xFFFF;
-
-            if (!tags.isEmpty()) {
-
-                for (Map.Entry<String, String> entry : tags.entrySet()) {
-                    String k = entry.getKey(), v = entry.getValue();
-                    switch (k) {
-                        case "building":
-                            r = 0f;
-                            g = 1f;
-                            b = 1f;
-                            a = 1f;
-                            lw = 1f;
-                            isPolygon = true;
-                            break;
-                        case "natural":
-                            switch (v) {
-                                case "water":
-                                    r = 0f;
-                                    g = 0f;
-                                    b = 1f;
-                                    a = 1f;
-                                    lw = 1f;
-                                    isPolygon = true;
-                                    break;
-                                case "wood":
-                                    r = 0f;
-                                    g = 1f;
-                                    b = 0f;
-                                    a = 1f;
-                                    lw = 1f;
-                                    isPolygon = true;
-                                    break;
-                                default:
-                                    System.out.println("unstyled: " + k + " = " + v);
-                                    break;
-                            }
-                            break;
-//                        case "landuse":
-//                            switch (v) {
-//                                case "forest":
-//                                case "grass":
-//                                    r = 0.1f;
-//                                    g = 0.9f;
-//                                    b = 0f;
-//                                    a = 1f;
-//                                    lw = 1f;
-//                                    isPolygon = true;
-//                                    break;
-//                                case "industrial":
-//                                    break;
-//                                default:
-//                                    System.out.println("unstyled: " + k + " = " + v);
-//                                    break;
-//                            }
-//                            break;
-                        case "route":
-                            switch (v) {
-                                case "road":
-                                    r = 1f;
-                                    g = 1f;
-                                    b = 1f;
-                                    a = 1f;
-                                    lw = 1f;
-                                    break;
-                                case "train":
-                                    r = 1f;
-                                    g = 1f;
-                                    b = 1f;
-                                    a = 1f;
-                                    lw = 5f;
-                                    ls = (short) 0xF0F0;
-                                    break;
-                                default:
-                                    System.out.println("unstyled: " + k + " = " + v);
-                                    break;
-                            }
-                            break;
-                        case "highway":
-                            switch (v) {
-                                case "pedestrian":
-                                    r = 0f;
-                                    g = 0.5f;
-                                    b = 0f;
-                                    a = 1f;
-                                    lw = 2f;
-                                    break;
-                                case "motorway":
-                                    r = 1f;
-                                    g = 0.5f;
-                                    b = 0f;
-                                    a = 1f;
-                                    lw = 5f;
-                                    break;
-                                default:
-                                    r = 1f;
-                                    g = 1f;
-                                    b = 1f;
-                                    a = 0.5f;
-                                    lw = 3f;
-                                    break;
-                            }
-                            break;
-                    }
-                }
-
-            }
-
-            isPolygon &= !wireframe && isClosed;
-
-            if (isPolygon) {
-                List<OsmNode> nn = way.getOsmNodes();
-                float[][] coord = new float[nn.size()][7];
 
 
-                for (int i = 0, nnSize = nn.size(); i < nnSize; i++) {
-                    OsmNode node = nn.get(i);
-
-                    float[] ci = coord[i];
-                    project(node.pos, ci);
-                    ci[3] = r;
-                    ci[4] = g;
-                    ci[5] = b;
-                    ci[6] = a;
-                }
-
-                draw.add(new OsmPolygonDraw(r, g, b, a, lw, ls, rr.tobj, nn, coord));
-
-
-            } else {
-
-                List<OsmNode> ways = way.getOsmNodes();
-                int ws = ways.size();
-                float[] c3 = new float[3 * ws];
-                for (int i = 0, waysSize = ws; i < waysSize; i++) {
-                    project(ways.get(i).pos, c3, i * 3);
-                }
-
-                draw.add(new OsmLineDraw(r, g, b, a, lw, ls, c3));
-
-            }
-
-        }
-
-
-        for (OsmNode node : osm.nodes) {
-            Map<String, String> tags = node.tags;
-
-            if (tags.isEmpty()) continue;
-            String highway = tags.get("highway");
-            String natural = tags.get("natural");
-
-            float pointSize;
-            float r, g, b, a;
-            if ("bus_stop".equals(highway)) {
-
-                pointSize = 3;
-                r = g = b = 1f;
-                a = 0.7f;
-            } else if ("traffic_signals".equals(highway)) {
-                pointSize = 3;
-                r = g = 1f;
-                b = 0f;
-                a = 0.7f;
-
-            } else if ("tree".equals(natural)) {
-                pointSize = 3;
-                g = 1f;
-                r = b = 0f;
-                a = 0.7f;
-
-            } else {
-                pointSize = 3;
-                r = 1f;
-                g = b = 0f;
-                a = 0.7f;
-            }
-
-            float[] c3 = new float[3];
-
-            project(node.pos, c3);
-
-            draw.add(new OsmDrawPoint(pointSize, r, g, b, a, c3));
-        }
-
-        return rr;
-    }
-
-    private static void project(GeoVec3 global, float[] target) {
-        project(global, target, 0);
-    }
-
-    private static void project(GeoVec3 global, float[] target, int offset) {
-        target[offset++] = global.getLongitude();
-        target[offset++] = global.getLatitude();
-        target[offset/*++*/] = 0;
-    }
-
-    private static class OsmPolygonDraw implements Consumer<GL2> {
-        private final float r,g,b,a;
-        private final float lw;
-        private final short ls;
-        private final GLUtessellator tobj;
-        private final List<OsmNode> nn;
-        private final float[][] coord;
-
-        OsmPolygonDraw(float r, float g, float b, float a, float lw, short ls, GLUtessellator tobj, List<OsmNode> nn, float[][] coord) {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            this.a = a;
-            this.lw = lw;
-            this.ls = ls;
-            this.tobj = tobj;
-            this.nn = nn;
-            this.coord = coord;
-        }
-
-        @Override
-        public void accept(GL2 gl) {
-            gl.glColor4f(r, g , b, a);
-            gl.glLineWidth(lw);
-            gl.glLineStipple(1, ls);
-
-            GLU.gluTessBeginPolygon(tobj, null);
-            GLU.gluTessBeginContour(tobj);
-            for (int i = 0, nnSize = nn.size(); i < nnSize; i++) {
-                float[] ci = coord[i];
-                GLU.gluTessVertex(tobj, Util.toDouble(ci), 0, ci);
-            }
-            GLU.gluTessEndContour(tobj);
-            GLU.gluTessEndPolygon(tobj);
-
-        }
-    }
-
-    private static class OsmLineDraw implements Consumer<GL2> {
-        private final float r,g,b,a;
-        private final float lw;
-        private final short ls;
-        private final float[] c3;
-
-        public OsmLineDraw(float r, float g, float b, float a, float lw, short ls, float[] c3) {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            this.a = a;
-            this.lw = lw;
-            this.ls = ls;
-            this.c3 = c3;
-        }
-
-        @Override
-        public void accept(GL2 gl) {
-            gl.glColor4f(r, g, b, a);
-            gl.glLineWidth(lw);
-            gl.glLineStipple(1, ls);
-            gl.glBegin(GL_LINE_STRIP);
-            for (int i = 0; i < c3.length / 3; i++) {
-                gl.glVertex3fv(c3, i * 3);
-            }
-            gl.glEnd();
-        }
-    }
-
-    private static class OsmDrawPoint implements Consumer<GL2> {
-        private final float pointSize;
-        private final float r, g, b, a;
-        private final float[] c3;
-
-        public OsmDrawPoint(float pointSize, float r, float g, float b, float a, float[] c3) {
-            this.pointSize = pointSize;
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            this.a = a;
-            this.c3 = c3;
-        }
-
-        @Override
-        public void accept(GL2 gl) {
-            gl.glPointSize(pointSize);
-            gl.glBegin(GL_POINTS);
-            gl.glColor4f(r, g, b, a);
-
-            gl.glVertex3f(c3[0], c3[1], c3[2]);
-            gl.glEnd();
-        }
-    }
 }

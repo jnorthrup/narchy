@@ -32,7 +32,7 @@ import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.Vector4f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  *
@@ -536,9 +536,9 @@ public class BoxCollision {
 			v3.sub(p3, center);
 
 			
-			spacegraph.util.math.v3 diff = new v3();
+			jcog.math.v3 diff = new v3();
 			diff.sub(v2, v1);
-			spacegraph.util.math.v3 abs_diff = new v3();
+			jcog.math.v3 abs_diff = new v3();
 			abs_diff.absolute(diff);
 
 			

@@ -25,7 +25,7 @@ package spacegraph.space3d.phys.dynamics.vehicle;
 
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.math.Transform;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * WheelInfo contains information per wheel about friction and suspension.

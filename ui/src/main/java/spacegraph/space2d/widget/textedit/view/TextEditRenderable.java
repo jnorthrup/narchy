@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.textedit.view;
 
 import com.jogamp.opengl.GL2;
 import spacegraph.util.math.Color4f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 
 public abstract class TextEditRenderable {

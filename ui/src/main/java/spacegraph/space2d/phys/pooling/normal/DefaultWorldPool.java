@@ -38,7 +38,7 @@ import spacegraph.space2d.phys.common.*;
 import spacegraph.space2d.phys.dynamics.contacts.*;
 import spacegraph.space2d.phys.pooling.IDynamicStack;
 import spacegraph.space2d.phys.pooling.IWorldPool;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * Provides object pooling for all objects used in the engine. Objects retrieved from here should

@@ -31,6 +31,8 @@
 
 package spacegraph.util.math;
 
+import jcog.math.Tuple3f;
+
 import java.awt.*;
 
 

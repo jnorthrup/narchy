@@ -24,7 +24,7 @@
 package spacegraph.space3d.phys.math.convexhull;
 
 import jcog.data.list.FasterList;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * Describes point cloud data and other input for conversion to polygonal representation.

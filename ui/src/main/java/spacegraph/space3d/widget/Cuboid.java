@@ -18,13 +18,13 @@ import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.shape.SimpleBoxShape;
 import spacegraph.space3d.phys.shape.SphereShape;
 import spacegraph.util.animate.Animated;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 import spacegraph.video.Draw;
 import spacegraph.video.JoglWindow;
 
 import java.util.function.Consumer;
 
-import static spacegraph.util.math.v3.v;
+import static jcog.math.v3.v;
 
 /**
  * https:

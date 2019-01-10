@@ -1,7 +1,7 @@
 package spacegraph.util.geo.osm;
 
 import org.w3c.dom.Element;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 import static java.lang.Double.parseDouble;
 

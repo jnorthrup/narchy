@@ -23,7 +23,7 @@
 
 package spacegraph.space3d.phys.shape;
 
-import spacegraph.util.math.Tuple3f;
+import jcog.math.Tuple3f;
 
 import java.nio.ByteBuffer;
 

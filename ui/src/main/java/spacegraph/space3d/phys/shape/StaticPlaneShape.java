@@ -27,7 +27,7 @@ import spacegraph.space3d.phys.collision.broad.BroadphaseNativeType;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.TransformUtil;
 import spacegraph.space3d.phys.math.VectorUtil;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * StaticPlaneShape simulates an infinite non-moving (static) collision plane.

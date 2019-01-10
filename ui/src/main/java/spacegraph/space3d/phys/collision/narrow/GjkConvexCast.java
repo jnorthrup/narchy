@@ -27,7 +27,7 @@ package spacegraph.space3d.phys.collision.narrow;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.shape.ConvexShape;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * GjkConvexCast performs a raycast on a convex object using support mapping.

@@ -7,7 +7,7 @@ import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.util.animate.Animated;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 import spacegraph.video.JoglSpace;
 
 /**

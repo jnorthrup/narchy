@@ -31,7 +31,7 @@ import spacegraph.space3d.phys.dynamics.gimpact.BoxCollision.AABB;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.shape.StridingMeshInterface;
 import spacegraph.space3d.phys.shape.VertexData;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  *

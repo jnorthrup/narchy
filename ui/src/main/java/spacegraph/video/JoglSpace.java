@@ -15,7 +15,7 @@ import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.util.animate.AnimVector3f;
 import spacegraph.util.animate.Animated;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -29,7 +29,7 @@ import static com.jogamp.opengl.GLES2.GL_MAX;
 import static com.jogamp.opengl.fixedfunc.GLLightingFunc.*;
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
-import static spacegraph.util.math.v3.v;
+import static jcog.math.v3.v;
 
 abstract public class JoglSpace {
 

@@ -39,7 +39,7 @@ import spacegraph.space3d.phys.shape.*;
 import spacegraph.space3d.phys.util.IntArrayList;
 import spacegraph.space3d.phys.util.OArrayList;
 import spacegraph.util.math.Vector4f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * Collision Algorithm for GImpact Shapes.<p>

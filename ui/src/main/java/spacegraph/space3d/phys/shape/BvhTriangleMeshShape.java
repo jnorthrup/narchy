@@ -26,7 +26,7 @@ package spacegraph.space3d.phys.shape;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.collision.broad.BroadphaseNativeType;
 import spacegraph.space3d.phys.math.VectorUtil;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 /**
  * BvhTriangleMeshShape is a static-triangle mesh shape with several optimizations,

@@ -31,7 +31,7 @@ import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.shape.ConvexShape;
 import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.Quat4f;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 import java.util.Arrays;
 

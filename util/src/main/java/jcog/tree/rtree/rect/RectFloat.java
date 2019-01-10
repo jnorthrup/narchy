@@ -5,13 +5,12 @@ import jcog.Util;
 import jcog.math.v2;
 import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.Spatialization;
-import jcog.tree.rtree.point.Float2D;
 
 import static jcog.Util.lerp;
 import static jcog.tree.rtree.Spatialization.EPSILON;
 
 
-public class RectFloat implements HyperRegion<Float2D>, Comparable<RectFloat> {
+public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 
     public static final RectFloat Unit = XYXY(0, 0, 1, 1);
     public static final RectFloat Zero = XYXY(0, 0, 0, 0);
@@ -119,7 +118,7 @@ public class RectFloat implements HyperRegion<Float2D>, Comparable<RectFloat> {
     }
 
     @Override
-    public RectFloat mbr(final HyperRegion<Float2D> r) {
+    public RectFloat mbr(final HyperRegion r) {
         if (r == this) return this;
 
         final RectFloat r2 = (RectFloat) r;

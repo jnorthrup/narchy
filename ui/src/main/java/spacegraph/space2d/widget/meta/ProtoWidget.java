@@ -165,7 +165,7 @@ public class ProtoWidget extends Bordering {
         add("Frequencies", TODO, "Meter"); //count of unique items passed through
 
 
-        add("Geo", () -> new OsmSpace(new IRL(User.the())).surface().go(-80.63f, 28.60f), "Reality");
+//        add("Geo", () -> new OsmSpace(new IRL(User.the())).surface().go(-80.63f, 28.60f), "Reality");
         add("Weather", TODO, "Reality");
 
         add("File", TODO, "Data"); //and directory too

@@ -36,7 +36,7 @@ import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.shape.CapsuleShape;
 import spacegraph.space3d.phys.shape.CollisionShape;
 import spacegraph.space3d.phys.util.BulletStack;
-import spacegraph.util.math.v3;
+import jcog.math.v3;
 
 
 /**
