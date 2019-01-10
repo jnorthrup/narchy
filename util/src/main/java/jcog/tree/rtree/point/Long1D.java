@@ -24,12 +24,12 @@ public class Long1D implements HyperPoint {
     }
 
     @Override
-    public int dim() {
+    public final int dim() {
         return 1;
     }
 
     @Override
-    public Long coord(int d) {
+    public final Long coord(int d) {
         return x;
     }
 

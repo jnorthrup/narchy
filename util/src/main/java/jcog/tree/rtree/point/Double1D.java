@@ -13,7 +13,7 @@ public class Double1D implements HyperPoint {
     }
 
     @Override
-    public int dim() {
+    public final int dim() {
         return 1;
     }
 

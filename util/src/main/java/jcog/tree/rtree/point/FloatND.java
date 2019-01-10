@@ -1,8 +1,8 @@
 package jcog.tree.rtree.point;
 
 
+import jcog.signal.tensor.ArrayTensor;
 import jcog.tree.rtree.HyperPoint;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -11,19 +11,17 @@ import java.util.Arrays;
 /**
  * Created by me on 12/21/16.
  */
-public class FloatND implements HyperPoint, Serializable, Comparable<FloatND> {
+public class FloatND extends ArrayTensor implements HyperPoint, Serializable, Comparable<FloatND> {
 
-    public final float[] coord;
-    private final int hash;
+//    private final int hash;
 
     public FloatND(FloatND copy) {
-        this(copy.coord.clone());
+        this(copy.data.clone());
     }
 
-
     public FloatND(float... coord) {
-        this.coord = coord;
-        this.hash = Arrays.hashCode(coord);
+        super(coord);
+//        this.hash = Arrays.hashCode(coord);
     }
 
     public static FloatND fill(int dims, float value) {
@@ -34,21 +32,22 @@ public class FloatND implements HyperPoint, Serializable, Comparable<FloatND> {
 
     @Override
     public int dim() {
-        return coord.length;
+        return data.length;
     }
 
     @Override
     public Float coord(int d) {
-        return coord[d];
+        return data[d];
     }
 
     @Override
     public double distance(HyperPoint h) {
+        if (this == h) return 0;
         FloatND p = (FloatND) h;
         float sumSq = 0;
-        for (int i = 0; i < coord.length; i++) {
-            float x = coord[i];
-            float y = p.coord[i];
+        for (int i = 0; i < data.length; i++) {
+            float x = data[i];
+            float y = p.data[i];
             float xMinY = x - y;
             sumSq += xMinY * xMinY;
         }
@@ -57,7 +56,7 @@ public class FloatND implements HyperPoint, Serializable, Comparable<FloatND> {
 
     @Override
     public double distance(HyperPoint p, int i) {
-        return Math.abs(coord[i] - ((FloatND) p).coord[i]);
+        return this==p ? 0 : Math.abs(data[i] - ((FloatND) p).data[i]);
     }
 
     @Override
@@ -66,29 +65,23 @@ public class FloatND implements HyperPoint, Serializable, Comparable<FloatND> {
         if (!(o instanceof FloatND)) return false;
 
         FloatND floatND = (FloatND) o;
-        return hash == floatND.hashCode() && Arrays.equals(coord, floatND.coord);
-
-
-
-
-
-
-
+        return /*hash == floatND.hashCode() && */Arrays.equals(data, floatND.data);
     }
 
     @Override
     public int hashCode() {
-        return hash;
+        //return hash;
+        return Arrays.hashCode(data);
     }
 
     @Override
     public String toString() {
-        return '(' + Arrays.toString(coord) + ')';
+        return '(' + Arrays.toString(data) + ')';
     }
 
 
     @Override
-    public int compareTo(@NotNull FloatND o) {
-        return Arrays.compare(coord, o.coord);
+    public int compareTo(FloatND o) {
+        return Arrays.compare(data, o.data);
     }
 }

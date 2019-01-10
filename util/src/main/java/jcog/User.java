@@ -469,8 +469,8 @@ public class User {
                         if (o instanceof HyperRectFloat) {
                             HyperRectFloat r = (HyperRectFloat)o;
                             if (r.dim() == 4) {
-                                double[] min = Util.toDouble(r.min.coord);
-                                double[] max = Util.toDouble(r.max.coord);
+                                double[] min = Util.toDouble(r.min.data);
+                                double[] max = Util.toDouble(r.max.data);
                                 d.add(new DoubleRange(BOUNDS, min, max));
                             }
                         } else if (o instanceof HyperRectDouble) {

@@ -89,22 +89,30 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
     }
 
 
-    public HyperRectFloat(final FloatND a, final FloatND b) {
-        int dim = a.dim();
+    public HyperRectFloat(FloatND a, FloatND b) {
+        if (a!=b) {
+            if (Arrays.compare(a.data, b.data)>0) {
 
-        float[] min = new float[dim];
-        float[] max = new float[dim];
+                int dim = a.dim();
 
-        float[] ad = a.coord;
-        float[] bd = b.coord;
-        for (int i = 0; i < dim; i++) {
-            float ai = ad[i];
-            float bi = bd[i];
-            min[i] = Math.min(ai, bi);
-            max[i] = Math.max(ai, bi);
+                float[] min = new float[dim];
+                float[] max = new float[dim];
+
+                float[] ad = a.data;
+                float[] bd = b.data;
+                for (int i = 0; i < dim; i++) {
+                    float ai = ad[i];
+                    float bi = bd[i];
+                    min[i] = Math.min(ai, bi);
+                    max[i] = Math.max(ai, bi);
+                }
+                a = new FloatND(min);
+                b = new FloatND(max);
+            }
         }
-        this.min = new FloatND(min);
-        this.max = new FloatND(max);
+
+        this.min = a;
+        this.max = b;
     }
 
     public static HyperRegion all(int i) {
@@ -132,14 +140,14 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
         if (r instanceof HyperRectFloat) {
             final HyperRectFloat x = (HyperRectFloat) r;
             for (int i = 0; i < dim; i++) {
-                newMin[i] = Math.min(min.coord[i], x.min.coord[i]);
-                newMax[i] = Math.max(max.coord[i], x.max.coord[i]);
+                newMin[i] = Math.min(min.data[i], x.min.data[i]);
+                newMax[i] = Math.max(max.data[i], x.max.data[i]);
             }
         } else {
 
             for (int i = 0; i < dim; i++) {
-                newMin[i] = Math.min(min.coord[i], (float) r.coord(i, false));
-                newMax[i] = Math.max(max.coord[i], (float) r.coord(i, true));
+                newMin[i] = Math.min(min.data[i], (float) r.coord(i, false));
+                newMax[i] = Math.max(max.data[i], (float) r.coord(i, true));
             }
         }
         if (Arrays.equals(newMin, newMax))
@@ -155,8 +163,8 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
     }
 
     public float centerF(int dim) {
-        float min = this.min.coord[dim];
-        float max = this.max.coord[dim];
+        float min = this.min.data[dim];
+        float max = this.max.data[dim];
         if ((min == NEGATIVE_INFINITY) && (max == Float.POSITIVE_INFINITY))
             return 0;
         if (min == NEGATIVE_INFINITY)
@@ -184,13 +192,13 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
 
     @Override
     public double coord(int dimension, boolean maxOrMin) {
-        return (maxOrMin ? max : min).coord[dimension];
+        return (maxOrMin ? max : min).data[dimension];
     }
 
     @Override
     public double range(final int dim) {
-        float min = this.min.coord[dim];
-        float max = this.max.coord[dim];
+        float min = this.min.data[dim];
+        float max = this.max.data[dim];
         if (min == max)
             return 0;
         if ((min == NEGATIVE_INFINITY) || (max == Float.POSITIVE_INFINITY))

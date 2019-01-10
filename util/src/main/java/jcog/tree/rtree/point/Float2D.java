@@ -1,6 +1,9 @@
 package jcog.tree.rtree.point;
 
+import jcog.Util;
 import jcog.tree.rtree.HyperPoint;
+
+import static java.lang.Float.floatToIntBits;
 
 public class Float2D implements HyperPoint, Comparable<Float2D> {
     public final float x;
@@ -12,7 +15,7 @@ public class Float2D implements HyperPoint, Comparable<Float2D> {
     }
 
     @Override
-    public int dim() {
+    public final int dim() {
         return 2;
     }
 
@@ -29,6 +32,7 @@ public class Float2D implements HyperPoint, Comparable<Float2D> {
 
     @Override
     public double distance(final HyperPoint p) {
+        if (p == this) return 0;
         final Float2D p2 = (Float2D) p;
 
         final float dx = p2.x - x;
@@ -38,6 +42,7 @@ public class Float2D implements HyperPoint, Comparable<Float2D> {
 
     @Override
     public double distance(final HyperPoint p, final int d) {
+        if (p == this) return 0;
         final Float2D p2 = (Float2D) p;
         if (d == 0) {
             return Math.abs(p2.x - x);
@@ -66,15 +71,16 @@ public class Float2D implements HyperPoint, Comparable<Float2D> {
 
     @Override
     public int hashCode() {
-        long temp = Float.floatToIntBits(x);
-        int result = (int) (temp ^ (temp >>> 32));
-        temp = Float.floatToIntBits(y);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        return result;
+//        long temp = floatToIntBits(x);
+//        int result = (int) (temp ^ (temp >>> 32));
+//        temp = floatToIntBits(y);
+//        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return Util.hashCombine(floatToIntBits(x), floatToIntBits(y));
     }
 
     @Override
     public int compareTo(Float2D o) {
+        if (this == o) return 0;
         int a = Float.compare(x, o.x);
         if (a != 0) return a;
         int b = Float.compare(y, o.y);
