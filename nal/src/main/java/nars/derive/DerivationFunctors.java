@@ -1,12 +1,13 @@
 package nars.derive;
 
-import jcog.bloom.hash.HashProvider;
 import jcog.data.list.FasterList;
 import nars.Builtin;
 import nars.NAR;
+import nars.Param;
 import nars.op.Equal;
 import nars.op.SetFunc;
 import nars.op.SubUnify;
+import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
@@ -14,6 +15,7 @@ import nars.term.atom.Atomic;
 import nars.term.util.Conj;
 import nars.term.util.Image;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
+import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +23,7 @@ import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
+import static nars.time.Tense.*;
 
 public enum DerivationFunctors {
     ;
@@ -34,6 +37,7 @@ public enum DerivationFunctors {
                 add(m, s);
 
         NAR nar = d.nar;
+
 
         Functor[] derivationFunctors = new Functor[]{
                 d.myUniSubst,
@@ -62,12 +66,15 @@ public enum DerivationFunctors {
                 (Functor) nar.concept("without"),
                 (Functor) nar.concept("withoutPosOrNeg"),
                 new Functor.AbstractInlineFunctor2("conjBefore") {
-                    @Override
-                    protected Term apply(Term conj, Term event) {
-                        Term x = beforeOrAfter(conj, event, true, d, 4);
-                        if (x == null)
-                            return Null;
-                        return x;
+                    @Override protected Term apply(Term conj, Term event) {
+                        Term x = beforeOrAfter(conj, event, true, d, Param.TTL_CONF_BEFORE_AFTER);
+                        return x == null ? Null : x;
+                    }
+                },
+                new Functor.AbstractInlineFunctor2("conjAfter") {
+                    @Override protected Term apply(Term conj, Term event) {
+                        Term x = beforeOrAfter(conj, event, false, d, Param.TTL_CONF_BEFORE_AFTER);
+                        return x == null ? Null : x;
                     }
                 }
         };
@@ -90,6 +97,136 @@ public enum DerivationFunctors {
         return m.put((Atomic) x.term(), (Functor) x);
     }
 
+
+    /**
+     * returns the prefix or suffix sequence of a specific matched subevent
+     */
+    public static Term beforeOrAfter(Term conj, Term event, boolean beforeOrAfter, Derivation d, int ttl /*, unifyOrEquals, includeMatchedEvent */) {
+
+
+        if (conj.op() != CONJ || conj.dt()==XTERNAL)
+            return Null;
+
+        event = Image.imageNormalize(event);
+
+        if (event.volume() >= conj.volume())
+            return Null;
+
+         return beforeOrAfterSeq(conj, event, beforeOrAfter, d, ttl);
+    }
+
+    private static Term beforeOrAfterSeq(Term conj, Term event, boolean beforeOrAfter, Derivation d, int ttl) {
+        int varBits = VAR_DEP.bit | VAR_INDEP.bit;
+
+        //sequence or commutive
+        boolean seqOrComm;
+
+        FasterList<LongObjectPair<Term>> x;
+        if (Conj.isSeq(conj)) {
+            seqOrComm = true;
+            x = conj.eventList();
+            if (!beforeOrAfter)
+                x.reverse(); //match from opposite direction
+        } else {
+            //conj.dt() == DTERNAL || conj.dt() == 0
+            seqOrComm = false;
+            Subterms ss = conj.subterms();
+            x = new FasterList<>(ss.subs());
+            long when = (conj.dt() == DTERNAL) ? ETERNAL : 0;
+            for (Term cc : ss)
+                x.add(PrimitiveTuples.pair(when, cc));
+        }
+
+        int n = x.size();
+        assert (n > 1);
+
+        long leadOcc = x.get(0).getOne();
+        boolean leadingEventParallel = (x.get(1).getOne() == leadOcc);
+
+        //skip a leading non-parallel event, but dont skip any if parallel
+        int parallelLead = leadingEventParallel ? 0 : 1;
+
+        if (!conj.impossibleSubTerm(event)) {
+            int matchExact = -1;
+            for (int i = parallelLead; i < n; i++) {
+                LongObjectPair<Term> xi = x.get(i);
+                if (xi.getTwo().equals(event)) {
+                    matchExact = i;
+                    break;
+                }
+            }
+            if (matchExact != -1) {
+                if (n == 2) {
+                    return x.get(1-matchExact).getTwo();
+                } else {
+                    //include any other events occurring at the same time as matchExact but not those after it
+                    LongObjectPair<Term> me = x.remove(matchExact);
+                    long meTime = me.getOne();
+                    x.removeIf(
+                            beforeOrAfter ?
+                                    xx -> xx.getOne() > meTime
+                                    :
+                                    xx -> xx.getOne() < meTime
+                    );
+
+                    return Conj.conj(x);
+                }
+            }
+        }
+
+        //try to unify if variables present
+        //TODO only unif
+        boolean eVar = event.hasAny(varBits);
+        if (eVar || (conj.hasAny(varBits) /*&& x.anySatisfy(1, n, z -> z.getTwo().hasAny(varBits)))*/)) {
+            //TODO use SubUnify correctly (ie. termutes via tryMatch )
+            SubUnify s =
+                    //new SubUnify(d.random);
+                    d.myUniSubst.u;
+            for (int matchUnify = parallelLead; matchUnify < n; matchUnify++) {
+                s.ttl = ttl;
+                LongObjectPair<Term> xi = x.get(matchUnify);
+                Term ti = xi.getTwo();
+                if (eVar || ti.hasAny(varBits)) {
+
+                    s.clear();
+
+                    if (event.unify(ti, s)) {
+
+                        s.xy.forEach(d.xy::set);
+
+                        if (n == 2) {
+                            return x.get(1-matchUnify).getTwo().replace(s.xy);
+                        } else {
+
+                            //include any other events occurring at the same time as matchExact but not those after it
+
+                            LongObjectPair<Term> me = x.remove(matchUnify);
+                            long meTime = me.getOne();
+                            x.removeIf(
+                                    beforeOrAfter ?
+                                            xx -> xx.getOne() > meTime
+                                            :
+                                            xx -> xx.getOne() < meTime
+                            );
+
+                            n = x.size();
+                            Conj y = new Conj(n);
+                            for (int j = 0; j < n; j++) {
+                                if (!y.add(x.get(j).getOne(), x.get(j).getTwo().replace(s.xy)))
+                                    break; //fail
+                            }
+                            return y.term();
+                        }
+                    }
+                }
+            }
+
+        }
+
+        return Null;
+    }
+
+
 //        {
 //            Map<Term, Termed> n = new HashMap<>(Builtin.statik.length);
 //            for (Termed s : Builtin.statik) {
@@ -100,128 +237,16 @@ public enum DerivationFunctors {
 //        }
 
 
-    final static HashProvider<Atomic> fastAtomHash = new HashProvider<Atomic>() {
-        @Override
-        public int hash1(Atomic element) {
-            return element.hashCode();
-        }
-
-        @Override
-        public int hash2(Atomic element) {
-            return element.bytes().length;
-        }
-    };
-
-
-    /**
-     * returns the prefix or suffix sequence of a specific matched subevent
-     */
-    public static Term beforeOrAfter(Term conj, Term event, boolean beforeOrAfter, Derivation d, int ttl /*, unifyOrEquals, includeMatchedEvent */) {
-        int varBits = VAR_DEP.bit | VAR_INDEP.bit;
-
-        if (conj.op() != CONJ || event.volume() > conj.volume())
-            return null;
-
-        if (Conj.isSeq(conj)) {
-            FasterList<LongObjectPair<Term>> x = conj.eventList();
-            if (!beforeOrAfter)
-                x.reverse();
-
-            int n = x.size();
-
-            if (!conj.impossibleSubTerm(event)) {
-                int matchExact = -1;
-                assert (n > 1);
-                for (int i = 1; i < n; i++) {
-                    LongObjectPair<Term> xi = x.get(i);
-                    if (xi.getTwo().equals(event)) {
-                        matchExact = i;
-                        break;
-                    }
-                }
-                if (matchExact != -1) {
-                    if (n == 2) {
-                        return x.get(0).getTwo();
-                    } else {
-                        //include any other events occurring at the same time as matchExact but not those after it
-                        LongObjectPair<Term> me = x.remove(matchExact);
-                        long meTime = me.getOne();
-                        x.removeIf(xx -> xx.getOne() > meTime);
-
-                        return Conj.conj(x);
-                    }
-                }
-            }
-
-            //try to unify if variables present
-            //TODO only unif
-            boolean eVar = event.hasAny(varBits);
-            if (eVar || (conj.hasAny(varBits) /*&& x.anySatisfy(1, n, z -> z.getTwo().hasAny(varBits)))*/)) {
-                //TODO use SubUnify correctly (ie. termutes via tryMatch )
-                SubUnify s =
-                    //new SubUnify(d.random);
-                    d.myUniSubst.u;
-                for (int matchUnify = 1; matchUnify < n; matchUnify++) {
-                    s.ttl = ttl;
-                    LongObjectPair<Term> xi = x.get(matchUnify);
-                    Term ti = xi.getTwo();
-                    if (eVar || ti.hasAny(varBits)) {
-
-                        s.clear();
-
-                        if (event.unify(ti, s)) {
-
-                            s.xy.forEach(d.xy::set);
-
-                            if (n == 2) {
-                                assert (matchUnify == 1);
-                                return x.get(0).getTwo().replace(s.xy);
-                            } else {
-
-                                //include any other events occurring at the same time as matchExact but not those after it
-
-                                LongObjectPair<Term> me = x.remove(matchUnify);
-                                long meTime = me.getOne();
-                                x.removeIf(xx -> xx.getOne() > meTime);
-
-                                n = x.size();
-                                Conj y = new Conj(n);
-                                for (int j = 0; j < n; j++) {
-                                    if (!y.add(x.get(j).getOne(), x.get(j).getTwo().replace(s.xy)))
-                                        break; //fail
-                                }
-                                return y.term();
-                            }
-                        }
-                    }
-                }
-
-            }
-
-
-//            Term match = earlyOrLate ? conj.eventFirst() : conj.eventLast(); //TODO look inside parallel conj event
-//            if (strict && (match.equals(event) || (!eventVars && !match.hasAny(varBits) /* TODO temporal subterms? */)))
-//                return null;
+//    final static HashProvider<Atomic> fastAtomHash = new HashProvider<Atomic>() {
+//        @Override
+//        public int hash1(Atomic element) {
+//            return element.hashCode();
+//        }
 //
-//            if (!Terms.possiblyUnifiable(match, event, strict, varBits))
-//                return null;
-//
-//            SubUnify s = new SubUnify(rng);
-//            s.ttl = ttl;
-//            if (match.unify(event, s)) {
-//                //TODO try diferent permutates tryMatch..
-//                Term dropped = withoutEarlyOrLate(conj, match, earlyOrLate);
-//                Term dropUnified = dropped.replace(s.xy);
-//                if (!strict || !dropUnified.equals(dropped)) {
-//                    return dropUnified;
-//                }
-//            }
-        } else {
-            //?? should apply to parallel?
-        }
-
-        return null; //TODO
-    }
-
+//        @Override
+//        public int hash2(Atomic element) {
+//            return element.bytes().length;
+//        }
+//    };
 
 }

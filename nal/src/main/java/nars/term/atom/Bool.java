@@ -125,10 +125,7 @@ abstract public class Bool extends AbstractAtomic implements The {
 //    @Override
 //    abstract public boolean equalsNegRoot(Term t);
 
-    @Override
-    public final boolean equalsRoot(Term x) {
-        return equals(x);
-    }
+
 
     @Override
     public final boolean equals(Object u) {

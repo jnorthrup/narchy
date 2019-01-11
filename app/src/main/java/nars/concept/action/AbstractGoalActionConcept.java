@@ -146,8 +146,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
                 withoutCuriosity;
                 //Answer.filter(withoutCuriosity, (t) -> t.endsAfter(recent)); //prevent stronger past from overriding weaker future
 
-        try(Answer a = Answer.
-                relevance(true, limit, s, e, term, fil, n)) {
+        try(Answer a = Answer.relevance(true, limit, s, e, term, fil, n)) {
 
 
             @Nullable TemporalBeliefTable temporalTable = ((BeliefTables) goals()).tableFirst(TemporalBeliefTable.class);

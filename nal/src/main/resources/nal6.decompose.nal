@@ -1,14 +1,15 @@
 //conjunction/disjunction structural decomposition
 
   //Conjunction structural decompose: C = (&&,a,b,..)
-//    C, X, eventOf(C,X), conjParallel(C)                        |-   conjWithout(C,X), (Belief:StructuralDeduction)
-//    C, X, eventOfNeg(C,X), conjParallel(C)                     |-   conjWithout(C,--X), (Belief:StructuralDeduction)
 
-      C, X, eventFirstOf(C,X)                               |- X, (  Goal:StructuralDeduction)
-       D, X, eventOfNeg(D,X), conjParallel(D), has(D,"--")  |- --conjWithout(D,--X), (  Goal:StructuralDeductionN)
+    C, X, eventOf(C,X), conjParallel(C), --isVar(X)                |-   conjWithout(C,X), (Belief:StructuralDeduction)
+    C, X, eventOfNeg(C,X), conjParallel(C), --isVar(X)             |-   conjWithout(C,--X), (Belief:StructuralDeduction)
+
+      //C, X, eventFirstOf(C,X)                               |- X, (  Goal:StructuralDeduction)
+       //D, X, eventOfNeg(D,X), conjParallel(D), has(D,"--")  |- --conjWithout(D,--X), (  Goal:StructuralDeductionN)
         //C, X, eventOf(C,X), conjParallel(C)                  |-   conjWithout(C,X), (  Goal:StructuralDeduction)
-      C, X, eventFirstOfNeg(C,X), has(C,"--")               |- --X, (  Goal:StructuralDeduction)
-       D, X, eventOf(D,X), conjParallel(D)                  |- --conjWithout(D,X), (  Goal:StructuralDeductionN)
+      //C, X, eventFirstOfNeg(C,X), has(C,"--")               |- --X, (  Goal:StructuralDeduction)
+       //D, X, eventOf(D,X), conjParallel(D)                  |- --conjWithout(D,X), (  Goal:StructuralDeductionN)
         //C, X, eventOfNeg(C,X), conjParallel(C)               |-   conjWithout(C,--X), (  Goal:StructuralDeduction)
 
 
@@ -17,20 +18,20 @@
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
 
     //CONJ
-    S, C, eventOf(C,S), conjParallel(C)                   |-   conjWithout(C,  S), (Belief:DecomposePP)
-    S, C, eventOfNeg(C,S), conjParallel(C), has(C,"--")   |-   conjWithout(C,--S), (Belief:DecomposeNP)
+    X, C, eventOf(C,X), conjParallel(C), --isVar(X)                   |-   conjWithout(C,  X), (Belief:DecomposePP)
+    X, C, eventOfNeg(C,X), conjParallel(C), has(C,"--"), --isVar(X)   |-   conjWithout(C,--X), (Belief:DecomposeNP)
 
-    //DISJ
-    S, D, eventOfNeg(D,S), conjParallel(D), has(D,"--")   |-   --conjWithout(D,--S), (Belief:DecomposeNN)
-    S, D, eventOf(D,S), conjParallel(D)                   |-   --conjWithout(D,  S), (Belief:DecomposePN)
+    //DIXJ
+    X, D, eventOfNeg(D,X), conjParallel(D), has(D,"--"), --isVar(X)   |-   --conjWithout(D,--X), (Belief:DecomposeNN)
+    X, D, eventOf(D,X), conjParallel(D), --isVar(X)                   |-   --conjWithout(D,  X), (Belief:DecomposePN)
 
     //conditional disjunction goal decompose (alternate suppress by belief)
-    D, X, eventOf(D,X), conjParallel(D)                   |-   --conjWithout(D,  X), (Goal:DesireNP)
-    D, X, eventOfNeg(D,X), conjParallel(D), has(D,"--")   |-   --conjWithout(D,--X), (Goal:DesireNN)
+    D, X, eventOf(D,X), conjParallel(D), --isVar(X)                   |-   --conjWithout(D,  X), (Goal:DesireNP)
+    D, X, eventOfNeg(D,X), conjParallel(D), has(D,"--"), --isVar(X)   |-   --conjWithout(D,--X), (Goal:DesireNN)
 
     //conditional goal disjunction decompose (alternate suppress by goal)
-    G, D, eventOf(D,G), conjParallel(D)                   |- --conjWithout(D,  G), (Goal:DesireWeakPN)
-    G, D, eventOfNeg(D,G), conjParallel(D), has(D,"--")   |- --conjWithout(D,--G), (Goal:DesireWeakNN)
+    G, D, eventOf(D,G), conjParallel(D), --isVar(G)                   |- --conjWithout(D,  G), (Goal:DesireWeakPN)
+    G, D, eventOfNeg(D,G), conjParallel(D), has(D,"--"), --isVar(G)   |- --conjWithout(D,--G), (Goal:DesireWeakNN)
 
 
 
@@ -50,13 +51,15 @@
     //X is the desired event suffix (outcome).
     //C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
 
-    //desire for sub-sequence leading to goal, with additional restriction of anti-goal not present anywhere in the sequence
-    G, C, is(C,"&&"), --eventOfNeg(C,G)              |-    conjBefore(C,  G),  (Goal:Desire)
-    G, C, is(C,"&&"), --eventOf(C,G), has(C,"--")    |-    conjBefore(C,--G),  (Goal:DesireN)
+    //desire for sub-sequence leading to goal,
+    G, C, is(C,"&&")                  |-    conjBefore(C,  G),  (Goal:Desire)
+    G, C, is(C,"&&"),  has(C,"--")    |-    conjBefore(C,--G),  (Goal:DesireN)
+            //--eventOfNeg(C,G) , --eventOf(C,G) <- optional additional restriction of anti-goal not present anywhere in the sequence
 
-    //weak anti-desire for sub-sequence leading to anti-goal
-       G, C, is(C,"&&"), has(C,"--")                 |-   negateEvents(conjBefore(C,--G)),  (Goal:DesireWeak)
-       G, C, is(C,"&&")                              |-   negateEvents(conjBefore(C,  G)),  (Goal:DesireWeakN)
+    //anti-desire for sub-sequence leading to anti-goal
+       G, C, is(C,"&&"), has(C,"--")                 |-   negateEvents(conjBefore(C,--G)),  (Goal:Desire)
+       G, C, is(C,"&&")                              |-   negateEvents(conjBefore(C,  G)),  (Goal:DesireN)
+        // weak, weakN?
 
 //        G, C, eventLastOf(C,G), --eventOfNeg(C,G)       |-   conjDropIfLatest(C,G),     (Goal:Desire)
 //        G, C, is(C,"&&")                                |-   conjDropIfLatestUnifies(C,G), (Goal:Desire)
@@ -92,8 +95,11 @@
 
     //TODO conjunction sequence prefix
 
-    C, X, eventFirstOf(C,X)                   |- conjDropIfEarliest(C,  X), (Belief:Deduction,Goal:Deduction)
-    C, X, eventFirstOfNeg(C,X), has(C,"--")   |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DeductionPN)
+    C, X, is(C,"&&"), --isVar(X)                   |- conjAfter(C,  X), (Belief:Deduction,Goal:Deduction)
+    C, X, is(C,"&&"), has(C,"--"), --isVar(X)      |- conjAfter(C,  --X), (Belief:DeductionPN,Goal:DeductionPN)
+
+//    C, X, eventFirstOf(C,X)                   |- conjDropIfEarliest(C,  X), (Belief:Deduction,Goal:Deduction)
+//    C, X, eventFirstOfNeg(C,X), has(C,"--")   |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DeductionPN)
 
 
 

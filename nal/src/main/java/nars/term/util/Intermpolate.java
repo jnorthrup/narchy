@@ -20,11 +20,13 @@ public enum Intermpolate {;
 
     private static Term intermpolate(/*@NotNull*/ Term a,  /*@NotNull*/ Term b, float aProp, float curDepth, NAR nar) {
 
-        if (a.equals(b)/* && bOffset == 0*/)
+        if (a.equals(b))
             return a;
 
         if (!a.equalsRoot(b))
             return Null;
+
+
 
         Op ao = a.op();//, bo = b.op();
 //        if (ao != bo)         return Null; //checked in equalRoot
@@ -111,8 +113,7 @@ public enum Intermpolate {;
     }
 
     public static int chooseDT(Term a, Term b, float aProp, NAR nar) {
-        int adt = a.dt(), bdt = b.dt();
-        return chooseDT(adt, bdt, aProp, nar);
+        return chooseDT(a.dt(), b.dt(), aProp, nar);
     }
 
     public static int chooseDT(int adt, int bdt, float aProp, NAR nar) {

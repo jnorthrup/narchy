@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 400;
+    private final int cycles = 200;
 
     @Override
     protected NAR nar() {
@@ -303,21 +303,21 @@ public class NAL5Test extends NALTest {
 
     }
 
-    @Test
-    void compound_decomposition_subj_posneg() {
-        test.nar.termVolumeMax.set(9);
-        test.believe("((b && --c)==>a)", 1.0f, 0.9f)
-                .mustBelieve(cycles, "(b==>a)", 1.00f, 0.81f)
-                .mustBelieve(cycles, "(--c==>a)", 1.00f, 0.81f);
-    }
-
-    @Test
-    void compound_decomposition_pred_posneg() {
-        test.nar.termVolumeMax.set(9);
-        test.believe("(a==>(b && --c))", 1.0f, 0.9f)
-                .mustBelieve(cycles, "(a==>b)", 1.00f, 0.81f)
-                .mustBelieve(cycles, "(a==>c)", 0.00f, 0.81f);
-    }
+//    @Test
+//    void compound_decomposition_subj_posneg() {
+//        test.nar.termVolumeMax.set(9);
+//        test.believe("((b && --c)==>a)", 1.0f, 0.9f)
+//                .mustBelieve(cycles, "(b==>a)", 1.00f, 0.81f)
+//                .mustBelieve(cycles, "(--c==>a)", 1.00f, 0.81f);
+//    }
+//
+//    @Test
+//    void compound_decomposition_pred_posneg() {
+//        test.nar.termVolumeMax.set(9);
+//        test.believe("(a==>(b && --c))", 1.0f, 0.9f)
+//                .mustBelieve(cycles, "(a==>b)", 1.00f, 0.81f)
+//                .mustBelieve(cycles, "(a==>c)", 0.00f, 0.81f);
+//    }
 
     @Test
     void compound_decomposition_one_premise_pos() {
@@ -329,14 +329,6 @@ public class NAL5Test extends NALTest {
         tester.mustBelieve(cycles, "(robin --> [flying])", 1.00f, 0.81f);
     }
 
-    @Test
-    void testConjStructuralDeduction() {
-        test
-                .believe("(&&, a, b)")
-                .mustBelieve(cycles, "a", 1f, 0.81f)
-                .mustBelieve(cycles, "b", 1f, 0.81f)
-        ;
-    }
 
     @Test
     void impl_disjunction_subj_decompose_one_premise() {
@@ -410,6 +402,14 @@ public class NAL5Test extends NALTest {
 
     }
 
+    @Test
+    void conjunction_decomposition_one_premises_simple() {
+        test
+                .believe("(&&, a, b)")
+                .mustBelieve(cycles, "a", 1f, 0.81f)
+                .mustBelieve(cycles, "b", 1f, 0.81f)
+        ;
+    }
 
     @Test
     void negation0() {

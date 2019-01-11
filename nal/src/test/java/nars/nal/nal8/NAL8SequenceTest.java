@@ -10,6 +10,8 @@ import nars.test.NALTest;
 import nars.time.Tense;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
@@ -30,6 +32,17 @@ public class NAL8SequenceTest extends NALTest {
         ;
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"&|","&&"})
+    void testSubParallelOutcome(String conj) {
+        test.confTolerance(0.01f);
+        test
+                .input( "x!")
+                .input( "(" + conj + ",x,y,z).")
+                .mustGoal(cycles, "(y"+conj+"z)", 1, 0.81f) //81% for one step
+        ;
+    }
+
     @Test
     void testMidSequenceOutcome() {
         test.confTolerance(0.01f);
@@ -37,6 +50,15 @@ public class NAL8SequenceTest extends NALTest {
                 .input( "c!")
                 .input( "(a &&+1 (b &&+1 (c &&+1 (d &&+1 e)))).")
                 .mustGoal(cycles, "(a &&+1 b)", 1, 0.81f) //81% for one step
+        ;
+    }
+    @Test
+    void testStartSequenceDTernalComponentOutcome() {
+        test.confTolerance(0.01f);
+        test
+                .input( "b!")
+                .input( "((a&|b) &&+1 c).")
+                .mustGoal(cycles, "a", 1, 0.81f) //81% for one step
         ;
     }
     @Test
@@ -96,6 +118,35 @@ public class NAL8SequenceTest extends NALTest {
                 .mustGoal(cycles, "(a(x) &&+1 (b &&+1 (c &&+1 d)))", 1, 0.81f) //81% for one step
         ;
     }
+
+    @Test
+    void testBeliefDeduction_MidSequenceDTernalComponent() {
+        test.confTolerance(0.01f);
+        test
+                .input( "c.")
+                .input( "(a &&+1 (b &&+1 ((c&|f) &&+1 (d &&+1 e)))).")
+                .mustBelieve(cycles, "(f &&+1 (d &&+1 e))", 1, 0.81f) //81% for one step
+        ;
+    }
+    @Test
+    void testBeliefDeduction_MidSequenceDTernalComponentWithUnification() {
+        test.confTolerance(0.01f);
+        test
+                .input( "c(x).")
+                .input( "(a &&+1 (b(#1) &&+1 ((&|,a,b,c(#1),d(x,#1)) &&+1 (d &&+1 e(#1))))).")
+                .mustBelieve(cycles, "((&|,a,b,d(x,x)) &&+1 (d &&+1 e(x)))", 1, 0.81f) //81% for one step
+        ;
+    }
+    @Test
+    void testGoalDeduction_MidSequenceDTernalComponentWithUnification() {
+        test.confTolerance(0.01f);
+        test
+                .input( "c(x).")
+                .input( "(a &&+1 (b(#1) &&+1 ((&|,a,b,c(#1),d(x,#1)) &&+1 (d &&+1 e(#1)))))!")
+                .mustGoal(cycles, "((&|,a,b,d(x,x)) &&+1 (d &&+1 e(x)))", 1, 0.81f) //81% for one step
+        ;
+    }
+
 
     @Disabled
     @Test void test1() throws Narsese.NarseseException {

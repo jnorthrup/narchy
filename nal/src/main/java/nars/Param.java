@@ -129,7 +129,7 @@ public abstract class Param {
     public static final int TASK_EVAL_FORK_LIMIT = 8;
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
-    /** can be > 1 */
+    /** >= 1  - maximum # of Answer attempts per Answer capacity.  so 2 means 2 tasks are tried for each Answer task slot in its capacity */
     public static final float ANSWER_COMPLETENESS = 2f;
 
 //    public static final boolean DERIVE_AUTO_IMAGE_NORMALIZE = true;
@@ -287,6 +287,8 @@ public abstract class Param {
     public final IntRange deriveBranchTTL = new IntRange(2 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
+
+    public static final int TTL_CONF_BEFORE_AFTER = 4;
 
     /**
      * for NALTest's: extends the time all unit tests are allowed to run for.

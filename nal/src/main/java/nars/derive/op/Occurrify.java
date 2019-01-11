@@ -271,15 +271,20 @@ public class Occurrify extends TimeGraph {
     }
 
     @Override
-    @Deprecated
-    protected Term dt(Term x, boolean dir, int dt) {
-        int ddt = dt(dt);
-        Term y = super.dt(x, dir, ddt);
-        if (ddt != dt && Param.ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS && (y.op() != x.op())) {
-            y = super.dt(x, dir, dt);
-        }
-        return y;
+    public long occ(long when) {
+        return Tense.dither(when, d.ditherTime);
     }
+
+    //    @Override
+//    @Deprecated
+//    protected Term dt(Term x, boolean dir, int dt) {
+//        int ddt = dt(dt);
+//        Term y = super.dt(x, dir, ddt);
+//        if (ddt != dt && !Param.ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS && (y.op() != x.op())) {
+//            y = super.dt(x, dir, dt);
+//        }
+//        return y;
+//    }
 
     @Override
     protected Random random() {
