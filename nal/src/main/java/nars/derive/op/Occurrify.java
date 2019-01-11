@@ -130,15 +130,15 @@ public class Occurrify extends TimeGraph {
                     (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
                 throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
 
-            if ((d.taskPunc==GOAL && d.concPunc == GOAL) && occ[0]!=ETERNAL && occ[0] < d.taskStart) {
-                //if (d.taskTerm.op()!=CONJ && d.beliefTerm.op()==IMPL) {
-                {
-                    //immediate shift
-                    long range = occ[1] - occ[0];
-                    occ[0] = d.taskStart;
-                    occ[1] = occ[0] + range;
-                }
-            }
+//            if ((d.taskPunc==GOAL && d.concPunc == GOAL) && occ[0]!=ETERNAL && occ[0] < d.taskStart) {
+//                //if (d.taskTerm.op()!=CONJ && d.beliefTerm.op()==IMPL) {
+//                {
+//                    //immediate shift
+//                    long range = occ[1] - occ[0];
+//                    occ[0] = d.taskStart;
+//                    occ[1] = occ[0] + range;
+//                }
+//            }
 
 //            if (d.concTruth!=null) {
 //                long start = occ[0], end = occ[1];
@@ -260,7 +260,7 @@ public class Occurrify extends TimeGraph {
                 int dt = x.dt();
                 return (dt != DTERNAL && dt != XTERNAL);
             }
-            return x.ORrecurse(Occurrify::temporal);
+            return x.subterms().OR(Occurrify::temporal);
         }
         return false;
     }

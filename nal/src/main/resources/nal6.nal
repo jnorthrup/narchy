@@ -64,8 +64,8 @@
 
 
         //TODO question variations
-        Y, (  C ==> Z), is(C,"&&"),eventsOf(C,Y)    |- (  conjWithoutAll(C,  Y) ==> Z), (Belief:Pre)
-        Y, (--C ==> Z), is(C,"&&"),eventsOf(C,Y)    |- (--conjWithoutAll(C,  Y) ==> Z), (Belief:Pre)
+        Y, (  C ==> Z), is(C,"&&"),eventOf(C,Y)    |- (  conjWithout(C,  Y) ==> Z), (Belief:Pre)
+        Y, (--C ==> Z), is(C,"&&"),eventOf(C,Y)    |- (--conjWithout(C,  Y) ==> Z), (Belief:Pre)
         Y, (  C ==> Z), is(C,"&&"),eventOfNeg(C,Y)    |- (  conjWithout(C,--Y) ==> Z), (Belief:PreN)
         Y, (--C ==> Z), is(C,"&&"),eventOfNeg(C,Y)    |- (--conjWithout(C,--Y) ==> Z), (Belief:PreN)
                 //TOD eventsOf
@@ -84,7 +84,7 @@
             //    Y, (B ==> (&&,X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:Deduction)
             //    Y, (B ==> (&&,--X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:DeductionN)
 
-        Y, (Z ==> C), is(C,"&&"),eventsOf(C,Y)      |- (Z ==> conjWithoutAll(C,    Y)), (Belief:Abduction)
+        Y, (Z ==> C), is(C,"&&"),eventOf(C,Y)      |- (Z ==> conjWithout(C,    Y)), (Belief:Abduction)
         Y, (Z ==> C), is(C,"&&"),eventOfNeg(C,Y)    |- (Z ==> conjWithout(C,  --Y)), (Belief:AbductionN)
         Y, (Z ==> C), is(C,"&&") |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,Y),Y,strict), (Belief:Abduction)
         Y, (Z ==> C), is(C,"&&") |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,--Y),--Y,strict), (Belief:AbductionN)
@@ -98,7 +98,7 @@
     //(A ==> B), X, neq(A,X), neq(A,--X), --is(X,"==>")   |- ((A && X) ==> B), (Belief:Induction)
     //(A ==> B), X, neq(A,X), neq(A,--X), --is(X,"==>")   |- ((A && --X) ==> B), (Belief:InductionPN)
 
-        (C ==> Z), (X ==> M), eventsOf(C,X) |- ((conjWithoutAll(C,X) && M) ==> Z), (Belief:AbductionPB)
+        (C ==> Z), (X ==> M), eventOf(C,X) |- ((conjWithout(C,X) && M) ==> Z), (Belief:AbductionPB)
 //        ((&&,M,X,A..*) ==> C), (Y ==> C) |- unisubst((M ==> C),X,Y), (Belief:AbductionPB)
 //        ((&&,M,A..+) ==> X), ((&&,A..+) ==> Y) |- unisubst((M ==> X),X,Y,"$"), (Belief:AbductionPB)
 //          (--(&&,M,A..+) ==> X), (--(&&,A..+) ==> Y) |- unisubst((--M ==> X),X,Y,"$"), (Belief:AbductionPB)
@@ -203,8 +203,8 @@
 
      (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:Intersection)
        (P ==> M), (S ==> M) |- --((P && S) ==> M), (Belief:IntersectionNN)
-     //(P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:Union)
-        //(P ==> M), (S ==> M) |- --((P || S) ==> M), (Belief:UnionNN)
+       (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:Union)
+        (P ==> M), (S ==> M) |- --((P || S) ==> M), (Belief:UnionNN)
 //     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:IntersectionSym)
 //     (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:UnionSym)
         (P ==> M), (S ==> M), task("?") |- (polarizeRandom((polarizeRandom(P) && polarizeRandom(S))) ==> M), (Punctuation:Question)
@@ -214,7 +214,7 @@
 
 
      (M ==> P), (M ==> S) |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized)
-     //(M ==> P), (M ==> S) |- (M ==> (polarize(P,task) || polarize(S,belief))), (Belief:UnionDepolarized, Also:VarIntro)
+     (M ==> P), (M ==> S) |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDepolarized)
         (M ==> P), (M ==> S), task("?") |- (M ==> polarizeRandom((polarizeRandom(P) && polarizeRandom(S)))), (Punctuation:Question)
 
         //(M ==> P), (M ==> S), task("?") |- (M ==> (polarizeRandom(P) || polarizeRandom(S))), (Punctuation:Question)
@@ -271,12 +271,12 @@
 
 
 
-    (C ==> Z), (B ==> M), eventsOf(C,B) |- ((conjWithoutAll(C,B) && M) ==> Z), (Belief:Induction)
-        (C ==> Z), (B ==> M), eventsOf(C,B) |- ((conjWithoutAll(C,B) && --M) ==> Z), (Belief:InductionPN)
+    (C ==> Z), (B ==> M), eventOf(C,B) |- ((conjWithout(C,B) && M) ==> Z), (Belief:Induction)
+        (C ==> Z), (B ==> M), eventOf(C,B) |- ((conjWithout(C,B) && --M) ==> Z), (Belief:InductionPN)
 
     //Conditional Abduction via Multi-conditional Syllogism
-    (C ==> Y), (E ==> Y), eventsOf(C,E)          |-    conjWithoutAll(C,E), (Belief:AbductionPB)
-        (--C ==> Y), (--D ==> Y), eventsOf(C,D)    |-  --conjWithoutAll(C,D), (Belief:AbductionPB)
+    (C ==> Y), (E ==> Y), eventOf(C,E)          |-    conjWithout(C,E), (Belief:AbductionPB)
+        (--C ==> Y), (--D ==> Y), eventOf(C,D)    |-  --conjWithout(C,D), (Belief:AbductionPB)
 
 
   (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,strict), (Belief:StructuralDeduction, Goal:StructuralDeduction)
@@ -331,8 +331,8 @@
     //(X ==> C), (B ==> M), eventOfNeg(X,M) |- ((conjWithout(X,--M) && B) ==> C), (Belief:DeductionPN)
         //((&&,M,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,B,A..+) ==> C), (Belief:Deduction)
 
-                (C ==> Y), (S ==> Y), eventsOf(C,S)          |- conjWithoutAll(C,S), (Belief:AbductionPB)
-                (--C ==> Y), (--S ==> Y), eventsOf(C,S)      |- conjWithoutAll(C,S), (Belief:AbductionPB)
+                (C ==> Y), (S ==> Y), eventOf(C,S)          |- conjWithout(C,S), (Belief:AbductionPB)
+                (--C ==> Y), (--S ==> Y), eventOf(C,S)      |- conjWithout(C,S), (Belief:AbductionPB)
                 //((&&,M,A..+) ==> Y), ((&&,A..+) ==> Y)          |- M, (Belief:AbductionPB)
                 //((&&,M,A) ==> Y),    (A ==> Y)                  |- M, (Belief:AbductionPB)
                     //(--(&&,M,A..+) ==> Y), (--(&&,A..+) ==> Y)  |- M, (Belief:AbductionPB)
@@ -369,20 +369,20 @@
 //        if two different precondition conjunctions, with a common element lead to the same conclusion,
 //        it might be that these different preconditions in the specific conjunctions imply each other
 //        because the premises can be swapped for this rule and it is still valid
-    (A ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- (conjWithoutAll(A,B) ==> conjWithoutAll(B,A)), (Belief:InductionPB)
-    (A ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- (conjWithoutAll(B,A) ==> conjWithoutAll(A,B)), (Belief:InductionPB)
+    (A ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:InductionPB)
+    (A ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- (conjWithout(B,A) ==> conjWithout(A,B)), (Belief:InductionPB)
 
         //((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- ((X ==> Y) && (Y ==> X)), (Bel4ief:InductionPB)
 
-    ((--,A) ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- ((--,conjWithoutAll(A,B)) ==> conjWithoutAll(B,A)), (Belief:InductionPB)
-    ((--,A) ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- ((--,conjWithoutAll(B,A)) ==> conjWithoutAll(A,B)), (Belief:InductionPB)
+    ((--,A) ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- ((--,conjWithout(A,B)) ==> conjWithout(B,A)), (Belief:InductionPB)
+    ((--,A) ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- ((--,conjWithout(B,A)) ==> conjWithout(A,B)), (Belief:InductionPB)
 
 
-    (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- (conjWithoutAll(A,B) ==> conjWithoutAll(B,A)), (Belief:AbductionPB)
-    (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- (conjWithoutAll(B,A) ==> conjWithoutAll(A,B)), (Belief:AbductionPB)
+    (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:AbductionPB)
+    (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- (conjWithout(B,A) ==> conjWithout(A,B)), (Belief:AbductionPB)
 
-        (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- (--conjWithoutAll(A,B) ==> conjWithoutAll(B,A)), (Belief:AbductionPBN)
-        (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- (--conjWithoutAll(B,A) ==> conjWithoutAll(A,B)), (Belief:AbductionPBN)
+        (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- (--conjWithout(A,B) ==> conjWithout(B,A)), (Belief:AbductionPBN)
+        (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- (--conjWithout(B,A) ==> conjWithout(A,B)), (Belief:AbductionPBN)
 
 
 

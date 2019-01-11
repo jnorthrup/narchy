@@ -328,7 +328,46 @@ public class NAL5Test extends NALTest {
         tester.mustBelieve(cycles, "(robin --> swimmer)", 1.00f, 0.81f);
         tester.mustBelieve(cycles, "(robin --> [flying])", 1.00f, 0.81f);
     }
-
+    @Test
+    void impl_conjunction_subj_decompose_conditional() {
+        test
+                .believe("((a && b) ==> x)")
+                .input("--(b ==> x). %0.75;0.9%")
+                .mustBelieve(cycles, "(a ==> x)", 0.75f, 0.61f) //via decompose
+        ;
+    }
+    @Test
+    void impl_conjunction_pred_decompose_conditional() {
+        test
+                .believe("(x ==> --(a && b))")
+                .input("(x ==> b). %0.75;0.9%")
+                .mustBelieve(cycles, "(x ==> a)", 0.25f, 0.61f) //via decompose
+        ;
+    }
+    @Test
+    void impl_conjunction_predneg_decompose_conditional() {
+        test
+                .believe("(x ==> --(a && --b))")
+                .input("--(x ==> b). %0.75;0.9%")
+                .mustBelieve(cycles, "(x ==> a)", 0.25f, 0.61f) //via decompose
+        ;
+    }
+    @Test
+    void impl_disjunction_subj_decompose_conditional() {
+        test
+                .believe("((a || b) ==> x)")
+                .input("--(b ==> x). %0.75;0.9%")
+                .mustBelieve(cycles, "(a ==> x)", 0.75f, 0.61f) //via decompose
+        ;
+    }
+    @Test
+    void impl_disjunction_pred_decompose_conditional() {
+        test
+                .believe("(x ==> (a || b))")
+                .input("(x ==> b). %0.25;0.9%")
+                .mustBelieve(cycles, "(x ==> a)", 0.75f, 0.61f) //via decompose
+        ;
+    }
 
     @Test
     void impl_disjunction_subj_decompose_one_premise() {

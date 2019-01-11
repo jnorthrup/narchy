@@ -130,7 +130,7 @@ public abstract class Param {
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
     /** >= 1  - maximum # of Answer attempts per Answer capacity.  so 2 means 2 tasks are tried for each Answer task slot in its capacity */
-    public static final float ANSWER_COMPLETENESS = 2f;
+    public static final float ANSWER_COMPLETENESS = 4f;
 
 //    public static final boolean DERIVE_AUTO_IMAGE_NORMALIZE = true;
 
@@ -238,7 +238,7 @@ public abstract class Param {
 
     public final TaskBuffer input =
             //new DerivedTasks.DerivedTasksMap(4096);
-            new TaskBuffer.BagTaskBuffer(512, 0.1f);
+            new TaskBuffer.BagTaskBuffer(512, 0.5f);
             //new TaskBuffer.BagPuncTasksBuffer(1024, 0.1f);
 
     /** (unsafe) true should theoreticaly be faster,
@@ -298,7 +298,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 2;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 4;
 
 
     /**

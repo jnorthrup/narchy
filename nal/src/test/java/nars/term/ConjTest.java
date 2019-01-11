@@ -766,16 +766,16 @@ public class ConjTest {
 
     @Test
     void testConjWithoutAllParallel() {
-        assertEquals("(a&&b)", Conj.withoutAll(
+        assertEquals("(a&&b)", Conj.without(
                 $$("(&&,a,b,c)"),
                 $$("(&&,c,d,e)")).toString());
 
         //unchanged because negative
-        assertEquals("(--,(&&,a,b,c))", Conj.withoutAll(
+        assertEquals("(--,(&&,a,b,c))", Conj.without(
                 $$("--(&&,a,b,c)"),
                 $$("(&&,c,d,e)")).toString());
 
-        assertEquals("(a&|b)", Conj.withoutAll(
+        assertEquals("(a&|b)", Conj.without(
                 $$("(&|,a,b,c)"),
                 $$("(&|,c,d,e)")).toString());
 
@@ -783,30 +783,30 @@ public class ConjTest {
         assertEquals(
                 //"(&&,a,b,c)",
                 "(a&&b)",
-                Conj.withoutAll(
+                Conj.without(
                         $$("(&&,a,b,c)"),
                         $$("(&|,c,d,e)")).toString());
 
-        assertEquals("(a&&b)", Conj.withoutAll(
+        assertEquals("(a&&b)", Conj.without(
                 $$("(&&,a,b,--c)"),
                 $$("(&&,--c,d,e)")).toString());
     }
 
     @Test
     void testConjWithoutAllParallel2() {
-        assertEq("a", Conj.withoutAll($$("(&&,a,b,c)"), $$("(b&&c)")));
-        assertEq("b", Conj.withoutAll($$("(&&,a,b,c)"), $$("(a&&c)")));
-        assertEq("(b&&c)", Conj.withoutAll($$("(&&,a,b,c)"), $$("a")));
-        assertEq("(a&&c)", Conj.withoutAll($$("(&&,a,b,c)"), $$("b")));
+        assertEq("a", Conj.without($$("(&&,a,b,c)"), $$("(b&&c)")));
+        assertEq("b", Conj.without($$("(&&,a,b,c)"), $$("(a&&c)")));
+        assertEq("(b&&c)", Conj.without($$("(&&,a,b,c)"), $$("a")));
+        assertEq("(a&&c)", Conj.without($$("(&&,a,b,c)"), $$("b")));
     }
 
     @Test
     void testConjWithoutAllSequence() {
-        assertEq("z", Conj.withoutAll(
+        assertEq("z", Conj.without(
                 $$("((x &&+1 y) &&+1 z)"),
                 $$("(&&,x,y)")));
 
-        assertEq("(y &&+1 z)", Conj.withoutAll(
+        assertEq("(y &&+1 z)", Conj.without(
                 $$("((x &&+1 y) &&+1 z)"),
                 $$("(x &&+2 y)")));
     }
@@ -827,7 +827,7 @@ public class ConjTest {
                 "(&|,b,c,x)",
                 y.toString());
 
-        assertEquals("y", Conj.withoutAll(x, y).toString());
+        assertEquals("y", Conj.without(x, y).toString());
 
         //ConjCommutive.the(DTERNAL, $$("(a&|b)"), $$("(b&|c)"));
 

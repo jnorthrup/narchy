@@ -1,5 +1,7 @@
 package jcog.version;
 
+import java.util.Arrays;
+
 /**
  * versioning context that holds versioned instances
  * a maximum stack size is provided at construction and will not be exceeded
@@ -56,15 +58,10 @@ public class Versioning<X> {
         final Versioned[] i = this.items;
 
         while (c-- > 0) {
-            Versioned x = i[--s];
-            if (x != null) {
-                x.pop();
-                i[s] = null;
-            }
+            i[--s].pop();
         }
-
+        Arrays.fill(i, when, s, null);
         this.size = s;
-        assert (s == when);
 
         return true;
     }

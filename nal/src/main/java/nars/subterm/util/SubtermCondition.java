@@ -41,6 +41,11 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
             return Conj.containsEvent(container, x);
         }
 
+        @Override
+        public boolean testContainer(Term container) {
+            return container.op()==CONJ;
+        }
+
         public float cost() {
             return 1f;
         }
@@ -49,6 +54,11 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
         @Override
         public final boolean test(Term container, Term x) {
             return Conj.isEventFirstOrLast(container, x,  true);
+        }
+
+        @Override
+        public boolean testContainer(Term container) {
+            return container.op()==CONJ;
         }
 
         public float cost() {
@@ -61,54 +71,64 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
             return Conj.isEventFirstOrLast(container, x,false);
         }
 
+        @Override
+        public boolean testContainer(Term container) {
+            return container.op()==CONJ;
+        }
+
         public float cost() {
             return 1.75f;
         } //more intensive comparison than first
-    },
+    }
 
-    /**
-     * conj containment of another event, or at least one event of another conj
-     */
-    EventsAny() {
-        @Override
-        public boolean test(Term container, Term x) {
-            if (container.op() != CONJ)
-                return false;
-
-            if (Conj.containsEvent(container, x))
-                return true;
-
-            if (x.op()==CONJ) {
-                return !x.eventsWhile((when,xx) ->
-                    xx==x || !Conj.containsOrEqualsEvent(container, xx)
-                , 0, true, true, true, 0);
-            }
-
-            return false;
-//            if (container.op() != CONJ || container.volume() <= xx.volume() || !Term.commonStructure(container, xx))
+//    /**
+//     * conj containment of another event, or at least one event of another conj
+//     */
+//    EventsAny() {
+//        @Override
+//        public boolean testContainer(Term container) {
+//            return container.op()==CONJ;
+//        }
+//        @Override
+//        public boolean test(Term container, Term x) {
+//            if (container.op() != CONJ)
 //                return false;
 //
-//            boolean simpleEvent = xx.op() != CONJ;
-//            if (simpleEvent) {
-//                if (Tense.dtSpecial(container.dt())) { //simple case
-//                    return container.contains(xx);
-//                } else {
-//                    return !container.eventsWhile((when, what) -> !what.equals(xx),
-//                            0, true, true, true, 0);
-//                }
-//            } else {
-//                Set<Term> xxe = xx.eventSet();
-//                container.eventsWhile((when, what) ->
-//                                !xxe.remove(what) || !xxe.isEmpty(),
-//                        0, true, true, true, 0);
-//                return xxe.isEmpty();
+//            if (Conj.containsEvent(container, x))
+//                return true;
+//
+//            if (x.op()==CONJ) {
+//                return !x.eventsWhile((when,xx) ->
+//                    xx==x || !Conj.containsOrEqualsEvent(container, xx)
+//                , 0, true, true, true, 0);
 //            }
-        }
-
-        public float cost() {
-            return 2f;
-        }
-    };
+//
+//            return false;
+////            if (container.op() != CONJ || container.volume() <= xx.volume() || !Term.commonStructure(container, xx))
+////                return false;
+////
+////            boolean simpleEvent = xx.op() != CONJ;
+////            if (simpleEvent) {
+////                if (Tense.dtSpecial(container.dt())) { //simple case
+////                    return container.contains(xx);
+////                } else {
+////                    return !container.eventsWhile((when, what) -> !what.equals(xx),
+////                            0, true, true, true, 0);
+////                }
+////            } else {
+////                Set<Term> xxe = xx.eventSet();
+////                container.eventsWhile((when, what) ->
+////                                !xxe.remove(what) || !xxe.isEmpty(),
+////                        0, true, true, true, 0);
+////                return xxe.isEmpty();
+////            }
+//        }
+//
+//        public float cost() {
+//            return 2f;
+//        }
+//    }
+    ;
 
     abstract public float cost();
 
@@ -116,4 +136,8 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
         return test(container, x) || (testNegAlso && test(container, x.neg()));
     }
 
+    public boolean testContainer(Term container) {
+        //default impl
+        return true;
+    }
 }

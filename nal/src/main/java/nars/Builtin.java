@@ -103,22 +103,13 @@ public class Builtin {
             new Functor.AbstractInlineFunctor2("conjWithout") {
                 @Override
                 protected Term apply(Term conj, Term event) {
-                    Term x = Conj.without(conj, event, false);
+                    Term x = Conj.without(conj, event);
                     if (conj.equals(x))
                         return Null;
                     return x;
                 }
             },
-            /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive event */
-            new Functor.AbstractInlineFunctor2("conjWithoutAll") {
-                @Override
-                protected Term apply(Term include, Term exclude) {
-                    Term x = Conj.withoutAll(include, exclude);
-                    if (include.equals(x))
-                        return Null;
-                    return x;
-                }
-            },
+
 
             /** applies the changes in structurally similar terms "from" and "to" to the target term */
             Functor.f3((Atom) $.the("substDiff"), (target, from, to) -> {
@@ -443,8 +434,8 @@ public class Builtin {
 
         nar.on(Functor.f1Inline("unneg", Term::unneg));
 
-        /** drops a random contained event, whether at first layer or below */
-        nar.on(Functor.f1Inline("dropAnyEvent", (Term x) -> Conj.dropAnyEvent(x, nar)));
+//        /** drops a random contained event, whether at first layer or below */
+//        nar.on(Functor.f1Inline("dropAnyEvent", (Term x) -> Conj.dropAnyEvent(x, nar)));
 
 
         /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive or negative of event */
@@ -493,51 +484,6 @@ public class Builtin {
            }
        });
 
-        nar.on(new Functor.AbstractInlineFunctor2("conjDropIfLatest") {
-            @Override
-            protected Term apply(Term conj, Term event) {
-                Term x = Conj.withoutEarlyOrLate(conj, event, false);
-                if (x==null)
-                    return Null;
-                return x;
-            }
-        });
-        nar.on(new Functor.AbstractInlineFunctor2("conjDropIfLatestUnifies") {
-            @Override
-            protected Term apply(Term conj, Term event) {
-                Term x = Conj.withoutEarlyOrLateUnifies(conj, event, false, true, nar.random(), 4);
-                if (x==null)
-                    return Null;
-                return x;
-            }
-        });
-        nar.on(new Functor.AbstractInlineFunctor2("conjDropIfEarliest") {
-            @Override
-            protected Term apply(Term conj, Term event) {
-                Term x = Conj.withoutEarlyOrLate(conj, event, true);
-                if (x == null)
-                    return Null;
-                return x;
-            }
-        });
-//        nar.on(new Functor.AbstractInlineFunctor2("conjDropIfEarliestFiltered") {
-//            @Override
-//            protected Term apply(Term conj, Term event) {
-//                Term x = Conj.conjDrop(conj, event, true, true);
-//                if (conj.equals(x))
-//                    return Bool.Null;
-//                return x;
-//            }
-//        });
-//        nar.on(new Functor.AbstractInlineFunctor2("conjDropIfLatestFiltered") {
-//            @Override
-//            protected Term apply(Term conj, Term event) {
-//                Term x = Conj.conjDrop(conj, event, false, true);
-//                if (conj.equals(x))
-//                    return Bool.Null;
-//                return x;
-//            }
-//        });
 
         nar.on(Functor.f1Concept("beliefTruth", nar, (c, n) -> $.quote(n.belief(c, n.time()))));
 //        nar.on(Functor.f1Concept("goalTruth", nar, (c, n) -> $.quote(n.goal(c, n.time()))));

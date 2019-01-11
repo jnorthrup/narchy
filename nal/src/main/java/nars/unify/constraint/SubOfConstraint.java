@@ -48,9 +48,12 @@ public class SubOfConstraint extends RelationConstraint {
     }
 
     public final boolean invalid(Term xx, Term yy) {
+        Term container = forward ? xx : yy;
+        if (!containment.testContainer(container))
+            return true;
+
         /** x polarized */
         Term contentP = (forward ? yy : xx).negIf(polarityCompare < 0);
-        Term container = forward ? xx : yy;
 
         boolean posAndNeg = polarityCompare==0;
 

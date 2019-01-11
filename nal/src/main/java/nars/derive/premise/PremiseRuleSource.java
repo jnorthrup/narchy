@@ -217,10 +217,8 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 case "eventOf":
                 case "eventOfNeg":
-                    if (!negated) {
-                        neq(constraints, XX, YY);
-                        match(X, new TermMatch.Is(CONJ));
-                    }
+                    match(X, new TermMatch.Is(CONJ));
+                    neq(constraints, XX, YY);
                     constraints.add(new SubOfConstraint(XX, YY, Event, pred.contains("Neg") ? -1 : +1).negIf(negated));
                     if (negated) negationApplied = true;
                     break;
@@ -229,10 +227,8 @@ public class PremiseRuleSource extends ProxyTerm {
                 case "eventFirstOfNeg":
                 case "eventLastOf":
                 case "eventLastOfNeg":
-                    if (!negated) {
-                        neq(constraints, XX, YY);
-                        match(X, new TermMatch.Is(CONJ));
-                    }
+                    match(X, new TermMatch.Is(CONJ));
+                    neq(constraints, XX, YY);
                     constraints.add(new SubOfConstraint(XX, YY, pred.contains("First") ? EventFirst : EventLast, pred.contains("Neg") ? -1 : +1).negIf(negated));
                     if (negated) negationApplied = true;
                     break;
@@ -244,13 +240,13 @@ public class PremiseRuleSource extends ProxyTerm {
                     constraints.add(new SubOfConstraint(XX, YY, Event, 0));
                     break;
 
-                /** one or more events contained */
-                case "eventsOf":
-                    neq(constraints, XX, YY);
-                    match(X, new TermMatch.Is(CONJ));
-
-                    constraints.add(new SubOfConstraint(XX, YY, EventsAny, 1));
-                    break;
+//                /** one or more events contained */
+//                case "eventsOf":
+//                    neq(constraints, XX, YY);
+//                    match(X, new TermMatch.Is(CONJ));
+//
+//                    constraints.add(new SubOfConstraint(XX, YY, EventsAny, 1));
+//                    break;
 
                 //case "eventsOfNeg":
 

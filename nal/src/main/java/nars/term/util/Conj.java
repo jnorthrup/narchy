@@ -123,15 +123,15 @@ public class Conj extends ByteAnonMap {
         if (container.op() != CONJ || container.impossibleSubTerm(x))
             return false;
 
-        if (container.contains(x))
-            return true;
         if (isSeq(container)) {
-            int xdt = x.dt();
+            boolean xIsConj = x.op()==CONJ;
+            int xdt = xIsConj ? x.dt() : DTERNAL;
             return !container.eventsWhile((when, cc) -> cc==container || !containsOrEqualsEvent(cc, x), //recurse
-                    0, xdt!=0, xdt!=DTERNAL, true, 0);
+                    0, !xIsConj || xdt!=0, !xIsConj || xdt!=DTERNAL, true, 0);
+        } else {
+            return container.contains(x);
         }
 
-        return false;
     }
 
     public static boolean isEventFirstOrLast(Term container, Term x, boolean firstOrLast) {
@@ -616,7 +616,12 @@ public class Conj extends ByteAnonMap {
         return ce.term();
     }
 
-    public static Term without(Term include, Term exclude, boolean excludeNeg) {
+    public static Term without(Term include, Term exclude) {
+        return without(include, exclude, false);
+    }
+
+    public static Term without(Term include, Term exclude, @Deprecated boolean excludeNeg) {
+
         if (excludeNeg) {
             if (include.unneg().equals(exclude.unneg()))
                 return True;
@@ -625,7 +630,14 @@ public class Conj extends ByteAnonMap {
                 return True;
         }
 
-        if (include.op() != CONJ || include.impossibleSubTerm(excludeNeg ? exclude.unneg() : exclude))
+        if (include.op() != CONJ)
+            return include;
+
+        if (!excludeNeg && exclude.op()==CONJ) {
+            return withoutAll(include, exclude); //HACK
+        }
+
+        if (include.impossibleSubTerm(excludeNeg ? exclude.unneg() : exclude))
             return include;
 
 
@@ -662,16 +674,10 @@ public class Conj extends ByteAnonMap {
 
     }
 
-    public static Term withoutAll(Term include, Term exclude) {
-        if (exclude.op() != CONJ)
-            return without(include, exclude, false);
-
-        if (include.op() != CONJ)
-            return include;
-
-        if (include.equals(exclude))
-            return True;
-
+    @Deprecated static Term withoutAll(Term include, Term exclude) {
+//        if (exclude.op() != CONJ)
+//            return without(include, exclude, false);
+//
 
         boolean eSeq = Conj.isSeq(exclude);
         if (!Conj.isSeq(include) && !eSeq) {

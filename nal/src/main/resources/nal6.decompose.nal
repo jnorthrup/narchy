@@ -84,10 +84,10 @@
 //      X, C, eventLastOf(C,X), --eventOfNeg(C,X)      |- --C, (Goal:DesireWeakN)
 
     //negate events of anti-conj goal
-    //C, X, eventOf(C,X) |- negateEvents(conjWithoutAll(C, X)), (Goal: StructuralDeductionN)
+    //C, X, eventOf(C,X) |- negateEvents(conjWithout(C, X)), (Goal: StructuralDeductionN)
 
     //  filters to prevent deriving anti-goal if it appears in the precondition, was called: "conjDropIfLatestFiltered"
-    //X, C, eventLastOf(C,X)    |- conjWithoutAll(C,  X), (Goal:Deduction,Time:TaskLastInBeliefPos)
+    //X, C, eventLastOf(C,X)    |- conjWithout(C,  X), (Goal:Deduction,Time:TaskLastInBeliefPos)
 
 
     //TODO conjunction sequence suffix
@@ -125,13 +125,11 @@
 //    (M ==> S), (M ==> (||,S,A_1..n)) |- (M ==> (||,A_1..n)), (Truth:DecomposeNegativePositivePositive, Order:ForAllSame)
 
 //conditional implication decomposition
-    (  S ==> M), (C ==> M), eventsOf(C,S)                      |-   (  conjWithoutAll(C, S) ==> M), (Belief:DecomposeNP)
-    (--S ==> M), (C ==> M), eventOfNeg(C,S), has(C,"--")       |-   (  conjWithout(C,  --S) ==> M), (Belief:DecomposeNP)
-        (--S ==> M), (--D ==> M), eventOfNeg(D,S), has(D,"--") |- --(--conjWithout(D,  --S) ==> M), (Belief:DecomposePN)
-        (  S ==> M), (--D ==> M), eventOf(D,S)                 |- --(--conjWithout(D,    S) ==> M), (Belief:DecomposePN)
-        //TODO eventsOf rather than eventOf
+    (  S ==> M), (C ==> M), eventOf(C,S)                    |-   (  conjWithout(C,   S) ==> M), (Belief:DecomposeNP)
+        (  S ==> M), (--D ==> M), eventOfNeg(D,S)           |-   (--conjWithout(D, --S) ==> M), (Belief:DecomposeNP)
+          //TODO eventsOf rather than eventOf
 
-    (M ==> S), (M ==> C), eventsOf(C,S)                        |- --(M ==> conjWithoutAll(C,   S)), (Belief:DecomposePN)
+    (M ==> S), (M ==> C), eventOf(C,S)                        |- --(M ==> conjWithout(C,   S)), (Belief:DecomposePN)
     (M ==> S), (M ==> C), eventOfNeg(C,S), has(C,"--")         |- --(M ==> conjWithout(C,    --S)), (Belief:DecomposeNN)
         (M ==> S), (M ==> D), eventOfNeg(D,S), has(D,"--")     |-   (M ==> conjWithout(D,    --S)), (Belief:DecomposeNP)
         (M ==> S), (M ==> D), eventOf(D,S)                     |-   (M ==> conjWithout(D,      S)), (Belief:DecomposePP)

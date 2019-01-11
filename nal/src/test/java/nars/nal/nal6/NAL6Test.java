@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 300;
+    private static final int cycles = 200;
 
     @BeforeEach
     void setup() {
@@ -426,14 +426,13 @@ public class NAL6Test extends NALTest {
     @Test
     void variable_introduction() {
 
-        TestNAR tester = test;
 
-        tester.believe("(swan --> bird)");
-        tester.believe("(swan --> swimmer)", 0.80f, 0.9f);
-        tester.mustBelieve(cycles, "(($1 --> swimmer) ==> ($1 --> bird))", 1.00f, 0.39f);
-        tester.mustBelieve(cycles, "(($1 --> bird) ==> ($1 --> swimmer))", 0.80f, 0.45f);
-
-        tester.mustBelieve(cycles, "((#1 --> swimmer) && (#1 --> bird))", 0.80f, 0.81f);
+        test.termVolMax(7);
+        test.believe("(swan --> bird)");
+        test.believe("(swan --> swimmer)", 0.80f, 0.9f);
+        test.mustBelieve(cycles, "(($1 --> swimmer) ==> ($1 --> bird))", 1.00f, 0.39f);
+        test.mustBelieve(cycles, "(($1 --> bird) ==> ($1 --> swimmer))", 0.80f, 0.45f);
+        test.mustBelieve(cycles, "((#1 --> swimmer) && (#1 --> bird))", 0.80f, 0.81f);
 
     }
 
