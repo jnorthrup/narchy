@@ -41,10 +41,6 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
         this.tree = tree;
     }
 
-    @Override
-    public Spatialization<T> model() {
-        return tree.model();
-    }
 
     @Override
     public boolean OR(Predicate<T> o) {
@@ -69,7 +65,7 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
     }
 
     @Override
-    public Node<T> root() {
+    public final Node<T> root() {
         return tree.root();
     }
 
@@ -89,15 +85,11 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
      */
     @Override
     public void addAsync(T t) {
-
-
         add(t);
     }
 
     @Override
     public void removeAsync(T t) {
-
-
         remove(t);
     }
 

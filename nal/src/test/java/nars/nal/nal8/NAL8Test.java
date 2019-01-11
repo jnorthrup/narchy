@@ -271,17 +271,6 @@ public class NAL8Test extends NALTest {
     }
 
 
-    @Test
-    void testConditionalGoalConjunctionDecomposePositiveGoal() {
-
-        test
-                .goal("x", Tense.Present, 1f, 0.9f)
-                .believe("(x &&+3 y)", Tense.Present, 1f, 0.9f)
-                .mustBelieve(cycles, "x", 1f, 0.81f, 0)
-                .mustBelieve(cycles, "y", 1f, 0.81f, 3)
-
-        ;
-    }
 
 
     @Test
@@ -993,16 +982,6 @@ public class NAL8Test extends NALTest {
 
     }
 
-    @Test
-    void testConjSequenceOutcome() {
-        test.confTolerance(0.01f);
-        test
-
-                .inputAt(0, "(x &&+1 y)! |")
-                .inputAt(0, "(z &&+1 (x &&+1 y)).")
-                .mustGoal(cycles, "z", 1, 0.66f, t -> true)
-        ;
-    }
 
     @Test
     void testNotEventOfNeg() {

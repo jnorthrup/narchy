@@ -30,7 +30,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
     private static final int MIN_TASKS_PER_LEAF = 2;
-    private static final int MAX_TASKS_PER_LEAF = 3;
+    private static final int MAX_TASKS_PER_LEAF = 4;
     private static final Split SPLIT = AxialSplitLeaf.the;
 
 
@@ -849,7 +849,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         @Deprecated final static ThreadLocal<Task> merged = new ThreadLocal();
 
         @Override
-        protected void merge(TaskRegion existing, TaskRegion incoming) {
+        protected void onMerge(TaskRegion existing, TaskRegion incoming) {
             merged.set((Task) existing);
         }
 

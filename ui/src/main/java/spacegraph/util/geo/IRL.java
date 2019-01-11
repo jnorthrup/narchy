@@ -8,7 +8,7 @@ import jcog.memoize.Memoize;
 import jcog.tree.rtree.RTree;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
-import jcog.tree.rtree.split.AxialSplitLeaf;
+import jcog.tree.rtree.split.LinearSplitLeaf;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,11 @@ public class IRL {
 
 
     public final RTree<OsmElement> index =
-            new RTree<>(new Spatialization<>((OsmElement e) -> e, new AxialSplitLeaf<>(), 2, 8));
+            new RTree<>(new Spatialization<>((OsmElement e) -> e,
+                    //new AxialSplitLeaf<>(),
+                    new LinearSplitLeaf<>(),
+                    //new QuadraticSplitLeaf(),
+                    2, 8));
 
     public IRL(User u) {
         this.user = u;
@@ -79,9 +83,12 @@ public class IRL {
                     logger.info("Loading {} ({} bytes)", u, data.length);
                     osm.load(new ByteArrayInputStream(data));
                     osm.ready = true;
-                    osm.nodes.forEachValue(n->{
-                        index.add(n);
+                    osm.ways.forEachValue(w -> {
+                       index.add(w);
                     });
+//                    osm.nodes.forEachValue(n->{
+//                        index.add(n);
+//                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

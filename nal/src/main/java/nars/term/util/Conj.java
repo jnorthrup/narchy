@@ -241,6 +241,7 @@ public class Conj extends ByteAnonMap {
 //        return sb;
 //    }
 
+
     /** TODO improve, unify sub-sequences of events etc */
     @Nullable public static Term withoutEarlyOrLateUnifies(Term conj, Term event, boolean earlyOrLate, boolean strict, Random rng, int ttl) {
         int varBits = VAR_DEP.bit | VAR_INDEP.bit;
@@ -579,7 +580,7 @@ public class Conj extends ByteAnonMap {
         int eventsSize = events.size();
         switch (eventsSize) {
             case 0:
-                return Null;
+                return True;
             case 1:
                 return events.get(0).getTwo();
         }
@@ -599,7 +600,7 @@ public class Conj extends ByteAnonMap {
         int eventsSize = events.size();
         switch (eventsSize) {
             case 0:
-                return Null;
+                return True;
             case 1:
                 return events.iterator().next().getTwo();
         }
@@ -1092,8 +1093,8 @@ public class Conj extends ByteAnonMap {
                 byte bi = b[i];
                 if (bi == 0) {
                     //empty slot, take
-                    if (ArrayUtils.indexOf(b, (byte)-id)!=-1)
-                        throw new WTF(); //basic verification test
+                    //assert(ArrayUtils.indexOf(b, (byte)-id)==-1); basic verification test
+
                     b[i] = id;
                     return true;
                 } else {
@@ -1521,7 +1522,7 @@ public class Conj extends ByteAnonMap {
                     return true;
                 } else {
                     //return c.add(whn, ww);
-                    return c.addEvent(whn, ww);//direct
+                    return c.add(whn, ww);//direct
                 }
 
             }, 0, dtInner == 0, dtInner == DTERNAL, dtInner == XTERNAL, 0);

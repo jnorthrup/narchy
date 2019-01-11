@@ -36,10 +36,6 @@ import java.util.stream.Stream;
  */
 public interface Space<T> extends Nodelike<T> {
 
-
-    Spatialization<T> model();
-
-
     /**
      * Update entry in tree
      *
@@ -60,7 +56,6 @@ public interface Space<T> extends Nodelike<T> {
     boolean AND(Predicate<T> o);
 
     void forEach(Consumer<? super T> consumer);
-
 
     enum BoundsMatch {
         //TODO meet, equal, disjoint, etc...
@@ -130,6 +125,8 @@ public interface Space<T> extends Nodelike<T> {
 
     Stats stats();
 
+    boolean contains(T t);
+
     default boolean isEmpty() {
         return size() == 0;
     }
@@ -181,21 +178,23 @@ public interface Space<T> extends Nodelike<T> {
             return Collections.emptyIterator();
 
 
-        List<T> snapshot = new FasterList(s);
-        forEach(snapshot::add);
-        return snapshot.iterator();
-
-
+        return stream().iterator();
+//        List<T> snapshot = new FasterList(s);
+//        forEach(snapshot::add);
+//        return snapshot.iterator();
     }
 
     default List<T> asList() {
         int s = size();
-        List<T> l = new FasterList<>(s);
-        this.forEach(l::add);
-        return l;
+        if (s > 0) {
+            List<T> l = new FasterList<>(s);
+            this.forEach(l::add);
+            return l;
+        } else {
+            return List.of();
+        }
     }
 
 
-    boolean contains(T t);
 
 }

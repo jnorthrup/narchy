@@ -6,6 +6,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.term.Term;
+import nars.test.NALTest;
 import nars.time.Tense;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -14,12 +15,90 @@ import java.util.List;
 
 import static nars.$.$$;
 
-/** test precision of sequence execution */
-@Disabled
-public class NAL8SequenceTest {
+/** test precision of sequence execution (planning) */
+public class NAL8SequenceTest extends NALTest {
+
+    public static final int cycles = 50;
 
     @Test
-    void test1() throws Narsese.NarseseException {
+    void testSubSequenceOutcome() {
+        test.confTolerance(0.01f);
+        test
+                .input( "(x &&+1 y)!")
+                .input( "(z &&+1 (x &&+1 y)).")
+                .mustGoal(cycles, "z", 1, 0.81f) //81% for one step
+        ;
+    }
+
+    @Test
+    void testMidSequenceOutcome() {
+        test.confTolerance(0.01f);
+        test
+                .input( "c!")
+                .input( "(a &&+1 (b &&+1 (c &&+1 (d &&+1 e)))).")
+                .mustGoal(cycles, "(a &&+1 b)", 1, 0.81f) //81% for one step
+        ;
+    }
+    @Test
+    void testMidSequenceDTernalComponentOutcome() {
+        test.confTolerance(0.01f);
+        test
+                .input( "c!")
+                .input( "(a &&+1 (b &&+1 ((c&|f) &&+1 (d &&+1 e)))).")
+                .mustGoal(cycles, "(a &&+1 (b &&+1 f))", 1, 0.81f) //81% for one step
+        ;
+    }
+
+    @Test
+    void testMidSequenceDTernalComponentWithUnification() {
+        test.confTolerance(0.01f);
+        test
+                .input( "c(x)!")
+                .input( "(a &&+1 (b(#1) &&+1 ((&|,a,b,c(#1),d(x,y)) &&+1 (d &&+1 e)))).")
+                .mustGoal(cycles, "(a &&+1 (b(x) &&+1 (&|,a,b,d(x,y))))", 1, 0.81f) //81% for one step
+        ;
+    }
+    @Test
+    void testMidSequenceDTernalComponentOutcome_Alternate_Sort() {
+        test.confTolerance(0.01f);
+        test
+                .input( "f!")
+                .input( "(a &&+1 (b &&+1 ((c&|f) &&+1 (d &&+1 e)))).")
+                .mustGoal(cycles, "(a &&+1 (b &&+1 c))", 1, 0.81f) //81% for one step
+        ;
+    }
+
+    @Test
+    void testNegMidSequenceOutcome() {
+        test.confTolerance(0.01f);
+        test
+                .input( "--c!")
+                .input( "(a &&+1 (b &&+1 (--c &&+1 (d &&+1 e)))).")
+                .mustGoal(cycles, "(a &&+1 b)", 1, 0.81f) //81% for one step
+        ;
+    }
+    @Test
+    void testEqualConclusionSequenceOutcome() {
+        test.confTolerance(0.01f);
+        test
+                .input( "e!")
+                .input( "(a &&+1 (b &&+1 (c &&+1 (d &&+1 e)))).")
+                .mustGoal(cycles, "(a &&+1 (b &&+1 (c &&+1 d)))", 1, 0.81f) //81% for one step
+        ;
+    }
+
+    @Test
+    void testUnifyConclusionSequenceOutcome() {
+        test.confTolerance(0.01f);
+        test
+                .input( "e(x)!")
+                .input( "(a(#1) &&+1 (b &&+1 (c &&+1 (d &&+1 e(#1))))).")
+                .mustGoal(cycles, "(a(x) &&+1 (b &&+1 (c &&+1 d)))", 1, 0.81f) //81% for one step
+        ;
+    }
+
+    @Disabled
+    @Test void test1() throws Narsese.NarseseException {
 
         String sequence = "(((f(a) &&+2 f(b)) &&+2 f(c)) &&+2 done)";
         String goal = "done";
@@ -53,4 +132,7 @@ public class NAL8SequenceTest {
         n.want($$(goal), Tense.Present, 1f);
         n.run(1400);
     }
+
+
+
 }

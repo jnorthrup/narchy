@@ -939,17 +939,17 @@ public class NAL6Test extends NALTest {
         ;
     }
 
-    @Test
-    void testDecomposeImplSubjDisjBelief() {
-        test
-                .believe("( (||, y, z) ==> x )")
-                .mustBelieve(cycles, "( y ==> x )", 1f, 0.81f)
-                .mustBelieve(cycles, "( z ==> x )", 1f, 0.81f)
-        ;
-    }
+//    @Test
+//    void testDecomposeImplSubjDisjBelief() {
+//        test
+//                .believe("( (||, y, z) ==> x )")
+//                .mustBelieve(cycles, "( y ==> x )", 1f, 0.81f)
+//                .mustBelieve(cycles, "( z ==> x )", 1f, 0.81f)
+//        ;
+//    }
 
     @Test
-    void testDecomposeImplSubjConjQuestion() throws NarseseException {
+    void testDecomposeImplSubjConjQuestion() {
         test
                 .ask("( (&&, y, z) ==> x )")
                 .mustOutput(cycles, "( y ==>+- x )", QUESTION)
@@ -958,7 +958,7 @@ public class NAL6Test extends NALTest {
     }
 
     @Test
-    void testDecomposeImplSubjDisjQuestion() throws NarseseException {
+    void testDecomposeImplSubjDisjQuestion() {
         test
                 .ask("( (||, y, z) ==> x )")
                 .mustOutput(cycles, "( y ==>+- x )", QUESTION)
@@ -976,7 +976,7 @@ public class NAL6Test extends NALTest {
     }
 
     @Test
-    void testDecomposeImplPredConjQuestion() throws NarseseException {
+    void testDecomposeImplPredConjQuestion()  {
         test
                 .ask("( x ==> (&&, y, z) )")
                 .mustOutput(cycles, "( x ==>+- y )", QUESTION)
@@ -985,7 +985,7 @@ public class NAL6Test extends NALTest {
     }
 
     @Test
-    void testDecomposeImplPredDisjQuestion() throws NarseseException {
+    void testDecomposeImplPredDisjQuestion()  {
         test
                 .ask("( x ==> (||, y, z) )")
                 .mustOutput(cycles, "( x ==>+- y )", QUESTION)
@@ -1032,7 +1032,7 @@ public class NAL6Test extends NALTest {
     }
 
     @Test
-    void recursionSmall1() throws NarseseException {
+    void recursionSmall1()  {
 
 
         test.nar.termVolumeMax.set(13);
@@ -1283,7 +1283,7 @@ public class NAL6Test extends NALTest {
                 .mustQuestion(cycles, "(x&&y)")
         ;
     }
-    @Test void testImplPredQuest() throws NarseseException {
+    @Test void testImplPredQuest()  {
         test
                 .believe("((x&&y)==>z)")
                 .quest("z")

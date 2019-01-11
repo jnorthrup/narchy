@@ -119,7 +119,7 @@ public final class Leaf<X> extends AbstractNode<X> {
 
                 if (mightContain) {
                     if (x.equals(t)) {
-                        model.merge(x, t);
+                        model.onMerge(x, t);
                         return null;
                     }
                 }
@@ -181,7 +181,7 @@ public final class Leaf<X> extends AbstractNode<X> {
                 if (t == null) continue;
                 if (t.equals(x)) {
                     if (t != x)
-                        model.merge(t, x);
+                        model.onMerge(t, x);
                     return true;
                 }
             }

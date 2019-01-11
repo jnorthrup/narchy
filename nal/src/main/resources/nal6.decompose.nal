@@ -1,10 +1,8 @@
 //conjunction/disjunction structural decomposition
 
   //Conjunction structural decompose: C = (&&,a,b,..)
-    C, X, eventOf(C,X)                        |-   conjWithout(C,X), (Belief:StructuralDeduction)
-//    C, X, eventOf(C,X)                        |-   X, (Belief:StructuralDeduction, Time:TaskSubEvent)
-    C, X, eventOfNeg(C,X)                     |-   conjWithout(C,--X), (Belief:StructuralDeduction)
-//    C, X, eventOfNeg(C,X)                     |- --X, (Belief:StructuralDeduction, Time:TaskSubEvent)
+//    C, X, eventOf(C,X), conjParallel(C)                        |-   conjWithout(C,X), (Belief:StructuralDeduction)
+//    C, X, eventOfNeg(C,X), conjParallel(C)                     |-   conjWithout(C,--X), (Belief:StructuralDeduction)
 
       C, X, eventFirstOf(C,X)    |-   X, (  Goal:StructuralDeduction)
        D, X, eventOfNeg(C,X), conjParallel(D)   |-   --conjWithout(D,--X), (  Goal:StructuralDeductionN)
@@ -51,8 +49,9 @@
 
     //X is the desired event suffix (outcome).
     //C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
-    G, C, eventLastOf(C,G), --eventOfNeg(C,G)       |-   conjDropIfLatest(C,G),     (Goal:Desire)
-    G, C, is(C,"&&")                                |-   conjDropIfLatestUnifies(C,G), (Goal:Desire)
+    G, C, is(C,"&&"), --eventOfNeg(C,G)       |-   conjBefore(C,G),     (Goal:Desire)
+//        G, C, eventLastOf(C,G), --eventOfNeg(C,G)       |-   conjDropIfLatest(C,G),     (Goal:Desire)
+//        G, C, is(C,"&&")                                |-   conjDropIfLatestUnifies(C,G), (Goal:Desire)
 
       //even though it has the opposite goal earlier in the seq, but desire weakly:
       X, C, eventLastOf(C,X), eventOfNeg(C,X)       |-   conjDropIfLatest(C,X),     (Goal:DesireWeak)
@@ -62,8 +61,9 @@
 //      X, C, eventLastOfNeg(C,X),--eventOf(C,X)      |- --conjDropIfLatest(C,--X), (Goal:DesireWeak)
 //      X, C, eventLastOfNeg(C,X),--eventOf(C,X)      |- --C, (Goal:DesireWeak)
 
-    G, C, eventLastOfNeg(C,G), --eventOf(C,G)       |-   conjDropIfLatest(C,--G),   (Goal:DesireN)
-    G, C, is(C,"&&")                                |-   conjDropIfLatestUnifies(C,--G), (Goal:DesireN)
+    G, C, is(C,"&&"), --eventOf(C,G), has(C,"--")    |-   conjBefore(C,--G),     (Goal:DesireN)
+        //G, C, eventLastOfNeg(C,G), --eventOf(C,G)       |-   conjDropIfLatest(C,--G),   (Goal:DesireN)
+        //G, C, is(C,"&&")                                |-   conjDropIfLatestUnifies(C,--G), (Goal:DesireN)
 
       //even though it has the opposite goal earlier in the seq, but desire weakly:
       X, C, eventLastOfNeg(C,X), eventOf(C,X)       |-   conjDropIfLatest(C,--X),   (Goal:DesireWeakN)
@@ -121,14 +121,14 @@
         //TODO disj
 
 //free implication question decomposition
-  (A ==> C), A, task("?"), is(C,"&&"), --isVar(A)       |- (A ==> dropAnyEvent(C)), (Punctuation:Question)
-  (C ==> A), A, task("?"), isUnneg(C,"&&"), --isVar(A)  |- (dropAnyEvent(C) ==> A), (Punctuation:Question)
+//  (A ==> C), A, task("?"), is(C,"&&"), --isVar(A)       |- (A ==> dropAnyEvent(C)), (Punctuation:Question)
+//  (C ==> A), A, task("?"), isUnneg(C,"&&"), --isVar(A)  |- (dropAnyEvent(C) ==> A), (Punctuation:Question)
     //not needed: (--C ==>A) since dropAnyEvent handles --C
 
 //free implication belief decomposition
     //pred
-    (A ==> C), X, eventOf(C,X), is(C,"&&"), --isVar(A)      |- (A ==> without(C,  X)), (Belief:StructuralReduction)
-    (A ==> C), X, eventOfNeg(C,X), is(C,"&&"), --isVar(A)   |- (A ==> without(C,--X)), (Belief:StructuralReduction)
+    //(A ==> C), X, eventOf(C,X), is(C,"&&"), --isVar(A)      |- (A ==> without(C,  X)), (Belief:StructuralReduction)
+    //(A ==> C), X, eventOfNeg(C,X), is(C,"&&"), --isVar(A)   |- (A ==> without(C,--X)), (Belief:StructuralReduction)
 
     //disj subj ONLY:
     //(--C ==> A), A, is(C,"&&"), --isVar(A)    |- (--dropAnyEvent(C) ==> A), (Belief:StructuralReduction)

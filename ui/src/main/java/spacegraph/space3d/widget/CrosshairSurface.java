@@ -58,7 +58,7 @@ public class CrosshairSurface extends Surface implements MouseListener {
         gl.glLineWidth(4f);
         float ch = 175f; 
         float cw = 175f; 
-        Draw.rectStroke(gl, smx-cw/2f, smy-ch/2f, cw, ch);
+        Draw.rectStroke(smx-cw/2f, smy-ch/2f, cw, ch, gl);
 
         float hl = 1.25f; 
         Draw.line(smx, smy-ch*hl, smx, smy+ch*hl, gl);

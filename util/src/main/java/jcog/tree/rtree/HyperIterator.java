@@ -45,10 +45,11 @@ public class HyperIterator<X> implements AutoCloseable {
         this(tree.model, tree.root(), rank);
     }
 
-    public HyperIterator(Spatialization model, Node<X> start, FloatFunction<HyperRegion> rank) {
-        this.plan = TopN.pooled(pool, 256, (FloatFunction)r -> rank.floatValueOf(
-                r instanceof Node ? ((Node) r).bounds() : model.bounds(r)
-                //model.bounds(r)
+    public HyperIterator(Spatialization<X> model, Node<X> start, FloatFunction<HyperRegion> rank) {
+        this.plan = TopN.pooled(pool, 256, (FloatFunction<?>)r -> rank.floatValueOf(
+                r instanceof HyperRegion ? ((HyperRegion)r) :
+                        (r instanceof Node ? ((Node<X>) r).bounds() :
+                                model.bounds((X)r))
                 ));
 
         plan.addRanked(start);

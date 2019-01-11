@@ -32,12 +32,8 @@ public final class QuadraticSplitLeaf<T> implements Split<T> {
     @Override
     public Node<T> split(T t, Leaf<T> leaf, Spatialization<T> model) {
 
-        boolean[] dummy = new boolean[1];
 
-        final Branch<T> pNode = model.newBranch();
 
-        final Node<T> l1Node = model.newLeaf();
-        final Node<T> l2Node = model.newLeaf();
 
         
         double minCost = Double.MIN_VALUE;
@@ -58,7 +54,10 @@ public final class QuadraticSplitLeaf<T> implements Split<T> {
             }
         }
 
-        
+
+        final Leaf<T> l1Node = model.newLeaf();
+        final Leaf<T> l2Node = model.newLeaf();
+        boolean[] dummy = new boolean[1];
         l1Node.add(data[r1Max], true, model, dummy);
         dummy[0] = false;
         l2Node.add(data[r2Max], true, model, dummy);
@@ -70,10 +69,7 @@ public final class QuadraticSplitLeaf<T> implements Split<T> {
 
         leaf.transfer(l1Node, l2Node, t, model);
 
-        pNode.addChild(l1Node);
-        pNode.addChild(l2Node);
-
-        return pNode;
+        return model.newBranch(l1Node, l2Node);
     }
 
 }

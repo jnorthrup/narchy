@@ -186,7 +186,7 @@ public class BitmapMatrixView extends Surface {
             float x = x(), y = y();
             gl.glColor4f(0.5f, 0.5f, 0.5f, 0.75f);
             gl.glLineWidth(2);
-            Draw.rectStroke(gl, x + touchPixel.x * w, y + touchPixel.y * h, w, h);
+            Draw.rectStroke(x + touchPixel.x * w, y + touchPixel.y * h, w, h, gl);
         }
     }
 

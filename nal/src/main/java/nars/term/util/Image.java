@@ -257,14 +257,20 @@ public enum Image {;
         @Override
         public void add(Remember r, NAR nar) {
             BeliefTable table = relink(nar, true);
-            Task originalInput = r.input;
+            Task imageInput = r.input;
             if (table == null) {
-                r.forget(originalInput);
+                r.forget(imageInput);
                 return;
             }
 
-            SpecialTermTask transformedInput = new SpecialTermTask(normal, originalInput);
-            if (originalInput.isCyclic())
+            Term normalTerm = normal.hasAny(Temporal) ?
+                    /* if temporal, normal is not necessarily equal to the task's term */
+                    Image.imageNormalize(imageInput.term())
+                    :
+                    normal;
+
+            SpecialTermTask transformedInput = new SpecialTermTask(normalTerm, imageInput);
+            if (imageInput.isCyclic())
                 transformedInput.setCyclic(true);
 
             r.setInput(transformedInput, (TaskConcept)nar.concept(image));

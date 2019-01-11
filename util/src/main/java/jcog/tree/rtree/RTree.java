@@ -122,11 +122,6 @@ public class RTree<T> implements Space<T> {
     }
 
 
-    @Override
-    public final Spatialization<T> model() {
-        return model;
-    }
-
     /**
      * @param xBounds - the bounds of t which may not necessarily need to be the same as the bounds as model might report it now; for removing a changing value
      */
@@ -278,5 +273,6 @@ public class RTree<T> implements Space<T> {
     public HyperRegion bounds(T x) {
         return model.bounds(x);
     }
+
 
 }

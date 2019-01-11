@@ -68,8 +68,7 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
     }
 
     public HyperRectFloat(final FloatND p) {
-        min = p;
-        max = p;
+        min = max = p;
     }
 
     public HyperRectFloat(v2 v) {

@@ -4,6 +4,8 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
 import jcog.math.FloatRange;
 import jcog.math.v2;
+import jcog.tree.rtree.HyperRegion;
+import jcog.tree.rtree.rect.HyperRectFloat;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMove;
@@ -14,6 +16,7 @@ import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.geo.IRL;
 import spacegraph.util.geo.osm.Osm;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -21,79 +24,81 @@ public class OsmSurface extends Surface {
 
     /** TODO move scale, center, translate to a generic 2D projection impl */
     final FloatRange scale = new FloatRange(16f, 0.001f, 1000f);
-    private v2 center = new v2();
-    final v2 translate = new v2();
 
-    transient protected Osm o = null;
-
-    final FingerMove pan = new FingerMove(0) {
-
-
-        private v2 translateStart;
-
-        @Override
-        protected boolean startDrag(Finger f) {
-            translateStart = translate.clone();
-            return super.startDrag(f);
-        }
-
-        @Override
-        public void move(float tx, float ty) {
-            translate.set(translateStart.x + tx, translateStart.y + ty);
-        }
-    };
+    private final IRL index;
 
     private OsmSpace.LonLatProjection projection = OsmSpace.LonLatProjection.Raw;
 
+    public final AtomicBoolean showIndexBounds = new AtomicBoolean(true);
 
-    @Override
-    public Surface finger(Finger finger) {
-        float wheel;
-        if ((wheel = finger.rotationY(true)) != 0) {
-            scale.multiply((1f - wheel * 0.1f));
-            return this;
-        }
-
-        if (finger.tryFingering(pan)) {
-            return this;
-        }
-
-        return null;
+    public OsmSurface(IRL i) {
+        this.index = i;
     }
 
-    public Surface view() {
-        return new Stacking(
-                this
-//                ,
-//                new Bordering().south(
-//                    Gridding.col(
-//                        new AnimLabel(()->"translation: " + translate.toString()),
-//                        new AnimLabel(()->"scale: " + scale.toString())
-//                    )
-//                )
-        );
-    }
+
+    private v2 center = new v2();
+    final v2 translate = new v2();
+
+    @Deprecated transient protected Osm o = null;
 
     @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+        gl.glPushMatrix();
 
+        gl.glTranslatef(
+                translate.x + bounds.x + bounds.w/2,
+                translate.y + bounds.y + bounds.h/2, 0); //center in view
+
+        transform(gl);
+
+        {
+            renderMap(gl);
+
+            if (showIndexBounds.get())
+                renderIndexBounds(gl);
+        }
+
+        gl.glPopMatrix();
+
+    }
+
+    /** setup the initial rendering transform TODO integrate with projection */
+    private void transform(GL2 gl) {
+        float viewScale = this.scale.floatValue() * Math.max(bounds.w, bounds.h);
+
+        gl.glScalef(viewScale, viewScale, 1);
+
+        gl.glTranslatef(-center.x, -center.y, 0);
+    }
+
+    private void renderIndexBounds(GL2 gl) {
+
+        gl.glLineWidth(2);
+
+        index.index.root().streamNodesRecursively().forEach(n -> {
+            HyperRegion b = n.bounds();
+            if (b instanceof HyperRectFloat) {
+                HyperRectFloat r = (HyperRectFloat)b;
+                float x1 = r.min.coord(0);
+                float y1 = r.min.coord(1);
+                Draw.colorHash(gl, r.hashCode(), 0.25f);
+                //Draw.rect(
+                Draw.rectStroke(
+                        x1, y1, r.max.coord(0)-x1, r.max.coord(1)-y1,
+                        gl
+                );
+            }
+        });
+    }
+
+    private void renderMap(GL2 gl) {
         if (o !=null) {
 
             RectFloat b = o.geoBounds;
 
             if (b != null) {
 
-                gl.glPushMatrix();
 
-                gl.glTranslatef(
-                        translate.x + bounds.x + bounds.w/2,
-                        translate.y + bounds.y + bounds.h/2, 0); //center in view
-
-                float viewScale = this.scale.floatValue() * Math.max(bounds.w, bounds.h);
-
-                gl.glScalef(viewScale, viewScale, 1);
-
-                gl.glTranslatef(-center.x, -center.y, 0);
 
                 Consumer<GL2> renderProc;
 
@@ -124,10 +129,8 @@ public class OsmSurface extends Surface {
 
                 }
 
-                gl.glPopMatrix();
             }
         }
-
     }
 
 
@@ -136,8 +139,8 @@ public class OsmSurface extends Surface {
         Draw.rectFrame(gl, 0, 0, 1, 1, 0.1f);
     };
 
-    public OsmSurface go(IRL i, float lon, float lat, float lonRange, float latRange) {
-        o = i.request(lon, lat, lonRange, latRange);
+    public OsmSurface go(float lon, float lat, float lonRange, float latRange) {
+        o = index.request(lon, lat, lonRange, latRange);
         center.set(lon, lat);
         return this;
     }
@@ -155,4 +158,54 @@ public class OsmSurface extends Surface {
             return super.prePaint(r);
         }
     }
+
+    final FingerMove pan = new FingerMove(0) {
+
+
+        private v2 dragStart;
+
+        @Override
+        protected boolean startDrag(Finger f) {
+            dragStart = center.clone();
+            return super.startDrag(f);
+        }
+
+        @Override
+        public void move(float tx, float ty) {
+            float s = 1f  / (scale.floatValue() * Math.max(bounds.w, bounds.h));
+            center.set(dragStart.x - tx*s, dragStart.y - ty*s);
+        }
+    };
+
+
+
+    @Override
+    public Surface finger(Finger finger) {
+        float wheel;
+        if ((wheel = finger.rotationY(true)) != 0) {
+            scale.multiply((1f - wheel * 0.1f));
+            return this;
+        }
+
+        if (finger.tryFingering(pan)) {
+            return this;
+        }
+
+        return null;
+    }
+
+    public Surface view() {
+        return new Stacking(
+                this
+//                ,
+//                new Bordering().south(
+//                    Gridding.col(
+//                        new AnimLabel(()->"translation: " + translate.toString()),
+//                        new AnimLabel(()->"scale: " + scale.toString())
+//                    )
+//                )
+        );
+    }
+
+
 }

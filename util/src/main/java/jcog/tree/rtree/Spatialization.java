@@ -22,6 +22,8 @@ public class Spatialization<X> {
             throw new UnsupportedOperationException("min split must be >=2");
         if (max < min)
             throw new UnsupportedOperationException("min split must be < max split");
+        assert(min>=1);
+        assert(max>=min);
         this.max = (short) max;
         this.min = (short) min;
         this.bounds = bounds;
@@ -36,12 +38,18 @@ public class Spatialization<X> {
         return new Leaf<>(max);
     }
 
-    public Branch<X> newBranch() {
-        return new Branch<>(max);
-    }
-
-    public Branch<X> newBranch(Leaf<X> a, Leaf<X> b) {
-        return new Branch<>(max, a, b);
+    public Node<X> newBranch(Leaf<X> a, Leaf<X> b) {
+//        int as = a.size();
+//        int bs = b.size();
+//        if (as + bs <= max) {
+//            //merge two leaves but doesnt seem to happen
+//            Leaf<X> l = new Leaf(max);
+//            System.arraycopy(a.data, 0, l.data, 0, as);
+//            System.arraycopy(b.data, as, l.data, as, bs);
+//            return l;
+//        } else {
+            return new Branch<>(max, a, b);
+//        }
     }
 
     public Node<X> split(X x, Leaf<X> leaf) {
@@ -49,12 +57,9 @@ public class Spatialization<X> {
     }
 
 
-
-
-
     /** existing may be the same instance, or .equals() to the incoming */
-    protected void merge(X existing, X incoming) {
-
+    protected void onMerge(X existing, X incoming) {
+        //default: do nothing
     }
 
     public final Leaf<X> transfer(ObjectDoublePair<X>[] sortedMbr, int from, int to) {

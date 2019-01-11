@@ -385,7 +385,7 @@ public enum Draw {
         gl.glEnd();
     }
 
-    public static void rectStroke(GL2 gl, float x1, float y1, float w, float h) {
+    public static void rectStroke(float x1, float y1, float w, float h, GL2 gl) {
         gl.glBegin(GL2.GL_LINE_STRIP);
         gl.glVertex2f(x1, y1);
         gl.glVertex2f(x1 + w, y1);
@@ -917,7 +917,7 @@ public enum Draw {
     }
 
     public static void rectStroke(RectFloat bounds, GL2 gl) {
-        Draw.rectStroke(gl, bounds.x, bounds.y, bounds.w, bounds.h);
+        Draw.rectStroke(bounds.x, bounds.y, bounds.w, bounds.h, gl);
     }
 
     public static void colorRGBA(float[] c, float r, float g, float b, float a) {

@@ -29,6 +29,8 @@ import jcog.tree.rtree.util.CounterNode;
 import jcog.tree.rtree.util.Stats;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.*;
 
@@ -104,20 +106,25 @@ class RTree2DTest {
         }
     }
 
+    static final int entryCount = 20000;
+    static final RectDouble[] randomRects = generateRandomRects(entryCount);
+
     /**
      * Use an enormous bounding box to ensure that every rectangle is returned.
      * Verifies the count returned from search AND the number of rectangles results.
      */
-    @Test
-    void rect2DSearchAllTest() {
+    @ParameterizedTest
+    @ValueSource(ints = {0,1,2})
+    void rect2DSearchAllTest(int split) {
 
-        final int entryCount = 10000;
-        final RectDouble[] rects = generateRandomRects(entryCount);
 
-        for (Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values()) {
+
+        //for (Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values())
+        Spatialization.DefaultSplits type = Spatialization.DefaultSplits.values()[split];
+        {
             RTree<RectDouble> rTree = createRect2DTree(2, 8, type);
-            for (int i = 0; i < rects.length; i++) {
-                rTree.add(rects[i]);
+            for (RectDouble randomRect : randomRects) {
+                rTree.add(randomRect);
             }
 
             final RectDouble searchRect = new RectDouble(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
@@ -144,20 +151,22 @@ class RTree2DTest {
      * Collect stats making the structure of trees of each split type
      * more visible.
      */
-    @Disabled
-    void treeStructureStatsTest() {
+    @ParameterizedTest
+    @ValueSource(ints = {0,1,2})
+    void treeStructureStatsTest(int split) {
 
-        final int entryCount = 50_000;
 
-        final RectDouble[] rects = generateRandomRects(entryCount);
-        for (Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values()) {
-            RTree<RectDouble> rTree = createRect2DTree(2, 8, type);
-            for (int i = 0; i < rects.length; i++) {
-                rTree.add(rects[i]);
-            }
+        //for (Spatialization.DefaultSplits type : Spatialization.DefaultSplits.values())
+        Spatialization.DefaultSplits type = Spatialization.DefaultSplits.values()[split];
+        {
+            RTree<RectDouble> rTree = createRect2DTree(2, 4, type);
+            for (RectDouble randomRect : randomRects)
+                rTree.add(randomRect);
 
+            System.out.println(type);
             Stats stats = rTree.stats();
             stats.print(System.out);
+            System.out.println();
         }
     }
 

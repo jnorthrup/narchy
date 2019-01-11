@@ -54,11 +54,18 @@ abstract public class OsmGroup extends OsmElement {
 
     @Override
     public double coord(int dimension, boolean maxOrMin) {
-        HyperRegion b = bounds;
-        if (b == null)
-            validate();
+        HyperRegion b = bounds();
 
         return b.coord(dimension, maxOrMin);
+    }
+
+    public HyperRegion bounds() {
+        HyperRegion b = bounds;
+        if (b == null) {
+            validate();
+            b = bounds;
+        }
+        return b;
     }
 
 }

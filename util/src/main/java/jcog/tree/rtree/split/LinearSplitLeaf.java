@@ -32,11 +32,7 @@ public final class LinearSplitLeaf<T> implements Split<T> {
     @Override
     public Node<T> split(T t, Leaf<T> leaf, Spatialization<T> model) {
 
-        boolean[] dummy = new boolean[1];
 
-        final Branch<T> pNode = model.newBranch();
-        final Node<T> l1Node = model.newLeaf();
-        final Node<T> l2Node = model.newLeaf();
 
         final int MIN = 0;
         final int MAX = 1;
@@ -44,16 +40,11 @@ public final class LinearSplitLeaf<T> implements Split<T> {
         T[] data = leaf.data;
         final int nD = model.bounds(data[0]).dim();
         final int[][][] rIndex = new int[nD][NRANGE][NRANGE];
-        
+
         final double[] separation = new double[nD];
 
         short size = leaf.size;
         for (int d = 0; d < nD; d++) {
-
-
-
-
-
 
 
             for (int j = 1; j < size; j++) {
@@ -80,17 +71,10 @@ public final class LinearSplitLeaf<T> implements Split<T> {
             }
 
 
-
-
-
-
-
-            
             final double width = model.bounds(data[rIndex[d][MAX][MAX]]).
                     distance(model.bounds(data[rIndex[d][MIN][MIN]]), d, true, false);
 
 
-            
             separation[d] = model.bounds(data[rIndex[d][MAX][MIN]]).distance(model.bounds(data[rIndex[d][MIN][MAX]]), d, true, false) / width;
         }
 
@@ -105,28 +89,28 @@ public final class LinearSplitLeaf<T> implements Split<T> {
         }
 
         if (r1Ext == r2Ext) {
-            
+
             r1Ext = 0;
             r2Ext = size - 1;
         }
 
-        
+        final Leaf<T> l1Node = model.newLeaf();
+        final Leaf<T> l2Node = model.newLeaf();
+
+        boolean[] dummy = new boolean[1];
         l1Node.add(data[r1Ext], true, model, dummy);
+        dummy[0] = false;
         l2Node.add(data[r2Ext], true, model, dummy);
 
         for (int i = 0; i < size; i++) {
             if ((i != r1Ext) && (i != r2Ext)) {
-                
                 leaf.transfer(l1Node, l2Node, data[i], model);
             }
         }
 
         leaf.transfer(l1Node, l2Node, t, model);
 
-        pNode.addChild(l1Node);
-        pNode.addChild(l2Node);
-
-        return pNode;
+        return model.newBranch(l1Node, l2Node);
     }
 
 

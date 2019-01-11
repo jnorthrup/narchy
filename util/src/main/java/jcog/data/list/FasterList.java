@@ -881,6 +881,17 @@ public class FasterList<X> extends FastList<X> {
             this.lastIndex = -1;
         }
     }
+    public boolean anySatisfy(int from, int to, Predicate<? super X> predicate2) {
+        int s = size;
+        if (s > 0 && s > from) {
+            X[] items = this.items;
+            for (int i = from; i < to; i++) {
+                if (predicate2.test(items[i]))
+                    return true;
+            }
+        }
+        return false;
+    }
 
     public <P> boolean anySatisfyWith(Predicate2<? super X, ? super P> predicate2, P parameter) {
         int s = size;

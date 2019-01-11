@@ -559,8 +559,8 @@ public class TestNAR {
         return this;
     }
 
-    public TestNAR quest(String termString) throws Narsese.NarseseException {
-        nar.quest($.$(termString));
+    public TestNAR quest(String termString)  {
+        nar.quest($.$$(termString));
         return this;
     }
 
