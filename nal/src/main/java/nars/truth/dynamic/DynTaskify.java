@@ -12,6 +12,7 @@ import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.task.util.Answer;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -71,26 +72,27 @@ public class DynTaskify extends DynEvi {
     @Nullable
     public static Task task(AbstractDynamicTruth model, boolean beliefOrGoal, Answer a) {
         Term template = a.template;
-        DynTaskify yy = eval(template, model, beliefOrGoal, a);
-        if (yy == null)
+        DynTaskify d = eval(template, model, beliefOrGoal, a);
+        if (d == null)
             return null;
+
 
 
         long s, e;
 
 
-        int eternals = yy.count(Task::isEternal);
-        if (eternals == yy.size()) {
+        int eternals = d.count(Task::isEternal);
+        if (eternals == d.size()) {
             s = ETERNAL;
             e = ETERNAL;
         } else {
             if (eternals == 0) {
-                s = yy.minValue(Stamp::start);
-                e = yy.maxValue(Stamp::end);
+                s = d.minValue(Stamp::start);
+                e = d.maxValue(Stamp::end);
 
             } else {
-                s = yy.minValue(t -> t.start() != ETERNAL ? t.start() : TIMELESS);
-                e = yy.maxValue(Stamp::end);
+                s = d.minValue(t -> t.start() != ETERNAL ? t.start() : TIMELESS);
+                e = d.maxValue(Stamp::end);
             }
 
 //                //trim
@@ -102,11 +104,11 @@ public class DynTaskify extends DynEvi {
 
         }
 
-        float eviFactor;
+//        float eviFactor;
         if (model == ConjIntersection) {
             if (s != ETERNAL)
-                e = s + (yy.minValue(t -> t.isEternal() ? 1 : t.range()) - 1);
-            eviFactor = 1;
+                e = s + (d.minValue(t -> t.isEternal() ? 1 : t.range()) - 1);
+//            eviFactor = 1;
         } else {
 
 //        //HACK discount by estimated evidence loss due to time gaps
@@ -117,35 +119,33 @@ public class DynTaskify extends DynEvi {
 //        eviFactor = Math.min(1, eviMax / maxEvi);
 
             //HACK estimate by time range only
-            if (s != ETERNAL) {
-                long range = (e - s) + 1;
-                eviFactor = (float) (yy.sumOfLong((Task x) -> x.isEternal() ? range : Math.min(range, x.range())) / (((double) range * yy.size())));
-                assert (eviFactor <= 1f);
-            } else {
-                eviFactor = 1;
-            }
+//            if (s != ETERNAL) {
+//                long range = (e - s) + 1;
+//                eviFactor = (float) (d.sumOfLong((Task x) -> x.isEternal() ? range : Math.min(range, x.range())) / (((double) range * d.size())));
+//                assert (eviFactor <= 1f);
+//            } else {
+//                eviFactor = 1;
+//            }
         }
 
         NAR nar = a.nar;
-        Truth t = model.truth(yy, nar);
-        t = (t != null && eviFactor != 1) ? PreciseTruth.byEvi(t.freq(), t.evi() * eviFactor) : t;
+        Term term = model.reconstruct(template, d, nar, s, e);
+        if (term == null || term instanceof Bool || !term.unneg().op().taskable) { //quick tests
+            if (Param.DEBUG)
+                throw new WTF("could not reconstruct: " + template + ' ' + d);
+            return null;
+        }
+
+        Truth t = model.truth(d, nar);
+        //t = (t != null && eviFactor != 1) ? PreciseTruth.byEvi(t.freq(), t.evi() * eviFactor) : t;
         if (t == null)
             return null;
 
 
-        Term reconstruct = model.reconstruct(template, yy, nar, s, e);
-        if (reconstruct == null) {
-            if (Param.DEBUG)
-                throw new WTF("could not reconstruct: " + template + ' ' + yy);
-            return null;
-        }
-        if (reconstruct != template && reconstruct.equals(template))
-            reconstruct = template; //use original instance
-
-        Task y = yy.task(reconstruct, t, yy::stamp, beliefOrGoal, s, e, nar);
-        if (y != null && eviFactor != 1.0f) {
-            y.priMult(eviFactor);
-        }
+        Task y = d.task(term, t, d::stamp, beliefOrGoal, s, e, nar);
+//        if (y != null && eviFactor != 1.0f) {
+//            y.priMult(eviFactor);
+//        }
         return y;
     }
 

@@ -1,16 +1,18 @@
 //conjunction/disjunction structural decomposition
 
-  //Conjunction structural decompose: C = (&&,a,b,..)
+    //free structural Conjunction/Disjunction decomposition
+    C, X, eventOfPosOrNeg(C,X), conjParallel(C), --isVar(X)  |-   conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
-    C, X, eventOf(C,X), conjParallel(C), --isVar(X)                |-   conjWithout(C,X), (Belief:StructuralDeduction)
-    C, X, eventOfNeg(C,X), conjParallel(C), --isVar(X)             |-   conjWithout(C,--X), (Belief:StructuralDeduction)
+    //not right:
+      //D, X, eventOfPosOrNeg(C,X), conjParallel(D), --isVar(X)  |- --conjWithoutPosOrNeg(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
 
-      //C, X, eventFirstOf(C,X)                               |- X, (  Goal:StructuralDeduction)
-       //D, X, eventOfNeg(D,X), conjParallel(D), has(D,"--")  |- --conjWithout(D,--X), (  Goal:StructuralDeductionN)
-        //C, X, eventOf(C,X), conjParallel(C)                  |-   conjWithout(C,X), (  Goal:StructuralDeduction)
-      //C, X, eventFirstOfNeg(C,X), has(C,"--")               |- --X, (  Goal:StructuralDeduction)
-       //D, X, eventOf(D,X), conjParallel(D)                  |- --conjWithout(D,X), (  Goal:StructuralDeductionN)
-        //C, X, eventOfNeg(C,X), conjParallel(C)               |-   conjWithout(C,--X), (  Goal:StructuralDeduction)
+    //free structural implication belief and question decomposition
+    (C ==> A), X, eventOfPosOrNeg(C,X), --isVar(A),--isVar(X)   |- (conjWithoutPosOrNeg(C,  X) ==> A), (Belief:StructuralReduction)
+        (C ==> A), X, eventOfPosOrNeg(C,X), task("?"), --isVar(A),--isVar(X)   |- (conjWithoutPosOrNeg(C,  X) ==> A), (Punctuation:Question)
+      (--C ==> A), X, eventOfPosOrNeg(C,X), --isVar(A),--isVar(X)   |- (--conjWithoutPosOrNeg(C,  X) ==> A), (Belief:StructuralReduction)
+          (--C ==> A), X, eventOfPosOrNeg(C,X), task("?"), --isVar(A),--isVar(X)   |- (--conjWithoutPosOrNeg(C,  X) ==> A), (Punctuation:Question)
+    (A ==> C), X, eventOfPosOrNeg(C,X), --isVar(A),--isVar(X)   |- (A ==> conjWithoutPosOrNeg(C,  X)), (Belief:StructuralReduction)
+         (A ==> C), X, eventOfPosOrNeg(C,X), task("?"), --isVar(A),--isVar(X)   |- (A ==> conjWithoutPosOrNeg(C,  X)), (Punctuation:Question)
 
 
 
@@ -116,15 +118,15 @@
         X, (--X ==> V), task("?"), is(V,"#"), --isVar(X)    |- --X, (Belief:BeliefStructuralAbduction)
 
 
-//// implication-based decomposition ////////////////////////////////////////////////////////////////////////////////////
 
-// Original:
+
+//Conditional implication decomposition
+//  Original:
 //    (S ==> M), ((&&,S,A_1..n) ==> M) |- ((&&,A_1..n) ==> M), (Truth:DecomposeNegativePositivePositive, Order:ForAllSame, SequenceIntervals:FromBelief)
 //    (S ==> M), ((||,S,A_1..n) ==> M) |- ((||,A_1..n) ==> M), (Truth:DecomposePositiveNegativeNegative, Order:ForAllSame)
 //    (M ==> S), (M ==> (&&,S,A_1..n)) |- (M ==> (&&,A_1..n)), (Truth:DecomposePositiveNegativeNegative, Order:ForAllSame, SequenceIntervals:FromBelief)
 //    (M ==> S), (M ==> (||,S,A_1..n)) |- (M ==> (||,A_1..n)), (Truth:DecomposeNegativePositivePositive, Order:ForAllSame)
 
-//conditional implication decomposition
     (  S ==> M), (C ==> M), eventOf(C,S)                    |-   (  conjWithout(C,   S) ==> M), (Belief:DecomposeNP)
         (  S ==> M), (--D ==> M), eventOfNeg(D,S)           |-   (--conjWithout(D, --S) ==> M), (Belief:DecomposeNP)
           //TODO eventsOf rather than eventOf
@@ -134,22 +136,6 @@
         (M ==> S), (M ==> D), eventOfNeg(D,S), has(D,"--")     |-   (M ==> conjWithout(D,    --S)), (Belief:DecomposeNP)
         (M ==> S), (M ==> D), eventOf(D,S)                     |-   (M ==> conjWithout(D,      S)), (Belief:DecomposePP)
 
-//free implication question decomposition
-//  (A ==> C), A, task("?"), is(C,"&&"), --isVar(A)       |- (A ==> dropAnyEvent(C)), (Punctuation:Question)
-//  (C ==> A), A, task("?"), isUnneg(C,"&&"), --isVar(A)  |- (dropAnyEvent(C) ==> A), (Punctuation:Question)
-    //not needed: (--C ==>A) since dropAnyEvent handles --C
-
-//free implication belief decomposition
-    //pred
-    //(A ==> C), X, eventOf(C,X), is(C,"&&"), --isVar(A)      |- (A ==> without(C,  X)), (Belief:StructuralReduction)
-    //(A ==> C), X, eventOfNeg(C,X), is(C,"&&"), --isVar(A)   |- (A ==> without(C,--X)), (Belief:StructuralReduction)
-
-    //disj subj ONLY:
-    //(--C ==> A), A, is(C,"&&"), --isVar(A)    |- (--dropAnyEvent(C) ==> A), (Belief:StructuralReduction)
-
-//dangerous?
-//(C ==> A), A, isUnneg(C,"&&"), --isVar(A) |- (dropAnyEvent(C) ==> A), (Belief:StructuralReduction)
-  //not needed: (--C ==>A) since dropAnyEvent handles --C
 
 
 

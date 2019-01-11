@@ -34,10 +34,11 @@ public class DynamicConjTruth {
                 range = ETERNAL;
             }
 
+            int n = components.size();
             for (TaskRegion t : components) {
                 long s = t.start();
                 long when;
-                if ((s == ETERNAL) || ((range == ETERNAL && s == ETERNAL) || (range>0 && s <= start && t.end() >= end)))
+                if ((s == ETERNAL) || ((range == ETERNAL) || (range>0 && s <= start && t.end() >= end)))
                     when = ETERNAL; //the component spans the entire range, so consider it an eternal factor
                 else
                     when = s;

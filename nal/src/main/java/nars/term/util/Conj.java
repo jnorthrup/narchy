@@ -5,7 +5,6 @@ import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
-import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.op.SubUnify;
