@@ -67,13 +67,13 @@ public enum DerivationFunctors {
                 (Functor) nar.concept("withoutPosOrNeg"),
                 new Functor.AbstractInlineFunctor2("conjBefore") {
                     @Override protected Term apply(Term conj, Term event) {
-                        Term x = beforeOrAfter(conj, event, true, d, Param.TTL_CONF_BEFORE_AFTER);
+                        Term x = beforeOrAfter(conj, event, true, d, Param.TTL_CONJ_BEFORE_AFTER);
                         return x == null ? Null : x;
                     }
                 },
                 new Functor.AbstractInlineFunctor2("conjAfter") {
                     @Override protected Term apply(Term conj, Term event) {
-                        Term x = beforeOrAfter(conj, event, false, d, Param.TTL_CONF_BEFORE_AFTER);
+                        Term x = beforeOrAfter(conj, event, false, d, Param.TTL_CONJ_BEFORE_AFTER);
                         return x == null ? Null : x;
                     }
                 }

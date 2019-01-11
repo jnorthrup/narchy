@@ -6,7 +6,12 @@ import jcog.math.v3;
 import static java.lang.Double.parseDouble;
 
 /**
- * Created by unkei on 2017/04/25.
+ * TODO
+ * from: https://wiki.openstreetmap.org/wiki/Node
+ * Do not use IEEE 32-bit floating point data type since it is limited to about 5 decimal places for the highest longitude.
+ * A 32-bit method used by the Rails port is to use an integer (by multiplying each coordinate in degrees by 1E7 and rounding it: this allows to cover all absolute signed coordinates in ±214.7483647 degrees, or a maximum difference of 429.4967295 degrees, a bit more than what is needed).
+ * For computing projections, IEEE 64 bit floating points are needed for intermediate results.
+ * The 7 rounded decimal places for coordinates in degrees define the worst error of longitude to a maximum of ±5.56595 millimeters on the Earth equator, i.e. it allows building maps with centimetric precision. With only 5 decimal places, the precision of map data would be only metric, causing severe changes of shapes for important objects like buildings, or many zigzags or angular artefacts on roads.
  */
 public class GeoVec3 extends v3 {
 //    private final double latitude;

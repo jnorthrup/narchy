@@ -125,13 +125,16 @@
 //    (M ==> S), (M ==> (||,S,A_1..n)) |- (M ==> (||,A_1..n)), (Truth:DecomposeNegativePositivePositive, Order:ForAllSame)
 
 //conditional implication decomposition
-    (  S ==> M), (C ==> M), eventsOf(C,S)                |- (conjWithoutAll(C,  S) ==> M), (Belief:DecomposeNP)
-    (--S ==> M), (C ==> M), eventOfNeg(C,S), has(C,"--") |- (conjWithout(C,--S) ==> M), (Belief:DecomposeNP)
-        //TODO disj
+    (  S ==> M), (C ==> M), eventsOf(C,S)                      |-   (  conjWithoutAll(C, S) ==> M), (Belief:DecomposeNP)
+    (--S ==> M), (C ==> M), eventOfNeg(C,S), has(C,"--")       |-   (  conjWithout(C,  --S) ==> M), (Belief:DecomposeNP)
+        (--S ==> M), (--D ==> M), eventOfNeg(D,S), has(D,"--") |- --(--conjWithout(D,  --S) ==> M), (Belief:DecomposePN)
+        (  S ==> M), (--D ==> M), eventOf(D,S)                 |- --(--conjWithout(D,    S) ==> M), (Belief:DecomposePN)
+        //TODO eventsOf rather than eventOf
 
-    (M ==> S), (M ==> C), eventsOf(C,S)                  |-   --(M ==> conjWithoutAll(C,S)),   (Belief:DecomposePN)
-    (M ==> S), (M ==> C), eventOfNeg(C,S), has(C,"--")   |-   --(M ==> conjWithout(C,--S)), (Belief:DecomposeNN)
-        //TODO disj
+    (M ==> S), (M ==> C), eventsOf(C,S)                        |- --(M ==> conjWithoutAll(C,   S)), (Belief:DecomposePN)
+    (M ==> S), (M ==> C), eventOfNeg(C,S), has(C,"--")         |- --(M ==> conjWithout(C,    --S)), (Belief:DecomposeNN)
+        (M ==> S), (M ==> D), eventOfNeg(D,S), has(D,"--")     |-   (M ==> conjWithout(D,    --S)), (Belief:DecomposeNP)
+        (M ==> S), (M ==> D), eventOf(D,S)                     |-   (M ==> conjWithout(D,      S)), (Belief:DecomposePP)
 
 //free implication question decomposition
 //  (A ==> C), A, task("?"), is(C,"&&"), --isVar(A)       |- (A ==> dropAnyEvent(C)), (Punctuation:Question)

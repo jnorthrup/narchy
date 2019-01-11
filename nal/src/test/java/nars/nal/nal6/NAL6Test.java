@@ -503,7 +503,7 @@ public class NAL6Test extends NALTest {
                 .believe("open({key1},{lock1})")
                 .believe("key:{key1}")
                 //.mustBelieve(cycles, "(key:{$1} ==> open({$1},{lock1}))", 1.00f, 0.45f)
-                .mustBelieve(cycles, "(key:$1 ==> open($1,{lock1}))", 1.00f, 0.42f)
+                .mustBelieve(cycles, "(key:$1 ==> open({$1},{lock1}))", 1.00f, 0.42f)
                 .mustBelieve(cycles, "(&&,open({#1},{lock1}),key:{#1})", 1.00f, 0.81f);
 
 
@@ -1275,6 +1275,20 @@ public class NAL6Test extends NALTest {
         ;
     }
 
+    @Test void testImplSubjQuestion() {
+        test
+                .believe("(x ==> y)")
+                .ask("x")
+                .mustQuestion(cycles, "y")
+        ;
+    }
+    @Test void testImplSubjNegQuestion() {
+        test
+                .believe("(--x ==> y)")
+                .ask("x")
+                .mustQuestion(cycles, "y")
+        ;
+    }
     @Test void testImplPredQuestion() {
         test
                 .believe("((x&&y)==>z)")
@@ -1289,7 +1303,7 @@ public class NAL6Test extends NALTest {
                 .mustQuest(cycles, "(x&&y)")
         ;
     }
-    @Test void testImplConjPredQuestion() {
+    @Disabled @Test void testImplConjPredQuestion() {
         test
                 .believe("((x&&y)==>z)")
                 .ask("z")
@@ -1298,11 +1312,32 @@ public class NAL6Test extends NALTest {
         ;
     }
 
-    @Test void testImplQuestionUnification() {
+    @Test void testImplSubjQuestionUnificationConst() {
+        test
+                .believe("(Criminal($1) ==> (&&,Sells($1,#2,#3),z))")
+                .ask("Criminal(x)")
+                .mustQuestion(cycles, "(&&,Sells(x,#2,#3),z)")
+        ;
+    }
+    @Test void testImplSubjNegQuestionUnificationConst() {
+        test
+                .believe("(--Criminal($1) ==> (&&,Sells($1,#2,#3),z))")
+                .ask("Criminal(x)")
+                .mustQuestion(cycles, "(&&,Sells(x,#2,#3),z)")
+        ;
+    }
+    @Test void testImplSubjQuestionUnificationQuery() {
+        test
+                .believe("(Criminal($1) ==> (&&,Sells($1,#2,#3),z))")
+                .ask("Criminal(?x)")
+                .mustQuestion(cycles, "(&&,Sells(?1,#2,#3),z)")
+        ;
+    }
+
+    @Test void testImplPredQuestionUnification() {
         test
                 .believe("((&&,Sells($1,#2,#3),z)==>Criminal($1))")
                 .ask("Criminal(?x)")
-                //.ask("(?1-->Criminal)")
                 .mustQuestion(cycles, "(&&,Sells(?1,#2,#3),z)")
         ;
     }
