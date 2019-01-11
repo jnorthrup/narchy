@@ -2306,8 +2306,8 @@ public class ConjTest {
         Term x = $$("((&|,_2(_1),_4(_3),_6(_5))&&(--,(_6(#1)&|_6(#2))))");
         {
             Conj c = Conj.from(x);
-            assertEquals(2, c.eventCount(ETERNAL));
             assertEq(x, c.term());
+            assertEquals(2, c.eventCount(ETERNAL));
         }
         {
             Conj c = Conj.from(x);

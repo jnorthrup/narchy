@@ -128,26 +128,6 @@ public abstract class TermBuilder {
         return theCompound(o, dt, s);
     }
 
-    public final Term theSortedCompound(Op o, int dt, Term... u) {
-
-        Term[] s;
-        if (o == CONJ) {
-            assert (Tense.dtSpecial(dt));
-            if (dt == XTERNAL) {
-                throw new WTF();
-//                Arrays.sort(u);
-//                s = u;
-            } else {
-                s = sorted(u);
-                if (s.length == 1)
-                    return s[0];
-            }
-        } else
-            throw new TODO();
-
-        return theCompound(o, dt, s);
-    }
-
     public final Term theCompound(Op o, int dt, Term... u) {
         return theCompound(o, dt, u, null);
     }
