@@ -103,7 +103,7 @@ public class Occurrify extends TimeGraph {
             assert((d.beliefStart == ETERNAL && d.beliefEnd == ETERNAL)||(d.beliefStart == TIMELESS && d.beliefEnd == TIMELESS));
         }
 
-        if (d.temporalTerms || (d.taskStart!=ETERNAL) || (d.beliefStart!=ETERNAL && d.beliefStart!=TIMELESS)) {
+        if (d.temporalTerms || (d.taskStart!=ETERNAL) || (d.beliefStart!=ETERNAL && d.beliefStart!=TIMELESS) ) {
 
 //            boolean unwrapNeg;
 //            if (c1.op()==NEG) {
@@ -255,13 +255,14 @@ public class Occurrify extends TimeGraph {
      * if there is any temporal terms with non-DTERNAL dt()
      */
     public static boolean temporal(Term x) {
-        return x.hasAny(Op.Temporal) && x.ORrecurse(z -> {
-            if (z instanceof Compound) {
-                int dt = z.dt();
+        if (x instanceof Compound && x.hasAny(Op.Temporal)) {
+            if (x.op().temporal) {
+                int dt = x.dt();
                 return (dt != DTERNAL && dt != XTERNAL);
             }
-            return false;
-        });
+            return x.ORrecurse(Occurrify::temporal);
+        }
+        return false;
     }
 
 

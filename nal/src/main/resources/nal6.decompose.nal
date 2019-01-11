@@ -129,8 +129,8 @@
     (--S ==> M), (C ==> M), eventOfNeg(C,S), has(C,"--") |- (conjWithout(C,--S) ==> M), (Belief:DecomposeNP)
         //TODO disj
 
-    (M ==> S), (M ==> C), eventsOf(C,S)                  |-   (M ==> conjWithoutAll(C,S)),   (Belief:DecomposePN)
-    (M ==> S), (M ==> C), eventOfNeg(C,S), has(C,"--")   |-   (M ==> conjWithout(C,--S)), (Belief:DecomposeNN)
+    (M ==> S), (M ==> C), eventsOf(C,S)                  |-   --(M ==> conjWithoutAll(C,S)),   (Belief:DecomposePN)
+    (M ==> S), (M ==> C), eventOfNeg(C,S), has(C,"--")   |-   --(M ==> conjWithout(C,--S)), (Belief:DecomposeNN)
         //TODO disj
 
 //free implication question decomposition

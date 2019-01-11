@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 200;
+    private final int cycles = 50;
 
     @Override
     protected NAR nar() {
@@ -297,8 +297,8 @@ public class NAL5Test extends NALTest {
     void compound_decomposition_two_premises1() {
 
         TestNAR tester = test;
-        tester.believe("--(bird:robin ==> (animal:robin && (robin-->[flying])))", 1.0f, 0.9f);
-        tester.believe("(bird:robin ==> (robin-->[flying]))");
+        tester.believe("(bird:robin ==> --(animal:robin && (robin-->[flying])))", 1.0f, 0.9f);
+        tester.believe("          (bird:robin ==> (robin-->[flying]))");
         tester.mustBelieve(cycles, "--(bird:robin ==> animal:robin)", 1.00f, 0.81f);
 
     }
@@ -348,7 +348,7 @@ public class NAL5Test extends NALTest {
         ;
     }
 
-    @Test
+    @Disabled @Test
     void disjunction_decompose_one_premise() {
         test
                 .believe("(||, a, b)")
@@ -356,7 +356,7 @@ public class NAL5Test extends NALTest {
                 .mustBelieve(cycles, "b", 1f, 0.40f)
         ;
     }
-    @Test
+    @Disabled @Test
     void disjunction_decompose_one_premise_pos_neg() {
         test
                 .believe("(||, a, --b)")

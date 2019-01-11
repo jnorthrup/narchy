@@ -682,7 +682,7 @@ public class Conj extends ByteAnonMap {
             int in = ii.cardinality();
             if (in < include.subs()) {
                 if (in == 1)
-                    return is.sub(in);
+                    return is.sub(ii.first(true));
                 else
                     return terms.conj(include.dt(), is.subsIncluding(ii));
             } else {

@@ -2,7 +2,6 @@ package nars.nal.nal6;
 
 import nars.NAR;
 import nars.NARS;
-import nars.Narsese.NarseseException;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import nars.time.Tense;
@@ -1141,7 +1140,7 @@ public class NAL6Test extends NALTest {
         //tests:
         // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
         test
-                .termVolMax(10)
+                .termVolMax(8)
                 .believe("(S ==> M)", 0.6f, 0.9f)
                 .believe("((X && S) ==> M)", 0.7f, 0.81f)
                 .mustBelieve(cycles, "(X ==> M)", .6f, 0.36f) //some freq and conf, dunno
@@ -1151,7 +1150,7 @@ public class NAL6Test extends NALTest {
         //tests:
         // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
         test
-                .termVolMax(10)
+                .termVolMax(8)
                 .believe("(       S ==> --M)")
                 .believe("((X && S) ==> --M)")
                 .mustBelieve(cycles, "(X ==> M)", 0f, 0.81f)

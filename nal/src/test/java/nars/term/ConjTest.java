@@ -793,6 +793,14 @@ public class ConjTest {
     }
 
     @Test
+    void testConjWithoutAllParallel2() {
+        assertEq("a", Conj.withoutAll($$("(&&,a,b,c)"), $$("(b&&c)")));
+        assertEq("b", Conj.withoutAll($$("(&&,a,b,c)"), $$("(a&&c)")));
+        assertEq("(b&&c)", Conj.withoutAll($$("(&&,a,b,c)"), $$("a")));
+        assertEq("(a&&c)", Conj.withoutAll($$("(&&,a,b,c)"), $$("b")));
+    }
+
+    @Test
     void testConjWithoutAllSequence() {
         assertEq("z", Conj.withoutAll(
                 $$("((x &&+1 y) &&+1 z)"),

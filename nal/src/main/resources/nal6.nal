@@ -331,6 +331,8 @@
     //(X ==> C), (B ==> M), eventOfNeg(X,M) |- ((conjWithout(X,--M) && B) ==> C), (Belief:DeductionPN)
         //((&&,M,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,B,A..+) ==> C), (Belief:Deduction)
 
+                (C ==> Y), (S ==> Y), eventsOf(C,S)          |- conjWithoutAll(C,S), (Belief:AbductionPB)
+                (--C ==> Y), (--S ==> Y), eventsOf(C,S)      |- conjWithoutAll(C,S), (Belief:AbductionPB)
                 //((&&,M,A..+) ==> Y), ((&&,A..+) ==> Y)          |- M, (Belief:AbductionPB)
                 //((&&,M,A) ==> Y),    (A ==> Y)                  |- M, (Belief:AbductionPB)
                     //(--(&&,M,A..+) ==> Y), (--(&&,A..+) ==> Y)  |- M, (Belief:AbductionPB)

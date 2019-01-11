@@ -168,14 +168,19 @@ class TermLinkTest {
     }
 
     @Test
+    void testTemplateProdInsideConjInsideImpl() {
+        testTemplates("(a ==> (x,y))",
+                "[(x,y), a]");
+    }
+    @Test
     void testTemplateConjInsideConjInsideImpl() {
         testTemplates("(a ==> (x && y))",
-                "[(x &&+- y), a, x, y]");
+                "[(x &&+- y), a]");
     }
     @Test
     void testTemplateConjInsideConjInsideImplVar() {
         testTemplates("(a ==> (x && #1))",
-                "[(x &&+- #1), a, x, #1]");
+                "[(x &&+- #1), a]");
     }
 
     @Test
