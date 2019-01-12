@@ -17,6 +17,21 @@ import java.util.Map;
  *  */
 public class ClassPatch {
 
+    /** http://bytebuddy.net/#/tutorial */
+    public static class TestByteBuddyAgent {
+
+        public static void main(String[] args) {
+            ByteBuddyAgent.install();
+            Foo foo = new Foo();
+            new ByteBuddy()
+                    .redefine(Bar.class)
+                    .name(Foo.class.getName())
+                    .make()
+                    .load(Foo.class.getClassLoader(), ClassReloadingStrategy.fromInstalledAgent());
+            assertThat(foo.m(), is("bar"));
+        }
+    }
+
     public static void main(String[] args) throws Exception {
 
         

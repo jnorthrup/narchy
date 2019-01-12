@@ -1571,11 +1571,12 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         boolean existingPolarity = existing.op() != NEG;
 
         //quick tests for contradiction
-        if (eConj) {
+        if (eConj && existingPolarity) {
             //for seq and parallel
-            if (existingPolarity && existing.containsNeg(incoming)){
+            if (eternalOrParallel && existing.containsNeg(incoming)){
                 return False;
             }
+            //TODO test for event at t=0 of parallel eConj
         }
 
 
