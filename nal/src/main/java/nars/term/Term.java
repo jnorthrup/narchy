@@ -583,8 +583,9 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     /**
      * event list, sorted by time
      * sorted by time; decomposes inner parallel conj
+     * @deprecated use LazyConj.events
      */
-    default FasterList<LongObjectPair<Term>> eventList() {
+    @Deprecated default FasterList<LongObjectPair<Term>> eventList() {
         return eventList(0, 1);
     }
 

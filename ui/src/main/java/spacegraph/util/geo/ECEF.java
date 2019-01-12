@@ -2,57 +2,52 @@ package spacegraph.util.geo;
 
 import jcog.Util;
 
+/*
+ *  ECEF - Earth Centered Earth Fixed coordinate system
+ *  https://en.wikipedia.org/wiki/ECEF
+ *
+ *  LLA - Lat Lon Alt
+ */
 class ECEF {
-    /*
-     *
-     *  ECEF - Earth Centered Earth Fixed
-     *
-     *  LLA - Lat Lon Alt
-     *
-     *  ported from matlab code at
-     *  https:
-     *     and
-     *  https:
-     */
 
-    
+
     private static final double a = 6378137; 
     private static final double e = 8.1819190842622e-2;  
 
-    private static final double asq = Math.pow(a, 2);
-    private static final double esq = Math.pow(e, 2);
+    private static final double asq = Util.sqr(a);
+    private static final double esq = Util.sqr(e);
+    private static final double esqInv = 1 - esq;
+
+
 
     public static double[] ecef2latlon(double[] ecef) {
-        double x = ecef[0];
-        double y = ecef[1];
-        double z = ecef[2];
+        return ecef2latlon(ecef[0], ecef[1], ecef[2]);
+    }
 
-        double b = Math.sqrt(asq * (1 - esq));
+    public static double[] ecef2latlon(double x, double y, double z) {
+
+        double b = Math.sqrt(asq * esqInv);
         double bsq = Util.sqr(b);
         double ep = Math.sqrt((asq - bsq) / bsq);
-        double p = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+        double p = Math.sqrt(Util.sqr(x) + Util.sqr(y));
         double th = Math.atan2(a * z, b * p);
 
-        double lon = Math.atan2(y, x);
-        double lat = Math.atan2((z + Math.pow(ep, 2) * b * Math.pow(Math.sin(th), 3)), (p - esq * a * Math.pow(Math.cos(th), 3)));
+        double lat = Math.atan2((z + Util.sqr(ep) * b * Util.cube(Math.sin(th))), (p - esq * a * Util.cube(Math.cos(th))));
+
         double N = a / (Math.sqrt(1 - esq * Util.sqr(Math.sin(lat))));
         double alt = p / Math.cos(lat) - N;
 
-        
-        lon = lon % (2 * Math.PI);
+        double lon = Math.atan2(y, x) % (2 * Math.PI);
 
-        
-
-        double[] ret = {lat, lon, alt};
-
-        return ret;
+        return new double[]{lat, lon, alt};
     }
 
 
     public static double[] latlon2ecef(double... lla) {
-        double lat = lla[0];
-        double lon = lla[1];
-        double alt = lla[2];
+        return latlon2ecef(lla[0], lla[1], lla[2]);
+    }
+
+    public static double[] latlon2ecef(double lat, double lon, double alt) {
 
         double sinLat = Math.sin(lat);
         double N = a / Math.sqrt(1 - esq * Util.sqr(sinLat));
@@ -61,9 +56,8 @@ class ECEF {
         double xy = (N + alt) * cosLat;
         double x = xy * Math.cos(lon);
         double y = xy * Math.sin(lon);
-        double z = ((1 - esq) * N + alt) * sinLat;
+        double z = (esqInv * N + alt) * sinLat;
 
-        double[] ret = {x, y, z};
-        return ret;
+        return new double[]{x, y, z};
     }
 }

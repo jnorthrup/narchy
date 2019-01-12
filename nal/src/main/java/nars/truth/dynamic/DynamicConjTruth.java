@@ -6,6 +6,7 @@ import nars.Task;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.util.Conj;
+import nars.term.util.LazyConj;
 import nars.truth.Stamp;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
@@ -20,7 +21,7 @@ public class DynamicConjTruth {
         @Override
         public Term reconstruct(Term superterm, List<Task> components, NAR nar, long start, long end) {
 
-            Conj c = new Conj(components.size());
+
 
 //            int ditherDT = nar.dtDither();
 
@@ -34,7 +35,9 @@ public class DynamicConjTruth {
                 range = ETERNAL;
             }
 
+
             int n = components.size();
+            LazyConj l = new LazyConj(n);
             for (TaskRegion t : components) {
                 long s = t.start();
                 long when;
@@ -44,11 +47,11 @@ public class DynamicConjTruth {
                     when = s;
 
 
-                if (!c.add(when, ((Task) t).term()))  //ts = Tense.dither(ts, ditherDT);
+                if (!l.add(when, ((Task) t).term()))
                     break;
             }
 
-            return c.term();
+            return l.term();
         }
 
         @Override

@@ -142,40 +142,44 @@ public class DynamicStatementTruth {
         Term sect;
         int outerDT;
         if (op == IMPL) {
+            //TODO DynamicConjTruth.ConjIntersection.reconstruct()
+
             //IMPL: compute innerDT for the conjunction
-            Conj c = new Conj();
+            Conj c = new Conj(); //TODO LazyConj
             for (TaskRegion x : components) {
                 Term xx = ((Task) x).term();
+
+                int tdt = xx.dt();
+                long tWhen = tdt == DTERNAL ? ETERNAL : -tdt;
 
                 boolean forceNegate = false;
                 if (xx.op() == NEG) {
 
-//                    if (op == IMPL) {
                     if (xx.unneg().op() == IMPL) {
                         xx = xx.unneg();
                         forceNegate = true;
                     } else {
                         if (!subjOrPred) {
                             //assume this is the reduced (true ==> --x)
-                            c.add(ETERNAL, xx.neg());
+                            if (!c.add(tWhen, xx.neg()))
+                                break;
                             continue;
                         } else {
-                            throw new WTF();
+                            throw new WTF(); //return null;
                         }
                     }
                 } else if (xx.op() != IMPL) {
                     if (!subjOrPred) {
                         //assume this is the reduced (true ==> x)
-                        c.add(ETERNAL, xx);
+                        if (!c.add(tWhen, xx))
+                            break;
                         continue;
                     } else {
-                        //throw new WTF();
-                        return null;
+                        throw new WTF(); //return null;
                     }
                 }
 
-                int tdt = xx.dt();
-                if (!c.add(tdt == DTERNAL ? ETERNAL : -tdt, xx.sub(subjOrPred ? 0 : 1).negIf(union ^ forceNegate)))
+                if (!c.add(tWhen, xx.sub(subjOrPred ? 0 : 1).negIf(union ^ forceNegate)))
                     break;
             }
 
@@ -183,7 +187,7 @@ public class DynamicStatementTruth {
             if (sect == Null)
                 return null; //but allow other Bool's
 
-            long cs = c.shift();
+            int cs = c.shiftOrDTERNAL();
             if (cs == DTERNAL || cs == ETERNAL) {
                 outerDT = DTERNAL; //some temporal information destroyed
             } else {

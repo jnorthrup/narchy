@@ -1,12 +1,11 @@
 package nars.derive;
 
-import jcog.data.list.FasterList;
 import nars.Builtin;
 import nars.NAR;
 import nars.Param;
 import nars.op.Equal;
 import nars.op.SetFunc;
-import nars.op.SubUnify;
+import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
@@ -14,14 +13,15 @@ import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.util.Conj;
 import nars.term.util.Image;
+import nars.term.util.LazyConj;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 import static nars.Op.*;
+import static nars.term.atom.Bool.False;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
 
@@ -116,29 +116,29 @@ public enum DerivationFunctors {
         int varBits = VAR_DEP.bit | VAR_INDEP.bit;
 
         //sequence or commutive
-        boolean seqOrComm;
 
-        FasterList<LongObjectPair<Term>> x;
+
+        LazyConj x;
         if (Conj.isSeq(conj)) {
-            seqOrComm = true;
-            x = conj.eventList();
+
+            x = LazyConj.events(conj);
             if (!beforeOrAfter)
                 x.reverse(); //match from opposite direction
         } else {
             //conj.dt() == DTERNAL || conj.dt() == 0
-            seqOrComm = false;
+
             Subterms ss = conj.subterms();
-            x = new FasterList<>(ss.subs());
+            x = new LazyConj(ss.subs());
             long when = (conj.dt() == DTERNAL) ? ETERNAL : 0;
             for (Term cc : ss)
-                x.add(PrimitiveTuples.pair(when, cc));
+                x.add(when, cc);
         }
 
         int n = x.size();
         assert (n > 1);
 
-        long leadOcc = x.get(0).getOne();
-        boolean leadingEventParallel = (x.get(1).getOne() == leadOcc);
+        long leadOcc = x.when(0);
+        boolean leadingEventParallel = (x.when(1) == leadOcc);
 
         //skip a leading non-parallel event, but dont skip any if parallel
         int parallelLead = leadingEventParallel ? 0 : 1;
@@ -146,27 +146,26 @@ public enum DerivationFunctors {
         if (!conj.impossibleSubTerm(event)) {
             int matchExact = -1;
             for (int i = parallelLead; i < n; i++) {
-                LongObjectPair<Term> xi = x.get(i);
-                if (xi.getTwo().equals(event)) {
+                if (x.get(i).equals(event)) {
                     matchExact = i;
                     break;
                 }
             }
             if (matchExact != -1) {
                 if (n == 2) {
-                    return x.get(1-matchExact).getTwo();
+                    return x.get(1-matchExact);
                 } else {
                     //include any other events occurring at the same time as matchExact but not those after it
-                    LongObjectPair<Term> me = x.remove(matchExact);
+                    LongObjectPair<Term> me = x.removeEvent(matchExact);
                     long meTime = me.getOne();
                     x.removeIf(
                             beforeOrAfter ?
-                                    xx -> xx.getOne() > meTime
+                                    (when, what) -> when > meTime
                                     :
-                                    xx -> xx.getOne() < meTime
+                                    (when, what) -> when < meTime
                     );
 
-                    return Conj.conj(x);
+                    return x.term();
                 }
             }
         }
@@ -176,43 +175,42 @@ public enum DerivationFunctors {
         boolean eVar = event.hasAny(varBits);
         if (eVar || (conj.hasAny(varBits) /*&& x.anySatisfy(1, n, z -> z.getTwo().hasAny(varBits)))*/)) {
             //TODO use SubUnify correctly (ie. termutes via tryMatch )
-            SubUnify s =
-                    //new SubUnify(d.random);
-                    d.myUniSubst.u;
+            UniSubst.MySubUnify s = d.myUniSubst.u;
             for (int matchUnify = parallelLead; matchUnify < n; matchUnify++) {
                 s.ttl = ttl;
-                LongObjectPair<Term> xi = x.get(matchUnify);
-                Term ti = xi.getTwo();
+                Term ti = x.get(matchUnify);
                 if (eVar || ti.hasAny(varBits)) {
 
-                    s.clear();
+                    s.reset(varBits, false);
 
                     if (event.unify(ti, s)) {
 
                         s.xy.forEach(d.xy::set);
 
                         if (n == 2) {
-                            return x.get(1-matchUnify).getTwo().replace(s.xy);
+                            return x.get(1-matchUnify).replace(s.xy);
                         } else {
 
                             //include any other events occurring at the same time as matchExact but not those after it
 
-                            LongObjectPair<Term> me = x.remove(matchUnify);
+                            LongObjectPair<Term> me = x.removeEvent(matchUnify);
                             long meTime = me.getOne();
                             x.removeIf(
                                     beforeOrAfter ?
-                                            xx -> xx.getOne() > meTime
+                                            (when,what) -> when > meTime
                                             :
-                                            xx -> xx.getOne() < meTime
+                                            (when,what) -> when < meTime
                             );
 
                             n = x.size();
-                            Conj y = new Conj(n);
                             for (int j = 0; j < n; j++) {
-                                if (!y.add(x.get(j).getOne(), x.get(j).getTwo().replace(s.xy)))
-                                    break; //fail
+                                Term jj = x.get(j).replace(s.xy);
+                                if (jj == False) {
+                                    return False; //TODO keep trying on different event?
+                                }
+                                x.set(j, jj);
                             }
-                            return y.term();
+                            return x.term();
                         }
                     }
                 }

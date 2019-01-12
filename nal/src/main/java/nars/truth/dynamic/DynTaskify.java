@@ -104,11 +104,11 @@ public class DynTaskify extends DynEvi {
 
         }
 
-//        float eviFactor;
+        float eviFactor;
         if (model == ConjIntersection) {
             if (s != ETERNAL)
                 e = s + (d.minValue(t -> t.isEternal() ? 1 : t.range()) - 1);
-//            eviFactor = 1;
+            eviFactor = 1;
         } else {
 
 //        //HACK discount by estimated evidence loss due to time gaps
@@ -119,13 +119,13 @@ public class DynTaskify extends DynEvi {
 //        eviFactor = Math.min(1, eviMax / maxEvi);
 
             //HACK estimate by time range only
-//            if (s != ETERNAL) {
-//                long range = (e - s) + 1;
-//                eviFactor = (float) (d.sumOfLong((Task x) -> x.isEternal() ? range : Math.min(range, x.range())) / (((double) range * d.size())));
-//                assert (eviFactor <= 1f);
-//            } else {
-//                eviFactor = 1;
-//            }
+            if (s != ETERNAL) {
+                long range = (e - s) + 1;
+                eviFactor = (float) (d.sumOfLong((Task x) -> x.isEternal() ? range : Math.min(range, x.range())) / (((double) range * d.size())));
+                assert (eviFactor <= 1f);
+            } else {
+                eviFactor = 1;
+            }
         }
 
         NAR nar = a.nar;
@@ -137,15 +137,15 @@ public class DynTaskify extends DynEvi {
         }
 
         Truth t = model.truth(d, nar);
-        //t = (t != null && eviFactor != 1) ? PreciseTruth.byEvi(t.freq(), t.evi() * eviFactor) : t;
+        t = (t != null && eviFactor != 1) ? PreciseTruth.byEvi(t.freq(), t.evi() * eviFactor) : t;
         if (t == null)
             return null;
 
 
         Task y = d.task(term, t, d::stamp, beliefOrGoal, s, e, nar);
-//        if (y != null && eviFactor != 1.0f) {
-//            y.priMult(eviFactor);
-//        }
+        if (y != null && eviFactor != 1) {
+            y.priMult(eviFactor);
+        }
         return y;
     }
 

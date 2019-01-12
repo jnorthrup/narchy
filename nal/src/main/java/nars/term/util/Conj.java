@@ -49,7 +49,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * representation of conjoined (eternal, parallel, or sequential) events specified in one or more conjunctions,
  * for use while constructing, merging, and/or analyzing
  */
-public class Conj extends ByteAnonMap {
+public class Conj extends ByteAnonMap implements ConjBuilder {
 
 
     public static final int ROARING_UPGRADE_THRESH = 8;
@@ -100,7 +100,10 @@ public class Conj extends ByteAnonMap {
     public static Conj from(Term t) {
         Conj c = new Conj();
         c.addAuto(t);
-        //c.factor();
+        return c;
+    }
+    public static LazyConj fromLazy(Term t) {
+        LazyConj c = LazyConj.events(t);
         return c;
     }
 
@@ -109,9 +112,7 @@ public class Conj extends ByteAnonMap {
     }
 
 
-    public boolean addAuto(Term t) {
-        return add(t.dt() == DTERNAL ? ETERNAL : 0, t);
-    }
+
 
     public static boolean containsOrEqualsEvent(Term container, Term x) {
         return container.equals(x) || containsEvent(container, x);
@@ -408,7 +409,7 @@ public class Conj extends ByteAnonMap {
             case NEG:
                 return negateEvents(x.unneg()).neg();
             case CONJ: {
-                Conj c = Conj.from(x);
+                ConjBuilder c = Conj.fromLazy(x);
                 c.negateEvents();
                 return c.term();
             }
@@ -562,7 +563,7 @@ public class Conj extends ByteAnonMap {
         return s.sub(eternalComponents.next(false, 0, s.subs()));
     }
 
-    private void negateEvents() {
+    @Override public void negateEvents() {
         event.forEachValue(x -> {
             if (!(x instanceof byte[]))
                 throw new TODO();
@@ -576,26 +577,6 @@ public class Conj extends ByteAnonMap {
     }
 
 
-    public static Term conj(FasterList<LongObjectPair<Term>> events) {
-        int eventsSize = events.size();
-        switch (eventsSize) {
-            case 0:
-                return True;
-            case 1:
-                return events.get(0).getTwo();
-        }
-
-        Conj ce = new Conj(eventsSize);
-
-        for (LongObjectPair<Term> o : events) {
-            if (!ce.add(o.getOne(), o.getTwo())) {
-                break;
-            }
-        }
-
-        return ce.term();
-    }
-
     public static Term conj(Collection<LongObjectPair<Term>> events) {
         int eventsSize = events.size();
         switch (eventsSize) {
@@ -605,7 +586,7 @@ public class Conj extends ByteAnonMap {
                 return events.iterator().next().getTwo();
         }
 
-        Conj ce = new Conj();
+        LazyConj ce = new LazyConj(eventsSize);
 
         for (LongObjectPair<Term> o : events) {
             if (!ce.add(o.getOne(), o.getTwo())) {
@@ -645,7 +626,7 @@ public class Conj extends ByteAnonMap {
 
         if (Conj.isSeq(include)) {
 
-            Conj xx = Conj.from(include);
+            Conj  xx = Conj.from(include);
             if (xx.removeEventsByTerm(exclude, true, excludeNeg)) {
                 return xx.term();
             } else {
@@ -698,7 +679,7 @@ public class Conj extends ByteAnonMap {
         } else {
 
 
-            Conj x = Conj.from(include);
+            ConjBuilder x = Conj.fromLazy(include);
             boolean[] removedSomething = new boolean[]{false};
 
             if (!eSeq) {
@@ -918,6 +899,7 @@ public class Conj extends ByteAnonMap {
      * ConjEvents instance is
      * now corrupt and its result via .term() should be considered final
      */
+    @Override
     public boolean add(long at, Term x) {
         if (term != null)
             throw new RuntimeException("already concluded: " + term);
@@ -1243,7 +1225,7 @@ public class Conj extends ByteAnonMap {
                     if (dt == DTERNAL)
                         dt = 0;
 
-                    Conj d = new Conj();
+                    LazyConj d = new LazyConj(2);
                     d.add(dt, incoming);
                     d.add(shift, newConj);
                     return d.term();
@@ -1460,8 +1442,8 @@ public class Conj extends ByteAnonMap {
         int dtOuter = eternal ? DTERNAL : 0;
         int dtInner = existing.dt();
 
-        if (dtInner==dtOuter && (dtInner==0 || !Conj.isSeq(existing)) && existing.contains(incoming))
-            return existing; //quick test for absorption
+//        if (dtInner==dtOuter && (dtInner==0 || !Conj.isSeq(existing)) && existing.contains(incoming))
+//            return existing; //quick test for absorption
 
 
         if (incoming.op() == CONJ) {
@@ -1490,7 +1472,7 @@ public class Conj extends ByteAnonMap {
         } else {
             boolean innerCommute = Tense.dtSpecial(dtInner);// && !conj.subterms().hasAny(Op.CONJ);
 
-            Conj c = !innerCommute ? new Conj() : null;
+            LazyConj c = !innerCommute ? new LazyConj() : null;
             FasterList<Term> cx = innerCommute ? new FasterList() : null;
 //            boolean incomingHasConj = incoming.hasAny(CONJ);
             boolean ok = existing.eventsWhile((whn, wht) -> {
@@ -1672,7 +1654,7 @@ public class Conj extends ByteAnonMap {
         return index;
     }
 
-    public boolean remove(long at, Term t) {
+    @Override public boolean remove(long at, Term t) {
 
         byte i = get(t);
         return remove(at, i);
@@ -1804,7 +1786,7 @@ public class Conj extends ByteAnonMap {
         return false;
     }
 
-    public Term term() {
+    @Override public Term term() {
         if (term != null)
             return term;
 
@@ -2235,6 +2217,10 @@ public class Conj extends ByteAnonMap {
             }
             return x;
         });
+    }
+
+    public int shiftOrDTERNAL() {
+        return eventOccurrences()==1 && eventCount(ETERNAL) > 0 ? DTERNAL : Tense.occToDT(shift());
     }
 
     //    private static void addAllTo(ByteHashSet common, Object o) {

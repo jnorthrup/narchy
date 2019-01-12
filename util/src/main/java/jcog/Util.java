@@ -1596,7 +1596,11 @@ public enum Util {
         return x * x;
     }
 
+
     public static float cube(float x) {
+        return x * x * x;
+    }
+    public static double cube(double x) {
         return x * x * x;
     }
 

@@ -50,7 +50,7 @@ public class SubUnify extends Unify {
 
 
     @Nullable
-    public Term tryMatch(@Nullable Term transformed, Term x, Term y, int ttl) {
+    public Term uniSubst(@Nullable Term transformed, Term x, Term y, int ttl) {
         this.transformed = transformed;
         this.result = null;
         setTTL(ttl); assert(ttl > 0);

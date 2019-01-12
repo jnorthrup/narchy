@@ -487,7 +487,7 @@ public class FasterList<X> extends FastList<X> {
         }
     }
 
-    private Object[] copyItemsWithNewCapacity(int newCapacity) {
+    protected Object[] copyItemsWithNewCapacity(int newCapacity) {
 //        Object[] newItems = newArray(newCapacity);
 //        System.arraycopy(this.items, 0, newItems, 0, Math.min(this.size, newCapacity));
 //        return newItems;

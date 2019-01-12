@@ -388,7 +388,19 @@ public final class Answer implements AutoCloseable {
      * this does not filter cyclic; do that manually
      */
     private TruthPolation truthpolation(DynEvi d, int dur) {
-        TruthPolation tp = Param.truth(time.start, time.end, dur);
+        long s = d.start();
+        long e = s != ETERNAL ? d.end() : ETERNAL;
+        if (s!=ETERNAL) {
+             if (this.time.start!=ETERNAL) {
+                 //project to the question time range
+                 s = this.time.start;
+                 e = this.time.end;
+             } else {
+                 //use the answered time range
+             }
+        }
+
+        TruthPolation tp = Param.truth(s, e, dur);
         tp.ensureCapacity(d.size());
         d.forEach(r -> tp.add(r.task()));
         return tp;

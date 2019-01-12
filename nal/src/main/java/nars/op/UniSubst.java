@@ -132,7 +132,7 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
             int ttl = Math.max(1, parent.nar.subUnifyTTLMax.intValue() - 1);
             x = Image.imageNormalize(x);
             y = Image.imageNormalize(y);
-            output = u.reset(var, strict).tryMatch(c, x, y, ttl);
+            output = u.reset(var, strict).uniSubst(c, x, y, ttl);
             parent.use(1 + ttl - u.ttl);
         } else {
             output = null;
@@ -151,7 +151,7 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
             super(null, Op.Variable);
         }
 
-        private MySubUnify reset(int varBits, boolean strict) {
+        public MySubUnify reset(int varBits, boolean strict) {
             this.random = parent.random;
             this.strict = strict;
             setVarBits(varBits);

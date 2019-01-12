@@ -98,15 +98,15 @@ public final class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
         if (c != null) {
 
             long start, end;
-            if (when == ETERNAL) {
-                //start = end = ETERNAL;
-                start = end = n.time();
-            } else {
+//            if (when == ETERNAL) {
+//                //start = end = ETERNAL;
+//                start = end = n.time();
+//            } else {
 //            int dur = n.dur();
 //            start = Tense.dither(when - dur/2, n);
 //            end = Tense.dither(when + dur/2, n);
                 start = end = when;
-            }
+//            }
 
             return c.table(punc).sample(start, end, t, n);
 

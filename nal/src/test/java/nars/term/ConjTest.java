@@ -26,8 +26,7 @@ import static nars.io.NarseseTest.assertInvalidTerms;
 import static nars.term.TemporalTermTest.*;
 import static nars.term.TermTestMisc.assertValid;
 import static nars.term.TermTestMisc.assertValidTermValidConceptInvalidTaskContent;
-import static nars.term.atom.Bool.False;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.Bool.*;
 import static nars.term.util.TermTest.*;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -38,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * TODO use assertEq() where possible for term equality test (not junit assertEquals). it applies more rigorous testing
  */
 public class ConjTest {
+
 
     @Test
     void conjWTFF() {
@@ -245,7 +245,7 @@ public class ConjTest {
     private void assertConsistentConj(int variety, int start, int end) {
         FasterList<LongObjectPair<Term>> x = newRandomEvents(variety, start, end);
 
-        Term y = Conj.conj(x.clone());
+        Term y = conj(x.clone());
         FasterList<LongObjectPair<Term>> z = y.eventList();
 
 
@@ -253,7 +253,7 @@ public class ConjTest {
 
 
         if (!x.equals(z)) {
-            Term y2 = Conj.conj(x.clone());
+            Term y2 = conj(x.clone());
         }
 
         assertEquals(x, z);
@@ -416,7 +416,7 @@ public class ConjTest {
     void testConjEvents1a() throws Narsese.NarseseException {
         assertEquals(
                 "(a &&+16 ((--,a)&|b))",
-                Conj.conj(
+                conj(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
                                 pair(298L, $.$("a")),
                                 pair(314L, $.$("b")),
@@ -429,7 +429,7 @@ public class ConjTest {
     void testConjEvents1b() throws Narsese.NarseseException {
         assertEquals(
                 "((a&|b) &&+1 (--,a))",
-                Conj.conj(
+                conj(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
                                 pair(1L, $.$("a")),
                                 pair(1L, $.$("b")),
@@ -442,7 +442,7 @@ public class ConjTest {
     void testConjEvents2() throws Narsese.NarseseException {
         assertEquals(
                 "((a &&+1 (&|,b1,b2,b3)) &&+1 (c &&+1 (d1&|d2)))",
-                Conj.conj(
+                conj(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
                                 pair(1L, $.$("a")),
                                 pair(2L, $.$("b1")),
@@ -459,7 +459,7 @@ public class ConjTest {
     void testConjEventsWithFalse() throws Narsese.NarseseException {
         assertEquals(
                 False,
-                Conj.conj(
+                conj(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
                                 pair(1L, $.$("a")),
                                 pair(2L, $.$("b1")),
@@ -467,7 +467,7 @@ public class ConjTest {
                         })));
         assertEquals(
                 False,
-                Conj.conj(
+                conj(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
                                 pair(1L, $.$("a")),
                                 pair(1L, $.$("--a"))
@@ -2385,5 +2385,26 @@ public class ConjTest {
     static final Term b = $.the("b");
     private final Random rng = new XoRoShiRo128PlusRandom(1);
     private final NAR n = NARS.shell();
+
+    @Deprecated public static Term conj(FasterList<LongObjectPair<Term>> events) {
+        int eventsSize = events.size();
+        switch (eventsSize) {
+            case 0:
+                return True;
+            case 1:
+                return events.get(0).getTwo();
+        }
+
+        Conj ce = new Conj(eventsSize);
+
+        for (LongObjectPair<Term> o : events) {
+            if (!ce.add(o.getOne(), o.getTwo())) {
+                break;
+            }
+        }
+
+        return ce.term();
+    }
+
 }
 

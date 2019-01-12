@@ -14,6 +14,7 @@ import nars.task.NALTask;
 import nars.task.util.TaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 import nars.util.Timed;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -47,9 +48,22 @@ public class DynEvi extends FasterList<Task> implements TaskRegion {
         return new Task[newCapacity];
     }
 
+    private boolean allEternal() {
+        return allSatisfy(x -> x.start()==ETERNAL);
+    }
+
     @Override
     public long start() {
-        return minValue(LongInterval::start);
+        if (allEternal())
+            return ETERNAL;
+        long min = Tense.TIMELESS;
+        int n = size();
+        for (int i = 0; i < n; i++) {
+            long s = get(i).start();
+            if (s != ETERNAL && s < min)
+                min = s;
+        }
+        return min;
     }
 
     @Override
