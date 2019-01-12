@@ -103,7 +103,7 @@ public class Builtin {
             new Functor.AbstractInlineFunctor2("conjWithout") {
                 @Override
                 protected Term apply(Term conj, Term event) {
-                    Term x = Conj.without(conj, event);
+                    Term x = Conj.diff(conj, event);
                     if (conj.equals(x))
                         return Null;
                     return x;
@@ -442,7 +442,7 @@ public class Builtin {
         nar.on(new Functor.AbstractInlineFunctor2("conjWithoutPosOrNeg") {
             @Override
             protected Term apply(Term conj, Term event) {
-                Term x = Conj.without(conj, event, true);
+                Term x = Conj.diff(conj, event, true);
                 if (conj.equals(x))
                     return Null;
                 return x;

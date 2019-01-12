@@ -15,7 +15,11 @@ import static nars.term.atom.Bool.*;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
 
-/** lazily constructs a conjunction term from components, in the most efficient method possible according to them */
+/** prepares construction of a conjunction term from components,
+ * in the most efficient method possible according to them.
+ * it is lighter weight than Conj.java in buffering / accumulating
+ * events prior to complete construction.
+ * */
 public class ConjLazy extends FasterList<Term> implements ConjBuilder {
     private long[] when;
 
@@ -34,9 +38,8 @@ public class ConjLazy extends FasterList<Term> implements ConjBuilder {
 
     public static ConjLazy events(Term conj, long occOffset) {
         ConjLazy l = new ConjLazy(conj.op()==CONJ ? 4 : 1);
-        conj.eventsWhile((w, t) -> {
-            return l.add(w, t);
-        }, occOffset, true, true, false, 0);
+        conj.eventsWhile(l::add,
+                occOffset, true, true, false, 0);
         return l;
     }
 
@@ -110,30 +113,43 @@ public class ConjLazy extends FasterList<Term> implements ConjBuilder {
 
     public boolean removeIf(LongObjectPredicate<Term> iff) {
         int s = size();
-        if (s == 0) return false;
-        MetalBitSet m = MetalBitSet.bits(s);
-        for (int i = 0; i < s; i++) {
-            if (iff.accept(when[i], get(i)))
-                m.set(i);
-        }
-        int toRemove = m.cardinality();
-        switch (toRemove) {
-            case 0: return false;
-            case 1: super.removeFast(m.first(true)); return true;
-            default:
-
-                for (int i = m.first(true); i < s;  /* TODO iterate bitset better */ ) {
-                    if (m.get(i)) {
-                        removeWhen(i, s);
-                        super.removeFast(i);
-                        s--;
-                    } else {
-                        i++;
-                    }
-                }
+        if (s == 0)
+            return false;
+        else if (s == 1) {
+            if (iff.accept(when[0],get(0))) {
+                clear();
                 return true;
-        }
+            } else
+                return false;
+        } else {
 
+            MetalBitSet m = MetalBitSet.bits(s);
+            for (int i = 0; i < s; i++) {
+                if (iff.accept(when[i], get(i)))
+                    m.set(i);
+            }
+            int toRemove = m.cardinality();
+            switch (toRemove) {
+                case 0:
+                    return false;
+                case 1:
+                    removeWhen(0, s);
+                    super.removeFast(m.first(true));
+                    return true;
+                default:
+
+                    for (int i = m.first(true); i < s;  /* TODO iterate bitset better */) {
+                        if (m.get(i)) {
+                            removeWhen(i, s);
+                            super.removeFast(i);
+                            s--;
+                        } else {
+                            i++;
+                        }
+                    }
+                    return true;
+            }
+        }
 
     }
 

@@ -24,7 +24,7 @@ public class NAL8SequenceTest extends NALTest {
 
     @Test
     void testSubSequenceOutcome() {
-        test.confTolerance(0.01f);
+        
         test
                 .input( "(x &&+1 y)!")
                 .input( "(z &&+1 (x &&+1 y)).")
@@ -35,7 +35,7 @@ public class NAL8SequenceTest extends NALTest {
     @ParameterizedTest
     @ValueSource(strings = {"&|","&&"})
     void testSubParallelOutcome(String conj) {
-        test.confTolerance(0.01f);
+        
         test
                 .input( "x!")
                 .input( "(" + conj + ",x,y,z).")
@@ -45,7 +45,7 @@ public class NAL8SequenceTest extends NALTest {
 
     @Test
     void testMidSequenceOutcome() {
-        test.confTolerance(0.01f);
+        
         test
                 .input( "c!")
                 .input( "(a &&+1 (b &&+1 (c &&+1 (d &&+1 e)))).")
@@ -54,7 +54,7 @@ public class NAL8SequenceTest extends NALTest {
     }
     @Test
     void testStartSequenceDTernalComponentOutcome() {
-        test.confTolerance(0.01f);
+        
         test
                 .input( "b!")
                 .input( "((a&|b) &&+1 c).")
@@ -63,7 +63,7 @@ public class NAL8SequenceTest extends NALTest {
     }
     @Test
     void testMidSequenceDTernalComponentOutcome() {
-        test.confTolerance(0.01f);
+        
         test
                 .input( "c!")
                 .input( "(a &&+1 (b &&+1 ((c&|f) &&+1 (d &&+1 e)))).")
@@ -73,7 +73,7 @@ public class NAL8SequenceTest extends NALTest {
 
     @Test
     void testMidSequenceDTernalComponentWithUnification() {
-        test.confTolerance(0.01f);
+        
         test
                 .input( "c(x)!")
                 .input( "(a &&+1 (b(#1) &&+1 ((&|,a,b,c(#1),d(x,y)) &&+1 (d &&+1 e)))).")
@@ -82,7 +82,7 @@ public class NAL8SequenceTest extends NALTest {
     }
     @Test
     void testMidSequenceDTernalComponentOutcome_Alternate_Sort() {
-        test.confTolerance(0.01f);
+        
         test
                 .input( "f!")
                 .input( "(a &&+1 (b &&+1 ((c&|f) &&+1 (d &&+1 e)))).")
@@ -92,7 +92,7 @@ public class NAL8SequenceTest extends NALTest {
 
     @Test
     void testNegMidSequenceOutcome() {
-        test.confTolerance(0.01f);
+        
         test
                 .input( "--c!")
                 .input( "(a &&+1 (b &&+1 (--c &&+1 (d &&+1 e)))).")
@@ -101,7 +101,7 @@ public class NAL8SequenceTest extends NALTest {
     }
     @Test
     void testEqualConclusionSequenceOutcome() {
-        test.confTolerance(0.01f);
+        
         test
                 .input( "e!")
                 .input( "(a &&+1 (b &&+1 (c &&+1 (d &&+1 e)))).")
@@ -111,7 +111,7 @@ public class NAL8SequenceTest extends NALTest {
 
     @Test
     void testUnifyConclusionSequenceOutcome() {
-        test.confTolerance(0.01f);
+        
         test
                 .input( "e(x)!")
                 .input( "(a(#1) &&+1 (b &&+1 (c &&+1 (d &&+1 e(#1))))).")
@@ -121,7 +121,7 @@ public class NAL8SequenceTest extends NALTest {
 
     @Test
     void testBeliefDeduction_MidSequenceDTernalComponent() {
-        test.confTolerance(0.01f);
+        
         test
                 .input( "c.")
                 .input( "(a &&+1 (b &&+1 ((c&|f) &&+1 (d &&+1 e)))).")
@@ -130,7 +130,7 @@ public class NAL8SequenceTest extends NALTest {
     }
     @Test
     void testBeliefDeduction_MidSequenceDTernalComponentWithUnification() {
-        test.confTolerance(0.01f);
+        
         test
                 .input( "c(x).")
                 .input( "(a &&+1 (b(#1) &&+1 ((&|,a,b,c(#1),d(x,#1)) &&+1 (d &&+1 e(#1))))).")
@@ -139,10 +139,10 @@ public class NAL8SequenceTest extends NALTest {
     }
     @Test
     void testGoalDeduction_MidSequenceDTernalComponentWithUnification() {
-        test.confTolerance(0.01f);
+        
         test
-                .input( "c(x).")
                 .input( "(a &&+1 (b(#1) &&+1 ((&|,a,b,c(#1),d(x,#1)) &&+1 (d &&+1 e(#1)))))!")
+                .input( "c(x).")
                 .mustGoal(cycles, "((&|,a,b,d(x,x)) &&+1 (d &&+1 e(x)))", 1, 0.81f) //81% for one step
         ;
     }

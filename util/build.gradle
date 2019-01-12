@@ -21,7 +21,7 @@ dependencies {
     compile group: 'org.ow2.asm', name: 'asm-commons', version: '7.0'
 
     compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.9.7'
-    testCompile group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.9.7'
+//    compile group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.9.7'
 
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
 

@@ -745,69 +745,97 @@ public class ConjTest {
     @Test
     void testConjWithout() {
 
-        assertEquals("(--,y)", Conj.without($$("(--x && --y)"), $$("x"), true).toString());
-        assertEquals("(--,y)", Conj.without($$("(--x &&+1 --y)"), $$("x"), true).toString());
-        assertEquals("(z &&+1 (--,y))", Conj.without($$("((--x &&+1 z) &&+1 --y)"), $$("x"), true).toString());
-        assertEquals("(z &&+1 (--,y))", Conj.without($$("((x &&+1 z) &&+1 --y)"), $$("x"), true).toString());
-        assertEquals("(z &&+1 (--,y))", Conj.without($$("((--x &&+1 z) &&+1 --y)"), $$("--x"), true).toString());
-        assertEquals("(z &&+1 (--,y))", Conj.without($$("((x &&+1 z) &&+1 --y)"), $$("--x"), true).toString());
-        assertEquals("((--,x)&&(--,y))", Conj.without($$("(--x && --y)"), $$("x"), false).toString()); //unchanged
-        assertEquals("((--,x) &&+1 (--,y))", Conj.without($$("(--x &&+1 --y)"), $$("x"), false).toString()); //unchanged
-        assertEquals("(((--,x) &&+1 z) &&+1 (--,y))", Conj.without($$("((--x &&+1 z) &&+1 --y)"), $$("x"), false).toString());
+        assertEquals("(--,y)", Conj.diff($$("(--x && --y)"), $$("x"), true).toString());
+        assertEquals("(--,y)", Conj.diff($$("(--x &&+1 --y)"), $$("x"), true).toString());
+        assertEquals("(z &&+1 (--,y))", Conj.diff($$("((--x &&+1 z) &&+1 --y)"), $$("x"), true).toString());
+        assertEquals("(z &&+1 (--,y))", Conj.diff($$("((x &&+1 z) &&+1 --y)"), $$("x"), true).toString());
+        assertEquals("(z &&+1 (--,y))", Conj.diff($$("((--x &&+1 z) &&+1 --y)"), $$("--x"), true).toString());
+        assertEquals("(z &&+1 (--,y))", Conj.diff($$("((x &&+1 z) &&+1 --y)"), $$("--x"), true).toString());
+        assertEquals("((--,x)&&(--,y))", Conj.diff($$("(--x && --y)"), $$("x"), false).toString()); //unchanged
+        assertEquals("((--,x) &&+1 (--,y))", Conj.diff($$("(--x &&+1 --y)"), $$("x"), false).toString()); //unchanged
+        assertEquals("(((--,x) &&+1 z) &&+1 (--,y))", Conj.diff($$("((--x &&+1 z) &&+1 --y)"), $$("x"), false).toString());
 
-        assertEquals("y", Conj.without($$("(x && y)"), $$("x"), false).toString());
+        assertEquals("y", Conj.diff($$("(x && y)"), $$("x"), false).toString());
 
-        assertEquals("(--,x)", Conj.without($$("--x"), $$("x"), false).toString());
-        assertEquals("x", Conj.without($$("x"), $$("--x"), false).toString());
-        assertEquals("true", Conj.without($$("--x"), $$("x"), true).toString());
-        assertEquals("true", Conj.without($$("x"), $$("--x"), true).toString());
+        assertEquals("(--,x)", Conj.diff($$("--x"), $$("x"), false).toString());
+        assertEquals("x", Conj.diff($$("x"), $$("--x"), false).toString());
+        assertEquals("true", Conj.diff($$("--x"), $$("x"), true).toString());
+        assertEquals("true", Conj.diff($$("x"), $$("--x"), true).toString());
 
 
     }
 
     @Test
     void testConjWithoutAllParallel() {
-        assertEquals("(a&&b)", Conj.without(
+        assertEquals("(a&&b)", Conj.diff(
                 $$("(&&,a,b,c)"),
                 $$("(&&,c,d,e)")).toString());
 
         //unchanged because negative
-        assertEquals("(--,(&&,a,b,c))", Conj.without(
+        assertEq("(--,(&&,a,b,c))", Conj.diff(
                 $$("--(&&,a,b,c)"),
-                $$("(&&,c,d,e)")).toString());
+                $$("(&&,c,d,e)")));
 
-        assertEquals("(a&|b)", Conj.without(
+        assertEq("(a&|b)", Conj.diff(
                 $$("(&|,a,b,c)"),
-                $$("(&|,c,d,e)")).toString());
+                $$("(&|,c,d,e)")));
 
 
-        assertEquals(
-                //"(&&,a,b,c)",
-                "(a&&b)",
-                Conj.without(
+        assertEq("(a&&b)",
+                Conj.diff(
                         $$("(&&,a,b,c)"),
-                        $$("(&|,c,d,e)")).toString());
+                        $$("(&|,c,d,e)")));
 
-        assertEquals("(a&&b)", Conj.without(
+        assertEq("(a&&b)", Conj.diff(
                 $$("(&&,a,b,--c)"),
-                $$("(&&,--c,d,e)")).toString());
+                $$("(&&,--c,d,e)")));
     }
+
 
     @Test
     void testConjWithoutAllParallel2() {
-        assertEq("a", Conj.without($$("(&&,a,b,c)"), $$("(b&&c)")));
-        assertEq("b", Conj.without($$("(&&,a,b,c)"), $$("(a&&c)")));
-        assertEq("(b&&c)", Conj.without($$("(&&,a,b,c)"), $$("a")));
-        assertEq("(a&&c)", Conj.without($$("(&&,a,b,c)"), $$("b")));
+        assertEq("a", Conj.diff($$("(&&,a,b,c)"), $$("(b&&c)")));
+        assertEq("b", Conj.diff($$("(&&,a,b,c)"), $$("(a&&c)")));
+        assertEq("(b&&c)", Conj.diff($$("(&&,a,b,c)"), $$("a")));
+        assertEq("(a&&c)", Conj.diff($$("(&&,a,b,c)"), $$("b")));
+
+
+    }
+
+    @Test void testConjLazyRemoveIf() {
+        ConjLazy c = ConjLazy.events($$("((&|,c,f) &&+1 g)"));
+        assertEquals(3, c.size());
+
+        assertFalse(
+            c.removeIf((when, what) -> when == 1 && what.toString().equals("c"))
+        );
+        assertEquals(3, c.size());
+
+        assertTrue(
+                c.removeIf((when, what) -> when == 0 && what.toString().equals("c"))
+        );
+        assertEquals(2, c.size());
+        assertEquals(0, c.when(0));
+        assertEq("f", c.get(0));
+        assertEquals(1, c.when(1));
+        assertEq("g", c.get(1));
+        assertEq("(f &&+1 g)", c.term());
+    }
+
+    @Test
+    void testConjWithoutAllParallel3() {
+        assertEq("(f &&+1 g)", Conj.diff(
+            $$("((&|,c,f) &&+1 g)"),
+            $$("(&|,c,d,e)")));
     }
 
     @Test
     void testConjWithoutAllSequence() {
-        assertEq("z", Conj.without(
+        assertEq("z", Conj.diff(
                 $$("((x &&+1 y) &&+1 z)"),
                 $$("(&&,x,y)")));
 
-        assertEq("(y &&+1 z)", Conj.without(
+        assertEq("(y &&+1 z)", Conj.diff(
                 $$("((x &&+1 y) &&+1 z)"),
                 $$("(x &&+2 y)")));
     }
@@ -828,7 +856,7 @@ public class ConjTest {
                 "(&|,b,c,x)",
                 y.toString());
 
-        assertEquals("y", Conj.without(x, y).toString());
+        assertEquals("y", Conj.diff(x, y).toString());
 
         //ConjCommutive.the(DTERNAL, $$("(a&|b)"), $$("(b&|c)"));
 
@@ -2292,6 +2320,7 @@ public class ConjTest {
 
 
     }
+
     @Test
     void testCollapseEteContainingEventParallel1() {
 
