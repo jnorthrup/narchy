@@ -1,4 +1,4 @@
-package nars.term.util;
+package nars.term.util.conj;
 
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
@@ -16,24 +16,24 @@ import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
 
 /** lazily constructs a conjunction term from components, in the most efficient method possible according to them */
-public class LazyConj extends FasterList<Term> implements ConjBuilder {
+public class ConjLazy extends FasterList<Term> implements ConjBuilder {
     private long[] when;
 
-    public LazyConj(int expectedSize) {
+    public ConjLazy(int expectedSize) {
         super(expectedSize);
         when = new long[expectedSize];
     }
 
-    public LazyConj() {
+    public ConjLazy() {
         this(3);
     }
 
-    public static LazyConj events(Term conj) {
+    public static ConjLazy events(Term conj) {
         return events(conj, 0);
     }
 
-    public static LazyConj events(Term conj, long occOffset) {
-        LazyConj l = new LazyConj(conj.op()==CONJ ? 4 : 1);
+    public static ConjLazy events(Term conj, long occOffset) {
+        ConjLazy l = new ConjLazy(conj.op()==CONJ ? 4 : 1);
         conj.eventsWhile((w, t) -> {
             return l.add(w, t);
         }, occOffset, true, true, false, 0);

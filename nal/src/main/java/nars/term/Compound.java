@@ -35,7 +35,7 @@ import nars.subterm.Subterms;
 import nars.term.anon.Anon;
 import nars.term.atom.Bool;
 import nars.term.compound.UnitCompound;
-import nars.term.util.Conj;
+import nars.term.util.conj.Conj;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
@@ -579,7 +579,8 @@ public interface Compound extends Term, IPair, Subterms {
                                 if ((w == DTERNAL && !decomposeConjDTernal) || (w != DTERNAL && !decomposeConjParallel)) {
                                     //combine the component with the eternal factor
                                     Term distributed = CONJ.the(w, what, factor);
-                                    if (distributed instanceof Bool) throw new WTF();
+                                    if (distributed instanceof Bool)
+                                        throw new WTF();
 //                                    assert (!(distributed instanceof Bool));
                                     return each.accept(when, distributed);
                                 } else {

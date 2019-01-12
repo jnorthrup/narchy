@@ -143,6 +143,14 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
         return (output == null || (strict && c.equals(output))) ? Null : output;
     }
 
+    public boolean transformed() {
+        if (u.result!=null && u.xy.size() > 0) {
+            u.result = null;
+            return true;
+        }
+        return false;
+    }
+
     public final class MySubUnify extends SubUnify {
 
         private boolean strict;
@@ -160,14 +168,36 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
             return this;
         }
 
-
         @Override
         protected boolean tryMatch(Term result) {
 
             if (!strict || (!result.equals(transformed) && !result.normalize().equals(transformed.normalize()))) { //dont actually normalize it ; could destroy common variables since they arent Anon and in the derivation's Anon map
 
-                //this.xy.forEach(parent.retransform::put);
-                this.xy.forEach(parent.xy::set);
+                this.xy.forEach(parent.retransform::put);
+
+                //this.xy.forEach(parent.xy::force);
+
+                //this.xy.forEach(parent.xy::set);
+
+//                int i = 0;
+//                for (Map.Entry<Variable, Term> e : this.xy.entrySet()) {
+//
+//                    //mode 1: force
+////                    parent.xy.force(e.getKey(), e.getValue());
+//
+//                    //mode 2: attempt
+//                    parent.xy.set(e.getKey(), e.getValue());
+//
+//                    //mode 3: careful
+////                    if (!parent.xy.set(e.getKey(), e.getValue())) {
+////                        //undo any assignments up to i
+////                        //TODO
+////                        //for (int k = 0; k < i; k++) {
+////                        //}
+////                        return false;
+////                    }
+//                    i++;
+//                }
 
                 return true;
             }

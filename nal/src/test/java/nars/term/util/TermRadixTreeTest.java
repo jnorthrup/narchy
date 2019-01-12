@@ -7,6 +7,8 @@ import nars.index.concept.TreeConceptIndex;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
+import nars.term.util.key.TermBytes;
+import nars.term.util.map.TermRadixTree;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 

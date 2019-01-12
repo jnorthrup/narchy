@@ -1,7 +1,5 @@
 package nars.term.util.builder;
 
-import jcog.TODO;
-import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import nars.Op;
 import nars.subterm.*;
@@ -13,8 +11,8 @@ import nars.term.anon.AnonID;
 import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
-import nars.term.util.Conj;
-import nars.term.util.ConjCommutive;
+import nars.term.util.conj.Conj;
+import nars.term.util.conj.ConjCommutive;
 import nars.term.util.Statement;
 import nars.term.util.TermException;
 import nars.term.util.transform.CompoundNormalization;

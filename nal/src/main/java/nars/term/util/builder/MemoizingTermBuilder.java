@@ -3,7 +3,7 @@ package nars.term.util.builder;
 import jcog.memoize.byt.ByteHijackMemoize;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.util.InternedCompound;
+import nars.term.util.cache.InternedCompound;
 
 import java.util.UUID;
 

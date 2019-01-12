@@ -3,6 +3,7 @@ package nars.term;
 import nars.$;
 import nars.Narsese;
 import nars.term.atom.Bool;
+import nars.term.util.conj.ConjDiff;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -226,7 +227,9 @@ public class ImplTest {
                 "((left &&+60 left) ==>-60 (left &&+5140 (--,left)))"
         );
     }
-    @Test void testElimination2() {
+
+    @Test
+    void testElimination2() {
         assertEq(
                 "TODO", //False?
                 "((--,(left &&+2518 left))==>left)"
@@ -234,14 +237,15 @@ public class ImplTest {
 
     }
 
-    @Test void testFactoredElimination() {
+    @Test
+    void testFactoredElimination() {
         //TODO
         //test that the eternal component is not eliminated while its dependent temporal component remains
         //may need Conj.distribute() method for exhaustive, unfactored comparison
         //test that implication construction returns the same result whether conj-containing input is factored or not
 
-        assertEq("((c &&+1 d)&&x)","((x&|c) &&+1 (x&|d))"); //sanity pre-test
-        assertEquals($$("((c &&+1 d),x)").volume()+2,$$("((x&|c),(x&|d))").volume()); //factored form results in 2 volume savings
+        assertEq("((c &&+1 d)&&x)", "((x&|c) &&+1 (x&|d))"); //sanity pre-test
+        assertEquals($$("((c &&+1 d),x)").volume() + 2, $$("((x&|c),(x&|d))").volume()); //factored form results in 2 volume savings
 
         assertEq("(((a &&+1 b)&&x)==>((c &&+1 d)&&x))",
                 "((x&&(a &&+1 b)) ==> (x&&(c &&+1 d)))"); //same
@@ -253,15 +257,18 @@ public class ImplTest {
 
 
 
+    @Test
+    void testElimination3() {
 
 
-    @Test void testElimination3() {
         assertEq("(b ==>+1 (a&&x))", $$("(b ==>+1 (a&&x))"));
 
         Term x1 = $$("((a &&+5 b) ==>+- (b &&+5 c))");
         Term y1 = x1.dt(0);
         assertEq("((a &&+5 b) ==>+5 c)", y1);
-
+    }
+    @Test
+    void testElimination4() {
         Term x2 = $$("((a &&+5 b) ==>+1 (b &&+5 c))");
         Term y2 = x2.dt(0);
         assertEq("((a &&+5 b) ==>+5 c)", y2);

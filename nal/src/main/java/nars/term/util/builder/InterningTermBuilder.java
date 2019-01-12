@@ -11,7 +11,7 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
-import nars.term.util.InternedCompound;
+import nars.term.util.cache.InternedCompound;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;

@@ -30,7 +30,7 @@ public class Array2DIterable<X> implements Iterable<X> {
 
     private final X[][] array2D;
     private final int pos = 0;
-    FasterList<X> order;
+    public FasterList<X> order;
     
 
     public Array2DIterable(X x[][]) {

@@ -7,7 +7,7 @@ import nars.term.Term;
 /** does not store tasks but only generates them on query */
 public abstract class DynamicTaskTable extends EmptyBeliefTable {
 
-    final boolean beliefOrGoal;
+    public final boolean beliefOrGoal;
 
     protected final Term term;
 

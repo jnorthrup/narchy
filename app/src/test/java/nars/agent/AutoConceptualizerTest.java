@@ -14,7 +14,7 @@ public class AutoConceptualizerTest {
     public void test1() {
         int W = 4, H = 4;
         NAR n = NARS.tmp();
-        Bitmap2DSensor c = new Bitmap2DSensor((x, y) -> $.p(x,y), new Bitmap2D() {
+        Bitmap2DSensor c = new Bitmap2DSensor<>((x, y) -> $.p(x,y), new Bitmap2D() {
             @Override
             public int width() {
                 return W;
@@ -32,7 +32,7 @@ public class AutoConceptualizerTest {
         }, n);
 
         AutoConceptualizer ac = new AutoConceptualizer(
-                c.concepts.iter.order /* HACK */, true, 2, n);
+                c.concepts.order() /* HACK */, true, 2, n);
 
 
 

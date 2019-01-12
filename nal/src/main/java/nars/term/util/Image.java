@@ -1,8 +1,6 @@
 package nars.term.util;
 
-import jcog.TODO;
 import jcog.Util;
-import jcog.WTF;
 import jcog.pri.Ranked;
 import jcog.util.ArrayUtils;
 import nars.NAR;
@@ -13,7 +11,7 @@ import nars.concept.TaskConcept;
 import nars.control.op.Remember;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
-import nars.table.EmptyBeliefTable;
+import nars.table.dynamic.DynamicTaskTable;
 import nars.task.proxy.SpecialTermTask;
 import nars.task.util.Answer;
 import nars.term.Compound;
@@ -178,51 +176,38 @@ public enum Image {;
     }
 
 
-    public static class ImageBeliefTable extends EmptyBeliefTable {
+    public static class ImageBeliefTable extends DynamicTaskTable {
 
         /**
          * the term of the concept which this relies on for storage of beliefs, and thus remains consistent with
          */
-        public final Term image, normal;
-        private final boolean beliefOrGoal;
+        public final Term normal;
 
-        @Nullable
-        transient TaskConcept host = null;
+
 
         public ImageBeliefTable(Term image, boolean beliefOrGoal) {
+            super(image, beliefOrGoal);
 
             Term imageNormalized = Image.imageNormalize(image);
+            assert(!image.equals(imageNormalized) && imageNormalized.op()==INH);
             this.normal = imageNormalized;
-            if (normal instanceof Bool)
-                throw new WTF();
-
-            this.image = image;
-
-            this.beliefOrGoal = beliefOrGoal;
         }
 
         @Override
         public void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
-            throw new TODO();
-            //not necessary to proxy
-//            BeliefTable table = table();
-//            if (table == null)
-//                return;
-        }
-
-        private BeliefTable table() {
-            @Nullable Concept h = host;
-            return (h == null) ? null : (beliefOrGoal ? h.beliefs() : h.goals());
+            //throw new TODO();
+            //ignore?
         }
 
 
-        @Override
-        public boolean isEmpty() {
-            BeliefTable t = table();
-            //if t is null, it just means this table isnt currently linked to the referent table.  so must report false
-            return t != null && t.isEmpty();
 
-        }
+//        @Override
+//        public boolean isEmpty() {
+//            BeliefTable t = table();
+//            //if t is null, it just means this table isnt currently linked to the referent table.  so must report false
+//            return t != null && t.isEmpty();
+//
+//        }
 
         @Override
         public void sample(Answer m) {
@@ -235,7 +220,7 @@ public enum Image {;
         }
 
         private void match(Answer m, boolean matchOrSample) {
-            BeliefTable table = relink(m.nar, false);
+            BeliefTable table = table(m.nar, false);
             if (table == null)
                 return;
 
@@ -248,6 +233,7 @@ public enum Image {;
             if (results > 0) {
             //HACK apply this as an add-on transformation to a final result, not every intermediate possible result
                 Ranked<Task>[] tt = m.tasks.items;
+                Term image = this.term;
                 for (int i = 0; i < results; i++) {
                     tt[i].set(new ImgTermTask(image, (tt[i].x)));
                 }
@@ -256,7 +242,7 @@ public enum Image {;
 
         @Override
         public void add(Remember r, NAR nar) {
-            BeliefTable table = relink(nar, true);
+            BeliefTable table = table(nar, true);
             Task imageInput = r.input;
             if (table == null) {
                 r.forget(imageInput);
@@ -273,6 +259,7 @@ public enum Image {;
             if (imageInput.isCyclic())
                 transformedInput.setCyclic(true);
 
+            Term image = this.term;
             r.setInput(transformedInput, (TaskConcept)nar.concept(image));
 
             table.add(r, nar);
@@ -309,14 +296,16 @@ public enum Image {;
 //            }
         }
 
-        @Nullable private BeliefTable relink(NAR n, boolean conceptualize) {
-            Concept h = host;
-            if (h == null || h.isDeleted()) {
-                h = (host = (TaskConcept) n.concept(normal, conceptualize)); //TODO set atomically
-                if (h == null)
-                    return null;
-            }
-            return beliefOrGoal ? h.beliefs() : h.goals();
+        @Nullable private BeliefTable table(NAR n, boolean conceptualize) {
+            Concept h = host(n, conceptualize);
+            if (h == null)
+                return null;
+            else
+                return beliefOrGoal ? h.beliefs() : h.goals();
+        }
+
+        @Nullable private TaskConcept host(NAR n, boolean conceptualize) {
+            return (TaskConcept) n.concept(normal, conceptualize);
         }
 
         private static class ImgTermTask extends SpecialTermTask {

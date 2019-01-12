@@ -68,10 +68,16 @@ public interface Variable extends Atomic {
             return false;
 
         Term y = u.resolvePosNeg(_y);
-        if (y!=_y && y.containsRecursively(this))
-            return false; //cycle caugh
+        if (!y.equals(_y)) {
+            if (equals(y))
+                return true;
+            if (y.containsRecursively(this))
+                return false; //cycle caught
+        }
         Term x = u.resolve(this);
         if (!x.equals(this)) {
+            if (x.equals(y))
+                return true;
 
 //            if (x.containsRecursively(_y))
 //                return false; //cycle caught
@@ -97,15 +103,15 @@ public interface Variable extends Atomic {
                     //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
                     Variable common = X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
                     if (u.putXY(X, common) && u.putXY(Y, common)) {
-                        //map any appearances of X or Y in already-assigned variables
-                        if (u.xy.size() > 2) {
-                            u.xy.replaceAll((var, val) -> {
-                                if (var.equals(X) || var.equals(Y) || !val.hasAny(xOp))
-                                    return val; //unchanged
-                                else
-                                    return val.replace(X, common).replace(Y, common);
-                            });
-                        }
+//                        //map any appearances of X or Y in already-assigned variables
+//                        if (u.xy.size() > 2) {
+//                            u.xy.replaceAll((var, val) -> {
+//                                if (var.equals(X) || var.equals(Y) || !val.hasAny(xOp))
+//                                    return val; //unchanged
+//                                else
+//                                    return val.replace(X, common).replace(Y, common);
+//                            });
+//                        }
                         return true;
                     }
                     return false;

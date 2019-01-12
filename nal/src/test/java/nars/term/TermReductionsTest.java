@@ -6,7 +6,7 @@ import nars.io.NarseseTest;
 import nars.task.util.TaskException;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.util.Conj;
+import nars.term.util.conj.Conj;
 import nars.term.util.SetSectDiff;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;

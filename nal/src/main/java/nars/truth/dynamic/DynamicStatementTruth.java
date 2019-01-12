@@ -8,7 +8,7 @@ import nars.Op;
 import nars.Task;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
-import nars.term.util.Conj;
+import nars.term.util.conj.Conj;
 import nars.term.util.Image;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;

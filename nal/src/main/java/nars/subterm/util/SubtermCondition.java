@@ -1,7 +1,7 @@
 package nars.subterm.util;
 
 import nars.term.Term;
-import nars.term.util.Conj;
+import nars.term.util.conj.Conj;
 
 import java.util.function.BiPredicate;
 

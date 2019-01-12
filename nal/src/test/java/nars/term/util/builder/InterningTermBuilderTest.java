@@ -6,7 +6,7 @@ import jcog.pri.PriProxy;
 import nars.Op;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.util.InternedCompound;
+import nars.term.util.cache.InternedCompound;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.*;

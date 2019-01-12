@@ -76,8 +76,8 @@ class NAL8EternalMixTest extends NALTest {
 
         TestNAR tester = test;
 
-        tester.input("goto({t003}). :|:");
-        tester.inputAt(10, "(goto($1) ==>+5 at(SELF,$1)).");
+        tester.input("goto({t003}). |");
+        tester.inputAt(0, "(goto($1) ==>+5 at(SELF,$1)).");
 
         tester.mustBelieve(cycles, "at(SELF,{t003})", 1.0f, 0.81f, 5);
 

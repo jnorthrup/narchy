@@ -1,4 +1,4 @@
-package nars.term.util;
+package nars.term.util.cache;
 
 import jcog.memoize.byt.ByteHijackMemoize;
 import nars.term.Term;

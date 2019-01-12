@@ -4,7 +4,7 @@ import com.google.common.primitives.Ints;
 import jcog.data.byt.DynBytes;
 import nars.Op;
 import nars.term.Term;
-import nars.term.util.ByteAnonMap;
+import nars.term.util.map.ByteAnonMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

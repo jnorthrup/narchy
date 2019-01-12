@@ -1,4 +1,4 @@
-package nars.term.util;
+package nars.term.util.map;
 
 import jcog.data.list.FasterList;
 import nars.term.Term;

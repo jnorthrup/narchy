@@ -1,4 +1,4 @@
-package nars.term.util;
+package nars.term.util.key;
 
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.byt.HashCachedBytes;

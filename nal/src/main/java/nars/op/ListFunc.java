@@ -11,7 +11,7 @@ import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.term.util.Conj;
+import nars.term.util.conj.Conj;
 
 import java.util.Collection;
 import java.util.function.Predicate;

@@ -17,10 +17,10 @@ class VersioningTest {
     Versioning v = new Versioning(10, 10);
     @NotNull
     private
-    Versioned a = new Versioned(v, 8);
+    MultiVersioned a = new MultiVersioned(v, 8);
     @NotNull
     private
-    Versioned b = new Versioned(v, 8);
+    MultiVersioned b = new MultiVersioned(v, 8);
 
     @Test
     void testRevision() {
@@ -33,7 +33,7 @@ class VersioningTest {
 
         assertEquals("{x=b}", m.toString());
 
-        Versioned mvx = m.map.get("x");
+        MultiVersioned mvx = (MultiVersioned) m.map.get("x");
 
         assertEquals("(a, b)", mvx.toStackString());
         assertEquals(2, w.size);
@@ -64,13 +64,17 @@ class VersioningTest {
     }
 
     @Test void testLimitedChanges() {
-        Versioning<Object> w = new Versioning(10, 10);
-        VersionMap<Object,Object> m = new VersionMap(w, 1);
+        Versioning<Object> w = new Versioning<>(10, 10);
+        VersionMap<Object,Object> m = new VersionMap<>(w, 1);
         boolean a = m.set("x", "a");
         assertTrue(a);
         boolean b = m.set("x", "b");
         assertFalse(b);
         assertEquals("{x=a}", m.toString());
+
+        m.force("x", "c");
+        assertEquals("{x=c}", m.toString());
+
         w.pop();
         boolean b2 = m.set("x", "b");
         assertTrue(b2);

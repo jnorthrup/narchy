@@ -11,7 +11,7 @@ import nars.term.anon.Anom;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.util.Conj;
+import nars.term.util.conj.Conj;
 import nars.term.util.SetSectDiff;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;

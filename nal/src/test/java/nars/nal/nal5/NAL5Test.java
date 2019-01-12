@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 350;
+    private final int cycles = 650;
 
     @Override
     protected NAR nar() {
@@ -87,8 +87,9 @@ public class NAL5Test extends NALTest {
         test
         .believe("f(x,#1)")
         .believe("f(y,#1)")
+        //both forms
         .mustBelieve(cycles, "(f(x,#1) ==> f(y,#2))", 1.00f, 0.45f)
-        .mustNotOutput(cycles, "(f(x,#1) ==> f(y,#1))", BELIEF, 0, 1, 0, 1, (t)->true)
+        .mustBelieve(cycles, "(f(x,#1) ==> f(y,#1))", 1.00f, 0.45f)
         ;
 
     }
@@ -364,6 +365,7 @@ public class NAL5Test extends NALTest {
     @Test
     void impl_disjunction_pred_decompose_conditional() {
         test
+                .termVolMax(8)
                 .believe("(x ==> (a || b))")
                 .input("(x ==> b). %0.25;0.9%")
                 .mustBelieve(cycles, "(x ==> a)", 0.75f, 0.61f) //via decompose
@@ -373,6 +375,7 @@ public class NAL5Test extends NALTest {
     @Test
     void impl_disjunction_subj_decompose_one_premise() {
         test
+                .termVolMax(8)
                 .believe("((a || b) ==> x)")
                 .mustBelieve(cycles, "(a ==> x)", 1f, 0.81f)
                 .mustBelieve(cycles, "(b ==> x)", 1f, 0.81f)

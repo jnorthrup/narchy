@@ -1,4 +1,4 @@
-package nars.term.util;
+package nars.term.util.conj;
 
 import jcog.TODO;
 import jcog.WTF;
@@ -13,6 +13,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
+import nars.term.util.map.ByteAnonMap;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
 import org.eclipse.collections.api.RichIterable;
@@ -102,8 +103,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         c.addAuto(t);
         return c;
     }
-    public static LazyConj fromLazy(Term t) {
-        LazyConj c = LazyConj.events(t);
+    public static ConjLazy fromLazy(Term t) {
+        ConjLazy c = ConjLazy.events(t);
         return c;
     }
 
@@ -586,7 +587,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 return events.iterator().next().getTwo();
         }
 
-        LazyConj ce = new LazyConj(eventsSize);
+        ConjLazy ce = new ConjLazy(eventsSize);
 
         for (LongObjectPair<Term> o : events) {
             if (!ce.add(o.getOne(), o.getTwo())) {
@@ -1225,7 +1226,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     if (dt == DTERNAL)
                         dt = 0;
 
-                    LazyConj d = new LazyConj(2);
+                    ConjLazy d = new ConjLazy(2);
                     d.add(dt, incoming);
                     d.add(shift, newConj);
                     return d.term();
@@ -1472,7 +1473,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         } else {
             boolean innerCommute = Tense.dtSpecial(dtInner);// && !conj.subterms().hasAny(Op.CONJ);
 
-            LazyConj c = !innerCommute ? new LazyConj() : null;
+            ConjLazy c = !innerCommute ? new ConjLazy() : null;
             FasterList<Term> cx = innerCommute ? new FasterList() : null;
 //            boolean incomingHasConj = incoming.hasAny(CONJ);
             boolean ok = existing.eventsWhile((whn, wht) -> {

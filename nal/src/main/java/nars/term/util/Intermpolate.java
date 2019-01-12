@@ -6,6 +6,8 @@ import nars.NAR;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.util.conj.Conj;
+import nars.term.util.conj.Conjterpolate;
 import nars.time.Tense;
 
 import static nars.Op.CONJ;

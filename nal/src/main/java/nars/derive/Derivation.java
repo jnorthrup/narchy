@@ -70,7 +70,7 @@ public class Derivation extends PreDerivation {
 
     public final AnonWithVarShift anon;
 
-    protected final UniSubst myUniSubst = new UniSubst(this);
+    public final UniSubst uniSubst = new UniSubst(this);
 
     protected final Functor polarizeTask = new Functor.AbstractInlineFunctor1("polarizeTask") {
         @Override
@@ -535,7 +535,7 @@ public class Derivation extends PreDerivation {
             this.dur = nar.dur();
             this.ditherTime = nar.dtDither();
 
-            myUniSubst.u.dtTolerance = unifyPremise.dtTolerance = this.dtTolerance =
+            uniSubst.u.dtTolerance = unifyPremise.dtTolerance = this.dtTolerance =
                     Math.round(Param.UNIFY_DT_TOLERANCE_DUR_FACTOR * dur);
 
             this.eviMin = c2wSafe(this.confMin = nar.confMin.floatValue());

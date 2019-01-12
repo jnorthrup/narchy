@@ -5,8 +5,8 @@ import nars.NAR;
 import nars.Task;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
-import nars.term.util.Conj;
-import nars.term.util.LazyConj;
+import nars.term.util.conj.Conj;
+import nars.term.util.conj.ConjLazy;
 import nars.truth.Stamp;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
@@ -37,7 +37,7 @@ public class DynamicConjTruth {
 
 
             int n = components.size();
-            LazyConj l = new LazyConj(n);
+            ConjLazy l = new ConjLazy(n);
             for (TaskRegion t : components) {
                 long s = t.start();
                 long when;

@@ -2,7 +2,7 @@ package nars.unify.constraint;
 
 import nars.term.Term;
 import nars.term.Variable;
-import nars.term.util.Conj;
+import nars.term.util.conj.Conj;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;

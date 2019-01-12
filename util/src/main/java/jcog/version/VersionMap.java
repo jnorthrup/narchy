@@ -15,7 +15,7 @@ import java.util.function.Function;
 
 public class VersionMap<X, Y> extends AbstractMap<X, Y> {
 
-    private final Versioning context;
+    protected final Versioning context;
     public final Map<X, Versioned<Y>> map;
     private final int itemVersions;
 
@@ -44,7 +44,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
                if (x!=null) {
                    Y y = function.apply(v, x);
                    if (x != y) {
-                       val.replaceLast(y);
+                       val.force(y);
                    }
                }
            }
@@ -89,11 +89,14 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
      */
     @Override
     public Set<Entry<X, Y>> entrySet() {
-        ArrayUnenforcedSet<Entry<X, Y>> e = new ArrayUnenforcedSet<>();
+        int s = map.size();
+        if (s == 0)
+            return Set.of();
+
+        ArrayUnenforcedSet<Entry<X, Y>> e = new ArrayUnenforcedSet<>(0, new Entry[s]);
         map.forEach((k, v) -> {
             Y vv = v.get();
             if (vv != null) {
-                
                 e.add(new SimpleEntry<>(k, vv));
             }
         });
@@ -124,13 +127,16 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
      */
     @Override
     public final Y put(X key, Y value) {
-        throw new UnsupportedOperationException("use set(k,v)");
+        throw new UnsupportedOperationException("use force(k,v)");
     }
 
-    public boolean set(X key, Y value) {
+    public final void force(X key, Y value) {
+        getOrCreateIfAbsent(key).force(value);
+    }
+
+    public final boolean set(X key, Y value) {
         return getOrCreateIfAbsent(key).set(value);
     }
-
 
 
 //    public boolean tryPut(X key, Supplier<Y> value) {
@@ -142,9 +148,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
     }
 
     protected Versioned<Y> newEntry(X x) {
-        return new Versioned<>(context, itemVersions);
-        
-        
+        return new MultiVersioned<>(context, itemVersions);
     }
 
     public void forEach(BiConsumer<? super X, ? super Y> each) {
@@ -226,11 +230,6 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
     }
 
     public static final VersionMap Empty = new VersionMap(new Versioning<>(1), 0) {
-
-        @Override
-        public boolean set(Object key, Object value) {
-            return false;
-        }
 
         @Override
         public Object get(Object key) {

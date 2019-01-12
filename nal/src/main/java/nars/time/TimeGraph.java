@@ -16,7 +16,7 @@ import nars.Op;
 import nars.Param;
 import nars.subterm.Subterms;
 import nars.term.Term;
-import nars.term.util.Conj;
+import nars.term.util.conj.Conj;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
@@ -110,7 +110,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      * creates an event for a hypothetical term which may not actually be an event;
      * but if it is there or becomes there, it will connect what it needs to
      */
-    private Event shadow(Term v) {
+    protected Event shadow(Term v) {
         //return event(v, TIMELESS, false);
         return new Relative(v);
     }
@@ -243,7 +243,16 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         return existing != null ? existing.id() : e;
     }
 
-    private boolean link(Event before, TimeSpan e, Event after) {
+    protected void shadow(Term x, Term y) {
+        assert(!(x.equals(y)));
+        shadow(shadow(x), shadow(y));
+    }
+
+    protected void shadow(Event a, Event b) {
+        link(a, TimeSpan.TS_ZERO, b);
+    }
+
+    protected boolean link(Event before, TimeSpan e, Event after) {
         MutableNode<Event, TimeSpan> x = addNode(before);
         MutableNode<Event, TimeSpan> y = before.equals(after) ? x : addNode(after);
 

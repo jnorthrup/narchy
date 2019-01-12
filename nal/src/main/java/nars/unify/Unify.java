@@ -2,7 +2,9 @@ package nars.unify;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
+import jcog.version.UniVersioned;
 import jcog.version.VersionMap;
 import jcog.version.Versioned;
 import jcog.version.Versioning;
@@ -11,12 +13,13 @@ import nars.Param;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Variable;
-import nars.term.util.TermHashMap;
+import nars.term.util.map.TermHashMap;
 import nars.term.util.transform.Subst;
 import nars.unify.constraint.UnifyConstraint;
 import nars.unify.mutate.Termutator;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -62,7 +65,7 @@ public abstract class Unify extends Versioning implements Subst {
 
 
     public int dtTolerance = 0;
-
+    private List<ConstrainedVersionedTerm> constrained = new FasterList();
 
 
     /**
@@ -213,8 +216,16 @@ public abstract class Unify extends Versioning implements Subst {
 
     @Override
     public Unify clear() {
+
         super.clear();
+
         termutes.clear();
+
+        if (!constrained.isEmpty()) {
+            constrained.forEach(ConstrainedVersionedTerm::unconstrain);
+            constrained.clear();
+        }
+
         return this;
     }
 
@@ -242,11 +253,8 @@ public abstract class Unify extends Versioning implements Subst {
      * args should be non-null. the annotations are removed for perf reasons
      */
     public final boolean putXY(final Variable x, Term y) {
-
         return xy.set(x, y);
-
     }
-
 
     /**
      * whether is constant with respect to the current matched variable type
@@ -259,9 +267,11 @@ public abstract class Unify extends Versioning implements Subst {
     }
 
 
-    public boolean constrain(UnifyConstraint m) {
+    public void constrain(UnifyConstraint m) {
         Variable target = m.x;
-        return ((ConstrainedVersionedTerm) xy.getOrCreateIfAbsent(target)).constrain(m);
+        ConstrainedVersionedTerm targetVersioned = (ConstrainedVersionedTerm) xy.getOrCreateIfAbsent(target);
+        targetVersioned.constrain(m);
+        constrained.add(targetVersioned);
     }
 
 
@@ -292,8 +302,8 @@ public abstract class Unify extends Versioning implements Subst {
     }
 
 
-    private class ConstrainedVersionMap extends VersionMap<Variable, Term> {
-        ConstrainedVersionMap(Versioning versioning, Map<Variable, Versioned<Term>> termMap) {
+    private static class ConstrainedVersionMap extends VersionMap<Variable, Term> {
+        ConstrainedVersionMap(Versioning<Term> versioning, Map<Variable, Versioned<Term>> termMap) {
             super(versioning,
                     termMap,
                     1);
@@ -301,64 +311,44 @@ public abstract class Unify extends Versioning implements Subst {
 
 
         @Override
-        protected Versioned newEntry(Variable x) {
-            return new ConstrainedVersionedTerm();
+        protected Versioned<Term> newEntry(Variable x) {
+            return new ConstrainedVersionedTerm(context);
         }
 
 
     }
 
-    public final class ConstrainedVersionedTerm extends Versioned<Term> {
+    static final class ConstrainedVersionedTerm extends UniVersioned<Term> {
 
         /**
          * lazily constructed
          */
         public UnifyConstraint constraint;
 
-        ConstrainedVersionedTerm() {
-            super(Unify.this, new Term[1]);
+        ConstrainedVersionedTerm(Versioning<Term> sharedContext) {
+            super(sharedContext);
         }
 
         @Override
-        public boolean set(Term next) {
-            @Nullable Term existing = get();
-            if (existing!=null) {
-//                if (existing.equals(next))
-//                    return true;
-                if (existing.unify(next, Unify.this))
-                    //TODO check whether, temporally, next is more specific than next. if so then replace
-                    return true;
-
-                return false;
-            }
-            if (valid(next) && addWithoutResize(next)) {
-                if (context.add(this))
-                    return true;
-                else
-                    pop();
-            }
-
-            return false;
+        protected int match(Term prevValue, Term nextValue) {
+            //TODO prefer more specific temporal matches, etc?
+            return prevValue==nextValue || prevValue.unify(nextValue, (Unify)context) ? -1 : 0;
         }
 
-        private boolean valid(Term x) {
+        @Override protected boolean valid(Term x) {
             UnifyConstraint c = this.constraint;
-            //return MatchConstraint.valid(x, c);
-            return c == null || !c.invalid(x, Unify.this);
+            return c == null || !c.invalid(x, (Unify)context);
         }
 
-        boolean constrain(UnifyConstraint c) {
-            assert(size==0);
+        void constrain(UnifyConstraint c) {
+            //assert(value==null && constraint == null);
             constraint = c;
-            return Unify.this.add(off);
         }
 
-        final Versioned off = new DummyVersioned() {
-            @Override
-            protected void off() {
-                constraint = null;
-            }
-        };
+        void unconstrain() {
+            //assert(constraint != null && value==null);
+            constraint = null;
+        }
     }
 
 }

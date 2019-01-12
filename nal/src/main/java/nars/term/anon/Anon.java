@@ -6,7 +6,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.util.ByteAnonMap;
+import nars.term.util.map.ByteAnonMap;
 import nars.term.util.transform.TermTransform;
 import nars.term.var.UnnormalizedVariable;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;

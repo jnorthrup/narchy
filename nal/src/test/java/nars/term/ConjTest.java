@@ -8,7 +8,7 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.op.SubUnify;
 import nars.term.atom.Bool;
-import nars.term.util.Conj;
+import nars.term.util.conj.Conj;
 import nars.term.util.TermException;
 import nars.term.util.transform.Retemporalize;
 import nars.unify.ellipsis.Ellipsis;

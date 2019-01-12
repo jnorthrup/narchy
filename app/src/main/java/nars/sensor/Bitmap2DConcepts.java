@@ -7,6 +7,7 @@ import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.NAR;
+import nars.concept.Concept;
 import nars.concept.sensor.Signal;
 import nars.link.TemplateTermLinker;
 import nars.link.TermLinker;
@@ -30,7 +31,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     public final int width, height, area;
     public final P src;
 
-    protected final Array2DIterable<Signal> iter;
+    public final Array2DIterable<Signal> iter;
     private final Int2Function<Term> pixelTerm;
 
     /** TODO abstract pixel neighbor linking strategies */
@@ -157,6 +158,10 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         if ((i < 0) || (j < 0) || (i >= width || j >= height))
             return null;
         return getSafe(i, j);
+    }
+
+    public final List<? extends Concept> order() {
+        return iter.order;
     }
 
 //    public Bitmap2DReader newReader(CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> mode, BooleanSupplier enable, NAR nar) {

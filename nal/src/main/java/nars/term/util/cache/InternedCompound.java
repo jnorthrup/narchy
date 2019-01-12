@@ -1,4 +1,4 @@
-package nars.term.util;
+package nars.term.util.cache;
 
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.byt.DynBytes;

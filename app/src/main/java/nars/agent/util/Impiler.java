@@ -24,7 +24,7 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
-import nars.term.util.Conj;
+import nars.term.util.conj.Conj;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;

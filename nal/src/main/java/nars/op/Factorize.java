@@ -10,7 +10,7 @@ import nars.Task;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.*;
-import nars.term.util.SubtermsKey;
+import nars.term.util.key.SubtermsKey;
 import nars.time.Tense;
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.list.MutableList;

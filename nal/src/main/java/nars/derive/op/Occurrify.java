@@ -13,7 +13,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
-import nars.term.util.Conj;
+import nars.term.util.conj.Conj;
 import nars.term.util.transform.Retemporalize;
 import nars.time.Event;
 import nars.time.Tense;
@@ -352,6 +352,7 @@ public class Occurrify extends TimeGraph {
         if (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG)) {
             setAutoNeg(pattern, taskTerm, beliefTerm);
         }
+
 
         //compact(); //TODO compaction removes self-loops which is bad, not sure if it does anything else either
 

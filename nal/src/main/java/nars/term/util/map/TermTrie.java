@@ -1,4 +1,4 @@
-package nars.term.util;
+package nars.term.util.map;
 
 import com.google.common.base.Joiner;
 import jcog.tree.perfect.Trie;

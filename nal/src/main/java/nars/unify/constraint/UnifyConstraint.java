@@ -33,7 +33,8 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
 
     @Override
     public final boolean test(Derivation p) {
-        return p.constrain(this);
+        p.constrain(this);
+        return true;
     }
 
     /**

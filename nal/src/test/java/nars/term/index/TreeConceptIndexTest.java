@@ -6,7 +6,7 @@ import nars.$;
 import nars.Narsese;
 import nars.index.concept.TreeConceptIndex;
 import nars.term.Term;
-import nars.term.util.TermRadixTree;
+import nars.term.util.map.TermRadixTree;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

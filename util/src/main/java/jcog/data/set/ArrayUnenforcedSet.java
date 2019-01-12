@@ -54,7 +54,7 @@ public class ArrayUnenforcedSet<X> extends FasterList<X> implements Set<X> {
         this(x.length, x);
     }
 
-    protected ArrayUnenforcedSet(int len, X[] x) {
+    public ArrayUnenforcedSet(int len, X[] x) {
         super(len, x);
     }
 

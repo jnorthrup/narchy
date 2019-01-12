@@ -1,4 +1,4 @@
-package nars.term.util;
+package nars.term.util.key;
 
 import jcog.memoize.byt.ByteKey;
 import nars.IO;

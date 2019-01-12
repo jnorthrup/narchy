@@ -14,7 +14,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.obj.QuantityTerm;
-import nars.term.util.Conj;
+import nars.term.util.conj.Conj;
 import nars.term.util.Image;
 import nars.time.Tense;
 import org.eclipse.collections.api.map.ImmutableMap;

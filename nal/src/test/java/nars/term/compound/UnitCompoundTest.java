@@ -8,7 +8,7 @@ import nars.subterm.UniSubterm;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.util.TermBytes;
+import nars.term.util.key.TermBytes;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

@@ -18,7 +18,7 @@ import nars.exe.Causable;
 import nars.task.NALTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
-import nars.term.util.Conj;
+import nars.term.util.conj.Conj;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;

@@ -1,4 +1,4 @@
-package nars.term.util;
+package nars.term.util.conj;
 
 import jcog.Util;
 import jcog.WTF;

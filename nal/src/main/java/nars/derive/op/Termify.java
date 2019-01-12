@@ -7,6 +7,7 @@ import nars.term.Term;
 import nars.term.control.AbstractPred;
 
 import static nars.Op.NEG;
+import static nars.term.atom.Bool.Null;
 
 /**
  * Derivation term construction step of the derivation process that produces a derived task
@@ -50,6 +51,11 @@ public final class Termify extends AbstractPred<Derivation> {
 //        d.refinements.clear();
 
         Term x = d.transform(pattern);
+
+        if (x!=Null && d.uniSubst.transformed()) {
+            //transform again to apply any assignments unified by second-layer unification to other parts of the compound not in the unification functor
+            x = x.replace(d.uniSubst.u.xy);
+        }
 
         if (!Taskify.valid(x, (byte) 0 /* dont consider punc consequences until after temporalization */)) {
             //Term c1e = c1;

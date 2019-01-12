@@ -2,7 +2,7 @@ package nars.unify.constraint;
 
 import nars.$;
 import nars.term.Term;
-import nars.term.util.Conj;
+import nars.term.util.conj.Conj;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;

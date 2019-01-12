@@ -3,7 +3,7 @@ package nars.index.task;
 import jcog.data.byt.AbstractBytes;
 import jcog.tree.radix.MyConcurrentRadixTree;
 import nars.Task;
-import nars.term.util.TermBytes;
+import nars.term.util.key.TermBytes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
