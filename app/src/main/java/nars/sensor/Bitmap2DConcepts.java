@@ -30,7 +30,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     public final int width, height, area;
     public final P src;
 
-    public final Array2DIterable<Signal> iter;
+    protected final Array2DIterable<Signal> iter;
     private final Int2Function<Term> pixelTerm;
 
     /** TODO abstract pixel neighbor linking strategies */
@@ -101,7 +101,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     }
 
     public Signal get(int i) {
-        return iter.order.get(i);
+        return iter.get(i);
     }
 
     /**
