@@ -549,7 +549,7 @@ public class TermTestMisc {
     }
 
 
-    static void assertValidTermValidConceptInvalidTaskContent(String o) {
+    public static void assertValidTermValidConceptInvalidTaskContent(String o) {
         assertThrows(TaskException.class, () -> {
             NARS.shell().input(o);
         });

@@ -525,7 +525,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     }
 
     static final Predicate<Term> isTemporalComponent = x->x.op()==CONJ && x.dt()!=DTERNAL;
-    public static final Predicate<Term> isEternalComponent = isTemporalComponent.negate();
+    static final Predicate<Term> isEternalComponent = isTemporalComponent.negate();
 
     /** extracts the eternal components of a seq. assumes the conj actually has been determined to be a sequence */
     public static Term seqEternal(Term seq) {
@@ -1569,6 +1569,16 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             return null; //OK no potential for interaction
 
         boolean existingPolarity = existing.op() != NEG;
+
+        //quick tests for contradiction
+        if (eConj) {
+            //for seq and parallel
+            if (existingPolarity && existing.containsNeg(incoming)){
+                return False;
+            }
+        }
+
+
         Term result;
 
         Term base;

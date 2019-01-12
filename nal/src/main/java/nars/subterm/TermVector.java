@@ -42,10 +42,7 @@ public abstract class TermVector extends TermMetadata implements Subterms, The /
 
 
 
-    @Override
-    public boolean containsNeg(Term x) {
-        return x.op() == NEG ? contains(x.unneg()) : (hasAny(NEG) && contains(x.neg()));
-    }
+
 
     void equivalentTo(TermVector that) {
         //share normalize state if different

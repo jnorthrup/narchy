@@ -1,4 +1,4 @@
-package nars.term;
+package nars.term.util.conj;
 
 import jcog.data.list.FasterList;
 import jcog.random.XoRoShiRo128PlusRandom;
@@ -7,8 +7,10 @@ import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.op.SubUnify;
+import nars.term.Compound;
+import nars.term.Term;
+import nars.term.TermTestMisc;
 import nars.term.atom.Bool;
-import nars.term.util.conj.Conj;
 import nars.term.util.TermException;
 import nars.term.util.transform.Retemporalize;
 import nars.unify.ellipsis.Ellipsis;
@@ -25,7 +27,6 @@ import static nars.Op.CONJ;
 import static nars.io.NarseseTest.assertInvalidTerms;
 import static nars.term.TemporalTermTest.*;
 import static nars.term.TermTestMisc.assertValid;
-import static nars.term.TermTestMisc.assertValidTermValidConceptInvalidTaskContent;
 import static nars.term.atom.Bool.*;
 import static nars.term.util.TermTest.*;
 import static nars.time.Tense.*;
@@ -640,8 +641,8 @@ public class ConjTest {
     void testFilterCommutedWithCoNegatedSubterms() throws Narsese.NarseseException {
 
 
-        assertValidTermValidConceptInvalidTaskContent(("((--,x) && x)."));
-        assertValidTermValidConceptInvalidTaskContent("((--,x) &| x).");
+        TermTestMisc.assertValidTermValidConceptInvalidTaskContent(("((--,x) && x)."));
+        TermTestMisc.assertValidTermValidConceptInvalidTaskContent("((--,x) &| x).");
         assertValid($("((--,x) &&+1 x)"));
         assertValid($("(x &&+1 x)"));
 

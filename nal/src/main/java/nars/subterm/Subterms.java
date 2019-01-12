@@ -37,6 +37,7 @@ import java.util.function.*;
 import java.util.stream.IntStream;
 
 import static nars.Op.ATOM;
+import static nars.Op.NEG;
 
 
 /**
@@ -620,6 +621,15 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        return true;
 //
 //    }
+
+    @Override
+    default boolean containsNeg(Term x) {
+        if (x.op() == NEG)
+            return contains(x.unneg());
+        else {
+            return !impossibleSubTerm(x) && hasAny(NEG) && contains(x.neg());
+        }
+    }
 
     /**
      * const/variable phase version
