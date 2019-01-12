@@ -3,7 +3,6 @@ package spacegraph.util.geo.osm;
 import jcog.tree.rtree.HyperRegion;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -21,7 +20,7 @@ abstract public class OsmElement implements HyperRegion {
         this.id = id;
 
         if (tags == null || tags.isEmpty())
-            tags = Collections.emptyMap();
+            tags = null; //Collections.emptyMap();
         this.tags = tags;
     }
 

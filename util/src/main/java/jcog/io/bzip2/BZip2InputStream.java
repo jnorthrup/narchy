@@ -199,7 +199,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
     }
 
     public BZip2InputStream(InputStream zStream) {
-        this(false, zStream);
+        this(true, zStream);
     }
 
     public int read() {

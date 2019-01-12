@@ -270,7 +270,7 @@ public class Memory {
         public Stream<Task> apply(InputStream ii) {
             return Streams.stream(() -> new Iterator<Task>() {
 
-                final DataInputStream i = new DataInputStream(new BZip2InputStream(ii));
+                final DataInputStream i = new DataInputStream(new BZip2InputStream(false,ii));
                 Task next = null;
 
 

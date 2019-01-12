@@ -1,6 +1,8 @@
 package spacegraph.util.geo.osm;
 
+import it.unimi.dsi.fastutil.longs.Long2ReferenceRBTreeMap;
 import jcog.data.list.FasterList;
+import jcog.io.bzip2.BZip2InputStream;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
@@ -15,10 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 import static java.lang.Double.parseDouble;
@@ -33,34 +32,42 @@ public class Osm {
     /** lon,lat coordinates */
     public RectFloat geoBounds;
 
-    public final LongObjectHashMap<OsmNode> nodes;
-    private final LongObjectHashMap<OsmRelation> relations;
-    public final LongObjectHashMap<OsmWay> ways;
+    public final Long2ReferenceRBTreeMap<OsmNode> nodes = new Long2ReferenceRBTreeMap();
+//    public final LongObjectHashMap<OsmNode> nodes;
+    private final LongObjectHashMap<OsmRelation> relations = new LongObjectHashMap();
+    public final LongObjectHashMap<OsmWay> ways = new LongObjectHashMap();
 
 
     public boolean ready = false;
     public String id;
 
+    /** TODO abstract
+     * bzless ~/test.osm.bz2  | fgrep 'k=' | sort > /tmp/x
+
+     * */
+    private final static Set<String> filteredKeys = Set.of(
+            "source", "tiger:cfcc", "odbl"
+    );
+
     public Osm() {
 
-        nodes = new LongObjectHashMap();
-        ways = new LongObjectHashMap();
-        relations = new LongObjectHashMap();
     }
 
     @Override
     public String toString() {
-        return geoBounds + " (" + nodes.size() + " nodes, " + relations.size() + " relations, " + ways.size() + " ways";
+        return geoBounds + " (" + nodes.size() + " nodes, " + relations.size() + " relations, " + ways.size() + " ways)";
     }
 
-    public void load(String filename) throws SAXException, IOException, ParserConfigurationException {
+    public Osm load(String filename) throws SAXException, IOException, ParserConfigurationException {
         InputStream fis = new FileInputStream(filename);
 
         if (filename.endsWith(".gz")) {
             fis = new GZIPInputStream(fis);
+        } else if (filename.endsWith(".bz2")) {
+            fis = new BZip2InputStream(fis);
         }
 
-        load(fis);
+        return load(fis);
     }
 
     public static URL url(String apiURL, double lonMin, double latMin, double lonMax, double latMax)  {
@@ -77,7 +84,7 @@ public class Osm {
     }
 
     /** TODO make static so it can customize/optimize the returned instance */
-    public void load(InputStream fis) throws SAXException, IOException, ParserConfigurationException {
+    public Osm load(InputStream fis) throws SAXException, IOException, ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 
@@ -96,9 +103,6 @@ public class Osm {
         Document document = documentBuilder.parse(fis);
 
 
-
-        Osm osm = this;
-
         Collection<Element> relationElements = new FasterList<>();
 
         NodeList childNodes = document.getDocumentElement().getChildNodes();
@@ -109,8 +113,8 @@ public class Osm {
             switch (n.getNodeName()) {
                 case "bounds": {
                     Element e = ((Element) n);
-                    assert(osm.geoBounds == null);
-                    osm.geoBounds = RectFloat.XYXY(
+                    assert(this.geoBounds == null);
+                    this.geoBounds = RectFloat.XYXY(
                             (float) parseDouble(e.getAttribute("minlon")),
                             (float) parseDouble(e.getAttribute("minlat")),
                             (float) parseDouble(e.getAttribute("maxlon")),
@@ -130,15 +134,18 @@ public class Osm {
                         /*if ("tag".equals(nodeChild.getNodeName()))*/
                         {
                             Element ne = (Element) nodeChild;
-                            if (osmTags == null)
-                                osmTags = new UnifiedMap(1);
-                            osmTags.put(ne.getAttribute("k"), ne.getAttribute("v"));
+                            String key = ne.getAttribute("k");
+                            if (!filteredKeys.contains(key)) {
+                                if (osmTags == null)
+                                    osmTags = new UnifiedMap(1);
+                                osmTags.put(key, ne.getAttribute("v"));
+                            }
                         }
                     }
 
 
                     OsmNode oo = new OsmNode(id, new GeoVec3(childElement), osmTags);
-                    osm.nodes.put(id, oo);
+                    this.nodes.put(id, oo);
 
 
                     break;
@@ -158,7 +165,7 @@ public class Osm {
                         if ("nd".equals(node)) {
                             Element wayChildElement = (Element) wayChild;
                             refOsmNodes.add(
-                                    osm.nodes.get(l(wayChildElement.getAttribute("ref")))
+                                    this.nodes.get(l(wayChildElement.getAttribute("ref")))
                             );
                         } else if ("tag".equals(node)) {
                             Element nodeChildElement = (Element) wayChild;
@@ -169,7 +176,7 @@ public class Osm {
                     }
 
                     OsmWay ow = new OsmWay(id, refOsmNodes, osmTags);
-                    osm.ways.put(id, ow);
+                    this.ways.put(id, ow);
 
 
                     break;
@@ -193,7 +200,7 @@ public class Osm {
                     }
 
                     OsmRelation or = new OsmRelation(id, null, osmTags);
-                    osm.relations.put(id, or);
+                    this.relations.put(id, or);
                     relationElements.add(childElement);
                     break;
             }
@@ -204,7 +211,7 @@ public class Osm {
         for (Element relationElement : relationElements) {
             long id = l(relationElement.getAttribute("id"));
 
-            OsmRelation osmRelation = osm.relations.get(id);
+            OsmRelation osmRelation = this.relations.get(id);
 
             Map<String, String> tags = osmRelation.tags;
 //            String highway, natural, building, building_part, landuse;
@@ -232,10 +239,10 @@ public class Osm {
                     OsmElement member = null;
                     switch (type) {
                         case "node":
-                            member = osm.nodes.get(ref);
+                            member = this.nodes.get(ref);
                             break;
                         case "way":
-                            member = osm.ways.get(ref);
+                            member = this.ways.get(ref);
 //                            if (member != null) {
 //                                if (highway != null) {
 //                                    member.tag("highway", highway);
@@ -255,7 +262,7 @@ public class Osm {
 //                            }
                             break;
                         case "relation":
-                            member = osm.relations.get(ref);
+                            member = this.relations.get(ref);
                             break;
                     }
                     if (member != null) {
@@ -275,7 +282,7 @@ public class Osm {
         for (Element relationElement : relationElements) {
             long id = l(relationElement.getAttribute("id"));
 
-            OsmRelation osmRelation = osm.relations.get(id);
+            OsmRelation osmRelation = this.relations.get(id);
 
             Map<String, String> tags = osmRelation.tags;
             String type = tags.get("type");
@@ -288,11 +295,11 @@ public class Osm {
                 OsmElement e1 = oc.get(i);
 
                 if (e1 == null || e1.getClass() != OsmWay.class)
-                    return;
+                    return this;
 
                 OsmWay w1 = (OsmWay) e1;
                 if (w1.isLoop())
-                    return;
+                    return this;
 
                 {
                     ListIterator<? extends OsmElement> ii = osmRelation.children.listIterator(i);
@@ -312,6 +319,7 @@ public class Osm {
             }
         }
 
+        return this;
     }
 
 
@@ -326,7 +334,7 @@ public class Osm {
     }
 
     public void print() {
-        printOsmNodes(nodes);
+        printOsmNodes(nodes.values());
         printOsmWays(ways);
         printOsmRelations(relations);
     }
@@ -431,9 +439,6 @@ public class Osm {
             printNode(indent + 1, childNodes.item(i));
         }
     }
-
-
-
 
 
 

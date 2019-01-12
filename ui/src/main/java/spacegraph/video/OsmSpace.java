@@ -75,7 +75,9 @@ public enum OsmSpace  { ;
         public transient GL2 gl;
         public List<Consumer<GL2>> draw = new FasterList();;
 
-        public OsmRenderer(GL2 gl, Osm osm, LonLatProjection project) {
+        boolean wireframe = false;
+
+        public OsmRenderer(GL2 gl, LonLatProjection project) {
             this.gl = gl;
             this.project = project;
 
@@ -85,179 +87,21 @@ public enum OsmSpace  { ;
             GLU.gluTessCallback(tobj, GLU.GLU_TESS_ERROR, this);
             GLU.gluTessCallback(tobj, GLU.GLU_TESS_COMBINE, this);
 
-            boolean wireframe = false;
+        }
 
-            List<Consumer<GL2>> draw = this.draw;
+        public void clear() {
+            draw.clear();
+        }
 
-            for (OsmWay way : osm.ways) {
+        public void addNode(OsmNode node) {
+            Map<String, String> tags = node.tags;
 
-                Map<String, String> tags = way.tags;
-
-
-                boolean isPolygon = false;
-                float r, g, b, a;
-                float lw;
-                short ls;
-
-                r = 0.5f;
-                g = 0.5f;
-                b = 0.5f;
-                a = 1f;
-                lw = 1f;
-                ls = (short) 0xFFFF;
-
-                if (!tags.isEmpty()) {
-
-                    for (Map.Entry<String, String> entry : tags.entrySet()) {
-                        String k = entry.getKey(), v = entry.getValue();
-                        switch (k) {
-                            case "building":
-                                r = 0f;
-                                g = 1f;
-                                b = 1f;
-                                a = 1f;
-                                lw = 1f;
-                                isPolygon = true;
-                                break;
-                            case "natural":
-                                switch (v) {
-                                    case "water":
-                                        r = 0f;
-                                        g = 0f;
-                                        b = 1f;
-                                        a = 1f;
-                                        lw = 1f;
-                                        isPolygon = true;
-                                        break;
-                                    case "wood":
-                                        r = 0f;
-                                        g = 1f;
-                                        b = 0f;
-                                        a = 1f;
-                                        lw = 1f;
-                                        isPolygon = true;
-                                        break;
-                                    default:
-                                        System.out.println("unstyled: " + k + " = " + v);
-                                        break;
-                                }
-                                break;
-//                        case "landuse":
-//                            switch (v) {
-//                                case "forest":
-//                                case "grass":
-//                                    r = 0.1f;
-//                                    g = 0.9f;
-//                                    b = 0f;
-//                                    a = 1f;
-//                                    lw = 1f;
-//                                    isPolygon = true;
-//                                    break;
-//                                case "industrial":
-//                                    break;
-//                                default:
-//                                    System.out.println("unstyled: " + k + " = " + v);
-//                                    break;
-//                            }
-//                            break;
-                            case "route":
-                                switch (v) {
-                                    case "road":
-                                        r = 1f;
-                                        g = 1f;
-                                        b = 1f;
-                                        a = 1f;
-                                        lw = 1f;
-                                        break;
-                                    case "train":
-                                        r = 1f;
-                                        g = 1f;
-                                        b = 1f;
-                                        a = 1f;
-                                        lw = 5f;
-                                        ls = (short) 0xF0F0;
-                                        break;
-                                    default:
-                                        System.out.println("unstyled: " + k + " = " + v);
-                                        break;
-                                }
-                                break;
-                            case "highway":
-                                switch (v) {
-                                    case "pedestrian":
-                                        r = 0f;
-                                        g = 0.5f;
-                                        b = 0f;
-                                        a = 1f;
-                                        lw = 2f;
-                                        break;
-                                    case "motorway":
-                                        r = 1f;
-                                        g = 0.5f;
-                                        b = 0f;
-                                        a = 1f;
-                                        lw = 5f;
-                                        break;
-                                    default:
-                                        r = 1f;
-                                        g = 1f;
-                                        b = 1f;
-                                        a = 0.5f;
-                                        lw = 3f;
-                                        break;
-                                }
-                                break;
-                        }
-                    }
-
-                }
-
-                isPolygon = isPolygon && way.isLoop();
-
-                if (isPolygon && !wireframe) {
-                    List nn = way.getOsmNodes();
-                    int s = nn.size();
-                    if (s > 0) {
-                        float[][] coord = new float[s][7];
-                        for (int i = 0; i < s; i++) {
-                            float[] ci = project.project(((OsmNode)nn.get(i)).pos, coord[i]);
-                            ci[3] = r;
-                            ci[4] = g;
-                            ci[5] = b;
-                            ci[6] = a;
-                        }
-
-                        draw.add(new OsmPolygonDraw(r, g, b, a, lw, ls, tobj, nn, coord));
-                    }
-
-
-                } else {
-
-                    List ways = way.getOsmNodes();
-                    int ws = ways.size();
-                    if (ws > 0) {
-                        float[] c3 = new float[3 * ws];
-                        for (int i = 0, waysSize = ws; i < waysSize; i++) {
-                            project.project(((OsmNode)ways.get(i)).pos, c3, i * 3);
-                        }
-
-                        draw.add(new OsmLineDraw(r, g, b, a, lw, ls, c3));
-                    }
-
-                }
-
-            }
-
-
-            for (OsmNode node : osm.nodes) {
-                Map<String, String> tags = node.tags;
-
-                if (tags.isEmpty()) continue;
+            float pointSize = 1;
+            float r = 0.5f, g = 0.5f, b = 0.5f, a = 1f;
+            if (tags!=null && !tags.isEmpty()) {
                 String highway = tags.get("highway");
                 String natural = tags.get("natural");
 
-                float pointSize;
-                float r, g, b, a;
                 if ("bus_stop".equals(highway)) {
 
                     pointSize = 3;
@@ -281,16 +125,169 @@ public enum OsmSpace  { ;
                     g = b = 0f;
                     a = 0.7f;
                 }
-
-                float[] c3 = new float[3];
-
-                project.project(node.pos, c3);
-
-                draw.add(new OsmDrawPoint(pointSize, r, g, b, a, c3));
             }
 
+            float[] c3 = new float[3];
+
+            project.project(node.pos, c3);
+
+            draw.add(new OsmDrawPoint(pointSize, r, g, b, a, c3));
         }
 
+        public void addWay(OsmWay w) {
+
+            Map<String, String> tags = w.tags;
+
+
+            boolean isPolygon = false;
+            float lw = 1f;
+            short ls = (short) 0xffff;
+            float r = 0.5f;
+            float g = 0.5f;
+            float b = 0.5f;
+            float a = 1f;
+
+            if (tags!=null && !tags.isEmpty()) {
+
+
+                for (Map.Entry<String, String> entry : tags.entrySet()) {
+                    String k = entry.getKey(), v = entry.getValue();
+                    switch (k) {
+                        case "building":
+                            r = 0f;
+                            g = 1f;
+                            b = 1f;
+                            a = 1f;
+                            lw = 1f;
+                            isPolygon = true;
+                            break;
+                        case "natural":
+                            switch (v) {
+                                case "water":
+                                    r = 0f;
+                                    g = 0f;
+                                    b = 1f;
+                                    a = 1f;
+                                    lw = 1f;
+                                    isPolygon = true;
+                                    break;
+                                case "wood":
+                                    r = 0f;
+                                    g = 1f;
+                                    b = 0f;
+                                    a = 1f;
+                                    lw = 1f;
+                                    isPolygon = true;
+                                    break;
+                                default:
+                                    System.out.println("unstyled: " + k + " = " + v);
+                                    break;
+                            }
+                            break;
+//                        case "landuse":
+//                            switch (v) {
+//                                case "forest":
+//                                case "grass":
+//                                    r = 0.1f;
+//                                    g = 0.9f;
+//                                    b = 0f;
+//                                    a = 1f;
+//                                    lw = 1f;
+//                                    isPolygon = true;
+//                                    break;
+//                                case "industrial":
+//                                    break;
+//                                default:
+//                                    System.out.println("unstyled: " + k + " = " + v);
+//                                    break;
+//                            }
+//                            break;
+                        case "route":
+                            switch (v) {
+                                case "road":
+                                    r = 1f;
+                                    g = 1f;
+                                    b = 1f;
+                                    a = 1f;
+                                    lw = 1f;
+                                    break;
+                                case "train":
+                                    r = 1f;
+                                    g = 1f;
+                                    b = 1f;
+                                    a = 1f;
+                                    lw = 5f;
+                                    ls = (short) 0xF0F0;
+                                    break;
+                                default:
+                                    System.out.println("unstyled: " + k + " = " + v);
+                                    break;
+                            }
+                            break;
+                        case "highway":
+                            switch (v) {
+                                case "pedestrian":
+                                    r = 0f;
+                                    g = 0.5f;
+                                    b = 0f;
+                                    a = 1f;
+                                    lw = 2f;
+                                    break;
+                                case "motorway":
+                                    r = 1f;
+                                    g = 0.5f;
+                                    b = 0f;
+                                    a = 1f;
+                                    lw = 5f;
+                                    break;
+                                default:
+                                    r = 1f;
+                                    g = 1f;
+                                    b = 1f;
+                                    a = 0.5f;
+                                    lw = 3f;
+                                    break;
+                            }
+                            break;
+                    }
+                }
+
+            }
+
+            isPolygon = isPolygon && w.isLoop();
+
+            if (isPolygon && !wireframe) {
+                List nn = w.getOsmNodes();
+                int s = nn.size();
+                if (s > 0) {
+                    float[][] coord = new float[s][7];
+                    for (int i = 0; i < s; i++) {
+                        float[] ci = project.project(((OsmNode)nn.get(i)).pos, coord[i]);
+                        ci[3] = r;
+                        ci[4] = g;
+                        ci[5] = b;
+                        ci[6] = a;
+                    }
+
+                    draw.add(new OsmPolygonDraw(r, g, b, a, lw, ls, tobj, nn, coord));
+                }
+
+
+            } else {
+
+                List ways = w.getOsmNodes();
+                int ws = ways.size();
+                if (ws > 0) {
+                    float[] c3 = new float[3 * ws];
+                    for (int i = 0, waysSize = ws; i < waysSize; i++) {
+                        project.project(((OsmNode)ways.get(i)).pos, c3, i * 3);
+                    }
+
+                    draw.add(new OsmLineDraw(r, g, b, a, lw, ls, c3));
+                }
+
+            }
+        }
         @Override
         public void begin(int type) {
             gl.glBegin(type);

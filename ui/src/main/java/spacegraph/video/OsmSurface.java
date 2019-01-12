@@ -29,7 +29,7 @@ public class OsmSurface extends Surface {
 
     private OsmSpace.LonLatProjection projection = OsmSpace.LonLatProjection.Raw;
 
-    public final AtomicBoolean showIndexBounds = new AtomicBoolean(true);
+    public final AtomicBoolean showIndexBounds = new AtomicBoolean(false);
 
     public OsmSurface(IRL i) {
         this.index = i;
@@ -113,7 +113,21 @@ public class OsmSurface extends Surface {
                         c = null;
                     }
                     if (c == null) {
-                        c = new OsmSpace.OsmRenderer(gl, o, projection);
+                        c = new OsmSpace.OsmRenderer(gl, projection);
+                        OsmSpace.OsmRenderer r = ((OsmSpace.OsmRenderer) c);
+//                        HyperRectFloat viewBounds = new HyperRectFloat(
+//                                new float[] { },
+//                                new float[] { }
+//                        );
+                        o.ways.forEach(w -> r.addWay(w));
+                        o.nodes.values().forEach(n -> r.addNode(n));
+//                        //index.index.forEach(e -> {//whileEachIntersecting(viewBounds,e->{
+//                            if (e instanceof OsmWay)
+//                                r.addWay((OsmWay)e);
+//                            else if (e instanceof OsmNode)
+//                                r.addNode((OsmNode)e);
+//                            //return true;
+//                        });
                         ctx.attachObject(o.id, c);
                         projection.changeNoticed();
                     }
@@ -139,8 +153,14 @@ public class OsmSurface extends Surface {
         Draw.rectFrame(gl, 0, 0, 1, 1, 0.1f);
     };
 
+    public OsmSurface go(Osm o) {
+        this.o = o;
+        center.set(o.geoBounds.cx(), o.geoBounds.cy());
+        return this;
+    }
+
     public OsmSurface go(float lon, float lat, float lonRange, float latRange) {
-        o = index.request(lon, lat, lonRange, latRange);
+        this.o = index.request(lon, lat, lonRange, latRange);
         center.set(lon, lat);
         return this;
     }

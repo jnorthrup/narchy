@@ -33,7 +33,7 @@ public class IRL {
                     //new AxialSplitLeaf<>(),
                     new LinearSplitLeaf<>(),
                     //new QuadraticSplitLeaf(),
-                    2, 8));
+                    2, 4));
 
     public IRL(User u) {
         this.user = u;
@@ -82,10 +82,10 @@ public class IRL {
                 try {
                     logger.info("Loading {} ({} bytes)", u, data.length);
                     osm.load(new ByteArrayInputStream(data));
-                    osm.ready = true;
                     osm.ways.forEachValue(w -> {
                        index.add(w);
                     });
+                    osm.ready = true;
 //                    osm.nodes.forEachValue(n->{
 //                        index.add(n);
 //                    });

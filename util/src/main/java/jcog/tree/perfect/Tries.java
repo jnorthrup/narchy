@@ -188,6 +188,10 @@ public enum Tries {
         return new Trie<>(new TrieSequencerLongArray());
     }
 
+//    public static <T> Trie<Long, T> forLong() {
+//        return new Trie<>(new TrieSequencerLongArray());
+//    }
+
     /**
      * Creates a Trie where the keys are longs.
      *

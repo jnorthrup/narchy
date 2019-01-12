@@ -17,6 +17,11 @@ public class OsmNode extends OsmElement {
     }
 
     @Override
+    public String toString() {
+        return id + "@" + pos + (tags!=null ? tags.toString() : "");
+    }
+
+    @Override
     public HyperRegion mbr(HyperRegion r) {
         return r.mbr(new HyperRectFloat(pos));
     }

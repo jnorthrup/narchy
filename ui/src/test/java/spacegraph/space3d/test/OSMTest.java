@@ -1,12 +1,38 @@
 package spacegraph.space3d.test;
 
 import jcog.User;
+import org.xml.sax.SAXException;
 import spacegraph.util.geo.IRL;
+import spacegraph.util.geo.osm.Osm;
 import spacegraph.video.OsmSurface;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 
 import static spacegraph.SpaceGraph.window;
 
 public class OSMTest {
+
+    static class OSMGraphTest {
+        public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+            IRL i = new IRL(User.the());
+
+            Osm o = new Osm().load("/home/me/test.osm.bz2");
+            o.nodes.values().forEach(i.index::add);
+            o.ready = true;
+
+            System.out.println(o);
+
+            o.nodes.values().forEach(n -> {
+                if (n.tags!=null)
+                    System.out.println(n);
+            });
+
+//            window(new OsmSurface(i).go(o).view(), 800, 800);
+
+            i.index.stats().print(System.out);
+        }
+    }
 
     public static void main(String[] args) {
 
