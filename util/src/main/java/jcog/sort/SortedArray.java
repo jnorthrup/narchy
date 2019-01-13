@@ -434,42 +434,29 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     public int add(X element, float elementRank, FloatFunction<X> cmp) {
         int s = size;
-        if (s < BINARY_SEARCH_THRESHOLD)
-            return addLinear(element, elementRank, cmp, s);
-        else
-            return addBinary(element, elementRank, cmp, s);
+
+        final int index = find(element, elementRank, cmp, false, true);
+
+        int result = insert(element, index, s);
+
+//        if (!isSorted(cmp))
+//            throw new WTF();
+
+        return result;
     }
 
-    private int addBinary(X element, float elementRank, FloatFunction<X> cmp, int size) {
-
-        final int index = this.findInsertionIndex(elementRank, 0, size, cmp);
-
-        return insert(element, index, elementRank, cmp, size);
-    }
-
-    private int insert(X element, int index, float elementRank, FloatFunction<X> cmp, int size) {
-        final X last = items[size - 1];
-
-        if (index == size || Util.fastCompare(cmp.floatValueOf(last), elementRank) < 0) {
+    private int insert(X element, int index, int size) {
+        assert(index!=-1);
+        if (index == size) {
             return addEnd(element);
         } else {
-            return (index == -1 ? addEnd(element) : addInternal(index, element, size));
+            if (addAtIndex(index, element, size))
+                return index;
+            else
+                return -1;
         }
     }
 
-    private int addLinear(X element, float elementRank, FloatFunction<X> cmp, int size) {
-        X[] l = this.items;
-        //size = Math.min(size, l.length);
-        if (size > 0) {
-            for (int i = 0; i < size; i++) {
-                final X current = l[i];
-                if (elementRank < cmp.floatValueOf(current)) {
-                    return addInternal(i, element, size);
-                }
-            }
-        }
-        return addEnd(element);
-    }
 
     public final boolean isEmpty() {
         return size == 0;
@@ -501,20 +488,6 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 //        return this.items = newList;
     }
 
-    private int addInternal(int index, X e, int s) {
-        //assert(index >=0);
-
-        if (index < s) {
-            if (!this.addAtIndex(index, e, s))
-                return -1;
-            return index;
-        } else if (index == s) {
-            return this.addEnd(e);
-        }
-        throw new UnsupportedOperationException();
-
-
-    }
 
     private boolean addAtIndex(int index, X element, int oldSize) {
 
@@ -582,11 +555,11 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     /**
-     * called when an item's sort order may have changed
+     * an adjustment: called when an item's sort order may have changed
      */
-    public void adjust(int index, FloatFunction<X> cmp) {
+    public void partialSort(int index, FloatFunction<X> cmp) {
         X[] l = this.items;
-        float cur = cmp.floatValueOf(l[index]);
+        final float cur = cmp.floatValueOf(l[index]);
 
         boolean reinsert = false;
 
@@ -606,17 +579,23 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         }
 
         if (reinsert) {
-            int next = this.findInsertionIndex(cur, 0, s, cmp);
-            if (next == index - 1) {
+            int next = find(null, cur , cmp, true, true);
+            if (next == index ) {
+                //in the right pos
+            } else if (next == index - 1) {
 
                 swap(l, index, index - 1);
             } else if (next == index + 1) {
 
                 swap(l, index, index + 1);
+
             } else {
 
-                insert(remove(index), next, cur, cmp, s);
+                insert(remove(index), next, s);
+
             }
+
+
         }
     }
 
@@ -639,37 +618,77 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     public int indexOf(final X element, FloatFunction<X> cmp, boolean eqByIdentity) {
 
+        return find(element, Float.NaN, cmp, eqByIdentity, false);
+    }
 
-        
-        int size = size();
-        if (size == 0)
-            return -1;
+    private int find(final X element, float elementRank /* can be NaN to lazily compute */, FloatFunction<X> cmp, boolean eqByIdentity, boolean forInsertionOrFind) {
+        int s = size;
+        if (s==0)
+            return forInsertionOrFind ? 0 : -1;
 
-        if (size >= BINARY_SEARCH_THRESHOLD) {
+        int left = 0, right = s;
+        X[] items = this.items;
+        do {
+            if (right - left < BINARY_SEARCH_THRESHOLD) {
+                int i;
+                for (i = left; i < right; i++) {
+                    X x = items[i];
+                    boolean eq = eq(element, x, eqByIdentity);
+                    if (!forInsertionOrFind) {
+                        if (eq) {
+                            return i;
+                        }
+                    }
 
-            float v = cmp.floatValueOf(element);
-            int found = eqByIdentity ?
-                    this.findInsertionIndexByIdentity(v, element, 0, size, cmp)
-                    :
-                    this.findInsertionIndex(v, 0, size, cmp);
-            assert(found!=-1);
-            if (found < size)
-                return found;
-//
-//            X[] l = this.items;
-//            for (int index = left; index < rightBorder[0]; index++) {
-//                X ll = l[index];
-//                if (eqByIdentity ? (element== ll) : element.equals(ll))
-//                    return index;
-//            }
+                    if (forInsertionOrFind) {
+                        if (elementRank != elementRank) elementRank = cmp.floatValueOf(element);
+                        if (0 < Util.fastCompare(cmp.floatValueOf(x), elementRank)) {
+                            break;
+                        }
+                    }
 
+                }
+                if (forInsertionOrFind)
+                    return i; //after the range
+                else
+                    break;
 
-        } else {
-            if (!exhaustiveFind())
+            } else {
+                final int midle = left + (right - left) / 2;
+
+                final X m = items[midle];
+                if (!forInsertionOrFind) {
+                    if (m == element || (!eqByIdentity && m.equals(element))) {
+                        return midle;
+                    }
+                }
+
+                if (elementRank!=elementRank) elementRank = cmp.floatValueOf(element);
+                final int comparedValue = Util.fastCompare(cmp.floatValueOf(m), elementRank);
+                if (comparedValue == 0) {
+                    if (forInsertionOrFind)
+                        return midle + 1; /* after existing element */
+                }
+                boolean c = (0 <= comparedValue);
+                int nextLeft = c ? left : midle, nextRight = c ? midle : right;
+                left = nextLeft;
+                right = nextRight;
+            }
+        } while (right-left>=1);
+
+        if (forInsertionOrFind)
+            return right;
+        else {
+            if (element!=null && exhaustiveFind())
+                return indexOfExhaustive(element, eqByIdentity);
+            else
                 return -1;
         }
 
-        return indexOfInternal(element, eqByIdentity);
+    }
+
+    private static <X> boolean eq(X element, X ii, boolean eqByIdentity) {
+        return (element == ii) || (!eqByIdentity && element.equals(ii));
     }
 
     /** needs to be true if the rank of items is known to be stable.  then binary indexOf lookup does not need to perform an exhaustive search if not found by rank */
@@ -678,7 +697,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
 
-    private int indexOfInternal(X e, boolean eqByIdentity) {
+    private int indexOfExhaustive(X e, boolean eqByIdentity) {
         Object[] l = this.items;
         int s = this.size;
         for (int i = 0; i < s; i++) {
@@ -687,100 +706,6 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
                 return i;
         }
         return -1;
-    }
-
-    /**
-     * find the position where the object should be inserted in to the list, or
-     * the area of the list which should be searched for the object
-     *
-     * @param list        the list or sublist in where the index should be found
-     * @param element     element for which the index should be found
-     * @param left        the left index (inclusively)
-     * @param right       the right index (exclusively)
-     * @return first index of the element where the element should be inserted
-     */
-    private int findInsertionIndex(
-            float elementRank, final int left, final int right,
-            FloatFunction<X> cmp) {
-
-        assert (right >= left);
-
-        if ((right - left) < BINARY_SEARCH_THRESHOLD) {
-            return findFirstIndex(elementRank, left, right, cmp);
-        } else {
-
-            final int midle = left + (right - left) / 2;
-
-            X[] list = this.items;
-
-            final X midleE = list[midle];
-
-            final int comparedValue = Util.fastCompare(cmp.floatValueOf(midleE), elementRank);
-            if (comparedValue == 0) {
-                return midle + 1; /* after existing element */
-            } else {
-
-                boolean c = (0 < comparedValue);
-                int nextLeft = c ? left : midle, nextRight = c ? midle : right;
-
-                return findInsertionIndex(elementRank, nextLeft, nextRight, cmp);
-            }
-        }
-    }
-    private int findInsertionIndexByIdentity(
-            float elementRank, X item, final int left, final int right, FloatFunction<X> cmp) {
-
-        assert (right >= left);
-
-        if ((right - left) < BINARY_SEARCH_THRESHOLD) {
-            return findFirstIndexByIdentity(item, left, right);
-        }
-
-        final int midle = left + (right - left) / 2;
-
-        X[] list = this.items;
-
-        final X midleE = list[midle];
-        if (midleE == item) {
-            return midle + 1;/* after existing element */
-        }
-
-        boolean c = 0 < Util.fastCompare(cmp.floatValueOf(midleE), elementRank);
-
-
-        int nextLeft = c ? left : midle;
-        int nextRight = c ? midle : right;
-
-        return findInsertionIndexByIdentity(elementRank, item, nextLeft, nextRight, cmp);
-
-    }
-
-    /**
-     * searches for the first index found for given element
-
-     */
-    private int findFirstIndex(float elementRank,
-                               final int left, final int right, FloatFunction<X> cmp) {
-        X[] ii = this.items;
-        int index;
-        for (index = left; index < right; index++) {
-            X x = ii[index];
-            if (0 < Util.fastCompare(cmp.floatValueOf(x), elementRank)) {
-                return index;
-            }
-        }
-        return index;
-    }
-
-    private int findFirstIndexByIdentity(X item, final int left, final int right) {
-        X[] ii = this.items;
-        int index;
-        for (index = left; index < right; index++) {
-            X x = ii[index];
-            if (x == item)
-                return index;
-        }
-        return index;
     }
 
 

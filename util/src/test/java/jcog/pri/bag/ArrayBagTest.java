@@ -1,5 +1,6 @@
 package jcog.pri.bag;
 
+import com.google.common.base.Joiner;
 import jcog.Util;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
@@ -155,7 +156,7 @@ class ArrayBagTest {
     }
 
     static void assertSorted(ArrayBag x) {
-        assert(x.items.isSorted(x));
+        assertTrue(x.items.isSorted(x), ()-> Joiner.on("\n").join(x));
     }
 
     @Test

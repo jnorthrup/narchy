@@ -621,6 +621,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         int posBefore = items.indexOf(existing, this, true);
         if (posBefore == -1) {
+            //items.indexOf(existing, this, true);
+
 //            //try harder: compare by keys, even if the value refuse to respond true to equals()
 //            X ki = key(incoming);
 //            int s = size();
@@ -656,7 +658,12 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
         if (Math.abs(delta) >= ScalarValue.EPSILON) {
 
-            items.adjust(posBefore, this);
+            if (result!=null) {
+
+                items.partialSort(posBefore, this);
+
+                //sort(0, posBefore);
+            }
 
             MASS.add(this, delta);
         }
