@@ -751,7 +751,8 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     public final boolean whileEach(int n, Predicate<? super X> action) {
-        int s = (n == -1) ? size : Math.min(size, n);
+        int s0 = this.size;
+        int s = (n == -1) ? s0 : Math.min(s0, n);
         if (s > 0) {
             X[] ii = items;
             for (int i = 0; i < s; i++)

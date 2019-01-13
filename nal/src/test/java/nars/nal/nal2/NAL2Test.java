@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL2Test extends NALTest {
 
-    private static final int cycles = 200;
+    private static final int cycles = 300;
 
 
     @Override
@@ -23,7 +23,7 @@ public class NAL2Test extends NALTest {
 
         NAR n = NARS.tmp(2);
         n.confMin.set(0.3f);
-        n.termVolumeMax.set(10);
+        n.termVolumeMax.set(8);
         return n;
     }
 
@@ -244,6 +244,7 @@ public class NAL2Test extends NALTest {
     void set_operations() {
 
         test
+                .termVolMax(6)
                 .believe("<planetX --> {Mars,Pluto,Venus}>", 0.9f, 0.9f)
                 .believe("<planetX --> {Pluto,Saturn}>", 0.7f, 0.9f)
                 .mustBelieve(cycles, "<planetX --> {Mars,Pluto,Saturn,Venus}>", 0.97f, 0.81f)
@@ -318,8 +319,9 @@ public class NAL2Test extends NALTest {
     void set_operations4() {
 
         TestNAR tester = test;
-        tester.believe("<[marsy,earthly,venusy] --> planetX>", 1.0f, 0.9f);
-        tester.believe("<[earthly,saturny] --> planetX>", 0.1f, 0.9f);
+        tester.termVolMax(7);
+        tester.believe("([marsy,earthly,venusy] --> planetX)", 1.0f, 0.9f);
+        tester.believe("([earthly,saturny] --> planetX)", 0.1f, 0.9f);
         tester.mustBelieve(cycles, "<[marsy,earthly,saturny,venusy] --> planetX>", 1.0f, 0.81f);
         tester.mustBelieve(cycles, "<[marsy,venusy] --> planetX>", 0.90f, 0.81f);
 

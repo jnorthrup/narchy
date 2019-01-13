@@ -145,20 +145,20 @@ public enum Intermpolate {;
      * merge delta
      */
     static int merge(int adt, int bdt, float aProp, NAR nar) {
-        if (adt >= 0 == bdt >= 0) { //require same sign ?
+        //if (adt >= 0 == bdt >= 0) { //require same sign ?
 
-            int range = //Math.max(Math.abs(adt), Math.abs(bdt));
-                    Math.abs(adt - bdt);
-            int ab = Tense.dither(Util.lerp(aProp, bdt, adt), nar);
+
+            int range = Math.max(Math.abs(adt), Math.abs(bdt));
+                    //Math.abs(adt - bdt);
+            int ab = Util.lerp(aProp, bdt, adt);
             int delta = Math.max(Math.abs(ab - adt), Math.abs(ab - bdt));
             float ratio = ((float) delta) / range;
             if (ratio <= nar.intermpolationRangeLimit.floatValue()) {
-                return ab;
+                return Tense.dither(ab, nar);
             }
-            return ab;
-        }
-
-        //discard temporal information by resorting to eternity
+//        }
+//
+//        //discard temporal information by resorting to eternity
         return DTERNAL;
     }
 
@@ -242,7 +242,7 @@ public enum Intermpolate {;
 
                 boolean ad = adt == DTERNAL, bd = bdt == DTERNAL;
                 if (!ad && !bd) {
-                    float range = Math.min(1 + Math.abs(adt), 1 + Math.abs(bdt));
+                    float range = 1 + Math.abs(adt) + Math.abs(bdt);
                     assert (range > 0);
                     dDT = Math.abs(adt - bdt) / (range);
                 } else {

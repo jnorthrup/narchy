@@ -171,7 +171,9 @@ public class ConjClustering extends Causable {
             this.now = now;
             this.dur = nar.dur();
             this.ditherTime = nar.dtDither();
-            this.maxStampLen = Param.STAMP_CAPACITY / 2; //for minimum of 2 tasks in each conjunction
+            this.maxStampLen =
+                    //Param.STAMP_CAPACITY / 2; //for minimum of 2 tasks in each conjunction
+                    Param.STAMP_CAPACITY - 1;
             this.confMin = nar.confMin.floatValue();
             this.volMaxSafe = Math.round((this.volMax = nar.termVolumeMax.intValue()) * termVolumeMaxFactor);
         }

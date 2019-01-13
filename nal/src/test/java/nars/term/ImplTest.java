@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.io.NarseseTest.assertInvalidTerms;
+import static nars.term.atom.Bool.False;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -19,17 +20,17 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 public class ImplTest {
     @Test
     public void testInvalidImpl1() {
-        assertEq(Bool.False, "(--y =|> y)");
+        assertEq(False, "(--y =|> y)");
     }
 
     @Test
     public void testInvalidImpl2() {
-        assertEq(Bool.False, "(--(x &| y) =|> y)");
+        assertEq(False, "(--(x &| y) =|> y)");
     }
 
     @Test
     public void testInvalidImpl3() {
-        assertEq(Bool.False, "(--(--x &| y) =|> y)");
+        assertEq(False, "(--(--x &| y) =|> y)");
     }
 
     @Test
@@ -61,7 +62,7 @@ public class ImplTest {
     @Test
     void testReducibleImplFactoredPredShouldRemainIntact() {
 
-        for (String cp : new String[]{"&&", "&|", " &&+- "}) {
+        for (String cp : new String[]{/*"&&",*/ "&|", " &&+- "}) {
             String ccp = cp;//cp.equals(" &&+- ") ? cp : "&|";
             assertEq("((x&&y) ==>+1 (y" + ccp + "z))", "((y&&x) ==>+1 (y" + cp + "z))");
             assertEq("(a ==>+1 (b &&+1 (y" + ccp + "z)))", "(a ==>+1 (b &&+1 (y" + cp + "z)))");
@@ -82,14 +83,14 @@ public class ImplTest {
 
     @Test
     void testReducibleImplConjCoNeg() {
-        assertEq(Bool.False, "((y &| --x) ==> x)");
+        assertEq(False, "((y &| --x) ==> x)");
 
         for (String i : new String[]{"==>", "=|>"}) {
             for (String c : new String[]{"&&", "&|"}) {
-                assertEq(Bool.False, "(x " + i + " (y " + c + " --x))");
-                assertEq(Bool.False, "(--x " + i + " (y " + c + " x))");
-                assertEq(Bool.False, "((y " + c + " --x) " + i + " x)");
-                assertEq(Bool.False, "((y " + c + " x) " + i + " --x)");
+                assertEq(False, "(x " + i + " (y " + c + " --x))");
+                assertEq(False, "(--x " + i + " (y " + c + " x))");
+                assertEq(False, "((y " + c + " --x) " + i + " x)");
+                assertEq(False, "((y " + c + " x) " + i + " --x)");
             }
         }
     }
@@ -230,7 +231,7 @@ public class ImplTest {
     @Test
     void testElimination2() {
         assertEq(
-                "TODO", //False?
+               False,
                 "((--,(left &&+2518 left))==>left)"
         );
 

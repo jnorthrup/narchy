@@ -1933,14 +1933,15 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             if (eternal == True)
                 ci = temporal;
             else {
-                if (Conj.isSeq(eternal) && Conj.isSeq(temporal)) {
+                if ((Conj.isSeq(eternal) || eternal.dt()==0) && Conj.isSeq(temporal)) {
                     //send through again
                     Conj cc = new Conj();
                     cc.add(0, temporal);
                     cc.add(0, eternal);
                     return cc.term();
+                } else {
+                    ci = ConjCommutive.the(DTERNAL, temporal, eternal);
                 }
-                ci = ConjCommutive.the(DTERNAL, temporal, eternal);
             }
         } else if (eternal == null) {
             ci = temporal;

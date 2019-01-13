@@ -8,7 +8,6 @@ import jcog.math.Range;
 import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
-import nars.task.util.TaskBuffer;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.util.builder.MemoizingTermBuilder;
@@ -73,8 +72,8 @@ public abstract class Param {
     public static final int TaskLinkSpreadDefault =
             //16;
             //12;
-            //10;
-            8;
+            10;
+            //8;
             //7;
             //6;
             //5;
@@ -130,7 +129,7 @@ public abstract class Param {
     public static final int TASK_EVAL_TRY_LIMIT = TASK_EVAL_FORK_LIMIT*2;
 
     /** >= 1  - maximum # of Answer attempts per Answer capacity.  so 2 means 2 tasks are tried for each Answer task slot in its capacity */
-    public static final float ANSWER_COMPLETENESS = 1f;
+    public static final float ANSWER_COMPLETENESS = 3f;
 
 //    public static final boolean DERIVE_AUTO_IMAGE_NORMALIZE = true;
 
@@ -280,7 +279,7 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(2 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(3 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
     public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
     public final IntRange matchTTL = new IntRange(8, 1, 32);
 
@@ -290,11 +289,11 @@ public abstract class Param {
      * for NALTest's: extends the time all unit tests are allowed to run for.
      * normally be kept to 1 but for debugging this may be increased to find what tests need more time
      */
-    public static final float TEST_TIME_MULTIPLIER = 4f;
+    public static final float TEST_TIME_MULTIPLIER = 2f;
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 4;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 8;
 
 
     /**

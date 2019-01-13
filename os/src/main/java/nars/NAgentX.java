@@ -263,11 +263,11 @@ abstract public class NAgentX extends NAgent {
 //        );
 //        senseReward.timing = new ActionTiming(n);
 //
-        ZipperDeriver senseActions = BeliefSource.forConcepts(n, rules,
-                sensorConcepts,
-                actionLinker
-        );
-        senseActions.timing = new ActionTiming(n);
+//        ZipperDeriver senseActions = BeliefSource.forConcepts(n, rules,
+//                sensorConcepts,
+//                actionLinker
+//        );
+//        senseActions.timing = new ActionTiming(n);
 
 
         ZipperDeriver motorInference = BeliefSource.forConcepts(n, Derivers.files(n,

@@ -150,25 +150,19 @@
     (M ==> P), (M ==> S) |- (S ==> P), (Belief:Induction)
         (M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN)
 
-                (  M ==> S), (  M ==> P), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
-                (--M ==> S), (  M ==> P), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
-                (  M ==> S), (--M ==> P), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
+                (X ==> S), (Y ==> P), eqPN(X,Y), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
 
     (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionPB)
     (P ==> M), (S ==> M) |- (S ==> P), (Belief:AbductionPB)
 
-            (S ==> M), (P ==> M), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
-        //(S ==> M), (P ==> M), task("?") |- (polarizeRandom(P) ==> S), (Punctuation:Question)
+            (S ==> X), (P ==> Y), task("?"), eqPN(X,Y) |- (S ==> P), (Punctuation:Question)
 
     (  M ==> S), (P ==> M)       |- (  S ==> P), (Belief:Exemplification)
     (  M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationN)
     (--M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPN)
     (--M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNN)
 
-            (  M ==> S), (P ==> M), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
-            (--M ==> S), (P ==> M), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
-
-
+            (X ==> S), (P ==> Y), task("?"), eqPN(X,Y) |- (polarizeRandom(S) ==> P), (Punctuation:Question)
 
     //the comparison rules here emulates what Comparison did in generating <=> which are modeled here as a pair of opposing ==>
     //untested
@@ -206,7 +200,8 @@
         (P ==> M), (S ==> M) |- --((P || S) ==> M), (Belief:UnionNN)
 //     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:IntersectionSym)
 //     (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:UnionSym)
-        (P ==> M), (S ==> M), task("?") |- (polarizeRandom((polarizeRandom(P) && polarizeRandom(S))) ==> M), (Punctuation:Question)
+        (P ==> M), (S ==> M), task("?") |- ((P && S) ==> M), (Punctuation:Question)
+        (P ==> M), (S ==> M), task("?") |- ((P || S) ==> M), (Punctuation:Question)
         //(P ==> M), (S ==> M), task("?") |- ((P || S) ==> M), (Punctuation:Question)
 
                 //...Also:VarIntro)
@@ -214,9 +209,7 @@
 
      (M ==> P), (M ==> S) |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized)
      (M ==> P), (M ==> S) |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDepolarized)
-        (M ==> P), (M ==> S), task("?") |- (M ==> polarizeRandom((polarizeRandom(P) && polarizeRandom(S)))), (Punctuation:Question)
-
-        //(M ==> P), (M ==> S), task("?") |- (M ==> (polarizeRandom(P) || polarizeRandom(S))), (Punctuation:Question)
+        (M ==> P), (M ==> S), task("?") |- (M ==> (polarizeRandom(P) && polarizeRandom(S))), (Punctuation:Question)
 
         //TODO question variations
         //((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P && S),A..+) ==> X), (Belief:IntersectionSym)

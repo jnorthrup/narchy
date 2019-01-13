@@ -3,6 +3,7 @@ package nars.truth.polation;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.WTF;
+import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import nars.NAR;
@@ -253,75 +254,79 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         int thisSize = this.size();
         if (thisSize == 0) return 0;
 
-        Term firstTerm = get(0).task.term();
-        if (thisSize == 1 || !firstTerm.hasAny(Op.Temporal)) {
+        Term first = get(0).task.term();
+        if (thisSize == 1 || !first.hasAny(Op.Temporal)) {
             //assumes that all the terms are from the same concept.  so if the first term has no temporal components the rest should not either.
-            this.term = firstTerm;
+            this.term = first;
             return 1;
         }
 
-        Task first = null, second = null;
 
-        for (int i = 0; i < thisSize; i++) {
+
+        MetalBitSet matchingFirst = MetalBitSet.bits(thisSize);
+        matchingFirst.set(0);
+        for (int i = 1; i < thisSize; i++) {
             TaskComponent t = this.get(i);
             Term ttt = t.task.term();
-            if (i == 0) {
-                first = t.task;
-                if (!ttt.hasAny(Op.Temporal))
-                    break;
-            } else {
-                if (!first.term().equals(ttt)) {
-                    if (second != null) {
-
-                        removeAbove(i);
-                        break;
-                    } else {
-                        second = t.task;
-                    }
-                }
-
-
-            }
+            if (first.equals(ttt))
+                matchingFirst.set(i);
+//            if (!first.equals(ttt)) {
+//                if (second != null) {
+//
+//                    removeAbove(i);
+//                    break;
+//                } else {
+//                    second = t.task;
+//                }
+//            }
         }
-
-        if (second == null) {
-            term = first.term();
+        if (matchingFirst.cardinality() > 1) {
+            this.term = first;
+            //exact matches are present.  remove those which are not
+            for (int i = 1; i < thisSize; i++)
+                if (!matchingFirst.get(i))
+                    set(i, null);
+            removeNulls();
             return 1f;
         } else {
 
+            //use the first successful intermpolation, if possible
 
-            Term a = first.term();
-            Term b = second.term();
+            int tryB = 1;
+            final float e1Evi = get(0).evi;
+            Term a = first;
+            TaskComponent B = get(tryB);
+            Term b = B.task.term();
 
             if ((Float.isFinite(dtDiff(a, b)))) {
 
-                long firstStart = first.start();
-                long secondStart = second.start();
-                final float[] e1Evi = {0};
-                final float[] e2Evi = {0};
-                Task finalFirst = first;
-                Task finalSecond = second;
-                removeIf(x -> {
-                    Task xx = x.task;
-                    Term xxx;
-                    if (xx == finalFirst || (xxx = xx.term()).equals(a)) {
-                        e1Evi[0] += x.evi;
-                        return false;
-                    } else if (xx == finalSecond || xxx.equals(b)) {
-                        e2Evi[0] += x.evi;
-                        return false;
-                    } else {
-                        return true;
-                    }
-                });
+//                long firstStart = first.start();
+//                long secondStart = second.start();
+                final float e2Evi = B.evi;
+//                Task finalFirst = A.task;
+//                Task finalSecond = B.task;
+//                removeIf(x -> {
+//                    Task xx = x.task;
+//                    Term xxx;
+//                    if (xx == finalFirst || (xxx = xx.term()).equals(a)) {
+//                        e1Evi[0] += x.evi;
+//                        return false;
+//                    } else if (xx == finalSecond || xxx.equals(b)) {
+//                        e2Evi[0] += x.evi;
+//                        return false;
+//                    } else {
+//                        return true;
+//                    }
+//                });
 
                 //if there isnt more evidence for the primarily sought term, then just use those components
-                Term term = Intermpolate.intermpolate(a,
-                        b, e1Evi[0] / (e1Evi[0] + e2Evi[0]), nar);
+                Term ab = Intermpolate.intermpolate(a,
+                        b, e1Evi / (e1Evi + e2Evi), nar);
 
-                if (Task.taskConceptTerm(term)) {
+                if (Task.taskConceptTerm(ab)) {
 
-                    this.term = term;
+                    this.term = ab;
+                    removeAbove(1+1);  assert(size()==2);
                     //return 1 - dtDiff * 0.5f; //half discounted
                     //return 1 - dtDiff;
                     return 1; //no discount for difference
@@ -330,8 +335,9 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
             }
 
-            removeIf(x -> !x.task.term().equals(a));
-            assert (size() > 0);
+
+            //last option: remove all except the first
+            removeAbove(1); assert(size()==1);
             this.term = a;
             return 1;
 

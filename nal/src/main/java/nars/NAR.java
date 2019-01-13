@@ -166,7 +166,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         input =
             //new TaskBuffer.DirectTaskBuffer(exe::input);
             //new DerivedTasks.DerivedTasksMap(4096);
-            new TaskBuffer.BagTaskBuffer(256, 0.01f);
+            new TaskBuffer.BagTaskBuffer(128, 0.25f);
             //new TaskBuffer.BagPuncTasksBuffer(1024, 0.1f);
         onCycle(n-> input.commit(n.time(), exe));
 
