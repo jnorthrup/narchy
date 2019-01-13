@@ -40,7 +40,7 @@ public final class TermMatchPred<X> extends AbstractPred<X> {
     static Term name(TermMatch match, Function resolve, boolean exactOrSuper) {
         Atomic a = Atomic.the(match.getClass().getSimpleName());
         Term r = $.the(resolve.toString());
-        r = exactOrSuper ? r : $.funcFast("in", r);
+        r = exactOrSuper ? r : $.func("in", r);
         Term p = match.param();
         return p!=null ? $.func(a, r, p) : $.func(a, r);
     }

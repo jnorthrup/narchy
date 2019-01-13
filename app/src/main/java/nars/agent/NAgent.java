@@ -26,7 +26,7 @@ import nars.concept.sensor.Sensor;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
 import nars.control.NARService;
-import nars.control.channel.CauseChannel;
+import nars.control.channel.ConsumerX;
 import nars.link.Activate;
 import nars.task.ITask;
 import nars.term.Term;
@@ -91,7 +91,7 @@ public class NAgent extends NARService implements NSense, NAct {
 //    @Deprecated private final FastCoWList<ReinforcedTask> always = new FastCoWList<>(ReinforcedTask[]::new);
 
     @Deprecated
-    private CauseChannel<ITask> in = null;
+    private ConsumerX<ITask> in = null;
 
     private final NAgentCycle cycle =
             //Cycles.Biphasic;
@@ -540,8 +540,8 @@ public class NAgent extends NARService implements NSense, NAct {
                 //nar.confMin.floatValue() * 2;
                 //nar.confMin.floatValue() * 4;
                 //Util.lerp(1/8f, nar.confMin.floatValue(), Param.TRUTH_MAX_CONF);
-                //nar.confDefault(GOAL)/4;
-                nar.confDefault(GOAL)/3;
+                nar.confDefault(GOAL)/4;
+                //nar.confDefault(GOAL)/3;
                 //nar.confDefault(GOAL)/2;
                 //nar.confDefault(GOAL)/3;
                 //w2c(c2w(nar.confDefault(GOAL))/3);

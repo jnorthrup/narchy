@@ -151,8 +151,8 @@ public class FZero extends NAgentX {
 
 
         float r = 0.05f;
-        senseNumberBi($.funcImageLast("vel", $$("x")), compose(() -> (float) fz.vehicleMetrics[0][7], new FloatAveraged(0.5f, false))).resolution(r);
-        senseNumberBi($.funcImageLast("vel", $$("y")), compose(() -> (float) fz.vehicleMetrics[0][8], new FloatAveraged(0.5f, false))).resolution(r);
+        senseNumberBi($.funcImg("vel", $$("x")), compose(() -> (float) fz.vehicleMetrics[0][7], new FloatAveraged(0.5f, false))).resolution(r);
+        senseNumberBi($.funcImg("vel", $$("y")), compose(() -> (float) fz.vehicleMetrics[0][8], new FloatAveraged(0.5f, false))).resolution(r);
 
         senseNumberDifferenceBi($.inh($.the("delta"), $.the("vel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
 

@@ -175,14 +175,8 @@ abstract public class MappedSubterms extends ProxySubterms {
 
 
     @Override
-    public int subs() {
-        return ref.subs();
-    }
+    abstract public int subs();
 
-    @Override
-    public boolean hasXternal() {
-        return ref.hasXternal();
-    }
 
     @Override
     public int structure() {

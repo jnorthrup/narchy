@@ -29,7 +29,7 @@ public enum Exe {;
      */
     private static volatile HashedWheelTimer timer = new HashedWheelTimer(
             new AdmissionQueueWheelModel(8,
-                    TimeUnit.MILLISECONDS.toNanos(2)
+                    TimeUnit.MILLISECONDS.toNanos(1)
             ),
             HashedWheelTimer.WaitStrategy.SleepWait,
             //HashedWheelTimer.WaitStrategy.YieldingWait,
@@ -149,8 +149,7 @@ public enum Exe {;
             ObjectNode n = JsonNodeFactory.instance.objectNode();
             n.putArray("t").add(startNS).add(endNS);
             n.put("_",
-                    Thread.currentThread().getId() + ": " +
-                    what.toString()
+                    Thread.currentThread().getId() + ": " + what.toString()
             );
 
 

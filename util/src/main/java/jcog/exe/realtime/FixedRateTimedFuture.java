@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FixedRateTimedFuture extends AbstractTimedRunnable {
 
+    int offset;
     /**
      * adjustable while running
      */
@@ -21,7 +22,8 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
     }
 
     public void init(long recurringTimeout, long resolution, int wheelSize) {
-        reset(this.periodNS = recurringTimeout, resolution, wheelSize);
+        this.periodNS = recurringTimeout;
+        reset(resolution, wheelSize);
     }
 
     @Override
@@ -43,7 +45,7 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
             try {
                 if (!isCancelled()) {
                     super.execute(t);
-                    reset(periodNS, t.resolution, t.wheels); //TODO time since last
+                    reset(t.resolution, t.wheels); //TODO time since last
                     t._schedule(this);
                 }
             } finally {
@@ -77,18 +79,16 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
         this.periodNS = periodNS;
     }
 
-    public int getOffset(long resolution) {
-        return (int) Math.round(
-                //Math.max(resolution, ((double) periodNS))
-                ((double)periodNS)
-                        / resolution);
+    public final int offset(long resolution) {
+        return offset;
     }
 
-    public void reset(long period, long resolution, int wheels) {
-        this.rounds = (int)
-                Math.min(Integer.MAX_VALUE - 1,
-                        Math.round((((double) period) / resolution) / wheels)
+    public final void reset(long resolution, int wheels) {
+        int steps = (int) Math.round(((double) periodNS) / resolution);
+        this.rounds = Math.min(Integer.MAX_VALUE - 1,
+                        (steps / wheels)
                 );
+        this.offset = steps % wheels;
     }
 
 

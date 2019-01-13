@@ -19,8 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
 abstract class AbstractTimerTest {
 
     private final HashedWheelTimer timer = new HashedWheelTimer(
-                    new AdmissionQueueWheelModel(64,
-                    TimeUnit.MILLISECONDS.toNanos(1)),
+                    new AdmissionQueueWheelModel(8,
+                    TimeUnit.MILLISECONDS.toNanos(1)/4),
                     waitStrategy());
 
     protected abstract HashedWheelTimer.WaitStrategy waitStrategy();
@@ -107,6 +107,7 @@ abstract class AbstractTimerTest {
     void delayBetweenFixedRateEvents() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(2);
         List<Long> r = new ArrayList<>();
+        int periodMS = 100;
         timer.scheduleAtFixedRate(() -> {
 
                     r.add(System.currentTimeMillis());
@@ -124,12 +125,12 @@ abstract class AbstractTimerTest {
 
                     r.add(System.currentTimeMillis());
                 },
-                100,
-                100,
+                periodMS,
+                periodMS,
                 TimeUnit.MILLISECONDS);
         assertTrue(latch.await(1, TimeUnit.SECONDS));
         
-        assertTrue(r.get(2) - r.get(1) <= (50 * 100)); 
+        assertTrue(r.get(2) - r.get(1) <= (50 * periodMS));
     }
 
     @Test
@@ -180,6 +181,14 @@ abstract class AbstractTimerTest {
     }
 
     @Test
+    void fixedRateSubsequentFireTest_4ms() throws InterruptedException {
+        fixedDelaySubsequentFireTest(4, 128, false);
+    }
+    @Test
+    void fixedRateSubsequentFireTest_5ms() throws InterruptedException {
+        fixedDelaySubsequentFireTest(5, 128, false);
+    }
+    @Test
     void fixedRateSubsequentFireTest_20ms() throws InterruptedException {
         fixedDelaySubsequentFireTest(20, 40, false);
     }
@@ -193,21 +202,21 @@ abstract class AbstractTimerTest {
         fixedDelaySubsequentFireTest(20, 40, true);
     }
 
-    private void fixedDelaySubsequentFireTest(int delayMS, int count, boolean fixedDelayOrRate) throws InterruptedException {
+    private void fixedDelaySubsequentFireTest(int periodMS, int count, boolean fixedDelayOrRate) throws InterruptedException {
 
-        int warmup = 1;
+        int warmup = count/2;
 
-        CountDownLatch latch = new CountDownLatch(count);
+        CountDownLatch latch = new CountDownLatch(count + warmup);
         Histogram when = new ConcurrentHistogram(
-                1_000L, 
-                1_000_000_000L * 4 /* 4 Sec */, 5);
+                1_000L, /* 1 uS */
+                1_000_000_000L * 2 /* 2 Sec */, 5);
 
         long start = System.nanoTime();
         final long[] last = {start};
         Runnable task = () -> {
             long now = System.nanoTime();
 
-            if (latch.getCount() < (count - warmup))
+            if (latch.getCount() < count)
                 when.recordValue(now - last[0]);
 
             last[0] = now;
@@ -217,12 +226,12 @@ abstract class AbstractTimerTest {
         if (fixedDelayOrRate) {
             timer.scheduleWithFixedDelay(task,
                     0,
-                    delayMS,
+                    periodMS,
                     TimeUnit.MILLISECONDS);
         } else {
             timer.scheduleAtFixedRate(task,
                     0,
-                    delayMS,
+                    periodMS,
                     TimeUnit.MILLISECONDS);
         }
 
@@ -234,8 +243,9 @@ abstract class AbstractTimerTest {
             Texts.histogramPrint(w, System.out);
             System.out.println("mean=" + Texts.timeStr(w.getMean()));
             System.out.println("max=" + Texts.timeStr(w.getMaxValue()));
-            long delayNS = TimeUnit.MILLISECONDS.toNanos(delayMS);
-            assertTrue(Math.abs(delayNS - w.getMean()) < delayNS / 4);
+            long delayNS = TimeUnit.MILLISECONDS.toNanos(periodMS);
+            double err = Math.abs(delayNS - w.getMean());
+            assertTrue(err < delayNS / 4);
         }
         
     }

@@ -1,5 +1,6 @@
 package nars.unify.constraint;
 
+import jcog.WTF;
 import nars.$;
 import nars.derive.premise.PreDerivation;
 import nars.term.Term;
@@ -72,11 +73,9 @@ abstract public class RelationConstraint extends UnifyConstraint {
     }
 
     @Override
-    public boolean invalid(Term xx, Unify f) {
-        Term yy = f.transform(y);
-        return yy != y
-                &&
-               invalid(xx, yy.negIf(yNeg));
+    public final boolean invalid(Term x, Unify f) {
+        Term yy = f.resolve(y);
+        return yy != y && invalid(x, yNeg ? yy.neg() : yy);
     }
 
     abstract public boolean invalid(Term xx, Term yy);
@@ -97,6 +96,13 @@ abstract public class RelationConstraint extends UnifyConstraint {
         }
 
         @Override
+        public boolean remainInAndWith(RelationConstraint c) {
+            if (c.equals(r))
+                throw new WTF(this + " present in a rule with its opposite " + c);
+            return true;
+        }
+
+        @Override
         protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
             return new NegRelationConstraint(r.mirror());
         }
@@ -112,13 +118,8 @@ abstract public class RelationConstraint extends UnifyConstraint {
         }
 
         @Override
-        public boolean invalid(Term xx, Unify f) {
-            return !r.invalid(xx, f);
-        }
-
-        @Override
         public float cost() {
-            return r.cost();
+            return r.cost() + 0.001f;
         }
 
         @Override

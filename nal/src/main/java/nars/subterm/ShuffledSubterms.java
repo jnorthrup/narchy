@@ -24,6 +24,11 @@ public final class ShuffledSubterms extends MappedSubterms {
     }
 
     @Override
+    public int subs() {
+        return ref.subs();
+    }
+
+    @Override
     public Term sub(int i) {
         return ref.sub(subMap(i)); //DIRECT
     }

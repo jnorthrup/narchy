@@ -50,7 +50,7 @@ public enum DerivationFunctors {
                 (Functor) nar.concept("unneg"),
                 (Functor) nar.concept("negateEvents"),
                 (Functor) nar.concept("conjWithout"),
-                (Functor) nar.concept("conjWithoutPosOrNeg"),
+                (Functor) nar.concept("conjWithoutPN"),
                 (Functor) nar.concept("chooseUnifiableSubEvent"),
 //                (Functor) nar.concept("dropAnyEvent"),
                 (Functor) nar.concept("without"),

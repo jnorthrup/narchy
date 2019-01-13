@@ -229,17 +229,13 @@ public abstract class Param {
 
 
     public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = true;
-    public static final boolean TIMEGRAPH_STRETCH_INTERSECTING_EVENT = true;
+    public static final boolean TIMEGRAPH_STRETCH_INTERSECTING_EVENT = false;
 
     /** whether timegraph should not return solutions with volume significantly less than the input's */
     public static final boolean TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS = true;
 
 
 
-    public final TaskBuffer input =
-            //new DerivedTasks.DerivedTasksMap(4096);
-            new TaskBuffer.BagTaskBuffer(512, 0.5f);
-            //new TaskBuffer.BagPuncTasksBuffer(1024, 0.1f);
 
     /** (unsafe) true should theoreticaly be faster,
      * at the risk of budgeting inaccuracies and unfairly neglected lost derivations */

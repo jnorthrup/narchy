@@ -11,6 +11,7 @@ import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.Task;
 import nars.control.CauseMerge;
+import nars.control.channel.ConsumerX;
 import nars.task.ITask;
 import nars.task.NALTask;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -23,30 +24,38 @@ import java.util.function.Consumer;
 
 import static nars.Op.*;
 
-/** regulates a flow of supplied tasks to a target consumer */
-abstract public class TaskBuffer implements Consumer<Task> {
+/**
+ * regulates a flow of supplied tasks to a target consumer
+ */
+abstract public class TaskBuffer implements Consumer<ITask> {
 
 
+    /**
+     * returns the input task, or the existing task if a pending duplicate was present
+     */
+    public abstract <T extends ITask> T add(T x);
 
-    /** returns the input task, or the existing task if a pending duplicate was present */
-    public abstract Task add(Task x);
-
-    public abstract void commit(long now, Consumer<Task> target);
+    //public abstract void commit(long now, Consumer<ITask> target);
+    public abstract void commit(long now, ConsumerX<ITask> target);
 
     public abstract void clear();
 
-    /** known or estimated number of tasks present */
+    /**
+     * known or estimated number of tasks present
+     */
     abstract public int size();
 
-    public final IntRange capacity = new IntRange(0, 0, 4*1024);
+    public final IntRange capacity = new IntRange(0, 0, 4 * 1024);
 
-    /** calculate or estimate current capacity, as a value between 0 and 100% [0..1.0] */
+    /**
+     * calculate or estimate current capacity, as a value between 0 and 100% [0..1.0]
+     */
     public final float volume() {
         return size() / capacity.floatValue();
     }
 
     @Override
-    public final void accept(Task task) {
+    public final void accept(ITask task) {
         add(task);
     }
 
@@ -54,17 +63,21 @@ abstract public class TaskBuffer implements Consumer<Task> {
     //final AtomicLong in = new AtomicLong(), out = new AtomicLong(), drop = new AtomicLong(), merge = new AtomicLong();
 
 
-    public static float merge(Task pp, Task tt) {
+    public static float merge(ITask pp, ITask tt) {
         if (pp == tt)
             return 0;
 
         if (pp instanceof NALTask)
-            ((NALTask) pp).priCauseMerge(tt, CauseMerge.AppendUnique);
+            ((NALTask) pp).priCauseMerge((Task) tt, CauseMerge.AppendUnique);
         else
             pp.priMax(tt.pri()); //just without cause update
 
-        if (pp.isCyclic() && !tt.isCyclic())
-            pp.setCyclic(false);
+        if (pp instanceof Task) { //HACK
+            Task ppp = (Task)pp;
+            Task ttt = (Task)tt;
+            if (ppp.isCyclic() && !ttt.isCyclic())
+                ppp.setCyclic(false);
+        }
 
         return 0; //TODO calculate
 
@@ -72,23 +85,53 @@ abstract public class TaskBuffer implements Consumer<Task> {
 
     abstract public float priMin();
 
-    /**
-     * TODO this is trivial. just input directly to NAR on add
-     */
-    public static abstract class TaskBufferDirect extends TaskBuffer {
+    /** pass-thru, no buffering */
+    public static class DirectTaskBuffer extends TaskBuffer {
+
+        private final Consumer<ITask> each;
+
+        public DirectTaskBuffer(Consumer<ITask> each) {
+            this.each = each;
+        }
+
+        @Override
+        public <T extends ITask> T add(T x) {
+            each.accept(x);
+            if (x.isDeleted())
+                return null;
+            else
+                return x;
+        }
+
+        @Override
+        public void commit(long now, ConsumerX<ITask> target) {
+
+        }
+
+        @Override
+        public void clear() {
+
+        }
+
         @Override
         public int size() {
             return 0;
         }
+
+        @Override
+        public float priMin() {
+            return 0;
+        }
     }
 
-    /** TODO
-     *  when the concept index churn rate is low, use the Map to conceptualize quickly
-     *  when the concept index churn rate is high, use the Bag with controlled throughput rate
-     *    acting as the original NoveltyBag did in OpenNARS
-     *  using this the system can shift energy towards exploration (more conceptualization) OR
-     *    towards more refined truth (more selectivity in task generation with regard to relatively
-     *    stable set of concepts they would add to)
+    /**
+     * TODO
+     * when the concept index churn rate is low, use the Map to conceptualize quickly
+     * when the concept index churn rate is high, use the Bag with controlled throughput rate
+     * acting as the original NoveltyBag did in OpenNARS
+     * using this the system can shift energy towards exploration (more conceptualization) OR
+     * towards more refined truth (more selectivity in task generation with regard to relatively
+     * stable set of concepts they would add to)
      */
     public static abstract class AdaptiveTaskBuffer extends TaskBuffer {
 
@@ -100,11 +143,11 @@ abstract public class TaskBuffer implements Consumer<Task> {
      * TODO find old implementation and re-implement this
      */
     public static class MapTaskBuffer extends TaskBuffer {
-        private final Map<Task, Task> tasks;
+        private final Map<ITask, ITask> tasks;
 
         public MapTaskBuffer(int initialCapacity) {
             capacity.set(initialCapacity);
-             tasks = new ConcurrentHashMap<>(initialCapacity, 0.99f);
+            tasks = new ConcurrentHashMap<>(initialCapacity, 0.99f);
         }
 
         @Override
@@ -123,18 +166,21 @@ abstract public class TaskBuffer implements Consumer<Task> {
         }
 
         @Override
-        public Task add(Task n) {
-            Task p = tasks.putIfAbsent(n, n);
-            if (p!=null) {
+        public <T extends ITask> T add(T n) {
+            ITask p = tasks.putIfAbsent(n, n);
+            if (p != null) {
                 merge(p, n);
-                return p;
+                return (T) p;
             }
             return n;
         }
 
-        /** TODO time-sensitive */
-        @Override public void commit(long now, Consumer<Task> target) {
-            Iterator<Task> ii = tasks.values().iterator();
+        /**
+         * TODO time-sensitive
+         */
+        @Override
+        public void commit(long now, ConsumerX<ITask> target) {
+            Iterator<ITask> ii = tasks.values().iterator();
             while (ii.hasNext()) {
                 target.accept(ii.next());
                 ii.remove();
@@ -155,13 +201,13 @@ abstract public class TaskBuffer implements Consumer<Task> {
         /**
          * temporary buffer before input so they can be merged in case of duplicates
          */
-        public final Bag<Task, Task> tasks =
-                new PriArrayBag<Task>(PriMerge.max,
+        public final Bag<ITask, ITask> tasks =
+                new PriArrayBag<ITask>(PriMerge.max,
                         //new HashMap()
                         new UnifiedMap()
                 ) {
                     @Override
-                    protected float merge(Task existing, Task incoming) {
+                    protected float merge(ITask existing, ITask incoming) {
                         return TaskBuffer.merge(existing, incoming);
                     }
                 };
@@ -239,13 +285,12 @@ abstract public class TaskBuffer implements Consumer<Task> {
             this.tasks.setCapacity(capacity);
         }
 
-        @Override
-        public Task add(Task x) {
-            return tasks.put(x);
+        @Override public <T extends ITask> T add(T x) {
+            return (T) tasks.put(x);
         }
 
         @Override
-        public void commit(long now, Consumer<Task> target) {
+        public void commit(long now, ConsumerX<ITask> target) {
 
             if (!busy.compareAndSet(false, true))
                 return; //an operation is in-progress
@@ -273,23 +318,41 @@ abstract public class TaskBuffer implements Consumer<Task> {
                     tasks.commit();
                 //tasks.commit(null);
 
-                if (!tasks.isEmpty()) {
-                    int n = batchSize(dt);
-                    if (n > 0) {
 
-                        if (tasks instanceof ArrayBag) {
-                            FasterList<ITask> batch = BagTaskBuffer.batch.get();
-                            ((ArrayBag) tasks).popBatch(n, batch);
-                            if (!batch.isEmpty()) {
-                                batch.forEach(target);
-                                batch.clear();
-                            }
+                int n = batchSize(dt);
+                if (n > 0) {
 
-                        } else {
-                            tasks.pop(null, n, target); //per item.. may be slow
-                        }
+
+                    if (tasks instanceof ArrayBag) {
+                        FasterList<ITask> batch = BagTaskBuffer.batch.get();
+
+                        ((ArrayBag) tasks).popBatch(n, batch);
+
+                        //System.out.println(this + "\tdt=" + dt + "\tin: " + batch.size() + "/" + n);
+
+                            int m = batch.size();
+//                            switch (m) {
+//                                case 0:
+//                                    break;
+//                                case 1:
+//                                    target.accept(batch.get(0));
+//                                    break;
+//                                default:
+//                                    if (m > 2)
+//                                        batch.sortThis(sloppySorter);
+//                                    target.input(batch.clone() /* HACK */);
+//                                    break;
+//                            }
+
+                        batch.forEach(target::input);
+                        batch.clear();
+
+
+                    } else {
+                        tasks.pop(null, n, target); //per item.. may be slow
                     }
                 }
+
 
             } finally {
                 busy.set(false);
@@ -297,18 +360,25 @@ abstract public class TaskBuffer implements Consumer<Task> {
 
         }
 
+//        /** fast, imprecise sort.  for cache locality and concurrency purposes */
+//        static final Comparator<ITask> sloppySorter = Comparator.comparingInt(x ->
+//                ((Task) x).term().concept().hashCode());
 
 
-        /**  TODO abstract */
+        /**
+         * TODO abstract
+         */
         protected int batchSize(float dt) {
             //rateControl.apply(tasks.size(), tasks.capacity());
             float v = valve.floatValue();
             if (v < ScalarValue.EPSILON)
                 return 0;
-            return Math.max(1,Math.round(dt * v * tasks.capacity()));
+            return Math.max(1, Math.round(
+                    //dt * v * tasks.capacity()
+                    v * tasks.capacity()
+            ));
         }
     }
-
 
 
     public static class BagPuncTasksBuffer extends TaskBuffer {
@@ -322,7 +392,7 @@ abstract public class TaskBuffer implements Consumer<Task> {
             question = new BagTaskBuffer(capacity, rate);
             quest = new BagTaskBuffer(capacity, rate);
 
-            ALL = new TaskBuffer[] {belief, goal, question, quest};
+            ALL = new TaskBuffer[]{belief, goal, question, quest};
 
             this.capacity.set(capacity);
         }
@@ -361,13 +431,12 @@ abstract public class TaskBuffer implements Consumer<Task> {
                 x.clear();
         }
 
-        @Override
-        public Task add(Task x) {
+        @Override public <T extends ITask> T add(T x) {
             return buffer(x.punc()).add(x);
         }
 
         @Override
-        public void commit(long now, Consumer<Task> target) {
+        public void commit(long now, ConsumerX<ITask> target) {
             //TODO parallelize
 
             int c = Math.max(1, capacity.intValue() / ALL.length);

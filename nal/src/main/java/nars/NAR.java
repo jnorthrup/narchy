@@ -40,6 +40,7 @@ import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.task.ITask;
 import nars.task.NALTask;
+import nars.task.util.TaskBuffer;
 import nars.task.util.TaskException;
 import nars.term.Functor;
 import nars.term.Term;
@@ -130,6 +131,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     public final Evaluator evaluator = new Evaluator(this::functor);
 
+    public final TaskBuffer input;
+
+
     public NAR(ConceptIndex concepts, Exec exe, Attention attn, Time time, Random rng, ConceptBuilder conceptBuilder) {
 
         this.random = rng;
@@ -144,6 +148,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         this.exe = exe;
 
+
+
         services = new Services<>(this, exe);
 
         this.conceptBuilder = conceptBuilder;
@@ -155,7 +161,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         on(this.attn);
 
-        onCycle(n-> input.commit(n.time(), this::input));
+
+
+        input =
+            //new TaskBuffer.DirectTaskBuffer(exe::input);
+            //new DerivedTasks.DerivedTasksMap(4096);
+            new TaskBuffer.BagTaskBuffer(256, 0.01f);
+            //new TaskBuffer.BagPuncTasksBuffer(1024, 0.1f);
+        onCycle(n-> input.commit(n.time(), exe));
 
         this.loop = new NARLoop(this);
         exe.start(this);
@@ -607,7 +620,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     @Override
     public final void input(ITask t) {
-        exe.execute(t);
+        exe.input(t);
     }
 
     @Override
@@ -620,7 +633,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 input(t[0]);
                 break;
             default:
-                exe.execute((Iterator) new ArrayIterator<>(t));
+                exe.input((Iterator) new ArrayIterator<>(t));
                 break;
         }
     }
@@ -866,7 +879,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * executes task. if executor is concurrent it will be async, otherwise it will be executed synch (current thread)
      */
     public final void run(Consumer<NAR> t) {
-        exe.execute(t);
+        exe.input(t);
     }
 
     /**
@@ -1090,12 +1103,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     public void input(Iterable<? extends ITask> tasks) {
         //if (tasks == null) return;
-        exe.execute(tasks);
+        exe.input(tasks);
     }
 
     public final void input(Stream<? extends ITask> tasks) {
 
-        exe.execute(tasks.filter(Objects::nonNull));
+        exe.input(tasks.filter(Objects::nonNull));
     }
 
     @Override

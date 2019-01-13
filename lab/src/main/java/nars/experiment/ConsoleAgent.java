@@ -206,7 +206,7 @@ public class ConsoleAgent extends NAgentX {
                     xy.parent(charAttn);
                     for (int i = 0, alphabetLength = alphabet.length; i < alphabetLength; i++) {
                         char a = alphabet[i];
-                        Term xya = $.funcImageLast(id, $.the(a), XY);
+                        Term xya = $.funcImg((Atomic)id, $.the(a), XY);
                         int xx = x;
                         int yy = y;
                         (charMatrix[x][y][i] = sense(xya, () -> chars[xx][yy] == a)).attn.reparent(xy);

@@ -130,8 +130,7 @@
        //(--M ==> P), (S ==> M) |- (S ==> P), (Belief:DeductionPNX)
 
         //(S ==> M), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
-            (S ==> M), (  M ==> P), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
-            (S ==> M), (--M ==> P), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
+            (S ==> X), (  Y ==> P), eqPN(X,Y), task("?") |- (S ==> P), (Punctuation:Question)
             //(S ==> M), (M ==> P), task("?") |- (S ==> P), (Punctuation:Question)
             //(S ==> M), (M ==> P), task("?") |- (P ==> S), (Punctuation:Question)
 
@@ -391,8 +390,8 @@
 
         //, Goal:StructuralStrong
            //maybe subOf?
-        //C, X, eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralStrong)
-        //C, X, task("!"), eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Punctuation:Quest)
+        //C, X, eventOfPN(C,X)  |- conjWithoutPN(C,X), (Belief:StructuralDeduction, Goal:StructuralStrong)
+        //C, X, task("!"), eventOfPN(C,X)  |- conjWithoutPN(C,X), (Punctuation:Quest)
 
 
 

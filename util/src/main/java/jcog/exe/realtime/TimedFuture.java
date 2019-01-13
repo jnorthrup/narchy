@@ -23,7 +23,7 @@ public interface TimedFuture<T> extends RunnableScheduledFuture<T>, Runnable {
      *
      * @return the offset of current Registration
      */
-    int getOffset(long resolution);
+    int offset(long resolution);
 
     long getDelay(TimeUnit unit);
 

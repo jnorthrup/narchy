@@ -58,7 +58,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         abstract public void reschedule(int wheel, TimedFuture r);
 
         public final void schedule(TimedFuture r, int c, HashedWheelTimer timer) {
-            int offset = r.getOffset(resolution);
+            int offset = r.offset(resolution);
             if (offset>-1 || r.isPeriodic()) {
                 reschedule(idx(c + offset + 1 ), r);
             } else {
@@ -179,6 +179,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 
 
+                //await();
                 deadline = await(deadline);
             }
         }
@@ -191,8 +192,17 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     }
 
+//    private void await() {
+//        try {
+//            waitStrategy.waitUntil(System.nanoTime() + resolution);
+//        } catch (InterruptedException e) {
+//            logger.error("interrupted: {}", e);
+//            shutdownNow();
+//        }
+//    }
+
     /** TODO call System.nanoTime() less by passing now,then as args to the wait interfce */
-    private long  await(long deadline) {
+    private long await(long deadline) {
 
         deadline += resolution;
         long now = System.nanoTime();
@@ -210,9 +220,11 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
             }
 
             //TODO check after sleep?
+            //long wake = System.nanoTime();
+
 
         } else {
-            float lagThreshold = 1; //in resolutions
+            float lagThreshold = wheels; //in resolutions
             if (sleepTimeNanos < -resolution * lagThreshold) {
                 //fell behind more than N resolutions, adjust
                 deadline = now + resolution;
@@ -233,7 +245,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     protected final void _schedule(TimedFuture<?> r) {
         int c = cursor.get();
         if (c >= 0) {
-            model.reschedule(idx(c + r.getOffset(model.resolution) + 1), r);
+            model.reschedule(idx(c + r.offset(model.resolution) + 1), r);
             assertRunning();
         }
     }
@@ -447,7 +459,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     void assertRunning() {
         if (cursor.compareAndSet(-1, 0)) {
             this.loop = new Thread(this, HashedWheelTimer.class.getSimpleName() +"_" + hashCode());
-            this.loop.setDaemon(daemon); 
+            this.loop.setDaemon(daemon);
+            this.loop.setPriority(Thread.MAX_PRIORITY);
             this.loop.start();
         }
     }

@@ -10,7 +10,7 @@ import nars.NAR;
 import nars.Task;
 import nars.agent.NAgent;
 import nars.concept.action.ActionConcept;
-import nars.control.channel.CauseChannel;
+import nars.control.channel.ConsumerX;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
@@ -37,7 +37,7 @@ public class RLBooster implements Consumer<NAR> {
     final float[] input;
     final int inD, outD;
     final ActionConcept[] actions;
-    private final CauseChannel<ITask> in;
+    private final ConsumerX<ITask> in;
     private final List<Term> inputs;
     private final int actionDiscretization;
 

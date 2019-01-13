@@ -14,7 +14,7 @@ import nars.*;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.control.DurService;
-import nars.control.channel.CauseChannel;
+import nars.control.channel.ConsumerX;
 import nars.subterm.Subterms;
 import nars.task.ITask;
 import nars.task.NALTask;
@@ -159,7 +159,7 @@ public class Opjects extends DefaultTermizer {
      */
 
 
-    protected final CauseChannel<ITask> in;
+    protected final ConsumerX<ITask> in;
 
     private final SoftMemoize<Pair<Pair<Class, Term>, List<Class<?>>>, MethodHandle> methodCache = new SoftMemoize<>((x) -> {
 

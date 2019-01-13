@@ -21,15 +21,8 @@ public class Scale extends UnitContainer {
         return scale;
     }
 
-
     @Override
     protected RectFloat innerBounds() {
-        float w = w();
-        float vw = w * scale;
-        float h = h();
-        float vh = h * scale;
-        float marginAmt = (1f - scale) / 2;
-        float tx = x() + w * marginAmt, ty = y() + h * marginAmt;
-        return RectFloat.XYXY(tx, ty, tx+vw, ty+vh);
+        return bounds.scale(scale);
     }
 }

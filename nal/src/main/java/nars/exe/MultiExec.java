@@ -55,12 +55,43 @@ abstract public class MultiExec extends UniExec {
         this.revaluator = revaluator;
     }
 
+//    @Override
+//    public void input(Collection<? extends ITask> xx) {
+//        int CHUNK_THRESH = 2;
+//        int conc = concurrency();
+//        if (xx.size() < conc * CHUNK_THRESH) {
+//            executeLater(new AbstractTask.TasksIterable(xx));
+//        } else {
+//            if (xx instanceof FasterList) {
+//                ((FasterList<ITask>)xx).chunk(conc).forEach((c)->{
+//                    executeLater(new AbstractTask.TasksIterable(c));
+//                });
+//            } else {
+//                executeLater(new AbstractTask.TasksIterable(xx)); //TODO
+//            }
+//        }
+//    }
+
     @Override
-    public final void execute(Object x) {
+    public final void input(Object x) {
         if (x instanceof NALTask || x instanceof TaskProxy)
-            execute((ITask) x);
+            input((ITask) x);
         else
             executeLater(x);
+    }
+
+    @Override
+    public final void input(Consumer<NAR> r) {
+        executeLater(r);
+    }
+
+    @Override
+    public final void execute(Runnable r) {
+        if (r==nextCycle) {
+            nextCycle(r);
+        } else {
+            executeLater(r);
+        }
     }
 
     private void executeLater(/*@NotNull */Object x) {
@@ -73,15 +104,6 @@ abstract public class MultiExec extends UniExec {
     }
 
 
-    @Override
-    public final void execute(Runnable r) {
-        if (r==nextCycle) {
-            nextCycle(r);
-        } else {
-            executeLater(r);
-        }
-    }
-
 
     /**
      * receives the NARLoop cycle update. should execute immediately, preferably in a worker thread (not synchronously)
@@ -89,10 +111,6 @@ abstract public class MultiExec extends UniExec {
     protected abstract void nextCycle(Runnable r);
 
 
-    @Override
-    public final void execute(Consumer<NAR> r) {
-        executeLater(r);
-    }
 
     private void onDur() {
         revaluator.update(nar);
@@ -114,7 +132,7 @@ abstract public class MultiExec extends UniExec {
 
 
             if (nar.random().nextFloat() < queueLatencyMeasurementProbability) {
-                execute(new QueueLatencyMeasurement(System.nanoTime()));
+                input(new QueueLatencyMeasurement(System.nanoTime()));
             }
 
         } else
@@ -549,6 +567,8 @@ abstract public class MultiExec extends UniExec {
 
                 do {
                     int available = in.size(); //in.capacity();
+                    if (available == 0)
+                        break;
                     float granularity =
                             //concurrency() - 1;
                             concurrency() / 2f;
@@ -556,7 +576,7 @@ abstract public class MultiExec extends UniExec {
                     int batchSize =
                             Util.lerp(nar.loop.throttle.floatValue(),
                                     available, /* all of it if low throttle. this allows other threads to remains asleep while one awake thread takes care of it all */
-                                    (int) Math.ceil((((float) available) / Math.max(1, granularity)))
+                                    Math.max(1, (int) ((((float) available) / Math.max(1, granularity))))
                             );
 
                     int drained = in.remove(schedule, batchSize);
@@ -580,7 +600,7 @@ abstract public class MultiExec extends UniExec {
 
                 //autojiffy
 
-                int granularity = 1;
+                int granularity = 2;
                 //double jiffyShort = 2 * Math.max(1, granularity/(concurrency())); //((double)granularity) * Math.max(1, (granularity - 1)) / concurrency();
                 double minJiffyTime = 0;
                 double maxJiffyTime = playTime / ((double) (granularity * Math.max(1, can.size() )));

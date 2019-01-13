@@ -8,7 +8,7 @@ import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.sensor.AbstractSensor;
 import nars.control.DurService;
-import nars.control.channel.CauseChannel;
+import nars.control.channel.ConsumerX;
 import nars.table.BeliefTable;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
@@ -35,7 +35,7 @@ public class AutoConceptualizer extends AbstractSensor {
 
     private final boolean beliefOrGoal;
     private final float[] x;
-    private final CauseChannel<ITask> out;
+    private final ConsumerX<ITask> out;
     float learningRate = 0.05f;
     float noiseLevel = 0.0002f;
 

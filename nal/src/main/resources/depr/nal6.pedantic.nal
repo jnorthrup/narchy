@@ -1,10 +1,10 @@
 //probably not very helpful:
 
 //Conj and Disj Question Decomposition
-    C, X, eventOfPosOrNeg(C,X), task("?") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Question)
-        X, C, eventOfPosOrNeg(C,X), task("?") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Question)
-    C, X, eventOfPosOrNeg(C,X), task("@") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Quest)
-        X, C, eventOfPosOrNeg(C,X), task("@") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Quest)
+    C, X, eventOfPN(C,X), task("?") |- conjWithoutPN(C,X),  (Punctuation:Question)
+        X, C, eventOfPN(C,X), task("?") |- conjWithoutPN(C,X),  (Punctuation:Question)
+    C, X, eventOfPN(C,X), task("@") |- conjWithoutPN(C,X),  (Punctuation:Quest)
+        X, C, eventOfPN(C,X), task("@") |- conjWithoutPN(C,X),  (Punctuation:Quest)
 
 
 //question/quest propagation

@@ -6,6 +6,7 @@ import nars.NARS;
 import nars.Narsese;
 import nars.subterm.util.TermMetadata;
 import nars.term.atom.Int;
+import nars.term.compound.CachedCompound;
 import nars.term.util.Image;
 import org.junit.jupiter.api.Test;
 
@@ -17,6 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** the NAL "Image" operator, not bitmaps or photos */
 class ImageTest {
+
+    @Test void testPreNormalize() {
+        Term t = $$("(acid --> (reaction,/,base))");
+        assertEquals(CachedCompound.SimpleCachedCompound.class, t.getClass());
+        t.isNormalized();
+    }
 
     @Test
     void testNormlizeExt() {
@@ -106,7 +113,7 @@ class ImageTest {
     }
 
     @Test void testOneArgFunctionAsImage() {
-        assertEquals("(y-->(x,/))", $.funcImageLast($.the("x"), $.the("y")).toString());
+        assertEquals("(y-->(x,/))", $.funcImg($.the("x"), $.the("y")).toString());
     }
     @Test void testConceptualizationNormalizesImages() throws Narsese.NarseseException {
         //"$.04 ((|,(--,(cart,"+")),(--,(cart,"-")),(--,angX))-->(believe,"-ß2~czîÊeå",/))! 406461⋈406503 %.06;.04%"

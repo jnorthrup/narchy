@@ -27,7 +27,7 @@ abstract public class AbstractExec extends Exec {
         }
     }
 
-    public void execute(Consumer<NAR> r) {
+    public void input(Consumer<NAR> r) {
         if (concurrent()) {
             ForkJoinPool.commonPool().execute(() -> r.accept(nar));
         } else {

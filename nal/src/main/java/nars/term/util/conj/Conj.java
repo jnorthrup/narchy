@@ -504,25 +504,22 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     /**
      * whether the conjunction is a sequence (includes check for factored inner sequence)
      */
-    public static boolean isSeq(Term conj) {
-        if (conj.op() != CONJ)
+    public static boolean isSeq(Term x) {
+        if (x.op() != CONJ)
             return false;
 
-        int dt = conj.dt();
-
-        if (!dtSpecial(dt))
-            return true; //basic sequence
-
+        int dt = x.dt();
         if (dt == DTERNAL) {
-            Subterms x = conj.subterms();
-            return x.hasAny(CONJ) && x.subs(xx -> xx.op() == CONJ && xx.dt() != DTERNAL) == 1;
-        }
-
-        return false;
+            Subterms xx = x.subterms();
+            return xx.hasAny(CONJ) && //inner conjunction
+                    xx.subs() > 1 &&
+                    xx.subs(Conj::isSeq) == 1;
+        } else
+            return !dtSpecial(dt);
     }
 
-    public static boolean isFactoredSeq(Term conj) {
-        return conj.dt() == DTERNAL && isSeq(conj);
+    public static boolean isFactoredSeq(Term x) {
+        return x.dt() == DTERNAL && isSeq(x);
     }
 
     static final Predicate<Term> isTemporalComponent = x -> x.op() == CONJ && x.dt() != DTERNAL;
@@ -1936,6 +1933,13 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             if (eternal == True)
                 ci = temporal;
             else {
+                if (Conj.isSeq(eternal) && Conj.isSeq(temporal)) {
+                    //send through again
+                    Conj cc = new Conj();
+                    cc.add(0, temporal);
+                    cc.add(0, eternal);
+                    return cc.term();
+                }
                 ci = ConjCommutive.the(DTERNAL, temporal, eternal);
             }
         } else if (eternal == null) {

@@ -24,11 +24,6 @@ public class Branchify extends AbstractPred<Derivation> {
     }
 
     @Override
-    public float cost() {
-        return Float.POSITIVE_INFINITY; 
-    }
-
-    @Override
     public boolean test(/*Pre*/Derivation derivation) {
         derivation.can.or(can);
         return true;

@@ -196,17 +196,28 @@ public abstract class AbstractTask implements ITask, Prioritizable {
 
         @Override
         public ITask next(NAR n) {
-            //FasterList<ITask> next = null;
             for (ITask t: tasks)
                 ITask.run(t, n);
-
-//                ITask p = t.next(n);
-//                if (p!=null) {
-//                    if (next == null) next = new FasterList(1);
-//                    next.add(p);
-//                }
             return null;
         }
 
     }
+    /** execute the given tasks */
+    public final static class TasksIterable extends AbstractTask {
+
+        private final Iterable<? extends ITask> tasks;
+
+        public TasksIterable(Iterable<? extends ITask> x) {
+            this.tasks = x;
+        }
+
+        @Override
+        public ITask next(NAR n) {
+            for (ITask t: tasks)
+                ITask.run(t, n);
+            return null;
+        }
+
+    }
+
 }

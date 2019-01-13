@@ -6,7 +6,7 @@ import nars.The;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
+import nars.term.util.transform.Retemporalize;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.time.Tense.DTERNAL;
@@ -44,35 +44,33 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 //            throw new WTF();
 
         Compound c;
-        if (!op.temporal && !subterms.hasAny(Op.Temporal) && subterms.isNormalized()) {
+        if (!op.temporal && !subterms.hasAny(Op.Temporal)) {
             assert (dt == DTERNAL);
-//            if (key!=null && subterms.volume() < Param.TERM_BYTE_KEY_CACHED_BELOW_VOLUME) {
-//                return new CachedCompound.SimpleCachedCompoundWithBytes(op, subterms, key);
-//            } else {
-            c = new SimpleCachedCompound(op, subterms);
-//            }
+            if (subterms.isNormalized())
+                c = new SimpleCachedCompound(op, subterms);
+            else
+                c = new UnnormalizedCachedCompound(op, subterms);
         } else {
-            //if (op==IMPL && dt==XTERNAL && !subterms.sub(0).equals(subterms.sub(1))) dt = DTERNAL; //TEMPORARY
-
             c = new TemporalCachedCompound(op, dt, subterms);
         }
 
         return c;
     }
 
-    private static class SimpleCachedCompound extends CachedCompound {
+    /** non-temporal but unnormalized */
+    public static class UnnormalizedCachedCompound extends CachedCompound {
 
-        SimpleCachedCompound(Op op, Subterms subterms) {
+        UnnormalizedCachedCompound(Op op, Subterms subterms) {
             super(op, DTERNAL, subterms);
         }
 
         @Override
-        public final Term root() {
-            return this;
+        public final int dt() {
+            return DTERNAL;
         }
 
         @Override
-        public final Term concept() {
+        public final Term temporalize(Retemporalize r) {
             return this;
         }
 
@@ -80,8 +78,6 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
         public final boolean hasXternal() {
             return false;
         }
-
-
 
         @Override
         public final int eventRange() {
@@ -93,9 +89,22 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
             return equals(event) ? 0 : DTERNAL;
         }
 
+    }
+
+    public final static class SimpleCachedCompound extends UnnormalizedCachedCompound {
+
+        SimpleCachedCompound(Op op, Subterms subterms) {
+            super(op, subterms);
+        }
+
         @Override
-        public final int dt() {
-            return DTERNAL;
+        public final Term root() {
+            return this;
+        }
+
+        @Override
+        public final Term concept() {
+            return this;
         }
 
     }

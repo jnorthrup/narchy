@@ -186,14 +186,14 @@ abstract public class Inperience extends TaskLeakTransform {
 
                 Term bb = //belief != null ? Described.transform(belief.term().negIf(belief.isNegative())) :
                         Described.transform(tt);
-                return $.funcImageLast(believe, self, bb);
+                return $.funcImg(believe, self, bb);
             } else {
                 Task goal = t;
                         //c.table(GOAL).answer(t.start(), t.end(), tt.unneg(), null, nar);
 
                 Term gg = //goal!=null ? Described.transform(goal.term().negIf(goal.isNegative())) :
                         Described.transform(tt);
-                return $.funcImageLast(want, self, gg);
+                return $.funcImg(want, self, gg);
 
 //                else {
 //
@@ -233,7 +233,7 @@ abstract public class Inperience extends TaskLeakTransform {
             x = x.hasAny(VAR_QUERY) ? TermTransform.queryToDepVar.transform(x) : x;
             if (x instanceof Bool) return Bool.Null;
 
-            return $.funcImageLast(punc == QUESTION ? wonder : evaluate, nar.self(), Described.transform(x));
+            return $.funcImg(punc == QUESTION ? wonder : evaluate, nar.self(), Described.transform(x));
         }
 
         @Override

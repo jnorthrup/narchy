@@ -1,18 +1,19 @@
 //conjunction/disjunction structural decomposition
 
     //free structural Conjunction/Disjunction decomposition
-    C, X, eventOfPosOrNeg(C,X), conjParallel(C), --isVar(X)  |-   conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, eventOfPN(C,X), --isVar(X)                  |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
+    C, X, eventOfPN(C,X), conjParallel(C), --isVar(X) |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
 
     //not right:
-      //D, X, eventOfPosOrNeg(C,X), conjParallel(D), --isVar(X)  |- --conjWithoutPosOrNeg(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+      //D, X, eventOfPN(C,X), conjParallel(D), --isVar(X)  |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
 
     //free structural implication belief and question decomposition
-    (C ==> A), X, eventOfPosOrNeg(C,X), --isVar(A),--isVar(X)   |- (conjWithoutPosOrNeg(C,  X) ==> A), (Belief:StructuralReduction)
-        (C ==> A), X, eventOfPosOrNeg(C,X), task("?"), --isVar(A),--isVar(X)   |- (conjWithoutPosOrNeg(C,  X) ==> A), (Punctuation:Question)
-      (--C ==> A), X, eventOfPosOrNeg(C,X), --isVar(A),--isVar(X)   |- (--conjWithoutPosOrNeg(C,  X) ==> A), (Belief:StructuralReduction)
-          (--C ==> A), X, eventOfPosOrNeg(C,X), task("?"), --isVar(A),--isVar(X)   |- (--conjWithoutPosOrNeg(C,  X) ==> A), (Punctuation:Question)
-    (A ==> C), X, eventOfPosOrNeg(C,X), --isVar(A),--isVar(X)   |- (A ==> conjWithoutPosOrNeg(C,  X)), (Belief:StructuralReduction)
-         (A ==> C), X, eventOfPosOrNeg(C,X), task("?"), --isVar(A),--isVar(X)   |- (A ==> conjWithoutPosOrNeg(C,  X)), (Punctuation:Question)
+    (C ==> A), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (conjWithoutPN(C,  X) ==> A), (Belief:StructuralReduction)
+        (C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A),--isVar(X)   |- (conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
+      (--C ==> A), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (--conjWithoutPN(C,  X) ==> A), (Belief:StructuralReduction)
+          (--C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A),--isVar(X)   |- (--conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
+    (A ==> C), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (A ==> conjWithoutPN(C,  X)), (Belief:StructuralReduction)
+         (A ==> C), X, eventOfPN(C,X), task("?"), --isVar(A),--isVar(X)   |- (A ==> conjWithoutPN(C,  X)), (Punctuation:Question)
 
 
 

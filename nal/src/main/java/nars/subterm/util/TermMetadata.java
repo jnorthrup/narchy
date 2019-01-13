@@ -57,10 +57,8 @@ abstract public class TermMetadata implements Termlike {
     public static boolean normalized(Subterms x) {
 
         //the product containing an image itself may be normalized but superterms containing it are not automatically considered normal
-        if (x.hasAll(Image.ImageBits) &&
-                x.OR(xx -> !xx.isNormalized() || !Image.imageNormalizable(xx))) {
+        if (Image.imageNormalizable(x))
             return false;
-        }
 
         if (x.vars()==0)
             return true;

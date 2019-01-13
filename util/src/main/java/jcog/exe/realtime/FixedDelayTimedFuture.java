@@ -36,7 +36,7 @@ public class FixedDelayTimedFuture<T> extends AbstractTimedCallable<T> {
     }
 
 
-    @Override public int getOffset(long resolution) {
+    @Override public int offset(long resolution) {
         return (int) Math.round(((double)Math.max(resolution, periodNS)) / resolution);
     }
 

@@ -161,11 +161,14 @@ public class PremiseRuleSource extends ProxyTerm {
                     neqRoot(XX, YY);
                     break;
                 case "eqRoot":
-                    eqRoot(XX, YY);
+                    match(XX, new TermMatch.EqualsRoot(YY));
                     break;
                 case "neqOrInhCommon":
                     neqRoot(XX, YY);
                     constraints.add(new NotEqualConstraint.NoCommonInh(XX, YY));
+                    break;
+                case "eqPN":
+                    constraints.add(new NotEqualConstraint.EqualNegConstraint(XX, YY));
                     break;
                 case "eqNeg":
                     neq(constraints, XX, YY);
@@ -233,7 +236,7 @@ public class PremiseRuleSource extends ProxyTerm {
                     if (negated) negationApplied = true;
                     break;
 
-                case "eventOfPosOrNeg":
+                case "eventOfPN":
                     neq(constraints, XX, YY);
                     match(X, new TermMatch.Is(CONJ));
 
@@ -863,11 +866,6 @@ public class PremiseRuleSource extends ProxyTerm {
     private void neqRoot(Variable x, Variable y) {
         match(x, new TermMatch.EqualsRoot(y), false);
         //constraints.add(new NotEqualConstraint.NotEqualRootConstraint(x, y));
-    }
-
-    private void eqRoot(Variable x, Term y) {
-        match(x, new TermMatch.EqualsRoot(y), true);
-        //constraints.add(new NotEqualConstraint.NotEqualRootConstraint(x, y).neg());
     }
 
     public static Term pp(@Nullable byte[] b) {

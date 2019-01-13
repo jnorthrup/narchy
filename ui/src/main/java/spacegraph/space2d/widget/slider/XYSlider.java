@@ -27,6 +27,7 @@ import static spacegraph.space2d.container.Bordering.S;
  */
 public class XYSlider extends Surface implements HudHover  {
 
+    public static final int BUTTON = 0;
     private final v2 knob = new v2(0.5f, 0.5f);
 
     private FloatFloatProcedure change = null;
@@ -89,37 +90,42 @@ public class XYSlider extends Surface implements HudHover  {
         return this;
     }
 
+    final FingerDragging drag = new FingerDragging(BUTTON) {
+
+        @Override
+        protected boolean startDrag(Finger f) {
+            pressing = true;
+            return super.startDrag(f);
+        }
+
+        @Override
+        public void stop(Finger finger) {
+            super.stop(finger);
+            pressing = false;
+        }
+
+        @Override protected boolean drag(Finger f) {
+            setPoint(f);
+            return true;
+        }
+    };
+
+    private void setPoint(Finger f) {
+        v2 hitPoint = f.relativePos(XYSlider.this);
+        if (hitPoint.inUnit()) {
+            pressing = true;
+            if (!Util.equals(knob.x, hitPoint.x) || !Util.equals(knob.y, hitPoint.y)) {
+                knob.set(hitPoint);
+                updated();
+            }
+        }
+    }
+
     @Override
-    public Surface finger(Finger finger) {
-
-        if (finger!=null && finger.pressing(0)) {
-            finger.tryFingering(new FingerDragging(0) {
-
-                @Override
-                protected boolean startDrag(Finger f) {
-                    pressing = true;
-                    return super.startDrag(f);
-                }
-
-                @Override
-                public void stop(Finger finger) {
-                    super.stop(finger);
-                    pressing = false;
-                }
-
-                @Override protected boolean drag(Finger f) {
-                    v2 hitPoint = finger.relativePos(XYSlider.this);
-                    if (hitPoint.inUnit()) {
-                        pressing = true;
-                        if (!Util.equals(knob.x, hitPoint.x) || !Util.equals(knob.y, hitPoint.y)) {
-                            knob.set(hitPoint);
-                            updated();
-                        }
-                        return true;
-                    }
-                    return true;
-                }
-            });
+    public Surface finger(Finger f) {
+        if (f.tryFingering(drag)) {
+        } else if (f.pressing(drag.button)) {
+            setPoint(f);
         }
         return this;
     }

@@ -439,7 +439,7 @@ public class Builtin {
 
 
         /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive or negative of event */
-        nar.on(new Functor.AbstractInlineFunctor2("conjWithoutPosOrNeg") {
+        nar.on(new Functor.AbstractInlineFunctor2("conjWithoutPN") {
             @Override
             protected Term apply(Term conj, Term event) {
                 Term x = Conj.diff(conj, event, true);

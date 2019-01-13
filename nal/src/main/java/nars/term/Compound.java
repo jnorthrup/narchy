@@ -184,20 +184,20 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound superterm) {
-        return (!inSuperCompound.test(this) ||
-                (whileTrue.test(this) && subterms().recurseTerms(inSuperCompound, whileTrue, this)));
+        return !inSuperCompound.test(this) ||
+                whileTrue.test(this) && subterms().recurseTerms(inSuperCompound, whileTrue, this);
     }
 
     @Override
     default boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
-        return (!inSuperCompound.test(this) ||
-                (whileTrue.test(this) && subterms().recurseTermsOrdered(inSuperCompound, whileTrue, this)));
+        return !inSuperCompound.test(this) ||
+                whileTrue.test(this) && subterms().recurseTermsOrdered(inSuperCompound, whileTrue, this);
     }
 
     @Override
     default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm) {
-        return (!aSuperCompoundMust.test(this) ||
-                (whileTrue.test(this, superterm) && subterms().recurseTerms(aSuperCompoundMust, whileTrue, this)));
+        return !aSuperCompoundMust.test(this) ||
+                whileTrue.test(this, superterm) && subterms().recurseTerms(aSuperCompoundMust, whileTrue, this);
     }
 
 
@@ -460,7 +460,7 @@ public interface Compound extends Term, IPair, Subterms {
 //
     }
 
-    default int subTimeOnly(Term event) {
+    @Deprecated default int subTimeOnly(Term event) {
         int[] t = subTimes(event, 1);
         if (t == null || t.length != 1) return DTERNAL;
         return t[0];
@@ -550,9 +550,7 @@ public interface Compound extends Term, IPair, Subterms {
         int dt = dt();
         boolean decompose;
         switch (dt) {
-            case 0:
-                decompose = decomposeConjParallel;
-                break;
+
             case DTERNAL:
                 if (Conj.isFactoredSeq(this)) {
                     Subterms ss = subterms();
@@ -603,6 +601,9 @@ public interface Compound extends Term, IPair, Subterms {
                     dt = 0;
                 }
 
+                break;
+            case 0:
+                decompose = decomposeConjParallel;
                 break;
             case XTERNAL:
                 if (decompose = decomposeXternal)
@@ -684,8 +685,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default int eventRange() {
-        Op o = op();
-        if (o == CONJ) {
+        if (op() == CONJ) {
             int dt = dt();
             if (dt == XTERNAL)
                 return 0; //unknown actual range; logically must be considered as point-like event

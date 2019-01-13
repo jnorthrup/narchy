@@ -6,7 +6,7 @@ import jcog.Util;
 import jcog.data.atomic.AtomicFloat;
 import jcog.math.Range;
 import nars.*;
-import nars.control.channel.CauseChannel;
+import nars.control.channel.ConsumerX;
 import nars.index.concept.ConceptIndex;
 import nars.subterm.Subterms;
 import nars.task.ITask;
@@ -85,7 +85,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
 
     private final long timeoutMS = 50;
-    private final CauseChannel<ITask> in;
+    private final ConsumerX<ITask> in;
 
 
     /*final ObjectBooleanHashMap<Term> beliefs = new ObjectBooleanHashMap() {

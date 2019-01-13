@@ -800,14 +800,18 @@ public enum $ {
         return $.func(f, args.toArray(Op.EmptyTermArray));
     }
 
-    public static Term funcImageLast(String f, Term... x) {
-        return funcImageLast($.the(f), x);
+    public static Term funcImg(String f, Term... x) {
+        return funcImg($.the(f), x);
     }
 
-    public static Term funcImageLast(Term f, Term... x) {
-        Term[] xx = ArrayUtils.insert(0, x, f);
-        xx[x.length] = ImgExt;
-        return INH.the(x[x.length-1], PROD.the(xx));
+    public static Term funcImg(Atomic f, Term... x) {
+//        if (x.length > 1) {
+            Term[] xx = ArrayUtils.insert(0, x, f);
+            xx[x.length] = ImgExt;
+            return INH.the(x[x.length - 1], PROD.the(xx));
+//        } else {
+//            return $.func(f, x);
+//        }
     }
 
 

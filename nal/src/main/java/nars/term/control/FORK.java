@@ -40,11 +40,6 @@ public class FORK<X> extends AbstractPred<X> {
     }
 
     @Override
-    public float cost() {
-        return Float.POSITIVE_INFINITY;
-    }
-
-    @Override
     public PREDICATE<X> transform(Function<PREDICATE<X>, PREDICATE<X>> f) {
         throw new TODO();
 

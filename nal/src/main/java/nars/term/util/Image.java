@@ -111,8 +111,17 @@ public enum Image {;
     }
 
 
-    public static boolean imageNormalizable(Term x) {
-        return x instanceof Compound && x.op()==INH && x.hasAll(ImageBits) && normalize((Compound)x, false)==null;
+    public static boolean imageNormalizable(Subterms x) {
+        return x.hasAll(Image.ImageBits) && !x.AND(Image::imageSubtermNormalizable);
+    }
+
+    private static boolean imageSubtermNormalizable(Term x) {
+        return
+                !x.isNormalized()
+                    ||
+                (x instanceof Compound && x.op()==INH &&
+                        x.hasAll(ImageBits) &&
+                        normalize((Compound)x, false)==null);
     }
 
     /** assumes that input is INH op has been tested for all image bits */
@@ -192,22 +201,6 @@ public enum Image {;
             assert(!image.equals(imageNormalized) && imageNormalized.op()==INH);
             this.normal = imageNormalized;
         }
-
-        @Override
-        public void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
-            //throw new TODO();
-            //ignore?
-        }
-
-
-
-//        @Override
-//        public boolean isEmpty() {
-//            BeliefTable t = table();
-//            //if t is null, it just means this table isnt currently linked to the referent table.  so must report false
-//            return t != null && t.isEmpty();
-//
-//        }
 
         @Override
         public void sample(Answer m) {

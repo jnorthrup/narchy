@@ -168,7 +168,7 @@ public class UniExec extends AbstractExec {
     }
 
 
-    void onCycle(NAR nar) {
+    protected void onCycle(NAR nar) {
 
         sync();
         nar.time.schedule(this::executeNow);

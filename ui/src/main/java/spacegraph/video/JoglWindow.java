@@ -466,6 +466,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
             this.loop = new InstrumentedLoop() {
 
+                @Override
+                protected boolean async() {
+                    return true;
+                }
 
                 @Override
                 public String toString() {
@@ -492,6 +496,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                         }
                     } finally {
                         waiting.set(false);
+                        ready();
                     }
                 }
 
@@ -502,9 +507,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                         return false;
 
                     //System.out.println(window + " " +window.isVisible());
-                    if (window.isVisible()) {
+                    if (waiting.compareAndSet(false, true)) {
+                        if (window.isVisible()) {
 
-                        if (waiting.compareAndSet(false, true)) {
 
                             long cycleTimeNS =
                                     //updater.cycleTimeNS;
@@ -514,10 +519,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                             onUpdate.emit(JoglWindow.this);
 
                             Threading.invokeOnOpenGLThread(false, this::render);
+                        } else {
+                            stop();
                         }
-
-                    } else {
-                        stop();
                     }
 
                     return true;

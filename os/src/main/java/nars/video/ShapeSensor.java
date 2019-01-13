@@ -19,7 +19,7 @@ import nars.$;
 import nars.NAR;
 import nars.agent.NAgent;
 import nars.control.NARService;
-import nars.control.channel.CauseChannel;
+import nars.control.channel.ConsumerX;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.signal.SignalTask;
@@ -52,7 +52,7 @@ import static nars.time.Tense.ETERNAL;
 public class ShapeSensor extends NARService {
 
     private final Bitmap2D input;
-    private final CauseChannel<ITask> in;
+    private final ConsumerX<ITask> in;
     private final Term id;
 
 

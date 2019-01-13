@@ -88,9 +88,8 @@ abstract public class Loop extends FixedRateTimedFuture {
         return this;
     }
 
-    private void ready() {
-        if (!async())
-            executing.set(false);
+    public final void ready() {
+        executing.set(false);
     }
 
     static int fpsToMS(float fps) {
@@ -155,7 +154,6 @@ abstract public class Loop extends FixedRateTimedFuture {
 
     protected void thrown(Throwable e) {
         stop();
-        ready();
         logger.error(" {}", e);
         //throw new RuntimeException(e);
     }
@@ -176,7 +174,8 @@ abstract public class Loop extends FixedRateTimedFuture {
             thrown(e);
         } finally {
             afterNext();
-            ready();
+            if (!async())
+                ready();
         }
 
     }

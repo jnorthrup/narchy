@@ -7,7 +7,7 @@ import nars.attention.AttBranch;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.CuriosityGoalTable;
 import nars.concept.action.curiosity.CuriosityTask;
-import nars.control.channel.CauseChannel;
+import nars.control.channel.ConsumerX;
 import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static nars.time.Tense.TIMELESS;
+import static nars.truth.func.TruthFunctions.w2cSafe;
 
 
 /**
@@ -51,7 +52,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
     /** latches the last non-null actionDex, used for echo/sustain */
     public @Nullable Truth lastActionDex;
 
-    protected final CauseChannel<ITask> in;
+    protected final ConsumerX<ITask> in;
 
     public AbstractGoalActionConcept(Term term,  NAR n) {
         this(term,
@@ -73,7 +74,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
         attnCuri.boost.set(0.5f);
     }
 
-    protected CauseChannel<ITask> newChannel(NAR n) {
+    protected ConsumerX<ITask> newChannel(NAR n) {
         return n.newChannel(this);
     }
 
@@ -85,7 +86,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
     @Override
     public float dexterity() {
         Truth t = this.actionDex;
-        return t!=null ? t.conf() : 0;
+        return t!=null ? w2cSafe(t.evi()) : 0;
     }
 
 

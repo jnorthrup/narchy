@@ -296,8 +296,9 @@ public interface NAct {
                     y ? 1 : 0;
                     //y ? 1 : Math.min(thresh.asFloat(),(g!=null ? g.freq() : 0));
             float c =
-                    //n.confDefault(BELIEF);
-                    Math.max(n.confMin.floatValue(), g!=null ? g.conf() : 0);
+                    n.confDefault(BELIEF);
+                    //Math.max(n.confMin.floatValue(), g!=null ? g.conf() : 0)
+                    ;
             return $.t(feedback, c);
 
         });
@@ -315,8 +316,9 @@ public interface NAct {
                     y ? 1 : 0;
                     //y ? 1 : Math.min(thresh.asFloat(),(g!=null ? g.freq() : 0));
             float c =
-                    //n.confDefault(BELIEF);
-                    Math.max(n.confMin.floatValue(), g!=null ? g.conf() : 0);
+                    n.confDefault(BELIEF);
+                    //Math.max(n.confMin.floatValue(), g!=null ? g.conf() : 0)
+                    ;
             return $.t(feedback, c);
         });
 
@@ -410,8 +412,8 @@ public interface NAct {
         ActionConcept.MotorFunction motor = new UnipolarMotor(freqOrExp, ifGoalMissing, update,
             (feedbackFreq,goalConf) ->
                 $.t(feedbackFreq,
-                        Math.max(nar().confMin.floatValue(), goalConf)
-                        //nar().confDefault(BELIEF)
+                        //Math.max(nar().confMin.floatValue(), goalConf)
+                        nar().confDefault(BELIEF)
                 )
         );
 

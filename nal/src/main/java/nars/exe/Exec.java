@@ -1,54 +1,45 @@
 package nars.exe;
 
 import nars.NAR;
+import nars.control.channel.ConsumerX;
 import nars.task.ITask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 /**
  * manages low level task scheduling and execution
  */
-abstract public class Exec implements Executor {
+abstract public class Exec extends ConsumerX<ITask> implements Executor {
 
     static final Logger logger = LoggerFactory.getLogger(Exec.class);
 
     protected NAR nar;
 
-
-    public void execute(/*@NotNull*/ Iterator<? extends ITask> input) {
-        input.forEachRemaining(this::execute);
-    }
-
-    public void execute(/*@NotNull*/ Stream<? extends ITask> input) {
-        input.forEach(this::execute);
-    }
-
-    public final void execute(/*@NotNull*/ Iterable<? extends ITask> input) {
-        execute(input.iterator());
-    }
-
-
-    public void execute(Object t) {
+    public void input(Object t) {
         executeNow(t);
     }
 
     /** immediately execute a Task */
-    public final void execute(ITask t) {
+    @Override public final void input(ITask t) {
         ITask.run(t, nar);
     }
+
+    abstract public void input(Consumer<NAR> r);
+
+    @Override
+    abstract public void execute(Runnable async);
+
 
     /**
      * inline, synchronous
      */
     final void executeNow(Object t) {
         if (t instanceof ITask)
-            execute((ITask) t);
+            input((ITask) t);
         else {
 //            Exe.run(t, () -> {
                 try {
@@ -63,11 +54,6 @@ abstract public class Exec implements Executor {
 //            });
         }
     }
-
-    @Override
-    abstract public void execute(Runnable async);
-
-    abstract public void execute(Consumer<NAR> r);
 
 
     public void start(NAR nar) {

@@ -7,7 +7,7 @@ import nars.agent.NSense;
 import nars.attention.AttBranch;
 import nars.attention.AttNode;
 import nars.concept.sensor.AbstractSensor;
-import nars.control.channel.CauseChannel;
+import nars.control.channel.ConsumerX;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -27,7 +27,7 @@ import static nars.Op.PROD;
  * implements Sensor but actually manages Actions internally. */
 public class BiPolarAction extends AbstractSensor {
 
-    private final CauseChannel<ITask> feedback;
+    private final ConsumerX<ITask> feedback;
     private final Polarization model;
     private final FloatToFloatFunction motor;
 
@@ -298,7 +298,7 @@ public class BiPolarAction extends AbstractSensor {
         }
 
         @Override
-        protected CauseChannel<ITask> newChannel(NAR n) {
+        protected ConsumerX<ITask> newChannel(NAR n) {
             return feedback;
         }
     }

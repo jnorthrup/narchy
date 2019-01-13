@@ -12,6 +12,8 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.video.Draw;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * abstract 1D slider/scrollbar
  */
@@ -21,11 +23,14 @@ public class SliderModel extends Surface {
     /** dead-zone at the edges to latch min/max values */
     static private final float margin =
             0.0001f;
+    public static final int BUTTON = 0;
 
-    
 
     @Nullable
     private ObjectFloatProcedure<SliderModel> change;
+
+    /** true when asynch change handler is awaiting execution */
+    final AtomicBoolean changing = new AtomicBoolean(false);
 
     private volatile float p;
 
@@ -65,23 +70,28 @@ public class SliderModel extends Surface {
         return this;
     }
 
+    final FingerDragging drag = new FingerDragging(BUTTON) {
+        @Override protected boolean drag(Finger f) {
+            setPoint(f);
+            return true;
+        }
+    };
+
     @Override
-    public Surface finger(Finger finger) {
-
-
-        if (finger!=null && finger.pressing(0)) {
-            if (finger.tryFingering(new FingerDragging(0) {
-                @Override protected boolean drag(Finger f) {
-                    v2 hitPoint = finger.relativePos(SliderModel.this);
-                    setPoint(ui.p(hitPoint));
-                    return true;
-                }
-            }))
-                return this;
+    public Surface finger(Finger f) {
+        if (f.tryFingering(drag)) {
+            return this;
+        } else if (f.pressing(drag.button)) {
+            setPoint(f);
+            return this;
         }
         return null; 
     }
 
+    private void setPoint(Finger f) {
+        v2 hitPoint = f.relativePos(SliderModel.this);
+        setPoint(ui.p(hitPoint));
+    }
 
     private void setPoint(float pNext) {
         Util.assertFinite(pNext);
@@ -97,9 +107,18 @@ public class SliderModel extends Surface {
 
     protected void onChanged() {
         if (change!=null) {
-            Exe.invokeLater(()->{
-                change.value(this, value());
-            });
+            if (changing.compareAndSet(false,true)) {
+                Exe.invokeLater(() -> {
+                    try {
+                        ObjectFloatProcedure<SliderModel> c = this.change;
+                        if (c != null) {
+                            c.value(this, value());
+                        }
+                    } finally {
+                        changing.set(false);
+                    }
+                });
+            }
         }
     }
 

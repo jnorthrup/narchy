@@ -198,7 +198,7 @@ abstract public class NARWeb extends WebServer {
                 }
 
                 @Override
-                public void execute(Consumer<NAR> r) {
+                public void input(Consumer<NAR> r) {
                     execute(() -> r.accept(this.nar));
                 }
             };

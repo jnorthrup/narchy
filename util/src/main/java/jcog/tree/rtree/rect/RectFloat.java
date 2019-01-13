@@ -201,16 +201,16 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 
 
     @Override
-    public int hashCode() {
-        return Util.hashCombine(Util.hashCombine(Float.hashCode(x), Float.hashCode(y)), Util.hashCombine(Float.hashCode(w), Float.hashCode(h)));
+    public final int hashCode() {
+        return Util.hashCombine(Float.hashCode(x), Float.hashCode(y), Util.hashCombine(Float.hashCode(w), Float.hashCode(h)));
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         return equals(o, (float) EPSILON);
     }
 
-    public boolean equals(Object o, float epsilon) {
+    public final boolean equals(Object o, float epsilon) {
         if (this == o) return true;
         if (!(o instanceof RectFloat)) return false;
 
@@ -290,7 +290,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     }
 
     public RectFloat scale(float s) {
-        if (Util.equals(s, 0, EPSILON))
+        if (Util.equals(s, 1, EPSILON))
             return this;
         else
             return RectFloat.XYWH(cx(), cy(), w * s, h * s);

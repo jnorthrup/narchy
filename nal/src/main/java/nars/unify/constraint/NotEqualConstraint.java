@@ -93,14 +93,6 @@ public final class NotEqualConstraint extends RelationConstraint {
             super("eqNeg", target, other);
         }
 
-        @Override
-        public @Nullable PREDICATE<PreDerivation> preFilter(Term taskPattern, Term beliefPattern) {
-            @Nullable PREDICATE<PreDerivation> p = super.preFilter(taskPattern, beliefPattern);
-            if (p ==null) {
-                return TaskOrBeliefHasNeg;
-            }
-            return p;
-        }
 
         @Override
         protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
@@ -114,7 +106,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 
         @Override
         public boolean invalid(Term x, Term y) {
-            return !y.equals(x.neg());
+            return !x.equalsNeg(y);
         }
 
 //        @Override
@@ -124,6 +116,31 @@ public final class NotEqualConstraint extends RelationConstraint {
 //            return true;
 //        }
     }
+
+    public static final class EqualPosOrNeg extends RelationConstraint {
+
+        public EqualPosOrNeg(Variable target, Variable other) {
+            super("eqPN", target, other);
+        }
+
+
+        @Override
+        protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
+            return new EqualNegConstraint(newX, newY);
+        }
+
+        @Override
+        public float cost() {
+            return 0.175f;
+        }
+
+        @Override
+        public boolean invalid(Term x, Term y) {
+            return !x.equals(y) && !x.equalsNeg(y) ;
+        }
+
+    }
+
 //    /** compares term equality, unnegated */
 //    public static final class NotEqualUnnegConstraint extends RelationConstraint {
 //
@@ -258,7 +275,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 
         @Override
         public float cost() {
-            return 0.1f;
+            return 0.2f;
         }
 
         @Override

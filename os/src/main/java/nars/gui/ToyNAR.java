@@ -10,6 +10,7 @@ import nars.gui.graph.run.BagregateConceptGraph2D;
 import nars.index.concept.AbstractConceptIndex;
 import nars.index.concept.HijackConceptIndex;
 import nars.link.Activate;
+import nars.task.ITask;
 import nars.task.util.TaskBuffer;
 import nars.term.Term;
 import spacegraph.space2d.Surface;
@@ -35,7 +36,7 @@ public class ToyNAR {
         //g.add(new BagView<>(activeConcepts, n)).posRel(0.5f, 0.5f, 0.25f, 0.15f);
 
         //((TaskBuffer.BagTaskBuffer)(n.input)).valve.set(0);
-        Bag<Task, Task> inputTasks = ((TaskBuffer.BagTaskBuffer) (n.input)).tasks;
+        Bag<ITask, ITask> inputTasks = ((TaskBuffer.BagTaskBuffer) (n.input)).tasks;
         //g.add(new BagView<>(inputTasks, n)).posRel(0.5f, 0.5f, 0.25f, 0.15f);
 
         Stream<Task> allTasks = n.tasks();
