@@ -171,7 +171,7 @@ public interface NSense {
     }*/
 
 
-    default List<Signal> senseNumber(int from, int to, IntFunction<String> id, IntFunction<FloatSupplier> v) throws Narsese.NarseseException {
+    default List<Signal> senseNumber(int from, int to, IntFunction<String> id, IntFunction<FloatSupplier> v) {
         List<Signal> l = newArrayList(to - from);
         for (int i = from; i < to; i++) {
             l.add(senseNumber(id.apply(i), v.apply(i)));

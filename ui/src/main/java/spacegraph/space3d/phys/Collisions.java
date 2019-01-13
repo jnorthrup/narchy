@@ -23,6 +23,7 @@
 
 package spacegraph.space3d.phys;
 
+import jcog.math.v3;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.space3d.phys.collision.broad.*;
 import spacegraph.space3d.phys.collision.narrow.*;
@@ -33,7 +34,6 @@ import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.shape.*;
 import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.Quat4f;
-import jcog.math.v3;
 
 import java.util.List;
 

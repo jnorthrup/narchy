@@ -163,7 +163,7 @@ public class ParserTestCase {
 	}
 	
 	 
-	@Test public void testDCGActionWithOperators() throws Exception {
+	@Test public void testDCGActionWithOperators() {
         String input = "{A =.. B, hotel, 2}";
         Struct result = new Struct("{}",
                             new Struct(",", new Struct("=..", new Var("A"), new Var("B")),

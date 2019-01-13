@@ -23,10 +23,10 @@
 
 package spacegraph.space3d.phys.shape;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.collision.broad.BroadphaseNativeType;
 import spacegraph.space3d.phys.math.MatrixUtil;
 import spacegraph.space3d.phys.math.Transform;
-import jcog.math.v3;
 
 /**
  * MinkowskiSumShape is only for advanced users. This shape represents implicit

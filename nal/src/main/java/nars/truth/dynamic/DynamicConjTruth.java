@@ -90,7 +90,7 @@ public class DynamicConjTruth {
             return conj.eventsWhile(sub, start,
                     parallel,
                     dternal,
-                    xternal, 0);
+                    xternal);
 
         }
     };

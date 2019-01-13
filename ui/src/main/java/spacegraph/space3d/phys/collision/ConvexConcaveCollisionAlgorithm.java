@@ -23,6 +23,7 @@
 
 package spacegraph.space3d.phys.collision;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.broad.CollisionAlgorithm;
 import spacegraph.space3d.phys.collision.broad.CollisionAlgorithmConstructionInfo;
@@ -38,7 +39,6 @@ import spacegraph.space3d.phys.shape.SphereShape;
 import spacegraph.space3d.phys.shape.TriangleCallback;
 import spacegraph.space3d.phys.shape.TriangleShape;
 import spacegraph.space3d.phys.util.OArrayList;
-import jcog.math.v3;
 
 /**
  * ConvexConcaveCollisionAlgorithm supports collision between convex shapes

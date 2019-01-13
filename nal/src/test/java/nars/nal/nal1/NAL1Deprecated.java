@@ -11,7 +11,7 @@ public class NAL1Deprecated extends NALTest {
     static final int cycles = 20;
 
     @Test
-    @Disabled void inheritanceToSimilarity3() throws nars.Narsese.NarseseException {
+    @Disabled void inheritanceToSimilarity3() {
 
         TestNAR tester = test;
         tester.believe("<swan --> bird>", 0.9f, 0.9f);
@@ -21,7 +21,7 @@ public class NAL1Deprecated extends NALTest {
     }
 
     @Test
-    @Disabled void conversion() throws nars.Narsese.NarseseException {
+    @Disabled void conversion() {
         test.believe("<bird --> swimmer>")
                 .ask("<swimmer --> bird>")
                 .mustOutput(cycles, "<swimmer --> bird>. %1.00;0.47%");

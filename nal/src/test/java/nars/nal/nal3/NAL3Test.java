@@ -3,7 +3,6 @@ package nars.nal.nal3;
 
 import nars.NAR;
 import nars.NARS;
-import nars.Narsese;
 import nars.Param;
 import nars.test.NALTest;
 import nars.test.TestNAR;
@@ -301,7 +300,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void questPropagation() throws Narsese.NarseseException {
+    public void questPropagation() {
 
         test.nar.termVolumeMax.set(5);
         test

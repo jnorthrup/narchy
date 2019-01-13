@@ -30,6 +30,7 @@ http:
 
 package spacegraph.space3d.phys.constraint.generic;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.constraint.TypedConstraint;
@@ -38,7 +39,6 @@ import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.solve.JacobianEntry;
 import spacegraph.util.math.Matrix3f;
-import jcog.math.v3;
 
 
 /*!

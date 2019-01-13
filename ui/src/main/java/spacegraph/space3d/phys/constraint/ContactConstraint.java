@@ -23,6 +23,7 @@
 
 package spacegraph.space3d.phys.constraint;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.collision.narrow.ManifoldPoint;
@@ -32,7 +33,6 @@ import spacegraph.space3d.phys.solve.ContactSolverFunc;
 import spacegraph.space3d.phys.solve.ContactSolverInfo;
 import spacegraph.space3d.phys.solve.JacobianEntry;
 import spacegraph.util.math.Matrix3f;
-import jcog.math.v3;
 
 /**
  * Functions for resolving contacts.

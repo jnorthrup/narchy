@@ -7,6 +7,7 @@ import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.math.FloatUtil;
 import jcog.data.list.FastCoWList;
 import jcog.event.Off;
+import jcog.math.v3;
 import spacegraph.input.key.KeyXYZ;
 import spacegraph.input.key.WindowKeyControls;
 import spacegraph.space2d.Surface;
@@ -15,7 +16,6 @@ import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.util.animate.AnimVector3f;
 import spacegraph.util.animate.Animated;
-import jcog.math.v3;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;

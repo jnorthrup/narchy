@@ -23,12 +23,12 @@
 
 package spacegraph.space3d.phys.constraint;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.solve.JacobianEntry;
 import spacegraph.util.math.Matrix3f;
-import jcog.math.v3;
 
 /**
  * Point to point constraint between two rigid bodies each with a pivot point that

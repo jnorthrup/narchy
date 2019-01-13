@@ -1,11 +1,11 @@
 package spacegraph.space3d.transform;
 
 import com.jogamp.opengl.math.Quaternion;
+import jcog.math.v3;
 import spacegraph.space3d.SimpleSpatial;
 import spacegraph.space3d.SpaceTransform;
 import spacegraph.space3d.Spatial;
 import spacegraph.space3d.phys.Body3D;
-import jcog.math.v3;
 
 import java.util.function.Consumer;
 

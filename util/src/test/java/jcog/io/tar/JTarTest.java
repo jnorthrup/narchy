@@ -122,7 +122,7 @@ class JTarTest {
 	 * @throws IOException
 	 */
 	@Test
-    void untarTGzFile() throws IOException, URISyntaxException {
+    void untarTGzFile() throws IOException {
 		File destFolder = new File(dir, "untargztest");
 
 		TarInputStream tis = new TarInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(tartestGZ))));

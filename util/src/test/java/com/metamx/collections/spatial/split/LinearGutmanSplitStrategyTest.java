@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class LinearGutmanSplitStrategyTest {
     @Test
-    void testPickSeeds() throws Exception {
+    void testPickSeeds() {
         BitmapFactory bf = new RoaringBitmapFactory();
 
         for (SplitStrategy strategy : new SplitStrategy[]{
@@ -58,7 +58,7 @@ class LinearGutmanSplitStrategyTest {
     }
 
     @Test
-    void testPickSeedsRoaring() throws Exception {
+    void testPickSeedsRoaring() {
         BitmapFactory bf = new RoaringBitmapFactory();
         LinearGutmanSplitStrategy strategy = new LinearGutmanSplitStrategy(0, 50, bf);
         Node node = new Node(new float[2], new float[2], true, bf);

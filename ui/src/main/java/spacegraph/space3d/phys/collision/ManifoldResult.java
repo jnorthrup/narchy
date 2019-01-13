@@ -23,12 +23,12 @@
 
 package spacegraph.space3d.phys.collision;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.narrow.DiscreteCollisionDetectorInterface;
 import spacegraph.space3d.phys.collision.narrow.ManifoldPoint;
 import spacegraph.space3d.phys.collision.narrow.PersistentManifold;
 import spacegraph.space3d.phys.math.Transform;
-import jcog.math.v3;
 
 /**
  * ManifoldResult is helper class to manage contact results.

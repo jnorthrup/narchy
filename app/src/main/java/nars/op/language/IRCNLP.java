@@ -172,7 +172,7 @@ public class IRCNLP extends IRC {
     }
 
 
-    public static void main(String[] args) throws IOException, IrcException {
+    public static void main(String[] args) {
 
 
         float durFPS = 1f;

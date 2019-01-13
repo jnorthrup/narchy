@@ -3,7 +3,6 @@ package nars.term;
 import nars.$;
 import nars.Narsese;
 import nars.term.atom.Bool;
-import nars.term.util.conj.ConjDiff;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -110,7 +109,7 @@ public class ImplTest {
     }
 
     @Test
-    void testInvalidCircularImpl2() throws Narsese.NarseseException {
+    void testInvalidCircularImpl2() {
         assertEq("(--,(x(intValue,(),1)==>x(intValue,(),0)))", "(x(intValue,(),1) ==> ((--,x(intValue,(),0)) &| x(intValue,(),1)))");
     }
 

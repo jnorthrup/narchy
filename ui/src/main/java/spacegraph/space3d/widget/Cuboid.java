@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.TODO;
 import jcog.Util;
 import jcog.event.Off;
+import jcog.math.v3;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
@@ -18,7 +19,6 @@ import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.shape.SimpleBoxShape;
 import spacegraph.space3d.phys.shape.SphereShape;
 import spacegraph.util.animate.Animated;
-import jcog.math.v3;
 import spacegraph.video.Draw;
 import spacegraph.video.JoglWindow;
 

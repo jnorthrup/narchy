@@ -125,7 +125,11 @@ public class HijackConceptIndex extends AbstractConceptIndex {
                 if (inserted != null) {
                     return inserted.get();
                 } else {
-                    return null; //could not insert
+                    //could not insert
+                    return null;
+
+//                    ((Concept)kc).delete(nar);
+//                    return kc; //return the concept although it wont exist in the index
                 }
             }
         }

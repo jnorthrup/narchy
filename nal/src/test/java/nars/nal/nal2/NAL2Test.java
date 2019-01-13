@@ -97,7 +97,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    void structureTransformation() throws nars.Narsese.NarseseException {
+    void structureTransformation() {
 
         TestNAR tester = test;
         tester.believe("<Birdie <-> Tweety>", 0.9f, 0.9f);
@@ -107,7 +107,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    void structureTransformation2() throws nars.Narsese.NarseseException {
+    void structureTransformation2() {
 
         TestNAR tester = test;
         tester.believe("<bright <-> smart>", 0.9f, 0.9f);
@@ -117,7 +117,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    void structureTransformation3() throws nars.Narsese.NarseseException {
+    void structureTransformation3() {
         /*
         <bright <-> smart>. %0.9;0.9%
         <{bright} --> {smart}>?
@@ -131,7 +131,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    void backwardInference() throws nars.Narsese.NarseseException {
+    void backwardInference() {
 
         TestNAR tester = test;
 

@@ -24,6 +24,7 @@
 package spacegraph.space3d.phys.solve;
 
 import jcog.data.list.FasterList;
+import jcog.math.v3;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.BulletStats;
@@ -39,7 +40,6 @@ import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.TransformUtil;
 import spacegraph.space3d.phys.util.IntArrayList;
 import spacegraph.util.math.Matrix3f;
-import jcog.math.v3;
 
 import java.util.Collection;
 

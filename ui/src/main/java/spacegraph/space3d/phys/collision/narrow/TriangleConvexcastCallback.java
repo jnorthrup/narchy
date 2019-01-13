@@ -23,11 +23,11 @@
 
 package spacegraph.space3d.phys.collision.narrow;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.shape.ConvexShape;
 import spacegraph.space3d.phys.shape.TriangleCallback;
 import spacegraph.space3d.phys.shape.TriangleShape;
-import jcog.math.v3;
 
 /**
  *

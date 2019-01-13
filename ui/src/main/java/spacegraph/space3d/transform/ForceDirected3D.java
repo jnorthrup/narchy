@@ -1,12 +1,12 @@
 package spacegraph.space3d.transform;
 
 import jcog.math.FloatRange;
+import jcog.math.v3;
 import spacegraph.space3d.SimpleSpatial;
 import spacegraph.space3d.Spatial;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.broad.Broadphase;
-import jcog.math.v3;
 
 import java.util.List;
 

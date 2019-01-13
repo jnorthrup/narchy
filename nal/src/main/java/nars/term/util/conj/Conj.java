@@ -127,7 +127,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             boolean xIsConj = x.op() == CONJ;
             int xdt = xIsConj ? x.dt() : DTERNAL;
             return !container.eventsWhile((when, cc) -> cc == container || !containsOrEqualsEvent(cc, x), //recurse
-                    0, !xIsConj || xdt != 0, !xIsConj || xdt != DTERNAL, true, 0);
+                    0, !xIsConj || xdt != 0, !xIsConj || xdt != DTERNAL, true);
         } else {
             return container.contains(x);
         }
@@ -699,7 +699,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             exclude.eventsWhile((when, what) -> {
                 removedSomething[0] |= when == ETERNAL ? x.removeAll(what) : x.remove(when, what);
                 return true;
-            }, offset, true, true, false, 0);
+            }, offset, true, true, false);
 
             return removedSomething[0] ? x.term() : include;
 
@@ -977,7 +977,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             return x.eventsWhile(this::addEvent, at,
                     at != ETERNAL, //unpack parallel except in DTERNAL root, allowing: ((a&|b) && (c&|d))
                     true,
-                    false, 0);
+                    false);
         } else {
             return addEvent(at, x);
         }
@@ -1189,7 +1189,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 }
             }
             return eternal || when == 0;
-        }, 0, true, true, eternal, 0);
+        }, 0, true, true, eternal);
 
 
         if (result[0] == True) {
@@ -1528,7 +1528,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     return c.add(whn, ww);//direct
                 }
 
-            }, 0, dtInner == 0, dtInner == DTERNAL, dtInner == XTERNAL, 0);
+            }, 0, dtInner == 0, dtInner == DTERNAL, dtInner == XTERNAL);
             if (!ok)
                 return False;
 

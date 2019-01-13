@@ -20,7 +20,7 @@ public class NQuadsRDFTest {
 
 
     @Test
-    public void test1() throws Exception {
+    public void test1() {
         final NAR n = NARS.tmp();
         n.log();
         NQuadsRDF.input(n, "<http://example.org/#spiderman> <http://xmlns.com/foaf/0.1/name> \"Человек-паук\"@ru .");

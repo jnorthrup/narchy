@@ -1273,7 +1273,7 @@ public class Occurrify extends TimeGraph {
                     x.eventsWhile((when, what) -> {
                         first[0] = what;
                         return false;
-                    }, 0, true, true, false, 0);
+                    }, 0, true, true, false);
                     if (first[0] != null && !first[0].equals(x)) {
                         offset = src.subTimeFirst(first[0]);
                         if (offset == DTERNAL) {

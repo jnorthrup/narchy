@@ -25,10 +25,10 @@
 
 package spacegraph.space3d.phys.collision.broad;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.math.MatrixUtil;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.VectorUtil;
-import jcog.math.v3;
 
 import static spacegraph.space3d.phys.math.VectorUtil.coord;
 

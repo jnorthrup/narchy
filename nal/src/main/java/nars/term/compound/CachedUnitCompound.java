@@ -4,6 +4,7 @@ import nars.Op;
 import nars.The;
 import nars.term.Compound;
 import nars.term.Term;
+import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
 
@@ -64,6 +65,10 @@ public class CachedUnitCompound extends UnitCompound implements The {
         return chash;
     }
 
+    @Override
+    public boolean equals(@Nullable Object that) {
+        return Compound.equals(this, that, true);
+    }
 
     @Override
     public final /*@NotNull*/ Op op() {

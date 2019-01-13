@@ -23,9 +23,9 @@
 
 package spacegraph.space3d.phys.collision.narrow;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.math.IDebugDraw;
 import spacegraph.space3d.phys.math.Transform;
-import jcog.math.v3;
 
 /**
  * ConvexCast is an interface for casting.

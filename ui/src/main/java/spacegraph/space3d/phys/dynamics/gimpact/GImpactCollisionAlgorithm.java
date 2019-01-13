@@ -27,6 +27,7 @@
 
 package spacegraph.space3d.phys.dynamics.gimpact;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.CollisionAlgorithmCreateFunc;
 import spacegraph.space3d.phys.collision.DefaultIntersecter;
@@ -39,7 +40,6 @@ import spacegraph.space3d.phys.shape.*;
 import spacegraph.space3d.phys.util.IntArrayList;
 import spacegraph.space3d.phys.util.OArrayList;
 import spacegraph.util.math.Vector4f;
-import jcog.math.v3;
 
 /**
  * Collision Algorithm for GImpact Shapes.<p>

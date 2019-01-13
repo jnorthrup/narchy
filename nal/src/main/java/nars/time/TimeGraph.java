@@ -392,13 +392,13 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                         subj.eventsWhile((w, y) -> {
                             link(know(y), ETERNAL, pe);
                             return true;
-                        }, 0, false, true, true, 0);
+                        }, 0, false, true, true);
 
 //
                         pred.eventsWhile((w, y) -> {
                             link(se, ETERNAL, know(y));
                             return true;
-                        }, 0, false, true, true, 0);
+                        }, 0, false, true, true);
 
                     } else if (edt == XTERNAL) {
 
@@ -463,7 +463,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
                                     link(event, w - eventStart, know(y, w, w + range));
                                     return true;
-                                }, eventStart, false, true, false, 0);
+                                }, eventStart, false, true, false);
                             } else {
                                 //chain the events together relatively
                                 final Event[] prev = {event};
@@ -477,7 +477,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                                         prev[0] = next;
                                     }
                                     return true;
-                                }, 0, false, false, false, 0);
+                                }, 0, false, false, false);
                             }
 
                             break;
@@ -807,14 +807,14 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                     eventTerms.add(aa);
                 }
                 return true;
-            }, 0, true, false, true, 0);
+            }, 0, true, false, true);
 
             if (eventTerms.isEmpty())
                 return false;
 
             return !b.eventsWhile((w, bb) -> {
                 return !eventTerms.remove(bb);
-            }, 0, true, false, true, 0);
+            }, 0, true, false, true);
         }
         return false; //TODO test conj -> nonConj common subevent?
     }

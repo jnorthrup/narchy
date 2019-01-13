@@ -24,6 +24,7 @@
 package spacegraph.space3d.phys;
 
 import jcog.Util;
+import jcog.math.v3;
 import spacegraph.space3d.phys.collision.CollidableType;
 import spacegraph.space3d.phys.collision.CollisionFlags;
 import spacegraph.space3d.phys.collision.broad.Broadphasing;
@@ -35,7 +36,6 @@ import spacegraph.space3d.phys.shape.CollisionShape;
 import spacegraph.space3d.phys.util.OArrayList;
 import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.Quat4f;
-import jcog.math.v3;
 
 import static jcog.Util.unitize;
 import static jcog.math.v3.v;

@@ -2,7 +2,6 @@ package nars.nal.nal4;
 
 import nars.NAR;
 import nars.NARS;
-import nars.Narsese;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
@@ -50,7 +49,7 @@ public class NAL4MultistepTest extends NALTest {
     }
 
     @Test
-    void nal4_everyday_reasoning_easiest() throws Narsese.NarseseException {
+    void nal4_everyday_reasoning_easiest() {
 
 
         test.believe("blue:sky", 1.0f, 0.9f)
@@ -61,7 +60,7 @@ public class NAL4MultistepTest extends NALTest {
     }
 
     @Test
-    void nal4_everyday_reasoning_easier() throws Narsese.NarseseException {
+    void nal4_everyday_reasoning_easier() {
         int time = 2550;
 
         test.confTolerance(0.2f);

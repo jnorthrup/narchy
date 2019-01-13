@@ -23,8 +23,8 @@
 
 package spacegraph.space3d.phys.shape;
 
-import spacegraph.space3d.phys.math.VectorUtil;
 import jcog.math.v3;
+import spacegraph.space3d.phys.math.VectorUtil;
 
 /**
  * StridingMeshInterface is the abstract class for high performance access to

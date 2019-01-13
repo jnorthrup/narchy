@@ -23,11 +23,11 @@
 
 package spacegraph.space3d.phys.shape;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.math.MatrixUtil;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.VectorUtil;
-import jcog.math.v3;
 
 /**
  * ConvexInternalShape is an internal base class, shared by most convex shape implementations.

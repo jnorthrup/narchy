@@ -20,7 +20,7 @@ public class PatrickTests extends NALTest {
 
 
     @Test
-    void testExample1() throws Narsese.NarseseException {
+    void testExample1() {
         /*
         
         
@@ -53,7 +53,7 @@ public class PatrickTests extends NALTest {
     }
 
     @Test
-    void testExample1_NoImages() throws Narsese.NarseseException {
+    void testExample1_NoImages() {
 
         TestNAR tt = test;
         tt.nar.freqResolution.set(0.1f);

@@ -34,7 +34,7 @@ public class PrologTestCase  {
 
 
 	
-	@Test public void testGetLibraryWithName() throws InvalidLibraryException {
+	@Test public void testGetLibraryWithName() {
 		Prolog engine = new Prolog("alice.tuprolog.TestLibrary");
 		assertNotNull(engine.library("TestLibraryName"));
 	}

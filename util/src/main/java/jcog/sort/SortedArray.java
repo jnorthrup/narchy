@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -68,8 +67,8 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     public SortedArray() {
     }
 
-    protected int grow(int oldSize) {
-        return 1 + (int) Math.ceil(oldSize * GROWTH_RATE);
+    protected static int grow(int oldSize) {
+        return 1 + (int)(oldSize * GROWTH_RATE);
 
     }
 
@@ -170,7 +169,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 //    }
 
     public void sort(ToIntFunction<X> x, int from, int to) {
-        int[] stack = new int[sortSize(to - from) /* estimate */];
+        int[] stack = new int[to-from+1 /*sortSize(to - from)*/ /* estimate */];
         qsort(stack, items, from /*dirtyStart - 1*/, to, x);
     }
 
@@ -443,7 +442,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     private int addBinary(X element, float elementRank, FloatFunction<X> cmp, int size) {
 
-        final int index = this.findInsertionIndex(elementRank, 0, size, null, cmp);
+        final int index = this.findInsertionIndex(elementRank, 0, size, cmp);
 
         return insert(element, index, elementRank, cmp, size);
     }
@@ -460,7 +459,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     private int addLinear(X element, float elementRank, FloatFunction<X> cmp, int size) {
         X[] l = this.items;
-        size = Math.min(size, l.length);
+        //size = Math.min(size, l.length);
         if (size > 0) {
             for (int i = 0; i < size; i++) {
                 final X current = l[i];
@@ -503,7 +502,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     private int addInternal(int index, X e, int s) {
-        assert(index >=0);
+        //assert(index >=0);
 
         if (index < s) {
             if (!this.addAtIndex(index, e, s))
@@ -607,7 +606,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         }
 
         if (reinsert) {
-            int next = this.findInsertionIndex(cur, 0, s, null, cmp);
+            int next = this.findInsertionIndex(cur, 0, s, cmp);
             if (next == index - 1) {
 
                 swap(l, index, index - 1);
@@ -634,35 +633,35 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
 
-    @SuppressWarnings("unchecked")
     public int indexOf(final X element, FloatFunction<X> cmp) {
         return indexOf(element, cmp, false);
     }
 
-    @SuppressWarnings("unchecked")
     public int indexOf(final X element, FloatFunction<X> cmp, boolean eqByIdentity) {
 
-		/*if (element == null)
-            return -1;*/
 
+        
         int size = size();
         if (size == 0)
             return -1;
 
         if (size >= BINARY_SEARCH_THRESHOLD) {
 
-            final int[] rightBorder = {0};
-            final int left = eqByIdentity ?
-                    this.findInsertionIndexByIdentity(cmp.floatValueOf(element), element, 0, size, rightBorder, cmp)
+            float v = cmp.floatValueOf(element);
+            int found = eqByIdentity ?
+                    this.findInsertionIndexByIdentity(v, element, 0, size, cmp)
                     :
-                    this.findInsertionIndex(cmp.floatValueOf(element), 0, size, rightBorder, cmp);
-
-            X[] l = this.items;
-            for (int index = left; index < rightBorder[0]; index++) {
-                X ll = l[index];
-                if (eqByIdentity ? (element== ll) : element.equals(ll))
-                    return index;
-            }
+                    this.findInsertionIndex(v, 0, size, cmp);
+            assert(found!=-1);
+            if (found < size)
+                return found;
+//
+//            X[] l = this.items;
+//            for (int index = left; index < rightBorder[0]; index++) {
+//                X ll = l[index];
+//                if (eqByIdentity ? (element== ll) : element.equals(ll))
+//                    return index;
+//            }
 
 
         } else {
@@ -671,7 +670,6 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         }
 
         return indexOfInternal(element, eqByIdentity);
-
     }
 
     /** needs to be true if the rank of items is known to be stable.  then binary indexOf lookup does not need to perform an exhaustive search if not found by rank */
@@ -699,55 +697,43 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
      * @param element     element for which the index should be found
      * @param left        the left index (inclusively)
      * @param right       the right index (exclusively)
-     * @param rightBorder This parameter will be modified inside the method, thus you
-     *                    can analyse it after the method execution. Is used to know the
-     *                    right border.
      * @return first index of the element where the element should be inserted
      */
     private int findInsertionIndex(
             float elementRank, final int left, final int right,
-            final int[] rightBorder, FloatFunction<X> cmp) {
+            FloatFunction<X> cmp) {
 
         assert (right >= left);
 
         if ((right - left) < BINARY_SEARCH_THRESHOLD) {
-            if (rightBorder!=null) rightBorder[0] = right;
             return findFirstIndex(elementRank, left, right, cmp);
+        } else {
+
+            final int midle = left + (right - left) / 2;
+
+            X[] list = this.items;
+
+            final X midleE = list[midle];
+
+            final int comparedValue = Util.fastCompare(cmp.floatValueOf(midleE), elementRank);
+            if (comparedValue == 0) {
+                return midle + 1; /* after existing element */
+            } else {
+
+                boolean c = (0 < comparedValue);
+                int nextLeft = c ? left : midle, nextRight = c ? midle : right;
+
+                return findInsertionIndex(elementRank, nextLeft, nextRight, cmp);
+            }
         }
-
-        final int midle = left + (right - left) / 2;
-
-        X[] list = this.items;
-
-        final X midleE = list[midle];
-
-
-        float ev = cmp.floatValueOf(midleE);
-        final int comparedValue = Util.fastCompare(ev, elementRank);
-        if (comparedValue == 0) {
-            int target = midle + 1;/* after existing element */
-            if(rightBorder!=null) rightBorder[0] = target;
-            return target;
-        }
-
-        boolean c = (0 < comparedValue);
-
-
-        int nextLeft = c ? left : midle;
-        int nextRight = c ? midle : right;
-
-        return findInsertionIndex(elementRank, nextLeft, nextRight, rightBorder, cmp);
-
     }
     private int findInsertionIndexByIdentity(
-            float elementRank, X item, final int left, final int right,
-            final int[] rightBorder, FloatFunction<X> cmp) {
+            float elementRank, X item, final int left, final int right, FloatFunction<X> cmp) {
 
         assert (right >= left);
 
         if ((right - left) < BINARY_SEARCH_THRESHOLD) {
-            if (rightBorder!=null) rightBorder[0] = right;
-            return findFirstIndexByIdentity(item, left, right, cmp);
+            return findFirstIndexByIdentity(item, left, right);
         }
 
         final int midle = left + (right - left) / 2;
@@ -756,59 +742,48 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
         final X midleE = list[midle];
         if (midleE == item) {
-            int target = midle + 1;/* after existing element */
-            if(rightBorder!=null) rightBorder[0] = target;
-            return target;
+            return midle + 1;/* after existing element */
         }
 
-        boolean c = (0 < elementRank);
+        boolean c = 0 < Util.fastCompare(cmp.floatValueOf(midleE), elementRank);
 
 
         int nextLeft = c ? left : midle;
         int nextRight = c ? midle : right;
 
-        return findInsertionIndexByIdentity(elementRank, item, nextLeft, nextRight, rightBorder, cmp);
+        return findInsertionIndexByIdentity(elementRank, item, nextLeft, nextRight, cmp);
 
     }
 
     /**
      * searches for the first index found for given element
-     *
-     * @param list  the list or sublist which should be invastigated
-     * @param left  left index (inclusively)
-     * @param right right index (exclusively)
-     * @return
+
      */
     private int findFirstIndex(float elementRank,
                                final int left, final int right, FloatFunction<X> cmp) {
-
-
         X[] ii = this.items;
-        for (int index = left; index < right; ) {
-            X x = ii[index++];
+        int index;
+        for (index = left; index < right; index++) {
+            X x = ii[index];
             if (0 < Util.fastCompare(cmp.floatValueOf(x), elementRank)) {
-                return index-1;
+                return index;
             }
         }
-        return right;
-
-
+        return index;
     }
-    private int findFirstIndexByIdentity(X item,
-                               final int left, final int right, FloatFunction<X> cmp) {
 
-
+    private int findFirstIndexByIdentity(X item, final int left, final int right) {
         X[] ii = this.items;
-        for (int index = left; index < right; ) {
-            X x = ii[index++];
-            if (x == item) {
-                return index-1;
-            }
+        int index;
+        for (index = left; index < right; index++) {
+            X x = ii[index];
+            if (x == item)
+                return index;
         }
-        return right;
-
-
+        return index;
     }
+
+
     /**
      * Returns the first (lowest) element currently in this list.
      */
@@ -904,7 +879,12 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
         X[] ii = items;
         int s = size();
-        return s > 0 ? IntStream.range(0, Math.min(ii.length, s)).mapToObj(i -> ii[i]/*(X) ITEM.getOpaque(items, i)*/) : Stream.empty();
+        /*(X) ITEM.getOpaque(items, i)*/
+        return ArrayIterator.stream(ii, Math.min(ii.length, s));
+//        return s > 0 ?
+//                Arrays.stream(ii, 0, Math.min(ii.length, s))
+//                :
+//                Stream.empty();
     }
 
     public Iterator<X> iterator() {

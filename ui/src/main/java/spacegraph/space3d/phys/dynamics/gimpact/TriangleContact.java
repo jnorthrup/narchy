@@ -27,9 +27,9 @@
 
 package spacegraph.space3d.phys.dynamics.gimpact;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.util.OArrayList;
 import spacegraph.util.math.Vector4f;
-import jcog.math.v3;
 
 import static spacegraph.space3d.phys.BulletGlobals.SIMD_EPSILON;
 

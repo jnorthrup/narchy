@@ -27,9 +27,7 @@ import spacegraph.space2d.widget.port.*;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.util.geo.IRL;
 import spacegraph.video.Draw;
-import spacegraph.video.OsmSpace;
 
 import java.io.IOException;
 import java.io.InputStream;

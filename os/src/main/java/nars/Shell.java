@@ -40,7 +40,7 @@ public class Shell {
         }
     };
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException {
 
 
         if (args.length == 0) {

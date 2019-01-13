@@ -73,9 +73,12 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     static boolean equals(/*@NotNull*/ Compound A, Object b) {
+        return equals(A, b, false);
+    }
+    static boolean equals(/*@NotNull*/ Compound A, Object b, boolean compareHashCode) {
         if (A == b) return true;
 
-        if (((b instanceof Compound) && (A.hashCode() == b.hashCode()))) {
+        if (((b instanceof Compound) && (!compareHashCode || (A.hashCode() == b.hashCode())))) {
             Compound B = (Compound) b;
             Op ao = A.op();
             if (ao == B.op()) {
@@ -537,113 +540,111 @@ public interface Compound extends Term, IPair, Subterms {
      * iterates contained events within a conjunction
      */
     @Override
-    default boolean eventsWhile(LongObjectPredicate<Term> each, long offset, boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal, int depth) {
+    default boolean eventsWhile(LongObjectPredicate<Term> each, long offset, boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal) {
 
         Op o = op();
+        if (o != CONJ)
+            return each.accept(offset, this);
 
-        if (o == CONJ) {
 
-            int dt = dt();
-            boolean decompose;
-            switch (dt) {
-                case 0:
-                    decompose = decomposeConjParallel;
-                    break;
-                case DTERNAL:
-                    if (Conj.isFactoredSeq(this)) {
-                        Subterms ss = subterms();
+        int dt = dt();
+        boolean decompose;
+        switch (dt) {
+            case 0:
+                decompose = decomposeConjParallel;
+                break;
+            case DTERNAL:
+                if (Conj.isFactoredSeq(this)) {
+                    Subterms ss = subterms();
 
-                        //distribute the factored inner sequence
-                        MetalBitSet eteComponents = Conj.seqEternalComponents(ss);
-                        Term seq = Conj.seqTemporal(ss, eteComponents);
-                        boolean unfactor;
-                        int sdt = seq.dt();
-                        switch (sdt) {
-                            case 0:
-                                unfactor = decomposeConjParallel;
-                                break;
-                            case XTERNAL:
-                                unfactor = decomposeXternal;
-                                break;
-                            default://non-special sequence
-                                unfactor = true;
-                                break;
-                        }
-                        if (unfactor) {
-                            Term factor = Conj.seqEternal(ss, eteComponents);
+                    //distribute the factored inner sequence
+                    MetalBitSet eteComponents = Conj.seqEternalComponents(ss);
+                    Term seq = Conj.seqTemporal(ss, eteComponents);
+                    boolean unfactor;
+                    int sdt = seq.dt();
+                    switch (sdt) {
+                        case 0:
+                            unfactor = decomposeConjParallel;
+                            break;
+                        case XTERNAL:
+                            unfactor = decomposeXternal;
+                            break;
+                        default://non-special sequence
+                            unfactor = true;
+                            break;
+                    }
+                    if (unfactor) {
+                        Term factor = Conj.seqEternal(ss, eteComponents);
 
-                            boolean b = seq.eventsWhile((when, what) -> {
+                        boolean b = seq.eventsWhile((when, what) -> {
 
-                                //int w = when == ETERNAL ? DTERNAL : 0;
-                                int w = DTERNAL;
-                                if ((w == DTERNAL && !decomposeConjDTernal) || (w != DTERNAL && !decomposeConjParallel)) {
-                                    //combine the component with the eternal factor
-                                    Term distributed = CONJ.the(w, what, factor);
-                                    if (distributed instanceof Bool)
-                                        throw new WTF();
+                            //int w = when == ETERNAL ? DTERNAL : 0;
+                            int w = DTERNAL;
+                            if ((w == DTERNAL && !decomposeConjDTernal) || (w != DTERNAL && !decomposeConjParallel)) {
+                                //combine the component with the eternal factor
+                                Term distributed = CONJ.the(w, what, factor);
+                                if (distributed instanceof Bool)
+                                    throw new WTF();
 //                                    assert (!(distributed instanceof Bool));
-                                    return each.accept(when, distributed);
-                                } else {
-                                    //provide the component and the eternal separately, at the appropriate time
-                                    return each.accept(when, what) && each.accept(when, factor);
-                                }
+                                return each.accept(when, distributed);
+                            } else {
+                                //provide the component and the eternal separately, at the appropriate time
+                                return each.accept(when, what) && each.accept(when, factor);
+                            }
 
-                            }, offset, decomposeConjParallel, decomposeConjDTernal, decomposeXternal, depth + 1);
+                        }, offset, decomposeConjParallel, decomposeConjDTernal, decomposeXternal);
 
-                            return b;
-                        }
-
+                        return b;
                     }
 
-                    if (decompose = decomposeConjDTernal) {
-                        dt = 0;
-                    }
-
-                    break;
-                case XTERNAL:
-                    if (decompose = decomposeXternal)
-                        dt = 0;
-                    break;
-                default:
-                    decompose = true;
-                    break;
-            }
-
-            if (decompose) {
-                depth++;
-
-                Subterms tt = subterms();
-                int s = tt.subs();
-
-                long t = offset;
-
-                boolean changeDT = t != ETERNAL && t != TIMELESS && dt != 0 /* motionless in time */;
-
-
-                boolean fwd;
-                if (changeDT) {
-                    fwd = dt >= 0;
-                    if (!fwd)
-                        dt = -dt;
-                } else {
-                    fwd = true;
                 }
 
-                for (int i = 0; i < s; i++) {
-                    Term st = tt.sub(fwd ? i : (s - 1) - i);
-                    if (!st.eventsWhile(each, t,
-                            decomposeConjParallel, decomposeConjDTernal, decomposeXternal,
-                            depth))
-                        return false;
-
-                    if (changeDT && i < s - 1)
-                        t += dt + st.eventRange();
+                if (decompose = decomposeConjDTernal) {
+                    dt = 0;
                 }
 
+                break;
+            case XTERNAL:
+                if (decompose = decomposeXternal)
+                    dt = 0;
+                break;
+            default:
+                decompose = true;
+                break;
+        }
 
-                return true;
+        if (decompose) {
+
+            Subterms tt = subterms();
+            int s = tt.subs();
+
+            long t = offset;
+
+            boolean changeDT = t != ETERNAL && t != TIMELESS && dt != 0 /* motionless in time */;
+
+
+            boolean fwd;
+            if (changeDT) {
+                fwd = dt >= 0;
+                if (!fwd)
+                    dt = -dt;
+            } else {
+                fwd = true;
             }
 
+            for (int i = 0; i < s; i++) {
+                Term tti = tt.sub(fwd ? i : (s - 1) - i);
+                if (!tti.eventsWhile(each, t,
+                        decomposeConjParallel, decomposeConjDTernal, decomposeXternal
+                ))
+                    return false;
+
+                if (changeDT && i < s - 1)
+                    t += dt + tti.eventRange();
+            }
+
+
+            return true;
         }
 
         return each.accept(offset, this);
@@ -818,7 +819,7 @@ public interface Compound extends Term, IPair, Subterms {
             eventsWhile((when, what) -> {
                 first[0] = what;
                 return false; //done got first
-            }, 0, false, false, false, 0);
+            }, 0, false, false, false);
             return first[0];
         }
         return this;
@@ -833,7 +834,7 @@ public interface Compound extends Term, IPair, Subterms {
             eventsWhile((when, what) -> {
                 last[0] = what;
                 return true; //HACK keep going to end
-            }, 0, false, false, false, 0);
+            }, 0, false, false, false);
             return last[0];
         }
         return this;

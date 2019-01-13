@@ -165,8 +165,7 @@ public class WeightedQueue<T> implements BlockingQueue<T>
         return retval;
     }
 
-    public T poll(long timeout, TimeUnit unit) throws InterruptedException
-    {
+    public T poll(long timeout, TimeUnit unit) {
         throw new UnsupportedOperationException();
     }
 

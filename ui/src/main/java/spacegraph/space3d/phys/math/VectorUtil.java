@@ -23,8 +23,8 @@
 
 package spacegraph.space3d.phys.math;
 
-import spacegraph.util.math.Vector4f;
 import jcog.math.v3;
+import spacegraph.util.math.Vector4f;
 
 /**
  * Utility functions for vectors.

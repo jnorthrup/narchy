@@ -26,13 +26,13 @@
 package spacegraph.space3d.phys.collision.broad;
 
 import jcog.data.list.FasterList;
+import jcog.math.v3;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.math.MiscUtil;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.util.IntArrayList;
 import spacegraph.space3d.phys.util.OArrayList;
-import jcog.math.v3;
 
 import java.util.Collection;
 import java.util.Collections;

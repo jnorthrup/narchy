@@ -26,9 +26,9 @@
 package spacegraph.space3d.phys.collision.broad;
 
 import jcog.data.list.FasterList;
+import jcog.math.v3;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.util.OArrayList;
-import jcog.math.v3;
 
 import java.util.List;
 import java.util.function.Consumer;

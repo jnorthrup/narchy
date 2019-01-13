@@ -1,6 +1,8 @@
 package jcog.exe.realtime;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Delayed;
+import java.util.concurrent.RunnableScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public interface TimedFuture<T> extends RunnableScheduledFuture<T>, Runnable {
 
@@ -38,10 +40,10 @@ public interface TimedFuture<T> extends RunnableScheduledFuture<T>, Runnable {
     }
 
     @Override
-    T get() throws InterruptedException, ExecutionException;
+    T get();
 
     @Override
-    T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException;
+    T get(long timeout, TimeUnit unit);
 
     default void execute(HashedWheelTimer t) {
         t.execute(this);

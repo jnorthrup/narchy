@@ -23,10 +23,10 @@
 
 package spacegraph.space3d.phys.math;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.Quat4f;
-import jcog.math.v3;
 
 /**
  * Utility functions for transforms.

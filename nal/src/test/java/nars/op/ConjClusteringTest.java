@@ -1,15 +1,16 @@
 package nars.op;
 
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
+import nars.*;
 import nars.op.stm.ConjClustering;
+import nars.table.BeliefTable;
 import nars.time.Tense;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 import static nars.Op.BELIEF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ConjClusteringTest {
 
@@ -18,35 +19,49 @@ class ConjClusteringTest {
 
         NAR n = NARS.shell();
         int ccap = 4;
-        ConjClustering c = new ConjClustering(n, BELIEF, (t) -> t.isInput(), 4, ccap);
+        ConjClustering c = new ConjClustering(n, BELIEF, Task::isInput, 4, ccap);
+
 
         for (int i = 0; i < ccap; i++)
             n.believe($.the("x" + i), Tense.Present);
         n.run(1);
-        assertEquals(1, n.concept($.$("(&&,x0,x1,x2,x3)")).beliefs().size());
+
+        BeliefTable b = n.concept($.$("(&&,x0,x1,x2,x3)")).beliefs();
+        assertEquals(1, b.size());
+
+        assert1234(n, b);
     }
+
     @Test
     void testNeg() throws Narsese.NarseseException {
 
         NAR n = NARS.shell();
         int ccap = 4;
-        ConjClustering c = new ConjClustering(n, BELIEF, (t) -> t.isInput(), 4, ccap);
+        ConjClustering c = new ConjClustering(n, BELIEF, Task::isInput, 4, ccap);
 
         for (int i = 0; i < ccap; i++)
             n.believe($.the("x" + i).neg(), Tense.Present);
         n.run(1);
-        assertEquals(1, n.concept($.$("(&&,(--,x0),(--,x1),(--,x2),(--,x3))")).beliefs().size());
+        BeliefTable b = n.concept($.$("(&&,(--,x0),(--,x1),(--,x2),(--,x3))")).beliefs();
+        assertEquals(1, b.size());
+
+        assert1234(n, b);
     }
 
-    @Test void testDimensionalDistance1() throws Narsese.NarseseException {
+    private static void assert1234(NAR n, BeliefTable b) {
+        Task the = b.streamTasks().findFirst().get();
+        float p = the.pri();
+        assertTrue(p==p);
+        assertTrue(p < n.priDefault(BELIEF)); //pri less than its components
+        assertEquals("[1, 2, 3, 4]", Arrays.toString(the.stamp()));
+    }
+
+    @Test void testDimensionalDistance1() {
         NAR n = NARS.shell();
         n.time.dur(4);
 
         int ccap = 8;
         ConjClustering c = new ConjClustering(n, BELIEF, (t) -> t.isInput(), 2, ccap);
-
-
-        n.log();
 
         n.inputAt(1, "$1.0 x. |");
         n.inputAt(2, "$1.0 y. |");

@@ -1,6 +1,7 @@
 package spacegraph.space3d;
 
 import com.jogamp.opengl.GL2;
+import jcog.math.v3;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
@@ -9,7 +10,6 @@ import spacegraph.space3d.phys.Dynamics3D;
 import spacegraph.space3d.phys.collision.ClosestRay;
 import spacegraph.space3d.phys.constraint.TypedConstraint;
 import spacegraph.util.Active;
-import jcog.math.v3;
 import spacegraph.video.JoglWindow;
 
 import java.util.List;

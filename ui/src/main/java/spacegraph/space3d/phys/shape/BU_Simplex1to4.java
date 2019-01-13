@@ -23,8 +23,8 @@
 
 package spacegraph.space3d.phys.shape;
 
-import spacegraph.space3d.phys.collision.broad.BroadphaseNativeType;
 import jcog.math.v3;
+import spacegraph.space3d.phys.collision.broad.BroadphaseNativeType;
 
 /**
  * BU_Simplex1to4 implements feature based and implicit simplex of up to 4 vertices

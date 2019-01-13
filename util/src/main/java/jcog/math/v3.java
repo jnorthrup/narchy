@@ -33,7 +33,6 @@ package jcog.math;
 
 import jcog.Util;
 
-
 import java.util.Random;
 
 /**

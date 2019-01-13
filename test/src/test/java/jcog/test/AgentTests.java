@@ -51,7 +51,7 @@ class AgentTests implements AfterAllCallback {
     }
 
     @AfterEach
-    public void afterEach(TestReporter testInfo) throws Exception {
+    public void afterEach(TestReporter testInfo) {
 //        if (!shouldBeBenchmarked(context))
 //            return;
 //
@@ -62,7 +62,7 @@ class AgentTests implements AfterAllCallback {
     }
 
     @Override
-    public void afterAll(ExtensionContext context) throws Exception {
+    public void afterAll(ExtensionContext context) {
 
     }
 }

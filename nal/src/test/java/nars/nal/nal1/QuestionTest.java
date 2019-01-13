@@ -230,14 +230,14 @@ class QuestionTest {
     }
 
     @Disabled @Test
-    void testDeriveQuestionOrdinary() throws Narsese.NarseseException {
+    void testDeriveQuestionOrdinary() {
         new TestNAR(NARS.tmp()) 
                 .ask("((S | P) --> M)")
                 .believe("(S --> M)")
                 .mustQuestion(512, "(P --> M)").test();
     }
     @Disabled @Test
-    void testDeriveQuestOrdinary() throws Narsese.NarseseException {
+    void testDeriveQuestOrdinary() {
         new TestNAR(NARS.tmp()) 
                 .quest("((S | P) --> M)")
                 .believe("(S --> M)")

@@ -14,7 +14,7 @@ class bAblTests extends NALTest {
 
 
     @Test
-    void test1() throws nars.Narsese.NarseseException {
+    void test1() {
 
         test
                 .believe("in(john,playground)") 

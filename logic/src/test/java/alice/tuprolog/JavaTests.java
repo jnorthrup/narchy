@@ -7,7 +7,7 @@ import java.net.URISyntaxException;
 
 public class JavaTests {
     @Test
-    public void testHashTable() throws IOException, InvalidTheoryException, MalformedGoalException, URISyntaxException {
+    public void testHashTable() throws IOException, InvalidTheoryException, URISyntaxException {
         Prolog p = new Prolog().input(
             Theory.resource("../../../resources/hash_table.pl")
         );
@@ -23,7 +23,7 @@ public class JavaTests {
     }
 
     @Test
-    public void testPoints2() throws IOException, InvalidTheoryException, MalformedGoalException, URISyntaxException {
+    public void testPoints2() throws IOException, InvalidTheoryException, URISyntaxException {
         Prolog p = new Prolog().input(
             Theory.resource("../../../resources/points_test2.pl")
         );

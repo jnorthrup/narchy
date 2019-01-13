@@ -3,6 +3,7 @@ package spacegraph.input.finger.util;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseEvent;
+import jcog.math.v3;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space3d.SpaceGraphPhys3D;
@@ -14,7 +15,6 @@ import spacegraph.space3d.phys.collision.narrow.VoronoiSimplexSolver;
 import spacegraph.space3d.phys.constraint.Point2PointConstraint;
 import spacegraph.space3d.phys.constraint.TypedConstraint;
 import spacegraph.space3d.phys.math.Transform;
-import jcog.math.v3;
 
 import static jcog.math.v3.v;
 

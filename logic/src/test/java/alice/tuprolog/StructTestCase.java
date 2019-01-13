@@ -196,7 +196,7 @@ public class StructTestCase {
 		assertEquals(anotherList, list.listTail().listTail().listTail().listHead());
 	}
 	
-	@Test public void testIteratedGoalTerm() throws Exception {
+	@Test public void testIteratedGoalTerm() {
 		Var x = new Var("X");
 		Struct foo = new Struct("foo", x);
 		Struct term = new Struct("^", x, foo);

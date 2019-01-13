@@ -4,7 +4,6 @@ import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Theory;
 import nars.NAR;
 import nars.NARS;
-import nars.Narsese;
 import nars.term.Functor;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ProNALTest {
 
 
-    @Test public void test1() throws InvalidTheoryException, Narsese.NarseseException, IOException, URISyntaxException {
+    @Test public void test1() throws InvalidTheoryException, IOException, URISyntaxException {
 
 
 

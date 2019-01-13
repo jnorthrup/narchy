@@ -3,7 +3,6 @@ package nars.derive;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.Narsese;
 import nars.derive.impl.BatchDeriver;
 import nars.derive.op.Occurrify;
 import nars.derive.premise.DeriverRules;
@@ -129,7 +128,7 @@ class DeriverTest {
     }
 
     @Test
-    void testConclusionFold() throws Narsese.NarseseException {
+    void testConclusionFold() {
 
         TestNAR t = test(
                 "(A --> B), C, task(\"?\") |- (A --> C), (Punctuation:Question)",
@@ -145,7 +144,7 @@ class DeriverTest {
     }
 
     @Test
-    void testDeriveQuest() throws Narsese.NarseseException {
+    void testDeriveQuest() {
 
         @NotNull TestNAR t = test("(P --> S), (S --> P), task(\"?\") |- (P --> S),   (Punctuation:Quest)")
                 .ask("b:a")

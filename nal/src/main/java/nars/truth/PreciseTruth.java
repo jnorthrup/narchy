@@ -1,8 +1,7 @@
 package nars.truth;
 
-import org.jetbrains.annotations.Nullable;
-
-import static nars.truth.func.TruthFunctions.*;
+import static nars.truth.func.TruthFunctions.c2wSafe;
+import static nars.truth.func.TruthFunctions.w2cSafe;
 
 /**
  * extends DiscreteTruth's raw hash representation with

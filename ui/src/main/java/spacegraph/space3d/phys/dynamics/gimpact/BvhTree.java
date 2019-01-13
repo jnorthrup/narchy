@@ -27,8 +27,8 @@
 
 package spacegraph.space3d.phys.dynamics.gimpact;
 
-import spacegraph.space3d.phys.math.VectorUtil;
 import jcog.math.v3;
+import spacegraph.space3d.phys.math.VectorUtil;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

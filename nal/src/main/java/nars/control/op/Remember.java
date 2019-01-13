@@ -115,8 +115,10 @@ public class Remember extends AbstractTask {
 
             return new Remember(input, (TaskConcept) c);
         } else {
-            if (isInput)
-                throw new TaskException(input, "not conceptualized");
+            if (Param.DEBUG) {
+                if (isInput)
+                    throw new TaskException(input, "not conceptualized");
+            }
             return null;
         }
     }

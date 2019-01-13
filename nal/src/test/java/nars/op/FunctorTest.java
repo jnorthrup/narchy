@@ -61,7 +61,7 @@ class FunctorTest {
 
     /** tests correct TRUE fall-through behavior, also backward question triggered execution */
     @Test
-    void testFunctor1() throws Narsese.NarseseException {
+    void testFunctor1() {
 
 
         TestNAR t = new TestNAR(NARS.tmp());
@@ -87,7 +87,7 @@ class FunctorTest {
 
 
     @Test
-    void testFunctor2() throws Narsese.NarseseException {
+    void testFunctor2() {
         
 
         TestNAR t = new TestNAR(NARS.tmp());

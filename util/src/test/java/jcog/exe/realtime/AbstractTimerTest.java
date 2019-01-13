@@ -133,7 +133,7 @@ abstract class AbstractTimerTest {
     }
 
     @Test
-    void delayBetweenFixedDelayEvents() throws InterruptedException {
+    void delayBetweenFixedDelayEvents() {
         //CountDownLatch latch = new CountDownLatch(2);
         List<Long> r = new ArrayList<>();
         long start = System.nanoTime();

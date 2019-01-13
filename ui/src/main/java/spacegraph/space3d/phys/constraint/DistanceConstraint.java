@@ -1,10 +1,10 @@
 package spacegraph.space3d.phys.constraint;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.solve.JacobianEntry;
 import spacegraph.util.math.Matrix3f;
-import jcog.math.v3;
 
 import static jcog.math.v3.v;
 

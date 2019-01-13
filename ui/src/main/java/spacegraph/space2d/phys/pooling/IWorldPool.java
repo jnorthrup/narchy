@@ -24,6 +24,7 @@
 package spacegraph.space2d.phys.pooling;
 
 import jcog.math.v2;
+import jcog.math.v3;
 import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.Collision;
 import spacegraph.space2d.phys.collision.Distance;
@@ -32,7 +33,6 @@ import spacegraph.space2d.phys.common.Mat22;
 import spacegraph.space2d.phys.common.Mat33;
 import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.dynamics.contacts.Contact;
-import jcog.math.v3;
 
 /**
  * World pool interface

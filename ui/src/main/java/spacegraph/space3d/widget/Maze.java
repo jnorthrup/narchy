@@ -1,10 +1,10 @@
 package spacegraph.space3d.widget;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.Dynamics3D;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.shape.*;
-import jcog.math.v3;
 
 import java.nio.ByteBuffer;
 

@@ -30,11 +30,10 @@ public class ThreadLibraryTestCase {
 
 	/**
 	 * Test method for {@link alice.tuprolog.lib.ThreadLibrary#thread_id_1(alice.tuprolog.Term)}.
-	 * @throws InvalidTheoryException 
-	 * @throws MalformedGoalException 
+	 * @throws MalformedGoalException
 	 * @throws NoSolutionException 
 	 */
-	@Test public void testThread_id_1() throws InvalidTheoryException, MalformedGoalException, NoSolutionException {
+	@Test public void testThread_id_1() throws MalformedGoalException, NoSolutionException {
 		Solution sinfo = engine.solve("thread_id(ID).");	
 		assertTrue(sinfo.isSuccess());
 		Term id = sinfo.getVarValue("ID");
@@ -464,7 +463,7 @@ public class ThreadLibraryTestCase {
             assertEquals(new NumberTerm.Int(40320), Y);
     }
 	
-	@Test public void testMutex1() throws InvalidTheoryException, MalformedGoalException, NoSolutionException{
+	@Test public void testMutex1() throws InvalidTheoryException, MalformedGoalException {
 		theory = "start(X) :- thread_create(ID, genitore(bob,X)), mutex_lock('mutex'), thread_create(ID2, lettura(ID,X)), loop(1,3,1,ID),  mutex_unlock('mutex').\n" +
 		"genitore(bob,c).\n" +
 		"genitore(bob,gdh).\n" +
@@ -478,7 +477,7 @@ public class ThreadLibraryTestCase {
 		assertTrue(sinfo.isSuccess());
 	}
 	
-	@Test public void testMutex2() throws InvalidTheoryException, MalformedGoalException, NoSolutionException{
+	@Test public void testMutex2() throws InvalidTheoryException, MalformedGoalException {
 		theory = "start :- thread_create(ID1, figlio(bob,X)), mutex_lock('mutex')," +
 				"thread_create(ID2, lettura(ID1,X)), loop(1,5,1,ID1),  mutex_unlock('mutex').\n" +
 				"loop(I, To, Inc, ThreadId) :- Inc >= 0, I > To, !.\n" +
@@ -497,7 +496,7 @@ public class ThreadLibraryTestCase {
 		
 	}
 	
-	@Test public void testMutex3() throws InvalidTheoryException, MalformedGoalException, NoSolutionException{
+	@Test public void testMutex3() throws InvalidTheoryException, MalformedGoalException {
 		theory = "start :- thread_create(ID1, figlio(bob,X))," +
 				"loop(1,5,1,ID1), thread_create(ID2, lettura(ID1,X)).\n" +
 				"loop(I, To, Inc, ThreadId) :- Inc >= 0, I > To, !.\n" +
@@ -515,7 +514,7 @@ public class ThreadLibraryTestCase {
 	}
 	
 	@Test
-	public void concurrentTest1() throws InvalidTheoryException, MalformedGoalException, NoSolutionException{
+	public void concurrentTest1() throws InvalidTheoryException, MalformedGoalException {
 		theory= "bubble(L1,L2) :- bubble(L1,0,L2).\n" +
 				"bubble(L1,0,L2) :- sweep(L1,0,L2).\n" +
 				"bubble(L1,0,L2) :- sweep(L1,1,LTMP),bubble(LTMP,0,L2).\n" +
@@ -546,7 +545,7 @@ public class ThreadLibraryTestCase {
 	}
 	
 	@Test
-	public void concurrentTest2() throws InvalidTheoryException, MalformedGoalException, NoSolutionException{
+	public void concurrentTest2() throws InvalidTheoryException, MalformedGoalException {
 		theory= "coppie(L,C,DX,SX):-thread_create(ID1, coppieDX(L,C,DX)), thread_create(ID2, coppieSX(L,C,SX)).\n" +
 		
 				"coppieDX([],_,[]).\n " +
@@ -565,7 +564,7 @@ public class ThreadLibraryTestCase {
 	}
 	
 	@Test
-	public void concurrentTest3() throws InvalidTheoryException, MalformedGoalException, NoSolutionException{
+	public void concurrentTest3() throws InvalidTheoryException, MalformedGoalException {
 		theory="study(L_stud, L_exams, N,Num) :- thread_create(ID, loop(1, N, 1, L_stud, L_exams)), length(L_exams,Num). \n"+
 				
 				"length([],0).\n"+

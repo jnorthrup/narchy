@@ -106,10 +106,9 @@ public abstract class UnitCompound implements Compound {
     @Override
     public Term dt(int nextDT) {
         if (nextDT == XTERNAL) {
-            if (op()==CONJ) {
-                //only case it's allowed
-                return CachedCompound.newCompound(CONJ, XTERNAL, new ArrayTermVector(sub()));
-            }
+            //only case it's allowed
+            assert(op()==CONJ);
+            return CachedCompound.newCompound(CONJ, XTERNAL, new ArrayTermVector(sub()));
         }
         assert(nextDT == DTERNAL);
         return this;
@@ -180,10 +179,6 @@ public abstract class UnitCompound implements Compound {
 
 
 
-    @Override
-    public boolean eventsWhile(LongObjectPredicate<Term> each, long dt, boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal, int depth) {
-        return each.accept(dt, this);
-    }
 
     @Override
     public void appendSubtermsTo(ByteArrayDataOutput out) {

@@ -1,13 +1,13 @@
 package spacegraph.space2d.hud;
 
 import jcog.math.v2;
+import jcog.math.v3;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMovePixels;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.util.animate.Animated;
-import jcog.math.v3;
 import spacegraph.video.JoglSpace;
 
 /**

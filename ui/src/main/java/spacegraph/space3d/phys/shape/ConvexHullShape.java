@@ -23,11 +23,11 @@
 
 package spacegraph.space3d.phys.shape;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.collision.broad.BroadphaseNativeType;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.util.OArrayList;
-import jcog.math.v3;
 
 import java.util.Collection;
 

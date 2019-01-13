@@ -23,10 +23,10 @@
 
 package spacegraph.space3d.phys.solve;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.TransformUtil;
-import jcog.math.v3;
 
 /**
  * SolverBody is an internal data structure for the constraint solver. Only necessary

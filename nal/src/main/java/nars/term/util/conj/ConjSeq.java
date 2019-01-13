@@ -29,7 +29,7 @@ public enum ConjSeq { ;
             }
             last[0] = when;
             return true; //continue looking for last event
-        }, 0, xdt!=0, xdt!=DTERNAL, false, 0);
+        }, 0, xdt!=0, xdt!=DTERNAL, false);
 
         return firstOrLast ? found[0] == 0 : found[0] == last[0];
 

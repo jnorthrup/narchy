@@ -26,6 +26,7 @@
 package spacegraph.space3d.phys.shape;
 
 import jcog.data.list.FasterList;
+import jcog.math.v3;
 import spacegraph.space3d.phys.math.MiscUtil;
 import spacegraph.space3d.phys.math.convexhull.HullDesc;
 import spacegraph.space3d.phys.math.convexhull.HullFlags;
@@ -33,7 +34,6 @@ import spacegraph.space3d.phys.math.convexhull.HullLibrary;
 import spacegraph.space3d.phys.math.convexhull.HullResult;
 import spacegraph.space3d.phys.util.IntArrayList;
 import spacegraph.space3d.phys.util.OArrayList;
-import jcog.math.v3;
 
 /**
  * ShapeHull takes a {@link ConvexShape}, builds the convex hull using {@link HullLibrary}

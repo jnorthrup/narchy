@@ -26,6 +26,7 @@
 
 package spacegraph.space3d.widget;
 
+import jcog.math.v3;
 import spacegraph.space3d.SpaceGraphPhys3D.ExtraGlobals;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.Dynamics3D;
@@ -36,7 +37,6 @@ import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.shape.CapsuleShape;
 import spacegraph.space3d.phys.shape.CollisionShape;
 import spacegraph.space3d.phys.util.BulletStack;
-import jcog.math.v3;
 
 
 /**

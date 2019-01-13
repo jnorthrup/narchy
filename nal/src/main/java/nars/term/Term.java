@@ -390,7 +390,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * null if not contained or indeterminate (ex: XTERNAL)
      */
     @Nullable
-    default int[] subTimes(Term x) {
+    @Deprecated default int[] subTimes(Term x) {
         int t = subTimeOnly(x);
         return t == DTERNAL ? null : new int[]{t};
     }
@@ -399,7 +399,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * returns the unique sub-event time of the given term,
      * or DTERNAL if not present or there is not one unique time.
      */
-    default int subTimeOnly(Term x) {
+    @Deprecated default int subTimeOnly(Term x) {
         return equals(x) ? 0 : DTERNAL;
     }
 
@@ -454,7 +454,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
                         }
                     }
                     return true;
-                }, 0, false, false, false, 0);
+                }, 0, false, false, false);
                 return true;
             } else {
                 if (contains(match))
@@ -573,10 +573,10 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
                     (dtDither > 1) ? Tense.dither(w, dtDither) : w,
                     t));
             return true;
-        }, offset, decomposeParallel, decomposeEternal, false, 0);
-        if (events.size() > 1) {
-            events.sortThisByLong(LongObjectPair::getOne);
-        }
+        }, offset, decomposeParallel, decomposeEternal, false);
+//        if (events.size() > 1) {
+//            events.sortThisByLong(LongObjectPair::getOne);
+//        }
         return events;
     }
 
@@ -590,10 +590,10 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
 
-    default boolean eventsWhile(LongObjectPredicate<Term> whileEachEvent, long dt,
-                                boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal,
-                                int level) {
-        return whileEachEvent.accept(dt, this);
+
+    default boolean eventsWhile(LongObjectPredicate<Term> each, long dt,
+                                boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal) {
+        return each.accept(dt, this);
     }
 
 //    /** recursively visits all conj and impl sub-conditions */
@@ -734,7 +734,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
             if (what != Term.this)
                 s.add(what);
             return true;
-        }, 0, true, true, true, 0);
+        }, 0, true, true, true);
         return s;
     }
 

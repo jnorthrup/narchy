@@ -14,8 +14,8 @@ import nars.term.atom.Atom;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.obj.QuantityTerm;
-import nars.term.util.conj.Conj;
 import nars.term.util.Image;
+import nars.term.util.conj.Conj;
 import nars.time.Tense;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
@@ -477,7 +477,7 @@ public class Builtin {
                        candidates.add(what);
                    }
                    return true;
-               }, 0, (!econj || edt!=DTERNAL), (!econj || edt!=0), true, 0);
+               }, 0, (!econj || edt!=DTERNAL), (!econj || edt!=0), true);
                if (candidates.isEmpty())
                    return Null;
                return candidates.get(nar.random());

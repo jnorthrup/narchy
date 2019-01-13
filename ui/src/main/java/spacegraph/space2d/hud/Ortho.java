@@ -8,6 +8,7 @@ import jcog.Util;
 import jcog.event.Off;
 import jcog.exe.Exe;
 import jcog.math.v2;
+import jcog.math.v3;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.input.finger.Finger;
@@ -18,7 +19,6 @@ import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.container.Container;
 import spacegraph.util.animate.AnimVector3f;
 import spacegraph.util.animate.Animated;
-import jcog.math.v3;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.JoglWindow;
 

@@ -2,7 +2,6 @@ package nars.nal.nal3;
 
 import nars.NAR;
 import nars.NARS;
-import nars.Narsese;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Disabled;
@@ -20,7 +19,7 @@ public class NAL3GuessTest extends NALTest {
     }
 
     @Test
-    void composition_on_both_sides_of_a_statement() throws Narsese.NarseseException {
+    void composition_on_both_sides_of_a_statement() {
 
         TestNAR tester = test;
         tester.believe("<bird --> animal>", 0.9f, 0.9f);
@@ -30,7 +29,7 @@ public class NAL3GuessTest extends NALTest {
     }
 
     @Test
-    void composition_on_both_sides_of_a_statement_2() throws Narsese.NarseseException {
+    void composition_on_both_sides_of_a_statement_2() {
 
         TestNAR tester = test;
         tester.believe("<bird --> animal>", 0.9f, 0.9f);
@@ -42,7 +41,7 @@ public class NAL3GuessTest extends NALTest {
     }
 
     @Test
-    void composition_on_both_sides_of_a_statement2() throws Narsese.NarseseException {
+    void composition_on_both_sides_of_a_statement2() {
 
         TestNAR tester = test;
         tester.believe("<bird --> animal>", 0.9f, 0.9f);
@@ -52,7 +51,7 @@ public class NAL3GuessTest extends NALTest {
     }
 
     @Test
-    void composition_on_both_sides_of_a_statement2_2() throws Narsese.NarseseException {
+    void composition_on_both_sides_of_a_statement2_2() {
 
         TestNAR tester = test;
         tester.believe("<bird --> animal>", 0.9f, 0.9f);
@@ -61,7 +60,7 @@ public class NAL3GuessTest extends NALTest {
 
     }
     @Test
-    void compound_composition_one_premise() throws Narsese.NarseseException {
+    void compound_composition_one_premise() {
 
         TestNAR tester = test;
         tester.believe("<swan --> bird>", 0.9f, 0.9f);
@@ -71,7 +70,7 @@ public class NAL3GuessTest extends NALTest {
     }
 
     @Test
-    void compound_composition_one_premise2() throws Narsese.NarseseException {
+    void compound_composition_one_premise2() {
         test
                 .believe("(swan --> bird)", 0.9f, 0.9f)
                 .ask("((swan&swimmer) --> bird)")

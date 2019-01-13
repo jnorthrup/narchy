@@ -3,6 +3,7 @@ package spacegraph.space3d;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.math.Quaternion;
 import jcog.Util;
+import jcog.math.v3;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.Collidable;
@@ -12,7 +13,6 @@ import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.shape.CollisionShape;
 import spacegraph.space3d.phys.shape.SimpleBoxShape;
 import spacegraph.space3d.phys.shape.SphereShape;
-import jcog.math.v3;
 
 import java.util.List;
 import java.util.function.Consumer;

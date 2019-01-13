@@ -23,12 +23,12 @@
 
 package spacegraph.space3d.phys.collision.narrow;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.math.MatrixUtil;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.shape.ConvexShape;
-import jcog.math.v3;
 
 /**
  * SubsimplexConvexCast implements Gino van den Bergens' paper

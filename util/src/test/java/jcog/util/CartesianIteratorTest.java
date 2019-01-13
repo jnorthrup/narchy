@@ -23,7 +23,7 @@ class CartesianIteratorTest {
 
 
     @Test
-    void test_0() throws Exception {
+    void test_0() {
         CartesianIterator<String> it = new CartesianIterator(String[]::new,
                 List.of(new String[0]));
 
@@ -35,7 +35,7 @@ class CartesianIteratorTest {
     }
 
     @Test
-    void test_1() throws Exception {
+    void test_1() {
         CartesianIterator<String> it = new CartesianIterator(String[]::new,
                 List.of(new String[] {"a"}));
 
@@ -45,7 +45,7 @@ class CartesianIteratorTest {
     }
 
     @Test
-    void test_2() throws Exception {
+    void test_2() {
         CartesianIterator it = new CartesianIterator(String[]::new,
                 Arrays.asList(new String[] {"a", "b"}));
 
@@ -57,7 +57,7 @@ class CartesianIteratorTest {
     }
 
     @Test
-    void test_2_0() throws Exception {
+    void test_2_0() {
         CartesianIterator it = new CartesianIterator(String[]::new,
                 Arrays.asList(new String[] {"a", "b"}),
                 Arrays.asList(new String[] {}));
@@ -70,7 +70,7 @@ class CartesianIteratorTest {
     }
 
     @Test
-    void test_2_2() throws Exception {
+    void test_2_2() {
         CartesianIterator it = new CartesianIterator(String[]::new,
                 Arrays.asList(new String[] {"a", "b"}),
                 Arrays.asList(new String[] {"c", "d"}));
@@ -87,7 +87,7 @@ class CartesianIteratorTest {
     }
 
     @Test
-    void test_2_3_4() throws Exception {
+    void test_2_3_4() {
         CartesianIterator it = new CartesianIterator(String[]::new,
                 Arrays.asList(new String[] {"a", "b"}),
                 Arrays.asList(new String[] {"c", "d", "e"}),

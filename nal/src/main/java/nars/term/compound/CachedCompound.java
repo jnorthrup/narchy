@@ -6,6 +6,7 @@ import nars.The;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.time.Tense.DTERNAL;
@@ -79,6 +80,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
         public final boolean hasXternal() {
             return false;
         }
+
 
 
         @Override
@@ -221,7 +223,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
     @Override
     public boolean equals(@Nullable Object that) {
-        return Compound.equals(this, that);
+        return Compound.equals(this, that, true);
     }
 
 

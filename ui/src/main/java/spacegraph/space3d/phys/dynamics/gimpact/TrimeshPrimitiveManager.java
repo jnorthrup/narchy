@@ -27,11 +27,11 @@
 
 package spacegraph.space3d.phys.dynamics.gimpact;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.dynamics.gimpact.BoxCollision.AABB;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.shape.StridingMeshInterface;
 import spacegraph.space3d.phys.shape.VertexData;
-import jcog.math.v3;
 
 /**
  *

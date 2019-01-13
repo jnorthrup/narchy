@@ -427,7 +427,7 @@ public class MLP2 {
 	// | Batch Learning |
 	// +----------------+
 	
-	public float BatchLearning(int nSamples, float[][] Input, float[][] ExpectedOutput, String WeightsFileName) throws IOException {
+	public float BatchLearning(int nSamples, float[][] Input, float[][] ExpectedOutput, String WeightsFileName) {
 		int nLayers = layer.length;
 		for (int iter = 0; iter < Epochs; iter++){
 	        System.out.print("Iteration " + iter + ": ");

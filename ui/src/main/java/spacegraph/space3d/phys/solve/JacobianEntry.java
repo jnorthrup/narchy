@@ -23,10 +23,10 @@
 
 package spacegraph.space3d.phys.solve;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.util.math.Matrix3f;
-import jcog.math.v3;
 
 
 

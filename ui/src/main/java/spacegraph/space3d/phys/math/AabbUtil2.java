@@ -24,8 +24,8 @@
 package spacegraph.space3d.phys.math;
 
 
-import spacegraph.util.math.Matrix3f;
 import jcog.math.v3;
+import spacegraph.util.math.Matrix3f;
 
 import static jcog.math.v3.v;
 

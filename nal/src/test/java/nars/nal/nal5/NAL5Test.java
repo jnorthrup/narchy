@@ -424,7 +424,7 @@ public class NAL5Test extends NALTest {
      */
     @Disabled
     @Test
-    void compound_composition_one_premises() throws nars.Narsese.NarseseException {
+    void compound_composition_one_premises() {
 
         TestNAR tester = test;
         tester.believe("(robin --> [flying])");
@@ -557,9 +557,10 @@ public class NAL5Test extends NALTest {
 
 
         test
-                .believe("<(&&,(robin --> [chirping]),(robin --> [flying]),(robin --> [withWings])) ==> a>")
-                .believe("(robin --> [flying])")
-                .mustBelieve(cycles, " <(&&,(robin --> [chirping]),(robin --> [withWings])) ==> a>", 1.00f, 0.81f);
+            .termVolMax(15)
+            .believe("<(&&,(robin --> [chirping]),(robin --> [flying]),(robin --> [withWings])) ==> a>")
+            .believe("(robin --> [flying])")
+            .mustBelieve(cycles, " <(&&,(robin --> [chirping]),(robin --> [withWings])) ==> a>", 1.00f, 0.81f);
 
     }
 
@@ -609,7 +610,7 @@ public class NAL5Test extends NALTest {
     void conditional_abduction2_viaMultiConditionalSyllogism() {
 
         test
-
+            .termVolMax(15)
             .believe("<(&&,(robin --> [withWings]),(robin --> [chirping])) ==> a>")
             .believe("<(&&,(robin --> [flying]),(robin --> [withWings]),(robin --> [chirping])) ==> a>")
             .mustBelieve(cycles, "(robin --> [flying])",

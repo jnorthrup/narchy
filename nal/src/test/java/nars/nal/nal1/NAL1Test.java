@@ -113,7 +113,7 @@ public class NAL1Test extends NALTest {
 
 
     @Test
-    void backwardInference() throws nars.Narsese.NarseseException {
+    void backwardInference() {
 
         test
                 .believe("<bird --> swimmer>", 1.0f, 0.8f)
@@ -124,7 +124,7 @@ public class NAL1Test extends NALTest {
     }
 
     @Test
-    void backwardInference2() throws nars.Narsese.NarseseException {
+    void backwardInference2() {
 
         /*
         $.14 (1-->(?1,0,/))? {866: 1©}
@@ -142,7 +142,7 @@ public class NAL1Test extends NALTest {
 
     @Disabled
     @Test
-    void structureTransformation_InhQuestion_SimBelief() throws nars.Narsese.NarseseException {
+    void structureTransformation_InhQuestion_SimBelief() {
 
         TestNAR tester = test;
         tester.believe("<bright <-> smart>", 0.9f, 0.9f);
@@ -234,7 +234,7 @@ public class NAL1Test extends NALTest {
 
 
     @Test
-    void similarityToInheritance4() throws nars.Narsese.NarseseException {
+    void similarityToInheritance4() {
 
         TestNAR tester = test;
         tester.believe("<bird <-> swan>", 0.9f, 0.9f);

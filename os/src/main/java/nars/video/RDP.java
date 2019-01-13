@@ -15,7 +15,6 @@ package nars.video;
 
 import nars.NAR;
 import nars.NAgentX;
-import nars.Narsese;
 import nars.agent.FrameTrigger;
 import nars.agent.NAgent;
 import net.propero.rdp.Rdesktop;
@@ -33,7 +32,7 @@ public class RDP extends NAgent {
 
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(RDP.class);
 
-    public RDP(NAR n, String host, int port) throws RdesktopException, Narsese.NarseseException {
+    public RDP(NAR n, String host, int port) throws RdesktopException {
         super($$("rdp(\"" + host + "\", " + port + ")"), FrameTrigger.durs(1), n);
         RdesktopFrame w = Rdesktop.RDPwindow(host + ":" + port);
 

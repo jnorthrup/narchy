@@ -6,8 +6,8 @@ import nars.io.NarseseTest;
 import nars.task.util.TaskException;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.util.conj.Conj;
 import nars.term.util.SetSectDiff;
+import nars.term.util.conj.Conj;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -544,7 +544,7 @@ public class TermReductionsTest extends NarseseTest {
 
 
     @Test
-    void testCoNegatedDifference() throws Narsese.NarseseException {
+    void testCoNegatedDifference() {
 
 
 //        {

@@ -13,7 +13,7 @@ public class TestEinsteinRiddle {
     
     @Disabled
     @Test
-    public void einsteinsRiddle() throws InterruptedException, IOException, URISyntaxException, InvalidTheoryException {
+    public void einsteinsRiddle() throws IOException, URISyntaxException, InvalidTheoryException {
 
         final boolean[] finished = {false};
 

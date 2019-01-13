@@ -139,7 +139,7 @@ class Licence {
          */
     }
 
-    private static byte[] generate_hwid() throws UnsupportedEncodingException {
+    private static byte[] generate_hwid() {
         byte[] hwid = new byte[LICENCE_HWID_SIZE];
         Secure.setLittleEndian32(hwid, 2);
         byte[] name = Options.hostname.getBytes(StandardCharsets.US_ASCII);

@@ -23,10 +23,10 @@
 
 package spacegraph.space3d.phys.collision.broad;
 
+import jcog.math.v3;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.util.OArrayList;
-import jcog.math.v3;
 
 /**
  * SimpleBroadphase is just a unit-test for {@link AxisSweep3}, {@link AxisSweep3_32},

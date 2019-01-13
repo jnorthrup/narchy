@@ -9,7 +9,9 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spacegraph.util.geo.osm.*;
+import spacegraph.util.geo.osm.GeoVec3;
+import spacegraph.util.geo.osm.OsmNode;
+import spacegraph.util.geo.osm.OsmWay;
 
 import java.util.List;
 import java.util.Map;

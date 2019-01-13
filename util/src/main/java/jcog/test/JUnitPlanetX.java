@@ -58,7 +58,7 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
         }
 
         @Override
-        public void awaitFinished() throws InterruptedException {
+        public void awaitFinished() {
 
         }
     };

@@ -24,8 +24,8 @@
 package spacegraph.space3d.phys.collision.narrow;
 
 
-import spacegraph.space3d.phys.math.VectorUtil;
 import jcog.math.v3;
+import spacegraph.space3d.phys.math.VectorUtil;
 
 /**
  * VoronoiSimplexSolver is an implementation of the closest point distance algorithm

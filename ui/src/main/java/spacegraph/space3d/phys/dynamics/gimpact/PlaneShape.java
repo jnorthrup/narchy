@@ -27,11 +27,11 @@
 
 package spacegraph.space3d.phys.dynamics.gimpact;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.shape.StaticPlaneShape;
 import spacegraph.util.math.Vector4f;
-import jcog.math.v3;
 
 /**
  *

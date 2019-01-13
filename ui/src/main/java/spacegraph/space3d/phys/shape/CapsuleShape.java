@@ -23,13 +23,13 @@
 
 package spacegraph.space3d.phys.shape;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.collision.broad.BroadphaseNativeType;
 import spacegraph.space3d.phys.math.MatrixUtil;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.util.math.Matrix3f;
-import jcog.math.v3;
 
 /**
  * CapsuleShape represents a capsule around the Y axis, there is also the

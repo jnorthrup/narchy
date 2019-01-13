@@ -8,7 +8,6 @@ import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.iterator.MutableLongIterator;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 
 import java.util.Arrays;
@@ -44,7 +43,7 @@ public class ConjLazy extends FasterList<Term> implements ConjBuilder {
     public static ConjLazy events(Term conj, long occOffset) {
         ConjLazy l = new ConjLazy(conj.op() == CONJ ? 4 : 1);
         conj.eventsWhile(l::add,
-                occOffset, true, true, false, 0);
+                occOffset, true, true, false);
         return l;
     }
 

@@ -24,7 +24,7 @@ public class JavaDynamicClassLoaderTestCase {
     String[] paths = new String[PATHS_NUMBER];
 
     @Test
-    public void ConstructorTest() throws IOException, ClassNotFoundException {
+    public void ConstructorTest() throws IOException {
         JavaDynamicClassLoader loader = new JavaDynamicClassLoader();
         assertNotNull(loader);
 
@@ -58,7 +58,7 @@ public class JavaDynamicClassLoaderTestCase {
     }
 
     @Test
-    public void LoadClassNotFoundTest() throws ClassNotFoundException, IOException {
+    public void LoadClassNotFoundTest() {
         assertThrows(ClassNotFoundException.class, () -> {
             JavaDynamicClassLoader loader = null;
             setPath(true);
@@ -69,7 +69,7 @@ public class JavaDynamicClassLoaderTestCase {
     }
 
     @Test
-    public void InvalidPathTest() throws ClassNotFoundException, IOException {
+    public void InvalidPathTest() {
         assertThrows(ClassNotFoundException.class, () -> {
             JavaDynamicClassLoader loader = null;
             URL url = new File(".").toURI().toURL();
@@ -95,7 +95,7 @@ public class JavaDynamicClassLoaderTestCase {
     }
 
     @Test
-    public void TestNestedPackage() throws ClassNotFoundException, IOException {
+    public void TestNestedPackage() {
         assertThrows(ClassNotFoundException.class, () -> {
 
             JavaDynamicClassLoader loader = null;

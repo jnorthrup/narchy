@@ -22,7 +22,7 @@ public class TestVarIsEqual {
   private final SysoutListener sysoutListener = new SysoutListener();
 
   @BeforeEach
-  protected void setUp() throws Exception {
+  protected void setUp() {
     core = new Prolog();
     core.addOutputListener(sysoutListener);
   }

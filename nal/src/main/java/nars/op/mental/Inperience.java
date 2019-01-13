@@ -14,8 +14,8 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.term.util.conj.Conj;
 import nars.term.util.Image;
+import nars.term.util.conj.Conj;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
 import nars.time.Tense;
@@ -119,7 +119,7 @@ abstract public class Inperience extends TaskLeakTransform {
                             ss.add(transform(what));
                             last[0] = when;
                             return true;
-                        },0, false, false, false,0);
+                        },0, false, false, false);
 
                         return $.func(seq, ss);
 

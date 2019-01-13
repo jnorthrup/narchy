@@ -27,11 +27,11 @@
 package spacegraph.space3d.phys.collision.broad;
 
 import jcog.data.list.FasterList;
+import jcog.math.v3;
 import spacegraph.space3d.phys.BulletStats;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.math.MiscUtil;
 import spacegraph.space3d.phys.math.VectorUtil;
-import jcog.math.v3;
 
 /**
  * AxisSweep3Internal is an internal base class that implements sweep and prune.

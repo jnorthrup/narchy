@@ -25,7 +25,10 @@ package spacegraph.space3d.phys.math;
 
 import com.jogamp.opengl.math.Quaternion;
 import jcog.math.v3;
-import spacegraph.util.math.*;
+import spacegraph.util.math.AxisAngle4f;
+import spacegraph.util.math.Matrix3f;
+import spacegraph.util.math.Matrix4f;
+import spacegraph.util.math.Quat4f;
 
 
 /**

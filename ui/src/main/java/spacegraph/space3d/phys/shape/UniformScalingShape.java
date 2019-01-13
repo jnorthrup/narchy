@@ -23,9 +23,9 @@
 
 package spacegraph.space3d.phys.shape;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.collision.broad.BroadphaseNativeType;
 import spacegraph.space3d.phys.math.Transform;
-import jcog.math.v3;
 
 /**
  * UniformScalingShape allows to re-use uniform scaled instances of {@link ConvexShape}

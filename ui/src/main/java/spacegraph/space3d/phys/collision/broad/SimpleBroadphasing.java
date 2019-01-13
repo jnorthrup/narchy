@@ -23,8 +23,8 @@
 
 package spacegraph.space3d.phys.collision.broad;
 
-import spacegraph.space3d.phys.Collidable;
 import jcog.math.v3;
+import spacegraph.space3d.phys.Collidable;
 
 /**
  *

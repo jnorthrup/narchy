@@ -36,7 +36,7 @@ class RoaringBitmapFactoryTest {
     }
 
     
-    private void checkEmptyComplement(BitmapFactory bitmapFactory) throws Exception {
+    private void checkEmptyComplement(BitmapFactory bitmapFactory) {
         int numRow = 5104234;
         ImmutableBitmap bitmap = bitmapFactory.complement(bitmapFactory.makeEmptyImmutableBitmap(), numRow);
         ImmutableBitmap notBitmap = bitmapFactory.complement(bitmap, numRow);
@@ -47,7 +47,7 @@ class RoaringBitmapFactoryTest {
     }
 
     @Test
-    void testUnwrapWithNull() throws Exception {
+    void testUnwrapWithNull() {
         RoaringBitmapFactory factory = new RoaringBitmapFactory();
 
         ImmutableBitmap bitmap = factory.union(
@@ -66,7 +66,7 @@ class RoaringBitmapFactoryTest {
     }
 
     @Test
-    void testUnwrapMerge() throws Exception {
+    void testUnwrapMerge() {
         RoaringBitmapFactory factory = new RoaringBitmapFactory();
 
         WrappedRoaringBitmap set = new WrappedRoaringBitmap();

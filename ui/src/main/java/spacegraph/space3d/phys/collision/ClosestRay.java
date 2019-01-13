@@ -1,9 +1,9 @@
 package spacegraph.space3d.phys.collision;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.Collisions;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.VectorUtil;
-import jcog.math.v3;
 
 /**
  * Created by me on 7/22/16.

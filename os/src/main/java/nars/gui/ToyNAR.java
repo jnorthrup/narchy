@@ -3,7 +3,6 @@ package nars.gui;
 import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.NARS;
-import nars.Narsese;
 import nars.Task;
 import nars.derive.Derivers;
 import nars.derive.impl.ZipperDeriver;
@@ -22,7 +21,7 @@ import java.util.stream.Stream;
 
 public class ToyNAR {
 
-    public static void main(String[] args) throws Narsese.NarseseException {
+    public static void main(String[] args) {
         GraphEdit<Surface> g = GraphEdit.window(1000, 800);
         NAR n = new NARS().index(
                 //new SimpleConceptIndex(128, 0.9f, true)

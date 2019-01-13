@@ -23,6 +23,7 @@
 
 package spacegraph.space3d.phys.collision;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.Collisions;
 import spacegraph.space3d.phys.collision.broad.Broadphasing;
@@ -34,7 +35,6 @@ import spacegraph.space3d.phys.math.TransformUtil;
 import spacegraph.space3d.phys.shape.ConvexShape;
 import spacegraph.space3d.phys.util.OArrayList;
 import spacegraph.util.math.Quat4f;
-import jcog.math.v3;
 
 import java.util.Collection;
 

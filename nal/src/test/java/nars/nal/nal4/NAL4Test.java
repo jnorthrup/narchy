@@ -2,7 +2,6 @@ package nars.nal.nal4;
 
 import nars.NAR;
 import nars.NARS;
-import nars.Narsese;
 import nars.term.util.Image;
 import nars.test.NALTest;
 import org.junit.jupiter.api.Disabled;
@@ -165,7 +164,7 @@ public class NAL4Test extends NALTest {
 
     @Disabled
     @Test
-    void testCompositionFromProductInh() throws nars.Narsese.NarseseException {
+    void testCompositionFromProductInh() {
 
 
         test
@@ -176,7 +175,7 @@ public class NAL4Test extends NALTest {
 
     @Disabled
     @Test
-    void testCompositionFromProductSim() throws nars.Narsese.NarseseException {
+    void testCompositionFromProductSim() {
 
         test
                 .believe("(soda <-> deadly)", 1.0f, 0.9f)
@@ -290,7 +289,7 @@ public class NAL4Test extends NALTest {
         ;
     }
     @Test
-    public void testNormalize1aQ() throws Narsese.NarseseException {
+    public void testNormalize1aQ() {
 
         test
                 .ask("([blue] --> (likes,cat,/))")
@@ -335,7 +334,7 @@ public class NAL4Test extends NALTest {
     }
 
     @Test
-    public void composition_on_both_sides_of_a_statement_2() throws Narsese.NarseseException {
+    public void composition_on_both_sides_of_a_statement_2() {
 
         test.nar.termVolumeMax.set(9);
         test.believe("(bird-->animal)",1.0f,0.9f) //en("Bird is a type of animal.");

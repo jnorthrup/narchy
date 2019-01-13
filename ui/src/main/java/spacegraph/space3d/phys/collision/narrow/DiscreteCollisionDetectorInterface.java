@@ -23,8 +23,8 @@
 
 package spacegraph.space3d.phys.collision.narrow;
 
-import spacegraph.space3d.phys.math.Transform;
 import jcog.math.v3;
+import spacegraph.space3d.phys.math.Transform;
 
 /**
  * This interface is made to be used by an iterative approach to do TimeOfImpact calculations.<p>

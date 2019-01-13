@@ -2,7 +2,6 @@ package nars.op.stm;
 
 import jcog.Util;
 import jcog.WTF;
-import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import jcog.math.LongInterval;
 import jcog.pri.Prioritizable;
@@ -56,6 +55,7 @@ public class ConjClustering extends Causable {
     static final boolean priCopyOrTransfer = false;
 
     final AtomicBoolean learn = new AtomicBoolean(true);
+    private int maxStampLen;
 
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
         this(nar, punc, (t) -> true, centroids, capacity);
@@ -65,8 +65,6 @@ public class ConjClustering extends Causable {
         super();
 
         this.in = nar.newChannel(this).buffered();
-
-        this.dur = nar.dur();
 
         this.model = new BagClustering.Dimensionalize<>(5) {
 
@@ -113,6 +111,9 @@ public class ConjClustering extends Causable {
         this.punc = punc;
         this.filter = filter;
 
+        this.now = Long.MIN_VALUE;
+        update(nar);
+
         nar.on(this);
     }
 
@@ -124,6 +125,7 @@ public class ConjClustering extends Causable {
         on(nar.onTask(t -> {
             if (!t.isEternal()
                     && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets) //TODO allow ImDep's
+                    && t.stamp().length <= maxStampLen
                     && filter.test(t)) {
 
                 data.put(t, pri(t));
@@ -134,9 +136,9 @@ public class ConjClustering extends Causable {
     }
 
     protected float pri(Task t) {
-        return t.priElseZero();
+        return t.priElseZero()
                 //* TruthIntegration.evi(t);
-                // * t.originality()l
+                 * t.originality();
 
     }
 
@@ -145,13 +147,9 @@ public class ConjClustering extends Causable {
     @Override
     protected /*synchronized*/ void next(NAR nar, BooleanSupplier kontinue /* max tasks generated per centroid, >=1 */) {
 
-        if (data == null || data.bag.isEmpty()) return;
+        update(nar);
 
-        this.now = nar.time();
-        this.dur = nar.dur();
-        this.ditherTime = nar.dtDither();
-        this.confMin = nar.confMin.floatValue();
-        this.volMaxSafe = Math.round((this.volMax = nar.termVolumeMax.intValue()) * termVolumeMaxFactor);
+        if (data == null || data.bag.isEmpty()) return;
 
         if (learn.compareAndSet(true,false)) {
             //learn once per duration
@@ -162,6 +160,21 @@ public class ConjClustering extends Causable {
         data.forEachCentroid(nar, nar.random(), conjoiner::conjoinCentroid);
 
         in.commit();
+    }
+
+    private void update(NAR nar) {
+        long now = nar.time();
+        long lastNow = this.now;
+        if (lastNow!=now) {
+            //parameters must be set even if data is empty due to continued use in the filter
+            //but at most once per cycle or duration
+            this.now = now;
+            this.dur = nar.dur();
+            this.ditherTime = nar.dtDither();
+            this.maxStampLen = Param.STAMP_CAPACITY / 2; //for minimum of 2 tasks in each conjunction
+            this.confMin = nar.confMin.floatValue();
+            this.volMaxSafe = Math.round((this.volMax = nar.termVolumeMax.intValue()) * termVolumeMaxFactor);
+        }
     }
 
     protected float forgetRate() {
@@ -189,8 +202,8 @@ public class ConjClustering extends Causable {
     class CentroidConjoiner {
 
         final Map<LongObjectPair<Term>, Task> vv = new HashMap<>(16);
-        final FasterList<Task> actualTasks = new FasterList(8);
-        final MetalLongSet actualStamp = new MetalLongSet(Param.STAMP_CAPACITY * 8);
+
+        final MetalLongSet actualStamp = new MetalLongSet(Param.STAMP_CAPACITY * 2);
 
         /**
          * HACK
@@ -207,7 +220,6 @@ public class ConjClustering extends Causable {
             while (gg.hasNext()) {
 
                 vv.clear();
-                actualTasks.clear();
                 actualStamp.clear();
 
 
@@ -226,68 +238,58 @@ public class ConjClustering extends Causable {
 
                     Task t = gg.next().get();
 
-                    Term xt = t.term();
+                    Term taskTerm = t.term();
 
-                    long zs = t.start();
-
-
+                    long taskStart = Tense.dither(t.start(), ditherTime);
 
                     Truth tx = t.truth();
-                    Term xtn = xt.neg();
+                    Term xtn = taskTerm.neg();
                     if (tx.isNegative()) {
-                        xt = xtn;
+                        taskTerm = xtn;
                     }
 
-                    int xtv = xt.volume();
+                    int xtv = taskTerm.volume();
                     if (vol + xtv + 1 >= ConjClustering.this.volMaxSafe || conf * tx.conf() < confMin) {
                         //continue;
                         break;
                     }
 
-                    boolean include = false;
-                    LongObjectPair<Term> ps = pair(zs, xt);
-                    Term xtNeg = xt.neg();
+                    LongObjectPair<Term> ps = pair(taskStart, taskTerm);
+                    Term xtNeg = taskTerm.neg();
 
 
                     if (!Stamp.overlapsAny(actualStamp, t.stamp())) {
-                        if (!vv.containsKey(pair(zs, xtNeg)) && null == vv.putIfAbsent(ps, t)) {
+                        if (!vv.containsKey(pair(taskStart, xtNeg)) && null == vv.putIfAbsent(ps, t)) {
                             vol += xtv;
-                            include = true;
+
+                            actualStamp.addAll(t.stamp());
+
+                            if (start > taskStart) start = taskStart;
+                            if (end < taskStart) end = taskStart;
+
+                            float tc = tx.conf();
+                            if (tc > confMax) confMax = tc;
+
+                            conf = TruthFunctions.confCompose(conf, tc);
+
+                            float tf = tx.freq();
+                            freq *= tx.isNegative() ? (1f - tf) : tf;
+
+                            float p = t.priElseZero();
+                            if (p < priMin) priMin = p;
+                            if (p > priMax) priMax = p;
+
+                            if (vv.size() >= Param.STAMP_CAPACITY)
+                                break;
                         }
-                    }
-
-
-                    if (include) {
-
-                        actualTasks.add(t);
-
-                        actualStamp.addAll(t.stamp());
-
-                        if (start > zs) start = zs;
-                        if (end < zs) end = zs;
-
-                        float tc = tx.conf();
-                        if (tc > confMax) confMax = tc;
-
-                        conf = TruthFunctions.confCompose(conf, tc);
-
-                        float tf = tx.freq();
-                        freq *= tx.isNegative() ? (1f - tf) : tf;
-
-                        float p = t.priElseZero();
-                        if (p < priMin) priMin = p;
-                        if (p > priMax) priMax = p;
-
-                        if (actualTasks.size() >= Param.STAMP_CAPACITY)
-                            break;
                     }
                 } while (vol < ConjClustering.this.volMaxSafe - 1 && conf > confMin);
 
-                int vs = actualTasks.size();
+                int vs = vv.size();
                 if (vs < 2)
                     continue;
 
-                Task[] uu = actualTasks.toArrayRecycled(Task[]::new);
+                Task[] uu = vv.values().toArray(Task.EmptyArray);
 
 
                 float e = c2wSafe(conf);
@@ -308,7 +310,7 @@ public class ConjClustering extends Causable {
                             ObjectBooleanPair<Term> cp = Task.tryContent(tt, punc, true);
                             if (cp != null) {
 
-                                long range = actualTasks.minValue(LongInterval::range) - 1;
+                                long range = Util.min(LongInterval::range, uu) - 1;
                                 long tEnd = start + range;
                                 NALTask m = new STMClusterTask(cp, t,
                                         Tense.dither(start, ditherTime), Tense.dither(tEnd,ditherTime),
@@ -329,7 +331,7 @@ public class ConjClustering extends Causable {
                                 m.pri(Prioritizable.fund(Util.unitize((priMin /* * uu.length*/ ) * cmplFactor /* * freqFactor  * confFactor*/ ), priCopyOrTransfer, uu));
 
                                 if (popConjoinedTasks) {
-                                    for (Task aa : actualTasks)
+                                    for (Task aa : uu)
                                         data.remove(aa);
                                 }
 

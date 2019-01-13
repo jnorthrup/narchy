@@ -24,6 +24,7 @@
 package spacegraph.space3d.phys;
 
 import jcog.data.list.FasterList;
+import jcog.math.v3;
 import jcog.util.Flip;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space3d.Spatial;
@@ -40,16 +41,15 @@ import spacegraph.space3d.phys.solve.ContactSolverInfo;
 import spacegraph.space3d.phys.solve.SequentialImpulseConstrainer;
 import spacegraph.space3d.phys.util.OArrayList;
 import spacegraph.util.math.Matrix3f;
-import jcog.math.v3;
 
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static jcog.math.v3.v;
 import static spacegraph.space3d.phys.Body3D.ifDynamic;
 import static spacegraph.space3d.phys.Collidable.ISLAND_SLEEPING;
-import static jcog.math.v3.v;
 
 /**
  * DynamicsWorld is the interface class for several dynamics implementation,

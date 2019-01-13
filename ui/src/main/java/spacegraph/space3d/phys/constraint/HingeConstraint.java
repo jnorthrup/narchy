@@ -25,6 +25,7 @@
 
 package spacegraph.space3d.phys.constraint;
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.math.QuaternionUtil;
@@ -34,7 +35,6 @@ import spacegraph.space3d.phys.math.TransformUtil;
 import spacegraph.space3d.phys.solve.JacobianEntry;
 import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.Quat4f;
-import jcog.math.v3;
 
 /**
  * Hinge constraint between two rigid bodies each with a pivot point that descibes

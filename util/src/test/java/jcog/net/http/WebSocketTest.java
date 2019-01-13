@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
@@ -31,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
      */
     class Server extends WebSocketServer {
 
-        Server(int port) throws UnknownHostException {
+        Server(int port) {
             super( new InetSocketAddress( port ), List.of(new Draft_6455()) );
             WebSocketImpl.DEBUG = true;
 

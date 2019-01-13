@@ -1,8 +1,8 @@
 package spacegraph.input.finger.util;
 
 import com.jogamp.newt.event.MouseEvent;
-import spacegraph.space3d.SpaceGraphPhys3D;
 import jcog.math.v3;
+import spacegraph.space3d.SpaceGraphPhys3D;
 
 import static com.jogamp.opengl.math.FloatUtil.sin;
 import static java.lang.Math.cos;

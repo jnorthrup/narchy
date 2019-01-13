@@ -26,12 +26,12 @@
 package spacegraph.space3d.phys.math.convexhull;
 
 import jcog.data.list.FasterList;
+import jcog.math.v3;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.math.MiscUtil;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.shape.ShapeHull;
 import spacegraph.space3d.phys.util.IntArrayList;
-import jcog.math.v3;
 
 /**
  * HullLibrary class can create a convex hull from a collection of vertices, using

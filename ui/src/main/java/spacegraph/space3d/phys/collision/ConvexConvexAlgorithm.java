@@ -24,6 +24,7 @@
 package spacegraph.space3d.phys.collision;
 
 
+import jcog.math.v3;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.broad.CollisionAlgorithm;
 import spacegraph.space3d.phys.collision.broad.CollisionAlgorithmConstructionInfo;
@@ -33,7 +34,6 @@ import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.shape.ConvexShape;
 import spacegraph.space3d.phys.shape.SphereShape;
 import spacegraph.space3d.phys.util.OArrayList;
-import jcog.math.v3;
 
 /**
  * ConvexConvexAlgorithm collision algorithm implements time of impact, convex

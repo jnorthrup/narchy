@@ -17,7 +17,6 @@ import spacegraph.SpaceGraph;
 import spacegraph.audio.synth.SineWave;
 
 import javax.sound.midi.*;
-import javax.sound.sampled.LineUnavailableException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -147,7 +146,7 @@ public class MIDITaskifier {
 
     }
 
-    public static void main(String[] arg) throws LineUnavailableException {
+    public static void main(String[] arg) {
         new MIDITaskifier();
     }
 
