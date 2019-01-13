@@ -8,8 +8,8 @@ import nars.Op;
 import nars.Task;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
-import nars.term.util.conj.Conj;
 import nars.term.util.Image;
+import nars.term.util.conj.Conj;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
@@ -76,21 +76,14 @@ public class DynamicStatementTruth {
     private static Term[] stmtReconstruct(boolean subjOrPred, List<Task> components) {
 
         //extract passive term and verify they all match (could differ temporally, for example)
-        Term[] common = new Term[1];
-        if (!((FasterList<Task>) components).allSatisfy(tr -> {
-            Term uu = tr.term().unneg();
-            Term tt = subjOrPred ? uu.sub(1) : uu.sub(0);
-            Term p = common[0];
-            if (p == null) {
-                common[0] = tt;
-                return true;
-            } else {
-                return p.equals(tt);
-            }
-        }) || (common[0] == null))
+        Term common = components.get(0).term().unneg().sub(subjOrPred ?  1 : 0);
+        int n = components.size();
+        if (((FasterList<Task>) components).anySatisfy(1, n,
+            tr -> !common.equals(tr.term().unneg().sub(subjOrPred ? 1 : 0))
+        ))
             return null; //differing passive component; TODO this can be detected earlier, before truth evaluation starts
 
-        return Util.map(0, components.size(), Term[]::new, tr ->
+        return Util.map(0, n, Term[]::new, tr ->
                 //components.get(tr).task().term().sub(subjOrPred ? 0 : 1)
                 subSubjPredWithNegRewrap(!subjOrPred, components.get(tr))
         );
@@ -185,14 +178,13 @@ public class DynamicStatementTruth {
 
             sect = c.term();
             if (sect == Null)
-                return null; //but allow other Bool's
+                return null; //allow non-Null Bool's?
 
             int cs = c.shiftOrDTERNAL();
             if (cs == DTERNAL || cs == ETERNAL) {
                 outerDT = DTERNAL; //some temporal information destroyed
             } else {
-                long shift = -cs - sect.eventRange();
-                outerDT = Tense.occToDT(shift);
+                outerDT = -Tense.occToDT(cs + sect.eventRange());
             }
 
         } else {

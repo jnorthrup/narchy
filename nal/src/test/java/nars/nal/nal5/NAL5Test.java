@@ -22,7 +22,7 @@ public class NAL5Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(13);
+        n.termVolumeMax.set(14);
         n.confMin.set(0.2f);
         return n;
     }

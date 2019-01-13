@@ -165,7 +165,7 @@ public class Evaluation {
     }
 
 
-    public boolean eval(Evaluator e, Term x) {
+    public boolean eval(Evaluator e, final Term x) {
         //iterate until stable
 
         Term y = x;

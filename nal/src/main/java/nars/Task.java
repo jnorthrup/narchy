@@ -8,7 +8,6 @@ import jcog.pri.UnitPrioritizable;
 import nars.control.Perceive;
 import nars.control.op.Remember;
 import nars.eval.Evaluation;
-import nars.eval.Evaluator;
 import nars.subterm.Subterms;
 import nars.task.*;
 import nars.task.proxy.SpecialNegatedTermTask;
@@ -41,8 +40,6 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.term.atom.Bool.False;
-import static nars.term.atom.Bool.True;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -886,8 +883,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
                 if (y == Bool.Null)
                     return true; //continue TODO maybe limit these
-                if (Param.VOLMAX_RESTRICTS_EVAL && y.volume() > volMax)
-                    return true; //oops
 
                 if (Perceive.tryPerceive(this, y, yy, n)) {
                     forked[0]++;
@@ -895,22 +890,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
 
                 return (forked[0] < Param.TASK_EVAL_FORK_LIMIT) && (tried[0] < Param.TASK_EVAL_TRY_LIMIT);
             };
-            Evaluation e = new Evaluation(each) {
-                @Override
-                protected Term bool(Term y, Bool b) {
-                    //filter non-true
-                    if (b == True && y.equals(x))
-                        return True; //y;
-                    else if (b == False && y.equals(x))
-                        return False; //y.neg();
-                    else
-                        return Bool.Null; //TODO
-                }
-            };
-            e.eval(new Evaluator(n::functor), x);
+            new Perceive.TaskEvaluation(each).eval(n.evaluator, x);
 
         } else {
-            Perceive.tryPerceive(this, x, yy, n);
+            if (!Perceive.tryPerceive(this, x, yy, n))
+                return null;
         }
 
         int yys = yy.size();
@@ -934,10 +918,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
         else
             return AbstractTask.of(yyys ==yys ? /*the original list */ yy : /* the deduplicated set */ yyy);
 
-    }
-
-    default ITask perceive(Task result, NAR n) {
-        return Remember.the(result, n);
     }
 
 

@@ -5,21 +5,26 @@ import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
 import nars.term.Term;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
+import org.eclipse.collections.api.iterator.LongIterator;
+import org.eclipse.collections.api.iterator.MutableLongIterator;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
+import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 import static nars.Op.CONJ;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
 
-/** prepares construction of a conjunction term from components,
+/**
+ * prepares construction of a conjunction term from components,
  * in the most efficient method possible according to them.
  * it is lighter weight than Conj.java in buffering / accumulating
  * events prior to complete construction.
- * */
+ */
 public class ConjLazy extends FasterList<Term> implements ConjBuilder {
     private long[] when;
 
@@ -37,7 +42,7 @@ public class ConjLazy extends FasterList<Term> implements ConjBuilder {
     }
 
     public static ConjLazy events(Term conj, long occOffset) {
-        ConjLazy l = new ConjLazy(conj.op()==CONJ ? 4 : 1);
+        ConjLazy l = new ConjLazy(conj.op() == CONJ ? 4 : 1);
         conj.eventsWhile(l::add,
                 occOffset, true, true, false, 0);
         return l;
@@ -50,12 +55,16 @@ public class ConjLazy extends FasterList<Term> implements ConjBuilder {
 //            return items != null ? Arrays.copyOf(items, newCapacity) : newArray(newCapacity);
 //        }
 
-    /** List semantics are changed in this overridden method. this is just an alias for the add(long, Term) method */
-    @Override public void add(int when, Term t) {
-        this.add((long)when, t);
+    /**
+     * List semantics are changed in this overridden method. this is just an alias for the add(long, Term) method
+     */
+    @Override
+    public void add(int when, Term t) {
+        this.add((long) when, t);
     }
 
-    @Override public boolean add(long when, Term t) {
+    @Override
+    public boolean add(long when, Term t) {
         if (t == True)
             return true; //ignore
 
@@ -63,12 +72,19 @@ public class ConjLazy extends FasterList<Term> implements ConjBuilder {
         if (t == False || t == Null) {
             clear(); //fail
             result = false;
+        } else {
+            //quick check for existing
+            int n = size();
+            for (int i = 0; i < n; i++) {
+                if (when(i) == when && get(i).equals(t))
+                    return true; //existing found
+            }
         }
 
         int s = addAndGetSize(t);
         if (this.when.length < s)
             this.when = Arrays.copyOf(this.when, s);
-        this.when[s-1] = when;
+        this.when[s - 1] = when;
 
         return result;
     }
@@ -85,7 +101,7 @@ public class ConjLazy extends FasterList<Term> implements ConjBuilder {
 
     @Override
     public boolean remove(long at, Term t) {
-        return removeIf((when,what)-> at == when && what.equals(t));
+        return removeIf((when, what) -> at == when && what.equals(t));
     }
 
     public void removeEventFast(int i) {
@@ -116,7 +132,7 @@ public class ConjLazy extends FasterList<Term> implements ConjBuilder {
         if (s == 0)
             return false;
         else if (s == 1) {
-            if (iff.accept(when[0],get(0))) {
+            if (iff.accept(when[0], get(0))) {
                 clear();
                 return true;
             } else
@@ -153,7 +169,8 @@ public class ConjLazy extends FasterList<Term> implements ConjBuilder {
 
     }
 
-    @Override public void reverse() {
+    @Override
+    public void reverse() {
         int s = size();
         if (s > 1) {
             super.reverse();
@@ -164,10 +181,15 @@ public class ConjLazy extends FasterList<Term> implements ConjBuilder {
     @Override
     public boolean removeAll(Term term) {
         switch (size()) {
-            case 0: return false;
-            case 1: if (get(0).equals(term)) { removeEventFast(0); return true; }
+            case 0:
+                return false;
+            case 1:
+                if (get(0).equals(term)) {
+                    removeEventFast(0);
+                    return true;
+                }
             default:
-                return removeIf((when,what)->what.equals(term));
+                return removeIf((when, what) -> what.equals(term));
         }
 
     }
@@ -182,11 +204,14 @@ public class ConjLazy extends FasterList<Term> implements ConjBuilder {
         return new Term[newCapacity];
     }
 
-    @Override public Term term() {
+    @Override
+    public Term term() {
         int n = size();
         switch (n) {
-            case 0: return True;
-            case 1: return get(0);
+            case 0:
+                return True;
+            case 1:
+                return get(0);
             case 2: {
                 long w0 = when[0], w1 = when[1];
 
@@ -229,7 +254,47 @@ public class ConjLazy extends FasterList<Term> implements ConjBuilder {
         return c.term();
     }
 
+    @Override
+    public LongIterator eventOccIterator() {
+        return new InternalLongIterator(when, size());
+    }
+
     public long when(int i) {
         return when[i];
+    }
+
+    static class InternalLongIterator implements MutableLongIterator {
+
+        private final long[] data;
+        /**
+         * Index of element to be returned by subsequent call to next.
+         */
+        private int currentIndex;
+        private int lastIndex;
+
+        public InternalLongIterator(long[] data, int size) {
+            this.data = data;
+            this.lastIndex = size;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return this.currentIndex != lastIndex;
+        }
+
+        @Override
+        public long next() {
+            if (!this.hasNext())
+                throw new NoSuchElementException();
+
+            long next = data[this.currentIndex];
+            this.lastIndex = this.currentIndex++;
+            return next;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
     }
 }

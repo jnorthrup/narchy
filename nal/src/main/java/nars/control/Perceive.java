@@ -6,7 +6,9 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.Operator;
+import nars.control.op.Remember;
 import nars.control.op.TaskEvent;
+import nars.eval.Evaluation;
 import nars.task.ITask;
 import nars.term.Functor;
 import nars.term.Term;
@@ -17,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.term.atom.Bool.True;
@@ -98,7 +101,7 @@ public enum Perceive { ;
         byte punc = t.punc();
         boolean cmd = punc == COMMAND;
         if (!cmd) {
-            ITask p = t.perceive(t, n);
+            ITask p = Remember.the(t, n);
             if (p != null)
                 queue.add(p);
         }
@@ -176,4 +179,21 @@ public enum Perceive { ;
         }
         return true;
     }
-}
+
+    public static class TaskEvaluation extends Evaluation {
+        public TaskEvaluation(Predicate<Term> each) {
+            super(each);
+        }
+
+        @Override
+        protected Term bool(Term x, Bool b) {
+//                    //filter non-true
+            return b;
+//                    if (b == True && x.equals(x))
+//                        return True; //y;
+//                    else if (b == False && x.equals(x))
+//                        return False; //y.neg();
+//                    else
+//                        return Bool.Null; //TODO
+        }
+    }}

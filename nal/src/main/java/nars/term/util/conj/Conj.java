@@ -1217,24 +1217,27 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 Conj c = new Conj();
                 if (eternal) c.addAuto(conjUnneg);
                 else c.add(0, conjUnneg);
-                c.factor();
+                //c.factor();
                 if (!eternal) {
                     boolean removed;
                     if (!(removed = c.remove(dt, incoming))) {
-                        //possibly absorbed in a factored eternal component TODO check if this is always the case
-                        if (c.eventOccurrences() > 1 && c.eventCount(ETERNAL) > 0) {
-                            //try again after distributing to be sure:
-                            c.distribute();
-                            if (!(removed = c.remove(dt, incoming))) {
-                                return Null; //return True;
-                            }
-                        } else {
-                            return Null; //return True;
-                        }
-
+//                        //possibly absorbed in a factored eternal component TODO check if this is always the case
+//                        if (c.eventOccurrences() > 1 && c.eventCount(ETERNAL) > 0) {
+//                            //try again after distributing to be sure:
+//                            //c.distribute();
+//                            if (!(removed = c.remove(dt, incoming))) {
+//                                return Null; //return True;
+//                            }
+//                        } else {
+//                            return Null; //return True;
+//                            //return null; //compatible
+//                        }
+                        return null;
                     }
                 } else {
-                    c.removeAll(incoming);
+                    if (!c.removeAll(incoming)) {
+                        return null; //compatible
+                    }
                 }
                 Term newConjUnneg = c.term();
                 int shift = Tense.occToDT(c.shift());
@@ -2080,25 +2083,18 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         }
         return false;
     }
+//
+//    private static void flattenInto(Collection<Term> ee, Term ex, int dt) {
+//        if (ex.op() == CONJ && ex.dt() == dt)
+//            ex.subterms().forEach(eee -> flattenInto(ee, eee, dt));
+//        else
+//            ee.add(ex);
+//    }
 
-    private static void flattenInto(Collection<Term> ee, Term ex, int dt) {
-        if (ex.op() == CONJ && ex.dt() == dt)
-            ex.subterms().forEach(eee -> flattenInto(ee, eee, dt));
-        else
-            ee.add(ex);
-    }
 
-    public long shift() {
-        long min = Long.MAX_VALUE;
-        LongIterator ii = event.keysView().longIterator();
-        while (ii.hasNext()) {
-            long t = ii.next();
-            if (t != ETERNAL) {
-                if (t < min)
-                    min = t;
-            }
-        }
-        return min == Long.MAX_VALUE ? 0 : min;
+    @Override
+    public LongIterator eventOccIterator() {
+        return event.keysView().longIterator();
     }
 
     public Term term(long when) {

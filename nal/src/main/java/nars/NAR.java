@@ -30,6 +30,7 @@ import nars.control.MetaGoal;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
 import nars.control.op.Remember;
+import nars.eval.Evaluator;
 import nars.eval.Facts;
 import nars.exe.Exec;
 import nars.exe.NARLoop;
@@ -127,6 +128,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     public Logger logger;
 
+    public final Evaluator evaluator = new Evaluator(this::functor);
+
     public NAR(ConceptIndex concepts, Exec exe, Attention attn, Time time, Random rng, ConceptBuilder conceptBuilder) {
 
         this.random = rng;
@@ -202,10 +205,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     public final Functor functor(Atom term) {
         Termed x = concepts.get(term, false);
-        if (x instanceof Functor)
-            return (Functor) x;
-        else
-            return null;
+        return x instanceof Functor ? (Functor) x : null;
     }
 
     /**

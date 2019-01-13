@@ -1,6 +1,5 @@
 package nars.exe;
 
-import jcog.exe.Exe;
 import nars.NAR;
 import nars.task.ITask;
 import org.slf4j.Logger;
@@ -38,8 +37,10 @@ abstract public class Exec implements Executor {
     public void execute(Object t) {
         executeNow(t);
     }
-    public void execute(ITask t) {
-        executeNow(t);
+
+    /** immediately execute a Task */
+    public final void execute(ITask t) {
+        ITask.run(t, nar);
     }
 
     /**
@@ -47,9 +48,9 @@ abstract public class Exec implements Executor {
      */
     final void executeNow(Object t) {
         if (t instanceof ITask)
-            executeNow((ITask) t);
+            execute((ITask) t);
         else {
-            Exe.profiled(t, () -> {
+//            Exe.run(t, () -> {
                 try {
                     if (t instanceof Runnable) {
                         ((Runnable) t).run();
@@ -59,12 +60,8 @@ abstract public class Exec implements Executor {
                 } catch (Throwable e) {
                     logger.error("{} {}", t, /*Param.DEBUG ?*/ e /*: e.getMessage()*/);
                 }
-            });
+//            });
         }
-    }
-
-    final void executeNow(ITask t) {
-        ITask.run(t, nar);
     }
 
     @Override

@@ -113,7 +113,7 @@ public class Statement {
 
 
 
-                    ConjDiff newPredConj = ConjDiff.the(so, subject.negIf(subjNeg), po, predicate, subjNeg);
+                    Conj newPredConj = ConjDiff.the(predicate, po, subject.negIf(subjNeg), so, subjNeg);
                     Term newPred = newPredConj.term();
 
                     boolean predChange = !predicate.equals(newPred);

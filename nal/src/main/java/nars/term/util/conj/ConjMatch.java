@@ -4,6 +4,7 @@ import nars.derive.Derivation;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.term.util.Image;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 
@@ -98,42 +99,53 @@ public class ConjMatch {
         if (eVar || (conj.hasAny(varBits) /*&& x.anySatisfy(1, n, z -> z.getTwo().hasAny(varBits)))*/)) {
             //TODO use SubUnify correctly (ie. termutes via tryMatch )
             UniSubst.MySubUnify s = d.uniSubst.u;
-            for (int matchUnify = parallelLead; matchUnify < n; matchUnify++) {
-                s.ttl = ttl;
-                Term ti = x.get(matchUnify);
-                if (eVar || ti.hasAny(varBits)) {
+            nextUnifiable: for (int matchUnify = parallelLead; matchUnify < n; matchUnify++) {
+                Term xx = x.get(matchUnify);
+                if (eVar || xx.hasAny(varBits)) {
 
                     s.reset(varBits, false);
 
-                    if (event.unify(ti, s)) {
+                    Term yy = s.unifySubst(xx, event, xx, ttl, varBits, false);
+                    if (yy!=null) {
+                        if (yy == False)
+                            continue; //fail
+
 
                         //s.xy.forEach(d.xy::set);
-                        s.xy.forEach(d.retransform::put);
 
+
+                        Term z;
                         if (n == 2) {
-                            return x.get(1-matchUnify).replace(s.xy); //TODO keep trying if term fails to transform
+                            z = x.get(1-matchUnify).replace(s.xy); //TODO keep trying if term fails to transform
                         } else {
 
                             //include any other events occurring at the same time as matchExact but not those after it
 
-                            LongObjectPair<Term> me = x.removeEvent(matchUnify);
-                            long meTime = me.getOne();
-                            x.removeIf(
-                                    beforeOrAfter ?
-                                            (when,what) -> when > meTime
-                                            :
-                                            (when,what) -> when < meTime
-                            );
+                            boolean includeMatched = false; //TODO can be a parameter
+                            long xTime = x.when(matchUnify);
 
-                            n = x.size();
+                            ConjLazy y = new ConjLazy(x.size());
                             for (int j = 0; j < n; j++) {
+                                if (matchUnify == j && !includeMatched) continue; //skip the matched event
+                                long jw = x.when(j);
+                                if (beforeOrAfter && jw > xTime) continue;
+                                if (!beforeOrAfter && jw < xTime) continue;
                                 Term jj = x.get(j).replace(s.xy);
-                                if (jj == False) {
-                                    return False; //TODO keep trying on different event?
+                                if (jj == Null || jj == False) {
+                                    continue nextUnifiable;
                                 }
-                                x.set(j, jj);
+                                y.add(jw, jj);
                             }
-                            return x.term();
+
+                            if (includeMatched)
+                                y.add(x.when(matchUnify), yy);
+
+                            z = y.term();
+                        }
+
+                        if (z!=null && !(z instanceof Bool)) {
+                            s.xy.forEach(d.retransform::put);
+                            return z;
                         }
                     }
                 }

@@ -10,6 +10,7 @@ import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.util.Image;
+import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.VAR_DEP;
 import static nars.term.atom.Bool.Null;
@@ -132,7 +133,7 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
             int ttl = Math.max(1, parent.nar.subUnifyTTLMax.intValue() - 1);
             x = Image.imageNormalize(x);
             y = Image.imageNormalize(y);
-            output = u.reset(var, strict).uniSubst(c, x, y, ttl);
+            output = u.unifySubst(x, y, c, ttl, var, strict);
             parent.use(1 + ttl - u.ttl);
         } else {
             output = null;
@@ -202,6 +203,12 @@ public class UniSubst extends Functor implements Functor.InlineFunctor {
                 return true;
             }
             return false;
+        }
+
+        @Nullable
+        public Term unifySubst(Term x, Term y, Term transformed, int ttl, int var, boolean strict) {
+            reset(var, strict);
+            return unifySubst(x, y, transformed, ttl);
         }
     }
 

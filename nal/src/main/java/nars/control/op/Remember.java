@@ -43,12 +43,29 @@ public class Remember extends AbstractTask {
     @Nullable
     public static Remember the(Task input, NAR n) {
 
+        assert (!input.isCommand());
+
         assert (input.op().taskable);
+
+        boolean isInput = input.isInput();
+        if (Param.VOLMAX_RESTRICTS || (Param.VOLMAX_RESTRICTS_INPUT && isInput)) {
+            int termVol = input.term().volume();
+            int maxVol = n.termVolumeMax.intValue();
+            if (termVol > maxVol)
+                throw new TaskException(input, "term exceeds volume maximum: " + termVol + " > " + maxVol);
+        }
+
+        if ((!isInput || input instanceof TaskProxy) && input.isBeliefOrGoal() && input.conf() < n.confMin.floatValue()) {
+            if (Param.DEBUG)
+                throw new TaskException(input, "insufficient evidence for non-input Task");
+            else
+                return null;
+        }
 
 
         //verify dithering
         if (Param.DEBUG_ENSURE_DITHERED_TRUTH) {
-            if (!input.isInput()) {
+            if (!isInput) {
                 Truth t = input.truth();
                 if (t != null) {
                     Truth d = t.dithered(n);
@@ -86,36 +103,22 @@ public class Remember extends AbstractTask {
             }
         }
 
-        if (!input.isCommand()) {
 
-            if (Param.VOLMAX_RESTRICTS_INPUT) {
-                int termVol = input.term().volume();
-                int maxVol = n.termVolumeMax.intValue();
-                if (termVol > maxVol)
-                    throw new TaskException(input, "term exceeds volume maximum: " + termVol + " > " + maxVol);
-            }
-
-            if ((!input.isInput() || input instanceof TaskProxy) && input.isBeliefOrGoal() && input.conf() < n.confMin.floatValue()) {
-                if (Param.DEBUG)
-                    throw new TaskException(input, "insufficient evidence for non-input Task");
+        Concept c = n.conceptualize(input);
+        if (c != null) {
+            if (!(c instanceof TaskConcept)) {
+                if (Param.DEBUG || isInput)
+                    throw new TaskException(input, c + " is not a TaskConcept: " + c.getClass());
                 else
                     return null;
             }
 
-            Concept c = n.conceptualize(input);
-            if (c != null) {
-                if (!(c instanceof TaskConcept)) {
-                    if (Param.DEBUG)
-                        throw new TaskException(input, c + " is not a TaskConcept: " + c.getClass());
-                    else
-                        return null;
-                }
-
-                return new Remember(input, (TaskConcept) c);
-            }
+            return new Remember(input, (TaskConcept) c);
+        } else {
+            if (isInput)
+                throw new TaskException(input, "not conceptualized");
+            return null;
         }
-
-        return null;
     }
 
     public Remember(Task input, TaskConcept c) {
@@ -272,16 +275,16 @@ public class Remember extends AbstractTask {
         }
 
         @Nullable Task r = rememberMerged(prev, next);
-        if (r!=null) {
+        if (r != null) {
             long dDurCycles = Math.max(0, next.creation() - prev.creation());
-            float dCreationDurs = dDurCycles == 0 ? 0 : (dDurCycles / ((float)n.dur()));
+            float dCreationDurs = dDurCycles == 0 ? 0 : (dDurCycles / ((float) n.dur()));
             r = rememberFilter(prev, next, r, dPri, dCreationDurs);
 
         }
-        if (r!=null)
+        if (r != null)
             remember(r);
 
-        if (!identity && r==null) {
+        if (!identity && r == null) {
             forget(next);
         } else {
             //just disable further input
@@ -290,10 +293,13 @@ public class Remember extends AbstractTask {
 
     }
 
-    /** heuristic for determining repeat suppression
+    /**
+     * heuristic for determining repeat suppression
+     *
      * @param dCreationDurs (creation(next) - creation(prev))/durCycles
-     * */
-    @Nullable protected Task rememberFilter(Task prev, Task next, Task remembered, float dPri, float dCreationDurs) {
+     */
+    @Nullable
+    protected Task rememberFilter(Task prev, Task next, Task remembered, float dPri, float dCreationDurs) {
 
         if (dCreationDurs > Param.REMEMBER_REPEAT_THRESH_DURS) {
             prev.setCreation(next.creation());
@@ -306,8 +312,11 @@ public class Remember extends AbstractTask {
         return null;
     }
 
-    /** returns which task, if any, to remember on merge */
-    @Nullable protected Task rememberMerged(Task prev, Task next) {
+    /**
+     * returns which task, if any, to remember on merge
+     */
+    @Nullable
+    protected Task rememberMerged(Task prev, Task next) {
 
         if (next instanceof DynEvi.DynamicTruthTask)
             return null;

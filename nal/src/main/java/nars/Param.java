@@ -92,11 +92,11 @@ public abstract class Param {
 
 
 
-    /** can produce varieties of terms with dt below the dithered threshold time */
-    public static final boolean ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS = false;
+//    /** can produce varieties of terms with dt below the dithered threshold time */
+//    public static final boolean ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS = false;
 
-    public static final boolean VOLMAX_RESTRICTS_INPUT = false;
-    public static final boolean VOLMAX_RESTRICTS_EVAL = true;
+    public static final boolean VOLMAX_RESTRICTS_INPUT = true; //input tasks
+    public static final boolean VOLMAX_RESTRICTS = false; //all tasks
 
 
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;

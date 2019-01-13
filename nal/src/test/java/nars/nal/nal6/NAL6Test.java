@@ -341,7 +341,7 @@ public class NAL6Test extends NALTest {
     void variable_elimination6simplerReverse() {
 
 
-        test.nar.termVolumeMax.set(12);
+        test.nar.termVolumeMax.set(14);
         test
                 .believe("(bird:$x ==> (&&, flyer:$x, chirping:$x, food:worms))")
                 .believe("flyer:Tweety")

@@ -570,7 +570,7 @@ public class NAL8Test extends NALTest {
     @ParameterizedTest
     @ValueSource(strings = {"&|", "&&"})
     void testGoalImplComponentEternal(String conj) {
-        test.nar.termVolumeMax.set(3);
+        test.nar.termVolumeMax.set(6);
         test
                 .input("happy!")
                 .input("(in =|> (happy " + conj + " --out)).")

@@ -7,23 +7,29 @@ import static nars.time.Tense.ETERNAL;
 public class ConjDiff extends Conj {
     private final Conj se;
     private final boolean invert;
-    private final long[] seEvents;
+    private final long[] excludeEvents;
 
-    public static ConjDiff the(long subjAt, Term subj, long offset, Term subtractWith, boolean invert) {
-        Conj subtractFrom = new Conj(subjAt, subj);
+    public static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt) {
+        return the(include, includeAt, exclude, excludeAt);
+    }
+
+    /** warning: invert may not work the way you expect. it is designed for use in IMPL construction */
+    public static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt, boolean invert) {
+        Conj subtractFrom = new Conj(excludeAt, exclude);
 
         if (subtractFrom.eventCount(ETERNAL)>0 && subtractFrom.event.size() > 1) {
-            //has both eternal and temporal components; mask the eternal components so they are not eliminated from the result
+            //has both eternal and temporal components;
+            // mask the eternal components so they are not eliminated from the result
             subtractFrom.removeAll(ETERNAL);
         }
 
-        return new ConjDiff(subtractFrom, offset, subtractWith, invert);
+        return new ConjDiff(subtractFrom, includeAt, include, invert);
     }
 
     ConjDiff(Conj subtractFrom, long offset, Term subtractWith, boolean invert) {
         super(subtractFrom.termToId, subtractFrom.idToTerm);
         this.se = subtractFrom;
-        this.seEvents = se.event.keySet().toArray();
+        this.excludeEvents = se.event.keySet().toArray();
         this.invert = invert;
         add(offset, subtractWith);
         //distribute();
@@ -39,7 +45,7 @@ public class ConjDiff extends Conj {
     protected int addFilter(long at, Term x, byte id) {
         if (at == ETERNAL) {
             boolean hasAbsorb = false;
-            for (long see : seEvents) {
+            for (long see : excludeEvents) {
                 int f = test(see, id);
                 if (f == -1) return -1;
                 if (f == +1) hasAbsorb = true; //but keep checking for contradictions first

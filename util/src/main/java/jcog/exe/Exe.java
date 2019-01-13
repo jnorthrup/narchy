@@ -71,7 +71,7 @@ public enum Exe {;
             p.profiled(what, start, end);
     }
 
-    public static void profiled(Object what, Runnable r) {
+    public static void run(Object what, Runnable r) {
         Profiler p = profiler;
         if (p != null) {
             p.run(what, r);

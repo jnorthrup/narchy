@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
+import static nars.term.atom.Bool.Null;
+
 /**
  * Less powerful one-match only unification
  */
@@ -33,27 +35,26 @@ public class SubUnify extends Unify {
      * terminate after the first match
      */
     @Override
-    public void tryMatch() {
+    protected void tryMatch() {
 
         if (transformed != null) {
             Term result = transform(transformed);
-            if (result != null && tryMatch(result)) {
-
+            if (result != null && result != Null && tryMatch(result)) {
 
                 this.result = result;
+
                 stop();
-
-
             }
         }
     }
 
 
     @Nullable
-    public Term uniSubst(@Nullable Term transformed, Term x, Term y, int ttl) {
+    public Term unifySubst(Term x, Term y, @Nullable Term transformed, int ttl) {
         this.transformed = transformed;
         this.result = null;
-        setTTL(ttl); assert(ttl > 0);
+        setTTL(ttl);
+        assert (ttl > 0);
 
         unify(x, y);
 

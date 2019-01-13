@@ -138,15 +138,37 @@ public class NAL8SequenceTest extends NALTest {
         ;
     }
     @Test
-    void testGoalDeduction_MidSequenceDTernalComponentWithUnification() {
-        
+    void testGoalDeduction_MidSequence() {
+
         test
-                .input( "(a &&+1 (b(#1) &&+1 ((&|,a,b,c(#1),d(x,#1)) &&+1 (d &&+1 e(#1)))))!")
-                .input( "c(x).")
-                .mustGoal(cycles, "((&|,a,b,d(x,x)) &&+1 (d &&+1 e(x)))", 1, 0.81f) //81% for one step
+                .input( "(a &&+1 ((b(#1)&|c) &&+1 ((&|,c(#1),d(x,#1)) &&+1 (d &&+1 e(#1)))))!")
+                .input( "(b(x)&|c).")
+                //.mustGoal(cycles, "((&|,d(x,x)) &&+1 (d &&+1 e(x)))", 1, 0.81f) //81% for one step
+                .mustGoal(cycles, "((&|,c(x),d(x,x)) &&+1 (d &&+1 e(x))))", 1, 0.81f) //81% for one step
+        ;
+    }
+    @Test
+    void testGoalDeduction_MidSequenceDTernalComponentWithUnification() {
+
+        String g = "(a &&+1 ((b(#1)&|c) &&+1 ((&|,c(#1),d(x,#1)) &&+1 d)))";
+        String b = "c(x)";
+        test
+            .goal(g)
+            .believe( b )
+            .mustGoal(cycles, "((&|,d(x,x)) &&+1 d)", 1, 0.81f) //81% for one step
         ;
     }
 
+    @Test
+    void testGoalDeduction_MidSequenceDTernalComponentWithUnification2() {
+
+        test
+                .input( "(a &&+1 ((b(#1)&|c) &&+1 ((&|,c(#1),d(x,#1)) &&+1 e(#1))))!")
+                .input( "(b&|c(x)).")
+                .mustGoal(cycles, "((&|,d(x,x)) &&+1 e(x))", 1, 0.81f) //81% for one step
+        //.mustGoal(cycles, "(&|,a,b,d(x,x))", 1, 0.81f) //81% for one step
+        ;
+    }
 
     @Disabled
     @Test void test1() throws Narsese.NarseseException {
