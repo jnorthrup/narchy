@@ -6,7 +6,6 @@ import nars.subterm.*;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.anon.AnonID;
 import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
@@ -27,9 +26,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.TreeSet;
 
-import static nars.Op.*;
+import static nars.Op.CONJ;
+import static nars.Op.NEG;
 import static nars.term.Terms.sorted;
-import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -202,41 +201,15 @@ public abstract class TermBuilder {
 
     }
 
-//    public Term conj(final int dt, Term... u) { //TEMPORARY for debug
-//        Term c = _conj(dt, u);
-//        if (c.op()==CONJ && c.anon().op()!=CONJ)
-//            throw new WTF();
-//        return c;
-//    }
+    public Term conj(final int dt, Term... u) {
+        return conj(false, dt, u);
+    }
 
-    public Term conj(final int dt, Term... u) { //TODO presorted flag
-//        /** TEMPORARY */
-//        Term x = _conj(dt, u);
-//        if (u.length> 1  && !x.unneg().anon().op().taskable)
-//            throw new WTF();
-//        return x;
-//    }
-//
-//    public Term _conj(final int dt, Term... u) {
+    public Term conj(boolean preSorted, final int dt, Term... u) {
 
-        switch (dt) {
-            case 0:
-            case DTERNAL:
-                u = Terms.sorted(u);
-                break;
-            case XTERNAL:
-                Term[] v = Terms.sorted(u);
-                if (v.length != 1) {
-                    u = v; //only if not collapsed to one item in case of repeat
-                } else {
-                    if (/*!(v[0] instanceof Ellipsislike) || */(u.length > 1 && u[0].equals(u[1])))
-                        u = new Term[]{v[0], v[0]};
-                    else {
-                        u = v;
-                    }
-                }
-                break;
-        }
+        if (!preSorted)
+            u = Conj.preSort(dt, u);
+
         switch (u.length) {
 
             case 0:
@@ -258,50 +231,7 @@ public abstract class TermBuilder {
         }
 
 
-        int trues = 0;
-        for (Term t : u) {
-            Op to = t.op();
-            if (to == BOOL) {
-                if (t == Bool.Null || t == Bool.False)
-                    return t;
-                else if (t == Bool.True)
-                    trues++;
-            }
-            else if (!to.eventable)
-                return Null;
-        }
 
-        if (trues > 0) {
-
-            int sizeAfterTrueRemoved = u.length - trues;
-            switch (sizeAfterTrueRemoved) {
-                case 0:
-
-                    return Bool.True;
-                case 1: {
-
-                    for (Term uu : u) {
-                        if (uu != Bool.True) {
-                            assert (!(uu instanceof Ellipsislike)) : "if this happens, TODO";
-                            return uu;
-                        }
-                    }
-                    throw new RuntimeException("should have found non-True term to return");
-                }
-                default: {
-                    Term[] y = new Term[sizeAfterTrueRemoved];
-                    int j = 0;
-                    for (int i = 0; j < y.length; i++) {
-                        Term uu = u[i];
-                        if (uu != Bool.True)
-                            y[j++] = uu;
-                    }
-                    assert (j == y.length);
-
-                    u = y;
-                }
-            }
-        }
 
 
         switch (dt) {

@@ -115,6 +115,11 @@ abstract public class Bool extends AbstractAtomic implements The {
             return True;
         }
     };
+
+    public static final Term[] Null_Array = new Term[] { Null };
+    public static final Term[] False_Array = new Term[] { False };
+
+
     private final String label;
 
     protected Bool(String label, byte code) {

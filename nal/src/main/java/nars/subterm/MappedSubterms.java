@@ -23,7 +23,9 @@ abstract public class MappedSubterms extends ProxySubterms {
 
     private boolean normalizedKnown = false, normalized = false;
 
-    public static MappedSubterms the(Term[] target, Subterms base) {
+    public static MappedSubterms the(Term[] target, Subterms base, Term[] baseRaw) {
+        assert(base.subs()==baseRaw.length);
+
         byte[] m = new byte[target.length];
         for (int i = 0, xLength = target.length; i < xLength; i++) {
             Term xi = target[i];
@@ -31,6 +33,7 @@ abstract public class MappedSubterms extends ProxySubterms {
             if (neg) xi = xi.unneg();
 
             int mi = base.indexOf(xi)+1;
+
             if (mi <= 0)
                 throw new WTF(xi + "not found in " + base);
 
@@ -38,6 +41,7 @@ abstract public class MappedSubterms extends ProxySubterms {
         }
         return new ArrayMappedSubterms(base, m, Subterms.hash(target));
     }
+
 
     /** make sure to calculate hash code in implementation's constructor */
     protected MappedSubterms(Subterms base) {

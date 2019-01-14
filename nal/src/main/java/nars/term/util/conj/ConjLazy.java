@@ -144,16 +144,17 @@ public class ConjLazy extends FasterList<Term> implements ConjBuilder {
                     m.set(i);
             }
             int toRemove = m.cardinality();
+            int firstRemoved = m.first(true);
             switch (toRemove) {
                 case 0:
                     return false;
                 case 1:
-                    removeWhen(0, s);
-                    super.removeFast(m.first(true));
+                    removeWhen(firstRemoved, s);
+                    super.removeFast(firstRemoved);
                     return true;
                 default:
 
-                    for (int i = m.first(true); i < s;  /* TODO iterate bitset better */) {
+                    for (int i = firstRemoved; i < s;  /* TODO iterate bitset better */) {
                         if (m.get(i)) {
                             removeWhen(i, s);
                             super.removeFast(i);

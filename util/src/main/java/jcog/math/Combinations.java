@@ -43,7 +43,7 @@ public final class Combinations {
 
         int alen = a.length;
         for (int i = 0; i < alen; i++) {
-            a[i] = (i) % alen;
+            a[i] = i;
         }
         numLeft = total;
     }

@@ -9,18 +9,17 @@ import nars.subterm.AnonVector;
 import nars.subterm.SortedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.atom.Bool;
 import nars.term.util.cache.InternedCompound;
+import nars.term.util.conj.Conj;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.UUID;
 import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.time.Tense.dtSpecial;
 
 /**
  * can intern subterms and compounds.
@@ -30,13 +29,13 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int DEFAULT_SIZE = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    protected static final int maxInternedVolumeDefault = 18;
+    protected static final int maxInternedVolumeDefault = 24;
     protected static final boolean deepDefault = true;
 
     /**
      * memory-saving
      */
-    private static final boolean sortCanonically = true;
+    public static final boolean sortCanonically = true;
     private final static boolean internNegs = false;
     private final static boolean cacheSubtermKeyBytes = false;
 
@@ -76,7 +75,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
             ByteHijackMemoize c;
             if (o == CONJ) {
-                c = newOpCache("conj", j -> super.conj(j.dt, resolve(j.rawSubs)), cacheSizePerOp);
+                c = newOpCache("conj", j -> super.conj(true, j.dt, resolve(j.rawSubs)), cacheSizePerOp);
             } else if (o.statement) {
                 c = statements;
             } else {
@@ -147,8 +146,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 return subsInterned(anonSubterms, t);
 
             if (sortCanonically) {
-                return SortedSubterms.the(t, u ->
-                        subsInterned(subterms, u), false);
+                return SortedSubterms.the(t, this::newSubterms, false);
             } else {
                 return subsInterned(subterms, t);
             }
@@ -157,6 +155,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
         }
     }
 
+    private Subterms newSubterms(Term... u) {
+        return subsInterned(subterms, u);
+    }
 
     public Subterms theSubterms(Term... t) {
         return super.theSubterms(false, resolve(t));
@@ -291,42 +292,16 @@ public class InterningTermBuilder extends HeapTermBuilder {
     @Override
     public Term conj(int dt, Term[] u) {
 
-        //preFilter
-//        u = conjPrefilter(dt, u);
-//        boolean trues = false;
-//        for (int i = 0, uLength = u.length; i < uLength; i++) {
-//            Term x = u[i];
-//            if (x == True) {
-//                u[i] = null;
-//                trues = true;
-//            }
-//            if (x == False)
-//                return False;
-//            if (x == Null)
-//                return Null;
-//        }
-//        if (trues) {
-//            u = ArrayUtils.removeNulls(u, Term[]::new);
-//        }
+        if (dtSpecial(dt))
+            u = Conj.preSort(dt, u);
 
         if (u.length > 1 && internableRoot(CONJ, dt, u)) {
-
-            if (dt == 0 || dt == DTERNAL)
-                u = Terms.sorted(u); //pre-sort
-            else if (dt == XTERNAL) {
-                if (!Terms.isSorted(u))
-                    Arrays.sort(u = u.clone()); //TODO deduplicate down to at least 2x, no further
-            }
-
             if (u.length > 1) {
                 return terms[CONJ.id].apply(InternedCompound.get(CONJ, dt, u));
             }
-        } else {
-//
-//                u = resolve(u);
         }
 
-        return super.conj(dt, u);
+        return super.conj(true, dt, u);
     }
 
 

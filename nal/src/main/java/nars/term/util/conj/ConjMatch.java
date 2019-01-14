@@ -6,7 +6,6 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.Image;
-import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 
 import static nars.Op.CONJ;
 import static nars.Op.VAR_DEP;
@@ -40,16 +39,13 @@ public class ConjMatch {
 
         //sequence or commutive
 
-
         ConjLazy x;
         if (Conj.isSeq(conj)) {
-
             x = ConjLazy.events(conj);
             if (!beforeOrAfter)
                 x.reverse(); //match from opposite direction
         } else {
             //conj.dt() == DTERNAL || conj.dt() == 0
-
             Subterms ss = conj.subterms();
             x = new ConjLazy(ss.subs());
             long when = (conj.dt() == DTERNAL) ? ETERNAL : 0;
@@ -60,38 +56,40 @@ public class ConjMatch {
         int n = x.size();
         assert (n > 1);
 
-        long leadOcc = x.when(0);
-        boolean leadingEventParallel = (x.when(1) == leadOcc);
+        long[] matchedTime = new long[] { Long.MAX_VALUE, Long.MIN_VALUE };
 
-        //skip a leading non-parallel event, but dont skip any if parallel
-        int parallelLead = leadingEventParallel ? 0 : 1;
-
-        if (!conj.impossibleSubTerm(event)) {
-            int matchExact = -1;
-            for (int i = parallelLead; i < n; i++) {
-                if (x.get(i).equals(event)) {
-                    matchExact = i;
-                    break;
-                }
+        if (event.op()!=CONJ) {
+            //simple event
+            if (!conj.impossibleSubTerm(event)) {
+                x.removeIf((when, what) -> {
+                    if (what.equals(event)) {
+                        matchedTime[0] = Math.min(matchedTime[0], when);
+                        matchedTime[1] = Math.max(matchedTime[1], when);
+                        return true;
+                    }
+                    return false;
+                });
             }
-            if (matchExact != -1) {
-                if (n == 2) {
-                    return x.get(1-matchExact);
-                } else {
-                    //include any other events occurring at the same time as matchExact but not those after it
-                    LongObjectPair<Term> me = x.removeEvent(matchExact);
-                    long meTime = me.getOne();
-                    x.removeIf(
-                            beforeOrAfter ?
-                                    (when, what) -> when > meTime
-                                    :
-                                    (when, what) -> when < meTime
-                    );
-
-                    return x.term();
-                }
-            }
+        } else {
+            //remove matching parallel/sequence conjunctions
+            //TODO
         }
+
+
+        int n0 = n;
+        n = x.size();
+        if (n0!=n) {
+            //something removed;
+            //include only the other events occurring at the same time as matchExact but not those after it
+            x.removeIf(beforeOrAfter ?
+                (when, what) -> when > matchedTime[0]
+                :
+                (when, what) -> when < matchedTime[1]
+            );
+
+            return x.term();
+        }
+
 
         //try to unify if variables present
         //TODO only unif
@@ -99,7 +97,7 @@ public class ConjMatch {
         if (eVar || (conj.hasAny(varBits) /*&& x.anySatisfy(1, n, z -> z.getTwo().hasAny(varBits)))*/)) {
             //TODO use SubUnify correctly (ie. termutes via tryMatch )
             UniSubst.MySubUnify s = d.uniSubst.u;
-            nextUnifiable: for (int matchUnify = parallelLead; matchUnify < n; matchUnify++) {
+            nextUnifiable: for (int matchUnify = 0; matchUnify < n; matchUnify++) {
                 Term xx = x.get(matchUnify);
                 if (eVar || xx.hasAny(varBits)) {
 

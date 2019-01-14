@@ -15,6 +15,7 @@ import nars.unify.ellipsis.Ellipsis;
 import nars.unify.ellipsis.EllipsisMatch;
 import org.eclipse.collections.api.set.MutableSet;
 
+import java.util.List;
 import java.util.SortedSet;
 
 /**
@@ -56,6 +57,10 @@ public class Choose2 extends Termutator.AbstractTermutator {
 
     }
 
+    public static boolean choose2(Ellipsis ellipsis, List<Term> xFixed, SortedSet<Term> yFree, Unify u) {
+        return u.termutes.add(new Choose2(ellipsis, u, Terms.sorted(xFixed), yFree));
+    }
+
     @Override
     public int getEstimatedPermutations() {
         throw new TODO();
@@ -69,7 +74,6 @@ public class Choose2 extends Termutator.AbstractTermutator {
 
 
         Combinations ccc = new Combinations(yFree.subs(), 2);
-        ccc.reset();
 
         boolean phase = true;
 
@@ -86,11 +90,13 @@ public class Choose2 extends Termutator.AbstractTermutator {
 
             c = phase ? ccc.next() : c;
 
-            byte c0 = (byte) c[0], c1 = (byte) c[1];
+            byte c0 = (byte) c[0];
 
             Term y1 = yy.sub(c0);
 
             if (x[0].unify(y1, f)) {
+
+                byte c1 = (byte) c[1];
 
                 Term y2 = yy.sub(c1);
 

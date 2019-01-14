@@ -21,7 +21,6 @@ import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ByteProcedure;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.iterator.MutableByteIterator;
-import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.set.primitive.ByteSet;
 import org.eclipse.collections.api.set.primitive.MutableLongSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -34,7 +33,10 @@ import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.ImmutableBitmapDataProvider;
 import org.roaringbitmap.RoaringBitmap;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
@@ -148,6 +150,73 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             return ConjSeq.contains(container, x, firstOrLast);
         }
 
+    }
+
+    public static Term[] preSort(int dt, Term[] u) {
+
+        switch (dt) {
+            case 0:
+            case DTERNAL:
+                return preSorted(u);
+
+            case XTERNAL:
+                Term[] v = preSorted(u);
+                if (v.length == 1 && !(v[0] instanceof Bool)) {
+                    if (/*!(v[0] instanceof Ellipsislike) || */(u.length > 1 && u[0].equals(u[1])))
+                        return new Term[]{v[0], v[0]};
+                }
+                return v;
+
+            default:
+                return u;
+        }
+    }
+
+    private static Term[] preSorted(Term[] u) {
+
+        for (Term t : u)
+            if (t == Bool.Null)
+                return Bool.Null_Array;
+
+        int trues = 0;
+        for (Term t : u) {
+            if (t == Bool.False)
+                return Bool.False_Array;
+            if (t == Bool.True)
+                trues++;
+            else if (!t.op().eventable)
+                return Null_Array;
+        }
+        if (trues > 0) {
+
+
+            int sizeAfterTrueRemoved = u.length - trues;
+            switch (sizeAfterTrueRemoved) {
+                case 0:
+                    return Op.EmptyTermArray;
+                case 1: {
+
+                    for (Term uu : u) {
+                        if (uu != Bool.True) {
+                            //assert (!(uu instanceof Ellipsislike)) : "if this happens, TODO";
+                            return new Term[]{uu};
+                        }
+                    }
+                    throw new RuntimeException("should have found non-True term to return");
+                }
+                default: {
+                    Term[] y = new Term[sizeAfterTrueRemoved];
+                    int j = 0;
+                    for (int i = 0; j < y.length; i++) {
+                        Term uu = u[i];
+                        if (uu != Bool.True)
+                            y[j++] = uu;
+                    }
+                    u = y;
+                }
+            }
+        }
+        return Terms.sorted(u);
     }
 
     //    private static boolean isEventSequence(Term container, Term subseq, boolean neg, boolean firstOrLast) {
@@ -1379,88 +1448,88 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         }
     }
 
-    /**
-     * stage 2: a and b are both the inner conjunctions of disjunction terms being compared for contradiction or factorable commonalities.
-     * a is the existing disjunction which can be rewritten.  b is the incoming
-     */
-    private static Term OLD_disjunctionVsDisjunction(Term a, Term b, boolean eternal) {
-        int adt = a.dt(), bdt = b.dt();
-        boolean bothCommute = (adt == 0 || adt == DTERNAL) && (bdt == 0 || bdt == DTERNAL);
-        if (bothCommute) {
-            if ((adt == bdt || adt == DTERNAL || bdt == DTERNAL)) {
-                //factor out contradicting subterms
-                MutableSet<Term> aa = a.subterms().toSet();
-                MutableSet<Term> bb = b.subterms().toSet();
-                Iterator<Term> bbb = bb.iterator();
-                boolean change = false;
-                while (bbb.hasNext()) {
-                    Term bn = bbb.next();
-                    if (aa.remove(bn.neg())) {
-                        bbb.remove(); //both cases allowed; annihilate both
-                        change = true;
-                    }
-                }
-                if (change) {
-                    //reconstitute the two terms, glue them together as a new super-disjunction to replace the existing (and interrupt adding the incoming)
-
-                    Term A = terms.conj(adt, aa.toArray(EmptyTermArray)).neg();
-                    if (A == False || A == Null || (adt == bdt && aa.equals(bb)))
-                        return A;
-
-                    Term B = terms.conj(bdt, bb.toArray(EmptyTermArray)).neg();
-                    if (B == False || B == Null || A.equals(B))
-                        return B;
-
-                    return terms.conj(eternal ? DTERNAL : 0, A, B);
-                }
-            }
-            //return null; //no change
-            return Null;
-        } else {
-//            //TODO factor out the common events, and rewrite the disjunction as an extra CONJ term with the two options (if they are compatible)
-//            //HACK simple case
-//            if (a.subs()==2 && b.subs()==2 && !a.subterms().hasAny(CONJ) && !b.subterms().hasAny(CONJ)){
-//                Term common = a.sub(0);
-//                if (common.equals(b.sub(0))) {
-//                    Term ar = Conj.without(a, common, false);
-//                    if (ar!=null) {
-//                        int ac = a.subTimeFirst(common);
-//                        if (ac!=DTERNAL) {
-//                            int ao = a.subTimeFirst(ar);
-//                            if (ao != DTERNAL) {
-//                                Term br = Conj.without(b, common, false);
-//                                if (br != null) {
-//                                    int bc = b.subTimeFirst(common);
-//                                    if (bc!=DTERNAL) {
-//                                        int bo = b.subTimeFirst(br);
-//                                        if (bo != DTERNAL) {
-//                                            Term arOrBr = terms.conj((bo-bc) - (ao-ac), ar.neg(), br.neg()).neg();
-//                                            Term y = terms.conj(-ac, common, arOrBr).neg(); //why neg
-//                                            return y;
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
+//    /**
+//     * stage 2: a and b are both the inner conjunctions of disjunction terms being compared for contradiction or factorable commonalities.
+//     * a is the existing disjunction which can be rewritten.  b is the incoming
+//     */
+//    private static Term OLD_disjunctionVsDisjunction(Term a, Term b, boolean eternal) {
+//        int adt = a.dt(), bdt = b.dt();
+//        boolean bothCommute = (adt == 0 || adt == DTERNAL) && (bdt == 0 || bdt == DTERNAL);
+//        if (bothCommute) {
+//            if ((adt == bdt || adt == DTERNAL || bdt == DTERNAL)) {
+//                //factor out contradicting subterms
+//                MutableSet<Term> aa = a.subterms().toSet();
+//                MutableSet<Term> bb = b.subterms().toSet();
+//                Iterator<Term> bbb = bb.iterator();
+//                boolean change = false;
+//                while (bbb.hasNext()) {
+//                    Term bn = bbb.next();
+//                    if (aa.remove(bn.neg())) {
+//                        bbb.remove(); //both cases allowed; annihilate both
+//                        change = true;
 //                    }
 //                }
+//                if (change) {
+//                    //reconstitute the two terms, glue them together as a new super-disjunction to replace the existing (and interrupt adding the incoming)
+//
+//                    Term A = terms.conj(adt, aa.toArray(EmptyTermArray)).neg();
+//                    if (A == False || A == Null || (adt == bdt && aa.equals(bb)))
+//                        return A;
+//
+//                    Term B = terms.conj(bdt, bb.toArray(EmptyTermArray)).neg();
+//                    if (B == False || B == Null || A.equals(B))
+//                        return B;
+//
+//                    return terms.conj(eternal ? DTERNAL : 0, A, B);
+//                }
 //            }
-
-//            //HACK if the set of components is disjoint, allow
-//            if (!a.subterms().hasAny(CONJ) && !b.subterms().hasAny(CONJ)) {
-//                Subterms bs = b.subterms();
-//                if (!a.subterms().OR(aa -> bs.contains(aa) || bs.containsNeg(aa)))
-//                    return null;//allow
-//            }
-
-            //TODO finer grained disjoint event comparison
-
-            //TODO sequence conditions
-            //throw new TODO(a + " vs " + b);
-            return Null; //disallow for now. the complexity might be excessive
-            //return null; //OK
-        }
-    }
+//            //return null; //no change
+//            return Null;
+//        } else {
+////            //TODO factor out the common events, and rewrite the disjunction as an extra CONJ term with the two options (if they are compatible)
+////            //HACK simple case
+////            if (a.subs()==2 && b.subs()==2 && !a.subterms().hasAny(CONJ) && !b.subterms().hasAny(CONJ)){
+////                Term common = a.sub(0);
+////                if (common.equals(b.sub(0))) {
+////                    Term ar = Conj.without(a, common, false);
+////                    if (ar!=null) {
+////                        int ac = a.subTimeFirst(common);
+////                        if (ac!=DTERNAL) {
+////                            int ao = a.subTimeFirst(ar);
+////                            if (ao != DTERNAL) {
+////                                Term br = Conj.without(b, common, false);
+////                                if (br != null) {
+////                                    int bc = b.subTimeFirst(common);
+////                                    if (bc!=DTERNAL) {
+////                                        int bo = b.subTimeFirst(br);
+////                                        if (bo != DTERNAL) {
+////                                            Term arOrBr = terms.conj((bo-bc) - (ao-ac), ar.neg(), br.neg()).neg();
+////                                            Term y = terms.conj(-ac, common, arOrBr).neg(); //why neg
+////                                            return y;
+////                                        }
+////                                    }
+////                                }
+////                            }
+////                        }
+////                    }
+////                }
+////            }
+//
+////            //HACK if the set of components is disjoint, allow
+////            if (!a.subterms().hasAny(CONJ) && !b.subterms().hasAny(CONJ)) {
+////                Subterms bs = b.subterms();
+////                if (!a.subterms().OR(aa -> bs.contains(aa) || bs.containsNeg(aa)))
+////                    return null;//allow
+////            }
+//
+//            //TODO finer grained disjoint event comparison
+//
+//            //TODO sequence conditions
+//            //throw new TODO(a + " vs " + b);
+//            return Null; //disallow for now. the complexity might be excessive
+//            //return null; //OK
+//        }
+//    }
 
 
     private static Term conjoinify(Term existing /* conj */, Term incoming, boolean eternal) {

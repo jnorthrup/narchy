@@ -318,7 +318,7 @@ public enum ConjCommutive {;
                 int nn = neg.first(true);
                 Term un = u[nn].unneg();
                 for (int i = 0; i < u.length; i++) {
-                    if (i!=nn && u[i].equals(un))
+                    if (i!=nn && un.equals(u[i]))
                         return true;
                 }
                 return false;

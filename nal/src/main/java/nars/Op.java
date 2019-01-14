@@ -147,7 +147,6 @@ public enum Op {
         public Term the(int dt, Term[] u) {
             return terms.conj(dt, u);
         }
-
     },
 
 

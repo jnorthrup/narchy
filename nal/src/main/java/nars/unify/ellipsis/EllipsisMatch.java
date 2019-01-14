@@ -12,15 +12,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.SortedSet;
 
-import static nars.Op.PROD;
+import static nars.Op.ATOM;
 
 /**
  * Holds results of an ellipsis match and
  */
 public final class EllipsisMatch extends LightCompound {
 
-    /** what it's disguised as. must be VAR_PATTERN */
-    public static final Op EllipsisOp = PROD;
+    public static final Op EllipsisOp = ATOM;
 
     public final static EllipsisMatch empty = new EllipsisMatch(Op.EmptyTermArray);
 

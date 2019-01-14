@@ -51,7 +51,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return hasAny(Op.Temporal) && OR(Term::hasXternal);
     }
     default boolean contains(Term t) {
-        return !impossibleSubTerm(t) && OR(t::equals);
+        return indexOf(t)!=-1;
     }
 
 
@@ -1146,10 +1146,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
                         return Op.FalseSubterm;
 
                     break;
-                case IMPL:
-                    if (i == 0 && yi == Bool.False)
-                        return null;
-                    break;
+//                case IMPL:
+//                    if (i == 0 && yi == Bool.False)
+//                        return null;
+//                    break;
 //                case INH:
 //                case SIM:
 //                    //TODO when on 2nd term, compare with the first term (either from the source subterms, or the target if it was transformed)
@@ -1159,8 +1159,15 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
             if (yi instanceof EllipsisMatch) {
 
-                EllipsisMatch xe = (EllipsisMatch) yi;
-                int xes = xe.subs();
+                EllipsisMatch ee = (EllipsisMatch) yi;
+
+                if (s == 1) {
+                    //it is only this ellipsis match so inline it by transforming directly and returning it (tail-call)
+                    return ee.transformSubs(f, superOp);
+                }
+
+                int xes = ee.subs();
+
 
                 if (y == null)
                     y = new DisposableTermList(s - 1 + xes /*estimate */, i);
@@ -1169,7 +1176,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
                 for (int j = 0; j < xes; j++) {
 
-                    Term k = f.transform(xe.sub(j));
+                    Term k = f.transform(ee.sub(j));
 
                     if (k == null || k == Bool.Null) {
                         return null;
@@ -1187,6 +1194,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
             } else {
 
                 if (xi != yi) {
+                    if (s == 1)
+                        return new UniSubterm(yi);
+
                     if (y == null)
                         y = new DisposableTermList(s, i);
                 }
@@ -1195,9 +1205,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                     y.addWithoutResizeCheck(yi);
 
             }
-
         }
-
 
         return y != null ? y.commit(this, superOp) : this;
     }

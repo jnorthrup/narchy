@@ -3205,6 +3205,15 @@ public enum ArrayUtils {;
         return INDEX_NOT_FOUND;
     }
 
+    /** quick search for items by identity first */
+    public static int indexOfIdentity(Object[] xx, Object y) {
+        for (int i = 0; i < xx.length; i++) {
+            if (y == xx[i])
+                return i;
+        }
+        return -1;
+    }
+
     /**
      * <p>Finds the last index of the given value within the array.
      *

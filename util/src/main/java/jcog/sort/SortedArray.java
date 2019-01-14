@@ -173,15 +173,15 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         qsort(stack, items, from /*dirtyStart - 1*/, to, x);
     }
 
-    public static <X> void qsort(int[] stack, X[] c, int left, int right, ToIntFunction<X> pCmp) {
+    public static void qsort(int[] stack, Object[] c, int left, int right, ToIntFunction pCmp) {
         int stack_pointer = -1;
         int cLenMin1 = c.length - 1;
-        final int SCAN_THRESH = 7;
+        final int SCAN_THRESH = 5;
         while (true) {
             int i, j;
             if (right - left <= SCAN_THRESH) {
                 for (j = left + 1; j <= right; j++) {
-                    X swap = c[j];
+                    Object swap = c[j];
                     i = j - 1;
                     int swapV = pCmp.applyAsInt(swap);
                     while (i >= left && pCmp.applyAsInt(c[i]) < swapV) {
@@ -220,7 +220,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
                     swap(c, i, left);
                 }
 
-                X temp = c[i];
+                Object temp = c[i];
                 int tempV = pCmp.applyAsInt(temp);
 
                 while (true) {

@@ -154,7 +154,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
         Term tt = task.term();
         if (!tt.equals(this.term)) {
             if (tt.op() == term.op() && tt.volume() == this.term.volume() && tt.structure() == this.term.structure() && this.term.toString().equals(tt.toString())) {
-
+                tt.equals(this.term); //TEMPORARY
                 throw new RuntimeException("term construction problem: " + this.term + " .toString() is equal to " + tt + " but inequal otherwise");
             }
             return false;

@@ -435,7 +435,7 @@ public class PatternIndex extends MapConceptIndex {
 //                            }
 //                        }
 
-                        if ((ixsStruct & ~u.varBits) != 0) {
+                        /*if ((ixsStruct & ~u.varBits) != 0)*/ {
 //                            List<Term> yMatchableWithX = null;
                             boolean canMatch = false;
                             for (Term yy : yFree) {
@@ -458,44 +458,14 @@ public class PatternIndex extends MapConceptIndex {
 
                 switch (xs) {
                     case 0:
-                        Term match = ys > 0 ? EllipsisMatch.matched(yFree) : EllipsisMatch.empty;
-                        return ellipsis.unify(match, u);
+                        return ellipsis.unify(ys > 0 ? EllipsisMatch.matched(yFree) : EllipsisMatch.empty, u);
 
-                    case 1: {
-                        if (ys == 0)
-                            return false;  //no matches possible
-
-                        Term x0 = xFixed.get(0);
-                        switch (ys) {
-                            case 1:
-                                assert (ellipsis.minArity == 0);
-                                return x0.unify(yFree.first(), u) && ellipsis.unify(EllipsisMatch.empty, u);
-                            case 2:
-                                //check if both elements actually could match x0.  if only one can, then no need to termute.
-                                //TODO generalize to n-terms
-                                int x0struct = x0.structure();
-                                //TODO include volume pre-test
-                                Term aa = yFree.first();
-                                boolean a = Subterms.possiblyUnifiable(x0struct, aa.structure(), u.varBits);
-                                Term bb = yFree.last();
-                                boolean b = Subterms.possiblyUnifiable(x0struct, bb.structure(), u.varBits);
-                                if (!a && !b) {
-                                    return false; //impossible
-                                } else if (a && !b) {
-                                    return x0.unify(aa, u) && ellipsis.unify(bb, u);
-                                } else if (b && !a) {
-                                    return x0.unify(bb, u) && ellipsis.unify(aa, u);
-                                } //else: continue below
-                                break;
-//                            default:
-//                                throw new TODO();
-                        }
-                        return u.termutes.add(new Choose1(ellipsis, x0, yFree));
-                    }
+                    case 1:
+                        //no matches possible but need one
+                        return ys >= 1 && Choose1.choose1(ellipsis, xFixed, yFree, u);
 
                     case 2:
-                        Term[] xFixedSorted = Terms.sorted(xFixed);
-                        return u.termutes.add(new Choose2(ellipsis, u, xFixedSorted, yFree));
+                        return ys >= 2 && Choose2.choose2(ellipsis, xFixed, yFree, u);
 
                     default:
                         throw new RuntimeException("unimpl: " + xs + " arity combination unimplemented");

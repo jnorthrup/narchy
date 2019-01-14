@@ -2,6 +2,7 @@ package nars.subterm;
 
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.iterator.ArrayIterator;
+import jcog.util.ArrayUtils;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
@@ -46,6 +47,17 @@ public class ArrayTermVector extends TermVector {
         for (Term t : terms)
             v = t.intifyRecurse(reduce, v);
         return v;
+    }
+
+    @Override
+    public int indexOf(Term t) {
+        //quick test for identity equality
+        if (terms.length < 5) {
+            int i = ArrayUtils.indexOfIdentity(terms, t);
+            if (i!=-1)
+                return i;
+        }
+        return super.indexOf(t);
     }
 
     @Override

@@ -4,14 +4,16 @@ import com.google.common.collect.Iterators;
 import jcog.memoize.byt.ByteHijackMemoize;
 import jcog.pri.PriProxy;
 import nars.Op;
+import nars.subterm.MappedSubterms;
+import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.util.cache.InternedCompound;
 import org.junit.jupiter.api.Test;
 
+import static nars.$.$$;
 import static nars.Op.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 
 class InterningTermBuilderTest {
 
@@ -37,6 +39,15 @@ class InterningTermBuilderTest {
 
         //Huffman h = prodCache.buildCodec();
 
+    }
+
+    @Test void testMappedNegBiSubterms() {
+
+        InterningTermBuilder t = new InterningTermBuilder();
+        assertTrue(InterningTermBuilder.sortCanonically);
+        Subterms s = t.subterms((Op)null, $$("x").neg(), $$("y"));
+        assertTrue(s instanceof MappedSubterms);
+        assertEquals("((--,x),y)", s.toString());
     }
 
     @Test public void testImplicationComplexEndToEnd() {

@@ -1274,7 +1274,7 @@ public class Occurrify extends TimeGraph {
                         first[0] = what;
                         return false;
                     }, 0, true, true, false);
-                    if (first[0] != null && !first[0].equals(x)) {
+                    if (first[0] != null && !x.equals(first[0])) {
                         offset = src.subTimeFirst(first[0]);
                         if (offset == DTERNAL) {
                             offset = src.subTimeFirst(first[0].neg());
