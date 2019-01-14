@@ -68,7 +68,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
     }
 
     @Override
-    public void mutate(Unify u, Termutator[] chain, int current) {
+    public void mutate(Termutator[] chain, int current, Unify u) {
 
         Subterms yFree = sub(1).sub(2).subterms();
 

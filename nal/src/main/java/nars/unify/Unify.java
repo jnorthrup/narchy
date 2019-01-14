@@ -124,7 +124,7 @@ public abstract class Unify extends Versioning implements Subst {
 
         if (++next < chain.length) {
 
-            chain[next].mutate(this, chain, next);
+            chain[next].mutate(chain, next, this);
 
             return true;
 

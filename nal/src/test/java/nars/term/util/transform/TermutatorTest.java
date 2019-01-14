@@ -155,8 +155,8 @@ class TermutatorTest {
         unifier.setTTL(TTL);
         
 
-        t.mutate(unifier, new Termutator[] { t, (f, chain, current) -> {
-            TreeMap t1 = new TreeMap(); 
+        t.mutate(new Termutator[] { t, (f, chain, current) -> {
+            TreeMap t1 = new TreeMap();
             f.xy.map.forEach(t1::put);
 
             if (s.add( t1.toString() )) {
@@ -165,7 +165,7 @@ class TermutatorTest {
                 duplicates[0]++;
             }
 
-        }}, 0);
+        }}, 0, unifier);
 
 
         String res = s.toString();

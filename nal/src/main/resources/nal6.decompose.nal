@@ -98,6 +98,7 @@
 
     //TODO conjunction sequence prefix
 
+    //conjunction belief and goal decomposition
     C, X, is(C,"&&"), --isVar(X)                   |- conjAfter(C,  X), (Belief:Deduction,Goal:Deduction)
     C, X, is(C,"&&"), has(C,"--"), --isVar(X)      |- conjAfter(C,  --X), (Belief:DeductionPN,Goal:DeductionPN)
 

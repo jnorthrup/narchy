@@ -51,8 +51,8 @@ public class Versioning<X> {
     public final boolean revert(int when) {
 
         int s = size;
-        if (s < when)
-            return false; //throw new WTF();
+        if (s <= when)
+            return false;
 
         final Versioned[] i = this.items;
 

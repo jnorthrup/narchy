@@ -14,7 +14,7 @@ public interface Termutator {
     /**
      * match all termutations recursing to the next after each successful one
      */
-    void mutate(Unify f, Termutator[] chain, int current);
+    void mutate(Termutator[] chain, int current, Unify f);
 
     default int getEstimatedPermutations() {
         return -1; /* unknown */

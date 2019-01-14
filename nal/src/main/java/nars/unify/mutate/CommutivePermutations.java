@@ -34,26 +34,24 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
     @Override
     public int getEstimatedPermutations() {
         throw new UnsupportedOperationException();
-        
+
     }
 
     @Override
-    public void mutate(Unify u, Termutator[] chain, int current) {
+    public void mutate(Termutator[] chain, int current, Unify u) {
         int start = u.size();
 
         ShuffledSubterms p = new ShuffledSubterms(x, u.random);
 
 
-        while (p.shuffle()) {
+        do {
 
             if (p.unifyLinear(y, u)) {
                 if (!u.tryMutate(chain, current))
                     break;
             }
 
-            if (!u.revertLive(start))
-                break;
-        }
+        } while (u.revertLive(start) && p.shuffle());
 
 
     }

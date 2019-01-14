@@ -52,19 +52,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
         return null;
     }
 
-    /**
-     * this needs to use .term(x) instead of Term[] because of shuffle terms
-     */
-    @Nullable
-    public static Ellipsis firstEllipsis(Term[] x) {
 
-        for (Term xi : x) {
-            if (xi instanceof Ellipsis) {
-                return (Ellipsis) xi;
-            }
-        }
-        return null;
-    }
 
 
 
