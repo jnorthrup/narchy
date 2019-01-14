@@ -7,6 +7,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.transform.Retemporalize;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.time.Tense.DTERNAL;
@@ -83,6 +84,23 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
         public final int eventRange() {
             return 0;
         }
+
+        @Override
+        public final Term eventFirst() {
+            return this;
+        }
+
+        @Override
+        public final Term eventLast() {
+            return this;
+        }
+
+
+        /** @see Term.eventsWhile */
+        @Override public final boolean eventsWhile(LongObjectPredicate<Term> each, long offset, boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal) {
+            return each.accept(offset, this);
+        }
+
 
         @Override
         public final int subTimeOnly(Term event) {

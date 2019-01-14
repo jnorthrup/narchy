@@ -19,8 +19,7 @@ import java.util.List;
 
 import static nars.Op.CONJ;
 import static nars.Op.VAR_DEP;
-import static nars.term.atom.Bool.False;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
 public class ConjMatch {
@@ -99,22 +98,57 @@ public class ConjMatch {
                 }
 
                 long bWhen = b.getOne();
+                matchedTime[0] = matchedTime[1] = bWhen;
                 boolean rem = x.removeIf((when,what)-> (when == bWhen && yTerms.contains(what)));
                 assert(rem);
 
             } else {
                 //sequence
                 //TODO
-                return Null;
+                if (event.subs()==2 && !event.subterms().hasAny(CONJ)) {
+                    Term a = event.eventFirst();
+                    assert(a!=event);
+                    Term b = null;
+                    int bDT = XTERNAL;
+
+                    //HACK simple 2-ary exact sequence match
+                    boolean found = false;
+                    findPair: for (int i = 0; i < n; i++) {
+                        if (x.get(i).equals(a)) {
+                            if (b == null) { b = event.eventLast(); bDT = event.subTimeFirst(b) - event.subTimeLast(a); }
+                            long aWhen = x.when(i);
+                            long bWhen = aWhen + bDT;
+                            for (int j = 0; j < n; j++) {
+                                if (i == j) continue;
+
+                                //exact time match, but here a dur tolerance could be allowed
+                                if (x.when(j) == bWhen && x.get(j).equals(b)) {
+                                    x.removeThe(i); x.removeThe(j);
+                                    found = true;
+                                    matchedTime[0] = Math.min(aWhen, bWhen);
+                                    matchedTime[1] = Math.max(aWhen, bWhen);
+                                    break findPair;
+                                }
+                            }
+                        }
+                    }
+                    if (!found)
+                        return Null;
+                } else {
+                    return Null;
+                }
             }
         }
 
 
         int n0 = n;
         n = x.size();
-        if (n0!=n) {
+        if (n0!=n && matchedTime[0]!=TIMELESS) {
             //something removed;
             //include only the other events occurring at the same time as matchExact but not those after it
+            if (x.isEmpty())
+                return True;
+
             x.removeIf(beforeOrAfter ?
                 (when, what) -> when > matchedTime[0]
                 :

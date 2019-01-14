@@ -23,11 +23,20 @@ public class NAL8SequenceTest extends NALTest {
     public static final int cycles = 50;
 
     @Test
-    void testSubSequenceOutcome() {
+    void testSubSequence2_end() {
         
         test
                 .input( "(x &&+1 y)!")
                 .input( "(z &&+1 (x &&+1 y)).")
+                .mustGoal(cycles, "z", 1, 0.81f) //81% for one step
+        ;
+    }
+    @Test
+    void testSubSequence2_mid() {
+
+        test
+                .input( "(x &&+1 y)!")
+                .input( "(z &&+1 ((x &&+1 y) &&+1 w)).")
                 .mustGoal(cycles, "z", 1, 0.81f) //81% for one step
         ;
     }

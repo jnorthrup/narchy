@@ -595,9 +595,9 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
 
 
 
-    default boolean eventsWhile(LongObjectPredicate<Term> each, long dt,
+    default boolean eventsWhile(LongObjectPredicate<Term> each, long offset,
                                 boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal) {
-        return each.accept(dt, this);
+        return each.accept(offset, this);
     }
 
 //    /** recursively visits all conj and impl sub-conditions */

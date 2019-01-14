@@ -60,14 +60,15 @@ public abstract class LongObjectArraySet<X> extends FasterList<X> {
 
     @Override
     public final X remove(int index) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("use removeThe(index)");
     }
 
     public boolean remove(long at, X t) {
         return removeIf((when, what) -> at == when && what.equals(t));
     }
 
-    protected void removeEventFast(int i) {
+    /** removes the ith tuple */
+    public void removeThe(int i) {
         removeWhen(i, size());
 
         super.removeFast(i);
@@ -101,15 +102,13 @@ public abstract class LongObjectArraySet<X> extends FasterList<X> {
                 case 0:
                     return false;
                 case 1:
-                    removeWhen(firstRemoved, s);
-                    super.removeFast(firstRemoved);
+                    removeThe(firstRemoved);
                     return true;
                 default:
 
                     for (int i = firstRemoved; i < s;  /* TODO iterate bitset better */) {
                         if (m.get(i)) {
-                            removeWhen(i, s);
-                            super.removeFast(i);
+                            removeThe(i);
                             s--;
                         } else {
                             i++;
@@ -147,7 +146,7 @@ public abstract class LongObjectArraySet<X> extends FasterList<X> {
                 return false;
             case 1:
                 if (get(0).equals(X)) {
-                    removeEventFast(0);
+                    removeThe(0);
                     return true;
                 }
             default:
