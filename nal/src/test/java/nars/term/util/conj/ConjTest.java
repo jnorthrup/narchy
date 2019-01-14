@@ -40,10 +40,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ConjTest {
 
     @Test void testSeq(){
-        assertTrue(Conj.isSeq(
-            //neg x seq
-            $$("((--,((--,(((--,_1)&|(--,_2)) &&+180 ((--,_1)&|(--,_2)))) &&+65225 _2))&&((--,_2) &&+65983 _2))")
-        ));
+        Term t = $$("((--,((--,(((--,_1)&|(--,_2)) &&+180 ((--,_1)&|(--,_2)))) &&+65225 _2))&&((--,_2) &&+65983 _2))");
+        assertEq(False, t);
+//        assertTrue(Conj.isSeq(
+//            //neg x seq
+//                t
+//        ));
     }
 
     @Test

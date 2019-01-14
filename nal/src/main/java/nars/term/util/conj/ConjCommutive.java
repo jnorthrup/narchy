@@ -151,7 +151,8 @@ public enum ConjCommutive {;
             return conjDirect(dt, u);
         }
 
-        if ((seq!=null && seq.cardinality()==1)) {
+        int seqCount = seq!=null ? seq.cardinality() : 0;
+        if (seqCount==1) {
             if (disj==null) {
 
                 //try simple cases
@@ -198,9 +199,9 @@ public enum ConjCommutive {;
         if (u.length == 2) {
             //TODO exclude the case with disj and conjOther
             int dd;
-            if (disj!=null && disj.cardinality()==1)
+            if (disj!=null && disj.cardinality()==1 && seqCount ==0)
                 dd = disj.first(true);
-            else if (dt == DTERNAL && seq!=null && seq.cardinality()==1)
+            else if (dt == DTERNAL && seqCount ==1)
                 dd = seq.first(true);
             else
                 dd = -1;

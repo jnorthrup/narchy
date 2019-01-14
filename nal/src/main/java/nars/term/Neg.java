@@ -96,6 +96,11 @@ public final class Neg extends UnitCompound implements The {
     }
 
     @Override
+    public Term negIf(boolean negate) {
+        return negate ? sub : this;
+    }
+
+    @Override
     public Term unneg() {
         return sub;
     }

@@ -42,7 +42,7 @@ public class ConjDiff extends Conj {
 //        }
 
     @Override
-    protected int addFilter(long at, Term x, byte id) {
+    protected int filterAdd(long at, byte id, Term x) {
         if (at == ETERNAL) {
             boolean hasAbsorb = false;
             for (long see : excludeEvents) {

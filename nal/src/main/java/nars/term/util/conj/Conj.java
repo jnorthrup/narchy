@@ -17,6 +17,7 @@ import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
 import nars.time.Tense;
 import org.eclipse.collections.api.RichIterable;
+import org.eclipse.collections.api.block.predicate.primitive.ByteObjectPredicate;
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ByteProcedure;
 import org.eclipse.collections.api.iterator.LongIterator;
@@ -1036,10 +1037,15 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //            );
 //        }
 
+        if (xdt == XTERNAL)
+            return addEvent(at, x);
+
         if (at != ETERNAL || (xdt == 0) || (xdt == DTERNAL)) {
 
             if (at == ETERNAL && Conj.isSeq(x))
                 at = 0;
+//            if (at == ETERNAL && x.dt() == 0)
+//                at = 0;
             return x.eventsWhile(this::addEvent, at,
                     at != ETERNAL, //unpack parallel except in DTERNAL root, allowing: ((a&|b) && (c&|d))
                     true,
@@ -1106,26 +1112,34 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             }
         }
 
+//        if (x.op()==CONJ && x.dt()!=XTERNAL)
+//            throw new WTF("why adding entire CONJ as event. should be decomposed");
+
+        //test this first
+        boolean polarity = x.op() != NEG;
+        Term xUnneg = polarity ? x : x.unneg();
+
+        byte id = add(xUnneg);
+        if (!polarity) id = (byte) -id;
 
         //quick test for conflict with existing ETERNALs
-        Object eternalEvents = event.get(ETERNAL);
-        if (eventCount(eternalEvents) > 0) {
-            if (!eventsAND(eternalEvents, b -> !unindex(b).equalsNeg(x))) {
+        Object eteEvs = event.get(ETERNAL);
+        if (eventCount(eteEvs) > 0) {
+            if (eventsORwith((byte[] /* TODO non-byte[] event */)eteEvs,
+                    (b, XN) -> b == XN, -id)) {
                 this.term = False;
                 return false;
             }
-            if (eventsOR(eternalEvents, b -> unindex(b).equals(x))) {
+            if (eventsORwith((byte[] /* TODO non-byte[] event */)eteEvs,
+                    (b,X) -> b == X, id)) {
                 return true; //absorbed into existing eternal
             }
         }
 
-        //test this first
-        boolean polarity = x.op() != NEG;
-        byte id = add(polarity ? x : x.unneg());
 
-        if (!polarity) id = (byte) -id;
 
-        switch (addFilter(at, x, id)) {
+
+        switch (filterAdd(at, id, x)) {
             case +1:
                 return true; //ignore and continue
             case 0:
@@ -1218,7 +1232,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      * 0: default, continue
      * +1: ignore and continue
      */
-    protected int addFilter(long at, Term x, byte id) {
+    protected int filterAdd(long at, byte id, Term x) {
         return 0;
     }
 
@@ -1635,19 +1649,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      *                          * null - do nothing, no conflict.  add x to the event time
      */
     private static Term merge(Term existing, Term incoming, boolean eternalOrParallel) {
-        if (existing == Null) return Null;
-        if (incoming == Null) return Null;
 
-        if (existing == False) return False;
-        if (incoming == False) return False;
-
-        if (existing == True) return incoming;
-        if (incoming == True) return existing;
-
-        if (existing.equals(incoming))
-            return existing; //exact same
-        if (existing.equalsNeg(incoming))
-            return False; //contradiction
 
         boolean incomingPolarity = incoming.op() != NEG;
         Term incomingUnneg = incomingPolarity ? incoming : incoming.unneg();
@@ -1658,7 +1660,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (!eConj && !xConj)
             return null;  //OK neither a conj/disj
 
-        if (!Term.commonStructure(existingUnneg, incomingUnneg))
+        if (!Term.commonStructure(existingUnneg.structure()& (~CONJ.bit), incomingUnneg.structure() & (~CONJ.bit)))
             return null; //OK no potential for interaction
 
         boolean existingPolarity = existing.op() != NEG;
@@ -1666,12 +1668,12 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         //quick tests for contradiction
         if (eConj && existingPolarity) {
             //for seq and parallel
-            if (eternalOrParallel && existing.containsNeg(incoming)) {
-                return False;
+            if (eternalOrParallel || existing.dt()==0) {
+                if (existing.containsNeg(incoming)) {
+                    return False;
+                }
             }
-            //TODO test for event at t=0 of parallel eConj
         }
-
 
         Term result;
 
@@ -1700,6 +1702,18 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      * stateless/fast 2-ary conjunction in either eternity (dt=DTERNAL) or parallel(dt=0) modes
      */
     public static Term conjoin(Term x, Term y, boolean eternalOrParallel) {
+
+        if (x == Null || y == Null) return Null;
+
+        if (x == False || y == False) return False;
+
+        if (x == True) return y;
+        if (y == True) return x;
+
+        if (x.equals(y))
+            return x; //exact same
+        if (x.equalsNeg(y))
+            return False; //contradiction
 
         Term xy = merge(x, y, eternalOrParallel);
 
@@ -2146,7 +2160,26 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         }
         return true;
     }
-
+    private static <X> boolean eventsANDwith(byte[] events, ByteObjectPredicate<X> each, X x) {
+        for (byte e : events) {
+            if (e != 0) {
+                if (!each.accept(e,x))
+                    return false;
+            } else
+                break; //null-terminator
+        }
+        return true;
+    }
+    private static <X> boolean eventsORwith(byte[] events, ByteObjectPredicate<X> each, X x) {
+        for (byte e : events) {
+            if (e != 0) {
+                if (each.accept(e,x))
+                    return true;
+            } else
+                break; //null-terminator
+        }
+        return false;
+    }
     private static boolean eventsOR(byte[] events, BytePredicate each) {
         for (byte e : events) {
             if (e != 0) {
