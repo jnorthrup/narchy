@@ -79,39 +79,41 @@ public interface Variable extends Atomic {
             if (x.equals(y))
                 return true;
 
-//            if (x.containsRecursively(_y))
-//                return false; //cycle caught
-
-            try {
-                return x.unifyForward(y, u);
-            } catch (StackOverflowError e) {
-                //HACK
-                System.err.println("unify stack overflow: " + x + "->" + y + " in " + u.xy);
-                return false;
+            if (x instanceof Variable && u.matchType(x.op())) {
+                xOp = x.op();
+                //continue below
+            } else {
+                try {
+                    return x.unifyForward(y, u);
+                } catch (StackOverflowError e) {
+                    //HACK
+                    System.err.println("unify stack overflow: " + x + "->" + y + " in " + u.xy);
+                    return false;
+                }
             }
         }
 
 
 
-        if (y instanceof Variable) {
+        if (y instanceof Variable && (x==this || x instanceof Variable)) {
             if (!(y instanceof EllipsisMatch)) {
                 if (xOp == y.op()) {
                     Variable Y = (Variable) y;
-                    Variable X = this;
+                    Variable X = (Variable) x;
 
                     //same op: common variable
                     //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
                     Variable common = X.compareTo(Y) < 0 ? CommonVariable.common(X, Y) : CommonVariable.common(Y, X);
                     if (u.putXY(X, common) && u.putXY(Y, common)) {
-//                        //map any appearances of X or Y in already-assigned variables
-//                        if (u.xy.size() > 2) {
-//                            u.xy.replaceAll((var, val) -> {
-//                                if (var.equals(X) || var.equals(Y) || !val.hasAny(xOp))
-//                                    return val; //unchanged
-//                                else
-//                                    return val.replace(X, common).replace(Y, common);
-//                            });
-//                        }
+                        //map any appearances of X or Y in already-assigned variables
+                        if (u.xy.size() > 2) {
+                            u.xy.replaceAll((var, val) -> {
+                                if (var.equals(X) || var.equals(Y) || !val.hasAny(X.op()))
+                                    return val; //unchanged
+                                else
+                                    return val.replace(X, common).replace(Y, common);
+                            });
+                        }
                         return true;
                     }
                     return false;

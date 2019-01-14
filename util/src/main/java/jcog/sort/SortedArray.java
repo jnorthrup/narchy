@@ -169,14 +169,18 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 //    }
 
     public void sort(ToIntFunction<X> x, int from, int to) {
+        from = Math.max(0, from);
+        to = Math.max(from, Math.min(size-1, to));
+        if (from==to)
+            return;
         int[] stack = new int[to-from+1 /*sortSize(to - from)*/ /* estimate */];
         qsort(stack, items, from /*dirtyStart - 1*/, to, x);
     }
 
-    public static void qsort(int[] stack, Object[] c, int left, int right, ToIntFunction pCmp) {
+    private static void qsort(int[] stack, Object[] c, int left, int right, ToIntFunction pCmp) {
         int stack_pointer = -1;
         int cLenMin1 = c.length - 1;
-        final int SCAN_THRESH = 5;
+        final int SCAN_THRESH = 4;
         while (true) {
             int i, j;
             if (right - left <= SCAN_THRESH) {
@@ -620,6 +624,9 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
         return find(element, Float.NaN, cmp, eqByIdentity, false);
     }
+    public int indexOf(float rank, FloatFunction<X> cmp) {
+        return find(null, rank, cmp, false, true);
+    }
 
     private int find(final X element, float elementRank /* can be NaN to lazily compute */, FloatFunction<X> cmp, boolean eqByIdentity, boolean forInsertionOrFind) {
         int s = size;
@@ -633,14 +640,12 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
                 int i;
                 for (i = left; i < right; i++) {
                     X x = items[i];
-                    boolean eq = eq(element, x, eqByIdentity);
                     if (!forInsertionOrFind) {
+                        boolean eq = eq(element, x, eqByIdentity);
                         if (eq) {
                             return i;
                         }
-                    }
-
-                    if (forInsertionOrFind) {
+                    } else {
                         if (elementRank != elementRank) elementRank = cmp.floatValueOf(element);
                         if (0 < Util.fastCompare(cmp.floatValueOf(x), elementRank)) {
                             break;

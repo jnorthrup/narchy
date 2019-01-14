@@ -155,9 +155,9 @@ class TermutatorTest {
         unifier.setTTL(TTL);
         
 
-        t.mutate(new Termutator[] { t, (f, chain, current) -> {
+        t.mutate(new Termutator[] { t, (chain, current, u) -> {
             TreeMap t1 = new TreeMap();
-            f.xy.map.forEach(t1::put);
+            u.xy.map.forEach(t1::put);
 
             if (s.add( t1.toString() )) {
                 actual[0]++;

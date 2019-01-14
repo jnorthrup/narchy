@@ -50,9 +50,9 @@ class AIMATests {
 
         n.freqResolution.set(0.1f);
 //        n.confResolution.set(0.05f);
-        n.confMin.set(0.1f);
+        n.confMin.set(0.2f);
 
-        n.beliefPriDefault.set(0.25f);
+        n.beliefPriDefault.set(0.1f);
         n.questionPriDefault.set(0.25f);
 
         assertEquals(20, $$("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").volume());
@@ -85,7 +85,7 @@ class AIMATests {
         //n.concept("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").print();
         //n.concept("Criminal").print();
 
-        n.run(3000);
+        n.run(4000);
 //        n.synch();
 
 //        Concept qc = n.concept(Q);

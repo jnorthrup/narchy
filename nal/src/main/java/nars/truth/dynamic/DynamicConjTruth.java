@@ -57,8 +57,8 @@ public class DynamicConjTruth {
         @Override
         public boolean components(Term conj, long start, long end, ObjectLongLongPredicate<Term> each) {
 
-            boolean seq = Conj.isFactoredSeq(conj);
-            if(seq) {
+            boolean seqFactored = Conj.isFactoredSeq(conj);
+            if(seqFactored) {
                 //evaluate the eternal components first.
                 // this is more efficient than sequence distribution,
                 // and avoids the evidence overlap problem
@@ -73,7 +73,7 @@ public class DynamicConjTruth {
             }
 
             int superDT = conj.dt();
-            boolean dternal = !seq && superDT == DTERNAL;
+            boolean dternal = !Conj.isSeq(conj) && superDT == DTERNAL;
             boolean xternal = superDT == XTERNAL;
             boolean parallel = superDT == 0;
 

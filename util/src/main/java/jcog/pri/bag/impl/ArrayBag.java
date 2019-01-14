@@ -660,9 +660,16 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
             if (result!=null) {
 
-                items.partialSort(posBefore, this);
+                sort(0, posBefore);
 
-                //sort(0, posBefore);
+//                int posAfter = items.indexOf(priAfter, this);
+//                if (posAfter == -1)
+//                    throw new WTF();
+//                if (posBefore!=posAfter)
+//                    sort(posBefore-1, posAfter+1);
+
+                //items.partialSort(posBefore, this);
+
             }
 
             MASS.add(this, delta);

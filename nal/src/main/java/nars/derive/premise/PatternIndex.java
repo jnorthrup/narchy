@@ -3,7 +3,6 @@ package nars.derive.premise;
 import jcog.TODO;
 import jcog.WTF;
 import jcog.data.list.FasterList;
-import nars.$;
 import nars.Builtin;
 import nars.NAR;
 import nars.Op;
@@ -409,7 +408,7 @@ public class PatternIndex extends MapConceptIndex {
                     if (xs !=ys)
                         return false;
                     if (xs > 1)
-                        return $.sFast(xFixed).unify($.sFast(yFree), u);
+                        return SETe.the(xFixed).unify(SETe.the(yFree), u);
                     else if (xs == 1)
                         return xFixed.get(0).unify(yFree.first(), u);
                     else

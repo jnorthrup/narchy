@@ -142,14 +142,15 @@ public class DynamicStatementTruth {
             for (TaskRegion x : components) {
                 Term xx = ((Task) x).term();
 
-                int tdt = xx.dt();
+                Term xxu = xx.unneg();
+                int tdt = xxu.dt();
                 long tWhen = tdt == DTERNAL ? ETERNAL : -tdt;
 
                 boolean forceNegate = false;
                 if (xx.op() == NEG) {
 
-                    if (xx.unneg().op() == IMPL) {
-                        xx = xx.unneg();
+                    if (xxu.op() == IMPL) {
+                        xx = xxu;
                         forceNegate = true;
                     } else {
                         if (!subjOrPred) {
