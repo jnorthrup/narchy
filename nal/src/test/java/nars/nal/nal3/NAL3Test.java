@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL3Test extends NALTest {
 
-    static final int cycles = 50;
+    static final int cycles = 150;
 
     @Override
     protected NAR nar() {
@@ -302,7 +302,7 @@ public class NAL3Test extends NALTest {
     @Test
     public void questPropagation() {
 
-        test.nar.termVolumeMax.set(5);
+        test.nar.termVolumeMax.set(6);
         test
                 .goal("x:a")
                 .goal("x:b")

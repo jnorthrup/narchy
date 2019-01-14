@@ -36,16 +36,17 @@ public class ConjMatch {
 
         event = Image.imageNormalize(event);
 
-        if (event.volume() >= conj.volume())
-            return Null;
-
-        return beforeOrAfterSeq(conj, event, beforeOrAfter, d, ttl);
-    }
-
-    private static Term beforeOrAfterSeq(Term conj, Term event, boolean beforeOrAfter, Derivation d, int ttl) {
         int varBits =
                 //VAR_DEP.bit | VAR_INDEP.bit;
                 VAR_DEP.bit;
+
+        if (event.volume() >= conj.volume() || !Term.commonStructure( (event.structure()&(~varBits)),(conj.structure()&(~varBits))))
+            return Null;
+
+        return beforeOrAfterSeq(conj, event, beforeOrAfter, varBits, d, ttl);
+    }
+
+    private static Term beforeOrAfterSeq(Term conj, Term event, boolean beforeOrAfter, int varBits, Derivation d, int ttl) {
 
         //sequence or commutive
 
@@ -77,21 +78,28 @@ public class ConjMatch {
                         found.getIfAbsentPut(x.when(i), ()->new FasterList(1)).add(xi);
                     }
                 }
-                if (found.isEmpty())
-                    return Null;
-                int mostMatched = found.maxBy(e->e.size()).size();
-                RichIterable<LongObjectPair<List<Term>>> best = found.keyValuesView().select(xx -> xx.getTwo().size() == mostMatched);
+                int nFound = found.size();
                 LongObjectPair<List<Term>> b;
-                if (best.size() > 1) {
-                    MutableList<LongObjectPair<List<Term>>> bb = best.toList();
-                    b = bb.get(d.random.nextInt(mostMatched));
-                } else {
-                    b = best.getOnly();
+                switch (nFound) {
+                    case 0: return Null;
+                    case 1:
+                        b = found.keyValuesView().getOnly();
+                        break;
+                    default:
+                        int mostMatched = found.maxBy(e->e.size()).size();
+                        RichIterable<LongObjectPair<List<Term>>> best = found.keyValuesView().select(xx -> xx.getTwo().size() == mostMatched);
+                        if (best.size() > 1) {
+                            MutableList<LongObjectPair<List<Term>>> bb = best.toList();
+                            b = bb.get(d.random.nextInt(mostMatched));
+                        } else {
+                            b = best.getOnly();
+                        }
+                        break;
+
                 }
+
                 long bWhen = b.getOne();
-                boolean rem = x.removeIf((when,what)->{
-                    return (when == bWhen && yTerms.contains(what));
-                });
+                boolean rem = x.removeIf((when,what)-> (when == bWhen && yTerms.contains(what)));
                 assert(rem);
 
             } else {

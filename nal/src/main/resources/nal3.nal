@@ -6,12 +6,12 @@
 //  to intensional union.
 
     (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neq(S,P) |- ((polarizeTask(P) | polarizeBelief(S)) --> M), (Belief:IntersectionDepolarized)
-     (P --> M), (S --> M), task("!"), notSetsOrDifferentSets(S,P), neq(S,P), hasBelief() |- ((polarizeTask(P) | polarizeBelief(S)) --> M), (Punctuation:Quest)
+     (P --> M), (S --> M), task("!"), notSetsOrDifferentSets(S,P), neq(S,P) |- ((polarizeTask(P) | polarizeRandom(S)) --> M), (Punctuation:Quest)
       (P --> M), (S --> M), task("?@"), notSetsOrDifferentSets(S,P), neq(S,P) |- ((polarizeRandom(P) | polarizeRandom(S)) --> M)
     (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neq(S,P),--isVar(P),--isVar(S) |- (unionSect(polarizeTask(P),polarizeBelief(S), "&") --> M), (Belief:UnionDepolarized)
 
     (M --> P), (M --> S), notSetsOrDifferentSets(S,P), neq(S,P) |- (M --> (polarizeTask(P) & polarizeBelief(S))), (Belief:IntersectionDepolarized)
-     (M --> P), (M --> S), task("!"), notSetsOrDifferentSets(S,P), neq(S,P), hasBelief() |- (M --> (polarizeTask(P) & polarizeBelief(S))), (Punctuation:Quest)
+     (M --> P), (M --> S), task("!"), notSetsOrDifferentSets(S,P), neq(S,P) |- (M --> (polarizeTask(P) & polarizeRandom(S))), (Punctuation:Quest)
       (M --> P), (M --> S), task("?@"), notSetsOrDifferentSets(S,P), neq(S,P) |- (M --> (polarizeRandom(P) & polarizeRandom(S)))
     (M --> P), (M --> S), notSetsOrDifferentSets(S,P), neq(S,P),--isVar(P),--isVar(S) |- (M --> unionSect(polarizeTask(P),polarizeBelief(S), "|")), (Belief:UnionDepolarized)
 

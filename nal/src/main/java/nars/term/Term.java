@@ -131,6 +131,10 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     static boolean commonStructure(Termlike x, Termlike y) {
         int xStruct = x.structure();
         int yStruct = y.structure();
+        return commonStructure(xStruct, yStruct);
+    }
+
+    static boolean commonStructure(int xStruct, int yStruct) {
         return (xStruct & yStruct) != 0;
     }
 
@@ -365,7 +369,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      */
     default boolean isAny(int bitsetOfOperators) {
         int s = opBit();
-        return (bitsetOfOperators & s) != 0;
+        return commonStructure(bitsetOfOperators, s);
     }
 
     default int opBit() {
