@@ -1,11 +1,21 @@
 package nars.term.util.conj;
 
+import jcog.Util;
+import jcog.data.list.FasterList;
 import nars.derive.Derivation;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.Image;
+import org.eclipse.collections.api.RichIterable;
+import org.eclipse.collections.api.list.MutableList;
+import org.eclipse.collections.api.set.ImmutableSet;
+import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
+import org.eclipse.collections.impl.factory.Sets;
+import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
+
+import java.util.List;
 
 import static nars.Op.CONJ;
 import static nars.Op.VAR_DEP;
@@ -39,40 +49,56 @@ public class ConjMatch {
 
         //sequence or commutive
 
-        ConjLazy x;
-        if (Conj.isSeq(conj)) {
-            x = ConjLazy.events(conj);
-            if (!beforeOrAfter)
-                x.reverse(); //match from opposite direction
-        } else {
-            //conj.dt() == DTERNAL || conj.dt() == 0
-            Subterms ss = conj.subterms();
-            x = new ConjLazy(ss.subs());
-            long when = (conj.dt() == DTERNAL) ? ETERNAL : 0;
-            for (Term cc : ss)
-                x.add(when, cc);
-        }
+        ConjLazy x = events(conj, beforeOrAfter);
 
         int n = x.size();
         assert (n > 1);
 
         long[] matchedTime = new long[] { Long.MAX_VALUE, Long.MIN_VALUE };
 
-        if (event.op()!=CONJ) {
+        if (event.op()!=CONJ && event.dt()!=XTERNAL) {
             //simple event
             if (!conj.impossibleSubTerm(event)) {
-                x.removeIf((when, what) -> {
-                    if (what.equals(event)) {
-                        matchedTime[0] = Math.min(matchedTime[0], when);
-                        matchedTime[1] = Math.max(matchedTime[1], when);
-                        return true;
-                    }
-                    return false;
-                });
+                remove(event, x, matchedTime);
             }
         } else {
             //remove matching parallel/sequence conjunctions
-            //TODO
+            ConjLazy y = events(event, beforeOrAfter);
+            assert(y.size() > 1);
+            long[] yRange = Util.minmax(y::when, 0, y.size());
+            if (yRange[0] == yRange[1]) {
+                //PARALLEL EVENT
+                //find what time in 'x' contains the most events from y, if any
+                LongObjectHashMap<List<Term>> found = new LongObjectHashMap<>();
+                ImmutableSet<Term> yTerms = Sets.immutable.withAll(y); //the terms
+                for (int i = 0; i < n; i++) {
+                    Term xi = x.get(i);
+                    if (yTerms.contains(xi)) {
+                        found.getIfAbsentPut(x.when(i), ()->new FasterList(1)).add(xi);
+                    }
+                }
+                if (found.isEmpty())
+                    return Null;
+                int mostMatched = found.maxBy(e->e.size()).size();
+                RichIterable<LongObjectPair<List<Term>>> best = found.keyValuesView().select(xx -> xx.getTwo().size() == mostMatched);
+                LongObjectPair<List<Term>> b;
+                if (best.size() > 1) {
+                    MutableList<LongObjectPair<List<Term>>> bb = best.toList();
+                    b = bb.get(d.random.nextInt(mostMatched));
+                } else {
+                    b = best.getOnly();
+                }
+                long bWhen = b.getOne();
+                boolean rem = x.removeIf((when,what)->{
+                    return (when == bWhen && yTerms.contains(what));
+                });
+                assert(rem);
+
+            } else {
+                //sequence
+                //TODO
+                return Null;
+            }
         }
 
 
@@ -152,6 +178,34 @@ public class ConjMatch {
         }
 
         return Null;
+    }
+
+    private static ConjLazy events(Term conj, boolean beforeOrAfter) {
+        ConjLazy x;
+        if (Conj.isSeq(conj)) {
+            x = ConjLazy.events(conj);
+            if (!beforeOrAfter)
+                x.reverse(); //match from opposite direction
+        } else {
+            //conj.dt() == DTERNAL || conj.dt() == 0
+            Subterms ss = conj.subterms();
+            x = new ConjLazy(ss.subs());
+            long when = (conj.dt() == DTERNAL) ? ETERNAL : 0;
+            for (Term cc : ss)
+                x.add(when, cc);
+        }
+        return x;
+    }
+
+    private static void remove(Term event, ConjLazy x, long[] matchedTime) {
+        x.removeIf((when, what) -> {
+            if (what.equals(event)) {
+                matchedTime[0] = Math.min(matchedTime[0], when);
+                matchedTime[1] = Math.max(matchedTime[1], when);
+                return true;
+            }
+            return false;
+        });
     }
 
 

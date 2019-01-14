@@ -1140,6 +1140,18 @@ public enum Util {
             f[i] = d[i];
         return f;
     }
+    public static long[] minmax(IntToLongFunction f, int from, int to) {
+
+        long min = Long.MAX_VALUE;
+        long max = Long.MIN_VALUE;
+        for (int i = from; i < to; i++) {
+            long y = f.applyAsLong(i);
+            if (y < min) min = y;
+            if (y > max) max = y;
+        }
+        return new long[]{min, max };
+
+    }
 
     public static float[] minmax(float[] x) {
 
