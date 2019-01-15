@@ -280,7 +280,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
      */
     @Override
     public void link(Activate a, Derivation d) {
-        if (d.firedTasks.isEmpty())
+        if (d.tasksFired.isEmpty())
             return;
 
         if (conceptualizeAndTermLink(a, d) > 0) {
@@ -292,7 +292,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
             if (!firedConcepts.isEmpty()) {
 
-                List<Task> taskedLinked = d.firedTasks.list;
+                List<Task> taskedLinked = d.tasksFired.list;
                 int n = taskedLinked.size();
                 if (n > 0) {
 
@@ -341,7 +341,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
         n = Math.min(n, d.deriver.tasklinkSpread.intValue());
 
-        float taskPriSum = (float) (((FasterList<Task>) (d.firedTasks.list)).sumOfFloat(Prioritized::priElseZero));
+        float taskPriSum = (float) (((FasterList<Task>) (d.tasksFired.list)).sumOfFloat(Prioritized::priElseZero));
 
         //taskPriSum *= concept.priElseZero();
         taskPriSum = Math.max(taskPriSum, ScalarValue.EPSILON);

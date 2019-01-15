@@ -209,7 +209,10 @@ public enum ConjCommutive {;
             if (dd!=-1) {
                 Term d = u[dd];
                 Term x = u[1 - dd];
-                return Conj.conjoin(d, x, dt == DTERNAL);
+                Term cj = Conj.conjoin(d, x, dt == DTERNAL);
+                if (cj == null)
+                    throw new WTF();
+                return cj;
             }
 
         }

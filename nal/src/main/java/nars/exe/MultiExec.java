@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 
 abstract public class MultiExec extends UniExec {
 
-    static final int contextGranularity = 2;
+    static final int contextGranularity = 4;
 
     private static final float inputQueueSizeSafetyThreshold = 0.999f;
     private final Revaluator revaluator;

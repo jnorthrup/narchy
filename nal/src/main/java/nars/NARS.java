@@ -121,10 +121,10 @@ public class NARS {
 
                 n.termVolumeMax.set(26);
 
-                ((AbstractConceptIndex)n.concepts).activationRate.set(1f);
+                ((AbstractConceptIndex)n.concepts).activationRate.set(0.1f);
 
-                n.beliefPriDefault.set(0.3f);
-                n.goalPriDefault.set(0.3f);
+                n.beliefPriDefault.set(0.2f);
+                n.goalPriDefault.set(0.2f);
                 n.questionPriDefault.set(0.05f);
                 n.questPriDefault.set(0.05f);
 
@@ -140,7 +140,7 @@ public class NARS {
     public NARS() {
 
         index = () ->
-                new SimpleConceptIndex(1024)
+                new SimpleConceptIndex(2048)
                 //new TemporaryConceptIndex()
         ;
 
@@ -193,10 +193,10 @@ public class NARS {
                         ),
                         //tasklinks
                         curve(Concept::volume,
-                                1, 64,
-                                2,32,
-                                16,24,
-                                32,16
+                                1, 48,
+                                2,24,
+                                16,16,
+                                32,12
                         ))
         );
 

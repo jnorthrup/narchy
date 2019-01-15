@@ -761,7 +761,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             ConjBuilder x = Conj.fromLazy(include);
             boolean[] removedSomething = new boolean[]{false};
 
-            long offset = exclude.dt()==DTERNAL && !Conj.isSeq(exclude) ? ETERNAL : 0;
+            long offset = exclude.dt() == DTERNAL && !Conj.isSeq(exclude) ? ETERNAL : 0;
 
             exclude.eventsWhile((when, what) -> {
                 removedSomething[0] |= when == ETERNAL ? x.removeAll(what) : x.remove(when, what);
@@ -1125,18 +1125,16 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         //quick test for conflict with existing ETERNALs
         Object eteEvs = event.get(ETERNAL);
         if (eventCount(eteEvs) > 0) {
-            if (eventsORwith((byte[] /* TODO non-byte[] event */)eteEvs,
+            if (eventsORwith((byte[] /* TODO non-byte[] event */) eteEvs,
                     (b, XN) -> b == XN, -id)) {
                 this.term = False;
                 return false;
             }
-            if (eventsORwith((byte[] /* TODO non-byte[] event */)eteEvs,
-                    (b,X) -> b == X, id)) {
+            if (eventsORwith((byte[] /* TODO non-byte[] event */) eteEvs,
+                    (b, X) -> b == X, id)) {
                 return true; //absorbed into existing eternal
             }
         }
-
-
 
 
         switch (filterAdd(at, id, x)) {
@@ -1187,7 +1185,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     return true;
                 } else {
 
-                    Term result = merge(unindex(bi), x, at == ETERNAL);
+                    Term result = merge(unindex(bi), x, at == ETERNAL, false);
 
                     if (result != null) {
                         if (result == True)
@@ -1546,99 +1544,81 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //    }
 
 
-    private static Term conjoinify(Term existing /* conj */, Term incoming, boolean eternal) {
+    private static Term conjoinify(Term existing /* conj */, Term incoming, boolean eternal, boolean create) {
 
-        int dtOuter = eternal ? DTERNAL : 0;
-        int dtInner = existing.dt();
+        int existingDT = existing.dt();
+        int incomingDT = incoming.dt();
 
-//        if (dtInner==dtOuter && (dtInner==0 || !Conj.isSeq(existing)) && existing.contains(incoming))
-//            return existing; //quick test for absorption
+        if (existingDT == XTERNAL || incomingDT == XTERNAL)
+            return null; //one or two xternal's, no way to know how they combine or not
 
+//        if (existingDT == 0 && incomingDT == 0) {
+//            assert(eternal);
+//            //promote to parallel
+//            eternal = false;
+//        }
+
+        int outerDT = eternal ? DTERNAL : 0;
 
         if (incoming.op() == CONJ) {
-            int incomingDT = incoming.dt();
-            if (incomingDT == dtOuter || existing.dt() == dtOuter) {
-                return terms.conj(dtOuter, existing, incoming);
-            } else if (incomingDT == existing.dt()) {
-                if (incomingDT == XTERNAL) {
 
-                    return null; //two XTERNAL conjoined in DTetrnity, OK
+            if (incomingDT == DTERNAL || incomingDT == 0) {
 
-                    //return terms.conj(incomingDT, conj, incoming); //promote two xternal in DTernity to one xternal
-
-                } else if (!eternal && ((incomingDT == 0) || (incomingDT == DTERNAL))) {
-                    //promote two parallel to one parallel
-                    return terms.conj(incomingDT, existing, incoming);
+                if (incomingDT == outerDT || existingDT == outerDT) {
+                    //at least one of the terms has a DT matching the outer
+                    return terms.conj(outerDT, existing, incoming);
+                } else if (incomingDT == existing.dt()) {
+                    if (outerDT == 0 && ((incomingDT == 0) || (incomingDT == DTERNAL))) {
+                        //promote a parallel of two eternals or two parallels to one parallel
+                        return terms.conj(incomingDT, existing, incoming);
+                    }
                 }
             }
 
-            //two sequences, probly. maybe some preprocessing that can be applied here
+
+            //two sequence-likes. maybe some preprocessing that can be applied here
             //otherwise just add the new event
-
-            //return terms.theSortedCompound(CONJ, dtOuter, conj, incoming);
-            return null; //OK
-
-        } else {
-            boolean innerCommute = Tense.dtSpecial(dtInner);// && !conj.subterms().hasAny(Op.CONJ);
-
-            ConjBuilder c = !innerCommute ? new Conj() : null;
-            FasterList<Term> cx = innerCommute ? new FasterList() : null;
-//            boolean incomingHasConj = incoming.hasAny(CONJ);
-            boolean ok = existing.eventsWhile((whn, wht) -> {
-                Term ww;
-
-                ww = terms.conj(dtOuter, wht, incoming);
-                if (ww == Null) {
-                    throw new WTF();
-                    //cx.clear
-                }
-                if (ww == False /*|| ww == Null*/)
-                    return false;
-                if (ww == True)
-                    return true;
-                if (ww != wht && ww.equals(wht))
-                    ww = wht; //use original if possible
-
-
-                if (innerCommute) {
-                    cx.add(ww);
-                    return true;
-                } else {
-                    //return c.add(whn, ww);
-                    return c.add(whn, ww);//direct
-                }
-
-            }, 0, dtInner == 0, dtInner == DTERNAL, dtInner == XTERNAL);
-            if (!ok)
-                return False;
-
-            Term d;
-            if (!innerCommute) {
-                //d = c.term();
+            if (!Conj.isSeq(existing) && !Conj.isSeq(incoming))
                 return null;
-            } else
-                d = terms.conj(dtInner, cx.toArrayRecycled(Term[]::new));
 
-            if (d == False /*|| d == Null*/)
-                return d; //fail
-            if (d == Null) {
-                throw new WTF();
-                //return d;
-            }
-
-            if (d.equals(existing))
-                return existing;  //no change since the incoming has been absorbed
-
-            if (d.op() != CONJ)
-                return d; //simplified/reduced event
-
-            //all original subterms remain intact, return simplified factored version
-//            //return terms.theSortedCompound(CONJ, dtOuter, conj, incoming);
-
-            //OK
-            return null; //return null because later factoring may be expected and returning 'd' would cause infinite loop
         }
 
+        //quick contradiction test
+        if (eternal || existingDT == 0) {
+            if (existing.containsNeg(incoming))
+                return False;
+            if (incoming.op()!=CONJ && existing.contains(incoming)) {
+                return existing;
+            }
+        }
+
+        ConjBuilder c = new Conj();
+
+        boolean ok = existing.eventsWhile((whn, wht) -> {
+            Term ww = terms.conj(outerDT, wht, incoming);
+            if (ww == Null)
+                throw new WTF();
+            else if (ww == False) {
+                c.add(ETERNAL, False);
+                return false;
+            }  else if (ww == True)
+                return true;
+
+            return c.add(whn, ww);
+
+        }, 0, true, true, false);
+        if (!ok)
+            return False;
+
+        Term d = c.term();
+        if (create)
+            return d;
+        else {
+            if (d.op()!=CONJ)
+                return d;
+            else
+                return null; //potentially factor
+        }
     }
 
     /**
@@ -1648,53 +1628,45 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      *                          * Null/False - short-circuit annihilation due to contradiction
      *                          * non-null - merged value.  if merged equals current item, as-if True returned. otherwise remove the current item, recurse and add the new merged one
      *                          * null - do nothing, no conflict.  add x to the event time
+     * @param create            - whether this is being used for testing potential construction, or to actually create the conjunction.
+     *                          can be used as a hint whether to proceed with full conjunction construction or not.
      */
-    private static Term merge(Term existing, Term incoming, boolean eternalOrParallel) {
+    private static Term merge(Term existing, Term incoming, boolean eternalOrParallel, boolean create) {
 
 
         boolean incomingPolarity = incoming.op() != NEG;
         Term incomingUnneg = incomingPolarity ? incoming : incoming.unneg();
         Term existingUnneg = existing.unneg();
-        boolean xConj = incomingUnneg.op() == CONJ;
+        boolean iConj = incomingUnneg.op() == CONJ;
         boolean eConj = existingUnneg.op() == CONJ;
 
-        if (!eConj && !xConj)
+        if (!eConj && !iConj)
             return null;  //OK neither a conj/disj
 
-        if (!Term.commonStructure(existingUnneg.structure()& (~CONJ.bit), incomingUnneg.structure() & (~CONJ.bit)))
+        if (!Term.commonStructure(existingUnneg.structure() & (~CONJ.bit), incomingUnneg.structure() & (~CONJ.bit)))
             return null; //OK no potential for interaction
 
         boolean existingPolarity = existing.op() != NEG;
 
-        //quick tests for contradiction
-        if (eConj && existingPolarity) {
-            //for seq and parallel
-            if (eternalOrParallel || existing.dt()==0) {
-                if (existing.containsNeg(incoming)) {
-                    return False;
-                }
-            }
-        }
-
-        Term result;
 
         Term base;
-        if (eConj && xConj) {
+        if (eConj && iConj) {
             //decide which is larger, swap for efficiency
             boolean swap = ((existingPolarity == incomingPolarity) && incoming.volume() > existing.volume());
             base = swap ? incoming : existing;
-        } else if (eConj && !xConj) {
+        } else if (eConj && !iConj) {
             base = existing;
         } else /*if (xConj && !eConj)*/ {
             base = incoming;
         }
 
         boolean conjPolarity = base == existing ? existingPolarity : incomingPolarity;
-        Term x = base == existing ? incoming : existing;
-        result = conjPolarity ? conjoinify(base, x, eternalOrParallel) : disjunctify(base, x, eternalOrParallel);
 
-        if (result != null && !(result instanceof Bool) && result.equals(existing))
-            return existing; //absorbed
+        Term x = base == existing ? incoming : existing;
+        Term result = conjPolarity ? conjoinify(base, x, eternalOrParallel, create) : disjunctify(base, x, eternalOrParallel);
+
+        if (result != null && result.equals(existing))
+            result = existing; //same value
 
         return result;
     }
@@ -1716,7 +1688,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (x.equalsNeg(y))
             return False; //contradiction
 
-        Term xy = merge(x, y, eternalOrParallel);
+        Term xy = merge(x, y, eternalOrParallel, true);
 
         //decode result term
         if (xy == True) {
@@ -2017,15 +1989,48 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             if (eternal == True)
                 ci = temporal;
             else {
-                if ((Conj.isSeq(eternal) || eternal.dt()==0) && Conj.isSeq(temporal)) {
-                    //send through again
-                    Conj cc = new Conj();
-                    cc.add(0, temporal);
-                    cc.add(0, eternal);
-                    return cc.term();
-                } else {
-                    ci = ConjCommutive.the(DTERNAL, temporal, eternal);
-                }
+
+
+
+//                if ((Conj.isSeq(eternal) || eternal.dt() == 0) && Conj.isSeq(temporal)) {
+//                    //send through again
+//                    Conj cc = new Conj();
+//                    cc.add(0, temporal);
+//                    cc.add(0, eternal);
+//                    return cc.term();
+//                } else {
+                    int tdt = temporal.dt();
+                    int edt = eternal.dt();
+                    if ((temporal.op()==CONJ && (tdt == DTERNAL || tdt == 0)) || (eternal.op()==CONJ && (edt ==DTERNAL || edt == 0)))
+                        return ConjCommutive.the(DTERNAL, temporal, eternal); //needs flatten
+                    else {
+
+                        if (temporal.op()==CONJ && Term.commonStructure(eternal, temporal)) {
+                            if (Conj.isSeq(temporal) || eternal.op()==CONJ) {
+
+                                if (!eternal.eventsWhile((ewhen, ewhat) -> {
+                                    //exhaustively check events for conflict
+                                    Term nEternal = ewhat.neg();
+                                    return temporal.eventsWhile((when, what) -> {
+                                        return !what.equals(nEternal);
+                                    }, 0, true, true, true);
+                                }, 0, true, true, true))
+                                    return False;
+
+                            } else {
+                                if (temporal.containsNeg(eternal))
+                                    return False; //HACK
+                                else if (temporal.contains(eternal))
+                                    return temporal;  //HACK
+                            }
+                        }
+
+                        return terms.theCompound(CONJ, DTERNAL, sorted(temporal, eternal));
+                    }
+
+//                    if (ci.anon() == False)
+//                        return False; //HACK
+//                }
             }
         } else if (eternal == null) {
             ci = temporal;
@@ -2161,26 +2166,29 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         }
         return true;
     }
+
     private static <X> boolean eventsANDwith(byte[] events, ByteObjectPredicate<X> each, X x) {
         for (byte e : events) {
             if (e != 0) {
-                if (!each.accept(e,x))
+                if (!each.accept(e, x))
                     return false;
             } else
                 break; //null-terminator
         }
         return true;
     }
+
     private static <X> boolean eventsORwith(byte[] events, ByteObjectPredicate<X> each, X x) {
         for (byte e : events) {
             if (e != 0) {
-                if (each.accept(e,x))
+                if (each.accept(e, x))
                     return true;
             } else
                 break; //null-terminator
         }
         return false;
     }
+
     private static boolean eventsOR(byte[] events, BytePredicate each) {
         for (byte e : events) {
             if (e != 0) {

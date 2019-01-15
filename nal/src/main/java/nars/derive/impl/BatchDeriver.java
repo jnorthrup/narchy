@@ -32,15 +32,19 @@ public class BatchDeriver extends Deriver {
 
     public final IntRange conceptsPerIteration = new IntRange(3, 1, 32);
 
-    /**
-     * how many premises to keep per concept; should be <= Hypothetical count
-     */
-    public final IntRange premisesPerConcept = new IntRange(1, 1, 8);
 
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */
-    public final IntRange termLinksPerTaskLink = new IntRange(1, 1, 8);
+    public final IntRange taskLinksPerConcept = new IntRange(1, 1, 8);
+
+    /**
+     * how many premises to keep per concept; should be <= Hypothetical count
+     */
+    public final IntRange premisesPerLink = new IntRange(1, 1, 8);
+
+//    /** what % premises to actually try deriving */
+//    public final FloatRange premiseElitism = new FloatRange(0.5f, 0, 1f);
 
 
 
@@ -73,8 +77,8 @@ public class BatchDeriver extends Deriver {
 //                    p.derive(/* HACK */ Deriver.derivation.get().next(nar, this), matchTTL, deriveTTL);
 //                });
 //            } else {
-                for (Premise p : hypothesize(d))
-                    p.derive(d, matchTTL, deriveTTL);
+            for (Premise p : hypothesize(d))
+                p.derive(d, matchTTL, deriveTTL);
 //            }
 
         } while (kontinue.getAsBoolean());
@@ -87,27 +91,16 @@ public class BatchDeriver extends Deriver {
      */
     private FasterList<Premise> hypothesize(Derivation d) {
 
-        int premisesMax = conceptsPerIteration.intValue() * premisesPerConcept.intValue();
-
-        int termLinksPerTaskLink = this.termLinksPerTaskLink.intValue();
-
-        int tasklinks = Math.max(1, Math.round(premisesMax / ((float) termLinksPerTaskLink)));
-
-
         SortedList<Premise> premises = d.premiseBuffer;
         premises.clear();
 
-
-
-
-
-        int[] conceptsRemain = new int[]{(int) Math.ceil(premisesMax / ((float) (termLinksPerTaskLink * termLinksPerTaskLink)))};
+        int[] conceptsRemain = new int[]{ conceptsPerIteration.intValue() };
 
         source.accept(a -> {
 
-            premiseMatrix(a, premisesMax, tasklinks, termLinksPerTaskLink, d);
+            premiseMatrix(a, d);
 
-            return (premises.size() < premisesMax) && conceptsRemain[0]-- > 0;
+            return conceptsRemain[0]-- > 0;
         });
 
 //        int s = premises.size();
@@ -121,7 +114,7 @@ public class BatchDeriver extends Deriver {
     /**
      * hypothesize a matrix of premises, M tasklinks x N termlinks
      */
-    private void premiseMatrix(Activate conceptActivation, int premisesMax, int _tasklinks, int _termlinksPerTasklink, Derivation d) {
+    private void premiseMatrix(Activate conceptActivation, Derivation d) {
 
         nar.emotion.conceptFire.increment();
 
@@ -146,8 +139,8 @@ public class BatchDeriver extends Deriver {
         }
 
 
-        final ArrayHashSet<TaskLink> taskLinksFired = d.firedTaskLinks;
-        final ArrayHashSet<Task> tasksFired = d.firedTasks;
+        final ArrayHashSet<TaskLink> taskLinksFired = d.taskLinksFired;
+        final ArrayHashSet<Task> tasksFired = d.tasksFired;
         taskLinksFired.clear();
         tasksFired.clear();
 
@@ -156,27 +149,26 @@ public class BatchDeriver extends Deriver {
 
         FasterList<Premise> premises = d.premiseBuffer;
 
-        tasklinks.sample(rng, Math.min(_tasklinks, nTaskLinks), tasklink -> {
+
+        tasklinks.sample(rng, Math.min(taskLinksPerConcept.intValue(), nTaskLinks), tasklink -> {
 
             Task task = TaskLink.task(tasklink, nar);
-            if (task != null) {
+            if (task == null)
+                return true;
 
-                int[] premisesPerTaskLink = { _termlinksPerTasklink };
+            int premisesPerTaskLinkTried = this.premisesPerLink.intValue();
 
+            int p = 0;
 
-                do {
-                    Term b = beliefSrc.get();
-                    if (b!=null) {
-                        if (premises.add(new Premise(task, b))) {
-                            if (premisesPerTaskLink[0]==_termlinksPerTasklink) //only add on the first
-                                tasksFired.add(task);
+            do {
+                Term b = beliefSrc.get();
+                if (b != null && premises.add(new Premise(task, b))) {
+                    p++;
+                }
+            } while (premisesPerTaskLinkTried-- > 0);
 
-                            if (premises.size() >= premisesMax)
-                                return false;
-                        }
-                    }
-                } while (premisesPerTaskLink[0]-- > 0);
-            }
+            if (p > 0)
+                tasksFired.add(task);
 
             return true;
         });

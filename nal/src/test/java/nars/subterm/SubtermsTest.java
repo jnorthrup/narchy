@@ -11,7 +11,9 @@ import nars.term.util.TermTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static nars.$.$$;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by me on 3/1/16.
@@ -101,6 +103,12 @@ public class SubtermsTest {
 
     }
 
+    @Test void testBiSubtermsContainsNeg() {
+        assertTrue( $$("(--x &&+1 x)").containsNeg($$("x")) );
+        assertTrue( $$("(--x &&+1 x)").containsNeg($$("--x")) );
+        assertTrue( $$("(--x &&+1 x)").contains($$("x")) );
+        assertTrue( $$("(--x &&+1 x)").contains($$("--x")) );
+    }
 //    @Test
 //    void testEqualityOfBiSubtermReverseImpls() {
 //        Term a = Atomic.the("a");

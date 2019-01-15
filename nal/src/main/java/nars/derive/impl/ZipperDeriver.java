@@ -62,10 +62,10 @@ public class ZipperDeriver extends Deriver {
             BeliefSource.LinkModel model = hypothesizer.apply(concept, d);
             if (model!=null) {
 
-                d.firedTasks.clear();
-                d.firedTaskLinks.clear();
+                d.tasksFired.clear();
+                d.taskLinksFired.clear();
 
-                ArrayHashSet<TaskLink> fired = model.tasklinks(tasklinksPerConcept.intValue(), d.firedTaskLinks);
+                ArrayHashSet<TaskLink> fired = model.tasklinks(tasklinksPerConcept.intValue(), d.taskLinksFired);
                 Supplier<Term> beliefTerms = model.beliefTerms();
 
                 int termlinks = /*Util.lerp(cPri, 1, */termlinksPerConcept.intValue();
@@ -83,7 +83,7 @@ public class ZipperDeriver extends Deriver {
                             Term b = beliefTerms.get();
                             if (b != null) {
                                 if (derived == 0)
-                                    d.firedTasks.add(task);
+                                    d.tasksFired.add(task);
                                 new Premise(task, b).derive(d, matchTTL, deriveTTL);
                                 derived++;
                             }

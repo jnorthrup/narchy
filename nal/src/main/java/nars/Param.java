@@ -72,10 +72,10 @@ public abstract class Param {
     public static final int TaskLinkSpreadDefault =
             //16;
             //12;
-            10;
+            //10;
             //8;
             //7;
-            //6;
+            6;
             //5;
             //4;
             //3;
@@ -343,7 +343,7 @@ public abstract class Param {
      * estimate
      */
     @Deprecated
-    private static final int TTL_MIN =
+    public static final int TTL_MIN =
             (Param.TTL_UNIFY * 2) +
                     (Param.TTL_BRANCH * 1) + Param.TTL_DERIVE_TASK_SUCCESS;
 
