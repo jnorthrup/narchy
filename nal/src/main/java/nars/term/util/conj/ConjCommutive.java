@@ -3,8 +3,8 @@ package nars.term.util.conj;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.util.ArrayUtils;
+import nars.Op;
 import nars.term.Term;
-import nars.term.util.builder.HeapTermBuilder;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.Arrays;
@@ -51,7 +51,7 @@ public enum ConjCommutive {;
 
             if (a.unneg().op() != CONJ && b.unneg().op()!=CONJ) {
                 //fast construct for simple case, verified above to not contradict itself
-                return HeapTermBuilder.the.theCompound(CONJ, dt, /*sorted*/u);
+                return conjDirect(dt, /*sorted*/u);
             }
         }
 
@@ -219,17 +219,16 @@ public enum ConjCommutive {;
 
         long sdt = dt == DTERNAL ? ETERNAL : 0;
         try {
-            Conj c = new Conj(u.length);
 
             //iterate in reverse order to add the smaller (by volume) items first
 
             if (seq!=null) {
+                Conj c = new Conj(u.length);
                 //add the non-conj terms at ETERNAL last.
                 //then if the conjOther is a sequence, add it at zero
                 for (int i = u.length-1; i >= 0; i--) {
                     if (seq.get(i)) {
-                        Term t = u[i];
-                        if (!c.add(sdt, t))
+                        if (!c.add(sdt, u[i]))
                             return c.term(); //fail
                     }
                 }
@@ -238,6 +237,7 @@ public enum ConjCommutive {;
                         if (!c.add(sdt, u[i]))
                             return c.term(); //fail
                 }
+                return c.term();
 
             } else {
                 switch (u.length) {
@@ -248,15 +248,15 @@ public enum ConjCommutive {;
                     case 2:
                         return Conj.conjoin(u[0], u[1], dt == DTERNAL);
                     default: {
+                        Conj c = new Conj(u.length);
                         for (int i = u.length-1; i >= 0; i--) {
-                            Term term = u[i];
-                            if (!c.add(sdt, term))
+                            if (!c.add(sdt, u[i]))
                                 break;
                         }
+                        return c.term();
                     }
                 }
             }
-            return c.term();
         } catch (StackOverflowError e) {
             throw new WTF("StackOverflow: && " + sdt + " " + Arrays.toString(u)); //TEMPORARY
         }
@@ -303,7 +303,7 @@ public enum ConjCommutive {;
 //    }
 
     static Term conjDirect(int dt, Term[] u) {
-        return HeapTermBuilder.the.theCompound(CONJ, dt, u);
+        return Op.terms.theCompound(CONJ, dt, u);
     }
 
     static boolean coNegate(MetalBitSet pos, MetalBitSet neg, Term[] u) {

@@ -86,16 +86,21 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     /**
      * since CONJ will be constructed with conjMerge, if x is conj the dt between events must be calculated from start-start. otherwise it is implication and this is measured internally
      */
-    private int dt(Event aa, Event bb) {
+    private int dt(Event aa, Event bb, boolean absolute) {
 
         long aWhen = aa.start();
         long bWhen;
         if (aWhen == ETERNAL || (bWhen = bb.start()) == ETERNAL)
             return DTERNAL;
         else {
-            assert (aWhen != TIMELESS);
-            assert (bWhen != TIMELESS);
-            return occToDT(bWhen - aWhen);
+            assert (aWhen != TIMELESS && bWhen != TIMELESS);
+            long d;
+            if (!absolute || aWhen <= bWhen)
+                d = (bWhen - aWhen) - (absolute ? 0 : aa.id.eventRange());
+            else
+                d = (aWhen - bWhen) - (absolute ? 0 : bb.id.eventRange());
+
+            return occToDT(d);
         }
 
     }
@@ -671,7 +676,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     private boolean solveDTAbsolutePair(Term x, Predicate<Event> each, Term a, Term b, boolean aEqB) {
-        if (!a.hasXternal() && !b.hasXternal() && (aEqB || !commonSubEventsWithMultipleOccurrences(a, b))) {
+        if (!a.hasXternal() && !b.hasXternal()) {
             UnifiedSet<Event> ae = new UnifiedSet(2);
             //solveExact(a, ax -> {
             solveOccurrence(a, ax -> {
@@ -705,8 +710,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
 
                     if (!be.isEmpty()) {
-                        for (Event ax : eventArray(ae)) {
-                            for (Event bx : eventArray(be)) {
+                        for (Event ax : (ae)) {
+                            for (Event bx : (be)) {
                                 if (ax != bx) {
                                     if (!solveDTAbsolutePair(x, ax, bx, each))
                                         return false;
@@ -735,12 +740,14 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             return true; //same event
         //TODO additional checking
 
-        int dt = dt(a, b);
+
 
         if (x.op() == CONJ) {
+            int dt = dt(a, b, true);
             return solveConj2DT(each, a, dt, b);
         } else {
             //for impl and other types cant assume occurrence corresponds with subject
+            int dt = dt(a, b, false);
             return solveDT(x, TIMELESS, dt, durMerge(a, b), null, true, each);
         }
     }
@@ -757,7 +764,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
                 Event z = a;
                 a = b;
                 b = z;
-                dt = -dt;
+//                dt = -dt;
             }
         }
 

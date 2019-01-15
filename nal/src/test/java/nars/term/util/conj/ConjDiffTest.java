@@ -13,9 +13,9 @@ class ConjDiffTest {
     void testConjDiff_Eliminate() {
 
         assertEq("c", ConjDiff.the(
-                $$("(b &&+5 c)"), 5, $$("(a &&+5 b)"), 0, false).term());
+                $$("(b &&+5 c)"), 5, $$("(a &&+5 b)"), 0).term());
         assertEq("c", ConjDiff.the(
-                $$("(--b &&+5 c)"), 5, $$("(a &&+5 --b)"), 0, false).term());
+                $$("(--b &&+5 c)"), 5, $$("(a &&+5 --b)"), 0).term());
     }
 
     @Test
@@ -33,31 +33,34 @@ class ConjDiffTest {
 
     }
 
+
+
     @Test
     void testConjDiff_EternalComponents_Same_Masked() {
         //x && ... common to both
         assertEq("z", ConjDiff.the(
-                $$("(x&&z)"), 0, $$("(x&&y)"), 0, false).term());
+                $$("(x&&z)"), 0, $$("(x&&y)"), 0).term());
 
         assertEq("z", ConjDiff.the(
-                $$("(x&&z)"), ETERNAL, $$("(x&&y)"), 0, false).term());
+                $$("(x&&z)"), ETERNAL, $$("(x&&y)"), 0).term());
         assertEq("z", ConjDiff.the(
-                $$("(x&&z)"), 0, $$("(x&&y)"), ETERNAL, false).term());
+                $$("(x&&z)"), 0, $$("(x&&y)"), ETERNAL).term());
 
         assertEq("z", ConjDiff.the(
-                $$("(x&&z)"), 1, $$("(x&&y)"), 1, false).term());
+                $$("(x&&z)"), 1, $$("(x&&y)"), 1).term());
         assertEq("(x&|z)", ConjDiff.the(
-                $$("(x&&z)"), 1, $$("(x&&y)"), 0, false).term());
+                $$("(x&&z)"), 1, $$("(x&&y)"), 0).term());
         assertEq("(x&|z)", ConjDiff.the(
-                $$("(x&&z)"), 0, $$("(x&&y)"), 1, false).term());
+                $$("(x&&z)"), 0, $$("(x&&y)"), 1).term());
 
         assertEq("(c&|x)", ConjDiff.the(
-                $$("(x&&(b &&+5 c))"), 5, $$("(x&&(a &&+5 b))"), 0, false).term());
+                $$("(x&&(b &&+5 c))"), 5, $$("(x&&(a &&+5 b))"), 0).term());
     }
+
     @Test
     void testConjDiff_EternalComponents_Diff_Masked_Ete() {
         assertEq("(w&|z)", ConjDiff.the(
-                $$("(w && z)"), 5, $$("(x && y)"), 0, false).term());
+                $$("(w && z)"), 5, $$("(x && y)"), 0).term());
     }
     @Test
     void testConjDiff_EternalComponents_Diff_Masked_Seq() {
@@ -65,7 +68,7 @@ class ConjDiffTest {
         assertEq("(((a &&+5 b)&&x)=|>(y &&+5 (c&|y)))", "(((a &&+5 b)&&x) =|> ((b &&+5 c)&&y))");
 
         assertEq("(y &&+5 (c&|y))", ConjDiff.the(
-                $$("(y && (b &&+5 c))"), 5, $$("(x && (a &&+5 b))"), 0, false).term());
+                $$("(y && (b &&+5 c))"), 5, $$("(x && (a &&+5 b))"), 0).term());
     }
 
 }

@@ -19,6 +19,8 @@ abstract class TemporalStabilityTest {
         n.freqResolution.set(0.1f);
         n.confResolution.set(0.02f);
 
+//        Param.DEBUG = true;
+//        n.log();
 
         n.onTask(this::validate);
 

@@ -1,8 +1,10 @@
 package nars.term.util;
 
 import jcog.TODO;
+import jcog.WTF;
 import nars.Op;
 import nars.Param;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.builder.HeapTermBuilder;
@@ -80,43 +82,50 @@ public class Statement {
             if (!subject.op().eventable || !predicate.op().eventable)
                 return Null;
 
-            //implicit dternal to parallel promotion in temporal implication
-//            if (dt!=XTERNAL && dt!=DTERNAL) {
-//                if (subject.op()==CONJ && subject.dt()==DTERNAL && !Conj.isSeq(subject))
-//                    subject = subject.dt(0);
-//                if (predicate.op()==CONJ && predicate.dt()==DTERNAL && !Conj.isSeq(predicate))
-//                    predicate = predicate.dt(0);
-//            }
+            int subjDT = subject.dt();
 
+            //TODO simple case when no CONJ or IMPL are present
 
-            {
-                int subjDT = subject.dt();
+            if (dt != XTERNAL && subjDT != XTERNAL && predicate.dt() != XTERNAL && !subject.OR(x->x instanceof Ellipsis) && !predicate.OR(x->x instanceof Ellipsis) ) {
 
-                //TODO simple case when no CONJ or IMPL are present
+                if ((!(subject instanceof Compound) && !(predicate instanceof Compound)) || !Term.commonStructure(subject, predicate)) {
 
-                if (dt != XTERNAL && subjDT != XTERNAL && predicate.dt() != XTERNAL && !subject.OR(x->x instanceof Ellipsis) && !predicate.OR(x->x instanceof Ellipsis) ) {
+                    //no validity test necessary
 
-
-                    int subjRange = subject.eventRange();
-                    boolean subjNeg = subject.op() == NEG;
+                } else {
 
                     long so, po; //subject and predicate occurrences
 
                     so = subjDT != DTERNAL ? 0 : (dt != DTERNAL ? 0 : ETERNAL);
-                    po = (subjDT!=DTERNAL || predicate.dt() != DTERNAL) ?
-                            (dt!=DTERNAL ? dt : 0)
+                    po = (subjDT != DTERNAL || predicate.dt() != DTERNAL) ?
+                            (dt != DTERNAL ? dt : 0)
                             :
                             (dt != DTERNAL ? dt : ETERNAL);
-                    if (po!=ETERNAL)
+
+                    int subjRange = subject.eventRange();
+                    if (po != ETERNAL)
                         po += subjRange;
 
 
+                    //test for validity by creating the hypothetical conjunction analog of the implication
+                    Conj x = new Conj();
+                    if (!x.add(so, subject))
+                        throw new WTF();
+                    if (!x.add(po, predicate))
+                        return False;
+                    Term cx = x.term();
+                    if (cx instanceof Bool)
+                        return cx;
 
-
+                    //subtract any common subject components from predicate
+                    boolean subjNeg = subject.op() == NEG;
                     Conj newPredConj = ConjDiff.the(predicate, po, subject.negIf(subjNeg), so, subjNeg);
                     Term newPred = newPredConj.term();
 
+
                     boolean predChange = !predicate.equals(newPred);
+
+
                     if (predChange) {
 
                         if (newPred instanceof Bool) {
@@ -149,7 +158,7 @@ public class Statement {
 //                                    }
 //                                    return true; //keep going
 //                                }, 0, true, true, false, 0);
-                                //shift = s[0];
+                            //shift = s[0];
                             //}
                             if (shift == DTERNAL || shift == XTERNAL) {
                                 if (Param.DEBUG)
@@ -160,23 +169,18 @@ public class Statement {
 
                             dt = shift - subjRange;
 
-                            if (newPred.dt()==0 && predicate.dt()==DTERNAL && predicate.subterms().equals(newPred.subterms())) {
+                            if (newPred.dt() == 0 && predicate.dt() == DTERNAL && predicate.subterms().equals(newPred.subterms())) {
                                 //HACK return to dternal
                                 newPred = newPred.dt(DTERNAL);
                             }
                         }
 
                         predicate = newPred;
-                        if (predicate.op()==NEG)
+                        if (predicate.op() == NEG)
                             return statement(IMPL, dt, subject, predicate.unneg()).neg();//recurse
                     }
                 }
-
             }
-
-
-
-
 
         } else if (op == SIM) {
             if (subject instanceof Bool || predicate instanceof Bool) {

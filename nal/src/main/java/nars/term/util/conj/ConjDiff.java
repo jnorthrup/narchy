@@ -1,6 +1,8 @@
 package nars.term.util.conj;
 
 import nars.term.Term;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static nars.time.Tense.ETERNAL;
 
@@ -10,28 +12,39 @@ public class ConjDiff extends Conj {
     private final long[] excludeEvents;
 
     public static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt) {
-        return the(include, includeAt, exclude, excludeAt);
+        return the(include, includeAt, exclude, excludeAt, false);
     }
 
-    /** warning: invert may not work the way you expect. it is designed for use in IMPL construction */
-    public static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt, boolean invert) {
-        Conj subtractFrom = new Conj(excludeAt, exclude);
 
-        if (subtractFrom.eventCount(ETERNAL)>0 && subtractFrom.event.size() > 1) {
+    public static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt, boolean invert) {
+        return the(include, includeAt, exclude, excludeAt, invert, null);
+
+    }
+    /** warning: invert may not work the way you expect. it is designed for use in IMPL construction */
+    public static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt, boolean invert, @Nullable Conj seed) {
+        Conj e = seed == null ? new Conj() : Conj.newConjSharingTermMap(seed);
+        e.add(excludeAt, exclude);
+
+        return the(include, includeAt, invert, e);
+    }
+
+    @NotNull
+    public static ConjDiff the(Term include, long includeAt, boolean invert, Conj exclude) {
+        if (exclude.eventCount(ETERNAL)>0 && exclude.event.size() > 1) {
             //has both eternal and temporal components;
             // mask the eternal components so they are not eliminated from the result
-            subtractFrom.removeAll(ETERNAL);
+            exclude.removeAll(ETERNAL);
         }
 
-        return new ConjDiff(subtractFrom, includeAt, include, invert);
+        return new ConjDiff(include, exclude, includeAt, invert);
     }
 
-    ConjDiff(Conj subtractFrom, long offset, Term subtractWith, boolean invert) {
-        super(subtractFrom.termToId, subtractFrom.idToTerm);
-        this.se = subtractFrom;
+    ConjDiff(Term include, Conj exclude, long offset, boolean invert) {
+        super(exclude.termToId, exclude.idToTerm);
+        this.se = exclude;
         this.excludeEvents = se.event.keySet().toArray();
         this.invert = invert;
-        add(offset, subtractWith);
+        add(offset, include);
         //distribute();
     }
 
