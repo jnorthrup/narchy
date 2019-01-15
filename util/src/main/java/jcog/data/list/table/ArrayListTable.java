@@ -55,7 +55,7 @@ abstract public class ArrayListTable<K, V> implements Table<K, V> {
      * @return Whether the Item is in the Bag
      */
     public final boolean contains(/**/ K k) {
-        return this.containsKey(k);
+        return map.containsKey(k);
     }
 
 
@@ -113,10 +113,6 @@ abstract public class ArrayListTable<K, V> implements Table<K, V> {
 
     public final V get(Object key) {
         return map.get(key);
-    }
-
-    public boolean containsKey(K name) {
-        return map.containsKey(name);
     }
 
     @NotNull

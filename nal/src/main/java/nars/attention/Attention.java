@@ -8,8 +8,6 @@ import nars.control.DurService;
 public abstract class Attention extends DurService {
 
 
-    public Activator activating;
-
     public Forgetting forgetting;
 
     /** default derivePri for derivers */
@@ -19,9 +17,9 @@ public abstract class Attention extends DurService {
             //new DefaultPuncWeightedDerivePri();
 
 
-    protected Attention(Activator activating, Forgetting forgetting) {
+    protected Attention(Forgetting forgetting) {
         super((NAR)null);
-        this.activating = activating;
+//        this.activating = activating;
         this.forgetting = forgetting;
     }
 
@@ -29,9 +27,7 @@ public abstract class Attention extends DurService {
     protected void starting(NAR nar) {
 
         super.starting(nar);
-        on(
-            nar.onCycle(this::cycle)
-        );
+
     }
 
     @Override
@@ -42,8 +38,4 @@ public abstract class Attention extends DurService {
 
     }
 
-    private void cycle(NAR n) {
-        activating.update(n);
-
-    }
 }

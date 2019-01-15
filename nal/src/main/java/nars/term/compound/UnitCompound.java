@@ -11,7 +11,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
-import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiPredicate;
@@ -36,6 +35,12 @@ public abstract class UnitCompound implements Compound {
         return sub();
     }
 
+    @Override
+    public Term sub(int i, Term ifOutOfBounds) {
+        if (i!=0)
+            return ifOutOfBounds;
+        return sub();
+    }
 
     @Override
     public int hashCode() {

@@ -9,6 +9,8 @@ import jcog.pri.bag.impl.hijack.PriHijackBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Param;
+import nars.attention.BufferedBag;
+import nars.attention.PriBuffer;
 import nars.concept.Concept;
 import nars.control.DurService;
 import nars.link.Activate;
@@ -18,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Random;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -57,16 +60,43 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
 
 
         active =
-                nar.exe.concurrent() ?
+                //nar.exe.concurrent() ?
 
-                        arrayBag()
+                  //      arrayBag()
                         //hijackBag()
 
                         //new FastPutProxyBag<>(arrayBag,
                         //      1024)
 
-                        :
-                        arrayBag();
+                    //    :
+            new BufferedBag<>(arrayBag(), new PriBuffer<Concept>(Param.conceptMerge)) {
+
+                private float min;
+
+                @Override
+                public Bag<Term, Activate> commit(Consumer<Activate> update) {
+                    min = bag.size() >= bag.capacity() ? bag.priMin() : 0;
+                    return super.commit(update);
+                }
+
+                @Override
+                public void putInternal(Concept c, float pri) {
+                    if (min <= ScalarValue.EPSILON  ||  (pri >= min || bag.contains(c.term())))
+                        bag.putAsync(new Activate(c, pri));
+                    else {
+                        //System.out.println("ignored: " + c + " "+n4(pri));
+                    }
+                }
+
+                //                int toActivate = items.size();
+//                int cap = ((AbstractConceptIndex) n.concepts).active.capacity();
+//        if (toActivate > cap) {
+//                    System.out.println("warning: activation set larger than active concepts bag capacity: " + toActivate + "/" + cap);
+//                }
+
+            };
+
+
 
 
         active.setCapacity(activeCapacity.intValue());
@@ -126,7 +156,7 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
 
     @Override
     public void activate(Concept c, float pri) {
-        active.putAsync(new Activate(c, pri * activationRate.floatValue()));
+        ((BufferedBag)active).put(c, pri * activationRate.floatValue());
     }
 
     @Override

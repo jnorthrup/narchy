@@ -12,9 +12,11 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
-import nars.attention.Activator;
+import nars.attention.BufferedBag;
+import nars.attention.PriBuffer;
 import nars.concept.Concept;
 import nars.derive.Derivation;
+import nars.index.concept.AbstractConceptIndex;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.var.Img;
@@ -346,10 +348,15 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
         //taskPriSum *= concept.priElseZero();
         taskPriSum = Math.max(taskPriSum, ScalarValue.EPSILON);
 
+        NAR nar = d.nar;
+        AbstractConceptIndex koncepts = (AbstractConceptIndex) nar.concepts;
+        PriBuffer<Concept> linking = ((BufferedBag<Term,Concept,?>) koncepts.active).buffer; //HACK
+
         float conceptActivationEach =
                 //(activationRate * conceptSrc.priElseZero()) / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch
                 taskPriSum / Math.max(1, n); //TODO correct # of concepts fired in this batch
 
+        conceptActivationEach *= koncepts.activationRate.floatValue(); //HACK
 
 //            float balance = nar.termlinkBalance.floatValue();
 
@@ -366,8 +373,6 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
 //            Term srcTerm = src.term();
 
-        NAR nar = d.nar;
-        Activator linking = nar.attn.activating;
 
         Random rng = d.random;
         int j; boolean inc;
@@ -393,11 +398,12 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
             if (tgtTerm instanceof Concept && ((Concept)tgtTerm).isDeleted())
                 setFast(j, tgtTerm = tgtTerm.term()); //concept was deleted, so revert back to term
 
-            @Nullable Concept tgt =
-                    linking.activate(tgtTerm, conceptActivationEach, nar, overflow);
 
+            Concept tgt = tgtTerm instanceof Concept ? ((Concept)tgtTerm) : nar.conceptualize(tgtTerm);
 
-            if (tgt != null) {
+            if (tgt !=null) {
+
+                linking.put(tgt, conceptActivationEach, overflow);
 
                 if (!(tgtTerm instanceof Concept))
                     setFast(j, tgt); //cache concept for the entry
@@ -418,7 +424,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
         }
 
         if(overflow!=null)
-            linking.activate(overflow, rng);
+            linking.put(overflow, rng);
 
         return n;
     }

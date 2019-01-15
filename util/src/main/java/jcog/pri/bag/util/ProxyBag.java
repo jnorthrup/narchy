@@ -91,12 +91,9 @@ public class ProxyBag<X,Y> implements Bag<X,Y> {
         return bag.put(b, overflowing);
     }
 
-
-
     @Override
     public void sample(Random rng, Function<? super Y, SampleReaction> each) {
         bag.sample(rng, each);
-
     }
 
     @Override
@@ -134,8 +131,6 @@ public class ProxyBag<X,Y> implements Bag<X,Y> {
         return this;
     }
 
-
-
     @Override
     public void onAdd(Y v) {
         bag.onAdd(v);
@@ -151,11 +146,11 @@ public class ProxyBag<X,Y> implements Bag<X,Y> {
         bag.onReject(v);
     }
 
-    @Override
-    public Iterable<Y> commit() {
-        bag.commit();
-        return this;
-    }
+//    @Override
+//    public Iterable<Y> commit() {
+//        bag.commit();
+//        return this;
+//    }
 
     @Override
     public float mass() {

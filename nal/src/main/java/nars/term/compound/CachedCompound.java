@@ -125,6 +125,10 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
             return this;
         }
 
+        @Override
+        public final boolean equalsRoot(Term x) {
+            return equals(x) || equals(x.root());
+        }
     }
 
 

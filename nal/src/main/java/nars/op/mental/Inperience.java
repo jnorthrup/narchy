@@ -317,7 +317,15 @@ abstract public class Inperience extends TaskLeakTransform {
     @Override
     protected float leak(Task x) {
 
-        Term c = reify(x).normalize();
+        Term c;
+        try {
+            c = reify(x).normalize();
+        } catch (Throwable t) {
+            if (Param.DEBUG)
+                logger.error("{} failed Task reification: {} : {}", this, x, t);
+            return 0;
+        }
+
         if (!c.op().conceptualizable)
             return 0;
         if (c.volume() > volMaxPost)

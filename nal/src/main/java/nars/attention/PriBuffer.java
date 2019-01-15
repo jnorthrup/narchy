@@ -2,11 +2,8 @@ package nars.attention;
 
 import jcog.pri.OverflowDistributor;
 import jcog.pri.UnitPri;
-import nars.NAR;
-import nars.Param;
-import nars.concept.Concept;
-import nars.index.concept.AbstractConceptIndex;
-import nars.term.Termed;
+import jcog.pri.op.PriMerge;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -14,7 +11,7 @@ import java.util.Map;
 import java.util.Random;
 //import java.util.concurrent.ConcurrentHashMap;
 
-/** accumulates/buffers/collates a stream of concept activations and termlinkages
+/** accumulates/buffers/collates a stream of Y activations and termlinkages
  *  to be applied in a batch as a batch
  *
  *  this task instance represents the drainage operation
@@ -23,28 +20,26 @@ import java.util.Random;
  *  it can be drained while being populated from different threads.
  *
  *  TODO use non-UnitPri entries and then allow this to determine a global amplitude factor via adaptive dynamic range compression of priority
+ *  TODO abstract to different impl
  * */
-public class Activator  {
+public class PriBuffer<Y> {
 
 
-
-
-    /** pending concept activation collation */
-    final Map<Concept, UnitPri> concepts =
+    /** pending Y activation collation */
+    final Map<Y, UnitPri> items =
             ///new ConcurrentHashMapUnsafe<>(1024);
             new java.util.concurrent.ConcurrentHashMap(1024);
 
-//    /** pending termlinking collation */
-//    final ConcurrentHashMap<TermLinkage, TermLinkage> termlink = new ConcurrentHashMap(1024);
+    private final PriMerge merge;
 
-    public Activator() {
-
+    public PriBuffer(PriMerge merge) {
+        this.merge = merge;
     }
 
 //    /** implements a plus merge (with collected refund)
 //     * TODO detect priority clipping (@1.0) statistic
 //     * */
-//    public void linkPlus(Concept source, Term target, float pri, @Nullable NumberX refund) {
+//    public void linkPlus(Y source, Term target, float pri, @Nullable NumberX refund) {
 //        float overflow = termlink.computeIfAbsent(new TermLinkage(source, target), (cc)-> cc)
 //                .priAddOverflow(pri);
 //        if (overflow > Float.MIN_NORMAL && refund!=null)
@@ -52,62 +47,47 @@ public class Activator  {
 //    }
 
     public boolean isEmpty() {
-        return concepts.isEmpty(); /* && termlink.isEmpty();*/
+        return items.isEmpty(); /* && termlink.isEmpty();*/
     }
 
-    public Concept activate(Termed x, float pri, NAR nar, @Nullable OverflowDistributor<Concept> overflow) {
+    public Y put(Y x, float pri) {
+        return put(x, pri, null);
+    }
+
+    public Y put(Y y, float pri, @Nullable OverflowDistributor<Y> overflow) {
         assert(pri == pri); //        if (pri!=pri)     return null;
 
-        @Nullable Concept y = x instanceof Concept ? (Concept)x : nar.concept(x, true);
-        if (y == null)
-            return null;
-        return activate(y, pri, overflow);
+        return putRaw(y, pri, overflow);
     }
 
-    public Concept activate(Concept x, float pri) {
-        return activate(x, pri, null);
-    }
-
-    private Concept activate(Concept x, float pri, @Nullable OverflowDistributor<Concept> overflow) {
-        return activateRaw(x, pri, overflow);
-    }
-
-
-    private Concept activateRaw(Concept x, float pri, @Nullable OverflowDistributor<Concept> overflow) {
+    private Y putRaw(Y x, float pri, @Nullable OverflowDistributor<Y> overflow) {
         if (pri!=pri)
             return null;
 
-        UnitPri a = concepts.computeIfAbsent(x, t -> new UnitPri());
+        UnitPri a = items.computeIfAbsent(x, t -> new UnitPri());
 
         if (overflow!=null)
-            overflow.merge(x, a, pri, Param.conceptMerge);
+            overflow.merge(x, a, pri, merge);
         else
             a.priAdd(pri);
 
         return x;
     }
 
-    public void update(NAR n) {
+    public void update(ObjectFloatProcedure<Y> each) {
 
-
-        int toActivate = concepts.size();
-        int cap = ((AbstractConceptIndex) n.concepts).active.capacity();
-        if (toActivate > cap) {
-            System.out.println("warning: activation set larger than active concepts bag capacity: " + toActivate + "/" + cap);
-        }
-
-        Iterator<Map.Entry<Concept, UnitPri>> ii = concepts.entrySet().iterator();
+        Iterator<Map.Entry<Y, UnitPri>> ii = items.entrySet().iterator();
         while (ii.hasNext()) {
-            Map.Entry<Concept, UnitPri> a = ii.next();
-            Concept c = a.getKey();
+            Map.Entry<Y, UnitPri> a = ii.next();
+            Y c = a.getKey();
             UnitPri p = a.getValue();
             ii.remove();
 
-            n.concepts.activate(c, p.priGetAndDelete());
+            each.value(c, p.priGetAndDelete());
         }
 
 //        removeIf(a -> {
-//            n.concepts.activate(a.get(), a.pri());
+//            n.Ys.activate(a.get(), a.pri());
 //            return true;
 //        });
 
@@ -122,20 +102,21 @@ public class Activator  {
 
     }
 
-    public final void activate(OverflowDistributor<Concept> overflow, Random random) {
-        overflow.shuffle(random).redistribute(this::activate);
+
+    public final void put(OverflowDistributor<Y> overflow, Random random) {
+        overflow.shuffle(random).redistribute(this::put);
     }
 
 //    private static final class TermLinkage extends UnitPri implements Comparable<TermLinkage> {
 //
 //        public final static Comparator<TermLinkage> preciseComparator = Comparator
-//            .comparing((TermLinkage x)->x.concept.term())
+//            .comparing((TermLinkage x)->x.Y.term())
 //            .thenComparingDouble((TermLinkage x)->-x.pri()) //descending
 //            .thenComparingInt((TermLinkage x)->x.hashTarget) //at this point the order doesnt matter so first decide by hash
 //            .thenComparing((TermLinkage x)->x.target);
 //
 //        /** fast and approximately same semantics of the sort as the preciseComparator:
-//         *     soruce concept -> pri -> target
+//         *     soruce Y -> pri -> target
 //         */
 //        public final static Comparator<TermLinkage> sloppyComparator = Comparator
 //                .comparingInt((TermLinkage x)->x.hashSource)
@@ -143,12 +124,12 @@ public class Activator  {
 //                .thenComparingInt((TermLinkage x)->x.hashTarget) //at this point the order doesnt matter so first decide by hash
 //                .thenComparing(System::identityHashCode);
 //
-//        public final Concept concept;
+//        public final Y Y;
 //        public final Term target;
 //        public final int hashSource, hashTarget;
 //
-//        TermLinkage(Concept source, Term target) {
-//            this.concept = source;
+//        TermLinkage(Y source, Term target) {
+//            this.Y = source;
 //            this.target = target;
 //            this.hashSource = source.hashCode();
 //            this.hashTarget = target.hashCode();
@@ -163,13 +144,13 @@ public class Activator  {
 //        public boolean equals(Object obj) {
 //            if (this == obj) return true;
 //            TermLinkage x = (TermLinkage) obj;
-//            return x.hashSource == hashSource && x.hashTarget == hashTarget && x.target.equals(target) && x.concept.equals(concept);
+//            return x.hashSource == hashSource && x.hashTarget == hashTarget && x.target.equals(target) && x.Y.equals(Y);
 //
 //        }
 //
 //        @Override
 //        public String toString() {
-//            return "termlink(" + concept + ',' + target + ',' + pri() + ')';
+//            return "termlink(" + Y + ',' + target + ',' + pri() + ')';
 //        }
 //
 //
@@ -190,8 +171,8 @@ public class Activator  {
 ////        int n = termlink.size();
 ////        if (n > 0) {
 ////            //drain at most n items from the concurrent map to a temporary list, sort it,
-////            //then insert PLinks into the concept termlinks bag as they will be sorted into sequences
-////            //of the same concept.
+////            //then insert PLinks into the Y termlinks bag as they will be sorted into sequences
+////            //of the same Y.
 ////            SortedList<TermLinkage> l = drainageBuffer(n);
 ////
 ////
