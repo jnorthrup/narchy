@@ -44,7 +44,7 @@ public class FixedDelayTimedFuture<T> extends AbstractTimedCallable<T> {
     public void reset() {
         this.rounds = (int)
                 Math.min(Integer.MAX_VALUE-1,
-                        Math.round((((double)periodNS)/resolution) / wheels)
+                        Math.round((((double)periodNS)/(resolution* wheels)))
                 );
     }
 

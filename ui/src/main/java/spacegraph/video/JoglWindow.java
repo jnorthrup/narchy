@@ -481,9 +481,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
                 }
 
-
-                /** waiting to be rendered */
-                final AtomicBoolean waiting = new AtomicBoolean();
+//
+//                /** waiting to be rendered */
+//                final AtomicBoolean waiting = new AtomicBoolean();
 
                 private void render() {
                     try {
@@ -495,7 +495,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                                 d.display();
                         }
                     } finally {
-                        waiting.set(false);
+//                        waiting.set(false);
                         ready();
                     }
                 }
@@ -503,11 +503,13 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 @Override
                 public boolean next() {
 
-                    if (window == null)
+                    if (window == null) {
+                        ready();
                         return false;
+                    }
 
                     //System.out.println(window + " " +window.isVisible());
-                    if (waiting.compareAndSet(false, true)) {
+//                    if (waiting.compareAndSet(false, true)) {
                         if (window.isVisible()) {
 
 
@@ -521,8 +523,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                             Threading.invokeOnOpenGLThread(false, this::render);
                         } else {
                             stop();
+                            ready();
                         }
-                    }
+//                    }
 
                     return true;
                 }

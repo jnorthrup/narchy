@@ -15,32 +15,33 @@ public class NARLoop extends InstrumentedLoop {
 
     public final FloatRange throttle = new FloatRange(1f, 0f, 1f);
 
-//    /** scheduler temporal granularity (in cycle fractions) */
-//    public final FloatRange jiffy = new FloatRange(0.25f, 0.001f, 1f);
-//    //private final boolean async;
-
     /**
      * starts paused; thread is not automatically created
      */
     public NARLoop(@NotNull NAR n) {
         super();
         nar = n;
-        //async = n.exe.concurrent();
     }
 
+    @Override
+    protected boolean async() {
+        return true;
+    }
 
     @Override
     public final boolean next() {
 
-
-        nar.time.cycle(nar);
+        try {
+            nar.time.cycle(nar);
 
 //        if (async) {
 //            nar.eventCycle.emitAsync(nar, nar.exe, () -> ready());
 //        } else {
             nar.eventCycle.emit(nar);
 //        }
-
+        } finally {
+            ready();
+        }
 
         return true;
     }
@@ -49,9 +50,4 @@ public class NARLoop extends InstrumentedLoop {
         return nar;
     }
 
-
-//    @Override
-//    protected boolean async() {
-//        return async;
-//    }
 }

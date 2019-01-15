@@ -150,6 +150,12 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
             event = new Relative(t);
         } else {
 
+            if (start!=ETERNAL) {
+                //optional dithering
+                start = occ(start);
+                end = occ(end);
+            }
+
             if (add) {
 
                 Collection<Event> te = byTerm.get(t);
@@ -509,7 +515,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
     private boolean solveDT(Term x, Predicate<Event> each) {
 
-        if (!validSolutionComponent(x)) return true;
+        if (!termsEvent(x)) return true;
 
         assert (x.dt() == XTERNAL);
 
@@ -846,7 +852,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     private boolean solveOccurrence(Term y, long start, long dur, Predicate<Event> each) {
-        if (!validSolutionComponent(y))
+        if (!termsEvent(y))
             return true; //keep trying
 
         return start != TIMELESS ?
@@ -869,7 +875,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         if (x == ETERNAL)
             idt = DTERNAL;
         else
-            idt = dt(Tense.occToDT(x));
+            idt = Tense.occToDT(x);
         return idt;
     }
 
@@ -880,19 +886,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         return when;
     }
 
-    private Event occ(Event x) {
-        if (!(x instanceof Absolute))
-            return x;
 
-        long s = x.start();
-        long e = x.end();
-        long ss = occ(s), ee = (s == e) ? ss : occ(e);
-        if (ss != s || ee != e)
-            return event(x.id, ss, ee, false);
-        else
-            return x;
-
-    }
 
 
     /**
@@ -960,8 +954,6 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
         if (!validPotentialSolution(y.id))
             return true; //ignore
 
-        y = occ(y);
-
         if (solutions.add(y)) {
             return target.test(y);
         } else {
@@ -1018,12 +1010,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
     }
 
-    private boolean validSolutionComponent(Term y) {
-        return termsEvent(y);
-    }
-
     protected boolean validPotentialSolution(Term y) {
-        return validSolutionComponent(y);
+        return termsEvent(y);
     }
 
     private boolean solveAll(Term x, Predicate<Event> each) {
@@ -1185,7 +1173,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
     }
 
     private boolean solveDtAndOccIfConceptualizable(Term x, Term y, Predicate<Event> each) {
-        if (y == null || x.equals(y) || !validSolutionComponent(y))
+        if (y == null || x.equals(y) || !termsEvent(y))
             return true;
 
         if (y.hasXternal()) {
@@ -1202,10 +1190,10 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
 
     /* solve xternal occurring at the root of a compound (without any internal xternal remaining) */
     private boolean solveDtAndOccTop(Term x, Predicate<Event> each) {
-        if (!validSolutionComponent(x)) return true;
+        if (!termsEvent(x)) return true;
 
         if (x.dt() == XTERNAL) {
-            return solveDT(x, y -> !validSolutionComponent(y.id) || solveOccurrence(y, each));
+            return solveDT(x, y -> !termsEvent(y.id) || solveOccurrence(y, each));
         } else {
             //dont solve if more specific dt solved further in previous solveDT call
             return solveOccurrence(x, each);
@@ -1217,7 +1205,7 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      * solves the start time for the given Unsolved event.  returns whether callee should continue iterating
      */
     private boolean solveOccurrence(Term x, Predicate<Event> each) {
-        if (!validSolutionComponent(x)) return true;
+        if (!termsEvent(x)) return true;
 
         return solveOccurrence(shadow(x), each);
     }

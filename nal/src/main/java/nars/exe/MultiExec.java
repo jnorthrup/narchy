@@ -87,11 +87,7 @@ abstract public class MultiExec extends UniExec {
 
     @Override
     public final void execute(Runnable r) {
-        if (r==nextCycle) {
-            nextCycle();
-        } else {
-            executeLater(r);
-        }
+        executeLater(r);
     }
 
     private void executeLater(/*@NotNull */Object x) {
@@ -102,14 +98,6 @@ abstract public class MultiExec extends UniExec {
             executeNow(x);
         }
     }
-
-
-
-    /**
-     * receives the NARLoop cycle update. should execute immediately, preferably in a worker thread (not synchronously)
-     */
-    protected abstract void nextCycle();
-
 
 
     private void onDur() {
@@ -459,43 +447,6 @@ abstract public class MultiExec extends UniExec {
             this.affinity = affinity;
         }
 
-        final AtomicInteger narCycleReady = new AtomicInteger(0);
-
-        /**
-         * a lucky worker gets to execute the next NAR cycle when ready
-         */
-        final boolean tryCycle() {
-            if (narCycleReady.compareAndSet(1, 2)) {
-                try {
-                    nar.run();
-                    return true;
-                } finally {
-                    narCycleReady.set(0);
-                }
-            }
-            return false;
-        }
-
-        @Override
-        protected void nextCycle() {
-            //it will be the same instance each time.  so only concerned if it wasnt already cleared by now
-
-            if (!narCycleReady.compareAndSet(0,1)) {
-                //System.out.println("lag");
-            } else {
-                //System.out.println("cycle");
-            }
-
-
-//            if (this.narCycle.getAndSet(r) != null) {
-//
-//                //TODO measure
-//                //if this happens excessively then probably need to reduce the framerate, ie. backpressure
-//
-//                //logger.warn("lag trying to execute NAR cycle");
-//
-//            }
-        }
 
         @Override
         public void start(NAR n) {
@@ -565,8 +516,6 @@ abstract public class MultiExec extends UniExec {
 
             private long work() {
                 long workStart = System.nanoTime();
-
-                tryCycle();
 
                 float granularity =
                     Math.max(1, concurrency() + 1);

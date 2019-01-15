@@ -46,7 +46,7 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel implem
     }
 
     @Override
-    public int run(int c, HashedWheelTimer timer) {
+    public int run(int c) {
         this.c = c;
         if (incoming.clear(this) > 0)
             timer.assertRunning();

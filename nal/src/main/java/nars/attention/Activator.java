@@ -5,8 +5,8 @@ import jcog.pri.UnitPri;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
+import nars.index.concept.AbstractConceptIndex;
 import nars.term.Termed;
-import org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -31,8 +31,8 @@ public class Activator  {
 
     /** pending concept activation collation */
     final Map<Concept, UnitPri> concepts =
-            new ConcurrentHashMapUnsafe<>(1024);
-            //new java.util.concurrent.ConcurrentHashMap(1024);
+            ///new ConcurrentHashMapUnsafe<>(1024);
+            new java.util.concurrent.ConcurrentHashMap(1024);
 
 //    /** pending termlinking collation */
 //    final ConcurrentHashMap<TermLinkage, TermLinkage> termlink = new ConcurrentHashMap(1024);
@@ -89,6 +89,12 @@ public class Activator  {
 
     public void update(NAR n) {
 
+
+        int toActivate = concepts.size();
+        int cap = ((AbstractConceptIndex) n.concepts).active.capacity();
+        if (toActivate > cap) {
+            System.out.println("warning: activation set larger than active concepts bag capacity: " + toActivate + "/" + cap);
+        }
 
         Iterator<Map.Entry<Concept, UnitPri>> ii = concepts.entrySet().iterator();
         while (ii.hasNext()) {

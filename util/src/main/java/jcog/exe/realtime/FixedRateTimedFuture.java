@@ -8,7 +8,7 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
     /**
      * adjustable while running
      */
-    private volatile long periodNS;
+    private /* volatile */ long periodNS;
 
     public FixedRateTimedFuture() {
         super();

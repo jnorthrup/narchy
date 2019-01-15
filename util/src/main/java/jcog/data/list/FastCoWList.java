@@ -173,11 +173,12 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
 
     @Override
-    public X[] apply(X[] current) {
-        if (current == null)
-            return list.fillArray(arrayBuilder.apply(list.size()), false);
-        else
+    public final X[] apply(X[] current) {
+        if (current != null) {
             return current;
+        } else {
+            return list.fillArray(arrayBuilder.apply(list.size()), false);
+        }
     }
 
     //@Override

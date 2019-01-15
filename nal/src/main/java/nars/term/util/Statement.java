@@ -1,9 +1,7 @@
 package nars.term.util;
 
-import jcog.TODO;
 import jcog.WTF;
 import nars.Op;
-import nars.Param;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -11,7 +9,6 @@ import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjDiff;
 import nars.time.Tense;
-import nars.unify.ellipsis.Ellipsis;
 
 import java.util.function.Predicate;
 
@@ -73,7 +70,11 @@ public class Statement {
                     if (dt == DTERNAL || dt == XTERNAL) {
                         newSubj = HeapTermBuilder.the.conj(dt, subject, inner);
                     } else {
-                        newSubj = Conj.sequence(subject, 0, inner, subject.eventRange() + dt);
+                        if (dt == XTERNAL || dt == DTERNAL) {
+                            newSubj = CONJ.the(dt, subject, inner);
+                        } else {
+                            newSubj = Conj.sequence(subject, 0, inner, subject.eventRange() + dt);
+                        }
                     }
                     return statement(IMPL, predicate.dt(), newSubj, predicate.sub(1)); //recurse
                 }
@@ -86,12 +87,16 @@ public class Statement {
 
             //TODO simple case when no CONJ or IMPL are present
 
-            if (dt != XTERNAL && subjDT != XTERNAL && predicate.dt() != XTERNAL && !subject.OR(x->x instanceof Ellipsis) && !predicate.OR(x->x instanceof Ellipsis) ) {
+            if (dt != XTERNAL && subjDT != XTERNAL && predicate.dt() != XTERNAL) { // && !subject.OR(x->x instanceof Ellipsis) && !predicate.OR(x->x instanceof Ellipsis) ) {
 
-                if ((!(subject instanceof Compound) && !(predicate instanceof Compound)) || !Term.commonStructure(subject, predicate)) {
-
+                if (!(subject instanceof Compound) && !(predicate instanceof Compound)) {
                     //no validity test necessary
-
+                } else if (!Term.commonStructure(subject, predicate)) {
+                    //no validity test necessary
+                } else if (subject instanceof Compound && !(predicate instanceof Compound) && !subject.containsRecursively(predicate)) {
+                    //no validity test necessary
+                } else if (predicate instanceof Compound && !(subject instanceof Compound) && !predicate.containsRecursively(subject)) {
+                    //no validity test necessary
                 } else {
 
                     long so, po; //subject and predicate occurrences
@@ -135,37 +140,12 @@ public class Statement {
 
                         if (dt != DTERNAL) {
                             int shift = Tense.occToDT(newPredConj.shift());
-//                            int shift = predicate.subTimeFirst(newPred.eventFirst());
-//
-//                            if (shift == DTERNAL && predicate.subterms().equals(newPred.subterms()) && predicate.dt() == DTERNAL && newPred.dt() == 0) {
-//                                shift = 0; //HACK handle dternal -> to zero implicit conversion
+//                            if (shift == DTERNAL || shift == XTERNAL) {
+//                                if (Param.DEBUG)
+//                                    throw new TODO();
+//                                else
+//                                    return Null; //??
 //                            }
-//                            if (shift == DTERNAL && Tense.dtSpecial(predicate.dt()) && Tense.dtSpecial(newPred.dt()) && newPred.AND(predicate::contains)) {
-//                                shift = 0; //sub-condition of parallel
-//                            }
-
-                            //int shift;
-                            //if (newPred.op() != CONJ) {
-                            //    shift = predicate.subTimeFirst(newPred);
-                            //} else {
-//                                int[] s = new int[]{DTERNAL};
-//                                Term finalPredicate = predicate;
-//                                newPred.eventsWhile((when, what) -> {
-//                                    int wshift = finalPredicate.subTimeFirst(what);
-//                                    if (wshift != DTERNAL) {
-//                                        s[0] = Tense.occToDT(wshift - when);
-//                                        return false;
-//                                    }
-//                                    return true; //keep going
-//                                }, 0, true, true, false, 0);
-                            //shift = s[0];
-                            //}
-                            if (shift == DTERNAL || shift == XTERNAL) {
-                                if (Param.DEBUG)
-                                    throw new TODO();
-                                else
-                                    return Null; //??
-                            }
 
                             dt = shift - subjRange;
 
@@ -194,7 +174,7 @@ public class Statement {
             }
         }
 
-        if ((op != IMPL || dtConcurrent) /*&& !subject.hasAny(Op.VAR_PATTERN) && !predicate.hasAny(Op.VAR_PATTERN)*/) {
+        if ((op != IMPL || dt == DTERNAL /* allow parallel IMPL because sequences may separate the events from overlap */) /*&& !subject.hasAny(Op.VAR_PATTERN) && !predicate.hasAny(Op.VAR_PATTERN)*/) {
 
             Predicate<Term> delim = (op == IMPL) ?
                     recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;

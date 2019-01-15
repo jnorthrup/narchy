@@ -17,8 +17,7 @@ import java.util.List;
 
 import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.*;
 
 public class DynamicStatementTruth {
 
@@ -227,7 +226,7 @@ public class DynamicStatementTruth {
 
         return DynamicConjTruth.ConjIntersection.components(decomposed, is, ie, (what, s, e) -> {
             //TODO fix
-            int innerDT = (s == ETERNAL) ? DTERNAL : Tense.occToDT(
+            int innerDT = (s == ETERNAL) ? XTERNAL : Tense.occToDT(
                     //(e-s)-outerDT
                     e - s
             );
@@ -241,6 +240,7 @@ public class DynamicStatementTruth {
                 if (negateComponents)
                     i = i.neg();
             }
+
             return each.accept(i, s, e);
         });
 //        int innerDT = decomposed.dt();

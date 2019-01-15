@@ -619,22 +619,22 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     private Y merge(Y existing, Y incoming, @Nullable NumberX overflow) {
 
 
-        int posBefore = items.indexOf(existing, this, true);
-        if (posBefore == -1) {
-            //items.indexOf(existing, this, true);
-
-//            //try harder: compare by keys, even if the value refuse to respond true to equals()
-//            X ki = key(incoming);
-//            int s = size();
-//            for (int i = 0; i < s; i++) {
-//                if (ki.equals(key(items.get(i)))) {
-//                    posBefore = i;
-//                    break;
-//                }
-//            }
-//            if (posBefore == -1)
-            throw new RuntimeException("Bag fault: " + existing + " not found in array");
-        }
+//        int posBefore = items.indexOf(existing, this, true);
+//        if (posBefore == -1) {
+//            //items.indexOf(existing, this, true);
+//
+////            //try harder: compare by keys, even if the value refuse to respond true to equals()
+////            X ki = key(incoming);
+////            int s = size();
+////            for (int i = 0; i < s; i++) {
+////                if (ki.equals(key(items.get(i)))) {
+////                    posBefore = i;
+////                    break;
+////                }
+////            }
+////            if (posBefore == -1)
+//            throw new RuntimeException("Bag fault: " + existing + " not found in array");
+//        }
 
         Y result;
 
@@ -660,7 +660,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
             if (result!=null) {
 
-                sort(0, posBefore);
+                //sort(0, size());
+
+                //sort(0, posBefore);
 
                 //items.partialSort(posBefore, this);
 

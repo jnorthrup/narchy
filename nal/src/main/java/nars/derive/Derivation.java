@@ -238,6 +238,7 @@ public class Derivation extends PreDerivation {
     public Derivation() {
         super(
                 null
+                //VAR_PATTERN
                 , null, Param.UnificationStackMax
         );
 

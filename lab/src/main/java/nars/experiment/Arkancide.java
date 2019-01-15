@@ -74,10 +74,10 @@ public class Arkancide extends NAgentX {
         paddleSpeed = 140 * noid.BALL_VELOCITY;
 
 
-        initUnipolar();
+        //initUnipolar();
         //initBipolarDirect();
         //initBipolarRelative();
-        //initPushButton();
+        initPushButton();
 
         float resX = 0.02f;
         float resY = 0.02f;

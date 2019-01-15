@@ -15,7 +15,7 @@ public class ConcurrentQueueWheelModel extends HashedWheelTimer.WheelModel {
     }
 
     @Override
-    public int run(int c, HashedWheelTimer timer) {
+    public int run(int c) {
         MetalConcurrentQueue<TimedFuture> q = wheel[c];
         final int n = q.size();
         for (int i = 0; i < n; i++) {

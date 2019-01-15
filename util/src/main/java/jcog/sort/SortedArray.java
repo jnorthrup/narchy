@@ -630,7 +630,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         return find(null, rank, cmp, false, true);
     }
 
-    private int find(final X element, float elementRank /* can be NaN to lazily compute */, FloatFunction<X> cmp, boolean eqByIdentity, boolean forInsertionOrFind) {
+    private int find(final X element, float elementRank /* can be NaN for forFind */, FloatFunction<X> cmp, boolean eqByIdentity, boolean forInsertionOrFind) {
         int s = size;
         if (s==0)
             return forInsertionOrFind ? 0 : -1;
@@ -638,7 +638,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         int left = 0, right = s;
         X[] items = this.items;
         do {
-            if (right - left < BINARY_SEARCH_THRESHOLD) {
+            if (right - left <= BINARY_SEARCH_THRESHOLD) {
                 int i;
                 for (i = left; i < right; i++) {
                     X x = items[i];
@@ -648,7 +648,6 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
                             return i;
                         }
                     } else {
-                        if (elementRank != elementRank) elementRank = cmp.floatValueOf(element);
                         if (0 < Util.fastCompare(cmp.floatValueOf(x), elementRank)) {
                             break;
                         }
@@ -670,13 +669,12 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
                     }
                 }
 
-                if (elementRank!=elementRank) elementRank = cmp.floatValueOf(element);
                 final int comparedValue = Util.fastCompare(cmp.floatValueOf(m), elementRank);
                 if (comparedValue == 0) {
                     if (forInsertionOrFind)
                         return midle + 1; /* after existing element */
                 }
-                boolean c = (0 <= comparedValue);
+                boolean c = (0 < comparedValue);
                 int nextLeft = c ? left : midle, nextRight = c ? midle : right;
                 left = nextLeft;
                 right = nextRight;

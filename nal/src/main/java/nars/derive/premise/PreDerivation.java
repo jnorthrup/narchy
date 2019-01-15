@@ -31,7 +31,7 @@ public abstract class PreDerivation extends Unify {
 
     public UnifyPremise unifyPremise = new UnifyPremise();
 
-    public PreDerivation(@Nullable Op type, Random random, int stackMax) {
+    protected PreDerivation(@Nullable Op type, Random random, int stackMax) {
         super(type, random, stackMax);
     }
 

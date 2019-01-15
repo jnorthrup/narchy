@@ -116,7 +116,7 @@ public abstract class Time implements Clock, Serializable {
 
                 }
 
-                now = now(); //udpate the time
+                //now = now(); //udpate the time
                 SchedTask p;
                 for (; (p = incoming.poll()) != null; ) {
                     if (p.when <= now)

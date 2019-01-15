@@ -28,14 +28,6 @@
     X, D, eventOfNeg(D,X), conjParallel(D), has(D,"--"), --isVar(X)   |-   --conjWithout(D,--X), (Belief:DecomposeNN)
     X, D, eventOf(D,X), conjParallel(D), --isVar(X)                   |-   --conjWithout(D,  X), (Belief:DecomposePN)
 
-    //conditional disjunction goal decompose (alternate suppress by belief)
-    D, X, eventOf(D,X), conjParallel(D), --isVar(X)                   |-   --conjWithout(D,  X), (Goal:DesireNP)
-    D, X, eventOfNeg(D,X), conjParallel(D), has(D,"--"), --isVar(X)   |-   --conjWithout(D,--X), (Goal:DesireNN)
-
-    //conditional goal disjunction decompose (alternate suppress by goal)
-    G, D, eventOf(D,G), conjParallel(D), --isVar(G)                   |- --conjWithout(D,  G), (Goal:DesireWeakPN)
-    G, D, eventOfNeg(D,G), conjParallel(D), has(D,"--"), --isVar(G)   |- --conjWithout(D,--G), (Goal:DesireWeakNN)
-
 
 
 //    //goal/antigoal in sequence
@@ -54,18 +46,26 @@
     //X is the desired event suffix (outcome).
     //C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
 
-    //desire for sub-sequence leading to goal,
+    //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
     G, C, is(C,"&&")                  |-    conjBefore(C,  G),  (Goal:Desire)
     G, C, is(C,"&&"),  has(C,"--")    |-    conjBefore(C,--G),  (Goal:DesireN)
             //--eventOfNeg(C,G) , --eventOf(C,G) <- optional additional restriction of anti-goal not present anywhere in the sequence
 
-    //anti-desire for sub-sequence leading to anti-goal (option: __Weak, __WeakN)
-       G, C, is(C,"&&"), has(C,"--")                 |-   negateEvents(conjBefore(C,--G)),  (Goal:DesireWeak)
-       G, C, is(C,"&&")                              |-   negateEvents(conjBefore(C,  G)),  (Goal:DesireWeakN)
+    //anti-desire for sub-sequence leading to anti-goal. truth function may be Desire or Deduction (option: __Weak, __WeakN)
+    G, C, is(C,"&&"), has(C,"--")     |-   negateEvents(conjBefore(C,--G)),  (Goal:Desire)
+    G, C, is(C,"&&")                  |-   negateEvents(conjBefore(C,  G)),  (Goal:DesireN)
+
+    //conditional goal disjunction decompose (alternate suppress by goal)
+    G, D, eventOf(D,G), conjParallel(D), --isVar(G)                   |- --conjWithout(D,  G), (Goal:DesireWeakPN)
+    G, D, eventOfNeg(D,G), conjParallel(D), has(D,"--"), --isVar(G)   |- --conjWithout(D,--G), (Goal:DesireWeakNN)
 
     //conjunction belief and goal decomposition
     C, X, is(C,"&&"), --isVar(X)                   |- conjAfter(C,  X), (Belief:Deduction,Goal:Deduction)
     C, X, is(C,"&&"), has(C,"--"), --isVar(X)      |- conjAfter(C,  --X), (Belief:DeductionPN,Goal:DeductionPN)
+
+    //conditional disjunction goal decompose (alternate suppress by belief)
+    D, X, eventOf(D,X), conjParallel(D), --isVar(X)                   |-   --conjWithout(D,  X), (Goal:DeductionNP)
+    D, X, eventOfNeg(D,X), conjParallel(D), has(D,"--"), --isVar(X)   |-   --conjWithout(D,--X), (Goal:DeductionNN)
 
 
     //TODO nal3 shortcut - decompose trailing intersection/union event

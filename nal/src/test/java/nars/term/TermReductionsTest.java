@@ -480,12 +480,22 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    void testImplXternalPredicateImpl() {
+    void testImplXternalDternalPredicateImpl() {
+
         assertEq("((x &&+- y) ==>+1 z)",
                 "(x ==>+- (y ==>+1 z))");
+
         assertEq("(((x &&+1 y) &&+- z) ==>+1 w)",
                 "((x &&+1 y) ==>+- (z ==>+1 w))");
+
+        assertEq("(((x &&+1 y)&&z) ==>+1 w)",
+                "((x &&+1 y) ==> (z ==>+1 w))");
+
+        assertEq("(((x &&+1 y) &&+1 z) ==>+1 w)",
+                "((x &&+1 y) ==>+1 (z ==>+1 w))");
+
     }
+
 
 
     @Test
@@ -504,9 +514,7 @@ public class TermReductionsTest extends NarseseTest {
 
         assertEq(Bool.True, "((x(intValue,(),0)&&x(set,0))==>x(intValue,(),0))");
         assertEq("x(set,0)", "((x(intValue,(),0)==>x(intValue,(),0)) && x(set,0))");
-        assertEq(
-
-                "((x(set,0)==>x(intValue,(),0))&&x(intValue,(),0))",
+        assertEq("((x(set,0)==>x(intValue,(),0))&&x(intValue,(),0))",
                 "((x(set,0)==>x(intValue,(),0)) && x(intValue,(),0))");
 
     }
