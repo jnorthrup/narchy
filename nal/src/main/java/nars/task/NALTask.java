@@ -130,9 +130,13 @@ public class NALTask extends UnitPri implements Task {
 
         int causeCap = Param.causeCapacity.intValue();
 
-        synchronized (this) {
-            this.cause = merge.merge(cause(), c, causeCap);
-        }
+        //synchronized (this) {
+            //HACK
+            short[] prevCause = cause();
+            short[] nextCause = merge.merge(prevCause, c, causeCap);
+            if (prevCause == this.cause) //to avoid needing to synchronize, check again if the same previous result is still there.  otherwise just give up (but could try again)
+                this.cause = nextCause;
+        //}
 
         return this;
     }

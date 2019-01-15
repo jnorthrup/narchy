@@ -88,6 +88,8 @@ public class TimeGraph extends MapNodeGraph<Event, TimeSpan> {
      */
     private int dt(Event aa, Event bb, boolean absolute) {
 
+        assert(!aa.equals(bb));
+
         long aWhen = aa.start();
         long bWhen;
         if (aWhen == ETERNAL || (bWhen = bb.start()) == ETERNAL)

@@ -54,7 +54,7 @@ import java.util.stream.Stream;
  */
 public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
-    public static final int BINARY_SEARCH_THRESHOLD = 3;
+    public static final int BINARY_SEARCH_THRESHOLD = 2;
     private static final float GROWTH_RATE = 1.25f;
 
     public /*volatile*/ X[] items = (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
@@ -438,6 +438,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     public int add(X element, float elementRank, FloatFunction<X> cmp) {
         int s = size;
+        assert(elementRank==elementRank);
 
         final int index = find(element, elementRank, cmp, false, true);
 
@@ -480,7 +481,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
                 return -1;
             }
         }
-        l[SIZE.getAndIncrement(this)] = e;
+        l[SIZE.incrementAndGet(this)-1] = e;
         return s;
     }
 
@@ -585,13 +586,14 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         if (reinsert) {
             int next = find(null, cur , cmp, true, true);
             if (next == index ) {
-                //in the right pos
+                //in the correct pos
             } else if (next == index - 1) {
-
-                swap(l, index, index - 1);
+                if (index >= 1)
+                    swap(l, index, index - 1);
             } else if (next == index + 1) {
 
-                swap(l, index, index + 1);
+                if (index < size()-1)
+                    swap(l, index, index + 1);
 
             } else {
 

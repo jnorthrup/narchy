@@ -92,6 +92,11 @@ abstract public class Loop extends FixedRateTimedFuture {
         executing.set(false);
     }
 
+    @Override
+    protected boolean isReady() {
+        return !executing.getOpaque();
+    }
+
     static int fpsToMS(float fps) {
         return Math.round(1000 / fps);
     }

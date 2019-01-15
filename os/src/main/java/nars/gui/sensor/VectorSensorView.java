@@ -10,6 +10,7 @@ import nars.concept.sensor.VectorSensor;
 import nars.control.DurService;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
+import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
@@ -48,6 +49,8 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
     private long start, end;
     private int dur;
+
+    static final int truthPrecision = 3;
 
     /** in durs */
     public final FloatRange timeShift = new FloatRange(0, -64, +64);
@@ -218,15 +221,19 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
         float R = 0, G = 0 , B = 0;
         float bf = 0;
+
+        Term template =
+                null; //s.term;
+
         if (visBelief.get()) {
-            Truth b = s.beliefs().truth(start, end, s.term, nar);
+            Truth b = s.beliefs().truth(start, end, template, null, truthPrecision, nar);
             bf = b != null ? b.freq() : noise();
         }
 
         R = bf * 0.75f; G = bf * 0.75f; B = bf * 0.75f;
 
         if (visGoal.get()) {
-            Truth d = s.goals().truth(start, end, s.term, nar);
+            Truth d = s.goals().truth(start, end, template, null, truthPrecision, nar);
             if (d != null) {
                 float f = d.expectation();
 

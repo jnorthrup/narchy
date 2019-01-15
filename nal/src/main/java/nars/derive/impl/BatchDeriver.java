@@ -30,13 +30,13 @@ import java.util.function.Supplier;
 /** buffers premises in batches*/
 public class BatchDeriver extends Deriver {
 
-    public final IntRange conceptsPerIteration = new IntRange(3, 1, 32);
+    public final IntRange conceptsPerIteration = new IntRange(2, 1, 32);
 
 
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */
-    public final IntRange taskLinksPerConcept = new IntRange(1, 1, 8);
+    public final IntRange taskLinksPerConcept = new IntRange(2, 1, 8);
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count

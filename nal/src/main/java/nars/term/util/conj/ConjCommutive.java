@@ -7,7 +7,6 @@ import nars.Op;
 import nars.term.Term;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -78,7 +77,7 @@ public enum ConjCommutive {;
                         break;
                     case CONJ:
                         int xdt = x.dt();
-                        if (xdt == dt || (dt == 0 && xdt ==DTERNAL) /* promote inner DTERNAL to parallel */) {
+                        if (xdt == dt /*|| (dt == 0 && xdt ==DTERNAL)*/ /* promote inner DTERNAL to parallel */) {
                             conjMerge = set(conjMerge, i, uLength);
                         } else {
                             //TODO handle promotion of &&/&| as conjMerge rather than conjOther
@@ -176,9 +175,9 @@ public enum ConjCommutive {;
                     }
 
                     if (indep == u.length-1) {
-                        //promote dternal wrapped parallel disjunction to parallel
-                        if (dt == DTERNAL && co.dt()==0)
-                            return theSorted(0, u); //need to start over (recurse)
+//                        //promote dternal wrapped parallel disjunction to parallel
+//                        if (dt == DTERNAL && co.dt()==0)
+//                            return theSorted(0, u); //need to start over (recurse)
 
                         return conjDirect(dt, u); //all independent
                     }
@@ -218,7 +217,7 @@ public enum ConjCommutive {;
         }
 
         long sdt = dt == DTERNAL ? ETERNAL : 0;
-        try {
+        //try {
 
             //iterate in reverse order to add the smaller (by volume) items first
 
@@ -257,9 +256,9 @@ public enum ConjCommutive {;
                     }
                 }
             }
-        } catch (StackOverflowError e) {
-            throw new WTF("StackOverflow: && " + sdt + " " + Arrays.toString(u)); //TEMPORARY
-        }
+//        } catch (StackOverflowError e) {
+//            throw new WTF("StackOverflow: && " + sdt + " " + Arrays.toString(u)); //TEMPORARY
+//        }
     }
 
     private static boolean absorbCompletelyByFirstLayer(Term co, Term x) {

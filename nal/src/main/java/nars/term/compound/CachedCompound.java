@@ -134,8 +134,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
      * caches a reference to the root for use in terms that are inequal to their root
      */
     public static class TemporalCachedCompound extends CachedCompound {
-        //        private transient Term rooted = null;
-//        private transient Term concepted = null;
+
         protected final int dt;
 
         public TemporalCachedCompound(Op op, int dt, Subterms subterms) {
@@ -144,6 +143,13 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
             this.dt = dt;
 
+
+
+//            if (dt==DTERNAL && op==CONJ && subs()>1 && Conj.isSeq(sub(0)) && Conj.isSeq(sub(1)))
+//                throw new WTF(); //TEMPORARY
+
+//            if (anon().volume()!=volume())
+//                throw new WTF(); //TEMPORARY
 
 //            if (dt!=XTERNAL && dt > 2147470000)//TEMPORARY
 //                throw new WTF();

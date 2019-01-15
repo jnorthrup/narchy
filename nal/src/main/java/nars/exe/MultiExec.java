@@ -31,7 +31,7 @@ abstract public class MultiExec extends UniExec {
 
     static final int contextGranularity = 4;
 
-    private static final float inputQueueSizeSafetyThreshold = 0.999f;
+    private static final float inputQueueSizeSafetyThreshold = 1f;
     private final Revaluator revaluator;
 
     final AtomicMetalBitSet sleeping = new AtomicMetalBitSet();
@@ -637,7 +637,7 @@ abstract public class MultiExec extends UniExec {
                         }
                     }
 
-                } while (/*queueSafe() && */(until > System.nanoTime()));
+                } while (queueSafe() && (until > System.nanoTime()));
 
             }
 

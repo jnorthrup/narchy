@@ -34,8 +34,8 @@ import static nars.truth.func.TruthFunctions.c2wSafe;
 public final class Answer implements AutoCloseable {
 
     public final static int BELIEF_MATCH_CAPACITY =
-            Param.STAMP_CAPACITY - 1;
-            //Math.max(1, Param.STAMP_CAPACITY / 2);
+            //Param.STAMP_CAPACITY - 1;
+            Math.max(1, Param.STAMP_CAPACITY / 2);
 
     public static final int BELIEF_SAMPLE_CAPACITY = Math.max(1, BELIEF_MATCH_CAPACITY / 2);
     public static final int QUESTION_SAMPLE_CAPACITY = 1;
@@ -161,12 +161,16 @@ public final class Answer implements AutoCloseable {
             float dtDiff = Intermpolate.dtDiff(template, x.term());
             if (!Float.isFinite(dtDiff))
                 return Float.NaN;
+            float d = 1 / (1 + dtDiff);
+            if (d < min)
+                return Float.NaN;
 
             float r = strength.rank(x, min);
             if (r!=r || r < min)
                 return Float.NaN;
 
-            float s = r * (1 / (1+ dtDiff));
+
+            float s = r * d;
             return s;
         };
     }
@@ -200,7 +204,7 @@ public final class Answer implements AutoCloseable {
     }
 
     public static FloatFunction<Task> temporalTaskStrength(long start, long end) {
-        long dur = 1 + (end-start);
+        long dur = (1 + (end-start))/2;
         return x -> (TruthIntegration.evi(x, start, end, dur /*1*/ /*0*/));
     }
 

@@ -1,6 +1,7 @@
 package nars.table;
 
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.control.op.Remember;
 import nars.task.util.Answer;
@@ -42,30 +43,34 @@ public interface BeliefTable extends TaskTable {
     void add(/*@NotNull*/ Remember r,  /*@NotNull*/ NAR nar);
 
 
+    default Truth truth(long when, NAR nar) {
+        return truth(when, when, null, nar);
+    }
 
-
-    default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR n) {
-        if (isEmpty())
-            return null;
-        return Answer.relevance(true, Answer.BELIEF_MATCH_CAPACITY, start, end, template, filter, n).
-                match(this).truth();
+    default Truth truth(long start, long end, NAR nar) {
+        return truth(start, end, null, nar);
     }
 
     default Truth truth(long start, long end, @Nullable Term template, NAR n) {
         return truth(start, end, template, null, n);
     }
 
-
-
-    @Deprecated
-    default Truth truth(long when, NAR nar) {
-        return truth(when, when, null, nar);
+    default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR n) {
+        return truth(start, end, template, filter, Answer.BELIEF_MATCH_CAPACITY, n);
     }
 
-    @Deprecated
-    default Truth truth(long start, long end, NAR nar) {
-        return truth(start, end, null, nar);
+    /** precision = max # of tasks to include in the sample */
+    default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, int precision, NAR n) {
+        assert(precision < Param.STAMP_CAPACITY);
+        if (isEmpty())
+            return null;
+        return Answer.relevance(true, precision, start, end, template, filter, n).
+                match(this).truth();
     }
+
+
+
+
 
     default void print(/*@NotNull*/ PrintStream out) {
         this.forEachTask(t -> out.println(t + " " + Arrays.toString(t.stamp())));

@@ -38,7 +38,7 @@ public abstract class Reward implements Termed, Iterable<Signal> {
 
     protected final ConsumerX<ITask> in;
 
-    boolean goalUnstamped = false;
+    boolean goalUnstamped = true;
 
     final AttNode attn;
 

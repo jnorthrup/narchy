@@ -48,12 +48,12 @@ class AIMATests {
         final NAR n = NARS.tmp(6);
         n.random().setSeed(1);
 
-        n.freqResolution.set(0.1f);
+        n.freqResolution.set(0.25f);
 //        n.confResolution.set(0.05f);
-        n.confMin.set(0.2f);
+        n.confMin.set(0.4f);
 
         n.beliefPriDefault.set(0.1f);
-        n.questionPriDefault.set(0.25f);
+        n.questionPriDefault.set(0.5f);
 
         assertEquals(20, $$("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").volume());
 
@@ -85,7 +85,7 @@ class AIMATests {
         //n.concept("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").print();
         //n.concept("Criminal").print();
 
-        n.run(4000);
+        n.run(9000);
 //        n.synch();
 
 //        Concept qc = n.concept(Q);

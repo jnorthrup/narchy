@@ -44,7 +44,9 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
         if (pending.compareAndSet(false, true)) {
             try {
                 if (!isCancelled()) {
-                    super.execute(t);
+                    if (isReady()) {
+                        super.execute(t);
+                    }
                     reset(t.resolution, t.wheels); //TODO time since last
                     t._schedule(this);
                 }
@@ -53,6 +55,11 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
             }
         }
 
+    }
+
+    /** override for returning false to pause automatic rescheduling */
+    protected boolean isReady() {
+        return true;
     }
 
 //    @Override

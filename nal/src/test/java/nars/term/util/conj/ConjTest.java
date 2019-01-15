@@ -101,6 +101,11 @@ public class ConjTest {
     }
 
     @Test
+    void testElimDisjunctionDTERNAL_WTF() {
+        assertEq("(--,right)", "((--,(left&&right))&&(--,right))");
+    }
+
+    @Test
     void testSimpleEternals() {
         Conj c = new Conj();
         c.add(ETERNAL, x);
@@ -303,9 +308,7 @@ public class ConjTest {
 
     @Test
     void testPromoteEternalToParallel2() {
-        assertEq(//"((b&|c)&&a)"
-                "(&|,a,b,c)"
-                , "(a&&(b&|c))");
+        assertEq("((b&|c)&&a)", "(a&&(b&|c))");
     }
 
     @Test
@@ -340,9 +343,15 @@ public class ConjTest {
 
     @Test
     void testTemporalConjunctionReduction5() {
-        assertEq(
+        Term t = assertEq(
                 "((a&|b)&&(a &&+1 b))",
                 "( (a&|b) && (a &&+1 b) )");
+        Term ta = t.anon();
+        assertEquals(t.volume(), ta.volume());
+        assertEq(
+                "((_1&|_2)&&(_1 &&+1 _2))",
+                ta);
+
     }
 
     @Test
@@ -860,8 +869,8 @@ public class ConjTest {
         Term y = $$("(&|,(b&&c),x)");
         assertEquals(
 
-                //"((b&&c)&|x)",
-                "(&|,b,c,x)",
+                "((b&&c)&|x)",
+                //"(&|,b,c,x)",
                 y.toString());
 
         assertEquals("y", Conj.diff(x, y).toString());
@@ -2130,6 +2139,7 @@ public class ConjTest {
         assertEq("((a &&+1 b)&&x)", c.term());
         assertEquals(1, c.shift());
     }
+
     @Test void testFactorizeEternalConj2() {
         Conj c = new Conj();
         c.add(1, $$("(a&&(x&&y))"));
@@ -2311,7 +2321,7 @@ public class ConjTest {
 
         assertEq("((a&|b)&&c)", "((&|,a,b)&&c)"); //NOT collapse
 
-        assertEq("(&|,a,b,c)", "((&&,a,b)&|c)");
+        assertEq("(&|,a,b,c)", "((&&,a,b)&|c)"); //collapse
     }
     @Test
     void testCollapseEteParallel2() {

@@ -1555,6 +1555,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
         if (incoming.op() == CONJ) {
 
+            if (eternal && (incomingDT!=DTERNAL && existingDT!=DTERNAL))
+                return null; //dont change non-DTERNAL components in eternity
+
             if (incomingDT == DTERNAL || incomingDT == 0) {
 
                 if (incomingDT == outerDT || existingDT == outerDT) {
@@ -1984,46 +1987,49 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 ci = temporal;
             else {
 
+                if (temporal.equals(eternal))
+                    return eternal;
 
-//                if ((Conj.isSeq(eternal) || eternal.dt() == 0) && Conj.isSeq(temporal)) {
-//                    //send through again
-//                    Conj cc = new Conj();
-//                    cc.add(0, temporal);
-//                    cc.add(0, eternal);
-//                    return cc.term();
-//                } else {
+                if (temporal.equalsNeg(eternal))
+                    return False;
+
+                //both conj or disj sequences?
+                if (((eternal.op()==CONJ && eternal.dt()!=DTERNAL) && Conj.isSeq(temporal.unneg())))
+                    return Null; //too complex
+
+                //temporal disjunction sequence AND eternal component?
+                if (Conj.isSeq(temporal.unneg()) && (eternal.unneg().op()==CONJ || temporal.containsRecursively(eternal.unneg())))
+                    return Null; //too complex
+
+//                if (temporal.op() == CONJ && Term.commonStructure(eternal, temporal)) {
+//                    if (Conj.isSeq(temporal) || eternal.op() == CONJ) {
+//
+//                        if (!eternal.eventsWhile((ewhen, ewhat) -> {
+//                            //exhaustively check events for conflict
+//                            Term nEternal = ewhat.neg();
+//                            return temporal.eventsWhile((when, what) -> {
+//                                return !what.equals(nEternal);
+//                            }, 0, true, true, true);
+//                        }, 0, true, true, true))
+//                            return False;
+//
+//                    } else {
+//                        if (temporal.containsNeg(eternal))
+//                            return False; //HACK
+//                        else if (temporal.contains(eternal))
+//                            return temporal;  //HACK
+//                    }
+//                }
+
                 int tdt = temporal.dt();
                 int edt = eternal.dt();
-                if ((temporal.op() == CONJ && (tdt == DTERNAL || tdt == 0)) || (eternal.op() == CONJ && (edt == DTERNAL || edt == 0)))
+                if ((temporal.unneg().op() == CONJ && (tdt == DTERNAL || tdt == 0)) || (eternal.op() == CONJ && (edt == DTERNAL || edt == 0)))
                     return terms.conj(DTERNAL, temporal, eternal); //needs flatten
                 else {
 
-                    if (temporal.op() == CONJ && Term.commonStructure(eternal, temporal)) {
-                        if (Conj.isSeq(temporal) || eternal.op() == CONJ) {
-
-                            if (!eternal.eventsWhile((ewhen, ewhat) -> {
-                                //exhaustively check events for conflict
-                                Term nEternal = ewhat.neg();
-                                return temporal.eventsWhile((when, what) -> {
-                                    return !what.equals(nEternal);
-                                }, 0, true, true, true);
-                            }, 0, true, true, true))
-                                return False;
-
-                        } else {
-                            if (temporal.containsNeg(eternal))
-                                return False; //HACK
-                            else if (temporal.contains(eternal))
-                                return temporal;  //HACK
-                        }
-                    }
 
                     return terms.theCompound(CONJ, DTERNAL, sorted(temporal, eternal));
                 }
-
-//                    if (ci.anon() == False)
-//                        return False; //HACK
-//                }
             }
         } else if (eternal == null) {
             ci = temporal;
@@ -2219,7 +2225,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //        return term(when, what, null);
 //    }
 
-    @Nullable
+
     private int term(Object what, Consumer<Term> each) {
         if (what == null)
             return 0;
@@ -2246,7 +2252,6 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         tmp.clear();
 
         int n = term(what, tmp::add);
-
         if (n == 0)
             return null;
 
@@ -2257,7 +2262,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             case 1:
                 return tmp.get(0);
             default: {
-                return terms.theSortedCompound(CONJ, when == ETERNAL ? DTERNAL : 0, tmp);
+                if (when==ETERNAL && ((FasterList<Term>)tmp).count(Conj::isSeq)>1)
+                    return Null; //too complex
+
+                int dt = when == ETERNAL ? DTERNAL : 0;
+                return terms.theSortedCompound(CONJ, dt, tmp);
             }
 
         }

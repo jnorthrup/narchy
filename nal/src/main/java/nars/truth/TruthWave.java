@@ -24,6 +24,8 @@ import java.util.Arrays;
  */
 public class TruthWave {
 
+    static final int precision = 3;
+
     private static final int ENTRY_SIZE = 4;
 
     /**
@@ -141,9 +143,9 @@ public class TruthWave {
         clear();
         this.start = minT;
         this.end = maxT;
-        if (minT == maxT) {
+        if (minT == maxT)
             return;
-        }
+
         size(points);
 
         double dt = (maxT - minT) / ((float) points);
@@ -154,7 +156,7 @@ public class TruthWave {
             long a = Math.round(t); //Math.round(t - dt/2);
             long b = Math.round(t + dt);
 
-            Truth tr = table.truth(a, b, term, nar);
+            Truth tr = table.truth(a, b, term, null, precision, nar);
 
             load(data, (j++) * ENTRY_SIZE,
                     minT, maxT,
