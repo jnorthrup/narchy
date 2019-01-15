@@ -53,6 +53,7 @@ public class AbstractGoalActionConcept extends ActionConcept {
     public @Nullable Truth lastActionDex;
 
     protected final ConsumerX<ITask> in;
+    private static final boolean shareCuriosityEvi = true;
 
     public AbstractGoalActionConcept(Term term,  NAR n) {
         this(term,
@@ -241,20 +242,25 @@ public class AbstractGoalActionConcept extends ActionConcept {
 
     }
 
-    long[] eviShared = null;
+    private long[] eviShared = null;
     @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
-        long[] evi;
-        if (Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME) {
-            if (eviShared == null)
-                eviShared = n.evidence();
-            evi = eviShared;
-        } else {
-            evi = n.evidence();
-        }
+        long[] evi = evi(n);
 
         SignalTask curiosity = new CuriosityTask(term, goal, n, pStart, pEnd, evi);
         attnCuri.ensure(curiosity, attn.elementPri());
         return curiosity;
+    }
+
+    private long[] evi(NAR n) {
+        return shareCuriosityEvi ? eviShared(n) : n.evidence();
+    }
+
+    private long[] eviShared(NAR n) {
+        long[] evi;
+        if (eviShared == null)
+            eviShared = n.evidence();
+        evi = eviShared;
+        return evi;
     }
 
     @Nullable protected SeriesBeliefTable.SeriesRemember feedback(@Nullable Truth f, long last, long now, NAR nar) {

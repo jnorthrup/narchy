@@ -765,7 +765,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
     public Sampler<Y> popBatch(int n, Collection<Y> popped) {
 
-        popped.clear();
         synchronized (items) {
 
             int s = size();
@@ -773,7 +772,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
 
                 int toRemove = n == -1 ? s : Math.min(s, n);
 
-                items.removeRange(0, toRemove, (e) -> popped.add(removeFromMap(e)));
+                items.removeRange(0, toRemove, e -> popped.add(removeFromMap(e)));
 
             }
         }

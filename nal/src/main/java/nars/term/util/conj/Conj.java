@@ -1581,7 +1581,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         } else {
             boolean innerCommute = Tense.dtSpecial(dtInner);// && !conj.subterms().hasAny(Op.CONJ);
 
-            ConjLazy c = !innerCommute ? new ConjLazy() : null;
+            ConjBuilder c = !innerCommute ? new Conj() : null;
             FasterList<Term> cx = innerCommute ? new FasterList() : null;
 //            boolean incomingHasConj = incoming.hasAny(CONJ);
             boolean ok = existing.eventsWhile((whn, wht) -> {
@@ -1613,9 +1613,10 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 return False;
 
             Term d;
-            if (!innerCommute)
-                d = c.term();
-            else
+            if (!innerCommute) {
+                //d = c.term();
+                return null;
+            } else
                 d = terms.conj(dtInner, cx.toArrayRecycled(Term[]::new));
 
             if (d == False /*|| d == Null*/)

@@ -211,7 +211,6 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         if (sleepTimeNanos > 0) {
             //System.out.println(Texts.timeStr(sleepTimeNanos) + " sleep");
 
-
             try {
                 waitStrategy.waitUntil(deadline);
             } catch (InterruptedException e) {
@@ -224,10 +223,11 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 
         } else {
+
             float lagThreshold = wheels; //in resolutions
             if (sleepTimeNanos < -resolution * lagThreshold) {
                 //fell behind more than N resolutions, adjust
-                deadline = now + resolution;
+                deadline = now;
             }
         }
         return deadline;

@@ -626,10 +626,10 @@ public class Derivation extends PreDerivation {
     public Term retransform(Term x) {
         Term y = x;
 
-        if (y.hasAny(VAR_DEP.bit | VAR_INDEP.bit | VAR_QUERY.bit)) {
-            //y = transform(y);
-            y = y.replace(xy);
-        }
+//        if (y.hasAny(VAR_DEP.bit | VAR_INDEP.bit | VAR_QUERY.bit)) {
+//            //y = transform(y);
+//            y = y.replace(xy);
+//        }
 
         y =
                     y.replace(retransform); //retransforms only

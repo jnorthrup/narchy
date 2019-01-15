@@ -59,54 +59,16 @@
     G, C, is(C,"&&"),  has(C,"--")    |-    conjBefore(C,--G),  (Goal:DesireN)
             //--eventOfNeg(C,G) , --eventOf(C,G) <- optional additional restriction of anti-goal not present anywhere in the sequence
 
-    //anti-desire for sub-sequence leading to anti-goal
+    //anti-desire for sub-sequence leading to anti-goal (option: __Weak, __WeakN)
        G, C, is(C,"&&"), has(C,"--")                 |-   negateEvents(conjBefore(C,--G)),  (Goal:DesireWeak)
        G, C, is(C,"&&")                              |-   negateEvents(conjBefore(C,  G)),  (Goal:DesireWeakN)
-        // weak, weakN?
-
-//        G, C, eventLastOf(C,G), --eventOfNeg(C,G)       |-   conjDropIfLatest(C,G),     (Goal:Desire)
-//        G, C, is(C,"&&")                                |-   conjDropIfLatestUnifies(C,G), (Goal:Desire)
-
-      //even though it has the opposite goal earlier in the seq, but desire weakly:
-      //X, C, eventLastOf(C,X), eventOfNeg(C,X)       |-   conjDropIfLatest(C,X),     (Goal:DesireWeak)
-
-//    //probably redundant, unless Deduction is used instead of Desire due to polarity balance
-//      //X, C, eventLastOfNeg(C,X),--eventOf(C,X)      |-   --negateEvents(conjDropIfLatest(C,--X)), (Goal:DesireWeak,Time:TaskLastInBeliefNeg)
-//      X, C, eventLastOfNeg(C,X),--eventOf(C,X)      |- --conjDropIfLatest(C,--X), (Goal:DesireWeak)
-//      X, C, eventLastOfNeg(C,X),--eventOf(C,X)      |- --C, (Goal:DesireWeak)
-
-        //G, C, eventLastOfNeg(C,G), --eventOf(C,G)       |-   conjDropIfLatest(C,--G),   (Goal:DesireN)
-        //G, C, is(C,"&&")                                |-   conjDropIfLatestUnifies(C,--G), (Goal:DesireN)
-
-      //even though it has the opposite goal earlier in the seq, but desire weakly:
-      //X, C, eventLastOfNeg(C,X), eventOf(C,X)       |-   conjDropIfLatest(C,--X),   (Goal:DesireWeakN)
-
-//    //probably redundant, unless Deduction is used instead of Desire due to polarity balance
-//      //X, C, eventLastOf(C,X), --eventOfNeg(C,X)     |-   --negateEvents(conjDropIfLatest(C,X)), (Goal:DesireWeak, Time:TaskLastInBeliefNeg)
-//      X, C, eventLastOf(C,X), --eventOfNeg(C,X)      |- --conjDropIfLatest(C,X),   (Goal:DesireWeakN)
-//      X, C, eventLastOf(C,X), --eventOfNeg(C,X)      |- --C, (Goal:DesireWeakN)
-
-    //negate events of anti-conj goal
-    //C, X, eventOf(C,X) |- negateEvents(conjWithout(C, X)), (Goal: StructuralDeductionN)
-
-    //  filters to prevent deriving anti-goal if it appears in the precondition, was called: "conjDropIfLatestFiltered"
-    //X, C, eventLastOf(C,X)    |- conjWithout(C,  X), (Goal:Deduction,Time:TaskLastInBeliefPos)
-
-
-    //TODO conjunction sequence suffix
-    //TODO nal3 shortcut - decompose trailing intersection/union event
-
-    //TODO conjunction sequence prefix
 
     //conjunction belief and goal decomposition
     C, X, is(C,"&&"), --isVar(X)                   |- conjAfter(C,  X), (Belief:Deduction,Goal:Deduction)
     C, X, is(C,"&&"), has(C,"--"), --isVar(X)      |- conjAfter(C,  --X), (Belief:DeductionPN,Goal:DeductionPN)
 
-//    C, X, eventFirstOf(C,X)                   |- conjDropIfEarliest(C,  X), (Belief:Deduction,Goal:Deduction)
-//    C, X, eventFirstOfNeg(C,X), has(C,"--")   |- conjDropIfEarliest(C,--X), (Belief:DeductionPN,Goal:DeductionPN)
 
-
-
+    //TODO nal3 shortcut - decompose trailing intersection/union event
 
 
 

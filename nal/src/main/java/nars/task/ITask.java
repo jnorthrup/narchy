@@ -31,6 +31,11 @@ public interface ITask extends Prioritizable {
 
     byte punc();
 
+    static void run(Iterable<ITask> t, NAR nar) {
+        for (ITask tt: t)
+            run(tt, nar);
+    }
+
     /**
      * continues executing the chain of returned tasks until the end
      */

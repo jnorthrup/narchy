@@ -11,6 +11,11 @@ import java.util.stream.Stream;
 /** recipient of instances: in collections, iterators, streams, or individually */
 public abstract class ConsumerX<X extends Prioritizable> implements Consumer<X> {
 
+    /** override for multithreading hints */
+    public int concurrency() {
+        return 1;
+    }
+
     abstract public void input(X x);
 
     public void input(Iterable<? extends X> xx) {

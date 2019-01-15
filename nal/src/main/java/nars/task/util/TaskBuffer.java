@@ -9,13 +9,16 @@ import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
+import nars.NAR;
 import nars.Task;
 import nars.control.CauseMerge;
 import nars.control.channel.ConsumerX;
+import nars.exe.Exec;
 import nars.task.ITask;
 import nars.task.NALTask;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -73,8 +76,8 @@ abstract public class TaskBuffer implements Consumer<ITask> {
             pp.priMax(tt.pri()); //just without cause update
 
         if (pp instanceof Task) { //HACK
-            Task ppp = (Task)pp;
-            Task ttt = (Task)tt;
+            Task ppp = (Task) pp;
+            Task ttt = (Task) tt;
             if (ppp.isCyclic() && !ttt.isCyclic())
                 ppp.setCyclic(false);
         }
@@ -85,7 +88,9 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
     abstract public float priMin();
 
-    /** pass-thru, no buffering */
+    /**
+     * pass-thru, no buffering
+     */
     public static class DirectTaskBuffer extends TaskBuffer {
 
         private final Consumer<ITask> each;
@@ -285,7 +290,8 @@ abstract public class TaskBuffer implements Consumer<ITask> {
             this.tasks.setCapacity(capacity);
         }
 
-        @Override public <T extends ITask> T add(T x) {
+        @Override
+        public <T extends ITask> T add(T x) {
             return (T) tasks.put(x);
         }
 
@@ -319,18 +325,39 @@ abstract public class TaskBuffer implements Consumer<ITask> {
                 //tasks.commit(null);
 
 
-                int n = batchSize(dt);
+                int n = Math.min(tasks.size(), batchSize(dt));
                 if (n > 0) {
 
 
-                    if (tasks instanceof ArrayBag) {
-                        FasterList<ITask> batch = BagTaskBuffer.batch.get();
+                    int c = target.concurrency();
+                    if (c <= 2) {
+                        tasks.pop(null, n, target::input);
+                    } else {
+                        //concurrency > 2
+                        int nEach = (int) Math.ceil(((float) n) / (c - 1));
+                        for (int i = 0; i < c && n > 0; i++) {
 
-                        ((ArrayBag) tasks).popBatch(n, batch);
+                            ((Exec) target)/*HACK*/.input((Consumer<NAR>) (nn) -> {
 
-                        //System.out.println(this + "\tdt=" + dt + "\tin: " + batch.size() + "/" + n);
+                                FasterList batch = BagTaskBuffer.batch.get();
+                                if (tasks instanceof ArrayBag) {
+                                    ((ArrayBag) tasks).popBatch(nEach, batch);
+                                } else {
+                                    tasks.pop(null, nEach, batch::add); //per item.. may be slow
+                                }
 
-                            int m = batch.size();
+                                if (!batch.isEmpty()) {
+                                    if (batch.size() > 2)
+                                        batch.sortThis(sloppySorter);
+                                    ITask.run(batch, nn);
+                                    batch.clear();
+                                }
+                            });
+                            n -= nEach;
+                        }
+
+
+//                            int m = batch.size();
 //                            switch (m) {
 //                                case 0:
 //                                    break;
@@ -340,19 +367,12 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 //                                default:
 //                                    if (m > 2)
 //                                        batch.sortThis(sloppySorter);
-//                                    target.input(batch.clone() /* HACK */);
 //                                    break;
 //                            }
 
-                        batch.forEach(target::input);
-                        batch.clear();
-
-
-                    } else {
-                        tasks.pop(null, n, target); //per item.. may be slow
+//                            batch.forEach(target::input);
                     }
                 }
-
 
             } finally {
                 busy.set(false);
@@ -360,9 +380,10 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
         }
 
-//        /** fast, imprecise sort.  for cache locality and concurrency purposes */
-//        static final Comparator<ITask> sloppySorter = Comparator.comparingInt(x ->
-//                ((Task) x).term().concept().hashCode());
+        /** fast, imprecise sort.  for cache locality and concurrency purposes */
+        static final Comparator<Task> sloppySorter = Comparator
+            .comparingInt((Task x) -> x.term().concept().hashCode())
+            .thenComparing((Task x) -> -x.priElseZero());
 
 
         /**
@@ -431,7 +452,8 @@ abstract public class TaskBuffer implements Consumer<ITask> {
                 x.clear();
         }
 
-        @Override public <T extends ITask> T add(T x) {
+        @Override
+        public <T extends ITask> T add(T x) {
             return buffer(x.punc()).add(x);
         }
 

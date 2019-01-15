@@ -781,7 +781,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
 
-    protected void removeRange(int fromIndex, int toIndex) {
+    private void removeRange(int fromIndex, int toIndex) {
         if (fromIndex <= toIndex)
             shiftTailOverGap(this.items, fromIndex, toIndex);
         else
