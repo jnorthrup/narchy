@@ -4,7 +4,7 @@ import jcog.memoize.byt.ByteHijackMemoize;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.util.cache.InternedCompound.InternedCompoundTransform;
+import nars.term.util.cache.Intermed.InternedCompoundTransform;
 
 import java.util.UUID;
 

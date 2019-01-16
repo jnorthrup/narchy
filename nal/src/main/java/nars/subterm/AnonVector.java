@@ -66,6 +66,30 @@ public class AnonVector extends TermVector /*implements Subterms.SubtermsBytesCa
 //            return s;
 //    }
 
+    public final boolean AND(/*@NotNull*/ Predicate<Term> p) {
+        int s = subs();
+        short prev = 0;
+        for (int i = 0; i < s; i++) {
+            short next = this.subterms[i];
+            if (prev!=next && !p.test(term(next)))
+                return false;
+            prev = next;
+        }
+        return true;
+    }
+
+    public final boolean OR(/*@NotNull*/ Predicate<Term> p) {
+        int s = subs();
+        short prev = 0;
+        for (int i = 0; i < s; i++) {
+            short next = this.subterms[i];
+            if (prev!=next && p.test(term(next)))
+                return true;
+            prev = next;
+        }
+        return false;
+    }
+
     @Override
     public Subterms replaceSub(Term from, Term to, Op superOp) {
 

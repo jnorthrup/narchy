@@ -69,6 +69,7 @@ public interface Termlike {
         int s = subs();
         for (int i = 0; i < s; i++)
             x += value.applyAsInt(sub(i));
+
         return x;
     }
 

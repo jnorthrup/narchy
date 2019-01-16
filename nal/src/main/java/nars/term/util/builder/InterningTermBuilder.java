@@ -10,9 +10,9 @@ import nars.subterm.SortedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.util.cache.InternedCompound;
-import nars.term.util.cache.InternedCompound.InternedCompoundByComponents;
-import nars.term.util.cache.InternedCompound.InternedSubterms;
+import nars.term.util.cache.Intermed;
+import nars.term.util.cache.Intermed.InternedCompoundByComponents;
+import nars.term.util.cache.Intermed.InternedSubterms;
 import nars.term.util.conj.Conj;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +24,7 @@ import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.dtSpecial;
 
 /**
- * can intern subterms and compounds.
+ * intern subterms and compounds.
  * the requirements for intern cache admission are configurable.
  **/
 public class InterningTermBuilder extends HeapTermBuilder {
@@ -95,7 +95,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
 
-    protected <I extends InternedCompound, Y> ByteHijackMemoize<I, Y> newOpCache(String name, Function<I, Y> f, int capacity) {
+    protected <I extends Intermed, Y> ByteHijackMemoize<I, Y> newOpCache(String name, Function<I, Y> f, int capacity) {
         ByteHijackMemoize h = new ByteHijackMemoize(f, capacity, 3, false);
         Memoizers.the.add(id + '_' + InterningTermBuilder.class.getSimpleName() + '_' + name, h);
         return h;

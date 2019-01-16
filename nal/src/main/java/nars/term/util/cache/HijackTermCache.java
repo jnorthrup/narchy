@@ -5,9 +5,9 @@ import nars.term.Term;
 
 import java.util.function.Function;
 
-public class HijackTermCache/*<I extends InternedCompound>*/ extends ByteHijackMemoize<InternedCompound, Term> {
+public class HijackTermCache/*<I extends InternedCompound>*/ extends ByteHijackMemoize<Intermed, Term> {
 
-    public HijackTermCache(Function<InternedCompound,Term> f, int capacity, int reprobes) {
+    public HijackTermCache(Function<Intermed,Term> f, int capacity, int reprobes) {
         super(f, capacity, reprobes, false);
     }
 

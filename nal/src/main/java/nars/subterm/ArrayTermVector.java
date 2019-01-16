@@ -145,21 +145,6 @@ public class ArrayTermVector extends TermVector {
         }
     }
 
-    @Override
-    public final boolean OR(Predicate<Term> p) {
-        for (Term i : this.terms)
-            if (p.test(i))
-                return true;
-        return false;
-    }
-
-    @Override
-    public final boolean AND(Predicate<Term> p) {
-        for (Term i : this.terms)
-            if (!p.test(i))
-                return false;
-        return true;
-    }
 
     @Override
     public boolean ANDwith(ObjectIntPredicate<Term> p) {

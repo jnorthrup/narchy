@@ -13,16 +13,17 @@ import nars.term.compound.UnitCompound;
 import static nars.term.util.builder.InterningTermBuilder.tmpKey;
 import static nars.time.Tense.DTERNAL;
 
-public class InternedCompound extends ByteKey.ByteKeyExternal  {
+/** interned terms and subterms implementations */
+public class Intermed extends ByteKey.ByteKeyExternal  {
 
-    protected InternedCompound(DynBytes key) {
+    protected Intermed(DynBytes key) {
         super(key);
     }
-    protected InternedCompound() {
+    protected Intermed() {
         this(tmpKey());
     }
 
-    public static final class InternedCompoundByComponents extends InternedCompound {
+    public static final class InternedCompoundByComponents extends Intermed {
         public final byte op;
         public final int dt;
         public final transient Term[] subs;
@@ -40,7 +41,7 @@ public class InternedCompound extends ByteKey.ByteKeyExternal  {
         }
     }
 
-    public static final class InternedSubterms extends InternedCompound {
+    public static final class InternedSubterms extends Intermed {
 
         public final transient Term[] subs;
 
@@ -52,7 +53,7 @@ public class InternedCompound extends ByteKey.ByteKeyExternal  {
         }
     }
 
-    public static final class InternedCompoundTransform extends InternedCompound {
+    public static final class InternedCompoundTransform extends Intermed {
         public final Term term;
 
         public InternedCompoundTransform(Term x) {
@@ -104,4 +105,14 @@ public class InternedCompound extends ByteKey.ByteKeyExternal  {
             s.appendTo((ByteArrayDataOutput) key);
     }
 
+    public static class SubtermsKey extends Intermed {
+        public final Subterms subs;
+
+        public SubtermsKey(Subterms s) {
+            super();
+            this.subs = s;
+            s.appendTo(key);
+            commit();
+        }
+    }
 }

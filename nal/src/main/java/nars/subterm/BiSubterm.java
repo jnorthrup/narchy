@@ -167,11 +167,6 @@ public class BiSubterm extends TermVector {
         }
 
         @Override
-        public int sum(ToIntFunction<Term> value) {
-            return value.applyAsInt(x)*2;
-        }
-
-        @Override
         public boolean AND(Predicate<Term> p) {
             return p.test(x);
         }

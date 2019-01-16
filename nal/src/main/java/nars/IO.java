@@ -338,12 +338,6 @@ public class IO {
         }
     }
 
-    public static DynBytes subsToDynBytes(Subterms t) {
-        DynBytes d = RecycledDynBytes.get();
-        t.appendTo(d);
-        return d;
-    }
-
     public static int termBytesEstimate(Termlike t) {
         return t.volume() * 8;
     }

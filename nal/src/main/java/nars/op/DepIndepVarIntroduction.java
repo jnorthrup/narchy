@@ -10,7 +10,7 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
-import nars.term.util.key.SubtermsKey;
+import nars.term.util.cache.Intermed;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.Pair;
@@ -70,10 +70,10 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     private final static Function<Subterms,Term[]> select = Memoizers.the.memoize(
             DepIndepVarIntroduction.class.getSimpleName() + "_select",
-            SubtermsKey::new,
+            Intermed.SubtermsKey::new,
             DepIndepVarIntroduction::_select, MEMOIZE_CAPACITY);
 
-    static protected Term[] _select(SubtermsKey input) {
+    static protected Term[] _select(Intermed.SubtermsKey input) {
         Term[] n = Terms.nextRepeat(input.subs, depIndepFilter, 2);
         return Objects.requireNonNullElse(n, Op.EmptyTermArray);
     }

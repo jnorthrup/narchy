@@ -8,7 +8,7 @@ import nars.subterm.MappedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.util.cache.InternedCompound.InternedCompoundByComponents;
+import nars.term.util.cache.Intermed.InternedCompoundByComponents;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;

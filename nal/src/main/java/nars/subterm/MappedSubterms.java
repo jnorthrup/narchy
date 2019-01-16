@@ -240,6 +240,25 @@ abstract public class MappedSubterms extends ProxySubterms {
         return ref.complexity() + negs();
     }
 
+    @Override
+    public int varPattern() {
+        return ref.varPattern();
+    }
+
+    @Override
+    public int varQuery() {
+        return ref.varQuery();
+    }
+
+    @Override
+    public int varDep() {
+        return ref.varDep();
+    }
+
+    @Override
+    public int varIndep() {
+        return ref.varIndep();
+    }
 
     @Override
     public String toString() {

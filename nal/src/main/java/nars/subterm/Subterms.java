@@ -971,9 +971,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
      */
     default boolean OR(/*@NotNull*/ Predicate<Term> p) {
         int s = subs();
-        for (int i = 0; i < s; i++)
-            if (p.test(sub(i)))
+        Term prev = null;
+        for (int i = 0; i < s; i++) {
+            Term next = sub(i);
+            if (prev!=next && p.test(next))
                 return true;
+            prev = next;
+        }
         return false;
     }
 
@@ -985,9 +989,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
      */
     default boolean AND(/*@NotNull*/ Predicate<Term> p) {
         int s = subs();
-        for (int i = 0; i < s; i++)
-            if (!p.test(sub(i)))
+        Term prev = null;
+        for (int i = 0; i < s; i++) {
+            Term next = sub(i);
+            if (prev!=next && !p.test(next))
                 return false;
+            prev = next;
+        }
         return true;
     }
 
@@ -1035,18 +1043,26 @@ public interface Subterms extends Termlike, Iterable<Term> {
     /** implementations are allowed to skip repeating subterms and visit out of order */
     default boolean ANDrecurse(/*@NotNull*/ Predicate<Term> p) {
         int s = subs();
-        for (int i = 0; i < s; i++)
-            if (!sub(i).ANDrecurse(p))
+        Term prev = null;
+        for (int i = 0; i < s; i++) {
+            Term next = sub(i);
+            if (prev!=next && !next.ANDrecurse(p))
                 return false;
+            prev = next;
+        }
         return true;
     }
 
     /** implementations are allowed to skip repeating subterms and visit out of order */
     default boolean ORrecurse(/*@NotNull*/ Predicate<Term> p) {
         int s = subs();
-        for (int i = 0; i < s; i++)
-            if (sub(i).ORrecurse(p))
+        Term prev = null;
+        for (int i = 0; i < s; i++) {
+            Term next = sub(i);
+            if (prev!=next && next.ORrecurse(p))
                 return true;
+            prev = next;
+        }
         return false;
     }
 

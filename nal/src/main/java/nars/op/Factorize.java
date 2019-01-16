@@ -10,7 +10,7 @@ import nars.Task;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.*;
-import nars.term.util.key.SubtermsKey;
+import nars.term.util.cache.Intermed;
 import nars.time.Tense;
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.list.MutableList;
@@ -80,10 +80,10 @@ public class Factorize {
 
     static final Function<Subterms,Term[]> factorize = Memoizers.the.memoize(
             Factorize.class.getSimpleName() + "_factorize",
-            SubtermsKey::new,
+            Intermed.SubtermsKey::new,
             Factorize::_factorize, 8 * 1024);
 
-    private static Term[] _factorize(SubtermsKey x) {
+    private static Term[] _factorize(Intermed.SubtermsKey x) {
         Subterms xx = x.subs;
 
         Term[] xxx = distribute(xx), yyy;
