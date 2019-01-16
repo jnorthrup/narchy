@@ -36,7 +36,7 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
     /**
      * TODO make dynamicalyl adjustable thru MutableInteger etc
      */
-    public final IntRange activeCapacity = new IntRange(512, 0, 2024) {
+    public final IntRange activeCapacity = new IntRange(256, 0, 2024) {
         @Override
         protected void changed() {
             active.setCapacity(intValue());

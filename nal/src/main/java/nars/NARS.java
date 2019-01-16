@@ -52,8 +52,6 @@ public class NARS {
 
     protected Supplier<Random> rng;
 
-    //protected Supplier<ActiveConcepts> attn;
-
     protected Supplier<ConceptBuilder> conceptBuilder;
 
 
