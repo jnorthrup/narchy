@@ -6,6 +6,7 @@ import jcog.memoize.byt.ByteKey;
 import nars.derive.Derivation;
 
 import static nars.Op.*;
+import static nars.Op.QUEST;
 
 public class PremiseKey extends ByteKey.ByteKeyExternal {
 
@@ -13,6 +14,17 @@ public class PremiseKey extends ByteKey.ByteKeyExternal {
 
         DynBytes k = d.tmpPremiseKey;
         k.clear();
+        return new PremiseKey(k, d);
+    }
+
+
+    transient public Derivation derivation;
+
+
+    protected PremiseKey(DynBytes b, Derivation d) {
+        super(b);
+        this.derivation = d;
+
 
         /** bits 0..1 */
         byte taskPuncAndIfDouble;
@@ -38,14 +50,14 @@ public class PremiseKey extends ByteKey.ByteKeyExternal {
             if (d.hasBeliefTruth())
                 taskPuncAndIfDouble |= 1 << 3;
         }
-        k.writeByte(taskPuncAndIfDouble);
+        b.writeByte(taskPuncAndIfDouble);
 
 
-        d.taskTerm.appendTo((ByteArrayDataOutput) k);
+        d.taskTerm.appendTo((ByteArrayDataOutput) b);
 
         //k.writeByte(0); //delimeter, for safety
 
-        d.beliefTerm.appendTo((ByteArrayDataOutput) k);
+        d.beliefTerm.appendTo((ByteArrayDataOutput) b);
 
         //k.writeByte(0); //delimeter, for safety
 
@@ -59,16 +71,8 @@ public class PremiseKey extends ByteKey.ByteKeyExternal {
 ////                pri/=2; //store in cache with lower pri since temporal variations would clutter
 ////            }
 
-        return new PremiseKey(k, d);
-    }
 
-
-    transient public Derivation derivation;
-
-
-    protected PremiseKey(DynBytes b, Derivation d) {
-        super(b);
-        this.derivation = d;
+        commit();
     }
 
 

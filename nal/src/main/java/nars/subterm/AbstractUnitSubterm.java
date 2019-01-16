@@ -7,10 +7,12 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.var.NormalizedVariable;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
+import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
@@ -58,6 +60,24 @@ abstract class AbstractUnitSubterm implements Subterms {
     @Override
     public boolean AND(Predicate<Term> p) {
         return p.test(sub());
+    }
+
+    @Override
+    public boolean ORwith(ObjectIntPredicate<Term> p) {
+        return p.accept(sub(), 0);
+    }
+    @Override
+    public boolean ANDwith(ObjectIntPredicate<Term> p) {
+        return p.accept(sub(), 0);
+    }
+
+    @Override
+    public <X> boolean ORwith(BiPredicate<Term, X> p, X param) {
+        return p.test(sub(), param);
+    }
+    @Override
+    public <X> boolean ANDwith(BiPredicate<Term, X> p, X param) {
+        return p.test(sub(), param);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package nars.attention;
 
 import jcog.math.FloatRange;
-import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.op.PriForget;
 import nars.NAR;
@@ -49,7 +48,9 @@ abstract public class Forgetting {
 
     }
 
-    abstract protected float depressurize(Bag b, float temperature);
+    protected final float depressurize(Bag b, float temperature) {
+        return b.depressurizePct(temperature);
+    }
 
     abstract protected @Nullable Consumer forget(float temperature, int size, int cap, float pressure, float mass);
 
@@ -57,11 +58,7 @@ abstract public class Forgetting {
     public static class AsyncForgetting extends Forgetting {
 
 
-        public final FloatRange tasklinkForgetRate = new FloatRange(0.9f, 0f, 1f);
-
-        @Override protected float depressurize(Bag b, float depressurizationRate) {
-            return b.depressurizePct(depressurizationRate);
-        }
+        public final FloatRange tasklinkForgetRate = new FloatRange(1f, 0f, 1f);
 
         public final void update(Concept c, NAR n) {
             Bag<Tasklike, TaskLink> tasklinks = c.tasklinks();
@@ -79,69 +76,67 @@ abstract public class Forgetting {
         }
     }
 
-    /** experimental */
-    public static class TimedForgetting extends Forgetting {
-
-        /**
-         * number of clock durations composing a unit of short term memory decay (used by bag forgetting)
-         */
-        public final FloatRange memoryDuration = new FloatRange(1f, 0f, 64f);
-
-        @Override protected float depressurize(Bag b, float temperature) {
-            return b.depressurizePct(temperature);
-        }
-
-        @Override
-        protected Consumer forget(float temperature, int size, int cap, float pressure, float mass) {
-            return PriForget.forgetIdeal(temperature,
-                                        ScalarValue.EPSILON * cap,
-                                        //1f/size,
-                                        //1f/cap,
-                                        //0.1f,
-                                        //0.5f,
-                                        size, cap, pressure, mass);
-        }
-
-
+//    /** experimental */
+//    @Deprecated public static class TimedForgetting extends Forgetting {
+//
+//        /**
+//         * number of clock durations composing a unit of short term memory decay (used by bag forgetting)
+//         */
+//        public final FloatRange memoryDuration = new FloatRange(1f, 0f, 64f);
+//
+//
+//
 //        @Override
-//        public void updateConcepts(Bag<Term, Activate> active, long dt, NAR n) {
-//            float temperature = 1f - (float) Math.exp(-(((double) dt) / n.dur()) / memoryDuration.floatValue());
-//            active.commit(active.forget(temperature));
+//        protected Consumer forget(float temperature, int size, int cap, float pressure, float mass) {
+//            return PriForget.forgetIdeal(temperature,
+//                                        ScalarValue.EPSILON * cap,
+//                                        //1f/size,
+//                                        //1f/cap,
+//                                        //0.1f,
+//                                        //0.5f,
+//                                        size, cap, pressure, mass);
 //        }
-
-        public void update(Concept c, NAR n) {
-
-
-            int dur = n.dur();
-
-            Consumer<TaskLink> tasklinkUpdate;
-            Bag<Tasklike, TaskLink> tasklinks = c.tasklinks();
-
-            long curTime = n.time();
-            Long prevCommit = c.meta("C", curTime);
-            if (prevCommit != null) {
-                if (curTime - prevCommit > 0) {
-
-                    double deltaDurs = ((double) (curTime - prevCommit)) / dur;
-
-                    //deltaDurs = Math.min(deltaDurs, 1);
-
-                    float forgetRate = (float) (1 - Math.exp(-deltaDurs / memoryDuration.doubleValue()));
-
-                    //System.out.println(deltaDurs + " " + forgetRate);
-                    tasklinkUpdate = tasklinks.forget(forgetRate);
-
-                } else {
-                    //dont need to commit, it already happened in this cycle
-                    return;
-                }
-            } else {
-                tasklinkUpdate = null;
-
-            }
-
-            tasklinks.commit(tasklinkUpdate);
-
-        }
-    }
+//
+//
+////        @Override
+////        public void updateConcepts(Bag<Term, Activate> active, long dt, NAR n) {
+////            float temperature = 1f - (float) Math.exp(-(((double) dt) / n.dur()) / memoryDuration.floatValue());
+////            active.commit(active.forget(temperature));
+////        }
+//
+//        public void update(Concept c, NAR n) {
+//
+//
+//            int dur = n.dur();
+//
+//            Consumer<TaskLink> tasklinkUpdate;
+//            Bag<Tasklike, TaskLink> tasklinks = c.tasklinks();
+//
+//            long curTime = n.time();
+//            Long prevCommit = c.meta("C", curTime);
+//            if (prevCommit != null) {
+//                if (curTime - prevCommit > 0) {
+//
+//                    double deltaDurs = ((double) (curTime - prevCommit)) / dur;
+//
+//                    //deltaDurs = Math.min(deltaDurs, 1);
+//
+//                    float forgetRate = (float) (1 - Math.exp(-deltaDurs / memoryDuration.doubleValue()));
+//
+//                    //System.out.println(deltaDurs + " " + forgetRate);
+//                    tasklinkUpdate = tasklinks.forget(forgetRate);
+//
+//                } else {
+//                    //dont need to commit, it already happened in this cycle
+//                    return;
+//                }
+//            } else {
+//                tasklinkUpdate = null;
+//
+//            }
+//
+//            tasklinks.commit(tasklinkUpdate);
+//
+//        }
+//    }
 }

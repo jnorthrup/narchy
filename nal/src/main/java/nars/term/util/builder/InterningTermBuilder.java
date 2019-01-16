@@ -11,6 +11,8 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.cache.InternedCompound;
+import nars.term.util.cache.InternedCompound.InternedCompoundByComponents;
+import nars.term.util.cache.InternedCompound.InternedSubterms;
 import nars.term.util.conj.Conj;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,8 +45,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private final boolean deep;
     protected final int volInternedMax;
 
-    final ByteHijackMemoize<InternedCompound, Subterms> subterms, anonSubterms;
-    final ByteHijackMemoize<InternedCompound, Term>[] terms;
+    final ByteHijackMemoize<InternedSubterms, Subterms> subterms, anonSubterms;
+    final ByteHijackMemoize<InternedCompoundByComponents, Term>[] terms;
 
     private final String id;
 
@@ -61,8 +63,11 @@ public class InterningTermBuilder extends HeapTermBuilder {
         terms = new ByteHijackMemoize[ops.length];
 
 
-        subterms = newOpCache("subterms", x -> theSubterms(x.rawSubs), cacheSizePerOp * 2);
-        anonSubterms = newOpCache("anonSubterms", x -> new AnonVector(x.rawSubs), cacheSizePerOp);
+        subterms = newOpCache("subterms",
+                (InternedSubterms x) -> theSubterms(x.subs), cacheSizePerOp * 2);
+        anonSubterms = newOpCache("anonSubterms",
+                (InternedSubterms x) -> new AnonVector(x.subs), cacheSizePerOp);
+
         ByteHijackMemoize statements = newOpCache("statement", this::_statement, cacheSizePerOp * 3);
 
         for (int i = 0; i < ops.length; i++) {
@@ -73,13 +78,15 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
             //TODO use multiple PROD slices to decrease contention
 
-            ByteHijackMemoize c;
+            ByteHijackMemoize<InternedCompoundByComponents, Term> c;
             if (o == CONJ) {
-                c = newOpCache("conj", j -> super.conj(true, j.dt, resolve(j.rawSubs)), cacheSizePerOp);
+                c = newOpCache("conj",
+                        (InternedCompoundByComponents j) -> super.conj(true, j.dt, resolve(j.subs)), cacheSizePerOp);
             } else if (o.statement) {
                 c = statements;
             } else {
-                c = newOpCache(o.str, x -> theCompound(ops[x.op], x.dt, resolve(x.rawSubs), x.key), s);
+                c = newOpCache(o.str,
+                        (InternedCompoundByComponents x) -> theCompound(ops[x.op], x.dt, resolve(x.subs), x.key), s);
             }
             terms[i] = c;
         }
@@ -88,8 +95,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
 
-    protected ByteHijackMemoize newOpCache(String name, Function<InternedCompound, ?> f, int capacity) {
-        ByteHijackMemoize h = new ByteHijackMemoize(f, capacity, 4, false);
+    protected <I extends InternedCompound, Y> ByteHijackMemoize<I, Y> newOpCache(String name, Function<I, Y> f, int capacity) {
+        ByteHijackMemoize h = new ByteHijackMemoize(f, capacity, 3, false);
         Memoizers.the.add(id + '_' + InterningTermBuilder.class.getSimpleName() + '_' + name, h);
         return h;
     }
@@ -107,12 +114,12 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return subs;
     }
 
-    private Term compoundInterned(InternedCompound x) {
+    private Term compoundInterned(InternedCompoundByComponents x) {
         return terms[x.op].apply(x);
     }
 
-    private Subterms subsInterned(ByteHijackMemoize<InternedCompound, Subterms> m, Term[] t) {
-        return m.apply(InternedCompound.get(PROD, DTERNAL, t));
+    private Subterms subsInterned(ByteHijackMemoize<InternedSubterms, Subterms> m, Term[] t) {
+        return m.apply(new InternedSubterms(t));
     }
 
 
@@ -130,7 +137,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private Term compoundInterned(Op op, int dt, Term[] u) {
-        return compoundInterned(InternedCompound.get(op, dt, u));
+        return compoundInterned(new InternedCompoundByComponents(op, dt, u));
     }
 
 
@@ -198,7 +205,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 negate = false;
             }
             if (x.the() && internableRoot(xo, x.dt())) {
-                Term y = terms[xo.id].apply(InternedCompound.get(x));
+                Term y = terms[xo.id].apply(new InternedCompoundByComponents(x));
                 if (y != null)
                     return negate ? y.neg() : y;
             }
@@ -268,7 +275,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
                     }
                 }
 
-                return this.terms[op.id].apply(InternedCompound.get(op, dt, subject, predicate)).negIf(negate);
+                return this.terms[op.id].apply(new InternedCompoundByComponents(op, dt, subject, predicate)).negIf(negate);
             }
 
             //return statements.apply(InternedCompound.get(op, dt, subject, predicate));
@@ -284,8 +291,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return super.statement(op, dt, subject, predicate);
     }
 
-    private Term _statement(InternedCompound c) {
-        Term[] s = resolve(c.rawSubs);
+    private Term _statement(InternedCompoundByComponents c) {
+        Term[] s = resolve(c.subs);
         return super.statement(Op.ops[c.op], c.dt, s[0], s[1]);
     }
 
@@ -297,7 +304,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
         if (u.length > 1 && internableRoot(CONJ, dt, u)) {
             if (u.length > 1) {
-                return terms[CONJ.id].apply(InternedCompound.get(CONJ, dt, u));
+                return terms[CONJ.id].apply(new InternedCompoundByComponents(CONJ, dt, u));
             }
         }
 

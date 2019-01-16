@@ -50,8 +50,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default boolean hasXternal() {
         return hasAny(Op.Temporal) && OR(Term::hasXternal);
     }
+
     default boolean contains(Term t) {
-        return indexOf(t)!=-1;
+        //return indexOf(t)!=-1;
+        return ORwith(Term::equals, t);
     }
 
 
@@ -1005,6 +1007,29 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (p.accept(sub(i), i))
                 return true;
         return false;
+    }
+    default <X> boolean ORwith(/*@NotNull*/ BiPredicate<Term,X> p, X param) {
+        int s = subs();
+        Term prev = null;
+        for (int i = 0; i < s; i++) {
+            Term next = sub(i);
+            if (prev!=next && p.test(next, param))
+                return true;
+            prev = next;
+        }
+        return false;
+    }
+
+    default <X> boolean ANDwith(/*@NotNull*/ BiPredicate<Term,X> p, X param) {
+        int s = subs();
+        Term prev = null;
+        for (int i = 0; i < s; i++) {
+            Term next = sub(i);
+            if (prev!=next && !p.test(next, param))
+                return false;
+            prev = next;
+        }
+        return true;
     }
 
     /** implementations are allowed to skip repeating subterms and visit out of order */

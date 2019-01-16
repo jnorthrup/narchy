@@ -8,7 +8,7 @@ import nars.subterm.MappedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.util.cache.InternedCompound;
+import nars.term.util.cache.InternedCompound.InternedCompoundByComponents;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -25,9 +25,9 @@ class InterningTermBuilderTest {
         Term pab = t.compound(PROD, a, b);
         assertEquals( "(a,b)", pab.toString());
 
-        ByteHijackMemoize<InternedCompound, Term> prodCache = t.terms[PROD.id];
+        ByteHijackMemoize<InternedCompoundByComponents, Term> prodCache = t.terms[PROD.id];
 
-        PriProxy<InternedCompound, Term> pabEntry = Iterators.get(prodCache.iterator(), 0);
+        PriProxy<InternedCompoundByComponents, Term> pabEntry = Iterators.get(prodCache.iterator(), 0);
         assertEquals(pab, pabEntry.get());
         Term pabSame = t.compound(PROD, a, b);
         assertSame(pab, pabSame);

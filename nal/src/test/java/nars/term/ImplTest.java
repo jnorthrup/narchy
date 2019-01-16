@@ -10,7 +10,10 @@ import static nars.$.$;
 import static nars.$.$$;
 import static nars.io.NarseseTest.assertInvalidTerms;
 import static nars.term.atom.Bool.False;
+import static nars.term.atom.Bool.Null;
 import static nars.term.util.TermTest.assertEq;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -39,12 +42,12 @@ public class ImplTest {
         assertEq("((x&|y)==>z)", "((x &| y) ==> (y &| z))");
     }
 
-    @Test
-    void toomuchReduction() {
-        /** this took some thought but it really is consistent with the system */
-        assertEq("((b &&+60000 c)=|>(#1 &&+60000 (b&|#1)))",
-                "((b &&+60000 c)=|>((#1 &&+60000 b)&&(c &&+60000 #1)))");
-    }
+//    @Test
+//    void toomuchReduction() {
+//        /** this took some thought but it really is consistent with the system */
+//        assertEq("((b &&+60000 c)=|>(#1 &&+60000 (b&|#1)))",
+//                "((b &&+60000 c)=|>((#1 &&+60000 b)&&(c &&+60000 #1)))");
+//    }
 
     @Test
     void conceptualizability() {
@@ -105,7 +108,7 @@ public class ImplTest {
 
     @Test
     void testInvalidCircularImpl() throws Narsese.NarseseException {
-        assertNotEquals(Bool.Null, $("(x(intValue,(),1) ==>+10 ((--,x(intValue,(),0)) &| x(intValue,(),1)))"));
+        assertNotEquals(Null, $("(x(intValue,(),1) ==>+10 ((--,x(intValue,(),0)) &| x(intValue,(),1)))"));
         assertEq("(--,(x(intValue,(),1)=|>x(intValue,(),0)))", "(x(intValue,(),1) =|> ((--,x(intValue,(),0)) &| x(intValue,(),1)))");
     }
 
@@ -270,11 +273,24 @@ public class ImplTest {
     @Test
     void testElimination4() {
         Term x2 = $$("((a &&+5 b) ==>+1 (b &&+5 c))");
-        Term y2 = x2.dt(0);
-        assertEq("((a &&+5 b) ==>+5 c)", y2);
+        assertEq("((a &&+5 b) ==>+5 c)", x2.dt(0));
+        assertEq("((a &&+5 b) ==>+- (b &&+5 c))", x2.dt(XTERNAL));
+        assertEq("((a &&+5 b)==>c)", x2.dt(DTERNAL));
     }
 
 
+    /** test repeat that may appear in a Mapped subterms */
+    @Test void testValidRepeatImplWithIndep() {
+        {
+            String x = "(($1 &&+5 b) ==>+1 ($1 &&+5 b))";
+            assertEquals(x, $$(x).toString());
+        }
+
+        {
+            String x = "(($1 &&+5 b),($1 &&+5 b))";
+            assertEquals(x, $$(x).toString());
+        }
+    }
 
 
 

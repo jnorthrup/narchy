@@ -9,11 +9,9 @@ import java.util.Arrays;
 
 abstract public class ByteKey extends UnitPri {
 
-    protected final int hash;
 
-    protected ByteKey(int hash) {
+    protected ByteKey() {
         super();
-        this.hash = hash;
     }
 
     /** of size equal or greater than length() */
@@ -24,7 +22,7 @@ abstract public class ByteKey extends UnitPri {
     @Override
     public final boolean equals(Object o) {
         ByteKey that = (ByteKey) o;
-        if (hash == that.hash) {
+        if (hashCode() == that.hashCode()) {
             int l = length();
             if (that.length() == l) {
                 return Arrays.equals(array(), 0, l, that.array(), 0, l);
@@ -34,16 +32,12 @@ abstract public class ByteKey extends UnitPri {
     }
 
 
-
     @Override
-    public final int hashCode() {
-        return hash;
-    }
+    abstract public int hashCode();
 
     @Override
     public String toString() {
-
-        return Texts.i(array(),0, length(), 16) + " [" + Integer.toUnsignedString(hash,32) + "]";
+        return Texts.i(array(),0, length(), 16) + " [" + Integer.toUnsignedString(hashCode(),32) + "]";
     }
 
 
@@ -54,19 +48,24 @@ abstract public class ByteKey extends UnitPri {
 
         /*@Stable*/
         public final byte[] key;
-
-
+        private final int hash;
 
         protected ByteKeyInternal(byte[] key, int hash, Y result, float pri) {
-            super(hash);
+            super();
+            this.hash = hash;
             this.key = key;
             this.result = result;
             pri(pri);
         }
 
         @Override
+        public int hashCode() {
+            return hash;
+        }
+
+        @Override
         public boolean xEquals(Object y, int kHash) {
-            return hash == kHash && super.equals(y);
+            return equals(y);
         }
 
         @Override
@@ -99,10 +98,22 @@ abstract public class ByteKey extends UnitPri {
 
         public final DynBytes key;
 
+        protected int hash;
 
         public ByteKeyExternal(DynBytes key) {
-            super(key.hashCode());
+            super();
             this.key = key;
+        }
+
+        protected void commit() {
+            //TODO optional compression
+
+            hash = key.hashCode();
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
         }
 
         protected <Y> PriProxy<?,Y> internal(Y y, float pri) {

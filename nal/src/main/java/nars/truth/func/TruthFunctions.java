@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.and;
 import static nars.$.t;
+import static nars.truth.func.TruthFunctions2.weak;
 
 /**
  * All truth-value (and desire-value) functions used in logic rules
@@ -78,12 +79,14 @@ public final class TruthFunctions {
 
 
     @Nullable
-    public static Truth deduction(Truth a, float bF, float bC, float minConf) {
+    public static Truth deduction(Truth a, float bF, float bC, boolean strong, float minConf) {
 
         float f = and(a.freq(), bF);
         float c = and(f,
                 confCompose(a.conf(), bC)
         );
+        if (!strong)
+            c = weak(c);
 
         return c >= minConf ? t(f, c) : null;
     }

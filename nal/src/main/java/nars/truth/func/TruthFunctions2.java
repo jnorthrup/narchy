@@ -295,6 +295,7 @@ public enum TruthFunctions2 {
             return 0.5f - (a * b)/2;
         }
     }
+
 //    /** freq: a,b; assumes they are of the same polarity */
 //    static float unionSym(float a, float b) {
 //        if (a >= 0.5f) {

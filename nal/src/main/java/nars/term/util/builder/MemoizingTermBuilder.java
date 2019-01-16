@@ -4,18 +4,16 @@ import jcog.memoize.byt.ByteHijackMemoize;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.util.cache.InternedCompound;
+import nars.term.util.cache.InternedCompound.InternedCompoundTransform;
 
 import java.util.UUID;
-
-import static nars.Op.PROD;
 
 /** memoizes certain term operations in addition to interning */
 public class MemoizingTermBuilder extends InterningTermBuilder {
 
     //TODO <Term,Term>
-    private final ByteHijackMemoize<InternedCompound,Term> normalize;
-    private final ByteHijackMemoize<InternedCompound,Term> root;
+    private final ByteHijackMemoize<InternedCompoundTransform, Term> normalize;
+    private final ByteHijackMemoize<InternedCompoundTransform, Term> root;
 
     public MemoizingTermBuilder() {
         this(UUID.randomUUID().toString(), deepDefault, maxInternedVolumeDefault, DEFAULT_SIZE);
@@ -25,9 +23,9 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
         super(id, deep, volInternedMax, cacheSizePerOp);
 
 
-        root = newOpCache("root", j -> super.root((Compound) j.sub0()), cacheSizePerOp);
+        root = newOpCache("root", j -> super.root((Compound) j.term), cacheSizePerOp);
 
-        normalize = newOpCache("normalize", j -> super.normalize((Compound) j.sub0(), (byte) 0), cacheSizePerOp);
+        normalize = newOpCache("normalize", j -> super.normalize((Compound) j.term, (byte) 0), cacheSizePerOp);
 
 //        concept = newOpCache("concept", j -> super.concept((Compound) j.sub0()), cacheSizePerOp);
 
@@ -40,7 +38,7 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
 //            throw new WTF();
 
         if (varOffset == 0 && internable(x))
-            return normalize.apply(InternedCompound.get(PROD, x)); //new LighterCompound(PROD, x, NORMALIZE)));
+            return normalize.apply(new InternedCompoundTransform(x)); //new LighterCompound(PROD, x, NORMALIZE)));
         else
             return super.normalize(x, varOffset);
 
@@ -61,7 +59,7 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
             return x;
 
         if (internable(x)) {
-            return root.apply(InternedCompound.get(PROD, x));
+            return root.apply(new InternedCompoundTransform(x));
         } else {
             return super.root(x);
         }

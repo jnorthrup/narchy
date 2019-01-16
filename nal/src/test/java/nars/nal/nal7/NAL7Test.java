@@ -1058,14 +1058,14 @@ public class NAL7Test extends NALTest {
                 .input("hold(key). |")
                 .input("(goto(door) =|> (hold(key) &| open(door))). " + implSuffix)
                 //temporal via conditional (double premise)
-                .mustBelieve(cycles, a, 1f, 0.4f, 0)
+                .mustBelieve(cycles, a, 1f, 0.45f, 0)
                 //temporal via conditional (double premise)
-                .mustBelieve(cycles, b, 1f, 0.4f, 0)
+                .mustBelieve(cycles, b, 1f, 0.45f, 0)
 
                 //implication belief's time, via structural decomposition
-                .mustBelieve(cycles, a, 1f, 0.81f, implTime)
+                .mustBelieve(cycles, a, 1f, 0.81f, 0 /*implTime*/)
                 //implication belief's time, via structural decomposition
-                .mustBelieve(cycles, b, 1f, 0.81f, implTime)
+                .mustBelieve(cycles, b, 1f, 0.81f, 0 /*implTime*/)
                 ;
 
 

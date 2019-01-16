@@ -58,7 +58,7 @@ public abstract class UnifyConstraint extends AbstractPred<Derivation> {
     }
 
     protected UnifyConstraint(Variable x, String func, @Nullable Term... args) {
-        this($.funcFast(UnifyIf, x, args!=null ? $.funcFast(func, args) : $.the(func)), x);
+        this($.funcFast(UnifyIf, x, args!=null ? $.func(func, args) : $.the(func)), x);
     }
 
 //    public static MatchConstraint[] combineConstraints(MatchConstraint[] cc) {

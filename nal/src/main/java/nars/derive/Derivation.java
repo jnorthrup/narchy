@@ -3,6 +3,7 @@ package nars.derive;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.byt.DynBytes;
+import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
 import jcog.math.Longerval;
@@ -39,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -191,7 +193,7 @@ public class Derivation extends PreDerivation {
     public final ArrayHashSet<TaskLink> taskLinksFired = new ArrayHashSet<>(32);
     public final ArrayHashSet<Task> tasksFired = new ArrayHashSet<>(32);
     /** temporary storage buffer for recently activated concepts */
-    public final ArrayHashSet<Concept> firedConcepts = new ArrayHashSet<>(32);
+    public final Collection<Concept> firedConcepts = new FasterList<>(32);
 
 
     private Function<Atomic, Functor> derivationFunctors;

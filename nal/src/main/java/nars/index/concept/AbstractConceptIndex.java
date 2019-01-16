@@ -64,11 +64,6 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
                   //      arrayBag()
                         //hijackBag()
 
-                        //new FastPutProxyBag<>(arrayBag,
-                        //      1024)
-
-                    //    :
-
             new BufferedBag.DefaultBufferedBag<>(arrayBag(), new PriBuffer<Concept>(Param.conceptMerge)) {
 
                 @Override

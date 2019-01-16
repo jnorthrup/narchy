@@ -2,7 +2,6 @@ package nars.link;
 
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
-import jcog.data.set.ArrayHashSet;
 import jcog.pri.OverflowDistributor;
 import jcog.pri.Prioritized;
 import jcog.pri.ScalarValue;
@@ -23,10 +22,7 @@ import nars.term.var.Img;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -59,7 +55,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
     /**
      * create a batch of tasklinks, sharing common seed data
      */
-    static void link(TaskLink tasklink, float pri, List<Concept> targets, @Nullable OverflowDistributor<Bag> overflow) {
+    static void link(TaskLink tasklink, float pri, Collection<Concept> targets, @Nullable OverflowDistributor<Bag> overflow) {
         assert(!targets.isEmpty());
 
 //        float pEach = Math.max(ScalarValue.EPSILON,
@@ -287,7 +283,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
         if (conceptualizeAndTermLink(a, d) > 0) {
 
-            List<Concept> firedConcepts = d.firedConcepts.list;
+            Collection<Concept> firedConcepts = d.firedConcepts;
 
             //default all to all exhausive matrix insertion
             //TODO configurable "termlink target concept x tasklink matrix" linking pattern: density, etc
@@ -338,7 +334,7 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
         if (n == 0)
             return 0;
 
-        ArrayHashSet<Concept> firedConcepts = d.firedConcepts;
+        Collection<Concept> firedConcepts = d.firedConcepts;
         firedConcepts.clear();
 
         n = Math.min(n, d.deriver.tasklinkSpread.intValue());
@@ -395,8 +391,8 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
             Termed tgtTerm = get(j);
 
-            if (tgtTerm instanceof Concept && ((Concept)tgtTerm).isDeleted())
-                setFast(j, tgtTerm = tgtTerm.term()); //concept was deleted, so revert back to term
+//            if (tgtTerm instanceof Concept && ((Concept)tgtTerm).isDeleted())
+//                setFast(j, tgtTerm = tgtTerm.term()); //concept was deleted, so revert back to term
 
 
             Concept tgt = tgtTerm instanceof Concept ? ((Concept)tgtTerm) : nar.conceptualize(tgtTerm);
@@ -405,8 +401,8 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
 
                 linking.put(tgt, conceptActivationEach, overflow);
 
-                if (!(tgtTerm instanceof Concept))
-                    setFast(j, tgt); //cache concept for the entry
+//                if (!(tgtTerm instanceof Concept))
+//                    setFast(j, tgt); //cache concept for the entry
 
                 firedConcepts.add(tgt);
 

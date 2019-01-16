@@ -201,14 +201,14 @@ public abstract class Param {
     public static final float REMEMBER_REPEAT_PRI_THRESHOLD = ScalarValue.EPSILONsqrt;
 
     /** >=0; higher values decrease the rate at which repeated tasks can be reactivated */
-    public static final int REMEMBER_REPEAT_THRESH_DURS = 2;
+    public static final float REMEMBER_REPEAT_THRESH_DURS = 2f;
 
 
     /**
      * maximum time (in durations) that a signal task can stretch the same value
      * until a new task (with new evidence) is created (seamlessly continuing it afterward)
      */
-    public final static float SIGNAL_STRETCH_DUR = 32;
+    public final static float SIGNAL_STRETCH_DUR = 16;
 
     /** maximum time between signal updates to stretch an equivalently truthed data point across.
      * stretches perception across some amount of lag
@@ -216,6 +216,7 @@ public abstract class Param {
     public final static float SIGNAL_LATCH_DUR =
             //0.5f;
             //1f;
+            //1.5f;
             2f;
 
 
@@ -281,11 +282,11 @@ public abstract class Param {
     /**
      * TTL = 'time to live'
      */
-    public final IntRange deriveBranchTTL = new IntRange(4 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
-    public final IntRange subUnifyTTLMax = new IntRange( 4, 1, 32);
-    public final IntRange matchTTL = new IntRange(8, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(2 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange subUnifyTTLMax = new IntRange( 6, 1, 32);
+    public final IntRange matchTTL = new IntRange(10, 1, 32);
 
-    public static final int TTL_CONJ_BEFORE_AFTER = 2;
+    public static final int TTL_CONJ_BEFORE_AFTER = 4;
 
     /**
      * for NALTest's: extends the time all unit tests are allowed to run for.
@@ -295,7 +296,7 @@ public abstract class Param {
 
 
     @Range(min = 1, max = 32)
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 4;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 3;
 
 
     /**

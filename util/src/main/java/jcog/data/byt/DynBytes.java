@@ -67,6 +67,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         }
 
 
+        //TODO compress to a temporary suffix the end of the buffer rather than allocating new byte[]
         int bufferLen = from + Snappy.maxCompressedLength(len);
 
 

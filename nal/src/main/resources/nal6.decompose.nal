@@ -24,7 +24,7 @@
     X, C, eventOf(C,X), conjParallel(C), --isVar(X)                   |-   conjWithout(C,  X), (Belief:DecomposePP)
     X, C, eventOfNeg(C,X), conjParallel(C), has(C,"--"), --isVar(X)   |-   conjWithout(C,--X), (Belief:DecomposeNP)
 
-    //DIXJ
+    //DISJ
     X, D, eventOfNeg(D,X), conjParallel(D), has(D,"--"), --isVar(X)   |-   --conjWithout(D,--X), (Belief:DecomposeNN)
     X, D, eventOf(D,X), conjParallel(D), --isVar(X)                   |-   --conjWithout(D,  X), (Belief:DecomposePN)
 
@@ -55,17 +55,17 @@
     G, C, is(C,"&&"), has(C,"--")     |-   negateEvents(conjBefore(C,--G)),  (Goal:Desire)
     G, C, is(C,"&&")                  |-   negateEvents(conjBefore(C,  G)),  (Goal:DesireN)
 
-    //conditional goal disjunction decompose (alternate suppress by goal)
-    G, D, eventOf(D,G), conjParallel(D), --isVar(G)                   |- --conjWithout(D,  G), (Goal:DesireWeakPN)
-    G, D, eventOfNeg(D,G), conjParallel(D), has(D,"--"), --isVar(G)   |- --conjWithout(D,--G), (Goal:DesireWeakNN)
-
     //conjunction belief and goal decomposition
     C, X, is(C,"&&"), --isVar(X)                   |- conjAfter(C,  X), (Belief:Deduction,Goal:Deduction)
     C, X, is(C,"&&"), has(C,"--"), --isVar(X)      |- conjAfter(C,  --X), (Belief:DeductionPN,Goal:DeductionPN)
 
+    //conditional goal disjunction decompose (alternate suppress by goal)
+    G, D, eventOf(D,G), conjParallel(D), --isVar(G)                   |- --conjWithout(D,  G), (Goal:DesireWeakPN)
+    G, D, eventOfNeg(D,G), conjParallel(D), has(D,"--"), --isVar(G)   |- --conjWithout(D,--G), (Goal:DesireWeakNN)
+
     //conditional disjunction goal decompose (alternate suppress by belief)
-    D, X, eventOf(D,X), conjParallel(D), --isVar(X)                   |-   --conjWithout(D,  X), (Goal:DeductionNP)
-    D, X, eventOfNeg(D,X), conjParallel(D), has(D,"--"), --isVar(X)   |-   --conjWithout(D,--X), (Goal:DeductionNN)
+    D, X, eventOf(D,X), conjParallel(D), --isVar(X)                   |-   --conjWithout(D,  X), (Goal:DeductionWeakNP)
+    D, X, eventOfNeg(D,X), conjParallel(D), has(D,"--"), --isVar(X)   |-   --conjWithout(D,--X), (Goal:DeductionWeakNN)
 
 
     //TODO nal3 shortcut - decompose trailing intersection/union event

@@ -10,5 +10,6 @@ public class SubtermsKey extends ByteKey.ByteKeyExternal {
     public SubtermsKey(Subterms s) {
         super(IO.subsToDynBytes(s));
         this.subs = s;
+        commit();
     }
 }

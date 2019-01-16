@@ -507,24 +507,24 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             return null;
 
         //HACK this should depressurize even if overflowing is null..
-        float oBefore;
-        if (overflowing == null) {
-            overflowing = new MutableFloat(0);
-            oBefore = 0;
-        } else {
-            oBefore = overflowing.floatValue();
-        }
+//        float oBefore;
+//        if (overflowing == null) {
+//            overflowing = new MutableFloat(0);
+//            oBefore = 0;
+//        } else {
+//            oBefore = overflowing.floatValue();
+//        }
 
         V x = update(k, v, PUT, overflowing);
+
+
+//        float oAfter = overflowing.floatValue();
+//        float oDelta = oAfter - oBefore;
+//        if (oDelta >= ScalarValue.EPSILON)
+//            depressurize(oDelta);
+
         if (x == null)
             onReject(v);
-
-
-        float oAfter = overflowing.floatValue();
-        float delta = oAfter - oBefore;
-        if (delta > ScalarValue.EPSILON)
-            depressurize(delta);
-
 
         return x;
     }

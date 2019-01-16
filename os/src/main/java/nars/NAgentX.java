@@ -25,7 +25,7 @@ import nars.exe.MultiExec;
 import nars.exe.Revaluator;
 import nars.gui.NARui;
 import nars.index.concept.AbstractConceptIndex;
-import nars.index.concept.CaffeineIndex;
+import nars.index.concept.HijackConceptIndex;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Factorize;
@@ -217,16 +217,16 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
-//                        new HijackConceptIndex(
-//
-//                                //192 * 1024,
-//                                128 * 1024,
-//                                //64 * 1024,
-//                                //32 * 1024,
-//                                //16 * 1024,
-//                                //8 * 1024,
-//                                4)
+                        //new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                        new HijackConceptIndex(
+
+                                //192 * 1024,
+                                128 * 1024,
+                                //64 * 1024,
+                                //32 * 1024,
+                                //16 * 1024,
+                                //8 * 1024,
+                                4)
 
 
                 )

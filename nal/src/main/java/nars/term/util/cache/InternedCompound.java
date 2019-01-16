@@ -6,88 +6,102 @@ import jcog.data.byt.util.IntCoding;
 import jcog.memoize.byt.ByteKey;
 import nars.IO;
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.compound.UnitCompound;
 
 import static nars.term.util.builder.InterningTermBuilder.tmpKey;
 import static nars.time.Tense.DTERNAL;
 
-public final class InternedCompound extends ByteKey.ByteKeyExternal  {
+public class InternedCompound extends ByteKey.ByteKeyExternal  {
 
-    public final byte op;
-    public final int dt;
-
-    public final transient Term[] rawSubs;
-
-    private InternedCompound(DynBytes key, Op o, int dt, Term[] rawSubs) {
+    protected InternedCompound(DynBytes key) {
         super(key);
-        this.op = o.id; this.dt = dt; this.rawSubs = rawSubs;
     }
-    public static InternedCompound get(Op o, Term... subs) {
-        return get(o, DTERNAL, subs);
-    }
-
-    public Term sub0() {
-        return rawSubs[0];
+    protected InternedCompound() {
+        this(tmpKey());
     }
 
-    //TODO conslidate the following two highly similar procedures
-    /** for look-up */
-    public static InternedCompound get(Term x) {
+    public static final class InternedCompoundByComponents extends InternedCompound {
+        public final byte op;
+        public final int dt;
+        public final transient Term[] subs;
 
-        return get(x.op(), x.dt(), x.arrayShared());
-//        ByteArrayDataOutput out = tmpKey();
-//
-//        Op o = x.op();
-//
-//        int dt = x.dt();
-//
-//        boolean temporal = o.temporal && dt!=DTERNAL;
-//        out.writeByte(o.id | (temporal ? IO.TEMPORAL_BIT : 0));
-//
-//
-//        if (x instanceof UnitCompound) {
-//            out.writeByte(1);
-//            x.sub(0).appendTo(out);
-//        } else if (x instanceof LighterCompound) {
-//            //HACK
-//            int s = x.subs();
-//            out.writeByte(s);
-//            for (int i = 0; i < s; i++)
-//                x.sub(i).appendTo(out);
-//        } else {
-//            Subterms xx = x.subterms();
-//            out.writeByte(xx.subs());
-//            xx.forEachWith(Term::appendTo, out);
-//        }
-//
-//        if (temporal)
-//            IntCoding.writeZigZagInt(dt, out);
-//        //else assert(dt == DTERNAL);
-//
-//        return new InternedCompound((DynBytes) out, o, dt, x.arrayShared());
+        public InternedCompoundByComponents(Op o, int dt, Term... subs) {
+            super();
+            this.op = o.id; this.dt = dt; this.subs = subs;
+            write(o, dt);
+            write(subs);
+            commit();
+        }
+
+        public InternedCompoundByComponents(Term x) {
+            this(x.op(), x.dt(), x.arrayShared());
+        }
     }
 
+    public static final class InternedSubterms extends InternedCompound {
 
-    public static InternedCompound get(Op o, int dt, Term... subs) {
-        DynBytes out = tmpKey();
+        public final transient Term[] subs;
 
-        boolean temporal = o.temporal && dt!=DTERNAL;
-        out.writeByte(o.id | (temporal ? IO.TEMPORAL_BIT : 0));
+        public InternedSubterms(Term[] s) {
+            super();
+            this.subs = s;
+            write(s);
+            commit();
+        }
+    }
+
+    public static final class InternedCompoundTransform extends InternedCompound {
+        public final Term term;
+
+        public InternedCompoundTransform(Term x) {
+            super();
+            this.term = x;
+            write(x);
+            commit();
+        }
 
 
-        int n = subs.length;
-        //assert(n < Byte.MAX_VALUE);
-        out.writeByte(n);
-        for (Term s : subs)
-            s.appendTo((ByteArrayDataOutput) out);
+    }
+
+    protected void write(Term x) {
+        write(x.op(), x.dt());
+        if (x instanceof UnitCompound)
+            write((UnitCompound)x);
+        else
+            write(x.subterms());
+    }
+
+    protected void write(Op o, int dt) {
+
+        boolean temporal = o.temporal && dt != DTERNAL;
+        this.key.writeByte(o.id | (temporal ? IO.TEMPORAL_BIT : 0));
 
         if (temporal)
-            IntCoding.writeZigZagInt(dt, out);
+            IntCoding.writeZigZagInt(dt, this.key);
         //else assert(dt==DTERNAL): "can not store temporal dt on " + o;
-
-        return new InternedCompound(out, o, dt, subs);
     }
 
+    protected void write(Term[] subs) {
+        int n = subs.length;
+        //assert(n < Byte.MAX_VALUE);
+        key.writeByte(n);
+        for (Term s : subs)
+            s.appendTo((ByteArrayDataOutput) key);
+    }
 
+    protected void write(UnitCompound u) {
+        key.writeByte(1);
+        u.sub().appendTo((ByteArrayDataOutput) key);
+    }
+
+    protected void write(Subterms subs) {
+        int n = subs.subs();
+        //assert(n < Byte.MAX_VALUE);
+        key.writeByte(n);
+        for (Term s : subs)
+            s.appendTo((ByteArrayDataOutput) key);
+    }
 
 }

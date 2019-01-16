@@ -6,6 +6,7 @@ import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 
 import java.util.Iterator;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
@@ -54,6 +55,16 @@ public class BiSubterm extends TermVector {
     @Override
     public boolean OR(Predicate<Term> p) {
         return p.test(x) || (x!=y && p.test(y));
+    }
+
+    @Override
+    public <X> boolean ORwith(BiPredicate<Term, X> p, X param) {
+        return p.test(x, param) || (x!=y && p.test(y, param));
+    }
+
+    @Override
+    public <X> boolean ANDwith(BiPredicate<Term, X> p, X param) {
+        return p.test(x, param) && (x==y || p.test(y, param));
     }
 
     @Override
@@ -133,6 +144,8 @@ public class BiSubterm extends TermVector {
         action.accept(x);
         action.accept(y);
     }
+
+
 
 
     @Override
