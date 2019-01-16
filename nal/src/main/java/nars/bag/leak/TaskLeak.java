@@ -6,10 +6,13 @@ import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.PLinkArrayBag;
+import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
+import nars.attention.BufferedBag;
+import nars.attention.PriBuffer;
 import nars.concept.Concept;
 import nars.exe.Causable;
 import nars.link.Activate;
@@ -48,9 +51,9 @@ public abstract class TaskLeak extends Causable {
     }
     protected TaskLeak(int capacity, @Nullable NAR n, byte... puncs) {
         this(
-                new BufferSource(//new FastPutProxyBag<>(
-                        new PLinkArrayBag<>(Param.taskMerge, capacity)
-                        //Runtime.getRuntime().availableProcessors()*128)
+                new BufferSource(
+                        new BufferedBag.SimpleBufferedBag<>(
+                                new PLinkArrayBag<>(Param.taskMerge, capacity), new PriBuffer(PriMerge.max))
                 )
                 , n, puncs
         );

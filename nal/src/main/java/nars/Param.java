@@ -228,7 +228,9 @@ public abstract class Param {
 
 
     public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = true;
-    public static final boolean TIMEGRAPH_STRETCH_INTERSECTING_EVENT = false;
+
+    /** if false, keeps intersecting timegraph events separate.  if true, it merges them to one event */
+    public static final boolean TIMEGRAPH_MERGE_INTERSECTING_EVENTS = false;
 
     /** whether timegraph should not return solutions with volume significantly less than the input's */
     public static final boolean TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS = true;

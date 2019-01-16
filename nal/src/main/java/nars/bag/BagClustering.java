@@ -77,14 +77,7 @@ public class BagClustering<X> {
         };
 
         //this.bag = b;
-        this.bag = new BufferedBag.SimpleBufferedBag<>(b, new PriBuffer<VLink<X>>(merge)) {
-
-            @Override
-            protected X keyInternal(VLink<X> c) {
-                return c.get();
-            }
-
-        };
+        this.bag = new BufferedBag.SimpleBufferedBag<>(b, new PriBuffer<VLink<X>>(merge));
 //        this.bag = new FastPutProxyBag<>(b, 1024);
 //        this.bag = new PriLinkHijackBag<X,VLink<X>>(PriMerge.max, initialCap, 4) {
 //

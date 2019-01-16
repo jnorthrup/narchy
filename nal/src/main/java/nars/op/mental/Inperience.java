@@ -1,9 +1,11 @@
 package nars.op.mental;
 
-import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.Param;
+import nars.Task;
 import nars.bag.leak.TaskLeakTransform;
 import nars.concept.Concept;
 import nars.control.CauseMerge;
@@ -180,16 +182,16 @@ abstract public class Inperience extends TaskLeakTransform {
             Term self = nar.self();
 
             if (t.punc() == BELIEF) {
-                Task belief =
-                        t;
-                        //c.table(BELIEF).answer(t.start(), t.end(), tt, null, nar);
+//                Task belief =
+//                        t;
+//                        //c.table(BELIEF).answer(t.start(), t.end(), tt, null, nar);
 
                 Term bb = //belief != null ? Described.transform(belief.term().negIf(belief.isNegative())) :
                         Described.transform(tt);
                 return $.funcImg(believe, self, bb);
             } else {
-                Task goal = t;
-                        //c.table(GOAL).answer(t.start(), t.end(), tt.unneg(), null, nar);
+//                Task goal = t;
+//                        //c.table(GOAL).answer(t.start(), t.end(), tt.unneg(), null, nar);
 
                 Term gg = //goal!=null ? Described.transform(goal.term().negIf(goal.isNegative())) :
                         Described.transform(tt);
@@ -296,9 +298,7 @@ abstract public class Inperience extends TaskLeakTransform {
         if (next.stamp().length == 0)
             return false;
 
-        if (//next.isInput() ||
-            !acceptTask(next)
-            /*|| task instanceof InperienceTask*/)
+        if (!acceptTask(next))
             return false;
 
 
@@ -331,8 +331,11 @@ abstract public class Inperience extends TaskLeakTransform {
         if (c.volume() > volMaxPost)
             return 0; //TODO try to prevent
 
-        float polarity = x.isQuestionOrQuest() ? 0.5f : x.polarity();
-        PreciseTruth t = $.t(1, Util.lerp(polarity, nar.confMin.floatValue()*2, nar.confDefault(Op.BELIEF))).dithered(nar);
+        int freq = x.isQuestionOrQuest() || x.isPositive() ? 1 : 0;
+        PreciseTruth t = $.t(
+            freq, nar.confDefault(BELIEF)
+            //freq, Util.lerp(x.isQuestionOrQuest() ? 0.5f : x.polarity(), nar.confMin.floatValue()*2, nar.confDefault(Op.BELIEF))
+        ).dithered(nar);
         if (t == null)
             return 0;
 

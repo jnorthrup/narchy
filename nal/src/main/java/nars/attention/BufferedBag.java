@@ -24,17 +24,24 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
     }
 
 
+
     @Override
     public Bag<X, Y> commit(Consumer<Y> update) {
 
         if (busy.compareAndSet(false,true)) {
             try {
                 synchronized (bag) {
+
                     bag.commit(update);
 
-                    buffer.update(this::putInternal);
+                    if (!buffer.isEmpty()) {
+                        buffer.update(this::putInternal);
+                        bag.commit(null); //force sort after
+                    }
 
-                    bag.commit(null); //sort
+//                    buffer.update(this::putInternal);
+//                    bag.commit(update);
+
                 }
             } finally {
                 busy.set(false);
@@ -50,7 +57,7 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
     }
 
     @Override public final Y put(Y x) {
-        put((B)x, ((Prioritized)x).priElseZero());
+        put((B)x, ((Prioritized)x).pri());
         return x;
     }
 
@@ -60,7 +67,8 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
     }
 
     public final void put(B x, float p) {
-        buffer.put(x, p);
+        if (p==p)
+            buffer.put(x, p);
     }
 
     @Override
@@ -102,7 +110,7 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
 
     }
 
-    abstract public static class SimpleBufferedBag<X,Y extends Prioritizable> extends DefaultBufferedBag<X,Y,Y> {
+    public static class SimpleBufferedBag<X,Y extends Prioritizable> extends DefaultBufferedBag<X,Y,Y> {
 
         public SimpleBufferedBag(Bag<X, Y> activates, PriBuffer<Y> conceptPriBuffer) {
             super(activates, conceptPriBuffer);
@@ -110,6 +118,11 @@ abstract public class BufferedBag<X,B,Y> extends ProxyBag<X,Y> {
 
         @Override protected final Y valueInternal(Y c, float pri) {
             return c;
+        }
+
+        @Override
+        protected final X keyInternal(Y c) {
+            return bag.key(c);
         }
 
     }

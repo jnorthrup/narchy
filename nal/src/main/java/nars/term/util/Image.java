@@ -21,8 +21,6 @@ import nars.term.atom.Bool;
 import nars.term.var.Img;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Consumer;
-
 import static nars.Op.*;
 
 /** utilities for transforming image compound terms */

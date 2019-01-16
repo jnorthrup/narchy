@@ -130,7 +130,7 @@ public class Occurrify extends TimeGraph {
                     (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
                 throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
 
-            if ((d.taskPunc==GOAL && d.concPunc == GOAL) && occ[0]!=ETERNAL && occ[0] < d.taskStart) {
+            if (!d.concSingle && (d.taskPunc==GOAL && d.concPunc == GOAL) && occ[0]!=ETERNAL && occ[0] < d.taskStart) {
                 {
                     //immediate shift
                     long range = occ[1] - occ[0];
