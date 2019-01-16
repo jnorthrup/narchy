@@ -9,6 +9,8 @@ import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.op.PriMerge;
 import jcog.util.ArrayUtils;
+import nars.attention.BufferedBag;
+import nars.attention.PriBuffer;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,7 +67,8 @@ public class BagClustering<X> {
 
         this.net = new NeuralGasNet(model.dims, centroids, model::distanceSq);
 
-        ArrayBag<X, VLink<X>> b = new ArrayBag<>(PriMerge.max, initialCap) {
+        PriMerge merge = PriMerge.max;
+        ArrayBag<X, VLink<X>> b = new ArrayBag<>(merge, initialCap) {
 
             @Override
             public X key(VLink<X> xvLink) {
@@ -73,7 +76,15 @@ public class BagClustering<X> {
             }
         };
 
-        this.bag = b;
+        //this.bag = b;
+        this.bag = new BufferedBag.SimpleBufferedBag<>(b, new PriBuffer<VLink<X>>(merge)) {
+
+            @Override
+            protected X keyInternal(VLink<X> c) {
+                return c.get();
+            }
+
+        };
 //        this.bag = new FastPutProxyBag<>(b, 1024);
 //        this.bag = new PriLinkHijackBag<X,VLink<X>>(PriMerge.max, initialCap, 4) {
 //

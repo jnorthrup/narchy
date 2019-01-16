@@ -322,6 +322,8 @@ public abstract class TermBuilder {
 //    }
 
     public Term root(Compound x) {
+        if (!x.hasAny(Op.Temporal))
+            return x;
         return x.temporalize(Retemporalize.root);
     }
 

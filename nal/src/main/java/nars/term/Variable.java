@@ -147,7 +147,8 @@ public interface Variable extends Atomic {
                     return true;
                 } else {
                     //u.revert(before);
-                    return (xOp.id < yOp.id) ? u.putXY(X, Y) : u.putXY(Y, X);
+                    return //(xOp.id < yOp.id) ? u.putXY(X, Y) : u.putXY(Y, X);
+                            false;
                 }
 
             }

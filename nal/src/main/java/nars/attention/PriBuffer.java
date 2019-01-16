@@ -2,6 +2,7 @@ package nars.attention;
 
 import jcog.pri.OverflowDistributor;
 import jcog.pri.UnitPri;
+import jcog.pri.UnitPrioritizable;
 import jcog.pri.op.PriMerge;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +27,7 @@ public class PriBuffer<Y> {
 
 
     /** pending Y activation collation */
-    final Map<Y, UnitPri> items =
+    final Map<Y, UnitPrioritizable> items =
             ///new ConcurrentHashMapUnsafe<>(1024);
             new java.util.concurrent.ConcurrentHashMap(1024);
 
@@ -64,7 +65,7 @@ public class PriBuffer<Y> {
         if (pri!=pri)
             return null;
 
-        UnitPri a = items.computeIfAbsent(x, t -> new UnitPri());
+        UnitPrioritizable a = items.computeIfAbsent(x, t -> t instanceof UnitPrioritizable ? (UnitPrioritizable)t : new UnitPri());
 
         if (overflow!=null)
             overflow.merge(x, a, pri, merge);
@@ -76,14 +77,19 @@ public class PriBuffer<Y> {
 
     public void update(ObjectFloatProcedure<Y> each) {
 
-        Iterator<Map.Entry<Y, UnitPri>> ii = items.entrySet().iterator();
+        Iterator<Map.Entry<Y, UnitPrioritizable>> ii = items.entrySet().iterator();
         while (ii.hasNext()) {
-            Map.Entry<Y, UnitPri> a = ii.next();
+            Map.Entry<Y, UnitPrioritizable> a = ii.next();
             Y c = a.getKey();
-            UnitPri p = a.getValue();
+            UnitPrioritizable p = a.getValue();
             ii.remove();
 
-            each.value(c, p.priGetAndDelete());
+            float pp = p.pri();
+            if (pp == pp) {
+                each.value(c, pp
+                        //c==p ? p.pri() : p.priGetAndDelete()
+                );
+            }
         }
 
 //        removeIf(a -> {

@@ -24,12 +24,11 @@ import nars.time.clock.RealTime;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 abstract public class MultiExec extends UniExec {
 
-    static final int contextGranularity = 4;
+    static final int contextGranularity = 2;
 
     private static final float inputQueueSizeSafetyThreshold = 1f;
     private final Revaluator revaluator;
@@ -550,16 +549,15 @@ abstract public class MultiExec extends UniExec {
 
             private void play(long playTime) {
 
-                double minJiffyTime = 50 * 1000; //50uS
                 double maxJiffyTime = playTime / ((double) (contextGranularity));
-                        //* Math.max(1, can.size() )));
+                double minJiffyTime = maxJiffyTime / Math.max(1, can.size());
+
 
                 long until = System.nanoTime() + playTime;
                 do {
                     InstrumentedCausable c = can.getIndex(rng);
-                    if (c == null) break; //empty
 
-                    if (!sleeping.get(c.c.scheduledID)) {
+                    if (c!=null && !sleeping.get(c.c.scheduledID)) {
 
                         boolean singleton = c.c.singleton();
                         if (!singleton || c.c.busy.compareAndSet(false, true)) {
@@ -586,7 +584,7 @@ abstract public class MultiExec extends UniExec {
                         }
                     }
 
-                } while (queueSafe() && (until > System.nanoTime()));
+                } while (/*queueSafe() && */(until > System.nanoTime()));
 
             }
 

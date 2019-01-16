@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 /** buffers premises in batches*/
 public class BatchDeriver extends Deriver {
 
-    public final IntRange conceptsPerIteration = new IntRange(2, 1, 32);
+    public final IntRange conceptsPerIteration = new IntRange(3, 1, 32);
 
 
     /**

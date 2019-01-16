@@ -3,6 +3,7 @@ package nars.op.stm;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.set.MetalLongSet;
+import jcog.math.FloatRange;
 import jcog.math.LongInterval;
 import jcog.pri.Prioritizable;
 import jcog.pri.VLink;
@@ -44,7 +45,9 @@ public class ConjClustering extends Causable {
     private final BagClustering.Dimensionalize<Task> model;
     private final BufferedCauseChannel in;
     private final byte punc;
-    private final float termVolumeMaxFactor = 0.5f;
+
+    public final FloatRange termVolumeMaxFactor = new FloatRange(0.9f, 0, 1f);
+
     private final Predicate<Task> filter;
     private long now;
     private int dur;
@@ -173,9 +176,10 @@ public class ConjClustering extends Causable {
             this.ditherTime = nar.dtDither();
             this.maxStampLen =
                     //Param.STAMP_CAPACITY / 2; //for minimum of 2 tasks in each conjunction
-                    Param.STAMP_CAPACITY - 1;
+                    //Param.STAMP_CAPACITY - 1;
+                    Integer.MAX_VALUE;
             this.confMin = nar.confMin.floatValue();
-            this.volMaxSafe = Math.round((this.volMax = nar.termVolumeMax.intValue()) * termVolumeMaxFactor);
+            this.volMaxSafe = Math.round((this.volMax = nar.termVolumeMax.intValue()) * termVolumeMaxFactor.floatValue());
         }
     }
 

@@ -1,6 +1,7 @@
 package nars.term.util.builder;
 
 import jcog.memoize.byt.ByteHijackMemoize;
+import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.cache.InternedCompound;
@@ -55,17 +56,19 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
 
     @Override
     public Term root(Compound x) {
+        boolean t = x.hasAny(Op.Temporal);
+        if (!t)
+            return x;
+
         if (internable(x)) {
             return root.apply(InternedCompound.get(PROD, x));
         } else {
             return super.root(x);
         }
-//        if (x.volume() < 2)
-//            throw new WTF();
     }
 
     protected boolean internable(Compound x) {
-        return x.the() && x.volume() < volInternedMax;
+        return x.volume() < volInternedMax && x.the();
     }
 
     //    private Term _root(InternedCompound i) {

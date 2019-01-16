@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Random;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -69,30 +68,17 @@ abstract public class AbstractConceptIndex extends ConceptIndex {
                         //      1024)
 
                     //    :
-            new BufferedBag<>(arrayBag(), new PriBuffer<Concept>(Param.conceptMerge)) {
 
-                private float min;
-
-                @Override
-                public Bag<Term, Activate> commit(Consumer<Activate> update) {
-                    min = bag.size() >= bag.capacity() ? bag.priMin() : 0;
-                    return super.commit(update);
-                }
+            new BufferedBag.DefaultBufferedBag<>(arrayBag(), new PriBuffer<Concept>(Param.conceptMerge)) {
 
                 @Override
-                public void putInternal(Concept c, float pri) {
-                    if (min <= ScalarValue.EPSILON  ||  (pri >= min || bag.contains(c.term())))
-                        bag.putAsync(new Activate(c, pri));
-                    else {
-                        //System.out.println("ignored: " + c + " "+n4(pri));
-                    }
+                protected Term keyInternal(Concept c) {
+                    return c.term();
                 }
 
-                //                int toActivate = items.size();
-//                int cap = ((AbstractConceptIndex) n.concepts).active.capacity();
-//        if (toActivate > cap) {
-//                    System.out.println("warning: activation set larger than active concepts bag capacity: " + toActivate + "/" + cap);
-//                }
+                @Override protected Activate valueInternal(Concept c, float pri) {
+                    return new Activate(c, pri);
+                }
 
             };
 

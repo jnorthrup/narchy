@@ -147,7 +147,7 @@ public class NAL7Test extends NALTest {
         ;
     }
 
-    @Test
+    @Disabled @Test
     void testConjDecomposeGoalSeq() {
         test
                 .inputAt(1, "(a &&+1 b)! :|:")

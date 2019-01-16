@@ -69,18 +69,16 @@ public class TruthIntegration {
                 (qStart >= tStart && qEnd <= tEnd)  //contained
             ) {
             //task contains question
-            if (qStart <= qEnd)
-                return t.eviIntegTrapezoidal(dur, qStart, qEnd);
-            else
-                return t.eviIntegTrapezoidal(dur, qEnd, qStart); //??
+            return qStart <= qEnd ?
+                    t.eviIntegTrapezoidal(dur, qStart, qEnd) :
+                    t.eviIntegTrapezoidal(dur, qEnd, qStart);
         }
 
         if (qStart <= tStart && qEnd >= tEnd) {
             //question contains task
-            if (tStart==tEnd)
-                return t.eviIntegTrapezoidal(dur, qStart, tStart, qEnd);
-            else
-                return t.eviIntegTrapezoidal(dur, qStart, tStart, tEnd, qEnd);
+            return tStart == tEnd ?
+                    t.eviIntegTrapezoidal(dur, qStart, tStart, qEnd) :
+                    t.eviIntegTrapezoidal(dur, qStart, tStart, tEnd, qEnd);
         }
 
         //remaining cases:

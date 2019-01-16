@@ -956,6 +956,13 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
         float ec = evi(c, dur);
         return ((ea+eb)/2 * (b-a+1)) + ((eb+ec)/2 * (c-b+1));
     }
+    default float eviIntegTrapezoidal(long dur, long a, long b, long c, long d) {
+        float ea = evi(a, dur);
+        float eb = evi(b, dur);
+        float ec = evi(c, dur);
+        float ed = evi(d, dur);
+        return ((ea+eb)/2 * (b-a+1)) + ((eb+ec)/2 * (c-b+1)) + ((ec+ed)/2 * (d-c+1));
+    }
 
     /**
      * https:
