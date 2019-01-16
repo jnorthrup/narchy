@@ -36,8 +36,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.IntStream;
 
-import static nars.Op.ATOM;
-import static nars.Op.NEG;
+import static nars.Op.*;
 
 
 /**
@@ -834,8 +833,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
             //if volume differs (and no recursive conjunction subterms)
             if ((xx.volume() != yy.volume()) &&
-                    (((XS & Op.CONJ.bit) == 0) || !xx.hasXternal()) &&
-                    (((YS & Op.CONJ.bit) == 0) || !yy.hasXternal())
+                    (((XS & CONJ.bit) == 0) || !xx.hasXternal()) &&
+                    (((YS & CONJ.bit) == 0) || !yy.hasXternal())
                )
                 return false;
 
@@ -1179,24 +1178,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 return null;
 
             //these fail-fast cases must be consistent with the term construction process.
-            //TODO add more
-            switch (superOp) {
-                case CONJ:
-
-                    if (yi == Bool.False)
-                        return Op.FalseSubterm;
-
-                    break;
-//                case IMPL:
-//                    if (i == 0 && yi == Bool.False)
-//                        return null;
-//                    break;
-//                case INH:
-//                case SIM:
-//                    //TODO when on 2nd term, compare with the first term (either from the source subterms, or the target if it was transformed)
-//                    //then it can tell if it reduces to True, False etc
-//                    break;
-            }
+            if (yi == Bool.False && superOp == CONJ)
+                return Op.FalseSubterm;
 
             if (yi instanceof EllipsisMatch) {
 
@@ -1205,30 +1188,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 if (s == 1) {
                     //it is only this ellipsis match so inline it by transforming directly and returning it (tail-call)
                     return ee.transformSubs(f, superOp);
-                }
-
-                int xes = ee.subs();
-
-
-                if (y == null)
-                    y = new DisposableTermList(s - 1 + xes /*estimate */, i);
-                else
-                    y.ensureExtraCapacityExact(xes - 1);
-
-                for (int j = 0; j < xes; j++) {
-
-                    Term k = f.transform(ee.sub(j));
-
-                    if (k == null || k == Bool.Null) {
+                } else {
+                    y = transformSubInline(ee, f, y, s, i);
+                    if (y == null)
                         return null;
-                    } else if (k instanceof EllipsisMatch) {
-                        if (Param.DEBUG)
-                            throw new TODO("recursive EllipsisMatch unsupported");
-                        else
-                            return null;
-                    } else {
-                        y.addWithoutResizeCheck(k);
-                    }
                 }
 
 
@@ -1249,6 +1212,33 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
 
         return y != null ? y.commit(this, superOp) : this;
+    }
+
+    static TermList transformSubInline(Subterms e, TermTransform f, TermList out, int subsTotal, int i) {
+        int xes = e.subs();
+
+
+        if (out == null)
+            out = new DisposableTermList(subsTotal - 1 + xes /*estimate */, i);
+        else
+            out.ensureExtraCapacityExact(xes - 1);
+
+        for (int j = 0; j < xes; j++) {
+
+            Term k = f.transform(e.sub(j));
+
+            if (k == null || k == Bool.Null) {
+                return null;
+            } else if (k instanceof EllipsisMatch) {
+                if (Param.DEBUG)
+                    throw new TODO("recursive EllipsisMatch unsupported");
+                else
+                    return null;
+            } else {
+                out.addWithoutResizeCheck(k);
+            }
+        }
+        return out;
     }
 
     default boolean these() {
