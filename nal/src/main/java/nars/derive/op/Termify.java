@@ -2,11 +2,13 @@ package nars.derive.op;
 
 import nars.$;
 import nars.NAR;
+import nars.Param;
 import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
+import nars.term.util.transform.Retemporalize;
 
-import static nars.Op.NEG;
+import static nars.Op.*;
 
 /**
  * Derivation term construction step of the derivation process that produces a derived task
@@ -56,6 +58,10 @@ public final class Termify extends AbstractPred<Derivation> {
 //            x = x.replace(d.uniSubst.u.xy);
 //        }
 
+        if (x.volume() - (x.op()==NEG ? 1 : 0) > d.termVolMax) {
+            d.nar.emotion.deriveFailVolLimit.increment();
+            return false;
+        }
         if (!Taskify.valid(x, (byte) 0 /* dont consider punc consequences until after temporalization */)) {
             //Term c1e = c1;
             d.nar.emotion.deriveFailEval.increment(/*() ->
@@ -64,10 +70,6 @@ public final class Termify extends AbstractPred<Derivation> {
             return false;
         }
 
-        if (x.volume() - (x.op()==NEG ? 1 : 0) > d.termVolMax) {
-            d.nar.emotion.deriveFailVolLimit.increment();
-            return false;
-        }
 
 //        if (c1.op() == NEG) {
 //            c1 = c1.unneg();

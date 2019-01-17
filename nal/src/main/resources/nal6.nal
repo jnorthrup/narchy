@@ -265,12 +265,13 @@
 
     (C ==> Z), (B ==> M), eventOf(C,B) |- ((conjWithout(C,B) && M) ==> Z), (Belief:Induction)
         (C ==> Z), (B ==> M), eventOf(C,B) |- ((conjWithout(C,B) && --M) ==> Z), (Belief:InductionPN)
+            //--C?
 
     //Conditional Abduction via Multi-conditional Syllogism
     //(C ==> Y), (E ==> Y), eventOf(C,E)          |-  conjWithout(C,E), (Belief:AbductionPB)
       //(--C ==> Y), (--D ==> Y), eventOf(C,D)    |-  conjWithout(C,D), (Belief:AbductionPB)
-    (C ==> X), (E ==> Y), eventOf(C,E)          |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
-      (--C ==> X), (--E ==> Y), eventOf(C,E)    |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
+    (C ==> X), (E ==> Y), eventOf(C,E), --isVar(X), --isVar(Y)          |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
+      //TODO check (--C ==> X), (--E ==> Y), eventOf(C,E), --isVar(X), --isVar(Y)    |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
 
   (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,strict), (Belief:StructuralDeduction, Goal:StructuralDeduction)
   //chain:
@@ -280,7 +281,7 @@
 
 // Mutex induction
     (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)              |- (&&,--(X && Y),A..*), (Belief:Intersection)
-    ((&&,X,--Y,A..+)==>Z), ((&&,Y,--X,A..+)==>Z),neq(X,Y)  |- ((&&,--(X && Y),A..+) ==> Z), (Belief:Intersection)
+    ((&&,X,--Y,A..*)==>Z), ((&&,Y,--X,A..*)==>Z),neq(X,Y)  |- ((&&,--(X && Y),A..*) ==> Z), (Belief:Intersection)
       (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)             |-  --(X ==> Y), (Belief:Induction)
       (&&,X,--Y,A..+), (&&,Y,--X,B..+),neq(X,Y)              |- (&&,--((&&,A..+) && (&&,B..+))), (Belief:Intersection)
         //TODO impl predicate mutex
@@ -347,7 +348,7 @@
 
     //Conjunction Anti-Contradiction: ((X&&A)==>C) and ((--X&&A)==>C)  |-  (A==>C), since X or --X doesnt make a difference
     ((&&,X,A..+) ==> C), (D ==> C), eventOfNeg(D,X)  |- ((&&,A..+) ==> C), (Belief:InductionPB)
-        (--(&&,X,A..+) ==> C), (--D ==> C), eventOfNeg(D,X)  |- ((--,(&&,A..+)) ==> C), (Belief:InductionPB)
+        //(--(&&,X,A..+) ==> C), (--D ==> C), eventOfNeg(D,X)  |- ((--,(&&,A..+)) ==> C), (Belief:InductionPB)
     (C ==> (&&,X,A..+)), (C ==> D), eventOfNeg(D,X)  |- (C ==> (&&,A..+)), (Belief:AbductionPB)
 
 //precondition/post-condition combiner inference rule (variable_unification6):
@@ -365,8 +366,8 @@
 
         //((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- ((X ==> Y) && (Y ==> X)), (Bel4ief:InductionPB)
 
-    ((--,A) ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- ((--,conjWithout(A,B)) ==> conjWithout(B,A)), (Belief:InductionPB)
-    ((--,A) ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- ((--,conjWithout(B,A)) ==> conjWithout(A,B)), (Belief:InductionPB)
+    //((--,A) ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- ((--,conjWithout(A,B)) ==> conjWithout(B,A)), (Belief:InductionPB)
+    //((--,A) ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- ((--,conjWithout(B,A)) ==> conjWithout(A,B)), (Belief:InductionPB)
 
 
     (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:AbductionPB)

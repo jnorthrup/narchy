@@ -58,19 +58,17 @@ public class Occurrify extends TimeGraph {
     public static boolean occurrify(Term x, Truthify truth, OccurrenceSolver time, Derivation d) {
         if (d.temporal) {
 
-            //HACK
+            //HACK reset to the input
             d.taskStart = d._task.start();
             d.taskEnd = d._task.end();
+            if (d._belief!=null && !d.concSingle) {
+                d.beliefStart = d._belief.start();
+                d.beliefEnd = d._belief.end();
 
-            if (d._belief == null || d.concSingle) {
-
-                d.beliefStart = d.beliefEnd = TIMELESS;
-
-            } else {
                 boolean taskEternal = d.taskStart == ETERNAL;
                 if (truth.beliefProjection == Raw || taskEternal) {
 
-                    d.beliefStart = d._belief.start();  d.beliefEnd = d._belief.end();
+                    //unchanged: d.beliefStart = d._belief.start();  d.beliefEnd = d._belief.end();
 
                 } else if (truth.beliefProjection == BeliefProjection.Task) {
 
@@ -78,9 +76,9 @@ public class Occurrify extends TimeGraph {
                     if (bothNonEternal && d.taskTerm.op().temporal && !d.beliefTerm.op().temporal) {
 
                         //mask task's occurrence, focusing on belief's occ
-                        d.taskStart = d._belief.start();
+                        d.beliefStart = d.taskStart = d._belief.start();
                         d.taskEnd = d.taskStart + (d._task.range()-1);
-                        d.beliefStart = d._belief.start();  d.beliefEnd = d._belief.end();
+                        d.beliefEnd = d._belief.end();
 
                     } else {
 
@@ -97,15 +95,26 @@ public class Occurrify extends TimeGraph {
 
                     throw new UnsupportedOperationException();
                 }
+
+            } else {
+                d.beliefStart = d.beliefEnd = TIMELESS;
             }
+
         } else {
             assert(d.taskStart == ETERNAL && d.taskEnd == ETERNAL);
             assert((d.beliefStart == ETERNAL && d.beliefEnd == ETERNAL)||(d.beliefStart == TIMELESS && d.beliefEnd == TIMELESS));
         }
 
         if (d.temporalTerms || (d.taskStart!=ETERNAL) || (d.beliefStart!=ETERNAL && d.beliefStart!=TIMELESS) ) {
+            return temporalify(x, time, d);
+        } else {
+            return eternify(x, d);
+        }
 
-//            boolean unwrapNeg;
+    }
+
+    private static boolean temporalify(Term x, OccurrenceSolver time, Derivation d) {
+        //            boolean unwrapNeg;
 //            if (c1.op()==NEG) {
 //                unwrapNeg = true;
 //                c1 = c1.unneg();
@@ -114,30 +123,29 @@ public class Occurrify extends TimeGraph {
 //            }
 
 
+        Pair<Term, long[]> timing = time.occurrence(d, x);
+        if (timing == null) {
+            d.nar.emotion.deriveFailTemporal.increment();
+            ///*temporary:*/ time.solve(d, c1);
+            return false;
+        }
 
-            Pair<Term, long[]> timing = time.occurrence(d, x);
-            if (timing == null) {
-                d.nar.emotion.deriveFailTemporal.increment();
-                ///*temporary:*/ time.solve(d, c1);
-                return false;
+
+        Term c2 = timing.getOne();
+        long[] occ = timing.getTwo();
+        if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&
+                (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
+                (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
+            throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
+
+        if (!d.concSingle && (d.taskPunc==GOAL && d.concPunc == GOAL) && occ[0]!=ETERNAL && occ[0] < d.taskStart) {
+            {
+                //immediate shift
+                long range = occ[1] - occ[0];
+                occ[0] = d.taskStart;
+                occ[1] = occ[0] + range;
             }
-
-
-            Term c2 = timing.getOne();
-            long[] occ = timing.getTwo();
-            if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&
-                    (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
-                    (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
-                throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
-
-            if (!d.concSingle && (d.taskPunc==GOAL && d.concPunc == GOAL) && occ[0]!=ETERNAL && occ[0] < d.taskStart) {
-                {
-                    //immediate shift
-                    long range = occ[1] - occ[0];
-                    occ[0] = d.taskStart;
-                    occ[1] = occ[0] + range;
-                }
-            }
+        }
 
 //            if (d.concTruth!=null) {
 //                long start = occ[0], end = occ[1];
@@ -164,57 +172,55 @@ public class Occurrify extends TimeGraph {
 //                }
 //            }
 
-            if (!Taskify.valid(c2, d.concPunc)) {
-                boolean fail;
+        if (!Taskify.valid(c2, d.concPunc)) {
+            boolean fail;
 
-                if (Param.INVALID_DERIVATION_TRY_QUESTION && d.concPunc == BELIEF || d.concPunc == GOAL) {
-                    //as a last resort, try forming a question from the remains
-                    byte qPunc = d.concPunc == BELIEF ? QUESTION : QUEST;
-                    if (!Taskify.valid(c2, qPunc)) {
-                        fail = true;
-                    } else {
-                        d.concPunc = qPunc;
-                        d.concTruth = null;
-                        fail = false;
-                    }
-                } else {
+            if (Param.INVALID_DERIVATION_TRY_QUESTION && d.concPunc == BELIEF || d.concPunc == GOAL) {
+                //as a last resort, try forming a question from the remains
+                byte qPunc = d.concPunc == BELIEF ? QUESTION : QUEST;
+                if (!Taskify.valid(c2, qPunc)) {
                     fail = true;
+                } else {
+                    d.concPunc = qPunc;
+                    d.concTruth = null;
+                    fail = false;
                 }
-
-                if (fail) {
-                    Term c1e = x;
-                    d.nar.emotion.deriveFailTemporal.increment(/*() ->
-                        rule + "\n\t" + d + "\n\t -> " + c1e + "\t->\t" + c2
-                */);
-                    return false;
-                }
-
+            } else {
+                fail = true;
             }
 
-
-            d.concOcc = occ;
-            d.concTerm = c2;
-        } else {
-
-            byte punc = d.concPunc;
-            if ((punc == BELIEF || punc == GOAL) && x.hasXternal()) { // && !d.taskTerm.hasXternal() && !d.beliefTerm.hasXternal()) {
-                //HACK this is for deficiencies in the temporal solver that can be fixed
-                x = Retemporalize.retemporalizeXTERNALToDTERNAL.transform(x);
-                if (!Taskify.valid(x, d.concPunc)) {
-                    d.nar.emotion.deriveFailTemporal.increment();
-                    Taskify.spam(d, Param.TTL_DERIVE_TASK_FAIL);
-                    return false;
-                }
+            if (fail) {
+                Term c1e = x;
+                d.nar.emotion.deriveFailTemporal.increment(/*() ->
+                    rule + "\n\t" + d + "\n\t -> " + c1e + "\t->\t" + c2
+            */);
+                return false;
             }
 
-            d.concTerm = x;
-            d.concOcc = null;
         }
 
-        return true;
 
+        d.concOcc = occ;
+        d.concTerm = c2;
+        return true;
     }
 
+    private static boolean eternify(Term x, Derivation d) {
+        byte punc = d.concPunc;
+        if ((punc == BELIEF || punc == GOAL) && x.hasXternal()) { // && !d.taskTerm.hasXternal() && !d.beliefTerm.hasXternal()) {
+            //HACK this is for deficiencies in the temporal solver that can be fixed
+            x = Retemporalize.retemporalizeXTERNALToDTERNAL.transform(x);
+            if (!Taskify.valid(x, d.concPunc)) {
+                d.nar.emotion.deriveFailTemporal.increment();
+                Taskify.spam(d, Param.TTL_DERIVE_TASK_FAIL);
+                return false;
+            }
+        }
+
+        d.concTerm = x;
+        d.concOcc = null;
+        return true;
+    }
 
 
     public static final OccurrenceSolver mergeDefault =
