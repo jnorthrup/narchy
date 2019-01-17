@@ -73,15 +73,13 @@ public interface TaskLink extends UnitPrioritizable, Function<NAR,Task>, Deletea
             MutableFloat o = new MutableFloat();
 
             TaskLink yy = b.put(x, o);
-
             if (o.floatValue() > EPSILON) {
-                float headRoom;
-                if (yy != null)
-                    headRoom = 1f - yy.priElseZero();
-                else
-                    headRoom = 1; //assume it needs as much as it can get
-
-                overflow.overflow(b, o.floatValue(), headRoom);
+                overflow.overflow(b, o.floatValue(),
+                    (yy != null) ?
+                        1f - yy.priElseZero()
+                        :
+                        1 //assume it needs as much as it can get
+                );
             }
         } else {
             b.putAsync(x);

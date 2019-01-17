@@ -4,15 +4,13 @@ package jcog.sort;
 import jcog.data.list.FasterList;
 
 /**
- * <p>
- * This class implements a sorted list. It is constructed with a comparator that
+ * insertion sorted list. It is constructed with a comparator that
  * can compare two objects and sorted objects accordingly. When you add an object
  * to the list, it is inserted in the correct place. Object that are equal
  * according to the comparator, will be in the list in the order that they were
  * added to this list. Add only objects that the comparator can compare.</p>
  */
 public class SortedList<E extends Comparable> extends FasterList<E> {
-
 
     /**
      * indicates if the resulting ordering is different from the input order
@@ -34,6 +32,7 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
     }
 
 
+
     /**
      * <p>
      * Adds an object to the list. The object will be inserted in the correct
@@ -45,13 +44,11 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
      */
     @Override
     public final boolean add(E o) {
-        int low = 0;
 
 
         int s = size;
         if (s > 0) {
-
-            int high = s - 1;
+            int low = 0, high = s - 1;
 
             while (low <= high) {
                 int mid = (low + high) / 2;

@@ -8,7 +8,6 @@ import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
-import jcog.sort.SortedList;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -67,8 +66,9 @@ public class Derivation extends PreDerivation {
     private final static int ANON_INITIAL_CAPACITY = 16;
 
 
-    public final SortedList<Premise> premiseBuffer =
-        new SortedList<>(256);
+    public final Collection<Premise> premiseBuffer =
+        new ArrayHashSet(256);
+        //new SortedList<>(256);
 
     public final AnonWithVarShift anon;
 

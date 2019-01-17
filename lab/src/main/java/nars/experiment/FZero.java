@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.learn.pid.MiniPID;
 import jcog.math.FloatAveraged;
 import jcog.math.FloatSupplier;
-import jcog.signal.wave2d.BrightnessNormalize;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.NAR;
@@ -81,14 +80,15 @@ public class FZero extends NAgentX {
 //        Param.DEBUG_EXTRA = true;
 
 
-        ScaledBitmap2D visionBuffer = new ScaledBitmap2D(()->fz.image,
+        ScaledBitmap2D vision = new ScaledBitmap2D(()->fz.image,
                 24, 20
         ).crop(0, 0.23f, 1f, 1f);
 
-//        Bitmap2D vision = visionBuffer.each(a -> {
+//        vision = vision.each(a -> {
 //            return Util.tanhFast(a * 1.2f);
 //        });
-        BrightnessNormalize vision = new BrightnessNormalize(visionBuffer);
+        //vision = new BrightnessNormalize(vision);
+
 
 
 
@@ -127,7 +127,7 @@ public class FZero extends NAgentX {
 
         //initPushButtonTank();
 
-        initLeftRightPushButtonMutex();
+        //initLeftRightPushButtonMutex();
         //initToggleLeftRight();
 
 
@@ -136,7 +136,7 @@ public class FZero extends NAgentX {
 //                NARui.beliefCharts(actions, nar)), 400, 400);
 
 
-        //initTankContinuous();
+        initTankContinuous();
 
         //BiPolarAction A =
             //initBipolarRotateRelative(false, 1f);
@@ -226,7 +226,7 @@ public class FZero extends NAgentX {
 //            //return Util.equals(damage, 0, 0.01f) ? Float.NaN : 0; //Math.max(0, 1 - damage);
 //            return Util.equals(damage, 0, 0.01f) ? 1 : 0;
 //        });
-        rewardNormalized("race", 0, +1, (() -> {
+        rewardNormalized("race", -1, +1, (() -> {
 
 //            float bias =
 //                    //0.25f;
@@ -234,7 +234,7 @@ public class FZero extends NAgentX {
 //                    0f;
 //            float R = progress - bias;
 
-            return Util.unitize(progress);
+            return Util.clamp(progress * 0.5f, -1, +1);
         }));
 //        rewardNormalized("efficient", 0, +1, (() -> {
 //
@@ -343,10 +343,11 @@ public class FZero extends NAgentX {
 
     }
 
+    /** TODO correct ackerman/tank drive vehicle dynamics */
     private void initTankContinuous() {
 
-        float res = 0.01f;
-        float powerScale = 0.4f;
+        float res = 0.05f;
+        float powerScale = 0.2f;
 
         final float[] left = new float[1];
         final float[] right = new float[1];
@@ -354,24 +355,18 @@ public class FZero extends NAgentX {
         actionUnipolar($.inh("left", id), (x) -> {
             float power = (x - 0.5f) * 2f * powerScale;
             left[0] = power;
-            fz.playerAngle += /*Math.max(0,*/(power - right[0]) * rotSpeed / 2;
-            fz.vehicleMetrics[0][6] +=
-
-                    left[0]
-
-                            * fwdSpeed / 2f;
+            float dp = power - right[0];
+            fz.playerAngle += dp * rotSpeed / 2;
+            fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed / 2f;
             return x;
         }).resolution(res);
 
         actionUnipolar($.inh("right", id), (x) -> {
             float power = (x - 0.5f) * 2f * powerScale;
             right[0] = power;
-            fz.playerAngle += /*Math.max(0,*/-(power - left[0]) * rotSpeed / 2;
-            fz.vehicleMetrics[0][6] +=
-
-                    right[0]
-
-                            * fwdSpeed / 2f;
+            float dp = power - left[0];
+            fz.playerAngle += -dp * rotSpeed / 2;
+            fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed / 2f;
             return x;
         }).resolution(res);
 

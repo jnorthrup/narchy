@@ -19,8 +19,6 @@ public class OverflowDistributor<X> extends MutableFloat {
     final FasterList<ObjectFloatPair<X>> needs = new FasterList(0);
     float totalHeadRoom = 0;
 
-    ;
-
     public final void add(X x, UnitPrioritizable a, float priToAdd) {
         overflow(x, a.priAddOverflow(priToAdd), 1f - a.priElseZero());
     }
@@ -39,8 +37,7 @@ public class OverflowDistributor<X> extends MutableFloat {
     }
 
     public OverflowDistributor<X> shuffle(Random r) {
-        if (needs.size()>1)
-            needs.shuffleThis(r);
+        needs.shuffleThis(r);
         return this;
     }
 
@@ -82,6 +79,7 @@ public class OverflowDistributor<X> extends MutableFloat {
     public void clear() {
         set(0);
         needs.clear();
+        totalHeadRoom = 0;
     }
 
 }

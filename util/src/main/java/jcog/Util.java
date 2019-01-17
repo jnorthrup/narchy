@@ -2246,16 +2246,15 @@ public enum Util {
             case 2:
                 return ByteLists.immutable.of(x.get(a++), x.get(a));
             case 3:
-                return ByteLists.immutable.of(x.get(a++), x.get(a++), x.get(a++));
+                return ByteLists.immutable.of(x.get(a++), x.get(a++), x.get(a));
             case 4:
-                return ByteLists.immutable.of(x.get(a++), x.get(a++), x.get(a++), x.get(a++));
+                return ByteLists.immutable.of(x.get(a++), x.get(a++), x.get(a++), x.get(a));
             case 5:
-                return ByteLists.immutable.of(x.get(a++), x.get(a++), x.get(a++), x.get(a++), x.get(a++));
+                return ByteLists.immutable.of(x.get(a++), x.get(a++), x.get(a++), x.get(a++), x.get(a));
             case 6:
-                return ByteLists.immutable.of(x.get(a++), x.get(a++), x.get(a++), x.get(a++), x.get(a++), x.get(a++));
+                return ByteLists.immutable.of(x.get(a++), x.get(a++), x.get(a++), x.get(a++), x.get(a++), x.get(a));
             default:
-                byte[] xx = x.toArray();
-                return ByteLists.immutable.of(ArrayUtils.subarray(xx, a, b));
+                return ByteLists.immutable.of(ArrayUtils.subarray(x.toArray(), a, b));
         }
     }
 

@@ -763,30 +763,42 @@ public class NAL6Test extends NALTest {
                 .believe("--(lock1 --> lock)")
                 .mustBelieve(cycles, "((open($1,lock1)&&--(lock1-->lock))==>($1-->key))", 1.00f, 0.81f);
     }
-
-
     @Test
-    @Disabled
+    void abduction_without_variable_elimination() {
+
+        test
+                .believe("(open(x,lock1) ==> (x --> key))", 1.00f, 0.90f)
+                .believe("(((lock1 --> lock) && open(x,lock1)) ==> (x --> key))", 1.00f, 0.90f)
+                .mustBelieve(cycles, "lock:lock1", 1.00f, 0.45f)
+        ;
+    }
+    @Test
+    void abduction_neg_without_variable_elimination() {
+
+        test
+                .believe("(open(x,lock1) ==> (x --> key))", 1.00f, 0.90f)
+                .believe("((--(lock1 --> lock) && open(x,lock1)) ==> (x --> key))", 1.00f, 0.90f)
+                .mustBelieve(cycles, "lock:lock1", 0.00f, 0.45f)
+        ;
+    }
+    @Test
     void abduction_with_variable_elimination() {
 
         test
                 .believe("(open($1,lock1) ==> ($1 --> key))", 1.00f, 0.90f)
-
                 .believe("(((#1 --> lock) && open($2,#1)) ==> ($2 --> key))", 1.00f, 0.90f)
                 .mustBelieve(cycles * 2, "lock:lock1", 1.00f, 0.45f)
         ;
     }
 
     @Test
-    /** TODO verify */
-    @Disabled
     void abduction_with_variable_elimination_negated() {
 
         test
 
                 .believe("(open($1,lock1) ==> ($1 --> key))", 1.00f, 0.90f)
 
-                .believe("(((--,(#1 --> lock)) && open($2,#1)) ==> ($2 --> key))", 1.00f, 0.90f)
+                .believe("((--(#1 --> lock) && open($2,#1)) ==> ($2 --> key))", 1.00f, 0.90f)
                 .mustBelieve(cycles * 2, "lock:lock1", 0.00f, 0.45f)
                 .mustNotOutput(cycles * 2, "lock:lock1", BELIEF, 0.5f, 1f, 0, 1f, ETERNAL)
         ;

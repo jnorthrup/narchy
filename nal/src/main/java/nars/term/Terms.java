@@ -13,6 +13,7 @@ import nars.term.atom.Atom;
 import org.eclipse.collections.api.LazyIterable;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -36,67 +37,14 @@ public enum Terms {
     ;
 
 
+    /** sort and deduplicates the elements; returns new array if modifications to order or deduplication are necessary  */
     public static Term[] sorted(Term... t) {
         int len = t.length;
         switch (len) {
-
-            case 0:
-                return Op.EmptyTermArray;
-
-            case 1:
-                return t;
-
-            case 2: {
-                Term a = t[0], b = t[1];
-                int ab = a.compareTo(b);
-                if (ab < 0) return t;
-                else if (ab > 0) return new Term[]{b, a};
-                else /*if (c == 0)*/ return new Term[]{a};
-            }
-
-            case 3: {
-                /*
-                //https://stackoverflow.com/a/16612345
-                if (el1 > el2) Swap(el1, el2)
-                if (el2 > el3) {
-                    Swap(el2, el3)
-                    if (el1 > el2) Swap(el1, el2)
-                }*/
-
-                Term a = t[0], b = t[1], c = t[2];
-                int ab = a.compareTo(b);
-                if (ab == 0) {
-                    return sorted(a, c); //a=b, so just combine a and c (recurse)
-                } else if (ab > 0) {
-                    Term x = a;
-                    a = b;
-                    b = x;
-                }
-                int bc = b.compareTo(c);
-                if (bc == 0) {
-                    //assert(a.compareTo(b) < 0); //temporary
-                    return new Term[]{a, b}; //b=c so just combine a and b
-                } else if (bc > 0) {
-                    Term x = b;
-                    b = c;
-                    c = x;
-                    int ab2 = a.compareTo(b);
-                    if (ab2 == 0) {
-                        //assert(a.compareTo(c) < 0); //temporary
-                        return new Term[]{a, c};
-                    } else if (ab2 > 0) {
-                        Term y = a;
-                        a = b;
-                        b = y;
-                    }
-                }
-                if (t[0] == a && t[1] == b && t[2] == c)
-                    return t; //already sorted
-                else {
-                    return new Term[]{a, b, c};
-                }
-            }
-
+            case 0: return Op.EmptyTermArray;
+            case 1: return t;
+            case 2: return sorted2(t);
+            case 3: return sorted3(t);
             default: {
                 SortedList<Term> sl = new SortedList<>(t, new Term[t.length]);
                 return sl.orderChangedOrDeduplicated ?
@@ -105,6 +53,58 @@ public enum Terms {
         }
 
 
+    }
+
+    public static Term[] sorted3(Term[] t) {
+    /*
+    //https://stackoverflow.com/a/16612345
+    if (el1 > el2) Swap(el1, el2)
+    if (el2 > el3) {
+        Swap(el2, el3)
+        if (el1 > el2) Swap(el1, el2)
+    }*/
+
+        Term a = t[0], b = t[1], c = t[2];
+        int ab = a.compareTo(b);
+        if (ab == 0) {
+            return sorted(a, c); //a=b, so just combine a and c (recurse)
+        } else if (ab > 0) {
+            Term x = a;
+            a = b;
+            b = x;
+        }
+        int bc = b.compareTo(c);
+        if (bc == 0) {
+            //assert(a.compareTo(b) < 0); //temporary
+            return new Term[]{a, b}; //b=c so just combine a and b
+        } else if (bc > 0) {
+            Term x = b;
+            b = c;
+            c = x;
+            int ab2 = a.compareTo(b);
+            if (ab2 == 0) {
+                //assert(a.compareTo(c) < 0); //temporary
+                return new Term[]{a, c};
+            } else if (ab2 > 0) {
+                Term y = a;
+                a = b;
+                b = y;
+            }
+        }
+        if (t[0] == a && t[1] == b && t[2] == c)
+            return t; //already sorted
+        else {
+            return new Term[]{a, b, c};
+        }
+    }
+
+    @NotNull
+    public static Term[] sorted2(Term[] t) {
+        Term a = t[0], b = t[1];
+        int ab = a.compareTo(b);
+        if (ab < 0) return t;
+        else if (ab > 0) return new Term[]{b, a};
+        else /*if (c == 0)*/ return new Term[]{a};
     }
 
     public static void printRecursive(PrintStream out, Term x) {

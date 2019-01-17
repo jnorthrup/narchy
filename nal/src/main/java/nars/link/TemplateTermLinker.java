@@ -281,41 +281,41 @@ public class TemplateTermLinker extends FasterList<Termed> implements TermLinker
         if (d.tasksFired.isEmpty())
             return;
 
-        if (conceptualizeAndTermLink(a, d) > 0) {
+        if (conceptualizeAndTermLink(a, d) <= 0)
+            return;
 
-            Collection<Concept> firedConcepts = d.firedConcepts;
+        Collection<Concept> firedConcepts = d.firedConcepts;
 
-            //default all to all exhausive matrix insertion
-            //TODO configurable "termlink target concept x tasklink matrix" linking pattern: density, etc
+        //default all to all exhausive matrix insertion
+        //TODO configurable "termlink target concept x tasklink matrix" linking pattern: density, etc
 
-            if (!firedConcepts.isEmpty()) {
+        if (!firedConcepts.isEmpty()) {
 
-                List<Task> taskedLinked = d.tasksFired.list;
-                int n = taskedLinked.size();
-                if (n > 0) {
+            List<Task> taskedLinked = d.tasksFired.list;
+            int n = taskedLinked.size();
+            if (n > 0) {
 
-                    OverflowDistributor<Bag> overflow = n > 1 ? new OverflowDistributor<>() : null;
+                OverflowDistributor<Bag> overflow = n > 1 ? new OverflowDistributor<>() : null;
 
-                    NAR nar = d.nar;
+                NAR nar = d.nar;
 
-                    float taskLinkRate = nar.taskLinkActivation.floatValue();
+                float taskLinkRate = nar.taskLinkActivation.floatValue();
 
-                    for (Task t : taskedLinked) {
+                for (Task t : taskedLinked) {
 
-                        //contextual compartmentalization: generify=true -> dont spam propagating tasklinks with the temporal specifics
-                        TaskLink tt = TaskLink.tasklink(t, true, true, 0 /* pri will be set in each clone */, nar);
+                    //contextual compartmentalization: generify=true -> dont spam propagating tasklinks with the temporal specifics
+                    TaskLink tt = TaskLink.tasklink(t, true, true, 0 /* pri will be set in each clone */, nar);
 
-                        link(tt, t.priElseZero() * taskLinkRate, firedConcepts, overflow);
+                    link(tt, t.priElseZero() * taskLinkRate, firedConcepts, overflow);
 
-                        if (overflow != null) {
-                            overflow.shuffle(d.random).redistribute((b, p) -> b.putAsync(tt.clone(p)));
-                            overflow.clear();
-                        }
-
+                    if (overflow != null) {
+                        overflow.shuffle(d.random).redistribute((b, p) -> b.putAsync(tt.clone(p)));
+                        overflow.clear();
                     }
-                }
 
+                }
             }
+
         }
 
 

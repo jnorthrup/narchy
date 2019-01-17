@@ -1,11 +1,9 @@
 package nars.derive.impl;
 
-import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.math.IntRange;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
-import jcog.sort.SortedList;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -19,6 +17,7 @@ import nars.link.TaskLink;
 import nars.task.Tasklike;
 import nars.term.Term;
 
+import java.util.Collection;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -89,9 +88,9 @@ public class BatchDeriver extends Deriver {
     /**
      * forms premises
      */
-    private FasterList<Premise> hypothesize(Derivation d) {
+    private Collection<Premise> hypothesize(Derivation d) {
 
-        SortedList<Premise> premises = d.premiseBuffer;
+        Collection<Premise> premises = d.premiseBuffer;
         premises.clear();
 
         int[] conceptsRemain = new int[]{ conceptsPerIteration.intValue() };
@@ -147,7 +146,7 @@ public class BatchDeriver extends Deriver {
 
         int nTaskLinks = tasklinks.size();
 
-        FasterList<Premise> premises = d.premiseBuffer;
+        Collection<Premise> premises = d.premiseBuffer;
 
 
         tasklinks.sample(rng, Math.min(taskLinksPerConcept.intValue(), nTaskLinks), tasklink -> {

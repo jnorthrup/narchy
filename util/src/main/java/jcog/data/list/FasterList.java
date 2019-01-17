@@ -221,6 +221,11 @@ public class FasterList<X> extends FastList<X> {
         return -1;
     }
 
+    @Override
+    public MutableList<X> shuffleThis(Random rnd) {
+        return size > 1 ? super.shuffleThis(rnd) : this;
+    }
+
     /**
      * use with caution.
      * --this could become invalidated so use it as a snapshot
