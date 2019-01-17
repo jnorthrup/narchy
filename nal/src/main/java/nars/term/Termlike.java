@@ -193,7 +193,6 @@ public interface Termlike {
         return hasAny(checkStruct);
     }
 
-    Op op();
 
     default boolean hasAny(/*@NotNull*/ Op op) {
         return hasAny(op.bit);

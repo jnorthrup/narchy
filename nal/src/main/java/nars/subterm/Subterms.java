@@ -231,9 +231,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
     }
 
-    default Op op() {
-        return null;
-    }
+
 
     default boolean isSorted() {
         int s = subs();

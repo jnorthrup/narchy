@@ -160,7 +160,7 @@ public class NARHear extends Loop {
     static public void readURL(NAR nar) {
         nar.onOp("readURL", (t, n) -> {
 
-            Term[] args = Operator.args(t).arrayClone();
+            Term[] args = Operator.args(t.term()).arrayClone();
             try {
 
 

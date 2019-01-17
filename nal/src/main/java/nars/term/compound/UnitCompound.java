@@ -260,4 +260,9 @@ public abstract class UnitCompound implements Compound {
     public boolean unifySubterms(Term y, Unify u) {
         return y.subs()==1 && sub().unify(y.sub(0), u);
     }
+
+    @Override
+    public boolean isSorted() {
+        return true;
+    }
 }

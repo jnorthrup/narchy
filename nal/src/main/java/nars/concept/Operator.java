@@ -7,7 +7,6 @@ import nars.link.TermLinker;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Term;
-import nars.term.Termlike;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.NotNull;
@@ -64,7 +63,7 @@ public final class Operator extends NodeConcept implements PermanentConcept, Ato
     /**
      * returns the arguments of an operation (task or term)
      */
-    public static Subterms args(Termlike operation) {
+    public static Subterms args(Term operation) {
         assert (operation.op() == INH && operation.subIs(1, ATOM));
         return operation.sub(0).subterms();
     }

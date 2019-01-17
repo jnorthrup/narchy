@@ -64,8 +64,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
      * implementations can override this to prefilter invalid operation patterns
      */
     protected Task exePrefilter(Task x) {
-        Subterms a = Operator.args(x);
-        return a.hasAny(Op.AtomicConstant) ? x : null;
+        return Operator.args(x.term()).hasAny(Op.AtomicConstant) ? x : null;
     }
 
 
