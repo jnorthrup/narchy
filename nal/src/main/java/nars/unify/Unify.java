@@ -331,8 +331,16 @@ public abstract class Unify extends Versioning implements Subst {
 
         @Override
         protected int match(Term prevValue, Term nextValue) {
-            //TODO prefer more specific temporal matches, etc?
-            return prevValue==nextValue || prevValue.unify(nextValue, (Unify)context) ? -1 : 0;
+
+            if (prevValue.unify(nextValue, (Unify) context)) {
+                if (prevValue!=nextValue && nextValue.hasAny(Op.Temporal)) {
+                    //prefer more specific temporal matches, etc?
+                    if (prevValue.hasXternal() && !nextValue.hasXternal()) {
+                        return +1;
+                    }
+                }
+                return 0;
+            } else return -1;
         }
 
         @Override protected boolean valid(Term x) {

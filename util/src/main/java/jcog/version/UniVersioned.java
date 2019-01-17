@@ -21,9 +21,8 @@ public class UniVersioned<X> implements Versioned<X> {
     @Override
     public void force(X x) {
         if (value==null) {
-            //add callback so it can be erased
-            if (!context.add(this))
-                throw new TODO("context overflow");
+            if (!context.add(this)); //add callback so it can be erased
+                throw new TODO();
         }
         value = x;
     }
@@ -48,41 +47,33 @@ public class UniVersioned<X> implements Versioned<X> {
     }
 
     @Override
-    public boolean set(X nextValue) {
-        X v = value;
-        if (v!=null) {
-            int m = match(v, nextValue);
-            if (m == 0) {
-                return false;
-            } else if (m == 1) {
-                value = nextValue;
-            } //else if (m == -1) { /* no change */            }
-            return true;
-        } else {
-            if (!valid(nextValue))
-                return false;
-
-            //initialize
-            value = nextValue;
-
-            if (context.add(this))
+    public final boolean set(X next) {
+        X prev = value;
+        if (prev!=null) {
+            int m = match(prev, next);
+            if (m >= 0) {
+                if (m == +1)
+                    value = next;
                 return true;
-            else {
-                value = null; //undo
-                return false;
+            }
+        } else {
+            if (valid(next) && context.add(this)) {
+                value = next;
+                return true;
             }
         }
-
+        return false;
     }
 
     /**
      * @return value:
      *      +1 accept, replace with new value
-     *      0  refuse
-     *      -1 accept, keep original value
+     *      0 accept, keep original value
+     *      -1  refuse
+     *
      */
     protected int match(X prevValue, X nextValue) {
-        return prevValue.equals(nextValue) ? -1 : 0;
+        return prevValue.equals(nextValue) ? 0 : -1;
     }
 
     @Override

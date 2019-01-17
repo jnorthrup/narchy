@@ -53,6 +53,10 @@ abstract public class MappedSubterms extends ProxySubterms {
         if (n <= 1)
             return x;
 
+        if (x instanceof ReversedSubterms) {
+            return ((ReversedSubterms)x).ref;
+        }
+
         if (x instanceof ArrayMappedSubterms) {
             ArrayMappedSubterms mx = ((ArrayMappedSubterms) x);
             //TODO test if the array is already perfectly reversed without cloning then just undo
@@ -62,19 +66,82 @@ abstract public class MappedSubterms extends ProxySubterms {
                 return x; //palindrome or repeats
 
             return new ArrayMappedSubterms(mx.ref, r);
-        } else {
-            byte[] m = new byte[n];
-            for (byte k = 0, i = (byte) (m.length - 1); i >= 0; i--, k++)
-                m[k] = (byte) (i + 1);
-            return new ArrayMappedSubterms(x, m);
+        } //else {
+//            byte[] m = new byte[n];
+//            for (byte k = 0, i = (byte) (m.length - 1); i >= 0; i--, k++)
+//                m[k] = (byte) (i + 1);
+//            return new ArrayMappedSubterms(x, m);
+//        }
+        return new ReversedSubterms(x);
+    }
+
+    private static abstract class HashCachedMappedSubterms extends MappedSubterms {
+
+        /**
+         * make sure to calculate hash code in implementation's constructor
+         *
+         * @param base
+         */
+        int hash;
+
+        protected HashCachedMappedSubterms(Subterms base) {
+            super(base);
+        }
+
+        @Override
+        public final int hashCode() {
+            return hash;
+        }
+
+        @Override
+        public final int hashCodeSubterms() {
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof Subterms && hash == obj.hashCode() && ((Subterms) obj).equalTerms(this);
         }
     }
 
-    private static final class ArrayMappedSubterms extends MappedSubterms {
+    private static final class ReversedSubterms extends HashCachedMappedSubterms {
+
+        /** cached */
+        private final byte size;
+
+        /**
+         * make sure to calculate hash code in implementation's constructor
+         *
+         * @param base
+         */
+        protected ReversedSubterms(Subterms base) {
+            super(base);
+            size = (byte) base.subs();
+            assert(size > 1);
+            this.hash = Subterms.hash(this);
+        }
+
+
+        @Override
+        public Subterms reversed() {
+            return ref;
+        }
+
+        @Override
+        public int subs() {
+            return size;
+        }
+
+        @Override
+        protected int subMap(int i) {
+            return (size) - i;
+        }
+    }
+
+    private static final class ArrayMappedSubterms extends HashCachedMappedSubterms {
         /** TODO even more compact 2-bit, 3-bit etc representations */
         final byte[] map;
 
-        final int hash;
         final boolean hasNegs;
 
         private ArrayMappedSubterms(Subterms base, byte[] map) {
@@ -111,18 +178,13 @@ abstract public class MappedSubterms extends ProxySubterms {
         }
 
         @Override
+        public int subs() {
+            return map.length;
+        }
+
+        @Override
         protected int subMap(int i) {
             return map[i];
-        }
-
-        @Override
-        public int hashCodeSubterms() {
-            return hash;
-        }
-
-        @Override
-        public int hashCode() {
-            return hash;
         }
 
 
@@ -137,10 +199,6 @@ abstract public class MappedSubterms extends ProxySubterms {
             }
         }
 
-        @Override
-        public int subs() {
-            return map.length;
-        }
 
     }
 
@@ -238,6 +296,11 @@ abstract public class MappedSubterms extends ProxySubterms {
     @Override
     public int complexity() {
         return ref.complexity() + negs();
+    }
+
+    @Override
+    public int vars() {
+        return ref.vars();
     }
 
     @Override
