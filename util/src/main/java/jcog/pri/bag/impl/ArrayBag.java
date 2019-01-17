@@ -715,7 +715,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends SortedListTab
     private void removed(Y y) {
         MASS.add(this, -priElse(y, 0));
         onRemove(y);
-        y.delete();
+        //y.delete();
     }
 
     @Override

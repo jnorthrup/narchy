@@ -626,7 +626,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     public static Term seqTemporal(Subterms s) {
         Term t = s.subFirst(isTemporalComponent);
-        assert (t.op() == CONJ);
+        assert (Conj.isSeq(t));
         return t;
     }
 

@@ -2,7 +2,6 @@ package jcog.pri.bag.util;
 
 import jcog.data.NumberX;
 import jcog.pri.bag.Bag;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -18,7 +17,7 @@ import java.util.function.Function;
  */
 public class ProxyBag<X,Y> implements Bag<X,Y> {
 
-    protected Bag<X,Y> bag;
+    public Bag<X,Y> bag;
 
     public ProxyBag(Bag<X, Y> delegate) {
         set(delegate);
@@ -101,7 +100,7 @@ public class ProxyBag<X,Y> implements Bag<X,Y> {
         return bag.size();
     }
 
-    @NotNull
+    
     @Override
     public Iterator<Y> iterator() {
         return bag.iterator();
@@ -124,7 +123,7 @@ public class ProxyBag<X,Y> implements Bag<X,Y> {
     }
 
 
-    @NotNull
+    
     @Override
     public Bag<X,Y> commit(Consumer<Y> update) {
         bag.commit(update);

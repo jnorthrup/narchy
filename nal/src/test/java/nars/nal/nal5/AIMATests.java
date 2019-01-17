@@ -48,17 +48,16 @@ class AIMATests {
         final NAR n = NARS.tmp(6);
         n.random().setSeed(1);
 
-        n.freqResolution.set(0.25f);
+        n.freqResolution.set(0.1f);
 //        n.confResolution.set(0.05f);
-        n.confMin.set(0.4f);
+        n.confMin.set(0.1f);
 
-        n.beliefPriDefault.set(0.1f);
-        n.questionPriDefault.set(0.5f);
+//        n.beliefPriDefault.set(0.1f);
+//        n.questionPriDefault.set(0.2f);
 
         assertEquals(20, $$("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").volume());
 
         n.termVolumeMax.set(22);
-//        n.log();
 
         n.believe(
 

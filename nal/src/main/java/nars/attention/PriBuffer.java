@@ -65,14 +65,28 @@ public class PriBuffer<Y> {
         if (pri!=pri)
             return null;
 
-        UnitPrioritizable a = items.computeIfAbsent(x, t -> t instanceof UnitPrioritizable ? (UnitPrioritizable)t : new UnitPri());
+        UnitPrioritizable y = items.compute(x, (xx, px) -> {
+            if (px != null) {
+                if (x != px)
+                    merge(px, x, pri, overflow);
+                return px;
+            } else {
+                if (xx instanceof UnitPrioritizable)
+                    return (UnitPrioritizable) xx;
+                else
+                    return new UnitPri(pri);
+            }
+        });
 
-        if (overflow!=null)
-            overflow.merge(x, a, pri, merge);
-        else
-            a.priAdd(pri);
+        return y.getClass() == UnitPri.class ? x : (Y) y;
+    }
 
-        return x;
+    protected void merge(UnitPrioritizable existing, Y incoming, float pri, OverflowDistributor<Y> overflow) {
+        if (overflow!=null) {
+            overflow.merge(incoming, existing, pri, merge);
+        } else {
+            merge.merge(existing, pri);
+        }
     }
 
     public void update(ObjectFloatProcedure<Y> each) {

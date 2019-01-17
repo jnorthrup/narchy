@@ -4,13 +4,17 @@ import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
+import jcog.pri.OverflowDistributor;
 import jcog.pri.ScalarValue;
+import jcog.pri.UnitPrioritizable;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Task;
+import nars.attention.BufferedBag;
+import nars.attention.PriBuffer;
 import nars.control.CauseMerge;
 import nars.control.channel.ConsumerX;
 import nars.exe.Exec;
@@ -206,7 +210,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         /**
          * temporary buffer before input so they can be merged in case of duplicates
          */
-        public final Bag<ITask, ITask> tasks =
+        public final Bag<ITask, ITask> tasks = new BufferedBag.SimpleBufferedBag<>(
                 new PriArrayBag<ITask>(PriMerge.max,
                         //new HashMap()
                         new UnifiedMap()
@@ -215,7 +219,22 @@ abstract public class TaskBuffer implements Consumer<ITask> {
                     protected float merge(ITask existing, ITask incoming) {
                         return TaskBuffer.merge(existing, incoming);
                     }
-                };
+                },
+                new PriBuffer<>(PriMerge.max) {
+                    @Override
+                    protected void merge(UnitPrioritizable existing, ITask incoming, float pri, OverflowDistributor<ITask> overflow) {
+                        TaskBuffer.merge((ITask)existing, incoming);
+                    }
+                }
+        );
+//                new PriArrayBag<ITask>(PriMerge.max, new HashMap()
+//                        //new UnifiedMap()
+//                ) {
+//                    @Override
+//                    protected float merge(ITask existing, ITask incoming) {
+//                        return TaskBuffer.merge(existing, incoming);
+//                    }
+//                };
 
         //new HijackBag...
 
@@ -278,7 +297,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
         private transient long prev = Long.MIN_VALUE;
 
-        public final AtomicBoolean fade = new AtomicBoolean(false);
+
 
         /**
          * @capacity size of buffer for tasks that have been input (and are being de-duplicated) but not yet input.
@@ -314,18 +333,14 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
                 tasks.setCapacity(capacity.intValue());
 
+
+                tasks.commit(null);
+
                 int s = tasks.size();
                 if (s == 0)
                     return;
 
-//                float dDur = (float) (((double) dt) / dur);
-
-                if (fade.getOpaque())
-                    tasks.commit();
-                //tasks.commit(null);
-
-
-                int n = Math.min(tasks.size(), batchSize(dt));
+                int n = Math.min(s, batchSize(dt));
                 if (n > 0) {
 
 
@@ -340,10 +355,15 @@ abstract public class TaskBuffer implements Consumer<ITask> {
                             ((Exec) target)/*HACK*/.input((Consumer<NAR>) (nn) -> {
 
                                 FasterList batch = BagTaskBuffer.batch.get();
-                                if (tasks instanceof ArrayBag) {
-                                    ((ArrayBag) tasks).popBatch(nEach, batch);
+                                Bag<ITask, ITask> t = tasks;
+
+                                if  (t instanceof BufferedBag)
+                                    t = ((BufferedBag)t).bag;
+
+                                if (t instanceof ArrayBag) {
+                                    ((ArrayBag) t).popBatch(nEach, batch);
                                 } else {
-                                    tasks.pop(null, nEach, batch::add); //per item.. may be slow
+                                    t.pop(null, nEach, batch::add); //per item.. may be slow
                                 }
 
                                 if (!batch.isEmpty()) {

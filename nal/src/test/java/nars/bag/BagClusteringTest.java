@@ -16,9 +16,9 @@ class BagClusteringTest {
         b.put("r", 0.5f);
         b.put("x", 0.5f);
         b.put("y", 0.5f);
-        assertEquals(7, b.size());
+        b.bag.commit(null); assertEquals(7, b.size());
         b.put("z", 0.5f);
-        assertEquals(8, b.size());
+        b.bag.commit(null); assertEquals(8, b.size());
 
         b.learn(1f, 1);
         b.forEachCentroid(null, null, (x, y) -> { return true; });
