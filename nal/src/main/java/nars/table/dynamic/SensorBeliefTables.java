@@ -12,7 +12,6 @@ import nars.table.BeliefTables;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.task.AbstractTask;
 import nars.task.ITask;
-import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
@@ -163,22 +162,22 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    @Override
-    public void match(Answer a) {
-        if (series.series.contains(a.time)) {
-            //try to allow the series to be the only authority in reporting
-            series.match(a);
-            if (a.tasks.isEmpty()) {
-                //if nothing was found, then search other tables
-                tables.each(t -> {
-                    if (t!=series)
-                        t.match(a);
-                });
-            }
-        } else {
-            super.match(a);
-        }
-    }
+//    @Override
+//    public void match(Answer a) {
+//        if (series.series.contains(a.time)) {
+//            //try to allow the series to be the only authority in reporting
+//            series.match(a);
+//            if (a.tasks.isEmpty()) {
+//                //if nothing was found, then search other tables
+//                tables.each(t -> {
+//                    if (t!=series)
+//                        t.match(a);
+//                });
+//            }
+//        } else {
+//            super.match(a);
+//        }
+//    }
 
 
     public FloatRange resolution() {

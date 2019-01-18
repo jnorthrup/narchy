@@ -161,8 +161,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             long e = x.end();
             return (e < futureThresh ? pastDiscount : 1f) *
                         //x.evi(now, dur) * (1 + (e-s)/2f)/*x.range()*/;
-                        evi;
-                        //evi * (e-s+1)/*x.range()*/;
+                        //evi;
+                        evi * (e-x.start()+1)/*x.range()*/;
             };
 
             //(TruthIntegration.eviAvg(x, 0))/ (1 + x.maxTimeTo(now)/((float)dur));

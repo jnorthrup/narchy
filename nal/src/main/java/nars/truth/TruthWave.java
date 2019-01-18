@@ -24,7 +24,7 @@ import java.util.Arrays;
  */
 public class TruthWave {
 
-    static final int precision = 3;
+    static final int precision = 4;
 
     private static final int ENTRY_SIZE = 4;
 
