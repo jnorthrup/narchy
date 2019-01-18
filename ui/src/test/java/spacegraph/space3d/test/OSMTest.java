@@ -28,7 +28,7 @@ public class OSMTest {
                     System.out.println(n);
             });
 
-//            window(new OsmSurface(i).go(o).view(), 800, 800);
+            window(new OsmSurface(i).go(o).view(), 800, 800);
 
             i.index.stats().print(System.out);
         }

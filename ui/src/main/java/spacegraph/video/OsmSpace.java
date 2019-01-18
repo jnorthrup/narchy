@@ -1,12 +1,14 @@
 package spacegraph.video;
 
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUtessellator;
 import com.jogamp.opengl.glu.GLUtessellatorCallback;
 import jcog.Util;
 import jcog.data.list.FasterList;
+import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.util.geo.osm.GeoVec3;
@@ -78,6 +80,10 @@ public enum OsmSpace  { ;
         public List<Consumer<GL2>> draw = new FasterList();;
 
         boolean wireframe = false;
+
+        public List<Consumer<GL2>> dbuf = new FasterList();
+        private final FloatArrayList vbuf = new FloatArrayList(8*1024);
+        private int nextType;
 
         public OsmRenderer(GL2 gl, LonLatProjection project) {
             this.gl = gl;
@@ -271,7 +277,7 @@ public enum OsmSpace  { ;
                         ci[6] = a;
                     }
 
-                    draw.add(new OsmPolygonDraw(r, g, b, a, lw, ls, tobj, nn, coord));
+                    draw.add(new OsmPolygonDraw(r, g, b, a, lw, ls, this, nn, coord));
                 }
 
 
@@ -292,27 +298,73 @@ public enum OsmSpace  { ;
         }
         @Override
         public void begin(int type) {
-            gl.glBegin(type);
+            //gl.glBegin(type);
+            nextType = type;
         }
 
         @Override
         public void end() {
-            gl.glEnd();
+            float[] coord = vbuf.toArray();
+            vbuf.clear();
+            int myNextType = nextType;
+            dbuf.add((gl)->{
+                gl.glBegin(myNextType);
+                int ii = 0;
+                for (int i = 0; i < coord.length / 6; i++) {
+                    gl.glColor3fv(coord, ii); ii+=3;
+                    gl.glVertex3fv(coord, ii); ii+=3;
+                }
+                gl.glEnd();
+            });
+            //gl.glEnd();
         }
+
+
 
         @Override
         public void vertex(Object vertexData) {
             if (vertexData instanceof double[]) {
+
                 double[] pointer = (double[]) vertexData;
-                if (pointer.length == 6)
-                    gl.glColor3dv(pointer, 3);
-                gl.glVertex3dv(pointer, 0);
+
+                if (pointer.length >= 6) {
+                    //gl.glColor3dv(pointer, 3);
+                    vbuf.add((float) pointer[3]);
+                    vbuf.add((float) pointer[4]);
+                    vbuf.add((float) pointer[5]);
+                } else {
+                    vbuf.add(1);
+                    vbuf.add(1);
+                    vbuf.add(1);
+                }
+                //gl.glVertex3dv(pointer, 0);
+
+                vbuf.add((float) pointer[0]);
+                vbuf.add((float) pointer[1]);
+                vbuf.add((float) pointer[2]);
+
+
             } else if (vertexData instanceof float[]) {
                 float[] pointer = (float[]) vertexData;
-                if (pointer.length == 6)
-                    gl.glColor3fv(pointer, 3);
-                gl.glVertex3fv(pointer, 0);
-            }
+
+                if (pointer.length >= 6) {
+//                    gl.glColor3fv(pointer, 3);
+                    vbuf.add((float) pointer[3]);
+                    vbuf.add((float) pointer[4]);
+                    vbuf.add((float) pointer[5]);
+                } else {
+                    vbuf.add(1);
+                    vbuf.add(1);
+                    vbuf.add(1);
+                }
+
+                //gl.glVertex3fv(pointer, 0);
+                vbuf.add(pointer[0]);
+                vbuf.add(pointer[1]);
+                vbuf.add(pointer[2]);
+
+            } else
+                throw new UnsupportedOperationException();
         }
 
         @Override
@@ -333,15 +385,15 @@ public enum OsmSpace  { ;
             vertex[0] = (float) coords[0];
             vertex[1] = (float) coords[1];
             vertex[2] = (float) coords[2];
-            for (int i = 3; i < 6/* 7OutOfBounds from C! */; i++) {
+            for (int cc = 3; cc < 6; cc++) {
                 float v = 0;
-                for (int j = 0; j < data.length; j++) {
-                    float[] d = (float[]) data[j];
+                for (int dd = 0; dd < data.length; dd++) {
+                    float[] d = (float[]) data[dd];
                     if (d != null) {
-                        v += weight[j] * d[i];
+                        v += weight[dd] * d[cc];
                     }
                 }
-                vertex[i] = v/data.length;
+                vertex[cc] = v;
             }
             outData[0] = vertex;
         }
@@ -436,20 +488,32 @@ public enum OsmSpace  { ;
         private final float r,g,b,a;
         private final float lw;
         private final short ls;
-        private final GLUtessellator tobj;
         private final List<OsmNode> nn;
-        private final float[][] coord;
+        //private final float[] coord;
+        private final Consumer[] draw;
 
-        OsmPolygonDraw(float r, float g, float b, float a, float lw, short ls, GLUtessellator tobj, List<OsmNode> nn, float[][] coord) {
+        OsmPolygonDraw(float r, float g, float b, float a, float lw, short ls, OsmRenderer s, List<OsmNode> nn, float[][] coord) {
             this.r = r;
             this.g = g;
             this.b = b;
             this.a = a;
             this.lw = lw;
             this.ls = ls;
-            this.tobj = tobj;
             this.nn = nn;
-            this.coord = coord;
+
+            GLUtessellator tobj = s.tobj;
+
+            GLU.gluTessBeginPolygon(tobj, null);
+            GLU.gluTessBeginContour(tobj);
+            for (int i = 0, nnSize = coord.length; i < nnSize; i++) {
+                float[] ci = coord[i];
+                GLU.gluTessVertex(tobj, Util.toDouble(ci), 0, ci);
+            }
+            GLU.gluTessEndContour(tobj);
+            GLU.gluTessEndPolygon(tobj);
+
+            this.draw = s.dbuf.toArray(new Consumer[0]);
+            s.dbuf.clear();
         }
 
         @Override
@@ -458,14 +522,15 @@ public enum OsmSpace  { ;
             gl.glLineWidth(lw);
             gl.glLineStipple(1, ls);
 
-            GLU.gluTessBeginPolygon(tobj, null);
-            GLU.gluTessBeginContour(tobj);
-            for (int i = 0, nnSize = nn.size(); i < nnSize; i++) {
-                float[] ci = coord[i];
-                GLU.gluTessVertex(tobj, Util.toDouble(ci), 0, ci);
-            }
-            GLU.gluTessEndContour(tobj);
-            GLU.gluTessEndPolygon(tobj);
+            for (Consumer<GL2> d : draw)
+                d.accept(gl);
+
+//            gl.glBegin(GL.GL_TRIANGLES);
+//            for (int i = 0; i < coord.length / 3; i++)
+//                gl.glVertex3fv(coord, i * 3);
+//            gl.glEnd();
+
+
 
         }
     }
@@ -492,9 +557,8 @@ public enum OsmSpace  { ;
             gl.glLineWidth(lw);
             gl.glLineStipple(1, ls);
             gl.glBegin(GL_LINE_STRIP);
-            for (int i = 0; i < c3.length / 3; i++) {
+            for (int i = 0; i < c3.length / 3; i++)
                 gl.glVertex3fv(c3, i * 3);
-            }
             gl.glEnd();
         }
     }
@@ -518,8 +582,7 @@ public enum OsmSpace  { ;
             gl.glPointSize(pointSize);
             gl.glBegin(GL_POINTS);
             gl.glColor4f(r, g, b, a);
-
-            gl.glVertex3f(c3[0], c3[1], c3[2]);
+            gl.glVertex3fv(c3, 0);
             gl.glEnd();
         }
     }
