@@ -85,7 +85,7 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public boolean equals(@Nullable Object that) {
-        return Compound.equals(this, that);
+        return Compound.equals(this, that, false);
     }
 
     @Override

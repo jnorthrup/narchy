@@ -150,7 +150,30 @@ public interface TermTransform {
 
 
 
+    /** HACK interface version */
+    interface AbstractNegObliviousTermTransform extends TermTransform {
 
+        @Override
+        @Nullable
+        default Term transformCompound(Compound x) {
+
+            if (x.op()==NEG) {
+                Term xx = x.unneg();
+                Term yy = transform(xx);
+                return yy == xx ? x : yy.neg();
+
+            } else {
+                return transformNonNegCompound(x);
+            }
+
+        }
+
+        /** default implementation */
+        default Term transformNonNegCompound(Compound x) {
+            return TermTransform.super.transformCompound(x);
+        }
+
+    }
 
     /**
      * operates transparently through negation subterms
@@ -164,9 +187,6 @@ public interface TermTransform {
             if (x.op()==NEG) {
                 Term xx = x.unneg();
                 Term yy = transform(xx);
-                if (yy == null || yy == Bool.Null)
-                    return Bool.Null;
-
                 return yy == xx ? x : yy.neg();
 
             } else {
@@ -178,11 +198,6 @@ public interface TermTransform {
         /** default implementation */
         protected Term transformNonNegCompound(Compound x) {
             return TermTransform.super.transformCompound(x);
-        }
-
-        /** HACK */
-        protected final Term transformCompoundPlease(Compound x) {
-            return x.transform(this);
         }
 
     }

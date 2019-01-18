@@ -89,7 +89,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     default boolean equalsRoot(Subterms y) {
         return equals(y) ||
-                (y.hasAny(Op.Temporal) && y.subs() == subs() && y.structure()==structure() && ANDwith((x,i)-> x.equalsRoot(y.sub(i))));
+                (y.hasAny(Op.Temporal) && y.subs() == subs() && y.structure()==structure() && ANDith((x, i)-> x.equalsRoot(y.sub(i))));
     }
 
     /** allows a Subterms implementation to accept the byte[] key that was used in constructing it,
@@ -704,7 +704,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * @return 0: must unify, -1: impossible, +1: unified already
      */
     private static int possiblyUnifiableWhileEliminatingEqualAndConstants(TermList xx, TermList yy, Unify u) {
-        int xs = 0, ys = 0;
 
         int n = xx.size();
 
@@ -714,8 +713,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 xx.removeFast(i);
                 n--;
             } else {
-                xs |= xi.opBit();
-                ys |= yy.get(i).opBit();
                 i++;
             }
         }
@@ -725,7 +722,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             return +1; //all eliminated
 
 
-        if (possiblyUnifiable(xs, ys, u.varBits)) {
+        if (possiblyUnifiable(xx, yy, u.varBits)) {
 //            if (xxs == 1)
 //                return 0; //one subterm remaining, direct match will be tested by callee
 //            Set<Term> xConst = null;
@@ -760,6 +757,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             return -1; //first layer has no non-variable commonality, no way to unify
 
     }
+
     /**
      * assume equality, structure commonality, and equal subterm count have been tested
      */
@@ -787,35 +785,19 @@ public interface Subterms extends Termlike, Iterable<Term> {
                         u.termutes.add(new CommutivePermutations(xx, yy));
                     }
                     return true;
-//                        }
-//                    }
-//                    return false;
                 }
             }
         }
 
     }
 
-    /**
-     * xs and ys must have variable bits masked before calling, and xs!=0 and ys!=0
-     */
-    static boolean possiblyUnifiable(int xs, int ys, int varBits) {
-        int xxs = xs & (~varBits);
-        if (xxs == 0)
-            return true; //all var
-        int yys = ys & (~varBits);
-        if (yys == 0)
-            return true; //all var
 
-        return (xxs & yys) != 0; //some non-var match possibility
-    }
-
-    static boolean possiblyUnifiable(Subterms xx, Subterms yy, int varBits) {
+    static boolean possiblyUnifiable(Termlike xx, Termlike yy, int varBits) {
         int XS = xx.structure();
+        int YS = yy.structure();
         int XSc = XS & (~varBits);
         if (XSc == 0)
             return true; //X contains only vars
-        int YS = yy.structure();
         int YSc = YS & (~varBits);
         if (YSc == 0)
             return true; //Y contains only vars
@@ -825,14 +807,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
             //cheap constant case invariant tests
 
             //differing constant structure
-            if (XS!=YS)
+            if (XS != YS)
                 return false;
 
             //if volume differs (and no recursive conjunction subterms)
             if ((xx.volume() != yy.volume()) &&
                     (((XS & CONJ.bit) == 0) || !xx.hasXternal()) &&
                     (((YS & CONJ.bit) == 0) || !yy.hasXternal())
-               )
+            )
                 return false;
 
             return true; //done
@@ -847,21 +829,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        return (xs & ys) != 0; //any constant subterm commonality
     }
 
-    default int structureConstant(int varBits) {
-        return intifyShallow((int v, Term z) -> {
-            //int zs = z.structure();
-            //return !Op.hasAny(zs, varBits) ? (v | zs) : v;
-            return (z instanceof Variable && (z.opBit() & varBits)!=0) ? v : (v | z.structure());
-        }, 0);
-    }
-
-
     static boolean possiblyUnifiable(Subterms xx, Subterms yy, Unify u) {
         return possiblyUnifiable(xx, yy, u.varBits);
     }
-
-
-
 
     /**
      * structure of the first layer (surface) only
@@ -947,15 +917,15 @@ public interface Subterms extends Termlike, Iterable<Term> {
         } else {
 
             int s = to - from;
-
-            Term[] l = new Term[to - from];
-
-            int y = from;
-            for (int i = 0; i < s; i++) {
-                l[i] = sub(y++);
+            if (s == 0)
+                return EmptyTermArray;
+            else {
+                Term[] l = new Term[s];
+                int y = from;
+                for (int i = 0; i < s; i++)
+                    l[i] = sub(y++);
+                return l;
             }
-
-            return l;
         }
     }
 
@@ -995,8 +965,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return true;
     }
 
-    /** supplies the current index as 2nd lambda argument */
-    default boolean ANDwith(/*@NotNull*/ ObjectIntPredicate<Term> p) {
+    /** supplies the i'th index as 2nd lambda argument. all subterms traversed, even repeats */
+    default boolean ANDith(/*@NotNull*/ ObjectIntPredicate<Term> p) {
         int s = subs();
         for (int i = 0; i < s; i++)
             if (!p.accept(sub(i), i))
@@ -1004,14 +974,15 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return true;
     }
 
-    /** supplies the current index as 2nd lambda argument */
-    default boolean ORwith(/*@NotNull*/ ObjectIntPredicate<Term> p) {
+    /** supplies the i'th index as 2nd lambda argument. all subterms traversed, even repeats */
+    default boolean ORith(/*@NotNull*/ ObjectIntPredicate<Term> p) {
         int s = subs();
         for (int i = 0; i < s; i++)
             if (p.accept(sub(i), i))
                 return true;
         return false;
     }
+
     default <X> boolean ORwith(/*@NotNull*/ BiPredicate<Term,X> p, X param) {
         int s = subs();
         Term prev = null;
@@ -1037,7 +1008,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     /** implementations are allowed to skip repeating subterms and visit out of order */
-    default boolean ANDrecurse(/*@NotNull*/ Predicate<Term> p) {
+    default boolean ANDrecurse(Predicate<Term> p) {
         int s = subs();
         Term prev = null;
         for (int i = 0; i < s; i++) {
@@ -1050,7 +1021,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     /** implementations are allowed to skip repeating subterms and visit out of order */
-    default boolean ORrecurse(/*@NotNull*/ Predicate<Term> p) {
+    default boolean ORrecurse(Predicate<Term> p) {
         int s = subs();
         Term prev = null;
         for (int i = 0; i < s; i++) {
@@ -1072,6 +1043,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return AND(s -> s.recurseTerms(inSuperCompound, whileTrue, parent));
     }
 
+    /**
+     * must be overriden by any Compound subclasses
+     */
+    default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, Compound parent) {
+        return AND(s -> s.recurseTerms(aSuperCompoundMust, whileTrue, parent));
+    }
+
     default boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
         int s = subs();
         for (int i = 0; i < s; i++) {
@@ -1081,20 +1059,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return true;
     }
 
-    /**
-     * must be overriden by any Compound subclasses
-     */
-    default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, Compound parent) {
-        return AND(s -> s.recurseTerms(aSuperCompoundMust, whileTrue, parent));
-    }
-
     default Subterms reversed() {
         return subs() > 1 ? MappedSubterms.reverse(this) : this;
     }
 
-//    default Subterms sorted() {
-//        return isSorted() ? this : Op.terms.subterms(Terms.sorted(arrayShared()));
-//    }
 
     /**
      * removes first occurrence only

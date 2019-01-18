@@ -19,7 +19,7 @@ public class ProxyTerm implements Compound {
 
     public ProxyTerm(Term t) {
         if (t instanceof ProxyTerm)
-            throw new WTF();
+            throw new WTF(t + " instanceof ProxyTerm; caught attempt to proxy a proxy in " + getClass());
         this.ref = t;
     }
 
@@ -112,7 +112,7 @@ public class ProxyTerm implements Compound {
         if (o instanceof ProxyTerm)
             o = ((ProxyTerm)o).ref;
         if (o instanceof Termed)
-            o = ((Termed)o).term(); 
+            o = ((Termed)o).term();
         return ref.equals(o);
     }
 
@@ -131,7 +131,7 @@ public class ProxyTerm implements Compound {
     public Term concept() {
         return ifDifferentElseThis(ref.concept());
     }
-    
+
     @Override
     public boolean isCommutative() {
         return ref.isCommutative();

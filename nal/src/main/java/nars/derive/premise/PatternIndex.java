@@ -422,7 +422,6 @@ public class PatternIndex extends MapConceptIndex {
                     //test matches against the one constant term
                     for (int ixs = 0; ixs < xs; ixs++) {
                         Term ix = xFixed.get(ixs);
-                        int ixsStruct = ix.structure();
 
                         //TODO requires more work
 //                        if ((ixsStruct & varBits)!=0) {
@@ -438,7 +437,7 @@ public class PatternIndex extends MapConceptIndex {
 //                            List<Term> yMatchableWithX = null;
                             boolean canMatch = false;
                             for (Term yy : yFree) {
-                                if (Subterms.possiblyUnifiable(ixsStruct, yy.structure(), u.varBits)) {
+                                if (Subterms.possiblyUnifiable(ix, yy, u.varBits)) {
 //                                    if (yMatchableWithX == null)
 //                                        yMatchableWithX = new FasterList(1);
 //                                    yMatchableWithX.add(yy);

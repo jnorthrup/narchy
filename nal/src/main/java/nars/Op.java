@@ -716,8 +716,6 @@ public enum Op {
                 case IMPL:
                     s = ("=|>");
                     break;
-
-
                 default:
                     throw new UnsupportedOperationException();
             }
@@ -740,13 +738,15 @@ public enum Op {
             if (invertDT)
                 dt = -dt;
 
-            if (dt > 0) w.append('+');
-            String ts;
+            if (dt > 0)
+                w.append('+');
+
             if (dt == XTERNAL)
-                ts = "-";
+                w.append('-');
             else
-                ts = Integer.toString(dt);
-            w.append(ts).append(' ');
+                w.append(Integer.toString(dt));
+
+            w.append(' ');
 
         }
     }

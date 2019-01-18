@@ -50,7 +50,7 @@ public final class CompoundNormalization extends VariableNormalization {
 
 //                }
         }
-        return hasImg || x.hasVars() ? transformCompoundPlease(x) : x;
+        return hasImg || x.hasVars() ? x.transform(this) : x;
     }
 
 

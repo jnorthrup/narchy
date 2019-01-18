@@ -779,7 +779,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         if (op == null)
             op = PROD;
 
-        return op.the(DTERNAL, vectorterms);
+        return op.the(vectorterms);
     }
 
     FasterList<Term> popTerms(Op[] op /* hint */) {

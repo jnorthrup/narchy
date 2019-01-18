@@ -53,12 +53,11 @@ public class Choose1 extends Termutator.AbstractTermutator {
             case 2:
                 //check if both elements actually could match x0.  if only one can, then no need to termute.
                 //TODO generalize to n-terms
-                int x0struct = x0.structure();
                 //TODO include volume pre-test
                 Term aa = yFree.first();
-                boolean a = Subterms.possiblyUnifiable(x0struct, aa.structure(), u.varBits);
+                boolean a = Subterms.possiblyUnifiable(x0, aa, u.varBits);
                 Term bb = yFree.last();
-                boolean b = Subterms.possiblyUnifiable(x0struct, bb.structure(), u.varBits);
+                boolean b = Subterms.possiblyUnifiable(x0, bb, u.varBits);
                 if (!a && !b) {
                     return false; //impossible
                 } else if (a && !b) {

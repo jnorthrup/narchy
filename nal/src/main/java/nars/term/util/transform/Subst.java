@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import static nars.Op.NEG;
 
 
-public interface Subst extends TermTransform {
+public interface Subst extends TermTransform.AbstractNegObliviousTermTransform {
 
 
     default Term resolvePosNeg(final Term x) {
@@ -40,15 +40,25 @@ public interface Subst extends TermTransform {
         return resolve(atomic);
     }
 
-    @Override @Nullable
-    default Term transformCompound(Compound x) {
+    @Override
+    default Term transformNonNegCompound(Compound x) {
         Term y = xy(x);
         if (y==null || y==x) {
-            return TermTransform.super.transformCompound((Compound) x);
+            return AbstractNegObliviousTermTransform.super.transformNonNegCompound((Compound) x);
         } else {
             return transform(y);
         }
     }
+
+//    @Override @Nullable
+//    default Term transformCompound(Compound x) {
+//        Term y = xy(x);
+//        if (y==null || y==x) {
+//            return TermTransform.super.transformCompound((Compound) x);
+//        } else {
+//            return transform(y);
+//        }
+//    }
 
 
     /**

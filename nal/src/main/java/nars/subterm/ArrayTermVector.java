@@ -147,7 +147,7 @@ public class ArrayTermVector extends TermVector {
 
 
     @Override
-    public boolean ANDwith(ObjectIntPredicate<Term> p) {
+    public boolean ANDith(ObjectIntPredicate<Term> p) {
         Term[] t = this.terms;
         for (int i = 0, tLength = t.length; i < tLength; i++) {
             if (!p.accept(t[i], i))

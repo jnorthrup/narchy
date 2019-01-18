@@ -63,11 +63,11 @@ abstract class AbstractUnitSubterm implements Subterms {
     }
 
     @Override
-    public boolean ORwith(ObjectIntPredicate<Term> p) {
+    public boolean ORith(ObjectIntPredicate<Term> p) {
         return p.accept(sub(), 0);
     }
     @Override
-    public boolean ANDwith(ObjectIntPredicate<Term> p) {
+    public boolean ANDith(ObjectIntPredicate<Term> p) {
         return p.accept(sub(), 0);
     }
 

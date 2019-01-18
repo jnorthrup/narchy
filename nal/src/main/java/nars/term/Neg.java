@@ -11,13 +11,11 @@ import static nars.Op.NEG;
 
 public final class Neg extends UnitCompound implements The {
 
-
     private final Term sub;
 
     public Neg(Term negated) {
         this.sub = negated;
     }
-
 
     @Override
     public Op op() {
@@ -37,38 +35,6 @@ public final class Neg extends UnitCompound implements The {
             return y.neg();
         return this;
     }
-
-    @Override
-    public Term replace(Term from, Term to) {
-        boolean fNeg = from.op()==NEG;
-        if (fNeg) {
-            if (this.equals(from))
-                return to;
-        } else {
-            Term x = sub();
-            if (x.equals(from))
-                return to.neg();
-            else {
-                Term y = x.replace(from, to);
-                if (y != x)
-                    return y.neg();
-            }
-        }
-        return this;
-    }
-
-//    @Override
-//    public @Nullable Term replace(Map<? extends Term, Term> m) {
-//        Term n = m.get(this);
-//        if (n!=null)
-//            return n;
-//
-//        Term x = sub();
-//        Term y = x.replace(m);
-//        if (y!=x)
-//            return y.neg();
-//        return this;
-//    }
 
     @Override
     public Term concept() {
@@ -111,23 +77,9 @@ public final class Neg extends UnitCompound implements The {
         return sub.equals(t);
     }
 
-    @Override
-    public boolean equals(@Nullable Object that) {
-        if (this == that) return true;
-        if (that instanceof Compound) {
-            Compound c = (Compound)that;
-            return c.op()==NEG && sub.equals(c.sub(0));
-        }
-        return false;
-//        if (that instanceof Neg) {
-//            return sub.equals(((Neg)that).sub);
-//        } else {
-//            return Compound.equals(this, that);
-//        }
-    }
 
     /** @see Compound.unifyForward */
     @Override public boolean unifyForward(Term y, Unify u) {
-        return (y.op()==NEG && sub.unifyForward(y.unneg(), u));
+        return (y.op()==NEG && sub.unify(y.unneg(), u));
     }
 }

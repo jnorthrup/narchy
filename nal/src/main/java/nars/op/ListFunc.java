@@ -110,7 +110,7 @@ public enum ListFunc {
 
             int remainderLength = xy.subs() - ys;
             if (remainderLength >= 0) {
-                if (yy.subterms().ANDwith((yi, yii) -> xy.sub(remainderLength + yii).equals(yi))) {
+                if (yy.subterms().ANDith((yi, yii) -> xy.sub(remainderLength + yii).equals(yi))) {
                     if (remainderLength == 0) {
                         return e.is(x, Op.EmptyProduct) ? null : Bool.Null;
                     } else {
@@ -133,7 +133,7 @@ public enum ListFunc {
             int xs = xx.subs();
             int remainderLength = xy.subs() - xs;
             if (remainderLength >= 0) {
-                if (xx.subterms().ANDwith((xi, xii) -> xy.sub(xii).equals(xi))) {
+                if (xx.subterms().ANDith((xi, xii) -> xy.sub(xii).equals(xi))) {
 
                     if (remainderLength == 0) {
                         return e.is(y, Op.EmptyProduct) ? null : Bool.Null;

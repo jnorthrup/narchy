@@ -282,26 +282,23 @@ public interface Compound extends Term, IPair, Subterms {
         if (xs == 1)
             return xx.sub(0).unify(yy.sub(0), u);
 
-        boolean xSpecific = false, ySpecific = false;
-
-        int xdt, ydt;
         if (o.temporal) {
-            xdt = x.dt();
-            ydt = y.dt();
+            int xdt = x.dt(), ydt = y.dt();
             if (xdt != ydt) {
-                xSpecific = (xdt != XTERNAL && xdt != DTERNAL);
-                ySpecific = (ydt != XTERNAL && ydt != DTERNAL);
-                if (xSpecific && ySpecific)
-                    if (!u.unifyDT(xdt, ydt))
-                        return false;
+                boolean xSpecific = (xdt != XTERNAL && xdt != DTERNAL);
+                if (xSpecific) {
+                    boolean ySpecific = (ydt != XTERNAL && ydt != DTERNAL);
+                    if (ySpecific) {
+                        if (!u.unifyDT(xdt, ydt))
+                            return false;
+                    }
+                }
             }
 
             //compound equality would have been true if non-temporal
             if (xx.equals(yy))
                 return true;
 
-        } else {
-            xdt = ydt = DTERNAL;
         }
 
 

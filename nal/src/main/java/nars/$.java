@@ -51,7 +51,6 @@ import java.util.stream.Stream;
 
 import static java.lang.Character.isDigit;
 import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
 
 /***
  *     oooo       oo       .o.       ooooooooo.
@@ -432,7 +431,7 @@ public enum $ {
     }
 
     public static Term secte(SortedSet<Term> x) {
-        return SECTe.the(DTERNAL, x);
+        return SECTe.the(x);
     }
 
 

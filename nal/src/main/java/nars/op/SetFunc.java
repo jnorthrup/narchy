@@ -21,7 +21,6 @@ import java.util.TreeSet;
 import java.util.function.Predicate;
 
 import static nars.term.atom.Bool.Null;
-import static nars.time.Tense.DTERNAL;
 
 public class SetFunc {
 
@@ -128,7 +127,7 @@ public class SetFunc {
                 return (Term) (as > bs ? a : b);
             }
         }
-        return o.the(DTERNAL, t);
+        return o.the(t);
     }
 
     /**
