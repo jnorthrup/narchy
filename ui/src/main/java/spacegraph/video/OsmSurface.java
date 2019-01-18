@@ -2,7 +2,6 @@ package spacegraph.video;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
-import jcog.math.FloatRange;
 import jcog.math.v2;
 import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.rect.HyperRectFloat;
@@ -22,22 +21,24 @@ import java.util.function.Supplier;
 
 public class OsmSurface extends Surface {
 
-    /** TODO move scale, center, translate to a generic 2D projection impl */
-    final FloatRange scale = new FloatRange(16f, 0.001f, 1000f);
+
 
     private final IRL index;
 
-    private OsmSpace.LonLatProjection projection = OsmSpace.LonLatProjection.Raw;
+    private OsmSpace.LonLatProjection projection =
+            //new OsmSpace.RawProjection();
+            new OsmSpace.ECEFProjection();
 
     public final AtomicBoolean showIndexBounds = new AtomicBoolean(false);
+
+
+    final v2 translate = new v2();
 
     public OsmSurface(IRL i) {
         this.index = i;
     }
 
 
-    private v2 center = new v2();
-    final v2 translate = new v2();
 
     @Deprecated transient protected Osm o = null;
 
@@ -49,7 +50,8 @@ public class OsmSurface extends Surface {
                 translate.x + bounds.x + bounds.w/2,
                 translate.y + bounds.y + bounds.h/2, 0); //center in view
 
-        transform(gl);
+
+        projection.transform(gl, bounds);
 
         {
             renderMap(gl);
@@ -58,17 +60,10 @@ public class OsmSurface extends Surface {
                 renderIndexBounds(gl);
         }
 
+        projection.untransform(gl, bounds);
+
         gl.glPopMatrix();
 
-    }
-
-    /** setup the initial rendering transform TODO integrate with projection */
-    private void transform(GL2 gl) {
-        float viewScale = this.scale.floatValue() * Math.max(bounds.w, bounds.h);
-
-        gl.glScalef(viewScale, viewScale, 1);
-
-        gl.glTranslatef(-center.x, -center.y, 0);
     }
 
     private void renderIndexBounds(GL2 gl) {
@@ -155,13 +150,13 @@ public class OsmSurface extends Surface {
 
     public OsmSurface go(Osm o) {
         this.o = o;
-        center.set(o.geoBounds.cx(), o.geoBounds.cy());
+        projection.center(o.geoBounds.cx(), o.geoBounds.cy());
         return this;
     }
 
     public OsmSurface go(float lon, float lat, float lonRange, float latRange) {
         this.o = index.request(lon, lat, lonRange, latRange);
-        center.set(lon, lat);
+        projection.center(lon, lat);
         return this;
     }
 
@@ -182,18 +177,18 @@ public class OsmSurface extends Surface {
     final FingerMove pan = new FingerMove(0) {
 
 
-        private v2 dragStart;
 
+        v2 prev = new v2();
         @Override
         protected boolean startDrag(Finger f) {
-            dragStart = center.clone();
+            prev.set(0,0);
             return super.startDrag(f);
         }
 
         @Override
         public void move(float tx, float ty) {
-            float s = 1f  / (scale.floatValue() * Math.max(bounds.w, bounds.h));
-            center.set(dragStart.x - tx*s, dragStart.y - ty*s);
+            projection.pan(tx - prev.x, ty - prev.y, bounds);
+            prev.set(tx, ty);
         }
     };
 
@@ -203,7 +198,7 @@ public class OsmSurface extends Surface {
     public Surface finger(Finger finger) {
         float wheel;
         if ((wheel = finger.rotationY(true)) != 0) {
-            scale.multiply((1f - wheel * 0.1f));
+            projection.zoom(wheel);
             return this;
         }
 

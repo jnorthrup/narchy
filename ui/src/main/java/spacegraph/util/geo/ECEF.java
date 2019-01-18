@@ -1,6 +1,7 @@
 package spacegraph.util.geo;
 
 import jcog.Util;
+import toxi.math.MathUtils;
 
 /*
  *  ECEF - Earth Centered Earth Fixed coordinate system
@@ -8,7 +9,7 @@ import jcog.Util;
  *
  *  LLA - Lat Lon Alt
  */
-class ECEF {
+public class ECEF {
 
 
     private static final double a = 6378137; 
@@ -48,6 +49,13 @@ class ECEF {
     }
 
     public static double[] latlon2ecef(double lat, double lon, double alt) {
+        return latlon2ecef(lat, lon, alt, new double[3]);
+    }
+
+    public static double[] latlon2ecef(double lat, double lon, double alt, double[] target) {
+
+        lat *= MathUtils.DEG2RAD;
+        lon *= MathUtils.DEG2RAD;
 
         double sinLat = Math.sin(lat);
         double N = a / Math.sqrt(1 - esq * Util.sqr(sinLat));
@@ -58,6 +66,9 @@ class ECEF {
         double y = xy * Math.sin(lon);
         double z = (esqInv * N + alt) * sinLat;
 
-        return new double[]{x, y, z};
+        target[0] = x;
+        target[1] = y;
+        target[2] = z;
+        return target;
     }
 }

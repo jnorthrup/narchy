@@ -1,19 +1,25 @@
 package spacegraph.video;
 
 
-import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUtessellator;
 import com.jogamp.opengl.glu.GLUtessellatorCallback;
+import com.jogamp.opengl.math.FloatUtil;
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.math.FloatRange;
+import jcog.math.v2;
+import jcog.math.v3;
+import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spacegraph.util.geo.ECEF;
 import spacegraph.util.geo.osm.GeoVec3;
 import spacegraph.util.geo.osm.OsmNode;
 import spacegraph.util.geo.osm.OsmWay;
+import toxi.math.MathUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -21,6 +27,8 @@ import java.util.function.Consumer;
 
 import static com.jogamp.opengl.GL.GL_LINE_STRIP;
 import static com.jogamp.opengl.GL.GL_POINTS;
+import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
+import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 
 /**
  * OSM Renderer context
@@ -55,20 +63,177 @@ public enum OsmSpace  { ;
             changed = false;
         }
 
-        /** this will be distorted, increasingly towards the poles (extreme latitudes) */
-        public static final LonLatProjection Raw = new LonLatProjection() {
-            @Override
-            public void project(float lon, float lat, float alt, float[] target, int offset) {
-                target[offset++] = lon;
-                target[offset++] = lat;
-                target[offset] = alt;
-            }
-        };
+        public abstract void transform(GL2 gl, RectFloat bounds);
+
+        public abstract void pan(float tx, float ty, RectFloat bounds);
+
+        public abstract void zoom(float wheel);
+
+        abstract public void center(float lon, float lat);
+
+        public void untransform(GL2 gl, RectFloat bounds) {
+
+        }
     }
 
-    /** TODO */
-    abstract public static class ECEFProjection extends LonLatProjection {
+    /** for debugging; this will be distorted, increasingly towards the poles (extreme latitudes) */
+    public static final class RawProjection extends LonLatProjection {
+        private v2 center = new v2();
 
+        /** TODO move scale, center, translate to a generic 2D projection impl */
+        final FloatRange scale = new FloatRange(16f, 0.001f, 1000f);
+
+        @Override
+        public void project(float lon, float lat, float alt, float[] target, int offset) {
+            target[offset++] = lon;
+            target[offset++] = lat;
+            target[offset] = alt;
+        }
+
+        @Override
+        public void transform(GL2 gl, RectFloat bounds) {
+
+            float viewScale = this.scale.floatValue() * Math.max(bounds.w, bounds.h);
+
+            gl.glScalef(viewScale, viewScale, 1);
+
+            gl.glTranslatef(-center.x, -center.y, 0);
+        }
+
+        @Override
+        public void pan(float tx, float ty, RectFloat bounds) {
+            float s = -1f  / (scale.floatValue() * Math.max(bounds.w, bounds.h));
+            //center.set(dragStart.x - tx*s, dragStart.y - ty*s);
+            center.add(tx*s, ty*s);
+        }
+
+        @Override
+        public void zoom(float wheel) {
+            scale.multiply(1f - wheel * 0.1f);
+        }
+
+        @Override
+        public void center(float lon, float lat) {
+            center.set(lon, lat);
+        }
+    }
+
+    public static final class ECEFProjection extends LonLatProjection {
+
+        public final v3 camFwd = new v3(), camUp = new v3();
+        final v3 camPos = new v3(0,0,-10), rot = new v3();
+
+        private final float[] mat4f = new float[16];
+
+        final FloatRange scale = new FloatRange(1/(50_000.0f), 1/250_000f, 1/10_000f);
+
+        {
+            camPos.set(0, 0, 0);
+        }
+
+        @Override
+        public void project(float lon, float lat, float alt, float[] target, int offset) {
+
+            double[] d = ECEF.latlon2ecef(lat , lon , alt); //HACK
+            target[offset++] = (float)(d[0]); //HACK
+            target[offset++] = (float)(d[1]); //HACK
+            target[offset++] = (float)(d[2]); //HACK
+        }
+
+        @Override
+        public void transform(GL2 gl, RectFloat bounds) {
+
+
+            camUp.set(0, 1, 0);
+            camFwd.set(0, 0, -1);
+
+            gl.glMatrixMode(GL_PROJECTION);
+            gl.glPushMatrix();
+            gl.glLoadIdentity();
+            float zNear = 0.5f, zFar = 1200;
+            float tanFovV = (float) Math.tan(45 * FloatUtil.PI / 180.0f / 2f);
+            float aspect =
+                    //1;
+                    //bounds.h / bounds.w;
+                    bounds.w / bounds.h;
+            float top = tanFovV * zNear;
+            float right = aspect * top;
+            float bottom = -top;
+            float left = -right;
+
+            gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
+
+            Draw.glu.gluLookAt(0 - camFwd.x, 0 - camFwd.y, 0 - camFwd.z,
+                    0, 0, 0,
+                    camUp.x, camUp.y, camUp.z);
+
+            gl.glMatrixMode(GL_MODELVIEW);
+            gl.glPushMatrix();
+            gl.glLoadIdentity();
+
+            System.out.println(camPos + " " + rot);
+
+            gl.glTranslatef(camPos.x, camPos.y, camPos.z);
+
+            gl.glRotatef(rot.x, 0, 0, 1);
+            gl.glRotatef(rot.y, 1, 0, 0);
+
+//            System.out.println(scale);
+            float scale = this.scale.floatValue();
+            gl.glScalef(scale,scale,scale);
+
+
+
+            //debug:
+            gl.glColor4f(1,1,1, 0.5f);
+
+            //gl.glLineWidth(2);
+            //gl.glBegin(GL_LINE_STRIP );
+
+            gl.glPointSize(4);
+            gl.glBegin(GL_POINTS);
+            float[] ff = new float[3];
+            for (int lat = -90; lat < +90; lat+=10) {
+                for (int lon = -180; lon < +180; lon+=10) {
+                    project(lon, lat, 0, ff, 0);
+                    gl.glVertex3fv(ff, 0);
+                }
+            }
+            gl.glEnd();
+
+//            gl.glMatrixMode(GL_PROJECTION);
+//            gl.glLoadIdentity();
+//            gl.glOrtho(0, w, 0, h, -1.5, 1.5);
+//            gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+//            gl.glLoadIdentity();
+        }
+
+        @Override
+        public void untransform(GL2 gl, RectFloat bounds) {
+            gl.glPopMatrix();
+            gl.glMatrixMode(GL_PROJECTION);
+            gl.glPopMatrix();
+            gl.glMatrixMode(GL_MODELVIEW);
+        }
+
+        @Override
+        public void pan(float tx, float ty, RectFloat bounds) {
+//            camPos.x = tx * 1;
+//            camPos.z = ty * 1;
+            rot.x += tx / 10f;
+            rot.y += ty / 10f;
+        }
+
+        @Override
+        public void zoom(float wheel) {
+            //scale.multiply(1f + (wheel) * 0.1f);
+            camPos.z += wheel * 30;
+        }
+
+        @Override
+        public void center(float lon, float lat) {
+
+        }
     }
 
     public static class OsmRenderer implements GLUtessellatorCallback, Consumer<GL2> {

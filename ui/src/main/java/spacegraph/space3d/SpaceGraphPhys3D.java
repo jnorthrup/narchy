@@ -74,6 +74,12 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
     public final Dynamics3D<X> dyn;
 
 
+    @Deprecated
+    private final Queue<Spatial> toRemove = new ConcurrentLinkedQueue<>();
+
+    private final List<AbstractSpace<X>> inputs = new FasterList<>(1);
+
+
     public SpaceGraphPhys3D<X> camPos(float x, float y, float z) {
         camPos.set(x, y, z);
         return this;
@@ -156,10 +162,6 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
 
     }
 
-    @Deprecated
-    private final Queue<Spatial> toRemove = new ConcurrentLinkedQueue<>();
-
-    private final List<AbstractSpace<X>> inputs = new FasterList<>(1);
 
     private void update(long dtMS) {
 

@@ -39,9 +39,10 @@ abstract public class JoglSpace {
     public final JoglWindow io;
 
     public final v3 camPos, camFwd, camUp;
+    private final float[] mat4f = new float[16];
+
     private final float cameraSpeed = 100f, cameraRotateSpeed = cameraSpeed;
 
-    private final float[] mat4f = new float[16];
 
     public final FastCoWList<Surface> layers = new FastCoWList(Surface[]::new);
     private final Queue<Runnable> pending = new ConcurrentLinkedQueue();
