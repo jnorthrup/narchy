@@ -32,7 +32,7 @@ public class NodeConcept implements Concept {
     /** cached here, == term.hashCode() */
     private final int hash;
 
-    public final CompactArrayMap<String, Object> meta = new CompactArrayMap<>(new Object[]{DELETED, DELETED});
+    public final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
 
     public NodeConcept(Term term, NAR nar) {
         this(term, nar.conceptBuilder);
@@ -56,14 +56,9 @@ public class NodeConcept implements Concept {
         this.hash = term.hashCode();
 
         this.linker = linker;
-//        if (Param.DEBUG_EXTRA) {
-//            for (Term target : this.linker) {
-//                if (!target.term().equals(target.term().concept())) {
-//                    throw new RuntimeException("attempted non-root linkage: " + target);
-//                }
-//            }
-//        }
 
+        if (!(this instanceof PermanentConcept))
+            meta.put(DELETED, DELETED); //HACK start deleted to avoid re-deleting if flyweight dynamic
     }
 
 

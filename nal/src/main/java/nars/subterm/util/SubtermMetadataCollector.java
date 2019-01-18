@@ -2,10 +2,8 @@ package nars.subterm.util;
 
 import jcog.Util;
 import nars.Op;
-import nars.Param;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.var.Img;
 
 import static nars.Op.*;
 
@@ -20,7 +18,7 @@ public final class SubtermMetadataCollector {
     }
 
     public SubtermMetadataCollector(Term... terms) {
-        assert (terms.length <= Param.COMPOUND_SUBTERMS_MAX);
+        //assert (terms.length <= Param.COMPOUND_SUBTERMS_MAX);
         for (Term x : terms)
             collectMetadata(x);
     }
@@ -53,12 +51,11 @@ public final class SubtermMetadataCollector {
         if (x instanceof Atomic) {
 
             Op xo = x.op();
+
             collectNonVar(xo, hash);
 
-            if (x instanceof nars.term.Variable) {
-                if (!(x instanceof Img))
-                    collectVar(xo);
-            }
+            if (xo.var)
+                collectVar(xo);
 
         } else {
             this.hash = Util.hashCombine(this.hash, hash);

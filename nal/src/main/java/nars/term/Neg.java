@@ -128,6 +128,6 @@ public final class Neg extends UnitCompound implements The {
 
     /** @see Compound.unifyForward */
     @Override public boolean unifyForward(Term y, Unify u) {
-        return (y.op()==NEG && sub.unify(y.unneg(), u));
+        return (y.op()==NEG && sub.unifyForward(y.unneg(), u));
     }
 }

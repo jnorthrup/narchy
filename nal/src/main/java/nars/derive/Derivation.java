@@ -539,7 +539,8 @@ public class Derivation extends PreDerivation {
             this.ditherTime = nar.dtDither();
 
             uniSubst.u.dtTolerance = unifyPremise.dtTolerance = this.dtTolerance =
-                    Math.round(Param.UNIFY_DT_TOLERANCE_DUR_FACTOR * dur);
+                    //Math.round(Param.UNIFY_DT_TOLERANCE_DUR_FACTOR * dur);
+                    nar.dtDither();
 
             this.eviMin = c2wSafe(this.confMin = nar.confMin.floatValue());
 

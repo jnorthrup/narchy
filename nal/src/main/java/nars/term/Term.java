@@ -357,7 +357,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * @return whether unification succeeded
      */
     default boolean unify(Term y, Unify u) {
-        return (this==y) || (y instanceof Variable ? y.unifyForward(this, u) : unifyForward(y, u));
+        return (y instanceof Variable ? y.unifyForward(this, u) : unifyForward(y, u));
     }
     default boolean unifyForward(Term y, Unify u) {
         return equals(y);

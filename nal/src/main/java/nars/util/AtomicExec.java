@@ -13,7 +13,6 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.control.DurService;
-import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -77,39 +76,43 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
         float exeThresh = this.exeThresh.floatValue();
 
-        List<Term> dispatch = new FasterList(active.size());
+        int s = active.size();
+        if (s > 0) {
+            List<Term> dispatch = new FasterList(s);
 
-        active.forEach((PriReference<Term> x) -> {
-            Term xx = x.get();
+            active.forEach((PriReference<Term> x) -> {
+                Term xx = x.get();
 
-            Concept c = n.concept(xx);
-            if (c == null) {
-                return;
-            }
+                Concept c = n.concept(xx);
+                if (c == null) {
+                    return;
+                }
 
 
-            Truth goalTruth = c.goals().truth(start, end, n);
-            if (goalTruth == null || goalTruth.expectation() <= exeThresh) {
-                return; //it may not have been input to the belief table yet so dont delete
-            }
+                Truth goalTruth = c.goals().truth(start, end, n);
+                if (goalTruth == null || goalTruth.expectation() <= exeThresh) {
+                    return; //it may not have been input to the belief table yet so dont delete
+                }
 
-            Truth beliefTruth = c.beliefs().truth(start, end, n); /* assume false with no evidence */
-            if (beliefTruth != null && beliefTruth.expectation() >= exeThresh) {
-                return;
-            }
+                Truth beliefTruth = c.beliefs().truth(start, end, n); /* assume false with no evidence */
+                if (beliefTruth != null && beliefTruth.expectation() >= exeThresh) {
+                    return;
+                }
 
-            logger.info("{} EVOKE (b={},g={}) {}", n.time(), beliefTruth, goalTruth, xx);
-            dispatch.add(xx);
+                logger.info("{} EVOKE (b={},g={}) {}", n.time(), beliefTruth, goalTruth, xx);
+                dispatch.add(xx);
 
-            x.delete();
-        });
+                x.delete();
+            });
 
-        dispatch.forEach(tt -> exe.accept(tt, n));
+            dispatch.forEach(tt -> exe.accept(tt, n));
 
-        active.commit();
-        if (active.isEmpty()) {
-            disable();
+            active.commit();
+            s = active.size();
         }
+
+        if (s == 0)
+            disable();
     }
 
     @Override

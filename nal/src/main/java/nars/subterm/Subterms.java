@@ -11,7 +11,6 @@ import jcog.data.set.ArrayUnenforcedSortedSet;
 import nars.$;
 import nars.Op;
 import nars.Param;
-import nars.subterm.util.DisposableTermList;
 import nars.subterm.util.TermMetadata;
 import nars.term.Compound;
 import nars.term.Term;

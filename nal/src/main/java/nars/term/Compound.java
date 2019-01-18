@@ -248,10 +248,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default boolean unifyForward(Term y, Unify u) {
-        return
-            (this == y)
-            ||
-            (y instanceof Compound &&
+        return (y instanceof Compound &&
                 (equals(y) || (op() == y.op() && unifySubterms(y, u))));
     }
 

@@ -120,8 +120,8 @@ public abstract class Param {
     /** TODO needs tested whether recursive Unification inherits TTL */
     public static final int EVALUATION_TTL = 32;
 
-    /** within how many durations a difference in dt is acceptable for term unification */
-    public static final float UNIFY_DT_TOLERANCE_DUR_FACTOR = 1f;
+//    /** within how many durations a difference in dt is acceptable for term unification */
+//    public static final float UNIFY_DT_TOLERANCE_DUR_FACTOR = 1f;
 
 //    public static final boolean LINK_VARIABLE_UNIFIED_PREMISE = false;
 

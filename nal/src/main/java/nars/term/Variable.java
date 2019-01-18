@@ -18,13 +18,6 @@ import static nars.Op.VAR_PATTERN;
  **/
 public interface Variable extends Atomic {
 
-
-//    static boolean commonalizableVariable(Op x) {
-//        return x.in(Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit);
-//    }
-
-
-
     /**
      * The syntactic complexity of a variable is 0, because it does not refer to
      * any concept.
@@ -51,7 +44,7 @@ public interface Variable extends Atomic {
 
     @Override
     default boolean unify(Term y, Unify u) {
-        return this == y || unifyForward(y, u);
+        return unifyForward(y, u);
     }
 
     @Override
@@ -71,8 +64,8 @@ public interface Variable extends Atomic {
         if (!y.equals(_y)) {
             if (equals(y))
                 return true;
-            if (y.containsRecursively(this))
-                return false; //cycle caught
+//            if (y.containsRecursively(this))
+//                return false; //cycle caught
         }
         Term x = u.resolve(this);
         if (!x.equals(this)) {
@@ -83,13 +76,13 @@ public interface Variable extends Atomic {
                 xOp = x.op();
                 //continue below
             } else {
-                try {
+//                try {
                     return x.unifyForward(y, u);
-                } catch (StackOverflowError e) {
-                    //HACK
-                    System.err.println("unify stack overflow: " + x + "->" + y + " in " + u.xy);
-                    return false;
-                }
+//                } catch (StackOverflowError e) {
+//                    //HACK
+//                    System.err.println("unify stack overflow: " + x + "->" + y + " in " + u.xy);
+//                    return false;
+//                }
             }
         }
 
