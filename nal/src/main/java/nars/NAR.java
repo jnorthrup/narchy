@@ -216,7 +216,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * resolves functor by its term
      */
     public final Functor functor(Atom term) {
-        Termed x = concepts.get(term, false);
+        Termed x = concept(term);
         return x instanceof Functor ? (Functor) x : null;
     }
 
@@ -733,7 +733,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     @Nullable
-    public final BeliefTable truths(Term concept, byte punc) {
+    public final BeliefTable truths(Termed concept, byte punc) {
         assert (punc == BELIEF || punc == GOAL);
         @Nullable Concept c = conceptualizeDynamic(concept);
         if (c == null)
@@ -746,8 +746,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     @Nullable
     public final Truth truth(Termed concept, byte punc, long start, long end) {
-        @Nullable Concept c = conceptualizeDynamic(concept);
-        return c != null ? ((BeliefTable) c.table(punc)).truth(start, end, concept instanceof Term ? ((Term)concept) : null, this) : null;
+        @Nullable BeliefTable table = truths(concept, punc);
+        return table != null ? table.truth(start, end, concept instanceof Term ? ((Term)concept) : null, this) : null;
     }
 
     @Nullable
@@ -1312,14 +1312,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return self.get();
     }
 
-    public final Termed get(Term x) {
-        return get(x, false);
-    }
-
-    public final Termed get(Term x, boolean createIfAbsent) {
-        return concepts.get(x, createIfAbsent);
-    }
-
     /**
      * strongest matching belief for the target time
      */
@@ -1499,7 +1491,15 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
             if (ConceptBuilder.dynamicModel(ct) != null) {
                 //try conceptualizing the dynamic
-                return conceptualize(concept);
+                //return conceptualize(concept);
+
+                //create temporary dynamic concept
+                Concept c = conceptBuilder.construct(ct);
+                if (c!=null) {
+                    //flyweight start deleted and unallocated (in-capacit-ated) since it isnt actually in memory
+                    c.delete(this);
+                }
+                return c;
             }
         }
         return x;

@@ -153,12 +153,15 @@ public class TaskConcept extends NodeConcept  {
 
 
     @Override
-    public void delete(NAR nar) {
-        super.delete(nar);
-        if (beliefs != null) beliefs.delete();
-        if (goals != null) goals.delete();
-        if (questions != null) questions.delete();
-        if (quests != null) quests.delete();
+    public boolean delete(NAR nar) {
+        if (super.delete(nar)) {
+            if (beliefs != null) beliefs.delete();
+            if (goals != null) goals.delete();
+            if (questions != null) questions.delete();
+            if (quests != null) quests.delete();
+            return true;
+        }
+        return false;
     }
 
 }

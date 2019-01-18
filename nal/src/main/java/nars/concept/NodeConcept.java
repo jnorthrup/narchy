@@ -1,5 +1,6 @@
 package nars.concept;
 
+import jcog.data.list.FasterList;
 import jcog.data.map.CompactArrayMap;
 import jcog.pri.bag.Bag;
 import nars.NAR;
@@ -7,6 +8,7 @@ import nars.Op;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
 import nars.link.TaskLink;
+import nars.link.TemplateTermLinker;
 import nars.link.TermLinker;
 import nars.table.BeliefTable;
 import nars.table.question.QuestionTable;
@@ -30,7 +32,7 @@ public class NodeConcept implements Concept {
     /** cached here, == term.hashCode() */
     private final int hash;
 
-    private final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
+    public final CompactArrayMap<String, Object> meta = new CompactArrayMap<>(new Object[]{DELETED, DELETED});
 
     public NodeConcept(Term term, NAR nar) {
         this(term, nar.conceptBuilder);
@@ -121,12 +123,17 @@ public class NodeConcept implements Concept {
 
 
     @Override
-    public void delete( NAR nar) {
-        meta.clearPut(DELETED, DELETED);
+    public boolean delete( NAR nar) {
+        Object[] c = meta.clearPut(DELETED, DELETED);
+        if (c==null || (c.length!=2 || c[0]!=DELETED)) {
+            taskLinks.clear();
+            taskLinks.setCapacity(0);
 
-        //not necessary:
-//        termLinks.clear();
-//        taskLinks.clear();
+            if (linker instanceof TemplateTermLinker) ((FasterList)linker).clear(); //HACK TODO maybe add Linker.clear()
+
+            return true;
+        }
+        return false;
     }
 
     @Override

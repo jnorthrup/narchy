@@ -80,7 +80,7 @@ public class PatternIndex extends MapConceptIndex {
         if (y == null) {
             if (nar != null && x.op() == ATOM) {
 
-                Termed xx = nar.concepts.get(x, false);
+                Termed xx = nar.concept(x);
                 if (xx != null) {
                     concepts.put(xx.term(), xx);
                     return (Term) xx;

@@ -13,7 +13,7 @@ import nars.NAR;
 public interface PermanentConcept extends Concept {
 
     @Override
-    default void delete(NAR nar) {
+    default boolean delete(NAR nar) {
         throw new RuntimeException("permanent concept deleted: " + this);
     }
 

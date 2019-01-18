@@ -184,7 +184,7 @@ public class Premise implements Comparable<Premise> {
 
         NAR n = d.nar;
 
-        Concept beliefConcept = beliefTerm.op().conceptualizable ?
+        Concept beliefConcept = beliefTerm.op().taskable ?
                 n.conceptualizeDynamic(beliefTerm)
                 //n.concept(beliefTerm)
                 //n.conceptualize(beliefTerm)
@@ -216,9 +216,20 @@ public class Premise implements Comparable<Premise> {
             } else {
                 Task answered = tryAnswer(beliefTerm, answerTable, d);
                 if (answered!=null) {
-                    if (answered.conf() >= d.confMin)
-                        d.add(answered); //TODO determine if inputting here is really only useful if revised or dynamic
+                    if (answered.conf() >= d.confMin) {
+
+//                        d.add(answered); //TODO determine if inputting here is really only useful if revised or dynamic
+
 //                        n.input(answered);
+
+                        if (answerGoal) {
+                            //store goals
+                            d.add(answered);
+                        } else {
+                            //just emit if belief
+                            n.eventTask.emit(answered);
+                        }
+                    }
 
                 }
                 if (answerGoal) {

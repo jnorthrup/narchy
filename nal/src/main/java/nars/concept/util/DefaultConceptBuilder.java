@@ -105,6 +105,7 @@ public class DefaultConceptBuilder extends ConceptBuilder {
 
     @Override
     public void start(Concept c) {
+        super.start(c);
         alloc.accept(c);
     }
 

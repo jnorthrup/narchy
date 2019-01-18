@@ -94,17 +94,7 @@
             //Y, (Z ==> (&&,--X,A..+)) |- unisubst((Z ==> (&&,--X,--Y,A..+)), X,Y), (Belief:AbductionN)
 
 
-    //general implication induction
-    //(A ==> B), X, neq(A,X), neq(A,--X), --is(X,"==>")   |- ((A && X) ==> B), (Belief:Induction)
-    //(A ==> B), X, neq(A,X), neq(A,--X), --is(X,"==>")   |- ((A && --X) ==> B), (Belief:InductionPN)
 
-        (C ==> Z), (X ==> M), eventOf(C,X) |- ((conjWithout(C,X) && M) ==> Z), (Belief:AbductionPB)
-//        ((&&,M,X,A..*) ==> C), (Y ==> C) |- unisubst((M ==> C),X,Y), (Belief:AbductionPB)
-//        ((&&,M,A..+) ==> X), ((&&,A..+) ==> Y) |- unisubst((M ==> X),X,Y,"$"), (Belief:AbductionPB)
-//          (--(&&,M,A..+) ==> X), (--(&&,A..+) ==> Y) |- unisubst((--M ==> X),X,Y,"$"), (Belief:AbductionPB)
-//        ((&&,M,A..+) ==> X), ((&&,A..+) ==> Y) |- unisubst((M ==> Y),Y,X,"$"), (Belief:AbductionPB)
-//          (--(&&,M,A..+) ==> X), (--(&&,A..+) ==> Y) |- unisubst((--M ==> Y),Y,X,"$"), (Belief:AbductionPB)
-//
 
 //// implication-based syllogism ////////////////////////////////////////////////////////////////////////////////////
 //       (A ==> B) ------- (B ==> C)
@@ -242,16 +232,14 @@
             //(Y --> P), (Z ==> (&&,(X-->P),A..+)),neq(X,Y) |- unisubst((Z ==> (&&,(X-->P),A..+)), X,Y,strict), (Belief:Deduction)
               //  (Y --> P), (Z ==> (&&,--(X-->P),A..+)),neq(X,Y) |- unisubst((Z ==> (&&,--(X-->P),A..+)), X,Y,strict), (Belief:DeductionN)
 
-
-
     (X ==> Y), ((&&,Y,A..+) ==> Z) |- ((&&,X,A..+) ==> Z), (Belief:Deduction)
         (X ==> Y), ((&&,Y,A..+) ==> Z) |- --((&&,X,A..+) ==> Z), (Belief:DeductionPN)
     (X ==> Y), ((&&,--Y,A..+) ==> Z) |- ((&&,X,A..+) ==> Z), (Belief:DeductionN)
         (X ==> Y), ((&&,--Y,A..+) ==> Z) |- --((&&,X,A..+) ==> Z), (Belief:DeductionNN)
 
-    ((&&,X,A..+) ==> Z), ((&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
-      (--(&&,X,A..+) ==> Z), (--(&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
-
+    //Primary Inverting Condition
+    ((&&,X,A..+) ==> Z), (Y ==> Z), eventOfNeg(Y,X)  |- ((X ==> Z) && (--X ==> --Z)), (Belief:AbductionPN)
+    ((&&,X,A..+) ==> Z), (Y ==> Z), eventOfNeg(Y,X)  |- ((X ==> --Z) && (--X ==> Z)), (Belief:AbductionNP)
 
     //Conj/Impl Chain Deduction (with swap)
     //TODO use conj ops
@@ -261,6 +249,8 @@
          (Y ==> X), ((&&,--X,A..+) ==> Z)  |- ((&&,Y,A..+) ==> Z), (Belief:DeductionN)
 
 
+    ((&&,X,A..+) ==> Z), ((&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
+      (--(&&,X,A..+) ==> Z), (--(&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
 
 
     (C ==> Z), (B ==> M), eventOf(C,B) |- ((conjWithout(C,B) && M) ==> Z), (Belief:Induction)
@@ -273,6 +263,20 @@
     (C ==> X), (E ==> Y), eventOf(C,E), --isVar(X), --isVar(Y)          |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
       //TODO check (--C ==> X), (--E ==> Y), eventOf(C,E), --isVar(X), --isVar(Y)    |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
 
+        (C ==> Z), (X ==> M), eventOf(C,X) |- ((conjWithout(C,X) &&   M) ==> Z), (Belief:AbductionPB)
+        (C ==> Z), (X ==> M), eventOf(C,X) |- ((conjWithout(C,X) && --M) ==> Z), (Belief:AbductionPBPN)
+
+//        ((&&,M,X,A..*) ==> C), (Y ==> C) |- unisubst((M ==> C),X,Y), (Belief:AbductionPB)
+//        ((&&,M,A..+) ==> X), ((&&,A..+) ==> Y) |- unisubst((M ==> X),X,Y,"$"), (Belief:AbductionPB)
+//          (--(&&,M,A..+) ==> X), (--(&&,A..+) ==> Y) |- unisubst((--M ==> X),X,Y,"$"), (Belief:AbductionPB)
+//        ((&&,M,A..+) ==> X), ((&&,A..+) ==> Y) |- unisubst((M ==> Y),Y,X,"$"), (Belief:AbductionPB)
+//          (--(&&,M,A..+) ==> X), (--(&&,A..+) ==> Y) |- unisubst((--M ==> Y),Y,X,"$"), (Belief:AbductionPB)
+//
+
+    //general implication induction
+    //(A ==> B), X, neq(A,X), neq(A,--X), --is(X,"==>")   |- ((A && X) ==> B), (Belief:Induction)
+    //(A ==> B), X, neq(A,X), neq(A,--X), --is(X,"==>")   |- ((A && --X) ==> B), (Belief:InductionPN)
+
   (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,strict), (Belief:StructuralDeduction, Goal:StructuralDeduction)
   //chain:
   (&&,(X<->Y),A..+), (Y<->Z)         |- substitute((&&,A..+),X,Z,strict), (Belief:Analogy, Goal:Analogy)
@@ -280,10 +284,16 @@
 
 
 // Mutex induction
-    (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)              |- (&&,--(X && Y),A..*), (Belief:Intersection)
-    ((&&,X,--Y,A..*)==>Z), ((&&,Y,--X,A..*)==>Z),neq(X,Y)  |- ((&&,--(X && Y),A..*) ==> Z), (Belief:Intersection)
-      (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)             |-  --(X ==> Y), (Belief:Induction)
-      (&&,X,--Y,A..+), (&&,Y,--X,B..+),neq(X,Y)              |- (&&,--((&&,A..+) && (&&,B..+))), (Belief:Intersection)
+    (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)                 |- (&&,--(X && Y),A..*), (Belief:Intersection)
+    (&&,X,--Y,A..+), (&&,Y,--X,B..+),neq(X,Y),neq(A..+,B..+)  |- (&&,--((&&,A..+) && (&&,B..+))), (Belief:Intersection)
+
+    (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z),neq(X,Y)     |- (  (&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP)
+    (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z),neq(X,Y)     |- (  (&&,--(X && Y),A..*) ==> --Z), (Belief:IntersectionNN)
+    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z),neq(X,Y)     |- (--(&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP)
+    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z),neq(X,Y)     |- (--(&&,--(X && Y),A..*) ==> --Z), (Belief:IntersectionNN)
+
+      (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)               |-  --(X ==> Y), (Belief:Induction)
+
         //TODO impl predicate mutex
 
 //mutex soft-swap

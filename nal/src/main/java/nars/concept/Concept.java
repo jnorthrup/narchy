@@ -54,7 +54,8 @@ public interface Concept extends Termed, MetaMap {
 
     QuestionTable quests();
 
-    void delete(NAR nar);
+    /** returns true if not already deleted */
+    boolean delete(NAR nar);
 
     /** meta-table key, if present, signifies concept has been deleted */
     String DELETED = "-";

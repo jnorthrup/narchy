@@ -32,7 +32,7 @@ import java.util.function.Predicate;
 import static nars.Op.*;
 
 /**
- * Created by me on 3/23/16.
+ * TODO make this BiFunction<Term,Concept,Concept>
  */
 public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed> {
 
@@ -283,15 +283,22 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
         return apply(x);
     }
 
+
+
     public final Termed apply(Term x) {
 
-        Concept c = Task.taskConceptTerm(x) ? taskConcept(x) : nodeConcept(x);
-        if (c == null)
-            throw new WTF(x + " unconceptualizable");
-
+        Concept c = construct(x);
 
         start(c);
 
+        return c;
+    }
+
+    /** constructs a concept but does no capacity allocation (result will have zero capacity, except dynamic abilities) */
+    public final Concept construct(Term x) {
+        Concept c = Task.taskConceptTerm(x) ? taskConcept(x) : nodeConcept(x);
+        if (c == null)
+            throw new WTF(x + " unconceptualizable");
         return c;
     }
 
@@ -299,7 +306,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Termed, Termed>
      * called after constructing a new concept, or after a permanent concept has been installed
      */
     public void start(Concept c) {
-
+        ((NodeConcept)c).meta.clear(); //HACK remove deleted state
     }
 
     abstract public TermLinker termlinker(Term term);
