@@ -23,6 +23,7 @@
       (--A ==> B), A, task("?")  |- B, (Punctuation:Question)
 
 
+
 //Hypothesize Subcondition Identity
 //      hypothesize that two subconditions which unify actually refer to the same term,
 //      eliminating the variable and simplifying the statement

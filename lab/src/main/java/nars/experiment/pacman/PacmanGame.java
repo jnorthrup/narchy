@@ -50,10 +50,6 @@ public class PacmanGame {
         maze = Maze.create(13, 13);
         player = new Player(maze, maze.playerStart().x, maze.playerStart().y, playerSpeed);
         keys = new boolean[4];
-        resetGhosts();
-        text = "";
-        score = 0;
-        previousDotCount = maze.dotCount;
         splashes = new CopyOnWriteArrayList<>();
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -84,7 +80,15 @@ public class PacmanGame {
         frame.add(view);
         frame.pack();
 
+        restart();
 
+    }
+
+    public void restart() {
+        resetGhosts();
+        text = "";
+        score = 0;
+        previousDotCount = maze.dotCount;
     }
 
 
@@ -163,8 +167,7 @@ public class PacmanGame {
 
                     } else {
 
-                        if (!player.deathAnimation()) return;
-                        else {
+                        if (player.deathAnimation()) {
 
                             splashes.add(new PacComponent.SplashModel("-100", player.x, player.y, Color.red));
                             score -= 10;
@@ -174,9 +177,12 @@ public class PacmanGame {
 
                             resetGhosts();
                             updates = UPDATES;
-                            if (player.die())
-                                text = "You Lose!";
+                            if (player.die()) {
+                                lose();
+                            }
 
+                        } else {
+                            return;
                         }
 
                     }
@@ -265,8 +271,7 @@ public class PacmanGame {
 
                 if (maze.dotCount == 0) {
 
-                    text = "You Won!";
-                    PacmanGame.win();
+                    win();
 
                 }
 
@@ -323,16 +328,20 @@ public class PacmanGame {
 
     }
 
-    public static void win() {
+    public void win() {
 
-        System.out.println("You Win!");
+        text = "WIN";
+        restart(); //TODO check this works
+
+        //System.out.println("You Win!");
+
 
 
     }
 
-    public static void lose() {
-
-        System.out.println("You Lose!");
+    public void lose() {
+        text = "LOSE";
+        //System.out.println("You Lose!");
 
 
     }

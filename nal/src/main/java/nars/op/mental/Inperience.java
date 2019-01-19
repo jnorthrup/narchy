@@ -171,7 +171,7 @@ abstract public class Inperience extends TaskLeakTransform {
             if (!tt.op().taskable)
                 return Bool.Null;
 
-            return reifyBeliefOrGoal(t, tt, nar);
+            return reifyBeliefOrGoal(t, Image.imageNormalize(tt), nar);
         }
 
         @Deprecated protected Term reifyBeliefOrGoal(Task t, Term tt, NAR nar) {
@@ -234,6 +234,8 @@ abstract public class Inperience extends TaskLeakTransform {
             x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
             x = x.hasAny(VAR_QUERY) ? TermTransform.queryToDepVar.transform(x) : x;
             if (x instanceof Bool) return Bool.Null;
+
+            x = Image.imageNormalize(x);
 
             return $.funcImg(punc == QUESTION ? wonder : evaluate, nar.self(), Described.transform(x));
         }

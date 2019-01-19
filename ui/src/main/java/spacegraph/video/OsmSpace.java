@@ -12,6 +12,7 @@ import jcog.math.FloatRange;
 import jcog.math.v2;
 import jcog.math.v3;
 import jcog.tree.rtree.rect.RectFloat;
+import jcog.util.ArrayUtils;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,6 @@ import spacegraph.util.geo.ECEF;
 import spacegraph.util.geo.osm.GeoVec3;
 import spacegraph.util.geo.osm.OsmNode;
 import spacegraph.util.geo.osm.OsmWay;
-import toxi.math.MathUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -137,7 +137,7 @@ public enum OsmSpace  { ;
             double[] d = ECEF.latlon2ecef(lat , lon , alt); //HACK
             target[offset++] = (float)(d[0]); //HACK
             target[offset++] = (float)(d[1]); //HACK
-            target[offset++] = (float)(d[2]); //HACK
+            target[offset]   = (float)(d[2]); //HACK
         }
 
         @Override
@@ -655,7 +655,7 @@ public enum OsmSpace  { ;
         private final short ls;
         private final List<OsmNode> nn;
         //private final float[] coord;
-        private final Consumer[] draw;
+        private final Consumer<GL2> draw;
 
         OsmPolygonDraw(float r, float g, float b, float a, float lw, short ls, OsmRenderer s, List<OsmNode> nn, float[][] coord) {
             this.r = r;
@@ -677,7 +677,16 @@ public enum OsmSpace  { ;
             GLU.gluTessEndContour(tobj);
             GLU.gluTessEndPolygon(tobj);
 
-            this.draw = s.dbuf.toArray(new Consumer[0]);
+            Consumer<GL2>[] draws = s.dbuf.toArray(ArrayUtils.EMPTY_CONSUMER_ARRAY);
+            if (draws.length == 1)
+                this.draw = draws[0];
+            else {
+                this.draw = (GL2 G)->{
+                    for (Consumer<GL2> d : draws)
+                        d.accept(G);
+                };
+            }
+
             s.dbuf.clear();
         }
 
@@ -687,16 +696,7 @@ public enum OsmSpace  { ;
             gl.glLineWidth(lw);
             gl.glLineStipple(1, ls);
 
-            for (Consumer<GL2> d : draw)
-                d.accept(gl);
-
-//            gl.glBegin(GL.GL_TRIANGLES);
-//            for (int i = 0; i < coord.length / 3; i++)
-//                gl.glVertex3fv(coord, i * 3);
-//            gl.glEnd();
-
-
-
+            draw.accept(gl);
         }
     }
 

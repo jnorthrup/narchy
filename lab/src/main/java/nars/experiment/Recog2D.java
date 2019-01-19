@@ -69,8 +69,9 @@ public class Recog2D extends NAgentX {
         super("x", n);
 
 
-        w = 10;
-        h = 12;
+        w = 10; h = 12;
+        int sw = 5, sh = 6;
+
         canvas = new BufferedImage(w, h, BufferedImage.TYPE_INT_BGR);
         g = ((Graphics2D) canvas.getGraphics());
 
@@ -84,7 +85,7 @@ public class Recog2D extends NAgentX {
 
 
                 ,
-                /*new Blink*/(new ScaledBitmap2D(() -> canvas, w, h)/*, 0.8f*/));
+                /*new Blink*/(new ScaledBitmap2D(() -> canvas, sw, sh)/*, 0.8f*/));
 
 
         outs = new BeliefVector(ii ->

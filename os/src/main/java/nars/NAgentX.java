@@ -217,7 +217,10 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        new CaffeineIndex(96 * 1024 , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
+                        new CaffeineIndex(
+                                96 * 1024
+                                //8 * 1024
+                                , (x) -> 1) //, c -> (int) Math.ceil(c.voluplexity()))
 //                        new HijackConceptIndex(
 //
 //                                //192 * 1024,

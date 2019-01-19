@@ -1011,5 +1011,23 @@ public class NAL5Test extends NALTest {
         ;
     }
 
+    @Test public void conjPreconditionDecompositionToImpl_BackChaining_Question() {
+        test
+                .ask("((x&&y)==>z)")
+                .mustQuestion(cycles, "(x&&y)")
+                .mustQuestion(cycles, "(x ==>+- z)")
+                .mustQuestion(cycles, "(y ==>+- z)")
+//                .mustQuestion(cycles, "(x==>(y&&z))")
+//                .mustQuestion(cycles, "(y==>(x&&z))")
+        ;
+    }
+    @Test public void conjPostconditionDecompositionToImpl_BackChaining_Question() {
+        test
+                .ask("(z==>(x&&y))")
+                .mustQuestion(cycles, "(x&&y)")
+                .mustQuestion(cycles, "(z ==>+- x)")
+                .mustQuestion(cycles, "(z ==>+- y)")
+        ;
+    }
 }
 

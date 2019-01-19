@@ -105,11 +105,11 @@ public final class Answer implements AutoCloseable {
 
         FloatRank<Task> strength =
                 beliefOrQuestion ?
-                        FloatRank.the(beliefStrength(start, end)) : questionStrength(start, end);
+                        beliefStrength(start, end) : questionStrength(start, end);
 
         FloatRank<Task> r;
         if (template == null || !template.hasAny(Temporal) || template.equals(template.concept()) /* <- means it will match anything */ ) {
-            r = FloatRank.the(strength);
+            r = strength;
         } else {
             r = complexTaskStrength(strength, template);
         }
@@ -175,7 +175,7 @@ public final class Answer implements AutoCloseable {
         };
     }
 
-    public static FloatFunction<Task> beliefStrength(long start, long end) {
+    public static FloatRank<Task> beliefStrength(long start, long end) {
         if (start == ETERNAL) {
             return eternalTaskStrength();
         } else {
@@ -199,17 +199,20 @@ public final class Answer implements AutoCloseable {
     }
 
 
-    public static FloatFunction<Task> eternalTaskStrength() {
-        return x -> (x.isEternal() ? x.evi() : x.eviEternalized() * x.range());
+    /** TODO use FloatRank min */
+    public static FloatRank<Task> eternalTaskStrength() {
+        return (x,min) -> (x.isEternal() ? x.evi() : x.eviEternalized() * x.range())
+                //* x.originality()
+                ;
     }
 
-    public static FloatFunction<Task> temporalTaskStrength(long start, long end) {
-        long dur = (1 + (end-start))/2;
-        return x -> (TruthIntegration.evi(x, start, end, dur /*1*/ /*0*/));
+    /** TODO use FloatRank min */
+    public static FloatRank<Task> temporalTaskStrength(long start, long end) {
+        long dur = Math.max(1,(1 + (end-start))/2);
+        return (x,min) -> TruthIntegration.evi(x, start, end, dur /*1*/ /*0*/)
+                //* x.originality()
+                ;
     }
-
-
-
 
     public Answer ditherTruth(boolean ditherTruth) {
         this.ditherTruth = ditherTruth;
@@ -268,7 +271,7 @@ public final class Answer implements AutoCloseable {
                 if (ss != ETERNAL) { //dont eternalize here
                     long ee = time.end;
                     if (t.isEternal() || !t.containedBy(ss, ee)) {
-                        t = Task.project(t, ss, ee, nar, ditherTruth, false);
+                        t = Task.project(t, ss, ee, true, ditherTruth, false, nar);
                     }
                 }
             }

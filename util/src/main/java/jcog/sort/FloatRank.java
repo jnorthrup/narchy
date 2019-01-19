@@ -22,7 +22,10 @@ import java.util.function.Predicate;
 
     /** adapter which ignores the minimum */
     static <X> FloatRank<X> the(FloatFunction<X> f) {
-        return (x, min) -> f.floatValueOf(x);
+        if (f instanceof FloatRank)
+            return ((FloatRank)f);
+        else
+            return (x, min) -> f.floatValueOf(x);
     }
 
 

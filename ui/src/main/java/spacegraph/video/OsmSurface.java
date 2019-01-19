@@ -26,8 +26,8 @@ public class OsmSurface extends Surface {
     private final IRL index;
 
     private OsmSpace.LonLatProjection projection =
-            //new OsmSpace.RawProjection();
-            new OsmSpace.ECEFProjection();
+            new OsmSpace.RawProjection();
+            //new OsmSpace.ECEFProjection();
 
     public final AtomicBoolean showIndexBounds = new AtomicBoolean(false);
 

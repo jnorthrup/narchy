@@ -18,7 +18,6 @@ import nars.term.*;
 import nars.term.atom.Bool;
 import nars.term.util.transform.VariableTransform;
 import nars.term.var.VarIndep;
-import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -409,24 +408,17 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
         return Task.taskConceptTerm(t/*.the()*/, punc, safe) ? pair(t, negated) : null;
     }
 
-    /**
-     * creates lazily computing proxy task which facades the task to the target time range
-     */
-    static Task project(@Nullable Task t, long subStart, long subEnd, boolean negated, boolean force, boolean dither, NAR n) {
-        if (force) {
-            return project(t, subStart, subEnd, n, dither, negated);
-        } else {
-            return negated ? Task.negated(t) : t; //just negate
-        }
+
+    static Task project(Task t, long start, long end, NAR n) {
+        return project(t, start, end, false, false, false, n);
     }
 
 
-    @Nullable
-    static Task project(Task t, long start, long end, NAR n, boolean ditherTruth, boolean negated) {
-        if (!negated && t.start()==start && t.end()==end)
+    static Task project(Task t, long start, long end, boolean trimIfIntersects, boolean ditherTruth, boolean negated, NAR n) {
+        if (!negated && t.start()==start && t.end()==end || (t.isBeliefOrGoal() && t.isEternal()))
             return t;
 
-        if (!t.isEternal()) {
+        if (trimIfIntersects) {
             @Nullable long[] intersection = Longerval.intersectionArray(start, end, t.start(), t.end());
             if (intersection != null) {
 
@@ -434,10 +426,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, UnitPri
                 end = intersection[1];
             }
 
-            start = Tense.dither(start, n);
-            end = Tense.dither(end, n);
-        } else
-            return t;
+//            start = Tense.dither(start, n);
+//            end = Tense.dither(end, n);
+        }
+
 
         Truth tt;
         if (t.isBeliefOrGoal()) {

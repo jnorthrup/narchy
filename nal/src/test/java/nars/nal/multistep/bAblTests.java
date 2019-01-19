@@ -71,18 +71,20 @@ class bAblTests extends NALTest {
 
         TestNAR t = test;
         t.confTolerance(0.9f);
-        t.nar.termVolumeMax.set(40);
+        t.nar.termVolumeMax.set(35);
         t.nar.freqResolution.set(0.25f);
+        t.nar.beliefPriDefault.set(0.1f);
+        t.nar.questionPriDefault.set(0.8f);
 
-        t.input("$0.9 ((&&, start($1,$2), at( $1,$B,$C), at( $B,$2,$C2) ) ==> ( path( id,$C,id,$C2)   && chunk( $1,$2,$B) )).")
-                .input("$0.9 ((&&, start($1,$2), at( $1,$B,$C), at( $2,$B,$C2) ) ==> ( path( id,$C,neg,$C2)  && chunk( $1,$2,$B) )).")
-                .input("$0.9 ((&&, start($1,$2), at( $B,$1,$C), at( $B,$2,$C2) ) ==> ( path( neg,$C,id,$C2)  && chunk( $1,$2,$B) )).")
-                .input("$0.9 ((&&, start($1,$2), at( $B,$1,$C), at( $2,$B,$C2) ) ==> ( path( neg,$C,neg,$C2) && chunk( $1,$2,$B) )).")
+        t.input("((&&, start($1,$2), at( $1,$B,$C), at( $B,$2,$C2) ) ==> ( path( id,$C,id,$C2)   && chunk( $1,$2,$B) )).")
+                .input("((&&, start($1,$2), at( $1,$B,$C), at( $2,$B,$C2) ) ==> ( path( id,$C,neg,$C2)  && chunk( $1,$2,$B) )).")
+                .input("((&&, start($1,$2), at( $B,$1,$C), at( $B,$2,$C2) ) ==> ( path( neg,$C,id,$C2)  && chunk( $1,$2,$B) )).")
+                .input("((&&, start($1,$2), at( $B,$1,$C), at( $2,$B,$C2) ) ==> ( path( neg,$C,neg,$C2) && chunk( $1,$2,$B) )).")
                 .input("at(kitchen,hallway,south).") 
                 .input("at(den,hallway,west).") 
                 .input("start(den,kitchen).") 
                 .input("$0.9 path(?a,?b,?c,?d)?")
-                .mustBelieve(500, "path(id,west,neg,south)", 1f, 0.75f); 
+                .mustBelieve(2500, "path(id,west,neg,south)", 1f, 0.75f);
 
 
     }

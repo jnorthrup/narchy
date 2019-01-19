@@ -13,7 +13,6 @@ import nars.table.BeliefTable;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -43,9 +42,9 @@ public class DynTaskify extends DynEvi {
 
     final boolean beliefOrGoal;
     final Predicate<Task> filter;
-    final boolean forceProjection;
 
-    public DynTaskify(Term template, AbstractDynamicTruth model, boolean beliefOrGoal, Predicate<Task> filter, boolean forceProjection, NAR nar) {
+
+    public DynTaskify(Term template, AbstractDynamicTruth model, boolean beliefOrGoal, Predicate<Task> filter, NAR nar) {
         super(4 /* estimate */);
         this.beliefOrGoal = beliefOrGoal;
 
@@ -58,13 +57,13 @@ public class DynTaskify extends DynEvi {
                         Answer.filter(filter, this::doesntOverlap) :
                         filter;
 
-        this.forceProjection = forceProjection;
+
     }
 
     @Nullable public static DynTaskify eval(Term template, AbstractDynamicTruth model, boolean beliefOrGoal, Answer a) {
         assert (template.op() != NEG);
 
-        DynTaskify d = new DynTaskify(template, model, beliefOrGoal, a.filter, false, a.nar);
+        DynTaskify d = new DynTaskify(template, model, beliefOrGoal, a.filter, a.nar);
 
         return model.components(template, a.time.start, a.time.end, d::evalComponent) ? d : null;
     }
@@ -83,17 +82,15 @@ public class DynTaskify extends DynEvi {
 
         int eternals = d.count(Task::isEternal);
         if (eternals == d.size()) {
-            s = ETERNAL;
-            e = ETERNAL;
+            s = e = ETERNAL;
         } else {
+            long earliest;
             if (eternals == 0) {
-                s = d.minValue(Stamp::start);
-                e = d.maxValue(Stamp::end);
-
+                earliest = d.minValue(Stamp::start);
             } else {
-                s = d.minValue(t -> t.start() != ETERNAL ? t.start() : TIMELESS);
-                e = d.maxValue(Stamp::end);
+                earliest = d.minValue(t -> t.start() != ETERNAL ? t.start() : TIMELESS);
             }
+            long latest = d.maxValue(Stamp::end);
 
 //                //trim
 //                if (a.time.start!=ETERNAL && Longerval.intersects(s, e, a.time.start, a.time.end)) {
@@ -101,32 +98,22 @@ public class DynTaskify extends DynEvi {
 //                    if (a.time.end != ETERNAL)
 //                        e = Math.min(a.time.end, e);
 //                }
+            if (model == ConjIntersection) {
+                //calculate the minimum range (ie. intersection of the ranges)
+                s = earliest;
+                e = earliest + (d.minValue(t -> t.isEternal() ? 1 : t.range()) - 1);
 
-        }
-
-        float eviFactor;
-        if (model == ConjIntersection) {
-            if (s != ETERNAL)
-                e = s + (d.minValue(t -> t.isEternal() ? 1 : t.range()) - 1);
-            eviFactor = 1;
-        } else {
-
-//        //HACK discount by estimated evidence loss due to time gaps
-//        float maxEvi = yy.maxValue((Task t) -> t.evi());
-//        TruthPolation p = Param.truth(s, e, nar.dur());
-//        yy.forEach(p::add);
-//        float eviMax = p.truth().evi();
-//        eviFactor = Math.min(1, eviMax / maxEvi);
-
-            //HACK estimate by time range only
-            if (s != ETERNAL) {
-                long range = (e - s) + 1;
-                eviFactor = (float) (d.sumOfLong((Task x) -> x.isEternal() ? range : Math.min(range, x.range())) / (((double) range * d.size())));
-                assert (eviFactor <= 1f);
             } else {
-                eviFactor = 1;
+
+                //TODO calculate ideal start, end range and projection for each task
+                //according to requested range (if not ETERNAL) and the loss in confidence caused by having to project the components
+                s = earliest;
+                e = latest;
             }
+
         }
+
+
 
         NAR nar = a.nar;
         Term term = model.reconstruct(template, d, nar, s, e);
@@ -136,16 +123,25 @@ public class DynTaskify extends DynEvi {
             return null;
         }
 
+        if (model!=ConjIntersection) {
+            for (int i = 0, dSize = d.size(); i < dSize; i++) {
+                Task x = d.get(i);
+                if (x.start() != s || x.end() != e) {
+                    d.setFast(i, Task.project(x, s, e, a.nar));
+                }
+            }
+        }
+
         Truth t = model.truth(d, nar);
-        t = (t != null && eviFactor != 1) ? PreciseTruth.byEvi(t.freq(), t.evi() * eviFactor) : t;
+        //t = (t != null && eviFactor != 1) ? PreciseTruth.byEvi(t.freq(), t.evi() * eviFactor) : t;
         if (t == null)
             return null;
 
 
         Task y = d.task(term, t, d::stamp, beliefOrGoal, s, e, nar);
-        if (y != null && eviFactor != 1) {
-            y.priMult(eviFactor);
-        }
+//        if (y != null && eviFactor != 1) {
+//            y.priMult(eviFactor);
+//        }
         return y;
     }
 
@@ -164,17 +160,19 @@ public class DynTaskify extends DynEvi {
             return false;
 
         BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
-        Task bt = forceProjection ?
-                table.answer(subStart, subEnd, subTerm, filter, nar) :
+        Task bt = //forceProjection ?
+                //table.answer(subStart, subEnd, subTerm, filter, nar);
                 table.match(subStart, subEnd, subTerm, filter, nar);
         if (bt == null || !model.acceptComponent(template, bt.term(), bt))
             return false;
 
         /* project to a specific time, and apply negation if necessary */
-        bt = Task.project(bt, subStart, subEnd, negated, forceProjection, false, nar);
+        //bt = Task.project(bt, subStart, subEnd, negated, forceProjection, false, nar);
+        bt = negated ? Task.negated(bt) : bt;
 
         return bt != null && add(bt);
     }
+
 
 
     @Override

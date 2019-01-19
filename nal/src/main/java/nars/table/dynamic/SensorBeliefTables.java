@@ -128,7 +128,7 @@ public class SensorBeliefTables extends BeliefTables {
                     double stretchDurs = ((double) (nextEnd - lastStart)) / dur;
                     if ((stretchDurs <= series.series.stretchDurs())) {
                         Truth lastEnds = last.truth(lastEnd, 0);
-                        if (lastEnds.equals(next)) {
+                        if (lastEnds!=null && lastEnds.equals(next)) {
                             //stretch
                             last.setEnd(nextEnd);
                             return last;
